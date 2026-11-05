@@ -1,0 +1,170 @@
+import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import { dirname, join } from 'node:path';
+import { test } from 'node:test';
+import { fileURLToPath } from 'node:url';
+
+const here = dirname(fileURLToPath(import.meta.url));
+const guard = join(here, 'guard.mjs');
+
+function run(toolInput, tool = 'Bash', cwd = here) {
+  return spawnSync('node', [guard], {
+    input: JSON.stringify({ tool_name: tool, tool_input: toolInput, cwd }),
+    encoding: 'utf8',
+  });
+}
+
+function bash(command) {
+  return run({ command });
+}
+
+const blocked = [
+  // Vercel CLI, direct and aliased
+  'vercel env ls',
+  'vercel env pull .vercel/x',
+  'vercel env add FOO production',
+  'vercel env rm FOO',
+  'vc env ls',
+  'vercel pull',
+  'vercel pull --yes',
+  'vercel dev',
+  'vercel api /v9/projects',
+  'vercel --token abc env ls',
+  'vercel -t abc pull',
+  'FOO=1 vercel env ls',
+  'sudo vercel env ls',
+  // runners
+  'npx vercel env ls',
+  'npx -y vercel env pull',
+  'npx --yes vercel@latest env ls',
+  'npx vercel@39.1.0 pull',
+  'npx -p vercel vercel env ls',
+  'npm exec vercel env ls',
+  'npm exec -- vercel@latest pull',
+  'npm x vercel dev',
+  'pnpm dlx vercel env ls',
+  'yarn dlx vercel@latest pull',
+  'bunx vercel env ls',
+  'bunx vercel@latest api /v2/user',
+  // compound commands and subshells
+  'cd apps/api && vercel env ls',
+  'echo hi; npx vercel pull',
+  'true || vercel dev',
+  'echo hi | vercel env ls',
+  'echo $(vercel env pull)',
+  'bash -c "vercel env ls"',
+  // Neon CLI
+  'neonctl connection-string',
+  'neonctl cs',
+  'neon connection-string --project-id x',
+  'neon cs',
+  'neonctl --project-id abc cs',
+  'neonctl projects create --name x',
+  'neonctl project create',
+  'neonctl branches create --name x',
+  'neon branch create',
+  'neonctl roles reset-password',
+  'neonctl roles create --name x',
+  'neonctl roles delete x',
+  'neonctl init',
+  'neon env',
+  'neon pull',
+  'npx neonctl connection-string',
+  'npx neonctl@latest cs',
+  'npx -y neon init',
+  'npx @neondatabase/neonctl cs',
+  'pnpm dlx neonctl roles create',
+  'bunx neonctl@2 branches create',
+  'npm exec neon pull',
+  // secret flags in any command
+  'neonctl branches list --show-secrets',
+  'something --decrypt',
+  'tool --reveal',
+  'tool --show-password',
+  'neonctl cs --psql',
+  'curl "https://api.example.test/env?decrypt=true"',
+];
+
+const allowed = [
+  'vercel ls',
+  'vercel inspect https://shelfmark-app.vercel.app',
+  'vercel --version',
+  'vc ls',
+  'npx vercel ls',
+  'gh pr checks 3',
+  'gh pr view 3',
+  'npx nx build api',
+  'npx nx run-many -t lint typecheck test build',
+  'npm exec nx build api',
+  'node --test .claude/hooks/',
+  'neon branches list',
+  'neonctl branches list',
+  'neonctl projects list',
+  'neonctl roles list',
+  'neon --version',
+  'npx neonctl branches list',
+  'echo environment',
+  'ls api',
+];
+
+for (const command of blocked) {
+  test(`blocks: ${command}`, () => {
+    const result = bash(command);
+    assert.equal(result.status, 2, result.stderr);
+    assert.match(result.stderr, /Blocked by \.claude\/hooks\/guard\.mjs/);
+  });
+}
+
+for (const command of allowed) {
+  test(`allows: ${command}`, () => {
+    const result = bash(command);
+    assert.equal(result.status, 0, result.stderr);
+  });
+}
+
+test('blocks a commit on main', () => {
+  // Needs a checkout that is on main: use a throwaway repo.
+  const result = spawnSync('node', ['-e', mainCommitScript()], { encoding: 'utf8' });
+  assert.equal(result.status, 0, result.stderr);
+});
+
+function mainCommitScript() {
+  return `
+    const { spawnSync, execFileSync } = require('node:child_process');
+    const { mkdtempSync } = require('node:fs');
+    const { tmpdir } = require('node:os');
+    const { join } = require('node:path');
+    const dir = mkdtempSync(join(tmpdir(), 'guard-'));
+    execFileSync('git', ['init', '-b', 'main'], { cwd: dir, stdio: 'ignore' });
+    const r = spawnSync('node', [${JSON.stringify(guard)}], {
+      input: JSON.stringify({ tool_name: 'Bash', tool_input: { command: 'git commit -m x' }, cwd: dir }),
+      encoding: 'utf8',
+    });
+    if (r.status !== 2) { console.error('expected exit 2, got ' + r.status); process.exit(1); }
+    const ok = spawnSync('node', [${JSON.stringify(guard)}], {
+      input: JSON.stringify({ tool_name: 'Bash', tool_input: { command: 'git status' }, cwd: dir }),
+      encoding: 'utf8',
+    });
+    if (ok.status !== 0) { console.error('expected exit 0, got ' + ok.status); process.exit(1); }
+  `;
+}
+
+test('blocks --no-verify', () => {
+  const result = bash('git commit --no-verify -m x');
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /--no-verify/);
+});
+
+test('blocks force push', () => {
+  assert.equal(bash('git push --force origin feat/x').status, 2);
+});
+
+test('blocks rm -rf', () => {
+  assert.equal(bash('rm -rf dist').status, 2);
+});
+
+test('blocks reading env files, allows .env.example', () => {
+  assert.equal(run({ file_path: '/repo/.env.local' }, 'Read').status, 2);
+  assert.equal(bash('cat .env.production').status, 2);
+  assert.equal(run({ file_path: '/repo/.env.example' }, 'Read').status, 0);
+});

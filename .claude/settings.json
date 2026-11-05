@@ -93,6 +93,15 @@
       "Bash(vercel env pull:*)",
       "Bash(vercel env ls:*)",
       "Bash(neonctl connection-string:*)",
+      "Bash(vercel env:*)",
+      "Bash(vercel pull:*)",
+      "Bash(npx vercel env:*)",
+      "Bash(npx vercel pull:*)",
+      "Bash(neonctl cs:*)",
+      "Bash(neon connection-string:*)",
+      "Bash(neon cs:*)",
+      "Read(~/.config/neon/**)",
+      "Read(**/.vercel/**)",
       "Bash(git push --force:*)",
       "Bash(git push -f:*)"
     ]

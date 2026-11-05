@@ -36,7 +36,143 @@ function checkPath(path) {
   }
 }
 
+const SECRET_FLAG_RE = /--(show-secrets|decrypt|reveal|show-password|psql)(?![\w-])|decrypt=true/;
+
+const WRAPPERS = new Set(['sudo', 'command', 'env', 'exec', 'nohup', 'time']);
+const CLI_NAMES = new Map([
+  ['vercel', 'vercel'],
+  ['vc', 'vercel'],
+  ['neon', 'neon'],
+  ['neonctl', 'neon'],
+  ['@neondatabase/neonctl', 'neon'],
+]);
+// Global flags of the two CLIs that take a separate value (so the value is not a subcommand).
+const VALUE_FLAGS = new Set([
+  '--token',
+  '-t',
+  '--scope',
+  '-S',
+  '--team',
+  '-T',
+  '--cwd',
+  '-A',
+  '--local-config',
+  '--project-id',
+  '--api-key',
+  '--output',
+  '-o',
+  '--context-file',
+  '--org-id',
+  '--config-dir',
+]);
+// Runner flags that take a separate value.
+const RUNNER_VALUE_FLAGS = new Set(['-p', '--package', '--call', '-c', '--cache', '--prefix']);
+
+const NEON_BLOCKED_FIRST = new Set(['connection-string', 'cs', 'init', 'env', 'pull']);
+const VERCEL_BLOCKED_FIRST = new Set(['env', 'pull', 'dev', 'api']);
+
+function unquote(token) {
+  return token.replace(/^['"]+|['"]+$/g, '');
+}
+
+function stripVersion(spec) {
+  const at = spec.lastIndexOf('@');
+  return at > 0 ? spec.slice(0, at) : spec;
+}
+
+function cliName(token) {
+  const name = stripVersion(unquote(token));
+  return CLI_NAMES.get(name) ?? CLI_NAMES.get(basename(name)) ?? null;
+}
+
+// Returns the first package spec after the runner flags, or -1.
+function runnerTarget(tokens, from) {
+  for (let i = from; i < tokens.length; i++) {
+    const t = tokens[i];
+    if (t === '--') continue;
+    if (RUNNER_VALUE_FLAGS.has(t)) {
+      i++;
+      continue;
+    }
+    if (t.startsWith('-')) continue;
+    return i;
+  }
+  return -1;
+}
+
+// Finds a Vercel / Neon CLI call in one simple command, directly or through a runner.
+function findCli(tokens) {
+  let i = 0;
+  while (i < tokens.length && (/^\w+=/.test(tokens[i]) || WRAPPERS.has(tokens[i]))) i++;
+  const cmd = tokens[i];
+  if (!cmd) return null;
+
+  let target;
+  if (cmd === 'npx' || cmd === 'bunx') {
+    target = runnerTarget(tokens, i + 1);
+  } else if (
+    (cmd === 'npm' && (tokens[i + 1] === 'exec' || tokens[i + 1] === 'x')) ||
+    ((cmd === 'pnpm' || cmd === 'yarn') && tokens[i + 1] === 'dlx')
+  ) {
+    target = runnerTarget(tokens, i + 2);
+  } else {
+    target = i;
+  }
+  if (target < 0) return null;
+  const cli = cliName(tokens[target]);
+  return cli ? { cli, args: tokens.slice(target + 1) } : null;
+}
+
+function positionals(args) {
+  const out = [];
+  for (let i = 0; i < args.length; i++) {
+    const a = unquote(args[i]);
+    if (VALUE_FLAGS.has(a)) {
+      i++;
+      continue;
+    }
+    if (a.startsWith('-')) continue;
+    out.push(a);
+  }
+  return out;
+}
+
+function checkSecretCli(command) {
+  if (SECRET_FLAG_RE.test(command)) {
+    block(
+      'flags that print or inject secret values (--show-secrets, --decrypt, --reveal, --show-password, --psql, decrypt=true) are not allowed. Secrets stay in the dashboards; the author handles them.',
+    );
+  }
+
+  const pieces = command
+    .split(/&&|\|\||;|\||\n|\$\(|\(|\)|`|&|["']/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  for (const piece of pieces) {
+    const found = findCli(piece.split(/\s+/));
+    if (!found) continue;
+    const [first, second] = positionals(found.args);
+    const why =
+      'Vercel and Neon CLI commands that read, write or inject secrets are blocked (PROJECT.md 9.2, ADR 0019). Linking and env vars are done by the author in the dashboard; verify deployments with "gh pr checks".';
+    if (found.cli === 'vercel' && VERCEL_BLOCKED_FIRST.has(first)) {
+      block(`"vercel ${first}" is not allowed. ${why}`);
+    }
+    if (found.cli === 'neon') {
+      const sub = first === 'project' ? 'projects' : first === 'branch' ? 'branches' : first;
+      const blocked =
+        NEON_BLOCKED_FIRST.has(sub) ||
+        ((sub === 'projects' || sub === 'branches') && second === 'create') ||
+        ((sub === 'roles' || sub === 'role') && second !== 'list');
+      if (blocked) {
+        block(`"neon ${[first, second].filter(Boolean).join(' ')}" is not allowed. ${why}`);
+      }
+    }
+  }
+}
+
 function checkBash(command, cwd) {
+  checkSecretCli(command);
+
   // Split into simple commands so "cd x && git commit" is inspected piece by piece.
   const parts = command
     .split(/&&|\|\||;|\||\n/)
