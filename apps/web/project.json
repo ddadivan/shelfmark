@@ -47,6 +47,17 @@
         }
       }
     },
+    "middleware-shell": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "inputs": ["{workspaceRoot}/scripts/write-middleware-shell.mjs", "production", "^production"],
+      "outputs": ["{workspaceRoot}/dist/apps/web/middleware"],
+      "cache": true,
+      "options": {
+        "command": "node scripts/write-middleware-shell.mjs",
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "serve": {
       "continuous": true,
       "executor": "@angular/build:dev-server",
