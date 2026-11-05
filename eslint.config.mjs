@@ -41,6 +41,7 @@ export default [
             { sourceTag: 'type:app', onlyDependOnLibsWithTags: ['type:ui', 'type:contracts'] },
             { sourceTag: 'type:ui', onlyDependOnLibsWithTags: ['type:ui', 'type:contracts'] },
             { sourceTag: 'type:contracts', onlyDependOnLibsWithTags: ['type:contracts'] },
+            { sourceTag: 'type:util', onlyDependOnLibsWithTags: [] },
           ],
         },
       ],

@@ -1,0 +1,19 @@
+{
+  "name": "web-csp",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/web/csp/src",
+  "projectType": "library",
+  "tags": ["scope:web", "type:util"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "tsc --noEmit -p libs/web/csp/tsconfig.lib.json",
+          "tsc --noEmit -p libs/web/csp/tsconfig.spec.json"
+        ],
+        "parallel": false
+      }
+    }
+  }
+}
