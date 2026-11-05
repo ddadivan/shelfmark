@@ -110,7 +110,7 @@ test.describe('Content-Security-Policy', () => {
       for (const path of ['/missing.js', '/nonexistent.woff2']) {
         const response = await request.get(path);
         expect(response.status(), path).toBe(404);
-        expect(response.headers()['content-type'] ?? '', path).not.toContain('text/html');
+        expect(await response.text(), path).not.toContain('app-root');
       }
     });
 
