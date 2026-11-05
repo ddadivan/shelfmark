@@ -87,6 +87,7 @@
       "Read(~/.vercel/**)",
       "Read(~/Library/Application Support/com.vercel.cli/**)",
       "Read(~/.config/neonctl/**)",
+      "Read(~/.config/neon/**)",
       "Bash(gh pr merge:*)",
       "Bash(gh secret:*)",
       "Bash(gh auth token:*)",
