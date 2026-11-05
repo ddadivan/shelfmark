@@ -17,10 +17,10 @@
     }
   },
   "rewrites": [
-    { "source": "/zz1/:p*", "destination": "/api" },
-    { "source": "/zz6/(.*)", "destination": "/api/health" },
-    { "source": "/zz7", "destination": "/api" },
-    { "source": "/api/(.*)", "destination": "/api" }
+    { "source": "/api/(.*)", "destination": "/api" },
+    { "source": "/(.*\\.js)", "destination": "/404.html" },
+    { "source": "/(.*\\.[^/]*)", "destination": "/not-found-sentinel" },
+    { "source": "/((?!api(?:/|$)).*)", "destination": "/index.html" }
   ],
   "headers": [
     {
