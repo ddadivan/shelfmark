@@ -10,7 +10,9 @@ $fade: 350ms;
 // them once) and use the `ui-` prefix. Colour is `currentColor` at 6% (light) / 10% (dark);
 // a host can raise it by setting `--ui-ripple-opacity` (filled buttons use 0.2).
 @mixin ripple {
-  .ui-ripple-host {
+  // `:where` keeps specificity at zero: `relative` is only a default, a component's own
+  // `position` (absolute, sticky) wins.
+  :where(.ui-ripple-host) {
     position: relative;
     isolation: isolate;
     overflow: hidden;

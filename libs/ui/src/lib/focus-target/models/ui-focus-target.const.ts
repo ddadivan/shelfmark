@@ -1,5 +1,5 @@
 import { InjectionToken } from '@angular/core';
-import type { UiFocusTarget } from './models/ui-focus-target.interface';
+import type { UiFocusTarget } from './ui-focus-target.interface';
 
 /**
  * Provided by wrapper components (`ui-button`). A directive on the same host injects it with

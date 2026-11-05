@@ -1,0 +1,40 @@
+@use '../src/styles/ui' as *;
+
+// Layout of the Ripple stories only (never shipped with the library). Class names start with `rs-`.
+
+.rs-panel {
+  display: grid;
+  gap: var(--space-4);
+  max-width: rem(384px);
+  padding: var(--space-6);
+  color: var(--text);
+  background: var(--bg);
+}
+
+.rs-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.rs-rows {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.rs-narrow {
+  width: rem(288px);
+}
+
+.rs-row {
+  display: block;
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  font: inherit;
+  color: var(--text);
+  text-align: start;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-md);
+}

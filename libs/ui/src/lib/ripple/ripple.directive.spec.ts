@@ -7,12 +7,16 @@ import { RippleDirective } from './ripple.directive';
   imports: [RippleDirective],
   template: `
     <div class="row" [uiRipple]="ripple()" [attr.aria-disabled]="ariaDisabled()">Row</div>
+    @if (link()) {
+      <a class="lnk" href="#x" uiRipple>Link</a>
+    }
     <button class="btn" uiRipple [disabled]="disabled()">Press</button>
   `,
 })
 class HostComponent {
   readonly ripple = signal<boolean | string>(true);
   readonly disabled = signal(false);
+  readonly link = signal(false);
   readonly ariaDisabled = signal<string | null>(null);
 }
 
@@ -193,6 +197,46 @@ describe('RippleDirective', () => {
     await settle();
 
     expect(row.classList.contains('ui-ripple-host')).toBe(true);
+  });
+
+  it('ends running ripples when the host opts out or becomes disabled', async () => {
+    const { host, row, spans, settle } = await setup();
+    row.dispatchEvent(pointer('pointerdown', 60, 30));
+    row.dispatchEvent(key('keydown', 'Enter'));
+
+    expect(spans(row)).toHaveLength(2);
+
+    host.ripple.set(false);
+    await settle();
+
+    expect(spans(row)).toHaveLength(0);
+  });
+
+  it('gives a link no Space ripple but keeps Enter', async () => {
+    const { host, root, settle } = await setup();
+    host.link.set(true);
+    await settle();
+    const anchor = root.querySelector('a') as HTMLElement;
+    anchor.getBoundingClientRect = () => new DOMRect(0, 0, 100, 36);
+    anchor.dispatchEvent(key('keydown', ' '));
+
+    expect(anchor.querySelectorAll('.ui-ripple')).toHaveLength(0);
+
+    anchor.dispatchEvent(key('keydown', 'Enter'));
+
+    expect(anchor.querySelectorAll('.ui-ripple')).toHaveLength(1);
+  });
+
+  it('removes the span at once when reduced motion is on at release', async () => {
+    const { row, spans } = await setup();
+    row.dispatchEvent(pointer('pointerdown', 60, 30));
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: query.includes('reduce'),
+      media: query,
+    }));
+    row.dispatchEvent(pointer('pointerup', 60, 30));
+
+    expect(spans(row)).toHaveLength(0);
   });
 
   it('shows no ripple under prefers-reduced-motion', async () => {

@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { DestroyRef, Directive, ElementRef, inject, input } from '@angular/core';
+import { DestroyRef, Directive, effect, ElementRef, inject, input } from '@angular/core';
 
 const MOVE_CANCEL_DISTANCE = 10;
 const FADE_ANIMATION = 'ui-ripple-fade';
@@ -43,11 +43,16 @@ export class RippleDirective {
   private pointerOrigin: { x: number; y: number } | null = null;
 
   constructor() {
-    inject(DestroyRef).onDestroy(() => {
-      for (const span of this.spans) {
-        span.remove();
+    // Opted out or disabled while ripples run: the host loses `overflow: hidden`, so end them.
+    effect(() => {
+      if (!this.enabled()) {
+        this.release();
+        this.releaseKey();
+        this.removeAll();
       }
-      this.spans.clear();
+    });
+    inject(DestroyRef).onDestroy(() => {
+      this.removeAll();
     });
   }
 
@@ -76,6 +81,10 @@ export class RippleDirective {
 
   protected onKeyDown(event: KeyboardEvent): void {
     if (event.repeat || (event.key !== 'Enter' && event.key !== ' ')) {
+      return;
+    }
+    // Space does not activate a link, so it gets no feedback.
+    if (event.key === ' ' && this.host.tagName === 'A') {
       return;
     }
     this.releaseKey();
@@ -120,8 +129,7 @@ export class RippleDirective {
     span.style.setProperty('top', `${y - radius}px`);
     span.addEventListener('animationend', (event) => {
       if ((event as AnimationEvent).animationName === FADE_ANIMATION) {
-        span.remove();
-        this.spans.delete(span);
+        this.remove(span);
       }
     });
     this.host.append(span);
@@ -130,7 +138,27 @@ export class RippleDirective {
   }
 
   private fade(span: HTMLElement | null): void {
-    span?.classList.add('is-out');
+    if (!span) {
+      return;
+    }
+    if (this.prefersReducedMotion()) {
+      // The ripple is hidden (no animation), so `animationend` would never remove it.
+      this.remove(span);
+      return;
+    }
+    span.classList.add('is-out');
+  }
+
+  private remove(span: HTMLElement): void {
+    span.remove();
+    this.spans.delete(span);
+  }
+
+  private removeAll(): void {
+    for (const span of this.spans) {
+      span.remove();
+    }
+    this.spans.clear();
   }
 
   private isDisabled(): boolean {

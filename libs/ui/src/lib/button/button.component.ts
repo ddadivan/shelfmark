@@ -6,13 +6,12 @@ import {
   computed,
   effect,
   ElementRef,
-  forwardRef,
   input,
   isDevMode,
   output,
   viewChild,
 } from '@angular/core';
-import { UI_FOCUS_TARGET } from '../focus-target/ui-focus-target.const';
+import { UI_FOCUS_TARGET } from '../focus-target/models/ui-focus-target.const';
 import type { UiFocusTarget } from '../focus-target/models/ui-focus-target.interface';
 import { IconComponent } from '../icon/icon.component';
 import type { IconName } from '../icon/models/icon-name.type';
@@ -36,7 +35,7 @@ import type { ButtonVariant } from './models/button-variant.type';
 @Component({
   selector: 'ui-button',
   imports: [IconComponent, NgTemplateOutlet, RippleDirective],
-  providers: [{ provide: UI_FOCUS_TARGET, useExisting: forwardRef(() => ButtonComponent) }],
+  providers: [{ provide: UI_FOCUS_TARGET, useExisting: ButtonComponent }],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './button.component.html',
   styleUrl: './button.component.scss',

@@ -19,7 +19,7 @@
 - **`uiRipple` directive** (`[uiRipple]`, works on any host):
   - Starts on `pointerdown` at the touch point (circle to the farthest corner), grows 450 ms `ease-out` while held, fades 350 ms on release; a pointer moving more than 10 px cancels (fades). Enter / Space start from the centre and fade on keyup.
   - The span is `aria-hidden`, positioned with CSSOM writes (no `style` attribute, strict CSP), removed on the fade's `animationend` and on destroy.
-  - Colour `currentColor` at 6% light / 10% dark; filled buttons raise it to **20%** through `--ui-ripple-opacity` (Motion spec and PROJECT.md 7.1 win over the 22% in the Ripple spec). Styles are global (`ripple` mixin in `global.scss`) because the span is created at runtime outside view encapsulation; timings 450/350 ms are the Motion spec's own and live as Sass variables, not duration tokens.
+  - Colour `currentColor` at 6% light / 10% dark; filled buttons raise it to **20%** through `--ui-ripple-opacity` (Motion spec and PROJECT.md 7.1 win over the 22% in the Ripple spec). Class names are `ui-ripple-host`, `ui-ripple` and `is-out` instead of the spec's `sm-ripple*`, following the `ui-` prefix of the library. Styles are global (`ripple` mixin in `global.scss`) because the span is created at runtime outside view encapsulation; timings 450/350 ms are the Motion spec's own and live as Sass variables, not duration tokens.
   - No ripple when the host is `disabled` or `aria-disabled="true"`, when opted out with `[uiRipple]="false"`, or under `prefers-reduced-motion: reduce` (only the pressed background shows; no press scale).
   - `ui-button` applies it on the inner `<button>` / `<a>` and has a `ripple` input to opt out.
 

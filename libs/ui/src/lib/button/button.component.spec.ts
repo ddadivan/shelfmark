@@ -1,7 +1,7 @@
 import { Component, Directive, inject, signal, viewChildren } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { axeViolations } from '../../testing/axe';
-import { UI_FOCUS_TARGET } from '../focus-target/ui-focus-target.const';
+import { UI_FOCUS_TARGET } from '../focus-target/models/ui-focus-target.const';
 import type { IconName } from '../icon/models/icon-name.type';
 import { ButtonComponent } from './button.component';
 import type { ButtonHaspopup } from './models/button-haspopup.type';
