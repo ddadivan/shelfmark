@@ -5,7 +5,7 @@ description: How Shelfmark works on GitHub - issue format, labels, milestones, t
 
 # GitHub workflow
 
-Repository: `ddadivan/shelfmark`. Board: GitHub Project **Shelfmark** (owner `ddadivan`).
+Repository: `ddadivan/shelfmark`. Board: GitHub Project **Shelfmark** (number 2, owner `ddadivan`).
 
 ## Labels
 
@@ -17,7 +17,7 @@ Repository: `ddadivan/shelfmark`. Board: GitHub Project **Shelfmark** (owner `dd
 
 ## Milestones
 
-`0 · Foundation`, `1 · Design system`, `2 · Auth`, `3 · Links`, `4 · Folders and tags`, `5 · Search and feed`, `6 · Polish`, `7 · Release` (PROJECT.md 9.1).
+`0 · Foundation`, `1 · Design system`, `2 · Authorisation`, `3 · Links`, `4 · Folders and tags`, `5 · Search and feed`, `6 · Polish`, `7 · Release` (PROJECT.md 9.1).
 
 ## Issues
 
