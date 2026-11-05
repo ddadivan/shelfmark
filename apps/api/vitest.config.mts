@@ -14,6 +14,7 @@ export default defineConfig({
     include: ['src/**/*.spec.ts'],
     reporters: ['default'],
     coverage: {
+      // On by default so `nx test api` enforces the thresholds; filtered runs (`-t foo`) may fail them.
       enabled: true,
       provider: 'v8',
       reportsDirectory: '../../coverage/apps/api',

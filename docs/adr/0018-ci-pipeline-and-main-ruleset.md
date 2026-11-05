@@ -1,6 +1,6 @@
 # 0018. CI pipeline, required checks and the `main` ruleset
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-05
 - Source: issue #2; `docs/PROJECT.md` 5.8, 9.3, 9.5; `docs/SETUP.md` section 2
 
@@ -15,9 +15,9 @@ Every PR must be checked automatically and `main` may change only through a gree
   - `lint-test-build` — `npm run format:check`, `npm run lint:styles`, `nx affected -t lint typecheck test build`;
   - `e2e` — `nx affected -t e2e` with `CI=true` (Playwright serves the production build via `web:serve-static`), report uploaded on failure;
   - `npm-audit` — `npm audit --audit-level=high` on the full tree (dev dependencies run in CI too, so they are not omitted);
-  - `gitleaks` — the gitleaks **binary** (pinned version, SHA-256 checked) scans the full git history with `.gitleaks.toml`, the same CLI as lefthook.
+  - `gitleaks` — the gitleaks **binary** (version and SHA-256 pinned in the workflow, not a checksum file from the same release; Dependabot does not bump them, so both are updated by hand) scans the full git history with `.gitleaks.toml`, the same CLI as lefthook.
 - Nx base/head from `nrwl/nx-set-shas`; Node from `actions/setup-node` with `node-version-file: .nvmrc` and npm cache; Nx local cache (`.nx/cache`) in `actions/cache`. Playwright browsers are not cached (`npx playwright install --with-deps chromium`).
-- **Hardening:** workflow-level `permissions: contents: read` (plus `actions: read` where `nx-set-shas` runs); every action pinned to a full commit SHA with a `# vX.Y.Z` comment (Dependabot `github-actions` keeps them current); `persist-credentials: false`; `timeout-minutes` per job; concurrency per PR with `cancel-in-progress` on PRs only; no secrets used. `SCARF_ANALYTICS=false` at workflow level backs up `scarfSettings`.
+- **Hardening:** workflow-level `permissions: {}` and `contents: read` per job (plus `actions: read` where `nx-set-shas` runs); every action pinned to a full commit SHA with a `# vX.Y.Z` comment (Dependabot `github-actions` keeps them current); `persist-credentials: false`; `timeout-minutes` per job; concurrency per PR with `cancel-in-progress` on PRs only; no secrets used. `SCARF_ANALYTICS=false` at workflow level backs up `scarfSettings`.
 - Coverage thresholds are enforced in the normal `test` target: `apps/api` enables Vitest coverage by default, as `libs/ui` already does.
 - **CodeQL default setup** (JavaScript/TypeScript and GitHub Actions), not an advanced workflow.
 - **`main` ruleset** (`~DEFAULT_BRANCH`, active, no bypass actors): PR required with 0 approvals and squash merge only; required status checks `lint-test-build`, `e2e`, `npm-audit`, `gitleaks` bound to the GitHub Actions app, branch must be up to date; code scanning rule for CodeQL (errors, security high or higher); no deletion, no force push, linear history. Repository setting "require actions pinned to a SHA" on.

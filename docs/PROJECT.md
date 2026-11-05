@@ -20,8 +20,9 @@ Updated as work goes on — every session resumes from here.
   - [x] Strict TypeScript and one type per file; filled design-system icons
   - [x] ADR 0001–0017; `docs/SETUP.md` (the author's manual steps)
   - [x] GitHub repository, Projects board, labels, milestones and stage 0 issues
-  - [ ] **Next — CI**: GitHub Actions (`nx affected -t lint typecheck test build`, `npm run lint:styles`, `npm audit`, gitleaks), CodeQL, `main` protection
-  - [ ] **Then — deploy**: Vercel (web static + API function, CSP header, `NODE_ENV=production`) and Neon, after the manual steps in `docs/SETUP.md`
+  - [x] CI: GitHub Actions workflow with four required checks (`lint-test-build`, `e2e`, `npm-audit`, `gitleaks`), ADR 0018
+  - [ ] CodeQL default setup and the `main` ruleset — applied with `gh` right after the CI PR is merged (ADR 0018)
+  - [ ] **Next — deploy**: Vercel (web static + API function, CSP header, `NODE_ENV=production`) and Neon, after the manual steps in `docs/SETUP.md`
   - Open decisions for the author: Vercel project name / domain (`shelfmark.vercel.app` is taken); the author creates the Neon project in the console (connection strings never reach an agent)
 - [ ] Motion in code — stage 6; promo video — after the stage 1 release
 

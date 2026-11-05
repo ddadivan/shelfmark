@@ -46,7 +46,7 @@ npx nx serve api                  # http://localhost:3000/api (Swagger: /api/doc
 # serve cold start: a production build runs first (dependsOn build), then the webpack
 # watch rebuilds and node --watch restarts the server on each change.
 npx nx build api                  # dist/apps/api, run with: node dist/apps/api/main.js
-npx nx test api --coverage        # Vitest, thresholds 80%
+npx nx test api                   # Vitest, coverage on by default, thresholds 80%
 npx nx run-many -t lint typecheck test build -p api contracts
 ```
 
