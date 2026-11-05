@@ -56,15 +56,15 @@ class HostComponent {
 }
 
 /** Stands in for a tooltip / menu trigger: reads the focus target from its own host. */
-@Directive({ selector: '[probe]' })
+@Directive({ selector: '[uiProbe]' })
 class ProbeDirective {
   readonly target = inject(UI_FOCUS_TARGET, { optional: true, self: true });
 }
 
 @Component({
   imports: [ButtonComponent, ProbeDirective],
-  template: `<ui-button probe>Probe</ui-button>
-    <div probe>Plain</div>`,
+  template: `<ui-button uiProbe>Probe</ui-button>
+    <div uiProbe>Plain</div>`,
 })
 class TokenHostComponent {
   readonly probes = viewChildren(ProbeDirective);
