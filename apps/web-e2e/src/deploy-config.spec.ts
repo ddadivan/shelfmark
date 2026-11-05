@@ -8,7 +8,9 @@ import {
 } from './support/vercel-config';
 
 const config = readVercelConfig();
-const apiRewrite = config.rewrites[0];
+const apiRewrite = config.rewrites.find(
+  (r) => r.destination === '/api' && r.source.startsWith('/api/'),
+) ?? { source: '', destination: '' };
 const apiPaths = ['/api', '/api/', '/api/health', '/api/docs', '/api/folders/1'];
 
 test.describe('vercel.json deployment config', () => {
@@ -73,8 +75,20 @@ test.describe('vercel.json deployment config', () => {
       (r) => r.source !== apiRewrite.source && r.destination === '/api',
     );
     expect(rule).toBeDefined();
+    // Order is a requirement: the API rule must come first, so `/api/v1/file.json` reaches the API.
+    expect(config.rewrites[0]).toEqual(apiRewrite);
+    expect(sourceToRegExp(apiRewrite.source).test('/api/v1/file.json')).toBe(true);
     const regexp = sourceToRegExp(rule?.source ?? '');
-    for (const path of ['/missing.js', '/nonexistent.woff2', '/media/x.woff2', '/a/b/app.css']) {
+    expect(regexp.test('/api/v1/file.json')).toBe(false);
+    // Look-alikes of /api are not API paths and get the missing-file 404.
+    for (const path of [
+      '/missing.js',
+      '/nonexistent.woff2',
+      '/media/x.woff2',
+      '/a/b/app.css',
+      '/api.json',
+      '/apix/a.js',
+    ]) {
       expect(regexp.test(path), path).toBe(true);
     }
     for (const path of [
