@@ -12,7 +12,7 @@ Conventions:
 
 - [ ] **Node 26** via nvm: `nvm install` then `nvm use` in the repo root (reads `.nvmrc` = `26`). `.npmrc` has `engine-strict=true`, so `npm ci` fails on any other major (ADR 0002).
 - [ ] **gitleaks >= 8.25**: `brew install gitleaks`, check with `gitleaks version`. The lefthook pre-commit hook **fails closed**: without gitleaks every commit is rejected (ADR 0003).
-- [ ] **Dependencies**: `npm ci`. The `prepare` script runs `lefthook install`; if it prints a warning, run `npx lefthook install`. npm may also warn that some dependency install scripts are "not covered by allowScripts"; this is a known npm 11 notice, not an error.
+- [ ] **Dependencies**: `npm ci`. The `prepare` script runs `lefthook install`; if it prints a warning, run `npx lefthook install`. Dependency install scripts are denied by default through `allowScripts` in `package.json` (ADR 0020), so `npm ci` prints no install-scripts warning; if one appears, a new package brought a script: run `npm install-scripts ls`, do not approve it without a reason (ADR 0020).
 - [ ] **Playwright browser**: `npx playwright install chromium` (only Chromium in stage 0, ADR 0008).
 - [ ] **Run**:
 
