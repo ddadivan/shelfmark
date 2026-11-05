@@ -1,6 +1,7 @@
 import { ComponentPortal } from '@angular/cdk/portal';
 import { DOCUMENT } from '@angular/common';
 import {
+  afterNextRender,
   computed,
   type ComponentRef,
   DestroyRef,
@@ -113,23 +114,12 @@ export class TooltipDirective {
 
     effect((onCleanup) => {
       const target = this.target();
-      const text = this.text();
-      if (!target || !text) {
-        this.removeDescription();
-        return;
+      this.syncDescription();
+      if (target) {
+        onCleanup(() => {
+          this.removeDescribedBy(target);
+        });
       }
-      const shortcut = this.shortcut();
-      // An icon-only button already has this name: describing it again is announced twice.
-      if (!shortcut && target.getAttribute('aria-label')?.trim() === text.trim()) {
-        this.removeDescription();
-        return;
-      }
-      const description = this.ensureDescription();
-      description.textContent = shortcut ? `${text} (${shortcut})` : text;
-      this.addDescribedBy(target);
-      onCleanup(() => {
-        this.removeDescribedBy(target);
-      });
     });
 
     // A different position needs different CDK positions: rebuild lazily on the next open.
@@ -151,7 +141,7 @@ export class TooltipDirective {
         if (this.panel && this.overlay?.isAttached) {
           this.panel.setInput('text', text);
           this.panel.setInput('shortcut', shortcut);
-          this.overlay.updatePosition();
+          this.remeasure();
         }
       });
     });
@@ -259,6 +249,7 @@ export class TooltipDirective {
       this.disarmEscape();
       return;
     }
+    this.syncDescription();
     const overlay = this.overlay ?? this.createOverlay(target);
     this.visible = true;
     if (this.panel && overlay.isAttached) {
@@ -299,8 +290,8 @@ export class TooltipDirective {
           if (this.panel && this.overlay?.isAttached && side !== this.side) {
             this.side = side;
             this.panel.setInput('side', side);
-            // The gap moved to another edge: measure again so the first frame is not off.
-            this.overlay.updatePosition();
+            // The gap moved to another edge: measure again after the panel has rendered.
+            this.remeasure();
           }
         },
       },
@@ -349,6 +340,40 @@ export class TooltipDirective {
     } catch {
       return true;
     }
+  }
+
+  /**
+   * Keeps the hidden description and `aria-describedby` in line with text, shortcut and the
+   * target's accessible name. Runs in an effect and again when the tooltip opens, so a later
+   * `aria-label` change is picked up too.
+   */
+  private syncDescription(): void {
+    const target = this.target();
+    const text = this.text();
+    const shortcut = this.shortcut();
+    if (!target) {
+      return;
+    }
+    // An icon-only button already has this name: describing it again is announced twice.
+    if (!text || (!shortcut && target.getAttribute('aria-label')?.trim() === text.trim())) {
+      this.removeDescribedBy(target);
+      this.removeDescription();
+      return;
+    }
+    this.ensureDescription().textContent = shortcut ? `${text} (${shortcut})` : text;
+    this.addDescribedBy(target);
+  }
+
+  /** Measure again once the panel has rendered its new content (not inside the CDK emit). */
+  private remeasure(): void {
+    afterNextRender(
+      () => {
+        if (this.overlay?.isAttached) {
+          this.overlay.updatePosition();
+        }
+      },
+      { injector: this.injector },
+    );
   }
 
   private removeDescription(): void {

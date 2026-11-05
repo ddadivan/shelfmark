@@ -20,6 +20,7 @@ const LEAVE_TIMEOUT_MS = 400;
 export class ConnectedOverlay {
   private readonly subscription = new Subscription();
   private releaseId = 0;
+  private leaveTimer: ReturnType<typeof setTimeout> | undefined;
   private lastSide: OverlaySide | undefined;
   private disposed = false;
   private readonly unregisterDestroy: () => void;
@@ -77,6 +78,7 @@ export class ConnectedOverlay {
   /** Stops a pending `release()`: the content came back before its leave animation ended. */
   cancelRelease(): void {
     this.releaseId++;
+    clearTimeout(this.leaveTimer);
   }
 
   /**
@@ -98,7 +100,9 @@ export class ConnectedOverlay {
           return;
         }
         // Never wait forever: a cancelled or never-started animation must not keep the pane.
-        const fallback = new Promise<void>((resolve) => setTimeout(resolve, LEAVE_TIMEOUT_MS));
+        const fallback = new Promise<void>((resolve) => {
+          this.leaveTimer = setTimeout(resolve, LEAVE_TIMEOUT_MS);
+        });
         void Promise.race([
           Promise.allSettled(animations.map((animation) => animation.finished)),
           fallback,

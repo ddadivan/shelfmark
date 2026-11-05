@@ -1,6 +1,8 @@
 import { Component, signal } from '@angular/core';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { axeViolations } from '../../testing/axe';
+import { ConnectedOverlay } from '../overlay/connected-overlay';
+import { UiOverlay } from '../overlay/overlay.service';
 import { ButtonComponent } from '../button/button.component';
 import type { TooltipPosition } from './models/tooltip-position.type';
 import { TooltipPanelComponent } from './tooltip-panel.component';
@@ -278,6 +280,40 @@ describe('TooltipDirective', () => {
     settle();
     expect(panelEl()).not.toBeNull();
     expect(document.querySelectorAll('.cdk-overlay-pane')).toHaveLength(1);
+  });
+
+  it('after a flip, re-measures only once the panel has rendered the new side', async () => {
+    let report: ((side: 'top' | 'bottom' | 'left' | 'right') => void) | undefined;
+    const connect = UiOverlay.prototype.connect;
+    vi.spyOn(UiOverlay.prototype, 'connect').mockImplementation(function (
+      this: UiOverlay,
+      config,
+      options,
+    ) {
+      report = options?.onPositionChange;
+      return connect.call(this, config, options);
+    });
+    const update = vi.spyOn(ConnectedOverlay.prototype, 'updatePosition');
+    const { inner, settle } = await setup();
+    enter(inner);
+    await vi.advanceTimersByTimeAsync(400);
+    settle();
+    update.mockClear();
+    report?.('bottom');
+    expect(update).not.toHaveBeenCalled();
+    settle();
+    expect(update).toHaveBeenCalledTimes(1);
+    expect(document.querySelector('.ui-tooltip-hit--bottom')).not.toBeNull();
+  });
+
+  it('re-checks the accessible name when the tooltip opens', async () => {
+    const { inner, settle } = await setup();
+    expect(inner.hasAttribute('aria-describedby')).toBe(true);
+    inner.setAttribute('aria-label', 'Search');
+    enter(inner);
+    await vi.advanceTimersByTimeAsync(400);
+    settle();
+    expect(inner.hasAttribute('aria-describedby')).toBe(false);
   });
 
   it('ignores other keys', async () => {

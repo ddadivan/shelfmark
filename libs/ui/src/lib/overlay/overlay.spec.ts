@@ -187,6 +187,20 @@ describe('UiOverlay', () => {
     vi.useRealTimers();
   });
 
+  it('clears the fallback timer when the release is cancelled', () => {
+    vi.useFakeTimers();
+    open('top');
+    overlay.pane.getAnimations = () => [
+      { finished: new Promise<Animation>(() => undefined) } as Animation,
+    ];
+    overlay.release();
+    TestBed.tick();
+    expect(vi.getTimerCount()).toBe(1);
+    overlay.cancelRelease();
+    expect(vi.getTimerCount()).toBe(0);
+    vi.useRealTimers();
+  });
+
   it('keeps the overlay when the release is cancelled mid-animation', async () => {
     open('top');
     let finish: () => void = () => undefined;
