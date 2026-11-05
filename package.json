@@ -100,5 +100,16 @@
   },
   "overrides": {
     "vite": "8.3.5"
+  },
+  "allowScripts": {
+    "@parcel/watcher": false,
+    "@scarf/scarf": false,
+    "@swc/core": false,
+    "esbuild": false,
+    "fsevents": false,
+    "lefthook": false,
+    "lmdb": false,
+    "msgpackr-extract": false,
+    "nx": false
   }
 }
