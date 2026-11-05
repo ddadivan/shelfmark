@@ -105,5 +105,21 @@ test.describe('Content-Security-Policy', () => {
       // No route matches a deep link yet, so assert the SPA shell instead of a heading.
       await expect(page.locator('app-root')).toBeAttached();
     });
+
+    test('returns a real 404 for a missing file, not the app shell', async ({ request }) => {
+      for (const path of ['/missing.js', '/nonexistent.woff2']) {
+        const response = await request.get(path);
+        expect(response.status(), path).toBe(404);
+        expect(response.headers()['content-type'] ?? '', path).not.toContain('text/html');
+      }
+    });
+
+    test('hands the API the original path and query, without extra params', async ({ request }) => {
+      const response = await request.get('/api/nope?x=1');
+      expect(response.status()).toBe(404);
+      const body = (await response.json()) as { message: string };
+      expect(body.message).toContain('/api/nope?x=1');
+      expect(body.message).not.toContain('path=');
+    });
   });
 });
