@@ -1,6 +1,9 @@
 import { ComponentPortal } from '@angular/cdk/portal';
 import { Component, inject, Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { existsSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { compileString } from 'sass';
 import type { ConnectedOverlay } from './connected-overlay';
 import type { OverlaySide } from './models/overlay-side.type';
 import { connectedSide, overlayTransformOrigin, setOverlayOrigin } from './overlay-origin';
@@ -9,6 +12,19 @@ import { sidePositions } from './side-positions';
 
 @Component({ template: '<span class="probe">Panel</span>' })
 class ProbeComponent {}
+
+/** The styles folder: walk up from the cwd (Nx runs the target from the workspace root). */
+function stylesDir(): string {
+  for (let dir = process.cwd(); ; dir = dirname(dir)) {
+    const candidate = resolve(dir, 'libs/ui/src/styles');
+    if (existsSync(resolve(candidate, '_ui.scss'))) {
+      return candidate;
+    }
+    if (dirname(dir) === dir) {
+      throw new Error('Cannot find libs/ui/src/styles');
+    }
+  }
+}
 
 const SIDES: readonly OverlaySide[] = ['top', 'bottom', 'left', 'right'];
 
@@ -84,10 +100,29 @@ describe('UiOverlay', () => {
     open('top');
     const pane = overlay.pane;
     expect(pane.classList.contains('ui-overlay-pane')).toBe(true);
-    expect(pane.classList.contains('ui-overlay-layer--menu')).toBe(true);
+    expect(pane.classList.contains('ui-overlay-layer--menu')).toBe(false);
+    expect(overlay.host.classList.contains('ui-overlay-layer--menu')).toBe(true);
     expect(pane.classList.contains('extra')).toBe(true);
     expect(pane.querySelector('.probe')).not.toBeNull();
     expect(overlay.isAttached).toBe(true);
+  });
+
+  it('orders hosts by layer, not by creation: a later menu stays under an earlier tooltip', () => {
+    const sheet = document.createElement('style');
+    sheet.textContent = compileString(`@use 'ui' as *;\n@include overlay-layers;`, {
+      loadPaths: [stylesDir()],
+    }).css;
+    document.head.append(sheet);
+    const service = TestBed.inject(UiOverlay);
+    const tooltip = service.connect({ origin, positions: sidePositions('top'), layer: 'tooltip' });
+    tooltip.attach(new ComponentPortal(ProbeComponent));
+    overlay = service.connect({ origin, positions: sidePositions('top'), layer: 'menu' });
+    overlay.attach(new ComponentPortal(ProbeComponent));
+    const z = (el: HTMLElement) => Number(getComputedStyle(el).zIndex);
+    expect(tooltip.host.classList.contains('ui-overlay-layer--tooltip')).toBe(true);
+    expect(z(tooltip.host)).toBeGreaterThan(z(overlay.host));
+    tooltip.dispose();
+    sheet.remove();
   });
 
   it('accepts a list of panel classes', () => {
@@ -136,6 +171,20 @@ describe('UiOverlay', () => {
     await Promise.resolve();
     await Promise.resolve();
     expect(overlay.isAttached).toBe(false);
+  });
+
+  it('detaches after the timeout when an animation never finishes', async () => {
+    vi.useFakeTimers();
+    open('top');
+    overlay.pane.getAnimations = () => [
+      { finished: new Promise<Animation>(() => undefined) } as Animation,
+    ];
+    overlay.release();
+    TestBed.tick();
+    expect(overlay.isAttached).toBe(true);
+    await vi.advanceTimersByTimeAsync(400);
+    expect(overlay.isAttached).toBe(false);
+    vi.useRealTimers();
   });
 
   it('keeps the overlay when the release is cancelled mid-animation', async () => {

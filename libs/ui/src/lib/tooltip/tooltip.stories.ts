@@ -12,7 +12,6 @@ interface TooltipArgs {
 
 const meta: Meta<TooltipArgs> = {
   title: 'Components/Tooltip',
-  component: TooltipDirective as never,
   tags: ['autodocs'],
   parameters: {
     layout: 'padded',

@@ -37,6 +37,8 @@
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-popover);
 
+  // `origin(center)` is the fallback; the overlay sets `--ui-origin` on the pane from the resolved
+  // position. The origin is measured on this box, which excludes the padding gap of the hit area.
   &--enter {
     @include enter(pop);
     @include origin(center);

@@ -78,6 +78,7 @@ export class TooltipDirective {
   private dismissed = false;
   private visible = false;
   private escapeArmed = false;
+  private side: TooltipPosition = 'top';
 
   constructor() {
     effect((onCleanup) => {
@@ -114,10 +115,17 @@ export class TooltipDirective {
       const target = this.target();
       const text = this.text();
       if (!target || !text) {
+        this.removeDescription();
+        return;
+      }
+      const shortcut = this.shortcut();
+      // An icon-only button already has this name: describing it again is announced twice.
+      if (!shortcut && target.getAttribute('aria-label')?.trim() === text.trim()) {
+        this.removeDescription();
         return;
       }
       const description = this.ensureDescription();
-      description.textContent = this.shortcut() ? `${text} (${this.shortcut()})` : text;
+      description.textContent = shortcut ? `${text} (${shortcut})` : text;
       this.addDescribedBy(target);
       onCleanup(() => {
         this.removeDescribedBy(target);
@@ -152,8 +160,7 @@ export class TooltipDirective {
       this.clearTimers();
       this.disarmEscape();
       this.resetOverlay();
-      this.description?.remove();
-      this.description = null;
+      this.removeDescription();
     });
   }
 
@@ -197,7 +204,14 @@ export class TooltipDirective {
   }
 
   private readonly onEscape = (event: KeyboardEvent): void => {
-    if (event.key !== 'Escape' || (!this.visible && this.showTimer === undefined)) {
+    if (event.key !== 'Escape') {
+      return;
+    }
+    if (!this.visible) {
+      // Not open yet: cancel the pending show and let Esc reach a dialog or menu.
+      if (this.showTimer !== undefined) {
+        this.dismiss();
+      }
       return;
     }
     // Only the tooltip closes; a dialog or menu around the trigger keeps its own Esc.
@@ -253,6 +267,8 @@ export class TooltipDirective {
       return;
     }
     const panel = overlay.attach(new ComponentPortal(TooltipPanelComponent));
+    this.side = this.position();
+    panel.setInput('side', this.side);
     panel.setInput('text', this.text());
     panel.setInput('shortcut', this.shortcut());
     panel.setInput('open', true);
@@ -280,8 +296,11 @@ export class TooltipDirective {
       {
         injector: this.injector,
         onPositionChange: (side) => {
-          if (this.overlay?.isAttached) {
-            this.panel?.setInput('side', side);
+          if (this.panel && this.overlay?.isAttached && side !== this.side) {
+            this.side = side;
+            this.panel.setInput('side', side);
+            // The gap moved to another edge: measure again so the first frame is not off.
+            this.overlay.updatePosition();
           }
         },
       },
@@ -330,6 +349,11 @@ export class TooltipDirective {
     } catch {
       return true;
     }
+  }
+
+  private removeDescription(): void {
+    this.description?.remove();
+    this.description = null;
   }
 
   private ensureDescription(): HTMLElement {

@@ -9,6 +9,9 @@ import { Subscription } from 'rxjs';
 import { connectedSide, setOverlayOrigin } from './overlay-origin';
 import type { OverlaySide } from './models/overlay-side.type';
 
+/** Longest leave animation (`duration-base`, 200 ms, for sheets) plus a margin. */
+const LEAVE_TIMEOUT_MS = 400;
+
 /**
  * One connected overlay (tooltip, later menu and listbox). It wraps the CDK `OverlayRef` and
  * adds what Shelfmark needs on top: `--ui-origin` follows the resolved position, the pane
@@ -19,6 +22,7 @@ export class ConnectedOverlay {
   private releaseId = 0;
   private lastSide: OverlaySide | undefined;
   private disposed = false;
+  private readonly unregisterDestroy: () => void;
 
   constructor(
     private readonly overlayRef: OverlayRef,
@@ -35,7 +39,7 @@ export class ConnectedOverlay {
       }),
     );
     // Always release, even if the owner forgets `dispose()`.
-    this.injector.get(DestroyRef).onDestroy(() => {
+    this.unregisterDestroy = this.injector.get(DestroyRef).onDestroy(() => {
       this.dispose();
     });
   }
@@ -43,6 +47,11 @@ export class ConnectedOverlay {
   /** The pane element (outside view encapsulation); `--ui-origin` is set on it. */
   get pane(): HTMLElement {
     return this.overlayRef.overlayElement;
+  }
+
+  /** The CDK host (bounding box): the stacking context that carries the layer class. */
+  get host(): HTMLElement {
+    return this.overlayRef.hostElement;
   }
 
   get isAttached(): boolean {
@@ -88,7 +97,12 @@ export class ConnectedOverlay {
           this.detach();
           return;
         }
-        void Promise.allSettled(animations.map((animation) => animation.finished)).then(() => {
+        // Never wait forever: a cancelled or never-started animation must not keep the pane.
+        const fallback = new Promise<void>((resolve) => setTimeout(resolve, LEAVE_TIMEOUT_MS));
+        void Promise.race([
+          Promise.allSettled(animations.map((animation) => animation.finished)),
+          fallback,
+        ]).then(() => {
           if (id === this.releaseId) {
             this.detach();
           }
@@ -112,6 +126,7 @@ export class ConnectedOverlay {
       return;
     }
     this.disposed = true;
+    this.unregisterDestroy();
     this.cancelRelease();
     this.subscription.unsubscribe();
     this.overlayRef.dispose();

@@ -17,7 +17,7 @@ import { TooltipDirective } from './tooltip.directive';
       [uiTooltipShortcut]="shortcut()"
       iconLeft="search"
       iconOnly
-      ariaLabel="Search"
+      ariaLabel="Open search"
     />
     <div id="plain" tabindex="0" uiTooltip="Plain host">Plain</div>
     <button id="native" type="button" uiTooltip="Native" aria-describedby="other">Native</button>
@@ -190,6 +190,96 @@ describe('TooltipDirective', () => {
     expect(panelEl()).not.toBeNull();
   });
 
+  it('Esc while only the show timer is pending cancels it and lets Esc pass on', async () => {
+    const { inner, settle, panelEl } = await setup();
+    const seen = vi.fn();
+    document.body.addEventListener('keydown', seen);
+    enter(inner);
+    await vi.advanceTimersByTimeAsync(200);
+    document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    expect(seen).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(500);
+    settle();
+    expect(panelEl()).toBeNull();
+    document.body.removeEventListener('keydown', seen);
+  });
+
+  it('Esc on an open tooltip does not reach other listeners', async () => {
+    const { inner, settle } = await setup();
+    const seen = vi.fn();
+    document.body.addEventListener('keydown', seen);
+    enter(inner);
+    await vi.advanceTimersByTimeAsync(400);
+    settle();
+    document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    expect(seen).not.toHaveBeenCalled();
+    document.body.removeEventListener('keydown', seen);
+  });
+
+  it('skips the description when the text equals the accessible name', async () => {
+    const { fixture, inner, settle } = await setup();
+    fixture.componentInstance.text.set('Open search');
+    settle();
+    // the ui-button has aria-label "Open search": no double announcement
+    expect(inner.getAttribute('aria-label')).toBe('Open search');
+    expect(inner.hasAttribute('aria-describedby')).toBe(false);
+    fixture.componentInstance.text.set('Find links');
+    settle();
+    expect(inner.hasAttribute('aria-describedby')).toBe(true);
+  });
+
+  it('keeps the description with a shortcut even if the name matches', async () => {
+    const { fixture, inner, settle } = await setup();
+    fixture.componentInstance.text.set('Open search');
+    fixture.componentInstance.shortcut.set('⌘K');
+    settle();
+    expect(inner.hasAttribute('aria-describedby')).toBe(true);
+  });
+
+  it('removes the body description when the text becomes empty', async () => {
+    const { fixture, inner, settle } = await setup();
+    fixture.componentInstance.text.set('Find links');
+    settle();
+    const id = inner.getAttribute('aria-describedby') as string;
+    expect(document.getElementById(id)).not.toBeNull();
+    fixture.componentInstance.text.set('');
+    settle();
+    expect(document.getElementById(id)).toBeNull();
+  });
+
+  it('keeps working when the position changes while open', async () => {
+    const { fixture, inner, settle, panelEl } = await setup();
+    enter(inner);
+    await vi.advanceTimersByTimeAsync(400);
+    settle();
+    fixture.componentInstance.position.set('right');
+    settle();
+    expect(panelEl()).toBeNull();
+    leave(inner);
+    enter(inner);
+    await vi.advanceTimersByTimeAsync(400);
+    settle();
+    expect(panelEl()).not.toBeNull();
+    expect(document.querySelectorAll('.cdk-overlay-pane')).toHaveLength(1);
+  });
+
+  it('survives rapid hover in and out with a re-hover during the leave', async () => {
+    const { inner, settle, panelEl } = await setup();
+    for (let i = 0; i < 3; i++) {
+      enter(inner);
+      await vi.advanceTimersByTimeAsync(400);
+      settle();
+      leave(inner);
+      await vi.advanceTimersByTimeAsync(110);
+      settle();
+    }
+    enter(inner);
+    await vi.advanceTimersByTimeAsync(400);
+    settle();
+    expect(panelEl()).not.toBeNull();
+    expect(document.querySelectorAll('.cdk-overlay-pane')).toHaveLength(1);
+  });
+
   it('ignores other keys', async () => {
     const { inner, settle, panelEl } = await setup();
     enter(inner);
@@ -274,14 +364,14 @@ describe('TooltipDirective', () => {
     expect(panelEl()?.textContent).toContain('Find');
   });
 
-  it('reopens after a position change and puts the pane on the tooltip layer', async () => {
+  it('reopens after a position change and puts the host on the tooltip layer', async () => {
     const { fixture, inner, settle, pane } = await setup();
     fixture.componentInstance.position.set('bottom');
     settle();
     enter(inner);
     await vi.advanceTimersByTimeAsync(400);
     settle();
-    expect(pane()?.classList.contains('ui-overlay-layer--tooltip')).toBe(true);
+    expect(pane()?.parentElement?.classList.contains('ui-overlay-layer--tooltip')).toBe(true);
   });
 
   it('a second hover during the leave works and the pane is reused', async () => {

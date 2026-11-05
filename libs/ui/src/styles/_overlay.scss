@@ -3,13 +3,17 @@
 @use 'utilities' as *;
 
 // Shared overlay API (issue #26). The CDK overlay structural CSS is included once in
-// `global.scss` (`@use '@angular/cdk/overlay'`), so under a strict CSP no runtime `<style>` is
-// injected. Everything here is the Shelfmark layer on top of it.
+// `global.scss` (`@use '@angular/cdk/overlay'`). That only avoids a flash of unstyled overlays
+// and a duplicate rule set: the CDK still injects its own runtime `<style>`, and so do component
+// styles, so `apps/web` needs the CSP nonce (ADR 0022) before an overlay renders.
+// Everything here is the Shelfmark layer on top of it.
 
 // Stacking order inside the single CDK overlay container (low to high): dialog scrim and panel,
 // menu / listbox, toast, tooltip. A menu opened from a dialog stays above it, a toast above
 // menus, and a tooltip above everything. A consumer passes the layer name through
-// `ConnectedOverlayConfig.layer`, which adds the class `ui-overlay-layer--<name>` to the pane.
+// `ConnectedOverlayConfig.layer`, which adds `ui-overlay-layer--<name>` to the CDK host element
+// (`overlayRef.hostElement`, the bounding box): that element is the stacking context, ordered by
+// creation time unless it gets its own z-index. These rules come after the CDK ones, unlayered.
 $overlay-layers: (
   'dialog': 1000,
   'menu': 1010,
@@ -26,7 +30,7 @@ $overlay-layers: (
   box-shadow: var(--shadow-popover);
 }
 
-// `z-index` of one pane per layer: global, because the pane is created by the CDK outside any
+// `z-index` of one host element per layer: global, because it is created by the CDK outside any
 // component's view encapsulation.
 @mixin overlay-layers {
   @each $name, $z in $overlay-layers {
