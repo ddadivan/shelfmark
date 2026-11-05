@@ -8,6 +8,9 @@ import {
 } from './support/vercel-config';
 
 const config = readVercelConfig();
+const apiRewrite = config.rewrites.find(
+  (r) => r.destination === '/api' && r.source.startsWith('/api/'),
+) ?? { source: '', destination: '' };
 const apiPaths = ['/api', '/api/', '/api/health', '/api/docs', '/api/folders/1'];
 
 test.describe('vercel.json deployment config', () => {
@@ -56,10 +59,45 @@ test.describe('vercel.json deployment config', () => {
     }
   });
 
-  test('SPA rewrite leaves paths with a file extension alone, so missing files stay 404', () => {
+  test('SPA rewrite leaves paths with a file extension alone', () => {
     const spa = config.rewrites.find((r) => r.destination === '/index.html');
     const regexp = sourceToRegExp(spa?.source ?? '');
     for (const path of ['/missing.js', '/media/x.woff2', '/assets/deep/app.css', '/favicon.ico']) {
+      expect(regexp.test(path), path).toBe(false);
+    }
+  });
+
+  // Vercel serves the app shell (200) for missing files even without rewrites and with the
+  // Framework Preset set to Other (issue #13, ADR 0019). This rule sends file-like paths to `/api`,
+  // which Vercel answers with a real 404 for a non-API source (observed, not documented).
+  test('missing-file rule matches file-like paths only, never app routes or /api', () => {
+    const rule = config.rewrites.find(
+      (r) => r.source !== apiRewrite.source && r.destination === '/api',
+    );
+    expect(rule).toBeDefined();
+    // Order is a requirement: the API rule must come first, so `/api/v1/file.json` reaches the API.
+    expect(config.rewrites[0]).toEqual(apiRewrite);
+    expect(sourceToRegExp(apiRewrite.source).test('/api/v1/file.json')).toBe(true);
+    const regexp = sourceToRegExp(rule?.source ?? '');
+    expect(regexp.test('/api/v1/file.json')).toBe(false);
+    // Look-alikes of /api are not API paths and get the missing-file 404.
+    for (const path of [
+      '/missing.js',
+      '/nonexistent.woff2',
+      '/media/x.woff2',
+      '/a/b/app.css',
+      '/api.json',
+      '/apix/a.js',
+    ]) {
+      expect(regexp.test(path), path).toBe(true);
+    }
+    for (const path of [
+      '/',
+      '/folders/42',
+      '/u/john.doe/links',
+      '/api/health',
+      '/api/docs/swagger-ui.css',
+    ]) {
       expect(regexp.test(path), path).toBe(false);
     }
   });
@@ -77,13 +115,15 @@ test.describe('vercel.json deployment config', () => {
     expect(regexp.test('/main.js')).toBe(false);
   });
 
-  test('API rewrite sends /api/* to the function', () => {
-    const api = config.rewrites.find((r) => r.destination === '/api');
-    expect(api).toBeDefined();
-    const regexp = sourceToRegExp(api?.source ?? '');
-    for (const path of ['/api/health', '/api/docs']) {
+  test('API rewrite sends /api/* to the function without named params', () => {
+    const regexp = sourceToRegExp(apiRewrite.source);
+    for (const path of ['/api/health', '/api/docs', '/api/docs/swagger-ui.css']) {
       expect(regexp.test(path), path).toBe(true);
     }
+    expect(regexp.test('/api'), '/api').toBe(false);
+    // Vercel appends every named param the destination does not use as a query parameter.
+    expect(apiRewrite.source).not.toMatch(/:\w+/);
+    expect(apiRewrite.destination).toBe('/api');
   });
 
   test('functions run in fra1 only', () => {

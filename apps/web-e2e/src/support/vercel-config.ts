@@ -33,7 +33,7 @@ export function readCspFromSetupDoc(): string {
 }
 
 // Mirrors Vercel's path-to-regexp for the simple patterns used in vercel.json:
-// literal segments, regex groups and a trailing `:name*`.
+// literal segments, regex groups (lookaheads included) and a trailing `:name*`.
 export function sourceToRegExp(source: string): RegExp {
   const pattern = source.replace(/\/:\w+\*/g, '(?:/.*)?');
   return new RegExp(`^${pattern}$`);
