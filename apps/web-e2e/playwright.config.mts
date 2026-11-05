@@ -5,7 +5,8 @@ import { getReadyUrl, workspaceRoot } from '@nx/devkit';
 const isCI = !!process.env['CI'];
 const port = process.env['E2E_PORT'] ?? '4200';
 const origin = `http://localhost:${port}`;
-const baseURL = process.env['BASE_URL'] || getReadyUrl(origin);
+const deployedUrl = process.env['BASE_URL'];
+const baseURL = deployedUrl || getReadyUrl(origin);
 
 // Generated as .mts so Node forces ESM; Playwright auto-discovers playwright.config.mts.
 export default defineConfig({
@@ -16,13 +17,16 @@ export default defineConfig({
     baseURL,
     trace: 'on-first-retry',
   },
-  webServer: {
-    command: `npx nx run web:${isCI ? 'serve-static' : 'serve'} --port=${port}`,
-    url: getReadyUrl(origin),
-    reuseExistingServer: !isCI,
-    timeout: 180_000,
-    cwd: workspaceRoot,
-  },
+  // Against a deployed URL there is nothing to start.
+  webServer: deployedUrl
+    ? undefined
+    : {
+        command: `npx nx run web:${isCI ? 'serve-static' : 'serve'} --port=${port}`,
+        url: getReadyUrl(origin),
+        reuseExistingServer: !isCI,
+        timeout: 180_000,
+        cwd: workspaceRoot,
+      },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'] } },
     {

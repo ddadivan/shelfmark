@@ -5,14 +5,15 @@ NestJS REST API, mounted under `/api` (port 3000). Source of truth: `docs/PROJEC
 ## Stack
 
 - NestJS 12 (`@nestjs/common|core|platform-express` 12.3.3, ESM-only), Express, `@nestjs/swagger` 12, `class-validator` + `class-transformer`, `helmet`.
-- Build: webpack (`webpack-cli build`, tsc loader, ESM output, all dependencies external) into `dist/apps/api`. No esbuild: it does not emit decorator metadata, which Nest DI needs. No `@nx/nest` (no Nest 12 support), no `@nx/node`, no `@nestjs/cli`, no `@nestjs/config`.
+- Build: webpack (`webpack-cli build`, tsc loader, ESM output, all dependencies external) into `dist/apps/api` (`main.mjs`, `vercel-handler.mjs`; `.mjs` so the module type is never guessed). No esbuild: it does not emit decorator metadata, which Nest DI needs. No `@nx/nest` (no Nest 12 support), no `@nx/node`, no `@nestjs/cli`, no `@nestjs/config`.
 - `@nx/webpack` 24 has no `webpack` executor, so `build` and `serve` are `nx:run-commands` around `webpack-cli`.
 - Tests: Vitest with SWC (`unplugin-swc`, Vite's own TS transform disabled with `oxc: false`) so decorator metadata works. Supertest on `createApp()`.
 
 ## Layout
 
 - `src/main.ts` - bootstrap and `listen` only.
-- `src/app/create-app.ts` - `NestFactory` + `configureApp`; reused by tests and later the Vercel handler.
+- `src/vercel-handler.ts` - second webpack entry (`vercel-handler.mjs`): Vercel Function handler, one Nest app per instance (`createApp()` + `init()`, no `listen`), cached promise reset on failure. Re-exported by the root `api/index.mjs` (ADR 0019).
+- `src/app/create-app.ts` - `NestFactory` (explicit `ExpressAdapter`) + `configureApp`; reused by `main.ts`, the Vercel handler and tests.
 - `src/app/configure-app.ts` - request id, helmet, 100kb JSON limit, `/api` prefix, global `ValidationPipe` (whitelist, forbidNonWhitelisted, transform), `AllExceptionsFilter`, Swagger at `/api/docs` (public in every environment, by decision).
 - `src/config/` - typed reader for `PORT` and `NODE_ENV`, validated at boot. Never loads `.env` files.
 - `src/common/` - cross-cutting pieces (request id, error filter, `@AllowAnonymous`).
@@ -45,7 +46,7 @@ NestJS REST API, mounted under `/api` (port 3000). Source of truth: `docs/PROJEC
 npx nx serve api                  # http://localhost:3000/api (Swagger: /api/docs)
 # serve cold start: a production build runs first (dependsOn build), then the webpack
 # watch rebuilds and node --watch restarts the server on each change.
-npx nx build api                  # dist/apps/api, run with: node dist/apps/api/main.js
+npx nx build api                  # dist/apps/api, run with: node dist/apps/api/main.mjs
 npx nx test api                   # Vitest, coverage on by default, thresholds 80%
 npx nx run-many -t lint typecheck test build -p api contracts
 ```

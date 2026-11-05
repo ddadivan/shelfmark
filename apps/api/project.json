@@ -27,7 +27,7 @@
       "options": {
         "commands": [
           "webpack-cli build --watch --config webpack.config.js --mode development",
-          "node --watch ../../dist/apps/api/main.js"
+          "node --watch ../../dist/apps/api/main.mjs"
         ],
         "cwd": "apps/api",
         "env": { "NODE_ENV": "development" },

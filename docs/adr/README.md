@@ -42,3 +42,4 @@ Routine features, bug fixes and choices already fully covered by an existing ADR
 | [0016](0016-claude-code-subagents-and-human-reviewed-prs.md) | Claude Code subagents with human-reviewed PRs | Accepted | 2026-11-05 |
 | [0017](0017-libs-ui-foundation.md) | libs/ui foundation: Storybook on Vite, tokens, self-hosted fonts, SVG sprite | Accepted | 2026-11-05 |
 | [0018](0018-ci-pipeline-and-main-ruleset.md) | CI pipeline, required checks and the `main` ruleset | Accepted | 2026-11-05 |
+| [0019](0019-vercel-deployment-architecture.md) | Vercel deployment: static web, API function, headers/CSP, CLI secret policy | Proposed | 2026-11-05 |
