@@ -76,7 +76,16 @@ All come from `@use '../../styles/ui' as *;` and are tested in `src/styles/style
 <div class="ui-menu" animate.enter="ui-menu--enter" animate.leave="ui-menu--leave">…</div>
 ```
 
-Angular keeps the element until the leave animation ends and a second toggle mid-animation reverses it. Menus and listboxes scale from their trigger: the overlay sets `--ui-origin` (for example `100% 0`) on the panel from its anchor; dialogs keep `center`. The ripple keyframes exist, the ripple itself is a separate component. The FLIP helper, the "card lands" moment, View Transitions and the logo animation are not part of this foundation.
+Angular keeps the element until the leave animation ends and a second toggle mid-animation reverses it. Menus and listboxes scale from their trigger: the overlay sets `--ui-origin` (for example `100% 0`) on the panel from its anchor; dialogs keep `center`. The ripple is the `uiRipple` directive (below). The FLIP helper, the "card lands" moment, View Transitions and the logo animation are not part of this foundation.
+
+## Trigger API and ripple (ADR 0021)
+
+`ui-button` stays a wrapper around a native `<button>` (or an `<a>` with `href`). Attributes and directives on `<ui-button>` land on the non-focusable host, so:
+
+- **ARIA inputs** on `ui-button` go to the inner element and render nothing when unset: `ariaLabel`, `ariaExpanded`, `ariaControls`, `ariaHaspopup`, `ariaDescribedby`, `ariaPressed`.
+- **Focus target**: `focus(options?)` and the `element` signal (inner native element). `UI_FOCUS_TARGET` (`UiFocusTarget`) is provided by `ui-button`; a trigger directive (tooltip, menu trigger, overlay origin) does `inject(UI_FOCUS_TARGET, { optional: true, self: true })` and falls back to its host `ElementRef`. Any new wrapper component with an inner native control provides it too.
+- **Links**: `href` renders an inner `<a>` with the same classes; `(linkClick)` fires for plain left clicks (no modifier key), the feature calls `preventDefault()` and routes (`routerLink` is not available here). A disabled link has no `href`, `role="link"`, `aria-disabled="true"` and swallows clicks.
+- **`uiRipple`** works on any host (rows, menu items, chips): pointer origin, Enter / Space from the centre, cancelled by a move over 10 px, no ripple when `disabled` / `aria-disabled`, `[uiRipple]="false"` opts out, no ripple under reduced motion. Colour `currentColor` at 6% / 10% (dark); a host raises it with `--ui-ripple-opacity` (filled buttons: 0.2). Its styles are the global `ripple` mixin in `global.scss` (the span is created at runtime, outside view encapsulation). The host class `ui-ripple-host` sets `position: relative`, `overflow: hidden`, `isolation: isolate` through `:where()` (zero specificity), so a host that needs `absolute` or `sticky` just sets its own `position`; the ripple only needs a positioned host. `ui-button` applies it on the inner element; `[ripple]="false"` opts out.
 
 ## Illustrations, logo and empty states
 

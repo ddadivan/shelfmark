@@ -12,6 +12,7 @@ const meta: Meta<ButtonComponent> = {
     type: 'button',
     iconOnly: false,
     disabled: false,
+    ripple: true,
   },
   argTypes: {
     variant: { control: 'inline-radio', options: ['primary', 'secondary', 'ghost', 'danger'] },
@@ -19,6 +20,13 @@ const meta: Meta<ButtonComponent> = {
     type: { control: 'inline-radio', options: ['button', 'submit', 'reset'] },
     iconLeft: { control: 'select', options: [undefined, ...ICON_NAMES] },
     iconRight: { control: 'select', options: [undefined, ...ICON_NAMES] },
+    href: { control: 'text' },
+    ariaHaspopup: {
+      control: 'select',
+      options: [undefined, true, 'menu', 'listbox', 'tree', 'grid', 'dialog'],
+    },
+    ariaPressed: { control: 'select', options: [undefined, true, false, 'mixed'] },
+    ariaExpanded: { control: 'select', options: [undefined, true, false] },
   },
   render: (args) => ({
     props: args,
@@ -32,7 +40,15 @@ const meta: Meta<ButtonComponent> = {
         [iconOnly]="iconOnly"
         [ariaLabel]="ariaLabel"
         [disabled]="disabled"
-        >Add link</ui-button
+        [href]="href"
+        [ripple]="ripple"
+        [ariaExpanded]="ariaExpanded"
+        [ariaControls]="ariaControls"
+        [ariaHaspopup]="ariaHaspopup"
+        [ariaDescribedby]="ariaDescribedby"
+        [ariaPressed]="ariaPressed"
+        (linkClick)="$event.preventDefault()"
+        >{{ label || 'Add link' }}</ui-button
       >`,
   }),
 };
@@ -59,6 +75,31 @@ export const IconOnly: Story = {
   args: { iconOnly: true, iconLeft: 'settings', ariaLabel: 'Settings', variant: 'ghost' },
 };
 
+/** Press it: a ripple grows from the touch point (20% of the text colour on filled buttons). */
+export const WithRipple: Story = { args: { variant: 'primary', size: 'lg' } };
+
+export const WithoutRipple: Story = { args: { ripple: false } };
+
+/** `href` renders an inner `<a>`; `(linkClick)` fires on plain left clicks so the feature can route. */
+export const Link: Story = { args: { href: '#links', variant: 'primary', iconRight: 'external' } };
+
+export const GhostLink: Story = { args: { href: '#links', variant: 'ghost' } };
+
+/** A disabled link has no `href` and `aria-disabled="true"`; it is not activatable. */
+export const DisabledLink: Story = { args: { href: '#links', disabled: true } };
+
+/** Forwarded ARIA inputs land on the inner button: a menu trigger and a toggle. */
+export const MenuTrigger: Story = {
+  args: {
+    iconRight: 'chevron-down',
+    ariaHaspopup: 'menu',
+    ariaExpanded: false,
+    ariaControls: 'menu-1',
+  },
+};
+
+export const Toggle: Story = { args: { ariaPressed: true, variant: 'ghost' } };
+
 export const Disabled: Story = { args: { variant: 'primary', disabled: true } };
 
 const panel = (theme: 'light' | 'dark') => `
@@ -71,6 +112,8 @@ const panel = (theme: 'light' | 'dark') => `
         <ui-button [variant]="v" iconRight="chevron-down">With icon</ui-button>
         <ui-button [variant]="v" [iconOnly]="true" iconLeft="settings" ariaLabel="Settings" />
         <ui-button [variant]="v" [disabled]="true">Disabled</ui-button>
+        <ui-button [variant]="v" href="#links" iconRight="external">Link</ui-button>
+        <ui-button [variant]="v" href="#links" [disabled]="true">Disabled link</ui-button>
       </div>
     }
   </div>`;

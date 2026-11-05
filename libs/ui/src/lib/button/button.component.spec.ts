@@ -1,8 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { Component, Directive, inject, signal, viewChildren } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { axeViolations } from '../../testing/axe';
+import { UI_FOCUS_TARGET } from '../focus-target/models/ui-focus-target.const';
 import type { IconName } from '../icon/models/icon-name.type';
 import { ButtonComponent } from './button.component';
+import type { ButtonHaspopup } from './models/button-haspopup.type';
+import type { ButtonPressed } from './models/button-pressed.type';
 import type { ButtonSize } from './models/button-size.type';
 import type { ButtonType } from './models/button-type.type';
 import type { ButtonVariant } from './models/button-variant.type';
@@ -19,6 +22,14 @@ import type { ButtonVariant } from './models/button-variant.type';
       [iconOnly]="iconOnly()"
       [ariaLabel]="ariaLabel()"
       [disabled]="disabled()"
+      [href]="href()"
+      [ripple]="ripple()"
+      [ariaExpanded]="ariaExpanded()"
+      [ariaControls]="ariaControls()"
+      [ariaHaspopup]="ariaHaspopup()"
+      [ariaDescribedby]="ariaDescribedby()"
+      [ariaPressed]="ariaPressed()"
+      (linkClick)="linkClicks.set(linkClicks() + 1)"
       (click)="clicks.set(clicks() + 1)"
       >Add link</ui-button
     >
@@ -34,6 +45,29 @@ class HostComponent {
   readonly ariaLabel = signal<string | undefined>(undefined);
   readonly disabled = signal(false);
   readonly clicks = signal(0);
+  readonly linkClicks = signal(0);
+  readonly href = signal<string | undefined>(undefined);
+  readonly ripple = signal(true);
+  readonly ariaExpanded = signal<boolean | undefined>(undefined);
+  readonly ariaControls = signal<string | undefined>(undefined);
+  readonly ariaHaspopup = signal<ButtonHaspopup | undefined>(undefined);
+  readonly ariaDescribedby = signal<string | undefined>(undefined);
+  readonly ariaPressed = signal<ButtonPressed | undefined>(undefined);
+}
+
+/** Stands in for a tooltip / menu trigger: reads the focus target from its own host. */
+@Directive({ selector: '[uiProbe]' })
+class ProbeDirective {
+  readonly target = inject(UI_FOCUS_TARGET, { optional: true, self: true });
+}
+
+@Component({
+  imports: [ButtonComponent, ProbeDirective],
+  template: `<ui-button uiProbe>Probe</ui-button>
+    <div uiProbe>Plain</div>`,
+})
+class TokenHostComponent {
+  readonly probes = viewChildren(ProbeDirective);
 }
 
 async function setup() {
@@ -41,11 +75,12 @@ async function setup() {
   await fixture.whenStable();
   const root = fixture.nativeElement as HTMLElement;
   const button = () => root.querySelector('button') as HTMLButtonElement;
+  const link = () => root.querySelector('a') as HTMLAnchorElement;
   const settle = async () => {
     fixture.detectChanges();
     await fixture.whenStable();
   };
-  return { fixture, host: fixture.componentInstance, root, button, settle };
+  return { fixture, host: fixture.componentInstance, root, button, link, settle };
 }
 
 describe('ButtonComponent', () => {
@@ -166,5 +201,221 @@ describe('ButtonComponent', () => {
 
     expect(await axeViolations(root)).toEqual([]);
     root.remove();
+  });
+
+  describe('ARIA forwarding', () => {
+    it('renders no ARIA attribute when the inputs are unset', async () => {
+      const { button } = await setup();
+
+      for (const name of [
+        'aria-label',
+        'aria-expanded',
+        'aria-controls',
+        'aria-haspopup',
+        'aria-describedby',
+        'aria-pressed',
+      ]) {
+        expect(button().hasAttribute(name)).toBe(false);
+      }
+    });
+
+    it('puts each ARIA input on the inner button', async () => {
+      const { host, root, button, settle } = await setup();
+      host.ariaExpanded.set(false);
+      host.ariaControls.set('menu-1');
+      host.ariaHaspopup.set('menu');
+      host.ariaDescribedby.set('tip-1');
+      host.ariaPressed.set('mixed');
+      await settle();
+
+      expect(button().getAttribute('aria-expanded')).toBe('false');
+      expect(button().getAttribute('aria-controls')).toBe('menu-1');
+      expect(button().getAttribute('aria-haspopup')).toBe('menu');
+      expect(button().getAttribute('aria-describedby')).toBe('tip-1');
+      expect(button().getAttribute('aria-pressed')).toBe('mixed');
+      expect(root.querySelector('ui-button')?.hasAttribute('aria-expanded')).toBe(false);
+
+      host.ariaExpanded.set(true);
+      host.ariaPressed.set(true);
+      await settle();
+
+      expect(button().getAttribute('aria-expanded')).toBe('true');
+      expect(button().getAttribute('aria-pressed')).toBe('true');
+    });
+
+    it('puts the ARIA inputs on the inner link too', async () => {
+      const { host, link, settle } = await setup();
+      host.href.set('/links');
+      host.ariaDescribedby.set('tip-1');
+      host.ariaHaspopup.set(true);
+      await settle();
+
+      expect(link().getAttribute('aria-describedby')).toBe('tip-1');
+      expect(link().getAttribute('aria-haspopup')).toBe('true');
+    });
+  });
+
+  describe('focus target', () => {
+    it('resolves the token to the inner button and focus() focuses it', async () => {
+      const fixture = TestBed.createComponent(TokenHostComponent);
+      await fixture.whenStable();
+      const root = fixture.nativeElement as HTMLElement;
+      document.body.append(root);
+      const [onButton, onDiv] = fixture.componentInstance.probes();
+      const inner = root.querySelector('button') as HTMLButtonElement;
+
+      expect(onButton.target?.element()).toBe(inner);
+      expect(onDiv.target).toBeNull();
+
+      onButton.target?.focus();
+
+      expect(document.activeElement).toBe(inner);
+      root.remove();
+    });
+
+    it('exposes the inner link when href is set', async () => {
+      const { fixture, host, link, settle } = await setup();
+      host.href.set('/links');
+      await settle();
+      const button = fixture.debugElement.children[0].componentInstance as ButtonComponent;
+
+      expect(button.element()).toBe(link());
+    });
+
+    it('focus() does nothing before the element exists', () => {
+      const button = TestBed.createComponent(ButtonComponent).componentInstance;
+
+      expect(() => button.focus()).not.toThrow();
+      expect(button.element()).toBeUndefined();
+    });
+  });
+
+  describe('href', () => {
+    it('renders a link with the button classes instead of a button', async () => {
+      const { host, root, button, link, settle } = await setup();
+      host.href.set('/links');
+      host.variant.set('primary');
+      host.size.set('lg');
+      await settle();
+
+      expect(button()).toBeNull();
+      expect(link().getAttribute('href')).toBe('/links');
+      expect(link().hasAttribute('type')).toBe(false);
+      expect(link().classList.contains('ui-button--primary')).toBe(true);
+      expect(link().classList.contains('ui-button--lg')).toBe(true);
+      expect(link().textContent?.trim()).toBe('Add link');
+      expect(root.querySelectorAll('a, button')).toHaveLength(1);
+    });
+
+    it('fires linkClick for plain left clicks only', async () => {
+      const { host, link, settle } = await setup();
+      host.href.set('/links');
+      await settle();
+      const click = (init: MouseEventInit) => {
+        const event = new MouseEvent('click', { bubbles: true, cancelable: true, ...init });
+        link().dispatchEvent(event);
+        return event;
+      };
+      // Keep jsdom from navigating.
+      link().addEventListener('click', (e) => e.preventDefault());
+
+      click({ button: 0 });
+
+      expect(host.linkClicks()).toBe(1);
+
+      click({ button: 1 });
+      click({ button: 0, metaKey: true });
+      click({ button: 0, ctrlKey: true });
+      click({ button: 0, shiftKey: true });
+      click({ button: 0, altKey: true });
+
+      expect(host.linkClicks()).toBe(1);
+      expect(host.clicks()).toBe(6);
+    });
+
+    it('lets the feature cancel the navigation of a plain click', async () => {
+      const { fixture, host, link, settle } = await setup();
+      host.href.set('/links');
+      await settle();
+      const button = fixture.debugElement.children[0].componentInstance as ButtonComponent;
+      button.linkClick.subscribe((e) => e.preventDefault());
+      const event = new MouseEvent('click', { bubbles: true, cancelable: true });
+      link().dispatchEvent(event);
+
+      expect(event.defaultPrevented).toBe(true);
+    });
+
+    it('renders a disabled link inert: no href, aria-disabled, swallowed clicks', async () => {
+      const { host, link, settle } = await setup();
+      host.href.set('/links');
+      host.disabled.set(true);
+      await settle();
+      const event = new MouseEvent('click', { bubbles: true, cancelable: true });
+      link().dispatchEvent(event);
+
+      expect(link().hasAttribute('href')).toBe(false);
+      expect(link().getAttribute('aria-disabled')).toBe('true');
+      expect(link().getAttribute('role')).toBe('link');
+      expect(link().hasAttribute('tabindex')).toBe(false);
+      expect(event.defaultPrevented).toBe(true);
+      expect(host.linkClicks()).toBe(0);
+      expect(host.clicks()).toBe(0);
+    });
+
+    it('has no axe violations for enabled and disabled links', async () => {
+      const { host, root, settle } = await setup();
+      document.body.append(root);
+      host.href.set('/links');
+      await settle();
+
+      expect(await axeViolations(root)).toEqual([]);
+
+      host.disabled.set(true);
+      await settle();
+
+      expect(await axeViolations(root)).toEqual([]);
+      root.remove();
+    });
+  });
+
+  describe('ripple', () => {
+    const down = (el: HTMLElement) =>
+      el.dispatchEvent(
+        new PointerEvent('pointerdown', { bubbles: true, button: 0, isPrimary: true }),
+      );
+
+    it('plays a ripple on the inner button, not on the host', async () => {
+      const { root, button } = await setup();
+      down(button());
+
+      expect(button().classList.contains('ui-ripple-host')).toBe(true);
+      expect(button().querySelectorAll('.ui-ripple')).toHaveLength(1);
+      expect(root.querySelector('ui-button')?.classList.contains('ui-ripple-host')).toBe(false);
+    });
+
+    it('plays on the inner link as well', async () => {
+      const { host, link, settle } = await setup();
+      host.href.set('/links');
+      await settle();
+      down(link());
+
+      expect(link().querySelectorAll('.ui-ripple')).toHaveLength(1);
+    });
+
+    it('is off when opted out and when disabled', async () => {
+      const { host, button, settle } = await setup();
+      host.ripple.set(false);
+      await settle();
+      down(button());
+
+      expect(button().querySelector('.ui-ripple')).toBeNull();
+
+      host.ripple.set(true);
+      host.disabled.set(true);
+      await settle();
+      down(button());
+
+      expect(button().querySelector('.ui-ripple')).toBeNull();
+    });
   });
 });
