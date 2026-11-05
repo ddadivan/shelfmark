@@ -44,7 +44,14 @@ test.describe('vercel.json deployment config', () => {
     for (const path of apiPaths) {
       expect(regexp.test(path), path).toBe(false);
     }
-    for (const path of ['/', '/folders/42', '/settings', '/library/x', '/folders/42/']) {
+    for (const path of [
+      '/',
+      '/folders/42',
+      '/settings',
+      '/library/x',
+      '/folders/42/',
+      '/u/john.doe/links',
+    ]) {
       expect(regexp.test(path), path).toBe(true);
     }
   });
