@@ -9,8 +9,11 @@
 // `.ui-menu--enter { @include enter(pop); }` and `.ui-menu--leave { @include leave(pop); }`,
 // and bind the classes in the template: `animate.enter="ui-menu--enter"`,
 // `animate.leave="ui-menu--leave"`. Angular waits for the animation to end before it removes
-// the element, and a reversed action restarts from the current state (principle 6). Every preset carries its reduced-motion fallback: movement and scale are replaced by a plain
-// fade (`ui-reveal` in, `ui-fade-out` out); loaders keep moving, slower.
+// the element, and a reversed action restarts from the current state (principle 6).
+// Every preset carries its reduced-motion fallback: movement and scale are replaced by a plain
+// fade (`ui-reveal` in, `ui-fade-out` out). Presets are finite on purpose: an endless animation
+// on the same element could keep `animate.leave` waiting, so loaders are applied on their own
+// element with `loop($name)`.
 
 // Looping loader timings are the one place that is not a duration token (status, not decoration).
 $spin-duration: 0.7s;
@@ -19,8 +22,7 @@ $progress-duration: 1.1s;
 $progress-duration-reduced: 2.4s;
 $shimmer-duration: 1.4s;
 
-// Entrances. `duration` / `ease` name the tokens (`--duration-*`, `--ease-*`); `spin` adds the
-// rotating loader animation next to the entrance.
+// Entrances. `duration` / `ease` name the tokens (`--duration-*`, `--ease-*`).
 $enter-presets: (
   'pop': (
     'keyframes': 'ui-pop-in',
@@ -46,13 +48,11 @@ $enter-presets: (
     'keyframes': 'ui-spinner-in',
     'duration': 'base',
     'ease': 'out',
-    'spin': true,
   ),
   'spinner-grow': (
     'keyframes': 'ui-spinner-grow',
     'duration': 'base',
     'ease': 'out',
-    'spin': true,
   ),
 );
 
@@ -82,13 +82,11 @@ $leave-presets: (
     'keyframes': 'ui-spinner-out',
     'duration': 'fast',
     'ease': 'out',
-    'spin': true,
   ),
   'spinner-shrink': (
     'keyframes': 'ui-spinner-shrink',
     'duration': 'fast',
     'ease': 'out',
-    'spin': true,
   ),
 );
 
@@ -96,15 +94,8 @@ $leave-presets: (
   @return var(--#{$kind}-#{$name});
 }
 
-// One animation, or the entrance/exit plus the rotating loader.
-@function -animation($keyframes, $duration, $ease, $spin, $spin-time) {
-  $main: string.unquote($keyframes) $duration $ease both;
-
-  @if $spin {
-    @return $main, ui-spin $spin-time linear infinite;
-  }
-
-  @return $main;
+@function -animation($keyframes, $duration, $ease) {
+  @return string.unquote($keyframes) $duration $ease both;
 }
 
 @function -preset($presets, $name, $kind) {
@@ -118,27 +109,20 @@ $leave-presets: (
 }
 
 // Plays an entrance: `pop` (menus, listboxes, dialogs), `fade`, `toast`, `sheet`, `spinner`,
-// `spinner-grow` (spinner inside a button, label makes room). Reduced motion: fade, 200 ms.
+// `spinner-grow` (spinner inside a button, label makes room). Reduced motion: fade, 200 ms
+// (so `spinner-grow` also drops its margin growth: the label does not slide). A spinner's
+// rotation is a separate `loop(spin)` on the inner element.
 @mixin enter($name) {
   $p: -preset($enter-presets, $name, 'enter');
-  $spin: map.get($p, 'spin');
 
   animation: -animation(
     map.get($p, 'keyframes'),
     -token('duration', map.get($p, 'duration')),
-    -token('ease', map.get($p, 'ease')),
-    $spin,
-    $spin-duration
+    -token('ease', map.get($p, 'ease'))
   );
 
   @include reduced-motion {
-    animation: -animation(
-      ui-reveal,
-      var(--duration-base),
-      var(--ease-out),
-      $spin,
-      $spin-duration-reduced
-    );
+    animation: -animation(ui-reveal, var(--duration-base), var(--ease-out));
   }
 }
 
@@ -146,19 +130,20 @@ $leave-presets: (
 // Reduced motion: a plain fade-out of the same duration.
 @mixin leave($name) {
   $p: -preset($leave-presets, $name, 'leave');
-  $spin: map.get($p, 'spin');
   $duration: -token('duration', map.get($p, 'duration'));
   $ease: -token('ease', map.get($p, 'ease'));
 
-  animation: -animation(map.get($p, 'keyframes'), $duration, $ease, $spin, $spin-duration);
+  animation: -animation(map.get($p, 'keyframes'), $duration, $ease);
 
   @include reduced-motion {
-    animation: -animation(ui-fade-out, $duration, $ease, $spin, $spin-duration-reduced);
+    animation: -animation(ui-fade-out, $duration, $ease);
   }
 }
 
-// Endless loaders: `spin`, `progress` (indeterminate bar), `shimmer` (skeleton). These are the
-// only `linear` curves. Reduced motion: spinner and bar keep moving, slower; shimmer stops.
+// Endless loaders: `spin`, `progress` (indeterminate bar), `shimmer` (skeleton). `linear` is
+// used only for the spinner and, under reduced motion, the bar; the shimmer uses `ease-in-out`.
+// Apply them on their own element, never together with `enter` / `leave`. Reduced motion:
+// spinner and bar keep moving, slower; shimmer stops.
 @mixin loop($name) {
   @if $name == 'spin' {
     animation: ui-spin $spin-duration linear infinite;

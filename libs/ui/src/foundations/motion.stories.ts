@@ -31,7 +31,11 @@ import { MOTION_TIMINGS } from './models/motion-timings.const';
               [class]="'fd-demo__box fd-demo__box--' + demo.name"
               [animate.enter]="'fd-enter--' + demo.name"
               [animate.leave]="'fd-leave--' + demo.name"
-            ></div>
+            >
+              @if (demo.name === 'spinner') {
+                <span class="fd-demo__spin"></span>
+              }
+            </div>
           }
         </div>
         <ui-button variant="secondary" size="sm" (click)="toggle(demo.name)">

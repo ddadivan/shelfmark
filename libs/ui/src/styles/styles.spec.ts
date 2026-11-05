@@ -1,19 +1,49 @@
-import { resolve } from 'node:path';
+import { existsSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
 import { compileString } from 'sass';
 
-// Nx runs the target from the workspace root (`import.meta.dirname` is not the source folder
-// once the builder has bundled the spec).
-const STYLES_DIR = resolve(process.cwd(), 'libs/ui/src/styles');
+const STYLES_PATH = 'libs/ui/src/styles';
+
+/**
+ * Finds the styles folder. `import.meta.dirname` is the source folder when the spec is not
+ * bundled; otherwise Nx runs the target from the workspace root, so walk up from the cwd.
+ */
+function findStylesDir(): string {
+  const direct = import.meta.dirname;
+  if (direct && existsSync(resolve(direct, '_ui.scss'))) {
+    return direct;
+  }
+  for (let dir = process.cwd(); ; dir = dirname(dir)) {
+    const candidate = resolve(dir, STYLES_PATH);
+    if (existsSync(resolve(candidate, '_ui.scss'))) {
+      return candidate;
+    }
+    if (dirname(dir) === dir) {
+      throw new Error(`Cannot find ${STYLES_PATH} from ${process.cwd()}`);
+    }
+  }
+}
+
+const STYLES_DIR = findStylesDir();
 
 /** Compiles a Sass snippet against the public API (`@use 'ui' as *;`). */
 function css(snippet: string): string {
   return compileString(`@use 'ui' as *;\n${snippet}`, { loadPaths: [STYLES_DIR] }).css;
 }
 
-/** Splits compiled CSS into the part outside any @media and the @media blocks, by condition. */
+/** Returns the body of every `@media (prefers-reduced-motion: reduce)` block, brace-matched. */
 function reducedMotionBlock(output: string): string {
-  const match = /@media \(prefers-reduced-motion: reduce\) \{([\s\S]*?)\n\}/.exec(output);
-  return match?.[1] ?? '';
+  const opener = /@media\s*\(\s*prefers-reduced-motion\s*:\s*reduce\s*\)\s*\{/g;
+  const bodies: string[] = [];
+  for (let m = opener.exec(output); m; m = opener.exec(output)) {
+    let depth = 1;
+    let i = opener.lastIndex;
+    for (; i < output.length && depth > 0; i++) {
+      depth += output[i] === '{' ? 1 : output[i] === '}' ? -1 : 0;
+    }
+    bodies.push(output.slice(opener.lastIndex, i - 1));
+  }
+  return bodies.join('\n');
 }
 
 describe('breakpoint mixins', () => {
@@ -33,6 +63,14 @@ describe('breakpoint mixins', () => {
 });
 
 describe('focus mixins', () => {
+  it('field-focus removes the global ring only from controls inside the wrapper', () => {
+    const out = css('.a { @include field-focus; }');
+    expect(out).toMatch(
+      /\.a :where\(input, textarea, \[contenteditable\]\):focus-visible \{\s*outline: none;/,
+    );
+    expect(css('.a { @include focus-ring; }')).not.toContain('outline: none');
+  });
+
   it('focus-ring draws a 2px focus-ring outline with a 2px offset', () => {
     const out = css('.a { @include focus-ring; }');
     expect(out).toContain('outline: 2px solid var(--focus-ring)');
@@ -74,7 +112,7 @@ describe('motion mixins', () => {
     expect(css(`.a { @include ${include}; }`)).toContain(`animation: ${animation}`);
   });
 
-  it.each(['enter(pop)', 'enter(toast)', 'enter(sheet)', 'enter(spinner-grow)'])(
+  it.each(['enter(pop)', 'enter(toast)', 'enter(sheet)', 'enter(spinner)', 'enter(spinner-grow)'])(
     '%s falls back to a fade in 200 ms under reduced motion',
     (include) => {
       const reduced = reducedMotionBlock(css(`.a { @include ${include}; }`));
@@ -92,10 +130,18 @@ describe('motion mixins', () => {
     },
   );
 
-  it('spinner presets add the rotation, slower under reduced motion', () => {
-    const out = css('.a { @include enter(spinner); }');
-    expect(out).toContain('ui-spin 0.7s linear infinite');
-    expect(reducedMotionBlock(out)).toContain('ui-spin 1.6s linear infinite');
+  it('presets are finite so animate.leave can finish: no infinite, no loader rotation', () => {
+    const presets = ['pop', 'fade', 'toast', 'sheet', 'spinner', 'spinner-grow']
+      .map((n) => `.a { @include enter(${n}); }`)
+      .concat(
+        ['pop', 'fade', 'toast', 'sheet', 'spinner', 'spinner-shrink'].map(
+          (n) => `.a { @include leave(${n}); }`,
+        ),
+      )
+      .map(css)
+      .join('\n');
+    expect(presets).not.toContain('infinite');
+    expect(presets).not.toMatch(/ui-spin(?![\w-])/);
   });
 
   it('loops keep moving slower for loaders and stop for the shimmer', () => {

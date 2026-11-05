@@ -45,7 +45,7 @@ export const Focus: Story = {
   render: () => ({
     template: `
       <div class="fd-page">
-        <p class="fd-lead">Press Tab. Buttons, rows and cards get a solid 2px ring; text fields turn their border and add a soft halo.</p>
+        <p class="fd-lead">Press Tab. Buttons, rows and cards get a solid 2px ring; text fields turn their border and add a soft halo (the wrapper includes the field-focus mixin, which also removes the outline from the bare input inside, so there is one indicator).</p>
         <button type="button" class="fd-focus-target">focus-ring</button>
         <label class="fd-field">
           <span class="fd-sr-note">field-focus</span>
