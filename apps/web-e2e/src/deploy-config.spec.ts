@@ -65,9 +65,9 @@ test.describe('vercel.json deployment config', () => {
     }
   });
 
-  // The Angular framework preset in the Vercel dashboard adds `/(.*)` -> `/index.html` after the
-  // filesystem, so a missing file would return the app shell with 200 (issue #13). This rule sends
-  // file-like paths to `/api`, which Vercel answers with a real 404 for a non-API source.
+  // Vercel serves the app shell (200) for missing files even without rewrites and with the
+  // Framework Preset set to Other (issue #13, ADR 0019). This rule sends file-like paths to `/api`,
+  // which Vercel answers with a real 404 for a non-API source (observed, not documented).
   test('missing-file rule matches file-like paths only, never app routes or /api', () => {
     const rule = config.rewrites.find(
       (r) => r.source !== apiRewrite.source && r.destination === '/api',
