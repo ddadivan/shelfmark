@@ -199,3 +199,31 @@ describe('motion mixins', () => {
     expect(out).not.toMatch(/\d+px/);
   });
 });
+
+describe('overlay mixins', () => {
+  it('popover is the floating surface: surface, border, radius-md and shadow-popover', () => {
+    const output = css('.p { @include popover; }');
+    expect(output).toContain('background: var(--surface)');
+    expect(output).toContain('border: 1px solid var(--border)');
+    expect(output).toContain('border-radius: var(--radius-md)');
+    expect(output).toContain('box-shadow: var(--shadow-popover)');
+  });
+
+  it('layers stack dialog < menu < toast < tooltip', () => {
+    const output = css('@include overlay-layers;');
+    const z = (name: string) =>
+      Number(
+        new RegExp(`ui-overlay-layer--${name}\\s*\\{\\s*z-index:\\s*(\\d+)`).exec(output)?.[1],
+      );
+    expect(z('dialog')).toBeLessThan(z('menu'));
+    expect(z('menu')).toBeLessThan(z('toast'));
+    expect(z('toast')).toBeLessThan(z('tooltip'));
+  });
+
+  it('hides the tooltip description visually but not from assistive technology', () => {
+    const output = css('@include tooltip-description;');
+    expect(output).toContain('.ui-tooltip-description');
+    expect(output).toContain('clip-path: inset(50%)');
+    expect(output).not.toContain('display: none');
+  });
+});

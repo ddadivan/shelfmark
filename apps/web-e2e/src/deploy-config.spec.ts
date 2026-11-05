@@ -1,8 +1,11 @@
 import { expect, test } from '@playwright/test';
+import { buildCsp, HTML_MATCHER } from '@shelfmark/web-csp';
 import {
   headerRulesWithCsp,
   readCsp,
   readCspFromSetupDoc,
+  readCspTemplateFromSetupDoc,
+  readMiddlewareMatcher,
   readVercelConfig,
   sourceToRegExp,
 } from './support/vercel-config';
@@ -14,8 +17,21 @@ const apiRewrite = config.rewrites.find(
 const apiPaths = ['/api', '/api/', '/api/health', '/api/docs', '/api/folders/1'];
 
 test.describe('vercel.json deployment config', () => {
-  test('CSP equals the policy documented in SETUP.md 5.6', () => {
+  test('static CSP equals the policy documented in SETUP.md 5.6 and the lib', () => {
     expect(readCsp(config)).toBe(readCspFromSetupDoc());
+    expect(readCsp(config)).toBe(buildCsp(null));
+  });
+
+  test('SETUP.md 5.6 document CSP template equals the lib policy with a nonce', () => {
+    expect(readCspTemplateFromSetupDoc()).toBe(buildCsp('{nonce}'));
+  });
+
+  test('middleware.ts matcher equals the lib HTML_MATCHER', () => {
+    expect(readMiddlewareMatcher()).toEqual([...HTML_MATCHER]);
+  });
+
+  test('the build command also writes the middleware shell', () => {
+    expect(config.buildCommand).toContain('middleware-shell');
   });
 
   test('CSP is strict: no unsafe-inline, no unsafe-eval, no wildcard sources', () => {
@@ -32,11 +48,53 @@ test.describe('vercel.json deployment config', () => {
     });
   }
 
-  test('CSP rule matches the app shell and deep links', () => {
-    const [rule] = headerRulesWithCsp(config);
-    const regexp = sourceToRegExp(rule.source);
-    for (const path of ['/', '/folders/42', '/index.html']) {
+  // HTML documents get their CSP (with a nonce) from the middleware; two policies must never
+  // meet on one response, so the static rule covers file-like paths only.
+  test('static CSP rule matches no HTML document path', () => {
+    for (const rule of headerRulesWithCsp(config)) {
+      const regexp = sourceToRegExp(rule.source);
+      for (const path of ['/', '/folders/42', '/folders/42/', '/u/john.doe/links', '/index.html']) {
+        expect(regexp.test(path), path).toBe(false);
+      }
+    }
+  });
+
+  test('static CSP rule matches file paths, including missing files', () => {
+    for (const rule of headerRulesWithCsp(config)) {
+      const regexp = sourceToRegExp(rule.source);
+      for (const path of [
+        '/main-ABCD1234.js',
+        '/missing.js',
+        '/favicon.ico',
+        '/assets/ui/icons.svg',
+      ]) {
+        expect(regexp.test(path), path).toBe(true);
+      }
+    }
+  });
+
+  test('the other security headers still apply to every non-API path', () => {
+    const rule = config.headers.find((r) =>
+      r.headers.some((h) => h.key === 'X-Content-Type-Options'),
+    );
+    expect(rule).toBeDefined();
+    const regexp = sourceToRegExp(rule?.source ?? '');
+    for (const path of ['/', '/folders/42', '/index.html', '/main-ABCD1234.js', '/missing.js']) {
       expect(regexp.test(path), path).toBe(true);
+    }
+    for (const path of apiPaths) {
+      expect(regexp.test(path), path).toBe(false);
+    }
+  });
+
+  test('middleware matcher covers HTML paths and no API or file path', () => {
+    const patterns = readMiddlewareMatcher().map((source) => sourceToRegExp(source));
+    const matches = (path: string) => patterns.some((pattern) => pattern.test(path));
+    for (const path of ['/', '/folders/42', '/u/john.doe/links', '/index.html']) {
+      expect(matches(path), path).toBe(true);
+    }
+    for (const path of [...apiPaths, '/main-ABCD1234.js', '/missing.js', '/favicon.ico']) {
+      expect(matches(path), path).toBe(false);
     }
   });
 
