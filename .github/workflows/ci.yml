@@ -56,6 +56,9 @@ jobs:
           }
       - run: node --test .claude/hooks/
       - run: npx nx affected -t lint typecheck test build --output-style=static
+      # Guards the production bundle (no e2e-only route, nonce placeholder present, ADR 0022).
+      # Only runs when `web` is affected; the build it depends on is cached by the step above.
+      - run: npx nx affected -t middleware-shell --output-style=static
 
   e2e:
     name: e2e

@@ -45,7 +45,32 @@
           "optimization": false,
           "extractLicenses": false,
           "sourceMap": true
+        },
+        "e2e": {
+          "budgets": [
+            { "type": "initial", "maximumWarning": "500kb", "maximumError": "1mb" },
+            { "type": "anyComponentStyle", "maximumWarning": "4kb", "maximumError": "8kb" }
+          ],
+          "outputHashing": "all",
+          "outputPath": "dist/apps/web-e2e-build",
+          "fileReplacements": [
+            {
+              "replace": "apps/web/src/app/app.routes.ts",
+              "with": "apps/web/src/app/app.routes.e2e.ts"
+            }
+          ]
         }
+      }
+    },
+    "middleware-shell": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "inputs": ["{workspaceRoot}/scripts/write-middleware-shell.mjs", "production", "^production"],
+      "outputs": ["{workspaceRoot}/dist/apps/web/middleware"],
+      "cache": true,
+      "options": {
+        "command": "node scripts/write-middleware-shell.mjs",
+        "cwd": "{workspaceRoot}"
       }
     },
     "serve": {
@@ -68,6 +93,12 @@
         "port": 4200,
         "staticFilePath": "dist/apps/web/browser",
         "spa": true
+      },
+      "configurations": {
+        "e2e": {
+          "buildTarget": "web:build:e2e",
+          "staticFilePath": "dist/apps/web-e2e-build/browser"
+        }
       }
     },
     "test": {
