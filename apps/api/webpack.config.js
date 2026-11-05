@@ -7,7 +7,7 @@ module.exports = {
     module: true,
     chunkFormat: 'module',
     library: { type: 'module' },
-    filename: '[name].js',
+    filename: '[name].mjs',
   },
   experiments: { outputModule: true },
   externalsType: 'module',
@@ -16,6 +16,9 @@ module.exports = {
       target: 'node',
       compiler: 'tsc',
       main: './src/main.ts',
+      additionalEntryPoints: [
+        { entryName: 'vercel-handler', entryPath: './src/vercel-handler.ts' },
+      ],
       tsConfig: './tsconfig.app.json',
       optimization: false,
       outputHashing: 'none',
