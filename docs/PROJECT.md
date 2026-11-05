@@ -22,8 +22,10 @@ Updated as work goes on — every session resumes from here.
   - [x] GitHub repository, Projects board, labels, milestones and stage 0 issues
   - [x] CI: GitHub Actions workflow with four required checks (`lint-test-build`, `e2e`, `npm-audit`, `gitleaks`), ADR 0018
   - [x] CodeQL default setup (JS/TS, Actions), `main` ruleset (PR + four required checks + CodeQL gate, squash only, linear history, no force-push / deletion), SHA-pinned actions required (ADR 0018)
-  - [ ] **Next — deploy**: Vercel (web static + API function, CSP header, `NODE_ENV=production`) and Neon, after the manual steps in `docs/SETUP.md`
-  - Open decisions for the author: Vercel project name / domain (`shelfmark.vercel.app` is taken); the author creates the Neon project in the console (connection strings never reach an agent)
+  - [x] Deploy: [shelfmark-app.vercel.app](https://shelfmark-app.vercel.app) — static web + NestJS as one Vercel Function (`fra1`), strict CSP and security headers, Neon project `shelfmark` (`eu-central-1`, branch per preview), guard hook blocks secret-revealing Vercel / Neon CLI commands (ADR 0019)
+  - [ ] Open in stage 0: npm install-scripts review (#4); missing static files return `index.html` and the `/api` rewrite adds `?path=` (#13)
+  - Next: stage 1 issues from 9.1 (the author decides when); CSP nonce middleware (#9) before the first `libs/ui` component renders in `apps/web`
+  - Verification of protected previews by agents: `vercel curl` and `vercel logs` (CLI login, no bypass token)
 - [ ] Motion in code — stage 6; promo video — after the stage 1 release
 
 ## 1. Problem and idea
