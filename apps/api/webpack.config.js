@@ -1,5 +1,6 @@
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 const { join } = require('node:path');
+const { EsmExternalsPlugin } = require('./esm-externals.plugin');
 
 module.exports = {
   output: {
@@ -26,5 +27,7 @@ module.exports = {
       skipTypeChecking: true,
       externalDependencies: 'all',
     }),
+    // After Nx: turns its `commonjs` externals into static ESM imports (issue #11).
+    new EsmExternalsPlugin(),
   ],
 };
