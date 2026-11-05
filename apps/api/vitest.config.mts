@@ -14,6 +14,7 @@ export default defineConfig({
     include: ['src/**/*.spec.ts'],
     reporters: ['default'],
     coverage: {
+      enabled: true,
       provider: 'v8',
       reportsDirectory: '../../coverage/apps/api',
       include: ['src/**/*.ts'],
