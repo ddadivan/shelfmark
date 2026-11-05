@@ -420,9 +420,9 @@ Stage 1 runs for free on **Vercel (Hobby) + Neon** and is available at a public 
 
 - **local**: PostgreSQL in Docker, `.env` only locally;
 - **preview**: Vercel preview deployment + a separate Neon database branch (not production);
-- **production**: `main` → Vercel + the main Neon branch.
+- **production**: `main` → Vercel + the Neon `production` branch.
 
-**Limitations and plan B:** Hobby is for non-commercial use only; function ≤ 250 MB. When moving to a commercial product: migrate to Google Cloud Run or paid Render without changing the NestJS code. The exact Nx monorepo configuration for Vercel (rewrites `/api` → function) is worked out at the deployment stage.
+**Limitations and plan B:** Hobby is for non-commercial use only; function ≤ 250 MB. When moving to a commercial product: migrate to Google Cloud Run or paid Render without changing the NestJS code. The Nx monorepo configuration for Vercel (static web, the API as one function, rewrites, headers, CSP) is fixed in [ADR 0019](adr/0019-vercel-deployment-architecture.md) and lives in `vercel.json`.
 
 Sources: [NestJS on Vercel](https://vercel.com/docs/frameworks/backend/nestjs), [Neon Free limits](https://neon.com/faqs/free-plan-limits-and-quotas).
 
@@ -814,12 +814,14 @@ The estimate assumes the bottleneck is PR review and fixes, not writing code. Hi
 
 ### 9.2 Connecting services
 
-**Done by Claude Code** (via `gh`, Vercel CLI, Neon CLI): repository, GitHub Projects board with the statuses from 8.2, milestones, labels, issues; GitHub Actions workflows; linking the repository to Vercel; database and branches in Neon; `.env.example` templates.
+**Done by Claude Code** (via `gh`): repository, GitHub Projects board with the statuses from 8.2, milestones, labels, issues; GitHub Actions workflows; `vercel.json` and other deployment configuration in the repo; `.env.example` templates.
+
+**Vercel and Neon CLIs:** agents never use them for anything that touches secrets (`vercel env`, `pull`, `dev`, `api`; Neon `connection-string`, `projects create`, `branches create`, `roles`, `init`; secret-revealing flags), and the guard hook plus the permission deny list block these commands (ADR 0019). Linking the repository to Vercel, the Neon integration, branches and environment variables are done by the author in the dashboards. Agents verify deployments through GitHub deployment statuses (`gh pr checks`).
 
 **Done manually by the project author** (following step-by-step instructions from Claude Code):
 
 - GitHub, Vercel, Neon accounts;
-- CLI sign-in (`gh auth login` with Projects access, `vercel login`, Neon sign-in);
+- CLI sign-in (`gh auth login` with Projects access; the Vercel and Neon CLIs are optional and only for the author);
 - OAuth apps in Google Cloud Console and GitHub;
 - entering secrets into environment variables; Claude Code never sees secrets (see 8.5).
 

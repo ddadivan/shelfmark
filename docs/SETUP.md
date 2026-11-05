@@ -48,20 +48,22 @@ Stage 2 adds a local PostgreSQL in Docker (`docker-compose.yml`), so install Doc
 The database is used from **stage 2**; stage 0 only creates the project (PROJECT.md 9.1, ADR 0011).
 
 - [ ] Create an account at neon.com (sign in with GitHub is fine). Free plan.
-- [ ] **Create the project yourself in the Neon console**, not through an agent: the console and `neonctl projects create` show the connection string with the password, and agents must never see it.
+- [ ] **Create the project yourself in the Neon console**, not through an agent: the console, `neonctl projects create` and `neonctl connection-string` show the connection string with the password, and agents must never see it.
   - Name: `shelfmark`. Postgres: latest offered version.
-  - **Region**: the AWS region closest to the Vercel Function region (section 5.2). Vercel's default is `iad1` (Washington, D.C.) → Neon **AWS US East (N. Virginia)**. If you pick a European Vercel region (e.g. `fra1`), pick **AWS Europe (Frankfurt)** instead. Both must match; a cross-ocean hop adds latency to every query.
-- [ ] Install and log in to the CLI so agents can manage branches later: `npm i -g neonctl` then `neonctl auth` (PROJECT.md 9.2).
+  - **Region**: Vercel Function region `fra1` (Frankfurt, pinned in `vercel.json`, section 5.2) → Neon **AWS Europe (Frankfurt) `eu-central-1`**. Both must match; a cross-ocean hop adds latency to every query. (Vercel's default `iad1` would pair with AWS US East.)
+  - The default (production) branch is named **`production`**, not `main`.
+  - **Skip the onboarding prompts** such as "paste this prompt into your agent" (and `neon init` / `neonctl init`): they pull connection strings into local env files that agents could read.
+- [ ] The CLI is **optional**. Neon now ships a new `neon` CLI next to `neonctl` (`npm i -g neonctl`, then `neonctl auth`). Use it yourself for non-secret work such as `neon branches list`. Agents never use it for anything that touches secrets; the guard hook blocks `connection-string` / `cs`, `projects create`, `branches create`, `roles`, `init`, `env`, `pull` and secret-revealing flags such as `--psql` (PROJECT.md 9.2, ADR 0019).
 
 **Branching strategy** (ADR 0011, PROJECT.md 5.7):
 
 | Environment | Neon branch | Who creates it |
 | --- | --- | --- |
-| production | `main` (the default branch) | created with the project |
-| preview (one per PR) | child branch of `main`, created per preview deployment | Neon ↔ Vercel integration (section 5.4) |
+| production | `production` (the default branch) | created with the project |
+| preview (one per PR) | child branch of `production`, created per preview deployment | Neon ↔ Vercel integration (section 5.4) |
 | local | none — PostgreSQL in Docker | stage 2 |
 
-Preview branches are copies of `main` at creation time; once production has real users, previews would contain their data. Decide in stage 2 whether previews branch from `main` or from a seeded, data-free branch. Free-plan branch count is limited: enable automatic deletion of preview branches in the integration settings.
+Preview branches are copies of `production` at creation time; once production has real users, previews would contain their data. Decide in stage 2 whether previews branch from `production` or from a seeded, data-free branch. Free-plan branch count is limited: enable automatic deletion of preview branches in the integration settings.
 
 **Connection strings** (two per branch, both secrets):
 
@@ -72,7 +74,7 @@ Variable names that the app reads are decided in stage 2. The Neon ↔ Vercel in
 
 | String | Production | Preview | Development | GitHub Actions |
 | --- | --- | --- | --- | --- |
-| pooled | Vercel, set by the integration (branch `main`) | Vercel, set per deployment by the integration | not used (local Docker) | not needed |
+| pooled | Vercel, set by the integration (branch `production`) | Vercel, set per deployment by the integration | not used (local Docker) | not needed |
 | direct | Vercel, only if migrations run in the Vercel build | same, for the preview branch | not used | only if migrations run in CI (section 2) |
 
 Where `prisma migrate deploy` runs on merge to `main` (PROJECT.md 9.5) is decided in stage 2.
@@ -127,15 +129,15 @@ Better Auth also needs a random signing secret and the public base URL per envir
 
 ### 5.1 Account and CLI
 
-- [ ] Sign up at vercel.com with GitHub, **Hobby** plan (non-commercial only, ADR 0013).
-- [ ] `npm i -g vercel` then `vercel login` (PROJECT.md 9.2). Never run `vercel env pull`: it writes secrets into a local `.env` file that agents could read.
+- [ ] Sign up at vercel.com, **Hobby** plan (non-commercial only, ADR 0013). An account created by **email** must connect GitHub first: Account → **Authentication** → connect GitHub; only then can you import the repository.
+- [ ] The CLI is **optional** (`npm i -g vercel`, `vercel login`). Never run `vercel env pull` or `vercel pull`: they write secrets into local files that agents could read. Agents never use the Vercel CLI for anything secret; linking and env variables are done by you in the dashboard, and agents verify deployments through GitHub deployment statuses (`gh pr checks`). The guard hook blocks `vercel env *`, `pull`, `dev` and `api` (PROJECT.md 9.2, ADR 0019).
 
 ### 5.2 Import the repository (the project link itself is done in the deploy task)
 
 - [ ] vercel.com/new → **Import Git Repository** → install the Vercel GitHub app for `ddadivan/shelfmark` only (not all repositories) → Import.
-- [ ] Root Directory: `./` (repo root; Nx builds from there). Framework preset, build command, output directory (`dist/apps/web/browser` for the web), the API as one Vercel Function, and the `/api/*` rewrite are **finalised in the deploy task** in `vercel.json` — accept the defaults now or let the deploy task do the import.
+- [ ] Root Directory: `./` (repo root; Nx builds from there). Framework preset, build command, output directory (`dist/apps/web/browser` for the web), the API as one Vercel Function, region and the `/api/*` rewrite are set in `vercel.json` (ADR 0019); the first import deployment fails until that file is merged, which is expected.
 - [ ] Settings → **Build and Deployment** → Node.js Version: **26.x** (ADR 0002).
-- [ ] Settings → **Functions** → Function Region: choose it together with the Neon region (section 3) and do not change it later without moving the database.
+- [ ] Function Region is **`fra1`** (Frankfurt), pinned in `vercel.json`; it matches Neon `eu-central-1`. Do not change it without moving the database.
 
 ### 5.3 Environment variables
 
@@ -154,22 +156,25 @@ Mark every secret as **Sensitive** (value cannot be read back in the dashboard).
 
 ### 5.4 Neon ↔ Vercel integration and previews
 
-- [ ] Vercel → **Integrations** / Marketplace → **Neon** → connect your existing Neon account and the `shelfmark` project to the Vercel project (if offered a choice, link the existing project rather than letting Vercel create a new one; the exact flavour is confirmed in the deploy task).
-  - Production → Neon branch `main`.
+- [ ] Vercel → **Integrations** / Marketplace → **Neon** → choose **Link Existing Neon Account** (the "Neon Postgres Previews Integration", not the Vercel-native flavour) and link the `shelfmark` project to the Vercel project. Limit its access to the `shelfmark-app` project only.
+  - Production → Neon branch `production`.
   - Preview → **create a database branch for each preview deployment**; enable automatic cleanup of obsolete branches.
-  - Development → off.
-- [ ] Preview deployments are on by default for every PR (Settings → Git). Keep **Vercel Authentication** (Deployment Protection) on for previews: only you can open them.
+  - Development → off (no development branch).
+- [ ] Preview deployments are on by default for every PR (Settings → Git). Keep **Vercel Authentication** (Deployment Protection) on for previews: only you can open them. Disable the **Vercel Toolbar** on previews (Settings → General → Vercel Toolbar): it injects scripts that the CSP blocks. Dependabot branches get no preview deployment (`vercel.json`, ADR 0019).
 
 ### 5.5 Domain
 
-- [ ] `shelfmark.vercel.app` is **already taken** by another project (checked Nov 5, 2026), and the npm name `shelfmark` is free. Pick the production name in Vercel → Settings → **Domains** (e.g. `shelfmark-app.vercel.app` or a custom domain; `shelfmark.app`, `.dev`, `.io` are registered by others). The chosen host is `<prod-domain>` in sections 4 and 5.3; update the OAuth clients if it changes.
+- [x] Production domain: **`shelfmark-app.vercel.app`** (`shelfmark.vercel.app` is taken by another project). This is `<prod-domain>` in sections 4 and 5.3; update the OAuth clients if it ever changes.
 
-### 5.6 What the deploy task will configure (no action now)
+### 5.6 Deployment configuration (done in the deploy task)
 
-- **CSP header** for the web (from the web security review): `default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'`, tested against a production build (use `ngCspNonce`, never `'unsafe-inline'`), plus an e2e check for CSP violations.
-- **Swagger UI assets** for `/api/docs` come from `swagger-ui-dist`; verify on the preview deploy and bundle them or serve from a CDN if the page is blank.
-- **ESM output** of the API (`main.mjs` or a `{"type":"module"}` package.json in `dist/apps/api`) before wrapping it in a Function.
-- `NODE_ENV=production` check, `/api/health` returning 200 on production and preview.
+All of it lives in `vercel.json`, `api/index.mjs` and `apps/api/src/vercel-handler.ts`; the reasoning is in [ADR 0019](adr/0019-vercel-deployment-architecture.md). Nothing to do by hand except the checks below.
+
+- **CSP and security headers** for the web are set in `vercel.json` (CSP: `default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'`), tested by an e2e check for CSP violations. `/api/*` gets no CSP from `vercel.json`: helmet sets it there.
+- **Nonce decision:** `style-src 'self'` holds only while no component with runtime styles renders. Before the first `libs/ui` component (or CDK overlay) renders in `apps/web`, a Vercel Routing Middleware injects a per-request nonce (`ngCspNonce`) into `index.html` and the CSP header; `'unsafe-inline'` stays out. Tracked in a separate issue.
+- **Swagger UI assets** for `/api/docs` come from `swagger-ui-dist` and are included in the function with `includeFiles`; verify `/api/docs` on the first preview deployment.
+- **ESM output** of the API is `.mjs` (`main.mjs`, `vercel-handler.mjs`).
+- After the first deployment check `NODE_ENV=production` and `/api/health` returning 200 on production and preview.
 
 ## 6. Secrets policy
 
@@ -185,7 +190,7 @@ Rules:
 - The repo contains **names only**, in `.env.example`. `.env*` is git-ignored; agents are blocked from reading it (PROJECT.md 8.5).
 - Client IDs are not secret, but treat them like secrets anyway for simplicity.
 - Never paste a value into a Claude session, an issue, a PR or a commit message.
-- **Rotation**: rotate on any suspicion, when someone loses access, and at least yearly. Order: create the new value at the provider → update Vercel (and GitHub, if used) → redeploy → revoke the old value. Rotating the Better Auth secret signs everybody out. Neon: Branches → `main` → Roles → reset password, then make sure the integration-managed variables in Vercel picked up the new value.
+- **Rotation**: rotate on any suspicion, when someone loses access, and at least yearly. Order: create the new value at the provider → update Vercel (and GitHub, if used) → redeploy → revoke the old value. Rotating the Better Auth secret signs everybody out. Neon: Branches → `production` → Roles → reset password, then make sure the integration-managed variables in Vercel picked up the new value.
 
 **If a secret leaks** (committed, pasted, shown in a log or screenshot):
 
@@ -204,11 +209,11 @@ Prevention layers: gitleaks in the pre-commit hook (locally) and in CI (CI task)
 | 2 | Verify secret scanning, push protection, Dependabot, squash-only | GitHub settings | author | CI task |
 | 3 | `gh auth status` with `project` scope | local machine | author | now |
 | 4 | Branch protection on `main`, CodeQL | GitHub settings | author / CI task | CI task |
-| 5 | Neon account, project in the chosen region, `neonctl auth` | neon.com, terminal | author | deploy task |
-| 6 | Vercel account (Hobby), `vercel login`, GitHub app on this repo only | vercel.com, terminal | author | deploy task |
+| 5 | Neon account, project in `eu-central-1` (CLI optional) | neon.com | author | deploy task |
+| 6 | Vercel account (Hobby, GitHub connected), GitHub app on this repo only (CLI optional) | vercel.com | author | deploy task |
 | 7 | Production domain chosen | Vercel → Domains | author | deploy task |
-| 8 | Import repo, Node 26.x, function region = Neon region | Vercel project settings | author / deploy task | deploy task |
-| 9 | Neon ↔ Vercel integration (prod `main`, branch per preview, cleanup) | Vercel Integrations | author | deploy task |
+| 8 | Import repo, Node 26.x, function region `fra1` (in `vercel.json`) | Vercel project settings | author / deploy task | deploy task |
+| 9 | Neon ↔ Vercel integration ("Link Existing Neon Account", prod `production`, branch per preview, cleanup) | Vercel Integrations | author | deploy task |
 | 10 | `NODE_ENV=production` for Production and Preview | Vercel env | author | deploy task |
 | 11 | Google project, consent screen, local + production clients | Google Cloud console | author | stage 2 |
 | 12 | GitHub OAuth apps, local + production | GitHub Developer settings | author | stage 2 |
