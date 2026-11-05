@@ -1,4 +1,4 @@
-@use '@angular/cdk/overlay';
+@use '@angular/cdk' as cdk;
 @use 'ui' as *;
 
 :root {
@@ -47,6 +47,6 @@ body {
 
 // Structural CDK overlay CSS (avoids a flash and a duplicate; the CDK still injects a runtime
 // `<style>`, which needs the CSP nonce of ADR 0022).
-@include overlay.overlay;
+@include cdk.overlay;
 @include overlay-layers;
 @include tooltip-description;
