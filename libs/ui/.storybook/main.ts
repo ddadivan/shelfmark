@@ -16,7 +16,11 @@ const config: StorybookConfig = {
         ...viteConfig.css?.preprocessorOptions,
         scss: {
           ...viteConfig.css?.preprocessorOptions?.['scss'],
-          loadPaths: [resolve(import.meta.dirname, '../src/styles')],
+          // `node_modules` lets `global.scss` load the CDK overlay styles with a bare `@use`.
+          loadPaths: [
+            resolve(import.meta.dirname, '../src/styles'),
+            resolve(import.meta.dirname, '../../../node_modules'),
+          ],
         },
       },
     },
