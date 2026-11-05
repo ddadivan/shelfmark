@@ -83,6 +83,39 @@ const blocked = [
   'tool --show-password',
   'neonctl cs --psql',
   'curl "https://api.example.test/env?decrypt=true"',
+  // shells, eval and script payloads are analysed as commands
+  'bash -c "vercel env pull"',
+  "sh -c 'npx vercel pull'",
+  'zsh -lc "vercel env ls"',
+  'eval "vercel env ls"',
+  'echo "$(vercel env ls)"',
+  'echo `vercel env ls`',
+  `node -e "require('child_process').execSync('vercel env ls')"`,
+  // wrapper flags, other runners
+  'env -i vercel env ls',
+  'env -u FOO vercel env ls',
+  'npx -y vercel@latest pull',
+  'pnpm exec vercel env ls',
+  'pnpm vercel env ls',
+  'yarn vercel pull',
+  'yarn dlx neonctl cs',
+  // credential files and env dumps
+  'cat ~/Library/Application\\ Support/com.vercel.cli/auth.json',
+  'cat "~/Library/Application Support/com.vercel.cli/auth.json"',
+  'cat ~/.local/share/com.vercel.cli/auth.json',
+  'cat ~/.config/neonctl/credentials.json',
+  'cat .vercel/project.json',
+  'printenv',
+  'env',
+  'env | grep TOKEN',
+  'printenv VERCEL_TOKEN',
+  'echo $VERCEL_TOKEN',
+  'echo "$DATABASE_URL"',
+  'printf %s ${GITHUB_TOKEN}',
+  // inline secrets on deploy
+  'vercel deploy -e KEY=val',
+  'vercel deploy --build-env KEY=val',
+  'vercel deploy --env=KEY=val',
 ];
 
 const allowed = [
@@ -105,6 +138,27 @@ const allowed = [
   'npx neonctl branches list',
   'echo environment',
   'ls api',
+  'git commit -m "docs: vercel env notes"',
+  'gh pr create --body "never run vercel env pull; avoid --decrypt"',
+  'gh issue comment 3 --body "neon connection-string is blocked"',
+  'gh pr create --body "decrypt, reveal and psql are blocked; see ~/.config/neonctl and .vercel/"',
+  [
+    `git commit -m "$(cat <<'EOF'`,
+    "fix: don't run vercel env pull",
+    '',
+    'Refs #3',
+    'EOF',
+    ')"',
+  ].join('\n'),
+  'echo "printenv"',
+  'echo $HOME',
+  'printenv HOME',
+  'env NODE_ENV=test npx nx test api',
+  'FOO=1 env -i npx nx test api',
+  'bash -c "npx nx test api"',
+  'vercel deploy --prod',
+  'echo "$VERCEL_ENV"',
+  `echo '$VERCEL_TOKEN'`,
 ];
 
 for (const command of blocked) {

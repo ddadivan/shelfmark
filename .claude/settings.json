@@ -100,7 +100,7 @@
       "Bash(neonctl cs:*)",
       "Bash(neon connection-string:*)",
       "Bash(neon cs:*)",
-      "Read(~/.config/neon/**)",
+      "Read(~/.local/share/com.vercel.cli/**)",
       "Read(**/.vercel/**)",
       "Bash(git push --force:*)",
       "Bash(git push -f:*)"
