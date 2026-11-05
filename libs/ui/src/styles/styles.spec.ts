@@ -1,0 +1,155 @@
+import { resolve } from 'node:path';
+import { compileString } from 'sass';
+
+// Nx runs the target from the workspace root (`import.meta.dirname` is not the source folder
+// once the builder has bundled the spec).
+const STYLES_DIR = resolve(process.cwd(), 'libs/ui/src/styles');
+
+/** Compiles a Sass snippet against the public API (`@use 'ui' as *;`). */
+function css(snippet: string): string {
+  return compileString(`@use 'ui' as *;\n${snippet}`, { loadPaths: [STYLES_DIR] }).css;
+}
+
+/** Splits compiled CSS into the part outside any @media and the @media blocks, by condition. */
+function reducedMotionBlock(output: string): string {
+  const match = /@media \(prefers-reduced-motion: reduce\) \{([\s\S]*?)\n\}/.exec(output);
+  return match?.[1] ?? '';
+}
+
+describe('breakpoint mixins', () => {
+  it('cover phone, tablet and desktop with no gap and no overlap, in em only', () => {
+    const out = css(
+      '.a { @include phone { x: 1; } @include tablet { x: 2; } @include desktop { x: 3; } }',
+    );
+    expect(out).toContain('@media (width < 40em)');
+    expect(out).toContain('@media (40em <= width < 64em)');
+    expect(out).toContain('@media (width >= 64em)');
+    expect(out).not.toMatch(/\d+px/);
+  });
+
+  it('tablet-up starts exactly where phone ends', () => {
+    expect(css('.a { @include tablet-up { x: 1; } }')).toContain('@media (width >= 40em)');
+  });
+});
+
+describe('focus mixins', () => {
+  it('focus-ring draws a 2px focus-ring outline with a 2px offset', () => {
+    const out = css('.a { @include focus-ring; }');
+    expect(out).toContain('outline: 2px solid var(--focus-ring)');
+    expect(out).toContain('outline-offset: 2px');
+  });
+
+  it('field-focus turns the border focus-ring with a 3px halo over the fast duration', () => {
+    const out = css('.a { @include field-focus; }');
+    expect(out).toContain('.a:focus-within');
+    expect(out).toContain('border-color: var(--focus-ring)');
+    expect(out).toContain('0 0 0 3px color-mix(in srgb, var(--focus-ring) 22%, transparent)');
+    expect(out).toContain('var(--duration-fast)');
+  });
+});
+
+describe('utility mixins', () => {
+  it('visually-hidden keeps the element out of sight but present', () => {
+    const out = css('.a { @include visually-hidden; }');
+    expect(out).toContain('position: absolute');
+    expect(out).toContain('clip-path: inset(50%)');
+  });
+
+  it('line-clamp clamps to the requested number of lines', () => {
+    expect(css('.a { @include line-clamp(2); }')).toContain('-webkit-line-clamp: 2');
+    expect(css('.a { @include line-clamp(1); }')).toContain('line-clamp: 1');
+  });
+});
+
+describe('motion mixins', () => {
+  it.each([
+    ['enter(pop)', 'ui-pop-in var(--duration-base) var(--ease-out) both'],
+    ['enter(fade)', 'ui-reveal var(--duration-base) var(--ease-out) both'],
+    ['enter(toast)', 'ui-slide-up var(--duration-slow) var(--ease-out) both'],
+    ['enter(sheet)', 'ui-sheet-in var(--duration-slow) var(--ease-drawer) both'],
+    ['leave(pop)', 'ui-pop-out var(--duration-fast) var(--ease-out) both'],
+    ['leave(toast)', 'ui-toast-out var(--duration-fast) var(--ease-in) both'],
+    ['leave(sheet)', 'ui-sheet-out var(--duration-base) var(--ease-in) both'],
+  ])('%s uses tokens for duration and easing', (include, animation) => {
+    expect(css(`.a { @include ${include}; }`)).toContain(`animation: ${animation}`);
+  });
+
+  it.each(['enter(pop)', 'enter(toast)', 'enter(sheet)', 'enter(spinner-grow)'])(
+    '%s falls back to a fade in 200 ms under reduced motion',
+    (include) => {
+      const reduced = reducedMotionBlock(css(`.a { @include ${include}; }`));
+      expect(reduced).toContain('animation: ui-reveal var(--duration-base) var(--ease-out) both');
+      expect(reduced).not.toMatch(/ui-(pop-in|slide-up|sheet-in|spinner-grow)/);
+    },
+  );
+
+  it.each(['leave(pop)', 'leave(toast)', 'leave(sheet)', 'leave(spinner-shrink)'])(
+    '%s falls back to a plain fade-out under reduced motion',
+    (include) => {
+      const reduced = reducedMotionBlock(css(`.a { @include ${include}; }`));
+      expect(reduced).toContain('ui-fade-out');
+      expect(reduced).not.toMatch(/ui-(pop-out|toast-out|sheet-out|spinner-shrink)/);
+    },
+  );
+
+  it('spinner presets add the rotation, slower under reduced motion', () => {
+    const out = css('.a { @include enter(spinner); }');
+    expect(out).toContain('ui-spin 0.7s linear infinite');
+    expect(reducedMotionBlock(out)).toContain('ui-spin 1.6s linear infinite');
+  });
+
+  it('loops keep moving slower for loaders and stop for the shimmer', () => {
+    expect(reducedMotionBlock(css('.a { @include loop(spin); }'))).toContain(
+      'animation-duration: 1.6s',
+    );
+    expect(reducedMotionBlock(css('.a { @include loop(progress); }'))).toContain(
+      'ui-progress 2.4s linear infinite',
+    );
+    expect(reducedMotionBlock(css('.a { @include loop(shimmer); }'))).toContain('animation: none');
+  });
+
+  it('only the loaders use linear', () => {
+    const nonLoaders = css(
+      '.a { @include enter(pop); @include leave(sheet); @include enter(toast); }',
+    );
+    expect(nonLoaders).not.toContain('linear');
+  });
+
+  it('origin falls back to the given value and honours --ui-origin', () => {
+    expect(css('.a { @include origin; }')).toContain(
+      'transform-origin: var(--ui-origin, top left)',
+    );
+    expect(css('.a { @include origin(center); }')).toContain('var(--ui-origin, center)');
+  });
+
+  it('rejects unknown presets', () => {
+    expect(() => css('.a { @include enter(nope); }')).toThrow(/Unknown enter preset/);
+    expect(() => css('.a { @include leave(nope); }')).toThrow(/Unknown leave preset/);
+    expect(() => css('.a { @include loop(nope); }')).toThrow(/Unknown loop/);
+  });
+
+  it('defines every shared keyframe once, with the ui- prefix', () => {
+    const out = css('@include keyframes;');
+    const names = [...out.matchAll(/@keyframes (\S+)/g)].map((m) => m[1]);
+    expect(names).toEqual([
+      'ui-pop-in',
+      'ui-pop-out',
+      'ui-fade-out',
+      'ui-reveal',
+      'ui-sheet-in',
+      'ui-sheet-out',
+      'ui-slide-up',
+      'ui-toast-out',
+      'ui-spin',
+      'ui-spinner-in',
+      'ui-spinner-grow',
+      'ui-spinner-out',
+      'ui-spinner-shrink',
+      'ui-shimmer',
+      'ui-progress',
+      'ui-ripple-grow',
+      'ui-ripple-fade',
+    ]);
+    expect(out).not.toMatch(/\d+px/);
+  });
+});
