@@ -18,7 +18,7 @@
   },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
-    { "source": "/((?!not-found\\.x$).*\\.[^/]*)", "destination": "/not-found.x" },
+    { "source": "/((?!api/).*\\.[^/]*)", "destination": "/api" },
     { "source": "/((?!api(?:/|$))(?:.*/)?[^./]*)", "destination": "/index.html" }
   ],
   "headers": [
