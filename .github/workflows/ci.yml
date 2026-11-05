@@ -44,7 +44,7 @@ jobs:
       - uses: nrwl/nx-set-shas@e602fada7ad5987b0f7b1905e7a99ea1c661514c # v5.1.0
       - run: npm run format:check
       - run: npm run lint:styles
-      - run: npx nx affected -t lint typecheck test build
+      - run: npx nx affected -t lint typecheck test build --output-style=static
 
   e2e:
     name: e2e
@@ -71,7 +71,7 @@ jobs:
       - run: npm ci
       - uses: nrwl/nx-set-shas@e602fada7ad5987b0f7b1905e7a99ea1c661514c # v5.1.0
       - run: npx playwright install --with-deps chromium
-      - run: npx nx affected -t e2e
+      - run: npx nx affected -t e2e --output-style=static
       - if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
