@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { builtinModules } from 'node:module';
 import { join, resolve } from 'node:path';
 
@@ -29,6 +29,7 @@ function packageName(specifier: string): string {
   return specifier.startsWith('@') ? parts.slice(0, 2).join('/') : parts[0];
 }
 
+// Prettier enforces single quotes, so only single-quoted static imports are parsed.
 function runtimeImports(code: string): string[] {
   const specifiers: string[] = [];
   for (const match of code.matchAll(/^import\s+(type\s+)?[^;]*?from\s+'([^']+)'/gm)) {
@@ -71,6 +72,22 @@ describe('Vercel function entry (api/index.mjs)', () => {
     const missing = RUNTIME_LOADED.filter((name) => !entryImports.has(name));
     expect(missing).toEqual([]);
   });
+
+  // Runs only after `nx build api`: checks the externals webpack actually emitted.
+  const bundle = resolve(srcDir, '../../../dist/apps/api/vercel-handler.mjs');
+  it.skipIf(!existsSync(bundle))(
+    'statically imports every external the built bundle requires',
+    () => {
+      const required = [
+        ...readFileSync(bundle, 'utf8').matchAll(/createRequire_require\("([^"]+)"\)/g),
+      ]
+        .map((match) => match[1])
+        .filter(isExternalPackage)
+        .map(packageName);
+      const missing = [...new Set(required)].filter((name) => !entryImports.has(name));
+      expect(missing).toEqual([]);
+    },
+  );
 
   it('re-exports the handler bundle as the default export', () => {
     expect(readFileSync(entryFile, 'utf8')).toMatch(
