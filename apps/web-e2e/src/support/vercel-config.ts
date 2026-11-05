@@ -23,11 +23,32 @@ export function readCsp(config: VercelConfig): string {
   return value;
 }
 
+/** The static policy for files documented in docs/SETUP.md 5.6. */
 export function readCspFromSetupDoc(): string {
+  return readSetupCodeSpan(/Static CSP \(files[^)]*\): `([^`]+)`/, 'static CSP');
+}
+
+/** The document policy template (`{nonce}` placeholder) documented in docs/SETUP.md 5.6. */
+export function readCspTemplateFromSetupDoc(): string {
+  return readSetupCodeSpan(/Document CSP template \([^)]*\): `([^`]+)`/, 'document CSP template');
+}
+
+/** The `matcher` array literal of the root `middleware.ts`, read as text (Vercel reads it so too). */
+export function readMiddlewareMatcher(): string[] {
+  const source = readFileSync(join(workspaceRoot, 'middleware.ts'), 'utf8');
+  const block = /matcher:\s*\[([\s\S]*?)\n?\s*\]\s*,?\s*\};/.exec(source)?.[1];
+  if (!block) {
+    throw new Error('middleware.ts has no literal matcher array');
+  }
+  // The array holds single-quoted string literals without quotes inside.
+  return Array.from(block.matchAll(/'([^']*)'/g), (m) => m[1] ?? '');
+}
+
+function readSetupCodeSpan(pattern: RegExp, name: string): string {
   const doc = readFileSync(join(workspaceRoot, 'docs/SETUP.md'), 'utf8');
-  const match = /CSP: `([^`]+)`/.exec(doc);
+  const match = pattern.exec(doc);
   if (!match?.[1]) {
-    throw new Error('docs/SETUP.md 5.6 has no CSP code span');
+    throw new Error(`docs/SETUP.md 5.6 has no ${name} code span`);
   }
   return match[1];
 }

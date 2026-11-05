@@ -21,7 +21,8 @@ export default defineConfig({
   webServer: deployedUrl
     ? undefined
     : {
-        command: `npx nx run web:${isCI ? 'serve-static' : 'serve'} --port=${port}`,
+        // CI serves the `e2e` build: the production build plus the hidden /__e2e/csp test page.
+        command: `npx nx run web:${isCI ? 'serve-static:e2e' : 'serve'} --port=${port}`,
         url: getReadyUrl(origin),
         reuseExistingServer: !isCI,
         timeout: 180_000,
