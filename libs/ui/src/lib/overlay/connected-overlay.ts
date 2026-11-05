@@ -1,0 +1,119 @@
+import type {
+  ConnectedOverlayPositionChange,
+  FlexibleConnectedPositionStrategy,
+  OverlayRef,
+} from '@angular/cdk/overlay';
+import type { ComponentPortal } from '@angular/cdk/portal';
+import { afterNextRender, DestroyRef, type ComponentRef, type Injector } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { connectedSide, setOverlayOrigin } from './overlay-origin';
+import type { OverlaySide } from './models/overlay-side.type';
+
+/**
+ * One connected overlay (tooltip, later menu and listbox). It wraps the CDK `OverlayRef` and
+ * adds what Shelfmark needs on top: `--ui-origin` follows the resolved position, the pane
+ * waits for leave animations before it detaches, and everything is released on `dispose()`.
+ */
+export class ConnectedOverlay {
+  private readonly subscription = new Subscription();
+  private releaseId = 0;
+  private lastSide: OverlaySide | undefined;
+  private disposed = false;
+
+  constructor(
+    private readonly overlayRef: OverlayRef,
+    strategy: FlexibleConnectedPositionStrategy,
+    private readonly injector: Injector,
+    onPositionChange?: (side: OverlaySide) => void,
+  ) {
+    this.subscription.add(
+      strategy.positionChanges.subscribe((change: ConnectedOverlayPositionChange) => {
+        setOverlayOrigin(overlayRef.overlayElement, change.connectionPair);
+        const side = connectedSide(change.connectionPair);
+        this.lastSide = side;
+        onPositionChange?.(side);
+      }),
+    );
+    // Always release, even if the owner forgets `dispose()`.
+    this.injector.get(DestroyRef).onDestroy(() => {
+      this.dispose();
+    });
+  }
+
+  /** The pane element (outside view encapsulation); `--ui-origin` is set on it. */
+  get pane(): HTMLElement {
+    return this.overlayRef.overlayElement;
+  }
+
+  get isAttached(): boolean {
+    return this.overlayRef.hasAttached();
+  }
+
+  /** The side the panel last resolved to, after a flip. */
+  get side(): OverlaySide | undefined {
+    return this.lastSide;
+  }
+
+  /** Attaches a component (or returns the existing one if it is still attached). */
+  attach<T>(portal: ComponentPortal<T>): ComponentRef<T> {
+    this.cancelRelease();
+    return this.overlayRef.attach(portal);
+  }
+
+  /** Recomputes the position (content size or trigger moved). */
+  updatePosition(): void {
+    this.overlayRef.updatePosition();
+  }
+
+  /** Stops a pending `release()`: the content came back before its leave animation ended. */
+  cancelRelease(): void {
+    this.releaseId++;
+  }
+
+  /**
+   * Detaches once the leave animations on the pane have finished (the owner has already
+   * removed the animated content, so `animate.leave` is running). With no animations
+   * (reduced motion removes them, jsdom has none) it detaches right away. `cancelRelease()`
+   * or a new `attach()` makes it a no-op, so a second open mid-animation just works.
+   */
+  release(): void {
+    const id = ++this.releaseId;
+    afterNextRender(
+      () => {
+        if (id !== this.releaseId) {
+          return;
+        }
+        const animations = this.pane.getAnimations?.({ subtree: true }) ?? [];
+        if (animations.length === 0) {
+          this.detach();
+          return;
+        }
+        void Promise.allSettled(animations.map((animation) => animation.finished)).then(() => {
+          if (id === this.releaseId) {
+            this.detach();
+          }
+        });
+      },
+      { injector: this.injector },
+    );
+  }
+
+  /** Detaches right away. */
+  detach(): void {
+    this.cancelRelease();
+    if (this.overlayRef.hasAttached()) {
+      this.overlayRef.detach();
+    }
+  }
+
+  /** Detaches and removes the pane from the DOM. */
+  dispose(): void {
+    if (this.disposed) {
+      return;
+    }
+    this.disposed = true;
+    this.cancelRelease();
+    this.subscription.unsubscribe();
+    this.overlayRef.dispose();
+  }
+}

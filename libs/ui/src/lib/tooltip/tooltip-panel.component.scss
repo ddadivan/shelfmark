@@ -1,0 +1,55 @@
+@use '../../styles/ui' as *;
+
+// The hit area carries the gap to the trigger as padding, so the pointer can travel from the
+// trigger to the tooltip without leaving both (WCAG 1.4.13 hoverable).
+.ui-tooltip-hit {
+  display: block;
+  pointer-events: auto;
+
+  &--top {
+    padding-bottom: rem(8px);
+  }
+
+  &--bottom {
+    padding-top: rem(8px);
+  }
+
+  &--left {
+    padding-right: rem(8px);
+  }
+
+  &--right {
+    padding-left: rem(8px);
+  }
+}
+
+.ui-tooltip {
+  @include type(label);
+
+  display: inline-block;
+  max-width: rem(280px);
+  padding: rem(6px) rem(8px);
+  font-size: rem(12px);
+  line-height: rem(16px);
+  color: var(--on-primary);
+  overflow-wrap: anywhere;
+  background: var(--primary);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-popover);
+
+  &--enter {
+    @include enter(pop);
+    @include origin(center);
+  }
+
+  &--leave {
+    @include leave(pop);
+    @include origin(center);
+  }
+
+  &__kbd {
+    margin-inline-start: var(--space-2);
+    font: inherit;
+    opacity: 0.7;
+  }
+}

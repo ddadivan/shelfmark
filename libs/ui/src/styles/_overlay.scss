@@ -1,0 +1,44 @@
+@use 'sass:map';
+@use 'functions' as *;
+@use 'utilities' as *;
+
+// Shared overlay API (issue #26). The CDK overlay structural CSS is included once in
+// `global.scss` (`@use '@angular/cdk/overlay'`), so under a strict CSP no runtime `<style>` is
+// injected. Everything here is the Shelfmark layer on top of it.
+
+// Stacking order inside the single CDK overlay container (low to high): dialog scrim and panel,
+// menu / listbox, toast, tooltip. A menu opened from a dialog stays above it, a toast above
+// menus, and a tooltip above everything. A consumer passes the layer name through
+// `ConnectedOverlayConfig.layer`, which adds the class `ui-overlay-layer--<name>` to the pane.
+$overlay-layers: (
+  'dialog': 1000,
+  'menu': 1010,
+  'toast': 1020,
+  'tooltip': 1030,
+);
+
+// Surface of menus, listboxes and other floating panels (`surface`, `border`, `radius-md`,
+// `shadow-popover`). Tooltips and toasts are graphite instead and only take the shadow.
+@mixin popover {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-popover);
+}
+
+// `z-index` of one pane per layer: global, because the pane is created by the CDK outside any
+// component's view encapsulation.
+@mixin overlay-layers {
+  @each $name, $z in $overlay-layers {
+    .ui-overlay-layer--#{$name} {
+      z-index: $z;
+    }
+  }
+}
+
+// The hidden element `uiTooltip` points `aria-describedby` at; it lives in `<body>`.
+@mixin tooltip-description {
+  .ui-tooltip-description {
+    @include visually-hidden;
+  }
+}
