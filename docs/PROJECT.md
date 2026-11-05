@@ -10,7 +10,7 @@ Updated as work goes on — every session resumes from here.
 - [x] [Shelfmark design system](https://claude.ai/artifact/BQrxb4RyTEo89FzAwgRFv7): tokens, font, spacing, radii, motion, brand book, cover, 23 components, logo, illustrations
 - [x] [Screen mockups](https://claude.ai/artifact/8vqtkwVg3JcrKZFQoe9Cs9) — 22 artboards incl. landing (desktop and phone), demo-mode banner, Share quick form, export menu, tooltips
 - [x] Author review of mockups and document, fixes
-- [ ] Stage 0 "Foundation" (9.1)
+- [x] Stage 0 "Foundation" (9.1) — done Nov 5, 2026
   - [x] GitHub templates, Dependabot, `CLAUDE.md`, 8 agents, skills, guard hook, permission allowlist
   - [x] Nx workspace: Node 26, TS 6.0.3, Nx 24, ESLint, Prettier, stylelint, lefthook + gitleaks
   - [x] API: NestJS 12, `libs/shared/contracts`, `/api/health`, unified error shape, helmet
@@ -23,7 +23,8 @@ Updated as work goes on — every session resumes from here.
   - [x] CI: GitHub Actions workflow with four required checks (`lint-test-build`, `e2e`, `npm-audit`, `gitleaks`), ADR 0018
   - [x] CodeQL default setup (JS/TS, Actions), `main` ruleset (PR + four required checks + CodeQL gate, squash only, linear history, no force-push / deletion), SHA-pinned actions required (ADR 0018)
   - [x] Deploy: [shelfmark-app.vercel.app](https://shelfmark-app.vercel.app) — static web + NestJS as one Vercel Function (`fra1`), strict CSP and security headers, Neon project `shelfmark` (`eu-central-1`, branch per preview), guard hook blocks secret-revealing Vercel / Neon CLI commands (ADR 0019)
-  - [ ] Open in stage 0: npm install-scripts review (#4); missing static files return `index.html` and the `/api` rewrite adds `?path=` (#13)
+  - [x] Dependency install scripts denied and enforced in CI (#4, ADR 0020); Vercel routing: missing files 404, clean API query string, Framework Preset Other (#13, ADR 0019)
+  - After every production deploy: `BASE_URL=https://shelfmark-app.vercel.app npx nx e2e web-e2e` (the missing-file 404 relies on undocumented Vercel behaviour)
   - Next: stage 1 issues from 9.1 (the author decides when); CSP nonce middleware (#9) before the first `libs/ui` component renders in `apps/web`
   - Verification of protected previews by agents: `vercel curl` and `vercel logs` (CLI login, no bypass token)
 - [ ] Motion in code — stage 6; promo video — after the stage 1 release
