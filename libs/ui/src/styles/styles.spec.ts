@@ -1,0 +1,201 @@
+import { existsSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { compileString } from 'sass';
+
+const STYLES_PATH = 'libs/ui/src/styles';
+
+/**
+ * Finds the styles folder. `import.meta.dirname` is the source folder when the spec is not
+ * bundled; otherwise Nx runs the target from the workspace root, so walk up from the cwd.
+ */
+function findStylesDir(): string {
+  const direct = import.meta.dirname;
+  if (direct && existsSync(resolve(direct, '_ui.scss'))) {
+    return direct;
+  }
+  for (let dir = process.cwd(); ; dir = dirname(dir)) {
+    const candidate = resolve(dir, STYLES_PATH);
+    if (existsSync(resolve(candidate, '_ui.scss'))) {
+      return candidate;
+    }
+    if (dirname(dir) === dir) {
+      throw new Error(`Cannot find ${STYLES_PATH} from ${process.cwd()}`);
+    }
+  }
+}
+
+const STYLES_DIR = findStylesDir();
+
+/** Compiles a Sass snippet against the public API (`@use 'ui' as *;`). */
+function css(snippet: string): string {
+  return compileString(`@use 'ui' as *;\n${snippet}`, { loadPaths: [STYLES_DIR] }).css;
+}
+
+/** Returns the body of every `@media (prefers-reduced-motion: reduce)` block, brace-matched. */
+function reducedMotionBlock(output: string): string {
+  const opener = /@media\s*\(\s*prefers-reduced-motion\s*:\s*reduce\s*\)\s*\{/g;
+  const bodies: string[] = [];
+  for (let m = opener.exec(output); m; m = opener.exec(output)) {
+    let depth = 1;
+    let i = opener.lastIndex;
+    for (; i < output.length && depth > 0; i++) {
+      depth += output[i] === '{' ? 1 : output[i] === '}' ? -1 : 0;
+    }
+    bodies.push(output.slice(opener.lastIndex, i - 1));
+  }
+  return bodies.join('\n');
+}
+
+describe('breakpoint mixins', () => {
+  it('cover phone, tablet and desktop with no gap and no overlap, in em only', () => {
+    const out = css(
+      '.a { @include phone { x: 1; } @include tablet { x: 2; } @include desktop { x: 3; } }',
+    );
+    expect(out).toContain('@media (width < 40em)');
+    expect(out).toContain('@media (40em <= width < 64em)');
+    expect(out).toContain('@media (width >= 64em)');
+    expect(out).not.toMatch(/\d+px/);
+  });
+
+  it('tablet-up starts exactly where phone ends', () => {
+    expect(css('.a { @include tablet-up { x: 1; } }')).toContain('@media (width >= 40em)');
+  });
+});
+
+describe('focus mixins', () => {
+  it('field-focus removes the global ring only from controls inside the wrapper', () => {
+    const out = css('.a { @include field-focus; }');
+    expect(out).toMatch(
+      /\.a :where\(input, textarea, \[contenteditable\]\):focus-visible \{\s*outline: none;/,
+    );
+    expect(css('.a { @include focus-ring; }')).not.toContain('outline: none');
+  });
+
+  it('focus-ring draws a 2px focus-ring outline with a 2px offset', () => {
+    const out = css('.a { @include focus-ring; }');
+    expect(out).toContain('outline: 2px solid var(--focus-ring)');
+    expect(out).toContain('outline-offset: 2px');
+  });
+
+  it('field-focus turns the border focus-ring with a 3px halo over the fast duration', () => {
+    const out = css('.a { @include field-focus; }');
+    expect(out).toContain('.a:focus-within');
+    expect(out).toContain('border-color: var(--focus-ring)');
+    expect(out).toContain('0 0 0 3px color-mix(in srgb, var(--focus-ring) 22%, transparent)');
+    expect(out).toContain('var(--duration-fast)');
+  });
+});
+
+describe('utility mixins', () => {
+  it('visually-hidden keeps the element out of sight but present', () => {
+    const out = css('.a { @include visually-hidden; }');
+    expect(out).toContain('position: absolute');
+    expect(out).toContain('clip-path: inset(50%)');
+  });
+
+  it('line-clamp clamps to the requested number of lines', () => {
+    expect(css('.a { @include line-clamp(2); }')).toContain('-webkit-line-clamp: 2');
+    expect(css('.a { @include line-clamp(1); }')).toContain('line-clamp: 1');
+  });
+});
+
+describe('motion mixins', () => {
+  it.each([
+    ['enter(pop)', 'ui-pop-in var(--duration-base) var(--ease-out) both'],
+    ['enter(fade)', 'ui-reveal var(--duration-base) var(--ease-out) both'],
+    ['enter(toast)', 'ui-slide-up var(--duration-slow) var(--ease-out) both'],
+    ['enter(sheet)', 'ui-sheet-in var(--duration-slow) var(--ease-drawer) both'],
+    ['leave(pop)', 'ui-pop-out var(--duration-fast) var(--ease-out) both'],
+    ['leave(toast)', 'ui-toast-out var(--duration-fast) var(--ease-in) both'],
+    ['leave(sheet)', 'ui-sheet-out var(--duration-base) var(--ease-in) both'],
+  ])('%s uses tokens for duration and easing', (include, animation) => {
+    expect(css(`.a { @include ${include}; }`)).toContain(`animation: ${animation}`);
+  });
+
+  it.each(['enter(pop)', 'enter(toast)', 'enter(sheet)', 'enter(spinner)', 'enter(spinner-grow)'])(
+    '%s falls back to a fade in 200 ms under reduced motion',
+    (include) => {
+      const reduced = reducedMotionBlock(css(`.a { @include ${include}; }`));
+      expect(reduced).toContain('animation: ui-reveal var(--duration-base) var(--ease-out) both');
+      expect(reduced).not.toMatch(/ui-(pop-in|slide-up|sheet-in|spinner-grow)/);
+    },
+  );
+
+  it.each(['leave(pop)', 'leave(toast)', 'leave(sheet)', 'leave(spinner-shrink)'])(
+    '%s falls back to a plain fade-out under reduced motion',
+    (include) => {
+      const reduced = reducedMotionBlock(css(`.a { @include ${include}; }`));
+      expect(reduced).toContain('ui-fade-out');
+      expect(reduced).not.toMatch(/ui-(pop-out|toast-out|sheet-out|spinner-shrink)/);
+    },
+  );
+
+  it('presets are finite so animate.leave can finish: no infinite, no loader rotation', () => {
+    const presets = ['pop', 'fade', 'toast', 'sheet', 'spinner', 'spinner-grow']
+      .map((n) => `.a { @include enter(${n}); }`)
+      .concat(
+        ['pop', 'fade', 'toast', 'sheet', 'spinner', 'spinner-shrink'].map(
+          (n) => `.a { @include leave(${n}); }`,
+        ),
+      )
+      .map(css)
+      .join('\n');
+    expect(presets).not.toContain('infinite');
+    expect(presets).not.toMatch(/ui-spin(?![\w-])/);
+  });
+
+  it('loops keep moving slower for loaders and stop for the shimmer', () => {
+    expect(reducedMotionBlock(css('.a { @include loop(spin); }'))).toContain(
+      'animation-duration: 1.6s',
+    );
+    expect(reducedMotionBlock(css('.a { @include loop(progress); }'))).toContain(
+      'ui-progress 2.4s linear infinite',
+    );
+    expect(reducedMotionBlock(css('.a { @include loop(shimmer); }'))).toContain('animation: none');
+  });
+
+  it('only the loaders use linear', () => {
+    const nonLoaders = css(
+      '.a { @include enter(pop); @include leave(sheet); @include enter(toast); }',
+    );
+    expect(nonLoaders).not.toContain('linear');
+  });
+
+  it('origin falls back to the given value and honours --ui-origin', () => {
+    expect(css('.a { @include origin; }')).toContain(
+      'transform-origin: var(--ui-origin, top left)',
+    );
+    expect(css('.a { @include origin(center); }')).toContain('var(--ui-origin, center)');
+  });
+
+  it('rejects unknown presets', () => {
+    expect(() => css('.a { @include enter(nope); }')).toThrow(/Unknown enter preset/);
+    expect(() => css('.a { @include leave(nope); }')).toThrow(/Unknown leave preset/);
+    expect(() => css('.a { @include loop(nope); }')).toThrow(/Unknown loop/);
+  });
+
+  it('defines every shared keyframe once, with the ui- prefix', () => {
+    const out = css('@include keyframes;');
+    const names = [...out.matchAll(/@keyframes (\S+)/g)].map((m) => m[1]);
+    expect(names).toEqual([
+      'ui-pop-in',
+      'ui-pop-out',
+      'ui-fade-out',
+      'ui-reveal',
+      'ui-sheet-in',
+      'ui-sheet-out',
+      'ui-slide-up',
+      'ui-toast-out',
+      'ui-spin',
+      'ui-spinner-in',
+      'ui-spinner-grow',
+      'ui-spinner-out',
+      'ui-spinner-shrink',
+      'ui-shimmer',
+      'ui-progress',
+      'ui-ripple-grow',
+      'ui-ripple-fade',
+    ]);
+    expect(out).not.toMatch(/\d+px/);
+  });
+});

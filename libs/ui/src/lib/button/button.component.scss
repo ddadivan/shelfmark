@@ -26,8 +26,7 @@
     transform var(--duration-fast) var(--ease-spring);
 
   &:focus-visible {
-    outline: 2px solid var(--focus-ring);
-    outline-offset: 2px;
+    @include focus-ring;
   }
 
   &:active {

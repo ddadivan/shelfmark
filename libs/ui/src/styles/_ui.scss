@@ -1,6 +1,10 @@
 // Public Sass API of libs/ui: `@use 'ui' as *;` (apps/web sets includePaths to this folder).
 @forward 'functions';
 @forward 'media';
+@forward 'breakpoints';
+@forward 'focus';
+@forward 'utilities';
+@forward 'motion';
 @forward 'typography';
 @forward 'tokens/light';
 @forward 'tokens/dark';

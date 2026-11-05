@@ -1,0 +1,23 @@
+@use 'functions' as *;
+
+// Hides content visually but keeps it for screen readers: live regions, "Step N of M" text.
+@mixin visually-hidden {
+  position: absolute;
+  width: rem(1px);
+  height: rem(1px);
+  padding: 0;
+  margin: rem(-1px);
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+  border: 0;
+}
+
+// Clamps text to `$lines` lines with an ellipsis (card titles 2 lines, domains 1 line).
+@mixin line-clamp($lines) {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $lines;
+  line-clamp: $lines;
+}

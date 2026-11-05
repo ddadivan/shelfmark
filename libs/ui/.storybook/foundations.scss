@@ -1,0 +1,369 @@
+@use '../src/styles/ui' as *;
+@use 'sass:map';
+
+// Styles for the "Foundations" docs stories only (never shipped with the library). Class names
+// start with `fd-`. Every colour is a token; each `.fd-panel` carries its own `data-theme`, so
+// one page shows light and dark side by side.
+
+.fd-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-width: min(100%, rem(640px));
+  color: var(--text);
+}
+
+.fd-lead {
+  @include type(body);
+
+  max-width: rem(640px);
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.fd-themes {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+
+  @include tablet-up {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.fd-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.fd-panel__title {
+  @include type(heading);
+
+  margin: 0;
+}
+
+.fd-group__title {
+  @include type(label);
+
+  margin: 0 0 var(--space-2);
+  color: var(--text-muted);
+}
+
+.fd-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(rem(120px), 1fr));
+  gap: var(--space-3);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.fd-swatch {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.fd-swatch__chip {
+  height: rem(40px);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-sm);
+}
+
+.fd-swatch__name {
+  @include type(caption);
+
+  font-family: var(--font-mono);
+  color: var(--text);
+}
+
+.fd-table {
+  @include type(body);
+
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: var(--space-2) var(--space-3);
+    text-align: start;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    @include type(label);
+
+    color: var(--text-muted);
+  }
+}
+
+.fd-code {
+  @include type(mono);
+
+  color: var(--text);
+}
+
+.fd-type__sample {
+  margin: 0;
+  color: var(--text);
+}
+
+@each $name in map.keys($styles) {
+  .fd-type--#{$name} {
+    @include type($name);
+  }
+}
+
+.fd-space {
+  height: rem(16px);
+  background: var(--accent);
+  border-radius: var(--radius-sm);
+}
+
+.fd-radius {
+  width: rem(72px);
+  height: rem(72px);
+  background: var(--accent-bg);
+  border: 1px solid var(--accent);
+}
+
+.fd-shadow {
+  width: rem(160px);
+  height: rem(80px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.fd-shadow--card-hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.fd-shadow--popover {
+  box-shadow: var(--shadow-popover);
+}
+
+// Live motion demos --------------------------------------------------------------------------
+
+.fd-demo {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.fd-demo__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.fd-demo__label {
+  @include type(label);
+}
+
+.fd-demo__timing {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+.fd-demo__stage {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: rem(160px);
+  height: rem(64px);
+  overflow: hidden;
+  background: var(--surface-hover);
+  border-radius: var(--radius-md);
+}
+
+.fd-demo__box {
+  width: rem(72px);
+  height: rem(40px);
+  background: var(--primary);
+  border-radius: var(--radius-md);
+}
+
+.fd-demo__box--sheet {
+  align-self: end;
+  width: 100%;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.fd-demo__box--spinner {
+  width: rem(24px);
+  height: rem(24px);
+  background: transparent;
+}
+
+// The rotation is separate from enter/leave so the exit animation can finish.
+.fd-demo__spin {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 2px solid var(--primary);
+  border-right-color: transparent;
+  border-radius: 50%;
+
+  @include loop(spin);
+}
+
+@each $name in pop, toast, sheet, fade, spinner {
+  .fd-enter--#{$name} {
+    @include enter($name);
+  }
+
+  .fd-leave--#{$name} {
+    @include leave($name);
+  }
+}
+
+.fd-ease {
+  position: relative;
+  flex: none;
+  width: rem(224px);
+  height: rem(24px);
+  background: var(--surface-hover);
+  border-radius: var(--radius-full);
+}
+
+.fd-ease__dot {
+  position: absolute;
+  inset-block: rem(4px);
+  inset-inline-start: rem(4px);
+  width: rem(16px);
+  background: var(--primary);
+  border-radius: var(--radius-full);
+  transition: transform var(--duration-slow) var(--ease-out);
+
+  &.is-moved {
+    transform: translateX(rem(192px));
+  }
+
+  @each $name in out, in, in-out, drawer, spring {
+    &.fd-ease__dot--#{$name} {
+      transition-timing-function: var(--ease-#{$name});
+    }
+  }
+
+  // No movement under reduced motion: the dot fades between two states instead.
+  @include reduced-motion {
+    transition-property: opacity;
+
+    &.is-moved {
+      opacity: 0.35;
+      transform: none;
+    }
+  }
+}
+
+.fd-duration {
+  height: rem(8px);
+  background: var(--accent);
+  border-radius: var(--radius-full);
+}
+
+// Breakpoints and focus ------------------------------------------------------------------------
+
+.fd-viewport {
+  @include type(label);
+
+  display: inline-block;
+  padding: var(--space-2) var(--space-3);
+  color: var(--accent-text);
+  background: var(--accent-bg);
+  border-radius: var(--radius-full);
+}
+
+.fd-viewport__phone,
+.fd-viewport__tablet,
+.fd-viewport__desktop {
+  display: none;
+}
+
+@include phone {
+  .fd-viewport__phone {
+    display: inline;
+  }
+}
+
+@include tablet {
+  .fd-viewport__tablet {
+    display: inline;
+  }
+}
+
+@include desktop {
+  .fd-viewport__desktop {
+    display: inline;
+  }
+}
+
+.fd-field {
+  display: flex;
+  align-items: center;
+  max-width: rem(320px);
+  padding: 0 var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-md);
+
+  @include field-focus;
+}
+
+.fd-field__input {
+  @include type(body);
+
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-2) 0;
+  color: var(--text);
+  background: transparent;
+  border: 0;
+}
+
+.fd-focus-target {
+  @include type(label);
+
+  padding: var(--space-2) var(--space-3);
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-md);
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.fd-sr-note {
+  @include visually-hidden;
+}
+
+.fd-clamp {
+  @include type(body);
+
+  max-width: rem(280px);
+  margin: 0;
+  color: var(--text);
+}
+
+.fd-clamp--2 {
+  @include line-clamp(2);
+}
+
+.fd-clamp--1 {
+  @include line-clamp(1);
+}

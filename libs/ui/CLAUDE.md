@@ -12,11 +12,12 @@ Shelfmark's own component library: tokens, themes, `ui-*` components and Storybo
 
 ```
 libs/ui/
-  .storybook/            main.ts, preview.ts
+  .storybook/            main.ts, preview.ts, foundations.scss (styles of the docs pages only)
   src/
     index.ts             public API, re-exports only
     assets/icons/        sprite.svg (served as /assets/ui/icons/sprite.svg)
-    styles/              _functions, _media, _typography, tokens/*, _ui (Sass API), global.scss
+    styles/              _functions, _media, _breakpoints, _focus, _utilities, _motion, _typography, tokens/*, _ui (Sass API), global.scss
+    foundations/         Storybook "Foundations" docs stories (colours, type, spacing, motion, ...); not exported
     testing/axe.ts       axe-core helper for specs
     lib/<name>/          <name>.component.ts|html|scss|spec.ts|stories.ts, index.ts, models/
 ```
@@ -32,12 +33,50 @@ libs/ui/
 ## Styles
 
 - Colours, spacing, radii, durations and easings only through CSS custom properties from the tokens; no hard-coded colours, no `!important`, no `::ng-deep`.
-- Component SCSS starts with `@use '../../styles/ui' as *;` (relative path, works in every builder). It gives `rem($px)`, `type($style)`, `hover`, `reduced-motion`.
+- Component SCSS starts with `@use '../../styles/ui' as *;` (relative path, works in every builder). It gives `rem($px)`, `type($style)`, `hover`, `reduced-motion` and the mixins below.
 - Sizes in `rem` via `rem(24px)`. Plain `px` is allowed only for border widths, `outline`, `outline-offset` and `box-shadow` (and `--shadow-*` tokens). Breakpoints in `em`. stylelint enforces this (`npm run lint:styles`).
 - The 2px top progress bar is the one other `px` exception and needs a described disable: `/* stylelint-disable-next-line unit-disallowed-list -- 2px progress bar per spec */` (descriptionless disables are reported).
 - Class names are BEM (`ui-button--primary`, `ui-icon__svg`).
-- `:hover` only through the `hover` mixin (`@media (hover: hover)`); `:focus-visible` shows the 2px `focus-ring` outline; wrap movement and scale in `@include reduced-motion`.
+- `:hover` only through the `hover` mixin (`@media (hover: hover)`); `:focus-visible` uses `@include focus-ring`; wrap movement and scale in `@include reduced-motion`.
 - Type styles come from the `type($style)` mixin (display, title, heading, body, label, caption, mono); there are no global type classes.
+
+## Shared mixins, keyframes and breakpoints
+
+All come from `@use '../../styles/ui' as *;` and are tested in `src/styles/styles.spec.ts` (the spec compiles the Sass and checks the output, including the reduced-motion fallbacks).
+
+| Mixin                                     | Use                                                                                                                                                                                                                                                                                                                                                                               |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `focus-ring($offset: 2px)`                | Declarations for `&:focus-visible`: 2px solid `focus-ring` outline, 2px offset. Never hand-write the ring.                                                                                                                                                                                                                                                                        |
+| `field-focus`                             | On a text-field wrapper (required for every field): 120 ms transition, `:focus-within` turns the border `focus-ring` and adds the soft 3px halo (transparent outline stays for forced colours). It also removes the global outline from the bare `input` / `textarea` / `[contenteditable]` inside, so there is one indicator; a field without the wrapper keeps the global ring. |
+| `visually-hidden`                         | Screen-reader-only text: live regions, "Step N of M".                                                                                                                                                                                                                                                                                                                             |
+| `line-clamp($lines)`                      | Ellipsis after N lines (card titles 2, domains 1).                                                                                                                                                                                                                                                                                                                                |
+| `phone`, `tablet`, `tablet-up`, `desktop` | Breakpoints in `em`: phone `< 40em`, tablet `40em` to `< 64em` (63.99em), desktop `>= 64em`; `tablet-up` is `>= 40em`. Range syntax: no gaps, no overlaps.                                                                                                                                                                                                                        |
+| `enter($name)`, `leave($name)`            | Animation presets (below) with duration and easing tokens and a built-in reduced-motion fallback.                                                                                                                                                                                                                                                                                 |
+| `loop(spin \| progress \| shimmer)`       | Endless loaders; the only `linear` curves. Reduced motion: spinner and bar slower, shimmer stops.                                                                                                                                                                                                                                                                                 |
+| `origin($fallback: top left)`             | `transform-origin: var(--ui-origin, …)`.                                                                                                                                                                                                                                                                                                                                          |
+
+**Keyframes** are defined once, in `global.scss` (`@include keyframes`), prefixed `ui-`: `pop-in`, `pop-out`, `fade-out`, `reveal`, `sheet-in`, `sheet-out`, `slide-up`, `toast-out`, `spin`, `spinner-in`, `spinner-grow`, `spinner-out`, `spinner-shrink`, `shimmer`, `progress`, `ripple-grow`, `ripple-fade`. Components never declare `@keyframes`; they use a preset or, for a new moment, add the keyframes to `_motion.scss`.
+
+**Presets** (duration, easing): `enter(pop)` 200 ms `ease-out` (menus, listboxes, dialogs), `enter(fade)` 200 ms (skeleton to content), `enter(toast)` 320 ms `ease-out`, `enter(sheet)` 320 ms `ease-drawer`, `enter(spinner)` / `enter(spinner-grow)` 200 ms (plus the spin). `leave(pop)` / `leave(fade)` 120 ms `ease-out`, `leave(toast)` 120 ms `ease-in`, `leave(sheet)` 200 ms `ease-in`, `leave(spinner)` / `leave(spinner-shrink)` 120 ms. Presets are finite (no `infinite`), so `animate.leave` can finish; a spinner's rotation is `@include loop(spin)` on the inner element, never on the element that has `enter` / `leave`. Under `prefers-reduced-motion: reduce` every `enter` becomes `ui-reveal` (200 ms fade) and every `leave` a `ui-fade-out`; movement and scale are gone (so `enter(spinner-grow)` loses its margin growth and the label does not slide).
+
+**Convention for Angular animations.** Put the preset in a modifier class and bind it with `animate.enter` / `animate.leave` on the element that appears and disappears:
+
+```scss
+.ui-menu--enter {
+  @include enter(pop);
+  @include origin;
+}
+
+.ui-menu--leave {
+  @include leave(pop);
+}
+```
+
+```html
+<div class="ui-menu" animate.enter="ui-menu--enter" animate.leave="ui-menu--leave">…</div>
+```
+
+Angular keeps the element until the leave animation ends and a second toggle mid-animation reverses it. Menus and listboxes scale from their trigger: the overlay sets `--ui-origin` (for example `100% 0`) on the panel from its anchor; dialogs keep `center`. The ripple keyframes exist, the ripple itself is a separate component. The FLIP helper, the "card lands" moment, View Transitions and the logo animation are not part of this foundation.
 
 ## Themes
 
@@ -56,6 +95,7 @@ Onest (variable) is self-hosted through `@fontsource-variable/onest` (SIL OFL 1.
 ## Storybook
 
 - `npx nx storybook ui` serves, `npx nx build-storybook ui` builds (Vite, `@storybook/angular-vite`). The toolbar switches light and dark (`data-theme` on `html`).
+- `Foundations/*` docs pages (`src/foundations/*.stories.ts`): colours and shadows in both themes side by side, type styles, spacing, radii, the Motion tables with live demos (`animate.enter` / `animate.leave`), breakpoints and focus. Page styles live in `.storybook/foundations.scss`; token lists in `src/foundations/models/`.
 - Every component has a story file with one story per variant and state plus an "All variants" story that shows both themes. The a11y addon runs axe in a real browser (including colour contrast) and fails the story on violations.
 
 ## Tests
