@@ -1,0 +1,29 @@
+// Light theme colours (docs/design/tokens.css).
+@mixin light {
+  color-scheme: light;
+
+  --bg: #f7f7f6;
+  --surface: #fff;
+  --surface-hover: #f0f0ee;
+  --surface-pressed: #e8e8e5;
+  --border: #e5e5e2;
+  --border-control: #8a8a8f;
+  --text: #18181a;
+  --text-muted: #6e6e73;
+  --primary: #18181a;
+  --primary-hover: #2e2e31;
+  --on-primary: #fff;
+  --accent: #4f7a4b;
+  --accent-bg: #e5eee2;
+  --accent-text: #2f4a2c;
+  --focus-ring: #5e8a58;
+  --danger: #b42318;
+  --danger-bg: #fdecea;
+  --success: #2f6b2b;
+  --warning: #93600a;
+  --warning-bg: #fbf1de;
+  --overlay: rgb(19 19 21 / 40%);
+  --logo-bookmark: #8dbb86;
+  --shadow-card-hover: 0 4px 16px rgb(24 24 26 / 8%);
+  --shadow-popover: 0 8px 24px rgb(24 24 26 / 12%), 0 2px 6px rgb(24 24 26 / 6%);
+}

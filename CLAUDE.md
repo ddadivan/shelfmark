@@ -1,0 +1,75 @@
+# Shelfmark
+
+Personal, responsive web app that keeps every saved link in one place: paste a URL, get a preview, organise with nested folders, tags and favorites, find it again with search. Stage 1 is a public portfolio project.
+
+**Source of truth:** [`docs/PROJECT.md`](docs/PROJECT.md) — scope, stories with acceptance criteria (4), stack (5), security (5.8), data model and API (6), design (7), agent team (8), process (9). Read the relevant section before any task. If code and the document disagree, stop and ask.
+
+**Design source of truth:** [`docs/design/`](docs/design/README.md) — start with `README.md`, then `BRAND.md`, the component spec in `components/<Name>/README.md`, `components/Motion/README.md` for any animation, and `screens/*.dc.html` for layout and copy.
+
+**Decisions:** [`docs/adr/`](docs/adr/) — one file per significant decision.
+
+## Language
+
+- Code, comments, docs, commits, issues, PRs: **English**.
+- UI text: English, always through translation keys (Transloco), never hard-coded in templates.
+
+## Stack
+
+TypeScript 6.0 everywhere · Nx monorepo · Angular 22 (standalone, zoneless, signals, Signal Forms, NgRx SignalStore, Angular Aria / CDK) · NestJS · PostgreSQL (Neon) + Prisma · Better Auth (Google, GitHub) · Vercel · Vitest · Playwright · Storybook.
+
+## Monorepo
+
+| Project                 | What                                                        | Rules                                      |
+| ----------------------- | ----------------------------------------------------------- | ------------------------------------------ |
+| `apps/web`              | Angular app; features live in `apps/web/src/app/features/*` | [`apps/web/CLAUDE.md`](apps/web/CLAUDE.md) |
+| `apps/web-e2e`          | Playwright e2e (desktop + phone)                            |                                            |
+| `apps/api`              | NestJS REST API under `/api`                                | [`apps/api/CLAUDE.md`](apps/api/CLAUDE.md) |
+| `libs/ui`               | Own component library, tokens, Storybook                    | [`libs/ui/CLAUDE.md`](libs/ui/CLAUDE.md)   |
+| `libs/shared/contracts` | DTOs and types shared by web and api                        | contract first: change here before code    |
+
+## Commands
+
+Node 26 LTS is required (`nvm use` reads `.nvmrc`). The pre-commit hook (lefthook) runs gitleaks, so install it once: `brew install gitleaks` (version 8.25 or newer is required, update with `brew upgrade gitleaks`); without it commits fail. One-time manual setup (local machine, Neon, OAuth apps, Vercel, secrets) is in [`docs/SETUP.md`](docs/SETUP.md) — the author does those steps, never an agent.
+
+```bash
+npm ci                                   # install
+npm run lint:styles                      # stylelint on css/scss (rem/em rules)
+npm run format:check                     # prettier check
+npx nx serve web                         # web on http://localhost:4200
+npx nx serve api                         # api on http://localhost:3000/api
+npx nx affected -t lint typecheck test build   # what CI runs
+npx nx test <project> --coverage         # unit tests (Vitest)
+npx nx e2e web-e2e                       # Playwright
+npx nx storybook ui                      # component showcase
+npx nx graph                             # project graph
+```
+
+## Non-negotiables
+
+- **Never commit to `main`.** One branch per issue: `feat/<issue>-short-name`, `fix/…`, `chore/…`, `docs/…`, `ci/…`. Conventional Commits. PR body has `Closes #N`. The author reviews and merges; you never merge.
+- **Secrets:** never read, print or create `.env*` files (except `.env.example` with names only). Secrets live in Vercel / GitHub settings, entered by the author.
+- **Security (5.8) is part of done:** user data filtered by `userId` from the session, DTO validation, no `innerHTML` / `bypassSecurityTrust*`, no `$queryRawUnsafe`, SSRF guard on any outbound fetch.
+- **TypeScript (PROJECT.md 5.0):** strictly typed, **no `any`** (explicit or `as any`) — use `unknown` + narrowing or generics; no `@ts-ignore` / `@ts-nocheck` (`@ts-expect-error` only in tests, with a reason). **One interface / type / enum / array-of-objects constant per file**, named `<kebab-name>.interface.ts` / `.type.ts` / `.enum.ts` / `.const.ts`, in a `models/` folder next to its users (shared web↔api types in `libs/shared/contracts/src/<domain>/`). No dump files (`types.ts`, `models.ts`, `constants.ts`); `index.ts` only re-exports.
+- **UI:** features use only `libs/ui` components; styles only through tokens; sizes in `rem` (px only for border widths, outline, outline-offset, box-shadow, the 2px progress bar); breakpoints in `em`; light and dark theme; phone from 360px.
+- **Tests:** coverage ≥ 80% for `apps/api` and `libs/ui`; data-isolation tests for every user-owned resource.
+- Small commits after every finished step, push the branch — unfinished work must survive a session break.
+
+## Task flow (PROJECT.md 8.2)
+
+Issue on the board (Todo) → `project-manager` moves it to In progress → `architect` writes a short plan (larger tasks) → dev agent implements on its branch → `test-engineer` adds tests → `code-reviewer` + `security-reviewer` review the diff, findings go back to the dev agent → tech lead opens the PR, `project-manager` moves to In review → author merges → Done.
+
+The tech lead (main session) is the only one who dispatches agents; subagents cannot call each other. On Pro run at most 1–2 agents in parallel, each in its own git worktree. A blocked agent finishes what it can and reports what blocks it.
+
+**Session end or pause:** update the **Status** section of `docs/PROJECT.md` and leave a comment on the current issue: _Done / Left / Next step_. A new session starts from the board, issues In progress and their last comment.
+
+## Agents
+
+`.claude/agents/`: `project-manager`, `architect`, `frontend-dev`, `ui-dev`, `backend-dev`, `test-engineer`, `code-reviewer`, `security-reviewer`.
+Skills in `.claude/skills/`: `angular-v22-rules`, `create-ui-component`, `create-api-module`, `security-checklist`, `github-workflow`.
+
+## Hooks and MCP
+
+- `PreToolUse` → `.claude/hooks/guard.mjs` (blocks secrets, `main` commits, `--no-verify`, destructive commands).
+- `PostToolUse` on Edit / Write / MultiEdit → `.claude/hooks/format-on-edit.mjs`: Prettier + `eslint --fix` on the edited file (repo root = git top level of the file, so worktrees work; skipped if that checkout has no `node_modules`); leftover lint errors come back as context. Never blocks.
+- `Stop` / `SubagentStop` → `.claude/hooks/stop-checks.mjs`: `nx affected -t typecheck test` for uncommitted changes (incl. untracked and deleted files) under `apps/` and `libs/`; a failure blocks the stop once per cycle (`stop_hook_active`) so the work continues. Instant when nothing changed; timeouts are not treated as failures; read-only agents (reviewers, architect, project-manager) are skipped. Committed work is checked by CI.
+- `.mcp.json` (pinned, pre-enabled via `enabledMcpjsonServers`): Angular CLI MCP (`@angular/cli mcp`), Nx MCP (`nx-mcp`), Playwright MCP (`@playwright/mcp`). Check with `/mcp`.

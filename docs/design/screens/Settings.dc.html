@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Settings</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/shelfmark/tokens.css">
+<link rel="stylesheet" href="ds/shelfmark/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root" style="min-height: 900px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif;">
+<header style="height: 60px; display: flex; align-items: center; gap: 12px; padding: 0 20px; border-bottom: 1px solid var(--border); background: var(--surface);">
+<a href="#" class="sm-btn sm-btn--ghost sm-btn--sm" style="text-decoration: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Back to links</a>
+</header>
+<main style="max-width: 680px; margin: 0 auto; padding: 40px 24px 64px; display: flex; flex-direction: column; gap: 24px;">
+<h1 style="margin: 0; font-size: 28px; line-height: 34px; font-weight: 600; letter-spacing: -0.02em;">Settings</h1>
+
+<section style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; display: flex; align-items: center; gap: 16px;">
+<span class="sm-avatar sm-avatar--lg">DD</span>
+<div style="flex: 1; min-width: 0;"><div style="font-size: 16px; font-weight: 600;">Dmytro</div><div style="font-size: 13px; color: var(--text-muted);">Signed in with Google as dmytro@example.com</div></div>
+<button class="sm-btn sm-btn--secondary">Sign out</button>
+</section>
+
+<section style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+<h2 style="margin: 0; font-size: 16px; font-weight: 600;">Appearance</h2>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+<div><div style="font-size: 14px; font-weight: 500;">Theme</div><div style="font-size: 13px; color: var(--text-muted);">System follows your device</div></div>
+<div class="sm-seg" role="radiogroup" aria-label="Theme"><button class="sm-seg__item is-active" role="radio">System</button><button class="sm-seg__item" role="radio">Light</button><button class="sm-seg__item" role="radio">Dark</button></div>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+<div><div style="font-size: 14px; font-weight: 500;">Language</div><div style="font-size: 13px; color: var(--text-muted);">More languages are coming</div></div>
+<div class="sm-field__control" style="min-width: 180px;"><span class="sm-select__value">English</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div>
+</div>
+</section>
+
+
+<section style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+<div><h2 style="margin: 0; font-size: 16px; font-weight: 600;">Welcome tour</h2><div style="font-size: 13px; color: var(--text-muted);">See the 3-step introduction again</div></div>
+<button class="sm-btn sm-btn--secondary">Show welcome again</button>
+</section>
+
+<section style="border: 1px solid var(--danger); border-radius: var(--radius-lg); padding: 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+<div style="max-width: 420px;"><h2 style="margin: 0; font-size: 16px; font-weight: 600; color: var(--danger);">Delete account</h2><div style="font-size: 13px; color: var(--text-muted);">Removes your account and all 248 links, folders and tags for good. This can't be undone.</div></div>
+<button class="sm-btn sm-btn--danger">Delete account</button>
+</section>
+
+<p style="margin: 0; font-size: 12px; color: var(--text-muted); display: flex; gap: 16px;"><a href="#">Privacy policy</a><span>Shelfmark v1.0</span></p>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+dist
+coverage
+.nx
+.angular
+storybook-static
+package-lock.json
+docs/**

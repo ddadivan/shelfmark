@@ -1,0 +1,15 @@
+// Hover styles only where a real pointer exists (Motion principle 7).
+@mixin hover {
+  @media (hover: hover) {
+    &:hover {
+      @content;
+    }
+  }
+}
+
+// Wraps rules that must be removed or reduced for users who prefer less motion.
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}

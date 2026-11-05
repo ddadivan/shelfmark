@@ -1,0 +1,123 @@
+@use '../../styles/ui' as *;
+
+:host {
+  display: inline-flex;
+}
+
+.ui-button {
+  @include type(label);
+
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: center;
+  height: rem(36px);
+  padding: 0 rem(14px);
+  color: var(--text);
+  white-space: nowrap;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    filter var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-spring);
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  &:active {
+    transition-duration: var(--duration-instant);
+    transition-timing-function: var(--ease-out);
+    transform: scale(0.97);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+    transform: none;
+  }
+}
+
+.ui-button--primary {
+  color: var(--on-primary);
+  background: var(--primary);
+
+  @include hover {
+    background: var(--primary-hover);
+  }
+}
+
+.ui-button--secondary {
+  background: var(--surface);
+  border-color: var(--border-control);
+
+  @include hover {
+    background: var(--surface-hover);
+  }
+
+  &:active {
+    background: var(--surface-pressed);
+  }
+}
+
+.ui-button--ghost {
+  @include hover {
+    background: var(--surface-hover);
+  }
+
+  &:active {
+    background: var(--surface-pressed);
+  }
+}
+
+.ui-button--danger {
+  color: var(--on-primary);
+  background: var(--danger);
+
+  @include hover {
+    filter: brightness(0.92);
+  }
+}
+
+// Hover and press must not tint a disabled button.
+.ui-button:disabled {
+  filter: none;
+}
+
+// sm inherits the `label` line-height; only font-size shrinks (spec: 12px text, 16px icons).
+.ui-button--sm {
+  height: rem(30px);
+  padding: 0 rem(10px);
+  font-size: rem(12px);
+  border-radius: var(--radius-sm);
+}
+
+.ui-button--lg {
+  height: rem(44px);
+  padding: 0 rem(18px);
+  font-size: rem(15px);
+}
+
+.ui-button--icon {
+  width: rem(36px);
+  padding: 0;
+
+  &.ui-button--sm {
+    width: rem(30px);
+  }
+
+  &.ui-button--lg {
+    width: rem(44px);
+  }
+}
+
+@include reduced-motion {
+  .ui-button:active {
+    transform: none;
+  }
+}

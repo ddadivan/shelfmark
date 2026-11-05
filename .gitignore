@@ -1,0 +1,31 @@
+node_modules/
+dist/
+tmp/
+coverage/
+.nx/cache
+.nx/workspace-data
+storybook-static/
+test-output/
+playwright-report/
+test-results/
+.vercel/
+*.log
+*.pem
+*.key
+
+# env files: only the names-only example is tracked
+.env*
+!.env.example
+
+.idea/
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+
+# Claude Code: personal settings and agent worktrees
+.claude/settings.local.json
+.claude/worktrees/
+
+# Angular / Vitest
+.angular/
+__screenshots__/

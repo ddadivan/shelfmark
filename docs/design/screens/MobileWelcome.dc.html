@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Welcome on a phone</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/shelfmark/tokens.css">
+<link rel="stylesheet" href="ds/shelfmark/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root" style="width: 390px; height: 844px; overflow: hidden; position: relative; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif;">
+<div aria-hidden="true" style="height: 56px; border-bottom: 1px solid var(--border); background: var(--surface);"></div>
+<div aria-hidden="true" style="position: absolute; inset: 0; background: var(--overlay);"></div>
+<div class="sm-sheet" role="dialog" aria-modal="true" aria-labelledby="mw-t" style="position: absolute; left: 0; right: 0; bottom: 0; box-sizing: border-box; gap: 18px; animation: sm-slide-up var(--duration-slow) var(--ease-out);">
+<div class="sm-sheet__grip" aria-hidden="true"></div>
+<div style="border-radius: var(--radius-md); background: var(--bg);">
+<svg viewBox="0 0 240 140" width="100%" role="img" aria-label="Paste a link and a card appears" style="display: block;">
+<rect x="30" y="16" width="180" height="26" rx="13" style="fill: var(--surface); stroke: var(--border)"/><rect x="40" y="25" width="8" height="8" rx="2" style="fill: var(--accent)"/><rect x="54" y="26" width="104" height="6" rx="3" style="fill: var(--surface-pressed)"/><rect x="170" y="21" width="34" height="16" rx="8" style="fill: var(--primary)"/>
+<rect x="76" y="56" width="88" height="72" rx="8" style="fill: var(--surface); stroke: var(--border)"/><rect x="82" y="62" width="76" height="32" rx="4" style="fill: var(--accent-bg)"/><rect x="82" y="100" width="56" height="5" rx="2.5" style="fill: var(--surface-pressed)"/><rect x="82" y="110" width="22" height="9" rx="4.5" style="fill: var(--accent)"/>
+</svg>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px;">
+<div class="sm-steps" aria-label="Step 2 of 3"><span class="sm-steps__dot"></span><span class="sm-steps__dot is-active"></span><span class="sm-steps__dot"></span></div>
+<h2 id="mw-t" style="margin: 4px 0 0; font-size: 22px; line-height: 28px; font-weight: 600;">Save in a second</h2>
+<p style="margin: 0; font-size: 15px; line-height: 22px; color: var(--text-muted);">Paste a link and the title and preview fill in by themselves. Add a note so you remember why you saved it.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px;">
+<button class="sm-btn sm-btn--primary sm-btn--lg" style="width: 100%; height: 48px;">Next</button>
+<button class="sm-btn sm-btn--ghost sm-btn--lg" style="width: 100%; height: 48px;">Skip</button>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

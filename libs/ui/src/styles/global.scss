@@ -1,0 +1,43 @@
+@use 'ui' as *;
+
+:root {
+  @include scale;
+}
+
+:root,
+[data-theme='light'] {
+  @include light;
+}
+
+[data-theme='dark'] {
+  @include dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    @include dark;
+  }
+}
+
+html {
+  font-size: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  @include type(body);
+
+  margin: 0;
+  color: var(--text);
+  background: var(--bg);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}

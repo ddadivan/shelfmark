@@ -1,0 +1,41 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore
+      include: scope
+    labels: ['type:chore', 'area:infra']
+    ignore:
+      # Angular 22 supports TypeScript 6.0 only; TS 7 is not compatible yet.
+      - dependency-name: typescript
+        versions: ['>=6.1']
+      # stylelint-config-standard-scss targets stylelint 17.
+      - dependency-name: stylelint
+        versions: ['>=18']
+    groups:
+      angular:
+        patterns: ['@angular/*', '@angular-devkit/*', '@schematics/angular', '@ngrx/*']
+      nx:
+        patterns: ['nx', '@nx/*']
+      nestjs:
+        patterns: ['@nestjs/*']
+      vitest:
+        patterns: ['vitest', '@vitest/*']
+      storybook:
+        patterns: ['storybook', '@storybook/*']
+      dev-tooling:
+        dependency-type: development
+        update-types: ['minor', 'patch']
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: ci
+    labels: ['type:ci', 'area:infra']

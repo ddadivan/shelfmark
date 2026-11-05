@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Delete folder</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/shelfmark/tokens.css">
+<link rel="stylesheet" href="ds/shelfmark/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root" style="min-height: 900px; position: relative; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif;">
+<div aria-hidden="true" style="position: absolute; inset: 0; display: flex; flex-direction: column;">
+<div style="height: 60px; border-bottom: 1px solid var(--border); background: var(--surface);"></div>
+<div style="flex: 1; display: flex;"><div style="width: 248px; border-right: 1px solid var(--border); background: var(--surface);"></div><div style="flex: 1;"></div></div>
+</div>
+<div class="sm-scrim" style="position: absolute; inset: 0;">
+<div class="sm-dialog sm-pop-in" role="alertdialog" aria-modal="true" aria-labelledby="d-title" aria-describedby="d-text" style="max-width: 460px;">
+<div class="sm-dialog__head"><h2 id="d-title" style="margin: 0; font-size: 20px; line-height: 28px; font-weight: 600;">Delete folder “Work”?</h2><button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+<p id="d-text" style="margin: 0; color: var(--text-muted);">It has 34 links and 2 subfolders. What should happen to the links?</p>
+<div class="sm-radio-group" role="radiogroup">
+<label class="sm-radio {{moveCls}}" onClick="{{pickMove}}"><span class="sm-radio__dot"></span><span><span class="sm-radio__title" style="display: block;">Move links to Unsorted</span><span class="sm-radio__desc" style="display: block;">The folders go, all 34 links stay</span></span></label>
+<label class="sm-radio {{delCls}}" onClick="{{pickDelete}}"><span class="sm-radio__dot"></span><span><span class="sm-radio__title" style="display: block;">Delete links too</span><span class="sm-radio__desc" style="display: block;">This can't be undone</span></span></label>
+</div>
+<div class="sm-dialog__foot"><button class="sm-btn sm-btn--secondary">Cancel</button><button class="sm-btn sm-btn--danger">{{cta}}</button></div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const mode = (this.state || {}).mode ?? 'move';
+    return {
+      theme: (this.props.dark ?? false) ? 'dark' : 'light',
+      moveCls: mode === 'move' ? 'is-checked' : '',
+      delCls: mode === 'delete' ? 'is-checked' : '',
+      cta: mode === 'move' ? 'Delete folder' : 'Delete folder and 34 links',
+      pickMove: () => this.setState({ mode: 'move' }),
+      pickDelete: () => this.setState({ mode: 'delete' })
+    };
+  }
+}
+</script>
+</body>
+</html>

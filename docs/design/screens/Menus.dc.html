@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Menus and folder dialogs</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/shelfmark/tokens.css">
+<link rel="stylesheet" href="ds/shelfmark/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root" style="min-height: 900px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; padding: 48px; box-sizing: border-box; display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 32px; align-content: start;">
+
+<section style="display: flex; flex-direction: column; gap: 12px;">
+<h2 style="margin: 0; font-size: 13px; font-weight: 600; color: var(--text-muted);">Link card · “…” menu</h2>
+<div style="position: relative; height: 330px;">
+<article class="sm-card is-hover" style="width: 260px;">
+<div class="sm-card__actions"><button class="sm-btn sm-btn--secondary sm-btn--icon sm-btn--sm is-focus" aria-label="More actions" aria-expanded="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button></div>
+<div class="sm-card__media" style="background: var(--accent-bg);"></div>
+<div class="sm-card__body"><div class="sm-card__meta"><span class="sm-favicon">C</span>cos.com · yesterday</div><h3 class="sm-card__title">Wool coat, straight cut, graphite</h3></div>
+</article>
+<div class="sm-menu sm-pop-in" role="menu" style="position: absolute; left: 196px; top: 48px; width: 220px;">
+<button class="sm-menu__item" role="menuitem">Open<span class="sm-menu__hint sm-kbd">↵</span></button>
+<button class="sm-menu__item is-hover" role="menuitem">Edit<span class="sm-menu__hint sm-kbd">E</span></button>
+<button class="sm-menu__item" role="menuitem">Add to favorites<span class="sm-menu__hint sm-kbd">F</span></button>
+<button class="sm-menu__item" role="menuitem">Move to folder…</button>
+<button class="sm-menu__item" role="menuitem">Copy link</button>
+<div class="sm-menu__sep" role="separator"></div>
+<button class="sm-menu__item sm-menu__item--danger" role="menuitem">Delete</button>
+</div>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 12px;">
+<h2 style="margin: 0; font-size: 13px; font-weight: 600; color: var(--text-muted);">Folder · context menu (right click or “…”)</h2>
+<div style="position: relative; height: 330px;">
+<div class="sm-tree" style="width: 248px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 8px;">
+<div class="sm-tree__row"><span class="sm-tree__twist is-open">›</span>Work<span class="sm-tree__count">34</span></div>
+<div class="sm-tree__row is-hover" style="padding-left: 32px;">Angular<span class="sm-tree__count">12</span></div>
+<div class="sm-tree__row" style="padding-left: 32px;">Courses<span class="sm-tree__count">8</span></div>
+<div class="sm-tree__row"><span class="sm-tree__twist">›</span>Clothes<span class="sm-tree__count">21</span></div>
+</div>
+<div class="sm-menu sm-pop-in" role="menu" style="position: absolute; left: 180px; top: 44px; width: 220px;">
+<button class="sm-menu__item" role="menuitem">New subfolder</button>
+<button class="sm-menu__item" role="menuitem">Add link here</button>
+<button class="sm-menu__item is-hover" role="menuitem">Rename</button>
+<button class="sm-menu__item" role="menuitem">Move to…</button>
+<div class="sm-menu__sep" role="separator"></div>
+<button class="sm-menu__item sm-menu__item--danger" role="menuitem">Delete folder…</button>
+</div>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 12px;">
+<h2 style="margin: 0; font-size: 13px; font-weight: 600; color: var(--text-muted);">Account menu</h2>
+<div style="position: relative; height: 300px;">
+<div style="display: flex; justify-content: flex-end; width: 280px;"><button class="sm-btn sm-btn--ghost sm-btn--icon is-focus" aria-label="Account menu" aria-expanded="true"><span class="sm-avatar">DD</span></button></div>
+<div class="sm-menu sm-pop-in" role="menu" style="position: absolute; left: 24px; top: 48px; width: 256px; --sm-origin: top right;">
+<div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px 10px;"><span class="sm-avatar">DD</span><span style="min-width: 0;"><span style="display: block; font-size: 14px; font-weight: 600;">Dmytro</span><span style="display: block; font-size: 12px; color: var(--text-muted);">dmytro@example.com</span></span></div>
+<div class="sm-menu__sep" role="separator"></div>
+<button class="sm-menu__item" role="menuitem">Settings</button>
+<button class="sm-menu__item" role="menuitem">Theme: System<span class="sm-menu__hint" style="color: var(--text-muted);">›</span></button>
+<button class="sm-menu__item" role="menuitem">Show welcome again</button>
+<button class="sm-menu__item" role="menuitem">Export all links<span class="sm-menu__hint" style="color: var(--text-muted);">JSON, HTML</span></button>
+<div class="sm-menu__sep" role="separator"></div>
+<button class="sm-menu__item" role="menuitem">Sign out</button>
+</div>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 12px;">
+<h2 style="margin: 0; font-size: 13px; font-weight: 600; color: var(--text-muted);">New folder</h2>
+<form class="sm-dialog" role="dialog" aria-labelledby="nf-title" style="max-width: 400px; box-shadow: var(--shadow-popover);">
+<div class="sm-dialog__head"><h3 id="nf-title" style="margin: 0; font-size: 18px; font-weight: 600;">New folder</h3></div>
+<div class="sm-field"><label class="sm-field__label" for="nf-name">Name</label><div class="sm-field__control is-focus"><input id="nf-name" value="Signals"></div></div>
+<div class="sm-field"><label class="sm-field__label">Inside</label><div class="sm-field__control"><span class="sm-select__value">Work / Angular</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div></div>
+<div class="sm-dialog__foot"><button type="button" class="sm-btn sm-btn--secondary">Cancel</button><button type="submit" class="sm-btn sm-btn--primary">Create folder</button></div>
+</form>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 12px;">
+<h2 style="margin: 0; font-size: 13px; font-weight: 600; color: var(--text-muted);">Rename in place (sidebar)</h2>
+<div class="sm-tree" style="width: 248px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 8px;">
+<div class="sm-tree__row"><span class="sm-tree__twist is-open">›</span>Work<span class="sm-tree__count">34</span></div>
+<div style="padding: 2px 4px 2px 28px;"><div class="sm-field__control is-focus" style="min-height: 30px; padding: 0 8px;"><input aria-label="Folder name" value="Angular 22" style="padding: 4px 0; font-size: 14px;"></div></div>
+<div class="sm-tree__row" style="padding-left: 32px;">Courses<span class="sm-tree__count">8</span></div>
+</div>
+<p style="margin: 0; font-size: 12px; color: var(--text-muted);">Enter saves · Esc cancels · empty or duplicate names show an inline error</p>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 12px; grid-column: 1 / -1;">
+<h2 style="margin: 0; font-size: 13px; font-weight: 600; color: var(--text-muted);">Tooltips · after 400 ms on hover or keyboard focus · not on touch</h2>
+<div style="display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px;"><span class="sm-tooltip" role="tooltip">Dark theme</span><button class="sm-btn sm-btn--ghost sm-btn--icon is-focus" aria-label="Switch theme"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg></button></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px;"><span class="sm-tooltip" role="tooltip">Cards view <span style="opacity: .7;">G C</span></span><div class="sm-seg"><button class="sm-seg__item is-active" aria-label="Cards"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg></button><button class="sm-seg__item" aria-label="List"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M5 6v.01M5 12v.01M5 18v.01"/></svg></button></div></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px;"><span class="sm-tooltip" role="tooltip">Add to favorites <span style="opacity: .7;">F</span></span><span class="sm-star"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M12 17.75l-6.17 3.24 1.18-6.87-5-4.86 6.9-1 3.09-6.26 3.09 6.26 6.9 1-5 4.86 1.18 6.87z"/></svg></span></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px;"><span class="sm-tooltip" role="tooltip">Hide recently opened</span><button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Hide recently opened"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M15 4v16"/></svg></button></div>
+<div style="display: flex; flex-direction: column; gap: 6px; max-width: 300px;"><span class="sm-tooltip" role="tooltip" style="max-width: 280px;">Angular 22: everything about Signal Forms in 20 minutes — full guide with examples</span><div class="sm-row is-hover" style="width: 260px;"><span class="sm-favicon">Y</span><span class="sm-row__main"><span class="sm-row__title">Angular 22: everything about Signal Forms in 20…</span></span></div></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px;"><span class="sm-tooltip" role="tooltip">Saved 3 Nov 2026, 14:20</span><span style="font-size: 12px; color: var(--text-muted); text-decoration: underline dotted;">2 days ago</span></div>
+</div>
+<p style="margin: 0; font-size: 12px; color: var(--text-muted);">Where: every icon-only button (theme, account, new folder, panel toggle, view switch, card actions, star), titles cut with “…”, relative dates. Shortcut hints sit inside the tooltip. Never the only place information lives.</p>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 12px;">
+<h2 style="margin: 0; font-size: 13px; font-weight: 600; color: var(--text-muted);">Move to folder</h2>
+<div class="sm-listbox" style="width: 300px;">
+<div class="sm-listbox__search"><div class="sm-field__control" style="min-height: 32px;"><input placeholder="Find a folder" aria-label="Find a folder" style="padding: 4px 0; font-size: 13px;"></div></div>
+<div class="sm-menu__item">Unsorted</div>
+<div class="sm-menu__item">Work</div>
+<div class="sm-menu__item is-selected" style="padding-left: 28px;">Angular<span class="sm-menu__hint">✓</span></div>
+<div class="sm-menu__item" style="padding-left: 28px;">Courses</div>
+<div class="sm-menu__item">Clothes</div>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

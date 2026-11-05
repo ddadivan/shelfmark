@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Shelfmark landing on a phone</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/shelfmark/tokens.css">
+<link rel="stylesheet" href="ds/shelfmark/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap">
+<style>
+body{margin:0}
+a{color:var(--text-muted)}a:hover{color:var(--text)}
+.lp-wrap{max-width:1180px;margin:0 auto;padding-left:24px;padding-right:24px}
+.lp-h1{margin:0;font-size:84px;line-height:78px;font-weight:700;letter-spacing:-0.05em}
+.lp-h1 em{font-style:normal;color:var(--text-muted)}
+.lp-mono{font-family:var(--font-mono);font-size:12px;color:var(--text-muted)}
+.lp-phone{position:relative;border-radius:28px;background:var(--surface);border:1px solid var(--border);overflow:hidden;box-shadow:0 30px 60px -30px rgba(24,24,26,.25)}
+.lp-phone__bar{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border)}
+.lp-chat{padding:12px 14px 16px;display:flex;flex-direction:column;justify-content:flex-end;gap:8px;background:var(--surface-hover);height:300px;box-sizing:border-box;overflow:hidden}
+.lp-day{align-self:center;font-size:11px;color:var(--text-muted);background:var(--surface);border-radius:999px;padding:2px 10px;margin:4px 0}
+.lp-msg{display:flex;justify-content:flex-end}
+.lp-bubble{max-width:82%;background:var(--accent-bg);color:var(--text);border-radius:16px 16px 4px 16px;padding:8px 10px 6px;font-size:14px;line-height:19px}
+.lp-link{display:flex;align-items:center;gap:6px;margin-top:4px;color:var(--accent-text);font-size:13px}
+.lp-url{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:underline;text-underline-offset:2px}
+.lp-time{text-align:right;font-size:11px;color:var(--text-muted);margin-top:2px}
+.lp-shelf{padding:14px;display:flex;flex-direction:column;gap:10px;height:300px;box-sizing:border-box;overflow:hidden;background:var(--bg)}
+.lp-group{display:flex;flex-direction:column;gap:6px}
+.lp-folder{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text-muted);padding:0 2px}
+.lp-land{animation-delay:var(--d)!important}
+.lp-land.sm-card--landed::after{animation-delay:var(--d)}
+.lp-group.lp-land{animation:sm-reveal var(--duration-base) var(--ease-out) both}
+.lp-out .lp-msg{animation:lp-out 360ms var(--ease-in) both}
+.lp-out .lp-msg:nth-child(3){animation-delay:40ms}.lp-out .lp-msg:nth-child(5){animation-delay:80ms}.lp-out .lp-msg:nth-child(6){animation-delay:120ms}.lp-out .lp-msg:nth-child(8){animation-delay:160ms}
+@keyframes lp-out{to{opacity:0;transform:translateX(40px) scale(.96)}}
+.lp-note{position:relative;max-width:640px;font-size:20px;line-height:31px;letter-spacing:-0.005em}
+.lp-agent{font-family:var(--font-mono);font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text)}
+@media (prefers-reduced-motion:reduce){.lp-out .lp-msg{animation:none}}
+
+.lp-chat{position:relative;padding:0 14px!important;display:block!important;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 56px);mask-image:linear-gradient(to bottom,transparent 0,#000 56px)}
+.lp-track{position:absolute;left:14px;right:14px;bottom:-600px;animation:lp-feed 14.4s linear infinite;will-change:transform}
+@keyframes lp-feed{0%{transform:translateY(0)}7.986%{transform:translateY(-0px);animation-timing-function:cubic-bezier(.22,.8,.24,1)}12.500%{transform:translateY(-76px);animation-timing-function:linear}20.486%{transform:translateY(-76px);animation-timing-function:cubic-bezier(.22,.8,.24,1)}25.000%{transform:translateY(-152px);animation-timing-function:linear}32.986%{transform:translateY(-152px);animation-timing-function:cubic-bezier(.22,.8,.24,1)}37.500%{transform:translateY(-228px);animation-timing-function:linear}45.486%{transform:translateY(-228px);animation-timing-function:cubic-bezier(.22,.8,.24,1)}50.000%{transform:translateY(-304px);animation-timing-function:linear}57.986%{transform:translateY(-304px);animation-timing-function:cubic-bezier(.22,.8,.24,1)}62.500%{transform:translateY(-380px);animation-timing-function:linear}70.486%{transform:translateY(-380px);animation-timing-function:cubic-bezier(.22,.8,.24,1)}75.000%{transform:translateY(-456px);animation-timing-function:linear}82.986%{transform:translateY(-456px);animation-timing-function:cubic-bezier(.22,.8,.24,1)}87.500%{transform:translateY(-532px);animation-timing-function:linear}95.486%{transform:translateY(-532px);animation-timing-function:cubic-bezier(.22,.8,.24,1)}100.000%{transform:translateY(-608px);animation-timing-function:linear}}
+.lp-msg{height:76px;box-sizing:border-box;padding-top:12px;display:flex;justify-content:flex-end}
+.lp-bubble{height:64px;box-sizing:border-box;max-width:86%;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:3px}
+.lp-txt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lp-link{min-width:0}
+.lp-link .lp-time{margin:0 0 0 8px;flex:none}
+.lp-out .lp-msg{animation:lp-out 360ms var(--ease-in) both!important}
+@media (prefers-reduced-motion:reduce){.lp-track{animation:none!important}}
+.lp-h1{font-size:44px;line-height:42px}
+.lp-phone{border-radius:22px}
+.lp-bubble{font-size:13px;line-height:18px}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root" style="width: 390px; height: 844px; overflow: hidden; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; display: flex; flex-direction: column;">
+<header style="height: 56px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 16px;">
+<span style="display: flex; align-items: center; gap: 8px;"><svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="6" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><span style="font-size: 16px; font-weight: 600;">Shelfmark</span></span>
+<a href="#" class="sm-btn sm-btn--ghost" style="text-decoration: none; height: 44px; color: var(--text);">Sign in</a>
+</header>
+<section style="padding: 12px 20px 0; display: flex; flex-direction: column; gap: 14px;">
+<span class="lp-mono">For everything you send to Saved Messages</span>
+<h1 class="lp-h1">Paste a link.<br>Find it again.<br><em>Even in a year.</em></h1>
+<p style="margin: 0; font-size: 15px; line-height: 22px; color: var(--text-muted);">Telegram is where links go to be forgotten. Shelfmark keeps them in folders, each with a note.</p>
+</section>
+<div style="padding: 16px 16px 0;">
+<div class="lp-phone">
+<div class="lp-phone__bar" style="padding: 10px 14px;"><sc-if value="{{notSorted}}" hint-placeholder-val="{{true}}"><span style="width: 32px; height: 32px; border-radius: 50%; background: var(--accent); display: grid; place-items: center; color: var(--surface);"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 3h10a1 1 0 0 1 1 1v17l-6-4-6 4V4a1 1 0 0 1 1-1z"/></svg></span><span style="flex: 1;"><span style="display: block; font-size: 15px; font-weight: 600;">Saved Messages</span><span style="display: block; font-size: 12px; color: var(--text-muted);">new links every day, none findable</span></span></sc-if><sc-if value="{{sorted}}" hint-placeholder-val="{{false}}"><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="6" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><span style="flex: 1;"><span style="display: block; font-size: 15px; font-weight: 600;">Your shelf</span><span style="display: block; font-size: 12px; color: var(--text-muted);">5 links in 4 folders, each with a note</span></span></sc-if></div>
+<sc-if value="{{notSorted}}" hint-placeholder-val="{{true}}"><div class="lp-chat {{outCls}}"><div class="lp-track"><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">watch later!!</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">Y</span><span class="lp-url">youtube.com/watch?v=ng22-signal-forms</span><span class="lp-time">Mon 23:41</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">this coat, wait for the sale</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">C</span><span class="lp-url">cos.com/en/wool-coat-graphite</span><span class="lp-time">Tue 09:12</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">Fwd: Frontend Weekly</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">S</span><span class="lp-url">stepik.org/course/nestjs-for-frontend</span><span class="lp-time">Wed 18:30</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">ramen recipe, friday?</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">R</span><span class="lp-url">seriouseats.com/weeknight-ramen</span><span class="lp-time">Thu 21:05</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">where was that zoneless article…</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">A</span><span class="lp-url">angular.dev/guide/zoneless</span><span class="lp-time">Fri 08:47</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">lisbon, maybe in may</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">L</span><span class="lp-url">cntraveler.com/lisbon-in-three-days</span><span class="lp-time">Sat 11:20</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">icons for the side project</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">T</span><span class="lp-url">tabler.io/icons</span><span class="lp-time">Sun 16:02</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">read this one day</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">O</span><span class="lp-url">overreacted.io/the-two-reacts</span><span class="lp-time">Mon 07:58</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">watch later!!</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">Y</span><span class="lp-url">youtube.com/watch?v=ng22-signal-forms</span><span class="lp-time">Mon 23:41</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">this coat, wait for the sale</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">C</span><span class="lp-url">cos.com/en/wool-coat-graphite</span><span class="lp-time">Tue 09:12</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">Fwd: Frontend Weekly</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">S</span><span class="lp-url">stepik.org/course/nestjs-for-frontend</span><span class="lp-time">Wed 18:30</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">ramen recipe, friday?</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">R</span><span class="lp-url">seriouseats.com/weeknight-ramen</span><span class="lp-time">Thu 21:05</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">where was that zoneless article…</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">A</span><span class="lp-url">angular.dev/guide/zoneless</span><span class="lp-time">Fri 08:47</span></div></div></div></div></div></sc-if>
+<sc-if value="{{sorted}}" hint-placeholder-val="{{false}}"><div class="lp-shelf"><div class="lp-group lp-land" style="--d: 0ms;"><div class="lp-folder"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2"/></svg>Work / Angular</div><article class="sm-card sm-card--landed lp-land" style="--d: 0ms; flex-direction: row; cursor: default;"><div class="sm-card__body" style="flex: 1; min-width: 0; padding: 9px 12px; gap: 2px;"><div style="display: flex; align-items: center; gap: 8px; min-width: 0;"><span class="sm-favicon" title="youtube.com">Y</span><span class="sm-card__title" style="font-size: 14px; line-height: 19px; -webkit-line-clamp: 1;">Signal Forms in 20 minutes</span></div><div style="font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 24px;">Watch later</div></div></article><article class="sm-card sm-card--landed lp-land" style="--d: 80ms; flex-direction: row; cursor: default;"><div class="sm-card__body" style="flex: 1; min-width: 0; padding: 9px 12px; gap: 2px;"><div style="display: flex; align-items: center; gap: 8px; min-width: 0;"><span class="sm-favicon" title="angular.dev">A</span><span class="sm-card__title" style="font-size: 14px; line-height: 19px; -webkit-line-clamp: 1;">Zoneless change detection</span></div><div style="font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 24px;">The article about zoneless</div></div></article></div><div class="lp-group lp-land" style="--d: 160ms;"><div class="lp-folder"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2"/></svg>Courses</div><article class="sm-card sm-card--landed lp-land" style="--d: 160ms; flex-direction: row; cursor: default;"><div class="sm-card__body" style="flex: 1; min-width: 0; padding: 9px 12px; gap: 2px;"><div style="display: flex; align-items: center; gap: 8px; min-width: 0;"><span class="sm-favicon" title="stepik.org">S</span><span class="sm-card__title" style="font-size: 14px; line-height: 19px; -webkit-line-clamp: 1;">NestJS for frontend developers</span></div><div style="font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 24px;">From Frontend Weekly</div></div></article></div><div class="lp-group lp-land" style="--d: 240ms;"><div class="lp-folder"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2"/></svg>Clothes</div><article class="sm-card sm-card--landed lp-land" style="--d: 240ms; flex-direction: row; cursor: default;"><div class="sm-card__body" style="flex: 1; min-width: 0; padding: 9px 12px; gap: 2px;"><div style="display: flex; align-items: center; gap: 8px; min-width: 0;"><span class="sm-favicon" title="cos.com">C</span><span class="sm-card__title" style="font-size: 14px; line-height: 19px; -webkit-line-clamp: 1;">Wool coat, graphite</span></div><div style="font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 24px;">Wait for the sale</div></div></article></div><div class="lp-group lp-land" style="--d: 320ms;"><div class="lp-folder"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2"/></svg>Recipes</div><article class="sm-card sm-card--landed lp-land" style="--d: 320ms; flex-direction: row; cursor: default;"><div class="sm-card__body" style="flex: 1; min-width: 0; padding: 9px 12px; gap: 2px;"><div style="display: flex; align-items: center; gap: 8px; min-width: 0;"><span class="sm-favicon" title="seriouseats.com">R</span><span class="sm-card__title" style="font-size: 14px; line-height: 19px; -webkit-line-clamp: 1;">The best weeknight ramen</span></div><div style="font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 24px;">Friday?</div></div></article></div></div></sc-if>
+</div>
+</div>
+<div style="padding: 14px 16px 0; display: flex; gap: 8px;">
+<button class="sm-btn {{sortBtnCls}}" style="flex: 1; height: 48px; border-radius: 14px;" onClick="{{toggle}}">{{sortLabel}}</button>
+<a href="#" class="sm-btn sm-btn--secondary" style="flex: 1; height: 48px; border-radius: 14px; text-decoration: none; color: var(--text);">Open the demo</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const st = (this.state || {}).st ?? 'chat';
+    const sorted = st === 'shelf';
+    return {
+      theme: (this.props.dark ?? false) ? 'dark' : 'light',
+      sorted, notSorted: !sorted,
+      outCls: st === 'leaving' ? 'lp-out' : '',
+      hint: sorted ? 'Notes come from your own messages.' : 'Five links, five different days.',
+      sortLabel: sorted ? 'Show the chat again' : 'Put them on the shelf',
+      sortBtnCls: sorted ? 'sm-btn--ghost' : 'sm-btn--primary',
+      toggle: () => {
+        if (sorted) { this.setState({ st: 'chat' }); return; }
+        this.setState({ st: 'leaving' });
+        setTimeout(() => this.setState({ st: 'shelf' }), 520);
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

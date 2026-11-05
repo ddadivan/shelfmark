@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Loading states</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/shelfmark/tokens.css">
+<link rel="stylesheet" href="ds/shelfmark/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+.cap{margin:0;font-size:13px;font-weight:600;color:var(--text-muted)}
+.note{margin:0;font-size:12px;line-height:18px;color:var(--text-muted)}
+.panel{position:relative;border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--surface);overflow:hidden}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root" style="min-height: 1400px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; padding: 40px 48px 48px; box-sizing: border-box; display: flex; flex-direction: column; gap: 28px;">
+
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+<div>
+<h1 style="margin: 0; font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -0.02em;">Loading states</h1>
+<p class="note" style="margin-top: 4px;">{{phaseNote}}</p>
+</div>
+<div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+<div class="sm-seg" role="radiogroup" aria-label="Loading phase">
+<button class="sm-seg__item {{segFirst}}" role="radio" style="width: auto; padding: 0 12px;" onClick="{{showFirst}}">First load</button>
+<button class="sm-seg__item {{segNav}}" role="radio" style="width: auto; padding: 0 12px;" onClick="{{showNav}}">Switching folder</button>
+<button class="sm-seg__item {{segDone}}" role="radio" style="width: auto; padding: 0 12px;" onClick="{{showDone}}">Loaded</button>
+</div>
+<button class="sm-btn sm-btn--secondary sm-btn--sm" onClick="{{replay}}">Play the sequence</button>
+</div>
+</div>
+
+<div class="panel" style="height: 640px; display: flex; flex-direction: column; background: var(--bg);">
+<header style="height: 56px; flex: none; display: flex; align-items: center; gap: 16px; padding: 0 20px; border-bottom: 1px solid var(--border); background: var(--surface);">
+<span style="display: flex; align-items: center; gap: 8px; min-width: 196px;"><svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="6" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><span style="font-size: 16px; font-weight: 600;">Shelfmark</span></span>
+<label class="sm-field__control" style="flex: 1; max-width: 480px; margin: 0 auto; min-height: 36px; background: var(--bg);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input aria-label="Search links" placeholder="Search links, notes and tags"><span class="sm-kbd">⌘K</span></label>
+<button class="sm-btn sm-btn--primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add link</button>
+<span class="sm-avatar">DD</span>
+</header>
+<div style="flex: 1; min-height: 0; display: flex; position: relative;">
+<sc-if value="{{isNav}}" hint-placeholder-val="{{false}}"><div class="sm-progress" role="progressbar" aria-label="Loading folder"></div></sc-if>
+
+<nav aria-label="Library" aria-busy="{{treeBusy}}" style="flex: 0 0 236px; padding: 16px 12px; border-right: 1px solid var(--border); background: var(--surface); display: flex; flex-direction: column; gap: 2px;">
+<sc-if value="{{isFirst}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-direction: column; gap: 14px; padding: 8px;" aria-hidden="true">
+<sc-for list="{{treeSkel}}" as="t" hint-placeholder-count="8">
+<div style="display: flex; gap: 10px; align-items: center; padding-left: {{t.pad}};"><div class="sm-skel sm-skel--icon"></div><div class="sm-skel sm-skel--line" style="width: {{t.w}};"></div></div>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{treeReady}}" hint-placeholder-val="{{false}}">
+<div class="{{revealCls}}" style="display: flex; flex-direction: column; gap: 2px;">
+<a href="#" class="sm-tree__row" style="text-decoration: none;">All links<span class="sm-tree__count">248</span></a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Unsorted<span class="sm-tree__count">17</span></a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Favorites<span class="sm-tree__count">9</span></a>
+<div class="sm-tree__section">Folders</div>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Work<span class="sm-tree__count">34</span></a>
+<a href="#" class="sm-tree__row {{angActive}}" style="text-decoration: none; padding-left: 28px;">Angular<span class="sm-tree__count">12</span></a>
+<a href="#" class="sm-tree__row {{cloActive}}" style="text-decoration: none;">Clothes<span class="sm-tree__count">21</span></a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Recipes<span class="sm-tree__count">15</span></a>
+</div>
+</sc-if>
+</nav>
+
+<main aria-busy="{{mainBusy}}" style="flex: 1; min-width: 0; padding: 20px 28px; display: flex; flex-direction: column; gap: 18px; overflow: hidden;">
+<div>
+<h2 style="margin: 0; font-size: 24px; line-height: 30px; font-weight: 600; letter-spacing: -0.02em;">{{folderTitle}}</h2>
+<sc-if value="{{isFirst}}" hint-placeholder-val="{{true}}"><div class="sm-skel sm-skel--line" style="width: 140px; margin-top: 8px;"></div></sc-if>
+<sc-if value="{{treeReady}}" hint-placeholder-val="{{false}}"><p class="{{revealCls}}" style="margin: 4px 0 0; font-size: 13px; color: var(--text-muted);">{{countLine}}</p></sc-if>
+</div>
+
+<sc-if value="{{isFirst}}" hint-placeholder-val="{{true}}">
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px;" aria-hidden="true">
+<sc-for list="{{cardSkel}}" as="c" hint-placeholder-count="6">
+<div class="sm-card" style="cursor: default;"><div class="sm-skel sm-skel--media"></div><div class="sm-card__body"><div class="sm-skel sm-skel--line" style="width: 40%;"></div><div class="sm-skel sm-skel--title" style="width: {{c.w1}};"></div><div class="sm-skel sm-skel--title" style="width: {{c.w2}};"></div><div class="sm-skel sm-skel--chip"></div></div></div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{treeReady}}" hint-placeholder-val="{{false}}">
+<div class="{{revealCls}}" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px;">
+<sc-for list="{{links}}" as="l" hint-placeholder-count="6">
+<a href="#" class="sm-card" style="text-decoration: none;">
+<div class="sm-card__media" style="background: {{l.media}};"></div>
+<div class="sm-card__body">
+<div class="sm-card__meta"><span class="sm-favicon">{{l.fav}}</span>{{l.site}}</div>
+<h3 class="sm-card__title">{{l.title}}</h3>
+<div class="sm-card__tags"><span class="sm-chip">{{l.tag}}</span></div>
+</div>
+</a>
+</sc-for>
+</div>
+</sc-if>
+</main>
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px;">
+
+<section style="display: flex; flex-direction: column; gap: 10px;">
+<h2 class="cap">Search in progress — type to try</h2>
+<div class="panel" style="padding: 14px; display: flex; flex-direction: column; gap: 8px; height: 220px; box-sizing: border-box;">
+<label class="sm-field__control" style="background: var(--bg);"><span style="width: 16px; height: 16px; display: inline-grid; place-items: center; color: var(--text-muted); flex: none;"><span class="sm-spinner sm-spinner--sm {{qLeave}}" style="display: {{qSpin}};" aria-label="Searching"></span><span class="sm-icon-in" style="display: {{qIcon}};"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span></span><input aria-label="Search" value="signal forms" onInput="{{typed}}"><span class="sm-kbd">Esc</span></label>
+<div style="opacity: .55; display: flex; flex-direction: column; gap: 2px;">
+<div class="sm-row" style="cursor: default; padding: 8px;"><span class="sm-favicon">Y</span><span class="sm-row__main"><span class="sm-row__title">Signal Forms in 20 minutes</span><span class="sm-row__meta">Work / Angular</span></span></div>
+<div class="sm-row" style="cursor: default; padding: 8px;"><span class="sm-favicon">A</span><span class="sm-row__main"><span class="sm-row__title">Forms guide</span><span class="sm-row__meta">Work / Angular</span></span></div>
+</div>
+</div>
+<p class="note">Previous results stay, dimmed. The spinner takes the place of the search icon.</p>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 10px;">
+<h2 class="cap">Loading more on scroll</h2>
+<div class="panel" style="height: 220px; display: flex; flex-direction: column; justify-content: flex-end; padding: 6px;">
+<div class="sm-row" style="cursor: default;"><span class="sm-favicon">N</span><span class="sm-row__main"><span class="sm-row__title">Nx 23: monorepo setup</span><span class="sm-row__meta">nx.dev</span></span><span class="sm-card__date" style="font-size: 12px;">2 weeks ago</span></div>
+<div class="sm-row" style="cursor: default;"><span class="sm-favicon">M</span><span class="sm-row__main"><span class="sm-row__title">Signals vs RxJS</span><span class="sm-row__meta">medium.com</span></span><span class="sm-card__date" style="font-size: 12px;">3 weeks ago</span></div>
+<div class="sm-loadmore" role="status"><span class="sm-spinner sm-spinner--sm"></span>Loading more links</div>
+</div>
+<p class="note">Next 24 links load when the last row is 600 px from view.</p>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 10px;">
+<h2 class="cap">Actions and export</h2>
+<div class="panel" style="padding: 16px; display: flex; flex-direction: column; gap: 16px; height: 220px; box-sizing: border-box;">
+<div style="display: flex; gap: 8px; flex-wrap: wrap;"><button class="sm-btn sm-btn--primary" aria-busy="{{saveBusy}}" onClick="{{save}}" style="min-width: 104px;"><span class="sm-spinner {{saveLeave}}" style="display: {{saveSpin}};"></span>{{saveLabel}}</button><button class="sm-btn sm-btn--danger" aria-busy="{{delBusy}}" onClick="{{del}}" style="min-width: 112px;"><span class="sm-spinner {{delLeave}}" style="display: {{delSpin}};"></span>{{delLabel}}</button></div><p class="note" style="margin-top: -6px;">Click the buttons: the spinner grows in, the label makes room, then both settle back.</p>
+<div style="display: flex; gap: 16px;"><span class="sm-status"><span class="sm-spinner sm-spinner--sm"></span>Saving…</span><span class="sm-status sm-status--done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>Saved</span></div>
+<div style="display: flex; flex-direction: column; gap: 6px;"><div style="display: flex; justify-content: space-between; font-size: 13px;"><span>Preparing export</span><span style="color: var(--text-muted);">64%</span></div><div class="sm-meter" role="progressbar" aria-valuenow="64" aria-valuemin="0" aria-valuemax="100" aria-label="Export progress"><div class="sm-meter__fill" style="width: 64%;"></div></div></div>
+</div>
+<p class="note">Favorite, move, rename and tags don't show a loader — they apply at once and roll back on error.</p>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 10px;">
+<h2 class="cap">App start and broken preview</h2>
+<div class="panel" style="height: 220px; display: grid; grid-template-columns: 1fr 1fr;">
+<div class="sm-boot" style="border-right: 1px solid var(--border);"><div class="sm-boot__inner"><svg width="36" height="36" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="6" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><div class="sm-progress sm-progress--inline" style="width: 72px;" role="progressbar" aria-label="Loading Shelfmark"></div></div></div>
+<div style="display: grid; place-items: center; padding: 12px;"><div class="sm-card" style="width: 100%; cursor: default;"><div class="sm-card__media sm-card__media--fallback">C</div><div class="sm-card__body" style="padding: 10px;"><div class="sm-card__meta"><span class="sm-favicon">C</span>cos.com</div><div class="sm-card__title" style="font-size: 13px; line-height: 18px;">Wool coat</div></div></div></div>
+</div>
+<p class="note">Start screen only if boot takes over 300 ms. No preview image → the site's first letter on sage.</p>
+</section>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"phase":{"editor":"enum","options":["first","nav","done"],"default":"first"},"$preview":{"width":1440,"height":1400}}'>
+class Component extends DCLogic {
+  run(key, ms) {
+    if ((this.state || {})[key] && this.state[key] !== 'idle') return;
+    this.setState({ [key]: 'busy' });
+    setTimeout(() => { this.setState({ [key]: 'leaving' }); setTimeout(() => this.setState({ [key]: 'idle' }), 130); }, ms);
+  }
+  renderVals() {
+    const s = this.state || {};
+    const phase = s.phase ?? this.props.phase ?? 'first';
+    const save = s.save ?? 'idle', del = s.del ?? 'idle', q = s.q ?? 'idle';
+    const isFirst = phase === 'first', isNav = phase === 'nav', isDone = phase === 'done';
+    const tint = 'var(--accent-bg)', hover = 'var(--surface-hover)', pressed = 'var(--surface-pressed)';
+    const angular = [
+      { title: 'Angular 22: everything about Signal Forms in 20 minutes', site: 'youtube.com', tag: 'angular', fav: 'Y', media: tint },
+      { title: 'NgRx SignalStore: patterns for real apps', site: 'dev.to', tag: 'angular', fav: 'D', media: hover },
+      { title: 'Zoneless change detection, explained', site: 'angular.dev', tag: 'angular', fav: 'A', media: pressed },
+      { title: 'Building accessible menus with Angular Aria', site: 'blog.angular.dev', tag: 'angular', fav: 'B', media: tint },
+      { title: 'Nx 23: monorepo setup for Angular and NestJS', site: 'nx.dev', tag: 'tools', fav: 'N', media: hover },
+      { title: 'Signals vs RxJS: when to use which', site: 'medium.com', tag: 'angular', fav: 'M', media: pressed }
+    ];
+    const clothes = [
+      { title: 'Wool coat, straight cut, graphite', site: 'cos.com', tag: 'clothes', fav: 'C', media: tint },
+      { title: 'Merino crew-neck jumper', site: 'uniqlo.com', tag: 'clothes', fav: 'U', media: hover },
+      { title: 'Leather Chelsea boots', site: 'drmartens.com', tag: 'shoes', fav: 'D', media: pressed },
+      { title: 'Relaxed straight jeans', site: 'levi.com', tag: 'clothes', fav: 'L', media: tint },
+      { title: 'Canvas tote bag', site: 'arket.com', tag: 'bags', fav: 'A', media: hover },
+      { title: 'Rain jacket, packable', site: 'rains.com', tag: 'clothes', fav: 'R', media: pressed }
+    ];
+    const notes = {
+      first: 'First load: frame renders at once, data parts are skeletons in the shape of the content.',
+      nav: 'Switching from Angular to Clothes: 2px sage bar on top, the old folder stays visible until the new one arrives.',
+      done: 'Loaded: content replaces skeletons with a 200 ms fade. Later refetches never show skeletons again.'
+    };
+    return {
+      theme: (this.props.dark ?? false) ? 'dark' : 'light',
+      isFirst, isNav, treeReady: !isFirst,
+      treeBusy: isFirst ? 'true' : 'false', mainBusy: isFirst || isNav ? 'true' : 'false',
+      revealCls: isDone ? 'sm-reveal' : '',
+      segFirst: isFirst ? 'is-active' : '', segNav: isNav ? 'is-active' : '', segDone: isDone ? 'is-active' : '',
+      phaseNote: notes[phase],
+      folderTitle: isDone ? 'Clothes' : 'Angular',
+      countLine: isDone ? '21 links' : '12 links, 2 subfolders',
+      angActive: isDone ? '' : 'is-active', cloActive: isDone ? 'is-active' : '',
+      links: isDone ? clothes : angular,
+      treeSkel: [
+        { w: '70%', pad: '0px' }, { w: '55%', pad: '0px' }, { w: '60%', pad: '0px' }, { w: '40%', pad: '0px' },
+        { w: '65%', pad: '20px' }, { w: '50%', pad: '20px' }, { w: '58%', pad: '0px' }, { w: '45%', pad: '0px' }
+      ],
+      cardSkel: [
+        { w1: '90%', w2: '65%' }, { w1: '85%', w2: '50%' }, { w1: '92%', w2: '70%' },
+        { w1: '80%', w2: '55%' }, { w1: '88%', w2: '60%' }, { w1: '75%', w2: '45%' }
+      ],
+      showFirst: () => this.setState({ phase: 'first' }),
+      showNav: () => this.setState({ phase: 'nav' }),
+      showDone: () => this.setState({ phase: 'done' }),
+      saveBusy: save !== 'idle' ? 'true' : 'false', saveSpin: save !== 'idle' ? 'inline-block' : 'none', saveLeave: save === 'leaving' ? 'sm-spinner--leave' : '', saveLabel: save === 'busy' ? 'Saving…' : 'Save link',
+      delBusy: del !== 'idle' ? 'true' : 'false', delSpin: del !== 'idle' ? 'inline-block' : 'none', delLeave: del === 'leaving' ? 'sm-spinner--leave' : '', delLabel: del === 'busy' ? 'Deleting…' : 'Delete link',
+      qSpin: q !== 'idle' ? 'inline-block' : 'none', qIcon: q === 'idle' ? 'inline-grid' : 'none', qLeave: q === 'leaving' ? 'sm-spinner--leave' : '',
+      save: () => this.run('save', 1400),
+      del: () => this.run('del', 1400),
+      typed: () => {
+        this.setState({ q: 'busy' });
+        clearTimeout(this.qTimer);
+        this.qTimer = setTimeout(() => { this.setState({ q: 'leaving' }); setTimeout(() => this.setState({ q: 'idle' }), 130); }, 900);
+      },
+      replay: () => {
+        this.setState({ phase: 'first' });
+        setTimeout(() => this.setState({ phase: 'nav' }), 1600);
+        setTimeout(() => this.setState({ phase: 'done' }), 2800);
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

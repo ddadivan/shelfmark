@@ -1,0 +1,15 @@
+pre-commit:
+  parallel: false
+  jobs:
+    - name: gitleaks
+      run: |
+        if ! command -v gitleaks >/dev/null 2>&1; then
+          echo "gitleaks is not installed. Install it with: brew install gitleaks" >&2
+          exit 1
+        fi
+        gitleaks git --staged --redact --no-banner
+    - name: stylelint
+      glob: '*.{css,scss}'
+      run: npx --no-install stylelint --allow-empty-input {staged_files}
+    - name: prettier
+      run: npx --no-install prettier --check --ignore-unknown {staged_files}

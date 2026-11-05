@@ -1,0 +1,29 @@
+// Dark theme colours (docs/design/tokens.css).
+@mixin dark {
+  color-scheme: dark;
+
+  --bg: #131315;
+  --surface: #1c1c1f;
+  --surface-hover: #26262a;
+  --surface-pressed: #2e2e33;
+  --border: #2c2c30;
+  --border-control: #6c6c73;
+  --text: #ededef;
+  --text-muted: #9a9aa0;
+  --primary: #ededef;
+  --primary-hover: #d4d4d8;
+  --on-primary: #131315;
+  --accent: #8dbb86;
+  --accent-bg: #22301f;
+  --accent-text: #c6dec0;
+  --focus-ring: #8dbb86;
+  --danger: #f97066;
+  --danger-bg: #3a1a18;
+  --success: #8dbb86;
+  --warning: #e6b45c;
+  --warning-bg: #33280f;
+  --overlay: rgb(0 0 0 / 60%);
+  --logo-bookmark: #4f7a4b;
+  --shadow-card-hover: 0 4px 16px rgb(0 0 0 / 40%);
+  --shadow-popover: 0 8px 24px rgb(0 0 0 / 50%), 0 2px 6px rgb(0 0 0 / 30%);
+}

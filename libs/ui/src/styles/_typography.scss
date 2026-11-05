@@ -1,0 +1,70 @@
+@use 'sass:map';
+@use 'functions' as *;
+
+// Type styles from docs/design/tokens.css. Sizes in rem; applied through the mixin, no global classes.
+$styles: (
+  'display': (
+    'family': var(--font-sans),
+    'size': 32,
+    'line': 38,
+    'weight': 600,
+    'tracking': -0.02em,
+  ),
+  'title': (
+    'family': var(--font-sans),
+    'size': 20,
+    'line': 28,
+    'weight': 600,
+    'tracking': -0.01em,
+  ),
+  'heading': (
+    'family': var(--font-sans),
+    'size': 16,
+    'line': 24,
+    'weight': 600,
+    'tracking': normal,
+  ),
+  'body': (
+    'family': var(--font-sans),
+    'size': 15,
+    'line': 22,
+    'weight': 400,
+    'tracking': normal,
+  ),
+  'label': (
+    'family': var(--font-sans),
+    'size': 13,
+    'line': 18,
+    'weight': 500,
+    'tracking': normal,
+  ),
+  'caption': (
+    'family': var(--font-sans),
+    'size': 12,
+    'line': 16,
+    'weight': 400,
+    'tracking': normal,
+  ),
+  'mono': (
+    'family': var(--font-mono),
+    'size': 13,
+    'line': 20,
+    'weight': 400,
+    'tracking': normal,
+  ),
+);
+
+// Applies one of: display, title, heading, body, label, caption, mono.
+@mixin type($style) {
+  $s: map.get($styles, $style);
+
+  @if not $s {
+    @error 'Unknown type style "#{$style}".';
+  }
+
+  font-family: map.get($s, 'family');
+  font-size: rem(map.get($s, 'size') * 1px);
+  line-height: rem(map.get($s, 'line') * 1px);
+  font-weight: map.get($s, 'weight');
+  letter-spacing: map.get($s, 'tracking');
+}

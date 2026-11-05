@@ -1,0 +1,25 @@
+@use '../../styles/ui' as *;
+
+:host {
+  display: inline-flex;
+  flex: none;
+  width: rem(16px);
+  height: rem(16px);
+  color: inherit;
+  line-height: 0;
+}
+
+:host(.ui-icon--20) {
+  width: rem(20px);
+  height: rem(20px);
+}
+
+:host(.ui-icon--24) {
+  width: rem(24px);
+  height: rem(24px);
+}
+
+.ui-icon__svg {
+  width: 100%;
+  height: 100%;
+}

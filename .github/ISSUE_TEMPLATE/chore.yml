@@ -1,0 +1,24 @@
+name: Chore
+description: Tooling, configuration, CI, docs or maintenance
+title: 'chore: '
+labels: ['type:chore']
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Files and projects to touch.
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      value: |
+        - [ ]
+    validations:
+      required: true

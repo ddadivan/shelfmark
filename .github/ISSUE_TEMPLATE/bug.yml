@@ -1,0 +1,35 @@
+name: Bug
+description: Something does not work as specified
+title: 'fix(<area>): '
+labels: ['type:fix']
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happens
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      value: |
+        1.
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      placeholder: 'production / preview URL, browser, device'
+  - type: input
+    id: request-id
+    attributes:
+      label: Request ID
+      description: X-Request-Id from the error toast or network tab, if any.

@@ -1,0 +1,49 @@
+{
+  "name": "ui",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/ui/src",
+  "prefix": "ui",
+  "projectType": "library",
+  "tags": ["scope:web", "type:ui"],
+  "targets": {
+    "build": {
+      "executor": "@angular/build:ng-packagr",
+      "outputs": ["{workspaceRoot}/dist/libs/ui"],
+      "defaultConfiguration": "production",
+      "options": {
+        "project": "libs/ui/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/ui/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/ui/tsconfig.lib.json"
+        }
+      }
+    },
+    "test": {
+      "executor": "@angular/build:unit-test",
+      "options": {
+        "buildTarget": "ui:build:development",
+        "tsConfig": "libs/ui/tsconfig.spec.json",
+        "runner": "vitest",
+        "watch": false,
+        "coverage": true,
+        "coverageThresholds": { "statements": 80, "branches": 80, "functions": 80, "lines": 80 },
+        "coverageExclude": ["**/*.stories.ts", "**/index.ts", "**/models/**", "**/testing/**"]
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "ngc -p libs/ui/tsconfig.lib.json --noEmit",
+          "ngc -p libs/ui/tsconfig.spec.json --noEmit",
+          "ngc -p libs/ui/.storybook/tsconfig.json --noEmit"
+        ],
+        "parallel": false
+      }
+    }
+  }
+}

@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Project document
+    url: https://github.com/ddadivan/shelfmark/blob/main/docs/PROJECT.md
+    about: Source of truth for scope, stack and process.
