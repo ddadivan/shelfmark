@@ -2,7 +2,7 @@ Motion defines Shelfmark's few animations. The one signature moment is saving a 
 
 ## Principles
 
-1. **Motion answers the user.** Nothing moves on its own except loaders. No entrance animations on page sections, no ambient loops.
+1. **Motion answers the user.** Nothing moves on its own except loaders and illustrations in their `loop` mode (landing, welcome steps, sign-in). No entrance animations on page sections, no other ambient loops.
 2. **Fast in, faster out.** Entrances `duration-base` (200 ms), exits `duration-fast` (120 ms), press-down `duration-instant` (80 ms). Only the saved card, toasts and sheets use `duration-slow` (320 ms). Nothing in the UI runs longer than 320 ms except the 1.8 s sage ring fading from a new card.
 3. **The right curve for the job.**
    - `ease-out` — anything appearing or reacting: menus, dialogs, toasts, spinners, press-down.

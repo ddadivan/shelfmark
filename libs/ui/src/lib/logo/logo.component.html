@@ -1,0 +1,15 @@
+<svg class="ui-logo__mark" viewBox="0 0 32 32" focusable="false">
+  @if (tone() === 'mono') {
+    <path
+      class="ui-logo__mono"
+      fill-rule="evenodd"
+      d="M9 5h14a6 6 0 0 1 6 6v10a6 6 0 0 1-6 6H9a6 6 0 0 1-6-6V11a6 6 0 0 1 6-6zM19 5h6v11l-3-2.4-3 2.4z"
+    />
+  } @else {
+    <rect class="ui-logo__card" x="3" y="5" width="26" height="22" rx="6" />
+    <path class="ui-logo__bookmark" d="M19 5h6v11l-3-2.4-3 2.4z" />
+  }
+</svg>
+@if (variant() === 'lockup') {
+  <span class="ui-logo__wordmark">{{ wordmark() }}</span>
+}

@@ -1,0 +1,37 @@
+@use '../../styles/ui' as *;
+
+:host {
+  display: inline-flex;
+  gap: 0.3em;
+  align-items: center;
+  color: var(--text);
+  line-height: 1;
+}
+
+.ui-logo__mark {
+  flex: none;
+  width: var(--ui-logo-size, #{rem(32px)});
+  height: var(--ui-logo-size, #{rem(32px)});
+}
+
+.ui-logo__card {
+  fill: var(--primary);
+}
+
+.ui-logo__bookmark {
+  fill: var(--logo-bookmark);
+}
+
+.ui-logo__mono {
+  fill: currentcolor;
+}
+
+.ui-logo__wordmark {
+  @include type(title);
+
+  // The wordmark follows the mark: 20px type next to the 32px mark.
+  font-size: calc(var(--ui-logo-size, #{rem(32px)}) * 0.625);
+  line-height: 1;
+  color: inherit;
+  white-space: nowrap;
+}

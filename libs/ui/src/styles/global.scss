@@ -43,6 +43,7 @@ body {
 }
 
 @include keyframes;
+@include illustration-keyframes;
 @include ripple;
 
 // Structural CDK overlay CSS (avoids a flash and a duplicate; the CDK still injects a runtime
