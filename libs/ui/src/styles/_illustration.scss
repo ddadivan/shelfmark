@@ -1,0 +1,155 @@
+// Illustration motion (docs/design/components/Illustration/README.md). Kept apart from the
+// shared presets: these are slow scene animations, not UI feedback. The keyframes are defined
+// once, in `global.scss` (`@include illustration-keyframes`). Positions and opacities come from
+// custom properties set by the scene classes, so a few keyframes serve every scene; offsets are
+// percentages of the element's own box (`transform-box: fill-box`), never px.
+// `once` ends on its final frame, which is the element's resting state, and holds it. `loop`
+// uses the `-loop` keyframes, which fade the element out and back in around the reset so the
+// restart is invisible. The two durations are the only non-token times, as the spec allows
+// slow 3-5 s scenes.
+$illustration-once-duration: 3.2s;
+$illustration-loop-duration: 4s;
+
+@mixin illustration-keyframes {
+  // Card flies in from `--ill-x`, `--ill-y`, `--ill-r` to its place.
+  @keyframes ui-ill-fly {
+    0%,
+    10% {
+      transform: translate(var(--ill-x), var(--ill-y)) rotate(var(--ill-r));
+    }
+
+    45%,
+    100% {
+      transform: none;
+    }
+  }
+
+  @keyframes ui-ill-fly-loop {
+    0% {
+      opacity: 0;
+      transform: translate(var(--ill-x), var(--ill-y)) rotate(var(--ill-r));
+    }
+
+    8% {
+      opacity: 1;
+      transform: translate(var(--ill-x), var(--ill-y)) rotate(var(--ill-r));
+    }
+
+    40%,
+    80% {
+      opacity: 1;
+      transform: none;
+    }
+
+    94%,
+    100% {
+      opacity: 0;
+      transform: none;
+    }
+  }
+
+  // New card grows out of the field above it.
+  @keyframes ui-ill-grow {
+    0%,
+    20% {
+      opacity: 0;
+      transform: translateY(-47%) scale(0.3);
+    }
+
+    50%,
+    100% {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes ui-ill-grow-loop {
+    0%,
+    8% {
+      opacity: 0;
+      transform: translateY(-47%) scale(0.3);
+    }
+
+    40%,
+    80% {
+      opacity: 1;
+      transform: none;
+    }
+
+    94%,
+    100% {
+      opacity: 0;
+      transform: none;
+    }
+  }
+
+  // Text line is typed (scales from its left edge).
+  @keyframes ui-ill-type {
+    0%,
+    10% {
+      transform: scaleX(0);
+    }
+
+    35%,
+    100% {
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes ui-ill-type-loop {
+    0%,
+    10% {
+      transform: scaleX(0);
+    }
+
+    35%,
+    80% {
+      transform: scaleX(1);
+    }
+
+    100% {
+      transform: scaleX(0);
+    }
+  }
+
+  // Opacity from `--ill-from` to `--ill-to` (search picks one card, dims the others).
+  @keyframes ui-ill-fade {
+    0%,
+    30% {
+      opacity: var(--ill-from);
+    }
+
+    50%,
+    100% {
+      opacity: var(--ill-to);
+    }
+  }
+
+  @keyframes ui-ill-fade-loop {
+    0%,
+    10% {
+      opacity: var(--ill-from);
+    }
+
+    35%,
+    80% {
+      opacity: var(--ill-to);
+    }
+
+    100% {
+      opacity: var(--ill-from);
+    }
+  }
+
+  // Moves out by `--ill-dx`, `--ill-dy` and back; already seamless, so loop and once share it.
+  @keyframes ui-ill-shift {
+    0%,
+    100% {
+      transform: none;
+    }
+
+    50% {
+      transform: translate(var(--ill-dx, 0), var(--ill-dy, 0));
+    }
+  }
+}
