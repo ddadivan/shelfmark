@@ -1,0 +1,198 @@
+@use 'sass:map';
+@use 'sass:string';
+@use '../../styles/ui' as *;
+
+:host {
+  display: block;
+  width: var(--ui-illustration-width, #{rem(240px)});
+  max-width: 100%;
+  line-height: 0;
+}
+
+.ui-illustration__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+// Fills are classes bound to tokens. Resting styles are the final frame of every scene.
+.ui-illustration__surface {
+  fill: var(--surface);
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.ui-illustration__surface--accent {
+  stroke: var(--accent);
+}
+
+.ui-illustration__ink {
+  fill: var(--primary);
+}
+
+.ui-illustration__accent {
+  fill: var(--accent);
+}
+
+.ui-illustration__tint {
+  fill: var(--accent-bg);
+}
+
+.ui-illustration__line {
+  fill: var(--surface-pressed);
+}
+
+.ui-illustration__mark {
+  fill: var(--logo-bookmark);
+}
+
+.ui-illustration__plus {
+  fill: var(--surface);
+}
+
+.ui-illustration__dash {
+  stroke: var(--border-control);
+}
+
+.ui-illustration__search {
+  stroke: var(--text-muted);
+}
+
+.ui-illustration__lens {
+  fill: var(--surface);
+  stroke: var(--primary);
+}
+
+// Animated parts. Offsets are percentages of the element's own box.
+.ui-illustration__fly,
+.ui-illustration__grow,
+.ui-illustration__type,
+.ui-illustration__dim,
+.ui-illustration__pick,
+.ui-illustration__shift {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.ui-illustration__type {
+  transform-origin: left center;
+}
+
+.ui-illustration__fly--1 {
+  --ill-x: -129%;
+  --ill-y: -83%;
+  --ill-r: -14deg;
+}
+
+.ui-illustration__fly--2 {
+  --ill-x: -167%;
+  --ill-y: 94%;
+  --ill-r: 12deg;
+  --ill-delay: 0.12s;
+}
+
+.ui-illustration__fly--3 {
+  --ill-x: -63%;
+  --ill-y: 133%;
+  --ill-r: -8deg;
+  --ill-delay: 0.24s;
+}
+
+.ui-illustration__fly--4 {
+  --ill-x: -200%;
+  --ill-y: -17%;
+  --ill-r: 18deg;
+  --ill-delay: 0.36s;
+}
+
+.ui-illustration__dim {
+  --ill-from: 1;
+  --ill-to: 0.35;
+
+  opacity: 0.35;
+}
+
+.ui-illustration__pick {
+  --ill-from: 0.35;
+  --ill-to: 1;
+}
+
+.ui-illustration__shift--bob {
+  --ill-dy: -23%;
+}
+
+.ui-illustration__shift--scan {
+  --ill-dx: 45%;
+}
+
+.ui-illustration__shift--nudge {
+  --ill-dy: 14%;
+}
+
+.ui-illustration__shift--toward {
+  --ill-dx: 9%;
+}
+
+.ui-illustration__shift--away {
+  --ill-dx: -9%;
+}
+
+// Motion modes. `once` plays one iteration and holds the end frame (`both`); `loop` repeats
+// forever with a 3-5 s cycle. `none` has no rule: the resting styles are the final frame.
+// Reduced motion removes every animation, whatever the mode.
+$parts: (
+  'fly': (
+    'selector': '.ui-illustration__fly',
+    'keyframes': 'ui-ill-fly',
+    'ease': 'out',
+  ),
+  'grow': (
+    'selector': '.ui-illustration__grow',
+    'keyframes': 'ui-ill-grow',
+    'ease': 'out',
+  ),
+  'type': (
+    'selector': '.ui-illustration__type',
+    'keyframes': 'ui-ill-type',
+    'ease': 'out',
+  ),
+  'dim': (
+    'selector': '.ui-illustration__dim, .ui-illustration__pick',
+    'keyframes': 'ui-ill-fade',
+    'ease': 'in-out',
+  ),
+  'shift': (
+    'selector': '.ui-illustration__shift',
+    'keyframes': 'ui-ill-shift',
+    'ease': 'in-out',
+  ),
+);
+
+@each $part, $config in $parts {
+  $keyframes: map.get($config, 'keyframes');
+  $ease: string.unquote('var(--ease-' + map.get($config, 'ease') + ')');
+  $loop-name: '#{$keyframes}-loop';
+
+  // The shift keyframes go out and back, so they are already seamless.
+  @if $part == 'shift' {
+    $loop-name: $keyframes;
+  }
+
+  #{map.get($config, 'selector')} {
+    :host(.ui-illustration--once) & {
+      animation: #{$keyframes} $illustration-once-duration $ease var(--ill-delay, 0s) 1 both;
+
+      @include reduced-motion {
+        animation: none;
+      }
+    }
+
+    :host(.ui-illustration--loop) & {
+      animation: #{$loop-name} $illustration-loop-duration $ease var(--ill-delay, 0s) infinite both;
+
+      @include reduced-motion {
+        animation: none;
+      }
+    }
+  }
+}
