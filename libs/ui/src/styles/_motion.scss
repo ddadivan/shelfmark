@@ -1,0 +1,321 @@
+@use 'sass:map';
+@use 'sass:string';
+@use 'functions' as *;
+@use 'media' as *;
+
+// Shared motion API (docs/design/components/Motion/README.md). Keyframes are ported from
+// docs/design/reference.css with a `ui-` prefix and defined once: `global.scss` includes
+// `keyframes`. Components never declare their own @keyframes; they apply a preset, for example
+// `.ui-menu--enter { @include enter(pop); }` and `.ui-menu--leave { @include leave(pop); }`,
+// and bind the classes in the template: `animate.enter="ui-menu--enter"`,
+// `animate.leave="ui-menu--leave"`. Angular waits for the animation to end before it removes
+// the element, and a reversed action restarts from the current state (principle 6). Every preset carries its reduced-motion fallback: movement and scale are replaced by a plain
+// fade (`ui-reveal` in, `ui-fade-out` out); loaders keep moving, slower.
+
+// Looping loader timings are the one place that is not a duration token (status, not decoration).
+$spin-duration: 0.7s;
+$spin-duration-reduced: 1.6s;
+$progress-duration: 1.1s;
+$progress-duration-reduced: 2.4s;
+$shimmer-duration: 1.4s;
+
+// Entrances. `duration` / `ease` name the tokens (`--duration-*`, `--ease-*`); `spin` adds the
+// rotating loader animation next to the entrance.
+$enter-presets: (
+  'pop': (
+    'keyframes': 'ui-pop-in',
+    'duration': 'base',
+    'ease': 'out',
+  ),
+  'fade': (
+    'keyframes': 'ui-reveal',
+    'duration': 'base',
+    'ease': 'out',
+  ),
+  'toast': (
+    'keyframes': 'ui-slide-up',
+    'duration': 'slow',
+    'ease': 'out',
+  ),
+  'sheet': (
+    'keyframes': 'ui-sheet-in',
+    'duration': 'slow',
+    'ease': 'drawer',
+  ),
+  'spinner': (
+    'keyframes': 'ui-spinner-in',
+    'duration': 'base',
+    'ease': 'out',
+    'spin': true,
+  ),
+  'spinner-grow': (
+    'keyframes': 'ui-spinner-grow',
+    'duration': 'base',
+    'ease': 'out',
+    'spin': true,
+  ),
+);
+
+// Exits: faster than entrances, `ease-in` only for things that leave the screen.
+$leave-presets: (
+  'pop': (
+    'keyframes': 'ui-pop-out',
+    'duration': 'fast',
+    'ease': 'out',
+  ),
+  'fade': (
+    'keyframes': 'ui-fade-out',
+    'duration': 'fast',
+    'ease': 'out',
+  ),
+  'toast': (
+    'keyframes': 'ui-toast-out',
+    'duration': 'fast',
+    'ease': 'in',
+  ),
+  'sheet': (
+    'keyframes': 'ui-sheet-out',
+    'duration': 'base',
+    'ease': 'in',
+  ),
+  'spinner': (
+    'keyframes': 'ui-spinner-out',
+    'duration': 'fast',
+    'ease': 'out',
+    'spin': true,
+  ),
+  'spinner-shrink': (
+    'keyframes': 'ui-spinner-shrink',
+    'duration': 'fast',
+    'ease': 'out',
+    'spin': true,
+  ),
+);
+
+@function -token($kind, $name) {
+  @return var(--#{$kind}-#{$name});
+}
+
+// One animation, or the entrance/exit plus the rotating loader.
+@function -animation($keyframes, $duration, $ease, $spin, $spin-time) {
+  $main: string.unquote($keyframes) $duration $ease both;
+
+  @if $spin {
+    @return $main, ui-spin $spin-time linear infinite;
+  }
+
+  @return $main;
+}
+
+@function -preset($presets, $name, $kind) {
+  $preset: map.get($presets, $name);
+
+  @if not $preset {
+    @error 'Unknown #{$kind} preset "#{$name}". Available: #{map.keys($presets)}.';
+  }
+
+  @return $preset;
+}
+
+// Plays an entrance: `pop` (menus, listboxes, dialogs), `fade`, `toast`, `sheet`, `spinner`,
+// `spinner-grow` (spinner inside a button, label makes room). Reduced motion: fade, 200 ms.
+@mixin enter($name) {
+  $p: -preset($enter-presets, $name, 'enter');
+  $spin: map.get($p, 'spin');
+
+  animation: -animation(
+    map.get($p, 'keyframes'),
+    -token('duration', map.get($p, 'duration')),
+    -token('ease', map.get($p, 'ease')),
+    $spin,
+    $spin-duration
+  );
+
+  @include reduced-motion {
+    animation: -animation(
+      ui-reveal,
+      var(--duration-base),
+      var(--ease-out),
+      $spin,
+      $spin-duration-reduced
+    );
+  }
+}
+
+// Plays an exit: `pop`, `fade`, `toast`, `sheet`, `spinner`, `spinner-shrink`.
+// Reduced motion: a plain fade-out of the same duration.
+@mixin leave($name) {
+  $p: -preset($leave-presets, $name, 'leave');
+  $spin: map.get($p, 'spin');
+  $duration: -token('duration', map.get($p, 'duration'));
+  $ease: -token('ease', map.get($p, 'ease'));
+
+  animation: -animation(map.get($p, 'keyframes'), $duration, $ease, $spin, $spin-duration);
+
+  @include reduced-motion {
+    animation: -animation(ui-fade-out, $duration, $ease, $spin, $spin-duration-reduced);
+  }
+}
+
+// Endless loaders: `spin`, `progress` (indeterminate bar), `shimmer` (skeleton). These are the
+// only `linear` curves. Reduced motion: spinner and bar keep moving, slower; shimmer stops.
+@mixin loop($name) {
+  @if $name == 'spin' {
+    animation: ui-spin $spin-duration linear infinite;
+
+    @include reduced-motion {
+      animation-duration: $spin-duration-reduced;
+    }
+  } @else if $name == 'progress' {
+    animation: ui-progress $progress-duration var(--ease-out) infinite;
+
+    @include reduced-motion {
+      animation: ui-progress $progress-duration-reduced linear infinite;
+    }
+  } @else if $name == 'shimmer' {
+    animation: ui-shimmer $shimmer-duration var(--ease-in-out) infinite;
+
+    @include reduced-motion {
+      animation: none;
+    }
+  } @else {
+    @error 'Unknown loop "#{$name}". Available: spin, progress, shimmer.';
+  }
+}
+
+// Scale from the trigger, not the centre (principle 5). The overlay sets `--ui-origin` from its
+// anchor (for example `100% 0`); without it the origin is `$fallback`. Dialogs keep `center`.
+@mixin origin($fallback: top left) {
+  transform-origin: var(--ui-origin, #{$fallback});
+}
+
+// All shared keyframes. Included once, in `global.scss`; never in component styles.
+@mixin keyframes {
+  @keyframes ui-pop-in {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes ui-pop-out {
+    to {
+      opacity: 0;
+      transform: scale(0.98);
+    }
+  }
+
+  @keyframes ui-fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes ui-reveal {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes ui-sheet-in {
+    from {
+      transform: translateY(100%);
+    }
+  }
+
+  @keyframes ui-sheet-out {
+    to {
+      transform: translateY(100%);
+    }
+  }
+
+  @keyframes ui-slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(#{rem(12px)});
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes ui-toast-out {
+    to {
+      opacity: 0;
+      transform: translateY(#{rem(8px)});
+    }
+  }
+
+  @keyframes ui-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  // The spinner is 16px with a gap of `space-2`; the grow/shrink variants animate the margin so
+  // the button label slides over (Motion principle 4, the one deliberate exception).
+  @keyframes ui-spinner-in {
+    from {
+      opacity: 0;
+      scale: 0.4;
+    }
+  }
+
+  @keyframes ui-spinner-grow {
+    from {
+      opacity: 0;
+      scale: 0.4;
+      margin-inline-end: calc(-1rem - var(--space-2));
+    }
+  }
+
+  @keyframes ui-spinner-out {
+    to {
+      opacity: 0;
+      scale: 0.4;
+    }
+  }
+
+  @keyframes ui-spinner-shrink {
+    to {
+      opacity: 0;
+      scale: 0.4;
+      margin-inline-end: calc(-1rem - var(--space-2));
+    }
+  }
+
+  @keyframes ui-shimmer {
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes ui-progress {
+    from {
+      transform: translateX(-100%);
+    }
+
+    to {
+      transform: translateX(250%);
+    }
+  }
+
+  @keyframes ui-ripple-grow {
+    to {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes ui-ripple-fade {
+    to {
+      opacity: 0;
+    }
+  }
+}
