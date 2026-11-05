@@ -51,12 +51,12 @@ export const AllVariants: Story = {
     props: { names: ILLUSTRATION_NAMES, motions: MOTIONS },
     template: `
       @for (m of motions; track m) {
-        <h3 style="margin: 1.5rem 0 0.75rem; font-size: 0.875rem">motion="{{ m }}"</h3>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 1rem">
+        <h3 class="story-heading">motion="{{ m }}"</h3>
+        <div class="story-grid">
           @for (n of names; track n) {
-            <figure style="margin: 0; padding: 0.75rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg)">
-              <ui-illustration [name]="n" [motion]="m" [label]="n" style="--ui-illustration-width: 100%" />
-              <figcaption style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-muted)">{{ n }}</figcaption>
+            <figure class="story-figure">
+              <ui-illustration [name]="n" [motion]="m" [label]="n" class="story-fill" />
+              <figcaption class="story-caption">{{ n }}</figcaption>
             </figure>
           }
         </div>
@@ -70,11 +70,11 @@ export const BothThemes: Story = {
   render: () => ({
     props: { names: ILLUSTRATION_NAMES },
     template: `
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem">
+      <div class="story-themes">
         @for (theme of ['light', 'dark']; track theme) {
-          <div [attr.data-theme]="theme" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); gap: 1rem; padding: 1rem; background: var(--bg); color: var(--text); border-radius: var(--radius-lg)">
+          <div [attr.data-theme]="theme" class="story-theme-pane story-theme-pane--scenes">
             @for (n of names; track n) {
-              <ui-illustration [name]="n" motion="none" [label]="n" style="--ui-illustration-width: 100%" />
+              <ui-illustration [name]="n" motion="none" [label]="n" class="story-fill" />
             }
           </div>
         }

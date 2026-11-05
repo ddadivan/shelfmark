@@ -9,6 +9,7 @@
     <ui-icon [name]="name" [size]="24" />
   </div>
 }
+<!-- One branch per level: Angular templates cannot take a dynamic tag name. -->
 @switch (headingLevel()) {
   @case (1) {
     <h1 class="ui-empty-state__title">{{ heading() }}</h1>

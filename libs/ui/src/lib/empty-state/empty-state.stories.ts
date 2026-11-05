@@ -99,9 +99,9 @@ export const AllVariants: Story = {
       ],
     },
     template: `
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem">
+      <div class="story-themes">
         @for (theme of ['light', 'dark']; track theme) {
-          <div [attr.data-theme]="theme" style="background: var(--bg); color: var(--text); border-radius: var(--radius-lg)">
+          <div [attr.data-theme]="theme" class="story-theme-pane story-theme-pane--empty">
             @for (c of cases; track c.heading) {
               <ui-empty-state [heading]="c.heading" [text]="c.text" [illustration]="c.scene" illustrationMotion="none">
                 <ui-button variant="primary">{{ c.action }}</ui-button>

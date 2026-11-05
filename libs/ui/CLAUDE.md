@@ -12,7 +12,7 @@ Shelfmark's own component library: tokens, themes, `ui-*` components and Storybo
 
 ```
 libs/ui/
-  .storybook/            main.ts, preview.ts, foundations.scss (styles of the docs pages only)
+  .storybook/            main.ts, preview.ts, foundations.scss and illustration-stories.scss (styles of the docs pages and stories only)
   src/
     index.ts             public API, re-exports only
     assets/icons/        sprite.svg (served as /assets/ui/icons/sprite.svg)
@@ -82,6 +82,7 @@ Angular keeps the element until the leave animation ends and a second toggle mid
 
 - `ui-illustration` draws the 8 scenes as inline SVG in its template (no `innerHTML`, no inline `style`, fills are token-bound classes). `motion` is `loop` (3-5 s cycle, landing / welcome / sign-in), `once` (plays, then holds the final frame; empty states and errors) or `none`; the caller picks it and each scene has a default (`ILLUSTRATION_DEFAULT_MOTION`: welcome scenes loop, the rest play once). Resting styles are the final frame, so `none` and `prefers-reduced-motion` just remove the animation.
 - Scene keyframes (`ui-ill-*`) and the two durations live in `styles/_illustration.scss` (`@include illustration-keyframes` in `global.scss`), apart from the shared presets; offsets are percentages of the element box, set through `--ill-*` custom properties on the scene classes.
+- Loops run continuously. The app may later pause off-screen ones (for example with an `IntersectionObserver` toggling `motion` to `none`); the component does not do that itself.
 - `ui-logo`: `variant` `lockup` / `mark`, `tone` `color` (theme tokens) / `mono` (`currentColor`), mark size through `--ui-logo-size`.
 - `ui-empty-state`: `illustration` or `icon`, `heading` (not `title`: that would add a native tooltip), `text`, `headingLevel`; the action is projected content.
 

@@ -5,7 +5,8 @@
 // percentages of the element's own box (`transform-box: fill-box`), never px.
 // `once` ends on its final frame, which is the element's resting state, and holds it. `loop`
 // uses the `-loop` keyframes, which fade the element out and back in around the reset so the
-// restart is invisible. The two durations are the only non-token times, as the spec allows
+// restart is invisible. `animation-delay` only offsets the first cycle, so after it the four
+// cards of a loop move together; a per-card offset would need keyframes per card. The two durations are the only non-token times, as the spec allows
 // slow 3-5 s scenes.
 $illustration-once-duration: 3.2s;
 $illustration-loop-duration: 4s;

@@ -27,10 +27,10 @@ export const MonoMark: Story = { args: { variant: 'mark', tone: 'mono', label: '
 export const Sizes: Story = {
   render: () => ({
     template: `
-      <div style="display: flex; align-items: center; gap: 2rem">
-        <ui-logo style="--ui-logo-size: 1.5rem" />
+      <div class="story-row">
+        <ui-logo class="story-logo--sm" />
         <ui-logo />
-        <ui-logo style="--ui-logo-size: 3rem" />
+        <ui-logo class="story-logo--lg" />
       </div>`,
   }),
 };
@@ -40,9 +40,9 @@ export const AllVariants: Story = {
   parameters: { layout: 'padded' },
   render: () => ({
     template: `
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem">
+      <div class="story-themes">
         @for (theme of ['light', 'dark']; track theme) {
-          <div [attr.data-theme]="theme" style="display: flex; flex-direction: column; align-items: flex-start; gap: 1.5rem; padding: 1.5rem; background: var(--bg); color: var(--text); border-radius: var(--radius-lg)">
+          <div [attr.data-theme]="theme" class="story-theme-pane story-theme-pane--logos">
             <ui-logo />
             <ui-logo variant="mark" label="Shelfmark" />
             <ui-logo tone="mono" />

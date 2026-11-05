@@ -11,7 +11,7 @@ Shelfmark is a calm shelf for everything people save: videos, articles, clothes,
 
 ## Illustration
 
-- Flat geometric scenes made of the product's own shapes — link cards, tag pills, favicon squares (component Illustration). Only token colours; sage marks the one meaningful element.
+- Flat geometric scenes made of the product's own shapes — link cards, tag pills, favicon squares (component Illustration). Only token colours; sage marks the one meaningful element. Used in the welcome steps, empty states, error pages and the sign-in screen.
 - No people, mascots or detailed objects. Motion is chosen by where the scene is shown (`loop` 3–5 s, `once` then hold, `none`); reduced motion shows the final frame.
 
 ## Colour
