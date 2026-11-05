@@ -12,7 +12,7 @@ Shelfmark is a calm shelf for everything people save: videos, articles, clothes,
 ## Illustration
 
 - Flat geometric scenes made of the product's own shapes — link cards, tag pills, favicon squares (component Illustration). Only token colours; sage marks the one meaningful element.
-- No people, mascots or detailed objects. They animate once and hold still; reduced motion shows the final frame.
+- No people, mascots or detailed objects. Motion is chosen by where the scene is shown (`loop` 3–5 s, `once` then hold, `none`); reduced motion shows the final frame.
 
 ## Colour
 
@@ -47,7 +47,7 @@ Spend motion in one place. The signature moment is saving a link: the new card d
 - Press: scale 0.97 and `surface-pressed`, released with `ease-spring`.
 - Focus-visible: buttons, rows and cards get a solid 2px `focus-ring` with a 2px offset; text fields instead turn their border `focus-ring` with a soft 3px halo hugging the field.
 - Menus scale from their trigger, dialogs from the centre, sheets slide from the bottom edge. Every overlay has an exit animation.
-- Illustrations play once when they appear (welcome steps, empty states) and then hold still. No ambient loops, no entrance animations on page sections.
+- Illustrations follow the three-mode rule: `loop` (slow 3–5 s cycle) on the landing page, the welcome steps and the sign-in screen; `once` then hold still for in-app empty states and errors; `none` is static. No ambient loops elsewhere, no entrance animations on page sections.
 - `prefers-reduced-motion`: no movement or scale; overlays and the new card simply fade; loaders keep moving slowly.
 
 ### Loading
