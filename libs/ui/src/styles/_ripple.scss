@@ -1,0 +1,54 @@
+@use 'functions' as *;
+@use 'media' as *;
+
+// Ripple timings are the Motion spec's own (not duration tokens): grows 450 ms, fades 350 ms.
+$grow: 450ms;
+$fade: 350ms;
+
+// Styles of the `uiRipple` directive. The directive appends its span at runtime, so the span
+// is outside every component's view encapsulation: the rules are global (`global.scss` includes
+// them once) and use the `ui-` prefix. Colour is `currentColor` at 6% (light) / 10% (dark);
+// a host can raise it by setting `--ui-ripple-opacity` (filled buttons use 0.2).
+@mixin ripple {
+  .ui-ripple-host {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .ui-ripple {
+    --ui-ripple-base: 0.06;
+
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+    background: currentcolor;
+    border-radius: 50%;
+    opacity: var(--ui-ripple-opacity, var(--ui-ripple-base));
+    transform: scale(0);
+    animation: ui-ripple-grow $grow var(--ease-out) forwards;
+
+    &.is-out {
+      animation:
+        ui-ripple-grow $grow var(--ease-out) forwards,
+        ui-ripple-fade $fade var(--ease-out) forwards;
+    }
+  }
+
+  [data-theme='dark'] .ui-ripple {
+    --ui-ripple-base: 0.1;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) .ui-ripple {
+      --ui-ripple-base: 0.1;
+    }
+  }
+
+  // Reduced motion: no ripple at all; the host shows its pressed background instead.
+  @include reduced-motion {
+    .ui-ripple {
+      display: none;
+    }
+  }
+}
