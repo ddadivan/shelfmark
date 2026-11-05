@@ -79,7 +79,10 @@ describe('Vercel function entry (api/index.mjs)', () => {
     'loads externals only through static ESM imports (no require of ESM-only packages)',
     () => {
       // The Vercel runtime rejects require() of an ES module (ERR_REQUIRE_ESM).
-      expect(readFileSync(bundle, 'utf8')).not.toContain('createRequire');
+      const code = readFileSync(bundle, 'utf8');
+      expect(code).not.toContain('createRequire');
+      // Workspace libraries must be bundled; they are not in node_modules at runtime.
+      expect(code).not.toMatch(/from "@shelfmark\//);
     },
   );
 
