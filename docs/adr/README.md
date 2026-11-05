@@ -44,3 +44,4 @@ Routine features, bug fixes and choices already fully covered by an existing ADR
 | [0018](0018-ci-pipeline-and-main-ruleset.md) | CI pipeline, required checks and the `main` ruleset | Accepted | 2026-11-05 |
 | [0019](0019-vercel-deployment-architecture.md) | Vercel deployment: static web, API function, headers/CSP, CLI secret policy | Proposed | 2026-11-05 |
 | [0020](0020-npm-install-scripts-policy.md) | npm install-scripts policy: deny by default, per-package review | Accepted | 2026-11-05 |
+| [0022](0022-csp-nonce-routing-middleware.md) | CSP nonce through Vercel Routing Middleware | Proposed | 2026-11-05 |
