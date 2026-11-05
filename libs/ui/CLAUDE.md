@@ -78,6 +78,13 @@ All come from `@use '../../styles/ui' as *;` and are tested in `src/styles/style
 
 Angular keeps the element until the leave animation ends and a second toggle mid-animation reverses it. Menus and listboxes scale from their trigger: the overlay sets `--ui-origin` (for example `100% 0`) on the panel from its anchor; dialogs keep `center`. The ripple keyframes exist, the ripple itself is a separate component. The FLIP helper, the "card lands" moment, View Transitions and the logo animation are not part of this foundation.
 
+## Illustrations, logo and empty states
+
+- `ui-illustration` draws the 8 scenes as inline SVG in its template (no `innerHTML`, no inline `style`, fills are token-bound classes). `motion` is `loop` (3-5 s cycle, landing / welcome / sign-in), `once` (plays, then holds the final frame; empty states and errors) or `none`; the caller picks it and each scene has a default (`ILLUSTRATION_DEFAULT_MOTION`: welcome scenes loop, the rest play once). Resting styles are the final frame, so `none` and `prefers-reduced-motion` just remove the animation.
+- Scene keyframes (`ui-ill-*`) and the two durations live in `styles/_illustration.scss` (`@include illustration-keyframes` in `global.scss`), apart from the shared presets; offsets are percentages of the element box, set through `--ill-*` custom properties on the scene classes.
+- `ui-logo`: `variant` `lockup` / `mark`, `tone` `color` (theme tokens) / `mono` (`currentColor`), mark size through `--ui-logo-size`.
+- `ui-empty-state`: `illustration` or `icon`, `heading` (not `title`: that would add a native tooltip), `text`, `headingLevel`; the action is projected content.
+
 ## Themes
 
 `global.scss` defines the tokens: scale tokens on `:root`, light on `:root, [data-theme='light']`, dark on `[data-theme='dark']`, and dark again under `@media (prefers-color-scheme: dark)` for `:root:not([data-theme])`. An explicit `data-theme` always wins; without one the OS decides. Every component must work in both; check both in Storybook.
