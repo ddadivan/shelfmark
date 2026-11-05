@@ -26,8 +26,7 @@
     transform var(--duration-fast) var(--ease-spring);
 
   &:focus-visible {
-    outline: 2px solid var(--focus-ring);
-    outline-offset: 2px;
+    @include focus-ring;
   }
 
   &:active {
@@ -36,14 +35,22 @@
     transform: scale(0.97);
   }
 
-  &:disabled {
+  &:disabled,
+  &[aria-disabled='true'] {
     cursor: not-allowed;
     opacity: 0.45;
     transform: none;
   }
 }
 
+// The same look on an inner `<a>` (`href` input).
+a.ui-button {
+  text-decoration: none;
+}
+
 .ui-button--primary {
+  --ui-ripple-opacity: 0.2;
+
   color: var(--on-primary);
   background: var(--primary);
 
@@ -76,6 +83,8 @@
 }
 
 .ui-button--danger {
+  --ui-ripple-opacity: 0.2;
+
   color: var(--on-primary);
   background: var(--danger);
 
@@ -85,7 +94,8 @@
 }
 
 // Hover and press must not tint a disabled button.
-.ui-button:disabled {
+.ui-button:disabled,
+.ui-button[aria-disabled='true'] {
   filter: none;
 }
 
@@ -116,8 +126,18 @@
   }
 }
 
+// Reduced motion: no press scale and no ripple (global `ripple` mixin); the pressed state is
+// the background only, so filled buttons get it here.
 @include reduced-motion {
   .ui-button:active {
     transform: none;
+  }
+
+  .ui-button--primary:active:not(:disabled, [aria-disabled='true']) {
+    background: var(--primary-hover);
+  }
+
+  .ui-button--danger:active:not(:disabled, [aria-disabled='true']) {
+    filter: brightness(0.85);
   }
 }

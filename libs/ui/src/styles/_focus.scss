@@ -1,0 +1,28 @@
+// Solid 2px `focus-ring` outline for buttons, rows, cards and other non-text controls.
+// Declarations only: use it inside `&:focus-visible { @include focus-ring; }`.
+@mixin focus-ring($offset: 2px) {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: $offset;
+}
+
+// Focus state of a text field wrapper (BRAND "Motion and states"): the border turns `focus-ring`
+// and a soft 3px halo hugs the field, 120 ms. Include it on the element that draws the border.
+// Fields must use this mixin: it also removes the global `focus-ring` outline from the bare
+// `input` / `textarea` / `[contenteditable]` inside the wrapper (text fields turn their border
+// instead, BRAND), and only there, so a field without a wrapper keeps the ring.
+// The transparent outline stays visible in forced-colors mode, where box-shadow is dropped.
+@mixin field-focus {
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+
+  &:focus-within {
+    border-color: var(--focus-ring);
+    outline: 2px solid transparent;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus-ring) 22%, transparent);
+  }
+
+  :where(input, textarea, [contenteditable]):focus-visible {
+    outline: none;
+  }
+}

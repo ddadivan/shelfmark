@@ -1,0 +1,29 @@
+// Layout breakpoints (author decision, ADR 0015): phone < 40em, tablet 40em to 63.99em,
+// desktop from 64em. Range syntax leaves no gap and no overlap between the three ranges.
+$tablet-min: 40em;
+$desktop-min: 64em;
+
+@mixin phone {
+  @media (width < #{$tablet-min}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (#{$tablet-min} <= width < #{$desktop-min}) {
+    @content;
+  }
+}
+
+// Tablet and desktop (40em and wider): the usual "not a phone" switch.
+@mixin tablet-up {
+  @media (width >= #{$tablet-min}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (width >= #{$desktop-min}) {
+    @content;
+  }
+}

@@ -1,6 +1,6 @@
 # 0022. CSP nonce through Vercel Routing Middleware
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-05
 - Source: issue #9; `docs/PROJECT.md` 5.8; `docs/SETUP.md` 5.6; [0019](0019-vercel-deployment-architecture.md), [0005](0005-web-csr-zoneless-angular.md), [0014](0014-own-ui-library-angular-aria-cdk.md)
 
