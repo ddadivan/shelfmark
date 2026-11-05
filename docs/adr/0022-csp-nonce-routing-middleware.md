@@ -19,8 +19,9 @@ Angular adds component styles (`libs/ui`, CDK overlays) at runtime as `<style>` 
 - The app shell is bundled into the middleware: a post-build target writes the built `index.html` as a JS module, and Vercel's bundler inlines it. There is no fetch to the origin, which would add latency, loop through the matcher and fail with 401 on protected previews.
 - Logic lives in the tested lib `libs/web/csp`. The root file keeps only the static `config` and the wiring, the same pattern as `api/index.mjs`.
 - One CSP source: `buildCsp()` in the lib. `vercel.json` keeps the nonce-less policy only for file-like non-API paths (a checked copy), so two policies never apply to one response and anything served as a file stays strict. An e2e config test enforces that the copies match.
+- The design depends on the middleware running: if Vercel skipped it, `/index.html` would be served without a CSP (the static rule excludes it). A post-deploy check of "exactly one CSP with a nonce on `/`" is therefore required; it is added as a post-deploy smoke step to issue #21 (Storybook / CI). POST to an HTML path is not handled by the middleware; Vercel answers 405 (checked on the preview).
 - Fail closed: the build fails, and the middleware throws at init, when the placeholder is missing.
-- Test page: a hidden `/__e2e/csp` route (`ui-button`, `ui-icon`, a CDK overlay) exists only in an `e2e` build configuration that swaps the route table by file replacement. CI serves that configuration; the production build does not contain the route, and a test checks the production output for the `__e2e` string.
+- Test page: a hidden `/__e2e/csp` route (`ui-button`, `ui-icon`, a CDK overlay) exists only in an `e2e` build configuration that swaps the route table by file replacement. CI serves that configuration; the production build does not contain the route. The `middleware-shell` script fails when the production output contains the `__e2e/csp` route string, and CI runs `nx affected -t middleware-shell` so that guard runs on every PR that touches `web`. The `e2e` configuration in `apps/web/project.json` repeats the `production` budgets and hashing (the Angular builder has no `extends` between configurations; JSON allows no comment there), builds into `dist/apps/web-e2e-build` and is served by `serve-static:e2e`.
 
 ## Alternatives considered
 
@@ -36,6 +37,8 @@ Angular adds component styles (`libs/ui`, CDK overlays) at runtime as `<style>` 
 - Every document load runs one edge middleware invocation (well within Hobby limits); SPA navigation does not.
 - HTML is never cached (`no-store`), and Chrome may skip the back-forward cache for it.
 - Local `nx serve` and the CI static server send no CSP. The CSP e2e test runs the real middleware handler inside the Playwright route, and the deployed-URL test checks the real header.
+- The nonce in the `ngCspNonce` attribute is readable by scripts. That is intrinsic to Angular and acceptable: the nonce only authorises styles, and `script-src 'self'` stays, so no injected script can run to read it.
+- `tsconfig.base.json` sets `"rootDir": "."` (repo root). `apps/web` and `apps/web-e2e` now import `libs/*` source through path aliases, and without it TS 6 uses the project folder as `rootDir` and fails with TS6059 ("file is not under rootDir").
 - CI tests a build that differs from production only by the `/__e2e/csp` route.
 - These Vercel behaviours are observed on the preview, not documented, and must be re-checked after changes: middleware bundling after `buildCommand`, `vercel.json` headers on middleware responses, and the matcher regex.
 - Switching to `runtime: 'nodejs'` is a one-line change if edge middleware is deprecated.

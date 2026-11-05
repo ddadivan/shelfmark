@@ -5,6 +5,7 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "strict": true,
+    "rootDir": ".",
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,

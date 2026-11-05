@@ -1,7 +1,3 @@
-import { execFileSync } from 'node:child_process';
-import { readdirSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
-import { workspaceRoot } from '@nx/devkit';
 import { expect, test } from '@playwright/test';
 import { buildCsp, HTML_MATCHER } from '@shelfmark/web-csp';
 import {
@@ -19,28 +15,6 @@ const apiRewrite = config.rewrites.find(
   (r) => r.destination === '/api' && r.source.startsWith('/api/'),
 ) ?? { source: '', destination: '' };
 const apiPaths = ['/api', '/api/', '/api/health', '/api/docs', '/api/folders/1'];
-
-test.describe('production bundle', () => {
-  test.skip(!!process.env['BASE_URL'], 'builds locally; not meaningful against a deployed URL');
-
-  // The e2e build adds the hidden /__e2e/csp page; the production build must not contain it.
-  test('has no e2e-only route and yields a shell with the nonce placeholder', () => {
-    test.setTimeout(240_000);
-    execFileSync('npx', ['nx', 'run', 'web:middleware-shell', '--output-style=static'], {
-      cwd: workspaceRoot,
-      stdio: 'pipe',
-    });
-
-    const shell = readFileSync(join(workspaceRoot, 'dist/apps/web/middleware/shell.mjs'), 'utf8');
-    expect(shell).toContain('CSP_NONCE_PLACEHOLDER');
-    const browserDir = join(workspaceRoot, 'dist/apps/web/browser');
-    const leaking = readdirSync(browserDir, { recursive: true })
-      .map(String)
-      .filter((file) => /\.(?:js|html)$/.test(file))
-      .filter((file) => readFileSync(join(browserDir, file), 'utf8').includes('__e2e'));
-    expect(leaking).toEqual([]);
-  });
-});
 
 test.describe('vercel.json deployment config', () => {
   test('static CSP equals the policy documented in SETUP.md 5.6 and the lib', () => {
