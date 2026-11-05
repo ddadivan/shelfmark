@@ -18,9 +18,8 @@
   },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
-    { "source": "/(.*\\.js)", "destination": "/404.html" },
-    { "source": "/(.*\\.[^/]*)", "destination": "/not-found-sentinel" },
-    { "source": "/((?!api(?:/|$)).*)", "destination": "/index.html" }
+    { "source": "/((?!not-found\\.x$).*\\.[^/]*)", "destination": "/not-found.x" },
+    { "source": "/((?!api(?:/|$))(?:.*/)?[^./]*)", "destination": "/index.html" }
   ],
   "headers": [
     {
