@@ -76,14 +76,21 @@ describe('Vercel function entry (api/index.mjs)', () => {
   // Runs only after `nx build api`: checks the externals webpack actually emitted.
   const bundle = resolve(srcDir, '../../../dist/apps/api/vercel-handler.mjs');
   it.skipIf(!existsSync(bundle))(
-    'statically imports every external the built bundle requires',
+    'loads externals only through static ESM imports (no require of ESM-only packages)',
     () => {
-      const required = [
-        ...readFileSync(bundle, 'utf8').matchAll(/createRequire_require\("([^"]+)"\)/g),
-      ]
+      // The Vercel runtime rejects require() of an ES module (ERR_REQUIRE_ESM).
+      expect(readFileSync(bundle, 'utf8')).not.toContain('createRequire');
+    },
+  );
+
+  it.skipIf(!existsSync(bundle))(
+    'statically imports every external the built bundle imports',
+    () => {
+      const required = [...readFileSync(bundle, 'utf8').matchAll(/^import .* from "([^"]+)";$/gm)]
         .map((match) => match[1])
         .filter(isExternalPackage)
         .map(packageName);
+      expect(required.length).toBeGreaterThan(0);
       const missing = [...new Set(required)].filter((name) => !entryImports.has(name));
       expect(missing).toEqual([]);
     },
