@@ -44,9 +44,30 @@ test.describe('vercel.json deployment config', () => {
     for (const path of apiPaths) {
       expect(regexp.test(path), path).toBe(false);
     }
-    for (const path of ['/', '/folders/42', '/settings']) {
+    for (const path of ['/', '/folders/42', '/settings', '/library/x', '/folders/42/']) {
       expect(regexp.test(path), path).toBe(true);
     }
+  });
+
+  test('SPA rewrite leaves paths with a file extension alone, so missing files stay 404', () => {
+    const spa = config.rewrites.find((r) => r.destination === '/index.html');
+    const regexp = sourceToRegExp(spa?.source ?? '');
+    for (const path of ['/missing.js', '/media/x.woff2', '/assets/deep/app.css', '/favicon.ico']) {
+      expect(regexp.test(path), path).toBe(false);
+    }
+  });
+
+  test('hashed js and css share one immutable cache rule', () => {
+    const rules = config.headers.filter((rule) =>
+      rule.headers.some((h) => h.key === 'Cache-Control' && h.value.includes('immutable')),
+    );
+    const hashed = rules.filter((rule) => rule.source.includes('{8}'));
+    expect(hashed).toHaveLength(1);
+    const regexp = sourceToRegExp(hashed[0].source);
+    for (const path of ['/main-ABCD1234.js', '/styles-ABCD1234.css']) {
+      expect(regexp.test(path), path).toBe(true);
+    }
+    expect(regexp.test('/main.js')).toBe(false);
   });
 
   test('API rewrite sends /api/* to the function', () => {

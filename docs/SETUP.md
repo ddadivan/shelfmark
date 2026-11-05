@@ -170,7 +170,7 @@ Mark every secret as **Sensitive** (value cannot be read back in the dashboard).
 
 All of it lives in `vercel.json`, `api/index.mjs` and `apps/api/src/vercel-handler.ts`; the reasoning is in [ADR 0019](adr/0019-vercel-deployment-architecture.md). Nothing to do by hand except the checks below.
 
-- **CSP and security headers** for the web are set in `vercel.json` (CSP: `default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'`), tested by an e2e check for CSP violations. `/api/*` gets no CSP from `vercel.json`: helmet sets it there.
+- **CSP and security headers** for the web are set in `vercel.json` (CSP: `default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; form-action 'self'`), tested by an e2e check for CSP violations. `/api/*` gets no CSP from `vercel.json`: helmet sets it there.
 - **Nonce decision:** `style-src 'self'` holds only while no component with runtime styles renders. Before the first `libs/ui` component (or CDK overlay) renders in `apps/web`, a Vercel Routing Middleware injects a per-request nonce (`ngCspNonce`) into `index.html` and the CSP header; `'unsafe-inline'` stays out. Tracked in a separate issue.
 - **Swagger UI assets** for `/api/docs` come from `swagger-ui-dist` and are included in the function with `includeFiles`; verify `/api/docs` on the first preview deployment.
 - **ESM output** of the API is `.mjs` (`main.mjs`, `vercel-handler.mjs`).
