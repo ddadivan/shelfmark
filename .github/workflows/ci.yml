@@ -44,6 +44,10 @@ jobs:
       - uses: nrwl/nx-set-shas@e602fada7ad5987b0f7b1905e7a99ea1c661514c # v5.1.0
       - run: npm run format:check
       - run: npm run lint:styles
+      # ADR 0020: every dependency install script needs an explicit allowScripts decision.
+      # `npm install-scripts ls` exits 0 either way, so check its output.
+      - name: Check npm install scripts are reviewed
+        run: npm install-scripts ls | grep -q 'No packages with unreviewed install scripts'
       - run: node --test .claude/hooks/
       - run: npx nx affected -t lint typecheck test build --output-style=static
 

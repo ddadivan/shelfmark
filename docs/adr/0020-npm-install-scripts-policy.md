@@ -10,7 +10,7 @@ npm 11 warns on `npm ci` that 9 packages have install scripts not covered by `al
 
 ## Decision
 
-All 9 packages are **denied**. The decision is stored in `allowScripts` in `package.json`, keyed by package name (`false` = denied), written by `npm install-scripts deny`. Name-only keys cover future versions; a new version does not reopen the question, a new package does.
+All 9 packages are **denied**. The decision is stored in `allowScripts` in `package.json`, keyed by package name (`false` = denied), written by `npm install-scripts deny`. Name-only keys cover future versions; a new version does not reopen the question, a new package does. This is safe while every entry is a denial; an approval keyed by name would also let a compromised later version run its script, so an approved package is re-reviewed on every version bump (and pinned by exact version in the key if npm supports it).
 
 | Package               | What the script does                                                         | Decision | Reason                                                                                         |
 | --------------------- | ---------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------- |
@@ -22,17 +22,18 @@ All 9 packages are **denied**. The decision is stored in `allowScripts` in `pack
 | `lefthook`            | `postinstall.js` runs `lefthook install` (skipped when `CI` is set)          | Deny     | `prepare` already runs `lefthook install` locally; same effect, no dependency script needed.   |
 | `lmdb`                | `node-gyp-build-optional-packages` (prebuilt lookup, compile fallback)       | Deny     | Prebuilt `@lmdb/*` binaries are loaded at runtime; used by Nx/Angular caches.                  |
 | `msgpackr-extract`    | `node-gyp-build-optional-packages` (prebuilt lookup, compile fallback)       | Deny     | Optional speed-up; prebuilt `@msgpackr-extract/*` exist and msgpackr has a pure JS fallback.   |
-| `nx`                  | `dist/bin/post-install` verifies platform support and updates the Nx Cloud client | Deny | Not critical (30s timeout, errors swallowed); we do not use Nx Cloud. Nx verified working without it. |
+| `nx`                  | `dist/bin/post-install` verifies platform support and updates the Nx Cloud client | Deny | Not critical (30s timeout, errors swallowed); we do not use Nx Cloud. Lint, typecheck, test, build and e2e green without it. |
 
 ### Rule for future packages
 
-- New install scripts are **denied by default**. `npm install-scripts ls` must show no unreviewed packages.
+- New install scripts are **denied by default**. CI enforces it: the `lint-test-build` job fails unless `npm install-scripts ls` reports "No packages with unreviewed install scripts" (the command itself exits 0 either way, checked with npm 11.20.0).
 - Approve (`npm install-scripts approve <pkg>`) only with a written reason in the PR and a new row in this ADR (or an update to it).
 - Before approving, check whether a prebuilt binary or an opt-out flag makes the script unnecessary.
 
 ## Consequences
 
-- `npm ci` and `npm ci --include=dev` (Vercel) print no install-scripts warning.
+- `npm ci` and `npm ci --include=dev` (Vercel) print no install-scripts warning (observed with npm 11.20.0, the `packageManager` pin).
+- A Dependabot PR that brings in a new package with an install script fails the CI check until the package gets a decision here.
 - Verified after a clean install: lint, typecheck, test, build, stylelint, Prettier, lefthook pre-commit, Storybook build and Playwright e2e all pass.
 - If a platform without prebuilt binaries is added, or a tool breaks without its script, revisit the affected row.
 
