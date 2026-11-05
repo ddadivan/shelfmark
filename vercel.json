@@ -16,14 +16,7 @@
       "includeFiles": "node_modules/swagger-ui-dist/**"
     }
   },
-  "rewrites": [
-    { "source": "/zz1/:p*", "destination": "/api" },
-    { "source": "/zz2/(.*)", "destination": "/api" },
-    { "source": "/zz3/:p*", "destination": "/api?" },
-    { "source": "/zz4/:p*", "destination": "/api/index.mjs" },
-    { "source": "/zz5/:p*", "destination": "/api/:p*" },
-    { "source": "/api/(.*)", "destination": "/api" }
-  ],
+  "rewrites": [],
   "headers": [
     {
       "source": "/((?!api/|api$).*)",
