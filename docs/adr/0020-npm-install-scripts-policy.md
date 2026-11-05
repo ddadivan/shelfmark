@@ -10,7 +10,7 @@ npm 11 warns on `npm ci` that 9 packages have install scripts not covered by `al
 
 ## Decision
 
-All 9 packages are **denied**. The decision is stored in `allowScripts` in `package.json`, keyed by package name (`false` = denied), written by `npm install-scripts deny`. Name-only keys cover future versions; a new version does not reopen the question, a new package does. This is safe while every entry is a denial; an approval keyed by name would also let a compromised later version run its script, so an approved package is re-reviewed on every version bump (and pinned by exact version in the key if npm supports it).
+All 9 packages are **denied**. The decision is stored in `allowScripts` in `package.json`, keyed by package name (`false` = denied), written by `npm install-scripts deny`. Name-only keys cover future versions; a new version does not reopen the question, a new package does. This is safe while every entry is a denial; an approval keyed by name would also let a compromised later version run its script, so an approved package must be re-reviewed on every version bump.
 
 | Package               | What the script does                                                         | Decision | Reason                                                                                         |
 | --------------------- | ---------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------- |
@@ -33,7 +33,7 @@ All 9 packages are **denied**. The decision is stored in `allowScripts` in `pack
 ## Consequences
 
 - `npm ci` and `npm ci --include=dev` (Vercel) print no install-scripts warning (observed with npm 11.20.0, the `packageManager` pin).
-- A Dependabot PR that brings in a new package with an install script fails the CI check until the package gets a decision here.
+- A Dependabot PR that brings in a new package with an install script fails the CI check (Dependabot itself does not evaluate `allowScripts`) until the package gets a decision here.
 - Verified after a clean install: lint, typecheck, test, build, stylelint, Prettier, lefthook pre-commit, Storybook build and Playwright e2e all pass.
 - If a platform without prebuilt binaries is added, or a tool breaks without its script, revisit the affected row.
 
