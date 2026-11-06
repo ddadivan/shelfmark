@@ -1,0 +1,47 @@
+@use '../src/styles/ui' as *;
+
+// Layout of the Input, Textarea and RadioGroup stories only (never shipped with the library).
+// Class names start with `fs-`.
+
+.fs-themes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.fs-panel {
+  display: grid;
+  gap: var(--space-6);
+  align-content: start;
+  padding: var(--space-6);
+  color: var(--text);
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+}
+
+.fs-narrow {
+  width: min(100%, rem(320px));
+}
+
+.fs-wide {
+  width: min(100vw - rem(48px), rem(420px));
+}
+
+.fs-form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.fs-caption {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.fs-values {
+  @include type(mono);
+
+  margin: 0;
+  color: var(--text-muted);
+}

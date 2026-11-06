@@ -1,0 +1,54 @@
+<ui-field-shell
+  [controlId]="controlId"
+  [label]="label()"
+  [hint]="hint()"
+  [error]="message()"
+  [invalid]="showInvalid()"
+  [disabled]="disabled()"
+  [mono]="type() === 'url'"
+>
+  @if (glyph(); as name) {
+    <span class="ui-input__slot">
+      @if (spinning()) {
+        <ui-spinner class="ui-input__glyph" animate.leave="ui-input__glyph--leave" />
+      } @else {
+        <ui-icon
+          class="ui-input__glyph"
+          [class.ui-input__glyph--return]="iconReturns()"
+          [name]="name"
+        />
+      }
+    </span>
+  }
+  <input
+    #native
+    class="ui-input__native"
+    [id]="controlId"
+    [type]="type()"
+    [value]="value()"
+    [disabled]="disabled()"
+    [attr.placeholder]="placeholder() || null"
+    [attr.inputmode]="type() === 'url' ? 'url' : null"
+    [attr.spellcheck]="type() === 'url' ? 'false' : null"
+    [attr.autocomplete]="type() === 'url' ? 'off' : null"
+    [attr.aria-required]="required() ? 'true' : null"
+    [attr.aria-invalid]="showInvalid() ? 'true' : null"
+    [attr.aria-describedby]="describedBy()"
+    (input)="onInput($event)"
+    (blur)="touch.emit()"
+  />
+  @if (showClear()) {
+    <button
+      type="button"
+      class="ui-input__clear"
+      [attr.aria-label]="clearLabel() || null"
+      (mousedown)="$event.preventDefault()"
+      (click)="clear()"
+    >
+      <ui-icon name="close" />
+    </button>
+  }
+  @if (shortcut()) {
+    <kbd class="ui-input__kbd" aria-hidden="true">{{ shortcut() }}</kbd>
+  }
+</ui-field-shell>
