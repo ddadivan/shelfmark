@@ -157,6 +157,16 @@ export class TagInputComponent extends UiFieldControl implements FormValueContro
       const open = this.open();
       untracked(() => (open ? this.show() : this.hide()));
     });
+    // Aria activates the first option; the option Enter adds is the typed text (its exact tag or
+    // the "Create tag" row), so that one is activated and announced instead.
+    afterRenderEffect(() => {
+      const listbox = this.listbox();
+      this.rows();
+      if (listbox && this.open()) {
+        // The mutation observer of Angular Aria re-sorts new options in a microtask first.
+        queueMicrotask(() => this.activateTyped());
+      }
+    });
     // Keep the active option visible while the arrows move through the list.
     afterRenderEffect(() => {
       const id = this.listbox()?.activeDescendant();
@@ -284,7 +294,8 @@ export class TagInputComponent extends UiFieldControl implements FormValueContro
   }
 
   private onEnter(event: KeyboardEvent): void {
-    // With an option under the arrows Aria's combobox hands Enter to the listbox, which chooses it.
+    // While the list shows, Aria's combobox hands Enter to the listbox, which chooses the active
+    // option (the typed text by default, see `activateTyped`).
     if (this.open() && this.listbox()?.activeDescendant()) {
       event.preventDefault();
       return;
@@ -298,7 +309,23 @@ export class TagInputComponent extends UiFieldControl implements FormValueContro
   private setQuery(text: string): void {
     this.query.set(text);
     // The model of the Aria combobox writes the input element; keep it in step.
-    this.combo()?.value.set(text);
+    const aria = this.combo();
+    if (aria && aria.value() !== text) {
+      aria.value.set(text);
+    }
+  }
+
+  /** Makes the option that Enter adds the active one: the exact tag, else the create row. */
+  private activateTyped(): void {
+    const rows = this.rows();
+    const text = normalizeTag(this.query()).toLocaleLowerCase();
+    if (!this.open() || !text) {
+      return;
+    }
+    const index = rows.findIndex((r) => r.create || r.name.toLocaleLowerCase() === text);
+    if (index >= 0) {
+      this.listbox()?.gotoIndex(index);
+    }
   }
 
   /** Adds a tag from text; ignores empty text and duplicates, respects `maxTags`. */

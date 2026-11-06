@@ -38,6 +38,10 @@ export function tagRows(
     return [];
   }
   const text = normalizeTag(query);
+  if (query && !text) {
+    // Only blanks typed: nothing to look for yet.
+    return [];
+  }
   const needle = text.toLocaleLowerCase();
   const matches = suggestions.filter(
     (s) => !includesTag(tags, s.name) && s.name.toLocaleLowerCase().includes(needle),

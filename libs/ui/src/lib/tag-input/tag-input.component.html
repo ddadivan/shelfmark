@@ -76,6 +76,7 @@
             [class.ui-tag-input__option--create]="row.create"
             [value]="row.key"
             [label]="row.label"
+            [attr.aria-label]="row.countLabel ? row.label + ', ' + row.countLabel : null"
           >
             <ui-icon class="ui-tag-input__option-icon" [name]="rowIcon(row)" [size]="16" />
             <span class="ui-tag-input__option-label">{{ row.label }}</span>
