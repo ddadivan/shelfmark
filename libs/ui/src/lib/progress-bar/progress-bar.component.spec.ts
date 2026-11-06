@@ -5,6 +5,7 @@ import { PROGRESS_BAR_DONE_TIMEOUT_MS } from './models/progress-bar-done-timeout
 import { PROGRESS_BAR_DONE_ANIMATION } from './models/progress-bar-done-animation.const';
 import type { ProgressBarVariant } from './models/progress-bar-variant.type';
 import { ProgressBarComponent } from './progress-bar.component';
+import { PROGRESS_BAR_VARIANT } from './models/progress-bar-variant.const';
 
 function setup(inputs: { variant?: ProgressBarVariant; label?: string } = {}) {
   const fixture = TestBed.createComponent(ProgressBarComponent);
@@ -134,14 +135,14 @@ describe('ProgressBarComponent', () => {
 
   describe('inline', () => {
     it('shows at once, without the 300 ms delay', () => {
-      const { bar, update } = setup({ variant: 'inline' });
+      const { bar, update } = setup({ variant: PROGRESS_BAR_VARIANT.Inline });
       update(true);
       expect(bar()?.classList.contains('ui-progress--inline')).toBe(true);
       expect(bar()?.classList.contains('ui-progress--fixed')).toBe(false);
     });
 
     it('finishes like the fixed bar', () => {
-      const { bar, update, endAnimation } = setup({ variant: 'inline' });
+      const { bar, update, endAnimation } = setup({ variant: PROGRESS_BAR_VARIANT.Inline });
       update(true);
       update(false);
       expect(bar()?.classList.contains('ui-progress--done')).toBe(true);
@@ -152,14 +153,17 @@ describe('ProgressBarComponent', () => {
 
   describe('accessibility', () => {
     it('is aria-hidden without a label', () => {
-      const { bar, update } = setup({ variant: 'inline' });
+      const { bar, update } = setup({ variant: PROGRESS_BAR_VARIANT.Inline });
       update(true);
       expect(bar()?.getAttribute('aria-hidden')).toBe('true');
       expect(bar()?.hasAttribute('role')).toBe(false);
     });
 
     it('is an indeterminate progressbar with a label', () => {
-      const { bar, update } = setup({ variant: 'inline', label: 'Loading Shelfmark' });
+      const { bar, update } = setup({
+        variant: PROGRESS_BAR_VARIANT.Inline,
+        label: 'Loading Shelfmark',
+      });
       update(true);
       expect(bar()?.getAttribute('role')).toBe('progressbar');
       expect(bar()?.getAttribute('aria-label')).toBe('Loading Shelfmark');
@@ -169,11 +173,11 @@ describe('ProgressBarComponent', () => {
 
     it('has no axe violations, with and without a label', async () => {
       vi.useRealTimers();
-      const plain = setup({ variant: 'inline' });
+      const plain = setup({ variant: PROGRESS_BAR_VARIANT.Inline });
       plain.update(true);
       expect(await axeViolations(plain.host)).toEqual([]);
 
-      const named = setup({ variant: 'inline', label: 'Loading Shelfmark' });
+      const named = setup({ variant: PROGRESS_BAR_VARIANT.Inline, label: 'Loading Shelfmark' });
       named.update(true);
       expect(await axeViolations(named.host)).toEqual([]);
     });

@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { axeViolations } from '../../testing/axe';
 import type { SpinnerSize } from './models/spinner-size.type';
 import { SpinnerComponent } from './spinner.component';
+import { SPINNER_SIZE } from './models/spinner-size.const';
 
 function setup(inputs: { size?: SpinnerSize; label?: string } = {}) {
   const fixture = TestBed.createComponent(SpinnerComponent);
@@ -22,7 +23,7 @@ describe('SpinnerComponent', () => {
     expect(host.querySelector('.ui-spinner__ring')).not.toBeNull();
   });
 
-  it.each<SpinnerSize>(['sm', 'lg'])('applies the %s size class', (size) => {
+  it.each<SpinnerSize>([SPINNER_SIZE.Sm, SPINNER_SIZE.Lg])('applies the %s size class', (size) => {
     const { host } = setup({ size });
     expect(host.classList.contains(`ui-spinner--${size}`)).toBe(true);
   });

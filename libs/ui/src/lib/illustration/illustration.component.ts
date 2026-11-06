@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { ILLUSTRATION_DEFAULT_MOTION } from './models/illustration-default-motion.const';
 import type { IllustrationMotion } from './models/illustration-motion.type';
 import type { IllustrationName } from './models/illustration-name.type';
+import { ILLUSTRATION_MOTION } from './models/illustration-motion.const';
 
 /**
  * Flat geometric brand scene, drawn as an inline SVG in the template (no `innerHTML`) with
@@ -15,9 +16,9 @@ import type { IllustrationName } from './models/illustration-name.type';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-illustration',
-    '[class.ui-illustration--loop]': "motionMode() === 'loop'",
-    '[class.ui-illustration--once]': "motionMode() === 'once'",
-    '[class.ui-illustration--none]': "motionMode() === 'none'",
+    '[class.ui-illustration--loop]': 'motionMode() === ILLUSTRATION_MOTION.Loop',
+    '[class.ui-illustration--once]': 'motionMode() === ILLUSTRATION_MOTION.Once',
+    '[class.ui-illustration--none]': 'motionMode() === ILLUSTRATION_MOTION.None',
     '[attr.role]': "label() ? 'img' : null",
     '[attr.aria-label]': 'label() || null',
     '[attr.aria-hidden]': "label() ? null : 'true'",
@@ -26,6 +27,8 @@ import type { IllustrationName } from './models/illustration-name.type';
   styleUrl: './illustration.component.scss',
 })
 export class IllustrationComponent {
+  protected readonly ILLUSTRATION_MOTION = ILLUSTRATION_MOTION;
+
   /** Scene to draw. */
   readonly name = input.required<IllustrationName>();
   /** Motion mode; omit for the scene's default. */

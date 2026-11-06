@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../../testing/axe';
 import { InputComponent } from './input.component';
+import { INPUT_TYPE } from './models/input-type.const';
 
 function setup(inputs: Record<string, unknown> = {}) {
   const fixture = TestBed.createComponent(InputComponent);
@@ -28,7 +29,7 @@ describe('InputComponent', () => {
   });
 
   it('url uses the mono control and URL hints', () => {
-    const { q, input } = setup({ type: 'url' });
+    const { q, input } = setup({ type: INPUT_TYPE.Url });
     expect(input().type).toBe('url');
     expect(input().getAttribute('inputmode')).toBe('url');
     expect(input().getAttribute('spellcheck')).toBe('false');
@@ -107,14 +108,14 @@ describe('InputComponent', () => {
     expect(setup({ icon: 'link' }).host.querySelector('use')?.getAttribute('href')).toContain(
       '#sm-link',
     );
-    expect(setup({ type: 'search' }).host.querySelector('use')?.getAttribute('href')).toContain(
-      '#sm-search',
-    );
+    expect(
+      setup({ type: INPUT_TYPE.Search }).host.querySelector('use')?.getAttribute('href'),
+    ).toContain('#sm-search');
     expect(setup().q('.ui-input__slot')).toBeNull();
   });
 
   it('swaps the search icon for a spinner while loading', () => {
-    const { fixture, host } = setup({ type: 'search', loading: true });
+    const { fixture, host } = setup({ type: INPUT_TYPE.Search, loading: true });
     expect(host.querySelector('ui-spinner')).not.toBeNull();
     expect(host.querySelector('ui-icon')).toBeNull();
     fixture.componentRef.setInput('loading', false);
@@ -184,11 +185,17 @@ describe('InputComponent', () => {
     ['default', {}],
     [
       'url with clear and shortcut',
-      { type: 'url', clearable: true, clearLabel: 'Clear', shortcut: '⌘K', value: 'https://a.b' },
+      {
+        type: INPUT_TYPE.Url,
+        clearable: true,
+        clearLabel: 'Clear',
+        shortcut: '⌘K',
+        value: 'https://a.b',
+      },
     ],
     ['error and hint', { error: 'Enter an address', hint: 'Hint' }],
     ['disabled', { disabled: true }],
-    ['search loading', { type: 'search', loading: true }],
+    ['search loading', { type: INPUT_TYPE.Search, loading: true }],
   ])('has no axe violations (%s)', async (_name, inputs) => {
     const { fixture, host } = setup(inputs);
     fixture.detectChanges();

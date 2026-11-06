@@ -1,2 +1,3 @@
-/** What the user chose; `system` follows `prefers-color-scheme`. */
-export type ThemePreference = 'system' | 'light' | 'dark';
+import type { THEME_PREFERENCE } from './theme-preference.const';
+
+export type ThemePreference = (typeof THEME_PREFERENCE)[keyof typeof THEME_PREFERENCE];

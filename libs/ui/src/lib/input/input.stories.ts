@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
-import type { InputType } from './models/input-type.type';
 import { InputComponent } from './input.component';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
+import { INPUT_TYPE } from './models/input-type.const';
 
-const TYPES: InputType[] = ['text', 'url', 'search'];
+const TYPES = Object.values(INPUT_TYPE);
 
 const meta: Meta<InputComponent> = {
   title: 'Components/Input',
@@ -21,7 +22,7 @@ const meta: Meta<InputComponent> = {
   },
   args: {
     label: 'Link',
-    type: 'text',
+    type: INPUT_TYPE.Text,
     placeholder: 'https://',
     hint: '',
     error: '',
@@ -65,7 +66,7 @@ export const Default: Story = {};
 
 export const Url: Story = {
   args: {
-    type: 'url',
+    type: INPUT_TYPE.Url,
     icon: 'link',
     clearable: true,
     value: 'https://youtube.com/watch?v=ng22',
@@ -76,7 +77,7 @@ export const Url: Story = {
 export const Search: Story = {
   args: {
     label: 'Search',
-    type: 'search',
+    type: INPUT_TYPE.Search,
     placeholder: 'Search links',
     shortcut: '⌘K',
   },
@@ -108,7 +109,7 @@ export const Focus: Story = {
 
 export const ErrorState: Story = {
   args: {
-    type: 'url',
+    type: INPUT_TYPE.Url,
     value: 'youtube com/ng22',
     error: 'Enter an address starting with http:// or https://',
   },
@@ -122,10 +123,11 @@ export const Disabled: Story = {
 export const AllVariants: Story = {
   parameters: { layout: 'padded' },
   render: () => ({
+    props: { themes: Object.values(THEME) },
     template: `
       <div class="fs-themes">
-        @for (theme of ['light', 'dark']; track theme) {
-          <div [attr.data-theme]="theme" class="fs-panel">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="fs-panel">
             <ui-input label="Link" type="url" icon="link" placeholder="https://"
               value="https://youtube.com/watch?v=ng22" [clearable]="true" clearLabel="Clear"
               hint="Title and preview fill in by themselves" />

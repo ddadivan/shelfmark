@@ -1,14 +1,15 @@
 import { overlayTransformOrigin } from '../overlay/overlay-origin';
 import { menuPositions, pointPositions } from './menu-positions';
+import { MENU_ALIGN } from './models/menu-align.const';
 
 describe('menu positions', () => {
   it('start aligns the menu with the left edge below the trigger, then flips', () => {
-    const origins = menuPositions('start').map((p) => overlayTransformOrigin(p));
+    const origins = menuPositions(MENU_ALIGN.Start).map((p) => overlayTransformOrigin(p));
     expect(origins).toEqual(['0 0', '100% 0', '0 100%', '100% 100%']);
   });
 
   it('end aligns the menu with the right edge below the trigger, then flips', () => {
-    const origins = menuPositions('end').map((p) => overlayTransformOrigin(p));
+    const origins = menuPositions(MENU_ALIGN.End).map((p) => overlayTransformOrigin(p));
     expect(origins).toEqual(['100% 0', '0 0', '100% 100%', '0 100%']);
   });
 

@@ -1,6 +1,10 @@
 export { ButtonComponent } from './button.component';
+export { BUTTON_HASPOPUP } from './models/button-haspopup.const';
 export type { ButtonHaspopup } from './models/button-haspopup.type';
 export type { ButtonPressed } from './models/button-pressed.type';
+export { BUTTON_SIZE } from './models/button-size.const';
 export type { ButtonSize } from './models/button-size.type';
+export { BUTTON_TYPE } from './models/button-type.const';
 export type { ButtonType } from './models/button-type.type';
+export { BUTTON_VARIANT } from './models/button-variant.const';
 export type { ButtonVariant } from './models/button-variant.type';

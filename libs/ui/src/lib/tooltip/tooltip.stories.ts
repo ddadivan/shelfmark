@@ -2,10 +2,14 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { ButtonComponent } from '../button/button.component';
 import { TooltipPanelComponent } from './tooltip-panel.component';
 import { TooltipDirective } from './tooltip.directive';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
+import type { Theme } from '../theme';
+import { OVERLAY_SIDE } from '../overlay/models/overlay-side.const';
+import type { TooltipPosition } from './models/tooltip-position.type';
 
 interface TooltipArgs {
   uiTooltip: string;
-  position: 'top' | 'bottom' | 'left' | 'right';
+  position: TooltipPosition;
   delay: number;
   uiTooltipShortcut: string;
 }
@@ -23,9 +27,14 @@ const meta: Meta<TooltipArgs> = {
       },
     },
   },
-  args: { uiTooltip: 'Switch theme', position: 'top', delay: 400, uiTooltipShortcut: '' },
+  args: {
+    uiTooltip: 'Switch theme',
+    position: OVERLAY_SIDE.Top,
+    delay: 400,
+    uiTooltipShortcut: '',
+  },
   argTypes: {
-    position: { control: 'inline-radio', options: ['top', 'bottom', 'left', 'right'] },
+    position: { control: 'inline-radio', options: Object.values(OVERLAY_SIDE) },
     delay: { control: 'number' },
   },
 };
@@ -104,8 +113,8 @@ export const Positions: Story = {
   }),
 };
 
-const variants = (theme: 'light' | 'dark') => `
-  <div data-theme="${theme}" class="ts-panel">
+const variants = (theme: Theme) => `
+  <div ${THEME_ATTRIBUTE}="${theme}" class="ts-panel">
     <p class="ts-hint">${theme} theme: hover or focus the buttons</p>
     <div class="ts-row">
       <ui-button uiTooltip="Top" position="top">Top</ui-button>
@@ -128,6 +137,6 @@ export const AllVariants: Story = {
   parameters: { layout: 'fullscreen' },
   render: () => ({
     moduleMetadata: { imports },
-    template: `${variants('light')}${variants('dark')}`,
+    template: `${Object.values(THEME).map(variants).join('')}`,
   }),
 };

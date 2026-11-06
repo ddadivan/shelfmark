@@ -11,6 +11,8 @@ import {
 import { IconComponent } from '../icon/icon.component';
 import type { IconName } from '../icon/models/icon-name.type';
 import type { ToastKind } from './models/toast-kind.type';
+import { TOAST_KIND } from './models/toast-kind.const';
+import { TOAST_KIND_ICON } from './models/toast-kind-icon.const';
 
 /**
  * The toast view: icon, text and an optional action. It carries no live region and no timer;
@@ -32,7 +34,7 @@ import type { ToastKind } from './models/toast-kind.type';
   styleUrl: './toast.component.scss',
 })
 export class ToastComponent {
-  readonly kind = input<ToastKind>('info');
+  readonly kind = input<ToastKind>(TOAST_KIND.Info);
   readonly text = input.required<string>();
   /** Action button text; no button without it. */
   readonly actionLabel = input<string>();
@@ -40,10 +42,7 @@ export class ToastComponent {
   /** True while the pointer is over the toast or focus is inside it. */
   readonly pausedChange = output<boolean>();
 
-  protected readonly icon = computed<IconName>(() => {
-    const kind = this.kind();
-    return kind === 'success' ? 'check' : kind === 'error' ? 'error' : 'info';
-  });
+  protected readonly icon = computed<IconName>(() => TOAST_KIND_ICON[this.kind()]);
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private hovered = false;

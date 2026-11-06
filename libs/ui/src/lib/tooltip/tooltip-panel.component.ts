@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import type { TooltipPosition } from './models/tooltip-position.type';
+import { OVERLAY_SIDE } from '../overlay/models/overlay-side.const';
 
 /**
  * The floating part of `uiTooltip`, rendered into a CDK overlay by the directive. It is not
@@ -17,7 +18,7 @@ export class TooltipPanelComponent {
   readonly text = input('');
   readonly shortcut = input('');
   /** The side the tooltip really sits on (after a flip); decides which edge keeps the gap. */
-  readonly side = input<TooltipPosition>('top');
+  readonly side = input<TooltipPosition>(OVERLAY_SIDE.Top);
   readonly open = input(true);
   /** The pointer entered or left the tooltip (WCAG 1.4.13: it stays open while hovered). */
   readonly hovered = output<boolean>();

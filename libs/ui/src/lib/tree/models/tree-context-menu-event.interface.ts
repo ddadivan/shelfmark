@@ -1,4 +1,4 @@
-import type { OverlayPoint } from '../../overlay/models/overlay-point.type';
+import type { OverlayPoint } from '../../overlay/models/overlay-point.interface';
 import type { UiTreeContextMenuTrigger } from './tree-context-menu-trigger.type';
 import type { UiTreeNode } from './tree-node.interface';
 

@@ -9,6 +9,10 @@ import type { ButtonPressed } from './models/button-pressed.type';
 import type { ButtonSize } from './models/button-size.type';
 import type { ButtonType } from './models/button-type.type';
 import type { ButtonVariant } from './models/button-variant.type';
+import { BUTTON_VARIANT } from './models/button-variant.const';
+import { BUTTON_SIZE } from './models/button-size.const';
+import { BUTTON_TYPE } from './models/button-type.const';
+import { BUTTON_HASPOPUP } from './models/button-haspopup.const';
 
 @Component({
   imports: [ButtonComponent],
@@ -37,9 +41,9 @@ import type { ButtonVariant } from './models/button-variant.type';
   `,
 })
 class HostComponent {
-  readonly variant = signal<ButtonVariant>('secondary');
-  readonly size = signal<ButtonSize>('md');
-  readonly type = signal<ButtonType>('button');
+  readonly variant = signal<ButtonVariant>(BUTTON_VARIANT.Secondary);
+  readonly size = signal<ButtonSize>(BUTTON_SIZE.Md);
+  readonly type = signal<ButtonType>(BUTTON_TYPE.Button);
   readonly iconLeft = signal<IconName | undefined>(undefined);
   readonly iconRight = signal<IconName | undefined>(undefined);
   readonly iconOnly = signal(false);
@@ -95,18 +99,15 @@ describe('ButtonComponent', () => {
     expect(button().className).not.toMatch(/--(sm|lg|icon)/);
   });
 
-  it.each(['primary', 'secondary', 'ghost', 'danger'] as const)(
-    'applies the %s variant class',
-    async (variant) => {
-      const { host, button, settle } = await setup();
-      host.variant.set(variant);
-      await settle();
+  it.each(Object.values(BUTTON_VARIANT))('applies the %s variant class', async (variant) => {
+    const { host, button, settle } = await setup();
+    host.variant.set(variant);
+    await settle();
 
-      expect(button().classList.contains(`ui-button--${variant}`)).toBe(true);
-    },
-  );
+    expect(button().classList.contains(`ui-button--${variant}`)).toBe(true);
+  });
 
-  it.each(['sm', 'lg'] as const)('applies the %s size class', async (size) => {
+  it.each([BUTTON_SIZE.Sm, BUTTON_SIZE.Lg])('applies the %s size class', async (size) => {
     const { host, button, settle } = await setup();
     host.size.set(size);
     await settle();
@@ -116,7 +117,7 @@ describe('ButtonComponent', () => {
 
   it('passes the native type', async () => {
     const { host, button, settle } = await setup();
-    host.type.set('submit');
+    host.type.set(BUTTON_TYPE.Submit);
     await settle();
 
     expect(button().type).toBe('submit');
@@ -138,7 +139,7 @@ describe('ButtonComponent', () => {
   it('uses 20px icons in large buttons', async () => {
     const { host, root, settle } = await setup();
     host.iconLeft.set('add');
-    host.size.set('lg');
+    host.size.set(BUTTON_SIZE.Lg);
     await settle();
 
     expect(root.querySelector('ui-icon')?.classList.contains('ui-icon--20')).toBe(true);
@@ -225,7 +226,7 @@ describe('ButtonComponent', () => {
       const { host, root, button, settle } = await setup();
       host.ariaExpanded.set(false);
       host.ariaControls.set('menu-1');
-      host.ariaHaspopup.set('menu');
+      host.ariaHaspopup.set(BUTTON_HASPOPUP.Menu);
       host.ariaDescribedby.set('tip-1');
       host.ariaPressed.set('mixed');
       await settle();
@@ -309,8 +310,8 @@ describe('ButtonComponent', () => {
     it('renders a link with the button classes instead of a button', async () => {
       const { host, root, button, link, settle } = await setup();
       host.href.set('/links');
-      host.variant.set('primary');
-      host.size.set('lg');
+      host.variant.set(BUTTON_VARIANT.Primary);
+      host.size.set(BUTTON_SIZE.Lg);
       await settle();
 
       expect(button()).toBeNull();

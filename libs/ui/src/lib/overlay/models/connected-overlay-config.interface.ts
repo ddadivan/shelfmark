@@ -1,6 +1,6 @@
 import type { ConnectedPosition } from '@angular/cdk/overlay';
 import type { OverlayLayer } from './overlay-layer.type';
-import type { OverlayPoint } from './overlay-point.type';
+import type { OverlayPoint } from './overlay-point.interface';
 
 export interface ConnectedOverlayConfig {
   /**

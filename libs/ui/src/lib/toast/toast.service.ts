@@ -6,6 +6,7 @@ import type { ToastOptions } from './models/toast-options.interface';
 import type { ToastRef } from './models/toast-ref.interface';
 import { ToastRegionComponent } from './toast-region.component';
 import { ToastStore } from './toast-store';
+import { OVERLAY_LAYER } from '../overlay/models/overlay-layer.const';
 
 /**
  * Short confirmations and undo. `show()` renders a `ui-toast` in the `toast` overlay layer
@@ -22,7 +23,10 @@ export class ToastService {
   private readonly regionRef: ComponentRef<ToastRegionComponent>;
 
   constructor() {
-    this.region = inject(UiOverlay).global({ layer: 'toast', panelClass: 'ui-toast-pane' });
+    this.region = inject(UiOverlay).global({
+      layer: OVERLAY_LAYER.Toast,
+      panelClass: 'ui-toast-pane',
+    });
     this.regionRef = this.region.attach(new ComponentPortal(ToastRegionComponent));
   }
 

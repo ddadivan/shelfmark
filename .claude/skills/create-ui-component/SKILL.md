@@ -26,28 +26,36 @@ libs/ui/src/lib/<name>/
 ## 3. Component
 
 ```ts
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
-export type ButtonSize = 'sm' | 'md' | 'lg';
+// models/button-variant.const.ts
+export const BUTTON_VARIANT = {
+  Primary: 'primary',
+  Secondary: 'secondary',
+  Ghost: 'ghost',
+  Danger: 'danger',
+} as const;
+// models/button-variant.type.ts: export type ButtonVariant = (typeof BUTTON_VARIANT)[keyof typeof BUTTON_VARIANT];
+// sizes follow the same pattern (button-size.const.ts, button-size.type.ts)
 
 @Component({
   selector: 'ui-button',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-button',
-    '[class.ui-button--primary]': "variant() === 'primary'",
+    '[class.ui-button--primary]': 'variant() === BUTTON_VARIANT.Primary',
     '[attr.aria-busy]': 'loading() || null',
   },
   templateUrl: './button.component.html',
   styleUrl: './button.component.scss',
 })
 export class ButtonComponent {
-  readonly variant = input<ButtonVariant>('secondary');
-  readonly size = input<ButtonSize>('md');
+  protected readonly BUTTON_VARIANT = BUTTON_VARIANT; // host and template expressions read it
+  readonly variant = input<ButtonVariant>(BUTTON_VARIANT.Secondary);
+  readonly size = input<ButtonSize>(BUTTON_SIZE.Md);
   readonly loading = input(false, { transform: booleanAttribute });
 }
 ```
 
-- Variants are typed union inputs with sensible defaults; booleans use `booleanAttribute`.
+- Variants are `as const` objects with a derived union type (ADR 0024, no TS `enum`); inputs keep the union and default through the constant; booleans use `booleanAttribute`.
 - Keyboard, focus, ARIA and overlays come from Angular Aria / CDK — do not hand-roll them.
 - Form controls integrate with Signal Forms.
 - No business logic, no HTTP, no stores — `libs/ui` is presentational.
@@ -63,7 +71,7 @@ export class ButtonComponent {
 
 - One story per variant and state (default, hover via pseudo-states, focus, disabled, loading, error), plus a "All variants" grid.
 - Theme toolbar shows light and dark; check both.
-- Use args for inputs so the controls panel works.
+- Use args for inputs so the controls panel works; `argTypes.options` is `Object.values(BUTTON_VARIANT)`, never a hand-copied list.
 
 ## 6. Tests
 

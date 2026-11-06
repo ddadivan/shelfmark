@@ -4,9 +4,13 @@ import { MenuItemComponent } from './menu-item.component';
 import { MenuSeparatorComponent } from './menu-separator.component';
 import { MenuTriggerDirective } from './menu-trigger.directive';
 import { MenuComponent } from './menu.component';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
+import type { Theme } from '../theme';
+import { MENU_ALIGN } from './models/menu-align.const';
+import type { MenuAlign } from './models/menu-align.type';
 
 interface MenuArgs {
-  align: 'start' | 'end';
+  align: MenuAlign;
 }
 
 const meta: Meta<MenuArgs> = {
@@ -24,8 +28,8 @@ const meta: Meta<MenuArgs> = {
       },
     },
   },
-  args: { align: 'start' },
-  argTypes: { align: { control: 'inline-radio', options: ['start', 'end'] } },
+  args: { align: MENU_ALIGN.Start },
+  argTypes: { align: { control: 'inline-radio', options: Object.values(MENU_ALIGN) } },
 };
 
 export default meta;
@@ -64,7 +68,7 @@ export const WithButtonTrigger: Story = {
 
 /** An icon-only trigger at the end of a row: the menu lines up with its right edge. */
 export const IconOnlyTrigger: Story = {
-  args: { align: 'end' },
+  args: { align: MENU_ALIGN.End },
   render: (args) => ({
     props: args,
     moduleMetadata: { imports },
@@ -143,8 +147,8 @@ export const ContextMenu: Story = {
   }),
 };
 
-const variants = (theme: 'light' | 'dark') => `
-  <div data-theme="${theme}" class="ms-panel">
+const variants = (theme: Theme) => `
+  <div ${THEME_ATTRIBUTE}="${theme}" class="ms-panel">
     <p class="ms-hint">${theme} theme: static menus (open the stories above for the live popup)</p>
     <div class="ms-row">
       <ui-menu inline ariaLabel="Link actions" class="ms-static">${linkItems}</ui-menu>
@@ -163,6 +167,6 @@ const variants = (theme: 'light' | 'dark') => `
 export const AllVariants: Story = {
   render: () => ({
     moduleMetadata: { imports },
-    template: `${variants('light')}${variants('dark')}`,
+    template: `${Object.values(THEME).map(variants).join('')}`,
   }),
 };

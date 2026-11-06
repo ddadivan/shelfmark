@@ -11,9 +11,11 @@ import type { UiDialogConfig } from './models/dialog-config.interface';
 import type { UiDialogContext } from './models/dialog-context.interface';
 import { UI_DIALOG_CONTEXT } from './models/ui-dialog-context.const';
 import { UI_DIALOG_DATA } from './models/ui-dialog-data.const';
-import { setOverlayLayer } from '../overlay/overlay-layer';
-
-const ESCAPE = 'Escape';
+import { overlayLayerClass, setOverlayLayer } from '../overlay/overlay-layer';
+import { KEYBOARD_KEY } from '../keyboard';
+import { DIALOG_ROLE } from './models/dialog-role.const';
+import { DIALOG_SIZE } from './models/dialog-size.const';
+import { OVERLAY_LAYER } from '../overlay/models/overlay-layer.const';
 
 /**
  * Opens dialogs on the CDK `Dialog`: focus trap, focus restore, `aria-modal`, page scroll
@@ -45,7 +47,7 @@ export class DialogService {
     const holder: { ref?: UiDialogRef<R, C> } = {};
 
     const cdkRef = this.dialog.open<R, D, C>(component, {
-      role: config.role ?? 'dialog',
+      role: config.role ?? DIALOG_ROLE.Dialog,
       ariaModal: true,
       ariaLabelledBy: titleId,
       ariaDescribedBy: config.describedBy ?? null,
@@ -54,7 +56,7 @@ export class DialogService {
       // The ref owns closing (leave animation first), so the CDK never closes on its own.
       disableClose: true,
       closeOnDestroy: true,
-      backdropClass: ['ui-dialog-scrim', 'ui-overlay-layer--dialog'],
+      backdropClass: ['ui-dialog-scrim', overlayLayerClass(OVERLAY_LAYER.Dialog)],
       positionStrategy: this.overlay.position().global(),
       injector: this.injector,
       providers: (ref) => {
@@ -62,7 +64,7 @@ export class DialogService {
         holder.ref = uiRef;
         const context: UiDialogContext = {
           titleId,
-          size: config.size ?? 'sm',
+          size: config.size ?? DIALOG_SIZE.Sm,
           leaving: uiRef.leaving,
         };
         return [
@@ -78,10 +80,10 @@ export class DialogService {
       throw new Error('ui-dialog: the dialog reference was not created.');
     }
     // On the host element (the stacking context), like every `UiOverlay` pane.
-    setOverlayLayer(cdkRef.overlayRef.hostElement, 'dialog');
+    setOverlayLayer(cdkRef.overlayRef.hostElement, OVERLAY_LAYER.Dialog);
 
     cdkRef.keydownEvents.subscribe((event) => {
-      if (event.key === ESCAPE && dismissible && !event.defaultPrevented) {
+      if (event.key === KEYBOARD_KEY.Escape && dismissible && !event.defaultPrevented) {
         event.preventDefault();
         result.close();
       }
@@ -109,9 +111,9 @@ export class DialogService {
     const ref = this.open<ConfirmDialogComponent, boolean, ConfirmDialogData>(
       ConfirmDialogComponent,
       {
-        size: 'sm',
+        size: DIALOG_SIZE.Sm,
         data: { ...config, textId },
-        role: destructive ? 'alertdialog' : 'dialog',
+        role: destructive ? DIALOG_ROLE.AlertDialog : DIALOG_ROLE.Dialog,
         scrimClose: !destructive,
         describedBy: textId,
         autoFocus: false,

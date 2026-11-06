@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import type { SpinnerSize } from './models/spinner-size.type';
+import { SPINNER_SIZE } from './models/spinner-size.const';
 
 /**
  * Indeterminate spinner: a ring drawn in `currentColor` that fades in and scales up from 40%
@@ -16,8 +17,8 @@ import type { SpinnerSize } from './models/spinner-size.type';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-spinner',
-    '[class.ui-spinner--sm]': "size() === 'sm'",
-    '[class.ui-spinner--lg]': "size() === 'lg'",
+    '[class.ui-spinner--sm]': 'size() === SPINNER_SIZE.Sm',
+    '[class.ui-spinner--lg]': 'size() === SPINNER_SIZE.Lg',
     '[attr.role]': "label() ? 'progressbar' : null",
     '[attr.aria-label]': 'label() || null',
     '[attr.aria-hidden]': "label() ? null : 'true'",
@@ -26,7 +27,9 @@ import type { SpinnerSize } from './models/spinner-size.type';
   styleUrl: './spinner.component.scss',
 })
 export class SpinnerComponent {
-  readonly size = input<SpinnerSize>('md');
+  protected readonly SPINNER_SIZE = SPINNER_SIZE;
+
+  readonly size = input<SpinnerSize>(SPINNER_SIZE.Md);
   /** Accessible name. Omit when the spinner sits next to the text that says what is loading. */
   readonly label = input<string>();
 }

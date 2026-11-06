@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { MeterComponent } from './meter.component';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
 
 const meta: Meta<MeterComponent> = {
   title: 'Components/Meter',
@@ -35,11 +36,11 @@ export const Complete: Story = { args: { value: 100 } };
 export const AllVariants: Story = {
   parameters: { layout: 'padded' },
   render: () => ({
-    props: { values: [0, 25, 64, 100] },
+    props: { values: [0, 25, 64, 100], themes: Object.values(THEME) },
     template: `
       <div class="ls-themes">
-        @for (theme of ['light', 'dark']; track theme) {
-          <div [attr.data-theme]="theme" class="ls-panel">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="ls-panel">
             @for (v of values; track v) {
               <div class="ls-meter">
                 <div class="ls-meter__head">

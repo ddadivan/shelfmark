@@ -9,6 +9,9 @@ import type { OverlaySide } from './models/overlay-side.type';
 import { connectedSide, overlayTransformOrigin, setOverlayOrigin } from './overlay-origin';
 import { UiOverlay } from './overlay.service';
 import { sidePositions } from './side-positions';
+import { OVERLAY_SIDE } from './models/overlay-side.const';
+import { OVERLAY_LAYER } from './models/overlay-layer.const';
+import { overlayLayerClass } from './overlay-layer';
 
 @Component({ template: '<span class="probe">Panel</span>' })
 class ProbeComponent {}
@@ -26,14 +29,14 @@ function stylesDir(): string {
   }
 }
 
-const SIDES: readonly OverlaySide[] = ['top', 'bottom', 'left', 'right'];
+const SIDES: readonly OverlaySide[] = Object.values(OVERLAY_SIDE);
 
 describe('overlay positions and origin', () => {
   it.each([
-    ['top', '50% 100%'],
-    ['bottom', '50% 0'],
-    ['left', '100% 50%'],
-    ['right', '0 50%'],
+    [OVERLAY_SIDE.Top, '50% 100%'],
+    [OVERLAY_SIDE.Bottom, '50% 0'],
+    [OVERLAY_SIDE.Left, '100% 50%'],
+    [OVERLAY_SIDE.Right, '0 50%'],
   ] as const)('the %s panel grows from %s', (side, origin) => {
     expect(overlayTransformOrigin(sidePositions(side)[0])).toBe(origin);
   });
@@ -46,10 +49,10 @@ describe('overlay positions and origin', () => {
 
   it('flips to the opposite side as the second position', () => {
     const opposite: Record<OverlaySide, OverlaySide> = {
-      top: 'bottom',
-      bottom: 'top',
-      left: 'right',
-      right: 'left',
+      top: OVERLAY_SIDE.Bottom,
+      bottom: OVERLAY_SIDE.Top,
+      left: OVERLAY_SIDE.Right,
+      right: OVERLAY_SIDE.Left,
     };
     for (const side of SIDES) {
       const [preferred, flipped] = sidePositions(side);
@@ -60,7 +63,7 @@ describe('overlay positions and origin', () => {
 
   it('writes --ui-origin on the pane through the CSSOM', () => {
     const pane = document.createElement('div');
-    setOverlayOrigin(pane, sidePositions('bottom')[0]);
+    setOverlayOrigin(pane, sidePositions(OVERLAY_SIDE.Bottom)[0]);
     expect(pane.style.getPropertyValue('--ui-origin')).toBe('50% 0');
     expect(pane.getAttribute('style')).toContain('--ui-origin');
   });
@@ -74,7 +77,7 @@ describe('UiOverlay', () => {
   function open(side: OverlaySide, onPositionChange?: (s: OverlaySide) => void) {
     const service = TestBed.inject(UiOverlay);
     overlay = service.connect(
-      { origin, positions: sidePositions(side), layer: 'menu', panelClass: 'extra' },
+      { origin, positions: sidePositions(side), layer: OVERLAY_LAYER.Menu, panelClass: 'extra' },
       { injector: TestBed.inject(Injector), onPositionChange },
     );
     overlay.attach(new ComponentPortal(ProbeComponent));
@@ -97,11 +100,11 @@ describe('UiOverlay', () => {
   });
 
   it('creates a pane with the layer and extra classes and attaches the content', () => {
-    open('top');
+    open(OVERLAY_SIDE.Top);
     const pane = overlay.pane;
     expect(pane.classList.contains('ui-overlay-pane')).toBe(true);
-    expect(pane.classList.contains('ui-overlay-layer--menu')).toBe(false);
-    expect(overlay.host.classList.contains('ui-overlay-layer--menu')).toBe(true);
+    expect(pane.classList.contains(overlayLayerClass(OVERLAY_LAYER.Menu))).toBe(false);
+    expect(overlay.host.classList.contains(overlayLayerClass(OVERLAY_LAYER.Menu))).toBe(true);
     expect(pane.classList.contains('extra')).toBe(true);
     expect(pane.querySelector('.probe')).not.toBeNull();
     expect(overlay.isAttached).toBe(true);
@@ -114,12 +117,20 @@ describe('UiOverlay', () => {
     }).css;
     document.head.append(sheet);
     const service = TestBed.inject(UiOverlay);
-    const tooltip = service.connect({ origin, positions: sidePositions('top'), layer: 'tooltip' });
+    const tooltip = service.connect({
+      origin,
+      positions: sidePositions(OVERLAY_SIDE.Top),
+      layer: OVERLAY_LAYER.Tooltip,
+    });
     tooltip.attach(new ComponentPortal(ProbeComponent));
-    overlay = service.connect({ origin, positions: sidePositions('top'), layer: 'menu' });
+    overlay = service.connect({
+      origin,
+      positions: sidePositions(OVERLAY_SIDE.Top),
+      layer: OVERLAY_LAYER.Menu,
+    });
     overlay.attach(new ComponentPortal(ProbeComponent));
     const z = (el: HTMLElement) => Number(getComputedStyle(el).zIndex);
-    expect(tooltip.host.classList.contains('ui-overlay-layer--tooltip')).toBe(true);
+    expect(tooltip.host.classList.contains(overlayLayerClass(OVERLAY_LAYER.Tooltip))).toBe(true);
     expect(z(tooltip.host)).toBeGreaterThan(z(overlay.host));
     tooltip.dispose();
     sheet.remove();
@@ -129,8 +140,8 @@ describe('UiOverlay', () => {
     const service = TestBed.inject(UiOverlay);
     overlay = service.connect({
       origin,
-      positions: sidePositions('top'),
-      layer: 'toast',
+      positions: sidePositions(OVERLAY_SIDE.Top),
+      layer: OVERLAY_LAYER.Toast,
       panelClass: ['a', 'b'],
     });
     overlay.attach(new ComponentPortal(ProbeComponent));
@@ -141,21 +152,21 @@ describe('UiOverlay', () => {
 
   it('reports the resolved side and sets --ui-origin from it', () => {
     const sides: OverlaySide[] = [];
-    open('top', (side) => sides.push(side));
-    expect(sides.at(-1)).toBe('top');
-    expect(overlay.side).toBe('top');
+    open(OVERLAY_SIDE.Top, (side) => sides.push(side));
+    expect(sides.at(-1)).toBe(OVERLAY_SIDE.Top);
+    expect(overlay.side).toBe(OVERLAY_SIDE.Top);
     expect(overlay.pane.style.getPropertyValue('--ui-origin')).toBe('50% 100%');
   });
 
   it('detaches right away when nothing animates', () => {
-    open('top');
+    open(OVERLAY_SIDE.Top);
     overlay.release();
     TestBed.tick();
     expect(overlay.isAttached).toBe(false);
   });
 
   it('waits for running leave animations before it detaches', async () => {
-    open('top');
+    open(OVERLAY_SIDE.Top);
     let finish: () => void = () => undefined;
     const finished = new Promise<Animation>((resolve) => {
       finish = () => {
@@ -175,7 +186,7 @@ describe('UiOverlay', () => {
 
   it('detaches after the timeout when an animation never finishes', async () => {
     vi.useFakeTimers();
-    open('top');
+    open(OVERLAY_SIDE.Top);
     overlay.pane.getAnimations = () => [
       { finished: new Promise<Animation>(() => undefined) } as Animation,
     ];
@@ -189,7 +200,7 @@ describe('UiOverlay', () => {
 
   it('clears the fallback timer when the release is cancelled', () => {
     vi.useFakeTimers();
-    open('top');
+    open(OVERLAY_SIDE.Top);
     overlay.pane.getAnimations = () => [
       { finished: new Promise<Animation>(() => undefined) } as Animation,
     ];
@@ -202,7 +213,7 @@ describe('UiOverlay', () => {
   });
 
   it('keeps the overlay when the release is cancelled mid-animation', async () => {
-    open('top');
+    open(OVERLAY_SIDE.Top);
     let finish: () => void = () => undefined;
     const finished = new Promise<Animation>((resolve) => {
       finish = () => {
@@ -221,7 +232,7 @@ describe('UiOverlay', () => {
   });
 
   it('a release that was superseded before the next render does nothing', () => {
-    open('top');
+    open(OVERLAY_SIDE.Top);
     overlay.release();
     overlay.cancelRelease();
     TestBed.tick();
@@ -229,7 +240,7 @@ describe('UiOverlay', () => {
   });
 
   it('removes the pane on dispose, also when called twice', () => {
-    open('top');
+    open(OVERLAY_SIDE.Top);
     expect(panes()).toHaveLength(1);
     overlay.updatePosition();
     overlay.dispose();
@@ -244,7 +255,7 @@ describe('UiOverlay', () => {
     }
     const owner = TestBed.createComponent(OwnerComponent);
     overlay = TestBed.inject(UiOverlay).connect(
-      { origin, positions: sidePositions('top'), layer: 'tooltip' },
+      { origin, positions: sidePositions(OVERLAY_SIDE.Top), layer: OVERLAY_LAYER.Tooltip },
       { injector: owner.componentInstance.injector },
     );
     overlay.attach(new ComponentPortal(ProbeComponent));
@@ -254,7 +265,11 @@ describe('UiOverlay', () => {
   });
   it('moves an existing element into the pane and puts it back on detach', () => {
     const service = TestBed.inject(UiOverlay);
-    overlay = service.connect({ origin, positions: sidePositions('bottom'), layer: 'menu' });
+    overlay = service.connect({
+      origin,
+      positions: sidePositions(OVERLAY_SIDE.Bottom),
+      layer: OVERLAY_LAYER.Menu,
+    });
     const parent = document.createElement('div');
     const element = document.createElement('div');
     parent.append(element);
@@ -273,8 +288,8 @@ describe('UiOverlay', () => {
     const service = TestBed.inject(UiOverlay);
     overlay = service.connect({
       origin: { x: 40, y: 60 },
-      positions: sidePositions('bottom'),
-      layer: 'menu',
+      positions: sidePositions(OVERLAY_SIDE.Bottom),
+      layer: OVERLAY_LAYER.Menu,
     });
     overlay.attach(new ComponentPortal(ProbeComponent));
     TestBed.tick();

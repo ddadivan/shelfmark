@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { LoadMoreComponent } from './load-more.component';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
 
 const meta: Meta<LoadMoreComponent> = {
   title: 'Components/LoadMore',
@@ -25,10 +26,11 @@ export const Idle: Story = { args: { loading: false } };
 export const AllVariants: Story = {
   parameters: { layout: 'padded' },
   render: () => ({
+    props: { themes: Object.values(THEME) },
     template: `
       <div class="ls-themes">
-        @for (theme of ['light', 'dark']; track theme) {
-          <div [attr.data-theme]="theme" class="ls-panel">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="ls-panel">
             <div class="ls-list"><ui-load-more text="Loading more links" /></div>
           </div>
         }

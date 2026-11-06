@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../../testing/axe';
 import type { RadioOption } from './models/radio-option.interface';
 import { RadioGroupComponent } from './radio-group.component';
+import { RADIO_ORIENTATION } from './models/radio-orientation.const';
 
 const OPTIONS: RadioOption[] = [
   { value: 'move', title: 'Move links to Unsorted', description: 'The folders go, all links stay' },
@@ -68,7 +69,9 @@ describe('RadioGroupComponent', () => {
   it('is vertical by default and a row when horizontal', () => {
     expect(setup().host.classList.contains('ui-radio-group--row')).toBe(false);
     expect(
-      setup({ orientation: 'horizontal' }).host.classList.contains('ui-radio-group--row'),
+      setup({ orientation: RADIO_ORIENTATION.Horizontal }).host.classList.contains(
+        'ui-radio-group--row',
+      ),
     ).toBe(true);
   });
 
@@ -105,7 +108,7 @@ describe('RadioGroupComponent', () => {
 
   it.each([
     ['default', {}],
-    ['selected, horizontal', { value: 'move', orientation: 'horizontal' }],
+    ['selected, horizontal', { value: 'move', orientation: RADIO_ORIENTATION.Horizontal }],
     ['disabled', { disabled: true }],
   ])('has no axe violations (%s)', async (_name, inputs) => {
     expect(await axeViolations(setup(inputs).host)).toEqual([]);

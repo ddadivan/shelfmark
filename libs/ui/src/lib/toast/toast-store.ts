@@ -2,6 +2,7 @@ import { ErrorHandler, inject, Service, signal } from '@angular/core';
 import { TOAST_DURATION_MS } from './models/toast-duration.const';
 import type { ToastItem } from './models/toast-item.interface';
 import type { ToastOptions } from './models/toast-options.interface';
+import { TOAST_KIND } from './models/toast-kind.const';
 
 /**
  * State and timer of the toast on screen (internal; features use `ToastService`). One toast at
@@ -23,7 +24,7 @@ export class ToastStore {
   push(options: ToastOptions): ToastItem {
     const item: ToastItem = {
       id: this.nextId++,
-      kind: options.kind ?? 'info',
+      kind: options.kind ?? TOAST_KIND.Info,
       text: options.text,
       action: options.action,
       duration: Math.max(

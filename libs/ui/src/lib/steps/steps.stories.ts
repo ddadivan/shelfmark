@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { StepsComponent } from './steps.component';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
 
 const meta: Meta<StepsComponent> = {
   title: 'Components/Steps',
@@ -25,11 +26,11 @@ export const Third: Story = { args: { current: 3, label: 'Step 3 of 3' } };
 export const AllVariants: Story = {
   parameters: { layout: 'padded' },
   render: () => ({
-    props: { steps: [1, 2, 3] },
+    props: { steps: [1, 2, 3], themes: Object.values(THEME) },
     template: `
       <div class="ds-themes">
-        @for (theme of ['light', 'dark']; track theme) {
-          <div [attr.data-theme]="theme" class="ds-pane">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane">
             @for (step of steps; track step) {
               <ui-steps [count]="3" [current]="step" [label]="'Step ' + step + ' of 3'" />
             }

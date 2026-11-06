@@ -31,7 +31,7 @@ NestJS REST API, mounted under `/api` (port 3000). Source of truth: `docs/PROJEC
 - `NODE_ENV` is fail-safe: only an explicit `development` or `test` is non-production (unset means production). Non-production drops HSTS and `upgrade-insecure-requests` from helmet; `nx serve` sets `NODE_ENV=development`.
 - 5xx responses never carry internal messages (generic text); the cause and stack are logged server-side only.
 - No CORS: the API is same-origin (web dev proxy `/api` -> `http://localhost:3000`).
-- Strict TypeScript: no `any`, no `@ts-ignore`; one interface/type/enum per file with the `.interface.ts` / `.type.ts` / `.enum.ts` suffix.
+- Strict TypeScript: no `any`, no `@ts-ignore`; one interface/type/const per file with the `.interface.ts` / `.type.ts` / `.const.ts` suffix; no TS `enum` (ADR 0024).
 
 ## Security
 

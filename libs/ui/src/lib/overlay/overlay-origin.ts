@@ -1,5 +1,6 @@
 import type { OverlayPositionPair } from './models/overlay-position-pair.type';
 import type { OverlaySide } from './models/overlay-side.type';
+import { OVERLAY_SIDE } from './models/overlay-side.const';
 
 const ORIGIN_PROPERTY = '--ui-origin';
 
@@ -22,10 +23,12 @@ export function setOverlayOrigin(pane: HTMLElement, pair: OverlayPositionPair): 
 /** The side of the trigger a resolved position puts the panel on. */
 export function connectedSide(pair: OverlayPositionPair): OverlaySide {
   if (pair.overlayY === 'bottom' && pair.originY === 'top') {
-    return 'top';
+    return OVERLAY_SIDE.Top;
   }
   if (pair.overlayY === 'top' && pair.originY === 'bottom') {
-    return 'bottom';
+    return OVERLAY_SIDE.Bottom;
   }
-  return pair.overlayX === 'end' && pair.originX === 'start' ? 'left' : 'right';
+  return pair.overlayX === 'end' && pair.originX === 'start'
+    ? OVERLAY_SIDE.Left
+    : OVERLAY_SIDE.Right;
 }

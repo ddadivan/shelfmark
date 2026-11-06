@@ -7,6 +7,7 @@ import type { IllustrationMotion } from '../illustration/models/illustration-mot
 import type { IllustrationName } from '../illustration/models/illustration-name.type';
 import { EmptyStateComponent } from './empty-state.component';
 import type { EmptyStateHeadingLevel } from './models/empty-state-heading-level.type';
+import { ILLUSTRATION_MOTION } from '../illustration/models/illustration-motion.const';
 
 @Component({
   imports: [EmptyStateComponent, ButtonComponent],
@@ -62,7 +63,7 @@ describe('EmptyStateComponent', () => {
     const { host, update } = setup();
     update((c) => {
       c.illustration.set('empty-folder');
-      c.motion.set('none');
+      c.motion.set(ILLUSTRATION_MOTION.None);
     });
     const scene = host.querySelector('ui-illustration');
     expect(scene).not.toBeNull();

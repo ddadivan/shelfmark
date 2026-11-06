@@ -1,8 +1,9 @@
 import { Service } from '@angular/core';
 import { Translation, TranslocoLoader } from '@jsverse/transloco';
+import { APP_LANG } from './models/app-lang.const';
 
 const loaders: Readonly<Record<string, () => Promise<{ default: Translation }>>> = {
-  en: () => import('./en.json'),
+  [APP_LANG.En]: () => import('./en.json'),
 };
 
 /** Static loader: translations are bundled lazily, no HTTP request. */

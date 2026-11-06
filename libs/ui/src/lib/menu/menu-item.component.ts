@@ -15,6 +15,7 @@ import { IconComponent } from '../icon/icon.component';
 import type { IconName } from '../icon/models/icon-name.type';
 import { RippleDirective } from '../ripple/ripple.directive';
 import type { MenuItemType } from './models/menu-item-type.type';
+import { MENU_ITEM_TYPE } from './models/menu-item-type.const';
 
 const ROLES = {
   item: 'menuitem',
@@ -50,7 +51,7 @@ export class MenuItemComponent {
   /** Current choice of a group (a theme, a sort order); adds `is-selected`. */
   readonly selected = input(false, { transform: booleanAttribute });
   /** `item` (action), `checkbox` or `radio`; sets the ARIA role of the inner element. */
-  readonly type = input<MenuItemType>('item');
+  readonly type = input<MenuItemType>(MENU_ITEM_TYPE.Item);
 
   /** The item was chosen (click, Enter or Space); the menu closes and gives focus back first. */
   readonly activated = output<void>();
@@ -64,6 +65,8 @@ export class MenuItemComponent {
   protected readonly ariaRole = computed(() => ROLES[this.type()]);
 
   /** Whether this is the item the menu pattern has under the cursor or focus. */
+  protected readonly MENU_ITEM_TYPE = MENU_ITEM_TYPE;
+
   readonly isActive = computed(() => this.aria().active());
 
   constructor() {

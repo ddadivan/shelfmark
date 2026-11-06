@@ -5,7 +5,7 @@
   [error]="message()"
   [invalid]="showInvalid()"
   [disabled]="disabled()"
-  [mono]="type() === 'url'"
+  [mono]="type() === INPUT_TYPE.Url"
 >
   @if (glyph(); as name) {
     <span class="ui-input__slot">
@@ -28,9 +28,9 @@
     [value]="value()"
     [disabled]="disabled()"
     [attr.placeholder]="placeholder() || null"
-    [attr.inputmode]="type() === 'url' ? 'url' : null"
-    [attr.spellcheck]="type() === 'url' ? 'false' : null"
-    [attr.autocomplete]="type() === 'url' ? 'off' : null"
+    [attr.inputmode]="type() === INPUT_TYPE.Url ? 'url' : null"
+    [attr.spellcheck]="type() === INPUT_TYPE.Url ? 'false' : null"
+    [attr.autocomplete]="type() === INPUT_TYPE.Url ? 'off' : null"
     [attr.aria-required]="required() ? 'true' : null"
     [attr.aria-invalid]="showInvalid() ? 'true' : null"
     [attr.aria-describedby]="describedBy()"

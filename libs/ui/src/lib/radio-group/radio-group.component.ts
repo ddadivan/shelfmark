@@ -12,6 +12,7 @@ import type { FormValueControl } from '@angular/forms/signals';
 import { nextFieldId } from '../field/field-ids';
 import type { RadioOption } from './models/radio-option.interface';
 import type { RadioOrientation } from './models/radio-orientation.type';
+import { RADIO_ORIENTATION } from './models/radio-orientation.const';
 
 /**
  * Choose one of a few options, each with a title and an explanation (the delete-folder dialog).
@@ -27,7 +28,7 @@ import type { RadioOrientation } from './models/radio-orientation.type';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-radio-group',
-    '[class.ui-radio-group--row]': "orientation() === 'horizontal'",
+    '[class.ui-radio-group--row]': 'orientation() === RADIO_ORIENTATION.Horizontal',
     '[class.ui-radio-group--disabled]': 'disabled()',
     role: 'radiogroup',
     '[attr.aria-label]': 'ariaLabel() || null',
@@ -39,12 +40,14 @@ import type { RadioOrientation } from './models/radio-orientation.type';
   styleUrl: './radio-group.component.scss',
 })
 export class RadioGroupComponent implements FormValueControl<string> {
+  protected readonly RADIO_ORIENTATION = RADIO_ORIENTATION;
+
   private readonly host: HTMLElement = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
   /** Value of the selected option; empty when none is selected. */
   readonly value = model('');
   readonly options = input.required<readonly RadioOption[]>();
-  readonly orientation = input<RadioOrientation>('vertical');
+  readonly orientation = input<RadioOrientation>(RADIO_ORIENTATION.Vertical);
   readonly disabled = input(false, { transform: booleanAttribute });
   /** Form field name; the native radios share it. Generated when empty. */
   readonly name = input('');
