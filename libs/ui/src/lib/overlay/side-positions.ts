@@ -1,5 +1,6 @@
 import type { ConnectedPosition } from '@angular/cdk/overlay';
 import type { OverlaySide } from './models/overlay-side.type';
+import { OVERLAY_SIDE } from './models/overlay-side.const';
 
 const OPPOSITE: Record<OverlaySide, OverlaySide> = {
   top: 'bottom',
@@ -10,13 +11,13 @@ const OPPOSITE: Record<OverlaySide, OverlaySide> = {
 
 function position(side: OverlaySide): ConnectedPosition {
   switch (side) {
-    case 'top':
+    case OVERLAY_SIDE.Top:
       return { originX: 'center', originY: 'top', overlayX: 'center', overlayY: 'bottom' };
-    case 'bottom':
+    case OVERLAY_SIDE.Bottom:
       return { originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top' };
-    case 'left':
+    case OVERLAY_SIDE.Left:
       return { originX: 'start', originY: 'center', overlayX: 'end', overlayY: 'center' };
-    case 'right':
+    case OVERLAY_SIDE.Right:
       return { originX: 'end', originY: 'center', overlayX: 'start', overlayY: 'center' };
   }
 }

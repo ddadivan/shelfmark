@@ -29,6 +29,9 @@ import type { ButtonPressed } from './models/button-pressed.type';
 import type { ButtonSize } from './models/button-size.type';
 import type { ButtonType } from './models/button-type.type';
 import type { ButtonVariant } from './models/button-variant.type';
+import { BUTTON_VARIANT } from './models/button-variant.const';
+import { BUTTON_SIZE } from './models/button-size.const';
+import { BUTTON_TYPE } from './models/button-type.const';
 
 /**
  * Triggers an action. Wraps a native `<button>`, so keyboard, focus and form behaviour are
@@ -54,9 +57,9 @@ import type { ButtonVariant } from './models/button-variant.type';
   styleUrl: './button.component.scss',
 })
 export class ButtonComponent implements UiFocusTarget {
-  readonly variant = input<ButtonVariant>('secondary');
-  readonly size = input<ButtonSize>('md');
-  readonly type = input<ButtonType>('button');
+  readonly variant = input<ButtonVariant>(BUTTON_VARIANT.Secondary);
+  readonly size = input<ButtonSize>(BUTTON_SIZE.Md);
+  readonly type = input<ButtonType>(BUTTON_TYPE.Button);
   readonly iconLeft = input<IconName>();
   readonly iconRight = input<IconName>();
   /** Shows only an icon (`iconLeft`, else `iconRight`). Requires `ariaLabel`. */
@@ -99,7 +102,7 @@ export class ButtonComponent implements UiFocusTarget {
   protected readonly lockedWidth = signal<number | undefined>(undefined);
   protected readonly classes = computed(() => {
     const classes = ['ui-button', `ui-button--${this.variant()}`];
-    if (this.size() !== 'md') {
+    if (this.size() !== BUTTON_SIZE.Md) {
       classes.push(`ui-button--${this.size()}`);
     }
     if (this.iconOnly()) {
@@ -108,7 +111,7 @@ export class ButtonComponent implements UiFocusTarget {
     return classes.join(' ');
   });
 
-  protected readonly iconSize = computed(() => (this.size() === 'lg' ? 20 : 16));
+  protected readonly iconSize = computed(() => (this.size() === BUTTON_SIZE.Lg ? 20 : 16));
   protected readonly singleIcon = computed(() => this.iconLeft() ?? this.iconRight());
 
   private readonly injector = inject(Injector);

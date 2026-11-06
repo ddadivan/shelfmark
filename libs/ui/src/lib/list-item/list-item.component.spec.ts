@@ -6,6 +6,7 @@ import { ButtonComponent } from '../button/button.component';
 import { CARD_STORY_IMAGE } from '../card/stories/card-story-image.const';
 import { FaviconComponent } from '../favicon/favicon.component';
 import { ListItemComponent } from './list-item.component';
+import { KEYBOARD_KEY } from '../keyboard';
 
 @Component({
   imports: [ListItemComponent, ButtonComponent, FaviconComponent],
@@ -185,7 +186,7 @@ describe('ListItemComponent', () => {
       try {
         const trailing = row.querySelector('.ui-list-item__trailing button') as HTMLElement;
         pointerDown(trailing);
-        for (const key of ['Enter', ' ']) {
+        for (const key of [KEYBOARD_KEY.Enter, KEYBOARD_KEY.Space]) {
           trailing.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
           trailing.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true }));
         }

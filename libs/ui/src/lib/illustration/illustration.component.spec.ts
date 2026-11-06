@@ -8,6 +8,7 @@ import { ILLUSTRATION_DEFAULT_MOTION } from './models/illustration-default-motio
 import type { IllustrationMotion } from './models/illustration-motion.type';
 import type { IllustrationName } from './models/illustration-name.type';
 import { ILLUSTRATION_NAMES } from './models/illustration-names.const';
+import { ILLUSTRATION_MOTION } from './models/illustration-motion.const';
 
 const SCSS_PATH = 'libs/ui/src/lib/illustration/illustration.component.scss';
 
@@ -47,7 +48,9 @@ function render(inputs: Inputs) {
 }
 
 function mode(host: HTMLElement): string[] {
-  return ['loop', 'once', 'none'].filter((m) => host.classList.contains(`ui-illustration--${m}`));
+  return Object.values(ILLUSTRATION_MOTION).filter((m) =>
+    host.classList.contains(`ui-illustration--${m}`),
+  );
 }
 
 describe('IllustrationComponent', () => {
@@ -65,29 +68,34 @@ describe('IllustrationComponent', () => {
       expect(mode(host)).toEqual([ILLUSTRATION_DEFAULT_MOTION[name]]);
     });
 
-    it.each<IllustrationMotion>(['loop', 'once', 'none'])('honours motion=%s', (motion) => {
-      const { host } = render({ name, motion });
-      expect(mode(host)).toEqual([motion]);
-    });
+    it.each<IllustrationMotion>(Object.values(ILLUSTRATION_MOTION))(
+      'honours motion=%s',
+      (motion) => {
+        const { host } = render({ name, motion });
+        expect(mode(host)).toEqual([motion]);
+      },
+    );
   });
 
   it('defaults the welcome scenes to loop and the other five to once', () => {
     const welcome = ILLUSTRATION_NAMES.filter((n) => n.startsWith('welcome-'));
     expect(welcome).toHaveLength(3);
     for (const name of ILLUSTRATION_NAMES) {
-      expect(ILLUSTRATION_DEFAULT_MOTION[name]).toBe(welcome.includes(name) ? 'loop' : 'once');
+      expect(ILLUSTRATION_DEFAULT_MOTION[name]).toBe(
+        welcome.includes(name) ? ILLUSTRATION_MOTION.Loop : ILLUSTRATION_MOTION.Once,
+      );
     }
   });
 
   it('follows a later change of name and motion', () => {
     const { fixture, host } = render({ name: 'empty-feed' });
-    expect(mode(host)).toEqual(['once']);
+    expect(mode(host)).toEqual([ILLUSTRATION_MOTION.Once]);
     fixture.componentRef.setInput('name', 'welcome-find');
     fixture.detectChanges();
-    expect(mode(host)).toEqual(['loop']);
-    fixture.componentRef.setInput('motion', 'none');
+    expect(mode(host)).toEqual([ILLUSTRATION_MOTION.Loop]);
+    fixture.componentRef.setInput('motion', ILLUSTRATION_MOTION.None);
     fixture.detectChanges();
-    expect(mode(host)).toEqual(['none']);
+    expect(mode(host)).toEqual([ILLUSTRATION_MOTION.None]);
   });
 
   describe('accessibility', () => {

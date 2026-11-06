@@ -9,6 +9,9 @@ import { MenuItemComponent } from '../menu/menu-item.component';
 import { MenuTriggerDirective } from '../menu/menu-trigger.directive';
 import { MenuComponent } from '../menu/menu.component';
 import type { DialogSize } from './models/dialog-size.type';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
+import type { Theme } from '../theme';
+import { DIALOG_SIZE } from './models/dialog-size.const';
 
 /** Content of the form story: a short form with Cancel left of the main action. */
 @Component({
@@ -118,7 +121,7 @@ const destructiveText: ConfirmDialogConfig = {
 })
 class StoryDemoComponent {
   readonly kind = input<DemoKind>('form');
-  readonly size = input<DialogSize>('sm');
+  readonly size = input<DialogSize>(DIALOG_SIZE.Sm);
   readonly dismissible = input(true);
 
   private readonly dialogs = inject(DialogService);
@@ -176,9 +179,9 @@ const meta: Meta<DialogArgs> = {
       },
     },
   },
-  args: { size: 'sm', dismissible: true },
+  args: { size: DIALOG_SIZE.Sm, dismissible: true },
   argTypes: {
-    size: { control: 'inline-radio', options: ['sm', 'md'] },
+    size: { control: 'inline-radio', options: Object.values(DIALOG_SIZE) },
     dismissible: { control: 'boolean' },
   },
 };
@@ -190,7 +193,7 @@ const imports = [StoryDemoComponent];
 
 /** A short form in a `md` dialog. Esc, the close button and Cancel close it. */
 export const FormDialog: Story = {
-  args: { size: 'md' },
+  args: { size: DIALOG_SIZE.Md },
   render: (args) => ({
     props: args,
     moduleMetadata: { imports },
@@ -236,7 +239,7 @@ export const MenuInDialog: Story = {
 
 /** Long content scrolls inside the dialog; header and footer stay put. */
 export const LongContent: Story = {
-  args: { size: 'md' },
+  args: { size: DIALOG_SIZE.Md },
   render: (args) => ({
     props: args,
     moduleMetadata: { imports },
@@ -257,7 +260,7 @@ export const PhoneSheet: Story = {
     },
   },
   globals: { viewport: { value: 'phone', isRotated: false } },
-  args: { size: 'md' },
+  args: { size: DIALOG_SIZE.Md },
   render: (args) => ({
     props: args,
     moduleMetadata: { imports },
@@ -265,8 +268,8 @@ export const PhoneSheet: Story = {
   }),
 };
 
-const frame = (theme: 'light' | 'dark') => `
-  <div data-theme="${theme}" class="dst-gallery">
+const frame = (theme: Theme) => `
+  <div ${THEME_ATTRIBUTE}="${theme}" class="dst-gallery">
     <p class="dst-hint">${theme} theme: static panels (open the stories above for the live dialog)</p>
     <div class="dst-scrim">
       <ui-dialog title="Delete folder “Work”?" closeLabel="Close">
@@ -295,6 +298,6 @@ const frame = (theme: 'light' | 'dark') => `
 export const AllVariants: Story = {
   render: () => ({
     moduleMetadata: { imports: [DialogComponent, ButtonComponent] },
-    template: `${frame('light')}${frame('dark')}`,
+    template: `${Object.values(THEME).map(frame).join('')}`,
   }),
 };

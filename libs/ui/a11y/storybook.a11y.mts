@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { expect, test, type Page } from '@playwright/test';
+import { THEME, THEME_ATTRIBUTE } from '../src/lib/theme';
 
 // Runs axe-core (including colour contrast) on every story of the built Storybook, in a real
 // browser, under the production CSP from libs/ui/vercel.json (see serve-storybook.mjs).
@@ -22,7 +23,7 @@ interface AxeResult {
 }
 
 const axePath = createRequire(import.meta.url).resolve('axe-core/axe.min.js');
-const themes = ['light', 'dark'] as const;
+const themes = Object.values(THEME);
 
 function loadStories(): IndexEntry[] {
   const file = new URL('../storybook-static/index.json', import.meta.url);
@@ -71,7 +72,9 @@ for (const story of stories) {
       if (story.type === 'docs') await page.waitForSelector('#storybook-docs .sbdocs');
       // The theme decorator runs after the first render: wait for it, then for fonts and for any
       // running colour transition, so axe never reads half-way colours.
-      await page.waitForFunction(`document.documentElement.dataset.theme === '${theme}'`);
+      await page.waitForFunction(
+        `document.documentElement.getAttribute('${THEME_ATTRIBUTE}') === '${theme}'`,
+      );
       await page.evaluate(
         `document.fonts.ready.then(() => Promise.all(document.getAnimations()
           .filter((a) => a.effect?.getComputedTiming().iterations !== Infinity)

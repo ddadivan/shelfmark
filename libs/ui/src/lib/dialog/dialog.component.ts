@@ -20,6 +20,8 @@ import { UI_DIALOG_CONTEXT } from './models/ui-dialog-context.const';
 import type { DragState } from './models/drag-state.interface';
 import { SHEET_SAMPLES } from './models/sheet-samples.const';
 import { shouldCloseSheet, sheetVelocity } from './sheet-drag';
+import { DIALOG_SIZE } from './models/dialog-size.const';
+import { BUTTON_SIZE } from '../button/models/button-size.const';
 
 const DRAG_PROPERTY = '--ui-sheet-drag';
 const NO_DRAG_TARGETS = 'button, a, input, select, textarea, [contenteditable]';
@@ -66,7 +68,11 @@ export class DialogComponent {
   private readonly body = viewChild.required<ElementRef<HTMLElement>>('body');
 
   protected readonly titleId = this.context?.titleId ?? nextDialogId('ui-dialog-title');
-  protected readonly effectiveSize = computed(() => this.size() ?? this.context?.size ?? 'sm');
+  protected readonly DIALOG_SIZE = DIALOG_SIZE;
+  protected readonly BUTTON_SIZE = BUTTON_SIZE;
+  protected readonly effectiveSize = computed(
+    () => this.size() ?? this.context?.size ?? DIALOG_SIZE.Sm,
+  );
   protected readonly leaving = computed(() => this.context?.leaving() ?? false);
   protected readonly phone = signal(false);
   protected readonly dragging = signal(false);

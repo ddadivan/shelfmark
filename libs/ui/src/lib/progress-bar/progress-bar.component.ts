@@ -13,6 +13,8 @@ import { PROGRESS_BAR_DONE_TIMEOUT_MS } from './models/progress-bar-done-timeout
 import { PROGRESS_BAR_DONE_ANIMATION } from './models/progress-bar-done-animation.const';
 import type { ProgressBarPhase } from './models/progress-bar-phase.type';
 import type { ProgressBarVariant } from './models/progress-bar-variant.type';
+import { PROGRESS_BAR_VARIANT } from './models/progress-bar-variant.const';
+import { PROGRESS_BAR_PHASE } from './models/progress-bar-phase.const';
 
 /**
  * The sage progress bar for navigation and background requests; old content stays visible.
@@ -33,36 +35,39 @@ import type { ProgressBarVariant } from './models/progress-bar-variant.type';
   styleUrl: './progress-bar.component.scss',
 })
 export class ProgressBarComponent {
+  protected readonly PROGRESS_BAR_PHASE = PROGRESS_BAR_PHASE;
+  protected readonly PROGRESS_BAR_VARIANT = PROGRESS_BAR_VARIANT;
+
   /** True while something is loading. */
   readonly active = input(false, { transform: booleanAttribute });
-  readonly variant = input<ProgressBarVariant>('fixed');
+  readonly variant = input<ProgressBarVariant>(PROGRESS_BAR_VARIANT.Fixed);
   /** Accessible name for the `progressbar`; unset keeps the bar `aria-hidden`. */
   readonly label = input<string>();
 
   private readonly delayed = loaderVisible(
-    computed(() => this.active() && this.variant() === 'fixed'),
+    computed(() => this.active() && this.variant() === PROGRESS_BAR_VARIANT.Fixed),
     { minVisible: 0 },
   );
   private readonly running = computed(() =>
-    this.variant() === 'inline' ? this.active() : this.delayed(),
+    this.variant() === PROGRESS_BAR_VARIANT.Inline ? this.active() : this.delayed(),
   );
 
-  protected readonly phase = signal<ProgressBarPhase>('idle');
+  protected readonly phase = signal<ProgressBarPhase>(PROGRESS_BAR_PHASE.Idle);
 
   constructor() {
     // A finished bar must never stay at 100%: if no `animationend` / `animationcancel` arrives
     // (the tab is hidden, the element is not rendered), a timer removes it.
     effect((onCleanup) => {
-      if (this.phase() === 'done') {
+      if (this.phase() === PROGRESS_BAR_PHASE.Done) {
         const timer = setTimeout(() => this.finish(), PROGRESS_BAR_DONE_TIMEOUT_MS);
         onCleanup(() => clearTimeout(timer));
       }
     });
     effect(() => {
       if (this.running()) {
-        this.phase.set('running');
-      } else if (untracked(this.phase) === 'running') {
-        this.phase.set('done');
+        this.phase.set(PROGRESS_BAR_PHASE.Running);
+      } else if (untracked(this.phase) === PROGRESS_BAR_PHASE.Running) {
+        this.phase.set(PROGRESS_BAR_PHASE.Done);
       }
     });
   }
@@ -75,8 +80,8 @@ export class ProgressBarComponent {
   }
 
   private finish(): void {
-    if (this.phase() === 'done') {
-      this.phase.set('idle');
+    if (this.phase() === PROGRESS_BAR_PHASE.Done) {
+      this.phase.set(PROGRESS_BAR_PHASE.Idle);
     }
   }
 

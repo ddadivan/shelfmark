@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { CARD_STORY_IMAGE } from '../card/stories/card-story-image.const';
-import { CARD_STORY_THEME } from '../card/stories/card-story-theme.const';
 import { FaviconComponent } from './favicon.component';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
 
 const meta: Meta<FaviconComponent> = {
   title: 'Components/Favicon',
@@ -41,7 +41,7 @@ export const AllVariants: Story = {
   parameters: { layout: 'padded' },
   render: () => ({
     props: {
-      themes: Object.values(CARD_STORY_THEME),
+      themes: Object.values(THEME),
       sources: [
         { src: CARD_STORY_IMAGE.Favicon, letter: undefined },
         { src: undefined, letter: 'y' },
@@ -53,7 +53,7 @@ export const AllVariants: Story = {
     template: `
       <div class="ds-themes">
         @for (theme of themes; track theme) {
-          <div [attr.data-theme]="theme" class="ds-pane">
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane">
             <div class="ds-row">
               @for (s of sources; track $index) {
                 <ui-favicon [src]="s.src" [letter]="s.letter" />

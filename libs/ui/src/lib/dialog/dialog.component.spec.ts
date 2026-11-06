@@ -4,6 +4,7 @@ import { axeViolations } from '../../testing/axe';
 import { DialogComponent } from './dialog.component';
 import { DialogService } from './dialog.service';
 import type { DialogSize } from './models/dialog-size.type';
+import { DIALOG_SIZE } from './models/dialog-size.const';
 
 @Component({
   imports: [DialogComponent],
@@ -101,7 +102,7 @@ describe('DialogComponent', () => {
     stubMatchMedia(false);
     const { fixture, root } = await setup();
     expect(root.querySelector('.ui-dialog--md')).toBeNull();
-    fixture.componentInstance.size.set('md');
+    fixture.componentInstance.size.set(DIALOG_SIZE.Md);
     fixture.detectChanges();
     expect(root.querySelector('.ui-dialog--md')).not.toBeNull();
   });

@@ -6,6 +6,7 @@ import { ButtonComponent } from '../button/button.component';
 import type { SelectOption } from './models/select-option.interface';
 import { SelectComponent } from './select.component';
 import { SELECT_FIXTURE_ID } from './models/select-fixture-id.const';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
 
 const FLAT: SelectOption[] = [
   { id: SELECT_FIXTURE_ID.Work, name: 'Work' },
@@ -213,11 +214,11 @@ export const AllVariants: Story = {
   parameters: { layout: 'padded' },
   render: () => ({
     moduleMetadata: { imports: [SelectComponent] },
-    props: { nested: NESTED, long: LONG },
+    props: { nested: NESTED, long: LONG, themes: Object.values(THEME) },
     template: `
       <div class="ss-themes">
-        @for (theme of ['light', 'dark']; track theme) {
-          <div [attr.data-theme]="theme" class="ss-panel">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="ss-panel">
             <ui-select label="Folder" [options]="nested" emptyLabel="Unsorted" value="${SELECT_FIXTURE_ID.Angular}"
               hint="Where the link is saved" searchLabel="Find a folder" />
             <ui-select label="Unsorted" [options]="nested" emptyLabel="Unsorted" [value]="null" />

@@ -1,5 +1,5 @@
 <svg class="ui-logo__mark" viewBox="0 0 32 32" focusable="false">
-  @if (tone() === 'mono') {
+  @if (tone() === LOGO_TONE.Mono) {
     <path
       class="ui-logo__mono"
       fill-rule="evenodd"
@@ -10,6 +10,6 @@
     <path class="ui-logo__bookmark" d="M19 5h6v11l-3-2.4-3 2.4z" />
   }
 </svg>
-@if (variant() === 'lockup') {
+@if (variant() === LOGO_VARIANT.Lockup) {
   <span class="ui-logo__wordmark">{{ wordmark() }}</span>
 }

@@ -7,6 +7,10 @@ import { UiDialogRef } from './dialog-ref';
 import { DialogService } from './dialog.service';
 import { injectDialogData } from './inject-dialog-data';
 import type { ConfirmDialogConfig } from './models/confirm-config.interface';
+import { KEYBOARD_KEY } from '../keyboard';
+import { DIALOG_SIZE } from './models/dialog-size.const';
+import { OVERLAY_LAYER } from '../overlay/models/overlay-layer.const';
+import { overlayLayerClass } from '../overlay/overlay-layer';
 
 interface EditData {
   readonly name: string;
@@ -93,7 +97,7 @@ describe('DialogService', () => {
   describe('open', () => {
     it('renders the component with role, labelling and the dialog layer on the host element', () => {
       const ref = service.open<EditDialogComponent, string, EditData>(EditDialogComponent, {
-        size: 'md',
+        size: DIALOG_SIZE.Md,
         data: { name: 'Work' },
         describedBy: 'edit-desc',
       });
@@ -108,10 +112,12 @@ describe('DialogService', () => {
       expect(root.textContent).toContain('Rename “Work”');
       expect(root.querySelector('.ui-dialog--md')).not.toBeNull();
       // Layer class on the CDK host element (the stacking context), also on the scrim.
-      expect(ref.hostElement.classList.contains('ui-overlay-layer--dialog')).toBe(true);
+      expect(ref.hostElement.classList.contains(overlayLayerClass(OVERLAY_LAYER.Dialog))).toBe(
+        true,
+      );
       expect(ref.hostElement.classList.contains('cdk-global-overlay-wrapper')).toBe(true);
       const scrim = document.querySelector('.ui-dialog-scrim');
-      expect(scrim?.classList.contains('ui-overlay-layer--dialog')).toBe(true);
+      expect(scrim?.classList.contains(overlayLayerClass(OVERLAY_LAYER.Dialog))).toBe(true);
       ref.close();
     });
 
@@ -121,7 +127,7 @@ describe('DialogService', () => {
         template: `<ui-dialog title="Sized" />`,
       })
       class SizedComponent {}
-      const ref = service.open(SizedComponent, { size: 'md' });
+      const ref = service.open(SizedComponent, { size: DIALOG_SIZE.Md });
       settle();
       expect(container().querySelector('.ui-dialog--md')).not.toBeNull();
       ref.close();
@@ -173,7 +179,7 @@ describe('DialogService', () => {
     it('closes on Esc and on a scrim click, with no result', async () => {
       const first = service.open(EditDialogComponent, { data: { name: 'x' } });
       settle();
-      press('Escape');
+      press(KEYBOARD_KEY.Escape);
       await closed();
       expect(await first.result).toBeUndefined();
 
@@ -194,7 +200,7 @@ describe('DialogService', () => {
       settle();
       expect(document.querySelector('.cdk-dialog-container')).not.toBeNull();
       expect(container().contains(document.activeElement)).toBe(true);
-      press('Escape');
+      press(KEYBOARD_KEY.Escape);
       await closed();
       expect(ref.isClosing).toBe(true);
     });
@@ -205,7 +211,7 @@ describe('DialogService', () => {
         dismissible: false,
       });
       settle();
-      press('Escape');
+      press(KEYBOARD_KEY.Escape);
       document.querySelector<HTMLElement>('.ui-dialog-scrim')?.click();
       settle();
       expect(document.querySelector('.cdk-dialog-container')).not.toBeNull();
@@ -279,7 +285,7 @@ describe('DialogService', () => {
     it.each([
       ['Cancel', () => button('Cancel').click()],
       ['the close button', () => button('Close').click()],
-      ['Esc', () => press('Escape')],
+      ['Esc', () => press(KEYBOARD_KEY.Escape)],
       ['a scrim click', () => document.querySelector<HTMLElement>('.ui-dialog-scrim')?.click()],
     ])('resolves false for %s', async (_name, act) => {
       const answer = service.confirm(confirmConfig);
@@ -338,7 +344,7 @@ describe('DialogService', () => {
       settle();
       expect(document.querySelector('.cdk-dialog-container')).not.toBeNull();
       expect(await axeViolations(root)).toEqual([]);
-      press('Escape');
+      press(KEYBOARD_KEY.Escape);
       await closed();
       expect(await answer).toBe(false);
     });

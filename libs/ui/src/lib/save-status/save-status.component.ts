@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { IconComponent } from '../icon/icon.component';
 import { SpinnerComponent } from '../spinner/spinner.component';
 import type { SaveStatusState } from './models/save-status-state.type';
+import { SAVE_STATUS_STATE } from './models/save-status-state.const';
 
 /**
  * Autosave status, for example in the edit dialog: icon plus words, never colour alone.
@@ -18,6 +19,8 @@ import type { SaveStatusState } from './models/save-status-state.type';
   styleUrl: './save-status.component.scss',
 })
 export class SaveStatusComponent {
+  protected readonly SAVE_STATUS_STATE = SAVE_STATUS_STATE;
+
   readonly state = input.required<SaveStatusState>();
   /** Text for `saving`, for example "Saving…". */
   readonly savingText = input('');
@@ -28,11 +31,11 @@ export class SaveStatusComponent {
 
   protected readonly text = computed(() => {
     switch (this.state()) {
-      case 'saving':
+      case SAVE_STATUS_STATE.Saving:
         return this.savingText();
-      case 'saved':
+      case SAVE_STATUS_STATE.Saved:
         return this.savedText();
-      case 'error':
+      case SAVE_STATUS_STATE.Error:
         return this.errorText();
     }
   });

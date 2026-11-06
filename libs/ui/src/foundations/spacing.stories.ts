@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { RADIUS_TOKENS } from './models/radius-tokens.const';
 import { SHADOW_TOKENS } from './models/shadow-tokens.const';
 import { SPACING_TOKENS } from './models/spacing-tokens.const';
+import { THEME, THEME_ATTRIBUTE } from '../lib/theme';
 
 const meta: Meta = {
   title: 'Foundations/Spacing, radii and shadows',
@@ -66,13 +67,13 @@ export const Radii: Story = {
 
 export const Shadows: Story = {
   render: () => ({
-    props: { themes: ['light', 'dark'], tokens: SHADOW_TOKENS },
+    props: { themes: Object.values(THEME), THEME, tokens: SHADOW_TOKENS },
     template: `
       <div class="fd-page">
         <div class="fd-themes">
           @for (theme of themes; track theme) {
-            <section class="fd-panel" [attr.data-theme]="theme" [attr.aria-label]="theme + ' theme'">
-              <h2 class="fd-panel__title">{{ theme === 'light' ? 'Light' : 'Dark' }} theme</h2>
+            <section class="fd-panel" [attr.${THEME_ATTRIBUTE}]="theme" [attr.aria-label]="theme + ' theme'">
+              <h2 class="fd-panel__title">{{ theme === THEME.Light ? 'Light' : 'Dark' }} theme</h2>
               @for (t of tokens; track t.name) {
                 <div>
                   <h3 class="fd-group__title"><code class="fd-code">--{{ t.name }}</code> · {{ t.value }}</h3>

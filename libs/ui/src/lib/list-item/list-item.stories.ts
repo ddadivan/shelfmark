@@ -3,7 +3,6 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { moduleMetadata } from '@storybook/angular-vite';
 import { ButtonComponent } from '../button/button.component';
 import { CARD_STORY_IMAGE } from '../card/stories/card-story-image.const';
-import { CARD_STORY_THEME } from '../card/stories/card-story-theme.const';
 import { ChipComponent } from '../chip/chip.component';
 import { FaviconComponent } from '../favicon/favicon.component';
 import { MenuItemComponent } from '../menu/menu-item.component';
@@ -12,6 +11,10 @@ import { MenuTriggerDirective } from '../menu/menu-trigger.directive';
 import { MenuComponent } from '../menu/menu.component';
 import { SkeletonComponent } from '../skeleton/skeleton.component';
 import { ListItemComponent } from './list-item.component';
+import { BUTTON_SIZE, BUTTON_VARIANT } from '../button';
+import { CHIP_VARIANT } from '../chip';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
+import { SKELETON_SHAPE } from '../skeleton';
 
 const meta: Meta<ListItemComponent> = {
   title: 'Components/List item',
@@ -67,12 +70,12 @@ const content = (title = TITLE, favorite = false, tags = true) => `
   <ui-favicon slot="leading" [src]="favicon" letter="y" />
   <span slot="title">${title}</span>
   <span slot="meta">youtube.com, in Work / Angular</span>
-  ${tags ? '<ui-chip slot="trailing" variant="tag">angular</ui-chip>' : ''}
-  <ui-button slot="trailing" variant="ghost" size="sm" iconOnly
+  ${tags ? `<ui-chip slot="trailing" variant="${CHIP_VARIANT.Tag}">angular</ui-chip>` : ''}
+  <ui-button slot="trailing" variant="${BUTTON_VARIANT.Ghost}" size="${BUTTON_SIZE.Sm}" iconOnly
     [iconLeft]="${favorite ? "'star-filled'" : "'star'"}"
     [ariaPressed]="${favorite}"
     ariaLabel="${favorite ? 'Remove from favorites' : 'Add to favorites'}" />
-  <ui-button slot="trailing" variant="ghost" size="sm" iconOnly iconLeft="more" ariaLabel="More actions" />`;
+  <ui-button slot="trailing" variant="${BUTTON_VARIANT.Ghost}" size="${BUTTON_SIZE.Sm}" iconOnly iconLeft="more" ariaLabel="More actions" />`;
 
 const rowTemplate = (inner: string) => `
   <div class="cs-list">
@@ -154,7 +157,7 @@ export const WithMenu: Story = {
           <ui-favicon slot="leading" [src]="favicon" letter="y" />
           <span slot="title">${TITLE}</span>
           <span slot="meta">youtube.com, in Work / Angular</span>
-          <ui-button slot="trailing" [uiMenuTrigger]="menu" variant="ghost" size="sm" iconOnly
+          <ui-button slot="trailing" [uiMenuTrigger]="menu" variant="${BUTTON_VARIANT.Ghost}" size="${BUTTON_SIZE.Sm}" iconOnly
             iconLeft="more" ariaLabel="More actions" />
         </ui-list-item>
         <ui-menu #menu align="end" ariaLabel="Link actions">
@@ -182,7 +185,7 @@ export const Reveal: Story = {
     props: { ...withProps(args), loaded: signal(false) },
     template: `
       <div class="cs-reveal">
-        <ui-button variant="secondary" (click)="loaded.set(!loaded())">
+        <ui-button variant="${BUTTON_VARIANT.Secondary}" (click)="loaded.set(!loaded())">
           {{ loaded() ? 'Show skeleton' : 'Load content' }}
         </ui-button>
         <div class="cs-list cs-reveal__stage" [attr.aria-busy]="!loaded()">
@@ -190,7 +193,7 @@ export const Reveal: Story = {
             <ui-list-item [href]="href" [reveal]="true">${content()}</ui-list-item>
             <ui-list-item [href]="href" [reveal]="true">${content('NestJS course for frontend developers')}</ui-list-item>
           } @else {
-            <ui-skeleton shape="row" [count]="2" />
+            <ui-skeleton shape="${SKELETON_SHAPE.Row}" [count]="2" />
           }
         </div>
       </div>`,
@@ -203,12 +206,12 @@ export const AllVariants: Story = {
     props: {
       ...withProps(args),
       preview: CARD_STORY_IMAGE.Preview,
-      themes: Object.values(CARD_STORY_THEME),
+      themes: Object.values(THEME),
     },
     template: `
       <div class="cs-themes">
         @for (theme of themes; track theme) {
-          <div [attr.data-theme]="theme" class="cs-pane">
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="cs-pane">
             <div class="cs-list cs-surface">
               <ui-list-item href="https://example.com/">${content()}</ui-list-item>
               <ui-list-item href="https://example.com/" [selected]="true">${content('Selected row', true)}</ui-list-item>

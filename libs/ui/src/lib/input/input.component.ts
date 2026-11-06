@@ -17,6 +17,7 @@ import { IconComponent } from '../icon/icon.component';
 import type { IconName } from '../icon/models/icon-name.type';
 import { SpinnerComponent } from '../spinner/spinner.component';
 import type { InputType } from './models/input-type.type';
+import { INPUT_TYPE } from './models/input-type.const';
 
 /**
  * Single-line text field in the shared field shell. Bind it to Signal Forms with
@@ -38,8 +39,10 @@ import type { InputType } from './models/input-type.type';
   styleUrl: './input.component.scss',
 })
 export class InputComponent extends UiFieldControl implements FormValueControl<string> {
+  protected readonly INPUT_TYPE = INPUT_TYPE;
+
   readonly value = model('');
-  readonly type = input<InputType>('text');
+  readonly type = input<InputType>(INPUT_TYPE.Text);
   readonly placeholder = input('');
   /** Leading icon; `search` fields default to the search icon. */
   readonly icon = input<IconName>();
@@ -55,9 +58,11 @@ export class InputComponent extends UiFieldControl implements FormValueControl<s
   private readonly native = viewChild.required<ElementRef<HTMLInputElement>>('native');
 
   protected readonly glyph = computed(
-    () => this.icon() ?? (this.type() === 'search' ? ('search' satisfies IconName) : undefined),
+    () =>
+      this.icon() ??
+      (this.type() === INPUT_TYPE.Search ? ('search' satisfies IconName) : undefined),
   );
-  protected readonly spinning = computed(() => this.type() === 'search' && this.loading());
+  protected readonly spinning = computed(() => this.type() === INPUT_TYPE.Search && this.loading());
   protected readonly showClear = computed(
     () => this.clearable() && !!this.clearLabel() && !this.disabled() && this.value() !== '',
   );

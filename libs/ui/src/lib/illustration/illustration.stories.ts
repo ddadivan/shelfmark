@@ -1,17 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { IllustrationComponent } from './illustration.component';
 import { ILLUSTRATION_DEFAULT_MOTION } from './models/illustration-default-motion.const';
-import type { IllustrationMotion } from './models/illustration-motion.type';
 import type { IllustrationName } from './models/illustration-name.type';
 import { ILLUSTRATION_NAMES } from './models/illustration-names.const';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
+import { ILLUSTRATION_MOTION } from './models/illustration-motion.const';
 
-const MOTIONS: IllustrationMotion[] = ['loop', 'once', 'none'];
+const MOTIONS = Object.values(ILLUSTRATION_MOTION);
 
 const meta: Meta<IllustrationComponent> = {
   title: 'Components/Illustration',
   component: IllustrationComponent,
   tags: ['autodocs'],
-  args: { name: 'empty-feed', motion: 'once' },
+  args: { name: 'empty-feed', motion: ILLUSTRATION_MOTION.Once },
   argTypes: {
     name: { control: 'select', options: ILLUSTRATION_NAMES },
     motion: {
@@ -40,9 +41,9 @@ export const PageNotFound: Story = scene('page-not-found');
 export const Offline: Story = scene('offline');
 
 /** The same scene in each mode; reload the story to replay `once`. */
-export const Loop: Story = { args: { name: 'welcome-collect', motion: 'loop' } };
-export const Once: Story = { args: { name: 'empty-feed', motion: 'once' } };
-export const Static: Story = { args: { name: 'empty-feed', motion: 'none' } };
+export const Loop: Story = { args: { name: 'welcome-collect', motion: ILLUSTRATION_MOTION.Loop } };
+export const Once: Story = { args: { name: 'empty-feed', motion: ILLUSTRATION_MOTION.Once } };
+export const Static: Story = { args: { name: 'empty-feed', motion: ILLUSTRATION_MOTION.None } };
 
 /** Every scene in every mode. Switch the theme in the toolbar for light and dark. */
 export const AllVariants: Story = {
@@ -68,11 +69,11 @@ export const AllVariants: Story = {
 export const BothThemes: Story = {
   parameters: { layout: 'padded' },
   render: () => ({
-    props: { names: ILLUSTRATION_NAMES },
+    props: { names: ILLUSTRATION_NAMES, themes: Object.values(THEME) },
     template: `
       <div class="story-themes">
-        @for (theme of ['light', 'dark']; track theme) {
-          <div [attr.data-theme]="theme" class="story-theme-pane story-theme-pane--scenes">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="story-theme-pane story-theme-pane--scenes">
             @for (n of names; track n) {
               <ui-illustration [name]="n" motion="none" [label]="n" class="story-fill" />
             }

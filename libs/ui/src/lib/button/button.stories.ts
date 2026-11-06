@@ -2,6 +2,12 @@ import { signal } from '@angular/core';
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { ICON_NAMES } from '../icon/models/icon-names.const';
 import { ButtonComponent } from './button.component';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
+import type { Theme } from '../theme';
+import { BUTTON_VARIANT } from './models/button-variant.const';
+import { BUTTON_SIZE } from './models/button-size.const';
+import { BUTTON_TYPE } from './models/button-type.const';
+import { BUTTON_HASPOPUP } from './models/button-haspopup.const';
 
 /** The component inputs plus the projected label text. */
 type ButtonArgs = ButtonComponent & { label?: string };
@@ -11,24 +17,24 @@ const meta: Meta<ButtonArgs> = {
   component: ButtonComponent,
   tags: ['autodocs'],
   args: {
-    variant: 'secondary',
-    size: 'md',
-    type: 'button',
+    variant: BUTTON_VARIANT.Secondary,
+    size: BUTTON_SIZE.Md,
+    type: BUTTON_TYPE.Button,
     iconOnly: false,
     disabled: false,
     loading: false,
     ripple: true,
   },
   argTypes: {
-    variant: { control: 'inline-radio', options: ['primary', 'secondary', 'ghost', 'danger'] },
-    size: { control: 'inline-radio', options: ['sm', 'md', 'lg'] },
-    type: { control: 'inline-radio', options: ['button', 'submit', 'reset'] },
+    variant: { control: 'inline-radio', options: Object.values(BUTTON_VARIANT) },
+    size: { control: 'inline-radio', options: Object.values(BUTTON_SIZE) },
+    type: { control: 'inline-radio', options: Object.values(BUTTON_TYPE) },
     iconLeft: { control: 'select', options: [undefined, ...ICON_NAMES] },
     iconRight: { control: 'select', options: [undefined, ...ICON_NAMES] },
     href: { control: 'text' },
     ariaHaspopup: {
       control: 'select',
-      options: [undefined, true, 'menu', 'listbox', 'tree', 'grid', 'dialog'],
+      options: [undefined, true, ...Object.values(BUTTON_HASPOPUP)],
     },
     ariaPressed: { control: 'select', options: [undefined, true, false, 'mixed'] },
     ariaExpanded: { control: 'select', options: [undefined, true, false] },
@@ -64,32 +70,41 @@ type Story = StoryObj<ButtonArgs>;
 
 export const Default: Story = {};
 
-export const Primary: Story = { args: { variant: 'primary', iconLeft: 'add' } };
+export const Primary: Story = { args: { variant: BUTTON_VARIANT.Primary, iconLeft: 'add' } };
 
-export const Ghost: Story = { args: { variant: 'ghost' } };
+export const Ghost: Story = { args: { variant: BUTTON_VARIANT.Ghost } };
 
-export const Danger: Story = { args: { variant: 'danger', iconLeft: 'trash' } };
+export const Danger: Story = { args: { variant: BUTTON_VARIANT.Danger, iconLeft: 'trash' } };
 
-export const Small: Story = { args: { size: 'sm' } };
+export const Small: Story = { args: { size: BUTTON_SIZE.Sm } };
 
-export const Large: Story = { args: { size: 'lg', variant: 'primary' } };
+export const Large: Story = { args: { size: BUTTON_SIZE.Lg, variant: BUTTON_VARIANT.Primary } };
 
 export const IconRight: Story = { args: { iconRight: 'chevron-down' } };
 
 /** Icon-only buttons need `ariaLabel`; in dev mode a missing one throws. */
 export const IconOnly: Story = {
-  args: { iconOnly: true, iconLeft: 'settings', ariaLabel: 'Settings', variant: 'ghost' },
+  args: {
+    iconOnly: true,
+    iconLeft: 'settings',
+    ariaLabel: 'Settings',
+    variant: BUTTON_VARIANT.Ghost,
+  },
 };
 
 /** Press it: a ripple grows from the touch point (20% of the text colour on filled buttons). */
-export const WithRipple: Story = { args: { variant: 'primary', size: 'lg' } };
+export const WithRipple: Story = {
+  args: { variant: BUTTON_VARIANT.Primary, size: BUTTON_SIZE.Lg },
+};
 
 export const WithoutRipple: Story = { args: { ripple: false } };
 
 /** `href` renders an inner `<a>`; `(linkClick)` fires on plain left clicks so the feature can route. */
-export const Link: Story = { args: { href: '#links', variant: 'primary', iconRight: 'external' } };
+export const Link: Story = {
+  args: { href: '#links', variant: BUTTON_VARIANT.Primary, iconRight: 'external' },
+};
 
-export const GhostLink: Story = { args: { href: '#links', variant: 'ghost' } };
+export const GhostLink: Story = { args: { href: '#links', variant: BUTTON_VARIANT.Ghost } };
 
 /** A disabled link has no `href` and `aria-disabled="true"`; it is not activatable. */
 export const DisabledLink: Story = { args: { href: '#links', disabled: true } };
@@ -98,23 +113,23 @@ export const DisabledLink: Story = { args: { href: '#links', disabled: true } };
 export const MenuTrigger: Story = {
   args: {
     iconRight: 'chevron-down',
-    ariaHaspopup: 'menu',
+    ariaHaspopup: BUTTON_HASPOPUP.Menu,
     ariaExpanded: false,
     ariaControls: 'menu-1',
   },
 };
 
-export const Toggle: Story = { args: { ariaPressed: true, variant: 'ghost' } };
+export const Toggle: Story = { args: { ariaPressed: true, variant: BUTTON_VARIANT.Ghost } };
 
 /** Busy: spinner, `aria-busy="true"`, width locked, clicks ignored; the button stays focusable. */
 export const Loading: Story = {
-  args: { variant: 'primary', loading: true, label: 'Saving…' },
+  args: { variant: BUTTON_VARIANT.Primary, loading: true, label: 'Saving…' },
 };
 
 export const LoadingSecondary: Story = { args: { loading: true, label: 'Exporting…' } };
 
 export const LoadingDanger: Story = {
-  args: { variant: 'danger', loading: true, label: 'Deleting…' },
+  args: { variant: BUTTON_VARIANT.Danger, loading: true, label: 'Deleting…' },
 };
 
 export const LoadingIconOnly: Story = {
@@ -126,7 +141,7 @@ export const LoadingIconOnly: Story = {
  * two seconds the spinner leaves and the label and width come back. It never jumps.
  */
 export const LoadingWithLabelChange: Story = {
-  args: { variant: 'primary', size: 'lg' },
+  args: { variant: BUTTON_VARIANT.Primary, size: BUTTON_SIZE.Lg },
   render: (args) => {
     const busy = signal(false);
     return {
@@ -150,10 +165,10 @@ export const LoadingWithLabelChange: Story = {
   },
 };
 
-export const Disabled: Story = { args: { variant: 'primary', disabled: true } };
+export const Disabled: Story = { args: { variant: BUTTON_VARIANT.Primary, disabled: true } };
 
-const panel = (theme: 'light' | 'dark') => `
-  <div data-theme="${theme}" style="padding: 1.5rem; background: var(--bg); color: var(--text); display: grid; gap: 1rem">
+const panel = (theme: Theme) => `
+  <div ${THEME_ATTRIBUTE}="${theme}" style="padding: 1.5rem; background: var(--bg); color: var(--text); display: grid; gap: 1rem">
     @for (v of variants; track v) {
       <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap">
         @for (s of sizes; track s) {
@@ -175,9 +190,9 @@ export const AllVariants: Story = {
   parameters: { layout: 'fullscreen' },
   render: () => ({
     props: {
-      variants: ['primary', 'secondary', 'ghost', 'danger'],
-      sizes: ['sm', 'md', 'lg'],
+      variants: Object.values(BUTTON_VARIANT),
+      sizes: Object.values(BUTTON_SIZE),
     },
-    template: `${panel('light')}${panel('dark')}`,
+    template: `${Object.values(THEME).map(panel).join('')}`,
   }),
 };

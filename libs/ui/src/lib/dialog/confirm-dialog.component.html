@@ -5,7 +5,7 @@
   }}</ui-button>
   <ui-button
     slot="footer"
-    [variant]="config.destructive ? 'danger' : 'primary'"
+    [variant]="config.destructive ? BUTTON_VARIANT.Danger : BUTTON_VARIANT.Primary"
     (click)="answer(true)"
     >{{ config.confirmLabel }}</ui-button
   >

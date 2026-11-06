@@ -1,9 +1,10 @@
 import { DOCUMENT } from '@angular/common';
 import { DestroyRef, Service, computed, effect, inject, signal } from '@angular/core';
-import { ResolvedTheme } from './models/resolved-theme.type';
+import { THEME, THEME_ATTRIBUTE, Theme } from '@shelfmark/ui';
+import { THEME_PREFERENCE } from './models/theme-preference.const';
 import { ThemePreference } from './models/theme-preference.type';
+import { THEME_STORAGE_KEY } from './models/theme-storage-key.const';
 
-const STORAGE_KEY = 'sm-theme';
 const DARK_QUERY = '(prefers-color-scheme: dark)';
 
 /**
@@ -15,14 +16,14 @@ export class ThemeService {
   private readonly document = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);
 
-  private readonly preferenceState = signal<ThemePreference>('system');
+  private readonly preferenceState = signal<ThemePreference>(THEME_PREFERENCE.System);
   private readonly systemDark = signal(false);
 
   readonly preference = this.preferenceState.asReadonly();
-  readonly resolved = computed<ResolvedTheme>(() => {
+  readonly resolved = computed<Theme>(() => {
     const preference = this.preferenceState();
-    if (preference === 'system') {
-      return this.systemDark() ? 'dark' : 'light';
+    if (preference === THEME_PREFERENCE.System) {
+      return this.systemDark() ? THEME.Dark : THEME.Light;
     }
     return preference;
   });
@@ -35,7 +36,7 @@ export class ThemeService {
     effect(() => {
       const theme = this.resolved();
       const root = this.document.documentElement;
-      root.dataset['theme'] = theme;
+      root.setAttribute(THEME_ATTRIBUTE, theme);
       root.style.colorScheme = theme;
     });
   }
@@ -64,7 +65,7 @@ export class ThemeService {
   setPreference(preference: ThemePreference): void {
     this.preferenceState.set(preference);
     try {
-      this.document.defaultView?.localStorage.setItem(STORAGE_KEY, preference);
+      this.document.defaultView?.localStorage.setItem(THEME_STORAGE_KEY, preference);
     } catch {
       // Storage can be unavailable (private mode, blocked); the choice then lasts for the session.
     }
@@ -72,8 +73,10 @@ export class ThemeService {
 
   private readStored(): ThemePreference | null {
     try {
-      const value = this.document.defaultView?.localStorage.getItem(STORAGE_KEY);
-      return value === 'system' || value === 'light' || value === 'dark' ? value : null;
+      const value = this.document.defaultView?.localStorage.getItem(THEME_STORAGE_KEY);
+      return Object.values<string>(THEME_PREFERENCE).includes(value ?? '')
+        ? (value as ThemePreference)
+        : null;
     } catch {
       return null;
     }

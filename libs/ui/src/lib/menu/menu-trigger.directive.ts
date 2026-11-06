@@ -1,6 +1,9 @@
 import { computed, Directive, effect, ElementRef, inject, input, Renderer2 } from '@angular/core';
 import { UI_FOCUS_TARGET } from '../focus-target/models/ui-focus-target.const';
 import type { MenuComponent } from './menu.component';
+import { KEYBOARD_KEY } from '../keyboard';
+import { MENU_FOCUS_EDGE } from './models/menu-focus-edge.const';
+import { BUTTON_HASPOPUP } from '../button/models/button-haspopup.const';
 
 /**
  * Opens a `ui-menu` from a button (the trigger half of the ARIA menu button pattern). Put it on
@@ -61,7 +64,7 @@ export class MenuTriggerDirective {
         return;
       }
       const menu = this.menu();
-      this.renderer.setAttribute(target, 'aria-haspopup', 'menu');
+      this.renderer.setAttribute(target, 'aria-haspopup', BUTTON_HASPOPUP.Menu);
       this.renderer.setAttribute(target, 'aria-expanded', String(menu.anchor() === target));
       this.renderer.setAttribute(target, 'aria-controls', menu.id());
       onCleanup(() => {
@@ -77,16 +80,21 @@ export class MenuTriggerDirective {
     if (menu.anchor() === target) {
       menu.close();
     } else {
-      menu.openFrom(target, { focus: 'first' });
+      menu.openFrom(target, { focus: MENU_FOCUS_EDGE.First });
     }
   }
 
   private onKeydown(event: KeyboardEvent, target: HTMLElement): void {
     const menu = this.menu();
-    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+    if (event.key === KEYBOARD_KEY.ArrowDown || event.key === KEYBOARD_KEY.ArrowUp) {
       event.preventDefault();
-      menu.openFrom(target, { focus: event.key === 'ArrowDown' ? 'first' : 'last' });
-    } else if ((event.key === 'Enter' || event.key === ' ') && !this.isNativeButton(target)) {
+      menu.openFrom(target, {
+        focus: event.key === KEYBOARD_KEY.ArrowDown ? MENU_FOCUS_EDGE.First : MENU_FOCUS_EDGE.Last,
+      });
+    } else if (
+      (event.key === KEYBOARD_KEY.Enter || event.key === KEYBOARD_KEY.Space) &&
+      !this.isNativeButton(target)
+    ) {
       event.preventDefault();
       this.toggle(target);
     }

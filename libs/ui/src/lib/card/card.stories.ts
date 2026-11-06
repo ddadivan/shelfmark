@@ -11,7 +11,10 @@ import { MenuComponent } from '../menu/menu.component';
 import { SkeletonComponent } from '../skeleton/skeleton.component';
 import { CardComponent } from './card.component';
 import { CARD_STORY_IMAGE } from './stories/card-story-image.const';
-import { CARD_STORY_THEME } from './stories/card-story-theme.const';
+import { BUTTON_SIZE, BUTTON_VARIANT } from '../button';
+import { CHIP_VARIANT } from '../chip';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
+import { SKELETON_SHAPE } from '../skeleton';
 
 const meta: Meta<CardComponent> = {
   title: 'Components/Card',
@@ -68,14 +71,14 @@ const content = (title = TITLE, favorite = false) => `
   <span slot="overlay" class="cs-overlay"><span>youtube.com</span><strong>Open ↗</strong></span>
   <ui-favicon slot="meta" [src]="favicon" letter="y" />
   <span slot="meta">youtube.com</span>
-  <ui-button slot="favorite" variant="ghost" size="sm" iconOnly
+  <ui-button slot="favorite" variant="${BUTTON_VARIANT.Ghost}" size="${BUTTON_SIZE.Sm}" iconOnly
     [iconLeft]="${favorite ? "'star-filled'" : "'star'"}"
     [ariaPressed]="${favorite}"
     ariaLabel="${favorite ? 'Remove from favorites' : 'Add to favorites'}" />
   <span slot="title">${title}</span>
   <p class="cs-note">Watch on the weekend</p>
-  <div class="cs-tags"><ui-chip variant="tag">angular</ui-chip><ui-chip variant="tag">courses</ui-chip></div>
-  <ui-button slot="actions" variant="secondary" size="sm" iconOnly iconLeft="more" ariaLabel="More actions" />`;
+  <div class="cs-tags"><ui-chip variant="${CHIP_VARIANT.Tag}">angular</ui-chip><ui-chip variant="${CHIP_VARIANT.Tag}">courses</ui-chip></div>
+  <ui-button slot="actions" variant="${BUTTON_VARIANT.Secondary}" size="${BUTTON_SIZE.Sm}" iconOnly iconLeft="more" ariaLabel="More actions" />`;
 
 const cardTemplate = (inner: string, attrs = '') => `
   <div class="cs-grid cs-grid--single">
@@ -115,7 +118,7 @@ export const PlaceholderIcon: Story = {
       <ui-favicon slot="meta" [src]="favicon" />
       <span slot="meta">cos.com</span>
       <span slot="title">Wool coat, straight cut, graphite</span>
-      <div class="cs-tags"><ui-chip variant="tag">clothes</ui-chip></div>`),
+      <div class="cs-tags"><ui-chip variant="${CHIP_VARIANT.Tag}">clothes</ui-chip></div>`),
   }),
 };
 
@@ -169,7 +172,7 @@ export const WithMenu: Story = {
           <ui-favicon slot="meta" [src]="favicon" letter="y" />
           <span slot="meta">youtube.com</span>
           <span slot="title">${TITLE}</span>
-          <ui-button slot="actions" [uiMenuTrigger]="menu" variant="secondary" size="sm" iconOnly
+          <ui-button slot="actions" [uiMenuTrigger]="menu" variant="${BUTTON_VARIANT.Secondary}" size="${BUTTON_SIZE.Sm}" iconOnly
             iconLeft="more" ariaLabel="More actions" />
         </ui-card>
         <ui-menu #menu align="end" ariaLabel="Link actions" (opened)="open.set(true)" (closed)="open.set(false)">
@@ -197,14 +200,14 @@ export const Reveal: Story = {
     props: { ...withProps(args), loaded: signal(false) },
     template: `
       <div class="cs-reveal">
-        <ui-button variant="secondary" (click)="loaded.set(!loaded())">
+        <ui-button variant="${BUTTON_VARIANT.Secondary}" (click)="loaded.set(!loaded())">
           {{ loaded() ? 'Show skeleton' : 'Load content' }}
         </ui-button>
         <div class="cs-reveal__stage" [attr.aria-busy]="!loaded()">
           @if (loaded()) {
             <ui-card [image]="image" [href]="href" [newTab]="newTab" [reveal]="true">${content()}</ui-card>
           } @else {
-            <ui-skeleton shape="card" />
+            <ui-skeleton shape="${SKELETON_SHAPE.Card}" />
           }
         </div>
       </div>`,
@@ -214,11 +217,11 @@ export const Reveal: Story = {
 /** Every state in both themes. */
 export const AllVariants: Story = {
   render: (args) => ({
-    props: { ...withProps(args), themes: Object.values(CARD_STORY_THEME) },
+    props: { ...withProps(args), themes: Object.values(THEME) },
     template: `
       <div class="cs-themes">
         @for (theme of themes; track theme) {
-          <div [attr.data-theme]="theme" class="cs-pane">
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="cs-pane">
             <div class="cs-grid">
               <ui-card [image]="image" href="https://example.com/" [newTab]="true">${content()}</ui-card>
               <ui-card href="https://example.com/" [newTab]="true">${content('Without a preview image')}</ui-card>

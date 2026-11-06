@@ -1,5 +1,10 @@
 import nx from '@nx/eslint-plugin';
 import prettier from 'eslint-config-prettier';
+import {
+  enumAndKeySelectors,
+  namedConstantDefinitionFiles,
+  namedConstantSelectors,
+} from './eslint.named-constants.mjs';
 
 export default [
   ...nx.configs['flat/base'],
@@ -25,6 +30,16 @@ export default [
         },
       ],
     },
+  },
+  {
+    // ADR 0024: named constants, no TS enum. Projects that set no-restricted-syntax themselves
+    // (eslint.angular.mjs) spread the same selectors.
+    files: ['**/*.ts', '**/*.tsx'],
+    rules: { 'no-restricted-syntax': ['error', ...namedConstantSelectors] },
+  },
+  {
+    files: namedConstantDefinitionFiles,
+    rules: { 'no-restricted-syntax': ['error', ...enumAndKeySelectors] },
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],

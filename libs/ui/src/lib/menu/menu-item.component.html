@@ -6,7 +6,7 @@
   [disabled]="disabled()"
   [role]="ariaRole()"
   [searchTerm]="searchText()"
-  [attr.aria-checked]="type() === 'item' ? null : selected()"
+  [attr.aria-checked]="type() === MENU_ITEM_TYPE.Item ? null : selected()"
   uiRipple
 >
   @if (icon(); as name) {

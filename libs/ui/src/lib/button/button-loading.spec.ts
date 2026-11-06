@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../../testing/axe';
 import { ButtonComponent } from './button.component';
 import type { ButtonType } from './models/button-type.type';
+import { BUTTON_TYPE } from './models/button-type.const';
 
 @Component({
   imports: [ButtonComponent],
@@ -25,7 +26,7 @@ import type { ButtonType } from './models/button-type.type';
 })
 class HostComponent {
   readonly loading = signal(false);
-  readonly type = signal<ButtonType>('button');
+  readonly type = signal<ButtonType>(BUTTON_TYPE.Button);
   readonly href = signal<string | undefined>(undefined);
   readonly iconLeft = signal<'add' | undefined>(undefined);
   readonly iconOnly = signal(false);
@@ -168,7 +169,7 @@ describe('ButtonComponent loading', () => {
 
   it('does not submit a form while loading', async () => {
     const { host, control, settle } = await setup();
-    host.type.set('submit');
+    host.type.set(BUTTON_TYPE.Submit);
     await settle();
     control().click();
     expect(host.submits()).toBe(1);

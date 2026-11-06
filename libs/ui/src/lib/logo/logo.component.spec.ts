@@ -3,6 +3,8 @@ import { axeViolations } from '../../testing/axe';
 import { LogoComponent } from './logo.component';
 import type { LogoTone } from './models/logo-tone.type';
 import type { LogoVariant } from './models/logo-variant.type';
+import { LOGO_VARIANT } from './models/logo-variant.const';
+import { LOGO_TONE } from './models/logo-tone.const';
 
 interface Inputs {
   variant?: LogoVariant;
@@ -31,7 +33,7 @@ describe('LogoComponent', () => {
   });
 
   it('draws the mark of the logo asset', () => {
-    const { host } = render({ variant: 'mark' });
+    const { host } = render({ variant: LOGO_VARIANT.Mark });
     expect(host.querySelector('svg')?.getAttribute('viewBox')).toBe('0 0 32 32');
     expect(host.querySelector('.ui-logo__card')?.getAttribute('rx')).toBe('6');
     expect(host.querySelector('.ui-logo__bookmark')?.getAttribute('d')).toBe(
@@ -40,13 +42,13 @@ describe('LogoComponent', () => {
   });
 
   it('omits the wordmark for the mark variant', () => {
-    const { host } = render({ variant: 'mark' });
+    const { host } = render({ variant: LOGO_VARIANT.Mark });
     expect(host.classList.contains('ui-logo--mark')).toBe(true);
     expect(host.querySelector('.ui-logo__wordmark')).toBeNull();
   });
 
   it('renders the mono mark as one cut-out path in currentColor', () => {
-    const { host } = render({ tone: 'mono' });
+    const { host } = render({ tone: LOGO_TONE.Mono });
     expect(host.classList.contains('ui-logo--mono')).toBe(true);
     expect(host.querySelector('.ui-logo__mono')?.getAttribute('fill-rule')).toBe('evenodd');
     expect(host.querySelector('.ui-logo__card')).toBeNull();
@@ -58,7 +60,7 @@ describe('LogoComponent', () => {
   });
 
   it('hides a bare mark from assistive technology', () => {
-    const { host } = render({ variant: 'mark' });
+    const { host } = render({ variant: LOGO_VARIANT.Mark });
     expect(host.getAttribute('aria-hidden')).toBe('true');
     expect(host.hasAttribute('role')).toBe(false);
   });
@@ -69,7 +71,7 @@ describe('LogoComponent', () => {
   });
 
   it('is a named image with a label', () => {
-    const { host } = render({ variant: 'mark', label: 'Shelfmark' });
+    const { host } = render({ variant: LOGO_VARIANT.Mark, label: 'Shelfmark' });
     expect(host.getAttribute('role')).toBe('img');
     expect(host.getAttribute('aria-label')).toBe('Shelfmark');
     expect(host.hasAttribute('aria-hidden')).toBe(false);
@@ -77,9 +79,9 @@ describe('LogoComponent', () => {
 
   it.each<Inputs>([
     {},
-    { variant: 'mark' },
-    { variant: 'mark', label: 'Shelfmark' },
-    { tone: 'mono', label: 'Shelfmark' },
+    { variant: LOGO_VARIANT.Mark },
+    { variant: LOGO_VARIANT.Mark, label: 'Shelfmark' },
+    { tone: LOGO_TONE.Mono, label: 'Shelfmark' },
   ])('has no axe violations for %o', async (inputs) => {
     const { host } = render(inputs);
     expect(await axeViolations(host)).toEqual([]);

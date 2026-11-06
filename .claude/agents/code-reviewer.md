@@ -19,7 +19,8 @@ You are the code reviewer of Shelfmark. You read; you never modify files.
    - **UI** — only `libs/ui` components in features, tokens, `rem`, both themes, phone layout, Motion spec, translation keys, a11y.
    - **Backend** — `userId` filtering, DTO validation, unified error format, no secrets in logs.
    - **Contracts** — types come from `libs/shared/contracts`, not duplicated.
-   - **TypeScript (PROJECT.md 5.0)** — no `any` / `as any`, no `@ts-ignore`; one interface / type / enum / array-of-objects constant per file with the `.interface.ts` / `.type.ts` / `.enum.ts` / `.const.ts` suffix in `models/`; no dump files (`types.ts`, `models.ts`, `constants.ts`). Lint cannot check the file split — you do (`blocker` if violated).
+   - **TypeScript (PROJECT.md 5.0)** — no `any` / `as any`, no `@ts-ignore`; one interface / type / array-of-objects constant per file with the `.interface.ts` / `.type.ts` / `.const.ts` suffix in `models/`; no dump files (`types.ts`, `models.ts`, `constants.ts`). Lint cannot check the file split — you do (`blocker` if violated).
+   - **Named constants** — No TS `enum`; no repeated string literals for fixed value sets (ADR 0024) — lint cannot see templates or union literals in general, check them by hand.
    - **Tests** — meaningful, cover the criteria, thresholds hold.
    - **Quality** — duplication, dead code, naming, unnecessary complexity, scope creep beyond the issue.
 

@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { axeViolations } from '../../testing/axe';
 import { RippleDirective } from './ripple.directive';
+import { KEYBOARD_KEY } from '../keyboard';
 
 @Component({
   imports: [RippleDirective],
@@ -134,24 +135,27 @@ describe('RippleDirective', () => {
     expect(spans(row)).toHaveLength(0);
   });
 
-  it.each(['Enter', ' '])('starts from the centre on %j and fades on keyup', async (k) => {
-    const { row, spans } = await setup();
-    row.dispatchEvent(key('keydown', k));
-    const [span] = spans(row);
+  it.each([KEYBOARD_KEY.Enter, KEYBOARD_KEY.Space])(
+    'starts from the centre on %j and fades on keyup',
+    async (k) => {
+      const { row, spans } = await setup();
+      row.dispatchEvent(key('keydown', k));
+      const [span] = spans(row);
 
-    // Centre of a 200x40 host is (100, 20); farthest corner is 100 x 20 away.
-    const radius = Math.hypot(100, 20);
-    expect(span.style.getPropertyValue('left')).toBe(`${100 - radius}px`);
-    expect(span.style.getPropertyValue('top')).toBe(`${20 - radius}px`);
+      // Centre of a 200x40 host is (100, 20); farthest corner is 100 x 20 away.
+      const radius = Math.hypot(100, 20);
+      expect(span.style.getPropertyValue('left')).toBe(`${100 - radius}px`);
+      expect(span.style.getPropertyValue('top')).toBe(`${20 - radius}px`);
 
-    row.dispatchEvent(key('keydown', k, { repeat: true }));
+      row.dispatchEvent(key('keydown', k, { repeat: true }));
 
-    expect(spans(row)).toHaveLength(1);
+      expect(spans(row)).toHaveLength(1);
 
-    row.dispatchEvent(key('keyup', k));
+      row.dispatchEvent(key('keyup', k));
 
-    expect(span.classList.contains('is-out')).toBe(true);
-  });
+      expect(span.classList.contains('is-out')).toBe(true);
+    },
+  );
 
   it('ignores other keys and releases a key ripple on blur', async () => {
     const { row, spans } = await setup();
@@ -160,7 +164,7 @@ describe('RippleDirective', () => {
 
     expect(spans(row)).toHaveLength(0);
 
-    row.dispatchEvent(key('keydown', 'Enter'));
+    row.dispatchEvent(key('keydown', KEYBOARD_KEY.Enter));
     row.dispatchEvent(key('keyup', 'a'));
 
     expect(spans(row)[0].classList.contains('is-out')).toBe(false);
@@ -205,7 +209,7 @@ describe('RippleDirective', () => {
   it('ends running ripples when the host opts out or becomes disabled', async () => {
     const { host, row, spans, settle } = await setup();
     row.dispatchEvent(pointer('pointerdown', 60, 30));
-    row.dispatchEvent(key('keydown', 'Enter'));
+    row.dispatchEvent(key('keydown', KEYBOARD_KEY.Enter));
 
     expect(spans(row)).toHaveLength(2);
 
@@ -221,11 +225,11 @@ describe('RippleDirective', () => {
     await settle();
     const anchor = root.querySelector('a') as HTMLElement;
     anchor.getBoundingClientRect = () => new DOMRect(0, 0, 100, 36);
-    anchor.dispatchEvent(key('keydown', ' '));
+    anchor.dispatchEvent(key('keydown', KEYBOARD_KEY.Space));
 
     expect(anchor.querySelectorAll('.ui-ripple')).toHaveLength(0);
 
-    anchor.dispatchEvent(key('keydown', 'Enter'));
+    anchor.dispatchEvent(key('keydown', KEYBOARD_KEY.Enter));
 
     expect(anchor.querySelectorAll('.ui-ripple')).toHaveLength(1);
   });
@@ -245,7 +249,7 @@ describe('RippleDirective', () => {
   it('shows no ripple under prefers-reduced-motion', async () => {
     const { row, spans } = await setup(true);
     row.dispatchEvent(pointer('pointerdown', 60, 30));
-    row.dispatchEvent(key('keydown', 'Enter'));
+    row.dispatchEvent(key('keydown', KEYBOARD_KEY.Enter));
 
     expect(spans(row)).toHaveLength(0);
   });
@@ -259,7 +263,7 @@ describe('RippleDirective', () => {
     document.addEventListener('keydown', (e) => seen.push(e.type), { once: true });
     const skip = guarded.querySelector('.skip') as HTMLElement;
     skip.dispatchEvent(pointer('pointerdown', 60, 30));
-    skip.dispatchEvent(key('keydown', 'Enter'));
+    skip.dispatchEvent(key('keydown', KEYBOARD_KEY.Enter));
     expect(guarded.querySelectorAll('.ui-ripple').length).toBe(0);
     expect(seen).toEqual(['pointerdown', 'keydown']);
     (guarded.querySelector('.plain') as HTMLElement).dispatchEvent(pointer('pointerdown', 60, 30));

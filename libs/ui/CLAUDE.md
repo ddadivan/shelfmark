@@ -25,7 +25,7 @@ libs/ui/
 ## Component rules
 
 - One component (or directive) per folder, selector `ui-<name>`, standalone, `OnPush`, `host: {}` (no `@HostBinding` / `@HostListener`), signal `input()` / `output()` / `model()`, `inject()`.
-- Variants and sizes are typed union inputs with defaults; each union lives in its own `models/<name>.type.ts`. Booleans use `booleanAttribute`.
+- Variants, sizes and kinds are `as const` objects with a derived union type (ADR 0024, no TS `enum`): `models/<name>.const.ts` (`BUTTON_VARIANT = { Primary: 'primary', … } as const`) and `models/<name>.type.ts` (`ButtonVariant`, the union). The input keeps the union type, so `variant="primary"` still compiles in templates; in TypeScript, host expressions and bound template expressions use the constant (`input<ButtonVariant>(BUTTON_VARIANT.Secondary)`, `protected readonly CHIP_VARIANT = CHIP_VARIANT;`, stories `argTypes.options: Object.values(BUTTON_VARIANT)`). `KeyboardEvent.key` values come from the shared `KEYBOARD_KEY` (`lib/keyboard`). Numeric unions, catalogue tuples (`ICON_NAMES`), `Record` keys and ARIA / DOM / CDK identifiers stay literal. Booleans use `booleanAttribute`.
 - Behaviour (keyboard, focus, ARIA, overlays) comes from native elements first, then Angular Aria / CDK. No Angular Material, no Tailwind, no third-party icon sets, no `@angular/animations`.
 - Templates in `.html`, styles in `.scss` files (stylelint does not see inline `styles:`).
 - Follow `.claude/skills/create-ui-component` and `angular-v22-rules`.
@@ -179,7 +179,7 @@ Angular keeps the element until the leave animation ends and a second toggle mid
 
 ## Themes
 
-`global.scss` defines the tokens: scale tokens on `:root`, light on `:root, [data-theme='light']`, dark on `[data-theme='dark']`, and dark again under `@media (prefers-color-scheme: dark)` for `:root:not([data-theme])`. An explicit `data-theme` always wins; without one the OS decides. Every component must work in both; check both in Storybook.
+`global.scss` defines the tokens: scale tokens on `:root`, light on `:root, [data-theme='light']`, dark on `[data-theme='dark']`, and dark again under `@media (prefers-color-scheme: dark)` for `:root:not([data-theme])`. An explicit `data-theme` always wins; without one the OS decides. Every component must work in both; check both in Storybook. The theme names and the attribute are `THEME` (`light`, `dark`) and `THEME_ATTRIBUTE` (`data-theme`) from `lib/theme`, used by Storybook, the a11y runner and the app; Sass cannot import them, so `styles/styles.spec.ts` checks the compiled CSS has a `[data-theme=…]` selector for every `THEME` value. Stories show both themes with `Object.values(THEME)`.
 
 ## Icons
 

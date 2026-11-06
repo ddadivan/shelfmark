@@ -10,6 +10,7 @@ import { DialogComponent } from './dialog.component';
 import { UiDialogRef } from './dialog-ref';
 import { injectDialogData } from './inject-dialog-data';
 import type { ConfirmDialogData } from './models/confirm-dialog-data.interface';
+import { BUTTON_VARIANT } from '../button/models/button-variant.const';
 
 /**
  * Content of `DialogService.confirm()`. Cancel (secondary) sits left of the confirm button.
@@ -23,6 +24,7 @@ import type { ConfirmDialogData } from './models/confirm-dialog-data.interface';
   styleUrl: './confirm-dialog.component.scss',
 })
 export class ConfirmDialogComponent {
+  protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   protected readonly config = injectDialogData<ConfirmDialogData>();
   private readonly ref = inject<UiDialogRef<boolean>>(UiDialogRef);
   private readonly buttons = viewChildren(ButtonComponent);

@@ -16,14 +16,15 @@ import './tree-stories.scss';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { applicationConfig, type Preview } from '@storybook/angular-vite';
 import { withThemeByDataAttribute } from '@storybook/addon-themes';
+import { THEME, THEME_ATTRIBUTE } from '../src/lib/theme';
 
 const preview: Preview = {
   decorators: [
     applicationConfig({ providers: [provideZonelessChangeDetection()] }),
     withThemeByDataAttribute({
-      themes: { light: 'light', dark: 'dark' },
-      defaultTheme: 'light',
-      attributeName: 'data-theme',
+      themes: { light: THEME.Light, dark: THEME.Dark },
+      defaultTheme: THEME.Light,
+      attributeName: THEME_ATTRIBUTE,
       parentSelector: 'html',
     }),
   ],

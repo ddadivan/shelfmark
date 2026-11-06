@@ -1,10 +1,11 @@
+import { APP_LANG } from './models/app-lang.const';
 import { AppTranslocoLoader } from './app-transloco.loader';
 
 describe('AppTranslocoLoader', () => {
   const loader = new AppTranslocoLoader();
 
   it('loads the en translations', async () => {
-    const translation = await loader.getTranslation('en');
+    const translation = await loader.getTranslation(APP_LANG.En);
 
     expect(translation).toEqual({
       landing: { title: 'Shelfmark', tagline: 'Every saved link, in one place.' },

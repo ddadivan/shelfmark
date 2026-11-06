@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { ButtonComponent } from '../button/button.component';
 import { RippleDirective } from './ripple.directive';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
+import type { Theme } from '../theme';
 
 const meta: Meta<RippleDirective> = {
   title: 'Components/Ripple',
@@ -12,8 +14,8 @@ const meta: Meta<RippleDirective> = {
 export default meta;
 type Story = StoryObj<RippleDirective>;
 
-const panel = (theme: 'light' | 'dark') => `
-  <div data-theme="${theme}" class="rs-panel">
+const panel = (theme: Theme) => `
+  <div ${THEME_ATTRIBUTE}="${theme}" class="rs-panel">
     <div class="rs-actions">
       <ui-button variant="primary">Primary</ui-button>
       <ui-button variant="secondary">Secondary</ui-button>
@@ -35,7 +37,7 @@ export const Demo: Story = {
   parameters: { layout: 'fullscreen' },
   render: () => ({
     moduleMetadata: { imports: [RippleDirective, ButtonComponent] },
-    template: `${panel('light')}${panel('dark')}`,
+    template: `${Object.values(THEME).map(panel).join('')}`,
   }),
 };
 

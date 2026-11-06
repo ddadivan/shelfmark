@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
-import { CARD_STORY_THEME } from '../card/stories/card-story-theme.const';
 import { SKELETON_SHAPE } from './models/skeleton-shape.const';
 import { SkeletonComponent } from './skeleton.component';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
 
 const meta: Meta<SkeletonComponent> = {
   title: 'Components/Skeleton',
@@ -54,14 +54,14 @@ export const Preview: Story = { args: { shape: SKELETON_SHAPE.Preview, count: 1 
 export const AllVariants: Story = {
   render: () => ({
     props: {
-      themes: Object.values(CARD_STORY_THEME),
+      themes: Object.values(THEME),
       shapes: Object.values(SKELETON_SHAPE).filter((shape) => shape !== SKELETON_SHAPE.Card),
       card: SKELETON_SHAPE.Card,
     },
     template: `
       <div class="cs-themes">
         @for (theme of themes; track theme) {
-          <div [attr.data-theme]="theme" class="cs-pane" aria-busy="true">
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="cs-pane" aria-busy="true">
             <div class="cs-grid cs-grid--single">
               <ui-skeleton [shape]="card" [count]="1" />
             </div>

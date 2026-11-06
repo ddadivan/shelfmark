@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { TextareaComponent } from './textarea.component';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
 
 const meta: Meta<TextareaComponent> = {
   title: 'Components/Textarea',
@@ -81,10 +82,11 @@ export const Disabled: Story = {
 export const AllVariants: Story = {
   parameters: { layout: 'padded' },
   render: () => ({
+    props: { themes: Object.values(THEME) },
     template: `
       <div class="fs-themes">
-        @for (theme of ['light', 'dark']; track theme) {
-          <div [attr.data-theme]="theme" class="fs-panel">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="fs-panel">
             <ui-textarea label="Note" placeholder="Why are you saving this?"
               hint="Helps you find it later" />
             <ui-textarea label="Note" [maxLength]="2000" counterLabel="characters"

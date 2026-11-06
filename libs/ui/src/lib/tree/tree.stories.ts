@@ -11,6 +11,8 @@ import { TREE_STORY_FLAT } from './stories/tree-story-flat.const';
 import { TREE_STORY_LONG } from './stories/tree-story-long.const';
 import { TREE_STORY_NESTED } from './stories/tree-story-nested.const';
 import { TreeComponent } from './tree.component';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
+import type { Theme } from '../theme';
 
 const meta: Meta<TreeComponent> = {
   title: 'Components/Tree',
@@ -137,8 +139,8 @@ export const WithContextMenu: Story = {
   }),
 };
 
-const variants = (theme: 'light' | 'dark') => `
-  <div data-theme="${theme}" class="ts-panel ts-panel--variants">
+const variants = (theme: Theme) => `
+  <div ${THEME_ATTRIBUTE}="${theme}" class="ts-panel ts-panel--variants">
     <p class="ts-hint">${theme} theme: nested open and closed, current row, long names</p>
     <div class="ts-row">
       <div class="ts-sidebar">
@@ -162,6 +164,6 @@ export const AllVariants: Story = {
       long: TREE_STORY_LONG,
       ids: { Angular: TREE_STORY_ID.Angular, Ml: TREE_STORY_ID.Ml },
     },
-    template: `${variants('light')}${variants('dark')}`,
+    template: `${Object.values(THEME).map(variants).join('')}`,
   }),
 };

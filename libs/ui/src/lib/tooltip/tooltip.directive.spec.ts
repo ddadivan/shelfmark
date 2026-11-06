@@ -7,6 +7,11 @@ import { ButtonComponent } from '../button/button.component';
 import type { TooltipPosition } from './models/tooltip-position.type';
 import { TooltipPanelComponent } from './tooltip-panel.component';
 import { TooltipDirective } from './tooltip.directive';
+import { KEYBOARD_KEY } from '../keyboard';
+import { OVERLAY_LAYER } from '../overlay/models/overlay-layer.const';
+import { OVERLAY_SIDE } from '../overlay/models/overlay-side.const';
+import { overlayLayerClass } from '../overlay/overlay-layer';
+import type { OverlaySide } from '../overlay/models/overlay-side.type';
 
 @Component({
   imports: [TooltipDirective, ButtonComponent],
@@ -27,7 +32,7 @@ import { TooltipDirective } from './tooltip.directive';
 })
 class HostComponent {
   readonly text = signal('Search');
-  readonly position = signal<TooltipPosition>('top');
+  readonly position = signal<TooltipPosition>(OVERLAY_SIDE.Top);
   readonly delay = signal(400);
   readonly shortcut = signal('');
 }
@@ -175,7 +180,11 @@ describe('TooltipDirective', () => {
     await vi.advanceTimersByTimeAsync(400);
     settle();
     expect(panelEl()).not.toBeNull();
-    const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true });
+    const event = new KeyboardEvent('keydown', {
+      key: KEYBOARD_KEY.Escape,
+      bubbles: true,
+      cancelable: true,
+    });
     document.body.dispatchEvent(event);
     settle();
     expect(panelEl()).toBeNull();
@@ -198,7 +207,9 @@ describe('TooltipDirective', () => {
     document.body.addEventListener('keydown', seen);
     enter(inner);
     await vi.advanceTimersByTimeAsync(200);
-    document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    document.body.dispatchEvent(
+      new KeyboardEvent('keydown', { key: KEYBOARD_KEY.Escape, bubbles: true }),
+    );
     expect(seen).toHaveBeenCalledTimes(1);
     await vi.advanceTimersByTimeAsync(500);
     settle();
@@ -213,7 +224,9 @@ describe('TooltipDirective', () => {
     enter(inner);
     await vi.advanceTimersByTimeAsync(400);
     settle();
-    document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    document.body.dispatchEvent(
+      new KeyboardEvent('keydown', { key: KEYBOARD_KEY.Escape, bubbles: true }),
+    );
     expect(seen).not.toHaveBeenCalled();
     document.body.removeEventListener('keydown', seen);
   });
@@ -254,7 +267,7 @@ describe('TooltipDirective', () => {
     enter(inner);
     await vi.advanceTimersByTimeAsync(400);
     settle();
-    fixture.componentInstance.position.set('right');
+    fixture.componentInstance.position.set(OVERLAY_SIDE.Right);
     settle();
     expect(panelEl()).toBeNull();
     leave(inner);
@@ -283,7 +296,7 @@ describe('TooltipDirective', () => {
   });
 
   it('after a flip, re-measures only once the panel has rendered the new side', async () => {
-    let report: ((side: 'top' | 'bottom' | 'left' | 'right') => void) | undefined;
+    let report: ((side: OverlaySide) => void) | undefined;
     const connect = UiOverlay.prototype.connect;
     vi.spyOn(UiOverlay.prototype, 'connect').mockImplementation(function (
       this: UiOverlay,
@@ -299,7 +312,7 @@ describe('TooltipDirective', () => {
     await vi.advanceTimersByTimeAsync(400);
     settle();
     update.mockClear();
-    report?.('bottom');
+    report?.(OVERLAY_SIDE.Bottom);
     expect(update).not.toHaveBeenCalled();
     settle();
     expect(update).toHaveBeenCalledTimes(1);
@@ -402,12 +415,14 @@ describe('TooltipDirective', () => {
 
   it('reopens after a position change and puts the host on the tooltip layer', async () => {
     const { fixture, inner, settle, pane } = await setup();
-    fixture.componentInstance.position.set('bottom');
+    fixture.componentInstance.position.set(OVERLAY_SIDE.Bottom);
     settle();
     enter(inner);
     await vi.advanceTimersByTimeAsync(400);
     settle();
-    expect(pane()?.parentElement?.classList.contains('ui-overlay-layer--tooltip')).toBe(true);
+    expect(
+      pane()?.parentElement?.classList.contains(overlayLayerClass(OVERLAY_LAYER.Tooltip)),
+    ).toBe(true);
   });
 
   it('a second hover during the leave works and the pane is reused', async () => {
@@ -458,7 +473,7 @@ describe('TooltipPanelComponent', () => {
     const fixture = TestBed.createComponent(TooltipPanelComponent);
     fixture.componentRef.setInput('text', 'Search');
     fixture.componentRef.setInput('shortcut', '⌘K');
-    fixture.componentRef.setInput('side', 'left');
+    fixture.componentRef.setInput('side', OVERLAY_SIDE.Left);
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
     expect(el.querySelector('.ui-tooltip-hit--left')).not.toBeNull();

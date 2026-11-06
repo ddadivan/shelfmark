@@ -1,5 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { DestroyRef, Directive, effect, ElementRef, inject, input } from '@angular/core';
+import { KEYBOARD_KEY } from '../keyboard';
 
 import { UI_RIPPLE_IGNORE } from './models/ui-ripple-ignore.const';
 
@@ -95,11 +96,11 @@ export class RippleDirective {
     if (this.isIgnored(event)) {
       return;
     }
-    if (event.repeat || (event.key !== 'Enter' && event.key !== ' ')) {
+    if (event.repeat || (event.key !== KEYBOARD_KEY.Enter && event.key !== KEYBOARD_KEY.Space)) {
       return;
     }
     // Space does not activate a link, so it gets no feedback.
-    if (event.key === ' ' && this.host.tagName === 'A') {
+    if (event.key === KEYBOARD_KEY.Space && this.host.tagName === 'A') {
       return;
     }
     this.releaseKey();
@@ -108,7 +109,7 @@ export class RippleDirective {
   }
 
   protected onKeyUp(event: KeyboardEvent): void {
-    if (event.key === 'Enter' || event.key === ' ') {
+    if (event.key === KEYBOARD_KEY.Enter || event.key === KEYBOARD_KEY.Space) {
       this.releaseKey();
     }
   }
