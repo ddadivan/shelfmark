@@ -1,0 +1,9 @@
+export { DialogComponent } from './dialog.component';
+export { UiDialogRef } from './dialog-ref';
+export { DialogService } from './dialog.service';
+export { injectDialogData } from './inject-dialog-data';
+export type { ConfirmDialogConfig } from './models/confirm-config.interface';
+export type { UiDialogConfig } from './models/dialog-config.interface';
+export type { DialogRole } from './models/dialog-role.type';
+export type { DialogSize } from './models/dialog-size.type';
+export { UI_DIALOG_DATA } from './models/ui-dialog-data.const';

@@ -1,0 +1,12 @@
+<ui-dialog [title]="config.title" [closeLabel]="config.closeLabel">
+  <p class="ui-confirm-dialog__text" [id]="config.textId">{{ config.message }}</p>
+  <ui-button slot="footer" variant="secondary" (click)="answer(false)">{{
+    config.cancelLabel
+  }}</ui-button>
+  <ui-button
+    slot="footer"
+    [variant]="config.destructive ? 'danger' : 'primary'"
+    (click)="answer(true)"
+    >{{ config.confirmLabel }}</ui-button
+  >
+</ui-dialog>
