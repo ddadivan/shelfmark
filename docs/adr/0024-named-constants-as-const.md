@@ -1,6 +1,6 @@
 # 0024. Named constants: `as const` objects with derived union types, no TS `enum`
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-06
 - Source: issue #44 (decision by the author, Nov 6); `docs/PROJECT.md` 5.0; ADR 0004; reference code in PR #52 (`tree`) and PR #53 (`select`)
 

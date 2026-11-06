@@ -7,7 +7,7 @@ description: Template for a new Shelfmark NestJS domain module - controller, ser
 
 ## 1. Contract first
 
-Add request / response types to `libs/shared/contracts/src/<domain>/` before writing the module — **one interface / type / enum per file**, named after the export (PROJECT.md 5.0), re-exported from `src/index.ts`. No `any`.
+Add request / response types to `libs/shared/contracts/src/<domain>/` before writing the module — **one interface / type / const per file**, named after the export (PROJECT.md 5.0), re-exported from `src/index.ts`. No `any`, no TS `enum` (ADR 0024): a fixed value set is an `as const` object plus a derived union; the DTO validates with `@IsIn(Object.values(X))` and documents with `@ApiProperty({ enum: Object.values(X) })`. A runtime constant in contracts needs the api webpack alias first (ADR 0024), so until then contracts stay type-only.
 
 ```ts
 // libs/shared/contracts/src/folders/folder-dto.interface.ts
@@ -52,7 +52,7 @@ apps/api/src/<domain>/
 ## 4. Service
 
 - **Every Prisma call includes `where: { userId }`** (or checks ownership of the parent first). Missing or foreign → `NotFoundException` (404), never 403.
-- Lengths and enums enforced by DTO validation and DB constraints (PROJECT.md 6.1).
+- Lengths and fixed value sets (`@IsIn(Object.values(X))`) enforced by DTO validation and DB constraints (PROJECT.md 6.1).
 - Only parameterised Prisma queries; `$queryRaw` with tagged templates if unavoidable; never `$queryRawUnsafe`.
 - No logging of bodies, tokens or personal data.
 

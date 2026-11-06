@@ -44,7 +44,9 @@ Applies to `apps/web` and `libs/ui`. Official Angular guidance (AI config, Agent
 
 `src/app/` → `app.routes.ts`, `app.config.ts`, `shell/`, `core/` (guards, interceptors, `AuthStore`, `TitleStrategy`, `DialogService`), `features/<name>/` (`<name>.page.ts` + local components), `stores/`. File names `kebab-case.<type>.ts`; pages export a default component for `loadComponent`.
 
-Types (PROJECT.md 5.0): no `any` / `as any` (use `unknown` + narrowing or generics), no `@ts-ignore`. One interface / type / enum / array-of-objects constant per file — `<kebab-name>.interface.ts`, `.type.ts`, `.enum.ts`, `.const.ts` — in a `models/` folder next to its users (e.g. `core/theme/models/theme-preference.type.ts`, `features/links/models/link-sort.enum.ts`). No dump files (`types.ts`, `models.ts`, `constants.ts`); `index.ts` only re-exports. API shapes come from `@shelfmark/contracts`, never redeclared.
+Types (PROJECT.md 5.0): no `any` / `as any` (use `unknown` + narrowing or generics), no `@ts-ignore`. One interface / type / array-of-objects constant per file — `<kebab-name>.interface.ts`, `.type.ts`, `.const.ts` — in a `models/` folder next to its users (e.g. `core/theme/models/theme-preference.type.ts`, `features/links/models/link-sort.const.ts`). No dump files (`types.ts`, `models.ts`, `constants.ts`); `index.ts` only re-exports. API shapes come from `@shelfmark/contracts`, never redeclared.
+
+Named constants (ADR 0024): no TS `enum`. A fixed value set is an `as const` object in `<name>.const.ts` (`LINK_SORT = { Newest: 'newest', … } as const`) plus the derived union in `<name>.type.ts` (`LinkSort`). Use `LINK_SORT.Newest`, not `'newest'`; story controls and validators use `Object.values(LINK_SORT)`. A template of the owning component reads the constant through a protected field (`protected readonly LINK_SORT = LINK_SORT;`). Public inputs keep the union so static attributes (`variant="primary"`) type-check.
 
 ## When unsure
 

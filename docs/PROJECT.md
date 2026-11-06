@@ -229,7 +229,8 @@ Monorepo, Node and tooling decisions: ADR 0001–0003 (`docs/adr/`).
 **TypeScript rules (whole stack).**
 
 - **Strict typing, no `any`.** Neither explicit `any` nor `as any`. Unknown data uses `unknown` with narrowing, or generics. `@ts-ignore` and `@ts-nocheck` are forbidden; `@ts-expect-error` only in tests and only with a reason. `strict` in `tsconfig.base.json` stays on. Lint reports these as errors (`no-explicit-any`, `ban-ts-comment`).
-- **One type per file.** Every interface, type, enum and array-of-objects constant lives in its own file, named as the kebab-case export plus a suffix: `link-preview.interface.ts`, `theme-preference.type.ts`, `link-sort.enum.ts`, `default-folders.const.ts`.
+- **One type per file.** Every interface, type and array-of-objects constant lives in its own file, named as the kebab-case export plus a suffix: `link-preview.interface.ts`, `theme-preference.type.ts`, `link-sort.const.ts`, `default-folders.const.ts`.
+- **Named constants, no `enum`.** A fixed value set (themes, variants, sizes, kinds, layers, keys, storage keys, attribute names) is an `as const` object in `<name>.const.ts` (`UPPER_SNAKE`, `PascalCase` members) plus the derived union in `<name>.type.ts`; code imports the constant instead of repeating the string. Public component inputs keep the union, so `variant="primary"` works in templates. Data (database ids, user content, translation keys) is not a value set. See ADR 0024.
 - **No dump files** such as `types.ts`, `models.ts`, `constants.ts`. Files are split by entity and live next to their users in the feature's or module's `models/` folder. Shared web↔api types go to `libs/shared/contracts/src/<domain>/`. `index.ts` only re-exports.
 - Classes (components, services, controllers, validation DTO classes) keep the usual `kebab-case.<type>.ts` names.
 
