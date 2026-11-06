@@ -1,0 +1,90 @@
+@use '../src/styles/ui' as *;
+
+// Layout of the Dialog stories only (never shipped with the library). Class names start with `dst-`.
+
+.dst-panel {
+  display: grid;
+  gap: var(--space-4);
+  min-height: rem(320px);
+  padding: var(--space-8) var(--space-6);
+  color: var(--text);
+  background: var(--bg);
+  place-content: start;
+}
+
+.dst-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+}
+
+.dst-result {
+  @include type(body);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.dst-fields {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.dst-field {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.dst-label {
+  @include type(label);
+
+  color: var(--text);
+}
+
+.dst-input {
+  @include type(body);
+
+  min-height: rem(36px);
+  padding: 0 var(--space-3);
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-md);
+}
+
+.dst-paragraph {
+  @include type(body);
+
+  margin: 0 0 var(--space-3);
+  color: var(--text-muted);
+}
+
+.dst-gallery {
+  display: grid;
+  gap: var(--space-6);
+  padding: var(--space-6);
+  color: var(--text);
+  background: var(--bg);
+}
+
+.dst-hint {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.dst-scrim {
+  display: grid;
+  padding: var(--space-6);
+  background: var(--overlay);
+  border-radius: var(--radius-lg);
+  place-items: center;
+}
+
+.dst-text {
+  @include type(body);
+
+  margin: 0;
+  color: var(--text-muted);
+}
