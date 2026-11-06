@@ -1,7 +1,9 @@
-import type { AppConfig } from './app-config.interface';
+import { NODE_ENV } from './models/node-env.const';
+import type { AppConfig } from './models/app-config.interface';
+import type { NodeEnv } from './models/node-env.type';
 
-const NODE_ENVS = ['development', 'production', 'test'] as const;
-const NON_PRODUCTION_ENVS = ['development', 'test'];
+const NODE_ENVS: readonly NodeEnv[] = Object.values(NODE_ENV);
+const NON_PRODUCTION_ENVS: readonly NodeEnv[] = [NODE_ENV.Development, NODE_ENV.Test];
 const DEFAULT_PORT = 3000;
 
 /**
@@ -19,7 +21,7 @@ export function readAppConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     }
   }
 
-  const rawNodeEnv = env['NODE_ENV'] ?? 'production';
+  const rawNodeEnv = env['NODE_ENV'] ?? NODE_ENV.Production;
   const nodeEnv = NODE_ENVS.find((value) => value === rawNodeEnv);
   if (!nodeEnv) {
     throw new Error(`Invalid configuration: NODE_ENV must be one of ${NODE_ENVS.join(', ')}`);

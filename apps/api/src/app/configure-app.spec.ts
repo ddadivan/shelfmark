@@ -6,6 +6,8 @@ import { Type } from 'class-transformer';
 import request from 'supertest';
 import { configureApp } from './configure-app';
 import { createApp } from './create-app';
+import { NODE_ENV } from '../config/models/node-env.const';
+import { REQUEST_ID_HEADER } from '../common/request-id/request-id.middleware';
 
 class EchoDto {
   @IsString()
@@ -26,8 +28,8 @@ class EchoController {
 
 describe('configureApp', () => {
   describe.each([
-    { isProduction: false, label: 'development' },
-    { isProduction: true, label: 'production' },
+    { isProduction: false, label: NODE_ENV.Development },
+    { isProduction: true, label: NODE_ENV.Production },
   ])('real app in $label', ({ isProduction }) => {
     let app: NestExpressApplication;
 
@@ -46,7 +48,7 @@ describe('configureApp', () => {
       expect(csp).toContain("default-src 'self'");
       expect(res.headers['x-content-type-options']).toBe('nosniff');
       expect(res.headers['x-powered-by']).toBeUndefined();
-      expect(res.headers['x-request-id']).toMatch(/^[0-9a-f-]{36}$/);
+      expect(res.headers[REQUEST_ID_HEADER.toLowerCase()]).toMatch(/^[0-9a-f-]{36}$/);
       if (isProduction) {
         expect(csp).toContain('upgrade-insecure-requests');
         expect(res.headers['strict-transport-security']).toBeDefined();
