@@ -1,27 +1,25 @@
 <ng-template #branch let-list let-parent="parent" let-level="level" let-folder="folder">
   @for (node of list; track node.id) {
-    <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- ngTreeItem sets the roving tabindex -->
-    <li
-      #item="ngTreeItem"
-      ngTreeItem
-      class="ui-tree__item"
-      [parent]="parent"
-      [value]="node.id"
-      [label]="node.name"
-      [expanded]="node.expanded ?? false"
-      [preserveContent]="true"
-      [attr.aria-labelledby]="labelledBy(item.id(), node)"
-      (expandedChange)="toggled.emit({ node, expanded: $event })"
-      (contextmenu)="onItemContextMenu($event)"
-      (keydown)="folder && onItemKeydown($event, node, row)"
-    >
+    <li class="ui-tree__item" role="none">
+      <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- ngTreeItem sets the roving tabindex -->
       <div
+        #item="ngTreeItem"
         #row
+        ngTreeItem
         class="ui-tree__row"
         [class.ui-tree__row--folder]="folder"
         [style.--ui-tree-level]="level"
         [uiRipple]="true"
-        (contextmenu)="folder && onRowContextMenu($event, node, row)"
+        [parent]="parent"
+        [value]="node.id"
+        [label]="node.name"
+        [expanded]="node.expanded ?? false"
+        [preserveContent]="true"
+        [attr.aria-labelledby]="labelledBy(item.id(), node)"
+        [attr.aria-owns]="node.children?.length ? item.id() + '-group' : null"
+        (expandedChange)="toggled.emit({ node, expanded: $event })"
+        (contextmenu)="folder && onContextMenu($event, node, row)"
+        (keydown)="folder && onKeydown($event, node, row)"
       >
         @if (folder) {
           <span
@@ -72,7 +70,7 @@
       </div>
       @if (node.children?.length) {
         <div class="ui-tree__children" [class.is-open]="item.expanded()">
-          <ul class="ui-tree__list ui-tree__group" role="group">
+          <ul class="ui-tree__list ui-tree__group" role="group" [id]="item.id() + '-group'">
             <ng-template ngTreeItemGroup [ownedBy]="item" #group="ngTreeItemGroup">
               <ng-container
                 *ngTemplateOutlet="

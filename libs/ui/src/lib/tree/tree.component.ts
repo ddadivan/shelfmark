@@ -8,6 +8,9 @@ import type { UiTreeContextMenuEvent } from './models/tree-context-menu-event.in
 import type { UiTreeNode } from './models/tree-node.interface';
 import type { UiTreeToggleEvent } from './models/tree-toggle-event.interface';
 
+/** Browsers echo a keyboard context-menu request as `contextmenu` within this window. */
+const KEYBOARD_CONTEXT_MENU_ECHO_MS = 750;
+
 /**
  * Sidebar navigation: fixed entries, then a heading and the nested folder tree with counts, on
  * the Angular Aria tree in navigation mode (roving focus; Up / Down, Home / End, Right / Left
@@ -34,6 +37,8 @@ import type { UiTreeToggleEvent } from './models/tree-toggle-event.interface';
   styleUrl: './tree.component.scss',
 })
 export class TreeComponent {
+  private keyboardMenuAt = Number.NEGATIVE_INFINITY;
+
   /** Folder tree, shown after the heading. Rows nest by `children`. */
   readonly nodes = input<readonly UiTreeNode[]>([]);
   /** Fixed entries before the folders (All links, Unsorted, Favorites); flat, no menu button. */
@@ -124,8 +129,13 @@ export class TreeComponent {
     }
   }
 
-  protected onRowContextMenu(event: MouseEvent, node: UiTreeNode, row: HTMLElement): void {
+  protected onContextMenu(event: MouseEvent, node: UiTreeNode, row: HTMLElement): void {
     event.preventDefault();
+    // The context-menu key also fires `contextmenu` on the focused row, right after the keydown
+    // that already emitted: it is not a pointer request.
+    if (event.timeStamp - this.keyboardMenuAt < KEYBOARD_CONTEXT_MENU_ECHO_MS) {
+      return;
+    }
     this.contextMenu.emit({
       node,
       trigger: 'pointer',
@@ -134,23 +144,14 @@ export class TreeComponent {
     });
   }
 
-  /**
-   * The keyboard context-menu key also fires a `contextmenu` event on the focused row itself
-   * (the pointer one lands on the row's content): keep the browser menu away from it.
-   */
-  protected onItemContextMenu(event: MouseEvent): void {
-    if (event.target === event.currentTarget) {
-      event.preventDefault();
-    }
-  }
-
-  protected onItemKeydown(event: KeyboardEvent, node: UiTreeNode, row: HTMLElement): void {
+  protected onKeydown(event: KeyboardEvent, node: UiTreeNode, row: HTMLElement): void {
     const requested = event.key === 'ContextMenu' || (event.shiftKey && event.key === 'F10');
-    if (!requested || event.target !== event.currentTarget) {
+    if (!requested) {
       return;
     }
     event.preventDefault();
     event.stopPropagation();
+    this.keyboardMenuAt = event.timeStamp;
     this.contextMenu.emit({ node, trigger: 'keyboard', anchor: row, position: null });
   }
 }

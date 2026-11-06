@@ -80,7 +80,7 @@ async function setup() {
     }
     return found;
   };
-  const row = (id: string): HTMLElement => item(id).querySelector('.ui-tree__row') as HTMLElement;
+  const row = item;
   const key = async (element: Element, name: string, init: KeyboardEventInit = {}) => {
     element.dispatchEvent(
       new KeyboardEvent('keydown', { key: name, bubbles: true, cancelable: true, ...init }),
@@ -151,10 +151,12 @@ describe('TreeComponent', () => {
 
     it('hides closed children from the tab order and assistive tech through the closed class', async () => {
       const { item } = await setup();
-      expect(item('Work').querySelector('.ui-tree__children')?.classList).toContain('is-open');
-      expect(item('Clothes').querySelector('.ui-tree__children')?.classList).not.toContain(
+      expect(item('Work').closest('li')?.querySelector('.ui-tree__children')?.classList).toContain(
         'is-open',
       );
+      expect(
+        item('Clothes').closest('li')?.querySelector('.ui-tree__children')?.classList,
+      ).not.toContain('is-open');
     });
 
     it('omits the heading without folders and the active state without activeId', async () => {
@@ -398,12 +400,15 @@ describe('TreeComponent', () => {
       expect(host.menus).toHaveLength(0);
     });
 
-    it('prevents the browser menu on the focused row itself', async () => {
-      const { item, fixture } = await setup();
-      const event = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
-      item('Work').dispatchEvent(event);
+    it('does not repeat the request when the browser echoes the key as a contextmenu event', async () => {
+      const { item, key, host, fixture } = await setup();
+      await key(item('Work'), 'ContextMenu');
+      const echo = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+      item('Work').dispatchEvent(echo);
       await settle(fixture);
-      expect(event.defaultPrevented).toBe(true);
+      expect(echo.defaultPrevented).toBe(true);
+      expect(host.menus).toHaveLength(1);
+      expect(host.menus[0].trigger).toBe('keyboard');
     });
 
     it('has no menu on fixed rows and none without menuLabel', async () => {

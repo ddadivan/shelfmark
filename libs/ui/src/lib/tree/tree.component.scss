@@ -16,16 +16,8 @@
   list-style: none;
 }
 
-// The Aria tree puts roving focus on the `li`; the ring is drawn on its row instead, inside the
-// row because the closed-group wrapper clips overflow.
-.ui-tree__item {
-  outline: none;
-
-  &:focus-visible > .ui-tree__row {
-    @include focus-ring(-2px);
-  }
-}
-
+// Roving focus sits on the row itself (the `treeitem`); the ring is inset because the
+// closed-group wrapper clips overflow.
 .ui-tree__row {
   @include type(body);
 
@@ -40,6 +32,14 @@
   user-select: none;
   border-radius: var(--radius-sm);
   transition: background-color var(--duration-fast) var(--ease-out);
+
+  &:focus-visible {
+    @include focus-ring(-2px);
+
+    .ui-tree__more {
+      opacity: 1;
+    }
+  }
 
   @include phone {
     min-height: rem(44px);
@@ -119,7 +119,7 @@
 }
 
 // Active row: the one place sage appears in navigation.
-.ui-tree__item[aria-current] > .ui-tree__row {
+.ui-tree__row[aria-current] {
   font-weight: 500;
   color: var(--accent-text);
   background: var(--accent-bg);
@@ -145,10 +145,6 @@
   @media (hover: none) {
     opacity: 1;
   }
-}
-
-.ui-tree__item:focus-visible > .ui-tree__row .ui-tree__more {
-  opacity: 1;
 }
 
 // Open and close by height. The group stays rendered while closed so it can animate; it is
