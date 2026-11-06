@@ -108,3 +108,9 @@
   background: var(--bg);
   opacity: 0.6;
 }
+
+// The muted text colour is below 4.5:1 on the accent background; the checked option uses the
+// accent text colour made for it.
+.ui-radio--checked .ui-radio__desc {
+  color: var(--accent-text);
+}
