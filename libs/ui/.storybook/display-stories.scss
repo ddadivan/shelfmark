@@ -1,0 +1,34 @@
+@use '../src/styles/ui' as *;
+
+// Layout of the Chip, Avatar, Notice and Steps stories only (never shipped with the library).
+// Class names start with `ds-`.
+
+.ds-themes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.ds-pane {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+  min-width: rem(280px);
+  padding: var(--space-6);
+  color: var(--text);
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+}
+
+.ds-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.ds-stack {
+  display: grid;
+  gap: var(--space-3);
+  max-width: rem(420px);
+}

@@ -108,6 +108,14 @@ Angular keeps the element until the leave animation ends and a second toggle mid
 - **Trigger decision:** Aria `MenuTrigger` writes its attributes and tabindex on its own host, which for `<ui-button>` is not the focusable element, so `uiMenuTrigger` implements the trigger half itself (click, ArrowDown / ArrowUp, Enter / Space on non-buttons) on the `UI_FOCUS_TARGET` element and writes `aria-haspopup`, `aria-expanded`, `aria-controls` there directly (a directive cannot set another component's inputs; do not also bind those inputs on the button). The popup, arrows, Home / End, Enter / Space and typeahead stay Aria's.
 - The host element of `ui-menu` is moved into the overlay pane with a `DomPortal` (`ConnectedOverlay.attachElement`) so Aria's host listeners keep seeing the items; closed, it is hidden and empty. Initial focus is set by dispatching Home / End to the menu, so Aria's active item matches DOM focus. Esc, Tab, an outside press and a choice close it; Esc and a choice return focus first, then `activated` emits. `ConnectedOverlayConfig.origin` also takes a viewport point.
 
+## Chip, avatar, notice, steps (issue #25)
+
+- `ui-chip`: `variant` `tag | neutral`, `clickable` (inner `<button>` with `uiRipple`, output `clicked`), `removable` (separate remove button named by `removeLabel`, output `removed`; Delete / Backspace anywhere in a removable chip also emits it), `disabled`, `icon`. The label is projected; there is no ripple on a non-clickable chip or on the remove button.
+- `ui-avatar`: `src`, `name`, `size` `sm | md | lg`, `label`. Initials (`initialsOf`, grapheme-safe, first and last word) when `src` is absent or fails (the CSP blocks external hosts; `linkedSignal` retries on a new `src`), a user icon without a name. Decorative (`aria-hidden`) unless `label` gives it `role="img"`.
+- `ui-notice`: `kind` `warning | danger`, `icon` override. `warning` is `role="status"`, `danger` `role="alert"`. `ViewEncapsulation.None` with `.ui-notice` selectors so projected links are styled.
+- `ui-steps`: `count`, `current` (1-based), `label` ("Step N of M", visually hidden, polite live region); dots are `aria-hidden`.
+- Story layout for these lives in `.storybook/display-stories.scss` (`ds-` classes).
+
 ## Themes
 
 `global.scss` defines the tokens: scale tokens on `:root`, light on `:root, [data-theme='light']`, dark on `[data-theme='dark']`, and dark again under `@media (prefers-color-scheme: dark)` for `:root:not([data-theme])`. An explicit `data-theme` always wins; without one the OS decides. Every component must work in both; check both in Storybook.
