@@ -1,4 +1,7 @@
 import { TestBed } from '@angular/core/testing';
+import { THEME, THEME_ATTRIBUTE } from '@shelfmark/ui';
+import { THEME_PREFERENCE } from './models/theme-preference.const';
+import { THEME_STORAGE_KEY } from './models/theme-storage-key.const';
 import { ThemeService } from './theme.service';
 
 type ChangeListener = (event: MediaQueryListEvent) => void;
@@ -34,7 +37,7 @@ function createService(): ThemeService {
 describe('ThemeService', () => {
   beforeEach(() => {
     localStorage.clear();
-    delete document.documentElement.dataset['theme'];
+    document.documentElement.removeAttribute(THEME_ATTRIBUTE);
     document.documentElement.style.colorScheme = '';
   });
 
@@ -45,42 +48,47 @@ describe('ThemeService', () => {
 
   it('defaults to the system preference', () => {
     stubSystemScheme(false);
-    expect(TestBed.inject(ThemeService).preference()).toBe('system');
+    expect(TestBed.inject(ThemeService).preference()).toBe(THEME_PREFERENCE.System);
   });
 
   it('resolves system to dark when the OS prefers dark', () => {
     stubSystemScheme(true);
     const service = createService();
 
-    expect(service.resolved()).toBe('dark');
+    expect(service.resolved()).toBe(THEME.Dark);
   });
 
   it('resolves system to light when the OS prefers light', () => {
     stubSystemScheme(false);
     const service = createService();
 
-    expect(service.resolved()).toBe('light');
+    expect(service.resolved()).toBe(THEME.Light);
   });
 
-  it.each(['light', 'dark'] as const)('explicit %s overrides the system scheme', (theme) => {
-    stubSystemScheme(theme === 'light');
+  it.each([THEME.Light, THEME.Dark])('explicit %s overrides the system scheme', (theme) => {
+    stubSystemScheme(theme === THEME.Light);
     const service = createService();
     service.setPreference(theme);
 
     expect(service.resolved()).toBe(theme);
   });
 
-  it('persists the preference to localStorage under sm-theme', () => {
+  it('persists the preference to localStorage under the storage key', () => {
     stubSystemScheme(false);
     const service = createService();
-    service.setPreference('dark');
+    service.setPreference(THEME_PREFERENCE.Dark);
 
-    expect(localStorage.getItem('sm-theme')).toBe('dark');
+    expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe(THEME.Dark);
   });
 
-  it.each(['light', 'dark', 'system'] as const)('restores stored %s on init', (stored) => {
+  it('keeps the persisted storage key stable', () => {
+    // Renaming it would drop every saved user preference.
+    expect(THEME_STORAGE_KEY).toBe('sm-theme');
+  });
+
+  it.each(Object.values(THEME_PREFERENCE))('restores stored %s on init', (stored) => {
     stubSystemScheme(false);
-    localStorage.setItem('sm-theme', stored);
+    localStorage.setItem(THEME_STORAGE_KEY, stored);
     const service = createService();
 
     expect(service.preference()).toBe(stored);
@@ -88,10 +96,10 @@ describe('ThemeService', () => {
 
   it('falls back to system when the stored value is invalid', () => {
     stubSystemScheme(false);
-    localStorage.setItem('sm-theme', 'purple');
+    localStorage.setItem(THEME_STORAGE_KEY, 'purple');
     const service = createService();
 
-    expect(service.preference()).toBe('system');
+    expect(service.preference()).toBe(THEME_PREFERENCE.System);
   });
 
   it('does not crash when reading localStorage throws', () => {
@@ -102,7 +110,7 @@ describe('ThemeService', () => {
 
     const service = createService();
 
-    expect(service.preference()).toBe('system');
+    expect(service.preference()).toBe(THEME_PREFERENCE.System);
   });
 
   it('keeps the choice for the session when writing localStorage throws', () => {
@@ -112,9 +120,9 @@ describe('ThemeService', () => {
     });
     const service = createService();
 
-    expect(() => service.setPreference('dark')).not.toThrow();
-    expect(service.preference()).toBe('dark');
-    expect(service.resolved()).toBe('dark');
+    expect(() => service.setPreference(THEME_PREFERENCE.Dark)).not.toThrow();
+    expect(service.preference()).toBe(THEME.Dark);
+    expect(service.resolved()).toBe(THEME.Dark);
   });
 
   it('updates the resolved theme on system change while preference is system', () => {
@@ -124,34 +132,34 @@ describe('ThemeService', () => {
     system.emit(true);
     TestBed.tick();
 
-    expect(service.resolved()).toBe('dark');
-    expect(document.documentElement.dataset['theme']).toBe('dark');
+    expect(service.resolved()).toBe(THEME.Dark);
+    expect(document.documentElement.getAttribute(THEME_ATTRIBUTE)).toBe(THEME.Dark);
   });
 
   it('ignores system changes when an explicit preference is set', () => {
     const system = stubSystemScheme(false);
     const service = createService();
-    service.setPreference('light');
+    service.setPreference(THEME_PREFERENCE.Light);
 
     system.emit(true);
     TestBed.tick();
 
-    expect(service.resolved()).toBe('light');
-    expect(document.documentElement.dataset['theme']).toBe('light');
+    expect(service.resolved()).toBe(THEME.Light);
+    expect(document.documentElement.getAttribute(THEME_ATTRIBUTE)).toBe(THEME.Light);
   });
 
   it('writes data-theme and color-scheme on the root element', () => {
     stubSystemScheme(true);
     const service = createService();
 
-    expect(document.documentElement.dataset['theme']).toBe('dark');
-    expect(document.documentElement.style.colorScheme).toBe('dark');
+    expect(document.documentElement.getAttribute(THEME_ATTRIBUTE)).toBe(THEME.Dark);
+    expect(document.documentElement.style.colorScheme).toBe(THEME.Dark);
 
-    service.setPreference('light');
+    service.setPreference(THEME_PREFERENCE.Light);
     TestBed.tick();
 
-    expect(document.documentElement.dataset['theme']).toBe('light');
-    expect(document.documentElement.style.colorScheme).toBe('light');
+    expect(document.documentElement.getAttribute(THEME_ATTRIBUTE)).toBe(THEME.Light);
+    expect(document.documentElement.style.colorScheme).toBe(THEME.Light);
   });
 
   it('stops listening to the system scheme when destroyed', () => {
