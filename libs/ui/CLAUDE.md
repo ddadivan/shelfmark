@@ -108,6 +108,14 @@ Angular keeps the element until the leave animation ends and a second toggle mid
 - **Trigger decision:** Aria `MenuTrigger` writes its attributes and tabindex on its own host, which for `<ui-button>` is not the focusable element, so `uiMenuTrigger` implements the trigger half itself (click, ArrowDown / ArrowUp, Enter / Space on non-buttons) on the `UI_FOCUS_TARGET` element and writes `aria-haspopup`, `aria-expanded`, `aria-controls` there directly (a directive cannot set another component's inputs; do not also bind those inputs on the button). The popup, arrows, Home / End, Enter / Space and typeahead stay Aria's.
 - The host element of `ui-menu` is moved into the overlay pane with a `DomPortal` (`ConnectedOverlay.attachElement`) so Aria's host listeners keep seeing the items; closed, it is hidden and empty. Initial focus is set by dispatching Home / End to the menu, so Aria's active item matches DOM focus. Esc, Tab, an outside press and a choice close it; Esc and a choice return focus first, then `activated` emits. `ConnectedOverlayConfig.origin` also takes a viewport point.
 
+## Chip, avatar, notice, steps (issue #25)
+
+- `ui-chip`: `variant` `tag | neutral`, `clickable` (inner `<button>` with `uiRipple`, output `clicked`), `removable` (separate remove button named by `removeLabel`, output `removed`; Delete / Backspace anywhere in a removable chip also emits it), `disabled`, `icon`. The label is projected; there is no ripple on a non-clickable chip or on the remove button. `focus()` focuses the clickable body, else the remove button. After `removed` the removed chip is gone and focus is lost: the feature must move focus (to a sibling chip via `focus()`, or to the input in a TagInput).
+- `ui-avatar`: `src`, `name`, `size` `sm | md | lg`, `label`. Initials (`initialsOf`, grapheme-safe, first and last word; it upper-cases first, so `ß` gives `S`) when `src` is absent or fails (the CSP blocks external hosts; `linkedSignal` retries on a new `src`), a user icon without a name. Decorative (`aria-hidden`) unless `label` gives it `role="img"`.
+- `ui-notice`: `kind` `warning | danger`, `icon` override. `warning` is `role="status"`, `danger` `role="alert"`. `ViewEncapsulation.None` with `.ui-notice` selectors so projected links are styled. A live region announces reliably only when content appears in it, so render a notice on demand (`@if`) when an announcement is wanted; one present at page load is not announced.
+- `ui-steps`: `count`, `current` (1-based), `label` ("Step N of M", visually hidden, polite live region); dots are `aria-hidden`; earlier dots look like upcoming ones, as in the spec.
+- Story layout for these lives in `.storybook/display-stories.scss` (`ds-` classes).
+
 ## Dialog (issue #28)
 
 - `DialogService.open<C, R, D>(Component, { size, data, dismissible, scrimClose, role, describedBy, autoFocus })` returns a `UiDialogRef<R, C>` (`close(result?)`, `afterClosed()`, `result` promise, `leaving`, `componentInstance`, `hostElement`). `confirm({ title, message, confirmLabel, cancelLabel, closeLabel?, destructive? })` resolves a boolean: true for confirm; false for Cancel, the close button, Esc and the scrim. All strings come in.
@@ -158,7 +166,7 @@ Onest (variable) is self-hosted through `@fontsource-variable/onest` (SIL OFL 1.
 ```bash
 npx nx storybook ui
 npx nx build-storybook ui
-npx nx test-storybook ui           # axe on every story, light and dark, under the production CSP (libs/ui/a11y)
+npx nx test-storybook ui           # axe on every story, light and dark, under the production CSP (libs/ui/a11y); it never reuses a running server, so parallel runs need different `STORYBOOK_PORT` values (default 6007)
 npx nx test ui --coverage
 npx nx run-many -t lint typecheck test build -p ui
 npm run lint:styles

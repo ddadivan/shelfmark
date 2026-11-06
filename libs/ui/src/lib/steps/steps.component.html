@@ -1,0 +1,6 @@
+<span class="ui-steps__label" aria-live="polite" aria-atomic="true">{{ label() }}</span>
+<span class="ui-steps__dots" aria-hidden="true">
+  @for (step of dots(); track step) {
+    <span class="ui-steps__dot" [class.ui-steps__dot--current]="step === current()"></span>
+  }
+</span>
