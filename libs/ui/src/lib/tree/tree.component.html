@@ -1,0 +1,111 @@
+<ng-template #branch let-list let-parent="parent" let-level="level" let-folder="folder">
+  @for (node of list; track node.id) {
+    <li class="ui-tree__item" role="none">
+      <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- ngTreeItem sets the roving tabindex -->
+      <div
+        #item="ngTreeItem"
+        #row
+        ngTreeItem
+        class="ui-tree__row"
+        [class.ui-tree__row--folder]="folder"
+        [style.--ui-tree-level]="level"
+        [uiRipple]="true"
+        [parent]="parent"
+        [value]="node.id"
+        [label]="node.name"
+        [expanded]="node.expanded ?? false"
+        [preserveContent]="true"
+        [attr.aria-labelledby]="labelledBy(item.id(), node)"
+        [attr.aria-owns]="node.children?.length ? item.id() + '-group' : null"
+        (expandedChange)="toggled.emit({ node, expanded: $event })"
+        (contextmenu)="folder && onContextMenu($event, node, row)"
+        (keydown)="onKeydown($event, node, row, folder)"
+        (keyup)="onKeyup()"
+        (blur)="disarmEcho()"
+      >
+        @if (folder) {
+          <span
+            class="ui-tree__twist"
+            [class.is-open]="item.expanded()"
+            aria-hidden="true"
+            (click)="onTwist($event, item.expanded)"
+          >
+            @if (node.children?.length) {
+              <ui-icon name="chevron-right" [size]="16" />
+            }
+          </span>
+        }
+        @if (node.icon ?? (folder ? 'folder' : undefined); as icon) {
+          <ui-icon class="ui-tree__icon" [name]="icon" [size]="16" />
+        }
+        <span class="ui-tree__name" [id]="item.id() + '-name'">{{ node.name }}</span>
+        @if (countId(item.id(), node); as count) {
+          <span class="ui-tree__count" [id]="count">&ngsp;{{ node.count }}</span>
+        }
+        @if (folder && menuLabel()) {
+          <ui-button
+            #more
+            class="ui-tree__more"
+            [class.is-open]="menuNodeId() === node.id"
+            variant="ghost"
+            size="sm"
+            iconOnly
+            iconLeft="more"
+            [ripple]="false"
+            [tabIndex]="-1"
+            ariaHaspopup="menu"
+            [ariaExpanded]="menuNodeId() === node.id"
+            [ariaLabel]="menuButtonLabel(node)"
+            (pointerdown)="$event.stopPropagation()"
+            (click)="onButton($event, node, more)"
+          />
+        }
+      </div>
+      @if (node.children?.length) {
+        <div class="ui-tree__children" [class.is-open]="item.expanded()">
+          <ul class="ui-tree__list ui-tree__group" role="group" [id]="item.id() + '-group'">
+            <ng-template ngTreeItemGroup [ownedBy]="item" #group="ngTreeItemGroup">
+              <ng-container
+                *ngTemplateOutlet="
+                  branch;
+                  context: {
+                    $implicit: node.children,
+                    parent: group,
+                    level: level + 1,
+                    folder: folder,
+                  }
+                "
+              />
+            </ng-template>
+          </ul>
+        </div>
+      }
+    </li>
+  }
+</ng-template>
+
+<ul
+  #tree="ngTree"
+  ngTree
+  nav
+  class="ui-tree__list"
+  [value]="selectedValue()"
+  [attr.aria-label]="ariaLabel() || null"
+  (valueChange)="onValueChange($event)"
+>
+  <ng-container
+    *ngTemplateOutlet="
+      branch;
+      context: { $implicit: fixedNodes(), parent: tree, level: 1, folder: false }
+    "
+  />
+  @if (heading() && nodes().length) {
+    <li class="ui-tree__section" role="presentation" aria-hidden="true">{{ heading() }}</li>
+  }
+  <ng-container
+    *ngTemplateOutlet="
+      branch;
+      context: { $implicit: nodes(), parent: tree, level: 1, folder: true }
+    "
+  />
+</ul>

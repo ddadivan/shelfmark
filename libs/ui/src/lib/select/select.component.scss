@@ -1,0 +1,214 @@
+@use '../../styles/ui' as *;
+@use '../field/field-parts' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+// The button fills the whole control box (the box's padding is taken back by negative margins),
+// so the click area is the box; the box's `field-focus` halo is the focus indicator.
+.ui-select__trigger {
+  @include type(body);
+
+  display: flex;
+  flex: 1;
+  gap: var(--space-2);
+  align-items: center;
+  align-self: stretch;
+  min-width: 0;
+  min-height: rem(38px);
+  padding: 0 var(--space-3);
+  margin: 0 calc(-1 * var(--space-3));
+  color: var(--text);
+  text-align: start;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-md);
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.ui-select__icon,
+.ui-select__chevron {
+  flex: none;
+  color: var(--text-muted);
+}
+
+.ui-select__chevron {
+  transition: transform var(--duration-base) var(--ease-out);
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+.ui-select__trigger[aria-expanded='true'] .ui-select__chevron {
+  transform: rotate(180deg);
+}
+
+.ui-select__value {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-select__value--placeholder {
+  color: var(--text-muted);
+}
+
+// The popup element sits empty where it is written; open, the overlay moves it into its pane.
+.ui-select__popup {
+  display: none;
+}
+
+.ui-select__popup--shown {
+  display: block;
+
+  // A flex item of the overlay pane: it grows to the pane's min-width (the trigger width).
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ui-select__panel {
+  @include popover;
+
+  display: flex;
+  flex-direction: column;
+  width: max-content;
+  min-width: 100%;
+  max-width: min(rem(480px), calc(100vw - #{rem(16px)}));
+  max-height: min(rem(320px), calc(100vh - #{rem(16px)}));
+  padding: var(--space-1);
+  margin: var(--space-1) 0;
+}
+
+// `--ui-origin` is set on the overlay pane from the resolved position.
+.ui-select--enter {
+  @include enter(pop);
+  @include origin;
+}
+
+.ui-select--leave {
+  @include leave(pop);
+  @include origin;
+}
+
+.ui-select__search {
+  flex: none;
+  padding: var(--space-1) var(--space-1) rem(6px);
+  margin-bottom: var(--space-1);
+  border-bottom: 1px solid var(--border);
+}
+
+.ui-select__search-box {
+  @include field-focus;
+
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-height: rem(32px);
+  padding: 0 var(--space-3);
+  color: var(--text-muted);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-md);
+}
+
+.ui-select__search-icon {
+  flex: none;
+}
+
+.ui-select__search-input {
+  @include field-native;
+
+  padding: rem(4px) 0;
+}
+
+// Long lists scroll inside the popup; the search box stays above.
+.ui-select__list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+// Item look of `ui-menu-item`, plus the indent: 16px per nesting level.
+.ui-select__option {
+  @include type(body);
+
+  display: flex;
+  gap: rem(10px);
+  align-items: center;
+  padding: rem(7px) rem(10px);
+  padding-inline-start: calc(#{rem(10px)} + var(--ui-select-level, 0) * #{rem(16px)});
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  @include hover {
+    background: var(--surface-hover);
+  }
+
+  &:active {
+    background: var(--surface-pressed);
+  }
+
+  // The option under the arrow keys (DOM focus stays on the trigger or the search box).
+  &[data-active='true'] {
+    background: var(--surface-hover);
+
+    @include focus-ring(-2px);
+  }
+
+  &.is-selected {
+    color: var(--accent-text);
+    background: var(--accent-bg);
+  }
+}
+
+.ui-select__option-icon {
+  flex: none;
+  color: var(--text-muted);
+}
+
+.ui-select__option.is-selected .ui-select__option-icon {
+  color: var(--accent-text);
+}
+
+.ui-select__option-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-select__check {
+  flex: none;
+  margin-inline-start: auto;
+}
+
+.ui-select__status {
+  @include type(body);
+
+  color: var(--text-muted);
+
+  &--filled {
+    padding: rem(7px) rem(10px);
+  }
+}

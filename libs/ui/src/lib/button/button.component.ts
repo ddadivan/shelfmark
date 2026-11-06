@@ -76,6 +76,8 @@ export class ButtonComponent implements UiFocusTarget {
   readonly ariaHaspopup = input<ButtonHaspopup>();
   readonly ariaDescribedby = input<string>();
   readonly ariaPressed = input<ButtonPressed>();
+  /** `tabindex` of the inner element; `-1` keeps a row action out of the tab order. */
+  readonly tabIndex = input<number>();
 
   /**
    * Plain left click on the link (no modifier key). Call `preventDefault()` on the event to
