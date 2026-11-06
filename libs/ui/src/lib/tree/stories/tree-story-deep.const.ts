@@ -1,10 +1,12 @@
 import type { UiTreeNode } from '../models/tree-node.interface';
+import { TREE_STORY_ID } from './tree-story-id.const';
+import { TREE_STORY_NAME } from './tree-story-name.const';
 
 /** Story data: five levels, all open. */
 export const TREE_STORY_DEEP: readonly UiTreeNode[] = [
   {
-    id: 'work',
-    name: 'Work',
+    id: TREE_STORY_ID.Work,
+    name: TREE_STORY_NAME.Work,
     count: 120,
     expanded: true,
     children: [
@@ -15,8 +17,8 @@ export const TREE_STORY_DEEP: readonly UiTreeNode[] = [
         expanded: true,
         children: [
           {
-            id: 'angular',
-            name: 'Angular',
+            id: TREE_STORY_ID.Angular,
+            name: TREE_STORY_NAME.Angular,
             count: 40,
             expanded: true,
             children: [
@@ -25,7 +27,7 @@ export const TREE_STORY_DEEP: readonly UiTreeNode[] = [
                 name: 'Signals',
                 count: 12,
                 expanded: true,
-                children: [{ id: 'forms', name: 'Signal Forms', count: 5 }],
+                children: [{ id: TREE_STORY_ID.Forms, name: 'Signal Forms', count: 5 }],
               },
               { id: 'aria', name: 'Aria', count: 6 },
             ],

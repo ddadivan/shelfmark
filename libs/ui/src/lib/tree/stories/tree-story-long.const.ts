@@ -1,4 +1,5 @@
 import type { UiTreeNode } from '../models/tree-node.interface';
+import { TREE_STORY_ID } from './tree-story-id.const';
 
 /** Story data: names far wider than the sidebar, with large counts. */
 export const TREE_STORY_LONG: readonly UiTreeNode[] = [
@@ -9,7 +10,7 @@ export const TREE_STORY_LONG: readonly UiTreeNode[] = [
     expanded: true,
     children: [
       {
-        id: 'ml',
+        id: TREE_STORY_ID.Ml,
         name: 'Machine learning for recommendation systems at scale in production',
         count: 318,
       },

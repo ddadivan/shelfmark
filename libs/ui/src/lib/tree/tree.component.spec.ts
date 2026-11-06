@@ -1,30 +1,16 @@
 import { Component, signal } from '@angular/core';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { axeViolations } from '../../testing/axe';
+import { UI_TREE_CONTEXT_MENU_TRIGGER } from './models/tree-context-menu-trigger.const';
+import { TREE_KEY } from './models/tree-key.const';
 import type { UiTreeContextMenuEvent } from './models/tree-context-menu-event.interface';
 import type { UiTreeNode } from './models/tree-node.interface';
 import type { UiTreeToggleEvent } from './models/tree-toggle-event.interface';
+import { TREE_STORY_FIXED } from './stories/tree-story-fixed.const';
+import { TREE_STORY_ID } from './stories/tree-story-id.const';
+import { TREE_STORY_NAME } from './stories/tree-story-name.const';
+import { TREE_STORY_NESTED } from './stories/tree-story-nested.const';
 import { TreeComponent } from './tree.component';
-
-const FIXED: UiTreeNode[] = [
-  { id: 'all', name: 'All links', icon: 'link', count: 248 },
-  { id: 'unsorted', name: 'Unsorted', icon: 'inbox', count: 17 },
-];
-
-const FOLDERS: UiTreeNode[] = [
-  {
-    id: 'work',
-    name: 'Work',
-    count: 34,
-    expanded: true,
-    children: [
-      { id: 'angular', name: 'Angular', count: 12 },
-      { id: 'courses', name: 'Courses', count: 8 },
-    ],
-  },
-  { id: 'clothes', name: 'Clothes', count: 21, children: [{ id: 'shoes', name: 'Shoes' }] },
-  { id: 'recipes', name: 'Recipes' },
-];
 
 @Component({
   imports: [TreeComponent],
@@ -44,9 +30,9 @@ const FOLDERS: UiTreeNode[] = [
   `,
 })
 class HostComponent {
-  readonly fixed = signal(FIXED);
-  readonly nodes = signal(FOLDERS);
-  readonly activeId = signal<string | null>('angular');
+  readonly fixed = signal(TREE_STORY_FIXED);
+  readonly nodes = signal(TREE_STORY_NESTED);
+  readonly activeId = signal<string | null>(TREE_STORY_ID.Angular);
   readonly menuLabel = signal<string | undefined>('Actions for {name}');
   readonly menuNodeId = signal<string | null>(null);
   readonly selected: UiTreeNode[] = [];
@@ -104,19 +90,25 @@ describe('TreeComponent', () => {
       expect(tree.getAttribute('aria-label')).toBe('Library');
       expect(root.querySelector('.ui-tree__section')?.textContent).toBe('Folders');
       const names = Array.from(root.querySelectorAll('.ui-tree__name')).map((el) => el.textContent);
-      expect(names.slice(0, 4)).toEqual(['All links', 'Unsorted', 'Work', 'Angular']);
+      expect(names.slice(0, 5)).toEqual([
+        TREE_STORY_NAME.All,
+        TREE_STORY_NAME.Unsorted,
+        TREE_STORY_NAME.Favorites,
+        TREE_STORY_NAME.Work,
+        TREE_STORY_NAME.Angular,
+      ]);
     });
 
     it('sets aria-level, aria-expanded and aria-current', async () => {
       const { item } = await setup();
-      expect(item('All links').getAttribute('aria-level')).toBe('1');
-      expect(item('Work').getAttribute('aria-level')).toBe('1');
-      expect(item('Angular').getAttribute('aria-level')).toBe('2');
-      expect(item('Work').getAttribute('aria-expanded')).toBe('true');
-      expect(item('Clothes').getAttribute('aria-expanded')).toBe('false');
-      expect(item('Recipes').hasAttribute('aria-expanded')).toBe(false);
-      expect(item('Angular').getAttribute('aria-current')).toBe('page');
-      expect(item('Work').hasAttribute('aria-current')).toBe(false);
+      expect(item(TREE_STORY_NAME.All).getAttribute('aria-level')).toBe('1');
+      expect(item(TREE_STORY_NAME.Work).getAttribute('aria-level')).toBe('1');
+      expect(item(TREE_STORY_NAME.Angular).getAttribute('aria-level')).toBe('2');
+      expect(item(TREE_STORY_NAME.Work).getAttribute('aria-expanded')).toBe('true');
+      expect(item(TREE_STORY_NAME.Clothes).getAttribute('aria-expanded')).toBe('false');
+      expect(item(TREE_STORY_NAME.Recipes).hasAttribute('aria-expanded')).toBe(false);
+      expect(item(TREE_STORY_NAME.Angular).getAttribute('aria-current')).toBe('page');
+      expect(item(TREE_STORY_NAME.Work).hasAttribute('aria-current')).toBe(false);
     });
 
     it('names a row by its name and count, not by its children', async () => {
@@ -126,30 +118,30 @@ describe('TreeComponent', () => {
           .split(' ')
           .map((ref) => root.querySelector(`[id="${ref}"]`)?.textContent?.trim())
           .join(' ');
-      expect(labelled('Work')).toBe('Work 34');
+      expect(labelled(TREE_STORY_NAME.Work)).toBe('Work 34');
     });
 
     it('indents each level by one step through the level variable', async () => {
       const { row } = await setup();
-      expect(row('Work').style.getPropertyValue('--ui-tree-level')).toBe('1');
-      expect(row('Angular').style.getPropertyValue('--ui-tree-level')).toBe('2');
+      expect(row(TREE_STORY_NAME.Work).style.getPropertyValue('--ui-tree-level')).toBe('1');
+      expect(row(TREE_STORY_NAME.Angular).style.getPropertyValue('--ui-tree-level')).toBe('2');
     });
 
     it('shows the folder icon by default and an explicit icon on fixed rows', async () => {
       const { row } = await setup();
       const href = (id: string) =>
         row(id).querySelector('.ui-tree__icon use')?.getAttribute('href') ?? '';
-      expect(href('Work')).toContain('#sm-folder');
-      expect(href('All links')).toContain('#sm-link');
+      expect(href(TREE_STORY_NAME.Work)).toContain('#sm-folder');
+      expect(href(TREE_STORY_NAME.All)).toContain('#sm-link');
     });
 
     it('hides closed children from the tab order and assistive tech through the closed class', async () => {
       const { item } = await setup();
-      expect(item('Work').closest('li')?.querySelector('.ui-tree__children')?.classList).toContain(
-        'is-open',
-      );
       expect(
-        item('Clothes').closest('li')?.querySelector('.ui-tree__children')?.classList,
+        item(TREE_STORY_NAME.Work).closest('li')?.querySelector('.ui-tree__children')?.classList,
+      ).toContain('is-open');
+      expect(
+        item(TREE_STORY_NAME.Clothes).closest('li')?.querySelector('.ui-tree__children')?.classList,
       ).not.toContain('is-open');
     });
 
@@ -159,7 +151,7 @@ describe('TreeComponent', () => {
       host.nodes.set([]);
       await settle(fixture);
       expect(root.querySelector('.ui-tree__section')).toBeNull();
-      expect(item('All links').hasAttribute('aria-current')).toBe(false);
+      expect(item(TREE_STORY_NAME.All).hasAttribute('aria-current')).toBe(false);
     });
 
     it('has no axe violations', async () => {
@@ -169,7 +161,7 @@ describe('TreeComponent', () => {
 
     it('has no axe violations with an open menu button', async () => {
       const { root, host, fixture } = await setup();
-      host.menuNodeId.set('work');
+      host.menuNodeId.set(TREE_STORY_ID.Work);
       await settle(fixture);
       expect(await axeViolations(root)).toEqual([]);
     });
@@ -205,106 +197,108 @@ describe('TreeComponent', () => {
 
     it('moves with ArrowDown / ArrowUp', async () => {
       const { press, focusedName } = await start();
-      expect(focusedName()).toBe('All links');
+      expect(focusedName()).toBe(TREE_STORY_NAME.All);
       await press('ArrowDown');
-      expect(focusedName()).toBe('Unsorted');
+      expect(focusedName()).toBe(TREE_STORY_NAME.Unsorted);
       await press('ArrowDown');
-      expect(focusedName()).toBe('Work');
+      expect(focusedName()).toBe(TREE_STORY_NAME.Favorites);
       await press('ArrowDown');
-      expect(focusedName()).toBe('Angular');
+      expect(focusedName()).toBe(TREE_STORY_NAME.Work);
+      await press('ArrowDown');
+      expect(focusedName()).toBe(TREE_STORY_NAME.Angular);
       await press('ArrowUp');
-      expect(focusedName()).toBe('Work');
+      expect(focusedName()).toBe(TREE_STORY_NAME.Work);
     });
 
     it('skips the children of a closed folder', async () => {
       const { press, focusedName } = await start();
       await press('End');
-      expect(focusedName()).toBe('Recipes');
+      expect(focusedName()).toBe(TREE_STORY_NAME.Recipes);
       await press('ArrowUp');
-      expect(focusedName()).toBe('Clothes');
+      expect(focusedName()).toBe(TREE_STORY_NAME.Clothes);
       await press('ArrowUp');
-      expect(focusedName()).toBe('Courses');
+      expect(focusedName()).toBe(TREE_STORY_NAME.Courses);
     });
 
     it('jumps with Home and End', async () => {
       const { press, focusedName } = await start();
       await press('End');
-      expect(focusedName()).toBe('Recipes');
+      expect(focusedName()).toBe(TREE_STORY_NAME.Recipes);
       await press('Home');
-      expect(focusedName()).toBe('All links');
+      expect(focusedName()).toBe(TREE_STORY_NAME.All);
     });
 
     it('wraps from the last row to the first', async () => {
       const { press, focusedName } = await start();
       await press('End');
       await press('ArrowDown');
-      expect(focusedName()).toBe('All links');
+      expect(focusedName()).toBe(TREE_STORY_NAME.All);
     });
 
     it('opens with ArrowRight, then steps into the first child', async () => {
       const { press, focusedName, item, host } = await start();
       await press('End');
       await press('ArrowUp');
-      expect(focusedName()).toBe('Clothes');
+      expect(focusedName()).toBe(TREE_STORY_NAME.Clothes);
       await press('ArrowRight');
-      expect(item('Clothes').getAttribute('aria-expanded')).toBe('true');
-      expect(host.toggled.at(-1)).toEqual({ node: FOLDERS[1], expanded: true });
-      expect(focusedName()).toBe('Clothes');
+      expect(item(TREE_STORY_NAME.Clothes).getAttribute('aria-expanded')).toBe('true');
+      expect(host.toggled.at(-1)).toEqual({ node: TREE_STORY_NESTED[1], expanded: true });
+      expect(focusedName()).toBe(TREE_STORY_NAME.Clothes);
       await press('ArrowRight');
-      expect(focusedName()).toBe('Shoes');
+      expect(focusedName()).toBe(TREE_STORY_NAME.Shoes);
     });
 
     it('steps to the parent from a child, then closes it with ArrowLeft', async () => {
       const { press, focusedName, item, host } = await start();
-      await press('ArrowDown');
-      await press('ArrowDown');
-      await press('ArrowDown');
-      expect(focusedName()).toBe('Angular');
+      for (let i = 0; i < 4; i++) {
+        await press('ArrowDown');
+      }
+      expect(focusedName()).toBe(TREE_STORY_NAME.Angular);
       await press('ArrowLeft');
-      expect(focusedName()).toBe('Work');
+      expect(focusedName()).toBe(TREE_STORY_NAME.Work);
       await press('ArrowLeft');
-      expect(item('Work').getAttribute('aria-expanded')).toBe('false');
-      expect(host.toggled.at(-1)).toEqual({ node: FOLDERS[0], expanded: false });
-      expect(focusedName()).toBe('Work');
+      expect(item(TREE_STORY_NAME.Work).getAttribute('aria-expanded')).toBe('false');
+      expect(host.toggled.at(-1)).toEqual({ node: TREE_STORY_NESTED[0], expanded: false });
+      expect(focusedName()).toBe(TREE_STORY_NAME.Work);
     });
 
     it('chooses a row with Enter', async () => {
       const { press, item, host } = await start();
       await press('ArrowDown');
-      await press('Enter');
-      expect(host.selected.at(-1)?.id).toBe('unsorted');
-      expect(item('Unsorted').getAttribute('aria-current')).toBe('page');
+      await press(TREE_KEY.Enter);
+      expect(host.selected.at(-1)?.id).toBe(TREE_STORY_ID.Unsorted);
+      expect(item(TREE_STORY_NAME.Unsorted).getAttribute('aria-current')).toBe('page');
     });
 
     it('jumps to a row by typing its first letters', async () => {
       const { press, focusedName } = await start();
       await press('r');
-      expect(focusedName()).toBe('Recipes');
+      expect(focusedName()).toBe(TREE_STORY_NAME.Recipes);
     });
   });
 
   describe('pointer', () => {
     it('chooses a row on click and toggles a folder', async () => {
       const { row, click, host, item } = await setup();
-      await click(row('Clothes'));
-      expect(host.selected.at(-1)?.id).toBe('clothes');
-      expect(item('Clothes').getAttribute('aria-expanded')).toBe('true');
+      await click(row(TREE_STORY_NAME.Clothes));
+      expect(host.selected.at(-1)?.id).toBe(TREE_STORY_ID.Clothes);
+      expect(item(TREE_STORY_NAME.Clothes).getAttribute('aria-expanded')).toBe('true');
     });
 
     it('toggles through the chevron without choosing the row', async () => {
       const { row, click, host, item } = await setup();
       const before = host.selected.length;
-      await click(row('Clothes').querySelector('.ui-tree__twist') as Element);
-      expect(item('Clothes').getAttribute('aria-expanded')).toBe('true');
+      await click(row(TREE_STORY_NAME.Clothes).querySelector('.ui-tree__twist') as Element);
+      expect(item(TREE_STORY_NAME.Clothes).getAttribute('aria-expanded')).toBe('true');
       expect(host.toggled.at(-1)?.expanded).toBe(true);
       expect(host.selected.length).toBe(before);
-      await click(row('Clothes').querySelector('.ui-tree__twist') as Element);
-      expect(item('Clothes').getAttribute('aria-expanded')).toBe('false');
+      await click(row(TREE_STORY_NAME.Clothes).querySelector('.ui-tree__twist') as Element);
+      expect(item(TREE_STORY_NAME.Clothes).getAttribute('aria-expanded')).toBe('false');
     });
 
     it('rotates the chevron through the is-open class', async () => {
       const { row, click } = await setup();
-      const twist = row('Clothes').querySelector('.ui-tree__twist') as HTMLElement;
+      const twist = row(TREE_STORY_NAME.Clothes).querySelector('.ui-tree__twist') as HTMLElement;
       expect(twist.classList).not.toContain('is-open');
       await click(twist);
       expect(twist.classList).toContain('is-open');
@@ -327,28 +321,28 @@ describe('TreeComponent', () => {
         clientX: 40,
         clientY: 60,
       });
-      row('Work').dispatchEvent(event);
+      row(TREE_STORY_NAME.Work).dispatchEvent(event);
       await settle(fixture);
       expect(event.defaultPrevented).toBe(true);
       expect(host.menus).toHaveLength(1);
       expect(host.menus[0]).toMatchObject({
-        trigger: 'pointer',
+        trigger: UI_TREE_CONTEXT_MENU_TRIGGER.Pointer,
         position: { x: 40, y: 60 },
-        anchor: row('Work'),
+        anchor: row(TREE_STORY_NAME.Work),
       });
-      expect(host.menus[0].node.id).toBe('work');
+      expect(host.menus[0].node.id).toBe(TREE_STORY_ID.Work);
     });
 
     it('emits from the "..." button with the inner button as anchor, without choosing the row', async () => {
       const { row, click, host } = await setup();
-      const button = row('Work').querySelector('ui-button button') as HTMLElement;
+      const button = row(TREE_STORY_NAME.Work).querySelector('ui-button button') as HTMLElement;
       expect(button.getAttribute('aria-label')).toBe('Actions for Work');
       expect(button.getAttribute('aria-haspopup')).toBe('menu');
       expect(button.getAttribute('aria-expanded')).toBe('false');
       const before = host.selected.length;
       await click(button);
       expect(host.menus.at(-1)).toMatchObject({
-        trigger: 'button',
+        trigger: UI_TREE_CONTEXT_MENU_TRIGGER.Button,
         position: null,
         anchor: button,
       });
@@ -357,39 +351,41 @@ describe('TreeComponent', () => {
 
     it('marks the button of the open menu as expanded', async () => {
       const { row, host, fixture } = await setup();
-      host.menuNodeId.set('work');
+      host.menuNodeId.set(TREE_STORY_ID.Work);
       await settle(fixture);
-      const button = row('Work').querySelector('ui-button button') as HTMLElement;
+      const button = row(TREE_STORY_NAME.Work).querySelector('ui-button button') as HTMLElement;
       expect(button.getAttribute('aria-expanded')).toBe('true');
-      expect(row('Courses').querySelector('ui-button button')?.getAttribute('aria-expanded')).toBe(
-        'false',
-      );
+      expect(
+        row(TREE_STORY_NAME.Courses)
+          .querySelector('ui-button button')
+          ?.getAttribute('aria-expanded'),
+      ).toBe('false');
     });
 
     it('emits with Shift+F10 and the context-menu key', async () => {
       const { item, row, key, host } = await setup();
-      item('Work').focus();
-      await key(item('Work'), 'F10', { shiftKey: true });
+      item(TREE_STORY_NAME.Work).focus();
+      await key(item(TREE_STORY_NAME.Work), TREE_KEY.F10, { shiftKey: true });
       expect(host.menus.at(-1)).toMatchObject({
-        trigger: 'keyboard',
+        trigger: UI_TREE_CONTEXT_MENU_TRIGGER.Keyboard,
         position: null,
-        anchor: row('Work'),
+        anchor: row(TREE_STORY_NAME.Work),
       });
-      await key(item('Work'), 'ContextMenu');
+      await key(item(TREE_STORY_NAME.Work), TREE_KEY.ContextMenu);
       expect(host.menus).toHaveLength(2);
     });
 
     it('does not emit from a nested row for its parent', async () => {
       const { item, key, host } = await setup();
-      item('Angular').focus();
-      await key(item('Angular'), 'ContextMenu');
+      item(TREE_STORY_NAME.Angular).focus();
+      await key(item(TREE_STORY_NAME.Angular), TREE_KEY.ContextMenu);
       expect(host.menus).toHaveLength(1);
-      expect(host.menus[0].node.id).toBe('angular');
+      expect(host.menus[0].node.id).toBe(TREE_STORY_ID.Angular);
     });
 
     it('ignores other keys', async () => {
       const { item, key, host } = await setup();
-      await key(item('Work'), 'F10');
+      await key(item(TREE_STORY_NAME.Work), TREE_KEY.F10);
       expect(host.menus).toHaveLength(0);
     });
 
@@ -399,82 +395,90 @@ describe('TreeComponent', () => {
 
     it('emits from Alt+Enter on a folder row, not on a fixed row', async () => {
       const { item, row, key, host } = await setup();
-      await key(item('Work'), 'Enter', { altKey: true });
+      await key(item(TREE_STORY_NAME.Work), TREE_KEY.Enter, { altKey: true });
       expect(host.menus).toHaveLength(1);
-      expect(host.menus[0]).toMatchObject({ trigger: 'keyboard', anchor: row('Work') });
+      expect(host.menus[0]).toMatchObject({
+        trigger: UI_TREE_CONTEXT_MENU_TRIGGER.Keyboard,
+        anchor: row(TREE_STORY_NAME.Work),
+      });
       expect(host.selected).toHaveLength(0);
-      await key(item('All links'), 'Enter', { altKey: true });
+      await key(item(TREE_STORY_NAME.All), TREE_KEY.Enter, { altKey: true });
       expect(host.menus).toHaveLength(1);
     });
 
     it('does not repeat the request when the browser echoes the key as a contextmenu event', async () => {
       const { item, key, host, fixture } = await setup();
-      await key(item('Work'), 'ContextMenu');
+      await key(item(TREE_STORY_NAME.Work), TREE_KEY.ContextMenu);
       const echo = contextmenu(30, 30);
-      item('Work').dispatchEvent(echo);
+      item(TREE_STORY_NAME.Work).dispatchEvent(echo);
       await settle(fixture);
       expect(echo.defaultPrevented).toBe(true);
       expect(host.menus).toHaveLength(1);
-      expect(host.menus[0].trigger).toBe('keyboard');
+      expect(host.menus[0].trigger).toBe(UI_TREE_CONTEXT_MENU_TRIGGER.Keyboard);
       // The echo was consumed: the next right click is a pointer request.
-      item('Work').dispatchEvent(contextmenu(30, 30));
-      expect(host.menus.at(-1)?.trigger).toBe('pointer');
+      item(TREE_STORY_NAME.Work).dispatchEvent(contextmenu(30, 30));
+      expect(host.menus.at(-1)?.trigger).toBe(UI_TREE_CONTEXT_MENU_TRIGGER.Pointer);
     });
 
     it('survives a long-held key: repeats emit once and the echo is still swallowed', async () => {
       const { item, key, host, fixture } = await setup();
-      await key(item('Work'), 'ContextMenu');
-      await key(item('Work'), 'ContextMenu', { repeat: true });
+      await key(item(TREE_STORY_NAME.Work), TREE_KEY.ContextMenu);
+      await key(item(TREE_STORY_NAME.Work), TREE_KEY.ContextMenu, { repeat: true });
       await wait(150);
-      await key(item('Work'), 'ContextMenu', { repeat: true });
-      item('Work').dispatchEvent(contextmenu(30, 30));
+      await key(item(TREE_STORY_NAME.Work), TREE_KEY.ContextMenu, { repeat: true });
+      item(TREE_STORY_NAME.Work).dispatchEvent(contextmenu(30, 30));
       await settle(fixture);
       expect(host.menus).toHaveLength(1);
     });
 
     it('swallows an echo that arrives just after the key is released, then re-arms the pointer', async () => {
       const { item, key, host, fixture } = await setup();
-      await key(item('Work'), 'F10', { shiftKey: true });
-      item('Work').dispatchEvent(new KeyboardEvent('keyup', { key: 'F10', bubbles: true }));
-      item('Work').dispatchEvent(contextmenu(30, 30));
+      await key(item(TREE_STORY_NAME.Work), TREE_KEY.F10, { shiftKey: true });
+      item(TREE_STORY_NAME.Work).dispatchEvent(
+        new KeyboardEvent('keyup', { key: TREE_KEY.F10, bubbles: true }),
+      );
+      item(TREE_STORY_NAME.Work).dispatchEvent(contextmenu(30, 30));
       expect(host.menus).toHaveLength(1);
       await wait(200);
       await settle(fixture);
-      item('Work').dispatchEvent(contextmenu(30, 30));
+      item(TREE_STORY_NAME.Work).dispatchEvent(contextmenu(30, 30));
       expect(host.menus).toHaveLength(2);
-      expect(host.menus[1].trigger).toBe('pointer');
+      expect(host.menus[1].trigger).toBe(UI_TREE_CONTEXT_MENU_TRIGGER.Pointer);
     });
 
     it('drops a pending echo on blur', async () => {
       const { item, key, host } = await setup();
-      await key(item('Work'), 'ContextMenu');
-      item('Work').dispatchEvent(new FocusEvent('blur'));
-      item('Work').dispatchEvent(contextmenu(30, 30));
-      expect(host.menus.map((m) => m.trigger)).toEqual(['keyboard', 'pointer']);
+      await key(item(TREE_STORY_NAME.Work), TREE_KEY.ContextMenu);
+      item(TREE_STORY_NAME.Work).dispatchEvent(new FocusEvent('blur'));
+      item(TREE_STORY_NAME.Work).dispatchEvent(contextmenu(30, 30));
+      expect(host.menus.map((m) => m.trigger)).toEqual([
+        UI_TREE_CONTEXT_MENU_TRIGGER.Keyboard,
+        UI_TREE_CONTEXT_MENU_TRIGGER.Pointer,
+      ]);
     });
 
     it('treats a contextmenu event at 0, 0 as a keyboard request', async () => {
       const { item, row, host } = await setup();
-      item('Work').dispatchEvent(contextmenu(0, 0));
+      item(TREE_STORY_NAME.Work).dispatchEvent(contextmenu(0, 0));
       expect(host.menus).toHaveLength(1);
       expect(host.menus[0]).toMatchObject({
-        trigger: 'keyboard',
+        trigger: UI_TREE_CONTEXT_MENU_TRIGGER.Keyboard,
         position: null,
-        anchor: row('Work'),
+        anchor: row(TREE_STORY_NAME.Work),
       });
     });
 
     it('keeps keys from the "..." button away from the tree (no selection, no typeahead)', async () => {
       const { row, key, click, host, item } = await setup();
-      const button = row('Work').querySelector('ui-button button') as HTMLElement;
+      const button = row(TREE_STORY_NAME.Work).querySelector('ui-button button') as HTMLElement;
       const before = document.activeElement;
-      for (const name of ['Enter', ' ', 'r', 'ArrowDown', 'End']) {
+      for (const name of [TREE_KEY.Enter, ' ', 'r', 'ArrowDown', 'End']) {
         await key(button, name);
       }
       expect(host.selected).toHaveLength(0);
       expect(host.menus).toHaveLength(0);
       expect(document.activeElement).toBe(before);
-      expect(item('Work').getAttribute('aria-expanded')).toBe('true');
+      expect(item(TREE_STORY_NAME.Work).getAttribute('aria-expanded')).toBe('true');
       // The browser turns Enter / Space on the button into one click.
       await click(button);
       expect(host.menus).toHaveLength(1);
@@ -483,27 +487,27 @@ describe('TreeComponent', () => {
 
     it('opens the menu from the keyboard even when focus is on the "..." button', async () => {
       const { row, key, host } = await setup();
-      const button = row('Work').querySelector('ui-button button') as HTMLElement;
-      await key(button, 'ContextMenu');
+      const button = row(TREE_STORY_NAME.Work).querySelector('ui-button button') as HTMLElement;
+      await key(button, TREE_KEY.ContextMenu);
       expect(host.menus).toHaveLength(1);
-      expect(host.menus[0].trigger).toBe('keyboard');
+      expect(host.menus[0].trigger).toBe(UI_TREE_CONTEXT_MENU_TRIGGER.Keyboard);
     });
 
     it('does not ripple when the "..." button is pressed', async () => {
       const { row } = await setup();
-      const button = row('Work').querySelector('ui-button button') as HTMLElement;
+      const button = row(TREE_STORY_NAME.Work).querySelector('ui-button button') as HTMLElement;
       button.dispatchEvent(
         new PointerEvent('pointerdown', { bubbles: true, button: 0, clientX: 5, clientY: 5 }),
       );
-      expect(row('Work').querySelector(':scope > .ui-ripple')).toBeNull();
+      expect(row(TREE_STORY_NAME.Work).querySelector(':scope > .ui-ripple')).toBeNull();
     });
 
     it('has no menu on fixed rows and none without menuLabel', async () => {
       const { row, host, fixture, root } = await setup();
       const event = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
-      row('All links').dispatchEvent(event);
+      row(TREE_STORY_NAME.All).dispatchEvent(event);
       expect(host.menus).toHaveLength(0);
-      expect(row('All links').querySelector('ui-button')).toBeNull();
+      expect(row(TREE_STORY_NAME.All).querySelector('ui-button')).toBeNull();
       host.menuLabel.set(undefined);
       await settle(fixture);
       expect(root.querySelector('ui-button')).toBeNull();

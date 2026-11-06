@@ -1,0 +1,29 @@
+<ui-field-shell
+  [controlId]="controlId"
+  [label]="label()"
+  [hint]="hint()"
+  [error]="message()"
+  [invalid]="showInvalid()"
+  [disabled]="disabled()"
+  [counter]="counterText()"
+  [counterLabel]="counterLabel()"
+  [multiline]="true"
+>
+  <textarea
+    #native
+    class="ui-textarea__native"
+    cdkTextareaAutosize
+    [cdkAutosizeMinRows]="rows()"
+    [cdkAutosizeMaxRows]="maxRows"
+    [id]="controlId"
+    [rows]="rows()"
+    [value]="value()"
+    [disabled]="disabled()"
+    [attr.placeholder]="placeholder() || null"
+    [attr.aria-required]="required() ? 'true' : null"
+    [attr.aria-invalid]="showInvalid() ? 'true' : null"
+    [attr.aria-describedby]="describedBy()"
+    (input)="onInput($event)"
+    (blur)="touch.emit()"
+  ></textarea>
+</ui-field-shell>

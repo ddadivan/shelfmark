@@ -4,6 +4,7 @@ import { MenuItemComponent } from '../menu/menu-item.component';
 import { MenuSeparatorComponent } from '../menu/menu-separator.component';
 import { MenuComponent } from '../menu/menu.component';
 import type { UiTreeContextMenuEvent } from './models/tree-context-menu-event.interface';
+import { TREE_STORY_ID } from './stories/tree-story-id.const';
 import { TREE_STORY_DEEP } from './stories/tree-story-deep.const';
 import { TREE_STORY_FIXED } from './stories/tree-story-fixed.const';
 import { TREE_STORY_FLAT } from './stories/tree-story-flat.const';
@@ -35,7 +36,7 @@ const meta: Meta<TreeComponent> = {
     menuLabel: 'Actions for {name}',
     fixedNodes: TREE_STORY_FIXED,
     nodes: TREE_STORY_NESTED,
-    activeId: 'angular',
+    activeId: TREE_STORY_ID.Angular,
   },
 };
 
@@ -58,7 +59,7 @@ const template = `
 
 /** Folders without nesting; the first fixed row is current. */
 export const Flat: Story = {
-  args: { nodes: TREE_STORY_FLAT, activeId: 'all' },
+  args: { nodes: TREE_STORY_FLAT, activeId: TREE_STORY_ID.All },
   render: (args) => ({ props: args, template }),
 };
 
@@ -69,19 +70,19 @@ export const Nested: Story = {
 
 /** Five levels, 16px per level. */
 export const DeepNesting: Story = {
-  args: { nodes: TREE_STORY_DEEP, activeId: 'forms' },
+  args: { nodes: TREE_STORY_DEEP, activeId: TREE_STORY_ID.Forms },
   render: (args) => ({ props: args, template }),
 };
 
 /** Long names are cut with an ellipsis; the count and the button keep their place. */
 export const LongNames: Story = {
-  args: { nodes: TREE_STORY_LONG, activeId: 'ml' },
+  args: { nodes: TREE_STORY_LONG, activeId: TREE_STORY_ID.Ml },
   render: (args) => ({ props: args, template }),
 };
 
 /** The active row is `accent-bg`; a different row is current here. */
 export const SelectedState: Story = {
-  args: { activeId: 'favorites' },
+  args: { activeId: TREE_STORY_ID.Favorites },
   render: (args) => ({ props: args, template }),
 };
 
@@ -142,11 +143,11 @@ const variants = (theme: 'light' | 'dark') => `
     <div class="ts-row">
       <div class="ts-sidebar">
         <ui-tree ariaLabel="Library (${theme})" heading="Folders" menuLabel="Actions for {name}"
-          [fixedNodes]="fixedNodes" [nodes]="nested" activeId="angular" />
+          [fixedNodes]="fixedNodes" [nodes]="nested" [activeId]="ids.Angular" />
       </div>
       <div class="ts-sidebar">
         <ui-tree ariaLabel="Long names (${theme})" heading="Folders" menuLabel="Actions for {name}"
-          [nodes]="long" activeId="ml" />
+          [nodes]="long" [activeId]="ids.Ml" />
       </div>
     </div>
   </div>`;
@@ -159,6 +160,7 @@ export const AllVariants: Story = {
       fixedNodes: TREE_STORY_FIXED,
       nested: TREE_STORY_NESTED,
       long: TREE_STORY_LONG,
+      ids: { Angular: TREE_STORY_ID.Angular, Ml: TREE_STORY_ID.Ml },
     },
     template: `${variants('light')}${variants('dark')}`,
   }),

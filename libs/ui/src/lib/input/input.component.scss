@@ -1,0 +1,57 @@
+@use '../../styles/ui' as *;
+@use '../field/field-parts' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.ui-input__native {
+  @include field-native;
+
+  // The own clear button replaces the browser's search cancel button.
+  &::-webkit-search-cancel-button {
+    appearance: none;
+  }
+}
+
+.ui-input__native[type='url'] {
+  @include type(mono);
+}
+
+// One 16px slot for the search icon and the spinner: the field never shifts.
+.ui-input__slot {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: rem(16px);
+  height: rem(16px);
+}
+
+.ui-input__glyph {
+  grid-area: 1 / 1;
+}
+
+.ui-input__glyph--return {
+  @include enter(spinner);
+}
+
+.ui-input__glyph--leave {
+  @include leave(spinner);
+}
+
+.ui-input__clear {
+  @include field-icon-button;
+}
+
+.ui-input__kbd {
+  @include type(caption);
+
+  flex: none;
+  padding: 0 rem(5px);
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: rem(5px);
+}

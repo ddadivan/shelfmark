@@ -12,6 +12,8 @@ import {
 import { ButtonComponent } from '../button/button.component';
 import { IconComponent } from '../icon/icon.component';
 import { RippleDirective } from '../ripple/ripple.directive';
+import { UI_TREE_CONTEXT_MENU_TRIGGER } from './models/tree-context-menu-trigger.const';
+import { TREE_KEY } from './models/tree-key.const';
 import type { UiTreeContextMenuEvent } from './models/tree-context-menu-event.interface';
 import type { UiTreeNode } from './models/tree-node.interface';
 import type { UiTreeToggleEvent } from './models/tree-toggle-event.interface';
@@ -134,7 +136,12 @@ export class TreeComponent {
     event.stopPropagation();
     const anchor = button.element();
     if (anchor) {
-      this.contextMenu.emit({ node, trigger: 'button', anchor, position: null });
+      this.contextMenu.emit({
+        node,
+        trigger: UI_TREE_CONTEXT_MENU_TRIGGER.Button,
+        anchor,
+        position: null,
+      });
     }
   }
 
@@ -148,7 +155,9 @@ export class TreeComponent {
     const keyboard = event.clientX === 0 && event.clientY === 0;
     this.contextMenu.emit({
       node,
-      trigger: keyboard ? 'keyboard' : 'pointer',
+      trigger: keyboard
+        ? UI_TREE_CONTEXT_MENU_TRIGGER.Keyboard
+        : UI_TREE_CONTEXT_MENU_TRIGGER.Pointer,
       anchor: row,
       position: keyboard ? null : { x: event.clientX, y: event.clientY },
     });
@@ -165,13 +174,19 @@ export class TreeComponent {
     row: HTMLElement,
     folder: boolean,
   ): void {
-    const echoing = event.key === 'ContextMenu' || (event.shiftKey && event.key === 'F10');
-    if (folder && (echoing || (event.altKey && event.key === 'Enter'))) {
+    const echoing =
+      event.key === TREE_KEY.ContextMenu || (event.shiftKey && event.key === TREE_KEY.F10);
+    if (folder && (echoing || (event.altKey && event.key === TREE_KEY.Enter))) {
       event.preventDefault();
       event.stopPropagation();
       // A held key repeats: one request, but the echo (context-menu key, Shift+F10) stays expected.
       if (!event.repeat) {
-        this.contextMenu.emit({ node, trigger: 'keyboard', anchor: row, position: null });
+        this.contextMenu.emit({
+          node,
+          trigger: UI_TREE_CONTEXT_MENU_TRIGGER.Keyboard,
+          anchor: row,
+          position: null,
+        });
       }
       if (echoing) {
         this.armEcho();

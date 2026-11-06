@@ -1,0 +1,89 @@
+import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  input,
+  model,
+  signal,
+  viewChild,
+} from '@angular/core';
+import type { FormValueControl } from '@angular/forms/signals';
+import { UiFieldControl } from '../field/field-control.directive';
+import { FieldShellComponent } from '../field/field-shell.component';
+import { IconComponent } from '../icon/icon.component';
+import type { IconName } from '../icon/models/icon-name.type';
+import { SpinnerComponent } from '../spinner/spinner.component';
+import type { InputType } from './models/input-type.type';
+
+/**
+ * Single-line text field in the shared field shell. Bind it to Signal Forms with
+ * `<ui-input label="Link" [formField]="form.url" />`: value, disabled, required, errors and
+ * touched come from the field (a custom `FormValueControl`), and the first error message shows
+ * once the field is touched. Without a form use `[(value)]` and `error`.
+ *
+ * The label is always visible (the placeholder only shows an example). `search` draws the search
+ * icon by default and swaps it for `ui-spinner` in the same 16px slot while `loading`, so the
+ * field never shifts. `clearable` shows a clear button (`clearLabel` is its accessible name)
+ * that empties the field and keeps focus in it.
+ */
+@Component({
+  selector: 'ui-input',
+  imports: [FieldShellComponent, IconComponent, SpinnerComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'ui-input' },
+  templateUrl: './input.component.html',
+  styleUrl: './input.component.scss',
+})
+export class InputComponent extends UiFieldControl implements FormValueControl<string> {
+  readonly value = model('');
+  readonly type = input<InputType>('text');
+  readonly placeholder = input('');
+  /** Leading icon; `search` fields default to the search icon. */
+  readonly icon = input<IconName>();
+  /** Shows a clear button while the field has a value. */
+  readonly clearable = input(false, { transform: booleanAttribute });
+  /** Accessible name of the clear button; without it no clear button is rendered. */
+  readonly clearLabel = input('');
+  /** Keyboard shortcut hint on the right, for example `⌘K`. */
+  readonly shortcut = input('');
+  /** `search` only: replaces the icon with a spinner while true. */
+  readonly loading = input(false, { transform: booleanAttribute });
+
+  private readonly native = viewChild.required<ElementRef<HTMLInputElement>>('native');
+
+  protected readonly glyph = computed(
+    () => this.icon() ?? (this.type() === 'search' ? ('search' satisfies IconName) : undefined),
+  );
+  protected readonly spinning = computed(() => this.type() === 'search' && this.loading());
+  protected readonly showClear = computed(
+    () => this.clearable() && !!this.clearLabel() && !this.disabled() && this.value() !== '',
+  );
+  /** True after the first spinner: only then the returning icon animates in. */
+  protected readonly iconReturns = signal(false);
+
+  constructor() {
+    super();
+    effect(() => {
+      if (this.spinning()) {
+        this.iconReturns.set(true);
+      }
+    });
+  }
+
+  /** Focuses the native input (Signal Forms calls this to focus the first invalid field). */
+  focus(options?: FocusOptions): void {
+    this.native().nativeElement.focus(options);
+  }
+
+  protected onInput(event: Event): void {
+    this.value.set((event.target as HTMLInputElement).value);
+  }
+
+  protected clear(): void {
+    this.value.set('');
+    this.focus();
+  }
+}
