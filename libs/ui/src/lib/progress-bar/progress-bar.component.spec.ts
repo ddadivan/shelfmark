@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../../testing/axe';
+import { PROGRESS_BAR_DONE_TIMEOUT_MS } from './models/progress-bar-done-timeout.const';
 import { PROGRESS_BAR_DONE_ANIMATION } from './models/progress-bar-done-animation.const';
 import type { ProgressBarVariant } from './models/progress-bar-variant.type';
 import { ProgressBarComponent } from './progress-bar.component';
@@ -76,6 +77,41 @@ describe('ProgressBarComponent', () => {
       expect(bar()).not.toBeNull();
 
       endAnimation(PROGRESS_BAR_DONE_ANIMATION);
+      expect(bar()).toBeNull();
+    });
+
+    it('leaves the DOM when the fade is cancelled, ignoring a cancelled enter animation', () => {
+      const { bar, update, fixture, host } = setup();
+      update(true);
+      vi.advanceTimersByTime(300);
+      TestBed.tick();
+      fixture.detectChanges();
+      update(false);
+      const cancel = (animationName: string): void => {
+        const event = new Event('animationcancel', { bubbles: true });
+        Object.defineProperty(event, 'animationName', { value: animationName });
+        bar()?.dispatchEvent(event);
+        fixture.detectChanges();
+      };
+      cancel('ui-reveal');
+      expect(host.querySelector('.ui-progress')).not.toBeNull();
+      cancel(PROGRESS_BAR_DONE_ANIMATION);
+      expect(bar()).toBeNull();
+    });
+
+    it('removes a finished bar by timer when no animation event arrives', () => {
+      const { bar, update, fixture } = setup();
+      update(true);
+      vi.advanceTimersByTime(300);
+      TestBed.tick();
+      fixture.detectChanges();
+      update(false);
+      vi.advanceTimersByTime(PROGRESS_BAR_DONE_TIMEOUT_MS - 1);
+      fixture.detectChanges();
+      expect(bar()).not.toBeNull();
+      vi.advanceTimersByTime(1);
+      TestBed.tick();
+      fixture.detectChanges();
       expect(bar()).toBeNull();
     });
 

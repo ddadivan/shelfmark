@@ -9,6 +9,7 @@ import {
   untracked,
 } from '@angular/core';
 import { loaderVisible } from '../loader-timing/loader-visible';
+import { PROGRESS_BAR_DONE_TIMEOUT_MS } from './models/progress-bar-done-timeout.const';
 import { PROGRESS_BAR_DONE_ANIMATION } from './models/progress-bar-done-animation.const';
 import type { ProgressBarPhase } from './models/progress-bar-phase.type';
 import type { ProgressBarVariant } from './models/progress-bar-variant.type';
@@ -38,7 +39,10 @@ export class ProgressBarComponent {
   /** Accessible name for the `progressbar`; unset keeps the bar `aria-hidden`. */
   readonly label = input<string>();
 
-  private readonly delayed = loaderVisible(this.active, { minVisible: 0 });
+  private readonly delayed = loaderVisible(
+    computed(() => this.active() && this.variant() === 'fixed'),
+    { minVisible: 0 },
+  );
   private readonly running = computed(() =>
     this.variant() === 'inline' ? this.active() : this.delayed(),
   );
@@ -46,6 +50,14 @@ export class ProgressBarComponent {
   protected readonly phase = signal<ProgressBarPhase>('idle');
 
   constructor() {
+    // A finished bar must never stay at 100%: if no `animationend` / `animationcancel` arrives
+    // (the tab is hidden, the element is not rendered), a timer removes it.
+    effect((onCleanup) => {
+      if (this.phase() === 'done') {
+        const timer = setTimeout(() => this.finish(), PROGRESS_BAR_DONE_TIMEOUT_MS);
+        onCleanup(() => clearTimeout(timer));
+      }
+    });
     effect(() => {
       if (this.running()) {
         this.phase.set('running');
@@ -55,10 +67,23 @@ export class ProgressBarComponent {
     });
   }
 
+  protected onAnimationCancel(event: AnimationEvent): void {
+    // The enter animation is cancelled when `done` replaces it; only the fade-out counts.
+    if (event.animationName === PROGRESS_BAR_DONE_ANIMATION) {
+      this.finish();
+    }
+  }
+
+  private finish(): void {
+    if (this.phase() === 'done') {
+      this.phase.set('idle');
+    }
+  }
+
   protected onAnimationEnd(event: AnimationEvent): void {
     // The enter animation also ends here; only the fade-out of a finished bar removes it.
-    if (this.phase() === 'done' && event.animationName === PROGRESS_BAR_DONE_ANIMATION) {
-      this.phase.set('idle');
+    if (event.animationName === PROGRESS_BAR_DONE_ANIMATION) {
+      this.finish();
     }
   }
 }

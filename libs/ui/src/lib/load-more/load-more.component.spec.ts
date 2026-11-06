@@ -19,9 +19,21 @@ describe('LoadMoreComponent', () => {
     expect(spinner?.getAttribute('aria-hidden')).toBe('true');
   });
 
-  it('is a polite status region', () => {
-    const { host } = setup();
-    expect(host.querySelector('.ui-load-more')?.getAttribute('role')).toBe('status');
+  it('keeps a persistent polite status region and renders the row only while loading', () => {
+    const { fixture, host } = setup();
+    expect(host.getAttribute('role')).toBe('status');
+
+    fixture.componentRef.setInput('loading', false);
+    fixture.detectChanges();
+    TestBed.tick();
+    expect(host.getAttribute('role')).toBe('status');
+    expect(host.querySelector('.ui-load-more')).toBeNull();
+    expect(host.textContent?.trim()).toBe('');
+
+    fixture.componentRef.setInput('loading', true);
+    fixture.detectChanges();
+    expect(host.querySelector('.ui-load-more')).not.toBeNull();
+    expect(host.textContent?.trim()).toBe('Loading more links');
   });
 
   it('follows the text input', () => {
@@ -31,7 +43,11 @@ describe('LoadMoreComponent', () => {
     expect(host.textContent?.trim()).toBe('Loading more');
   });
 
-  it('has no axe violations', async () => {
+  it('has no axe violations, loading or idle', async () => {
+    const idle = setup();
+    idle.fixture.componentRef.setInput('loading', false);
+    idle.fixture.detectChanges();
+    expect(await axeViolations(idle.host)).toEqual([]);
     expect(await axeViolations(setup().host)).toEqual([]);
   });
 });

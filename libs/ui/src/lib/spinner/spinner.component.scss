@@ -18,6 +18,7 @@
 :host(.ui-spinner--sm) {
   --ui-spinner-size: #{rem(12px)};
 
+  // Spec: the 12px ring has a 1.5px stroke (2px would look heavy at this size).
   .ui-spinner__ring {
     border-width: 1.5px;
   }

@@ -8,5 +8,6 @@
     [attr.aria-label]="label() || null"
     [attr.aria-hidden]="label() ? null : 'true'"
     (animationend)="onAnimationEnd($event)"
+    (animationcancel)="onAnimationCancel($event)"
   ></div>
 }

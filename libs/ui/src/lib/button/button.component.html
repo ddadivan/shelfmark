@@ -30,9 +30,9 @@
     #control
     [class]="classes()"
     [uiRipple]="rippleActive()"
-    [attr.href]="disabled() ? null : href()"
-    [attr.role]="disabled() ? 'link' : null"
-    [attr.aria-disabled]="disabled() ? 'true' : null"
+    [attr.href]="inert() ? null : href()"
+    [attr.role]="inert() ? 'link' : null"
+    [attr.aria-disabled]="inert() ? 'true' : null"
     [attr.aria-label]="ariaLabel() || null"
     [attr.aria-expanded]="ariaExpanded() ?? null"
     [attr.aria-controls]="ariaControls() || null"
@@ -60,7 +60,6 @@
     [attr.aria-busy]="loading() ? 'true' : null"
     [style.width.px]="lockedWidth() ?? null"
     [disabled]="disabled()"
-    (click)="onClick($event)"
   >
     <ng-container *ngTemplateOutlet="content" />
   </button>

@@ -189,19 +189,52 @@ describe('ButtonComponent loading', () => {
     expect(document.activeElement).toBe(control());
   });
 
-  it('blocks a link while loading', async () => {
+  it('swallows the click before listeners on the button but not for document capture listeners', async () => {
+    const { host, control, settle } = await setup();
+    host.loading.set(true);
+    await settle();
+    const seen: string[] = [];
+    const onCapture = (): number => seen.push('document-capture');
+    const onBubble = (): number => seen.push('document-bubble');
+    document.addEventListener('click', onCapture, true);
+    document.addEventListener('click', onBubble);
+    try {
+      const event = new MouseEvent('click', { bubbles: true, cancelable: true });
+      control().dispatchEvent(event);
+
+      expect(event.defaultPrevented).toBe(true);
+      expect(host.clicks()).toBe(0);
+      expect(seen).toEqual(['document-capture']);
+    } finally {
+      document.removeEventListener('click', onCapture, true);
+      document.removeEventListener('click', onBubble);
+    }
+  });
+
+  it('turns a link into an inert, busy link: no href, role link, aria-disabled', async () => {
     const { host, control, settle } = await setup();
     host.href.set('/links');
     await settle();
+    expect(control().getAttribute('href')).toBe('/links');
+    expect(control().hasAttribute('role')).toBe(false);
+
     host.loading.set(true);
     await settle();
+    expect(control().hasAttribute('href')).toBe(false);
+    expect(control().getAttribute('role')).toBe('link');
+    expect(control().getAttribute('aria-disabled')).toBe('true');
+    expect(control().getAttribute('aria-busy')).toBe('true');
+
     const event = new MouseEvent('click', { bubbles: true, cancelable: true, button: 0 });
     control().dispatchEvent(event);
-
     expect(event.defaultPrevented).toBe(true);
     expect(host.linkClicks()).toBe(0);
     expect(host.clicks()).toBe(0);
-    expect(control().getAttribute('aria-busy')).toBe('true');
+
+    host.loading.set(false);
+    await settle();
+    expect(control().getAttribute('href')).toBe('/links');
+    expect(control().hasAttribute('aria-disabled')).toBe(false);
   });
 
   it('shows no ripple while loading', async () => {

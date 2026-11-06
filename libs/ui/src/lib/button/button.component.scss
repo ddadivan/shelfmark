@@ -35,8 +35,9 @@
     transform: scale(0.97);
   }
 
+  // A busy link is `aria-disabled` too (no `href`) but is not dimmed.
   &:disabled,
-  &[aria-disabled='true'] {
+  &[aria-disabled='true']:not([aria-busy='true']) {
     cursor: not-allowed;
     opacity: 0.45;
     transform: none;

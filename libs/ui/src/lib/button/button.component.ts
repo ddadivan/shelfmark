@@ -88,6 +88,8 @@ export class ButtonComponent implements UiFocusTarget {
   readonly element = computed(() => this.control()?.nativeElement);
 
   protected readonly isLink = computed(() => this.href() !== undefined);
+  /** A link without `href` (disabled or busy): no navigation by middle click or context menu. */
+  protected readonly inert = computed(() => this.disabled() || this.loading());
   protected readonly rippleActive = computed(
     () => this.ripple() && !this.disabled() && !this.loading(),
   );
@@ -108,6 +110,7 @@ export class ButtonComponent implements UiFocusTarget {
   protected readonly singleIcon = computed(() => this.iconLeft() ?? this.iconRight());
 
   private readonly injector = inject(Injector);
+  private readonly hostElement = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly resizeObserver =
     typeof ResizeObserver === 'undefined'
       ? undefined
@@ -137,6 +140,21 @@ export class ButtonComponent implements UiFocusTarget {
     } else {
       afterEveryRender({ read: () => this.measureRestWidth(this.element()?.offsetWidth) });
     }
+    // Busy: a capture-phase listener on the host stops the click before the inner element and
+    // before listeners on `<ui-button>` (`(click)`), so nothing is activated and a submit
+    // button does not submit. Capture listeners higher up (the CDK overlay's outside-press)
+    // still see the event; `preventDefault()` also stops link navigation.
+    const swallowClick = (event: Event): void => {
+      if (this.loading()) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    };
+    const host = this.hostElement.nativeElement;
+    host.addEventListener('click', swallowClick, { capture: true });
+    inject(DestroyRef).onDestroy(() =>
+      host.removeEventListener('click', swallowClick, { capture: true }),
+    );
     effect(() => {
       const loading = this.loading();
       untracked(() => (loading ? this.lockWidth() : this.releaseWidthAfterSpinner()));
@@ -195,20 +213,7 @@ export class ButtonComponent implements UiFocusTarget {
     );
   }
 
-  protected onClick(event: MouseEvent): void {
-    if (this.loading()) {
-      // Busy: no click reaches listeners on `<ui-button>` and a submit button does not submit.
-      event.preventDefault();
-      event.stopPropagation();
-    }
-  }
-
   protected onLinkClick(event: MouseEvent): void {
-    if (this.loading()) {
-      event.preventDefault();
-      event.stopPropagation();
-      return;
-    }
     if (this.disabled()) {
       // A disabled link is inert: no navigation and no click for listeners on the host.
       event.preventDefault();
