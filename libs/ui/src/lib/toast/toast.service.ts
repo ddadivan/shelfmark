@@ -1,5 +1,5 @@
 import { ComponentPortal } from '@angular/cdk/portal';
-import { inject, Service } from '@angular/core';
+import { inject, Service, type ComponentRef } from '@angular/core';
 import type { ConnectedOverlay } from '../overlay/connected-overlay';
 import { UiOverlay } from '../overlay/overlay.service';
 import type { ToastOptions } from './models/toast-options.interface';
@@ -19,10 +19,11 @@ import { ToastStore } from './toast-store';
 export class ToastService {
   private readonly store = inject(ToastStore);
   private readonly region: ConnectedOverlay;
+  private readonly regionRef: ComponentRef<ToastRegionComponent>;
 
   constructor() {
     this.region = inject(UiOverlay).global({ layer: 'toast', panelClass: 'ui-toast-pane' });
-    this.region.attach(new ComponentPortal(ToastRegionComponent));
+    this.regionRef = this.region.attach(new ComponentPortal(ToastRegionComponent));
   }
 
   show(options: ToastOptions): ToastRef {
@@ -36,5 +37,22 @@ export class ToastService {
     if (current) {
       this.store.dismiss(current.id);
     }
+  }
+
+  /**
+   * Moves focus to the action button of the toast on screen. Only an explicit call moves focus
+   * (a toast never takes it by itself); while focused the timer is paused. Does nothing without
+   * a toast or an action. The app binds a shortcut to it, so keyboard users can reach an Undo
+   * before the toast closes.
+   */
+  focusAction(): void {
+    if (!this.store.items()[0]?.action) {
+      return;
+    }
+    const actions = (
+      this.regionRef.location.nativeElement as HTMLElement
+    ).querySelectorAll<HTMLElement>('.ui-toast__action');
+    // A replaced toast can still be leaving: the newest one is last.
+    actions.item(actions.length - 1).focus();
   }
 }

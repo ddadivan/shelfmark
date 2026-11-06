@@ -5,11 +5,11 @@
 
   box-sizing: border-box;
   display: flex;
-  gap: rem(10px);
+  gap: var(--space-3);
   align-items: center;
   min-width: rem(280px);
   max-width: min(rem(400px), 100%);
-  padding: rem(10px) rem(10px) rem(10px) rem(14px);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
   color: var(--on-primary);
   pointer-events: auto;
   background: var(--primary);
@@ -27,10 +27,8 @@
   @include type(label);
 
   flex: none;
-  padding: rem(4px) rem(8px);
-  font-size: rem(13px);
+  padding: var(--space-1) var(--space-2);
   font-weight: 600;
-  line-height: rem(18px);
   color: var(--on-primary);
   text-decoration: underline;
   text-underline-offset: rem(3px);

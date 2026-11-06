@@ -1,3 +1,4 @@
+import { ErrorHandler } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../../testing/axe';
@@ -32,6 +33,9 @@ describe('ToastService', () => {
 
   afterEach(() => {
     vi.useRealTimers();
+    vi.restoreAllMocks();
+    // Destroys the root injector: the overlay (and its region) is disposed.
+    TestBed.resetTestingModule();
   });
 
   it('creates one persistent polite live region in the toast layer, before any toast', () => {
@@ -67,8 +71,6 @@ describe('ToastService', () => {
     render();
     const toast = toasts()[0];
     expect(toast.querySelector('use')?.getAttribute('href')).toContain(`#sm-${icon}`);
-    expect(toast.classList.contains('ui-toast--success')).toBe(kind === 'success');
-    expect(toast.classList.contains('ui-toast--error')).toBe(kind === 'error');
   });
 
   it('closes after 4 s by default', () => {
@@ -170,24 +172,27 @@ describe('ToastService', () => {
     expect(run).toHaveBeenCalledTimes(1);
   });
 
-  it('dismisses even when the action throws', () => {
+  it('dismisses when the action throws and reports the error to the ErrorHandler', () => {
+    const error = new Error('boom');
+    const handleError = vi.fn();
+    TestBed.configureTestingModule({
+      providers: [{ provide: ErrorHandler, useValue: { handleError } }],
+    });
     const service = setup();
     service.show({
       text: 'x',
       action: {
         label: 'Retry',
         run: () => {
-          throw new Error('boom');
+          throw error;
         },
       },
     });
     render();
     const button = toasts()[0].querySelector('button') as HTMLButtonElement;
-    // Angular reports a listener error to the ErrorHandler instead of throwing it.
-    const log = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     button.click();
-    log.mockRestore();
     render();
+    expect(handleError).toHaveBeenCalledWith(error);
     expect(toasts()).toHaveLength(0);
   });
 
@@ -231,6 +236,73 @@ describe('ToastService', () => {
     vi.advanceTimersByTime(1000);
     render();
     expect(toasts()).toHaveLength(0);
+  });
+
+  it('duration 0 keeps the toast until it is dismissed', () => {
+    const service = setup();
+    const ref = service.show({ text: 'Stays', duration: 0 });
+    render();
+    vi.advanceTimersByTime(600_000);
+    render();
+    expect(toasts()).toHaveLength(1);
+    toasts()[0].dispatchEvent(new Event('pointerenter'));
+    toasts()[0].dispatchEvent(new Event('pointerleave'));
+    vi.advanceTimersByTime(600_000);
+    render();
+    expect(toasts()).toHaveLength(1);
+    ref.dismiss();
+    render();
+    expect(toasts()).toHaveLength(0);
+  });
+
+  it('a replacement that appears under a resting pointer waits for the pointer to leave', () => {
+    const matches = vi.spyOn(HTMLElement.prototype, 'matches').mockImplementation(function (
+      this: HTMLElement,
+      selector: string,
+    ) {
+      return selector === ':hover';
+    });
+    const service = setup();
+    service.show({ text: 'old' });
+    render();
+    service.show({ text: 'new' });
+    render();
+    vi.advanceTimersByTime(60_000);
+    render();
+    expect(toasts().some((t) => t.textContent?.includes('new'))).toBe(true);
+
+    matches.mockRestore();
+    const current = toasts().find((t) => t.textContent?.includes('new')) as HTMLElement;
+    current.dispatchEvent(new Event('pointerleave'));
+    vi.advanceTimersByTime(4000);
+    render();
+    expect(toasts()).toHaveLength(0);
+  });
+
+  it('focusAction() focuses the action only when called, and pauses the timer', () => {
+    const service = setup();
+    service.show({ text: 'Link deleted', action: { label: 'Undo', run: vi.fn() } });
+    render();
+    const button = toasts()[0].querySelector('button') as HTMLButtonElement;
+    expect(document.activeElement).not.toBe(button);
+    service.focusAction();
+    expect(document.activeElement).toBe(button);
+    vi.advanceTimersByTime(60_000);
+    render();
+    expect(toasts()).toHaveLength(1);
+  });
+
+  it('focusAction() does nothing without a toast or without an action', () => {
+    const service = setup();
+    const outside = document.createElement('button');
+    document.body.append(outside);
+    outside.focus();
+    service.focusAction();
+    service.show({ text: 'No action' });
+    render();
+    service.focusAction();
+    expect(document.activeElement).toBe(outside);
+    outside.remove();
   });
 
   it('never moves focus', () => {

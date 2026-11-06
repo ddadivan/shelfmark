@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  input,
+  output,
+} from '@angular/core';
 import { IconComponent } from '../icon/icon.component';
 import type { IconName } from '../icon/models/icon-name.type';
 import type { ToastKind } from './models/toast-kind.type';
@@ -14,8 +23,6 @@ import type { ToastKind } from './models/toast-kind.type';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-toast',
-    '[class.ui-toast--success]': "kind() === 'success'",
-    '[class.ui-toast--error]': "kind() === 'error'",
     '(pointerenter)': 'setHover(true)',
     '(pointerleave)': 'setHover(false)',
     '(focusin)': 'setFocus(true)',
@@ -38,6 +45,7 @@ export class ToastComponent {
     return kind === 'success' ? 'check' : kind === 'error' ? 'error' : 'info';
   });
 
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private hovered = false;
   private focused = false;
   private paused = false;
@@ -57,6 +65,15 @@ export class ToastComponent {
     if (!(event.relatedTarget instanceof Node && host.contains(event.relatedTarget))) {
       this.setFocus(false);
     }
+  }
+
+  constructor() {
+    // A toast that appears under a resting pointer (it replaced one) gets no pointerenter.
+    afterNextRender(() => {
+      if (this.host.matches(':hover')) {
+        this.setHover(true);
+      }
+    });
   }
 
   private report(): void {

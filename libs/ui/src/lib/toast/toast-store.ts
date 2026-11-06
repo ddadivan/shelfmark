@@ -1,4 +1,4 @@
-import { Service, signal } from '@angular/core';
+import { ErrorHandler, inject, Service, signal } from '@angular/core';
 import { TOAST_DURATION_MS } from './models/toast-duration.const';
 import type { ToastItem } from './models/toast-item.interface';
 import type { ToastOptions } from './models/toast-options.interface';
@@ -11,6 +11,7 @@ import type { ToastOptions } from './models/toast-options.interface';
 @Service()
 export class ToastStore {
   private readonly current = signal<readonly ToastItem[]>([]);
+  private readonly errorHandler = inject(ErrorHandler);
   private nextId = 1;
   private timer: ReturnType<typeof setTimeout> | undefined;
   private remaining = 0;
@@ -33,7 +34,9 @@ export class ToastStore {
     };
     this.current.set([item]);
     this.remaining = item.duration;
-    this.start(item.id);
+    clearTimeout(this.timer);
+    this.timer = undefined;
+    this.start(item);
     return item;
   }
 
@@ -58,25 +61,32 @@ export class ToastStore {
         this.remaining = Math.max(0, this.remaining - (Date.now() - this.startedAt));
       }
     } else if (this.timer === undefined) {
-      this.start(id);
+      this.start(this.current()[0]);
     }
   }
 
-  /** Runs the action (if any), then dismisses, even if the action throws. */
+  /** Runs the action (if any), then dismisses. An error goes to the `ErrorHandler`. */
   runAction(item: ToastItem): void {
     try {
       item.action?.run();
+    } catch (error) {
+      this.errorHandler.handleError(error);
     } finally {
       this.dismiss(item.id);
     }
   }
 
-  private start(id: number): void {
+  /** Duration 0 means no timer: the toast stays until it is dismissed. */
+  private start(item: ToastItem): void {
     clearTimeout(this.timer);
+    this.timer = undefined;
+    if (item.duration === 0) {
+      return;
+    }
     this.startedAt = Date.now();
     this.timer = setTimeout(() => {
       this.timer = undefined;
-      this.dismiss(id);
+      this.dismiss(item.id);
     }, this.remaining);
   }
 }
