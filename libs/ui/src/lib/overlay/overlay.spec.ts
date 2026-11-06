@@ -252,4 +252,32 @@ describe('UiOverlay', () => {
     owner.destroy();
     expect(panes()).toHaveLength(0);
   });
+  it('moves an existing element into the pane and puts it back on detach', () => {
+    const service = TestBed.inject(UiOverlay);
+    overlay = service.connect({ origin, positions: sidePositions('bottom'), layer: 'menu' });
+    const parent = document.createElement('div');
+    const element = document.createElement('div');
+    parent.append(element);
+    document.body.append(parent);
+    let detached = 0;
+    overlay.detachments().subscribe(() => detached++);
+    overlay.attachElement(element);
+    expect(overlay.pane.contains(element)).toBe(true);
+    overlay.detach();
+    expect(parent.contains(element)).toBe(true);
+    expect(detached).toBe(1);
+    parent.remove();
+  });
+
+  it('anchors to a viewport point', () => {
+    const service = TestBed.inject(UiOverlay);
+    overlay = service.connect({
+      origin: { x: 40, y: 60 },
+      positions: sidePositions('bottom'),
+      layer: 'menu',
+    });
+    overlay.attach(new ComponentPortal(ProbeComponent));
+    TestBed.tick();
+    expect(overlay.isAttached).toBe(true);
+  });
 });

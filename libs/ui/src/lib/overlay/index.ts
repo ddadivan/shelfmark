@@ -1,6 +1,7 @@
 export { ConnectedOverlay } from './connected-overlay';
 export type { ConnectedOverlayConfig } from './models/connected-overlay-config.interface';
 export type { OverlayLayer } from './models/overlay-layer.type';
+export type { OverlayPoint } from './models/overlay-point.type';
 export type { OverlayPositionPair } from './models/overlay-position-pair.type';
 export type { OverlaySide } from './models/overlay-side.type';
 export { connectedSide, overlayTransformOrigin, setOverlayOrigin } from './overlay-origin';
