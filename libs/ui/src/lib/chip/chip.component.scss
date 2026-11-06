@@ -43,7 +43,7 @@ button.ui-chip__body {
   }
 }
 
-:host(.ui-chip--clickable) {
+:host(.ui-chip--clickable:not(.ui-chip--disabled)) {
   @include hover {
     filter: brightness(0.96);
   }

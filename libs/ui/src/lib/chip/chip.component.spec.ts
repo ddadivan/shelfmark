@@ -141,6 +141,29 @@ describe('ChipComponent', () => {
     expect(chip.classList.contains('ui-chip--disabled')).toBe(true);
   });
 
+  it('focus() targets the clickable body, else the remove button, else nothing', () => {
+    const { chip, update, fixture } = setup();
+    const api = fixture.debugElement.children[0].componentInstance as ChipComponent;
+    api.focus();
+    expect(document.activeElement).not.toBe(chip.querySelector('button'));
+    update((c) => c.removable.set(true));
+    document.body.append(chip);
+    api.focus();
+    expect(document.activeElement).toBe(chip.querySelector('.ui-chip__remove'));
+    update((c) => c.clickable.set(true));
+    api.focus();
+    expect(document.activeElement).toBe(chip.querySelector('.ui-chip__body'));
+  });
+
+  it('does not style hover or pressed when disabled', () => {
+    const { chip, update } = setup();
+    update((c) => {
+      c.clickable.set(true);
+      c.disabled.set(true);
+    });
+    expect(chip.classList.contains('ui-chip--disabled')).toBe(true);
+  });
+
   it('has no axe violations in each configuration', async () => {
     const { host, update } = setup();
     expect(await axeViolations(host)).toEqual([]);

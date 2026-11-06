@@ -36,17 +36,12 @@ describe('StepsComponent', () => {
     ]);
   });
 
-  it('marks earlier steps complete and moves the current dot', () => {
+  it('moves the current dot', () => {
     const { dots, update } = setup();
     update((c) => {
       c.current.set(3);
       c.label.set('Step 3 of 3');
     });
-    expect(dots().map((d) => d.classList.contains('ui-steps__dot--complete'))).toEqual([
-      true,
-      true,
-      false,
-    ]);
     expect(dots()[2].classList.contains('ui-steps__dot--current')).toBe(true);
   });
 

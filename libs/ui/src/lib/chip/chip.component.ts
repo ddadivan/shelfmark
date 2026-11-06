@@ -1,5 +1,13 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { booleanAttribute, ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  input,
+  output,
+} from '@angular/core';
 import { IconComponent } from '../icon/icon.component';
 import type { IconName } from '../icon/models/icon-name.type';
 import { RippleDirective } from '../ripple/ripple.directive';
@@ -47,6 +55,18 @@ export class ChipComponent {
   readonly clicked = output<void>();
   /** The chip should be removed (remove button, Delete, Backspace). */
   readonly removed = output<void>();
+
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+
+  /**
+   * Focuses the clickable body, else the remove button. Does nothing for a plain chip
+   * (no focusable part). Lets a TagInput move focus to a sibling after `removed`.
+   */
+  focus(options?: FocusOptions): void {
+    this.host
+      .querySelector<HTMLElement>('button.ui-chip__body, button.ui-chip__remove')
+      ?.focus(options);
+  }
 
   protected onKeydown(event: KeyboardEvent): void {
     if (

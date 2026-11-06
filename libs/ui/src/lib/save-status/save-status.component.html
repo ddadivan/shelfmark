@@ -1,0 +1,33 @@
+<span
+  class="ui-save-status"
+  [class.ui-save-status--done]="state() === 'saved'"
+  [class.ui-save-status--error]="state() === 'error'"
+  role="status"
+>
+  <span class="ui-save-status__slot">
+    @switch (state()) {
+      @case ('saving') {
+        <ui-spinner
+          size="sm"
+          class="ui-save-status__icon"
+          animate.leave="ui-save-status__icon--leave"
+        />
+      }
+      @case ('saved') {
+        <ui-icon
+          name="check"
+          class="ui-save-status__icon"
+          animate.leave="ui-save-status__icon--leave"
+        />
+      }
+      @case ('error') {
+        <ui-icon
+          name="error"
+          class="ui-save-status__icon"
+          animate.leave="ui-save-status__icon--leave"
+        />
+      }
+    }
+  </span>
+  <span class="ui-save-status__text">{{ text() }}</span>
+</span>

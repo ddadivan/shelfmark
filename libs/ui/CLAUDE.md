@@ -110,11 +110,20 @@ Angular keeps the element until the leave animation ends and a second toggle mid
 
 ## Chip, avatar, notice, steps (issue #25)
 
-- `ui-chip`: `variant` `tag | neutral`, `clickable` (inner `<button>` with `uiRipple`, output `clicked`), `removable` (separate remove button named by `removeLabel`, output `removed`; Delete / Backspace anywhere in a removable chip also emits it), `disabled`, `icon`. The label is projected; there is no ripple on a non-clickable chip or on the remove button.
-- `ui-avatar`: `src`, `name`, `size` `sm | md | lg`, `label`. Initials (`initialsOf`, grapheme-safe, first and last word) when `src` is absent or fails (the CSP blocks external hosts; `linkedSignal` retries on a new `src`), a user icon without a name. Decorative (`aria-hidden`) unless `label` gives it `role="img"`.
-- `ui-notice`: `kind` `warning | danger`, `icon` override. `warning` is `role="status"`, `danger` `role="alert"`. `ViewEncapsulation.None` with `.ui-notice` selectors so projected links are styled.
-- `ui-steps`: `count`, `current` (1-based), `label` ("Step N of M", visually hidden, polite live region); dots are `aria-hidden`.
+- `ui-chip`: `variant` `tag | neutral`, `clickable` (inner `<button>` with `uiRipple`, output `clicked`), `removable` (separate remove button named by `removeLabel`, output `removed`; Delete / Backspace anywhere in a removable chip also emits it), `disabled`, `icon`. The label is projected; there is no ripple on a non-clickable chip or on the remove button. `focus()` focuses the clickable body, else the remove button. After `removed` the removed chip is gone and focus is lost: the feature must move focus (to a sibling chip via `focus()`, or to the input in a TagInput).
+- `ui-avatar`: `src`, `name`, `size` `sm | md | lg`, `label`. Initials (`initialsOf`, grapheme-safe, first and last word; it upper-cases first, so `ß` gives `S`) when `src` is absent or fails (the CSP blocks external hosts; `linkedSignal` retries on a new `src`), a user icon without a name. Decorative (`aria-hidden`) unless `label` gives it `role="img"`.
+- `ui-notice`: `kind` `warning | danger`, `icon` override. `warning` is `role="status"`, `danger` `role="alert"`. `ViewEncapsulation.None` with `.ui-notice` selectors so projected links are styled. A live region announces reliably only when content appears in it, so render a notice on demand (`@if`) when an announcement is wanted; one present at page load is not announced.
+- `ui-steps`: `count`, `current` (1-based), `label` ("Step N of M", visually hidden, polite live region); dots are `aria-hidden`; earlier dots look like upcoming ones, as in the spec.
 - Story layout for these lives in `.storybook/display-stories.scss` (`ds-` classes).
+
+## Loading (issue #23)
+
+- Pick the indicator by what loads (Loading spec): `ui-button [loading]` for an action the user started, `ui-progress-bar` for navigation and background requests, `ui-meter` for known progress, `ui-load-more` under a list, `ui-save-status` for autosave, skeletons for first loads.
+- **`ui-spinner`** (`size` `sm | md | lg`, optional `label`): ring in `currentColor`, rotation on the inner `__ring` (`loop(spin)`), `enter(spinner)` on the host when it is created. Without `label` it is `aria-hidden`; with it, an indeterminate `progressbar`. It leaves only when its owner removes it with `animate.leave` and a class using `@include leave(spinner)` (`spinner-shrink` inside a button); the components below do that already.
+- **`ui-button [loading]`**: spinner with `enter(spinner-grow)` (label makes room), `aria-busy="true"`, no ripple, `cursor: progress`. Activation (clicks, Enter / Space, form submit) is blocked by `preventDefault()` plus a capture-phase host listener that calls `stopImmediatePropagation()` only while loading: `(click)` on `<ui-button>` does not fire; document capture listeners (the CDK overlay's outside-press) still see the event, bubble listeners above the button do not. A loading `href` button renders like a disabled link (no `href`, `role="link"`, `aria-disabled="true"`, not dimmed), so middle-click and the context menu cannot navigate. The button stays focusable (not `disabled`). The width is locked in px on the inner element: a `ResizeObserver` keeps the rest width (fallback without one: read after each render), the lock is set when `loading` turns true and released after the leaving spinner's animations finish. The feature changes the label to the -ing form itself. The spinner replaces `iconLeft`; icon-only buttons show a solo spinner (`enter(spinner)`).
+- **`ui-progress-bar`** (`active`, `variant` `fixed | inline`, optional `label`): presentational, the app binds `active`. `fixed` is the 2px sage bar at the top of the viewport (z-index 900, below overlays), shown only after 300 ms of `active`; `inline` is a 3px track in a box, shown at once. On finish it fills to 100% and fades (`ui-fade-out`, removed on `animationend`). The 2px height is the described stylelint disable. A finished bar is removed on `animationend` / `animationcancel` of the fade or, as a fallback, after 450 ms; `inline` skips the 300 ms helper. Without `label` it is `aria-hidden`.
+- **`ui-meter`** (`value` 0-100, clamped; required `label`): `role="progressbar"`, `aria-valuenow`; percent text is the feature's. **`ui-load-more`** (`text`, `loading`): the host is a persistent `role="status"` live region (keep it rendered, bind `loading`; a region inserted already filled is often not announced), the spinner `sm` plus text row exists only while `loading`. **`ui-save-status`** (`state` `saving | saved | error`, `savingText`, `savedText`, `errorText`): icon plus words in a polite status region; the icons share one 16px slot.
+- **`loaderVisible(busy, { delay?, minVisible?, injector? })`** (`lib/loader-timing`): turns a `busy` signal into a `visible` signal that goes true after 300 ms and stays true for at least 400 ms once shown (`LOADER_SHOW_DELAY_MS`, `LOADER_MIN_VISIBLE_MS`); a response faster than the delay shows nothing. Call it in an injection context; timers are cleared on destroy. Features bind loaders to its result, never to the raw request state.
 
 ## Themes
 
@@ -147,7 +156,7 @@ Onest (variable) is self-hosted through `@fontsource-variable/onest` (SIL OFL 1.
 ```bash
 npx nx storybook ui
 npx nx build-storybook ui
-npx nx test-storybook ui           # axe on every story, light and dark, under the production CSP (libs/ui/a11y)
+npx nx test-storybook ui           # axe on every story, light and dark, under the production CSP (libs/ui/a11y); it never reuses a running server, so parallel runs need different `STORYBOOK_PORT` values (default 6007)
 npx nx test ui --coverage
 npx nx run-many -t lint typecheck test build -p ui
 npm run lint:styles

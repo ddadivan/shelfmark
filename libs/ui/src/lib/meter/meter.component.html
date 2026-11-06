@@ -1,0 +1,10 @@
+<div
+  class="ui-meter"
+  role="progressbar"
+  aria-valuemin="0"
+  aria-valuemax="100"
+  [attr.aria-valuenow]="percent()"
+  [attr.aria-label]="label()"
+>
+  <div class="ui-meter__fill" [style.width.%]="percent()"></div>
+</div>

@@ -8,8 +8,8 @@ import {
 
 /**
  * Progress dots of the welcome dialog. `count` dots, `current` is 1-based; the current dot
- * stretches to a sage pill over `duration-base` (instant under reduced motion), earlier dots
- * are marked complete. `label` is the translated "Step N of M" text: it is visually hidden and
+ * stretches to a sage pill over `duration-base` (instant under reduced motion).
+ * `label` is the translated "Step N of M" text: it is visually hidden and
  * sits in a polite live region so a change is announced. The dots are decorative.
  */
 @Component({

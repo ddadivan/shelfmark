@@ -34,7 +34,7 @@ describe('initialsOf', () => {
     ['ada', 'A'],
     ['  ada   lovelace  byron ', 'AB'],
     ['Іван Петренко', 'ІП'],
-    ['ßeta', 'SS'],
+    ['ßeta', 'S'],
     ['👩‍💻 Dev', '👩‍💻D'],
     ['émile zola', 'ÉZ'],
     ['', ''],

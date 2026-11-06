@@ -19,7 +19,6 @@ export function initialsOf(name: string | null | undefined): string {
   const picked = words.length === 1 ? [words[0]] : [words[0], words[words.length - 1]];
   return picked
     .slice(0, MAX_INITIALS)
-    .map((word) => firstGrapheme(word, segmenter))
-    .join('')
-    .toLocaleUpperCase();
+    .map((word) => firstGrapheme(word.toLocaleUpperCase(), segmenter))
+    .join('');
 }

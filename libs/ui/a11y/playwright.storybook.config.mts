@@ -16,7 +16,7 @@ export default defineConfig({
     command: 'node libs/ui/a11y/serve-storybook.mjs',
     cwd: '../../..',
     url: `http://127.0.0.1:${port}/index.json`,
-    reuseExistingServer: !process.env['CI'],
+    reuseExistingServer: false,
     env: { STORYBOOK_PORT: port },
   },
 });
