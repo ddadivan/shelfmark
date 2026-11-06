@@ -13,4 +13,8 @@ export const COLOR_GROUPS: readonly ColorGroup[] = [
   { title: 'Accent and focus', tokens: ['accent', 'accent-bg', 'accent-text', 'focus-ring'] },
   { title: 'Status', tokens: ['danger', 'danger-bg', 'success', 'warning', 'warning-bg'] },
   { title: 'Other', tokens: ['overlay', 'logo-bookmark'] },
+  {
+    title: 'Cards and skeletons',
+    tokens: ['card-hover-bg', 'card-hover-border', 'skeleton-shimmer'],
+  },
 ];
