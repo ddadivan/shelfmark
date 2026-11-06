@@ -1,28 +1,33 @@
 import { describe, expect, it } from 'vitest';
 import type { SelectOption } from './models/select-option.interface';
 import { selectedRow, selectRows } from './select-rows';
+import { SELECT_FIXTURE_ID } from './models/select-fixture-id.const';
 
 const tree: SelectOption[] = [
   {
-    id: 'work',
+    id: SELECT_FIXTURE_ID.Work,
     name: 'Work',
     children: [
-      { id: 'angular', name: 'Angular', children: [{ id: 'signals', name: 'Signals' }] },
-      { id: 'courses', name: 'Courses' },
+      {
+        id: SELECT_FIXTURE_ID.Angular,
+        name: 'Angular',
+        children: [{ id: SELECT_FIXTURE_ID.Signals, name: 'Signals' }],
+      },
+      { id: SELECT_FIXTURE_ID.Courses, name: 'Courses' },
     ],
   },
-  { id: 'clothes', name: 'Clothes' },
+  { id: SELECT_FIXTURE_ID.Clothes, name: 'Clothes' },
 ];
 
 describe('selectRows', () => {
   it('flattens the tree in order with the depth and the path', () => {
     const rows = selectRows(tree, '', '');
     expect(rows.map((r) => [r.id, r.level])).toEqual([
-      ['work', 0],
-      ['angular', 1],
-      ['signals', 2],
-      ['courses', 1],
-      ['clothes', 0],
+      [SELECT_FIXTURE_ID.Work, 0],
+      [SELECT_FIXTURE_ID.Angular, 1],
+      [SELECT_FIXTURE_ID.Signals, 2],
+      [SELECT_FIXTURE_ID.Courses, 1],
+      [SELECT_FIXTURE_ID.Clothes, 0],
     ]);
     expect(rows[2]?.path).toBe('Work / Angular / Signals');
   });
@@ -35,11 +40,11 @@ describe('selectRows', () => {
 
   it('keeps matches with their ancestors, ignoring case and spaces around', () => {
     expect(selectRows(tree, '  SIGN ', '').map((r) => r.id)).toEqual([
-      'work',
-      'angular',
-      'signals',
+      SELECT_FIXTURE_ID.Work,
+      SELECT_FIXTURE_ID.Angular,
+      SELECT_FIXTURE_ID.Signals,
     ]);
-    expect(selectRows(tree, 'cl', '').map((r) => r.id)).toEqual(['clothes']);
+    expect(selectRows(tree, 'cl', '').map((r) => r.id)).toEqual([SELECT_FIXTURE_ID.Clothes]);
   });
 
   it('shows the empty row only when it matches the query', () => {
@@ -48,7 +53,7 @@ describe('selectRows', () => {
   });
 
   it('finds the selected row in the whole tree', () => {
-    expect(selectedRow(tree, 'angular', '')?.path).toBe('Work / Angular');
+    expect(selectedRow(tree, SELECT_FIXTURE_ID.Angular, '')?.path).toBe('Work / Angular');
     expect(selectedRow(tree, null, 'Unsorted')?.name).toBe('Unsorted');
     expect(selectedRow(tree, null, '')).toBeUndefined();
     expect(selectedRow(tree, 'gone', '')).toBeUndefined();

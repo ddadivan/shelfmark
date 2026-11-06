@@ -89,11 +89,7 @@
             [attr.aria-label]="row.level > 0 ? row.path : null"
             [style.--ui-select-level]="row.level"
           >
-            <ui-icon
-              class="ui-select__option-icon"
-              [name]="row.id === null ? 'inbox' : 'folder'"
-              [size]="16"
-            />
+            <ui-icon class="ui-select__option-icon" [name]="rowIcon(row.id)" [size]="16" />
             <span class="ui-select__option-label">{{ row.name }}</span>
             @if (row.id === value()) {
               <ui-icon class="ui-select__check" name="check" [size]="16" />

@@ -29,6 +29,9 @@ import type { ConnectedOverlay } from '../overlay/connected-overlay';
 import { UiOverlay } from '../overlay/overlay.service';
 import { RippleDirective } from '../ripple/ripple.directive';
 import type { SelectOption } from './models/select-option.interface';
+import type { SelectIcon } from './models/select-icon.type';
+import { SELECT_ICON } from './models/select-icon.const';
+import { SELECT_KEY } from './models/select-key.const';
 import { selectedRow, selectRows } from './select-rows';
 
 /**
@@ -105,7 +108,7 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
     selectedRow(this.options(), this.value(), this.emptyLabel()),
   );
   protected readonly triggerText = computed(() => this.chosen()?.path ?? this.placeholder());
-  protected readonly triggerIcon = computed(() => (this.value() === null ? 'inbox' : 'folder'));
+  protected readonly triggerIcon = computed(() => this.rowIcon(this.value()));
 
   private overlay: ConnectedOverlay | null = null;
   private detachSubscription: Subscription | null = null;
@@ -141,6 +144,11 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
     this.trigger().nativeElement.focus(options);
   }
 
+  /** Folder icon, or the inbox for the empty option. */
+  protected rowIcon(id: string | null): SelectIcon {
+    return id === null ? SELECT_ICON.Empty : SELECT_ICON.Folder;
+  }
+
   protected onExpandedChange(expanded: boolean): void {
     if (expanded) {
       this.show();
@@ -151,7 +159,7 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
 
   protected onTriggerKeydown(event: KeyboardEvent): void {
     // A dialog around the select keeps its own Esc while the popup is open.
-    if (event.key === 'Escape' && this.open()) {
+    if (event.key === SELECT_KEY.Escape && this.open()) {
       event.stopPropagation();
     }
   }
@@ -221,23 +229,23 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
   protected onSearchKeydown(event: KeyboardEvent): void {
     const field = this.searchField()?.nativeElement;
     switch (event.key) {
-      case 'ArrowDown':
-      case 'ArrowUp':
-      case 'Enter':
+      case SELECT_KEY.ArrowDown:
+      case SELECT_KEY.ArrowUp:
+      case SELECT_KEY.Enter:
         this.relay(event);
         break;
-      case 'Home':
-      case 'End':
+      case SELECT_KEY.Home:
+      case SELECT_KEY.End:
         if (!field?.value || event.ctrlKey || event.metaKey) {
           this.relay(event);
         }
         break;
-      case 'Escape':
+      case SELECT_KEY.Escape:
         event.stopPropagation();
         event.preventDefault();
         this.hide(true);
         break;
-      case 'Tab':
+      case SELECT_KEY.Tab:
         // Focus goes back to the trigger first, so Tab moves on from there.
         this.hide(true);
         break;

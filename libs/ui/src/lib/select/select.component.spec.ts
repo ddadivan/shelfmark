@@ -5,17 +5,19 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../../testing/axe';
 import type { SelectOption } from './models/select-option.interface';
 import { SelectComponent } from './select.component';
+import { SELECT_KEY } from './models/select-key.const';
+import { SELECT_FIXTURE_ID } from './models/select-fixture-id.const';
 
 const TREE: SelectOption[] = [
   {
-    id: 'work',
+    id: SELECT_FIXTURE_ID.Work,
     name: 'Work',
     children: [
-      { id: 'angular', name: 'Angular' },
-      { id: 'courses', name: 'Courses' },
+      { id: SELECT_FIXTURE_ID.Angular, name: 'Angular' },
+      { id: SELECT_FIXTURE_ID.Courses, name: 'Courses' },
     ],
   },
-  { id: 'clothes', name: 'Clothes' },
+  { id: SELECT_FIXTURE_ID.Clothes, name: 'Clothes' },
 ];
 
 @Component({
@@ -44,7 +46,7 @@ class HostComponent {
   readonly searchable = signal(false);
   readonly error = signal('');
   readonly disabled = signal(false);
-  readonly value = signal<string | null>('angular');
+  readonly value = signal<string | null>(SELECT_FIXTURE_ID.Angular);
   readonly touches = signal(0);
 }
 
@@ -173,13 +175,13 @@ describe('SelectComponent', () => {
     const { open, trigger, active, press } = await setup();
     await open();
     expect(active()?.textContent.trim()).toBe('Angular');
-    await press(trigger, 'ArrowDown');
+    await press(trigger, SELECT_KEY.ArrowDown);
     expect(active()?.textContent.trim()).toBe('Courses');
-    await press(trigger, 'End');
+    await press(trigger, SELECT_KEY.End);
     expect(active()?.textContent.trim()).toBe('Clothes');
-    await press(trigger, 'Home');
+    await press(trigger, SELECT_KEY.Home);
     expect(active()?.textContent.trim()).toBe('Unsorted');
-    await press(trigger, 'ArrowUp');
+    await press(trigger, SELECT_KEY.ArrowUp);
     expect(active()?.textContent.trim()).toBe('Clothes');
   });
 
@@ -194,9 +196,9 @@ describe('SelectComponent', () => {
   it('chooses with Enter, closes and keeps focus on the trigger', async () => {
     const { open, trigger, press, host, listbox, fixture } = await setup();
     await open();
-    await press(trigger, 'ArrowDown');
-    await press(trigger, 'Enter');
-    expect(host.value()).toBe('courses');
+    await press(trigger, SELECT_KEY.ArrowDown);
+    await press(trigger, SELECT_KEY.Enter);
+    expect(host.value()).toBe(SELECT_FIXTURE_ID.Courses);
     expect(trigger.getAttribute('aria-expanded')).toBe('false');
     expect(document.activeElement).toBe(trigger);
     await settle(fixture);
@@ -218,7 +220,7 @@ describe('SelectComponent', () => {
     await open();
     options()[2]?.click();
     await settle(fixture);
-    expect(host.value()).toBe('angular');
+    expect(host.value()).toBe(SELECT_FIXTURE_ID.Angular);
   });
 
   it('closes on Esc, keeps the value and stops Esc from reaching a dialog', async () => {
@@ -226,21 +228,25 @@ describe('SelectComponent', () => {
     const outer = vi.fn();
     (fixture.nativeElement as HTMLElement).addEventListener('keydown', outer);
     await open();
-    await press(trigger, 'ArrowDown');
-    await press(trigger, 'Escape');
+    await press(trigger, SELECT_KEY.ArrowDown);
+    await press(trigger, SELECT_KEY.Escape);
     expect(trigger.getAttribute('aria-expanded')).toBe('false');
-    expect(host.value()).toBe('angular');
+    expect(host.value()).toBe(SELECT_FIXTURE_ID.Angular);
     expect(document.activeElement).toBe(trigger);
-    const escapes = outer.mock.calls.filter(([e]) => (e as KeyboardEvent).key === 'Escape');
+    const escapes = outer.mock.calls.filter(
+      ([e]) => (e as KeyboardEvent).key === SELECT_KEY.Escape,
+    );
     expect(escapes).toHaveLength(0);
-    await press(trigger, 'Escape');
-    expect(outer.mock.calls.filter(([e]) => (e as KeyboardEvent).key === 'Escape')).toHaveLength(1);
+    await press(trigger, SELECT_KEY.Escape);
+    expect(
+      outer.mock.calls.filter(([e]) => (e as KeyboardEvent).key === SELECT_KEY.Escape),
+    ).toHaveLength(1);
   });
 
   it('opens with ArrowDown and Enter from the keyboard', async () => {
     const { trigger, press } = await setup();
     trigger.focus();
-    await press(trigger, 'ArrowDown');
+    await press(trigger, SELECT_KEY.ArrowDown);
     expect(trigger.getAttribute('aria-expanded')).toBe('true');
   });
 
@@ -353,40 +359,44 @@ describe('SelectComponent', () => {
       const field = search() as HTMLInputElement;
       type(field, 'c');
       await settle(fixture);
-      await press(field, 'ArrowDown');
+      await press(field, SELECT_KEY.ArrowDown);
       expect(active()?.textContent.trim()).toBe('Courses');
-      await press(field, 'Enter');
-      expect(host.value()).toBe('courses');
+      await press(field, SELECT_KEY.Enter);
+      expect(host.value()).toBe(SELECT_FIXTURE_ID.Courses);
       expect(document.activeElement).toBe(trigger);
     });
 
     it('uses Home and End for the options only while the box is empty or with Ctrl', async () => {
       const { search, press, active } = await searching();
       const field = search() as HTMLInputElement;
-      await press(field, 'End');
+      await press(field, SELECT_KEY.End);
       expect(active()?.textContent.trim()).toBe('Clothes');
-      await press(field, 'Home');
+      await press(field, SELECT_KEY.Home);
       expect(active()?.textContent.trim()).toBe('Unsorted');
       field.value = 'o';
-      const end = new KeyboardEvent('keydown', { key: 'End', bubbles: true, cancelable: true });
+      const end = new KeyboardEvent('keydown', {
+        key: SELECT_KEY.End,
+        bubbles: true,
+        cancelable: true,
+      });
       field.dispatchEvent(end);
       expect(end.defaultPrevented).toBe(false);
-      await press(field, 'End', { ctrlKey: true });
+      await press(field, SELECT_KEY.End, { ctrlKey: true });
       expect(active()).not.toBeNull();
     });
 
     it('closes on Esc from the search box and returns focus to the trigger', async () => {
       const { search, press, trigger, host } = await searching();
-      await press(search() as HTMLInputElement, 'Escape');
+      await press(search() as HTMLInputElement, SELECT_KEY.Escape);
       expect(trigger.getAttribute('aria-expanded')).toBe('false');
       expect(document.activeElement).toBe(trigger);
-      expect(host.value()).toBe('angular');
+      expect(host.value()).toBe(SELECT_FIXTURE_ID.Angular);
     });
 
     it('closes on Tab and clears the query when it opens again', async () => {
       const { search, press, trigger, open, fixture } = await searching();
       type(search() as HTMLInputElement, 'ang');
-      await press(search() as HTMLInputElement, 'Tab');
+      await press(search() as HTMLInputElement, SELECT_KEY.Tab);
       expect(trigger.getAttribute('aria-expanded')).toBe('false');
       await settle(fixture);
       await open();
@@ -438,13 +448,13 @@ describe('SelectComponent with Signal Forms', () => {
     await settle(fixture);
     document.querySelectorAll<HTMLElement>('[role="option"]')[3]?.click();
     await settle(fixture);
-    expect(host.model().folder).toBe('courses');
+    expect(host.model().folder).toBe(SELECT_FIXTURE_ID.Courses);
     expect(trigger.textContent.trim()).toBe('Work / Courses');
   });
 
   it('writes null back when the empty option is chosen', async () => {
     const { fixture, trigger, host } = await formSetup();
-    host.model.set({ folder: 'clothes' });
+    host.model.set({ folder: SELECT_FIXTURE_ID.Clothes });
     await settle(fixture);
     trigger.click();
     await settle(fixture);

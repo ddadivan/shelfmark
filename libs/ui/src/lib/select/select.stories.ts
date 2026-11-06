@@ -5,32 +5,37 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { ButtonComponent } from '../button/button.component';
 import type { SelectOption } from './models/select-option.interface';
 import { SelectComponent } from './select.component';
+import { SELECT_FIXTURE_ID } from './models/select-fixture-id.const';
 
 const FLAT: SelectOption[] = [
-  { id: 'work', name: 'Work' },
-  { id: 'reading', name: 'Reading list' },
-  { id: 'recipes', name: 'Recipes' },
-  { id: 'clothes', name: 'Clothes' },
+  { id: SELECT_FIXTURE_ID.Work, name: 'Work' },
+  { id: SELECT_FIXTURE_ID.Reading, name: 'Reading list' },
+  { id: SELECT_FIXTURE_ID.Recipes, name: 'Recipes' },
+  { id: SELECT_FIXTURE_ID.Clothes, name: 'Clothes' },
 ];
 
 const NESTED: SelectOption[] = [
   {
-    id: 'work',
+    id: SELECT_FIXTURE_ID.Work,
     name: 'Work',
     children: [
       {
-        id: 'angular',
+        id: SELECT_FIXTURE_ID.Angular,
         name: 'Angular',
         children: [
-          { id: 'signals', name: 'Signals' },
-          { id: 'forms', name: 'Signal Forms' },
+          { id: SELECT_FIXTURE_ID.Signals, name: 'Signals' },
+          { id: SELECT_FIXTURE_ID.Forms, name: 'Signal Forms' },
         ],
       },
-      { id: 'courses', name: 'Courses' },
+      { id: SELECT_FIXTURE_ID.Courses, name: 'Courses' },
     ],
   },
-  { id: 'clothes', name: 'Clothes' },
-  { id: 'recipes', name: 'Recipes', children: [{ id: 'soups', name: 'Soups' }] },
+  { id: SELECT_FIXTURE_ID.Clothes, name: 'Clothes' },
+  {
+    id: SELECT_FIXTURE_ID.Recipes,
+    name: 'Recipes',
+    children: [{ id: SELECT_FIXTURE_ID.Soups, name: 'Soups' }],
+  },
 ];
 
 const DEEP: SelectOption[] = [
@@ -50,7 +55,11 @@ const DEEP: SelectOption[] = [
                 id: 'l4',
                 name: 'Level four',
                 children: [
-                  { id: 'l5', name: 'Level five', children: [{ id: 'l6', name: 'Level six' }] },
+                  {
+                    id: 'l5',
+                    name: 'Level five',
+                    children: [{ id: SELECT_FIXTURE_ID.DeepSix, name: 'Level six' }],
+                  },
                 ],
               },
             ],
@@ -63,16 +72,16 @@ const DEEP: SelectOption[] = [
 
 const LONG: SelectOption[] = [
   {
-    id: 'long',
+    id: SELECT_FIXTURE_ID.Long,
     name: 'Everything I want to read about the new reactivity model and its migration path',
     children: [
       {
-        id: 'long-child',
+        id: SELECT_FIXTURE_ID.LongChild,
         name: 'Notes on zoneless change detection in large production applications',
       },
     ],
   },
-  { id: 'short', name: 'Short' },
+  { id: SELECT_FIXTURE_ID.Short, name: 'Short' },
 ];
 
 const MANY: SelectOption[] = Array.from({ length: 30 }, (_, i) => ({
@@ -111,7 +120,7 @@ const meta: Meta<SelectComponent> = {
     error: '',
     disabled: false,
     required: false,
-    value: 'angular',
+    value: SELECT_FIXTURE_ID.Angular,
   },
   render: (args) => ({
     props: args,
@@ -156,11 +165,11 @@ async function search(text: string): Promise<void> {
 
 export const Nested: Story = {};
 
-export const Flat: Story = { args: { options: FLAT, value: 'recipes' } };
+export const Flat: Story = { args: { options: FLAT, value: SELECT_FIXTURE_ID.Recipes } };
 
-export const NestedDeep: Story = { args: { options: DEEP, value: 'l6' } };
+export const NestedDeep: Story = { args: { options: DEEP, value: SELECT_FIXTURE_ID.DeepSix } };
 
-export const LongNames: Story = { args: { options: LONG, value: 'long-child' } };
+export const LongNames: Story = { args: { options: LONG, value: SELECT_FIXTURE_ID.LongChild } };
 
 export const EmptyValue: Story = { args: { value: null } };
 
@@ -179,7 +188,7 @@ export const Open: Story = { play: openPopup };
 
 /** Open with the search box (focus is in it); a long list scrolls inside the popup. */
 export const OpenSearchable: Story = {
-  args: { searchable: true, options: MANY, value: 'folder-12' },
+  args: { searchable: true, options: MANY, value: SELECT_FIXTURE_ID.Folder12 },
   play: openPopup,
 };
 
@@ -209,14 +218,14 @@ export const AllVariants: Story = {
       <div class="ss-themes">
         @for (theme of ['light', 'dark']; track theme) {
           <div [attr.data-theme]="theme" class="ss-panel">
-            <ui-select label="Folder" [options]="nested" emptyLabel="Unsorted" value="angular"
+            <ui-select label="Folder" [options]="nested" emptyLabel="Unsorted" value="${SELECT_FIXTURE_ID.Angular}"
               hint="Where the link is saved" searchLabel="Find a folder" />
             <ui-select label="Unsorted" [options]="nested" emptyLabel="Unsorted" [value]="null" />
             <ui-select label="No choice yet" [options]="nested" placeholder="Choose a folder" [value]="null" />
-            <ui-select label="Long name" [options]="long" value="long-child" />
+            <ui-select label="Long name" [options]="long" value="${SELECT_FIXTURE_ID.LongChild}" />
             <ui-select label="Error" [options]="nested" placeholder="Choose a folder" [value]="null"
               error="Choose a folder" />
-            <ui-select label="Disabled" [options]="nested" emptyLabel="Unsorted" value="clothes"
+            <ui-select label="Disabled" [options]="nested" emptyLabel="Unsorted" value="${SELECT_FIXTURE_ID.Clothes}"
               [disabled]="true" />
           </div>
         }
