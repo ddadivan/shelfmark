@@ -1,5 +1,6 @@
 import '@fontsource-variable/onest/wght.css';
 import '../src/styles/global.scss';
+import './breadcrumbs-stories.scss';
 import './display-stories.scss';
 import './dialog-stories.scss';
 import './foundations.scss';

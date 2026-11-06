@@ -1,0 +1,56 @@
+<ui-menu #menu [ariaLabel]="collapsedLabel()">
+  @for (item of trail().hidden; track $index) {
+    <ui-menu-item (activated)="onMenuChoice(item)">{{ item.label }}</ui-menu-item>
+  }
+</ui-menu>
+
+<nav class="ui-crumbs__nav" [attr.aria-label]="ariaLabel()">
+  <ol class="ui-crumbs__list">
+    @for (entry of trail().entries; track entry.key; let first = $first) {
+      <li
+        class="ui-crumbs__item"
+        [class.ui-crumbs__item--collapsed]="entry.kind === BREADCRUMB_ENTRY_KIND.Collapsed"
+      >
+        @if (!first) {
+          <span class="ui-crumbs__sep" aria-hidden="true">
+            <ui-icon name="chevron-right" [size]="16" />
+          </span>
+        }
+        @switch (entry.kind) {
+          @case (BREADCRUMB_ENTRY_KIND.Collapsed) {
+            <ui-button
+              [uiMenuTrigger]="menu"
+              variant="ghost"
+              size="sm"
+              iconOnly
+              iconLeft="more"
+              [ariaLabel]="collapsedLabel()"
+            />
+          }
+          @case (BREADCRUMB_ENTRY_KIND.Current) {
+            <span
+              #current
+              class="ui-crumbs__current"
+              aria-current="page"
+              [uiTooltip]="truncated().has(entry.key) ? (entry.item?.label ?? '') : ''"
+              (pointerenter)="measure(entry.key, current)"
+              >{{ entry.item?.label }}</span
+            >
+          }
+          @default {
+            <a
+              #link
+              class="ui-crumbs__link"
+              [attr.href]="entry.item?.href"
+              [uiTooltip]="truncated().has(entry.key) ? (entry.item?.label ?? '') : ''"
+              (pointerenter)="measure(entry.key, link)"
+              (focus)="measure(entry.key, link)"
+              (click)="entry.item && onLinkClick($event, entry.item)"
+              >{{ entry.item?.label }}</a
+            >
+          }
+        }
+      </li>
+    }
+  </ol>
+</nav>

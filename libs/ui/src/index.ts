@@ -1,4 +1,5 @@
 export * from './lib/avatar';
+export * from './lib/breadcrumbs';
 export * from './lib/button';
 export * from './lib/chip';
 export * from './lib/dialog';
