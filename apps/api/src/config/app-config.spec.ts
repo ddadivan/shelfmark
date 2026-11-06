@@ -1,19 +1,24 @@
 import { readAppConfig } from './app-config';
+import { NODE_ENV } from './models/node-env.const';
 
 describe('readAppConfig', () => {
   it('defaults to port 3000 and production (fail-safe)', () => {
-    expect(readAppConfig({})).toEqual({ port: 3000, nodeEnv: 'production', isProduction: true });
-  });
-
-  it('reads PORT and NODE_ENV', () => {
-    expect(readAppConfig({ PORT: '8080', NODE_ENV: 'production' })).toEqual({
-      port: 8080,
-      nodeEnv: 'production',
+    expect(readAppConfig({})).toEqual({
+      port: 3000,
+      nodeEnv: NODE_ENV.Production,
       isProduction: true,
     });
   });
 
-  it.each(['development', 'test'])('treats %s as non-production', (nodeEnv) => {
+  it('reads PORT and NODE_ENV', () => {
+    expect(readAppConfig({ PORT: '8080', NODE_ENV: NODE_ENV.Production })).toEqual({
+      port: 8080,
+      nodeEnv: NODE_ENV.Production,
+      isProduction: true,
+    });
+  });
+
+  it.each([NODE_ENV.Development, NODE_ENV.Test])('treats %s as non-production', (nodeEnv) => {
     expect(readAppConfig({ NODE_ENV: nodeEnv }).isProduction).toBe(false);
   });
 
