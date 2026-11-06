@@ -84,7 +84,7 @@ const cardTemplate = (inner: string, attrs = '') => `
       [description]="description" [actionsPinned]="actionsPinned" [reveal]="reveal">${inner}</ui-card>
   </div>`;
 
-const withProps = (args: Partial<CardComponent>) => ({
+const withProps = (args: object) => ({
   ...args,
   favicon: CARD_STORY_IMAGE.Favicon,
 });

@@ -48,7 +48,6 @@ const meta: Meta<ListItemComponent> = {
     selected: false,
     compact: false,
     reveal: false,
-    ripple: true,
     thumb: undefined,
     description: 'opens in a new tab',
   },
@@ -79,10 +78,10 @@ const rowTemplate = (inner: string) => `
   <div class="cs-list">
     <ui-list-item
       [href]="href" [newTab]="newTab" [selected]="selected" [compact]="compact" [thumb]="thumb"
-      [description]="description" [reveal]="reveal" [ripple]="ripple">${inner}</ui-list-item>
+      [description]="description" [reveal]="reveal">${inner}</ui-list-item>
   </div>`;
 
-const withProps = (args: Partial<ListItemComponent>) => ({
+const withProps = (args: object) => ({
   ...args,
   favicon: CARD_STORY_IMAGE.Favicon,
 });
