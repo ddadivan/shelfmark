@@ -5,6 +5,7 @@ import type { IconName } from '../icon/models/icon-name.type';
 import { ChipComponent } from './chip.component';
 import type { ChipVariant } from './models/chip-variant.type';
 import { KEYBOARD_KEY } from '../keyboard';
+import { CHIP_VARIANT } from './models/chip-variant.const';
 
 @Component({
   imports: [ChipComponent],
@@ -23,7 +24,7 @@ import { KEYBOARD_KEY } from '../keyboard';
   `,
 })
 class HostComponent {
-  readonly variant = signal<ChipVariant>('tag');
+  readonly variant = signal<ChipVariant>(CHIP_VARIANT.Tag);
   readonly clickable = signal(false);
   readonly removable = signal(false);
   readonly disabled = signal(false);
@@ -56,7 +57,7 @@ describe('ChipComponent', () => {
 
   it('renders the neutral variant', () => {
     const { chip, update } = setup();
-    update((c) => c.variant.set('neutral'));
+    update((c) => c.variant.set(CHIP_VARIANT.Neutral));
     expect(chip.classList.contains('ui-chip--neutral')).toBe(true);
     expect(chip.classList.contains('ui-chip--tag')).toBe(false);
   });
@@ -172,7 +173,7 @@ describe('ChipComponent', () => {
     const { host, update } = setup();
     expect(await axeViolations(host)).toEqual([]);
     update((c) => {
-      c.variant.set('neutral');
+      c.variant.set(CHIP_VARIANT.Neutral);
       c.clickable.set(true);
       c.removable.set(true);
       c.icon.set('tag');

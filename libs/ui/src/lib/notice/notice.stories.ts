@@ -2,14 +2,15 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { ICON_NAMES } from '../icon/models/icon-names.const';
 import { NoticeComponent } from './notice.component';
 import { THEME, THEME_ATTRIBUTE } from '../theme';
+import { NOTICE_KIND } from './models/notice-kind.const';
 
 const meta: Meta<NoticeComponent> = {
   title: 'Components/Notice',
   component: NoticeComponent,
   tags: ['autodocs'],
-  args: { kind: 'warning' },
+  args: { kind: NOTICE_KIND.Warning },
   argTypes: {
-    kind: { control: 'inline-radio', options: ['warning', 'danger'] },
+    kind: { control: 'inline-radio', options: Object.values(NOTICE_KIND) },
     icon: { control: 'select', options: [undefined, ...ICON_NAMES] },
   },
   render: (args) => ({
@@ -26,7 +27,7 @@ export const Warning: Story = {};
 
 /** Assertive `role="alert"`. */
 export const Danger: Story = {
-  args: { kind: 'danger' },
+  args: { kind: NOTICE_KIND.Danger },
   render: (args) => ({
     props: args,
     template: `<ui-notice [kind]="kind" [icon]="icon">We could not load a preview for this link.</ui-notice>`,

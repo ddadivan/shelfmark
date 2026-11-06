@@ -3,6 +3,7 @@ import { UI_FOCUS_TARGET } from '../focus-target/models/ui-focus-target.const';
 import type { MenuComponent } from './menu.component';
 import { KEYBOARD_KEY } from '../keyboard';
 import { MENU_FOCUS_EDGE } from './models/menu-focus-edge.const';
+import { BUTTON_HASPOPUP } from '../button/models/button-haspopup.const';
 
 /**
  * Opens a `ui-menu` from a button (the trigger half of the ARIA menu button pattern). Put it on
@@ -63,7 +64,7 @@ export class MenuTriggerDirective {
         return;
       }
       const menu = this.menu();
-      this.renderer.setAttribute(target, 'aria-haspopup', 'menu');
+      this.renderer.setAttribute(target, 'aria-haspopup', BUTTON_HASPOPUP.Menu);
       this.renderer.setAttribute(target, 'aria-expanded', String(menu.anchor() === target));
       this.renderer.setAttribute(target, 'aria-controls', menu.id());
       onCleanup(() => {

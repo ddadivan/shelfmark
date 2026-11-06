@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { AvatarComponent } from './avatar.component';
 import { THEME, THEME_ATTRIBUTE } from '../theme';
+import { AVATAR_SIZE } from './models/avatar-size.const';
 
 // A data URI: the production CSP (`img-src 'self' data:`) allows it, external hosts are blocked.
 const PHOTO =
@@ -12,9 +13,9 @@ const meta: Meta<AvatarComponent> = {
   title: 'Components/Avatar',
   component: AvatarComponent,
   tags: ['autodocs'],
-  args: { name: 'Dmytro Dadivan', size: 'md' },
+  args: { name: 'Dmytro Dadivan', size: AVATAR_SIZE.Md },
   argTypes: {
-    size: { control: 'inline-radio', options: ['sm', 'md', 'lg'] },
+    size: { control: 'inline-radio', options: Object.values(AVATAR_SIZE) },
   },
   render: (args) => ({
     props: args,
@@ -35,9 +36,9 @@ export const ImageFailed: Story = { args: { src: BROKEN } };
 /** Neither image nor name: a user icon. */
 export const NoName: Story = { args: { name: undefined } };
 
-export const Small: Story = { args: { size: 'sm' } };
+export const Small: Story = { args: { size: AVATAR_SIZE.Sm } };
 
-export const Large: Story = { args: { size: 'lg' } };
+export const Large: Story = { args: { size: AVATAR_SIZE.Lg } };
 
 /** `role="img"` with an accessible name; without `label` the avatar is decorative. */
 export const Labelled: Story = { args: { label: 'Dmytro Dadivan' } };
@@ -47,7 +48,7 @@ export const AllVariants: Story = {
   parameters: { layout: 'padded' },
   render: () => ({
     props: {
-      sizes: ['sm', 'md', 'lg'],
+      sizes: Object.values(AVATAR_SIZE),
       sources: [
         { name: 'Dmytro Dadivan', src: undefined },
         { name: 'Ada', src: undefined },

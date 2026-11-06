@@ -8,6 +8,8 @@ import {
 import { IconComponent } from '../icon/icon.component';
 import type { IconName } from '../icon/models/icon-name.type';
 import type { NoticeKind } from './models/notice-kind.type';
+import { NOTICE_KIND } from './models/notice-kind.const';
+import { NOTICE_KIND_ICON } from './models/notice-kind-icon.const';
 
 /**
  * Inline message in a form or page (duplicate-link warning, preview errors). Always an icon
@@ -23,20 +25,22 @@ import type { NoticeKind } from './models/notice-kind.type';
   encapsulation: ViewEncapsulation.None,
   host: {
     class: 'ui-notice',
-    '[class.ui-notice--warning]': "kind() === 'warning'",
-    '[class.ui-notice--danger]': "kind() === 'danger'",
-    '[attr.role]': "kind() === 'danger' ? 'alert' : 'status'",
+    '[class.ui-notice--warning]': 'kind() === NOTICE_KIND.Warning',
+    '[class.ui-notice--danger]': 'kind() === NOTICE_KIND.Danger',
+    '[attr.role]': "kind() === NOTICE_KIND.Danger ? 'alert' : 'status'",
   },
   templateUrl: './notice.component.html',
   styleUrl: './notice.component.scss',
 })
 export class NoticeComponent {
+  protected readonly NOTICE_KIND = NOTICE_KIND;
+
   /** `warning` or `danger`. */
-  readonly kind = input<NoticeKind>('warning');
+  readonly kind = input<NoticeKind>(NOTICE_KIND.Warning);
   /** Icon override; defaults to `warning` for a warning and `error` for danger. */
   readonly icon = input<IconName>();
 
   protected readonly iconName = computed<IconName>(
-    () => this.icon() ?? (this.kind() === 'danger' ? 'error' : 'warning'),
+    () => this.icon() ?? NOTICE_KIND_ICON[this.kind()],
   );
 }

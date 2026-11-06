@@ -13,6 +13,7 @@ import type { IconName } from '../icon/models/icon-name.type';
 import { RippleDirective } from '../ripple/ripple.directive';
 import type { ChipVariant } from './models/chip-variant.type';
 import { KEYBOARD_KEY } from '../keyboard';
+import { CHIP_VARIANT } from './models/chip-variant.const';
 
 /**
  * Tag or state chip. `variant="tag"` is sage (`accent-bg` / `accent-text`), `neutral` is for
@@ -28,8 +29,8 @@ import { KEYBOARD_KEY } from '../keyboard';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-chip',
-    '[class.ui-chip--tag]': "variant() === 'tag'",
-    '[class.ui-chip--neutral]': "variant() === 'neutral'",
+    '[class.ui-chip--tag]': 'variant() === CHIP_VARIANT.Tag',
+    '[class.ui-chip--neutral]': 'variant() === CHIP_VARIANT.Neutral',
     '[class.ui-chip--clickable]': 'clickable()',
     '[class.ui-chip--removable]': 'removable()',
     '[class.ui-chip--disabled]': 'disabled()',
@@ -39,8 +40,10 @@ import { KEYBOARD_KEY } from '../keyboard';
   styleUrl: './chip.component.scss',
 })
 export class ChipComponent {
+  protected readonly CHIP_VARIANT = CHIP_VARIANT;
+
   /** `tag` (sage) or `neutral`. */
-  readonly variant = input<ChipVariant>('tag');
+  readonly variant = input<ChipVariant>(CHIP_VARIANT.Tag);
   /** Renders the body as a button (ripple, `clicked`). */
   readonly clickable = input(false, { transform: booleanAttribute });
   /** Adds a remove button and Delete / Backspace removal. */

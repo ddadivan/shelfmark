@@ -2,20 +2,21 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { ICON_NAMES } from '../icon/models/icon-names.const';
 import { ChipComponent } from './chip.component';
 import { THEME, THEME_ATTRIBUTE } from '../theme';
+import { CHIP_VARIANT } from './models/chip-variant.const';
 
 const meta: Meta<ChipComponent> = {
   title: 'Components/Chip',
   component: ChipComponent,
   tags: ['autodocs'],
   args: {
-    variant: 'tag',
+    variant: CHIP_VARIANT.Tag,
     clickable: false,
     removable: false,
     disabled: false,
     removeLabel: 'Remove tag design',
   },
   argTypes: {
-    variant: { control: 'inline-radio', options: ['tag', 'neutral'] },
+    variant: { control: 'inline-radio', options: Object.values(CHIP_VARIANT) },
     icon: { control: 'select', options: [undefined, ...ICON_NAMES] },
     clicked: { action: 'clicked' },
     removed: { action: 'removed' },
@@ -41,7 +42,7 @@ type Story = StoryObj<ChipComponent>;
 
 export const Tag: Story = {};
 
-export const Neutral: Story = { args: { variant: 'neutral' } };
+export const Neutral: Story = { args: { variant: CHIP_VARIANT.Neutral } };
 
 /** Button semantics with ripple; filters the feed by the tag. */
 export const Clickable: Story = { args: { clickable: true } };
@@ -51,7 +52,9 @@ export const Removable: Story = { args: { removable: true } };
 
 export const ClickableAndRemovable: Story = { args: { clickable: true, removable: true } };
 
-export const WithIcon: Story = { args: { variant: 'neutral', icon: 'star', clickable: true } };
+export const WithIcon: Story = {
+  args: { variant: CHIP_VARIANT.Neutral, icon: 'star', clickable: true },
+};
 
 export const Disabled: Story = {
   args: { clickable: true, removable: true, disabled: true },
@@ -59,7 +62,7 @@ export const Disabled: Story = {
 
 /** The "+2" chip that collapses the tags beyond three on a card. */
 export const Overflow: Story = {
-  args: { variant: 'neutral' },
+  args: { variant: CHIP_VARIANT.Neutral },
   render: (args) => ({
     props: args,
     template: `<ui-chip [variant]="variant">+2</ui-chip>`,
@@ -72,16 +75,16 @@ export const AllVariants: Story = {
   render: () => ({
     props: {
       cases: [
-        { variant: 'tag' },
-        { variant: 'tag', clickable: true },
-        { variant: 'tag', removable: true },
-        { variant: 'tag', clickable: true, removable: true, icon: 'tag' },
-        { variant: 'tag', clickable: true, disabled: true },
-        { variant: 'neutral' },
-        { variant: 'neutral', clickable: true },
-        { variant: 'neutral', removable: true },
-        { variant: 'neutral', clickable: true, icon: 'star' },
-        { variant: 'neutral', clickable: true, disabled: true },
+        { variant: CHIP_VARIANT.Tag },
+        { variant: CHIP_VARIANT.Tag, clickable: true },
+        { variant: CHIP_VARIANT.Tag, removable: true },
+        { variant: CHIP_VARIANT.Tag, clickable: true, removable: true, icon: 'tag' },
+        { variant: CHIP_VARIANT.Tag, clickable: true, disabled: true },
+        { variant: CHIP_VARIANT.Neutral },
+        { variant: CHIP_VARIANT.Neutral, clickable: true },
+        { variant: CHIP_VARIANT.Neutral, removable: true },
+        { variant: CHIP_VARIANT.Neutral, clickable: true, icon: 'star' },
+        { variant: CHIP_VARIANT.Neutral, clickable: true, disabled: true },
       ],
       themes: Object.values(THEME),
     },

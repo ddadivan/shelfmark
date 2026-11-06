@@ -4,6 +4,7 @@ import { axeViolations } from '../../testing/axe';
 import { AvatarComponent } from './avatar.component';
 import { initialsOf } from './initials';
 import type { AvatarSize } from './models/avatar-size.type';
+import { AVATAR_SIZE } from './models/avatar-size.const';
 
 @Component({
   imports: [AvatarComponent],
@@ -12,7 +13,7 @@ import type { AvatarSize } from './models/avatar-size.type';
 class HostComponent {
   readonly src = signal<string | undefined>(undefined);
   readonly name = signal<string | undefined>('Dmytro Dadivan');
-  readonly size = signal<AvatarSize>('md');
+  readonly size = signal<AvatarSize>(AVATAR_SIZE.Md);
   readonly label = signal<string | undefined>(undefined);
 }
 
@@ -67,9 +68,9 @@ describe('AvatarComponent', () => {
   });
 
   it.each<[AvatarSize, string]>([
-    ['sm', 'ui-avatar--sm'],
-    ['md', 'ui-avatar--md'],
-    ['lg', 'ui-avatar--lg'],
+    [AVATAR_SIZE.Sm, 'ui-avatar--sm'],
+    [AVATAR_SIZE.Md, 'ui-avatar--md'],
+    [AVATAR_SIZE.Lg, 'ui-avatar--lg'],
   ])('size %s adds %s', (size, cls) => {
     const { avatar, update } = setup();
     update((c) => c.size.set(size));
@@ -101,7 +102,7 @@ describe('AvatarComponent', () => {
     const { avatar, update } = setup();
     update((c) => c.name.set(undefined));
     expect(avatar.querySelector('ui-icon')).not.toBeNull();
-    update((c) => c.size.set('lg'));
+    update((c) => c.size.set(AVATAR_SIZE.Lg));
     expect(avatar.querySelector('ui-icon')?.classList.contains('ui-icon--24')).toBe(true);
   });
 

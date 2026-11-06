@@ -4,6 +4,7 @@ import { axeViolations } from '../../testing/axe';
 import type { IconName } from '../icon/models/icon-name.type';
 import type { NoticeKind } from './models/notice-kind.type';
 import { NoticeComponent } from './notice.component';
+import { NOTICE_KIND } from './models/notice-kind.const';
 
 @Component({
   imports: [NoticeComponent],
@@ -14,7 +15,7 @@ import { NoticeComponent } from './notice.component';
   `,
 })
 class HostComponent {
-  readonly kind = signal<NoticeKind>('warning');
+  readonly kind = signal<NoticeKind>(NOTICE_KIND.Warning);
   readonly icon = signal<IconName | undefined>(undefined);
 }
 
@@ -44,7 +45,7 @@ describe('NoticeComponent', () => {
 
   it('danger is an alert with the error icon', () => {
     const { notice, update } = setup();
-    update((c) => c.kind.set('danger'));
+    update((c) => c.kind.set(NOTICE_KIND.Danger));
     expect(notice.classList.contains('ui-notice--danger')).toBe(true);
     expect(notice.classList.contains('ui-notice--warning')).toBe(false);
     expect(notice.getAttribute('role')).toBe('alert');
@@ -67,7 +68,7 @@ describe('NoticeComponent', () => {
   it('has no axe violations for both kinds', async () => {
     const { host, update } = setup();
     expect(await axeViolations(host)).toEqual([]);
-    update((c) => c.kind.set('danger'));
+    update((c) => c.kind.set(NOTICE_KIND.Danger));
     expect(await axeViolations(host)).toEqual([]);
   });
 });

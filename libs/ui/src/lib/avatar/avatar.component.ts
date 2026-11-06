@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input, linkedSignal } fro
 import { IconComponent } from '../icon/icon.component';
 import type { AvatarSize } from './models/avatar-size.type';
 import { initialsOf } from './initials';
+import { AVATAR_SIZE } from './models/avatar-size.const';
 
 /**
  * The signed-in user's picture. Shows `src` when it loads; without `src`, or when the image
@@ -18,9 +19,9 @@ import { initialsOf } from './initials';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-avatar',
-    '[class.ui-avatar--sm]': "size() === 'sm'",
-    '[class.ui-avatar--md]': "size() === 'md'",
-    '[class.ui-avatar--lg]': "size() === 'lg'",
+    '[class.ui-avatar--sm]': 'size() === AVATAR_SIZE.Sm',
+    '[class.ui-avatar--md]': 'size() === AVATAR_SIZE.Md',
+    '[class.ui-avatar--lg]': 'size() === AVATAR_SIZE.Lg',
     '[attr.role]': "label() ? 'img' : null",
     '[attr.aria-label]': 'label() || null',
     '[attr.aria-hidden]': "label() ? null : 'true'",
@@ -34,11 +35,12 @@ export class AvatarComponent {
   /** Display name; its initials are the fallback. */
   readonly name = input<string>();
   /** `sm` 24, `md` 32, `lg` 48 design pixels. */
-  readonly size = input<AvatarSize>('md');
+  readonly size = input<AvatarSize>(AVATAR_SIZE.Md);
   /** Accessible name. Omit when the avatar sits inside a control that has its own name. */
   readonly label = input<string>();
 
   /** Set when the current `src` failed to load; resets when `src` changes. */
+  protected readonly AVATAR_SIZE = AVATAR_SIZE;
   protected readonly failed = linkedSignal<string | undefined, boolean>({
     source: this.src,
     computation: () => false,
@@ -46,5 +48,5 @@ export class AvatarComponent {
 
   protected readonly imageSrc = computed(() => (this.failed() ? null : this.src() || null));
   protected readonly initials = computed(() => initialsOf(this.name()));
-  protected readonly iconSize = computed(() => (this.size() === 'lg' ? 24 : 16));
+  protected readonly iconSize = computed(() => (this.size() === AVATAR_SIZE.Lg ? 24 : 16));
 }
