@@ -1,6 +1,8 @@
+import type { NodeEnv } from './node-env.type';
+
 export interface AppConfig {
   port: number;
-  nodeEnv: 'development' | 'production' | 'test';
+  nodeEnv: NodeEnv;
   /** True unless NODE_ENV is explicitly `development` or `test`. */
   isProduction: boolean;
 }

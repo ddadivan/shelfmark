@@ -8,6 +8,7 @@ import {
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import request from 'supertest';
 import { createApp } from '../../app/create-app';
+import { REQUEST_ID_HEADER } from '../request-id/request-id.middleware';
 import { AllExceptionsFilter } from './all-exceptions.filter';
 
 function callFilter(exception: unknown, headersSent = false) {
@@ -139,7 +140,7 @@ describe('error responses over HTTP', () => {
   it('returns the unified 404 shape for unknown routes', async () => {
     const res = await request(app.getHttpServer()).get('/api/nope').set('X-Request-Id', 'my-id');
     expect(res.status).toBe(404);
-    expect(res.headers['x-request-id']).toBe('my-id');
+    expect(res.headers[REQUEST_ID_HEADER.toLowerCase()]).toBe('my-id');
     expect(res.body).toEqual({
       statusCode: 404,
       error: 'Not Found',
@@ -158,7 +159,7 @@ describe('error responses over HTTP', () => {
       statusCode: 400,
       error: 'Bad Request',
       message: expect.any(String),
-      requestId: res.headers['x-request-id'],
+      requestId: res.headers[REQUEST_ID_HEADER.toLowerCase()],
     });
   });
 
