@@ -83,10 +83,10 @@ export const SingleLevel: Story = { args: { items: [{ label: 'All links' }] } };
 const variants = (theme: Theme) => `
   <div ${THEME_ATTRIBUTE}="${theme}" class="bc-panel">
     <p class="bc-hint">${theme} theme</p>
-    <ui-breadcrumbs [items]="short" ariaLabel="Short trail" collapsedLabel="Show hidden folders" />
-    <ui-breadcrumbs [items]="deep" ariaLabel="Collapsed trail" collapsedLabel="Show hidden folders" />
+    <ui-breadcrumbs [items]="short" ariaLabel="Short trail (${theme})" collapsedLabel="Show hidden folders" />
+    <ui-breadcrumbs [items]="deep" ariaLabel="Collapsed trail (${theme})" collapsedLabel="Show hidden folders" />
     <div class="bc-narrow">
-      <ui-breadcrumbs [items]="long" ariaLabel="Long names" collapsedLabel="Show hidden folders" />
+      <ui-breadcrumbs [items]="long" ariaLabel="Long names (${theme})" collapsedLabel="Show hidden folders" />
     </div>
   </div>`;
 
