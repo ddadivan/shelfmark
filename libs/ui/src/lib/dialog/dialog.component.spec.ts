@@ -212,6 +212,17 @@ describe('DialogComponent', () => {
       expect(panel.classList.contains('ui-dialog--snapping')).toBe(true);
     });
 
+    it('does not count a fast move followed by a pause as a flick', async () => {
+      stubMatchMedia(true);
+      const { fixture, root } = await setup();
+      const { grip } = drag(root, 400);
+      pointer(grip, 'pointerdown', 100, 0);
+      pointer(grip, 'pointermove', 120, 10);
+      pointer(grip, 'pointermove', 140, 20);
+      pointer(grip, 'pointerup', 140, 400);
+      expect(fixture.componentInstance.closes()).toBe(0);
+    });
+
     it('never moves up and snaps back on cancel', async () => {
       stubMatchMedia(true);
       const { fixture, root } = await setup();

@@ -16,6 +16,7 @@ export class UiDialogRef<R = undefined, C = unknown> {
 
   private readonly closedSubject = new ReplaySubject<R | undefined>(1);
   private closing = false;
+  private timers: ReturnType<typeof setTimeout>[] = [];
 
   /** Resolves with the result (`undefined` when dismissed) once the dialog is gone. */
   readonly result: Promise<R | undefined> = new Promise((resolve) => {
@@ -29,6 +30,10 @@ export class UiDialogRef<R = undefined, C = unknown> {
     // Also fires when the CDK closes the dialog itself (navigation, `closeAll`, destroy).
     cdkRef.closed.subscribe((result) => {
       this.closing = true;
+      this.timers.forEach((timer) => {
+        clearTimeout(timer);
+      });
+      this.timers = [];
       this.closedSubject.next(result);
       this.closedSubject.complete();
     });
@@ -69,8 +74,8 @@ export class UiDialogRef<R = undefined, C = unknown> {
     const safety = setTimeout(() => {
       this.cdkRef.close(result);
     }, LEAVE_TIMEOUT_MS * 2);
+    this.timers.push(safety);
     const finish = (): void => {
-      clearTimeout(safety);
       this.cdkRef.close(result);
     };
     afterNextRender(
@@ -81,7 +86,9 @@ export class UiDialogRef<R = undefined, C = unknown> {
           finish();
           return;
         }
-        const fallback = new Promise<void>((resolve) => setTimeout(resolve, LEAVE_TIMEOUT_MS));
+        const fallback = new Promise<void>((resolve) => {
+          this.timers.push(setTimeout(resolve, LEAVE_TIMEOUT_MS));
+        });
         void Promise.race([
           Promise.allSettled(animations.map((animation) => animation.finished)),
           fallback,

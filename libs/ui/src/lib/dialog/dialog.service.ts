@@ -90,7 +90,8 @@ export class DialogService {
       if (scrimClose) {
         result.close();
       } else {
-        // A click on the scrim must not leave focus on <body>.
+        // A click on the scrim must not leave focus on <body>. `_recaptureFocus` is internal CDK
+        // API (no public equivalent; present in @angular/cdk 22.2.x): re-check on CDK upgrades.
         cdkRef.containerInstance._recaptureFocus?.();
       }
     });

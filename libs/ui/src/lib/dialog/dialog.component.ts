@@ -17,19 +17,12 @@ import { UiDialogRef } from './dialog-ref';
 import { DIALOG_PHONE_QUERY } from './models/dialog-phone-query.const';
 import type { DialogSize } from './models/dialog-size.type';
 import { UI_DIALOG_CONTEXT } from './models/ui-dialog-context.const';
-import { shouldCloseSheet } from './sheet-drag';
+import type { DragState } from './models/drag-state.interface';
+import { SHEET_SAMPLES } from './models/sheet-samples.const';
+import { shouldCloseSheet, sheetVelocity } from './sheet-drag';
 
 const DRAG_PROPERTY = '--ui-sheet-drag';
 const NO_DRAG_TARGETS = 'button, a, input, select, textarea, [contenteditable]';
-
-interface DragState {
-  readonly pointerId: number;
-  readonly startY: number;
-  lastY: number;
-  lastTime: number;
-  velocity: number;
-  offset: number;
-}
 
 /**
  * Layout of a dialog: title, optional close button, body (default slot) and footer
@@ -129,9 +122,7 @@ export class DialogComponent {
     this.drag = {
       pointerId: event.pointerId,
       startY: event.clientY,
-      lastY: event.clientY,
-      lastTime: event.timeStamp,
-      velocity: 0,
+      samples: [{ y: event.clientY, time: event.timeStamp }],
       offset: 0,
     };
     this.snapping.set(false);
@@ -146,12 +137,10 @@ export class DialogComponent {
     if (!drag || event.pointerId !== drag.pointerId) {
       return;
     }
-    const elapsed = event.timeStamp - drag.lastTime;
-    if (elapsed > 0) {
-      drag.velocity = (event.clientY - drag.lastY) / elapsed;
+    drag.samples.push({ y: event.clientY, time: event.timeStamp });
+    if (drag.samples.length > SHEET_SAMPLES) {
+      drag.samples.shift();
     }
-    drag.lastY = event.clientY;
-    drag.lastTime = event.timeStamp;
     drag.offset = Math.max(0, event.clientY - drag.startY);
     this.setOffset(drag.offset);
   }
@@ -164,7 +153,7 @@ export class DialogComponent {
     this.drag = undefined;
     this.dragging.set(false);
     const height = this.panel().nativeElement.getBoundingClientRect().height;
-    if (shouldCloseSheet(drag.offset, height, drag.velocity)) {
+    if (shouldCloseSheet(drag.offset, height, sheetVelocity(drag.samples, event.timeStamp))) {
       // The leave animation starts from the dragged position (`--ui-sheet-drag` stays set).
       this.requestClose();
     } else {

@@ -5,6 +5,9 @@ import { DialogComponent } from './dialog.component';
 import { UiDialogRef } from './dialog-ref';
 import { DialogService } from './dialog.service';
 import type { ConfirmDialogConfig } from './models/confirm-config.interface';
+import { MenuItemComponent } from '../menu/menu-item.component';
+import { MenuTriggerDirective } from '../menu/menu-trigger.directive';
+import { MenuComponent } from '../menu/menu.component';
 import type { DialogSize } from './models/dialog-size.type';
 
 /** Content of the form story: a short form with Cancel left of the main action. */
@@ -57,7 +60,33 @@ class StoryLongComponent {
   );
 }
 
-type DemoKind = 'form' | 'confirm' | 'destructive' | 'long';
+/** A menu opened from inside a dialog must appear above it (layers: menu above dialog). */
+@Component({
+  selector: 'ui-dialog-story-menu',
+  imports: [
+    ButtonComponent,
+    DialogComponent,
+    MenuComponent,
+    MenuItemComponent,
+    MenuTriggerDirective,
+  ],
+  template: `
+    <ui-dialog title="Link actions" closeLabel="Close">
+      <ui-button [uiMenuTrigger]="menu" iconRight="chevron-down">Actions</ui-button>
+      <ui-menu #menu ariaLabel="Link actions">
+        <ui-menu-item icon="edit">Edit</ui-menu-item>
+        <ui-menu-item icon="copy">Copy link</ui-menu-item>
+        <ui-menu-item icon="trash" danger>Delete</ui-menu-item>
+      </ui-menu>
+      <ui-button slot="footer" variant="primary" (click)="ref.close()">Done</ui-button>
+    </ui-dialog>
+  `,
+})
+class StoryMenuComponent {
+  protected readonly ref = inject<UiDialogRef>(UiDialogRef);
+}
+
+type DemoKind = 'form' | 'confirm' | 'destructive' | 'long' | 'menu';
 
 const confirmText: ConfirmDialogConfig = {
   title: 'Move link to Unsorted?',
@@ -103,6 +132,11 @@ class StoryDemoComponent {
       case 'destructive':
         this.result.set(`Confirmed: ${await this.dialogs.confirm(destructiveText)}`);
         return;
+      case 'menu': {
+        await this.dialogs.open(StoryMenuComponent, { autoFocus: 'dialog' }).result;
+        this.result.set('Closed.');
+        return;
+      }
       case 'long': {
         await this.dialogs.open(StoryLongComponent, { size: this.size() }).result;
         this.result.set('Closed.');
@@ -189,6 +223,14 @@ export const DestructiveConfirm: Story = {
   render: () => ({
     moduleMetadata: { imports },
     template: `<ui-dialog-story-demo kind="destructive" />`,
+  }),
+};
+
+/** A menu opened inside a dialog stays above it and closes first on Esc. */
+export const MenuInDialog: Story = {
+  render: () => ({
+    moduleMetadata: { imports },
+    template: `<ui-dialog-story-demo kind="menu" />`,
   }),
 };
 

@@ -1,4 +1,29 @@
-import { shouldCloseSheet } from './sheet-drag';
+import { sheetVelocity, shouldCloseSheet } from './sheet-drag';
+
+describe('sheetVelocity', () => {
+  it('averages the kept samples', () => {
+    expect(
+      sheetVelocity(
+        [
+          { y: 0, time: 0 },
+          { y: 20, time: 20 },
+          { y: 60, time: 40 },
+        ],
+        50,
+      ),
+    ).toBeCloseTo(1.5);
+  });
+
+  it('is 0 after a pause of 100 ms or more, or without a usable span', () => {
+    const samples = [
+      { y: 0, time: 0 },
+      { y: 80, time: 20 },
+    ];
+    expect(sheetVelocity(samples, 120)).toBe(0);
+    expect(sheetVelocity([{ y: 5, time: 10 }], 20)).toBe(0);
+    expect(sheetVelocity([], 20)).toBe(0);
+  });
+});
 
 describe('shouldCloseSheet', () => {
   it('closes past 30% of the height', () => {
