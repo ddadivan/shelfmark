@@ -5,5 +5,6 @@ export type { OverlayPoint } from './models/overlay-point.type';
 export type { OverlayPositionPair } from './models/overlay-position-pair.type';
 export type { OverlaySide } from './models/overlay-side.type';
 export { connectedSide, overlayTransformOrigin, setOverlayOrigin } from './overlay-origin';
+export { overlayLayerClass, setOverlayLayer } from './overlay-layer';
 export { UiOverlay } from './overlay.service';
 export { sidePositions } from './side-positions';
