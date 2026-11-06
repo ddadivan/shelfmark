@@ -4,10 +4,12 @@ import { TooltipPanelComponent } from './tooltip-panel.component';
 import { TooltipDirective } from './tooltip.directive';
 import { THEME, THEME_ATTRIBUTE } from '../theme';
 import type { Theme } from '../theme';
+import { OVERLAY_SIDE } from '../overlay/models/overlay-side.const';
+import type { TooltipPosition } from './models/tooltip-position.type';
 
 interface TooltipArgs {
   uiTooltip: string;
-  position: 'top' | 'bottom' | 'left' | 'right';
+  position: TooltipPosition;
   delay: number;
   uiTooltipShortcut: string;
 }
@@ -25,9 +27,14 @@ const meta: Meta<TooltipArgs> = {
       },
     },
   },
-  args: { uiTooltip: 'Switch theme', position: 'top', delay: 400, uiTooltipShortcut: '' },
+  args: {
+    uiTooltip: 'Switch theme',
+    position: OVERLAY_SIDE.Top,
+    delay: 400,
+    uiTooltipShortcut: '',
+  },
   argTypes: {
-    position: { control: 'inline-radio', options: ['top', 'bottom', 'left', 'right'] },
+    position: { control: 'inline-radio', options: Object.values(OVERLAY_SIDE) },
     delay: { control: 'number' },
   },
 };

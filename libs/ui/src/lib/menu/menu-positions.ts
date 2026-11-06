@@ -1,5 +1,6 @@
 import type { ConnectedPosition } from '@angular/cdk/overlay';
 import type { MenuAlign } from './models/menu-align.type';
+import { MENU_ALIGN } from './models/menu-align.const';
 
 /**
  * Positions below a trigger, then above it; the second pair of each row is the horizontal flip
@@ -8,7 +9,7 @@ import type { MenuAlign } from './models/menu-align.type';
 export function menuPositions(align: MenuAlign): ConnectedPosition[] {
   const start = { originX: 'start', overlayX: 'start' } as const;
   const end = { originX: 'end', overlayX: 'end' } as const;
-  const [first, second] = align === 'start' ? [start, end] : [end, start];
+  const [first, second] = align === MENU_ALIGN.Start ? [start, end] : [end, start];
   return [
     { ...first, originY: 'bottom', overlayY: 'top' },
     { ...second, originY: 'bottom', overlayY: 'top' },

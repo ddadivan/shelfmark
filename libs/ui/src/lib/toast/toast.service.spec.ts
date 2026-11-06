@@ -3,6 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../../testing/axe';
 import { ToastService } from './toast.service';
+import { OVERLAY_LAYER } from '../overlay/models/overlay-layer.const';
+import { overlayLayerClass } from '../overlay/overlay-layer';
 
 function setup() {
   const service = TestBed.inject(ToastService);
@@ -44,7 +46,7 @@ describe('ToastService', () => {
     expect(live.getAttribute('role')).toBe('status');
     expect(live.getAttribute('aria-live')).toBe('polite');
     expect(live.textContent?.trim()).toBe('');
-    expect(live.closest('.ui-overlay-layer--toast')).not.toBeNull();
+    expect(live.closest(`.${overlayLayerClass(OVERLAY_LAYER.Toast)}`)).not.toBeNull();
     expect(document.querySelectorAll('ui-toast-region')).toHaveLength(1);
   });
 

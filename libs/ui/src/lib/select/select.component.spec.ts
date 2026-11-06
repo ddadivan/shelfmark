@@ -7,6 +7,8 @@ import type { SelectOption } from './models/select-option.interface';
 import { SelectComponent } from './select.component';
 import { SELECT_FIXTURE_ID } from './models/select-fixture-id.const';
 import { KEYBOARD_KEY } from '../keyboard';
+import { OVERLAY_LAYER } from '../overlay/models/overlay-layer.const';
+import { overlayLayerClass } from '../overlay/overlay-layer';
 
 const TREE: SelectOption[] = [
   {
@@ -164,7 +166,7 @@ describe('SelectComponent', () => {
     expect(trigger.getAttribute('aria-expanded')).toBe('true');
     expect(trigger.getAttribute('aria-controls')).toBe(listbox()?.id);
     expect(names()).toEqual(['Unsorted', 'Work', 'Angular', 'Courses', 'Clothes']);
-    expect(listbox()?.closest('.ui-overlay-layer--menu')).not.toBeNull();
+    expect(listbox()?.closest(`.${overlayLayerClass(OVERLAY_LAYER.Menu)}`)).not.toBeNull();
     const angular = options()[2] as HTMLElement;
     expect(angular.getAttribute('aria-selected')).toBe('true');
     expect(angular.getAttribute('aria-label')).toBe('Work / Angular');

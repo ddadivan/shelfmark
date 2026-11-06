@@ -9,6 +9,11 @@ import { MenuSeparatorComponent } from './menu-separator.component';
 import { MenuTriggerDirective } from './menu-trigger.directive';
 import { MenuComponent } from './menu.component';
 import { KEYBOARD_KEY } from '../keyboard';
+import { OVERLAY_LAYER } from '../overlay/models/overlay-layer.const';
+import { overlayLayerClass } from '../overlay/overlay-layer';
+import { MENU_ALIGN } from './models/menu-align.const';
+import { MENU_ITEM_TYPE } from './models/menu-item-type.const';
+import { MENU_FOCUS_EDGE } from './models/menu-focus-edge.const';
 
 @Component({
   imports: [
@@ -43,8 +48,8 @@ import { KEYBOARD_KEY } from '../keyboard';
   `,
 })
 class HostComponent {
-  readonly align = signal<MenuAlign>('start');
-  readonly type = signal<MenuItemType>('item');
+  readonly align = signal<MenuAlign>(MENU_ALIGN.Start);
+  readonly type = signal<MenuItemType>(MENU_ITEM_TYPE.Item);
   readonly selected = signal(false);
   readonly opened = signal(0);
   readonly closed = signal(0);
@@ -158,7 +163,7 @@ describe('MenuComponent', () => {
       expect(
         pane
           ?.closest('.cdk-global-overlay-wrapper, .cdk-overlay-connected-position-bounding-box')
-          ?.classList.contains('ui-overlay-layer--menu'),
+          ?.classList.contains(overlayLayerClass(OVERLAY_LAYER.Menu)),
       ).toBe(true);
       expect(menuHost.getAttribute('role')).toBe('menu');
       expect(menuHost.getAttribute('aria-label')).toBe('Link actions');
@@ -170,7 +175,7 @@ describe('MenuComponent', () => {
 
     it('grows from the right edge of the trigger when aligned to the end', async () => {
       const { fixture, inner, menuHost } = await setup();
-      fixture.componentInstance.align.set('end');
+      fixture.componentInstance.align.set(MENU_ALIGN.End);
       await settle(fixture);
       inner.click();
       await settle(fixture);
@@ -382,7 +387,7 @@ describe('MenuComponent', () => {
 
     it('marks the current choice with is-selected and aria-checked on a radio item', async () => {
       const { fixture, inner, items } = await setup();
-      fixture.componentInstance.type.set('radio');
+      fixture.componentInstance.type.set(MENU_ITEM_TYPE.Radio);
       fixture.componentInstance.selected.set(true);
       await settle(fixture);
       inner.click();
@@ -437,7 +442,7 @@ describe('MenuComponent', () => {
         ) as MenuComponent;
       menu.openAt({ x: 10, y: 10 });
       await settle(fixture);
-      menu.openAt({ x: 200, y: 120 }, { focus: 'last' });
+      menu.openAt({ x: 200, y: 120 }, { focus: MENU_FOCUS_EDGE.Last });
       await settle(fixture);
       expect(document.querySelectorAll('.cdk-overlay-pane')).toHaveLength(1);
       expect(menuHost.querySelector('.ui-menu__surface')).not.toBeNull();

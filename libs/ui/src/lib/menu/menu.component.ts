@@ -17,7 +17,7 @@ import {
 } from '@angular/core';
 import type { Subscription } from 'rxjs';
 import type { ConnectedOverlay } from '../overlay/connected-overlay';
-import type { OverlayPoint } from '../overlay/models/overlay-point.type';
+import type { OverlayPoint } from '../overlay/models/overlay-point.interface';
 import { UiOverlay } from '../overlay/overlay.service';
 import { MenuItemComponent } from './menu-item.component';
 import { menuPositions, pointPositions } from './menu-positions';
@@ -26,6 +26,9 @@ import type { MenuCloseOptions } from './models/menu-close-options.interface';
 import type { MenuFocusEdge } from './models/menu-focus-edge.type';
 import type { MenuOpenOptions } from './models/menu-open-options.interface';
 import { KEYBOARD_KEY } from '../keyboard';
+import { MENU_FOCUS_EDGE } from './models/menu-focus-edge.const';
+import { MENU_ALIGN } from './models/menu-align.const';
+import { OVERLAY_LAYER } from '../overlay/models/overlay-layer.const';
 
 function isElement(origin: HTMLElement | OverlayPoint): origin is HTMLElement {
   return 'nodeType' in origin;
@@ -62,7 +65,7 @@ function isElement(origin: HTMLElement | OverlayPoint): origin is HTMLElement {
 })
 export class MenuComponent {
   /** Lines the menu up with the left (`start`) or right (`end`) edge of the trigger. */
-  readonly align = input<MenuAlign>('start');
+  readonly align = input<MenuAlign>(MENU_ALIGN.Start);
   /** Accessible name of the menu, for example "Link actions". */
   readonly ariaLabel = input<string>();
   /** Render in place, always open (docs and Storybook). */
@@ -118,12 +121,12 @@ export class MenuComponent {
 
   /** Opens below (or above, when there is no room) an element, normally the trigger. */
   openFrom(origin: HTMLElement, options: MenuOpenOptions = {}): void {
-    this.show(origin, options.focus ?? 'first');
+    this.show(origin, options.focus ?? MENU_FOCUS_EDGE.First);
   }
 
   /** Opens at a viewport point (client coordinates), for a context menu. */
   openAt(point: OverlayPoint, options: MenuOpenOptions = {}): void {
-    this.show({ x: point.x, y: point.y }, options.focus ?? 'first');
+    this.show({ x: point.x, y: point.y }, options.focus ?? MENU_FOCUS_EDGE.First);
   }
 
   /** Closes the menu; focus goes back to the trigger unless `restoreFocus` is `false`. */
@@ -192,7 +195,7 @@ export class MenuComponent {
       {
         origin,
         positions: isElement(origin) ? menuPositions(this.align()) : pointPositions(),
-        layer: 'menu',
+        layer: OVERLAY_LAYER.Menu,
       },
       { injector: this.injector },
     );
@@ -237,7 +240,7 @@ export class MenuComponent {
     }
     this.host.dispatchEvent(
       new KeyboardEvent('keydown', {
-        key: edge === 'first' ? KEYBOARD_KEY.Home : KEYBOARD_KEY.End,
+        key: edge === MENU_FOCUS_EDGE.First ? KEYBOARD_KEY.Home : KEYBOARD_KEY.End,
       }),
     );
   }

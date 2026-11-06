@@ -33,6 +33,8 @@ import type { SelectIcon } from './models/select-icon.type';
 import { SELECT_ICON } from './models/select-icon.const';
 import { selectedRow, selectRows } from './select-rows';
 import { KEYBOARD_KEY } from '../keyboard';
+import { OVERLAY_LAYER } from '../overlay/models/overlay-layer.const';
+import { MENU_ALIGN } from '../menu/models/menu-align.const';
 
 /**
  * Picks one value from a nested list (the folder of a link). The trigger is an Angular Aria
@@ -317,7 +319,7 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
     this.detachSubscription?.unsubscribe();
     this.overlay?.dispose();
     const overlay = this.overlays.connect(
-      { origin: trigger, positions: menuPositions('start'), layer: 'menu' },
+      { origin: trigger, positions: menuPositions(MENU_ALIGN.Start), layer: OVERLAY_LAYER.Menu },
       { injector: this.injector, onPositionChange: () => this.syncWidth() },
     );
     this.overlay = overlay;

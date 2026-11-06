@@ -22,6 +22,8 @@ import { sidePositions } from '../overlay/side-positions';
 import type { TooltipPosition } from './models/tooltip-position.type';
 import { TooltipPanelComponent } from './tooltip-panel.component';
 import { KEYBOARD_KEY } from '../keyboard';
+import { OVERLAY_LAYER } from '../overlay/models/overlay-layer.const';
+import { OVERLAY_SIDE } from '../overlay/models/overlay-side.const';
 
 /** Time the pointer or focus may leave before the tooltip closes (lets it reach the panel). */
 const HIDE_GRACE_MS = 100;
@@ -50,7 +52,7 @@ function textTransform(value: string | null | undefined): string {
 export class TooltipDirective {
   /** The tooltip text. Empty or missing: no tooltip. */
   readonly text = input('', { alias: 'uiTooltip', transform: textTransform });
-  readonly position = input<TooltipPosition>('top');
+  readonly position = input<TooltipPosition>(OVERLAY_SIDE.Top);
   /** Milliseconds before the tooltip opens on hover or focus. */
   readonly delay = input(400, { transform: numberAttribute });
   /** Shortcut shown as `kbd` after the text, for example `⌘K`. */
@@ -80,7 +82,7 @@ export class TooltipDirective {
   private dismissed = false;
   private visible = false;
   private escapeArmed = false;
-  private side: TooltipPosition = 'top';
+  private side: TooltipPosition = OVERLAY_SIDE.Top;
 
   constructor() {
     effect((onCleanup) => {
@@ -284,7 +286,7 @@ export class TooltipDirective {
 
   private createOverlay(target: HTMLElement): ConnectedOverlay {
     this.overlay = this.overlays.connect(
-      { origin: target, positions: sidePositions(this.position()), layer: 'tooltip' },
+      { origin: target, positions: sidePositions(this.position()), layer: OVERLAY_LAYER.Tooltip },
       {
         injector: this.injector,
         onPositionChange: (side) => {
