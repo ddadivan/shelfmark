@@ -1,8 +1,11 @@
 @use '../../styles/ui' as *;
 
 :host {
+  // No type style is 14/20 (the Toast spec size); body is the base, the size follows the spec.
   @include type(body);
 
+  font-size: rem(14px);
+  line-height: rem(20px);
   box-sizing: border-box;
   display: flex;
   gap: var(--space-3);
