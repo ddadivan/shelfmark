@@ -21,6 +21,7 @@ export * from './lib/radio-group';
 export * from './lib/ripple';
 export * from './lib/save-status';
 export * from './lib/select';
+export * from './lib/skeleton';
 export * from './lib/spinner';
 export * from './lib/steps';
 export * from './lib/textarea';

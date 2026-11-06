@@ -1,0 +1,48 @@
+@for (i of items(); track i) {
+  @switch (shape()) {
+    @case (SKELETON_SHAPE.Card) {
+      <div class="ui-skeleton__card">
+        <div class="ui-skeleton__block ui-skeleton__media"></div>
+        <div class="ui-skeleton__card-body">
+          <div class="ui-skeleton__block ui-skeleton__line ui-skeleton__line--meta"></div>
+          <div class="ui-skeleton__block ui-skeleton__title ui-skeleton__title--long"></div>
+          <div class="ui-skeleton__block ui-skeleton__title ui-skeleton__title--short"></div>
+          <div class="ui-skeleton__chips">
+            <div class="ui-skeleton__block ui-skeleton__chip"></div>
+            <div class="ui-skeleton__block ui-skeleton__chip ui-skeleton__chip--short"></div>
+          </div>
+        </div>
+      </div>
+    }
+    @case (SKELETON_SHAPE.Row) {
+      <div class="ui-skeleton__row">
+        <div class="ui-skeleton__block ui-skeleton__icon"></div>
+        <div class="ui-skeleton__row-main">
+          <div class="ui-skeleton__block ui-skeleton__title"></div>
+          <div class="ui-skeleton__block ui-skeleton__line ui-skeleton__line--meta"></div>
+        </div>
+      </div>
+    }
+    @case (SKELETON_SHAPE.Tree) {
+      <div class="ui-skeleton__tree-row">
+        <div class="ui-skeleton__block ui-skeleton__icon"></div>
+        <div class="ui-skeleton__block ui-skeleton__line"></div>
+      </div>
+    }
+    @case (SKELETON_SHAPE.Preview) {
+      <div class="ui-skeleton__preview">
+        <div class="ui-skeleton__block ui-skeleton__preview-media"></div>
+        <div class="ui-skeleton__preview-main">
+          <div class="ui-skeleton__block ui-skeleton__preview-meta"></div>
+          <div class="ui-skeleton__block ui-skeleton__preview-title"></div>
+          <div
+            class="ui-skeleton__block ui-skeleton__preview-title ui-skeleton__preview-title--short"
+          ></div>
+        </div>
+      </div>
+    }
+    @default {
+      <div class="ui-skeleton__block ui-skeleton__line"></div>
+    }
+  }
+}
