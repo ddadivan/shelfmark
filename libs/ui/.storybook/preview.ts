@@ -3,6 +3,7 @@ import '../src/styles/global.scss';
 import './display-stories.scss';
 import './dialog-stories.scss';
 import './foundations.scss';
+import './field-stories.scss';
 import './illustration-stories.scss';
 import './loading-stories.scss';
 import './menu-stories.scss';
