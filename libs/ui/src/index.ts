@@ -10,6 +10,7 @@ export * from './lib/focus-target';
 export * from './lib/icon';
 export * from './lib/illustration';
 export * from './lib/input';
+export * from './lib/list-item';
 export * from './lib/load-more';
 export * from './lib/loader-timing';
 export * from './lib/logo';
