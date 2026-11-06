@@ -2,7 +2,7 @@
 // a11y run also proves that the production CSP does not block Storybook (ADR 0023).
 import { createReadStream, readFileSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
-import { extname, join, normalize, resolve } from 'node:path';
+import { extname, join, normalize, resolve, sep } from 'node:path';
 
 const root = resolve(import.meta.dirname, '../storybook-static');
 const port = Number(process.env.STORYBOOK_PORT ?? 6007);
@@ -25,9 +25,15 @@ const types = {
 };
 
 createServer((request, response) => {
-  const pathname = decodeURIComponent(new URL(request.url ?? '/', 'http://localhost').pathname);
+  let pathname;
+  try {
+    pathname = decodeURIComponent(new URL(request.url ?? '/', 'http://localhost').pathname);
+  } catch {
+    response.writeHead(400, headers).end('Bad request');
+    return;
+  }
   let file = join(root, normalize(pathname));
-  if (!file.startsWith(root)) {
+  if (file !== root && !file.startsWith(root + sep)) {
     response.writeHead(403, headers).end();
     return;
   }

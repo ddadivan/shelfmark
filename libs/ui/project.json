@@ -39,6 +39,7 @@
       "dependsOn": ["build-storybook"],
       "cache": true,
       "inputs": [
+        "sharedGlobals",
         "{projectRoot}/a11y/**/*",
         "{projectRoot}/vercel.json",
         "{projectRoot}/storybook-static/**/*"

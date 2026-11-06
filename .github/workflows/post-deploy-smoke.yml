@@ -32,6 +32,9 @@ jobs:
     permissions: {}
     env:
       BASE_URL: https://shelfmark-app.vercel.app
+      EVENT_NAME: ${{ github.event_name }}
+      DEPLOYMENT_URL: ${{ github.event.deployment_status.environment_url }}
+      DEPLOYMENT_ENV: ${{ github.event.deployment.environment }}
     steps:
       - name: Check the production deployment
         run: |
@@ -40,10 +43,14 @@ jobs:
           fail() { echo "::error::$1"; exit 1; }
 
           # The production alias can lag a few seconds behind the deployment_status event.
+          echo "Event: ${EVENT_NAME}; deployment: ${DEPLOYMENT_URL:-n/a}; environment: ${DEPLOYMENT_ENV:-n/a}"
+          headers=""
           for attempt in 1 2 3 4 5 6; do
-            headers="$(curl -sS -o body.html -D - --max-time 20 "$BASE_URL/" | tr -d '\r')" && break
+            if headers="$(curl -sS -o body.html -D - --max-time 20 "$BASE_URL/" | tr -d '\r')"; then break; fi
+            headers=""
             echo "Attempt $attempt failed, retrying"; sleep 10
           done
+          [ -n "$headers" ] || fail "$BASE_URL is unreachable after 6 attempts"
           echo "$headers"
 
           status="$(head -n 1 <<<"$headers" | cut -d ' ' -f 2)"

@@ -8,7 +8,7 @@ import { expect, test, type Page } from '@playwright/test';
 
 interface IndexEntry {
   readonly id: string;
-  readonly type: string;
+  readonly type: 'story' | 'docs';
   readonly title: string;
   readonly name: string;
 }
@@ -27,7 +27,10 @@ const themes = ['light', 'dark'] as const;
 function loadStories(): IndexEntry[] {
   const file = new URL('../storybook-static/index.json', import.meta.url);
   const index = JSON.parse(readFileSync(file, 'utf8')) as { entries: Record<string, IndexEntry> };
-  return Object.values(index.entries).filter((entry) => entry.type === 'story');
+  return Object.values(index.entries).filter(
+    (entry) =>
+      entry.type === 'story' || (entry.type === 'docs' && entry.title.startsWith('Foundations/')),
+  );
 }
 
 async function trackCspViolations(page: Page): Promise<void> {
@@ -61,12 +64,15 @@ for (const story of stories) {
     test(`${story.title} / ${story.name} (${theme})`, async ({ page }) => {
       await trackCspViolations(page);
       await page.emulateMedia({ reducedMotion: 'reduce' });
-      await page.goto(`/iframe.html?id=${story.id}&viewMode=story&globals=theme:${theme}`);
+      await page.goto(
+        `/iframe.html?id=${story.id}&viewMode=${story.type === 'docs' ? 'docs' : 'story'}&globals=theme:${theme}`,
+      );
       await page.waitForSelector('body.sb-show-main:not(.sb-show-errordisplay)');
+      if (story.type === 'docs') await page.waitForSelector('#storybook-docs .sbdocs');
       await page.evaluate(`document.fonts.ready.then(() => undefined)`);
       await page.addScriptTag({ path: axePath });
       const results = await page.evaluate<AxeResult>(
-        `axe.run(document.querySelector('#storybook-root'), {
+        `axe.run(document.querySelector(${JSON.stringify(story.type === 'docs' ? '#storybook-docs' : '#storybook-root')}), {
           runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'] },
         })`,
       );

@@ -25,7 +25,7 @@
       ]
     },
     {
-      "source": "/(assets|sb-addons|sb-manager|sb-common-assets)/(.*)",
+      "source": "/assets/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
     }
   ]
