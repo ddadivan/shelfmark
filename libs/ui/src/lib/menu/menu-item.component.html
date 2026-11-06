@@ -4,9 +4,9 @@
   [class.ui-menu-item--danger]="danger()"
   [class.is-selected]="selected()"
   [disabled]="disabled()"
-  [role]="role()"
+  [role]="ariaRole()"
   [searchTerm]="searchText()"
-  [attr.aria-checked]="role() === 'menuitem' ? null : selected()"
+  [attr.aria-checked]="type() === 'item' ? null : selected()"
   uiRipple
 >
   @if (icon(); as name) {

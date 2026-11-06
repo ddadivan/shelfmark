@@ -3,7 +3,7 @@ import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { axeViolations } from '../../testing/axe';
 import { ButtonComponent } from '../button/button.component';
 import type { MenuAlign } from './models/menu-align.type';
-import type { MenuItemRole } from './models/menu-item-role.type';
+import type { MenuItemType } from './models/menu-item-type.type';
 import { MenuItemComponent } from './menu-item.component';
 import { MenuSeparatorComponent } from './menu-separator.component';
 import { MenuTriggerDirective } from './menu-trigger.directive';
@@ -33,7 +33,7 @@ import { MenuComponent } from './menu.component';
       <ui-menu-item icon="star" [disabled]="true" (activated)="log('star')"
         >Add to favorites</ui-menu-item
       >
-      <ui-menu-item [role]="role()" [selected]="selected()" (activated)="log('copy')" shortcut="⌘C"
+      <ui-menu-item [type]="type()" [selected]="selected()" (activated)="log('copy')" shortcut="⌘C"
         >Copy link</ui-menu-item
       >
       <ui-menu-separator />
@@ -43,7 +43,7 @@ import { MenuComponent } from './menu.component';
 })
 class HostComponent {
   readonly align = signal<MenuAlign>('start');
-  readonly role = signal<MenuItemRole>('menuitem');
+  readonly type = signal<MenuItemType>('item');
   readonly selected = signal(false);
   readonly opened = signal(0);
   readonly closed = signal(0);
@@ -381,13 +381,16 @@ describe('MenuComponent', () => {
 
     it('marks the current choice with is-selected and aria-checked on a radio item', async () => {
       const { fixture, inner, items } = await setup();
-      fixture.componentInstance.role.set('menuitemradio');
+      fixture.componentInstance.type.set('radio');
       fixture.componentInstance.selected.set(true);
       await settle(fixture);
       inner.click();
       await settle(fixture);
       const copy = items()[3];
       expect(copy.getAttribute('role')).toBe('menuitemradio');
+      const host = copy.closest('ui-menu-item') as HTMLElement;
+      expect(host.getAttribute('role')).toBe('none');
+      expect(items()).toHaveLength(5);
       expect(copy.getAttribute('aria-checked')).toBe('true');
       expect(copy.classList.contains('is-selected')).toBe(true);
       expect(items()[0].hasAttribute('aria-checked')).toBe(false);

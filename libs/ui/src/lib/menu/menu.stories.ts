@@ -100,7 +100,7 @@ export const DisabledItem: Story = {
   }),
 };
 
-/** Current choice of a group: `is-selected` with `role="menuitemradio"`. */
+/** Current choice of a group: `is-selected` with `type="radio"`. */
 export const SelectedChoice: Story = {
   render: (args) => ({
     props: args,
@@ -111,9 +111,9 @@ export const SelectedChoice: Story = {
           <ui-button [uiMenuTrigger]="menu" iconLeft="moon">Theme</ui-button>
         </div>
         <ui-menu #menu [align]="align" ariaLabel="Theme">
-          <ui-menu-item icon="sun" role="menuitemradio">Light</ui-menu-item>
-          <ui-menu-item icon="moon" role="menuitemradio">Dark</ui-menu-item>
-          <ui-menu-item icon="monitor" role="menuitemradio" selected>System</ui-menu-item>
+          <ui-menu-item icon="sun" type="radio">Light</ui-menu-item>
+          <ui-menu-item icon="moon" type="radio">Dark</ui-menu-item>
+          <ui-menu-item icon="monitor" type="radio" selected>System</ui-menu-item>
         </ui-menu>
       </div>`,
   }),
@@ -149,9 +149,9 @@ const variants = (theme: 'light' | 'dark') => `
     <div class="ms-row">
       <ui-menu inline ariaLabel="Link actions" class="ms-static">${linkItems}</ui-menu>
       <ui-menu inline ariaLabel="Theme" class="ms-static">
-        <ui-menu-item icon="sun" role="menuitemradio">Light</ui-menu-item>
-        <ui-menu-item icon="moon" role="menuitemradio">Dark</ui-menu-item>
-        <ui-menu-item icon="monitor" role="menuitemradio" selected>System</ui-menu-item>
+        <ui-menu-item icon="sun" type="radio">Light</ui-menu-item>
+        <ui-menu-item icon="moon" type="radio">Dark</ui-menu-item>
+        <ui-menu-item icon="monitor" type="radio" selected>System</ui-menu-item>
         <ui-menu-separator />
         <ui-menu-item icon="download" [disabled]="true" shortcut="JSON">Export all links</ui-menu-item>
         <ui-menu-item icon="logout" danger>Sign out</ui-menu-item>
