@@ -5,6 +5,7 @@ import './illustration-stories.scss';
 import './loading-stories.scss';
 import './menu-stories.scss';
 import './ripple-stories.scss';
+import './toast-stories.scss';
 import './tooltip-stories.scss';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { applicationConfig, type Preview } from '@storybook/angular-vite';
