@@ -73,6 +73,10 @@
 
 .ui-select__popup--shown {
   display: block;
+
+  // A flex item of the overlay pane: it grows to the pane's min-width (the trigger width).
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .ui-select__panel {
