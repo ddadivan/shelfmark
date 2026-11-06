@@ -20,6 +20,7 @@ export * from './lib/progress-bar';
 export * from './lib/radio-group';
 export * from './lib/ripple';
 export * from './lib/save-status';
+export * from './lib/segmented-control';
 export * from './lib/select';
 export * from './lib/spinner';
 export * from './lib/steps';

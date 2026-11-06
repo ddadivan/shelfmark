@@ -8,6 +8,7 @@ import './illustration-stories.scss';
 import './loading-stories.scss';
 import './menu-stories.scss';
 import './ripple-stories.scss';
+import './segmented-stories.scss';
 import './select-stories.scss';
 import './toast-stories.scss';
 import './tooltip-stories.scss';

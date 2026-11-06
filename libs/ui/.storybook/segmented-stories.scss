@@ -1,0 +1,24 @@
+@use '../src/styles/ui' as *;
+
+// Layout of the Segmented control stories only (never shipped with the library). Class names
+// start with `sg-`.
+
+.sg-panel {
+  display: grid;
+  gap: var(--space-6);
+  padding: var(--space-6);
+  color: var(--text);
+  background: var(--bg);
+}
+
+.sg-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  align-items: center;
+}
+
+.sg-hint {
+  margin: 0;
+  color: var(--text-muted);
+}
