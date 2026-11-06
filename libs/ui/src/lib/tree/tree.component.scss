@@ -141,6 +141,10 @@
   @media (hover: none) {
     opacity: 1;
   }
+
+  @include reduced-motion {
+    transition: none;
+  }
 }
 
 // Open and close by height. The group stays rendered while closed so it can animate; it is
@@ -163,8 +167,12 @@
 
   > .ui-tree__group {
     min-height: 0;
-    padding-block-start: rem(1px);
     overflow: hidden;
+
+    // The gap to the parent row lives inside, so a closed group is exactly 0 high.
+    > :first-child {
+      margin-block-start: rem(1px);
+    }
   }
 
   @include reduced-motion {

@@ -1,11 +1,13 @@
 import '@fontsource-variable/onest/wght.css';
 import '../src/styles/global.scss';
+import './display-stories.scss';
 import './dialog-stories.scss';
 import './foundations.scss';
 import './illustration-stories.scss';
 import './loading-stories.scss';
 import './menu-stories.scss';
 import './ripple-stories.scss';
+import './toast-stories.scss';
 import './tooltip-stories.scss';
 import './tree-stories.scss';
 import { provideZonelessChangeDetection } from '@angular/core';

@@ -233,3 +233,5 @@ Prevention layers: gitleaks in the pre-commit hook (locally) and in CI (CI task)
 | 14 | Docker Desktop for local PostgreSQL | local machine | author | stage 2 |
 | 15 | Migration secret in a GitHub `production` environment (only if CI migrates) | GitHub Environments | author | stage 2 |
 | 16 | Privacy policy URL, publish the Google app | Google Auth Platform | author | stage 7 |
+
+The showcase builds only from `main`: `ignoreCommand` in `libs/ui/vercel.json` skips every other branch (issue #50), so PRs create no `shelfmark-ui` deployments and the Hobby deployment limit is spent on the app project. Storybook on PRs is checked by CI (`nx test-storybook ui`).

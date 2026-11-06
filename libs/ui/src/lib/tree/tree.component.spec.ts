@@ -393,15 +393,109 @@ describe('TreeComponent', () => {
       expect(host.menus).toHaveLength(0);
     });
 
+    const contextmenu = (x: number, y: number) =>
+      new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: x, clientY: y });
+    const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    it('emits from Alt+Enter on a folder row, not on a fixed row', async () => {
+      const { item, row, key, host } = await setup();
+      await key(item('Work'), 'Enter', { altKey: true });
+      expect(host.menus).toHaveLength(1);
+      expect(host.menus[0]).toMatchObject({ trigger: 'keyboard', anchor: row('Work') });
+      expect(host.selected).toHaveLength(0);
+      await key(item('All links'), 'Enter', { altKey: true });
+      expect(host.menus).toHaveLength(1);
+    });
+
     it('does not repeat the request when the browser echoes the key as a contextmenu event', async () => {
       const { item, key, host, fixture } = await setup();
       await key(item('Work'), 'ContextMenu');
-      const echo = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+      const echo = contextmenu(30, 30);
       item('Work').dispatchEvent(echo);
       await settle(fixture);
       expect(echo.defaultPrevented).toBe(true);
       expect(host.menus).toHaveLength(1);
       expect(host.menus[0].trigger).toBe('keyboard');
+      // The echo was consumed: the next right click is a pointer request.
+      item('Work').dispatchEvent(contextmenu(30, 30));
+      expect(host.menus.at(-1)?.trigger).toBe('pointer');
+    });
+
+    it('survives a long-held key: repeats emit once and the echo is still swallowed', async () => {
+      const { item, key, host, fixture } = await setup();
+      await key(item('Work'), 'ContextMenu');
+      await key(item('Work'), 'ContextMenu', { repeat: true });
+      await wait(150);
+      await key(item('Work'), 'ContextMenu', { repeat: true });
+      item('Work').dispatchEvent(contextmenu(30, 30));
+      await settle(fixture);
+      expect(host.menus).toHaveLength(1);
+    });
+
+    it('swallows an echo that arrives just after the key is released, then re-arms the pointer', async () => {
+      const { item, key, host, fixture } = await setup();
+      await key(item('Work'), 'F10', { shiftKey: true });
+      item('Work').dispatchEvent(new KeyboardEvent('keyup', { key: 'F10', bubbles: true }));
+      item('Work').dispatchEvent(contextmenu(30, 30));
+      expect(host.menus).toHaveLength(1);
+      await wait(200);
+      await settle(fixture);
+      item('Work').dispatchEvent(contextmenu(30, 30));
+      expect(host.menus).toHaveLength(2);
+      expect(host.menus[1].trigger).toBe('pointer');
+    });
+
+    it('drops a pending echo on blur', async () => {
+      const { item, key, host } = await setup();
+      await key(item('Work'), 'ContextMenu');
+      item('Work').dispatchEvent(new FocusEvent('blur'));
+      item('Work').dispatchEvent(contextmenu(30, 30));
+      expect(host.menus.map((m) => m.trigger)).toEqual(['keyboard', 'pointer']);
+    });
+
+    it('treats a contextmenu event at 0, 0 as a keyboard request', async () => {
+      const { item, row, host } = await setup();
+      item('Work').dispatchEvent(contextmenu(0, 0));
+      expect(host.menus).toHaveLength(1);
+      expect(host.menus[0]).toMatchObject({
+        trigger: 'keyboard',
+        position: null,
+        anchor: row('Work'),
+      });
+    });
+
+    it('keeps keys from the "..." button away from the tree (no selection, no typeahead)', async () => {
+      const { row, key, click, host, item } = await setup();
+      const button = row('Work').querySelector('ui-button button') as HTMLElement;
+      const before = document.activeElement;
+      for (const name of ['Enter', ' ', 'r', 'ArrowDown', 'End']) {
+        await key(button, name);
+      }
+      expect(host.selected).toHaveLength(0);
+      expect(host.menus).toHaveLength(0);
+      expect(document.activeElement).toBe(before);
+      expect(item('Work').getAttribute('aria-expanded')).toBe('true');
+      // The browser turns Enter / Space on the button into one click.
+      await click(button);
+      expect(host.menus).toHaveLength(1);
+      expect(host.selected).toHaveLength(0);
+    });
+
+    it('opens the menu from the keyboard even when focus is on the "..." button', async () => {
+      const { row, key, host } = await setup();
+      const button = row('Work').querySelector('ui-button button') as HTMLElement;
+      await key(button, 'ContextMenu');
+      expect(host.menus).toHaveLength(1);
+      expect(host.menus[0].trigger).toBe('keyboard');
+    });
+
+    it('does not ripple when the "..." button is pressed', async () => {
+      const { row } = await setup();
+      const button = row('Work').querySelector('ui-button button') as HTMLElement;
+      button.dispatchEvent(
+        new PointerEvent('pointerdown', { bubbles: true, button: 0, clientX: 5, clientY: 5 }),
+      );
+      expect(row('Work').querySelector(':scope > .ui-ripple')).toBeNull();
     });
 
     it('has no menu on fixed rows and none without menuLabel', async () => {

@@ -19,7 +19,9 @@
         [attr.aria-owns]="node.children?.length ? item.id() + '-group' : null"
         (expandedChange)="toggled.emit({ node, expanded: $event })"
         (contextmenu)="folder && onContextMenu($event, node, row)"
-        (keydown)="folder && onKeydown($event, node, row)"
+        (keydown)="onKeydown($event, node, row, folder)"
+        (keyup)="onKeyup()"
+        (blur)="disarmEcho()"
       >
         @if (folder) {
           <span
@@ -37,8 +39,8 @@
           <ui-icon class="ui-tree__icon" [name]="icon" [size]="16" />
         }
         <span class="ui-tree__name" [id]="item.id() + '-name'">{{ node.name }}</span>
-        @if (node.count !== undefined) {
-          <span class="ui-tree__count" [id]="item.id() + '-count'">&ngsp;{{ node.count }}</span>
+        @if (countId(item.id(), node); as count) {
+          <span class="ui-tree__count" [id]="count">&ngsp;{{ node.count }}</span>
         }
         @if (folder && menuLabel()) {
           <ui-button
@@ -54,6 +56,7 @@
             ariaHaspopup="menu"
             [ariaExpanded]="menuNodeId() === node.id"
             [ariaLabel]="menuButtonLabel(node)"
+            (pointerdown)="$event.stopPropagation()"
             (click)="onButton($event, node, more)"
           />
         }
@@ -97,7 +100,7 @@
     "
   />
   @if (heading() && nodes().length) {
-    <li class="ui-tree__section" role="presentation">{{ heading() }}</li>
+    <li class="ui-tree__section" role="presentation" aria-hidden="true">{{ heading() }}</li>
   }
   <ng-container
     *ngTemplateOutlet="

@@ -1,6 +1,14 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Tree, TreeItem, TreeItemGroup } from '@angular/aria/tree';
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  input,
+  output,
+} from '@angular/core';
 import { ButtonComponent } from '../button/button.component';
 import { IconComponent } from '../icon/icon.component';
 import { RippleDirective } from '../ripple/ripple.directive';
@@ -8,8 +16,10 @@ import type { UiTreeContextMenuEvent } from './models/tree-context-menu-event.in
 import type { UiTreeNode } from './models/tree-node.interface';
 import type { UiTreeToggleEvent } from './models/tree-toggle-event.interface';
 
-/** Browsers echo a keyboard context-menu request as `contextmenu` within this window. */
-const KEYBOARD_CONTEXT_MENU_ECHO_MS = 750;
+/** Safety net: a pending keyboard echo is dropped after this long (a held key refreshes it). */
+const KEYBOARD_ECHO_TIMEOUT_MS = 1000;
+/** The echo can arrive just after the key is released. */
+const KEYBOARD_ECHO_RELEASE_MS = 100;
 
 /**
  * Sidebar navigation: fixed entries, then a heading and the nested folder tree with counts, on
@@ -37,7 +47,13 @@ const KEYBOARD_CONTEXT_MENU_ECHO_MS = 750;
   styleUrl: './tree.component.scss',
 })
 export class TreeComponent {
-  private keyboardMenuAt = Number.NEGATIVE_INFINITY;
+  /** A keyboard menu request is pending; the browser's echoed `contextmenu` consumes it. */
+  private keyboardEcho = false;
+  private echoTimer: ReturnType<typeof setTimeout> | undefined;
+
+  constructor() {
+    inject(DestroyRef).onDestroy(() => clearTimeout(this.echoTimer));
+  }
 
   /** Folder tree, shown after the heading. Rows nest by `children`. */
   readonly nodes = input<readonly UiTreeNode[]>([]);
@@ -89,16 +105,19 @@ export class TreeComponent {
     }
   }
 
-  /** Picks the id that the template builds `aria-labelledby` from: name, then the count. */
+  /** `id` of the count element of a row, or `null` for a row without a count. */
+  protected countId(itemId: string, node: UiTreeNode): string | null {
+    return node.count === undefined ? null : `${itemId}-count`;
+  }
+
+  /** The row is named by its name, then its count (never by its children). */
   protected labelledBy(itemId: string, node: UiTreeNode): string {
-    if (node.count === undefined) {
-      return `${itemId}-name`;
-    }
-    return `${itemId}-name ${itemId}-count`;
+    const count = this.countId(itemId, node);
+    return count ? `${itemId}-name ${count}` : `${itemId}-name`;
   }
 
   protected menuButtonLabel(node: UiTreeNode): string {
-    return (this.menuLabel() ?? '').replace('{name}', node.name);
+    return (this.menuLabel() ?? '').replace('{name}', () => node.name);
   }
 
   /** Twisty click: toggles without choosing the row (the Aria click handler never sees it). */
@@ -121,27 +140,66 @@ export class TreeComponent {
 
   protected onContextMenu(event: MouseEvent, node: UiTreeNode, row: HTMLElement): void {
     event.preventDefault();
-    // The context-menu key also fires `contextmenu` on the focused row, right after the keydown
-    // that already emitted: it is not a pointer request.
-    if (event.timeStamp - this.keyboardMenuAt < KEYBOARD_CONTEXT_MENU_ECHO_MS) {
+    if (this.keyboardEcho) {
+      // The echo of the key press that already emitted: not a pointer request.
+      this.disarmEcho();
       return;
     }
+    const keyboard = event.clientX === 0 && event.clientY === 0;
     this.contextMenu.emit({
       node,
-      trigger: 'pointer',
+      trigger: keyboard ? 'keyboard' : 'pointer',
       anchor: row,
-      position: { x: event.clientX, y: event.clientY },
+      position: keyboard ? null : { x: event.clientX, y: event.clientY },
     });
   }
 
-  protected onKeydown(event: KeyboardEvent, node: UiTreeNode, row: HTMLElement): void {
-    const requested = event.key === 'ContextMenu' || (event.shiftKey && event.key === 'F10');
-    if (!requested) {
-      return;
+  /**
+   * Keys the row handles itself: the context-menu key, Shift+F10 and Alt+Enter open the folder
+   * menu. Keys that come from the "..." button inside the row never reach the Aria tree (Enter
+   * would choose the roving row, Space is blocked, letters would start a typeahead).
+   */
+  protected onKeydown(
+    event: KeyboardEvent,
+    node: UiTreeNode,
+    row: HTMLElement,
+    folder: boolean,
+  ): void {
+    const echoing = event.key === 'ContextMenu' || (event.shiftKey && event.key === 'F10');
+    if (folder && (echoing || (event.altKey && event.key === 'Enter'))) {
+      event.preventDefault();
+      event.stopPropagation();
+      // A held key repeats: one request, but the echo (context-menu key, Shift+F10) stays expected.
+      if (!event.repeat) {
+        this.contextMenu.emit({ node, trigger: 'keyboard', anchor: row, position: null });
+      }
+      if (echoing) {
+        this.armEcho();
+      }
+    } else if (event.target !== row) {
+      event.stopPropagation();
     }
-    event.preventDefault();
-    event.stopPropagation();
-    this.keyboardMenuAt = event.timeStamp;
-    this.contextMenu.emit({ node, trigger: 'keyboard', anchor: row, position: null });
+  }
+
+  protected onKeyup(): void {
+    if (this.keyboardEcho) {
+      // The echo may arrive right after the release.
+      this.scheduleDisarm(KEYBOARD_ECHO_RELEASE_MS);
+    }
+  }
+
+  protected disarmEcho(): void {
+    clearTimeout(this.echoTimer);
+    this.keyboardEcho = false;
+  }
+
+  private armEcho(): void {
+    this.keyboardEcho = true;
+    this.scheduleDisarm(KEYBOARD_ECHO_TIMEOUT_MS);
+  }
+
+  private scheduleDisarm(delay: number): void {
+    clearTimeout(this.echoTimer);
+    this.echoTimer = setTimeout(() => this.disarmEcho(), delay);
   }
 }

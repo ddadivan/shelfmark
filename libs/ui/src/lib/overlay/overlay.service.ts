@@ -1,6 +1,7 @@
 import { Overlay } from '@angular/cdk/overlay';
 import { inject, Injector, Service } from '@angular/core';
 import { ConnectedOverlay } from './connected-overlay';
+import type { GlobalOverlayConfig } from './models/global-overlay-config.interface';
 import { setOverlayLayer } from './overlay-layer';
 import type { ConnectedOverlayConfig } from './models/connected-overlay-config.interface';
 import type { OverlaySide } from './models/overlay-side.type';
@@ -52,5 +53,35 @@ export class UiOverlay {
       options.injector ?? this.injector,
       options.onPositionChange,
     );
+  }
+
+  /**
+   * A panel that is not anchored to an element: it spans the bottom (or top) edge of the
+   * viewport and the content decides where inside that strip it sits (toasts). The pane lets
+   * pointer events through (`ui-overlay-pane--passthrough`), so the strip never blocks the page.
+   * The layer class is on the host element, as with `connect()`.
+   */
+  global(config: GlobalOverlayConfig, options: { injector?: Injector } = {}): ConnectedOverlay {
+    const strategy = this.overlay.position().global().left('0');
+    if (config.edge === 'top') {
+      strategy.top('0');
+    } else {
+      strategy.bottom('0');
+    }
+    const overlayRef = this.overlay.create({
+      positionStrategy: strategy,
+      scrollStrategy: this.overlay.scrollStrategies.noop(),
+      panelClass: [
+        'ui-overlay-pane',
+        'ui-overlay-pane--passthrough',
+        ...(typeof config.panelClass === 'string'
+          ? [config.panelClass]
+          : (config.panelClass ?? [])),
+      ],
+      width: '100%',
+      hasBackdrop: false,
+    });
+    setOverlayLayer(overlayRef.hostElement, config.layer);
+    return new ConnectedOverlay(overlayRef, undefined, options.injector ?? this.injector);
   }
 }

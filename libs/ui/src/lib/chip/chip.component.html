@@ -1,0 +1,32 @@
+<ng-template #content>
+  @if (icon(); as name) {
+    <ui-icon class="ui-chip__icon" [name]="name" />
+  }
+  <ng-content />
+</ng-template>
+@if (clickable()) {
+  <button
+    type="button"
+    class="ui-chip__body"
+    uiRipple
+    [disabled]="disabled()"
+    (click)="clicked.emit()"
+  >
+    <ng-container [ngTemplateOutlet]="content" />
+  </button>
+} @else {
+  <span class="ui-chip__body">
+    <ng-container [ngTemplateOutlet]="content" />
+  </span>
+}
+@if (removable()) {
+  <button
+    type="button"
+    class="ui-chip__remove"
+    [disabled]="disabled()"
+    [attr.aria-label]="removeLabel() || null"
+    (click)="removed.emit()"
+  >
+    <ui-icon name="close" />
+  </button>
+}

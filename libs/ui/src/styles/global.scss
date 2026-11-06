@@ -50,5 +50,6 @@ body {
 // `<style>`, which needs the CSP nonce of ADR 0022).
 @include cdk.overlay;
 @include overlay-layers;
+@include overlay-passthrough;
 @include dialog-layout;
 @include tooltip-description;
