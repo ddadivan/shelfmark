@@ -83,6 +83,7 @@ describe('ThemeService', () => {
 
   it('keeps the persisted storage key stable', () => {
     // Renaming it would drop every saved user preference.
+    // eslint-disable-next-line no-restricted-syntax -- pinned on purpose (ADR 0024)
     expect(THEME_STORAGE_KEY).toBe('sm-theme');
   });
 

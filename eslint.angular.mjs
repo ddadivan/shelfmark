@@ -1,9 +1,34 @@
 import nx from '@nx/eslint-plugin';
+import {
+  enumAndKeySelectors,
+  namedConstantDefinitionFiles,
+  namedConstantSelectors,
+} from './eslint.named-constants.mjs';
 
 const decoratorBan = (name, instead) => ({
   selector: `Decorator > CallExpression[callee.name='${name}']`,
   message: `@${name}() is forbidden. ${instead}`,
 });
+
+const tsBans = [
+  decoratorBan('Injectable', 'Use @Service().'),
+  decoratorBan('Input', 'Use input() / input.required().'),
+  decoratorBan('Output', 'Use output().'),
+  decoratorBan('HostBinding', 'Use the host: {} metadata.'),
+  decoratorBan('HostListener', 'Use the host: {} metadata.'),
+  {
+    selector: 'Identifier[name=/^bypassSecurityTrust/]',
+    message: 'DomSanitizer.bypassSecurityTrust* is forbidden (XSS).',
+  },
+  {
+    selector: 'AssignmentExpression[left.property.name=/^(innerHTML|outerHTML)$/]',
+    message: 'Assigning innerHTML / outerHTML is forbidden (XSS). Use textContent.',
+  },
+  {
+    selector: 'CallExpression[callee.property.name=/^(insertAdjacentHTML|write|writeln)$/]',
+    message: 'insertAdjacentHTML / document.write are forbidden (XSS).',
+  },
+];
 
 /**
  * Angular rules shared by every Angular project (apps/web, libs/ui): legacy API bans,
@@ -51,30 +76,16 @@ export default function angularConfig({ prefix }) {
             patterns: [{ group: ['zone.js/*'], message: 'The app is zoneless.' }],
           },
         ],
-        'no-restricted-syntax': [
-          'error',
-          decoratorBan('Injectable', 'Use @Service().'),
-          decoratorBan('Input', 'Use input() / input.required().'),
-          decoratorBan('Output', 'Use output().'),
-          decoratorBan('HostBinding', 'Use the host: {} metadata.'),
-          decoratorBan('HostListener', 'Use the host: {} metadata.'),
-          {
-            selector: 'Identifier[name=/^bypassSecurityTrust/]',
-            message: 'DomSanitizer.bypassSecurityTrust* is forbidden (XSS).',
-          },
-          {
-            selector: 'AssignmentExpression[left.property.name=/^(innerHTML|outerHTML)$/]',
-            message: 'Assigning innerHTML / outerHTML is forbidden (XSS). Use textContent.',
-          },
-          {
-            selector: 'CallExpression[callee.property.name=/^(insertAdjacentHTML|write|writeln)$/]',
-            message: 'insertAdjacentHTML / document.write are forbidden (XSS).',
-          },
-        ],
+        'no-restricted-syntax': ['error', ...tsBans, ...namedConstantSelectors],
         'no-eval': 'error',
         'no-implied-eval': 'error',
         'no-new-func': 'error',
       },
+    },
+    {
+      // Defining files spell the singleton literals once (ADR 0024).
+      files: namedConstantDefinitionFiles,
+      rules: { 'no-restricted-syntax': ['error', ...tsBans, ...enumAndKeySelectors] },
     },
     {
       files: ['**/*.html'],
