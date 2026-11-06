@@ -1,0 +1,17 @@
+@if (imageSrc(); as url) {
+  <img
+    class="ui-favicon__image"
+    alt=""
+    width="16"
+    height="16"
+    loading="lazy"
+    decoding="async"
+    referrerpolicy="no-referrer"
+    [src]="url"
+    (error)="failed.set(true)"
+  />
+} @else if (initial(); as letter) {
+  <span class="ui-favicon__letter">{{ letter }}</span>
+} @else {
+  <ui-icon name="link" [size]="16" />
+}
