@@ -59,6 +59,10 @@ jobs:
       # Guards the production bundle (no e2e-only route, nonce placeholder present, ADR 0022).
       # Only runs when `web` is affected; the build it depends on is cached by the step above.
       - run: npx nx affected -t middleware-shell --output-style=static
+      # Storybook must build whenever `ui` (or something it depends on) is affected (ADR 0023).
+      # Its accessibility run needs a browser and lives in the `e2e` job.
+      - name: Build Storybook
+        run: npx nx affected -t build-storybook --output-style=static
 
   e2e:
     name: e2e
@@ -84,8 +88,20 @@ jobs:
             nx-e2e-${{ runner.os }}-
       - run: npm ci
       - uses: nrwl/nx-set-shas@e602fada7ad5987b0f7b1905e7a99ea1c661514c # v5.1.0
-      - run: npx playwright install --with-deps chromium
-      - run: npx nx affected -t e2e --output-style=static
+      # The job always runs (required check), but the browser is only downloaded when a browser
+      # test target is affected: `e2e` (web-e2e) or `test-storybook` (libs/ui axe over Storybook).
+      - name: Detect affected browser tests
+        id: browser
+        run: |
+          projects="$(npx nx show projects --affected --with-target e2e,test-storybook --json)"
+          echo "Affected projects with browser tests: ${projects}"
+          if [ "$projects" = "[]" ]; then echo "needed=false" >> "$GITHUB_OUTPUT"; else echo "needed=true" >> "$GITHUB_OUTPUT"; fi
+      - name: Install Chromium
+        if: steps.browser.outputs.needed == 'true'
+        run: npx playwright install --with-deps chromium
+      - name: Run e2e and Storybook a11y tests
+        if: steps.browser.outputs.needed == 'true'
+        run: npx nx affected -t e2e test-storybook --output-style=static
       - if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:

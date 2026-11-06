@@ -1,0 +1,74 @@
+name: Post-deploy smoke
+
+# ADR 0022: the CSP design depends on the Vercel Routing Middleware running. If Vercel ever
+# skipped it, `/index.html` would be served without a CSP, so every production deployment is
+# checked from the outside. Production is public, so no secrets or checkout are needed.
+
+on:
+  deployment_status:
+  workflow_dispatch:
+
+# Deny by default; the job needs no repository access at all.
+permissions: {}
+
+concurrency:
+  group: post-deploy-smoke
+  cancel-in-progress: false
+
+jobs:
+  smoke:
+    name: smoke
+    # Production deployments of shelfmark-app only (not previews, not the Storybook project).
+    # Vercel names the environment "Production" (or "Production – <project>" when a repository
+    # has several projects), so match by prefix and exclude shelfmark-ui.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.deployment_status.state == 'success' &&
+      startsWith(github.event.deployment.environment, 'Production') &&
+      !contains(github.event.deployment.environment, 'shelfmark-ui') &&
+      !contains(github.event.deployment_status.environment_url, 'shelfmark-ui'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    env:
+      BASE_URL: https://shelfmark-app.vercel.app
+    steps:
+      - name: Check the production deployment
+        run: |
+          set -euo pipefail
+
+          fail() { echo "::error::$1"; exit 1; }
+
+          # The production alias can lag a few seconds behind the deployment_status event.
+          for attempt in 1 2 3 4 5 6; do
+            headers="$(curl -sS -o body.html -D - --max-time 20 "$BASE_URL/" | tr -d '\r')" && break
+            echo "Attempt $attempt failed, retrying"; sleep 10
+          done
+          echo "$headers"
+
+          status="$(head -n 1 <<<"$headers" | cut -d ' ' -f 2)"
+          [ "$status" = "200" ] || fail "/ returned $status, expected 200"
+
+          # 1. Exactly one Content-Security-Policy header.
+          csp_lines="$(grep -i '^content-security-policy:' <<<"$headers" || true)"
+          count="$(grep -c . <<<"$csp_lines" || true)"
+          [ "$count" = "1" ] || fail "/ has $count Content-Security-Policy headers, expected exactly 1"
+
+          # 2. It carries a nonce source, and that nonce is the one in the body.
+          header_nonce="$(grep -o "'nonce-[^']*'" <<<"$csp_lines" | sed -E "s/'nonce-(.*)'/\1/" | head -n 1)"
+          [ -n "$header_nonce" ] || fail "the CSP has no nonce- source"
+          body_nonce="$(grep -io 'ngcspnonce="[^"]*"' body.html | sed -E 's/.*="(.*)"/\1/' | head -n 1)"
+          [ -n "$body_nonce" ] || fail "the body has no ngcspnonce attribute"
+          [ "$header_nonce" = "$body_nonce" ] || fail "CSP nonce differs from ngcspnonce in the body"
+          [ "$body_nonce" != "CSP_NONCE_PLACEHOLDER" ] || fail "the nonce placeholder was not replaced"
+          echo "CSP and ngcspnonce match"
+
+          # 3. A missing file is a 404 (and not the app shell).
+          missing="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "$BASE_URL/missing.js")"
+          [ "$missing" = "404" ] || fail "/missing.js returned $missing, expected 404"
+
+          # 4. The API function is up.
+          health="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "$BASE_URL/api/health")"
+          [ "$health" = "200" ] || fail "/api/health returned $health, expected 200"
+
+          echo "Smoke passed"
