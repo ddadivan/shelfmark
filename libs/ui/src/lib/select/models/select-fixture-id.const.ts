@@ -1,4 +1,4 @@
-/** Option ids shared by the select specs and stories, so a selected value points at a node. */
+/** Option ids shared by the select specs and stories (test and story code only, not API). */
 export const SELECT_FIXTURE_ID = {
   Work: 'work',
   Angular: 'angular',

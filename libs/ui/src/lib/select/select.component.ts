@@ -92,6 +92,7 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
   private readonly popup = viewChild.required<ElementRef<HTMLElement>>('popup');
   private readonly listbox = viewChild<Listbox<string | null>>(Listbox);
   private readonly widget = viewChild(ComboboxWidget);
+  private readonly combo = viewChild(Combobox);
   private readonly searchField = viewChild<ElementRef<HTMLInputElement>>('search');
 
   /** The popup is open (the Aria combobox `expanded` state). */
@@ -112,6 +113,7 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
 
   private overlay: ConnectedOverlay | null = null;
   private detachSubscription: Subscription | null = null;
+  private resizeObserver: ResizeObserver | null = null;
 
   constructor() {
     super();
@@ -132,6 +134,7 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
       }
     });
     inject(DestroyRef).onDestroy(() => {
+      this.stopWidthSync();
       this.detachSubscription?.unsubscribe();
       this.overlay?.dispose();
       // The pane may still hold the popup element, which Angular no longer owns.
@@ -152,6 +155,10 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
   protected onExpandedChange(expanded: boolean): void {
     if (expanded) {
       this.show();
+    } else if (this.open() && this.windowBlurred()) {
+      // Aria closes the popup when the window loses focus; focus is still on the select, so
+      // the popup stays and Aria's state is put back.
+      this.combo()?.expanded.set(true);
     } else {
       this.hide(false);
     }
@@ -164,8 +171,12 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
     }
   }
 
-  protected onTriggerBlur(): void {
-    // Opening moves focus into the search box, which is no blur of the field.
+  protected onTriggerBlur(event: FocusEvent): void {
+    // Blur from a window or tab switch (no related target, document not focused) is no blur of
+    // the field. Opening moves focus into the search box, which is no blur of it either.
+    if (event.relatedTarget === null && !this.document.hasFocus()) {
+      return;
+    }
     if (!this.open()) {
       this.touch.emit();
     }
@@ -206,15 +217,22 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
     if (next instanceof Node && this.popup().nativeElement.contains(next)) {
       return;
     }
+    if (next === null && !this.document.hasFocus()) {
+      return;
+    }
     // Aria closes the popup once neither the trigger nor the popup has focus.
     this.widget()?.onFocusout(event);
   }
 
   protected onSearch(event: Event): void {
-    this.query.set((event.target as HTMLInputElement).value);
+    if (event.target instanceof HTMLInputElement) {
+      this.query.set(event.target.value);
+    }
     afterNextRender(
       () => {
-        // The mutation observer of Angular Aria re-sorts the new options in a microtask first.
+        // The mutation observer of Angular Aria re-sorts the new options in a microtask first, so
+        // the first option is activated after it. Covered by the spec "filters while typing, keeps
+        // ancestors and activates the first match".
         queueMicrotask(() => {
           if (this.open() && this.rows().length > 0) {
             this.listbox()?.gotoFirst();
@@ -257,7 +275,18 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
   /** Hands a key of the search box to the Aria listbox, as the combobox does for the trigger. */
   private relay(event: KeyboardEvent): void {
     event.preventDefault();
-    this.listbox()?.element.dispatchEvent(new KeyboardEvent('keydown', { key: event.key }));
+    // Ctrl / Cmd on Home / End only chooses the options over the caret; Aria's single-select
+    // listbox binds the plain key, so those two modifiers are dropped there.
+    const edge = event.key === SELECT_KEY.Home || event.key === SELECT_KEY.End;
+    this.listbox()?.element.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: event.key,
+        shiftKey: event.shiftKey,
+        altKey: event.altKey,
+        ctrlKey: edge ? false : event.ctrlKey,
+        metaKey: edge ? false : event.metaKey,
+      }),
+    );
   }
 
   private show(): void {
@@ -273,7 +302,8 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
     } else {
       this.createOverlay(trigger);
     }
-    this.overlay?.pane.style.setProperty('min-width', `${trigger.offsetWidth}px`);
+    this.syncWidth();
+    this.watchWidth(trigger);
     this.attached.set(true);
     afterNextRender(
       () => {
@@ -288,7 +318,7 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
     this.overlay?.dispose();
     const overlay = this.overlays.connect(
       { origin: trigger, positions: menuPositions('start'), layer: 'menu' },
-      { injector: this.injector },
+      { injector: this.injector, onPositionChange: () => this.syncWidth() },
     );
     this.overlay = overlay;
     overlay.attachElement(this.popup().nativeElement);
@@ -307,6 +337,7 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
       return;
     }
     this.open.set(false);
+    this.stopWidthSync();
     if (restoreFocus) {
       this.focus();
     }
@@ -318,6 +349,41 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
         this.overlay?.release();
       },
       { injector: this.injector },
+    );
+  }
+
+  /** The pane is at least as wide as the trigger; re-read on every reposition and resize. */
+  private syncWidth(): void {
+    this.overlay?.pane.style.setProperty(
+      'min-width',
+      `${this.trigger().nativeElement.offsetWidth}px`,
+    );
+  }
+
+  private watchWidth(trigger: HTMLElement): void {
+    this.stopWidthSync();
+    if (typeof ResizeObserver === 'undefined') {
+      return;
+    }
+    this.resizeObserver = new ResizeObserver(() => {
+      this.syncWidth();
+      this.overlay?.updatePosition();
+    });
+    this.resizeObserver.observe(trigger);
+  }
+
+  private stopWidthSync(): void {
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = null;
+  }
+
+  /** The document lost focus (window or tab switch) while an element in it keeps it. */
+  private windowBlurred(): boolean {
+    const active = this.document.activeElement;
+    return (
+      !this.document.hasFocus() &&
+      !!active &&
+      (active === this.trigger().nativeElement || this.popup().nativeElement.contains(active))
     );
   }
 }

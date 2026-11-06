@@ -127,9 +127,13 @@ async function setup() {
 describe('SelectComponent', () => {
   beforeEach(() => {
     Element.prototype.scrollIntoView = vi.fn();
+    // jsdom reports an unfocused document; the select tells window blur from field blur by it.
+    vi.spyOn(document, 'hasFocus').mockReturnValue(true);
   });
 
   afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
     document.querySelectorAll('.cdk-overlay-container').forEach((el) => {
       el.replaceChildren();
     });
@@ -266,6 +270,52 @@ describe('SelectComponent', () => {
     expect(host.touches()).toBe(1);
   });
 
+  it('keeps the popup and the touched state when the window loses focus', async () => {
+    const { open, trigger, host, fixture } = await setup();
+    await open();
+    const touches = host.touches();
+    vi.mocked(document.hasFocus).mockReturnValue(false);
+    // A window blur leaves `document.activeElement` on the trigger.
+    trigger.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: null }));
+    trigger.dispatchEvent(new FocusEvent('blur', { relatedTarget: null }));
+    await settle(fixture);
+    expect(trigger.getAttribute('aria-expanded')).toBe('true');
+    expect(document.querySelector('[role="listbox"]')).not.toBeNull();
+    expect(host.touches()).toBe(touches);
+    vi.mocked(document.hasFocus).mockReturnValue(true);
+    (fixture.nativeElement as HTMLElement).querySelector<HTMLElement>('#outside')?.focus();
+    await settle(fixture);
+    expect(trigger.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('keeps the pane at least as wide as the trigger while it resizes', async () => {
+    const observers: { callback: () => void; disconnect: ReturnType<typeof vi.fn> }[] = [];
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        readonly disconnect = vi.fn();
+        constructor(callback: () => void) {
+          observers.push({ callback, disconnect: this.disconnect });
+        }
+        observe(): void {
+          /* the test fires the callback itself */
+        }
+      },
+    );
+    const { open, trigger, fixture, press } = await setup();
+    let width = 300;
+    Object.defineProperty(trigger, 'offsetWidth', { get: () => width, configurable: true });
+    await open();
+    const pane = document.querySelector('.ui-overlay-pane') as HTMLElement;
+    expect(pane.style.minWidth).toBe('300px');
+    width = 420;
+    observers.at(-1)?.callback();
+    expect(pane.style.minWidth).toBe('420px');
+    await press(trigger, SELECT_KEY.Escape);
+    expect(observers.at(-1)?.disconnect).toHaveBeenCalled();
+    await settle(fixture);
+  });
+
   it('toggles closed on a second click', async () => {
     const { open, trigger, fixture } = await setup();
     await open();
@@ -382,7 +432,37 @@ describe('SelectComponent', () => {
       field.dispatchEvent(end);
       expect(end.defaultPrevented).toBe(false);
       await press(field, SELECT_KEY.End, { ctrlKey: true });
+      expect(active()?.textContent.trim()).toBe('Clothes');
+    });
+
+    it('gives the search box the combobox semantics and takes the pointer off the trigger', async () => {
+      const { search, trigger, active, fixture } = await searching();
+      const field = search() as HTMLInputElement;
+      const list = document.querySelector('[role="listbox"]') as HTMLElement;
+      expect(field.getAttribute('role')).toBe('combobox');
+      expect(field.getAttribute('aria-expanded')).toBe('true');
+      expect(field.getAttribute('aria-haspopup')).toBe('listbox');
+      expect(field.getAttribute('aria-controls')).toBe(list.id);
+      expect(field.getAttribute('aria-activedescendant')).toBe(active()?.id);
       expect(active()).not.toBeNull();
+      expect(trigger.hasAttribute('aria-activedescendant')).toBe(false);
+      type(field, 'cou');
+      await settle(fixture);
+      expect(field.getAttribute('aria-activedescendant')).toBe(active()?.id);
+      expect(trigger.hasAttribute('aria-activedescendant')).toBe(false);
+    });
+
+    it('stays open and untouched when the window loses focus', async () => {
+      const { search, trigger, host, fixture } = await searching();
+      const touches = host.touches();
+      vi.mocked(document.hasFocus).mockReturnValue(false);
+      const field = search() as HTMLInputElement;
+      field.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: null }));
+      trigger.dispatchEvent(new FocusEvent('focusout', { relatedTarget: null }));
+      await settle(fixture);
+      expect(trigger.getAttribute('aria-expanded')).toBe('true');
+      expect(host.touches()).toBe(touches);
+      vi.mocked(document.hasFocus).mockReturnValue(true);
     });
 
     it('closes on Esc from the search box and returns focus to the trigger', async () => {
@@ -434,7 +514,12 @@ describe('SelectComponent with Signal Forms', () => {
     return { fixture, root, trigger, host: fixture.componentInstance };
   }
 
+  beforeEach(() => {
+    vi.spyOn(document, 'hasFocus').mockReturnValue(true);
+  });
+
   afterEach(() => {
+    vi.restoreAllMocks();
     document.querySelectorAll('.cdk-overlay-container').forEach((el) => {
       el.replaceChildren();
     });

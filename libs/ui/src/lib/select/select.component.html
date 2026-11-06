@@ -22,7 +22,7 @@
     [attr.aria-invalid]="showInvalid() ? 'true' : null"
     [attr.aria-describedby]="describedBy()"
     (keydown)="onTriggerKeydown($event)"
-    (blur)="onTriggerBlur()"
+    (blur)="onTriggerBlur($event)"
   >
     <ui-icon class="ui-select__icon" [name]="triggerIcon()" [size]="16" />
     <span class="ui-select__value" [class.ui-select__value--placeholder]="!chosen()">{{
@@ -50,6 +50,9 @@
               #search
               class="ui-select__search-input"
               type="text"
+              role="combobox"
+              aria-expanded="true"
+              aria-haspopup="listbox"
               autocomplete="off"
               spellcheck="false"
               aria-autocomplete="list"
@@ -73,7 +76,7 @@
         selectionMode="explicit"
         tabindex="-1"
         [attr.aria-label]="label()"
-        [activeDescendant]="list.activeDescendant()"
+        [activeDescendant]="searchable() ? undefined : list.activeDescendant()"
         [value]="selection()"
         [hidden]="rows().length === 0"
         (valueChange)="onListValue($event)"
