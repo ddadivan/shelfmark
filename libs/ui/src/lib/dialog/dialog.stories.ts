@@ -1,0 +1,258 @@
+import { Component, inject, input, signal } from '@angular/core';
+import type { Meta, StoryObj } from '@storybook/angular-vite';
+import { ButtonComponent } from '../button/button.component';
+import { DialogComponent } from './dialog.component';
+import { UiDialogRef } from './dialog-ref';
+import { DialogService } from './dialog.service';
+import type { ConfirmDialogConfig } from './models/confirm-config.interface';
+import type { DialogSize } from './models/dialog-size.type';
+
+/** Content of the form story: a short form with Cancel left of the main action. */
+@Component({
+  selector: 'ui-dialog-story-form',
+  imports: [ButtonComponent, DialogComponent],
+  template: `
+    <form (submit)="$event.preventDefault(); ref.close('saved')">
+      <ui-dialog title="Edit link" closeLabel="Close">
+        <div class="dst-fields">
+          <label class="dst-field">
+            <span class="dst-label">Link</span>
+            <input class="dst-input" value="https://www.cos.com/en/wool-coat" />
+          </label>
+          <label class="dst-field">
+            <span class="dst-label">Note</span>
+            <input class="dst-input" placeholder="Why are you saving this?" />
+          </label>
+        </div>
+        <ui-button slot="footer" (click)="ref.close()">Cancel</ui-button>
+        <ui-button slot="footer" variant="primary" type="submit">Save link</ui-button>
+      </ui-dialog>
+    </form>
+  `,
+})
+class StoryFormComponent {
+  protected readonly ref = inject<UiDialogRef<string>>(UiDialogRef);
+}
+
+/** Content of the long-content story: the body scrolls, header and footer stay. */
+@Component({
+  selector: 'ui-dialog-story-long',
+  imports: [ButtonComponent, DialogComponent],
+  template: `
+    <ui-dialog title="Privacy and data" closeLabel="Close">
+      @for (paragraph of paragraphs; track $index) {
+        <p class="dst-paragraph">{{ paragraph }}</p>
+      }
+      <ui-button slot="footer" variant="primary" (click)="ref.close()">Got it</ui-button>
+    </ui-dialog>
+  `,
+})
+class StoryLongComponent {
+  protected readonly ref = inject<UiDialogRef>(UiDialogRef);
+  protected readonly paragraphs = Array.from(
+    { length: 14 },
+    (_value, index) =>
+      `Paragraph ${index + 1}. Shelfmark keeps your saved links in one place. Only you can see them, ` +
+      'and you can export or delete everything at any time from the settings.',
+  );
+}
+
+type DemoKind = 'form' | 'confirm' | 'destructive' | 'long';
+
+const confirmText: ConfirmDialogConfig = {
+  title: 'Move link to Unsorted?',
+  message: 'The link leaves its folder and goes back to Unsorted.',
+  confirmLabel: 'Move link',
+  cancelLabel: 'Cancel',
+  closeLabel: 'Close',
+};
+
+const destructiveText: ConfirmDialogConfig = {
+  title: 'Delete folder “Work”?',
+  message: 'It has 34 links and 2 subfolders. This cannot be undone.',
+  confirmLabel: 'Delete folder',
+  cancelLabel: 'Cancel',
+  closeLabel: 'Close',
+  destructive: true,
+};
+
+/** A button that opens the dialog and prints what came back. */
+@Component({
+  selector: 'ui-dialog-story-demo',
+  imports: [ButtonComponent],
+  template: `
+    <div class="dst-panel">
+      <ui-button variant="primary" (click)="open()">Open dialog</ui-button>
+      <p class="dst-result" aria-live="polite">{{ result() }}</p>
+    </div>
+  `,
+})
+class StoryDemoComponent {
+  readonly kind = input<DemoKind>('form');
+  readonly size = input<DialogSize>('sm');
+  readonly dismissible = input(true);
+
+  private readonly dialogs = inject(DialogService);
+  protected readonly result = signal('Nothing chosen yet.');
+
+  protected async open(): Promise<void> {
+    switch (this.kind()) {
+      case 'confirm':
+        this.result.set(`Confirmed: ${await this.dialogs.confirm(confirmText)}`);
+        return;
+      case 'destructive':
+        this.result.set(`Confirmed: ${await this.dialogs.confirm(destructiveText)}`);
+        return;
+      case 'long': {
+        await this.dialogs.open(StoryLongComponent, { size: this.size() }).result;
+        this.result.set('Closed.');
+        return;
+      }
+      case 'form': {
+        const saved = await this.dialogs.open<StoryFormComponent, string>(StoryFormComponent, {
+          size: this.size(),
+          dismissible: this.dismissible(),
+          autoFocus: 'input',
+        }).result;
+        this.result.set(saved ? 'Saved.' : 'Dismissed.');
+        return;
+      }
+    }
+  }
+}
+
+interface DialogArgs {
+  size: DialogSize;
+  dismissible: boolean;
+}
+
+const meta: Meta<DialogArgs> = {
+  title: 'Components/Dialog',
+  tags: ['autodocs'],
+  parameters: {
+    layout: 'fullscreen',
+    docs: {
+      description: {
+        component:
+          '`ui-dialog` is the layout of a dialog (title, close button, body, footer) and `DialogService` ' +
+          'opens it on the CDK Dialog: focus moves in and is trapped, Esc closes, a scrim click closes ' +
+          'unless the dialog is destructive, page scroll is locked and focus returns to the trigger. ' +
+          'Below 40em it becomes a bottom sheet you can drag shut. The popup lives in the page body ' +
+          'and follows the theme of the page.',
+      },
+    },
+  },
+  args: { size: 'sm', dismissible: true },
+  argTypes: {
+    size: { control: 'inline-radio', options: ['sm', 'md'] },
+    dismissible: { control: 'boolean' },
+  },
+};
+
+export default meta;
+type Story = StoryObj<DialogArgs>;
+
+const imports = [StoryDemoComponent];
+
+/** A short form in a `md` dialog. Esc, the close button and Cancel close it. */
+export const FormDialog: Story = {
+  args: { size: 'md' },
+  render: (args) => ({
+    props: args,
+    moduleMetadata: { imports },
+    template: `<ui-dialog-story-demo kind="form" [size]="size" [dismissible]="dismissible" />`,
+  }),
+};
+
+/** `sm` is 440px, `md` is 560px. */
+export const Sizes: Story = {
+  render: () => ({
+    moduleMetadata: { imports },
+    template: `
+      <div class="dst-row">
+        <ui-dialog-story-demo kind="form" size="sm" />
+        <ui-dialog-story-demo kind="form" size="md" />
+      </div>`,
+  }),
+};
+
+/** Yes / no question; confirm has focus, so Enter confirms. Esc, Cancel and the scrim answer no. */
+export const Confirm: Story = {
+  render: () => ({
+    moduleMetadata: { imports },
+    template: `<ui-dialog-story-demo kind="confirm" />`,
+  }),
+};
+
+/** Irreversible action: `alertdialog`, red button, Cancel has focus, the scrim does not close it. */
+export const DestructiveConfirm: Story = {
+  render: () => ({
+    moduleMetadata: { imports },
+    template: `<ui-dialog-story-demo kind="destructive" />`,
+  }),
+};
+
+/** Long content scrolls inside the dialog; header and footer stay put. */
+export const LongContent: Story = {
+  args: { size: 'md' },
+  render: (args) => ({
+    props: args,
+    moduleMetadata: { imports },
+    template: `<ui-dialog-story-demo kind="long" [size]="size" />`,
+  }),
+};
+
+/**
+ * On a phone viewport (below 40em) the dialog is a bottom sheet with a grip: drag the header
+ * down (past 30% or with a quick flick) to close it, or use Esc / the close button.
+ */
+export const PhoneSheet: Story = {
+  parameters: {
+    viewport: {
+      options: {
+        phone: { name: 'Phone 390', styles: { width: '390px', height: '844px' }, type: 'mobile' },
+      },
+    },
+  },
+  globals: { viewport: { value: 'phone', isRotated: false } },
+  args: { size: 'md' },
+  render: (args) => ({
+    props: args,
+    moduleMetadata: { imports },
+    template: `<ui-dialog-story-demo kind="form" [size]="size" />`,
+  }),
+};
+
+const frame = (theme: 'light' | 'dark') => `
+  <div data-theme="${theme}" class="dst-gallery">
+    <p class="dst-hint">${theme} theme: static panels (open the stories above for the live dialog)</p>
+    <div class="dst-scrim">
+      <ui-dialog title="Delete folder “Work”?" closeLabel="Close">
+        <p class="dst-text">It has 34 links and 2 subfolders. This cannot be undone.</p>
+        <ui-button slot="footer">Cancel</ui-button>
+        <ui-button slot="footer" variant="danger">Delete folder</ui-button>
+      </ui-dialog>
+    </div>
+    <div class="dst-scrim">
+      <ui-dialog title="Move link to Unsorted?" closeLabel="Close">
+        <p class="dst-text">The link leaves its folder and goes back to Unsorted.</p>
+        <ui-button slot="footer">Cancel</ui-button>
+        <ui-button slot="footer" variant="primary">Move link</ui-button>
+      </ui-dialog>
+    </div>
+    <div class="dst-scrim">
+      <ui-dialog title="Edit link" size="md" closeLabel="Close">
+        <p class="dst-text">A medium dialog holds a short form.</p>
+        <ui-button slot="footer">Cancel</ui-button>
+        <ui-button slot="footer" variant="primary">Save link</ui-button>
+      </ui-dialog>
+    </div>
+  </div>`;
+
+/** Both themes: destructive and plain confirmations and a medium dialog. */
+export const AllVariants: Story = {
+  render: () => ({
+    moduleMetadata: { imports: [DialogComponent, ButtonComponent] },
+    template: `${frame('light')}${frame('dark')}`,
+  }),
+};
