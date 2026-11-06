@@ -176,6 +176,18 @@ All of it lives in `vercel.json`, `api/index.mjs` and `apps/api/src/vercel-handl
 - **ESM output** of the API is `.mjs` (`main.mjs`, `vercel-handler.mjs`).
 - After the first deployment check `NODE_ENV=production` and `/api/health` returning 200 on production and preview.
 
+### 5.7 Storybook project (`shelfmark-ui`)
+
+A second Vercel project from the same repository publishes the component showcase; the reasoning (including the relaxed CSP) is in [ADR 0023](adr/0023-storybook-showcase-hosting.md). Its configuration is `libs/ui/vercel.json`; the settings below are done by the author in the dashboard.
+
+- [x] Project **`shelfmark-ui`** (team `reacts-projects-581acec8`, Hobby), same GitHub repository.
+- [x] **Root Directory** `libs/ui`, with "Include files outside the Root Directory in the Build Step" enabled (the install and build commands run from the workspace root) and "Skip deployments when there are no changes to the root directory or its dependencies" enabled.
+- [x] Framework Preset **Other**, Node.js **26.x**, no environment variables.
+- [x] **Vercel Authentication** on previews, Vercel Toolbar off.
+- Install `cd ../.. && npm ci --include=dev`, build `cd ../.. && npx nx build-storybook ui --output-style=static`, output `storybook-static` (all from `libs/ui/vercel.json`; a project whose Root Directory is `libs/ui` ignores the repository-root `vercel.json` and `middleware.ts` of `shelfmark-app`).
+- Production URL: `https://shelfmark-ui.vercel.app` (if the name is taken, note the real one here).
+- On the first preview check: the manager and a story load, the response has one `Content-Security-Policy` header (the relaxed one from ADR 0023) and the other security headers, the browser console shows no CSP violation.
+
 ## 6. Secrets policy
 
 | Secret | Lives in | Never in |

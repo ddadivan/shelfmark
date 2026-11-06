@@ -46,3 +46,4 @@ Routine features, bug fixes and choices already fully covered by an existing ADR
 | [0020](0020-npm-install-scripts-policy.md) | npm install-scripts policy: deny by default, per-package review | Accepted | 2026-11-05 |
 | [0021](0021-ui-button-wrapper-and-trigger-api.md) | ui-button stays a wrapper; trigger API (ARIA, focus target, href) and uiRipple | Accepted | 2026-11-05 |
 | [0022](0022-csp-nonce-routing-middleware.md) | CSP nonce through Vercel Routing Middleware | Accepted | 2026-11-05 |
+| [0023](0023-storybook-showcase-hosting.md) | Storybook showcase on its own Vercel project, relaxed CSP for a data-free static site | Accepted | 2026-11-06 |
