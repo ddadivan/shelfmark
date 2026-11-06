@@ -3,7 +3,10 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { ICON_NAMES } from '../icon/models/icon-names.const';
 import { ButtonComponent } from './button.component';
 
-const meta: Meta<ButtonComponent> = {
+/** The component inputs plus the projected label text. */
+type ButtonArgs = ButtonComponent & { label?: string };
+
+const meta: Meta<ButtonArgs> = {
   title: 'Components/Button',
   component: ButtonComponent,
   tags: ['autodocs'],
@@ -57,7 +60,7 @@ const meta: Meta<ButtonComponent> = {
 };
 
 export default meta;
-type Story = StoryObj<ButtonComponent>;
+type Story = StoryObj<ButtonArgs>;
 
 export const Default: Story = {};
 
