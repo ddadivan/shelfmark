@@ -136,6 +136,9 @@ describe('DialogComponent', () => {
         observe(): void {
           return;
         }
+        unobserve(): void {
+          return;
+        }
         disconnect(): void {
           return;
         }

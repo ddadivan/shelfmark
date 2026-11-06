@@ -1,11 +1,22 @@
 <ng-template #content>
+  @if (loading()) {
+    <ui-spinner
+      class="ui-button__spinner"
+      [class.ui-button__spinner--solo]="iconOnly()"
+      animate.leave="ui-button__spinner--leave"
+    />
+  }
   @if (iconOnly()) {
     @if (singleIcon(); as icon) {
-      <ui-icon [name]="icon" [size]="iconSize()" />
+      @if (!loading()) {
+        <ui-icon [name]="icon" [size]="iconSize()" />
+      }
     }
   } @else {
     @if (iconLeft(); as icon) {
-      <ui-icon [name]="icon" [size]="iconSize()" />
+      @if (!loading()) {
+        <ui-icon [name]="icon" [size]="iconSize()" />
+      }
     }
     <ng-content />
     @if (iconRight(); as icon) {
@@ -19,15 +30,17 @@
     #control
     [class]="classes()"
     [uiRipple]="rippleActive()"
-    [attr.href]="disabled() ? null : href()"
-    [attr.role]="disabled() ? 'link' : null"
-    [attr.aria-disabled]="disabled() ? 'true' : null"
+    [attr.href]="inert() ? null : href()"
+    [attr.role]="inert() ? 'link' : null"
+    [attr.aria-disabled]="inert() ? 'true' : null"
     [attr.aria-label]="ariaLabel() || null"
     [attr.aria-expanded]="ariaExpanded() ?? null"
     [attr.aria-controls]="ariaControls() || null"
     [attr.aria-haspopup]="ariaHaspopup() ?? null"
     [attr.aria-describedby]="ariaDescribedby() || null"
     [attr.aria-pressed]="ariaPressed() ?? null"
+    [attr.aria-busy]="loading() ? 'true' : null"
+    [style.width.px]="lockedWidth() ?? null"
     (click)="onLinkClick($event)"
   >
     <ng-container *ngTemplateOutlet="content" />
@@ -44,6 +57,8 @@
     [attr.aria-haspopup]="ariaHaspopup() ?? null"
     [attr.aria-describedby]="ariaDescribedby() || null"
     [attr.aria-pressed]="ariaPressed() ?? null"
+    [attr.aria-busy]="loading() ? 'true' : null"
+    [style.width.px]="lockedWidth() ?? null"
     [disabled]="disabled()"
   >
     <ng-container *ngTemplateOutlet="content" />

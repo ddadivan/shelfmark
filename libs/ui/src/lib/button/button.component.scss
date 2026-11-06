@@ -35,8 +35,9 @@
     transform: scale(0.97);
   }
 
+  // A busy link is `aria-disabled` too (no `href`) but is not dimmed.
   &:disabled,
-  &[aria-disabled='true'] {
+  &[aria-disabled='true']:not([aria-busy='true']) {
     cursor: not-allowed;
     opacity: 0.45;
     transform: none;
@@ -90,6 +91,29 @@ a.ui-button {
 
   @include hover {
     filter: brightness(0.92);
+  }
+}
+
+// Loading: the spinner grows in while the label makes room (`spinner-grow`) and shrinks back
+// out on the way out; the width lock itself is set by the component. An icon-only button has no
+// label to make room, so its spinner only fades and scales in place.
+.ui-button[aria-busy='true'] {
+  cursor: progress;
+}
+
+.ui-button__spinner {
+  @include enter(spinner-grow);
+}
+
+.ui-button__spinner--leave {
+  @include leave(spinner-shrink);
+}
+
+.ui-button__spinner--solo {
+  @include enter(spinner);
+
+  &.ui-button__spinner--leave {
+    @include leave(spinner);
   }
 }
 
