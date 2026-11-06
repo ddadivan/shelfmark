@@ -22,4 +22,5 @@ export * from './lib/save-status';
 export * from './lib/spinner';
 export * from './lib/steps';
 export * from './lib/textarea';
+export * from './lib/toast';
 export * from './lib/tooltip';

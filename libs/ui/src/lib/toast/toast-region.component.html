@@ -1,0 +1,12 @@
+@for (item of store.items(); track item.id) {
+  <ui-toast
+    class="ui-toast-region__item"
+    animate.enter="ui-toast-region__item--enter"
+    animate.leave="ui-toast-region__item--leave"
+    [kind]="item.kind"
+    [text]="item.text"
+    [actionLabel]="item.action?.label"
+    (action)="store.runAction(item)"
+    (pausedChange)="store.setPaused(item.id, $event)"
+  />
+}

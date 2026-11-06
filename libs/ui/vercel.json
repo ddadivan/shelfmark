@@ -4,6 +4,7 @@
   "installCommand": "cd ../.. && npm ci --include=dev",
   "buildCommand": "cd ../.. && npx nx build-storybook ui --output-style=static",
   "outputDirectory": "storybook-static",
+  "ignoreCommand": "[ \"$VERCEL_GIT_COMMIT_REF\" != \"main\" ]",
   "git": {
     "deploymentEnabled": {
       "dependabot/**": false

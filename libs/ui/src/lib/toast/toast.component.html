@@ -1,0 +1,5 @@
+<ui-icon [name]="icon()" />
+<span class="ui-toast__text">{{ text() }}</span>
+@if (actionLabel(); as label) {
+  <button type="button" class="ui-toast__action" (click)="action.emit()">{{ label }}</button>
+}
