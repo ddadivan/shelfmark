@@ -474,6 +474,64 @@ describe('MenuComponent', () => {
   });
 });
 
+@Component({
+  imports: [ButtonComponent, MenuComponent, MenuItemComponent, MenuTriggerDirective],
+  template: `
+    @if (show()) {
+      <ui-button id="btn" [uiMenuTrigger]="menu">More</ui-button>
+      <ui-menu #menu ariaLabel="Root menu"><ui-menu-item>One</ui-menu-item></ui-menu>
+    }
+  `,
+})
+class RootIfHostComponent {
+  readonly show = signal(true);
+}
+
+describe('MenuComponent as the root of an embedded view', () => {
+  afterEach(() => {
+    document.querySelectorAll('.cdk-overlay-container').forEach((el) => {
+      el.remove();
+    });
+  });
+
+  it('leaves no ghost menu when removed while open', async () => {
+    const fixture = TestBed.createComponent(RootIfHostComponent);
+    await settle(fixture);
+    const menuHost = fixture.nativeElement.querySelector('ui-menu') as HTMLElement;
+    fixture.nativeElement.querySelector('#btn button').click();
+    await settle(fixture);
+    expect(menuHost.closest('.cdk-overlay-pane')).not.toBeNull();
+    fixture.componentInstance.show.set(false);
+    await settle(fixture);
+    expect(document.contains(menuHost)).toBe(false);
+    expect(document.querySelector('.ui-menu--shown')).toBeNull();
+    expect(document.querySelector('[role="menu"]')).toBeNull();
+  });
+});
+
+describe('MenuComponent external detach', () => {
+  afterEach(() => {
+    document.querySelectorAll('.cdk-overlay-container').forEach((el) => {
+      el.remove();
+    });
+  });
+
+  it('resets its state and drops the document listener when the overlay detaches', async () => {
+    const { fixture, inner } = await setup();
+    const menu = fixture.debugElement.children
+      .map((child) => child.componentInstance)
+      .find((i): i is MenuComponent => i instanceof MenuComponent) as MenuComponent;
+    const remove = vi.spyOn(document, 'removeEventListener');
+    inner.click();
+    await settle(fixture);
+    (menu as unknown as { overlay: { detach(): void } }).overlay.detach();
+    await settle(fixture);
+    expect(menu.isOpen()).toBe(false);
+    expect(remove).toHaveBeenCalledWith('pointerdown', expect.any(Function), true);
+    remove.mockRestore();
+  });
+});
+
 describe('MenuComponent inline', () => {
   it('renders in place, always open, and activates without an overlay', async () => {
     const fixture = TestBed.createComponent(InlineHostComponent);

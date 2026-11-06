@@ -96,6 +96,7 @@ export class MenuComponent {
 
   private overlay: ConnectedOverlay | null = null;
   private overlayOrigin: HTMLElement | OverlayPoint | null = null;
+  private overlayAlign: MenuAlign | null = null;
   private detachSubscription: Subscription | null = null;
   private restoreTarget: HTMLElement | null = null;
   private listening = false;
@@ -106,7 +107,11 @@ export class MenuComponent {
     });
     inject(DestroyRef).onDestroy(() => {
       this.disarm();
+      this.attached.set(false);
       this.disposeOverlay();
+      // Angular may have detached the host (root of an embedded view) before this runs; the
+      // CDK dispose can put it back, so remove it for good.
+      this.host.remove();
     });
   }
 
@@ -150,8 +155,13 @@ export class MenuComponent {
           ? active
           : null;
     }
-    if (this.overlay?.isAttached && isElement(origin) && origin === this.overlayOrigin) {
-      // Reopened on the same trigger while the leave animation runs.
+    if (
+      this.overlay?.isAttached &&
+      isElement(origin) &&
+      origin === this.overlayOrigin &&
+      this.align() === this.overlayAlign
+    ) {
+      // Reopened on the same trigger (same alignment) while the leave animation runs.
       this.overlay.cancelRelease();
     } else {
       this.disposeOverlay();
@@ -187,11 +197,18 @@ export class MenuComponent {
     );
     this.overlay = overlay;
     this.overlayOrigin = origin;
+    this.overlayAlign = this.align();
     overlay.attachElement(this.host);
     this.detachSubscription = overlay.detachments().subscribe(() => {
       if (this.overlay === overlay) {
         this.disposeOverlay();
+        this.disarm();
         this.attached.set(false);
+        if (this.open()) {
+          // Detached from outside (not through `close()`): no listener may outlive the pane.
+          this.open.set(false);
+          this.anchorElement.set(null);
+        }
       }
     });
   }
@@ -202,12 +219,16 @@ export class MenuComponent {
     const overlay = this.overlay;
     this.overlay = null;
     this.overlayOrigin = null;
+    this.overlayAlign = null;
     overlay?.dispose();
   }
 
   /**
    * Moves focus to the first or last item through the Home / End keys of the Aria menu, so
-   * its active item stays in step with the DOM focus.
+   * its active item stays in step with the DOM focus. `@angular/aria` 22.2.5 has no public
+   * `first()` / `last()` on `Menu` (only the private `_pattern`), and focusing the element
+   * directly would leave Aria's active item behind. The spec asserts first/last focus, so an
+   * Aria upgrade that changes this fails loudly.
    */
   private focusEdge(edge: MenuFocusEdge): void {
     if (!this.open()) {

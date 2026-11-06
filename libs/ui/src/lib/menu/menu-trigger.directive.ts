@@ -39,7 +39,9 @@ export class MenuTriggerDirective {
       const unlisten = [
         this.renderer.listen(target, 'click', (event: MouseEvent) => {
           // A link trigger must not navigate.
-          event.preventDefault();
+          if (target.tagName === 'A') {
+            event.preventDefault();
+          }
           this.toggle(target);
         }),
         this.renderer.listen(target, 'keydown', (event: KeyboardEvent) => {
