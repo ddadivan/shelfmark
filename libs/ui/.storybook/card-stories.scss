@@ -12,6 +12,7 @@
 
 .cs-pane {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-6);
   align-content: start;
   min-width: 0;

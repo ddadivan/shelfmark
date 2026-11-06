@@ -201,7 +201,11 @@ export const Reveal: Story = {
 /** Every state in both themes. */
 export const AllVariants: Story = {
   render: (args) => ({
-    props: { ...withProps(args), themes: Object.values(CARD_STORY_THEME) },
+    props: {
+      ...withProps(args),
+      preview: CARD_STORY_IMAGE.Preview,
+      themes: Object.values(CARD_STORY_THEME),
+    },
     template: `
       <div class="cs-themes">
         @for (theme of themes; track theme) {
@@ -209,7 +213,7 @@ export const AllVariants: Story = {
             <div class="cs-list cs-surface">
               <ui-list-item href="https://example.com/">${content()}</ui-list-item>
               <ui-list-item href="https://example.com/" [selected]="true">${content('Selected row', true)}</ui-list-item>
-              <ui-list-item href="https://example.com/" [thumb]="thumb">${content('With a preview thumb')}</ui-list-item>
+              <ui-list-item href="https://example.com/" [thumb]="preview">${content('With a preview thumb')}</ui-list-item>
               <ui-list-item href="https://example.com/" thumb="">${content('Missing preview')}</ui-list-item>
               <ui-list-item href="https://example.com/" [compact]="true">${content('Compact row', false, false)}</ui-list-item>
               <ui-list-item href="https://example.com/">${content(

@@ -68,6 +68,11 @@
 :host(.ui-card--selected) {
   background: var(--accent-bg);
   border-color: var(--accent);
+
+  // `text-muted` on `accent-bg` is below 4.5:1 in the light theme.
+  .ui-card__meta {
+    color: var(--accent-text);
+  }
 }
 
 // Media ---------------------------------------------------------------------------------------
