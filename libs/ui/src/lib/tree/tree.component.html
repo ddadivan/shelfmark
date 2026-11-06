@@ -38,7 +38,7 @@
         }
         <span class="ui-tree__name" [id]="item.id() + '-name'">{{ node.name }}</span>
         @if (node.count !== undefined) {
-          <span class="ui-tree__count" [id]="item.id() + '-count'">{{ node.count }}</span>
+          <span class="ui-tree__count" [id]="item.id() + '-count'">&ngsp;{{ node.count }}</span>
         }
         @if (folder && menuLabel()) {
           <ui-button
