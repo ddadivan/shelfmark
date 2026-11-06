@@ -7,6 +7,9 @@ import { IconComponent } from '../icon/icon.component';
  * (the site's first letter) and, without a letter, the link icon in `text-muted`. The box has a
  * fixed size, so a failed or late image never shifts the layout. The image is bound as `src`
  * only, lazy (`loading="lazy"`, `decoding="async"`) and sent with `referrerpolicy="no-referrer"`.
+ * The app CSP is `img-src 'self' data:`, so external favicons are blocked and the letter or
+ * icon shows until stage 3 decides on an image proxy or a CSP change (see the image-sources
+ * issue #57 in milestone 3).
  * Always decorative (`aria-hidden`): the domain next to it is the text.
  */
 @Component({

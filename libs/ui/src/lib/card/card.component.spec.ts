@@ -185,7 +185,13 @@ describe('CardComponent', () => {
     });
     expect(card.classList.contains('ui-card--pinned')).toBe(true);
     expect(card.classList.contains('ui-card--reveal')).toBe(true);
-    expect(card.querySelector('.ui-card__description')?.textContent).toBe('opens in a new tab');
+    const description = card.querySelector('.ui-card__description') as HTMLElement;
+    expect(description.textContent).toBe('opens in a new tab');
+    const link = card.querySelector('.ui-card__link') as HTMLElement;
+    expect(link.getAttribute('aria-describedby')).toBe(description.id);
+    expect(link.contains(description)).toBe(false);
+    update((c) => c.description.set(undefined));
+    expect(link.hasAttribute('aria-describedby')).toBe(false);
   });
 
   describe('styles', () => {

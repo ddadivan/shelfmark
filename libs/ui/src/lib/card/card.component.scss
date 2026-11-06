@@ -239,7 +239,7 @@
   }
 }
 
-:host(:focus-within) .ui-card__actions,
+:host(:has(:focus-visible)) .ui-card__actions,
 :host(.ui-card--pinned) .ui-card__actions {
   opacity: 1;
   transform: none;

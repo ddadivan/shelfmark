@@ -1,8 +1,5 @@
 <ng-template #title>
   <ng-content select="[slot=title]" />
-  @if (description(); as text) {
-    <span class="ui-card__description">{{ text }}</span>
-  }
 </ng-template>
 
 <div class="ui-card__media">
@@ -34,6 +31,7 @@
       [attr.target]="newTab() ? '_blank' : null"
       [attr.rel]="newTab() ? 'noopener noreferrer' : null"
       [attr.aria-current]="selected() ? 'true' : null"
+      [attr.aria-describedby]="description() ? descriptionId : null"
       (click)="activated.emit($event)"
     >
       <ng-container [ngTemplateOutlet]="title" />
@@ -43,6 +41,7 @@
       type="button"
       class="ui-card__link"
       [attr.aria-current]="selected() ? 'true' : null"
+      [attr.aria-describedby]="description() ? descriptionId : null"
       (click)="activated.emit($event)"
     >
       <ng-container [ngTemplateOutlet]="title" />
@@ -51,3 +50,6 @@
   <ng-content />
 </div>
 <div class="ui-card__actions"><ng-content select="[slot=actions]" /></div>
+@if (description(); as text) {
+  <span class="ui-card__description" [id]="descriptionId">{{ text }}</span>
+}

@@ -6,7 +6,6 @@ import { ButtonComponent } from '../button/button.component';
 import { CARD_STORY_IMAGE } from '../card/stories/card-story-image.const';
 import { FaviconComponent } from '../favicon/favicon.component';
 import { ListItemComponent } from './list-item.component';
-import { LIST_ITEM_PRESS_KEY } from './models/list-item-press-key.const';
 
 @Component({
   imports: [ListItemComponent, ButtonComponent, FaviconComponent],
@@ -145,7 +144,10 @@ describe('ListItemComponent', () => {
     expect(row.classList.contains('ui-list-item--compact')).toBe(true);
     expect(row.classList.contains('ui-list-item--reveal')).toBe(true);
     expect(main().getAttribute('aria-current')).toBe('true');
-    expect(row.querySelector('.ui-list-item__description')?.textContent).toBe('opens in a new tab');
+    const description = row.querySelector('.ui-list-item__description') as HTMLElement;
+    expect(description.textContent).toBe('opens in a new tab');
+    expect(main().getAttribute('aria-describedby')).toBe(description.id);
+    expect(main().contains(description)).toBe(false);
   });
 
   it('shows no thumb unless one is set, then the image or a picture icon', () => {
@@ -173,25 +175,28 @@ describe('ListItemComponent', () => {
       expect(row.querySelectorAll(':scope > .ui-ripple').length).toBe(1);
     });
 
-    it('does not play on a press of a trailing control, nor on Enter or Space there', () => {
-      const { row } = setup();
-      const trailing = row.querySelector('.ui-list-item__trailing button') as HTMLElement;
-      pointerDown(trailing);
-      for (const key of Object.values(LIST_ITEM_PRESS_KEY)) {
-        trailing.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
-        trailing.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true }));
-      }
-      expect(row.querySelectorAll(':scope > .ui-ripple').length).toBe(0);
-    });
-
-    it('lets other keys on a trailing control bubble', () => {
-      const { row } = setup();
+    it('does not play on a press or Enter / Space on a trailing control, and the events still bubble', () => {
+      const { host, row } = setup();
       const seen: string[] = [];
-      row.addEventListener('keydown', (event) => seen.push(event.key));
-      const trailing = row.querySelector('.ui-list-item__trailing button') as HTMLElement;
-      trailing.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', bubbles: true }));
-      trailing.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
-      expect(seen).toEqual(['a']);
+      const listen = (event: Event) => seen.push(event.type);
+      for (const type of ['pointerdown', 'keydown', 'keyup']) {
+        document.addEventListener(type, listen);
+      }
+      try {
+        const trailing = row.querySelector('.ui-list-item__trailing button') as HTMLElement;
+        pointerDown(trailing);
+        for (const key of ['Enter', ' ']) {
+          trailing.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+          trailing.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true }));
+        }
+        expect(row.querySelectorAll(':scope > .ui-ripple').length).toBe(0);
+        expect(seen).toEqual(['pointerdown', 'keydown', 'keyup', 'keydown', 'keyup']);
+      } finally {
+        for (const type of ['pointerdown', 'keydown', 'keyup']) {
+          document.removeEventListener(type, listen);
+        }
+      }
+      expect(host).toBeTruthy();
     });
 
     it('can be switched off', () => {

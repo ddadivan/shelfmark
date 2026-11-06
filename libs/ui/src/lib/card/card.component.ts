@@ -10,6 +10,8 @@ import {
 } from '@angular/core';
 import { IconComponent } from '../icon/icon.component';
 
+let nextId = 0;
+
 /**
  * Surface of a saved link in the cards view: a `surface` box with a `border` hairline and
  * `radius-lg`, flat at rest. Content comes in through slots (`slot="..."` attributes):
@@ -26,6 +28,10 @@ import { IconComponent } from '../icon/icon.component';
  * sit above that layer, so using them never activates the card. `activated` emits the click
  * (the feature may `preventDefault()` an `href` click to route); `newTab` opens `href` in a
  * new tab with `noopener noreferrer`.
+ *
+ * Images: the app CSP is `img-src 'self' data:`, so external preview images and favicons
+ * are blocked and the fallbacks show until stage 3 decides on an image proxy or a CSP change
+ * (see the image-sources issue #57 in milestone 3).
  *
  * Hover (pointer devices only): a soft shadow spreads from under the card (320 ms), the
  * border darkens (in dark theme the surface brightens a little with a faint glow), the image
@@ -48,6 +54,9 @@ import { IconComponent } from '../icon/icon.component';
   styleUrl: './card.component.scss',
 })
 export class CardComponent {
+  /** Id of the visually hidden description that the link points to. */
+  protected readonly descriptionId = `ui-card-description-${nextId++}`;
+
   /** Preview image URL (16:9, cover). Without it, or when it fails, the `fallback` slot shows. */
   readonly image = input<string>();
   /** Makes the activation target an `<a href>`; without it a `<button type="button">`. */

@@ -9,10 +9,10 @@ import {
   output,
 } from '@angular/core';
 import { IconComponent } from '../icon/icon.component';
+import { UI_RIPPLE_IGNORE } from '../ripple/models/ui-ripple-ignore.const';
 import { RippleDirective } from '../ripple/ripple.directive';
-import { LIST_ITEM_PRESS_KEY } from './models/list-item-press-key.const';
 
-const PRESS_KEYS: readonly string[] = Object.values(LIST_ITEM_PRESS_KEY);
+let nextId = 0;
 
 /**
  * One saved link in the list view (and, `compact`, in "Recently opened"): a row with `leading`
@@ -26,15 +26,20 @@ const PRESS_KEYS: readonly string[] = Object.values(LIST_ITEM_PRESS_KEY);
  * never activates the row. `activated` emits the click (the feature may `preventDefault()` an
  * `href` click to route); `newTab` opens `href` in a new tab with `noopener noreferrer`.
  *
+ * Images: the app CSP is `img-src 'self' data:`, so external preview images and favicons
+ * are blocked and the fallbacks show until stage 3 decides on an image proxy or a CSP change
+ * (see the image-sources issue #57 in milestone 3).
+ *
  * Hover (pointer devices only) is `surface-hover`, `selected` is `accent-bg`, focus is the
  * 2px ring, a press plays the ripple (`ripple` opts out). Under reduced motion there is no
- * ripple: the row shows `surface-pressed` while pressed. Ripples started on the trailing
- * controls do not play on the row.
+ * ripple: the row shows `surface-pressed` while pressed. The ripple ignores events from the trailing controls
+ * (`UI_RIPPLE_IGNORE`), which still bubble normally.
  */
 @Component({
   selector: 'ui-list-item',
   imports: [NgTemplateOutlet, IconComponent],
   hostDirectives: [{ directive: RippleDirective, inputs: ['uiRipple: ripple'] }],
+  providers: [{ provide: UI_RIPPLE_IGNORE, useValue: '.ui-list-item__trailing' }],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-list-item',
@@ -46,6 +51,9 @@ const PRESS_KEYS: readonly string[] = Object.values(LIST_ITEM_PRESS_KEY);
   styleUrl: './list-item.component.scss',
 })
 export class ListItemComponent {
+  /** Id of the visually hidden description that the link points to. */
+  protected readonly descriptionId = `ui-list-item-description-${nextId++}`;
+
   /** Makes the activation target an `<a href>`; without it a `<button type="button">`. */
   readonly href = input<string>();
   /** Opens `href` in a new tab (`target="_blank"`, `rel="noopener noreferrer"`). */
@@ -75,16 +83,4 @@ export class ListItemComponent {
 
   protected readonly hasThumb = computed(() => this.thumb() !== undefined);
   protected readonly thumbSrc = computed(() => (this.failed() ? null : this.thumb() || null));
-
-  /** A press on a trailing control must not bubble to the row, whose ripple would start. */
-  protected keepPointerToTrailing(event: PointerEvent): void {
-    event.stopPropagation();
-  }
-
-  /** Enter and Space on a trailing control must not start the row's keyboard ripple. */
-  protected keepKeyToTrailing(event: KeyboardEvent): void {
-    if (PRESS_KEYS.includes(event.key)) {
-      event.stopPropagation();
-    }
-  }
 }

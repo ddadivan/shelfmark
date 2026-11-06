@@ -1,9 +1,6 @@
 <ng-template #main>
   <span class="ui-list-item__title"><ng-content select="[slot=title]" /></span>
   <span class="ui-list-item__meta"><ng-content select="[slot=meta]" /></span>
-  @if (description(); as text) {
-    <span class="ui-list-item__description">{{ text }}</span>
-  }
 </ng-template>
 
 <div class="ui-list-item__leading"><ng-content select="[slot=leading]" /></div>
@@ -31,6 +28,7 @@
     [attr.target]="newTab() ? '_blank' : null"
     [attr.rel]="newTab() ? 'noopener noreferrer' : null"
     [attr.aria-current]="selected() ? 'true' : null"
+    [attr.aria-describedby]="description() ? descriptionId : null"
     (click)="activated.emit($event)"
   >
     <ng-container [ngTemplateOutlet]="main" />
@@ -40,17 +38,15 @@
     type="button"
     class="ui-list-item__link"
     [attr.aria-current]="selected() ? 'true' : null"
+    [attr.aria-describedby]="description() ? descriptionId : null"
     (click)="activated.emit($event)"
   >
     <ng-container [ngTemplateOutlet]="main" />
   </button>
 }
-<!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- only stops events bubbling to the row ripple; the wrapper is not interactive -->
-<div
-  class="ui-list-item__trailing"
-  (pointerdown)="keepPointerToTrailing($event)"
-  (keydown)="keepKeyToTrailing($event)"
-  (keyup)="keepKeyToTrailing($event)"
->
+<div class="ui-list-item__trailing">
   <ng-content select="[slot=trailing]" />
 </div>
+@if (description(); as text) {
+  <span class="ui-list-item__description" [id]="descriptionId">{{ text }}</span>
+}
