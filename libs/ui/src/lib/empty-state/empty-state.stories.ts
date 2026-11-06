@@ -4,6 +4,7 @@ import { ILLUSTRATION_NAMES } from '../illustration/models/illustration-names.co
 import { ButtonComponent } from '../button/button.component';
 import { EmptyStateComponent } from './empty-state.component';
 import { THEME, THEME_ATTRIBUTE } from '../theme';
+import { ILLUSTRATION_MOTION } from '../illustration/models/illustration-motion.const';
 
 const meta: Meta<EmptyStateComponent> = {
   title: 'Components/EmptyState',
@@ -18,7 +19,10 @@ const meta: Meta<EmptyStateComponent> = {
   argTypes: {
     icon: { control: 'select', options: [undefined, ...ICON_NAMES] },
     illustration: { control: 'select', options: [undefined, ...ILLUSTRATION_NAMES] },
-    illustrationMotion: { control: 'inline-radio', options: [undefined, 'loop', 'once', 'none'] },
+    illustrationMotion: {
+      control: 'inline-radio',
+      options: [undefined, ...Object.values(ILLUSTRATION_MOTION)],
+    },
     headingLevel: { control: 'inline-radio', options: [1, 2, 3, 4, 5, 6] },
   },
   render: (args) => ({

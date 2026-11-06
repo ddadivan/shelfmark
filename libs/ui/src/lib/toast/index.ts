@@ -1,4 +1,5 @@
 export type { ToastAction } from './models/toast-action.interface';
+export { TOAST_KIND } from './models/toast-kind.const';
 export type { ToastKind } from './models/toast-kind.type';
 export type { ToastOptions } from './models/toast-options.interface';
 export type { ToastRef } from './models/toast-ref.interface';

@@ -1,26 +1,26 @@
 <span
   class="ui-save-status"
-  [class.ui-save-status--done]="state() === 'saved'"
-  [class.ui-save-status--error]="state() === 'error'"
+  [class.ui-save-status--done]="state() === SAVE_STATUS_STATE.Saved"
+  [class.ui-save-status--error]="state() === SAVE_STATUS_STATE.Error"
   role="status"
 >
   <span class="ui-save-status__slot">
     @switch (state()) {
-      @case ('saving') {
+      @case (SAVE_STATUS_STATE.Saving) {
         <ui-spinner
           size="sm"
           class="ui-save-status__icon"
           animate.leave="ui-save-status__icon--leave"
         />
       }
-      @case ('saved') {
+      @case (SAVE_STATUS_STATE.Saved) {
         <ui-icon
           name="check"
           class="ui-save-status__icon"
           animate.leave="ui-save-status__icon--leave"
         />
       }
-      @case ('error') {
+      @case (SAVE_STATUS_STATE.Error) {
         <ui-icon
           name="error"
           class="ui-save-status__icon"

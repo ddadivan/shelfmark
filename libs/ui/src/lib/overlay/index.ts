@@ -1,6 +1,8 @@
 export { ConnectedOverlay } from './connected-overlay';
 export type { ConnectedOverlayConfig } from './models/connected-overlay-config.interface';
 export type { GlobalOverlayConfig } from './models/global-overlay-config.interface';
+export { OVERLAY_EDGE } from './models/overlay-edge.const';
+export type { OverlayEdge } from './models/overlay-edge.type';
 export { OVERLAY_LAYER } from './models/overlay-layer.const';
 export type { OverlayLayer } from './models/overlay-layer.type';
 export type { OverlayPoint } from './models/overlay-point.interface';

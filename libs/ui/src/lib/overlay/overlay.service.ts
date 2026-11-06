@@ -4,6 +4,7 @@ import { ConnectedOverlay } from './connected-overlay';
 import type { GlobalOverlayConfig } from './models/global-overlay-config.interface';
 import { setOverlayLayer } from './overlay-layer';
 import type { ConnectedOverlayConfig } from './models/connected-overlay-config.interface';
+import { OVERLAY_EDGE } from './models/overlay-edge.const';
 import type { OverlaySide } from './models/overlay-side.type';
 
 /**
@@ -63,7 +64,7 @@ export class UiOverlay {
    */
   global(config: GlobalOverlayConfig, options: { injector?: Injector } = {}): ConnectedOverlay {
     const strategy = this.overlay.position().global().left('0');
-    if (config.edge === 'top') {
+    if (config.edge === OVERLAY_EDGE.Top) {
       strategy.top('0');
     } else {
       strategy.bottom('0');

@@ -1,16 +1,16 @@
 import { signal } from '@angular/core';
 import type { Meta, StoryObj } from '@storybook/angular-vite';
-import type { ProgressBarVariant } from './models/progress-bar-variant.type';
 import { ProgressBarComponent } from './progress-bar.component';
 import { THEME, THEME_ATTRIBUTE } from '../theme';
+import { PROGRESS_BAR_VARIANT } from './models/progress-bar-variant.const';
 
-const VARIANTS: ProgressBarVariant[] = ['fixed', 'inline'];
+const VARIANTS = Object.values(PROGRESS_BAR_VARIANT);
 
 const meta: Meta<ProgressBarComponent> = {
   title: 'Components/ProgressBar',
   component: ProgressBarComponent,
   tags: ['autodocs'],
-  args: { active: true, variant: 'fixed' },
+  args: { active: true, variant: PROGRESS_BAR_VARIANT.Fixed },
   argTypes: {
     variant: { control: 'inline-radio', options: VARIANTS },
     active: { control: 'boolean' },
@@ -19,8 +19,8 @@ const meta: Meta<ProgressBarComponent> = {
   render: (args) => ({
     props: args,
     template: `
-      <div class="ls-box" [class.ls-box--inline]="variant === 'inline'">
-        <ui-progress-bar [active]="active" [variant]="variant" [label]="label" [class.ls-inline-bar]="variant === 'inline'" />
+      <div class="ls-box" [class.ls-box--inline]="variant === PROGRESS_BAR_VARIANT.Inline">
+        <ui-progress-bar [active]="active" [variant]="variant" [label]="label" [class.ls-inline-bar]="variant === PROGRESS_BAR_VARIANT.Inline" />
         <div class="ls-lines">
           <div class="ls-line ls-line--long"></div>
           <div class="ls-line ls-line--short"></div>
@@ -36,7 +36,9 @@ type Story = StoryObj<ProgressBarComponent>;
 export const Fixed: Story = {};
 
 /** Inside a box, for example the boot screen: shown at once, 3px on a track. */
-export const Inline: Story = { args: { variant: 'inline', label: 'Loading Shelfmark' } };
+export const Inline: Story = {
+  args: { variant: PROGRESS_BAR_VARIANT.Inline, label: 'Loading Shelfmark' },
+};
 
 /** Toggle `active` in the controls: on finish the bar fills to 100% and fades. */
 export const Idle: Story = { args: { active: false } };

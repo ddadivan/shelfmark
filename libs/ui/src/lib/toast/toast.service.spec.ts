@@ -5,6 +5,7 @@ import { axeViolations } from '../../testing/axe';
 import { ToastService } from './toast.service';
 import { OVERLAY_LAYER } from '../overlay/models/overlay-layer.const';
 import { overlayLayerClass } from '../overlay/overlay-layer';
+import { TOAST_KIND } from './models/toast-kind.const';
 
 function setup() {
   const service = TestBed.inject(ToastService);
@@ -64,9 +65,9 @@ describe('ToastService', () => {
   });
 
   it.each([
-    ['info', 'info'],
-    ['success', 'check'],
-    ['error', 'error'],
+    [TOAST_KIND.Info, 'info'],
+    [TOAST_KIND.Success, 'check'],
+    [TOAST_KIND.Error, 'error'],
   ] as const)('the %s kind draws the %s icon', (kind, icon) => {
     const service = setup();
     service.show({ text: 'x', kind });
@@ -337,7 +338,7 @@ describe('ToastService', () => {
   it('has no axe violations for every kind, with and without an action', async () => {
     vi.useRealTimers();
     const service = setup();
-    for (const kind of ['info', 'success', 'error'] as const) {
+    for (const kind of Object.values(TOAST_KIND)) {
       service.show({ text: 'Something happened', kind, action: { label: 'Undo', run: vi.fn() } });
       render();
       expect(await axeViolations(region())).toEqual([]);

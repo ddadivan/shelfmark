@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import type { RadioOption } from './models/radio-option.interface';
-import type { RadioOrientation } from './models/radio-orientation.type';
 import { RadioGroupComponent } from './radio-group.component';
 import { THEME, THEME_ATTRIBUTE } from '../theme';
+import { RADIO_ORIENTATION } from './models/radio-orientation.const';
 
 const OPTIONS: RadioOption[] = [
   {
@@ -13,7 +13,7 @@ const OPTIONS: RadioOption[] = [
   { value: 'delete', title: 'Delete links too', description: "This can't be undone" },
 ];
 
-const ORIENTATIONS: RadioOrientation[] = ['vertical', 'horizontal'];
+const ORIENTATIONS = Object.values(RADIO_ORIENTATION);
 
 const meta: Meta<RadioGroupComponent> = {
   title: 'Components/RadioGroup',
@@ -31,7 +31,7 @@ const meta: Meta<RadioGroupComponent> = {
   },
   args: {
     options: OPTIONS,
-    orientation: 'vertical',
+    orientation: RADIO_ORIENTATION.Vertical,
     ariaLabel: 'What happens to the links',
     disabled: false,
     value: 'move',
@@ -57,7 +57,7 @@ type Story = StoryObj<RadioGroupComponent>;
 
 export const Vertical: Story = {};
 
-export const Horizontal: Story = { args: { orientation: 'horizontal' } };
+export const Horizontal: Story = { args: { orientation: RADIO_ORIENTATION.Horizontal } };
 
 export const SecondSelected: Story = { args: { value: 'delete' } };
 

@@ -1,9 +1,9 @@
-@if (phase() !== 'idle') {
+@if (phase() !== PROGRESS_BAR_PHASE.Idle) {
   <div
     class="ui-progress"
-    [class.ui-progress--fixed]="variant() === 'fixed'"
-    [class.ui-progress--inline]="variant() === 'inline'"
-    [class.ui-progress--done]="phase() === 'done'"
+    [class.ui-progress--fixed]="variant() === PROGRESS_BAR_VARIANT.Fixed"
+    [class.ui-progress--inline]="variant() === PROGRESS_BAR_VARIANT.Inline"
+    [class.ui-progress--done]="phase() === PROGRESS_BAR_PHASE.Done"
     [attr.role]="label() ? 'progressbar' : null"
     [attr.aria-label]="label() || null"
     [attr.aria-hidden]="label() ? null : 'true'"

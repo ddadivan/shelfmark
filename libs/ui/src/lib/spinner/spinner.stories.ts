@@ -2,14 +2,15 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import type { SpinnerSize } from './models/spinner-size.type';
 import { SpinnerComponent } from './spinner.component';
 import { THEME, THEME_ATTRIBUTE } from '../theme';
+import { SPINNER_SIZE } from './models/spinner-size.const';
 
-const SIZES: SpinnerSize[] = ['sm', 'md', 'lg'];
+const SIZES: SpinnerSize[] = Object.values(SPINNER_SIZE);
 
 const meta: Meta<SpinnerComponent> = {
   title: 'Components/Spinner',
   component: SpinnerComponent,
   tags: ['autodocs'],
-  args: { size: 'md' },
+  args: { size: SPINNER_SIZE.Md },
   argTypes: { size: { control: 'inline-radio', options: SIZES }, label: { control: 'text' } },
 };
 
@@ -18,9 +19,9 @@ type Story = StoryObj<SpinnerComponent>;
 
 export const Default: Story = {};
 
-export const Small: Story = { args: { size: 'sm' } };
+export const Small: Story = { args: { size: SPINNER_SIZE.Sm } };
 
-export const Large: Story = { args: { size: 'lg' } };
+export const Large: Story = { args: { size: SPINNER_SIZE.Lg } };
 
 /** With `label` the spinner is an indeterminate `progressbar`; without it it is decorative. */
 export const Labelled: Story = { args: { label: 'Loading links' } };

@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { axeViolations } from '../../testing/axe';
 import type { SaveStatusState } from './models/save-status-state.type';
 import { SaveStatusComponent } from './save-status.component';
+import { SAVE_STATUS_STATE } from './models/save-status-state.const';
 
 function setup(state: SaveStatusState) {
   const fixture = TestBed.createComponent(SaveStatusComponent);
@@ -22,7 +23,7 @@ function setup(state: SaveStatusState) {
 
 describe('SaveStatusComponent', () => {
   it('saving: spinner and the saving text', () => {
-    const { host, status, text } = setup('saving');
+    const { host, status, text } = setup(SAVE_STATUS_STATE.Saving);
     expect(text()).toBe('Saving…');
     expect(host.querySelector('ui-spinner')).not.toBeNull();
     expect(host.querySelector('ui-icon')).toBeNull();
@@ -31,7 +32,7 @@ describe('SaveStatusComponent', () => {
   });
 
   it('saved: check icon, sage modifier and the saved text', () => {
-    const { host, status, text } = setup('saved');
+    const { host, status, text } = setup(SAVE_STATUS_STATE.Saved);
     expect(text()).toBe('Saved');
     expect(host.querySelector('ui-spinner')).toBeNull();
     expect(host.querySelector('use')?.getAttribute('href')).toContain('#sm-check');
@@ -39,15 +40,15 @@ describe('SaveStatusComponent', () => {
   });
 
   it('error: warning icon, danger modifier and the error text', () => {
-    const { host, status, text } = setup('error');
+    const { host, status, text } = setup(SAVE_STATUS_STATE.Error);
     expect(text()).toBe('Could not save');
     expect(host.querySelector('use')?.getAttribute('href')).toContain('#sm-error');
     expect(status().classList.contains('ui-save-status--error')).toBe(true);
   });
 
   it('follows the state', () => {
-    const { fixture, host, text } = setup('saving');
-    fixture.componentRef.setInput('state', 'saved');
+    const { fixture, host, text } = setup(SAVE_STATUS_STATE.Saving);
+    fixture.componentRef.setInput('state', SAVE_STATUS_STATE.Saved);
     fixture.detectChanges();
     TestBed.tick();
     expect(text()).toBe('Saved');
@@ -55,12 +56,12 @@ describe('SaveStatusComponent', () => {
   });
 
   it('keeps the icon decorative and the text in a polite status region', () => {
-    const { host, status } = setup('saved');
+    const { host, status } = setup(SAVE_STATUS_STATE.Saved);
     expect(status().getAttribute('role')).toBe('status');
     expect(host.querySelector('ui-icon')?.getAttribute('aria-hidden')).toBe('true');
   });
 
-  it.each<SaveStatusState>(['saving', 'saved', 'error'])(
+  it.each<SaveStatusState>(Object.values(SAVE_STATUS_STATE))(
     'has no axe violations (%s)',
     async (state) => {
       expect(await axeViolations(setup(state).host)).toEqual([]);

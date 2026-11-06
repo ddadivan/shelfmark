@@ -5,6 +5,7 @@ import type { ToastKind } from './models/toast-kind.type';
 import { ToastComponent } from './toast.component';
 import { ToastService } from './toast.service';
 import { THEME, THEME_ATTRIBUTE } from '../theme';
+import { TOAST_KIND } from './models/toast-kind.const';
 
 /** Story helper: buttons that call `ToastService`. Not part of the library. */
 @Component({
@@ -29,7 +30,7 @@ import { THEME, THEME_ATTRIBUTE } from '../theme';
 })
 class ToastDemoComponent {
   private readonly toasts = inject(ToastService);
-  protected readonly kinds: readonly ToastKind[] = ['info', 'success', 'error'];
+  protected readonly kinds: readonly ToastKind[] = Object.values(TOAST_KIND);
   protected last = '';
 
   protected show(kind: ToastKind): void {
@@ -51,7 +52,7 @@ class ToastDemoComponent {
 
   protected retry(): void {
     this.toasts.show({
-      kind: 'error',
+      kind: TOAST_KIND.Error,
       text: "Couldn't save. Check your connection.",
       action: {
         label: 'Retry',
@@ -64,7 +65,7 @@ class ToastDemoComponent {
 
   protected many(): void {
     for (let i = 1; i <= 5; i++) {
-      this.toasts.show({ kind: 'success', text: `Link ${i} saved` });
+      this.toasts.show({ kind: TOAST_KIND.Success, text: `Link ${i} saved` });
     }
   }
 
