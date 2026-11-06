@@ -3,9 +3,9 @@ import type {
   FlexibleConnectedPositionStrategy,
   OverlayRef,
 } from '@angular/cdk/overlay';
-import type { ComponentPortal } from '@angular/cdk/portal';
+import { DomPortal, type ComponentPortal } from '@angular/cdk/portal';
 import { afterNextRender, DestroyRef, type ComponentRef, type Injector } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subscription, type Observable } from 'rxjs';
 import { connectedSide, setOverlayOrigin } from './overlay-origin';
 import type { OverlaySide } from './models/overlay-side.type';
 
@@ -68,6 +68,20 @@ export class ConnectedOverlay {
   attach<T>(portal: ComponentPortal<T>): ComponentRef<T> {
     this.cancelRelease();
     return this.overlayRef.attach(portal);
+  }
+
+  /**
+   * Moves an existing element into the pane (a component that owns its host element, like
+   * `ui-menu`). The CDK puts it back where it was on `detach()`.
+   */
+  attachElement(element: HTMLElement): void {
+    this.cancelRelease();
+    this.overlayRef.attach(new DomPortal(element));
+  }
+
+  /** Emits after the pane content has been detached (after a `release()` or `detach()`). */
+  detachments(): Observable<void> {
+    return this.overlayRef.detachments();
   }
 
   /** Recomputes the position (content size or trigger moved). */

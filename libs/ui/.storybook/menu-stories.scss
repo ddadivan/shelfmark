@@ -1,0 +1,46 @@
+@use '../src/styles/ui' as *;
+
+// Layout of the Menu stories only (never shipped with the library). Class names start with `ms-`.
+
+.ms-panel {
+  display: grid;
+  gap: var(--space-6);
+  min-height: rem(360px);
+  padding: var(--space-8) var(--space-6);
+  color: var(--text);
+  background: var(--bg);
+}
+
+.ms-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  align-items: flex-start;
+}
+
+.ms-end {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ms-context {
+  display: grid;
+  min-height: rem(200px);
+  padding: var(--space-6);
+  color: var(--text-muted);
+  place-items: center;
+  cursor: context-menu;
+  user-select: none;
+  background: var(--surface);
+  border: 1px dashed var(--border-control);
+  border-radius: var(--radius-lg);
+}
+
+.ms-hint {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.ms-static {
+  width: rem(240px);
+}

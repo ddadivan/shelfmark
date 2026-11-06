@@ -4,6 +4,7 @@ export * from './lib/focus-target';
 export * from './lib/icon';
 export * from './lib/illustration';
 export * from './lib/logo';
+export * from './lib/menu';
 export * from './lib/overlay';
 export * from './lib/ripple';
 export * from './lib/tooltip';

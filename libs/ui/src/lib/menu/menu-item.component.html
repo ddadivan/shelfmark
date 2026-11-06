@@ -1,0 +1,19 @@
+<div
+  ngMenuItem
+  class="ui-menu-item"
+  [class.ui-menu-item--danger]="danger()"
+  [class.is-selected]="selected()"
+  [disabled]="disabled()"
+  [role]="ariaRole()"
+  [searchTerm]="searchText()"
+  [attr.aria-checked]="type() === 'item' ? null : selected()"
+  uiRipple
+>
+  @if (icon(); as name) {
+    <ui-icon class="ui-menu-item__icon" [name]="name" [size]="16" />
+  }
+  <span #label class="ui-menu-item__label"><ng-content /></span>
+  @if (shortcut(); as hint) {
+    <kbd class="ui-menu-item__hint">{{ hint }}</kbd>
+  }
+</div>
