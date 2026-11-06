@@ -29,6 +29,7 @@ import type { ButtonVariant } from './models/button-variant.type';
       [ariaHaspopup]="ariaHaspopup()"
       [ariaDescribedby]="ariaDescribedby()"
       [ariaPressed]="ariaPressed()"
+      [tabIndex]="tabIndex()"
       (linkClick)="linkClicks.set(linkClicks() + 1)"
       (click)="clicks.set(clicks() + 1)"
       >Add link</ui-button
@@ -53,6 +54,7 @@ class HostComponent {
   readonly ariaHaspopup = signal<ButtonHaspopup | undefined>(undefined);
   readonly ariaDescribedby = signal<string | undefined>(undefined);
   readonly ariaPressed = signal<ButtonPressed | undefined>(undefined);
+  readonly tabIndex = signal<number | undefined>(undefined);
 }
 
 /** Stands in for a tooltip / menu trigger: reads the focus target from its own host. */
@@ -241,6 +243,19 @@ describe('ButtonComponent', () => {
 
       expect(button().getAttribute('aria-expanded')).toBe('true');
       expect(button().getAttribute('aria-pressed')).toBe('true');
+    });
+
+    it('puts tabIndex on the inner element and renders none when unset', async () => {
+      const { host, button, link, settle } = await setup();
+      expect(button().hasAttribute('tabindex')).toBe(false);
+
+      host.tabIndex.set(-1);
+      await settle();
+      expect(button().getAttribute('tabindex')).toBe('-1');
+
+      host.href.set('/links');
+      await settle();
+      expect(link().getAttribute('tabindex')).toBe('-1');
     });
 
     it('puts the ARIA inputs on the inner link too', async () => {

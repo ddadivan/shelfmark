@@ -1,0 +1,36 @@
+@use '../src/styles/ui' as *;
+
+// Layout of the Tree stories only (never shipped with the library). Class names start with `ts-`.
+
+.ts-panel {
+  display: grid;
+  gap: var(--space-6);
+  min-height: rem(480px);
+  padding: var(--space-8) var(--space-6);
+  color: var(--text);
+  background: var(--bg);
+}
+
+.ts-panel--variants {
+  min-height: 0;
+}
+
+.ts-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  align-items: flex-start;
+}
+
+.ts-sidebar {
+  width: rem(260px);
+  padding: var(--space-4) var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.ts-hint {
+  margin: 0;
+  color: var(--text-muted);
+}
