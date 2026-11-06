@@ -1,0 +1,115 @@
+@use '../../styles/ui' as *;
+
+:host {
+  display: block;
+}
+
+// Panel: 440 / 560 px wide, never wider than the viewport minus the scrim padding.
+// Below 40em it is a bottom sheet: full width, top corners rounded, safe-area padding.
+.ui-dialog {
+  --ui-dialog-width: #{rem(440px)};
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: min(var(--ui-dialog-width), calc(100vw - #{rem(48px)}));
+  max-height: calc(100dvh - #{rem(48px)});
+  padding: var(--space-6);
+  color: var(--text);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-popover);
+
+  &--md {
+    --ui-dialog-width: #{rem(560px)};
+  }
+
+  @include phone {
+    width: 100vw;
+    max-height: calc(100dvh - #{rem(48px)});
+    padding: var(--space-3) rem(20px) calc(var(--space-6) + env(safe-area-inset-bottom));
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    transform: translateY(var(--ui-sheet-drag, 0));
+  }
+
+  // The drag moves the sheet one to one: no transition while the finger is down.
+  &--snapping {
+    @include phone {
+      transition: transform var(--duration-base) var(--ease-out);
+
+      @include reduced-motion {
+        transition: none;
+      }
+    }
+  }
+}
+
+// Dialog: fade and scale from the centre. Sheet: slides up from below the screen.
+.ui-dialog--enter {
+  @include enter(pop);
+
+  @include phone {
+    @include enter(sheet);
+  }
+}
+
+.ui-dialog--leave {
+  @include leave(pop);
+
+  @include phone {
+    @include leave(sheet);
+  }
+}
+
+.ui-dialog__drag {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  @include phone {
+    touch-action: none;
+  }
+}
+
+.ui-dialog__grip {
+  display: none;
+  align-self: center;
+  width: rem(36px);
+  height: rem(4px);
+  background: var(--border-control);
+  border-radius: rem(2px);
+
+  @include phone {
+    display: block;
+  }
+}
+
+.ui-dialog__head {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.ui-dialog__title {
+  @include type(title);
+
+  margin: 0;
+  color: var(--text);
+}
+
+.ui-dialog__body {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.ui-dialog__foot {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+
+  &:empty {
+    display: none;
+  }
+}

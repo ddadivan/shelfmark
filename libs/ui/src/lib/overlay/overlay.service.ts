@@ -2,6 +2,7 @@ import { Overlay } from '@angular/cdk/overlay';
 import { inject, Injector, Service } from '@angular/core';
 import { ConnectedOverlay } from './connected-overlay';
 import type { GlobalOverlayConfig } from './models/global-overlay-config.interface';
+import { setOverlayLayer } from './overlay-layer';
 import type { ConnectedOverlayConfig } from './models/connected-overlay-config.interface';
 import type { OverlaySide } from './models/overlay-side.type';
 
@@ -45,7 +46,7 @@ export class UiOverlay {
     });
     // The layer class goes on the host (the CDK bounding box): that element is the stacking
     // context, so a class on the pane would not reorder overlays that were created earlier.
-    overlayRef.hostElement.classList.add(`ui-overlay-layer--${config.layer}`);
+    setOverlayLayer(overlayRef.hostElement, config.layer);
     return new ConnectedOverlay(
       overlayRef,
       strategy,
@@ -80,7 +81,7 @@ export class UiOverlay {
       width: '100%',
       hasBackdrop: false,
     });
-    overlayRef.hostElement.classList.add(`ui-overlay-layer--${config.layer}`);
+    setOverlayLayer(overlayRef.hostElement, config.layer);
     return new ConnectedOverlay(overlayRef, undefined, options.injector ?? this.injector);
   }
 }

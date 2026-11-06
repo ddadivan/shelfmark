@@ -51,4 +51,5 @@ body {
 @include cdk.overlay;
 @include overlay-layers;
 @include overlay-passthrough;
+@include dialog-layout;
 @include tooltip-description;
