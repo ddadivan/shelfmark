@@ -1,6 +1,7 @@
 export * from './lib/avatar';
 export * from './lib/button';
 export * from './lib/chip';
+export * from './lib/dialog';
 export * from './lib/empty-state';
 export * from './lib/focus-target';
 export * from './lib/icon';

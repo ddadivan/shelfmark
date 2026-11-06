@@ -116,6 +116,16 @@ Angular keeps the element until the leave animation ends and a second toggle mid
 - `ui-steps`: `count`, `current` (1-based), `label` ("Step N of M", visually hidden, polite live region); dots are `aria-hidden`; earlier dots look like upcoming ones, as in the spec.
 - Story layout for these lives in `.storybook/display-stories.scss` (`ds-` classes).
 
+## Dialog (issue #28)
+
+- `DialogService.open<C, R, D>(Component, { size, data, dismissible, scrimClose, role, describedBy, autoFocus })` returns a `UiDialogRef<R, C>` (`close(result?)`, `afterClosed()`, `result` promise, `leaving`, `componentInstance`, `hostElement`). `confirm({ title, message, confirmLabel, cancelLabel, closeLabel?, destructive? })` resolves a boolean: true for confirm; false for Cancel, the close button, Esc and the scrim. All strings come in.
+- The content component renders `<ui-dialog title="…" closeLabel="…" [size]>` with the body as content and footer buttons as `slot="footer"` (secondary first, main action last), reads `injectDialogData<T>()` and closes through the injected `UiDialogRef`. A `<form>` may wrap `ui-dialog`. The close button exists only with `closeLabel`; an overflowing body becomes a focusable region.
+- Built on CDK `Dialog` (focus trap, focus restore, `aria-modal`, scroll lock, page hidden from AT). The service sets `disableClose` and handles Esc and the scrim itself, so every close plays the leave animation first (`UiDialogRef.close()`: `leaving` signal, `getAnimations`, 800 ms safety timer); focus returns when the overlay is removed. `dismissible: false` turns Esc and scrim off; `scrimClose: false` only the scrim (destructive confirm).
+- **Layer:** `ui-overlay-layer--dialog` goes on `overlayRef.hostElement` (`setOverlayLayer`); the scrim is the CDK backdrop with `ui-dialog-scrim` (+ the layer class: a sibling of the host unless the CDK uses a popover host, as in 22). `ui-dialog-scrim` and the wrapper placement (centred; bottom edge below 40em) are global (`styles/_dialog.scss`, `@include dialog-layout` in `global.scss`).
+- **Phone sheet** (`< 40em`): `enter(sheet)` / `leave(sheet)`, grip, 44px close button; dragging the grip or header sets `--ui-sheet-drag` (CSSOM, no `style` attribute); release past 30% of the height or a flick over 0.5 px/ms closes (`shouldCloseSheet`), else snaps back. Reduced motion: fade only, the drag still works. Desktop: `enter(pop)` / `leave(pop)` from the centre.
+- Confirm focus: confirm button, or Cancel when destructive (`confirm` sets this itself). **`autoFocus` defaults to `first-tabbable`, which is the header close button**, so every form dialog must pass `autoFocus: '<selector>'` (for example `'input'`) to land on its first field; the form story does. `_recaptureFocus` (scrim click on a non-closing dialog) is internal CDK API, checked against 22.2.x.
+- Sheet release speed: the last 3 pointer samples; a pause of 100 ms or more before the release counts as speed 0 (no flick). The phone sheet width stays `100vw` (the pane is shrink-to-fit, so `100%` would collapse to the content width).
+
 ## Loading (issue #23)
 
 - Pick the indicator by what loads (Loading spec): `ui-button [loading]` for an action the user started, `ui-progress-bar` for navigation and background requests, `ui-meter` for known progress, `ui-load-more` under a list, `ui-save-status` for autosave, skeletons for first loads.
