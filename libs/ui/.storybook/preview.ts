@@ -2,6 +2,7 @@ import '@fontsource-variable/onest/wght.css';
 import '../src/styles/global.scss';
 import './foundations.scss';
 import './illustration-stories.scss';
+import './loading-stories.scss';
 import './menu-stories.scss';
 import './ripple-stories.scss';
 import './tooltip-stories.scss';
