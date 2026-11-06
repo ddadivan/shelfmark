@@ -25,6 +25,7 @@ import type { MenuAlign } from './models/menu-align.type';
 import type { MenuCloseOptions } from './models/menu-close-options.interface';
 import type { MenuFocusEdge } from './models/menu-focus-edge.type';
 import type { MenuOpenOptions } from './models/menu-open-options.interface';
+import { KEYBOARD_KEY } from '../keyboard';
 
 function isElement(origin: HTMLElement | OverlayPoint): origin is HTMLElement {
   return 'nodeType' in origin;
@@ -235,7 +236,9 @@ export class MenuComponent {
       return;
     }
     this.host.dispatchEvent(
-      new KeyboardEvent('keydown', { key: edge === 'first' ? 'Home' : 'End' }),
+      new KeyboardEvent('keydown', {
+        key: edge === 'first' ? KEYBOARD_KEY.Home : KEYBOARD_KEY.End,
+      }),
     );
   }
 
@@ -252,11 +255,11 @@ export class MenuComponent {
     if (this.inline()) {
       return;
     }
-    if (event.key === 'Escape') {
+    if (event.key === KEYBOARD_KEY.Escape) {
       // A dialog around the trigger keeps its own Esc.
       event.stopPropagation();
       this.close();
-    } else if (event.key === 'Tab') {
+    } else if (event.key === KEYBOARD_KEY.Tab) {
       // Focus returns to the trigger first, so Tab moves on from there.
       this.close();
     }

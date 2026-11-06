@@ -12,6 +12,7 @@ import { IconComponent } from '../icon/icon.component';
 import type { IconName } from '../icon/models/icon-name.type';
 import { RippleDirective } from '../ripple/ripple.directive';
 import type { ChipVariant } from './models/chip-variant.type';
+import { KEYBOARD_KEY } from '../keyboard';
 
 /**
  * Tag or state chip. `variant="tag"` is sage (`accent-bg` / `accent-text`), `neutral` is for
@@ -72,7 +73,7 @@ export class ChipComponent {
     if (
       this.removable() &&
       !this.disabled() &&
-      (event.key === 'Delete' || event.key === 'Backspace')
+      (event.key === KEYBOARD_KEY.Delete || event.key === KEYBOARD_KEY.Backspace)
     ) {
       event.preventDefault();
       this.removed.emit();

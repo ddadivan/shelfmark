@@ -7,6 +7,7 @@ import { ButtonComponent } from '../button/button.component';
 import type { TooltipPosition } from './models/tooltip-position.type';
 import { TooltipPanelComponent } from './tooltip-panel.component';
 import { TooltipDirective } from './tooltip.directive';
+import { KEYBOARD_KEY } from '../keyboard';
 
 @Component({
   imports: [TooltipDirective, ButtonComponent],
@@ -175,7 +176,11 @@ describe('TooltipDirective', () => {
     await vi.advanceTimersByTimeAsync(400);
     settle();
     expect(panelEl()).not.toBeNull();
-    const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true });
+    const event = new KeyboardEvent('keydown', {
+      key: KEYBOARD_KEY.Escape,
+      bubbles: true,
+      cancelable: true,
+    });
     document.body.dispatchEvent(event);
     settle();
     expect(panelEl()).toBeNull();
@@ -198,7 +203,9 @@ describe('TooltipDirective', () => {
     document.body.addEventListener('keydown', seen);
     enter(inner);
     await vi.advanceTimersByTimeAsync(200);
-    document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    document.body.dispatchEvent(
+      new KeyboardEvent('keydown', { key: KEYBOARD_KEY.Escape, bubbles: true }),
+    );
     expect(seen).toHaveBeenCalledTimes(1);
     await vi.advanceTimersByTimeAsync(500);
     settle();
@@ -213,7 +220,9 @@ describe('TooltipDirective', () => {
     enter(inner);
     await vi.advanceTimersByTimeAsync(400);
     settle();
-    document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    document.body.dispatchEvent(
+      new KeyboardEvent('keydown', { key: KEYBOARD_KEY.Escape, bubbles: true }),
+    );
     expect(seen).not.toHaveBeenCalled();
     document.body.removeEventListener('keydown', seen);
   });

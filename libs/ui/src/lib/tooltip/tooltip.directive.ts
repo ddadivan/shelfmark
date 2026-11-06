@@ -21,6 +21,7 @@ import { UiOverlay } from '../overlay/overlay.service';
 import { sidePositions } from '../overlay/side-positions';
 import type { TooltipPosition } from './models/tooltip-position.type';
 import { TooltipPanelComponent } from './tooltip-panel.component';
+import { KEYBOARD_KEY } from '../keyboard';
 
 /** Time the pointer or focus may leave before the tooltip closes (lets it reach the panel). */
 const HIDE_GRACE_MS = 100;
@@ -194,7 +195,7 @@ export class TooltipDirective {
   }
 
   private readonly onEscape = (event: KeyboardEvent): void => {
-    if (event.key !== 'Escape') {
+    if (event.key !== KEYBOARD_KEY.Escape) {
       return;
     }
     if (!this.visible) {

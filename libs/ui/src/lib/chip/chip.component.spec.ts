@@ -4,6 +4,7 @@ import { axeViolations } from '../../testing/axe';
 import type { IconName } from '../icon/models/icon-name.type';
 import { ChipComponent } from './chip.component';
 import type { ChipVariant } from './models/chip-variant.type';
+import { KEYBOARD_KEY } from '../keyboard';
 
 @Component({
   imports: [ChipComponent],
@@ -97,24 +98,27 @@ describe('ChipComponent', () => {
     expect(chip.querySelector('.ui-chip__remove')?.hasAttribute('aria-label')).toBe(false);
   });
 
-  it.each(['Delete', 'Backspace'])('%s on a removable chip emits removed', (key) => {
-    const { chip, update, cmp } = setup();
-    update((c) => {
-      c.clickable.set(true);
-      c.removable.set(true);
-    });
-    const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true });
-    chip.querySelector('button')?.dispatchEvent(event);
-    expect(cmp.removals()).toBe(1);
-    expect(event.defaultPrevented).toBe(true);
-  });
+  it.each([KEYBOARD_KEY.Delete, KEYBOARD_KEY.Backspace])(
+    '%s on a removable chip emits removed',
+    (key) => {
+      const { chip, update, cmp } = setup();
+      update((c) => {
+        c.clickable.set(true);
+        c.removable.set(true);
+      });
+      const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true });
+      chip.querySelector('button')?.dispatchEvent(event);
+      expect(cmp.removals()).toBe(1);
+      expect(event.defaultPrevented).toBe(true);
+    },
+  );
 
   it('ignores Delete when not removable and other keys', () => {
     const { chip, update, cmp } = setup();
     update((c) => c.clickable.set(true));
     chip
       .querySelector('button')
-      ?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Delete', bubbles: true }));
+      ?.dispatchEvent(new KeyboardEvent('keydown', { key: KEYBOARD_KEY.Delete, bubbles: true }));
     update((c) => c.removable.set(true));
     chip
       .querySelector('button')
@@ -135,7 +139,7 @@ describe('ChipComponent', () => {
       expect(b.disabled).toBe(true);
       b.click();
     });
-    chip.dispatchEvent(new KeyboardEvent('keydown', { key: 'Delete', bubbles: true }));
+    chip.dispatchEvent(new KeyboardEvent('keydown', { key: KEYBOARD_KEY.Delete, bubbles: true }));
     expect(cmp.clicks()).toBe(0);
     expect(cmp.removals()).toBe(0);
     expect(chip.classList.contains('ui-chip--disabled')).toBe(true);

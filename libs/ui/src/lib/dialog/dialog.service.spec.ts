@@ -7,6 +7,7 @@ import { UiDialogRef } from './dialog-ref';
 import { DialogService } from './dialog.service';
 import { injectDialogData } from './inject-dialog-data';
 import type { ConfirmDialogConfig } from './models/confirm-config.interface';
+import { KEYBOARD_KEY } from '../keyboard';
 
 interface EditData {
   readonly name: string;
@@ -173,7 +174,7 @@ describe('DialogService', () => {
     it('closes on Esc and on a scrim click, with no result', async () => {
       const first = service.open(EditDialogComponent, { data: { name: 'x' } });
       settle();
-      press('Escape');
+      press(KEYBOARD_KEY.Escape);
       await closed();
       expect(await first.result).toBeUndefined();
 
@@ -194,7 +195,7 @@ describe('DialogService', () => {
       settle();
       expect(document.querySelector('.cdk-dialog-container')).not.toBeNull();
       expect(container().contains(document.activeElement)).toBe(true);
-      press('Escape');
+      press(KEYBOARD_KEY.Escape);
       await closed();
       expect(ref.isClosing).toBe(true);
     });
@@ -205,7 +206,7 @@ describe('DialogService', () => {
         dismissible: false,
       });
       settle();
-      press('Escape');
+      press(KEYBOARD_KEY.Escape);
       document.querySelector<HTMLElement>('.ui-dialog-scrim')?.click();
       settle();
       expect(document.querySelector('.cdk-dialog-container')).not.toBeNull();
@@ -279,7 +280,7 @@ describe('DialogService', () => {
     it.each([
       ['Cancel', () => button('Cancel').click()],
       ['the close button', () => button('Close').click()],
-      ['Esc', () => press('Escape')],
+      ['Esc', () => press(KEYBOARD_KEY.Escape)],
       ['a scrim click', () => document.querySelector<HTMLElement>('.ui-dialog-scrim')?.click()],
     ])('resolves false for %s', async (_name, act) => {
       const answer = service.confirm(confirmConfig);
@@ -338,7 +339,7 @@ describe('DialogService', () => {
       settle();
       expect(document.querySelector('.cdk-dialog-container')).not.toBeNull();
       expect(await axeViolations(root)).toEqual([]);
-      press('Escape');
+      press(KEYBOARD_KEY.Escape);
       await closed();
       expect(await answer).toBe(false);
     });

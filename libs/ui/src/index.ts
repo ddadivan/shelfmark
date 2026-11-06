@@ -8,6 +8,7 @@ export * from './lib/focus-target';
 export * from './lib/icon';
 export * from './lib/illustration';
 export * from './lib/input';
+export * from './lib/keyboard';
 export * from './lib/load-more';
 export * from './lib/loader-timing';
 export * from './lib/logo';

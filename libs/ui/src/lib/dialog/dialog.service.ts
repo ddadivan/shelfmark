@@ -12,8 +12,7 @@ import type { UiDialogContext } from './models/dialog-context.interface';
 import { UI_DIALOG_CONTEXT } from './models/ui-dialog-context.const';
 import { UI_DIALOG_DATA } from './models/ui-dialog-data.const';
 import { setOverlayLayer } from '../overlay/overlay-layer';
-
-const ESCAPE = 'Escape';
+import { KEYBOARD_KEY } from '../keyboard';
 
 /**
  * Opens dialogs on the CDK `Dialog`: focus trap, focus restore, `aria-modal`, page scroll
@@ -81,7 +80,7 @@ export class DialogService {
     setOverlayLayer(cdkRef.overlayRef.hostElement, 'dialog');
 
     cdkRef.keydownEvents.subscribe((event) => {
-      if (event.key === ESCAPE && dismissible && !event.defaultPrevented) {
+      if (event.key === KEYBOARD_KEY.Escape && dismissible && !event.defaultPrevented) {
         event.preventDefault();
         result.close();
       }

@@ -5,8 +5,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../../testing/axe';
 import type { SelectOption } from './models/select-option.interface';
 import { SelectComponent } from './select.component';
-import { SELECT_KEY } from './models/select-key.const';
 import { SELECT_FIXTURE_ID } from './models/select-fixture-id.const';
+import { KEYBOARD_KEY } from '../keyboard';
 
 const TREE: SelectOption[] = [
   {
@@ -179,13 +179,13 @@ describe('SelectComponent', () => {
     const { open, trigger, active, press } = await setup();
     await open();
     expect(active()?.textContent.trim()).toBe('Angular');
-    await press(trigger, SELECT_KEY.ArrowDown);
+    await press(trigger, KEYBOARD_KEY.ArrowDown);
     expect(active()?.textContent.trim()).toBe('Courses');
-    await press(trigger, SELECT_KEY.End);
+    await press(trigger, KEYBOARD_KEY.End);
     expect(active()?.textContent.trim()).toBe('Clothes');
-    await press(trigger, SELECT_KEY.Home);
+    await press(trigger, KEYBOARD_KEY.Home);
     expect(active()?.textContent.trim()).toBe('Unsorted');
-    await press(trigger, SELECT_KEY.ArrowUp);
+    await press(trigger, KEYBOARD_KEY.ArrowUp);
     expect(active()?.textContent.trim()).toBe('Clothes');
   });
 
@@ -200,8 +200,8 @@ describe('SelectComponent', () => {
   it('chooses with Enter, closes and keeps focus on the trigger', async () => {
     const { open, trigger, press, host, listbox, fixture } = await setup();
     await open();
-    await press(trigger, SELECT_KEY.ArrowDown);
-    await press(trigger, SELECT_KEY.Enter);
+    await press(trigger, KEYBOARD_KEY.ArrowDown);
+    await press(trigger, KEYBOARD_KEY.Enter);
     expect(host.value()).toBe(SELECT_FIXTURE_ID.Courses);
     expect(trigger.getAttribute('aria-expanded')).toBe('false');
     expect(document.activeElement).toBe(trigger);
@@ -232,25 +232,25 @@ describe('SelectComponent', () => {
     const outer = vi.fn();
     (fixture.nativeElement as HTMLElement).addEventListener('keydown', outer);
     await open();
-    await press(trigger, SELECT_KEY.ArrowDown);
-    await press(trigger, SELECT_KEY.Escape);
+    await press(trigger, KEYBOARD_KEY.ArrowDown);
+    await press(trigger, KEYBOARD_KEY.Escape);
     expect(trigger.getAttribute('aria-expanded')).toBe('false');
     expect(host.value()).toBe(SELECT_FIXTURE_ID.Angular);
     expect(document.activeElement).toBe(trigger);
     const escapes = outer.mock.calls.filter(
-      ([e]) => (e as KeyboardEvent).key === SELECT_KEY.Escape,
+      ([e]) => (e as KeyboardEvent).key === KEYBOARD_KEY.Escape,
     );
     expect(escapes).toHaveLength(0);
-    await press(trigger, SELECT_KEY.Escape);
+    await press(trigger, KEYBOARD_KEY.Escape);
     expect(
-      outer.mock.calls.filter(([e]) => (e as KeyboardEvent).key === SELECT_KEY.Escape),
+      outer.mock.calls.filter(([e]) => (e as KeyboardEvent).key === KEYBOARD_KEY.Escape),
     ).toHaveLength(1);
   });
 
   it('opens with ArrowDown and Enter from the keyboard', async () => {
     const { trigger, press } = await setup();
     trigger.focus();
-    await press(trigger, SELECT_KEY.ArrowDown);
+    await press(trigger, KEYBOARD_KEY.ArrowDown);
     expect(trigger.getAttribute('aria-expanded')).toBe('true');
   });
 
@@ -311,7 +311,7 @@ describe('SelectComponent', () => {
     width = 420;
     observers.at(-1)?.callback();
     expect(pane.style.minWidth).toBe('420px');
-    await press(trigger, SELECT_KEY.Escape);
+    await press(trigger, KEYBOARD_KEY.Escape);
     expect(observers.at(-1)?.disconnect).toHaveBeenCalled();
     await settle(fixture);
   });
@@ -409,9 +409,9 @@ describe('SelectComponent', () => {
       const field = search() as HTMLInputElement;
       type(field, 'c');
       await settle(fixture);
-      await press(field, SELECT_KEY.ArrowDown);
+      await press(field, KEYBOARD_KEY.ArrowDown);
       expect(active()?.textContent.trim()).toBe('Courses');
-      await press(field, SELECT_KEY.Enter);
+      await press(field, KEYBOARD_KEY.Enter);
       expect(host.value()).toBe(SELECT_FIXTURE_ID.Courses);
       expect(document.activeElement).toBe(trigger);
     });
@@ -419,19 +419,19 @@ describe('SelectComponent', () => {
     it('uses Home and End for the options only while the box is empty or with Ctrl', async () => {
       const { search, press, active } = await searching();
       const field = search() as HTMLInputElement;
-      await press(field, SELECT_KEY.End);
+      await press(field, KEYBOARD_KEY.End);
       expect(active()?.textContent.trim()).toBe('Clothes');
-      await press(field, SELECT_KEY.Home);
+      await press(field, KEYBOARD_KEY.Home);
       expect(active()?.textContent.trim()).toBe('Unsorted');
       field.value = 'o';
       const end = new KeyboardEvent('keydown', {
-        key: SELECT_KEY.End,
+        key: KEYBOARD_KEY.End,
         bubbles: true,
         cancelable: true,
       });
       field.dispatchEvent(end);
       expect(end.defaultPrevented).toBe(false);
-      await press(field, SELECT_KEY.End, { ctrlKey: true });
+      await press(field, KEYBOARD_KEY.End, { ctrlKey: true });
       expect(active()?.textContent.trim()).toBe('Clothes');
     });
 
@@ -467,7 +467,7 @@ describe('SelectComponent', () => {
 
     it('closes on Esc from the search box and returns focus to the trigger', async () => {
       const { search, press, trigger, host } = await searching();
-      await press(search() as HTMLInputElement, SELECT_KEY.Escape);
+      await press(search() as HTMLInputElement, KEYBOARD_KEY.Escape);
       expect(trigger.getAttribute('aria-expanded')).toBe('false');
       expect(document.activeElement).toBe(trigger);
       expect(host.value()).toBe(SELECT_FIXTURE_ID.Angular);
@@ -476,7 +476,7 @@ describe('SelectComponent', () => {
     it('closes on Tab and clears the query when it opens again', async () => {
       const { search, press, trigger, open, fixture } = await searching();
       type(search() as HTMLInputElement, 'ang');
-      await press(search() as HTMLInputElement, SELECT_KEY.Tab);
+      await press(search() as HTMLInputElement, KEYBOARD_KEY.Tab);
       expect(trigger.getAttribute('aria-expanded')).toBe('false');
       await settle(fixture);
       await open();

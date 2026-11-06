@@ -31,8 +31,8 @@ import { RippleDirective } from '../ripple/ripple.directive';
 import type { SelectOption } from './models/select-option.interface';
 import type { SelectIcon } from './models/select-icon.type';
 import { SELECT_ICON } from './models/select-icon.const';
-import { SELECT_KEY } from './models/select-key.const';
 import { selectedRow, selectRows } from './select-rows';
+import { KEYBOARD_KEY } from '../keyboard';
 
 /**
  * Picks one value from a nested list (the folder of a link). The trigger is an Angular Aria
@@ -166,7 +166,7 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
 
   protected onTriggerKeydown(event: KeyboardEvent): void {
     // A dialog around the select keeps its own Esc while the popup is open.
-    if (event.key === SELECT_KEY.Escape && this.open()) {
+    if (event.key === KEYBOARD_KEY.Escape && this.open()) {
       event.stopPropagation();
     }
   }
@@ -247,23 +247,23 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
   protected onSearchKeydown(event: KeyboardEvent): void {
     const field = this.searchField()?.nativeElement;
     switch (event.key) {
-      case SELECT_KEY.ArrowDown:
-      case SELECT_KEY.ArrowUp:
-      case SELECT_KEY.Enter:
+      case KEYBOARD_KEY.ArrowDown:
+      case KEYBOARD_KEY.ArrowUp:
+      case KEYBOARD_KEY.Enter:
         this.relay(event);
         break;
-      case SELECT_KEY.Home:
-      case SELECT_KEY.End:
+      case KEYBOARD_KEY.Home:
+      case KEYBOARD_KEY.End:
         if (!field?.value || event.ctrlKey || event.metaKey) {
           this.relay(event);
         }
         break;
-      case SELECT_KEY.Escape:
+      case KEYBOARD_KEY.Escape:
         event.stopPropagation();
         event.preventDefault();
         this.hide(true);
         break;
-      case SELECT_KEY.Tab:
+      case KEYBOARD_KEY.Tab:
         // Focus goes back to the trigger first, so Tab moves on from there.
         this.hide(true);
         break;
@@ -277,7 +277,7 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
     event.preventDefault();
     // Ctrl / Cmd on Home / End only chooses the options over the caret; Aria's single-select
     // listbox binds the plain key, so those two modifiers are dropped there.
-    const edge = event.key === SELECT_KEY.Home || event.key === SELECT_KEY.End;
+    const edge = event.key === KEYBOARD_KEY.Home || event.key === KEYBOARD_KEY.End;
     this.listbox()?.element.dispatchEvent(
       new KeyboardEvent('keydown', {
         key: event.key,
