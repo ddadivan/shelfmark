@@ -1,0 +1,50 @@
+@use '../../styles/ui' as *;
+
+:host {
+  // No type style is 14/20 (the Toast spec size); body is the base, the size follows the spec.
+  @include type(body);
+
+  font-size: rem(14px);
+  line-height: rem(20px);
+  box-sizing: border-box;
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  min-width: rem(280px);
+  max-width: min(rem(400px), 100%);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+  color: var(--on-primary);
+  pointer-events: auto;
+  background: var(--primary);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-popover);
+}
+
+.ui-toast__text {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.ui-toast__action {
+  @include type(label);
+
+  flex: none;
+  padding: var(--space-1) var(--space-2);
+  font-weight: 600;
+  color: var(--on-primary);
+  text-decoration: underline;
+  text-underline-offset: rem(3px);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+
+  @include hover {
+    background: color-mix(in srgb, var(--on-primary) 14%, transparent);
+  }
+
+  &:focus-visible {
+    @include focus-ring(0);
+  }
+}

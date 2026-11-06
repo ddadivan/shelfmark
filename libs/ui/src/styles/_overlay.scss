@@ -40,6 +40,14 @@ $overlay-layers: (
   }
 }
 
+// Panes of global overlays (toasts) span the viewport edge; the content takes pointer events
+// itself, so the empty strip never blocks clicks on the page below.
+@mixin overlay-passthrough {
+  .ui-overlay-pane--passthrough {
+    pointer-events: none;
+  }
+}
+
 // The hidden element `uiTooltip` points `aria-describedby` at; it lives in `<body>`.
 @mixin tooltip-description {
   .ui-tooltip-description {
