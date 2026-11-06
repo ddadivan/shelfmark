@@ -25,3 +25,4 @@ export * from './lib/steps';
 export * from './lib/textarea';
 export * from './lib/toast';
 export * from './lib/tooltip';
+export * from './lib/tree';
