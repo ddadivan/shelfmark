@@ -62,7 +62,12 @@ export function loaderVisible(
         } else {
           clearShow();
           if (visible() && hideTimer === undefined) {
-            hideTimer = setTimeout(hide, Math.max(0, minVisible - (Date.now() - shownAt)));
+            const remaining = minVisible - (Date.now() - shownAt);
+            if (remaining > 0) {
+              hideTimer = setTimeout(hide, remaining);
+            } else {
+              hide();
+            }
           }
         }
       });

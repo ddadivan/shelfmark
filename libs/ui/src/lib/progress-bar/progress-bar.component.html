@@ -1,0 +1,12 @@
+@if (phase() !== 'idle') {
+  <div
+    class="ui-progress"
+    [class.ui-progress--fixed]="variant() === 'fixed'"
+    [class.ui-progress--inline]="variant() === 'inline'"
+    [class.ui-progress--done]="phase() === 'done'"
+    [attr.role]="label() ? 'progressbar' : null"
+    [attr.aria-label]="label() || null"
+    [attr.aria-hidden]="label() ? null : 'true'"
+    (animationend)="onAnimationEnd($event)"
+  ></div>
+}
