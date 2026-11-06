@@ -337,6 +337,7 @@ describe('TagInputComponent', () => {
     host.disabled.set(true);
     await settle(fixture);
     expect(input.disabled).toBe(true);
+    expect(chips()[0]?.getAttribute('aria-disabled')).toBe('true');
     expect(chips()[0]?.querySelector<HTMLButtonElement>('.ui-chip__remove')?.disabled).toBe(true);
   });
 

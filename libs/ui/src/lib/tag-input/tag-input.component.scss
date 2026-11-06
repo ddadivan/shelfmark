@@ -133,3 +133,8 @@
   flex: none;
   color: var(--text-muted);
 }
+
+// The shell already dims a disabled field; the chip must not dim twice (contrast).
+.ui-tag-input__box .ui-tag-input__chip.ui-chip--disabled {
+  opacity: 1;
+}

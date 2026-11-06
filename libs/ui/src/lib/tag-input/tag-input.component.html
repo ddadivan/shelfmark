@@ -10,6 +10,8 @@
   <div #box class="ui-tag-input__box">
     @for (tag of value(); track $index) {
       <ui-chip
+        class="ui-tag-input__chip"
+        [attr.aria-disabled]="disabled() ? 'true' : null"
         removable
         [removeLabel]="chipLabel(tag)"
         [disabled]="disabled()"
