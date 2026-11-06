@@ -27,18 +27,21 @@ export class ConnectedOverlay {
 
   constructor(
     private readonly overlayRef: OverlayRef,
-    strategy: FlexibleConnectedPositionStrategy,
+    strategy: FlexibleConnectedPositionStrategy | undefined,
     private readonly injector: Injector,
     onPositionChange?: (side: OverlaySide) => void,
   ) {
-    this.subscription.add(
-      strategy.positionChanges.subscribe((change: ConnectedOverlayPositionChange) => {
-        setOverlayOrigin(overlayRef.overlayElement, change.connectionPair);
-        const side = connectedSide(change.connectionPair);
-        this.lastSide = side;
-        onPositionChange?.(side);
-      }),
-    );
+    // A global overlay (toast) has no anchor, so no strategy and no origin to follow.
+    if (strategy) {
+      this.subscription.add(
+        strategy.positionChanges.subscribe((change: ConnectedOverlayPositionChange) => {
+          setOverlayOrigin(overlayRef.overlayElement, change.connectionPair);
+          const side = connectedSide(change.connectionPair);
+          this.lastSide = side;
+          onPositionChange?.(side);
+        }),
+      );
+    }
     // Always release, even if the owner forgets `dispose()`.
     this.unregisterDestroy = this.injector.get(DestroyRef).onDestroy(() => {
       this.dispose();
