@@ -1,3 +1,4 @@
+import { signal } from '@angular/core';
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { ICON_NAMES } from '../icon/models/icon-names.const';
 import { ButtonComponent } from './button.component';
@@ -12,6 +13,7 @@ const meta: Meta<ButtonComponent> = {
     type: 'button',
     iconOnly: false,
     disabled: false,
+    loading: false,
     ripple: true,
   },
   argTypes: {
@@ -40,6 +42,7 @@ const meta: Meta<ButtonComponent> = {
         [iconOnly]="iconOnly"
         [ariaLabel]="ariaLabel"
         [disabled]="disabled"
+        [loading]="loading"
         [href]="href"
         [ripple]="ripple"
         [ariaExpanded]="ariaExpanded"
@@ -100,6 +103,50 @@ export const MenuTrigger: Story = {
 
 export const Toggle: Story = { args: { ariaPressed: true, variant: 'ghost' } };
 
+/** Busy: spinner, `aria-busy="true"`, width locked, clicks ignored; the button stays focusable. */
+export const Loading: Story = {
+  args: { variant: 'primary', loading: true, label: 'Saving…' },
+};
+
+export const LoadingSecondary: Story = { args: { loading: true, label: 'Exporting…' } };
+
+export const LoadingDanger: Story = {
+  args: { variant: 'danger', loading: true, label: 'Deleting…' },
+};
+
+export const LoadingIconOnly: Story = {
+  args: { iconOnly: true, iconLeft: 'settings', ariaLabel: 'Saving', loading: true },
+};
+
+/**
+ * Click it: the width is locked, the label changes to "Saving…" and the spinner grows in; after
+ * two seconds the spinner leaves and the label and width come back. It never jumps.
+ */
+export const LoadingWithLabelChange: Story = {
+  args: { variant: 'primary', size: 'lg' },
+  render: (args) => {
+    const busy = signal(false);
+    return {
+      props: {
+        args,
+        busy,
+        save: () => {
+          busy.set(true);
+          setTimeout(() => busy.set(false), 2000);
+        },
+      },
+      template: `
+        <ui-button
+          [variant]="args.variant"
+          [size]="args.size"
+          [loading]="busy()"
+          (click)="save()"
+          >{{ busy() ? 'Saving…' : 'Save link' }}</ui-button
+        >`,
+    };
+  },
+};
+
 export const Disabled: Story = { args: { variant: 'primary', disabled: true } };
 
 const panel = (theme: 'light' | 'dark') => `
@@ -112,6 +159,8 @@ const panel = (theme: 'light' | 'dark') => `
         <ui-button [variant]="v" iconRight="chevron-down">With icon</ui-button>
         <ui-button [variant]="v" [iconOnly]="true" iconLeft="settings" ariaLabel="Settings" />
         <ui-button [variant]="v" [disabled]="true">Disabled</ui-button>
+        <ui-button [variant]="v" [loading]="true">Saving…</ui-button>
+        <ui-button [variant]="v" [loading]="true" [iconOnly]="true" iconLeft="settings" ariaLabel="Saving" />
         <ui-button [variant]="v" href="#links" iconRight="external">Link</ui-button>
         <ui-button [variant]="v" href="#links" [disabled]="true">Disabled link</ui-button>
       </div>

@@ -93,6 +93,29 @@ a.ui-button {
   }
 }
 
+// Loading: the spinner grows in while the label makes room (`spinner-grow`) and shrinks back
+// out on the way out; the width lock itself is set by the component. An icon-only button has no
+// label to make room, so its spinner only fades and scales in place.
+.ui-button[aria-busy='true'] {
+  cursor: progress;
+}
+
+.ui-button__spinner {
+  @include enter(spinner-grow);
+}
+
+.ui-button__spinner--leave {
+  @include leave(spinner-shrink);
+}
+
+.ui-button__spinner--solo {
+  @include enter(spinner);
+
+  &.ui-button__spinner--leave {
+    @include leave(spinner);
+  }
+}
+
 // Hover and press must not tint a disabled button.
 .ui-button:disabled,
 .ui-button[aria-disabled='true'] {
