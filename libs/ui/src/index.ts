@@ -15,3 +15,4 @@ export * from './lib/ripple';
 export * from './lib/save-status';
 export * from './lib/spinner';
 export * from './lib/tooltip';
+export * from './lib/tree';
