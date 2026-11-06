@@ -139,6 +139,13 @@ describe('InputComponent', () => {
       expect(q('.ui-input__clear')?.getAttribute('type')).toBe('button');
     });
 
+    it('is not rendered without a clearLabel (no nameless button)', () => {
+      const { fixture, q } = setup({ clearable: true });
+      fixture.componentInstance.value.set('x');
+      fixture.detectChanges();
+      expect(q('.ui-input__clear')).toBeNull();
+    });
+
     it('is not shown when not clearable or disabled', () => {
       const a = setup({ value: 'x' });
       a.fixture.componentInstance.value.set('x');

@@ -45,7 +45,7 @@ describe('TextareaComponent', () => {
 
   it('shows a counter that follows the text, with a hidden unit', () => {
     const { fixture, q, area } = setup({ maxLength: 20, counterLabel: 'characters' });
-    expect(area().getAttribute('maxlength')).toBe('20');
+    expect(area().getAttribute('maxlength')).toBeNull();
     expect(q('.ui-field__counter')?.textContent).toContain('0 / 20');
     fixture.componentInstance.value.set('Watch on the weekend');
     fixture.detectChanges();

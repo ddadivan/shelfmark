@@ -117,11 +117,22 @@ describe('Signal Forms integration', () => {
   it('takes maxLength from the form and shows the counter', async () => {
     const { fixture, cmp, area, host } = setup();
     await fixture.whenStable();
-    expect(area.getAttribute('maxlength')).toBe('10');
+    expect(area.getAttribute('maxlength')).toBeNull();
     type(area, 'abcd');
     await fixture.whenStable();
     expect(host.querySelector('ui-textarea .ui-field__counter')?.textContent).toContain('4 / 10');
     expect(cmp.model().note).toBe('abcd');
+  });
+
+  it('reports a value over the limit (loaded or pasted) as an error after touch', async () => {
+    const { fixture, cmp, area, host } = setup();
+    cmp.model.update((m) => ({ ...m, note: 'x'.repeat(12) }));
+    await fixture.whenStable();
+    expect(host.querySelector('ui-textarea .ui-field__counter')?.textContent).toContain('12 / 10');
+    area.dispatchEvent(new Event('blur'));
+    await fixture.whenStable();
+    expect(host.querySelector('ui-textarea .ui-field__error')?.textContent).toBe('Keep it short');
+    expect(area.getAttribute('aria-invalid')).toBe('true');
   });
 
   it('marks the field required from a required rule', async () => {

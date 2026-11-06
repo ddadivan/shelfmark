@@ -34,7 +34,10 @@ export class TextareaComponent extends UiFieldControl implements FormValueContro
   readonly placeholder = input('');
   /** Rows shown when empty (minimum height). */
   readonly rows = input(3, { transform: numberAttribute });
-  /** Longest allowed text; shows the counter. `[formField]` sets it from a `maxLength` rule. */
+  /**
+   * Longest allowed text; shows the counter. No native cap: the Signal Forms `maxLength` rule
+   * reports an overflow (typed, pasted or loaded) as an error. `[formField]` sets this input.
+   */
   readonly maxLength = input<number | undefined>(undefined);
   /** Unit for screen readers after the counter, for example "characters". */
   readonly counterLabel = input('');

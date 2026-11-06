@@ -41,7 +41,7 @@
     <button
       type="button"
       class="ui-input__clear"
-      [attr.aria-label]="clearLabel() || null"
+      [attr.aria-label]="clearLabel()"
       (mousedown)="$event.preventDefault()"
       (click)="clear()"
     >

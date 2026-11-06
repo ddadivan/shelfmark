@@ -45,7 +45,7 @@ export class InputComponent extends UiFieldControl implements FormValueControl<s
   readonly icon = input<IconName>();
   /** Shows a clear button while the field has a value. */
   readonly clearable = input(false, { transform: booleanAttribute });
-  /** Accessible name of the clear button; give it whenever `clearable` is set. */
+  /** Accessible name of the clear button; without it no clear button is rendered. */
   readonly clearLabel = input('');
   /** Keyboard shortcut hint on the right, for example `⌘K`. */
   readonly shortcut = input('');
@@ -59,7 +59,7 @@ export class InputComponent extends UiFieldControl implements FormValueControl<s
   );
   protected readonly spinning = computed(() => this.type() === 'search' && this.loading());
   protected readonly showClear = computed(
-    () => this.clearable() && !this.disabled() && this.value() !== '',
+    () => this.clearable() && !!this.clearLabel() && !this.disabled() && this.value() !== '',
   );
   /** True after the first spinner: only then the returning icon animates in. */
   protected readonly iconReturns = signal(false);
