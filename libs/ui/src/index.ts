@@ -9,3 +9,4 @@ export * from './lib/overlay';
 export * from './lib/ripple';
 export * from './lib/tooltip';
 export * from './lib/loader-timing';
+export * from './lib/spinner';
