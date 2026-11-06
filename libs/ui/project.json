@@ -34,13 +34,28 @@
         "coverageExclude": ["**/*.stories.ts", "**/index.ts", "**/models/**", "**/testing/**"]
       }
     },
+    "test-storybook": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build-storybook"],
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/a11y/**/*",
+        "{projectRoot}/vercel.json",
+        "{projectRoot}/storybook-static/**/*"
+      ],
+      "options": {
+        "command": "playwright test -c libs/ui/a11y/playwright.storybook.config.mts",
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
           "ngc -p libs/ui/tsconfig.lib.json --noEmit",
           "ngc -p libs/ui/tsconfig.spec.json --noEmit",
-          "ngc -p libs/ui/.storybook/tsconfig.json --noEmit"
+          "ngc -p libs/ui/.storybook/tsconfig.json --noEmit",
+          "tsc -p libs/ui/a11y/tsconfig.json --noEmit"
         ],
         "parallel": false
       }
