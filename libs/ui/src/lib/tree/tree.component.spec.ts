@@ -37,7 +37,6 @@ const FOLDERS: UiTreeNode[] = [
       [activeId]="activeId()"
       [menuLabel]="menuLabel()"
       [menuNodeId]="menuNodeId()"
-      [countLabel]="countLabel()"
       (selected)="selected.push($event)"
       (toggled)="toggled.push($event)"
       (contextMenu)="menus.push($event)"
@@ -50,7 +49,6 @@ class HostComponent {
   readonly activeId = signal<string | null>('angular');
   readonly menuLabel = signal<string | undefined>('Actions for {name}');
   readonly menuNodeId = signal<string | null>(null);
-  readonly countLabel = signal<string | undefined>(undefined);
   readonly selected: UiTreeNode[] = [];
   readonly toggled: UiTreeToggleEvent[] = [];
   readonly menus: UiTreeContextMenuEvent[] = [];
@@ -122,17 +120,13 @@ describe('TreeComponent', () => {
     });
 
     it('names a row by its name and count, not by its children', async () => {
-      const { item, root, host, fixture } = await setup();
+      const { item, root } = await setup();
       const labelled = (id: string) =>
         (item(id).getAttribute('aria-labelledby') ?? '')
           .split(' ')
           .map((ref) => root.querySelector(`[id="${ref}"]`)?.textContent)
           .join(' ');
       expect(labelled('Work')).toBe('Work 34');
-      host.countLabel.set('{count} links');
-      await settle(fixture);
-      expect(labelled('Work')).toBe('Work 34 links');
-      expect(root.querySelector('.ui-tree__count')?.getAttribute('aria-hidden')).toBe('true');
     });
 
     it('indents each level by one step through the level variable', async () => {
@@ -173,9 +167,8 @@ describe('TreeComponent', () => {
       expect(await axeViolations(root)).toEqual([]);
     });
 
-    it('has no axe violations with count labels and an open menu button', async () => {
+    it('has no axe violations with an open menu button', async () => {
       const { root, host, fixture } = await setup();
-      host.countLabel.set('{count} links');
       host.menuNodeId.set('work');
       await settle(fixture);
       expect(await axeViolations(root)).toEqual([]);

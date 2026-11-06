@@ -38,17 +38,7 @@
         }
         <span class="ui-tree__name" [id]="item.id() + '-name'">{{ node.name }}</span>
         @if (node.count !== undefined) {
-          <span
-            class="ui-tree__count"
-            [id]="item.id() + '-count'"
-            [attr.aria-hidden]="countLabel() ? 'true' : null"
-            >{{ node.count }}</span
-          >
-          @if (countLabel()) {
-            <span class="ui-tree__sr" [id]="item.id() + '-count-text'">{{
-              countText(node.count)
-            }}</span>
-          }
+          <span class="ui-tree__count" [id]="item.id() + '-count'">{{ node.count }}</span>
         }
         @if (folder && menuLabel()) {
           <ui-button

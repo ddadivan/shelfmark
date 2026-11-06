@@ -57,12 +57,6 @@ export class TreeComponent {
   readonly menuLabel = input<string>();
   /** `id` of the folder whose menu is open: its button shows `aria-expanded="true"` and stays visible. */
   readonly menuNodeId = input<string | null>(null);
-  /**
-   * Spoken form of a count; `{count}` becomes the number, for example "{count} links". Without it
-   * the bare number is read after the name.
-   */
-  readonly countLabel = input<string>();
-
   /** A row was chosen (click, Enter). */
   readonly selected = output<UiTreeNode>();
   /** A folder opened or closed. */
@@ -100,11 +94,7 @@ export class TreeComponent {
     if (node.count === undefined) {
       return `${itemId}-name`;
     }
-    return `${itemId}-name ${itemId}-count${this.countLabel() ? '-text' : ''}`;
-  }
-
-  protected countText(count: number): string {
-    return (this.countLabel() ?? '').replace('{count}', String(count));
+    return `${itemId}-name ${itemId}-count`;
   }
 
   protected menuButtonLabel(node: UiTreeNode): string {

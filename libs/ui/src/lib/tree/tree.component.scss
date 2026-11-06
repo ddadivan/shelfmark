@@ -106,10 +106,6 @@
   color: var(--text-muted);
 }
 
-.ui-tree__sr {
-  @include visually-hidden;
-}
-
 .ui-tree__section {
   @include type(caption);
 

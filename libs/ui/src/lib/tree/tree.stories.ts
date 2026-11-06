@@ -33,7 +33,6 @@ const meta: Meta<TreeComponent> = {
     ariaLabel: 'Library',
     heading: 'Folders',
     menuLabel: 'Actions for {name}',
-    countLabel: '{count} links',
     fixedNodes: TREE_STORY_FIXED,
     nodes: TREE_STORY_NESTED,
     activeId: 'angular',
@@ -50,7 +49,6 @@ const template = `
         [ariaLabel]="ariaLabel"
         [heading]="heading"
         [menuLabel]="menuLabel"
-        [countLabel]="countLabel"
         [fixedNodes]="fixedNodes"
         [nodes]="nodes"
         [activeId]="activeId"
@@ -119,8 +117,7 @@ export const WithContextMenu: Story = {
             ariaLabel="Library"
             [heading]="heading"
             [menuLabel]="menuLabel"
-            [countLabel]="countLabel"
-            [fixedNodes]="fixedNodes"
+                [fixedNodes]="fixedNodes"
             [nodes]="nodes"
             [activeId]="current()"
             [menuNodeId]="menuNodeId()"
