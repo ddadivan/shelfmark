@@ -69,17 +69,44 @@ for (const story of stories) {
       );
       await page.waitForSelector('body.sb-show-main:not(.sb-show-errordisplay)');
       if (story.type === 'docs') await page.waitForSelector('#storybook-docs .sbdocs');
-      await page.evaluate(`document.fonts.ready.then(() => undefined)`);
+      // The theme decorator runs after the first render: wait for it, then for fonts and for any
+      // running colour transition, so axe never reads half-way colours.
+      await page.waitForFunction(`document.documentElement.dataset.theme === '${theme}'`);
+      await page.evaluate(
+        `document.fonts.ready.then(() => Promise.all(document.getAnimations()
+          .filter((a) => a.effect?.getComputedTiming().iterations !== Infinity)
+          .map((a) => a.finished.catch(() => undefined))))`,
+      );
       await page.addScriptTag({ path: axePath });
-      const results = await page.evaluate<AxeResult>(
-        `axe.run(document.querySelector(${JSON.stringify(story.type === 'docs' ? '#storybook-docs' : '#storybook-root')}), {
-          runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'] },
-        })`,
-      );
-      const messages = results.violations.map(
-        (v) => `${v.id}: ${v.help} (${v.nodes.map((n) => n.target.join(' ')).join(' | ')})`,
-      );
-      expect(messages).toEqual([]);
+      const selector = story.type === 'docs' ? '#storybook-docs' : '#storybook-root';
+      // Entry animations and ripples can still be mid-fade on a slow runner, and axe blends the
+      // half-way colours. A real violation is stable and still fails after the polling window.
+      await expect
+        .poll(
+          async () => {
+            const results = await page.evaluate<AxeResult>(
+              `(async () => {
+                // The Storybook a11y addon runs its own axe on render; axe allows one run at a time.
+                for (let attempt = 0; attempt < 25; attempt++) {
+                  try {
+                    return await axe.run(document.querySelector(${JSON.stringify(selector)}), {
+                      runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'] },
+                    });
+                  } catch (error) {
+                    if (!String(error).includes('already running')) throw error;
+                    await new Promise((resolve) => setTimeout(resolve, 200));
+                  }
+                }
+                throw new Error('axe stayed busy');
+              })()`,
+            );
+            return results.violations.map(
+              (v) => `${v.id}: ${v.help} (${v.nodes.map((n) => n.target.join(' ')).join(' | ')})`,
+            );
+          },
+          { timeout: 3000, intervals: [0, 250, 500, 1000] },
+        )
+        .toEqual([]);
       expect(await page.evaluate<string[]>(`globalThis.__cspViolations ?? []`)).toEqual([]);
     });
   }

@@ -5,6 +5,34 @@
 // start with `fd-`. Every colour is a token; each `.fd-panel` carries its own `data-theme`, so
 // one page shows light and dark side by side.
 
+// The Storybook docs chrome is styled by Storybook's own (light) theme, which cannot follow the
+// toolbar theme without a React docs container. Re-skin the parts it paints so the dark docs
+// render, and are checked by axe, the way a user sees them. Tokens only.
+.sbdocs.sbdocs-wrapper,
+.sbdocs.sbdocs-content {
+  color: var(--text);
+  background: var(--bg);
+}
+
+[data-theme='dark'] .sbdocs {
+  color-scheme: dark;
+
+  &.sbdocs-preview {
+    background: var(--surface);
+    border-color: var(--border);
+  }
+
+  &.sbdocs-content :is(p, li, h1, h2, h3, h4, h5, h6, label, summary) {
+    color: var(--text);
+  }
+
+  button,
+  a {
+    color: var(--text);
+    background: var(--surface);
+  }
+}
+
 .fd-page {
   display: flex;
   flex-direction: column;
