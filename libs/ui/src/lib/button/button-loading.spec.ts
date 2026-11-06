@@ -248,3 +248,84 @@ describe('ButtonComponent loading', () => {
     expect(await axeViolations(root)).toEqual([]);
   });
 });
+
+describe('ButtonComponent loading with a ResizeObserver', () => {
+  class FakeResizeObserver {
+    static instances: FakeResizeObserver[] = [];
+    readonly observed = new Set<Element>();
+    disconnected = false;
+
+    constructor(private readonly callback: ResizeObserverCallback) {
+      FakeResizeObserver.instances.push(this);
+    }
+
+    observe(element: Element): void {
+      this.observed.add(element);
+    }
+
+    unobserve(element: Element): void {
+      this.observed.delete(element);
+    }
+
+    disconnect(): void {
+      this.disconnected = true;
+    }
+
+    /** Reports a size for every observed element, the way the browser does after layout. */
+    report(size: { border?: number; content?: number }): void {
+      const entries = [...this.observed].map(
+        (target) =>
+          ({
+            target,
+            borderBoxSize: size.border === undefined ? undefined : [{ inlineSize: size.border }],
+            contentRect: { width: size.content ?? 0 },
+          }) as unknown as ResizeObserverEntry,
+      );
+      this.callback(entries, this as unknown as ResizeObserver);
+    }
+  }
+
+  beforeEach(() => {
+    FakeResizeObserver.instances = [];
+    vi.stubGlobal('ResizeObserver', FakeResizeObserver);
+  });
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('locks the fractional width the observer reported at rest', async () => {
+    const { host, control, settle } = await setup();
+    const observer = FakeResizeObserver.instances[0];
+    expect(observer.observed.has(control())).toBe(true);
+    observer.report({ border: 100.89 });
+
+    host.loading.set(true);
+    await settle();
+    expect(control().style.width).toBe('100.89px');
+
+    // A size reported while loading (the new label) is not the width to keep.
+    observer.report({ border: 70 });
+    host.loading.set(false);
+    await settle();
+    await settle();
+    expect(control().style.width).toBe('');
+  });
+
+  it('falls back to the content rect and does not lock an unknown width', async () => {
+    const { host, control, settle } = await setup();
+    host.loading.set(true);
+    await settle();
+    expect(control().style.width).toBe('');
+    host.loading.set(false);
+    await settle();
+
+    FakeResizeObserver.instances[0].report({ content: 88 });
+    host.loading.set(true);
+    await settle();
+    expect(control().style.width).toBe('88px');
+  });
+
+  it('disconnects the observer when the button is destroyed', async () => {
+    const { fixture } = await setup();
+    fixture.destroy();
+    expect(FakeResizeObserver.instances[0].disconnected).toBe(true);
+  });
+});

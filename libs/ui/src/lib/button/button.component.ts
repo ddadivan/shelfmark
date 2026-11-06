@@ -6,6 +6,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   effect,
   ElementRef,
   inject,
@@ -107,21 +108,35 @@ export class ButtonComponent implements UiFocusTarget {
   protected readonly singleIcon = computed(() => this.iconLeft() ?? this.iconRight());
 
   private readonly injector = inject(Injector);
+  private readonly resizeObserver =
+    typeof ResizeObserver === 'undefined'
+      ? undefined
+      : new ResizeObserver((entries) => {
+          const entry = entries.at(-1);
+          this.measureRestWidth(entry?.borderBoxSize?.[0]?.inlineSize ?? entry?.contentRect.width);
+        });
   /** Last width measured while the button was at rest; the width to lock when loading starts. */
   private restWidth: number | undefined;
   private wasLoading = false;
 
   constructor() {
     // The label changes in the same change detection pass that sets `loading`, before any
-    // effect or hook of this component can read the DOM; so the rest width is recorded after
-    // every render in which the button is neither loading nor locked.
-    afterEveryRender({
-      read: () => {
-        if (!this.loading() && this.lockedWidth() === undefined) {
-          this.restWidth = this.element()?.offsetWidth || undefined;
+    // effect or hook of this component can read the DOM, so the width to lock is recorded
+    // beforehand: a ResizeObserver keeps it fresh (also across font loading); without one
+    // (no layout engine) it is read after every render that is neither loading nor locked.
+    if (this.resizeObserver) {
+      const observer = this.resizeObserver;
+      effect((onCleanup) => {
+        const element = this.element();
+        if (element) {
+          observer.observe(element);
+          onCleanup(() => observer.unobserve(element));
         }
-      },
-    });
+      });
+      inject(DestroyRef).onDestroy(() => observer.disconnect());
+    } else {
+      afterEveryRender({ read: () => this.measureRestWidth(this.element()?.offsetWidth) });
+    }
     effect(() => {
       const loading = this.loading();
       untracked(() => (loading ? this.lockWidth() : this.releaseWidthAfterSpinner()));
@@ -139,6 +154,12 @@ export class ButtonComponent implements UiFocusTarget {
   /** Focuses the inner native element (not the non-focusable host). */
   focus(options?: FocusOptions): void {
     this.element()?.focus(options);
+  }
+
+  private measureRestWidth(width: number | undefined): void {
+    if (!this.loading() && this.lockedWidth() === undefined) {
+      this.restWidth = width || undefined;
+    }
   }
 
   private lockWidth(): void {
