@@ -1,0 +1,41 @@
+@use '../src/styles/ui' as *;
+
+// Layout of the Select stories only (never shipped with the library). Class names start with `ss-`.
+
+.ss-themes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.ss-panel {
+  display: grid;
+  gap: var(--space-6);
+  align-content: start;
+  padding: var(--space-6);
+  color: var(--text);
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+}
+
+.ss-field {
+  width: min(100vw - rem(48px), rem(320px));
+}
+
+// Room under the field so an open popup stays inside the story canvas.
+.ss-open {
+  min-height: rem(420px);
+}
+
+.ss-form {
+  display: grid;
+  gap: var(--space-4);
+  width: min(100vw - rem(48px), rem(420px));
+}
+
+.ss-values {
+  @include type(mono);
+
+  margin: 0;
+  color: var(--text-muted);
+}
