@@ -124,7 +124,7 @@ describe('TreeComponent', () => {
       const labelled = (id: string) =>
         (item(id).getAttribute('aria-labelledby') ?? '')
           .split(' ')
-          .map((ref) => root.querySelector(`[id="${ref}"]`)?.textContent)
+          .map((ref) => root.querySelector(`[id="${ref}"]`)?.textContent?.trim())
           .join(' ');
       expect(labelled('Work')).toBe('Work 34');
     });
