@@ -23,6 +23,7 @@ export * from './lib/save-status';
 export * from './lib/select';
 export * from './lib/spinner';
 export * from './lib/steps';
+export * from './lib/tag-input';
 export * from './lib/textarea';
 export * from './lib/theme';
 export * from './lib/toast';
