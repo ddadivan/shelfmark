@@ -2,6 +2,8 @@ import { signal } from '@angular/core';
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { ICON_NAMES } from '../icon/models/icon-names.const';
 import { ButtonComponent } from './button.component';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
+import type { Theme } from '../theme';
 
 /** The component inputs plus the projected label text. */
 type ButtonArgs = ButtonComponent & { label?: string };
@@ -152,8 +154,8 @@ export const LoadingWithLabelChange: Story = {
 
 export const Disabled: Story = { args: { variant: 'primary', disabled: true } };
 
-const panel = (theme: 'light' | 'dark') => `
-  <div data-theme="${theme}" style="padding: 1.5rem; background: var(--bg); color: var(--text); display: grid; gap: 1rem">
+const panel = (theme: Theme) => `
+  <div ${THEME_ATTRIBUTE}="${theme}" style="padding: 1.5rem; background: var(--bg); color: var(--text); display: grid; gap: 1rem">
     @for (v of variants; track v) {
       <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap">
         @for (s of sizes; track s) {
@@ -178,6 +180,6 @@ export const AllVariants: Story = {
       variants: ['primary', 'secondary', 'ghost', 'danger'],
       sizes: ['sm', 'md', 'lg'],
     },
-    template: `${panel('light')}${panel('dark')}`,
+    template: `${Object.values(THEME).map(panel).join('')}`,
   }),
 };

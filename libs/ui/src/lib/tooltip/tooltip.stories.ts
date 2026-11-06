@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { ButtonComponent } from '../button/button.component';
 import { TooltipPanelComponent } from './tooltip-panel.component';
 import { TooltipDirective } from './tooltip.directive';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
+import type { Theme } from '../theme';
 
 interface TooltipArgs {
   uiTooltip: string;
@@ -104,8 +106,8 @@ export const Positions: Story = {
   }),
 };
 
-const variants = (theme: 'light' | 'dark') => `
-  <div data-theme="${theme}" class="ts-panel">
+const variants = (theme: Theme) => `
+  <div ${THEME_ATTRIBUTE}="${theme}" class="ts-panel">
     <p class="ts-hint">${theme} theme: hover or focus the buttons</p>
     <div class="ts-row">
       <ui-button uiTooltip="Top" position="top">Top</ui-button>
@@ -128,6 +130,6 @@ export const AllVariants: Story = {
   parameters: { layout: 'fullscreen' },
   render: () => ({
     moduleMetadata: { imports },
-    template: `${variants('light')}${variants('dark')}`,
+    template: `${Object.values(THEME).map(variants).join('')}`,
   }),
 };

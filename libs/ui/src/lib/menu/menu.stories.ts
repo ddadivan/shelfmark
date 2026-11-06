@@ -4,6 +4,8 @@ import { MenuItemComponent } from './menu-item.component';
 import { MenuSeparatorComponent } from './menu-separator.component';
 import { MenuTriggerDirective } from './menu-trigger.directive';
 import { MenuComponent } from './menu.component';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
+import type { Theme } from '../theme';
 
 interface MenuArgs {
   align: 'start' | 'end';
@@ -143,8 +145,8 @@ export const ContextMenu: Story = {
   }),
 };
 
-const variants = (theme: 'light' | 'dark') => `
-  <div data-theme="${theme}" class="ms-panel">
+const variants = (theme: Theme) => `
+  <div ${THEME_ATTRIBUTE}="${theme}" class="ms-panel">
     <p class="ms-hint">${theme} theme: static menus (open the stories above for the live popup)</p>
     <div class="ms-row">
       <ui-menu inline ariaLabel="Link actions" class="ms-static">${linkItems}</ui-menu>
@@ -163,6 +165,6 @@ const variants = (theme: 'light' | 'dark') => `
 export const AllVariants: Story = {
   render: () => ({
     moduleMetadata: { imports },
-    template: `${variants('light')}${variants('dark')}`,
+    template: `${Object.values(THEME).map(variants).join('')}`,
   }),
 };

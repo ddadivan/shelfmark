@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { AvatarComponent } from './avatar.component';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
 
 // A data URI: the production CSP (`img-src 'self' data:`) allows it, external hosts are blocked.
 const PHOTO =
@@ -54,11 +55,12 @@ export const AllVariants: Story = {
         { name: 'Dmytro Dadivan', src: BROKEN },
         { name: 'Dmytro Dadivan', src: PHOTO },
       ],
+      themes: Object.values(THEME),
     },
     template: `
       <div class="ds-themes">
-        @for (theme of ['light', 'dark']; track theme) {
-          <div [attr.data-theme]="theme" class="ds-pane">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane">
             @for (size of sizes; track size) {
               <div class="ds-row">
                 @for (s of sources; track $index) {

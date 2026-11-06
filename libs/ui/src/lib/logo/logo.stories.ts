@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { LogoComponent } from './logo.component';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
 
 const meta: Meta<LogoComponent> = {
   title: 'Components/Logo',
@@ -39,10 +40,11 @@ export const Sizes: Story = {
 export const AllVariants: Story = {
   parameters: { layout: 'padded' },
   render: () => ({
+    props: { themes: Object.values(THEME) },
     template: `
       <div class="story-themes">
-        @for (theme of ['light', 'dark']; track theme) {
-          <div [attr.data-theme]="theme" class="story-theme-pane story-theme-pane--logos">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="story-theme-pane story-theme-pane--logos">
             <ui-logo />
             <ui-logo variant="mark" label="Shelfmark" />
             <ui-logo tone="mono" />

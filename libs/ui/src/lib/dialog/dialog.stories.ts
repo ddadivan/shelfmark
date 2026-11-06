@@ -9,6 +9,8 @@ import { MenuItemComponent } from '../menu/menu-item.component';
 import { MenuTriggerDirective } from '../menu/menu-trigger.directive';
 import { MenuComponent } from '../menu/menu.component';
 import type { DialogSize } from './models/dialog-size.type';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
+import type { Theme } from '../theme';
 
 /** Content of the form story: a short form with Cancel left of the main action. */
 @Component({
@@ -265,8 +267,8 @@ export const PhoneSheet: Story = {
   }),
 };
 
-const frame = (theme: 'light' | 'dark') => `
-  <div data-theme="${theme}" class="dst-gallery">
+const frame = (theme: Theme) => `
+  <div ${THEME_ATTRIBUTE}="${theme}" class="dst-gallery">
     <p class="dst-hint">${theme} theme: static panels (open the stories above for the live dialog)</p>
     <div class="dst-scrim">
       <ui-dialog title="Delete folder “Work”?" closeLabel="Close">
@@ -295,6 +297,6 @@ const frame = (theme: 'light' | 'dark') => `
 export const AllVariants: Story = {
   render: () => ({
     moduleMetadata: { imports: [DialogComponent, ButtonComponent] },
-    template: `${frame('light')}${frame('dark')}`,
+    template: `${Object.values(THEME).map(frame).join('')}`,
   }),
 };

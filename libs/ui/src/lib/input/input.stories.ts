@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import type { InputType } from './models/input-type.type';
 import { InputComponent } from './input.component';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
 
 const TYPES: InputType[] = ['text', 'url', 'search'];
 
@@ -122,10 +123,11 @@ export const Disabled: Story = {
 export const AllVariants: Story = {
   parameters: { layout: 'padded' },
   render: () => ({
+    props: { themes: Object.values(THEME) },
     template: `
       <div class="fs-themes">
-        @for (theme of ['light', 'dark']; track theme) {
-          <div [attr.data-theme]="theme" class="fs-panel">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="fs-panel">
             <ui-input label="Link" type="url" icon="link" placeholder="https://"
               value="https://youtube.com/watch?v=ng22" [clearable]="true" clearLabel="Clear"
               hint="Title and preview fill in by themselves" />

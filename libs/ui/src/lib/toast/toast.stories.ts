@@ -4,6 +4,7 @@ import { ButtonComponent } from '../button/button.component';
 import type { ToastKind } from './models/toast-kind.type';
 import { ToastComponent } from './toast.component';
 import { ToastService } from './toast.service';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
 
 /** Story helper: buttons that call `ToastService`. Not part of the library. */
 @Component({
@@ -135,10 +136,11 @@ export const LongText: Story = {
 export const AllVariants: Story = {
   render: () => ({
     moduleMetadata: { imports: [ToastComponent] },
+    props: { themes: Object.values(THEME) },
     template: `
       <div class="tt-themes">
-        @for (theme of ['light', 'dark']; track theme) {
-          <div [attr.data-theme]="theme" class="tt-panel tt-static">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="tt-panel tt-static">
             <ui-toast kind="info" text="Link moved" />
             <ui-toast kind="success" text="Link saved to Work / Angular" actionLabel="View" />
             <ui-toast kind="info" text="Link deleted" actionLabel="Undo" />

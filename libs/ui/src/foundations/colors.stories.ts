@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { COLOR_GROUPS } from './models/color-groups.const';
+import { THEME, THEME_ATTRIBUTE } from '../lib/theme';
 
 const meta: Meta = {
   title: 'Foundations/Colours',
@@ -20,14 +21,14 @@ type Story = StoryObj;
 
 export const Palette: Story = {
   render: () => ({
-    props: { themes: ['light', 'dark'], groups: COLOR_GROUPS },
+    props: { themes: Object.values(THEME), THEME, groups: COLOR_GROUPS },
     template: `
       <div class="fd-page">
         <p class="fd-lead">Same token names in both themes; only the values change.</p>
         <div class="fd-themes">
           @for (theme of themes; track theme) {
-            <section class="fd-panel" [attr.data-theme]="theme" [attr.aria-label]="theme + ' theme'">
-              <h2 class="fd-panel__title">{{ theme === 'light' ? 'Light' : 'Dark' }} theme</h2>
+            <section class="fd-panel" [attr.${THEME_ATTRIBUTE}]="theme" [attr.aria-label]="theme + ' theme'">
+              <h2 class="fd-panel__title">{{ theme === THEME.Light ? 'Light' : 'Dark' }} theme</h2>
               @for (group of groups; track group.title) {
                 <div>
                   <h3 class="fd-group__title">{{ group.title }}</h3>

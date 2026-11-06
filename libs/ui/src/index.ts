@@ -23,6 +23,7 @@ export * from './lib/select';
 export * from './lib/spinner';
 export * from './lib/steps';
 export * from './lib/textarea';
+export * from './lib/theme';
 export * from './lib/toast';
 export * from './lib/tooltip';
 export * from './lib/tree';

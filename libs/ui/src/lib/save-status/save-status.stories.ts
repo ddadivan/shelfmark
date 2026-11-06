@@ -2,6 +2,7 @@ import { signal } from '@angular/core';
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import type { SaveStatusState } from './models/save-status-state.type';
 import { SaveStatusComponent } from './save-status.component';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
 
 const STATES: SaveStatusState[] = ['saving', 'saved', 'error'];
 
@@ -59,11 +60,11 @@ export const Changing: Story = {
 export const AllVariants: Story = {
   parameters: { layout: 'padded' },
   render: () => ({
-    props: { states: STATES },
+    props: { states: STATES, themes: Object.values(THEME) },
     template: `
       <div class="ls-themes">
-        @for (theme of ['light', 'dark']; track theme) {
-          <div [attr.data-theme]="theme" class="ls-panel">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="ls-panel">
             @for (s of states; track s) {
               <ui-save-status
                 [state]="s"

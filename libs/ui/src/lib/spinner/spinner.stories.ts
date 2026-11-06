@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import type { SpinnerSize } from './models/spinner-size.type';
 import { SpinnerComponent } from './spinner.component';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
 
 const SIZES: SpinnerSize[] = ['sm', 'md', 'lg'];
 
@@ -28,11 +29,11 @@ export const Labelled: Story = { args: { label: 'Loading links' } };
 export const AllVariants: Story = {
   parameters: { layout: 'padded' },
   render: () => ({
-    props: { sizes: SIZES },
+    props: { sizes: SIZES, themes: Object.values(THEME) },
     template: `
       <div class="ls-themes">
-        @for (theme of ['light', 'dark']; track theme) {
-          <div [attr.data-theme]="theme" class="ls-panel">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="ls-panel">
             <div class="ls-row">
               @for (s of sizes; track s) {
                 <ui-spinner [size]="s" />

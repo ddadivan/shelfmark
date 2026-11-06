@@ -3,6 +3,7 @@ import { ICON_NAMES } from '../icon/models/icon-names.const';
 import { ILLUSTRATION_NAMES } from '../illustration/models/illustration-names.const';
 import { ButtonComponent } from '../button/button.component';
 import { EmptyStateComponent } from './empty-state.component';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
 
 const meta: Meta<EmptyStateComponent> = {
   title: 'Components/EmptyState',
@@ -97,11 +98,12 @@ export const AllVariants: Story = {
           action: 'Clear search',
         },
       ],
+      themes: Object.values(THEME),
     },
     template: `
       <div class="story-themes">
-        @for (theme of ['light', 'dark']; track theme) {
-          <div [attr.data-theme]="theme" class="story-theme-pane story-theme-pane--empty">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="story-theme-pane story-theme-pane--empty">
             @for (c of cases; track c.heading) {
               <ui-empty-state [heading]="c.heading" [text]="c.text" [illustration]="c.scene" illustrationMotion="none">
                 <ui-button variant="primary">{{ c.action }}</ui-button>

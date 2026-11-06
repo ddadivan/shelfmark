@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { compileString } from 'sass';
+import { compile, compileString } from 'sass';
+import { THEME, THEME_ATTRIBUTE } from '../lib/theme';
 
 const STYLES_PATH = 'libs/ui/src/styles';
 
@@ -225,5 +226,16 @@ describe('overlay mixins', () => {
     expect(output).toContain('.ui-tooltip-description');
     expect(output).toContain('clip-path: inset(50%)');
     expect(output).not.toContain('display: none');
+  });
+});
+
+describe('themes', () => {
+  it('global.scss defines a [data-theme] selector for every THEME value', () => {
+    const output = compile(resolve(STYLES_DIR, 'global.scss'), {
+      loadPaths: [resolve(STYLES_DIR, '../../../../node_modules')],
+    }).css;
+    for (const theme of Object.values(THEME)) {
+      expect(output).toContain(`[${THEME_ATTRIBUTE}=${theme}]`);
+    }
   });
 });

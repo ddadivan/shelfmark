@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import type { RadioOption } from './models/radio-option.interface';
 import type { RadioOrientation } from './models/radio-orientation.type';
 import { RadioGroupComponent } from './radio-group.component';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
 
 const OPTIONS: RadioOption[] = [
   {
@@ -74,11 +75,11 @@ export const Disabled: Story = { args: { disabled: true } };
 export const AllVariants: Story = {
   parameters: { layout: 'padded' },
   render: () => ({
-    props: { options: OPTIONS },
+    props: { options: OPTIONS, themes: Object.values(THEME) },
     template: `
       <div class="fs-themes">
-        @for (theme of ['light', 'dark']; track theme) {
-          <div [attr.data-theme]="theme" class="fs-panel">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="fs-panel">
             <ui-radio-group [options]="options" value="move" ariaLabel="Vertical" />
             <ui-radio-group [options]="options" value="delete" orientation="horizontal"
               ariaLabel="Horizontal" />

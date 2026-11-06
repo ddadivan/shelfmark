@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { ICON_NAMES } from '../icon/models/icon-names.const';
 import { ChipComponent } from './chip.component';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
 
 const meta: Meta<ChipComponent> = {
   title: 'Components/Chip',
@@ -82,11 +83,12 @@ export const AllVariants: Story = {
         { variant: 'neutral', clickable: true, icon: 'star' },
         { variant: 'neutral', clickable: true, disabled: true },
       ],
+      themes: Object.values(THEME),
     },
     template: `
       <div class="ds-themes">
-        @for (theme of ['light', 'dark']; track theme) {
-          <div [attr.data-theme]="theme" class="ds-pane">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane">
             <div class="ds-row">
               @for (c of cases; track $index) {
                 <ui-chip

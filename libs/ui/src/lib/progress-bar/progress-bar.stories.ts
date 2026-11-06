@@ -2,6 +2,7 @@ import { signal } from '@angular/core';
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import type { ProgressBarVariant } from './models/progress-bar-variant.type';
 import { ProgressBarComponent } from './progress-bar.component';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
 
 const VARIANTS: ProgressBarVariant[] = ['fixed', 'inline'];
 
@@ -63,10 +64,11 @@ export const FinishesAfterRequest: Story = {
 export const AllVariants: Story = {
   parameters: { layout: 'padded' },
   render: () => ({
+    props: { themes: Object.values(THEME) },
     template: `
       <div class="ls-themes">
-        @for (theme of ['light', 'dark']; track theme) {
-          <div [attr.data-theme]="theme" class="ls-panel">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="ls-panel">
             <p class="ls-caption">fixed (top bar)</p>
             <div class="ls-box">
               <ui-progress-bar [active]="true" />

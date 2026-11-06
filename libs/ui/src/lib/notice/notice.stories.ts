@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { ICON_NAMES } from '../icon/models/icon-names.const';
 import { NoticeComponent } from './notice.component';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
 
 const meta: Meta<NoticeComponent> = {
   title: 'Components/Notice',
@@ -45,10 +46,11 @@ export const CustomIcon: Story = { args: { icon: 'info' } };
 export const AllVariants: Story = {
   parameters: { layout: 'padded' },
   render: () => ({
+    props: { themes: Object.values(THEME) },
     template: `
       <div class="ds-themes">
-        @for (theme of ['light', 'dark']; track theme) {
-          <div [attr.data-theme]="theme" class="ds-pane">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane">
             <div class="ds-stack">
               <ui-notice kind="warning">You already saved this link.</ui-notice>
               <ui-notice kind="warning">You already saved this link. <a href="#open">Open it</a></ui-notice>
