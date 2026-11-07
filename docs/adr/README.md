@@ -50,4 +50,5 @@ Routine features, bug fixes and choices already fully covered by an existing ADR
 | [0024](0024-named-constants-as-const.md) | Named constants: as const objects + derived unions, no TS enum | Accepted | 2026-11-06 |
 | [0025](0025-database-tooling-prisma-7-pglite.md) | Database tooling: Prisma 7, PGlite instead of Docker, migrations checked in CI and applied in the Vercel build | Accepted | 2026-11-07 |
 | [0027](0027-better-auth-integration.md) | Better Auth integration: environment rules, allowed surface, token stripping, session filtering, test harness | Proposed | 2026-11-07 |
+| [0028](0028-lighthouse-ci-isolated-lockfile.md) | Lighthouse CI in an isolated lockfile outside the root audit scope | Proposed | 2026-11-07 |
 | [0029](0029-global-session-guard-and-isolation-harness.md) | Global session guard on AuthService, public-route allow-list and scanner, data-isolation harness | Proposed | 2026-11-07 |

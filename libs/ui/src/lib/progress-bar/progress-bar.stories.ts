@@ -21,7 +21,7 @@ const meta: Meta<ProgressBarComponent> = {
     template: `
       <div class="ls-box" [class.ls-box--inline]="variant === PROGRESS_BAR_VARIANT.Inline">
         <ui-progress-bar [active]="active" [variant]="variant" [label]="label" [class.ls-inline-bar]="variant === PROGRESS_BAR_VARIANT.Inline" />
-        <div class="ls-lines">
+        <div class="ls-lines" [attr.aria-busy]="active">
           <div class="ls-line ls-line--long"></div>
           <div class="ls-line ls-line--short"></div>
         </div>
@@ -53,7 +53,7 @@ export const FinishesAfterRequest: Story = {
       template: `
         <div class="ls-box">
           <ui-progress-bar [active]="active()" [variant]="args.variant" />
-          <div class="ls-lines">
+          <div class="ls-lines" [attr.aria-busy]="active()">
             <div class="ls-line ls-line--long"></div>
             <div class="ls-line ls-line--short"></div>
           </div>
@@ -74,7 +74,7 @@ export const AllVariants: Story = {
             <p class="ls-caption">fixed (top bar)</p>
             <div class="ls-box">
               <ui-progress-bar [active]="true" />
-              <div class="ls-lines">
+              <div class="ls-lines" aria-busy="true">
                 <div class="ls-line ls-line--long"></div>
                 <div class="ls-line ls-line--short"></div>
               </div>
