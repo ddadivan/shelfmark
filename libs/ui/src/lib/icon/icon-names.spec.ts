@@ -7,13 +7,15 @@ import { ICON_NAMES } from './models/icon-names.const';
 const SPRITE_PATH = resolve(process.cwd(), 'libs/ui/src/assets/icons/sprite.svg');
 const DESIGN_SPRITE_PATH = resolve(process.cwd(), 'docs/design/assets/icons/sprite.svg');
 
+const PROVIDER_SYMBOLS = /<symbol id="sm-(?:google|github)"[\s\S]*?<\/symbol>/g;
+
 describe('ICON_NAMES', () => {
   it('matches the symbol ids of the sprite exactly', () => {
     const sprite = readFileSync(SPRITE_PATH, 'utf8');
     const ids = [...sprite.matchAll(/<symbol id="sm-([a-z0-9-]+)"/g)].map((m) => m[1]);
 
     expect([...ICON_NAMES].sort()).toEqual([...ids].sort());
-    expect(ICON_NAMES).toHaveLength(44);
+    expect(ICON_NAMES).toHaveLength(46);
   });
 
   it('has no duplicates', () => {
@@ -27,9 +29,19 @@ describe('ICON_NAMES', () => {
     expect(sprite).not.toContain('style=');
   });
 
-  it('is the design sprite without the root display:none style', () => {
+  it('is the design sprite without the root display:none style, plus the provider marks', () => {
     const design = readFileSync(DESIGN_SPRITE_PATH, 'utf8').replace(' style="display:none"', '');
+    const withoutMarks = readFileSync(SPRITE_PATH, 'utf8').replace(PROVIDER_SYMBOLS, '');
 
-    expect(readFileSync(SPRITE_PATH, 'utf8')).toBe(design);
+    expect(withoutMarks).toBe(design);
+  });
+
+  it('draws GitHub in currentColor and Google with its own fixed brand colours', () => {
+    const sprite = readFileSync(SPRITE_PATH, 'utf8');
+    const symbol = (id: string) =>
+      sprite.match(new RegExp(`<symbol id="sm-${id}"[\\s\\S]*?</symbol>`))?.[0] ?? '';
+
+    expect(symbol('github')).not.toContain('fill=');
+    expect(symbol('google').match(/fill="#[0-9A-F]{6}"/g)).toHaveLength(4);
   });
 });

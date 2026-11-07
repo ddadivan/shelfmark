@@ -1,6 +1,7 @@
 /**
  * Every icon in `assets/icons/sprite.svg` (symbol id without the `sm-` prefix).
- * Keep in sync with the sprite; a unit test compares both.
+ * Keep in sync with the sprite; a unit test compares both. `google` and `github` are the
+ * sign-in provider marks (not part of the design sprite, see `icon-names.spec.ts`).
  */
 export const ICON_NAMES = [
   'add',
@@ -47,4 +48,6 @@ export const ICON_NAMES = [
   'error',
   'offline',
   'image',
+  'google',
+  'github',
 ] as const;
