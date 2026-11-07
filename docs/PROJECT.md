@@ -265,7 +265,7 @@ See ADR 0004.
 
 CSR without SSR, zoneless, Transloco, strict-CSP build: ADR 0005; state: ADR 0009; UI library: ADR 0014; `rem`/`em` units: ADR 0015.
 
-**Routes (Angular Router).** Every feature is lazy-loaded (`loadComponent`). Router: `provideRouter(routes, withComponentInputBinding(), withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }), withPreloading(PreloadAllModules), withRouterConfig({ paramsInheritanceStrategy: 'always' }))`, so path params, query and `data` reach components as `input()`.
+**Routes (Angular Router).** Every feature is lazy-loaded (`loadComponent`), except the public landing (the LCP page, eager) and no route preloading (it competes with the first paint; Lighthouse budget). Router: `provideRouter(routes, withComponentInputBinding(), withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }), withRouterConfig({ paramsInheritanceStrategy: 'always' }))`, so path params, query and `data` reach components as `input()`.
 
 | URL | Screen | Access | Feature (lazy) |
 | --- | --- | --- | --- |

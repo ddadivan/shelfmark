@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { APP_PATH } from './models/app-path.const';
 import { authOnly, guestOnly, redirectToSignIn } from './core/auth/auth.guards';
+import LandingPage from './features/landing/landing.page';
 
 const libraryPage = () => import('./features/library/library.page');
 const settingsPage = () => import('./features/settings/settings.page');
@@ -11,7 +12,8 @@ export const pageRoutes: Routes = [
   {
     path: '',
     canMatch: [guestOnly],
-    loadComponent: () => import('./features/landing/landing.page'),
+    // Eager on purpose: the landing is the LCP page; a lazy chunk chain delays first paint.
+    component: LandingPage,
   },
   {
     path: '',
