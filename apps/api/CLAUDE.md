@@ -27,6 +27,8 @@ NestJS REST API, mounted under `/api` (port 3000). Source of truth: `docs/PROJEC
 - `src/common/` - cross-cutting pieces (request id, error filter, `auth/`: `@AllowAnonymous`, `@CurrentUser()` in `current-user.decorator.ts`, `models/public-route.const.ts` = `PUBLIC_ROUTES`, the only allowed public routes; `scan-routes.ts` + `route-protection.spec.ts` enforce it).
 - `src/common/rate-limit/` (`RATE_LIMIT` presets, `@RateLimit`, `clientIp`, auth middleware), `src/common/interceptors/` (`LoggingInterceptor`: method, route pattern, status, duration, request id only; `TimeoutInterceptor`: `REQUEST_TIMEOUT_MS` below the Vercel `maxDuration`, 504), `src/common/csrf/` (`CsrfGuard`: foreign `Origin` 403, non-JSON body 415 on unsafe methods).
 - `src/<domain>/` - one module per domain (`auth`, `users`, `links`, `folders`, `tags`, `metadata`, ...) with `*.module.ts`, `*.controller.ts`, `*.service.ts`, `dto/`.
+- `src/links/` (ADR 0033): `LinksService` (list, recent, get, preview), `LinksWriteService` (create, update, open, delete), `LinkPreviewService` (fetch through `SafeFetcherService`, one fallback for every failure), `link-where.ts` (shared filter builder: user, folder = direct children, unsorted, favorite, tags AND, search words AND over title, note and URL; the export reuses it), `escape-like.ts` (every search word is escaped), `link-cursor.ts` (keyset cursor `{v,s,o,k,id}`; a cursor for another sort or order is a 400). `faviconUrl` / `imageUrl` in responses are `null` until #149; only source URLs are stored. Create is idempotent through `idempotencyKey` (replay answers 200 with the first link) and capped at `LINK_LIMIT.PerUserMax`.
+- **Lock order:** a transaction that takes advisory locks takes `folders:<userId>` (`FoldersService.lockTree`) before `tags:<userId>` (`TagsService.lockUserTags`, also taken inside `resolveNames`), never the reverse. Never fetch a page inside a transaction.
 
 ## Rules
 
@@ -61,7 +63,7 @@ NestJS REST API, mounted under `/api` (port 3000). Source of truth: `docs/PROJEC
 
 ## Outbound HTTP: the SSRF-safe fetcher
 
-`src/fetcher/` (`FetcherModule` exports `SafeFetcherService.fetch(url)`) is the only allowed way to make an outbound request. Never use `fetch`, `http.request` or an HTTP client anywhere else. The endpoint that uses it (`POST /api/links/preview`) comes with #65.
+`src/fetcher/` (`FetcherModule` exports `SafeFetcherService.fetch(url, limits?)`, optional per-call limit overrides) is the only allowed way to make an outbound request. Never use `fetch`, `http.request` or an HTTP client anywhere else. The endpoint that uses it (`POST /api/links/preview` and `POST /api/links` without a title, through `LinkPreviewService`, 6 s budget) lives in `src/links/`.
 
 - URL: http/https only, no credentials, at most 2048 characters, ports 80 and 443 only (a deliberate decision: an open port range makes the fetcher a port scanner; pages on other ports are rare).
 - DNS is resolved by the fetcher itself; one blocked address in the answer rejects the host. The connection is pinned to the validated addresses through a custom `lookup` (no second lookup, so no DNS rebinding). Blocked ranges: `models/blocked-ip-ranges.const.ts` (private, loopback, link-local incl. cloud metadata, CGNAT, multicast, reserved, NAT64, 6to4, Teredo, unique-local). `ip-policy.ts` expands IPv6 and unwraps IPv4-mapped / compatible forms; anything that is not a canonical IP literal fails closed. `localhost`, `*.localhost`, `*.local` and `*.internal` are refused by name.
