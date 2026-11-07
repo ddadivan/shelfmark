@@ -13,10 +13,12 @@ import { SafeFetcherService } from '../fetcher/safe-fetcher.service';
 const BASE = '/api/links';
 const ROUNDS = 8;
 
-// Retries cover one infrastructure flake only: PGlite's socket server multiplexes parallel connections
-// onto one instance and now and then answers "unnamed prepared statement does not exist" (P2039)
-// to the session lookup. The invariants asserted below are deterministic, so a real race fails
-// every attempt.
+// Test-level retries (2) exist for one harness artifact only: PGlite's socket server multiplexes
+// parallel connections onto a single instance and now and then answers "unnamed prepared statement
+// does not exist" (P2039) to the session lookup. The unified error format hides the cause, so the
+// failure cannot be matched per request; retrying a mutating request is also unsafe. A retry re-runs
+// the whole test on a clean database. This is not a Postgres behaviour: on a real server the
+// invariants asserted here are deterministic.
 describe('links API: concurrency', { retry: 2 }, () => {
   const fetch = vi.fn<SafeFetcherService['fetch']>();
   let t: AuthTestApp;
