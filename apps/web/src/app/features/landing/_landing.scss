@@ -45,3 +45,26 @@
     color: var(--text);
   }
 }
+
+// Scroll reveal for the direct children of an element carrying `appLandingReveal`: fade + 1rem
+// rise over `duration-slow`, each child delayed by `--landing-reveal-delay` (set by the
+// directive). Only the directive's `--pending` class hides content, and reduced motion never does.
+@mixin reveal {
+  &.landing-reveal--pending > * {
+    opacity: 0;
+    transform: translateY(rem(16px));
+  }
+
+  &.landing-reveal--shown > * {
+    transition:
+      opacity var(--duration-slow) var(--ease-out) var(--landing-reveal-delay, 0ms),
+      transform var(--duration-slow) var(--ease-out) var(--landing-reveal-delay, 0ms);
+  }
+
+  @include reduced-motion {
+    &.landing-reveal--pending > * {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}

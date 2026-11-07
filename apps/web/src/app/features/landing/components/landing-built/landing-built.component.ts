@@ -3,11 +3,12 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { IconComponent } from '@shelfmark/ui';
 import { LANDING_AGENT_ROLES } from '../../models/landing-agent-roles.const';
 import { LANDING_LINKS } from '../../models/landing-links.const';
+import { LandingRevealDirective } from '../../directives/landing-reveal.directive';
 
 /** "How it's built": the stack, the eight agent roles and links to the code and decision log. */
 @Component({
   selector: 'app-landing-built',
-  imports: [TranslocoPipe, IconComponent],
+  imports: [LandingRevealDirective, TranslocoPipe, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { id: 'how' },
   templateUrl: './landing-built.component.html',

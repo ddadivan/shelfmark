@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { LandingMotionService } from './landing-motion.service';
 import { LandingBeforeAfterComponent } from './components/landing-before-after/landing-before-after.component';
 import { LandingBuiltComponent } from './components/landing-built/landing-built.component';
 import { LandingFinaleComponent } from './components/landing-finale/landing-finale.component';
@@ -19,6 +20,8 @@ import { LandingWhyComponent } from './components/landing-why/landing-why.compon
     LandingFinaleComponent,
     LandingFooterComponent,
   ],
+  // Per page, so the motion listeners are removed when the visitor leaves the landing page.
+  providers: [LandingMotionService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './landing.page.html',
   styleUrl: './landing.page.scss',

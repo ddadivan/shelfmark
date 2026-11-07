@@ -81,7 +81,8 @@
     "beforeAfter": {
       "title": "The same links, before and after",
       "before": "Before: scattered",
-      "after": "After: on one shelf"
+      "after": "After: on one shelf",
+      "pauseMotion": "Pause animations"
     },
     "before": {
       "pingTitle": "+1 in Saved Messages",
