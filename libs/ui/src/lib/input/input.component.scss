@@ -40,6 +40,15 @@
   @include leave(spinner);
 }
 
+.ui-input__spinner {
+  flex: none;
+  color: var(--text-muted);
+}
+
+.ui-input__spinner--leave {
+  @include leave(spinner);
+}
+
 .ui-input__clear {
   @include field-icon-button;
 }

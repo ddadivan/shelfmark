@@ -36,11 +36,19 @@
     [attr.spellcheck]="type() === INPUT_TYPE.Url ? 'false' : null"
     [attr.autocomplete]="type() === INPUT_TYPE.Url ? 'off' : null"
     [attr.aria-required]="required() ? 'true' : null"
+    [attr.aria-busy]="loading() ? 'true' : null"
     [attr.aria-invalid]="showInvalid() ? 'true' : null"
     [attr.aria-describedby]="describedBy()"
     (input)="onInput($event)"
     (blur)="touch.emit()"
   />
+  @if (trailingSpinner()) {
+    <ui-spinner
+      class="ui-input__spinner"
+      [label]="loadingLabel() || undefined"
+      animate.leave="ui-input__spinner--leave"
+    />
+  }
   @if (showClear()) {
     <button
       type="button"

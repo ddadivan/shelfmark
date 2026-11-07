@@ -32,7 +32,7 @@ export class ToastService {
 
   show(options: ToastOptions): ToastRef {
     const item = this.store.push(options);
-    return { dismiss: () => this.store.dismiss(item.id) };
+    return { dismiss: () => this.store.dismiss(item.id), closed: item.closed };
   }
 
   /** Closes the toast on screen, if any. */
