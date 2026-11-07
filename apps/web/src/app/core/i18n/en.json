@@ -204,7 +204,8 @@
         "loadingHint": "You can keep typing a note and choosing a folder while it loads.",
         "filled": "Filled in from the page. You can edit the title.",
         "failed": "Couldn't load a preview. The link will be saved with its address as the title — you can rename it.",
-        "ready": "Preview loaded: {{title}}"
+        "ready": "Preview loaded: {{title}}",
+        "unavailable": "No preview is available for this page. The link will be saved with its address as the title — you can rename it."
       },
       "titleField": {
         "label": "Title",
@@ -239,6 +240,10 @@
         "text": "You already saved this link in {{folder}}. Open it, or save it again."
       },
       "saveFailed": "Couldn't save the link. Try again.",
+      "saveFailedLimit": "You have reached the limit of {{max}} saved links. Delete some to save more.",
+      "saveFailedChanged": "A folder or tag changed while saving. Try again.",
+      "saveFailedRateLimit": "Too many requests. Wait a moment and try again.",
+      "saveFailedInvalid": "The link couldn't be saved because some details are invalid. Check the address, title and note.",
       "actions": {
         "cancel": "Cancel",
         "openSaved": "Open saved",

@@ -1,14 +1,4 @@
-const HTTP_PROTOCOLS: readonly string[] = ['http:', 'https:'];
-
-/** True for an absolute http(s) URL with a host; mirrors the contract's URL validation. */
-export function isHttpUrl(value: string): boolean {
-  try {
-    const url = new URL(value);
-    return HTTP_PROTOCOLS.includes(url.protocol) && url.hostname !== '';
-  } catch {
-    return false;
-  }
-}
+export { isHttpUrl } from '@shelfmark/contracts';
 
 /** The host without `www.` for display, or the input when it is not a URL. */
 export function displayHost(value: string): string {

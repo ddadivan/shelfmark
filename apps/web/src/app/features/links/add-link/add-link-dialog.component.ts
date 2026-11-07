@@ -20,7 +20,9 @@ import {
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   LINK_LIMIT,
+  type CreateLinkRequest,
   type LinkDuplicate,
+  type LinkPreview,
   type LinkResponse,
   type UpdateLinkRequest,
 } from '@shelfmark/contracts';
@@ -59,6 +61,7 @@ import type { PreviewState } from '../models/preview-state.type';
 import { relativeTime } from '../relative-time';
 import { buildFolderOptions } from './folder-options';
 import { displayHost, isHttpUrl, urlWithoutScheme } from './http-url';
+import { saveErrorKey } from './save-error-key';
 
 /** Wait after the last keystroke before the preview is requested (a paste is instant to the eye). */
 const PREVIEW_DEBOUNCE_MS = 350;
@@ -181,7 +184,10 @@ export class AddLinkDialogComponent {
         switchMap(() => this.linksApi.preview(url)),
         tap({
           next: (response) => {
-            this.autofillTitle(response.preview.title);
+            // Not fetched: `preview.title` is only the URL; the server defaults the title itself.
+            if (response.fetched) {
+              this.autofillTitle(response.preview.title);
+            }
           },
           error: () => {
             this.autofillTitle(urlWithoutScheme(url));
@@ -217,8 +223,20 @@ export class AddLinkDialogComponent {
     return this.editing && state !== PREVIEW_STATE.Ready ? PREVIEW_STATE.Idle : state;
   });
 
+  /** The page could not be fetched: the preview only echoes the URL (the duplicate still counts). */
+  protected readonly noPreview = computed(
+    () =>
+      !this.editing &&
+      this.previewState() === PREVIEW_STATE.Ready &&
+      this.preview.hasValue() &&
+      !this.preview.value().fetched,
+  );
+
   protected readonly previewData = computed(() =>
-    !this.editing && this.previewState() === PREVIEW_STATE.Ready && this.preview.hasValue()
+    !this.editing &&
+    this.previewState() === PREVIEW_STATE.Ready &&
+    this.preview.hasValue() &&
+    this.preview.value().fetched
       ? this.preview.value().preview
       : null,
   );
@@ -278,7 +296,8 @@ export class AddLinkDialogComponent {
   }
 
   protected readonly saving = signal(false);
-  protected readonly saveFailed = signal(false);
+  /** Translation key of why the last save failed; `null` while nothing failed. */
+  protected readonly saveError = signal<string | null>(null);
 
   protected openExisting(): void {
     const existing = this.duplicate();
@@ -314,16 +333,20 @@ export class AddLinkDialogComponent {
       }
       request$ = this.linksApi.update(this.original.id, changes);
     } else {
-      request$ = this.linksApi.create({
+      const fetched = this.fetchedPreview();
+      const payload: CreateLinkRequest = {
         url: value.url.trim(),
         ...(title && { title }),
         ...(note && { note }),
         ...(value.folderId !== null && { folderId: value.folderId }),
         ...(tags.length > 0 && { tags }),
-      });
+        ...(fetched?.faviconUrl && { faviconUrl: fetched.faviconUrl }),
+        ...(fetched?.imageUrl && { imageUrl: fetched.imageUrl }),
+      };
+      request$ = this.linksApi.create({ ...payload, idempotencyKey: this.keyFor(payload) });
     }
     this.saving.set(true);
-    this.saveFailed.set(false);
+    this.saveError.set(null);
     try {
       const pending = firstValueFrom(request$).then((link): AddLinkSaved => ({
         action: ADD_LINK_ACTION.Saved,
@@ -334,10 +357,37 @@ export class AddLinkDialogComponent {
       const saved = await pending;
       // `saving` stays on: the button keeps its spinner while the dialog leaves.
       this.ref.close(saved);
-    } catch {
+    } catch (error) {
       this.saving.set(false);
-      this.saveFailed.set(true);
+      this.saveError.set(saveErrorKey(error));
     }
+  }
+
+  /** The loaded preview of the current URL when the server could fetch the page. */
+  private fetchedPreview(): LinkPreview | null {
+    return this.previewState() === PREVIEW_STATE.Ready &&
+      this.preview.hasValue() &&
+      this.preview.value().fetched
+      ? this.preview.value().preview
+      : null;
+  }
+
+  /**
+   * The idempotency key of this save. A retry of the same payload reuses the key (the server
+   * replays it); a changed payload needs a new one, because the server ignores the payload of a
+   * replayed key.
+   */
+  private keyFor(payload: CreateLinkRequest): string {
+    const session = this.data.session;
+    const fingerprint = JSON.stringify(payload);
+    if (
+      session.idempotencyKey === null ||
+      (session.sentPayload !== null && session.sentPayload !== fingerprint)
+    ) {
+      session.idempotencyKey = globalThis.crypto.randomUUID();
+    }
+    session.sentPayload = fingerprint;
+    return session.idempotencyKey;
   }
 
   /** Edit mode: only the fields that differ from the saved link. */

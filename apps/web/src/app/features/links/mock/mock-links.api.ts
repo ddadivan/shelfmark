@@ -1,6 +1,7 @@
 import { inject, Service } from '@angular/core';
 import {
   LINK_SORT_FIELD,
+  normalizeUrl,
   PAGE_LIMIT,
   SORT_ORDER,
   type CreateLinkRequest,
@@ -22,7 +23,6 @@ import { MOCK_LINKS_SCENARIO } from '../models/mock-links-scenario.const';
 import { MOCK_LINKS_SCENARIO_KEY } from '../models/mock-links-scenario-key.const';
 import type { LinksApi } from '../models/links-api.interface';
 import { MockLibraryData } from './mock-library-data';
-import { normalizeUrl } from './normalize-url';
 
 /**
  * `LinksApi` over generated data with simulated latency, until the real API (#72). State is
@@ -34,6 +34,8 @@ import { normalizeUrl } from './normalize-url';
 @Service()
 export class MockLinksApi implements LinksApi {
   private readonly data = inject(MockLibraryData);
+  /** Links created per `idempotencyKey`: the same key answers the same link, like the server. */
+  private readonly created = new Map<string, LinkResponse>();
 
   private get links(): LinkResponse[] {
     return this.data.links;
@@ -51,10 +53,7 @@ export class MockLinksApi implements LinksApi {
       );
     }
     const normalized = normalizeUrl(url);
-    if (
-      normalized !== null &&
-      normalized === normalizeUrl(MOCK_LINK_PREVIEW_DUPLICATE.preview.url)
-    ) {
+    if (normalized === normalizeUrl(MOCK_LINK_PREVIEW_DUPLICATE.preview.url)) {
       return of(MOCK_LINK_PREVIEW_DUPLICATE).pipe(delay(MOCK_LATENCY_MS.Preview));
     }
     const response: LinkPreviewResponse = {
@@ -76,6 +75,11 @@ export class MockLinksApi implements LinksApi {
       if (displayHost(request.url) === MOCK_HOST.SaveFails) {
         return throwError(() => new Error('Mock: save failed'));
       }
+      const replay =
+        request.idempotencyKey === undefined ? undefined : this.created.get(request.idempotencyKey);
+      if (replay) {
+        return of({ ...replay });
+      }
       const now = new Date().toISOString();
       const link: LinkResponse = {
         id: globalThis.crypto.randomUUID(),
@@ -93,6 +97,9 @@ export class MockLinksApi implements LinksApi {
       };
       this.links = [link, ...this.links];
       this.data.ensureTags(link.tags);
+      if (request.idempotencyKey !== undefined) {
+        this.created.set(request.idempotencyKey, link);
+      }
       return of({ ...link });
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }

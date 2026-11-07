@@ -8,4 +8,12 @@ import type { AddLinkSaved } from './add-link-saved.interface';
 export interface AddLinkSession {
   /** Resolves with the saved link, or `undefined` when the save failed. */
   saving: Promise<AddLinkSaved | undefined> | null;
+  /**
+   * Sent with every save attempt of this dialog (the server replays by key, so a retry or a double
+   * click never creates a second link). Replaced when the payload changed since the key was last
+   * sent. `null` in edit mode.
+   */
+  idempotencyKey: string | null;
+  /** The payload `idempotencyKey` was last sent with; `null` before the first attempt. */
+  sentPayload: string | null;
 }
