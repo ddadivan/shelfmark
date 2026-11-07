@@ -34,9 +34,9 @@ describe('ngsw-config.json', () => {
       new RegExp(
         `^${glob
           .replace(/[.+^${}()|[\]\\]/g, '\\$&')
-          .replace(/\*\*/g, '\u0000')
+          .replace(/\*\*/g, '<any>')
           .replace(/\*/g, '[^/]*')
-          .replace(/\u0000/g, '.*')}$`,
+          .replace(/<any>/g, '.*')}$`,
       );
     const include = ngswConfig.navigationUrls.filter((url) => !url.startsWith('!')).map(toRegExp);
     const exclude = ngswConfig.navigationUrls
