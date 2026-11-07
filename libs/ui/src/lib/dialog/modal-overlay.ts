@@ -4,6 +4,7 @@ import type { ModalOverlayDeps } from './models/modal-overlay-deps.interface';
 import type { ModalOverlayOptions } from './models/modal-overlay-options.interface';
 import { KEYBOARD_KEY } from '../keyboard';
 import { OVERLAY_LAYER } from '../overlay/models/overlay-layer.const';
+import { raiseOverlayLayers } from '../overlay/overlay-stacking';
 import { overlayLayerClass, setOverlayLayer } from '../overlay/overlay-layer';
 
 /**
@@ -46,6 +47,8 @@ export function openModalOverlay<C, R, D>(
   }
   // On the host element (the stacking context), like every `UiOverlay` pane.
   setOverlayLayer(cdkRef.overlayRef.hostElement, OVERLAY_LAYER.Dialog);
+  // Popovers stack by show time: toasts (and menus, tooltips) that already exist must stay above.
+  raiseOverlayLayers(cdkRef.overlayRef.hostElement);
 
   cdkRef.keydownEvents.subscribe((event) => {
     if (event.key === KEYBOARD_KEY.Escape && options.dismissible && !event.defaultPrevented) {
