@@ -12,6 +12,7 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['src/**/*.spec.ts', 'scripts/**/*.spec.ts'],
+    setupFiles: ['./vitest.setup.ts'],
     reporters: ['default'],
     coverage: {
       // On by default so `nx test api` enforces the thresholds; filtered runs (`-t foo`) may fail them.
