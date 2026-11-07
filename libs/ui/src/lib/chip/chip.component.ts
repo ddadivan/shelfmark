@@ -3,6 +3,7 @@ import {
   booleanAttribute,
   ChangeDetectionStrategy,
   Component,
+  computed,
   ElementRef,
   inject,
   input,
@@ -33,6 +34,7 @@ import { CHIP_VARIANT } from './models/chip-variant.const';
     '[class.ui-chip--neutral]': 'variant() === CHIP_VARIANT.Neutral',
     '[class.ui-chip--clickable]': 'clickable()',
     '[class.ui-chip--removable]': 'removable()',
+    '[class.ui-chip--menu]': 'hasMenu()',
     '[class.ui-chip--disabled]': 'disabled()',
     '(keydown)': 'onKeydown($event)',
   },
@@ -55,6 +57,18 @@ export class ChipComponent {
   /** Accessible name of the remove button; required in practice when `removable`. */
   readonly removeLabel = input<string>();
 
+  /**
+   * Accessible name of the optional trailing "..." button ("Actions for tag design"). The
+   * button is rendered only when this is non-empty, so there is never a nameless button.
+   */
+  readonly menuLabel = input<string>();
+
+  /**
+   * The "..." button was pressed. Carries the button element as the origin for
+   * `ui-menu.openFrom(origin)`; the chip's own action (`clicked`) is not triggered.
+   */
+  readonly menuRequested = output<HTMLElement>();
+
   /** The clickable body was activated (click, Enter, Space). */
   readonly clicked = output<void>();
   /** The chip should be removed (remove button, Delete, Backspace). */
@@ -62,14 +76,23 @@ export class ChipComponent {
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
+  protected readonly hasMenu = computed(() => !!this.menuLabel());
+
   /**
    * Focuses the clickable body, else the remove button. Does nothing for a plain chip
    * (no focusable part). Lets a TagInput move focus to a sibling after `removed`.
    */
   focus(options?: FocusOptions): void {
     this.host
-      .querySelector<HTMLElement>('button.ui-chip__body, button.ui-chip__remove')
+      .querySelector<HTMLElement>(
+        'button.ui-chip__body, button.ui-chip__menu, button.ui-chip__remove',
+      )
       ?.focus(options);
+  }
+
+  protected onMenuClick(event: MouseEvent): void {
+    event.stopPropagation();
+    this.menuRequested.emit(event.currentTarget as HTMLElement);
   }
 
   protected onKeydown(event: KeyboardEvent): void {

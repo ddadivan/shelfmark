@@ -19,6 +19,18 @@
     <ng-container [ngTemplateOutlet]="content" />
   </span>
 }
+@if (menuLabel(); as label) {
+  <button
+    type="button"
+    class="ui-chip__menu"
+    [disabled]="disabled()"
+    [attr.aria-label]="label"
+    aria-haspopup="menu"
+    (click)="onMenuClick($event)"
+  >
+    <ui-icon name="more" />
+  </button>
+}
 @if (removable()) {
   <button
     type="button"

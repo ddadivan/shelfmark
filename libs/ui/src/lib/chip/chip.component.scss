@@ -31,7 +31,48 @@
   border-radius: var(--radius-full);
 }
 
-:host(.ui-chip--removable) .ui-chip__body {
+:host(.ui-chip--removable) .ui-chip__body,
+:host(.ui-chip--menu) .ui-chip__body {
+  padding-right: var(--space-1);
+}
+
+// Trailing "..." button: hidden until the chip is hovered or a part of it has focus on a
+// hover-capable pointer, always there on touch. It keeps its width (no layout shift) and stays
+// in the tab order, and `:focus-visible` shows it, so keyboard users reach it.
+.ui-chip__menu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  padding: 0 var(--space-2) 0 var(--space-1);
+  color: inherit;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-full);
+  transition: opacity var(--duration-fast) var(--ease-out);
+
+  @include hover {
+    opacity: 0;
+  }
+
+  @include hit-area(-6px -3px -6px -4px, -14px -3px -14px -6px);
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+@include hover {
+  :host(.ui-chip--menu:hover) .ui-chip__menu,
+  :host(.ui-chip--menu:focus-within) .ui-chip__menu,
+  .ui-chip__menu:focus-visible {
+    opacity: 1;
+  }
+}
+
+// With a menu and a remove button the menu sits first; tighten the gap between them.
+:host(.ui-chip--menu.ui-chip--removable) .ui-chip__menu {
   padding-right: var(--space-1);
 }
 
@@ -86,6 +127,7 @@ button.ui-chip__body {
   opacity: 0.5;
 
   .ui-chip__body,
+  .ui-chip__menu,
   .ui-chip__remove {
     cursor: not-allowed;
   }
@@ -93,6 +135,7 @@ button.ui-chip__body {
 
 @include reduced-motion {
   :host,
+  .ui-chip__menu,
   .ui-chip__remove {
     transition: none;
   }
