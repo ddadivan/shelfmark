@@ -242,6 +242,36 @@ describe('GET /api/export', () => {
     expect(html.match(/<A /g)).toHaveLength(1100);
   });
 
+  it('exports every link exactly once across batches, mixed folders and unsorted', async () => {
+    const { prisma } = t.db;
+    const userId = users.owner.userId;
+    const a = await prisma.folder.create({ data: { userId, name: 'A' } });
+    const b = await prisma.folder.create({ data: { userId, name: 'B', parentId: a.id } });
+    const homes = [null, a.id, b.id];
+    await prisma.link.createMany({
+      data: Array.from({ length: 1300 }, (_, i) => ({
+        userId,
+        url: `https://mixed.example/${i}`,
+        normalizedUrl: `https://mixed.example/${i}`,
+        title: `Mixed ${i}`,
+        folderId: homes[i % 3],
+      })),
+    });
+    const expected = Array.from({ length: 1300 }, (_, i) => `https://mixed.example/${i}`);
+    const doc = (await owner().get('/api/export?format=json').expect(200)).body as ExportDocument;
+    expect(doc.links.map((l) => l.url).sort()).toEqual([...expected].sort());
+    const html = (await owner().get('/api/export?format=html').expect(200)).text;
+    const hrefs = [...html.matchAll(/HREF="([^"]+)"/g)].map((m) => m[1]);
+    expect([...hrefs].sort()).toEqual([...expected].sort());
+  });
+
+  it('treats an empty tag value as no filter', async () => {
+    await seed(users.owner.userId);
+    const doc = (await owner().get('/api/export?format=json&tag=').expect(200))
+      .body as ExportDocument;
+    expect(doc.links).toHaveLength(4);
+  });
+
   it('validates the query', async () => {
     await owner().get('/api/export').expect(400);
     await owner().get('/api/export?format=xml').expect(400);

@@ -4,6 +4,7 @@ import { EXPORT_FORMAT, EXPORT_SCHEMA_VERSION, normalizeTagName } from '@shelfma
 import type { ExportFolder, ExportLink, ExportQuery } from '@shelfmark/contracts';
 import { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { EXPORT_CONTENT_TYPE } from './models/export-content-type.const';
 import type { ExportFile } from './models/export-file.interface';
 import type { ExportFolderRow } from './models/export-folder-row.interface';
 import type { ExportLinkRow } from './models/export-link-row.interface';
@@ -16,8 +17,6 @@ import {
 } from './render-bookmarks';
 
 const BATCH_SIZE = 500;
-const JSON_TYPE = 'application/json; charset=utf-8';
-const HTML_TYPE = 'text/html; charset=utf-8';
 
 const LINK_SELECT = {
   id: true,
@@ -79,13 +78,13 @@ export class ExportService {
     if (query.format === EXPORT_FORMAT.Json) {
       return {
         filename: `shelfmark-${date}.json`,
-        contentType: JSON_TYPE,
+        contentType: EXPORT_CONTENT_TYPE.Json,
         body: Readable.from(this.guarded(this.jsonChunks(folders, byId, base, now))),
       };
     }
     return {
       filename: `shelfmark-${date}.html`,
-      contentType: HTML_TYPE,
+      contentType: EXPORT_CONTENT_TYPE.Html,
       body: Readable.from(this.guarded(this.htmlChunks(folders, query.folderId, base))),
     };
   }
@@ -159,16 +158,13 @@ export class ExportService {
     return scope.filter((folder) => keep.has(folder.id));
   }
 
-  private async *linkBatches(
-    where: Prisma.LinkWhereInput,
-    orderBy: Prisma.LinkOrderByWithRelationInput[] = [{ id: 'asc' }],
-  ): AsyncGenerator<ExportLinkRow[]> {
+  private async *linkBatches(where: Prisma.LinkWhereInput): AsyncGenerator<ExportLinkRow[]> {
     let cursor: string | undefined;
     for (;;) {
       const rows: ExportLinkRow[] = await this.prisma.link.findMany({
         where,
         select: LINK_SELECT,
-        orderBy,
+        orderBy: { id: 'asc' },
         take: BATCH_SIZE,
         ...(cursor === undefined ? {} : { cursor: { id: cursor }, skip: 1 }),
       });
@@ -228,7 +224,7 @@ export class ExportService {
   }
 
   /**
-   * One pass over the links (batched, ordered by folder then id), grouped by folder in memory as
+   * One pass over the links (batched, ordered by id), grouped by folder in memory as
    * rendered text, then emitted in tree order. Memory is bounded by the per-user caps; the
    * database sees one query set, not one per folder.
    */
@@ -242,7 +238,9 @@ export class ExportService {
     for (const folder of folders) {
       const key =
         folder.id === rootId || !inScope.has(folder.parentId ?? '') ? null : folder.parentId;
-      children.set(key, [...(children.get(key) ?? []), folder]);
+      const siblings = children.get(key);
+      if (siblings) siblings.push(folder);
+      else children.set(key, [folder]);
     }
     const depths = new Map<string | null, number>([[null, 1]]);
     const assign = (parent: string | null, depth: number): void => {
@@ -254,10 +252,13 @@ export class ExportService {
     assign(null, 1);
 
     const rendered = new Map<string | null, string[]>();
-    for await (const batch of this.linkBatches(base, [{ folderId: 'asc' }, { id: 'asc' }])) {
+    for await (const batch of this.linkBatches(base)) {
       for (const row of batch) {
         const text = renderBookmark(row, depths.get(row.folderId) ?? 1);
-        if (text !== '') rendered.set(row.folderId, [...(rendered.get(row.folderId) ?? []), text]);
+        if (text === '') continue;
+        const texts = rendered.get(row.folderId);
+        if (texts) texts.push(text);
+        else rendered.set(row.folderId, [text]);
       }
     }
 

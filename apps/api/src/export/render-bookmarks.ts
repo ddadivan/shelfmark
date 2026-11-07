@@ -34,7 +34,6 @@ export function renderFolderClose(depth: number): string {
 export function renderBookmark(link: ExportLinkRow, depth: number): string {
   const href = safeHref(link.url);
   if (href === null) return '';
-  // The attribute is comma-separated, so a comma inside a tag name becomes a hyphen.
   // TAGS is comma-separated, so a comma inside a tag name becomes a hyphen.
   const tags = link.tags.map((entry) => entry.tag.name.replaceAll(',', '-')).join(',');
   const attrs =
