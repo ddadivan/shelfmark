@@ -140,24 +140,115 @@ describe('Library schema (links, folders, tags)', () => {
 
   it('rejects values over the column limits', async () => {
     const user = await createUser();
+    // Prisma maps Postgres "value too long for type character varying(n)" to P2000.
+    const tooLong = { code: 'P2000' };
     await expect(
       database.prisma.link.create({ data: linkData(user.id, { title: 't'.repeat(301) }) }),
-    ).rejects.toThrow();
+    ).rejects.toMatchObject(tooLong);
     await expect(
-      database.prisma.link.create({ data: linkData(user.id, { url: 'u'.repeat(2049) }) }),
-    ).rejects.toThrow();
+      database.prisma.link.create({
+        data: linkData(user.id, { url: `https://e.test/${'u'.repeat(2040)}` }),
+      }),
+    ).rejects.toMatchObject(tooLong);
+    await expect(
+      database.prisma.link.create({
+        data: linkData(user.id, { faviconUrl: `https://e.test/${'f'.repeat(2040)}` }),
+      }),
+    ).rejects.toMatchObject(tooLong);
+    await expect(
+      database.prisma.link.create({
+        data: linkData(user.id, { imageUrl: `https://e.test/${'i'.repeat(2040)}` }),
+      }),
+    ).rejects.toMatchObject(tooLong);
     await expect(
       database.prisma.link.create({ data: linkData(user.id, { note: 'n'.repeat(2001) }) }),
-    ).rejects.toThrow();
+    ).rejects.toThrow(/links_note_length_check/);
     await expect(
       database.prisma.folder.create({ data: { userId: user.id, name: 'f'.repeat(101) } }),
-    ).rejects.toThrow();
+    ).rejects.toMatchObject(tooLong);
     await expect(
       database.prisma.tag.create({ data: { userId: user.id, name: 't'.repeat(51) } }),
-    ).rejects.toThrow();
+    ).rejects.toMatchObject(tooLong);
     await database.prisma.link.create({
       data: linkData(user.id, { title: 't'.repeat(300), note: 'n'.repeat(2000) }),
     });
+  });
+
+  it('only accepts http(s) urls for url, faviconUrl and imageUrl', async () => {
+    const user = await createUser();
+    await expect(
+      database.prisma.link.create({ data: linkData(user.id, { url: 'javascript:alert(1)' }) }),
+    ).rejects.toThrow(/links_url_scheme_check/);
+    await expect(
+      database.prisma.link.create({ data: linkData(user.id, { faviconUrl: 'data:image/png;x' }) }),
+    ).rejects.toThrow(/links_favicon_url_scheme_check/);
+    await expect(
+      database.prisma.link.create({ data: linkData(user.id, { imageUrl: 'ftp://e.test/i.png' }) }),
+    ).rejects.toThrow(/links_image_url_scheme_check/);
+    const ok = await database.prisma.link.create({
+      data: linkData(user.id, {
+        url: 'HTTPS://Example.test/a',
+        faviconUrl: 'http://example.test/f.ico',
+        imageUrl: 'https://example.test/i.png',
+      }),
+    });
+    expect(ok.url).toBe('HTTPS://Example.test/a');
+  });
+
+  it('rejects blank titles and names', async () => {
+    const user = await createUser();
+    await expect(
+      database.prisma.link.create({ data: linkData(user.id, { title: '   ' }) }),
+    ).rejects.toThrow(/links_title_not_blank_check/);
+    await expect(
+      database.prisma.folder.create({ data: { userId: user.id, name: '' } }),
+    ).rejects.toThrow(/folders_name_not_blank_check/);
+    await expect(
+      database.prisma.tag.create({ data: { userId: user.id, name: ' ' } }),
+    ).rejects.toThrow(/tags_name_not_blank_check/);
+  });
+
+  it('keeps tag names unique case-insensitively per user', async () => {
+    const ada = await createUser();
+    const bob = await createUser('bob@example.test');
+    await database.prisma.tag.create({ data: { userId: ada.id, name: 'ts' } });
+    await expect(
+      database.prisma.tag.create({ data: { userId: ada.id, name: 'TS' } }),
+    ).rejects.toThrow(/tags_user_id_lower_name_key/);
+    await database.prisma.tag.create({ data: { userId: bob.id, name: 'TS' } });
+    expect(await database.prisma.tag.count()).toBe(2);
+  });
+
+  it('requires an expiry for demo users and indexes it', async () => {
+    await expect(
+      database.prisma.user.create({ data: { name: 'D', email: 'd@example.test', isDemo: true } }),
+    ).rejects.toThrow(/users_demo_expiry_check/);
+    const demo = await database.prisma.user.create({
+      data: { name: 'D', email: 'd@example.test', isDemo: true, demoExpiresAt: new Date() },
+    });
+    expect(demo.isDemo).toBe(true);
+    const rows = await database.prisma.$queryRaw<{ indexdef: string }[]>`
+      SELECT indexdef FROM pg_indexes WHERE indexname = 'users_demo_expires_at_idx'`;
+    expect(rows[0]?.indexdef).toContain('WHERE is_demo');
+  });
+
+  it('rejects a folder that is its own parent', async () => {
+    const user = await createUser();
+    const folder = await database.prisma.folder.create({ data: { userId: user.id, name: 'A' } });
+    await expect(
+      database.prisma.folder.update({ where: { id: folder.id }, data: { parentId: folder.id } }),
+    ).rejects.toThrow(/folders_parent_not_self_check/);
+  });
+
+  it('rejects a parent folder that belongs to another user', async () => {
+    const ada = await createUser();
+    const bob = await createUser('bob@example.test');
+    const adas = await database.prisma.folder.create({ data: { userId: ada.id, name: 'A' } });
+    await expect(
+      database.prisma.folder.create({
+        data: { userId: bob.id, name: 'B', parentId: adas.id },
+      }),
+    ).rejects.toMatchObject({ code: 'P2003' });
   });
 
   it('creates the specified indexes', async () => {
