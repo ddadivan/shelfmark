@@ -35,11 +35,13 @@
   }
   <!--
     The demo loads when the browser is idle: its code and its first render stay out of the task
-    that paints the headline. The placeholder has the phone's height, so nothing moves.
+    that paints the headline. The placeholder (also shown while the chunk loads) has the phone's height, so nothing moves.
   -->
   @defer (on idle) {
     <app-landing-chat class="landing-hero__demo" />
   } @placeholder {
+    <div class="landing-hero__demo-placeholder" aria-hidden="true"></div>
+  } @loading {
     <div class="landing-hero__demo-placeholder" aria-hidden="true"></div>
   }
 </section>
