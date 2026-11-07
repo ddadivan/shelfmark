@@ -24,6 +24,8 @@ import { IconComponent } from '../icon/icon.component';
 import type { IconName } from '../icon/models/icon-name.type';
 import { RippleDirective } from '../ripple/ripple.directive';
 import { SpinnerComponent } from '../spinner/spinner.component';
+import { BUTTON_HIT_AREA } from './models/button-hit-area.const';
+import type { ButtonHitArea } from './models/button-hit-area.type';
 import type { ButtonHaspopup } from './models/button-haspopup.type';
 import type { ButtonPressed } from './models/button-pressed.type';
 import type { ButtonSize } from './models/button-size.type';
@@ -71,6 +73,12 @@ export class ButtonComponent implements UiFocusTarget {
   readonly loading = input(false, { transform: booleanAttribute });
   /** Renders an inner `<a href>` instead of a `<button>` (`type` then does not apply). */
   readonly href = input<string>();
+  /**
+   * Touch target of an icon-only button on `pointer: coarse`: `grow` (default) makes the button
+   * 44px; `overlay` keeps the visual size and adds an invisible hit area (a favorite star on a
+   * card). The overlay has no ripple (the ripple host clips).
+   */
+  readonly hitArea = input<ButtonHitArea>(BUTTON_HIT_AREA.Grow);
   /** Press ripple; `[ripple]="false"` opts out. */
   readonly ripple = input(true, { transform: booleanAttribute });
   /** `aria-expanded` of the inner element; unset renders no attribute. */
@@ -96,7 +104,11 @@ export class ButtonComponent implements UiFocusTarget {
   /** A link without `href` (disabled or busy): no navigation by middle click or context menu. */
   protected readonly inert = computed(() => this.disabled() || this.loading());
   protected readonly rippleActive = computed(
-    () => this.ripple() && !this.disabled() && !this.loading(),
+    () =>
+      this.ripple() &&
+      !this.disabled() &&
+      !this.loading() &&
+      this.hitArea() !== BUTTON_HIT_AREA.Overlay,
   );
   /** Width (px) the button keeps while it is loading and until the spinner has left. */
   protected readonly lockedWidth = signal<number | undefined>(undefined);
@@ -107,6 +119,9 @@ export class ButtonComponent implements UiFocusTarget {
     }
     if (this.iconOnly()) {
       classes.push('ui-button--icon');
+    }
+    if (this.hitArea() === BUTTON_HIT_AREA.Overlay) {
+      classes.push('ui-button--hit-overlay');
     }
     return classes.join(' ');
   });

@@ -11,7 +11,7 @@ import { MenuComponent } from '../menu/menu.component';
 import { SkeletonComponent } from '../skeleton/skeleton.component';
 import { CardComponent } from './card.component';
 import { CARD_STORY_IMAGE } from './stories/card-story-image.const';
-import { BUTTON_SIZE, BUTTON_VARIANT } from '../button';
+import { BUTTON_HIT_AREA, BUTTON_SIZE, BUTTON_VARIANT } from '../button';
 import { CHIP_VARIANT } from '../chip';
 import { THEME, THEME_ATTRIBUTE } from '../theme';
 import { SKELETON_SHAPE } from '../skeleton';
@@ -71,7 +71,7 @@ const content = (title = TITLE, favorite = false) => `
   <span slot="overlay" class="cs-overlay"><span>youtube.com</span><strong>Open ↗</strong></span>
   <ui-favicon slot="meta" [src]="favicon" letter="y" />
   <span slot="meta">youtube.com</span>
-  <ui-button slot="favorite" variant="${BUTTON_VARIANT.Ghost}" size="${BUTTON_SIZE.Sm}" iconOnly
+  <ui-button slot="favorite" variant="${BUTTON_VARIANT.Ghost}" size="${BUTTON_SIZE.Sm}" hitArea="${BUTTON_HIT_AREA.Overlay}" iconOnly
     [iconLeft]="${favorite ? "'star-filled'" : "'star'"}"
     [ariaPressed]="${favorite}"
     ariaLabel="${favorite ? 'Remove from favorites' : 'Add to favorites'}" />
