@@ -1,9 +1,11 @@
 import type { ThrottlerModuleOptions } from '@nestjs/throttler';
+import { clientIp } from './client-ip';
+import { DEFAULT_THROTTLER_NAME } from './models/default-throttler-name.const';
+import { RATE_LIMIT } from './models/rate-limit.const';
+import { RATE_LIMIT_ENV } from './models/rate-limit-env.const';
+import { RATE_LIMIT_MESSAGE } from './models/rate-limit-message.const';
 import type { RateLimitPreset } from './models/rate-limit-preset.interface';
 import { perClientKey } from './rate-limit-key';
-import { clientIp } from './client-ip';
-import { RATE_LIMIT } from './models/rate-limit.const';
-import { RATE_LIMIT_MESSAGE } from './models/rate-limit-message.const';
 
 const ENABLED = '1';
 
@@ -14,7 +16,9 @@ const ENABLED = '1';
  * a non-production `NODE_ENV`.
  */
 export function shouldTrustProxyHeaders(env: NodeJS.ProcessEnv = process.env): boolean {
-  return env['VERCEL'] === ENABLED || env['TRUST_PROXY_HEADERS'] === ENABLED;
+  return (
+    env[RATE_LIMIT_ENV.Vercel] === ENABLED || env[RATE_LIMIT_ENV.TrustProxyHeaders] === ENABLED
+  );
 }
 
 /**
@@ -27,7 +31,7 @@ export function createRateLimitOptions(
   defaultLimit: RateLimitPreset = RATE_LIMIT.Default,
 ): ThrottlerModuleOptions {
   return {
-    throttlers: [{ name: 'default', ...defaultLimit }],
+    throttlers: [{ name: DEFAULT_THROTTLER_NAME, ...defaultLimit }],
     // One bucket per client across all routes; `@RateLimit` overrides keep per-route buckets.
     generateKey: (_context, tracker, name) => perClientKey(tracker, name),
     getTracker: (req) => clientIp(req, trustProxyHeaders),

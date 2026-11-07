@@ -2,6 +2,7 @@ import {
   type CallHandler,
   type ExecutionContext,
   HttpException,
+  HttpStatus,
   Injectable,
   Logger,
   type NestInterceptor,
@@ -10,8 +11,6 @@ import type { Request, Response } from 'express';
 import { tap, type Observable } from 'rxjs';
 import { isRecord } from '../util/is-record';
 import { REQUEST_ID_LOCAL } from '../request-id/request-id.middleware';
-
-const INTERNAL_ERROR_STATUS = 500;
 
 /** The route pattern (`/api/links/:id`) when matched, else the path; never the query string. */
 function loggedPath(req: Request): string {
@@ -43,7 +42,9 @@ export class LoggingInterceptor implements NestInterceptor {
       tap({
         complete: () => log(res.statusCode),
         error: (error: unknown) =>
-          log(error instanceof HttpException ? error.getStatus() : INTERNAL_ERROR_STATUS),
+          log(
+            error instanceof HttpException ? error.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR,
+          ),
       }),
     );
   }

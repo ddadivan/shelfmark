@@ -19,7 +19,10 @@ import { PrismaModule } from '../prisma/prisma.module';
     PrismaModule,
     AuthModule,
     HealthModule,
-    ThrottlerModule.forRoot(createRateLimitOptions(shouldTrustProxyHeaders())),
+    // Async so the environment is read at DI time, not at import time.
+    ThrottlerModule.forRootAsync({
+      useFactory: () => createRateLimitOptions(shouldTrustProxyHeaders()),
+    }),
   ],
   providers: [
     // Guards run in registration order, and the order is security-relevant: the rate limiter first,

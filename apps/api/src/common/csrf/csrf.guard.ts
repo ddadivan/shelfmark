@@ -29,7 +29,9 @@ function isJson(req: Request): boolean {
  * Global CSRF guard for the Nest routes (`/api/auth/*` has Better Auth's own checks and is mounted
  * outside Nest's router). For POST, PUT, PATCH and DELETE: an `Origin` header that is present and
  * not a trusted origin is a 403; a request with a body that is not `application/json` is a 415.
- * A present `Sec-Fetch-Site: cross-site` is a 403; without an `Origin`, only `same-origin`, `none` or no `Sec-Fetch-Site` is accepted (`same-site` is not), so non-browser clients still pass. There is no state-changing `GET`.
+ * A present `Sec-Fetch-Site: cross-site` is a 403. Without an `Origin`, only `same-origin`, `none`
+ * or no `Sec-Fetch-Site` is accepted (`same-site` is not), so non-browser clients still pass.
+ * There is no state-changing `GET`.
  */
 export class CsrfGuard implements CanActivate {
   private readonly trusted: ReadonlySet<string>;

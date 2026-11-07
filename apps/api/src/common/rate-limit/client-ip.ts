@@ -14,6 +14,8 @@ function headerValue(headers: Record<string, unknown>, name: string): string | u
 const IPV4_MAPPED_PREFIX = '::ffff:';
 
 /** `::ffff:203.0.113.7` is the IPv4 client 203.0.113.7: unwrap it so IPv4 users do not share one /64. */
+// Only the dotted form is unwrapped: Node reports `req.ip` and proxies send dotted text. The hex form
+// (`::ffff:cb00:7107`) is not produced by either and stays in its /64 bucket.
 function unwrapMapped(ip: string): string {
   if (!ip.toLowerCase().startsWith(IPV4_MAPPED_PREFIX)) return ip;
   const rest = ip.slice(IPV4_MAPPED_PREFIX.length);
