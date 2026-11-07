@@ -1,6 +1,6 @@
 import { LINK_LIMIT } from '@shelfmark/contracts';
 import type { Prisma } from '../generated/prisma/client';
-import { escapeLike } from './escape-like';
+import { escapeLike } from '../common/util/escape-like';
 import type { LinkFilter } from './models/link-filter.interface';
 
 /** The words of a search text: split on whitespace, at most `LINK_LIMIT.QueryTermsMax` are used. */
@@ -31,7 +31,7 @@ export function buildLinkWhere(userId: string, filter: LinkFilter): Prisma.LinkW
   if (filter.favorite !== undefined) and.push({ isFavorite: filter.favorite });
   for (const name of filter.tag ?? []) {
     and.push({
-      tags: { some: { tag: { userId, name: { equals: name, mode: 'insensitive' } } } },
+      tags: { some: { tag: { userId, name: { equals: escapeLike(name), mode: 'insensitive' } } } },
     });
   }
   for (const term of searchTerms(filter.q)) and.push(termCondition(term));

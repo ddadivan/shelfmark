@@ -16,6 +16,7 @@ import {
 } from '@shelfmark/contracts';
 import { FoldersService } from '../folders/folders.service';
 import { Prisma } from '../generated/prisma/client';
+import { stripControlChars } from '../common/validation/has-control-chars';
 import { hasPrismaCode } from '../common/prisma/has-prisma-code';
 import { PRISMA_ERROR_CODE } from '../common/prisma/prisma-error-code.const';
 import { PrismaService } from '../prisma/prisma.service';
@@ -35,8 +36,9 @@ function noteOrNull(note: string | null | undefined): string | null {
 
 /** The title when the page gave none: the URL, cut to the title limit. */
 function titleOrUrl(title: string, url: string): string {
-  const clean = title.trim();
-  return (clean === '' ? url : clean).slice(0, LINK_LIMIT.TitleMax);
+  const clean = stripControlChars(title).replace(/\s+/g, ' ').trim();
+  // By code points: a cut inside a surrogate pair would leave a lone half.
+  return [...(clean === '' ? url : clean)].slice(0, LINK_LIMIT.TitleMax).join('');
 }
 
 /**
@@ -66,6 +68,9 @@ export class LinksWriteService {
     let faviconSourceUrl = request.faviconUrl ?? null;
     let imageSourceUrl = request.imageUrl ?? null;
     if (title === undefined) {
+      // Cheap unlocked checks first, so a request that must fail anyway never costs a page fetch
+      // (up to 6 s). The locked checks in the transaction stay authoritative.
+      await this.precheck(userId, request.folderId);
       const { preview, fetched } = await this.previews.load(request.url);
       title = titleOrUrl(preview.title, request.url);
       if (fetched) {
@@ -87,10 +92,7 @@ export class LinksWriteService {
         if (request.folderId !== undefined) {
           await this.requireFolder(tx, userId, request.folderId);
         }
-        const total = await tx.link.count({ where: { userId } });
-        if (total >= LINK_LIMIT.PerUserMax) {
-          throw new ConflictException(LINK_ERROR_MESSAGE.LimitReached);
-        }
+        await this.assertUnderLimit(tx, userId);
         const tagIds = await this.tags.resolveNames(userId, request.tags ?? [], tx);
         const row = await tx.link.create({
           data: {
@@ -200,6 +202,19 @@ export class LinksWriteService {
   /** 404 for a foreign or missing folder: they look the same. */
   private requireFolder(tx: LinkDbClient, userId: string, folderId: string): Promise<void> {
     return this.folders.requireOwned(tx, userId, folderId);
+  }
+
+  /** Unlocked early rejection for a create that is about to fetch a page. */
+  private async precheck(userId: string, folderId: string | undefined): Promise<void> {
+    if (folderId !== undefined) await this.requireFolder(this.prisma, userId, folderId);
+    await this.assertUnderLimit(this.prisma, userId);
+  }
+
+  private async assertUnderLimit(db: LinkDbClient, userId: string): Promise<void> {
+    const total = await db.link.count({ where: { userId } });
+    if (total >= LINK_LIMIT.PerUserMax) {
+      throw new ConflictException(LINK_ERROR_MESSAGE.LimitReached);
+    }
   }
 
   /** Rejects an over-long tag name before any page is fetched or transaction opened. */

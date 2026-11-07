@@ -23,6 +23,7 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
+import { NoControlChars } from '../../common/validation/no-control-chars.decorator';
 import { TrimString } from '../../folders/dto/trim-string.decorator';
 import { NormalizeTagFilter } from './normalize-tag-filter.decorator';
 import { QueryBoolean } from './query-boolean.decorator';
@@ -55,6 +56,7 @@ export class ListLinksQueryDto implements ListLinksQuery {
   @IsArray()
   @ArrayMaxSize(LINK_LIMIT.TagFilterMax)
   @IsString({ each: true })
+  @NoControlChars(false, { each: true })
   @MaxLength(TAG_LIMIT.NameMax, { each: true })
   tag?: string[];
 
@@ -65,6 +67,7 @@ export class ListLinksQueryDto implements ListLinksQuery {
   @IsOptional()
   @TrimString()
   @IsString()
+  @NoControlChars()
   @MaxLength(LINK_LIMIT.QueryMax)
   q?: string;
 

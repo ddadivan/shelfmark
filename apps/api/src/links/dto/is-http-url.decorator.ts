@@ -1,9 +1,19 @@
 import { isHttpUrl, LINK_LIMIT } from '@shelfmark/contracts';
 import { registerDecorator, type ValidationOptions } from 'class-validator';
+import { hasControlChars } from '../../common/validation/has-control-chars';
 
-/** An absolute http(s) URL without credentials, at most `LINK_LIMIT.UrlMax` characters. */
+/**
+ * An absolute http(s) URL without credentials or control characters, at most `LINK_LIMIT.UrlMax`
+ * characters. Control characters are checked on the raw text: `new URL` silently drops tabs and
+ * line breaks, so the stored text would differ from what was validated.
+ */
 export function isStorableUrl(value: unknown): value is string {
-  if (typeof value !== 'string' || value.length > LINK_LIMIT.UrlMax || !isHttpUrl(value)) {
+  if (
+    typeof value !== 'string' ||
+    value.length > LINK_LIMIT.UrlMax ||
+    hasControlChars(value) ||
+    !isHttpUrl(value)
+  ) {
     return false;
   }
   const url = new URL(value);

@@ -1,4 +1,5 @@
 import { normalizeUrl } from '@shelfmark/contracts';
+import { escapeLike } from '../src/common/util/escape-like';
 import type { PrismaService } from '../src/prisma/prisma.service';
 import type { SeedLinkOptions } from './models/seed-link-options.interface';
 
@@ -16,7 +17,7 @@ export async function seedLink(
   const tagIds: string[] = [];
   for (const name of options.tags ?? []) {
     const existing = await prisma.tag.findFirst({
-      where: { userId, name: { equals: name, mode: 'insensitive' } },
+      where: { userId, name: { equals: escapeLike(name), mode: 'insensitive' } },
       select: { id: true },
     });
     const id = existing?.id ?? (await prisma.tag.create({ data: { userId, name } })).id;

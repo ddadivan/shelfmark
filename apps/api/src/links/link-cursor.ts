@@ -8,6 +8,7 @@ import {
 } from '@shelfmark/contracts';
 import type { Prisma } from '../generated/prisma/client';
 import { isRecord } from '../common/util/is-record';
+import { hasControlChars } from '../common/validation/has-control-chars';
 import { LINK_ERROR_MESSAGE } from './models/link-error-message.const';
 import { LINK_CURSOR_VERSION } from './models/link-cursor-version.const';
 import type { LinkCursor } from './models/link-cursor.interface';
@@ -49,6 +50,7 @@ export function decodeCursor(raw: string, sort: LinkSortField, order: SortOrder)
   if (v !== LINK_CURSOR_VERSION || !isSortField(s) || !isSortOrder(o)) throw invalid();
   if (s !== sort || o !== order) throw invalid();
   if (typeof k !== 'string' || typeof id !== 'string' || !UUID.test(id)) throw invalid();
+  if (hasControlChars(k)) throw invalid();
   if (s === LINK_SORT_FIELD.CreatedAt) {
     const time = new Date(k);
     if (Number.isNaN(time.getTime()) || time.toISOString() !== k) throw invalid();

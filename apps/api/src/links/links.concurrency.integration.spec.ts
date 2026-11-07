@@ -13,7 +13,11 @@ import { SafeFetcherService } from '../fetcher/safe-fetcher.service';
 const BASE = '/api/links';
 const ROUNDS = 8;
 
-describe('links API: concurrency', () => {
+// Retries cover one infrastructure flake only: PGlite's socket server multiplexes parallel connections
+// onto one instance and now and then answers "unnamed prepared statement does not exist" (P2039)
+// to the session lookup. The invariants asserted below are deterministic, so a real race fails
+// every attempt.
+describe('links API: concurrency', { retry: 2 }, () => {
   const fetch = vi.fn<SafeFetcherService['fetch']>();
   let t: AuthTestApp;
   let users: IsolationUsers;

@@ -11,6 +11,7 @@ import {
   MinLength,
   ValidateIf,
 } from 'class-validator';
+import { NoControlChars } from '../../common/validation/no-control-chars.decorator';
 import { TrimString } from '../../folders/dto/trim-string.decorator';
 import { IsHttpUrl } from './is-http-url.decorator';
 
@@ -30,6 +31,7 @@ export class UpdateLinkDto implements UpdateLinkRequest {
   @ValidateIf(present)
   @TrimString()
   @IsString()
+  @NoControlChars()
   @MinLength(1)
   @MaxLength(LINK_LIMIT.TitleMax)
   title?: string;
@@ -37,6 +39,7 @@ export class UpdateLinkDto implements UpdateLinkRequest {
   @ApiPropertyOptional({ maxLength: LINK_LIMIT.NoteMax, nullable: true, type: String })
   @IsOptional()
   @IsString()
+  @NoControlChars(true)
   @MaxLength(LINK_LIMIT.NoteMax)
   note?: string | null;
 
@@ -54,6 +57,7 @@ export class UpdateLinkDto implements UpdateLinkRequest {
   @IsArray()
   @ArrayMaxSize(LINK_LIMIT.TagsMax)
   @IsString({ each: true })
+  @NoControlChars(true, { each: true })
   @MaxLength(RAW_TAG_MAX, { each: true })
   tags?: string[];
 

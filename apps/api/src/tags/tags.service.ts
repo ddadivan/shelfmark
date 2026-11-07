@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { normalizeTagName, TAG_LIMIT } from '@shelfmark/contracts';
 import type { ListTagsResponse, TagResponse } from '@shelfmark/contracts';
+import { escapeLike } from '../common/util/escape-like';
 import { hasPrismaCode } from '../common/prisma/has-prisma-code';
 import { PRISMA_ERROR_CODE } from '../common/prisma/prisma-error-code.const';
 import { PrismaService } from '../prisma/prisma.service';
@@ -191,7 +192,7 @@ export class TagsService {
     name: string,
   ): Promise<string | undefined> {
     const tag = await db.tag.findFirst({
-      where: { userId, name: { equals: name, mode: 'insensitive' } },
+      where: { userId, name: { equals: escapeLike(name), mode: 'insensitive' } },
       select: { id: true },
     });
     return tag?.id;
