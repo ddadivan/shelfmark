@@ -13,7 +13,7 @@ import { warnMissingProviders } from './warn-missing-providers';
  * - Body parsers off: `configureApp` already installs the 100kb JSON parser with its 400/413
  *   mapping, and Better Auth reads the parsed body.
  * - `disableGlobalAuthGuard`: the global session guard comes with #65.
- * - `disableControllers`: the router is the raw Node handler, so no Nest controller exists.
+ * Not `disableControllers`: despite its name it also turns off the middleware that mounts the router.
  * Auth responses bypass `ValidationPipe` and `AllExceptionsFilter`: errors keep Better Auth's
  * `{ code, message }` shape.
  */
@@ -24,7 +24,6 @@ import { warnMissingProviders } from './warn-missing-providers';
       inject: [PrismaService],
       isGlobal: true,
       disableGlobalAuthGuard: true,
-      disableControllers: true,
       useFactory: (prisma: PrismaService) => {
         const config = readAuthConfig();
         warnMissingProviders(config);
