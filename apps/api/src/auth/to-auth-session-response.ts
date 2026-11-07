@@ -12,7 +12,7 @@ function toIsoString(value: unknown): string | null {
 }
 
 /**
- * Maps the raw `get-session` result to the contract: exactly the five user fields and
+ * Maps the raw `get-session` result to the contract: exactly the six user fields and
  * `session.expiresAt`. The session token, IP address and user agent never reach the web. Returns
  * `null` for a missing session and for anything that does not have the expected shape (fail closed).
  */
@@ -20,7 +20,7 @@ export function toAuthSessionResponse(value: unknown): AuthSessionResponse | nul
   if (!isRecord(value) || !isRecord(value['user']) || !isRecord(value['session'])) {
     return null;
   }
-  const { id, name, email, image, isDemo } = value['user'];
+  const { id, name, email, image, isDemo, demoExpiresAt } = value['user'];
   const expiresAt = toIsoString(value['session']['expiresAt']);
   if (
     typeof id !== 'string' ||
@@ -37,6 +37,7 @@ export function toAuthSessionResponse(value: unknown): AuthSessionResponse | nul
       email,
       image: typeof image === 'string' ? image : null,
       isDemo: isDemo === true,
+      demoExpiresAt: isDemo === true ? toIsoString(demoExpiresAt) : null,
     },
     session: { expiresAt },
   };

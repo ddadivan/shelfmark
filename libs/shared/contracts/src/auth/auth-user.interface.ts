@@ -5,4 +5,6 @@ export interface AuthUser {
   email: string;
   image: string | null;
   isDemo: boolean;
+  /** ISO time the demo sandbox ends; `null` for a regular user. */
+  demoExpiresAt: string | null;
 }

@@ -1,7 +1,14 @@
 import { toAuthSessionResponse } from './to-auth-session-response';
 
 const expiresAt = new Date('2030-01-01T00:00:00.000Z');
-const user = { id: 'u1', name: 'Ada', email: 'ada@example.test', image: null, isDemo: false };
+const user = {
+  id: 'u1',
+  name: 'Ada',
+  email: 'ada@example.test',
+  image: null,
+  isDemo: false,
+  demoExpiresAt: null,
+};
 
 describe('toAuthSessionResponse', () => {
   it('maps to exactly the contract and drops token, IP address and user agent', () => {
@@ -28,6 +35,25 @@ describe('toAuthSessionResponse', () => {
     expect(result?.user.image).toBe('https://img.example.test/a.png');
     expect(result?.user.isDemo).toBe(true);
     expect(result?.session.expiresAt).toBe('2030-01-01T00:00:00.000Z');
+  });
+
+  it('maps the demo expiry for a demo user only', () => {
+    const expiry = new Date('2030-01-02T00:00:00.000Z');
+    const demo = toAuthSessionResponse({
+      user: { ...user, isDemo: true, demoExpiresAt: expiry },
+      session: { expiresAt },
+    });
+    expect(demo?.user.demoExpiresAt).toBe('2030-01-02T00:00:00.000Z');
+    const regular = toAuthSessionResponse({
+      user: { ...user, demoExpiresAt: expiry },
+      session: { expiresAt },
+    });
+    expect(regular?.user.demoExpiresAt).toBeNull();
+    const missing = toAuthSessionResponse({
+      user: { ...user, isDemo: true },
+      session: { expiresAt },
+    });
+    expect(missing?.user.demoExpiresAt).toBeNull();
   });
 
   it('treats a non-boolean isDemo as false and a non-string image as null', () => {
