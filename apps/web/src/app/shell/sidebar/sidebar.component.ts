@@ -1,8 +1,11 @@
 import {
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
   computed,
   inject,
+  input,
+  output,
   signal,
   viewChild,
 } from '@angular/core';
@@ -31,6 +34,9 @@ import { FoldersStore } from '../../stores/folders.store';
 import { sidebarActiveId } from './sidebar-active-id';
 
 /** The fixed rows and their routes. */
+/** Id of the "Recently opened" row (phone drawer); it opens a sheet instead of a route. */
+const RECENT_ROW_ID = 'recent';
+
 const FIXED_ROUTES: Readonly<Record<string, string>> = {
   [LINKS_SCOPE.All]: APP_PATH.Links,
   [LINKS_SCOPE.Unsorted]: APP_PATH.Unsorted,
@@ -60,6 +66,11 @@ const FIXED_ROUTES: Readonly<Record<string, string>> = {
 })
 export class SidebarComponent {
   protected readonly folders = inject(FoldersStore);
+  /** Adds the "Recently opened" row below the views (the phone drawer; the desktop has a panel). */
+  readonly showRecent = input(false, { transform: booleanAttribute });
+  /** The "Recently opened" row was chosen. */
+  readonly recentRequested = output<void>();
+
   private readonly actions = inject(FolderActionsService);
   private readonly viewport = inject(ViewportService);
   /** Text buttons reach the 44px touch target on a phone. */
@@ -85,7 +96,16 @@ export class SidebarComponent {
       this.transloco.selectTranslate('library.scope.unsorted'),
       this.transloco.selectTranslate('library.scope.favorites'),
       this.transloco.selectTranslate('shell.sidebar.folderActions', { name: '{name}' }),
-    ]).pipe(map(([all, unsorted, favorites, actions]) => ({ all, unsorted, favorites, actions }))),
+      this.transloco.selectTranslate('links.recent.title'),
+    ]).pipe(
+      map(([all, unsorted, favorites, actions, recent]) => ({
+        all,
+        unsorted,
+        favorites,
+        actions,
+        recent,
+      })),
+    ),
   );
   /** The "..." button name with its `{name}` placeholder; `ui-tree` fills in the folder. */
   protected readonly menuLabel = computed(() => this.labels()?.actions);
@@ -102,6 +122,9 @@ export class SidebarComponent {
       return [];
     }
     const counts = this.folders.loaded() ? this.folders.counts() : null;
+    const recent: UiTreeNode[] = this.showRecent()
+      ? [{ id: RECENT_ROW_ID, name: labels.recent, icon: 'clock' }]
+      : [];
     return [
       { id: LINKS_SCOPE.All, name: labels.all, icon: 'bookmark', ...count(counts?.all) },
       {
@@ -116,6 +139,7 @@ export class SidebarComponent {
         icon: 'star',
         ...count(counts?.favorites),
       },
+      ...recent,
     ];
   });
 
@@ -149,6 +173,10 @@ export class SidebarComponent {
   }
 
   protected async select(node: UiTreeNode): Promise<void> {
+    if (node.id === RECENT_ROW_ID) {
+      this.recentRequested.emit();
+      return;
+    }
     const fixed = FIXED_ROUTES[node.id];
     await this.router.navigate(fixed ? [`/${fixed}`] : [`/${APP_PATH.Folders}`, node.id]);
   }

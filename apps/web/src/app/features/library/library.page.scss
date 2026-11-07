@@ -2,16 +2,22 @@
 
 .library__toolbar {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-4);
   align-items: center;
   justify-content: space-between;
   margin-bottom: var(--space-4);
 }
 
+.library__heading {
+  min-width: 0;
+}
+
 .library__title {
   @include type(title);
 
   margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .library__count {

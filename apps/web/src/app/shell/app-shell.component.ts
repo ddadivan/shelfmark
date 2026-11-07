@@ -20,7 +20,7 @@ import { RecentLinksPanelComponent } from '../features/links/recent/recent-links
 import { ViewportService } from '../core/layout/viewport.service';
 import { UiStore } from '../stores/ui.store';
 import { APP_PATH } from '../models/app-path.const';
-import { SidebarDrawerService } from './drawer/sidebar-drawer.service';
+import { MobileNavService } from './mobile-nav/mobile-nav.service';
 import { SidebarComponent } from './sidebar/sidebar.component';
 
 /** Layout around the signed-in pages: header with the account menu (settings, sign out), then the page. */
@@ -51,7 +51,7 @@ export default class AppShellComponent {
   protected readonly search = inject(SearchDialogService);
   protected readonly viewport = inject(ViewportService);
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
-  protected readonly drawer = inject(SidebarDrawerService);
+  protected readonly nav = inject(MobileNavService);
   private readonly transloco = inject(TranslocoService);
 
   private readonly recentLabels = toSignal(
@@ -71,7 +71,7 @@ export default class AppShellComponent {
     // Growing past the phone breakpoint shows the sidebar inline: the drawer has to go.
     effect(() => {
       if (!this.viewport.phone()) {
-        this.drawer.close();
+        void this.nav.close();
       }
     });
   }

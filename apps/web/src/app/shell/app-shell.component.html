@@ -5,19 +5,21 @@
     iconOnly
     iconLeft="menu"
     [ariaLabel]="'shell.menu' | transloco"
-    [ariaExpanded]="drawer.isOpen()"
-    (click)="drawer.open()"
+    [ariaExpanded]="nav.isOpen()"
+    (click)="nav.open()"
   />
   <ui-logo />
-  <ui-button
-    class="shell__add"
-    variant="primary"
-    size="sm"
-    iconLeft="add"
-    (click)="actions.addLink()"
-  >
-    {{ 'shell.addLink' | transloco }}
-  </ui-button>
+  @if (!viewport.phone()) {
+    <ui-button
+      class="shell__add"
+      variant="primary"
+      size="sm"
+      iconLeft="add"
+      (click)="actions.addLink()"
+    >
+      {{ 'shell.addLink' | transloco }}
+    </ui-button>
+  }
   <ui-button
     class="shell__search"
     variant="ghost"
@@ -46,7 +48,7 @@
         [uiMenuTrigger]="accountMenu"
         variant="ghost"
         [size]="viewport.phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm"
-        iconRight="chevron-down"
+        [iconRight]="viewport.phone() ? undefined : 'chevron-down'"
         [ariaLabel]="'shell.accountMenu' | transloco"
       >
         <ui-avatar [name]="user.name" [src]="user.image ?? undefined" size="sm" />
@@ -75,13 +77,15 @@
     <app-recent-links-panel class="shell__recent" />
   }
 </div>
-<!-- Phone: the add action is the floating button of the mobile design. -->
-<ui-button
-  class="shell__fab"
-  variant="primary"
-  size="lg"
-  iconOnly
-  iconLeft="add"
-  [ariaLabel]="'shell.addLink' | transloco"
-  (click)="actions.addLink()"
-/>
+<!-- Phone: the add action is the floating button of the mobile design (header button is off). -->
+@if (viewport.phone()) {
+  <ui-button
+    class="shell__fab"
+    variant="primary"
+    iconOnly
+    fab
+    iconLeft="add"
+    [ariaLabel]="'shell.addLink' | transloco"
+    (click)="actions.addLink()"
+  />
+}

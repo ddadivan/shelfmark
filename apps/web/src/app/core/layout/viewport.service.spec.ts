@@ -26,7 +26,7 @@ describe('ViewportService', () => {
   });
 
   it('reads the breakpoints and follows changes', () => {
-    const listeners = stubMatchMedia({ '(width < 40em)': true });
+    const listeners = stubMatchMedia({ '(width < 40em)': true, '(width < 64em)': true });
     const viewport = TestBed.inject(ViewportService);
 
     expect(viewport.phone()).toBe(true);

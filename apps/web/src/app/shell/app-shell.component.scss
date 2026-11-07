@@ -40,10 +40,6 @@
 
 .shell__add {
   margin-inline: var(--space-4) auto;
-
-  @include phone {
-    display: none;
-  }
 }
 
 // Phone header (mobile design): menu, logo, then search and account on the right.
@@ -65,14 +61,8 @@
 .shell__fab {
   position: fixed;
   inset-block-end: calc(var(--space-6) + env(safe-area-inset-bottom));
-  inset-inline-end: var(--space-4);
+  inset-inline-end: calc(var(--space-4) + env(safe-area-inset-right));
   z-index: 10;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-popover);
-
-  @include tablet-up {
-    display: none;
-  }
 }
 
 .shell__sidebar {
@@ -105,7 +95,7 @@
 
   // Room below the last row for the floating add button.
   @include phone {
-    padding-block-end: rem(88px);
+    padding-block-end: calc(rem(88px) + env(safe-area-inset-bottom));
   }
 
   @include tablet-up {

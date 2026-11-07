@@ -10,9 +10,10 @@ import { AuthUser } from '../core/auth/models/auth-user.interface';
 import { APP_LANG } from '../core/i18n/models/app-lang.const';
 import { AppTranslocoLoader } from '../core/i18n/app-transloco.loader';
 import { translocoConfig } from '../core/i18n/transloco.config';
+import { ThemeService } from '../core/theme/theme.service';
+import { RecentLinksSheetService } from '../features/links/recent/recent-links-sheet.service';
 import { SearchDialogService } from '../features/search/search-dialog.service';
 import AppShellComponent from './app-shell.component';
-import { SidebarDrawerService } from './drawer/sidebar-drawer.service';
 
 const USER: AuthUser = {
   id: 'u1',
@@ -131,8 +132,19 @@ describe('AppShellComponent', () => {
     expect(search.handleShortcut).toHaveBeenCalledTimes(1);
   });
 
-  describe('drawer', () => {
-    async function setup() {
+  describe('layout by width', () => {
+    const PHONE_QUERY = '(width < 40em)';
+    const listeners = new Map<string, (event: MediaQueryListEvent) => void>();
+    const recentSheet = { open: vi.fn() };
+
+    async function setup(phone: boolean) {
+      listeners.clear();
+      vi.stubGlobal('matchMedia', (query: string) => ({
+        matches: phone && query === PHONE_QUERY,
+        addEventListener: (_type: string, listener: (event: MediaQueryListEvent) => void) =>
+          listeners.set(query, listener),
+        removeEventListener: () => listeners.delete(query),
+      }));
       const api: AuthApi = {
         getSession: () => Promise.resolve(USER),
         signIn: vi.fn(),
@@ -147,42 +159,120 @@ describe('AppShellComponent', () => {
           ]),
           provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
           { provide: AUTH_API, useValue: api },
+          { provide: RecentLinksSheetService, useValue: recentSheet },
         ],
       });
       await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
       await TestBed.inject(AuthStore).ensureLoaded();
-      return RouterTestingHarness.create('/');
+      const harness = await RouterTestingHarness.create('/');
+      const root = harness.routeNativeElement as HTMLElement;
+      return { harness, root };
     }
 
-    const drawer = () => document.querySelector('app-sidebar-drawer');
+    afterEach(() => {
+      vi.unstubAllGlobals();
+      recentSheet.open.mockClear();
+    });
 
-    it('opens from the menu button and holds the sidebar', async () => {
-      const harness = await setup();
-      const button = (harness.routeNativeElement as HTMLElement).querySelector<HTMLButtonElement>(
-        'button[aria-label="Open menu"]',
-      );
+    const drawer = () => document.querySelector('app-mobile-nav');
+    const byLabel = (root: ParentNode, label: string) =>
+      root.querySelector<HTMLButtonElement>(`button[aria-label="${label}"]`);
 
-      button?.click();
+    async function openDrawer(harness: { fixture: ComponentFixture<unknown> }, root: HTMLElement) {
+      byLabel(root, 'Open menu')?.click();
       await harness.fixture.whenStable();
+    }
+
+    it('shows the sidebar inline and the header add button from the tablet width', async () => {
+      const { root } = await setup(false);
+
+      expect(root.querySelector('.shell__sidebar app-sidebar')).not.toBeNull();
+      expect(root.querySelector('.shell__add')).not.toBeNull();
+      expect(root.querySelector('.shell__fab')).toBeNull();
+    });
+
+    it('on a phone has the add FAB and no inline sidebar or header add button', async () => {
+      const { root } = await setup(true);
+
+      expect(root.querySelector('.shell__sidebar')).toBeNull();
+      expect(root.querySelector('.shell__add')).toBeNull();
+      expect(root.querySelector('.shell__fab')).not.toBeNull();
+      expect(byLabel(root, 'Add link')).not.toBeNull();
+    });
+
+    it('opens the drawer from the menu button and holds the one sidebar', async () => {
+      const { harness, root } = await setup(true);
+
+      await openDrawer(harness, root);
 
       expect(drawer()?.closest('[role="dialog"]')?.getAttribute('aria-modal')).toBe('true');
-      expect(drawer()?.querySelector('nav[aria-label="Library"]')).not.toBeNull();
-
-      TestBed.inject(SidebarDrawerService).close();
-      await harness.fixture.whenStable();
-
-      expect(drawer()).toBeNull();
+      expect(drawer()?.querySelectorAll('nav[aria-label="Library"]').length).toBe(1);
+      expect(document.querySelectorAll('nav[aria-label="Library"]').length).toBe(1);
+      expect(byLabel(root, 'Open menu')?.getAttribute('aria-expanded')).toBe('true');
     });
 
     it('closes when a navigation ends', async () => {
-      const harness = await setup();
-      TestBed.inject(SidebarDrawerService).open();
-      await harness.fixture.whenStable();
+      const { harness, root } = await setup(true);
+      await openDrawer(harness, root);
       expect(drawer()).not.toBeNull();
 
       await TestBed.inject(Router).navigateByUrl('/settings');
       await harness.fixture.whenStable();
 
+      expect(drawer()).toBeNull();
+    });
+
+    it('closes when the viewport grows past the phone width', async () => {
+      const { harness, root } = await setup(true);
+      await openDrawer(harness, root);
+
+      listeners.get(PHONE_QUERY)?.({ matches: false } as MediaQueryListEvent);
+      await harness.fixture.whenStable();
+
+      expect(drawer()).toBeNull();
+      expect(root.querySelector('.shell__sidebar app-sidebar')).not.toBeNull();
+    });
+
+    it('closes with the close button', async () => {
+      const { harness, root } = await setup(true);
+      await openDrawer(harness, root);
+
+      byLabel(document, 'Close menu')?.click();
+      await harness.fixture.whenStable();
+
+      expect(drawer()).toBeNull();
+    });
+
+    it('opens the recent links sheet from the "Recently opened" row', async () => {
+      const { harness, root } = await setup(true);
+      await openDrawer(harness, root);
+      const row = Array.from(
+        drawer()?.querySelectorAll<HTMLElement>('[role="treeitem"], a, button') ?? [],
+      ).find((item) => item.textContent?.includes('Recently opened'));
+
+      row?.click();
+      await harness.fixture.whenStable();
+
+      expect(recentSheet.open).toHaveBeenCalledTimes(1);
+      expect(drawer()).toBeNull();
+    });
+
+    it('has the user, a theme toggle and settings in the footer', async () => {
+      const { harness, root } = await setup(true);
+      await openDrawer(harness, root);
+      const theme = TestBed.inject(ThemeService);
+
+      expect(drawer()?.textContent).toContain('Ada Lovelace');
+      byLabel(document, 'Switch theme')?.click();
+      await harness.fixture.whenStable();
+      expect(theme.preference()).toBe('dark');
+
+      byLabel(document, 'Switch theme')?.click();
+      expect(theme.preference()).toBe('light');
+
+      byLabel(document, 'Settings')?.click();
+      await harness.fixture.whenStable();
+      expect(TestBed.inject(Router).url).toBe('/settings');
       expect(drawer()).toBeNull();
     });
   });

@@ -283,7 +283,8 @@
       "empty": "Links you open appear here.",
       "hide": "Hide recently opened",
       "show": "Show recently opened",
-      "loading": "Loading recently opened links"
+      "loading": "Loading recently opened links",
+      "close": "Close"
     }
   },
   "auth": {
@@ -310,7 +311,8 @@
     "menu": "Open menu",
     "drawer": {
       "label": "Menu",
-      "close": "Close menu"
+      "close": "Close menu",
+      "theme": "Switch theme"
     },
     "sidebar": {
       "nav": "Library",

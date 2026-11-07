@@ -1,9 +1,8 @@
-import { DOCUMENT } from '@angular/common';
-import { DestroyRef, Service, inject, signal, type Signal } from '@angular/core';
+import { Service, computed } from '@angular/core';
+import { PHONE_MEDIA_QUERY, mediaMatch } from '@shelfmark/ui';
 
-/** Same breakpoints as the Sass mixins `phone` and `desktop` (ADR 0015). */
-const PHONE_QUERY = '(width < 40em)';
-const DESKTOP_QUERY = '(width >= 64em)';
+/** Same breakpoint as the Sass mixin `desktop` (ADR 0015); the phone one is `PHONE_MEDIA_QUERY`. */
+const BELOW_DESKTOP_QUERY = '(width < 64em)';
 
 /**
  * The layout breakpoint the viewport is in, for the few places where CSS alone is not enough:
@@ -12,23 +11,9 @@ const DESKTOP_QUERY = '(width >= 64em)';
  */
 @Service()
 export class ViewportService {
-  private readonly document = inject(DOCUMENT);
-  private readonly destroyRef = inject(DestroyRef);
-
   /** Below 40em: the sidebar is a drawer. */
-  readonly phone = this.follow(PHONE_QUERY, false);
+  readonly phone = mediaMatch(PHONE_MEDIA_QUERY);
+  private readonly belowDesktop = mediaMatch(BELOW_DESKTOP_QUERY);
   /** From 64em: the recent panel has room. */
-  readonly desktop = this.follow(DESKTOP_QUERY, true);
-
-  private follow(query: string, fallback: boolean): Signal<boolean> {
-    const state = signal(fallback);
-    const list = this.document.defaultView?.matchMedia?.(query);
-    if (list) {
-      state.set(list.matches);
-      const onChange = (event: MediaQueryListEvent): void => state.set(event.matches);
-      list.addEventListener('change', onChange);
-      this.destroyRef.onDestroy(() => list.removeEventListener('change', onChange));
-    }
-    return state.asReadonly();
-  }
+  readonly desktop = computed(() => !this.belowDesktop());
 }
