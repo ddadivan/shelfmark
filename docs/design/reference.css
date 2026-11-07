@@ -283,6 +283,16 @@
 ::view-transition-old(*), ::view-transition-new(*) { width: 100%; height: 100%; object-fit: cover; object-position: left top; }
 ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
 
+/* Touch targets: WCAG 2.5.8 min 24px everywhere; 44px on touch screens */
+.sm-star, .sm-chip__remove { position: relative; }
+.sm-star::after { content: ""; position: absolute; inset: -6px; }
+.sm-chip__remove::after { content: ""; position: absolute; inset: -6px -4px; }
+@media (pointer: coarse) {
+  .sm-btn--icon { min-width: 44px; min-height: 44px; }
+  .sm-star::after { inset: -10px; }
+  .sm-chip__remove::after { inset: -14px -10px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
   .sm-card__open { transform: none !important; }

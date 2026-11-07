@@ -1,0 +1,48 @@
+<!-- @dsCard height=288 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; background: var(--bg); }
+  .cover { position: relative; width: 960px; height: 288px; background: var(--bg); overflow: hidden; font-family: var(--font-sans); }
+  .art { position: absolute; left: 480px; top: 0; width: 480px; height: 288px; }
+  .sage { fill: var(--accent); }
+  .ink { fill: var(--primary); }
+  .tint { fill: var(--accent-bg); }
+  .muted { fill: var(--text-muted); }
+  .ground { fill: var(--bg); }
+  .card { rx: var(--radius-lg); }
+  .pill { rx: 8px; }
+  .fav { rx: var(--radius-sm); }
+  .name { position: absolute; left: 40px; bottom: 64px; max-width: 440px; margin: 0; font-size: 80px; line-height: 0.92; font-weight: 700; letter-spacing: -0.03em; color: var(--text); }
+  .tag { position: absolute; left: 42px; bottom: 32px; max-width: 440px; margin: 0; font-size: 14px; line-height: 20px; color: var(--text-muted); }
+</style>
+<div class="cover">
+  <svg class="art" viewBox="0 0 480 288" aria-hidden="true">
+    <!--
+      blocks: accent (2 cards), accent-bg (3 cards, one merged two-wide), primary (2 cards), text-muted (1 card); sage and graphite lead
+      arrangement: the link feed itself — a modular grid of link cards, one merged two-wide like a wide card, bleeding off the top, right and bottom
+      pattern: tiles cut by radius tokens (the product is a grid of link cards) + tag pills (radius-full, height space-4) and favicon squares (radius-sm, cut from the ground) inside the cards
+      scales: columns 136/160, gaps space-4 (16), rows 120/96/120, radius-lg cards, radius-sm favicons, pills 48–64 x 16
+    -->
+    <rect class="tint card" x="24" y="-40" width="136" height="120"/>
+    <rect class="ink card" x="176" y="-40" width="136" height="120"/>
+    <rect class="sage card" x="328" y="-40" width="168" height="120"/>
+
+    <rect class="sage card" x="24" y="96" width="136" height="96"/>
+    <rect class="tint card" x="176" y="96" width="320" height="96"/>
+
+    <rect class="ink card" x="24" y="208" width="136" height="120"/>
+    <rect class="tint card" x="176" y="208" width="136" height="120"/>
+    <rect class="muted card" x="328" y="208" width="168" height="120"/>
+
+    <rect class="ground fav" x="192" y="48" width="16" height="16"/>
+    <rect class="sage pill" x="40" y="56" width="56" height="16"/>
+    <rect class="ground fav" x="40" y="112" width="16" height="16"/>
+    <rect class="sage pill" x="192" y="160" width="64" height="16"/>
+    <rect class="sage pill" x="264" y="160" width="48" height="16"/>
+    <rect class="ground fav" x="40" y="224" width="16" height="16"/>
+    <rect class="sage pill" x="192" y="224" width="48" height="16"/>
+  </svg>
+  <p class="name">Shelfmark</p>
+  <p class="tag">All your saved links in one place.</p>
+</div>
