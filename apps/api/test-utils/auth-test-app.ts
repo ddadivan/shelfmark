@@ -1,6 +1,8 @@
 import { randomBytes } from 'node:crypto';
 import { ExpressAdapter, type NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
+import { getOptionsToken } from '@nestjs/throttler';
+import { createRateLimitOptions } from '../src/common/rate-limit/rate-limit-options';
 import { AppModule } from '../src/app/app.module';
 import { configureApp } from '../src/app/configure-app';
 import { AUTH_ENV } from '../src/config/models/auth-env.const';
@@ -9,6 +11,7 @@ import type { AuthTestApp } from './models/auth-test-app.interface';
 import type { AuthTestAppOptions } from './models/auth-test-app-options.interface';
 import { createTestDatabase } from './test-database';
 
+const UNLIMITED_RATE_LIMIT = { limit: 1_000_000, ttl: 60_000 };
 const DEFAULT_BASE_URL = 'http://localhost:4200';
 
 /**
@@ -59,11 +62,17 @@ export async function createAuthTestApp(options: AuthTestAppOptions = {}): Promi
     })
       .overrideProvider(PrismaService)
       .useValue(db.prisma)
+      // Every request of a spec comes from one address: one default bucket would trip on long scenarios.
+      .overrideProvider(getOptionsToken())
+      .useValue(createRateLimitOptions(true, options.defaultRateLimit ?? UNLIMITED_RATE_LIMIT))
       .compile();
     const app = moduleRef.createNestApplication<NestExpressApplication>(new ExpressAdapter(), {
       bodyParser: false,
     });
-    configureApp(app, { isProduction: options.isProduction ?? false });
+    configureApp(app, {
+      isProduction: options.isProduction ?? false,
+      authRateLimit: options.authRateLimit ?? UNLIMITED_RATE_LIMIT,
+    });
     await app.init();
     return {
       app,
