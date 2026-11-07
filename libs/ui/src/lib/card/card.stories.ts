@@ -52,11 +52,13 @@ const meta: Meta<CardComponent> = {
     selected: false,
     actionsPinned: false,
     reveal: false,
+    headingLevel: 2,
     description: 'opens in a new tab',
   },
   argTypes: {
     image: { control: 'text' },
     href: { control: 'text' },
+    headingLevel: { control: 'inline-radio', options: [1, 2, 3, 4, 5, 6] },
   },
 };
 
@@ -84,7 +86,7 @@ const cardTemplate = (inner: string, attrs = '') => `
   <div class="cs-grid cs-grid--single">
     <ui-card ${attrs}
       [image]="image" [href]="href" [newTab]="newTab" [selected]="selected"
-      [description]="description" [actionsPinned]="actionsPinned" [reveal]="reveal">${inner}</ui-card>
+      [description]="description" [actionsPinned]="actionsPinned" [reveal]="reveal" [headingLevel]="headingLevel">${inner}</ui-card>
   </div>`;
 
 const withProps = (args: object) => ({
@@ -191,6 +193,24 @@ export const Phone: Story = {
   render: (args) => ({
     props: withProps(args),
     template: `<div class="cs-phone">${cardTemplate(content())}</div>`,
+  }),
+};
+
+/**
+ * Heading structure: the page title is the `h1`, every card title an `h2` (`headingLevel`,
+ * 2 by default; use 3 under an `h2` section title). Screen reader users can jump card to card
+ * by heading, and no level is skipped.
+ */
+export const InAGrid: Story = {
+  render: (args) => ({
+    props: withProps(args),
+    template: `
+      <h1 class="cs-heading">Saved links</h1>
+      <div class="cs-grid">
+        <ui-card [image]="image" href="https://example.com/a">${content('Signal Forms in 20 minutes')}</ui-card>
+        <ui-card href="https://example.com/b">${content('Angular Aria patterns')}</ui-card>
+        <ui-card [image]="image" href="https://example.com/c">${content('Zoneless change detection')}</ui-card>
+      </div>`,
   }),
 };
 

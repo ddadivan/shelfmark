@@ -180,6 +180,13 @@
   align-items: center;
 }
 
+// The heading wraps the link. It stays static positioned (the link's `::after` is stretched
+// over the card) and carries no type of its own.
+.ui-card__heading {
+  margin: 0;
+  font: inherit;
+}
+
 // The one activation target: a native link or button reset to look like text.
 .ui-card__link {
   @include type(heading);
