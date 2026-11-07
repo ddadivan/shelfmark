@@ -17,4 +17,5 @@ export const MOCK_LINK_PREVIEW_DUPLICATE: LinkPreviewResponse = {
     folderId: MOCK_ID.FolderAngular,
     folderName: MOCK_NAME.FolderAngular,
   },
+  fetched: true,
 };

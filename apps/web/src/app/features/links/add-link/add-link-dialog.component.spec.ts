@@ -26,6 +26,7 @@ const PLAIN: LinkPreviewResponse = {
     faviconUrl: null,
   },
   duplicate: null,
+  fetched: true,
 };
 
 interface FakeApi extends LinksApi {

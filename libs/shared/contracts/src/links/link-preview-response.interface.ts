@@ -6,4 +6,6 @@ export interface LinkPreviewResponse {
   preview: LinkPreview;
   /** The existing link when the URL is already saved; `null` otherwise. */
   duplicate: LinkDuplicate | null;
+  /** `false` when the page could not be fetched: `preview` then only carries the URL as the title. */
+  fetched: boolean;
 }

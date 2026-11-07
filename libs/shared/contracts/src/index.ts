@@ -21,6 +21,8 @@ export type { RecentLinksResponse } from './links/recent-links-response.interfac
 export type { OpenLinkResponse } from './links/open-link-response.type';
 export type { GetLinkResponse } from './links/get-link-response.type';
 export type { LinkSortField } from './links/link-sort-field.type';
+export { isHttpUrl } from './links/is-http-url';
+export { normalizeUrl } from './links/normalize-url';
 export { LINK_LIMIT } from './links/link-limit.const';
 export { LINK_SORT_FIELD } from './links/link-sort-field.const';
 
