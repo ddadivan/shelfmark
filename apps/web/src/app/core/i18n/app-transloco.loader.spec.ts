@@ -13,6 +13,9 @@ describe('AppTranslocoLoader', () => {
         finale: { title: 'Empty your Saved Messages.' },
       },
     });
+    for (const scope of ['landing', 'auth', 'shell', 'library']) {
+      expect(translation).toHaveProperty(scope);
+    }
   });
 
   it('rejects an unsupported language', async () => {

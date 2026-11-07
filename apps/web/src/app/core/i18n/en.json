@@ -185,5 +185,47 @@
       "github": "GitHub"
     },
     "newTab": "opens in a new tab"
+  },
+  "auth": {
+    "signIn": {
+      "title": "All your links on one shelf",
+      "subtitle": "Save videos, articles, things to buy and courses in one place — and actually find them again.",
+      "google": "Continue with Google",
+      "github": "Continue with GitHub",
+      "demo": "Open the demo",
+      "failed": "We could not sign you in. Try again.",
+      "reason": {
+        "sessionExpired": "Your session has expired. Sign in again.",
+        "demoExpired": "The demo has ended. Open a new one or sign in."
+      },
+      "eyebrow": "Sign in to Shelfmark",
+      "privacy": "By continuing you agree to the Privacy policy. We only use your name, email and avatar."
+    },
+    "signOut": "Sign out"
+  },
+  "shell": {
+    "accountMenu": "Account menu",
+    "settings": "Settings"
+  },
+  "library": {
+    "title": "All links",
+    "placeholder": "Your saved links will appear here."
+  },
+  "settings": {
+    "title": "Settings",
+    "back": "Back to links",
+    "account": {
+      "title": "Account"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "theme": {
+        "label": "Theme",
+        "hint": "System follows your device",
+        "system": "System",
+        "light": "Light",
+        "dark": "Dark"
+      }
+    }
   }
 }
