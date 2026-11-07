@@ -12,7 +12,9 @@
       "line1": "Paste a link.",
       "line2": "Find it again.",
       "line3": "Even in a year.",
-      "lead": "Telegram is where links go to be forgotten. Shelfmark keeps them in folders, with a note on why you saved each one, and finds any of them in two keystrokes."
+      "lead": "Telegram is where links go to be forgotten. Shelfmark keeps them in folders, with a note on why you saved each one, and finds any of them in two keystrokes.",
+      "demo": "Open the demo",
+      "signIn": "Sign in"
     },
     "chat": {
       "savedMessages": "Saved Messages",

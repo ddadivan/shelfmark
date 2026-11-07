@@ -9,6 +9,17 @@
       }}</span>
     </h1>
     <p class="landing-hero__lead">{{ 'landing.hero.lead' | transloco }}</p>
+    <div class="landing-hero__actions">
+      <ui-button
+        [variant]="BUTTON_VARIANT.Primary"
+        [size]="BUTTON_SIZE.Lg"
+        [href]="LANDING_LINKS.Demo"
+        >{{ 'landing.hero.demo' | transloco }}</ui-button
+      >
+      <ui-button [size]="BUTTON_SIZE.Lg" [href]="LANDING_LINKS.SignIn">{{
+        'landing.hero.signIn' | transloco
+      }}</ui-button>
+    </div>
   </div>
   <app-landing-chat class="landing-hero__demo" />
 </section>

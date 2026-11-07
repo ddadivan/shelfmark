@@ -1,8 +1,12 @@
+import { LANDING_FOLDER } from './landing-folder.const';
+import type { LandingFolder } from './landing-folder.type';
 import type { LandingLinkEntry } from './landing-link-entry.interface';
 
-/** Links of each folder of the "after" scene, by folder id (`LANDING_TREE_ROWS`). */
-export const LANDING_FOLDER_LISTS: Readonly<Record<string, readonly LandingLinkEntry[]>> = {
-  clothes: [
+/** Links of each folder of the "after" scene, by folder id; Work only holds the Angular subfolder, so it has no list. */
+export const LANDING_FOLDER_LISTS: Readonly<
+  Partial<Record<LandingFolder, readonly LandingLinkEntry[]>>
+> = {
+  [LANDING_FOLDER.Clothes]: [
     {
       id: 'coat',
       letter: 'C',
@@ -22,7 +26,7 @@ export const LANDING_FOLDER_LISTS: Readonly<Record<string, readonly LandingLinkE
       noteKey: 'landing.after.links.jumper.note',
     },
   ],
-  angular: [
+  [LANDING_FOLDER.Angular]: [
     {
       id: 'signal-forms',
       letter: 'Y',
@@ -42,7 +46,7 @@ export const LANDING_FOLDER_LISTS: Readonly<Record<string, readonly LandingLinkE
       noteKey: 'landing.after.links.zoneless.note',
     },
   ],
-  recipes: [
+  [LANDING_FOLDER.Recipes]: [
     {
       id: 'ramen',
       letter: 'R',

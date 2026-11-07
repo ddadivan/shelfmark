@@ -1,6 +1,12 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { BUTTON_VARIANT, ButtonComponent, FaviconComponent, LogoComponent } from '@shelfmark/ui';
+import {
+  BUTTON_VARIANT,
+  ButtonComponent,
+  FaviconComponent,
+  IconComponent,
+  LogoComponent,
+} from '@shelfmark/ui';
 import { LANDING_CHAT_MESSAGES } from '../../models/landing-chat-messages.const';
 import { LANDING_SHELF_GROUPS } from '../../models/landing-shelf-groups.const';
 
@@ -11,7 +17,7 @@ import { LANDING_SHELF_GROUPS } from '../../models/landing-shelf-groups.const';
  */
 @Component({
   selector: 'app-landing-chat',
-  imports: [TranslocoPipe, ButtonComponent, FaviconComponent, LogoComponent],
+  imports: [TranslocoPipe, ButtonComponent, FaviconComponent, IconComponent, LogoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './landing-chat.component.html',
   styleUrl: './landing-chat.component.scss',

@@ -73,3 +73,9 @@
     line-height: rem(28px);
   }
 }
+
+.landing-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(10px);
+}

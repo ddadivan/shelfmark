@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { ChipComponent, FaviconComponent } from '@shelfmark/ui';
 import { LandingBeforeSceneComponent } from '../landing-before-scene/landing-before-scene.component';
+import { LANDING_FOLDER } from '../../models/landing-folder.const';
+import type { LandingFolder } from '../../models/landing-folder.type';
 import { LANDING_FOLDER_LISTS } from '../../models/landing-folder-lists.const';
 import { LANDING_TREE_ROWS } from '../../models/landing-tree-rows.const';
 
@@ -21,5 +23,5 @@ export class LandingBeforeAfterComponent {
   protected readonly lists = LANDING_FOLDER_LISTS;
 
   /** Id of the folder whose links are listed (`LANDING_TREE_ROWS`). */
-  protected readonly activeFolder = signal('clothes');
+  protected readonly activeFolder = signal<LandingFolder>(LANDING_FOLDER.Clothes);
 }

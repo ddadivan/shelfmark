@@ -1,4 +1,6 @@
 import { expect, test } from '@playwright/test';
+import { COLOR_SCHEME } from './models/color-scheme.const';
+import { expectNoBlockingViolations } from './support/axe';
 
 const HEADLINE = 'Paste a link. Find it again. Even in a year.';
 
@@ -79,3 +81,33 @@ test.describe('landing', () => {
     expect(afterSwap).toBeLessThanOrEqual(0);
   });
 });
+
+const VIEWPORTS = [
+  { name: 'desktop', width: 1280, height: 900 },
+  { name: 'phone', width: 360, height: 780 },
+] as const;
+
+for (const colorScheme of Object.values(COLOR_SCHEME)) {
+  for (const viewport of VIEWPORTS) {
+    test.describe(`landing accessibility (${colorScheme}, ${viewport.name})`, () => {
+      test.use({ colorScheme, viewport: { width: viewport.width, height: viewport.height } });
+
+      test('chat state has no serious or critical axe violations', async ({ page }, testInfo) => {
+        await page.goto('/');
+        await expect(page.getByRole('heading', { level: 1, name: HEADLINE })).toBeVisible();
+        await page.evaluate('document.fonts.ready.then(() => undefined)');
+
+        await expectNoBlockingViolations(page, testInfo);
+      });
+
+      test('shelf state has no serious or critical axe violations', async ({ page }, testInfo) => {
+        await page.goto('/');
+        await page.getByRole('button', { name: 'Put them on the shelf' }).click();
+        await expect(page.getByText('Notes come from your own messages.')).toBeVisible();
+        await page.evaluate('document.fonts.ready.then(() => undefined)');
+
+        await expectNoBlockingViolations(page, testInfo);
+      });
+    });
+  }
+}
