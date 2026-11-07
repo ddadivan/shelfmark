@@ -18,12 +18,16 @@ class FakeIntersectionObserver {
   }
 }
 
+let motionListeners: ((event: { matches: boolean }) => void)[] = [];
+
 function stubReducedMotion(reduced: boolean): void {
+  motionListeners = [];
   vi.stubGlobal(
     'matchMedia',
     vi.fn(() => ({
       matches: reduced,
-      addEventListener: vi.fn(),
+      addEventListener: (_type: string, listener: (event: { matches: boolean }) => void) =>
+        motionListeners.push(listener),
       removeEventListener: vi.fn(),
     })),
   );
@@ -47,13 +51,15 @@ describe('LandingChatComponent', () => {
   };
   const step = (): string => track().style.getPropertyValue('--landing-chat-step');
   const observer = (): FakeIntersectionObserver => FakeIntersectionObserver.instances[0];
+  const shelfButton = (): HTMLButtonElement | undefined =>
+    Array.from(root.querySelectorAll('button')).at(-1);
   const settle = (): void => TestBed.tick();
   const advance = (ms: number): void => {
     vi.advanceTimersByTime(ms);
     settle();
   };
   const click = (): void => {
-    root.querySelector('button')?.click();
+    shelfButton()?.click();
     settle();
   };
 
@@ -78,6 +84,10 @@ describe('LandingChatComponent', () => {
   describe('reduced motion', () => {
     beforeEach(() => create({ reduced: true }));
 
+    it('has no pause button, since nothing moves', () => {
+      expect(root.querySelectorAll('button')).toHaveLength(1);
+    });
+
     it('shows the static frame with five links and starts no timers', () => {
       observer().emit(true);
       settle();
@@ -96,7 +106,7 @@ describe('LandingChatComponent', () => {
       expect(root.querySelectorAll('.landing-chat-shelf__folder')).toHaveLength(4);
       expect(root.querySelectorAll('.landing-chat-shelf__card')).toHaveLength(5);
       expect(root.textContent).toContain('Your shelf');
-      expect(root.querySelector('button')?.textContent?.trim()).toBe('Show the chat again');
+      expect(shelfButton()?.textContent?.trim()).toBe('Show the chat again');
       expect(vi.getTimerCount()).toBe(0);
 
       click();
@@ -121,7 +131,7 @@ describe('LandingChatComponent', () => {
       expect(root.querySelectorAll('.landing-chat__slot')).toHaveLength(16);
       expect(track().getAttribute('aria-hidden')).toBe('true');
       expect(root.querySelectorAll('.landing-chat__sr li')).toHaveLength(5);
-      expect(root.querySelector('button')?.textContent?.trim()).toBe('Put them on the shelf');
+      expect(shelfButton()?.textContent?.trim()).toBe('Put them on the shelf');
     });
 
     it('waits for the block to enter the viewport', () => {
@@ -210,6 +220,93 @@ describe('LandingChatComponent', () => {
       expect(step()).toBe('1');
     });
 
+    describe('pause paths (WCAG 2.2.2)', () => {
+      const pauseButton = (): HTMLButtonElement =>
+        Array.from(root.querySelectorAll('button')).find((button) =>
+          button.textContent?.includes('Pause the feed'),
+        ) as HTMLButtonElement;
+
+      beforeEach(() => {
+        observer().emit(true);
+        settle();
+      });
+
+      it('stops and restarts the feed with the pause button, announced by aria-pressed', () => {
+        expect(pauseButton().getAttribute('aria-pressed')).toBe('false');
+
+        pauseButton().click();
+        settle();
+        expect(pauseButton().getAttribute('aria-pressed')).toBe('true');
+        expect(vi.getTimerCount()).toBe(0);
+        advance(5 * LANDING_CHAT_TIMING.MessageIntervalMs);
+        expect(step()).toBe('0');
+
+        pauseButton().click();
+        settle();
+        advance(LANDING_CHAT_TIMING.MessageIntervalMs);
+        expect(step()).toBe('1');
+      });
+
+      it('pauses while the pointer is over the chat and resumes when it leaves', () => {
+        fixture.nativeElement.dispatchEvent(new Event('pointerenter'));
+        settle();
+        expect(vi.getTimerCount()).toBe(0);
+        advance(5 * LANDING_CHAT_TIMING.MessageIntervalMs);
+        expect(step()).toBe('0');
+
+        fixture.nativeElement.dispatchEvent(new Event('pointerleave'));
+        settle();
+        advance(LANDING_CHAT_TIMING.MessageIntervalMs);
+        expect(step()).toBe('1');
+      });
+
+      it('pauses while focus is inside the chat and resumes on focusout', () => {
+        fixture.nativeElement.dispatchEvent(new Event('focusin'));
+        settle();
+        expect(vi.getTimerCount()).toBe(0);
+        advance(5 * LANDING_CHAT_TIMING.MessageIntervalMs);
+        expect(step()).toBe('0');
+
+        fixture.nativeElement.dispatchEvent(new Event('focusout'));
+        settle();
+        advance(LANDING_CHAT_TIMING.MessageIntervalMs);
+        expect(step()).toBe('1');
+      });
+
+      it('hides the pause button on the shelf', () => {
+        click();
+        advance(LANDING_CHAT_TIMING.ClearMs);
+
+        expect(pauseButton()).toBeUndefined();
+      });
+    });
+
+    it('starts from the first frame when the chat comes back', () => {
+      observer().emit(true);
+      settle();
+      advance(3 * LANDING_CHAT_TIMING.MessageIntervalMs);
+      expect(step()).toBe('3');
+      click();
+      advance(LANDING_CHAT_TIMING.ClearMs);
+
+      click();
+
+      expect(step()).toBe('0');
+    });
+
+    it('shows the shelf at once when reduced motion turns on while the messages clear', () => {
+      observer().emit(true);
+      settle();
+      click();
+
+      motionListeners.forEach((listener) => listener({ matches: true }));
+      settle();
+
+      expect(root.querySelector('app-landing-chat-shelf')).not.toBeNull();
+      expect(root.querySelector('.landing-chat__messages')).toBeNull();
+      expect(vi.getTimerCount()).toBe(0);
+    });
+
     it('clears its timer and listeners on destroy', () => {
       observer().emit(true);
       settle();
@@ -235,7 +332,7 @@ describe('LandingChatComponent', () => {
       expect(root.querySelector('.landing-chat__feed')).toBeNull();
       expect(root.querySelectorAll('.landing-chat-shelf__folder')).toHaveLength(4);
       expect(root.querySelectorAll('.landing-chat-shelf__card')).toHaveLength(5);
-      expect(root.querySelector('button')?.textContent?.trim()).toBe('Show the chat again');
+      expect(shelfButton()?.textContent?.trim()).toBe('Show the chat again');
       // Staggered landing: later cards start later.
       const delays = Array.from(
         root.querySelectorAll<HTMLElement>('.landing-chat-shelf__card'),

@@ -34,12 +34,13 @@
         class="landing-chat__track"
         aria-hidden="true"
         [class.landing-chat__track--snap]="snapping()"
+        [class.landing-chat__track--running]="running()"
         [style.--landing-chat-step]="step()"
         (transitionend)="onRiseEnd($event)"
       >
         @for (message of feed; track $index) {
           <li class="landing-chat__slot">
-            <ng-container *ngTemplateOutlet="bubble; context: { $implicit: message }" />
+            <app-landing-chat-bubble [message]="message" />
           </li>
         }
       </ul>
@@ -53,7 +54,7 @@
     <ul id="landing-chat-body" class="landing-chat__messages">
       @for (message of messages; track message.id) {
         <li class="landing-chat__message">
-          <ng-container *ngTemplateOutlet="bubble; context: { $implicit: message }" />
+          <app-landing-chat-bubble [message]="message" />
         </li>
       }
     </ul>
@@ -64,22 +65,23 @@
   <p class="landing-chat__hint">
     {{ (sorted() ? 'landing.chat.hintShelf' : 'landing.chat.hintChat') | transloco }}
   </p>
-  <ui-button
-    [variant]="sorted() ? BUTTON_VARIANT.Ghost : BUTTON_VARIANT.Primary"
-    ariaControls="landing-chat-body"
-    (click)="toggle()"
-  >
-    {{ (sorted() ? 'landing.chat.showChat' : 'landing.chat.putOnShelf') | transloco }}
-  </ui-button>
-</div>
-
-<ng-template #bubble let-message>
-  <div class="landing-chat__bubble">
-    <span class="landing-chat__text">{{ message.textKey | transloco }}</span>
-    <span class="landing-chat__link">
-      <ui-favicon [letter]="message.letter" />
-      <span class="landing-chat__url">{{ message.url }}</span>
-      <span class="landing-chat__time">{{ message.timeKey | transloco }}</span>
-    </span>
+  <div class="landing-chat__actions">
+    @if (animated() && !sorted()) {
+      <ui-button
+        [variant]="BUTTON_VARIANT.Ghost"
+        ariaControls="landing-chat-body"
+        [ariaPressed]="userPaused()"
+        (click)="togglePause()"
+      >
+        {{ 'landing.chat.pause' | transloco }}
+      </ui-button>
+    }
+    <ui-button
+      [variant]="sorted() ? BUTTON_VARIANT.Ghost : BUTTON_VARIANT.Primary"
+      ariaControls="landing-chat-body"
+      (click)="toggle()"
+    >
+      {{ (sorted() ? 'landing.chat.showChat' : 'landing.chat.putOnShelf') | transloco }}
+    </ui-button>
   </div>
-</ng-template>
+</div>
