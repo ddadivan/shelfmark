@@ -1,0 +1,120 @@
+@use '../src/styles/ui' as *;
+
+// Layout of the Card, List item, Favicon and Skeleton stories only (never shipped with the
+// library). Class names start with `cs-`.
+
+.cs-themes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.cs-pane {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+  align-content: start;
+  min-width: 0;
+  padding: var(--space-6);
+  color: var(--text);
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+}
+
+.cs-heading {
+  margin: 0;
+  font-size: rem(13px);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.cs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(rem(240px), 1fr));
+  gap: var(--space-6);
+}
+
+.cs-grid--single {
+  grid-template-columns: minmax(0, rem(260px));
+}
+
+.cs-phone {
+  width: rem(360px);
+  max-width: 100%;
+  padding: var(--space-4);
+  background: var(--bg);
+}
+
+.cs-list {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+  max-width: rem(560px);
+}
+
+.cs-surface {
+  padding: rem(6px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.cs-site {
+  display: flex;
+  gap: rem(6px);
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cs-meta {
+  display: flex;
+  gap: rem(6px);
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.cs-title {
+  margin: 0;
+  font: inherit;
+}
+
+.cs-note {
+  margin: 0;
+}
+
+.cs-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(6px);
+}
+
+.cs-overlay {
+  display: flex;
+  gap: rem(8px);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cs-thumb {
+  flex: none;
+  width: rem(56px);
+  height: rem(40px);
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+
+.cs-reveal {
+  display: grid;
+  gap: var(--space-4);
+  justify-items: start;
+}
+
+// A fixed height keeps the Skeleton -> content swap from moving the story controls.
+.cs-reveal__stage {
+  width: rem(260px);
+}

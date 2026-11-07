@@ -11,6 +11,9 @@ import { KEYBOARD_KEY } from '../keyboard';
     @if (link()) {
       <a class="lnk" href="#x" uiRipple>Link</a>
     }
+    <div class="guarded" uiRipple uiRippleIgnore=".skip">
+      <span class="plain">Text</span><button class="skip">Skip</button>
+    </div>
     <button class="btn" uiRipple [disabled]="disabled()">Press</button>
   `,
 })
@@ -249,6 +252,22 @@ describe('RippleDirective', () => {
     row.dispatchEvent(key('keydown', KEYBOARD_KEY.Enter));
 
     expect(spans(row)).toHaveLength(0);
+  });
+
+  it('skips events from an ignored region without stopping them', async () => {
+    const { root } = await setup();
+    const guarded = root.querySelector('.guarded') as HTMLElement;
+    guarded.getBoundingClientRect = () => new DOMRect(10, 20, 200, 40);
+    const seen: string[] = [];
+    document.addEventListener('pointerdown', (e) => seen.push(e.type), { once: true });
+    document.addEventListener('keydown', (e) => seen.push(e.type), { once: true });
+    const skip = guarded.querySelector('.skip') as HTMLElement;
+    skip.dispatchEvent(pointer('pointerdown', 60, 30));
+    skip.dispatchEvent(key('keydown', KEYBOARD_KEY.Enter));
+    expect(guarded.querySelectorAll('.ui-ripple').length).toBe(0);
+    expect(seen).toEqual(['pointerdown', 'keydown']);
+    (guarded.querySelector('.plain') as HTMLElement).dispatchEvent(pointer('pointerdown', 60, 30));
+    expect(guarded.querySelectorAll('.ui-ripple').length).toBe(1);
   });
 
   it('removes running ripples on destroy', async () => {
