@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { PGlite } from '@electric-sql/pglite';
+import { pg_trgm } from '@electric-sql/pglite/contrib/pg_trgm';
 import { PGLiteSocketServer } from '@electric-sql/pglite-socket';
 import { PrismaService } from '../src/prisma/prisma.service';
 import type { TestDatabase } from './models/test-database.interface';
@@ -26,7 +27,8 @@ export function migrationFiles(dir: string = MIGRATIONS_DIR): string[] {
  * port and used through the same `PrismaService` as production. No Docker, no network.
  */
 export async function createTestDatabase(): Promise<TestDatabase> {
-  const db = await PGlite.create();
+  // pg_trgm is loaded for the search of #71; it is harmless until `CREATE EXTENSION` runs.
+  const db = await PGlite.create({ extensions: { pg_trgm } });
   for (const file of migrationFiles()) {
     await db.exec(readFileSync(file, 'utf8'));
   }
