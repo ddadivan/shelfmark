@@ -15,7 +15,9 @@ import { SPINNER_SIZE } from './models/spinner-size.const';
  * Without `label` it is decorative (`aria-hidden`; the visible text next to it is the status);
  * with `label` it is a `role="status"` region holding the label as visually hidden text. The
  * text is filled after the first render, so the region exists empty first and the screen reader
- * announces the insertion. (`ui-progress-bar` and `ui-meter` stay `progressbar`.)
+ * announces the insertion. A live region already present in the DOM announces more reliably than
+ * one inserted together with its content, so keep a labelled spinner mounted when the
+ * announcement matters. (`ui-progress-bar` and `ui-meter` stay `progressbar`.)
  *
  * It leaves with the `leave(spinner)` preset: the owner removes it with `@if` and binds
  * `animate.leave` to a class that includes `@include leave(spinner)` (inside a button

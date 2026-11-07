@@ -2,12 +2,12 @@ import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { axeViolations } from '../../testing/axe';
 import { ButtonComponent } from '../button/button.component';
+import type { HeadingLevel } from '../heading';
 import type { IconName } from '../icon/models/icon-name.type';
+import { ILLUSTRATION_MOTION } from '../illustration/models/illustration-motion.const';
 import type { IllustrationMotion } from '../illustration/models/illustration-motion.type';
 import type { IllustrationName } from '../illustration/models/illustration-name.type';
 import { EmptyStateComponent } from './empty-state.component';
-import type { HeadingLevel } from '../heading';
-import { ILLUSTRATION_MOTION } from '../illustration/models/illustration-motion.const';
 
 @Component({
   imports: [EmptyStateComponent, ButtonComponent],

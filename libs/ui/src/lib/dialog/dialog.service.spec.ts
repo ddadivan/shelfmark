@@ -306,7 +306,7 @@ describe('DialogService', () => {
       expect(button('Cancel').type).toBe('button');
     });
 
-    it('submits through the default button and closes with the result', async () => {
+    it('submits through a click on the default submit button (Enter is not available in jsdom) and closes with the result', async () => {
       const ref = service.open<FormDialogComponent, string>(FormDialogComponent);
       settle();
       // Enter in a field makes the browser click the default (first submit) button.

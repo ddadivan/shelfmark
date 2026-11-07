@@ -52,7 +52,7 @@ describe('target sizes', () => {
       /__remove::after\s*{[^}]*inset: -0\.375rem -0\.1875rem -0\.375rem -0\.25rem/,
     );
     expect(coarse(css)).toMatch(
-      /__remove::after\s*{[^}]*inset: -0\.875rem -0\.1875rem -0\.875rem -0\.625rem/,
+      /__remove::after\s*{[^}]*inset: -0\.875rem -0\.1875rem -0\.875rem -0\.375rem/,
     );
   });
 

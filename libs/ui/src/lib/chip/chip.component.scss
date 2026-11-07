@@ -68,8 +68,10 @@ button.ui-chip__body {
   transition: opacity var(--duration-fast) var(--ease-out);
 
   // Invisible hit area (24px chip, 16px glyph). Its inline-end side stops 3px out so it never
-  // reaches the next chip (tag input gap 6px). The glyph is non-text, so it may stay dimmed.
-  @include hit-area(-6px -3px -6px -4px, -14px -3px -14px -10px);
+  // reaches the next chip (tag input gap 6px); on coarse pointers its inline-start side stops
+  // 6px out, so it overlaps the chip body by at most ~6px. The glyph is non-text, so it may
+  // stay dimmed.
+  @include hit-area(-6px -3px -6px -4px, -14px -3px -14px -6px);
 
   @include hover {
     opacity: 1;

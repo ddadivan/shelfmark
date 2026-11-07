@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import type { HeadingLevel } from '../heading';
 import { IconComponent } from '../icon/icon.component';
 import type { IconName } from '../icon/models/icon-name.type';
 import { IllustrationComponent } from '../illustration/illustration.component';
 import type { IllustrationMotion } from '../illustration/models/illustration-motion.type';
 import type { IllustrationName } from '../illustration/models/illustration-name.type';
-import type { HeadingLevel } from '../heading';
 
 /**
  * Invites the next action when a space has nothing in it: an `illustration` scene or an

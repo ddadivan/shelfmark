@@ -75,7 +75,7 @@ export class ButtonComponent implements UiFocusTarget {
   readonly href = input<string>();
   /**
    * Touch target of an icon-only button on `pointer: coarse`: `grow` (default) makes the button
-   * 44px; `overlay` keeps the visual size and adds an invisible hit area (a favorite star on a
+   * 44px; `overlay` (for icon-only buttons only, ignored otherwise) keeps the visual size and adds an invisible hit area (a favorite star on a
    * card). The overlay has no ripple (the ripple host clips).
    */
   readonly hitArea = input<ButtonHitArea>(BUTTON_HIT_AREA.Grow);
@@ -103,12 +103,12 @@ export class ButtonComponent implements UiFocusTarget {
   protected readonly isLink = computed(() => this.href() !== undefined);
   /** A link without `href` (disabled or busy): no navigation by middle click or context menu. */
   protected readonly inert = computed(() => this.disabled() || this.loading());
+  /** The overlay hit area applies to icon-only buttons only. */
+  protected readonly hasOverlay = computed(
+    () => this.iconOnly() && this.hitArea() === BUTTON_HIT_AREA.Overlay,
+  );
   protected readonly rippleActive = computed(
-    () =>
-      this.ripple() &&
-      !this.disabled() &&
-      !this.loading() &&
-      this.hitArea() !== BUTTON_HIT_AREA.Overlay,
+    () => this.ripple() && !this.disabled() && !this.loading() && !this.hasOverlay(),
   );
   /** Width (px) the button keeps while it is loading and until the spinner has left. */
   protected readonly lockedWidth = signal<number | undefined>(undefined);
@@ -120,7 +120,7 @@ export class ButtonComponent implements UiFocusTarget {
     if (this.iconOnly()) {
       classes.push('ui-button--icon');
     }
-    if (this.hitArea() === BUTTON_HIT_AREA.Overlay) {
+    if (this.hasOverlay()) {
       classes.push('ui-button--hit-overlay');
     }
     return classes.join(' ');

@@ -11,7 +11,7 @@ const REPORT_TYPE = 'application/json';
  * serious or critical violations only.
  */
 export async function expectNoBlockingViolations(page: Page, testInfo: TestInfo): Promise<void> {
-  const results = await new AxeBuilder({ page }).withTags(AXE_TAGS).analyze();
+  const results = await new AxeBuilder({ page }).withTags([...AXE_TAGS]).analyze();
   await testInfo.attach(REPORT_NAME, {
     body: JSON.stringify(results, null, 2),
     contentType: REPORT_TYPE,

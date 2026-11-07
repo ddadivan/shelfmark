@@ -19,6 +19,12 @@ class HostComponent {
   readonly hitArea = signal<ButtonHitArea>(BUTTON_HIT_AREA.Grow);
 }
 
+@Component({
+  imports: [ButtonComponent],
+  template: `<ui-button hitArea="overlay">Save</ui-button>`,
+})
+class LabelledHostComponent {}
+
 async function setup() {
   const fixture = TestBed.createComponent(HostComponent);
   await fixture.whenStable();
@@ -42,6 +48,15 @@ describe('ButtonComponent hitArea', () => {
 
     expect(button().classList.contains('ui-button--hit-overlay')).toBe(true);
     expect(button().classList.contains('ui-ripple-host')).toBe(false);
+  });
+
+  it('ignores overlay on a button with a label: no overlay class, ripple on', async () => {
+    const fixture = TestBed.createComponent(LabelledHostComponent);
+    await fixture.whenStable();
+    const button = (fixture.nativeElement as HTMLElement).querySelector('button')!;
+
+    expect(button.classList.contains('ui-button--hit-overlay')).toBe(false);
+    expect(button.classList.contains('ui-ripple-host')).toBe(true);
   });
 
   it('styles: 44px minimum for grow on coarse pointers, rem hit area for overlay', () => {
