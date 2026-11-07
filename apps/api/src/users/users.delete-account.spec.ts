@@ -1,5 +1,6 @@
 import { AUTH_ENDPOINT } from '@shelfmark/contracts';
 import request from 'supertest';
+import { SIGN_OUT_TIMEOUT_MS } from '../auth/models/sign-out-timeout.const';
 import { SessionCookieService } from '../auth/session-cookie.service';
 import { createAuthTestApp } from '../../test-utils/auth-test-app';
 import { createIsolationUsers } from '../../test-utils/isolation/create-isolation-users';
@@ -209,26 +210,73 @@ describe('DELETE /api/me', () => {
     expect(cookie).not.toMatch(/Secure/);
   });
 
-  it('never answers 500 to two concurrent deletions', async () => {
+  it('answers exactly two 204, or one 204 and one 401, to two concurrent deletions', async () => {
     const send = () => asUser(t.app, users.owner).delete(ME).send({ email: 'owner@example.com' });
-    const [a, b] = await Promise.all([send(), send()]);
-    expect([204, 401]).toContain(a.status);
-    expect([204, 401]).toContain(b.status);
-    expect(await t.db.prisma.user.count({ where: { id: users.owner.userId } })).toBe(0);
+    const statuses = (await Promise.all([send(), send()])).map((r) => r.status).sort();
+    expect([
+      [204, 204],
+      [204, 401],
+    ]).toContainEqual(statuses);
+    expect(await countsFor(t, users.owner.userId, 'owner@example.com')).toEqual({
+      users: 0,
+      sessions: 0,
+      accounts: 0,
+      folders: 0,
+      links: 0,
+      tags: 0,
+      linkTags: 0,
+      verifications: 0,
+    });
+    expect(
+      await t.db.prisma.verification.count({
+        where: { identifier: { equals: 'owner@example.com', mode: 'insensitive' } },
+      }),
+    ).toBe(0);
+  });
+
+  it('propagates a failing transaction as a generic 500 and deletes nothing', async () => {
+    vi.spyOn(t.db.prisma, '$transaction').mockRejectedValueOnce(new Error('db down'));
+    const res = await asUser(t.app, users.owner)
+      .delete(ME)
+      .send({ email: 'owner@example.com' })
+      .expect(500);
+    expect(JSON.stringify(res.body)).not.toContain('db down');
+    expect(await t.db.prisma.user.count({ where: { id: users.owner.userId } })).toBe(1);
+    expect(setCookiesOf(res)).toEqual([]);
   });
 });
 
-describe('SessionCookieService fallback cookie', () => {
+type AuthStub = ConstructorParameters<typeof SessionCookieService>[0];
+
+describe('SessionCookieService', () => {
   afterEach(() => {
     vi.unstubAllEnvs();
+    vi.useRealTimers();
   });
 
-  it('carries the prefix and Secure in production', () => {
+  // The fallback never touches Better Auth, so the stub has no behaviour.
+  const stubAuth = (signOut = vi.fn()): AuthStub => ({ api: { signOut } }) as unknown as AuthStub;
+
+  it('builds the fallback cookie with the prefix and Secure in production', () => {
     vi.stubEnv('NODE_ENV', 'production');
-    // The fallback never touches Better Auth, so no AuthService is needed.
-    const [cookie] = new SessionCookieService(undefined as never).fallbackClearingCookies();
+    const [cookie] = new SessionCookieService(stubAuth()).fallbackClearingCookies();
     expect(cookie).toBe(
       '__Secure-shelfmark.session_token=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax; Secure',
     );
+  });
+
+  it('builds the fallback cookie without prefix and Secure outside production', () => {
+    vi.stubEnv('NODE_ENV', 'development');
+    const [cookie] = new SessionCookieService(stubAuth()).fallbackClearingCookies();
+    expect(cookie).toBe('shelfmark.session_token=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax');
+  });
+
+  it('rejects when the sign-out hangs longer than the timeout', async () => {
+    vi.useFakeTimers();
+    const hanging = vi.fn(() => new Promise<never>(() => undefined));
+    const pending = new SessionCookieService(stubAuth(hanging)).clearingCookies({});
+    const outcome = expect(pending).rejects.toThrow('Sign-out timed out');
+    await vi.advanceTimersByTimeAsync(SIGN_OUT_TIMEOUT_MS);
+    await outcome;
   });
 });

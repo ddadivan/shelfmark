@@ -10,13 +10,14 @@ export class UsersService {
 
   /**
    * Deletes the session user and all their data in one transaction. The `User` delete cascades to
-   * sessions, accounts, folders, links, tags and (through links and tags) link tags. `Verification`
-   * has no user relation: its rows are keyed by `identifier`, so rows whose `identifier` equals the
-   * user's email (case-insensitive) go in the same transaction. The owner always comes from the session, never from the request.
-   * A mismatching confirmation is a 400 and deletes nothing.
+   * sessions, accounts, folders, links, tags and (through links and tags) link tags.
+   * `Verification` has no user relation: its rows are keyed by `identifier`, so rows whose
+   * `identifier` equals the user's email (case-insensitive) go in the same transaction. The owner
+   * always comes from the session, never from the request. A mismatching confirmation is a 400
+   * and deletes nothing; a failing transaction propagates (500) and deletes nothing.
    */
   async deleteAccount(user: AuthUser, body: DeleteAccountRequest): Promise<void> {
-    if (body.email.trim().toLowerCase() !== user.email.toLowerCase()) {
+    if (body.email.toLowerCase() !== user.email.toLowerCase()) {
       throw new BadRequestException('The confirmation does not match the account email');
     }
     await this.prisma.$transaction([
