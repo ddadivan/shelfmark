@@ -57,3 +57,12 @@ export function stubReducedMotion(matches: boolean): void {
     removeEventListener: () => undefined,
   }));
 }
+
+/** Sets the tab to visible or hidden and fires `visibilitychange`; reset it with `setTabState(true)`. */
+export function setTabState(visible: boolean): void {
+  Object.defineProperty(document, 'visibilityState', {
+    value: visible ? 'visible' : 'hidden',
+    configurable: true,
+  });
+  document.dispatchEvent(new Event('visibilitychange'));
+}

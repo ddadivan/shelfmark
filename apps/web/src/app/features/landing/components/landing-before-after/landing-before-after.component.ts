@@ -54,6 +54,18 @@ export class LandingBeforeAfterComponent {
   private readonly engaged = signal(false);
   protected readonly stopped = computed(() => this.paused() || this.engaged());
 
+  constructor() {
+    const gate = inject(LandingLoopGateDirective);
+    const stepMs = LANDING_LOOP.ShelfCycleMs / LANDING_FOLDER_CYCLE.length;
+    effect((onCleanup) => {
+      if (!gate.active() || this.stopped()) {
+        return;
+      }
+      const timer = setInterval(() => this.activeFolder.update(nextFolder), stepMs);
+      onCleanup(() => clearInterval(timer));
+    });
+  }
+
   protected togglePaused(): void {
     this.paused.update((value) => !value);
   }
@@ -67,18 +79,6 @@ export class LandingBeforeAfterComponent {
     if (!(event.relatedTarget instanceof Node) || !area.contains(event.relatedTarget)) {
       this.engaged.set(false);
     }
-  }
-
-  constructor() {
-    const gate = inject(LandingLoopGateDirective);
-    const stepMs = LANDING_LOOP.ShelfCycleMs / LANDING_FOLDER_CYCLE.length;
-    effect((onCleanup) => {
-      if (!gate.active() || this.stopped()) {
-        return;
-      }
-      const timer = setInterval(() => this.activeFolder.update(nextFolder), stepMs);
-      onCleanup(() => clearInterval(timer));
-    });
   }
 }
 

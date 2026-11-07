@@ -7,7 +7,6 @@ import { LandingMotionService } from '../landing-motion.service';
  */
 @Directive({
   selector: '[appLandingLoopGate]',
-  exportAs: 'landingLoopGate',
 })
 export class LandingLoopGateDirective {
   private readonly motion = inject(LandingMotionService);

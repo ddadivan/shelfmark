@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, vi } from 'vitest';
 import {
   MockIntersectionObserver,
+  setTabState,
   stubReducedMotion,
 } from '../../../../../testing/mock-intersection-observer';
 import { axeViolations } from '../../../../../testing/axe';
@@ -32,7 +33,7 @@ describe('LandingBeforeSceneComponent', () => {
 
     afterEach(() => {
       vi.unstubAllGlobals();
-      Object.defineProperty(document, 'visibilityState', { value: 'visible', configurable: true });
+      setTabState(true);
     });
 
     async function board(): Promise<{
@@ -60,13 +61,11 @@ describe('LandingBeforeSceneComponent', () => {
       fixture.detectChanges();
       expect(el.classList.contains(LIVE)).toBe(true);
 
-      Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true });
-      document.dispatchEvent(new Event('visibilitychange'));
+      setTabState(false);
       fixture.detectChanges();
       expect(el.classList.contains(LIVE)).toBe(false);
 
-      Object.defineProperty(document, 'visibilityState', { value: 'visible', configurable: true });
-      document.dispatchEvent(new Event('visibilitychange'));
+      setTabState(true);
       MockIntersectionObserver.triggerAll(false);
       fixture.detectChanges();
       expect(el.classList.contains(LIVE)).toBe(false);

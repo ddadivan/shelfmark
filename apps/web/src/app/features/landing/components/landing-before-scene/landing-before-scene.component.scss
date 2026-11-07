@@ -135,6 +135,8 @@
 // Loops: only under `--live` (in view, tab visible, motion allowed), so the default is the
 // static frame. Drift moves the scraps with `translate` (it composes with their `rotate`);
 // the ping fades and pops with `scale`. transform / opacity only, nothing changes layout.
+// These timings (and the per-scrap durations and delays below) are intentionally CSS-only: they
+// are ambient decoration with no logic behind them, so no TS constant mirrors them.
 $drift-duration: 14s;
 $ping-duration: 6s;
 

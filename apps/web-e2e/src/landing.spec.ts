@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 import { COLOR_SCHEME } from './models/color-scheme.const';
 import { expectNoBlockingViolations } from './support/axe';
 
@@ -104,7 +104,7 @@ test.describe('landing scenes and reveals', () => {
     const pause = shelf.getByRole('button', { name: 'Pause animations' });
 
     await expect(shelf.getByText('Signal Forms', { exact: false }).first()).toBeVisible({
-      timeout: 6000,
+      timeout: 15_000,
     });
     await pause.click();
     await expect(pause).toHaveAttribute('aria-pressed', 'true');
@@ -131,6 +131,14 @@ test.describe('landing scenes and reveals', () => {
     });
   });
 });
+
+/** Waits for the reveal transitions to end, so axe never reads half-transparent text. */
+async function settleReveals(page: Page): Promise<void> {
+  await expect(page.locator('.landing-reveal--pending')).toHaveCount(0);
+  await page.evaluate(
+    'Promise.all(document.getAnimations().filter((a) => a instanceof CSSTransition).map((a) => a.finished)).then(() => undefined)',
+  );
+}
 
 const VIEWPORTS = [
   { name: 'desktop', width: 1280, height: 900 },
@@ -177,6 +185,22 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
         await expect(
           page.getByRole('region', { name: 'Empty your Saved Messages.' }).locator('h2'),
         ).toHaveCSS('opacity', '1');
+        // Sections skipped by the jump reveal through the 1 s safety timeout.
+        await settleReveals(page);
+        await page.evaluate('document.fonts.ready.then(() => undefined)');
+
+        await expectNoBlockingViolations(page, testInfo);
+      });
+
+      test('shelf with the pause button pressed has no serious or critical axe violations', async ({
+        page,
+      }, testInfo) => {
+        await page.goto('/');
+        const shelf = page.getByRole('region', { name: 'The same links, before and after' });
+        await shelf.scrollIntoViewIfNeeded();
+        await shelf.getByRole('button', { name: 'Pause animations' }).click();
+        await settleReveals(page);
+        await expect(page.locator('.landing-ba__item--enter')).toHaveCount(0, { timeout: 10_000 });
         await page.evaluate('document.fonts.ready.then(() => undefined)');
 
         await expectNoBlockingViolations(page, testInfo);

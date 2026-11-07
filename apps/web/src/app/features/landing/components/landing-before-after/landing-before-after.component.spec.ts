@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, vi } from 'vitest';
 import {
   MockIntersectionObserver,
+  setTabState,
   stubReducedMotion,
 } from '../../../../../testing/mock-intersection-observer';
 import { axeViolations } from '../../../../../testing/axe';
@@ -44,7 +45,7 @@ describe('LandingBeforeAfterComponent', () => {
     afterEach(() => {
       vi.useRealTimers();
       vi.unstubAllGlobals();
-      Object.defineProperty(document, 'visibilityState', { value: 'visible', configurable: true });
+      setTabState(true);
     });
 
     async function start() {
@@ -107,8 +108,7 @@ describe('LandingBeforeAfterComponent', () => {
       const { fixture, activeRow, show } = await start();
       fixture.detectChanges();
       show(true);
-      Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true });
-      document.dispatchEvent(new Event('visibilitychange'));
+      setTabState(false);
       fixture.detectChanges();
 
       await vi.advanceTimersByTimeAsync(STEP_MS * 3);
@@ -185,6 +185,28 @@ describe('LandingBeforeAfterComponent', () => {
         expect(activeRow()).toBe('Clothes');
 
         scenes.dispatchEvent(new Event('focusout'));
+        fixture.detectChanges();
+        await vi.advanceTimersByTimeAsync(STEP_MS);
+        fixture.detectChanges();
+        expect(activeRow()).toBe('Angular');
+      });
+
+      it('keeps the cycle paused while focus moves inside the scenes, resumes when it leaves', async () => {
+        const { fixture, activeRow, show } = await start();
+        fixture.detectChanges();
+        show(true);
+        const scenes = (fixture.nativeElement as HTMLElement).querySelector(
+          '.landing-ba__scenes',
+        ) as HTMLElement;
+        const inside = scenes.querySelector('h3') as HTMLElement;
+
+        scenes.dispatchEvent(new Event('focusin'));
+        scenes.dispatchEvent(new FocusEvent('focusout', { relatedTarget: inside }));
+        fixture.detectChanges();
+        await vi.advanceTimersByTimeAsync(STEP_MS * 2);
+        expect(activeRow()).toBe('Clothes');
+
+        scenes.dispatchEvent(new FocusEvent('focusout', { relatedTarget: document.body }));
         fixture.detectChanges();
         await vi.advanceTimersByTimeAsync(STEP_MS);
         fixture.detectChanges();

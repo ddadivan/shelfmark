@@ -35,6 +35,9 @@ export class LandingRevealDirective {
     if (this.motion.reducedMotion() || typeof IntersectionObserver === 'undefined') {
       return;
     }
+    if (this.visibleShare() >= LANDING_REVEAL.Threshold) {
+      return;
+    }
     Array.from(this.host.children).forEach((child, index) => {
       if (child instanceof HTMLElement) {
         child.style.setProperty(DELAY_PROPERTY, `${index * LANDING_REVEAL.StaggerMs}ms`);
@@ -42,16 +45,35 @@ export class LandingRevealDirective {
     });
     this.state.set(LANDING_REVEAL_STATE.Pending);
 
+    const reveal = (): void => {
+      this.state.set(LANDING_REVEAL_STATE.Shown);
+      observer.disconnect();
+      clearTimeout(safety);
+    };
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries.some((entry) => entry.isIntersecting)) {
-          this.state.set(LANDING_REVEAL_STATE.Shown);
-          observer.disconnect();
+          reveal();
         }
       },
       { threshold: LANDING_REVEAL.Threshold },
     );
+    // Never leave content hidden if the observer does not report.
+    const safety = setTimeout(reveal, LANDING_REVEAL.SafetyMs);
     observer.observe(this.host);
-    this.destroyRef.onDestroy(() => observer.disconnect());
+    this.destroyRef.onDestroy(() => {
+      observer.disconnect();
+      clearTimeout(safety);
+    });
+  }
+
+  /** Share of the host already inside the viewport (0 when it has no size yet). */
+  private visibleShare(): number {
+    const { top, bottom, height } = this.host.getBoundingClientRect();
+    if (height <= 0) {
+      return 0;
+    }
+    const viewport = this.host.ownerDocument.defaultView?.innerHeight ?? 0;
+    return (Math.min(bottom, viewport) - Math.max(top, 0)) / height;
   }
 }

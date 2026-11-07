@@ -65,6 +65,33 @@ describe('LandingRevealDirective', () => {
     expect(observer.disconnected).toBe(true);
   });
 
+  it('does not hide a section that is already at least 20% on screen', async () => {
+    const fixture = TestBed.createComponent(HostComponent);
+    const section = (fixture.nativeElement as HTMLElement).querySelector('section') as HTMLElement;
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+      top: 100,
+      bottom: 500,
+      height: 400,
+    } as DOMRect);
+
+    await fixture.whenStable();
+
+    expect(section.className).not.toContain('landing-reveal');
+    expect(MockIntersectionObserver.instances).toHaveLength(0);
+    vi.restoreAllMocks();
+  });
+
+  it('forces the section visible after 1 s if the observer never reports', async () => {
+    const { fixture, section } = await create();
+    expect(section.classList.contains('landing-reveal--pending')).toBe(true);
+
+    await new Promise((resolve) => setTimeout(resolve, 1050));
+    await fixture.whenStable();
+
+    expect(section.classList.contains('landing-reveal--shown')).toBe(true);
+    expect(MockIntersectionObserver.instances[0].disconnected).toBe(true);
+  });
+
   it('never hides content under reduced motion', async () => {
     stubReducedMotion(true);
 
