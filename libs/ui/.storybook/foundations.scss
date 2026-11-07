@@ -31,6 +31,45 @@
     color: var(--text);
     background: var(--surface);
   }
+
+  // The props table: Storybook paints the cells white and the header a fixed grey.
+  .docblock-argstable {
+    th {
+      color: var(--text-muted);
+
+      span {
+        color: inherit;
+      }
+    }
+
+    td {
+      color: var(--text);
+      background: var(--surface);
+
+      // Type pills, inline code and descriptions carry their own fixed grey.
+      :is(div, span, code, p) {
+        color: inherit;
+      }
+    }
+  }
+}
+
+// The boolean control is a switch with a fixed light track, a white selected pill and a 50%
+// transparent unselected label (2.75:1). Re-skin it with tokens so both labels are readable.
+.sbdocs input[role='switch'] {
+  & ~ span[aria-hidden='true'] {
+    color: var(--text);
+  }
+
+  &:not(:checked) ~ span[aria-hidden='true']:first-of-type,
+  &:checked ~ span[aria-hidden='true']:last-of-type {
+    color: var(--text);
+    background: var(--surface);
+  }
+}
+
+.sbdocs label:has(> input[role='switch']) {
+  background: var(--surface-pressed);
 }
 
 .fd-page {
