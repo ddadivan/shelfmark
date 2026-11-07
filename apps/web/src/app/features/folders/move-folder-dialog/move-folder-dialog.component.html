@@ -1,0 +1,25 @@
+<form [formRoot]="form">
+  <ui-dialog
+    [title]="'folders.move.title' | transloco: { name: data.folder.name }"
+    [closeLabel]="'folders.dialog.close' | transloco"
+  >
+    <div class="move-folder__fields">
+      <ui-select
+        [label]="'folders.move.label' | transloco"
+        [options]="options()"
+        [emptyLabel]="'folders.move.topLevel' | transloco"
+        [searchLabel]="'folders.move.searchLabel' | transloco"
+        [noResultsLabel]="'folders.move.noResults' | transloco"
+        searchable
+        [formField]="form.parentId"
+      />
+    </div>
+
+    <ui-button slot="footer" (click)="cancel()">{{
+      'folders.dialog.cancel' | transloco
+    }}</ui-button>
+    <ui-button slot="footer" [type]="BUTTON_TYPE.Submit" [variant]="BUTTON_VARIANT.Primary">{{
+      'folders.move.action' | transloco
+    }}</ui-button>
+  </ui-dialog>
+</form>
