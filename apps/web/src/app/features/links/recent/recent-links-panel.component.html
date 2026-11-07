@@ -1,0 +1,32 @@
+<section
+  class="recent"
+  [attr.aria-labelledby]="'recent-title'"
+  [attr.aria-busy]="!store.recentLoaded()"
+>
+  <h2 id="recent-title" class="recent__title">{{ 'links.recent.title' | transloco }}</h2>
+  @if (!store.recentLoaded()) {
+    <div class="recent__list">
+      <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="SKELETON_COUNT" />
+    </div>
+  } @else if (store.recent().length === 0) {
+    <p class="recent__empty">{{ 'links.recent.empty' | transloco }}</p>
+  } @else {
+    <ul class="recent__list">
+      @for (link of store.recent(); track link.id) {
+        <li>
+          <ui-list-item
+            compact
+            newTab
+            [href]="safeHref(link.url)"
+            [description]="'links.item.opensInNewTab' | transloco"
+            (activated)="actions.open(link)"
+          >
+            <ui-favicon slot="leading" [letter]="siteLetter(link.url)" />
+            <span slot="title">{{ link.title }}</span>
+            <span slot="meta">{{ linkHost(link.url) }}</span>
+          </ui-list-item>
+        </li>
+      }
+    </ul>
+  }
+</section>

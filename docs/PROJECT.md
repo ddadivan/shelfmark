@@ -524,18 +524,18 @@ All routes except `/api/auth/*` require a session and work only with the current
 | GET | `/api/me` | Current user |
 | DELETE | `/api/me` | Delete the account and all data |
 | POST | `/api/links/preview` | For a URL, return title, icon, image + the existing link if it is a duplicate (for form autofill) |
-| GET | `/api/links` | List with filters: `folderId`, `unsorted`, `favorite`, `tag`, `q` (search), `sort` (`createdAt` / `title`), `order`, `cursor`, `limit` |
+| GET | `/api/links` | List with filters: `folderId`, `unsorted`, `favorite`, `tag` (repeated, `?tag=a&tag=b`: AND, case-insensitive, max 5, more is a 400; empty or absent = no filter), `q` (search), `sort` (`createdAt` / `title`), `order`, `cursor`, `limit` |
 | GET | `/api/links/recent` | Recently opened (by `lastOpenedAt`), `limit` |
 | GET | `/api/links/:id` | One link |
 | POST | `/api/links` | Create: `url`, `title?`, `note?`, `folderId?`, `tags?` (names; new tags are created automatically) |
 | PATCH | `/api/links/:id` | Change any fields, including `isFavorite` and `folderId` |
 | POST | `/api/links/:id/open` | Record an open (updates `lastOpenedAt`) |
 | DELETE | `/api/links/:id` | Delete |
-| GET | `/api/folders` | All folders as a flat list (`parentId` + link count); the frontend builds the tree |
-| POST | `/api/folders` | Create: `name`, `parentId?` |
+| GET | `/api/folders` | All folders as a flat list ordered by name (`parentId` + direct link count) plus `counts` (`all`, `unsorted`, `favorites`) for the fixed sidebar rows; the frontend builds the tree |
+| POST | `/api/folders` | Create: `name`, `parentId?`; 409 at the per-user cap (500 folders) |
 | PATCH | `/api/folders/:id` | Rename / move; moving into itself or its own subfolder is forbidden |
 | DELETE | `/api/folders/:id?mode=` | Delete a folder with all subfolders; `mode=delete-links` also deletes the links, `mode=move-to-unsorted` moves them to "Unsorted" |
-| GET, POST, PATCH /:id, DELETE /:id, POST /:id/merge | `/api/tags` | The user's tags with link counts; create an empty tag, rename (409 if the name is taken), delete (links remain), merge with another tag |
+| GET, POST, PATCH /:id, DELETE /:id, POST /:id/merge | `/api/tags` | The user's tags with link counts, sorted by link count descending, then name; create an empty tag (409 if the name is taken or at the per-user cap of 1000), rename (409 if the name is taken; changing only the case of its own name is allowed), delete (links remain), merge with another tag (merging into itself is a 400). Names are normalized with `normalizeTagName` (trim, whitespace runs become one hyphen) on create and rename |
 
 **General API rules:**
 
@@ -545,7 +545,7 @@ All routes except `/api/auth/*` require a session and work only with the current
 
 **Additionally:** `PATCH /api/me` with `{ onboardingCompleted: true | false }` marks onboarding as completed or resets it ("Show onboarding again"); `GET /api/me` returns `onboardingCompletedAt`.
 
-**Demo, export, PWA:** `POST /api/demo` creates a demo sandbox and session (strict per-IP rate limit); `GET /api/export?format=json|html` (+ optional `folderId`, `tag`, `q`, the same filters as the list) downloads the current folder or all data; receiving a link from the "Share" menu (Web Share Target) needs no separate endpoint: the manifest opens the `/share?url=…` route (GET), and the page saves via `POST /api/links`.
+**Demo, export, PWA:** `POST /api/demo` creates a demo sandbox and session (strict per-IP rate limit); `GET /api/export?format=json|html` (+ optional `folderId`, `tag` (repeated, same AND semantics as the list), `q`, the same filters as the list) downloads the current folder or all data; receiving a link from the "Share" menu (Web Share Target) needs no separate endpoint: the manifest opens the `/share?url=…` route (GET), and the page saves via `POST /api/links`.
 
 **App rating:** `GET /api/me` returns `ratingPrompt: 'day3' | 'week1' | 'month1' | 'year1' | null`, which dialog to show now (computed by the backend from `createdAt` and the `Feedback` table); `POST /api/feedback` `{ milestone, score | null, comment? }` saves a rating, feedback or a skip; resubmitting for the same milestone appends to the comment. Rate-limited; the feedback text is stored as is and rendered only as text (no HTML).
 
