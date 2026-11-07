@@ -31,8 +31,58 @@
   border-radius: var(--radius-full);
 }
 
-:host(.ui-chip--removable) .ui-chip__body {
+:host(.ui-chip--removable) .ui-chip__body,
+:host(.ui-chip--menu) .ui-chip__body {
   padding-right: var(--space-1);
+}
+
+// Trailing "..." button. On hover-capable pointers it is clipped away (not `opacity`, not
+// `visibility`: it keeps its width, so nothing shifts, and stays focusable) until the chip is
+// hovered or has focus inside, or the button itself has keyboard focus. While clipped it takes
+// no pointer events, so its hit area never catches a click at the end of the chip. On touch it
+// is always shown, with a wider box so the 44px target does not overlap the remove button.
+.ui-chip__menu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  padding: 0 var(--space-1);
+  color: inherit;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-full);
+
+  // The right side (physical inset) stops at the button edge: the remove button or the chip end is next.
+  @include hit-area(-6px 0 -6px -4px, -14px 0 -14px -4px);
+
+  @media (hover: hover) {
+    pointer-events: none;
+    clip-path: inset(50%);
+  }
+
+  @include coarse {
+    padding: 0 rem(12px);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+@media (hover: hover) {
+  :host(.ui-chip--menu:hover) .ui-chip__menu,
+  :host(.ui-chip--menu:focus-within) .ui-chip__menu,
+  .ui-chip__menu:focus-visible {
+    pointer-events: auto;
+    clip-path: none;
+  }
+}
+
+// Menu first, then remove: the remove hit area stops at its own edge, so a tap between the
+// glyphs can never reach the destructive button.
+:host(.ui-chip--menu) .ui-chip__remove {
+  @include hit-area(-6px -3px -6px 0, -14px -3px -14px 0);
 }
 
 button.ui-chip__body {
@@ -86,6 +136,7 @@ button.ui-chip__body {
   opacity: 0.5;
 
   .ui-chip__body,
+  .ui-chip__menu,
   .ui-chip__remove {
     cursor: not-allowed;
   }
