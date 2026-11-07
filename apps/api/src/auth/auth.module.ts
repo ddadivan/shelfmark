@@ -12,7 +12,8 @@ import { warnMissingProviders } from './warn-missing-providers';
  *   call `enableCors` for the trusted origins.
  * - Body parsers off: `configureApp` already installs the 100kb JSON parser with its 400/413
  *   mapping, and Better Auth reads the parsed body.
- * - `disableGlobalAuthGuard`: the global session guard comes with #65.
+ * - `disableGlobalAuthGuard`: turns off the integration's own guard; `SessionAuthGuard` is the
+ *   global guard, registered in `AppModule` (ADR 0029). It never sees `/api/auth/*` (mounted outside Nest's router).
  * Not `disableControllers`: despite its name it also turns off the middleware that mounts the router.
  * Auth responses bypass `ValidationPipe` and `AllExceptionsFilter`: errors keep Better Auth's
  * `{ code, message }` shape.
@@ -22,7 +23,7 @@ import { warnMissingProviders } from './warn-missing-providers';
     BetterAuthModule.forRootAsync({
       imports: [PrismaModule],
       inject: [PrismaService],
-      // Global so #65 can inject `AuthService` (the guard reads sessions through it) anywhere.
+      // Global so `SessionAuthGuard` (and later modules) can inject `AuthService`.
       isGlobal: true,
       disableGlobalAuthGuard: true,
       useFactory: (prisma: PrismaService) => {

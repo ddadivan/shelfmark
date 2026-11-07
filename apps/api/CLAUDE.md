@@ -22,8 +22,9 @@ NestJS REST API, mounted under `/api` (port 3000). Source of truth: `docs/PROJEC
 - `scripts/` - `local-db.mjs` (PGlite + socket server, runs a command with the database URLs set), `db-check.mjs`, `migrate-deploy.mjs` (Vercel build only: production of `main` or preview). The persistent data dir `tmp/pglite/api` is locked by a pid file (`.lock`): one process at a time; the shadow database starts only with `--shadow`.
 - `test-utils/test-database.ts` - per test file in-memory PGlite with all migrations applied (`createTestDatabase()`, `truncateAll()`, `close()`).
 - `test-utils/auth-test-app.ts`, `oauth-provider-stub.ts`, `sign-in-as.ts` - auth harness: `createAuthTestApp()` boots `AppModule` on PGlite with per-run random secrets; `stubOAuthProviders()` fakes GitHub/Google on `globalThis.fetch` (any other URL throws); `signInAs(app, baseUrl, { email, name, provider? })` drives the real flow and returns `{ userId, cookie }`: call it twice for the two users of a data-isolation test.
-- `src/auth/` - Better Auth on `/api/auth/*` (ADR 0027): `auth.module.ts` (community Nest integration, no CORS, our JSON parser, no global guard until #65), `create-auth.ts` (factory from `AuthConfig` + the Prisma client), `strip-oauth-tokens.ts` (provider tokens are never stored), `to-auth-session-response.ts` (HTTP `get-session` returns only the contract), `auth-logger.ts` (message only), `auth-allow-list.middleware.ts` + `models/allowed-auth-route.const.ts` (allow-list in `configureApp`: only POST sign-in/social, GET callback/{google,github}, GET get-session, POST sign-out reach Better Auth; everything else under `/api/auth` is 404) and `models/disabled-auth-path.const.ts` (second layer). Auth responses bypass `ValidationPipe` and `AllExceptionsFilter`: errors there are Better Auth's `{ code, message }`, not `ApiError`.
-- `src/common/` - cross-cutting pieces (request id, error filter, `@AllowAnonymous`).
+- `test-utils/isolation/` - data-isolation harness (ADR 0029): `createIsolationUsers`, `asUser` / `anonymous`, `expectIsolated`, plus test-only `NotesFixtureModule` and `LeakyNotesFixtureModule` (pass them as `createAuthTestApp({ imports })`, never into `AppModule`).
+- `src/auth/` - Better Auth on `/api/auth/*` (ADR 0027): `auth.module.ts` (community Nest integration, no CORS, our JSON parser, its own guard off; `SessionAuthGuard` is registered as `APP_GUARD` in `AppModule`, where the throttler of #123 goes before it), `session-auth.guard.ts` (public check first, read-only session lookup, 4xx to 401, ADR 0029), `create-auth.ts` (factory from `AuthConfig` + the Prisma client), `strip-oauth-tokens.ts` (provider tokens are never stored), `to-auth-session-response.ts` (HTTP `get-session` returns only the contract), `auth-logger.ts` (message only), `auth-allow-list.middleware.ts` + `models/allowed-auth-route.const.ts` (allow-list in `configureApp`: only POST sign-in/social, GET callback/{google,github}, GET get-session, POST sign-out reach Better Auth; everything else under `/api/auth` is 404) and `models/disabled-auth-path.const.ts` (second layer). Auth responses bypass `ValidationPipe` and `AllExceptionsFilter`: errors there are Better Auth's `{ code, message }`, not `ApiError`.
+- `src/common/` - cross-cutting pieces (request id, error filter, `auth/`: `@AllowAnonymous`, `@CurrentUser()` in `current-user.decorator.ts`, `models/public-route.const.ts` = `PUBLIC_ROUTES`, the only allowed public routes; `scan-routes.ts` + `route-protection.spec.ts` enforce it).
 - `src/<domain>/` - one module per domain (`auth`, `users`, `links`, `folders`, `tags`, `metadata`, ...) with `*.module.ts`, `*.controller.ts`, `*.service.ts`, `dto/`.
 
 ## Rules
@@ -32,9 +33,10 @@ NestJS REST API, mounted under `/api` (port 3000). Source of truth: `docs/PROJEC
 - Contracts: `import type` for shapes. A runtime import (`AUTH_PROVIDER`, `AUTH_ENDPOINT`) works because `webpack.config.js` and `vitest.config.mts` alias `@shelfmark/contracts` to the lib source.
 - Controllers are thin; logic lives in services.
 - Never use `import type` for injectables (controller/service constructor parameters): it erases decorator metadata and breaks DI.
-- From stage 2 every query on user data filters by `userId` from the session; a foreign or missing object is 404, never 403. Every user-owned resource gets a data-isolation test.
+- Every query on user data filters by `userId` from `@CurrentUser()` (`user.id`), never from body, params or query; a foreign or missing object is 404, never 403. Every user-owned resource gets a data-isolation test (`expectIsolated`, see Testing conventions).
+- Every route is closed by default (`SessionAuthGuard`). The integration's package is imported only in `src/auth/**` and `src/common/auth/**` (ESLint); feature modules use `@CurrentUser()` and `@AllowAnonymous()` from `src/common/auth`. No state-changing `GET` (SameSite=Lax cookies ride along on top-level cross-site GETs).
 - Errors always use `ApiError` (`{ statusCode, error, message, requestId }`), no stack traces. Validation errors have `message: string[]`.
-- `@AllowAnonymous()` is the integration's decorator (key `PUBLIC`) and must be justified in the PR description and in a comment at the use site. It is a NO-OP until the global AuthGuard (#65) exists; all non-auth routes are currently public.
+- `@AllowAnonymous()` is the integration's decorator (key `PUBLIC`). A new public route needs an entry in `PUBLIC_ROUTES`, a comment at the use site and a justification in the PR description; never on a controller class, never `@OptionalAuth()`.
 - `NODE_ENV` is fail-safe: only an explicit `development` or `test` is non-production (unset means production). Non-production drops HSTS and `upgrade-insecure-requests` from helmet; `nx serve` sets `NODE_ENV=development`.
 - 5xx responses never carry internal messages (generic text); the cause and stack are logged server-side only.
 - No CORS: the API is same-origin (web dev proxy `/api` -> `http://localhost:3000`).
@@ -43,7 +45,7 @@ NestJS REST API, mounted under `/api` (port 3000). Source of truth: `docs/PROJEC
 ## Security
 
 - Never read or create `.env*` files; configuration comes from the platform environment.
-- Auth: never set Better Auth's `disableCSRFCheck` or `skipStateCookieCheck`, and never `disableOriginCheck: true` (`createAuth` sets it to `false` explicitly); it skips those checks under `NODE_ENV=test` or a truthy `TEST`, so `vitest.setup.ts` runs specs as `development` without `TEST` and `readAuthConfig` refuses `TEST` in production. Cookies are `SameSite=Lax` (the OAuth callback is a cross-site top-level GET), `Secure` + `__Secure-` exactly when `isProduction`. Never log Better Auth's extra logger arguments (they can hold tokens). A new Better Auth route needs an entry in `ALLOWED_AUTH_ROUTES` on purpose; #65 enables the global guard (`disableGlobalAuthGuard` goes away) and `AllowAnonymous` already uses the right key. The built-in rate limiter is per instance and production-only until `@nestjs/throttler`.
+- Auth: never set Better Auth's `disableCSRFCheck` or `skipStateCookieCheck`, and never `disableOriginCheck: true` (`createAuth` sets it to `false` explicitly); it skips those checks under `NODE_ENV=test` or a truthy `TEST`, so `vitest.setup.ts` runs specs as `development` without `TEST` and `readAuthConfig` refuses `TEST` in production. Cookies are `SameSite=Lax` (the OAuth callback is a cross-site top-level GET), `Secure` + `__Secure-` exactly when `isProduction`. Never log Better Auth's extra logger arguments (they can hold tokens). A new Better Auth route needs an entry in `ALLOWED_AUTH_ROUTES` on purpose. `disableGlobalAuthGuard: true` stays: it switches off the integration's guard in favour of ours. The built-in rate limiter is per instance and production-only until `@nestjs/throttler` (#123).
 - Never log secrets, tokens, request bodies or personal data. The error filter logs only method, path, status and request id.
 - Outbound HTTP (link previews) only through the SSRF-safe fetcher (http/https, private IPs blocked after DNS resolve, timeout, size and redirect limits, no cookies).
 - Prisma with parameterised queries only; never `$queryRawUnsafe` / `$executeRawUnsafe` (ESLint forbids both).
@@ -75,3 +77,21 @@ npx nx run-many -t lint typecheck test build -p api contracts
 - Specs sit next to the code (`*.spec.ts`).
 - Integration tests build the app with `createApp()` (or `Test.createTestingModule` + `configureApp`) and call it with Supertest; close the app in `afterAll`.
 - Unit-test pure helpers and filters directly; no network, no real database in unit tests. Database tests use `createTestDatabase()` (in-memory PGlite, no Docker); every user-owned resource needs a data-isolation test against it.
+- Data isolation: `createAuthTestApp({ imports: [FixtureModule] })`, `createIsolationUsers(t)` and `expectIsolated(app, users, scenario)` from `test-utils/isolation`. Example:
+
+```ts
+const users = await createIsolationUsers(t);
+await expectIsolated(t.app, users, {
+  create: async (a) =>
+    (await a.post('/api/links').send({ url: 'https://example.com' }).expect(201)).body.id,
+  read: (u, id) => u.get(`/api/links/${id}`),
+  update: (u, id) => u.patch(`/api/links/${id}`).send({ title: 'x' }),
+  remove: (u, id) => u.delete(`/api/links/${id}`),
+  list: {
+    request: (u) => u.get('/api/links'),
+    ids: (b) => (b as ListLinksResponse).items.map((l) => l.id),
+  },
+  reference: (u, id) => u.post('/api/links').send({ url: 'https://example.com', folderId: id }),
+  // or skip: { reference: 'reason' } (update, remove, list, reference: provide or skip with a reason)
+});
+```

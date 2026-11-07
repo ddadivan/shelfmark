@@ -6,6 +6,7 @@ import { authAllowListMiddleware } from '../auth/auth-allow-list.middleware';
 import { AllExceptionsFilter } from '../common/errors/all-exceptions.filter';
 import { requestIdMiddleware } from '../common/request-id/request-id.middleware';
 import type { ConfigureAppOptions } from './configure-app-options.interface';
+import { API_GLOBAL_PREFIX } from './models/api-global-prefix.const';
 
 /** Shared setup for the real server, tests and the future Vercel handler. */
 export function configureApp(app: NestExpressApplication, options: ConfigureAppOptions): void {
@@ -26,7 +27,7 @@ export function configureApp(app: NestExpressApplication, options: ConfigureAppO
   // Before the body parsers and the Better Auth router: only the four named auth routes get through.
   app.use(authAllowListMiddleware);
   app.useBodyParser('json', { limit: '100kb' });
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix(API_GLOBAL_PREFIX);
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

@@ -34,7 +34,7 @@ A task is not done until every item that applies to it is checked. Reviewers cit
 - [ ] Cookies httpOnly + Secure + SameSite
 - [ ] Origin checked on state-changing requests
 - [ ] Limited session lifetime; sign-out invalidates the session server-side
-- [ ] Global auth guard; `@AllowAnonymous()` only on intended routes
+- [ ] Global `SessionAuthGuard`; `@AllowAnonymous()` only on handlers listed in `PUBLIC_ROUTES`; `@CurrentUser()` for the owner; `expectIsolated` test per user-owned resource
 
 ## 5. Input validation
 
