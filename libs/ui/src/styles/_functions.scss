@@ -1,6 +1,22 @@
+@use 'sass:list';
 @use 'sass:math';
 
 // Converts a design pixel value to rem (16px = 1rem). Usage: rem(24px).
 @function rem($px) {
   @return math.div($px, 16px) * 1rem;
+}
+
+// Converts a space-separated list of px values (as in `inset` or `margin`) to rem; 0 stays 0.
+@function rem-list($values) {
+  $out: ();
+
+  @each $value in $values {
+    @if $value == 0 {
+      $out: list.append($out, 0, space);
+    } @else {
+      $out: list.append($out, rem($value), space);
+    }
+  }
+
+  @return $out;
 }

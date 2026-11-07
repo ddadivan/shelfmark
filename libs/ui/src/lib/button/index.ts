@@ -2,6 +2,8 @@ export { ButtonComponent } from './button.component';
 export { BUTTON_HASPOPUP } from './models/button-haspopup.const';
 export type { ButtonHaspopup } from './models/button-haspopup.type';
 export type { ButtonPressed } from './models/button-pressed.type';
+export { BUTTON_HIT_AREA } from './models/button-hit-area.const';
+export type { ButtonHitArea } from './models/button-hit-area.type';
 export { BUTTON_SIZE } from './models/button-size.const';
 export type { ButtonSize } from './models/button-size.type';
 export { BUTTON_TYPE } from './models/button-type.const';
