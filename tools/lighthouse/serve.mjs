@@ -1,7 +1,8 @@
 // Static SPA server for the Lighthouse run: serves the `e2e` build like production does, with
 // brotli / gzip responses (Vercel compresses; the plain file server sends raw bytes, which makes
 // the simulated 4G load look about 3x heavier than it is). Adds no other headers: the CSP lives in
-// the Vercel middleware, not in the static files. Listens on loopback only. Usage: node tools/lighthouse/serve.mjs <dir> <port>
+// the Vercel middleware, not in the static files. Listens on loopback only.
+// Usage: node tools/lighthouse/serve.mjs <dir> <port>
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { extname, join, normalize, resolve, sep } from 'node:path';

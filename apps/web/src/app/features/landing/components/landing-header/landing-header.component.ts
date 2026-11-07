@@ -17,7 +17,11 @@ export class LandingHeaderComponent {
   /** The visitor asked for "How it's built"; the page loads the deferred sections and scrolls. */
   readonly howItsBuiltRequested = output<void>();
 
-  protected onHowItsBuilt(event: Event): void {
+  protected onHowItsBuilt(event: MouseEvent): void {
+    // Open-in-new-tab gestures keep the plain link: `/#how` then loads the page with the hash.
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {
+      return;
+    }
     // The target may not be rendered yet (deferred); the page scrolls once it is.
     event.preventDefault();
     this.howItsBuiltRequested.emit();
