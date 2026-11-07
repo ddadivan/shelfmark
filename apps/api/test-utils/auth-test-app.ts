@@ -1,7 +1,8 @@
 import { randomBytes } from 'node:crypto';
 import { ExpressAdapter, type NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
-import { getOptionsToken } from '@nestjs/throttler';
+import { getOptionsToken, ThrottlerStorage } from '@nestjs/throttler';
+import { ResettableThrottlerStorage } from './resettable-throttler-storage';
 import { createRateLimitOptions } from '../src/common/rate-limit/rate-limit-options';
 import { AppModule } from '../src/app/app.module';
 import { configureApp } from '../src/app/configure-app';
@@ -63,6 +64,8 @@ export async function createAuthTestApp(options: AuthTestAppOptions = {}): Promi
       .overrideProvider(PrismaService)
       .useValue(db.prisma)
       // Every request of a spec comes from one address: one default bucket would trip on long scenarios.
+      .overrideProvider(ThrottlerStorage)
+      .useValue(new ResettableThrottlerStorage())
       .overrideProvider(getOptionsToken())
       .useValue(createRateLimitOptions(true, options.defaultRateLimit ?? UNLIMITED_RATE_LIMIT));
     for (const override of options.overrides ?? []) {

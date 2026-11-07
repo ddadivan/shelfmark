@@ -1,25 +1,12 @@
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { ThrottlerStorage } from '@nestjs/throttler';
+import { ResettableThrottlerStorage } from './resettable-throttler-storage';
 
-function clearMap(owner: object, property: string): void {
-  const value: unknown = Reflect.get(owner, property);
-  if (!(value instanceof Map)) {
-    throw new Error(`The throttler storage has no in-memory "${property}"`);
-  }
-  value.clear();
-}
-
-/**
- * Forgets every rate-limit counter of the test app. Per-route presets (`RATE_LIMIT.AddLink`,
- * `Preview`) are fixed by the route decorators, so a spec that sends many requests to such a route
- * calls this between tests instead of tripping the limit by accident. The in-memory storage keeps
- * its sliding window in a second private map, which has to be cleared as well.
- */
+/** Forgets every rate-limit counter of an app built by `createAuthTestApp`. */
 export function resetRateLimits(app: NestExpressApplication): void {
   const storage: unknown = app.get(ThrottlerStorage, { strict: false });
-  if (typeof storage !== 'object' || storage === null) {
-    throw new Error('The throttler storage is not available');
+  if (!(storage instanceof ResettableThrottlerStorage)) {
+    throw new Error('The app was not built by createAuthTestApp (no resettable throttler storage)');
   }
-  clearMap(storage, 'storage');
-  clearMap(storage, 'hitExpirations');
+  storage.reset();
 }

@@ -146,7 +146,7 @@ model Link {
   tags             LinkTag[]
 
   @@unique([userId, idempotencyKey])
-  @@index([userId, createdAt])
+  @@index([userId, createdAt, id])
   @@index([userId, normalizedUrl])
   @@index([userId, lastOpenedAt])
   @@index([userId, titleSortKey, id])

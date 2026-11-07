@@ -40,7 +40,9 @@ export class ListLinksQueryDto implements ListLinksQuery {
   @IsBoolean()
   unsorted?: boolean;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: 'true = only favorites, false = only links that are not favorites; omit for both',
+  })
   @IsOptional()
   @QueryBoolean()
   @IsBoolean()

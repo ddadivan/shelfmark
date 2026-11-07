@@ -257,7 +257,9 @@ describe('Library schema (links, folders, tags)', () => {
       SELECT indexname, indexdef FROM pg_indexes WHERE schemaname = 'public'`;
     const defs = rows.map((row) => row.indexdef);
     const has = (fragment: string) => defs.some((def) => def.includes(fragment));
-    expect(has('ON public.links USING btree (user_id, created_at)')).toBe(true);
+    expect(has('ON public.links USING btree (user_id, created_at, id)')).toBe(true);
+    expect(has('ON public.links USING btree (user_id, title_sort_key, id)')).toBe(true);
+    expect(has('(user_id, idempotency_key)')).toBe(true);
     expect(has('ON public.links USING btree (user_id, normalized_url)')).toBe(true);
     expect(has('ON public.links USING btree (user_id, last_opened_at)')).toBe(true);
     expect(has('ON public.folders USING btree (user_id, parent_id)')).toBe(true);

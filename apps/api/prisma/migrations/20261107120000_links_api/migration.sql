@@ -15,6 +15,11 @@ ALTER TABLE "links" ALTER COLUMN "title_sort_key" SET NOT NULL;
 -- CreateIndex
 CREATE UNIQUE INDEX "links_user_id_idempotency_key_key" ON "links"("user_id", "idempotency_key");
 
+-- Keyset paging by created_at needs the id tie-breaker in the index; it also serves everything the
+-- old (user_id, created_at) index served, so that one is replaced.
+CREATE INDEX "links_user_id_created_at_id_idx" ON "links"("user_id", "created_at", "id");
+DROP INDEX "links_user_id_created_at_idx";
+
 -- CreateIndex
 CREATE INDEX "links_user_id_title_sort_key_id_idx" ON "links"("user_id", "title_sort_key", "id");
 

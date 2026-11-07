@@ -1,4 +1,6 @@
-import { normalizeUrl } from './normalize-url';
+// The implementation lives in the contracts library (shared with the web app), which has no test
+// runner of its own: its regression tests run here.
+import { normalizeUrl } from '@shelfmark/contracts';
 
 describe('normalizeUrl', () => {
   it.each([
