@@ -1,94 +1,42 @@
+/**
+ * Route protection (ADR 0029). The scan runs on `AppModule` plus the test-only `NotesFixtureModule`:
+ * the real application has a single route today (`GET /api/health`), so the fixture gives the
+ * behavioural sweep guarded routes to check. A second scan of the real Express router stack makes
+ * sure no reachable Nest route escapes the scanned set. The negative tests at the end prove the
+ * scanner itself reports each kind of violation, using throwaway controllers.
+ */
 import { randomUUID } from 'node:crypto';
-import { PATH_METADATA, METHOD_METADATA, ROUTE_ARGS_METADATA } from '@nestjs/common/constants';
-import { RequestMethod } from '@nestjs/common';
-import { DiscoveryService, MetadataScanner } from '@nestjs/core';
-import { AuthService } from '@thallesp/nestjs-better-auth';
+import { All, Controller, Get, Post } from '@nestjs/common';
+import { DiscoveryModule } from '@nestjs/core';
+import { Test } from '@nestjs/testing';
+import { AUTH_ENDPOINT } from '@shelfmark/contracts';
+import { AuthService, OptionalAuth } from '@thallesp/nestjs-better-auth';
 import request from 'supertest';
 import { createAuthTestApp } from '../../../test-utils/auth-test-app';
 import { createIsolationUsers } from '../../../test-utils/isolation/create-isolation-users';
 import { NotesFixtureModule } from '../../../test-utils/isolation/notes-fixture.module';
 import type { AuthTestApp } from '../../../test-utils/models/auth-test-app.interface';
 import type { IsolationUsers } from '../../../test-utils/models/isolation-users.interface';
-import { AUTH_ENDPOINT } from '@shelfmark/contracts';
-import { currentUserFactory } from './current-user.decorator';
-import { AUTH_METADATA_KEY } from './models/auth-metadata-key.const';
+import { AllowAnonymous } from './allow-anonymous.decorator';
+import { CurrentUser } from './current-user.decorator';
+import { HTTP_METHOD } from './models/http-method.const';
+import type { HttpMethod } from './models/http-method.type';
+import type { RouteScan } from './models/route-scan.interface';
 import { PUBLIC_ROUTES } from './models/public-route.const';
+import { expressRouteKeys, findRouteViolations, scanRoutes } from './scan-routes';
 
-interface FoundRoute {
-  key: string;
-  method: string;
-  path: string;
-  isPublic: boolean;
-  usesCurrentUser: boolean;
-}
-
-function joinPath(...parts: string[]): string {
-  const joined = parts
-    .map((part) => part.replace(/^\/+|\/+$/g, ''))
-    .filter(Boolean)
-    .join('/');
-  return `/${joined}`;
-}
-
-function firstPath(value: unknown): string {
-  if (Array.isArray(value)) return typeof value[0] === 'string' ? value[0] : '';
-  return typeof value === 'string' ? value : '';
-}
-
-function usesCurrentUser(controller: object, method: string): boolean {
-  const args: unknown = Reflect.getMetadata(ROUTE_ARGS_METADATA, controller.constructor, method);
-  return (
-    typeof args === 'object' &&
-    args !== null &&
-    Object.values(args).some((arg) => Reflect.get(arg as object, 'factory') === currentUserFactory)
-  );
+function violationsOf(scan: RouteScan, tag: string): string[] {
+  return findRouteViolations(scan).filter((v) => v.startsWith(`${tag}:`));
 }
 
 describe('route protection', () => {
   let t: AuthTestApp;
   let users: IsolationUsers;
-  let classes: { name: string; isPublic: boolean; isOptional: boolean }[];
-  let routes: FoundRoute[];
-  let optionalHandlers: string[];
+  let scan: RouteScan;
 
   beforeAll(async () => {
     t = await createAuthTestApp({ imports: [NotesFixtureModule] });
-    const discovery = t.app.get(DiscoveryService, { strict: false });
-    const scanner = t.app.get(MetadataScanner, { strict: false });
-    classes = [];
-    routes = [];
-    optionalHandlers = [];
-    for (const wrapper of discovery.getControllers()) {
-      const instance: unknown = wrapper.instance;
-      const metatype = wrapper.metatype;
-      if (typeof instance !== 'object' || instance === null || typeof metatype !== 'function') {
-        continue;
-      }
-      classes.push({
-        name: metatype.name,
-        isPublic: Reflect.getMetadata(AUTH_METADATA_KEY.Public, metatype) !== undefined,
-        isOptional: Reflect.getMetadata(AUTH_METADATA_KEY.Optional, metatype) !== undefined,
-      });
-      const base = firstPath(Reflect.getMetadata(PATH_METADATA, metatype));
-      for (const name of scanner.getAllMethodNames(Object.getPrototypeOf(instance))) {
-        const handler: unknown = Reflect.get(instance, name);
-        if (typeof handler !== 'function') continue;
-        const verb: unknown = Reflect.getMetadata(METHOD_METADATA, handler);
-        if (typeof verb !== 'number') continue;
-        const method = RequestMethod[verb];
-        const path = joinPath('api', base, firstPath(Reflect.getMetadata(PATH_METADATA, handler)));
-        if (Reflect.getMetadata(AUTH_METADATA_KEY.Optional, handler) !== undefined) {
-          optionalHandlers.push(`${method} ${path}`);
-        }
-        routes.push({
-          key: `${method} ${path}`,
-          method,
-          path,
-          isPublic: Reflect.getMetadata(AUTH_METADATA_KEY.Public, handler) !== undefined,
-          usesCurrentUser: usesCurrentUser(instance, name),
-        });
-      }
-    }
+    scan = scanRoutes(t.app);
     users = await createIsolationUsers(t);
   });
 
@@ -97,35 +45,43 @@ describe('route protection', () => {
   });
 
   it('finds the routes of the application', () => {
-    expect(routes.length).toBeGreaterThanOrEqual(1);
-    expect(routes.map((r) => r.key)).toContain('GET /api/health');
+    expect(scan.routes.map((r) => r.key)).toContain('GET /api/health');
+    expect(violationsOf(scan, 'no-routes')).toEqual([]);
+  });
+
+  it('has no violation at all', () => {
+    expect(findRouteViolations(scan)).toEqual([]);
   });
 
   it('opens exactly the routes listed in PUBLIC_ROUTES, each with a reason', () => {
-    const open = routes.filter((r) => r.isPublic).map((r) => r.key);
-    const listed = PUBLIC_ROUTES.map((r) => `${r.method} ${r.path}`);
-    expect(open.sort()).toEqual(listed.sort());
+    expect(violationsOf(scan, 'public-mismatch')).toEqual([]);
+    expect(violationsOf(scan, 'empty-reason')).toEqual([]);
     for (const entry of PUBLIC_ROUTES) expect(entry.reason.trim()).not.toBe('');
   });
 
-  it('never opens a whole controller', () => {
-    expect(classes.filter((c) => c.isPublic).map((c) => c.name)).toEqual([]);
-  });
-
-  it('never makes authentication optional', () => {
-    expect(classes.filter((c) => c.isOptional).map((c) => c.name)).toEqual([]);
-    expect(optionalHandlers).toEqual([]);
+  it('never opens a whole controller or makes authentication optional', () => {
+    expect(violationsOf(scan, 'public-class')).toEqual([]);
+    expect(violationsOf(scan, 'optional-class')).toEqual([]);
+    expect(violationsOf(scan, 'optional-route')).toEqual([]);
   });
 
   it('never reads the current user on a public route', () => {
-    expect(routes.filter((r) => r.isPublic && r.usesCurrentUser).map((r) => r.key)).toEqual([]);
+    expect(violationsOf(scan, 'current-user-on-public')).toEqual([]);
+  });
+
+  it('serves no Nest route through Express that the scan did not find', () => {
+    const scanned = new Set(scan.routes.map((r) => r.key));
+    const unscanned = expressRouteKeys(t.app).filter((key) => !scanned.has(key));
+    expect(unscanned).toEqual([]);
+    expect(expressRouteKeys(t.app)).toContain('GET /api/health');
   });
 
   describe('behaviour of every guarded route', () => {
-    const guarded = () => routes.filter((r) => !r.isPublic);
-    const call = (route: FoundRoute, cookie?: string) => {
-      const path = route.path.replace(/:[A-Za-z]+/g, randomUUID());
-      const verb = route.method.toLowerCase() as 'get' | 'post' | 'put' | 'patch' | 'delete';
+    const guarded = () => scan.routes.filter((r) => !r.isPublic);
+    const call = (key: string, cookie?: string) => {
+      const [method, rawPath] = key.split(' ');
+      const path = rawPath.replace(/:[A-Za-z]+/g, randomUUID());
+      const verb = method.toLowerCase() as Lowercase<HttpMethod>;
       const req = request(t.app.getHttpServer())[verb](path);
       return cookie === undefined ? req : req.set('Cookie', cookie);
     };
@@ -144,13 +100,13 @@ describe('route protection', () => {
     });
 
     it('answers 401 without a cookie', async () => {
-      for (const route of guarded()) expectUnauthorized(await call(route));
+      for (const route of guarded()) expectUnauthorized(await call(route.key));
     });
 
     it('answers 401 for a forged cookie', async () => {
       const name = users.owner.cookie.split('=')[0];
       for (const route of guarded()) {
-        expectUnauthorized(await call(route, `${name}=forged.value`));
+        expectUnauthorized(await call(route.key, `${name}=forged.value`));
       }
     });
 
@@ -161,7 +117,7 @@ describe('route protection', () => {
         .set('Origin', t.baseUrl)
         .set('Cookie', cookie)
         .expect(200);
-      for (const route of guarded()) expectUnauthorized(await call(route, cookie));
+      for (const route of guarded()) expectUnauthorized(await call(route.key, cookie));
     });
   });
 
@@ -176,5 +132,114 @@ describe('route protection', () => {
     } finally {
       getSession.mockRestore();
     }
+  });
+});
+
+describe('route scanner (negative tests)', () => {
+  @AllowAnonymous()
+  @Controller('bad-public-class')
+  class PublicClassController {
+    @Get()
+    read(): string {
+      return 'x';
+    }
+  }
+
+  @Controller('bad-optional')
+  class OptionalController {
+    @OptionalAuth()
+    @Get()
+    read(): string {
+      return 'x';
+    }
+  }
+
+  @Controller('bad-current-user')
+  class CurrentUserOnPublicController {
+    @AllowAnonymous()
+    @Get()
+    read(@CurrentUser() user: unknown): unknown {
+      return user;
+    }
+  }
+
+  @Controller(['multi-a', 'multi-b'])
+  class MultiPathController {
+    @Get(['one', 'two'])
+    read(): string {
+      return 'x';
+    }
+  }
+
+  @Controller('all-verbs')
+  class AllVerbsController {
+    @All()
+    any(): string {
+      return 'x';
+    }
+  }
+
+  @OptionalAuth()
+  @Controller('bad-optional-class')
+  class OptionalClassController {
+    @Post()
+    write(): string {
+      return 'x';
+    }
+  }
+
+  async function scanOf(...controllers: (new () => object)[]): Promise<RouteScan> {
+    const moduleRef = await Test.createTestingModule({
+      imports: [DiscoveryModule],
+      controllers,
+    }).compile();
+    try {
+      return scanRoutes(moduleRef);
+    } finally {
+      await moduleRef.close();
+    }
+  }
+
+  it('reports a public controller class', async () => {
+    const scan = await scanOf(PublicClassController);
+    expect(violationsOf(scan, 'public-class')).toEqual(['public-class: PublicClassController']);
+  });
+
+  it('reports an optional handler and an optional class', async () => {
+    const scan = await scanOf(OptionalController, OptionalClassController);
+    expect(violationsOf(scan, 'optional-route')).toEqual(['optional-route: GET /api/bad-optional']);
+    expect(violationsOf(scan, 'optional-class')).toEqual([
+      'optional-class: OptionalClassController',
+    ]);
+  });
+
+  it('reports @CurrentUser() on a public route and the unlisted public route', async () => {
+    const scan = await scanOf(CurrentUserOnPublicController);
+    expect(violationsOf(scan, 'current-user-on-public')).toEqual([
+      'current-user-on-public: GET /api/bad-current-user',
+    ]);
+    expect(violationsOf(scan, 'public-mismatch')).toContain(
+      'public-mismatch: GET /api/bad-current-user',
+    );
+  });
+
+  it('expands array paths of controller and handler as a cross product', async () => {
+    const scan = await scanOf(MultiPathController);
+    expect(scan.routes.map((r) => r.key).sort()).toEqual([
+      `${HTTP_METHOD.Get} /api/multi-a/one`,
+      `${HTTP_METHOD.Get} /api/multi-a/two`,
+      `${HTTP_METHOD.Get} /api/multi-b/one`,
+      `${HTTP_METHOD.Get} /api/multi-b/two`,
+    ]);
+  });
+
+  it('refuses @All()', async () => {
+    await expect(scanOf(AllVerbsController)).rejects.toThrow(/uses @All\(\)/);
+  });
+
+  it('reports an empty scan', () => {
+    expect(findRouteViolations({ controllers: [], routes: [] })).toContain(
+      'no-routes: nothing found',
+    );
   });
 });

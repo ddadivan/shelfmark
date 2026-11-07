@@ -2,6 +2,7 @@ import {
   type CanActivate,
   type ExecutionContext,
   Injectable,
+  ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
@@ -12,21 +13,26 @@ import type { AuthenticatedRequest } from '../common/auth/models/authenticated-r
 import { isRecord } from '../common/util/is-record';
 import { toAuthSessionResponse } from './to-auth-session-response';
 
-const CLIENT_ERROR_MAX = 499;
+/** Better Auth statuses that mean "no valid session". */
+const NO_SESSION_STATUSES: readonly number[] = [400, 401, 403];
+const TOO_MANY_REQUESTS = 429;
 
-function isClientError(error: unknown): boolean {
+function statusOf(error: unknown): number | undefined {
   const status = isRecord(error) ? error['statusCode'] : undefined;
-  return typeof status === 'number' && status >= 400 && status <= CLIENT_ERROR_MAX;
+  return typeof status === 'number' ? status : undefined;
 }
 
 /**
- * Global guard (ADR 0029): every route needs a valid session unless it carries `@AllowAnonymous()`.
+ * Global guard (ADR 0029): every route needs a valid session unless its handler carries
+ * `@AllowAnonymous()`.
+ * - The public marker is read from the handler only, so a class-level marker fails closed.
  * - The public check comes first, so public routes never touch the database.
  * - Read-only: `disableRefresh` keeps the sliding refresh with `GET /api/auth/get-session`, which
  *   sets the new cookie correctly.
  * - The raw session (token, IP, user agent) never lands on the request: only the contract shape.
- * - A Better Auth 4xx is a 401. Anything else (a database outage) is rethrown and becomes a
- *   generic 500, because the web signs the user out on 401.
+ * - Better Auth 400/401/403 is a 401. A 429 is a 503, so a throttled lookup does not sign the user
+ *   out. Anything else (a database outage, another status) is rethrown and the error filter answers
+ *   with that status or a generic 500, because the web signs the user out on 401.
  */
 @Injectable()
 export class SessionAuthGuard implements CanActivate {
@@ -36,9 +42,9 @@ export class SessionAuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const isPublic = this.reflector.getAllAndOverride<boolean | undefined>(
+    const isPublic = this.reflector.get<boolean | undefined>(
       AUTH_METADATA_KEY.Public,
-      [context.getHandler(), context.getClass()],
+      context.getHandler(),
     );
     if (isPublic) return true;
 
@@ -50,7 +56,11 @@ export class SessionAuthGuard implements CanActivate {
         query: { disableRefresh: true },
       });
     } catch (error) {
-      if (isClientError(error)) throw new UnauthorizedException();
+      const status = statusOf(error);
+      if (status !== undefined && NO_SESSION_STATUSES.includes(status)) {
+        throw new UnauthorizedException();
+      }
+      if (status === TOO_MANY_REQUESTS) throw new ServiceUnavailableException();
       throw error;
     }
     const auth = toAuthSessionResponse(raw);

@@ -1,7 +1,12 @@
-import { type ExecutionContext, UnauthorizedException } from '@nestjs/common';
-import type { Reflector } from '@nestjs/core';
-import type { AuthService } from '@thallesp/nestjs-better-auth';
+import {
+  type ExecutionContext,
+  ServiceUnavailableException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { AllowAnonymous, type AuthService } from '@thallesp/nestjs-better-auth';
 import type { AuthenticatedRequest } from '../common/auth/models/authenticated-request.interface';
+import type { SessionArgs } from './models/session-args.interface';
 import { SessionAuthGuard } from './session-auth.guard';
 
 const RAW_SESSION = {
@@ -14,18 +19,13 @@ const RAW_SESSION = {
   },
 };
 
-interface SessionArgs {
-  headers: Headers;
-  query: unknown;
-}
-
 function setup(options: { isPublic?: boolean; getSession?: () => Promise<unknown> } = {}) {
   const getSession = vi.fn((_args: SessionArgs) =>
     (options.getSession ?? (() => Promise.resolve(RAW_SESSION)))(),
   );
   const authService = { api: { getSession } } as unknown as AuthService;
   const reflector = {
-    getAllAndOverride: vi.fn(() => options.isPublic),
+    get: vi.fn(() => options.isPublic),
   } as unknown as Reflector;
   const request: AuthenticatedRequest = { headers: { cookie: 'a=b' } } as AuthenticatedRequest;
   const context = {
@@ -45,10 +45,30 @@ describe('SessionAuthGuard', () => {
     expect(request.auth).toBeUndefined();
   });
 
-  it('reads the PUBLIC key from handler and class', async () => {
+  it('reads the PUBLIC key from the handler only', async () => {
     const { guard, context, reflector } = setup();
     await guard.canActivate(context);
-    expect(reflector.getAllAndOverride).toHaveBeenCalledWith('PUBLIC', ['handler', 'class']);
+    expect(reflector.get).toHaveBeenCalledWith('PUBLIC', 'handler');
+  });
+
+  it('fails closed for a class-level @AllowAnonymous() without a handler marker', async () => {
+    @AllowAnonymous()
+    class OpenClass {
+      handler(): string {
+        return 'x';
+      }
+    }
+    const getSession = vi.fn(() => Promise.resolve(null));
+    const guard = new SessionAuthGuard(new Reflector(), {
+      api: { getSession },
+    } as unknown as AuthService);
+    const context = {
+      getHandler: () => OpenClass.prototype.handler,
+      getClass: () => OpenClass,
+      switchToHttp: () => ({ getRequest: () => ({ headers: {} }) }),
+    } as unknown as ExecutionContext;
+    await expect(guard.canActivate(context)).rejects.toBeInstanceOf(UnauthorizedException);
+    expect(getSession).toHaveBeenCalled();
   });
 
   it('reads the session read-only and from the request cookies', async () => {
@@ -78,10 +98,22 @@ describe('SessionAuthGuard', () => {
     },
   );
 
-  it('maps a Better Auth 4xx error to 401', async () => {
-    const apiError = Object.assign(new Error('x'), { status: 'UNAUTHORIZED', statusCode: 401 });
+  it.each([400, 401, 403])('maps a Better Auth %i error to 401', async (statusCode) => {
+    const apiError = Object.assign(new Error('x'), { status: 'UNAUTHORIZED', statusCode });
     const { guard, context } = setup({ getSession: () => Promise.reject(apiError) });
     await expect(guard.canActivate(context)).rejects.toBeInstanceOf(UnauthorizedException);
+  });
+
+  it('maps a throttled lookup (429) to 503, not to a sign-out', async () => {
+    const apiError = Object.assign(new Error('x'), { statusCode: 429 });
+    const { guard, context } = setup({ getSession: () => Promise.reject(apiError) });
+    await expect(guard.canActivate(context)).rejects.toBeInstanceOf(ServiceUnavailableException);
+  });
+
+  it('rethrows another 4xx so it keeps its own status', async () => {
+    const apiError = Object.assign(new Error('x'), { statusCode: 404 });
+    const { guard, context } = setup({ getSession: () => Promise.reject(apiError) });
+    await expect(guard.canActivate(context)).rejects.toBe(apiError);
   });
 
   it.each([

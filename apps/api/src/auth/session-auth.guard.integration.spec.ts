@@ -5,10 +5,10 @@ import { createAuthTestApp } from '../../test-utils/auth-test-app';
 import { createIsolationUsers } from '../../test-utils/isolation/create-isolation-users';
 import { NotesFixtureModule } from '../../test-utils/isolation/notes-fixture.module';
 import { asUser } from '../../test-utils/isolation/test-agent';
+import { FIXTURE_PATH } from '../../test-utils/models/fixture-path.const';
 import type { AuthTestApp } from '../../test-utils/models/auth-test-app.interface';
 import type { IsolationUsers } from '../../test-utils/models/isolation-users.interface';
 
-const WHO_AM_I = '/api/__fixture/whoami';
 const HOUR_MS = 60 * 60 * 1000;
 
 describe('SessionAuthGuard with a real session', () => {
@@ -32,7 +32,7 @@ describe('SessionAuthGuard with a real session', () => {
   });
 
   it('gives the handler the user of the session, never the token', async () => {
-    const res = await asUser(t.app, users.owner).get(WHO_AM_I).expect(200);
+    const res = await asUser(t.app, users.owner).get(FIXTURE_PATH.WhoAmI).expect(200);
     expect(res.body).toEqual({
       id: users.owner.userId,
       name: 'Owner',
@@ -51,7 +51,7 @@ describe('SessionAuthGuard with a real session', () => {
 
   it('reports isDemo for a demo user', async () => {
     await t.db.prisma.user.update({ where: { id: users.owner.userId }, data: { isDemo: true } });
-    const res = await asUser(t.app, users.owner).get(WHO_AM_I).expect(200);
+    const res = await asUser(t.app, users.owner).get(FIXTURE_PATH.WhoAmI).expect(200);
     expect((res.body as AuthUser).isDemo).toBe(true);
   });
 
@@ -60,7 +60,7 @@ describe('SessionAuthGuard with a real session', () => {
       where: { userId: users.owner.userId },
       data: { expiresAt: new Date(Date.now() - HOUR_MS) },
     });
-    await asUser(t.app, users.owner).get(WHO_AM_I).expect(401);
+    await asUser(t.app, users.owner).get(FIXTURE_PATH.WhoAmI).expect(401);
   });
 
   it('answers 401 with the old cookie after sign-out', async () => {
@@ -69,7 +69,7 @@ describe('SessionAuthGuard with a real session', () => {
       .set('Origin', t.baseUrl)
       .set('Cookie', users.owner.cookie)
       .expect(200);
-    await asUser(t.app, users.owner).get(WHO_AM_I).expect(401);
+    await asUser(t.app, users.owner).get(FIXTURE_PATH.WhoAmI).expect(401);
   });
 
   it('does not slide the session: only get-session does', async () => {
@@ -77,7 +77,7 @@ describe('SessionAuthGuard with a real session', () => {
     const inWindow = new Date(Date.now() + HOUR_MS);
     await t.db.prisma.session.updateMany({ where, data: { expiresAt: inWindow } });
 
-    await asUser(t.app, users.owner).get(WHO_AM_I).expect(200);
+    await asUser(t.app, users.owner).get(FIXTURE_PATH.WhoAmI).expect(200);
     const afterGuard = await t.db.prisma.session.findFirstOrThrow({ where });
     expect(afterGuard.expiresAt.getTime()).toBe(inWindow.getTime());
 
@@ -86,12 +86,24 @@ describe('SessionAuthGuard with a real session', () => {
     expect(afterGetSession.expiresAt.getTime()).toBeGreaterThan(inWindow.getTime());
   });
 
-  it('ignores a userId in the body: the owner is always the session user', async () => {
+  it('rejects a body with a userId (forbidNonWhitelisted)', async () => {
     const res = await asUser(t.app, users.owner)
-      .post('/api/__fixture/notes')
+      .post(FIXTURE_PATH.Notes)
       .send({ text: 'hello', userId: users.intruder.userId });
     expect(res.status).toBe(400);
-    const list = await asUser(t.app, users.intruder).get('/api/__fixture/notes').expect(200);
+    const list = await asUser(t.app, users.intruder).get(FIXTURE_PATH.Notes).expect(200);
     expect(list.body).toEqual({ items: [] });
+  });
+
+  it('owns a created note by the session user only', async () => {
+    const created = await asUser(t.app, users.owner)
+      .post(FIXTURE_PATH.Notes)
+      .send({ text: 'mine' })
+      .expect(201);
+    const id = (created.body as { id: string }).id;
+    const ownerList = await asUser(t.app, users.owner).get(FIXTURE_PATH.Notes).expect(200);
+    const intruderList = await asUser(t.app, users.intruder).get(FIXTURE_PATH.Notes).expect(200);
+    expect((ownerList.body as { items: { id: string }[] }).items.map((n) => n.id)).toEqual([id]);
+    expect(intruderList.body).toEqual({ items: [] });
   });
 });
