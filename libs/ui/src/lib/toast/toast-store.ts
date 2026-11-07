@@ -1,9 +1,9 @@
-import { ErrorHandler, inject, Service, signal } from '@angular/core';
+import { DestroyRef, ErrorHandler, inject, Service, signal } from '@angular/core';
+import { TOAST_CLOSE_REASON } from './models/toast-close-reason.const';
+import type { ToastCloseReason } from './models/toast-close-reason.type';
 import { TOAST_DURATION_MS } from './models/toast-duration.const';
 import type { ToastItem } from './models/toast-item.interface';
 import type { ToastOptions } from './models/toast-options.interface';
-import { TOAST_CLOSE_REASON } from './models/toast-close-reason.const';
-import type { ToastCloseReason } from './models/toast-close-reason.type';
 import { TOAST_KIND } from './models/toast-kind.const';
 
 /**
@@ -24,9 +24,21 @@ export class ToastStore {
   /** What to render: zero or one item. */
   readonly items = this.current.asReadonly();
 
+  constructor() {
+    // `closed` must never stay pending: settle what is left when the injector goes away.
+    inject(DestroyRef).onDestroy(() => {
+      clearTimeout(this.timer);
+      this.timer = undefined;
+      for (const id of [...this.resolvers.keys()]) {
+        this.resolve(id, TOAST_CLOSE_REASON.Dismissed);
+      }
+    });
+  }
+
   push(options: ToastOptions): ToastItem {
     const id = this.nextId++;
     const closed = new Promise<ToastCloseReason>((resolve) => this.resolvers.set(id, resolve));
+    // The previous toast is settled as `replaced` before `current.set` swaps it out.
     const previous = this.current()[0];
     if (previous) {
       this.resolve(previous.id, TOAST_CLOSE_REASON.Replaced);
@@ -77,14 +89,16 @@ export class ToastStore {
     }
   }
 
-  /** Runs the action (if any), then dismisses. An error goes to the `ErrorHandler`. */
+  /**
+   * Dismisses with `action` first, then runs the action (if any): an action that shows another
+   * toast must not turn this one into `replaced`. An error goes to the `ErrorHandler`.
+   */
   runAction(item: ToastItem): void {
+    this.dismiss(item.id, TOAST_CLOSE_REASON.Action);
     try {
       item.action?.run();
     } catch (error) {
       this.errorHandler.handleError(error);
-    } finally {
-      this.dismiss(item.id, TOAST_CLOSE_REASON.Action);
     }
   }
 

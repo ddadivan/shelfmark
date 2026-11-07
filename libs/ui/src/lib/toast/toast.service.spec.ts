@@ -277,6 +277,27 @@ describe('ToastService', () => {
       await expect(ref.closed).resolves.toBe(TOAST_CLOSE_REASON.Action);
     });
 
+    it('resolves with action when the action shows another toast', async () => {
+      const service = setup();
+      const ref = service.show({
+        text: 'Deleted',
+        action: { label: 'Undo', run: () => service.show({ text: 'Restored' }) },
+      });
+      render();
+      (toasts()[0].querySelector('button') as HTMLButtonElement).click();
+      render();
+      await expect(ref.closed).resolves.toBe(TOAST_CLOSE_REASON.Action);
+      expect(toasts().some((t) => t.textContent?.includes('Restored'))).toBe(true);
+    });
+
+    it('resolves a pending toast as dismissed when the injector is destroyed', async () => {
+      const service = setup();
+      const ref = service.show({ text: 'x' });
+      TestBed.resetTestingModule();
+      await expect(ref.closed).resolves.toBe(TOAST_CLOSE_REASON.Dismissed);
+      vi.advanceTimersByTime(10_000);
+    });
+
     it('resolves with timeout when the timer ends, after a pause too', async () => {
       const service = setup();
       const ref = service.show({ text: 'x' });
