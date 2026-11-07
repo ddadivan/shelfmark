@@ -1,14 +1,13 @@
 import { expect, test } from '@playwright/test';
 import { COLOR_SCHEME } from './models/color-scheme.const';
 import { expectNoBlockingViolations } from './support/axe';
-
-const HEADLINE = 'Paste a link. Find it again. Even in a year.';
+import { LANDING_HEADLINE } from './models/landing-headline.const';
 
 test.describe('landing', () => {
   test('a guest sees the headline and the sections in order', async ({ page }) => {
     await page.goto('/');
 
-    await expect(page.getByRole('heading', { level: 1, name: HEADLINE })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: LANDING_HEADLINE })).toBeVisible();
     await expect(page.getByRole('main')).toBeVisible();
     const headings = await page.getByRole('heading', { level: 2 }).allTextContents();
     expect(headings.map((text) => text.trim())).toEqual([
@@ -67,7 +66,7 @@ test.describe('landing', () => {
   test('has no horizontal scroll at 360px width', async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 780 });
     await page.goto('/');
-    await expect(page.getByRole('heading', { level: 1, name: HEADLINE })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: LANDING_HEADLINE })).toBeVisible();
 
     const overflow = await page.evaluate<number>(
       '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
@@ -94,7 +93,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
 
       test('chat state has no serious or critical axe violations', async ({ page }, testInfo) => {
         await page.goto('/');
-        await expect(page.getByRole('heading', { level: 1, name: HEADLINE })).toBeVisible();
+        await expect(page.getByRole('heading', { level: 1, name: LANDING_HEADLINE })).toBeVisible();
         await page.evaluate('document.fonts.ready.then(() => undefined)');
 
         await expectNoBlockingViolations(page, testInfo);
