@@ -1,4 +1,91 @@
-<section class="library">
-  <h1 class="library__title">{{ 'library.title' | transloco }}</h1>
-  <p class="library__hint">{{ 'library.placeholder' | transloco }}</p>
+<ui-progress-bar [active]="refetching()" [label]="'library.loading' | transloco" />
+<section class="library" [attr.aria-busy]="store.loading()">
+  <header class="library__toolbar">
+    <div class="library__heading">
+      <h1 class="library__title">{{ titleKey() | transloco }}</h1>
+      @if (showLinks()) {
+      <p class="library__count">
+        {{ (store.hasMore() ? 'library.countMore' : 'library.count') | transloco: { count:
+        store.count() } }}
+      </p>
+      }
+    </div>
+    @if (showLinks() && viewOptions(); as options) {
+    <ui-segmented-control
+      iconOnly
+      [options]="options"
+      [value]="ui.view()"
+      [ariaLabel]="'library.view.label' | transloco"
+      (valueChange)="setView($event)"
+    />
+    }
+  </header>
+
+  @if (failed()) {
+  <ui-empty-state
+    illustration="offline"
+    [heading]="'library.error.title' | transloco"
+    [text]="'library.error.text' | transloco"
+  >
+    <ui-button variant="primary" (click)="retry()">
+      {{ 'library.error.retry' | transloco }}
+    </ui-button>
+  </ui-empty-state>
+  } @else if (firstLoad()) { @if (ui.view() === UI_VIEW.List) {
+  <div class="library__rows">
+    <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="SKELETON_COUNT" />
+  </div>
+  } @else {
+  <div class="library__grid">
+    <ui-skeleton [shape]="SKELETON_SHAPE.Card" [count]="SKELETON_COUNT" />
+  </div>
+  } } @else if (empty()) {
+  <ui-empty-state
+    illustration="empty-feed"
+    [heading]="'library.empty.title' | transloco"
+    [text]="'library.empty.text' | transloco"
+  >
+    <ui-button variant="primary" iconLeft="add" (click)="actions.addLink()">
+      {{ 'library.empty.add' | transloco }}
+    </ui-button>
+  </ui-empty-state>
+  } @else if (showLinks()) { @if (ui.view() === UI_VIEW.List) {
+  <ul class="library__rows" [attr.aria-label]="'library.list.label' | transloco">
+    @for (link of store.entities(); track link.id) {
+    <li>
+      <app-link-row
+        [link]="link"
+        (opened)="actions.open(link)"
+        (favoriteToggled)="actions.toggleFavorite(link)"
+        (deleteRequested)="actions.delete(link)"
+      />
+    </li>
+    }
+  </ul>
+  } @else {
+  <ul class="library__grid" [attr.aria-label]="'library.list.label' | transloco">
+    @for (link of store.entities(); track link.id) {
+    <li>
+      <app-link-card
+        [link]="link"
+        (opened)="actions.open(link)"
+        (favoriteToggled)="actions.toggleFavorite(link)"
+        (deleteRequested)="actions.delete(link)"
+      />
+    </li>
+    }
+  </ul>
+  }
+
+  <ui-load-more [loading]="store.loadingMore()" [text]="'library.loadingMore' | transloco" />
+  @if (store.hasMore()) {
+  <div class="library__more" appInView (entered)="store.loadMore()">
+    @if (store.loadMoreFailed()) {
+    <p class="library__more-error">{{ 'library.loadMoreFailed' | transloco }}</p>
+    }
+    <ui-button [disabled]="store.loadingMore()" (click)="store.loadMore()">
+      {{ 'library.loadMore' | transloco }}
+    </ui-button>
+  </div>
+  } }
 </section>

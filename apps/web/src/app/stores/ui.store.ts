@@ -1,14 +1,11 @@
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
+import { isUiView } from './is-ui-view';
 import { UI_STORAGE_KEY } from './models/ui-storage-key.const';
 import type { UiState } from './models/ui-state.interface';
 import { UI_VIEW } from './models/ui-view.const';
 import type { UiView } from './models/ui-view.type';
 
 const defaults: UiState = { view: UI_VIEW.Cards, recentVisible: true };
-
-function isUiView(value: unknown): value is UiView {
-  return Object.values(UI_VIEW).some((view) => view === value);
-}
 
 /** Reads the stored preferences; anything unexpected falls back to the default for that field. */
 function readState(): UiState {
