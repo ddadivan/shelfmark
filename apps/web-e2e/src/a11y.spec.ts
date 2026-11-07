@@ -1,0 +1,36 @@
+import { expect, test, type Page } from '@playwright/test';
+import { A11Y_PAGES } from './models/a11y-pages.const';
+import { expectNoBlockingViolations } from './support/axe';
+
+const COLOR_SCHEMES = ['light', 'dark'] as const;
+// Same gate as csp.spec.ts: the hidden test page exists only in the static e2e build.
+const isStaticBuild = !!process.env['CI'] && !process.env['BASE_URL'];
+
+async function waitForFonts(page: Page): Promise<void> {
+  // String script: this project has no DOM lib, and the code runs in the browser anyway.
+  await page.evaluate('document.fonts.ready.then(() => undefined)');
+}
+
+for (const colorScheme of COLOR_SCHEMES) {
+  test.describe(`accessibility (${colorScheme} theme)`, () => {
+    test.use({ colorScheme });
+
+    for (const { path, heading, ciOnly, overlayOpener } of A11Y_PAGES) {
+      test(`${path} has no serious or critical axe violations`, async ({ page }, testInfo) => {
+        test.skip(!!ciOnly && !isStaticBuild, 'page exists only in the static e2e build');
+
+        await page.goto(path);
+        await expect(page.getByRole('heading', { level: 1, name: heading })).toBeVisible();
+        await expect(page.locator('html')).toHaveAttribute('data-theme', colorScheme);
+        await waitForFonts(page);
+
+        if (overlayOpener) {
+          await page.getByRole('button', { name: overlayOpener }).click();
+          await expect(page.getByRole('dialog')).toBeVisible();
+        }
+
+        await expectNoBlockingViolations(page, testInfo);
+      });
+    }
+  });
+}
