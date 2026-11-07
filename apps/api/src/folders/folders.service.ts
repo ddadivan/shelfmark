@@ -128,7 +128,11 @@ export class FoldersService {
     });
   }
 
-  /** Serializes tree writes of one user until the transaction ends. */
+  /**
+   * Serializes tree writes of one user until the transaction ends. Every other writer of a user's
+   * folders (import, demo seed, ...) must take this same lock with the same `folders:` key
+   * convention (`FOLDER_LOCK_PREFIX` + userId), or the cycle check and the cap can be raced.
+   */
   private async lockUserTree(tx: Prisma.TransactionClient, userId: string): Promise<void> {
     await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${FOLDER_LOCK_PREFIX + userId}, 0))`;
   }

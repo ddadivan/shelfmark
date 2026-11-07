@@ -196,6 +196,17 @@ describe('folders API', () => {
     await a.delete(`${BASE}/${root}?mode=${FOLDER_DELETE_MODE.MoveToUnsorted}`).expect(404);
   });
 
+  it('a foreign move-to-unsorted delete is 404 and leaves the folder and links alone', async () => {
+    const folder = await createFolder(a, 'Mine');
+    const linkId = await addLink(users.owner.userId, { folderId: folder });
+
+    await b.delete(`${BASE}/${folder}?mode=${FOLDER_DELETE_MODE.MoveToUnsorted}`).expect(404);
+
+    expect((await list(a)).items.map((f) => f.id)).toEqual([folder]);
+    const link = await t.db.prisma.link.findUnique({ where: { id: linkId } });
+    expect(link?.folderId).toBe(folder);
+  });
+
   it('requires a valid delete mode', async () => {
     const id = await createFolder(a, 'Root');
     await a.delete(`${BASE}/${id}`).expect(400);
