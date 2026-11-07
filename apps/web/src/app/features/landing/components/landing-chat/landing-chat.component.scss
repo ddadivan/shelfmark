@@ -1,0 +1,186 @@
+@use 'ui' as *;
+
+:host {
+  --landing-chat-height: #{rem(300px)};
+
+  // One message slot in the feed: the bubble plus the gap above it.
+  --landing-chat-slot: #{rem(76px)};
+
+  // Messages in view before the first rise; the track is placed so the last one touches the bottom.
+  --landing-chat-start: 4;
+
+  display: block;
+
+  @include tablet-up {
+    --landing-chat-height: #{rem(478px)};
+    --landing-chat-start: 7;
+  }
+}
+
+.landing-chat__phone {
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: rem(22px);
+  box-shadow: 0 30px 60px -30px color-mix(in srgb, var(--text) 25%, transparent);
+
+  @include tablet-up {
+    border-radius: rem(28px);
+  }
+}
+
+.landing-chat__bar {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.landing-chat__avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: rem(32px);
+  height: rem(32px);
+  color: var(--surface);
+  background: var(--accent);
+  border-radius: var(--radius-full);
+}
+
+.landing-chat__mark {
+  --ui-logo-size: #{rem(32px)};
+
+  flex: none;
+}
+
+.landing-chat__heading {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.landing-chat__title {
+  @include type(heading);
+
+  font-size: rem(15px);
+}
+
+.landing-chat__subtitle {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+// Chat: bubbles stack from the bottom, like a real chat.
+.landing-chat__messages {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  min-height: var(--landing-chat-height);
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  margin: 0;
+  list-style: none;
+  background: var(--surface-hover);
+}
+
+// Live feed: a fixed-height window, so the rising track never moves the page (no CLS). The
+// gradient mask lets old messages fade out past the top edge instead of vanishing.
+.landing-chat__feed {
+  position: relative;
+  height: var(--landing-chat-height);
+  overflow: hidden;
+  background: var(--surface-hover);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 #{rem(56px)});
+}
+
+.landing-chat__track {
+  position: absolute;
+  inset-inline: var(--space-4);
+  top: calc(var(--landing-chat-height) - var(--landing-chat-start) * var(--landing-chat-slot));
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  transform: translateY(calc(var(--landing-chat-step, 0) * var(--landing-chat-slot) * -1));
+  transition: transform var(--landing-chat-rise) var(--ease-in-out);
+}
+
+.landing-chat__track--running {
+  will-change: transform;
+}
+
+.landing-chat__track--snap {
+  transition: none;
+}
+
+// Every slot has the same height, so one rise is always exactly one message.
+.landing-chat__slot {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: flex-end;
+  height: var(--landing-chat-slot);
+  padding-top: var(--space-3);
+
+  app-landing-chat-bubble {
+    justify-content: center;
+    height: 100%;
+  }
+}
+
+// The messages clear to the right, one after another, before the shelf shows.
+@media (prefers-reduced-motion: no-preference) {
+  .landing-chat__feed--clearing .landing-chat__slot {
+    animation: landing-chat-clear var(--duration-slow) var(--ease-in) both;
+
+    &:nth-child(3n + 2) {
+      animation-delay: 40ms;
+    }
+
+    &:nth-child(3n) {
+      animation-delay: 80ms;
+    }
+  }
+}
+
+@keyframes landing-chat-clear {
+  to {
+    opacity: 0;
+    transform: translateX(#{rem(40px)}) scale(0.96);
+  }
+}
+
+// Text for assistive technology; the moving feed is hidden from it.
+.landing-chat__sr {
+  @include visually-hidden;
+}
+
+.landing-chat__message {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.landing-chat__footer {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-4);
+}
+
+.landing-chat__actions {
+  display: flex;
+  flex: none;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.landing-chat__hint {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: rem(12px);
+  line-height: rem(16px);
+  color: var(--text-muted);
+}

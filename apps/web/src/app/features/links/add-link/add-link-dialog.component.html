@@ -1,6 +1,6 @@
 <form [formRoot]="form" class="add-link">
   <ui-dialog
-    [title]="'links.add.title' | transloco"
+    [title]="(editing ? 'links.edit.title' : 'links.add.title') | transloco"
     [closeLabel]="'links.add.close' | transloco"
     size="md"
   >
@@ -34,7 +34,7 @@
         }
       </div>
 
-      @switch (previewState()) {
+      @switch (shownState()) {
         @case (PREVIEW_STATE.Loading) {
           <div class="add-link__preview" aria-busy="true">
             <ui-skeleton [shape]="SKELETON_SHAPE.Line" [count]="3" />
@@ -109,12 +109,28 @@
       @if (saveFailed()) {
         <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'links.add.saveFailed' | transloco }}</ui-notice>
       }
+
+      @if (meta(); as text) {
+        <p class="add-link__note">{{ text }}</p>
+      }
     </div>
+
+    @if (editing) {
+      <ui-button
+        slot="footer"
+        class="add-link__delete"
+        [variant]="BUTTON_VARIANT.Danger"
+        iconLeft="trash"
+        [disabled]="saving()"
+        (click)="requestDelete()"
+        >{{ 'links.edit.actions.delete' | transloco }}</ui-button
+      >
+    }
 
     <ui-button slot="footer" class="add-link__action" [disabled]="saving()" (click)="cancel()">{{
       'links.add.actions.cancel' | transloco
     }}</ui-button>
-    @if (duplicate()) {
+    @if (duplicate() && !editing) {
       <ui-button slot="footer" class="add-link__action" (click)="openExisting()">{{
         'links.add.actions.openSaved' | transloco
       }}</ui-button>
@@ -128,9 +144,11 @@
       >{{
         (saving()
           ? 'links.add.actions.saving'
-          : duplicate()
-            ? 'links.add.actions.saveAnyway'
-            : 'links.add.actions.save'
+          : editing
+            ? 'links.edit.actions.save'
+            : duplicate()
+              ? 'links.add.actions.saveAnyway'
+              : 'links.add.actions.save'
         ) | transloco
       }}</ui-button
     >

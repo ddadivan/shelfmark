@@ -15,11 +15,11 @@ const USER: AuthUser = {
   isDemo: false,
 };
 
-@Component({ template: 'landing' })
+@Component({ selector: 'app-landing-stub', template: 'landing' })
 class LandingStub {}
-@Component({ template: 'shell' })
+@Component({ selector: 'app-shell-stub', template: 'shell' })
 class ShellStub {}
-@Component({ template: 'sign-in' })
+@Component({ selector: 'app-sign-in-stub', template: 'sign-in' })
 class SignInStub {}
 
 const routes: Routes = [

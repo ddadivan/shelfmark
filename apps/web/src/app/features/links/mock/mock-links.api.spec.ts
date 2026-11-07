@@ -1,8 +1,20 @@
+import { Injector, runInInjectionContext } from '@angular/core';
 import { MOCK_LINK_PREVIEW_DUPLICATE } from '@shelfmark/contracts/testing';
 import { firstValueFrom } from 'rxjs';
 import { MOCK_HOST } from '../models/mock-host.const';
+import { MOCK_LINKS_COUNT } from '../models/mock-links-count.const';
+import { MOCK_LINKS_SCENARIO } from '../models/mock-links-scenario.const';
+import { MOCK_LINKS_SCENARIO_KEY } from '../models/mock-links-scenario-key.const';
+import { MockLibraryData } from './mock-library-data';
 import { MockLinksApi } from './mock-links.api';
 import { normalizeUrl } from './normalize-url';
+
+/** A links API over its own fresh library. */
+function createApi(): MockLinksApi {
+  return runInInjectionContext(Injector.create({ providers: [MockLibraryData] }), () => {
+    return new MockLinksApi();
+  });
+}
 
 describe('normalizeUrl', () => {
   it('lowercases the host and drops fragment, utm params and the trailing slash', () => {
@@ -18,7 +30,7 @@ describe('normalizeUrl', () => {
 });
 
 describe('MockLinksApi', () => {
-  const api = new MockLinksApi();
+  const api = createApi();
 
   it('answers the duplicate fixture for an already saved URL', async () => {
     const response = await firstValueFrom(
@@ -55,5 +67,79 @@ describe('MockLinksApi', () => {
     await expect(
       firstValueFrom(api.create({ url: `https://${MOCK_HOST.SaveFails}` })),
     ).rejects.toThrow();
+  });
+
+  describe('feed', () => {
+    afterEach(() => sessionStorage.removeItem(MOCK_LINKS_SCENARIO_KEY));
+
+    it('pages through every link with the cursor', async () => {
+      const feed = createApi();
+      const first = await firstValueFrom(feed.list({ limit: 25 }));
+      expect(first.items).toHaveLength(25);
+      expect(first.nextCursor).not.toBeNull();
+      const second = await firstValueFrom(feed.list({ limit: 25, cursor: first.nextCursor ?? '' }));
+      const third = await firstValueFrom(feed.list({ limit: 25, cursor: second.nextCursor ?? '' }));
+      expect(third.items).toHaveLength(MOCK_LINKS_COUNT - 50);
+      expect(third.nextCursor).toBeNull();
+    });
+
+    it('filters favorites and unsorted links', async () => {
+      const feed = createApi();
+      const favorites = await firstValueFrom(feed.list({ favorite: true, limit: 100 }));
+      expect(favorites.items.every((link) => link.isFavorite)).toBe(true);
+      const unsorted = await firstValueFrom(feed.list({ unsorted: true, limit: 100 }));
+      expect(unsorted.items.every((link) => link.folderId === null)).toBe(true);
+    });
+
+    it('lists recently opened links, newest first', async () => {
+      const { items } = await firstValueFrom(createApi().recent({ limit: 5 }));
+      expect(items.length).toBeGreaterThan(0);
+      const times = items.map((link) => link.lastOpenedAt ?? '');
+      expect(times).toEqual([...times].sort().reverse());
+    });
+
+    it('updates, opens and removes a link in memory', async () => {
+      const feed = createApi();
+      const [target] = (await firstValueFrom(feed.list({ limit: 1 }))).items;
+      const updated = await firstValueFrom(feed.update(target.id, { isFavorite: true }));
+      expect(updated.isFavorite).toBe(true);
+      const opened = await firstValueFrom(feed.open(target.id));
+      expect(opened.lastOpenedAt).not.toBeNull();
+      await firstValueFrom(feed.remove(target.id));
+      const rest = await firstValueFrom(feed.list({ limit: 100 }));
+      expect(rest.items.some((link) => link.id === target.id)).toBe(false);
+    });
+
+    it('gets one link by id and fails for an unknown id', async () => {
+      const feed = createApi();
+      const [target] = (await firstValueFrom(feed.list({ limit: 1 }))).items;
+      expect(await firstValueFrom(feed.get(target.id))).toEqual(target);
+      await expect(firstValueFrom(feed.get('missing'))).rejects.toThrow();
+    });
+
+    it('puts a created link at the top of the next list', async () => {
+      const feed = createApi();
+      const link = await firstValueFrom(feed.create({ url: 'https://new.example.org' }));
+      const { items } = await firstValueFrom(feed.list({ limit: 100 }));
+      expect(items.some((item) => item.id === link.id)).toBe(true);
+    });
+
+    it('fails update and delete for the failure hosts', async () => {
+      const feed = createApi();
+      const link = await firstValueFrom(feed.create({ url: `https://${MOCK_HOST.PatchFails}/a` }));
+      await expect(firstValueFrom(feed.update(link.id, { isFavorite: true }))).rejects.toThrow();
+      const doomed = await firstValueFrom(
+        feed.create({ url: `https://${MOCK_HOST.DeleteFails}/a` }),
+      );
+      await expect(firstValueFrom(feed.remove(doomed.id))).rejects.toThrow();
+    });
+
+    it('follows the sessionStorage scenario', async () => {
+      const feed = createApi();
+      sessionStorage.setItem(MOCK_LINKS_SCENARIO_KEY, MOCK_LINKS_SCENARIO.Empty);
+      expect((await firstValueFrom(feed.list())).items).toEqual([]);
+      sessionStorage.setItem(MOCK_LINKS_SCENARIO_KEY, MOCK_LINKS_SCENARIO.Error);
+      await expect(firstValueFrom(feed.list())).rejects.toThrow();
+    });
   });
 });

@@ -292,6 +292,24 @@ describe('text-muted contrast (WCAG AA 4.5:1)', () => {
   });
 });
 
+describe('highlight mark contrast (WCAG AA 4.5:1)', () => {
+  it.each(['light', 'dark'] as const)('highlight-text on highlight-bg holds in %s', (theme) => {
+    const ratio = contrast(tokenHex(theme, 'highlight-text'), tokenHex(theme, 'highlight-bg'));
+    expect(ratio).toBeGreaterThanOrEqual(4.5);
+    // Documented in libs/ui/CLAUDE.md and BRAND.md (light 9.4:1, dark 6.9:1).
+    expect(ratio).toBeGreaterThan(theme === 'light' ? 9 : 6.5);
+  });
+
+  it.each(['light', 'dark'] as const)(
+    'the mark stands out from the row backgrounds in %s',
+    (theme) => {
+      for (const row of ['surface', 'surface-hover', 'accent-bg']) {
+        expect(tokenHex(theme, 'highlight-bg'), `${theme} ${row}`).not.toBe(tokenHex(theme, row));
+      }
+    },
+  );
+});
+
 describe('themes', () => {
   it('global.scss defines a [data-theme] selector for every THEME value', () => {
     const output = compile(resolve(STYLES_DIR, 'global.scss'), {

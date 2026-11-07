@@ -14,12 +14,14 @@ const meta: Meta<ChipComponent> = {
     removable: false,
     disabled: false,
     removeLabel: 'Remove tag design',
+    menuLabel: undefined,
   },
   argTypes: {
     variant: { control: 'inline-radio', options: Object.values(CHIP_VARIANT) },
     icon: { control: 'select', options: [undefined, ...ICON_NAMES] },
     clicked: { action: 'clicked' },
     removed: { action: 'removed' },
+    menuRequested: { action: 'menuRequested' },
   },
   render: (args) => ({
     props: args,
@@ -31,6 +33,8 @@ const meta: Meta<ChipComponent> = {
         [disabled]="disabled"
         [icon]="icon"
         [removeLabel]="removeLabel"
+        [menuLabel]="menuLabel"
+        (menuRequested)="menuRequested($event)"
         (clicked)="clicked($event)"
         (removed)="removed($event)"
       >design</ui-chip>`,
@@ -54,6 +58,15 @@ export const ClickableAndRemovable: Story = { args: { clickable: true, removable
 
 export const WithIcon: Story = {
   args: { variant: CHIP_VARIANT.Neutral, icon: 'star', clickable: true },
+};
+
+/** Trailing "..." button: on hover or focus with a mouse, always visible on touch. */
+export const WithMenu: Story = {
+  args: { clickable: true, menuLabel: 'Actions for tag design' },
+};
+
+export const WithMenuAndRemove: Story = {
+  args: { clickable: true, removable: true, menuLabel: 'Actions for tag design' },
 };
 
 export const Disabled: Story = {
@@ -85,6 +98,9 @@ export const AllVariants: Story = {
         { variant: CHIP_VARIANT.Neutral, removable: true },
         { variant: CHIP_VARIANT.Neutral, clickable: true, icon: 'star' },
         { variant: CHIP_VARIANT.Neutral, clickable: true, disabled: true },
+        { variant: CHIP_VARIANT.Tag, clickable: true, menu: true },
+        { variant: CHIP_VARIANT.Neutral, clickable: true, menu: true, removable: true },
+        { variant: CHIP_VARIANT.Tag, clickable: true, menu: true, disabled: true },
       ],
       themes: Object.values(THEME),
     },
@@ -101,6 +117,7 @@ export const AllVariants: Story = {
                   [disabled]="c.disabled ?? false"
                   [icon]="c.icon"
                   removeLabel="Remove tag design"
+                  [menuLabel]="c.menu ? 'Actions for tag design' : undefined"
                 >design</ui-chip>
               }
             </div>

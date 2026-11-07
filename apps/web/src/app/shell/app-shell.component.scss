@@ -38,10 +38,41 @@
   }
 }
 
+.shell__add {
+  margin-inline: var(--space-4) auto;
+}
+
+// The recent panel needs room: it exists from the desktop breakpoint up.
+.shell__recent-toggle {
+  display: none;
+
+  @include desktop {
+    display: inline-flex;
+  }
+}
+
+.shell__body {
+  display: flex;
+  align-items: flex-start;
+}
+
 .shell__main {
+  flex: 1;
+  min-width: 0;
   padding: var(--space-6) var(--space-4);
 
   @include tablet-up {
     padding-inline: var(--space-6);
+  }
+}
+
+.shell__recent {
+  display: none;
+
+  @include desktop {
+    display: block;
+    flex: none;
+    width: rem(280px);
+    padding: var(--space-6) var(--space-6) var(--space-6) 0;
   }
 }

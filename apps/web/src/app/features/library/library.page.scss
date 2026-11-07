@@ -1,14 +1,75 @@
 @use 'ui' as *;
 
+.library__toolbar {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
 .library__title {
   @include type(title);
 
-  margin: 0 0 rem(8px);
+  margin: 0;
 }
 
-.library__hint {
+.library__count {
+  @include type(caption);
+
+  margin: var(--space-1) 0 0;
+  color: var(--text-muted);
+}
+
+.library__grid,
+.library__rows {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.library__grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, rem(256px)), 1fr));
+
+  // The list items hold the cards; stretch them to the row height.
+  > li {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.library__rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.library__more {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: center;
+  margin-top: var(--space-6);
+}
+
+.library__more-error {
   @include type(body);
 
   margin: 0;
   color: var(--text-muted);
+}
+
+.library__notice {
+  display: block;
+  margin-bottom: var(--space-4);
+}
+
+.library__filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  margin-bottom: var(--space-4);
 }
