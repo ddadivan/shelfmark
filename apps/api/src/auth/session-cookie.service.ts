@@ -2,6 +2,10 @@ import type { IncomingHttpHeaders } from 'node:http';
 import { Injectable } from '@nestjs/common';
 import { AuthService } from '@thallesp/nestjs-better-auth';
 import { fromNodeHeaders } from 'better-auth/node';
+import { readAppConfig } from '../config/app-config';
+import { AUTH_COOKIE_PREFIX } from './models/auth-cookie-prefix.const';
+
+const SESSION_COOKIE_NAME = `${AUTH_COOKIE_PREFIX}.session_token`;
 
 /**
  * Feature modules never import the Better Auth integration (ESLint, ADR 0029): this is the one
@@ -22,5 +26,23 @@ export class SessionCookieService {
       returnHeaders: true,
     });
     return result.headers.getSetCookie();
+  }
+
+  /**
+   * Hand-built expired session cookie with the attributes `createAuth` pins (path `/`, HttpOnly,
+   * SameSite=Lax, Secure + `__Secure-` exactly in production). Fallback when `clearingCookies`
+   * fails after the account is already gone.
+   */
+  fallbackClearingCookies(): string[] {
+    const secure = readAppConfig().isProduction;
+    const name = `${secure ? '__Secure-' : ''}${SESSION_COOKIE_NAME}`;
+    const attributes = [
+      'Path=/',
+      'Max-Age=0',
+      'HttpOnly',
+      'SameSite=Lax',
+      ...(secure ? ['Secure'] : []),
+    ];
+    return [`${name}=; ${attributes.join('; ')}`];
   }
 }

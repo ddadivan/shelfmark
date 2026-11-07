@@ -1,5 +1,6 @@
 import { AUTH_ENDPOINT } from '@shelfmark/contracts';
 import request from 'supertest';
+import { SessionCookieService } from '../auth/session-cookie.service';
 import { createAuthTestApp } from '../../test-utils/auth-test-app';
 import { createIsolationUsers } from '../../test-utils/isolation/create-isolation-users';
 import { asUser } from '../../test-utils/isolation/test-agent';
@@ -55,12 +56,13 @@ describe('DELETE /api/me', () => {
     users = await createIsolationUsers(t);
     await seedLibrary(t, users.owner.userId, 'owner');
     await seedLibrary(t, users.intruder.userId, 'intruder');
-    await t.db.prisma.verification.create({
-      data: {
-        identifier: 'owner@example.com',
-        value: 'v',
-        expiresAt: new Date(Date.now() + 60_000),
-      },
+    const expiresAt = new Date(Date.now() + 60_000);
+    await t.db.prisma.verification.createMany({
+      data: [
+        { identifier: 'owner@example.com', value: 'v1', expiresAt },
+        { identifier: 'Owner@Example.com', value: 'v2', expiresAt },
+        { identifier: 'intruder@example.com', value: 'v3', expiresAt },
+      ],
     });
   });
 
@@ -84,6 +86,7 @@ describe('DELETE /api/me', () => {
       linkTags: 1,
       verifications: 1,
     });
+    expect(await t.db.prisma.verification.count()).toBe(3);
 
     const res = await asUser(t.app, users.owner)
       .delete(ME)
@@ -101,6 +104,10 @@ describe('DELETE /api/me', () => {
       linkTags: 0,
       verifications: 0,
     });
+    // Both the exact and the differently cased rows of the user are gone; the intruder's survives.
+    expect(await t.db.prisma.verification.findMany({ select: { identifier: true } })).toEqual([
+      { identifier: 'intruder@example.com' },
+    ]);
   });
 
   it('leaves the data of another user untouched', async () => {
@@ -114,7 +121,7 @@ describe('DELETE /api/me', () => {
       links: 1,
       tags: 1,
       linkTags: 1,
-      verifications: 0,
+      verifications: 1,
     });
     await asUser(t.app, users.intruder).get(AUTH_ENDPOINT.GetSession).expect(200);
   });
@@ -186,5 +193,42 @@ describe('DELETE /api/me', () => {
     expect(second.userId).toBe(users.owner.userId);
     await asUser(t.app, users.owner).delete(ME).send({ email: 'owner@example.com' }).expect(204);
     expect(await t.db.prisma.session.count({ where: { userId: users.owner.userId } })).toBe(0);
+  });
+
+  it('still answers 204 with an expired cookie when the sign-out fails after the commit', async () => {
+    const cookies = t.app.get(SessionCookieService);
+    vi.spyOn(cookies, 'clearingCookies').mockRejectedValueOnce(new Error('boom'));
+    const res = await asUser(t.app, users.owner)
+      .delete(ME)
+      .send({ email: 'owner@example.com' })
+      .expect(204);
+    expect(await t.db.prisma.user.count({ where: { id: users.owner.userId } })).toBe(0);
+    const [cookie] = setCookiesOf(res);
+    expect(cookie).toMatch(/^shelfmark\.session_token=;/);
+    expect(cookie).toMatch(/Path=\/; Max-Age=0; HttpOnly; SameSite=Lax/);
+    expect(cookie).not.toMatch(/Secure/);
+  });
+
+  it('never answers 500 to two concurrent deletions', async () => {
+    const send = () => asUser(t.app, users.owner).delete(ME).send({ email: 'owner@example.com' });
+    const [a, b] = await Promise.all([send(), send()]);
+    expect([204, 401]).toContain(a.status);
+    expect([204, 401]).toContain(b.status);
+    expect(await t.db.prisma.user.count({ where: { id: users.owner.userId } })).toBe(0);
+  });
+});
+
+describe('SessionCookieService fallback cookie', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it('carries the prefix and Secure in production', () => {
+    vi.stubEnv('NODE_ENV', 'production');
+    // The fallback never touches Better Auth, so no AuthService is needed.
+    const [cookie] = new SessionCookieService(undefined as never).fallbackClearingCookies();
+    expect(cookie).toBe(
+      '__Secure-shelfmark.session_token=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax; Secure',
+    );
   });
 });
