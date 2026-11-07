@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { FoldersStore } from '../../stores/folders.store';
 import { LinksStore } from '../../stores/links.store';
+import { TagsStore } from '../../stores/tags.store';
 import { AUTH_API } from './auth-api.token';
 import { SIGN_OUT_FLUSH_TIMEOUT_MS } from './models/sign-out-flush-timeout.const';
 import { AUTH_ROUTE } from './models/auth-routes.const';
@@ -30,6 +31,7 @@ export const AuthStore = signalStore(
       router = inject(Router),
       links = inject(LinksStore),
       folders = inject(FoldersStore),
+      tags = inject(TagsStore),
     ) => {
       let loading: Promise<void> | null = null;
 
@@ -54,7 +56,7 @@ export const AuthStore = signalStore(
           timer = setTimeout(resolve, ms);
         });
         try {
-          await Promise.race([links.flushPending(), timeout]);
+          await Promise.race([Promise.all([links.flushPending(), tags.flushPending()]), timeout]);
         } catch {
           // A failed flush restores the links in the store; sign-out goes on.
         } finally {
@@ -77,6 +79,7 @@ export const AuthStore = signalStore(
         } finally {
           links.reset();
           folders.reset();
+          tags.reset();
           patchState(store, { user: null, loaded: true, failed: false });
         }
       }

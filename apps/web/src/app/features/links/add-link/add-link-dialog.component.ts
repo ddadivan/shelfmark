@@ -45,6 +45,9 @@ import {
 } from '@shelfmark/ui';
 import { firstValueFrom, switchMap, tap, timer, type Observable } from 'rxjs';
 import { FoldersStore } from '../../../stores/folders.store';
+import { TagsStore } from '../../../stores/tags.store';
+import { pluralKey } from '../../../core/i18n/plural-key';
+import { normalizeTagNames } from '../../tags/normalize-tag-names';
 import { ADD_LINK_ACTION } from '../models/add-link-action.const';
 import type { AddLinkDialogData } from '../models/add-link-dialog-data.interface';
 import type { AddLinkSaved } from '../models/add-link-saved.interface';
@@ -53,7 +56,6 @@ import type { AddLinkResult } from '../models/add-link-result.type';
 import { LINKS_API } from '../models/links-api.const';
 import { PREVIEW_STATE } from '../models/preview-state.const';
 import type { PreviewState } from '../models/preview-state.type';
-import { TAGS_API } from '../models/tags-api.const';
 import { relativeTime } from '../relative-time';
 import { buildFolderOptions } from './folder-options';
 import { displayHost, isHttpUrl, urlWithoutScheme } from './http-url';
@@ -106,7 +108,7 @@ export class AddLinkDialogComponent {
 
   private readonly linksApi = inject(LINKS_API);
   private readonly folders = inject(FoldersStore);
-  private readonly tagsApi = inject(TAGS_API);
+  private readonly tagStore = inject(TagsStore);
   private readonly ref = inject<UiDialogRef<AddLinkResult>>(UiDialogRef);
   private readonly transloco = inject(TranslocoService);
   private readonly data = injectDialogData<AddLinkDialogData>();
@@ -122,7 +124,7 @@ export class AddLinkDialogComponent {
     url: this.original?.url ?? '',
     title: this.original?.title ?? '',
     folderId: this.original ? this.original.folderId : (this.data.folderId ?? null),
-    tags: [...(this.original?.tags ?? [])],
+    tags: [...normalizeTagNames(this.original?.tags ?? [])],
     note: this.original?.note ?? '',
   });
 
@@ -188,12 +190,16 @@ export class AddLinkDialogComponent {
       ),
   });
 
-  private readonly tags = rxResource({ stream: () => this.tagsApi.list() });
-
   protected readonly folderOptions = computed(() => buildFolderOptions(this.folders.entities()));
-  protected readonly tagSuggestions = computed<TagSuggestion[]>(() =>
-    (this.tags.hasValue() ? this.tags.value() : []).map((tag) => ({ name: tag.name })),
-  );
+  protected readonly tagSuggestions = computed<TagSuggestion[]>(() => {
+    this.i18n();
+    return this.tagStore.entities().map((tag) => ({
+      name: tag.name,
+      countLabel: this.transloco.translate(pluralKey('tags.count', tag.linkCount), {
+        count: tag.linkCount,
+      }),
+    }));
+  });
 
   protected readonly previewState = computed<PreviewState>(() => {
     if (this.previewUrl() === undefined) {
@@ -246,6 +252,16 @@ export class AddLinkDialogComponent {
   constructor() {
     // Usually loaded by the sidebar already; the options fill in when the list arrives.
     void this.folders.load();
+    void this.tagStore.load();
+    // Tags leave the field the way the API stores them: `normalizeTagName`, deduplicated.
+    effect(() => {
+      const field = this.form.tags();
+      const tags = field.value();
+      const normalized = normalizeTagNames(tags);
+      if (normalized !== tags) {
+        untracked(() => field.value.set([...normalized]));
+      }
+    });
     // The preview is gone (URL emptied or no longer valid): drop a title it filled in.
     // An `effect` because the field tree exposes `dirty()` but has no value-change hook, and the
     // form model is a plain signal, so a `linkedSignal` could not see whether the user typed.
@@ -288,6 +304,7 @@ export class AddLinkDialogComponent {
     const value = this.model();
     const title = value.title.trim();
     const note = value.note.trim();
+    const tags = [...normalizeTagNames(value.tags)];
     let request$: Observable<LinkResponse>;
     if (this.original) {
       const changes = this.changes();
@@ -302,7 +319,7 @@ export class AddLinkDialogComponent {
         ...(title && { title }),
         ...(note && { note }),
         ...(value.folderId !== null && { folderId: value.folderId }),
-        ...(value.tags.length > 0 && { tags: value.tags }),
+        ...(tags.length > 0 && { tags }),
       });
     }
     this.saving.set(true);
@@ -334,6 +351,7 @@ export class AddLinkDialogComponent {
     const url = value.url.trim();
     const title = value.title.trim();
     const note = value.note.trim();
+    const tags = [...normalizeTagNames(value.tags)];
     if (url !== link.url) {
       changes.url = url;
     }
@@ -346,11 +364,8 @@ export class AddLinkDialogComponent {
     if (value.folderId !== link.folderId) {
       changes.folderId = value.folderId;
     }
-    if (
-      value.tags.length !== link.tags.length ||
-      value.tags.some((tag, index) => tag !== link.tags[index])
-    ) {
-      changes.tags = value.tags;
+    if (tags.length !== link.tags.length || tags.some((tag, index) => tag !== link.tags[index])) {
+      changes.tags = tags;
     }
     return changes;
   }

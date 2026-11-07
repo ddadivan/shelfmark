@@ -309,6 +309,62 @@ describe('AddLinkDialogComponent', () => {
     expect(outcome?.action).toBe(ADD_LINK_ACTION.Saved);
   });
 
+  describe('tags', () => {
+    function addTag(text: string): void {
+      const tags = dialog().querySelector<HTMLInputElement>('ui-tag-input input');
+      if (!tags) {
+        throw new Error('no tag input');
+      }
+      tags.value = text;
+      tags.dispatchEvent(new Event('input'));
+      tags.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    }
+
+    it('turns spaces in a new tag into hyphens in the chip and in the saved link', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      const { result } = await setup(api);
+
+      await type('Link', 'https://example.org/post');
+      addTag('winter  sale');
+      addTag('Winter-Sale');
+      await until(() => {
+        expect(dialog().querySelector('ui-tag-input')?.textContent).toContain('winter-sale');
+        expect(input('Title').value).toBe('A fine post');
+      });
+      button('Save link').click();
+      await result;
+
+      expect(api.create).toHaveBeenCalledWith(expect.objectContaining({ tags: ['winter-sale'] }));
+    });
+
+    it('suggests the existing tags of the store with their link counts', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      await setup(api);
+      const tags = dialog().querySelector<HTMLInputElement>('ui-tag-input input');
+      if (!tags) {
+        throw new Error('no tag input');
+      }
+
+      tags.focus();
+      tags.value = 'doc';
+      tags.dispatchEvent(new Event('input'));
+
+      await until(() => {
+        const options = [...document.querySelectorAll('[role="option"]')].map(
+          (option) => option.textContent ?? '',
+        );
+        expect(options.some((text) => /docs.*\d+ links?/.test(text))).toBe(true);
+      });
+    });
+
+    it('prefills the tags of an edited link in their stored spelling', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      await setup(api, { link: { ...EDITED, tags: ['winter-sale'] } });
+
+      expect(dialog().querySelector('ui-tag-input')?.textContent).toContain('winter-sale');
+    });
+  });
+
   it('shows an error and stays open when saving fails', async () => {
     const api = fakeApi(() => of(PLAIN));
     api.create.mockReturnValue(throwError(() => new Error('boom')));

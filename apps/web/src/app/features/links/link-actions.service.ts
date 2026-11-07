@@ -5,11 +5,12 @@ import { firstValueFrom } from 'rxjs';
 import { DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { FoldersStore } from '../../stores/folders.store';
 import { LinksStore } from '../../stores/links.store';
+import { TagsStore } from '../../stores/tags.store';
 import { AddLinkDialogService } from './add-link/add-link-dialog.service';
 import { ADD_LINK_ACTION } from './models/add-link-action.const';
 import type { AddLinkData } from './models/add-link-data.interface';
 import { LINKS_API } from './models/links-api.const';
-import { UndoToastService } from './undo-toast.service';
+import { UndoToastService } from '../../core/undo/undo-toast.service';
 
 /**
  * What a user can do with a link from the feed, the recent panel and the header: open, favorite,
@@ -20,6 +21,7 @@ import { UndoToastService } from './undo-toast.service';
 export class LinkActionsService {
   private readonly store = inject(LinksStore);
   private readonly folders = inject(FoldersStore);
+  private readonly tags = inject(TagsStore);
   // Resolved on use: the shell injects this service where specs provide no `LINKS_API`.
   private readonly injector = inject(Injector);
   private readonly dialogs = inject(DialogService);
@@ -71,6 +73,7 @@ export class LinkActionsService {
     if (result?.action === ADD_LINK_ACTION.Saved) {
       this.store.addSaved(result.link);
       void this.folders.refresh();
+      void this.tags.noteLinkSaved();
       this.toasts.show({ kind: TOAST_KIND.Success, text: this.t('links.item.saved') });
     } else if (result?.action === ADD_LINK_ACTION.OpenExisting) {
       // "Open saved": the already saved link opens in its edit dialog.
@@ -83,6 +86,7 @@ export class LinkActionsService {
     const result = await this.addLinkDialog.open({ link });
     if (result?.action === ADD_LINK_ACTION.Saved) {
       this.store.applyEdit(result.link);
+      void this.tags.noteLinkSaved();
       this.toasts.show({ kind: TOAST_KIND.Success, text: this.t('links.item.edited') });
     } else if (result?.action === ADD_LINK_ACTION.Delete) {
       await this.delete(result.link);
@@ -102,6 +106,7 @@ export class LinkActionsService {
   private async commitDelete(id: string): Promise<void> {
     if (await this.store.commitRemove(id)) {
       void this.folders.refresh();
+      void this.tags.noteLinkSaved();
     } else {
       this.toasts.show({ kind: TOAST_KIND.Error, text: this.t('links.item.deleteFailed') });
     }

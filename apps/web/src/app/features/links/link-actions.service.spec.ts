@@ -15,7 +15,7 @@ import { loadEnglish, provideTranslocoForTest } from '../../testing/transloco-te
 import { AddLinkDialogService } from './add-link/add-link-dialog.service';
 import { LinkActionsService } from './link-actions.service';
 import { ADD_LINK_ACTION } from './models/add-link-action.const';
-import { DELETE_UNDO_MS } from './models/delete-undo.const';
+import { DELETE_UNDO_MS } from '../../core/undo/models/delete-undo.const';
 import { LINKS_API } from './models/links-api.const';
 import type { LinksApi } from './models/links-api.interface';
 import { LINKS_SCOPE } from './models/links-scope.const';
