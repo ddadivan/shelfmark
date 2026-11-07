@@ -374,7 +374,7 @@ NestJS choice: ADR 0010; API build and tests: ADR 0006; API security baseline: A
 | Search by title | Built-in PostgreSQL search (`pg_trgm` / full-text search) |
 | Duplicate links | Index on the "user + URL" pair |
 | Schema migrations | Prisma Migrate |
-| Local development | PostgreSQL in Docker |
+| Local development and tests | PGlite (embedded PostgreSQL, no Docker), see [ADR 0025](adr/0025-database-tooling-prisma-7-pglite.md) |
 | Cloud database | Neon, free tier (see 5.7) |
 
 **A cache (Redis)** is not needed in stage 1.
@@ -422,7 +422,7 @@ Stage 1 runs for free on **Vercel (Hobby) + Neon** and is available at a public 
 
 **Environments:**
 
-- **local**: PostgreSQL in Docker, `.env` only locally;
+- **local**: PGlite (no Docker), `.env` only locally;
 - **preview**: Vercel preview deployment + a separate Neon database branch (not production);
 - **production**: `main` → Vercel + the Neon `production` branch.
 
@@ -821,7 +821,7 @@ Stage 1 is 8 stages (GitHub milestones), roughly 8–9 weeks at \~3 hours a day;
 | 6 | Polish | Mobile version, dark theme, empty states, accessibility | \~1 week |
 | 7 | Release | 5.8 check, account deletion, privacy policy, README, Storybook online | 3–4 days |
 
-**Stage 0 clarification:** stage 0 creates only the Neon project; Prisma, `docker-compose.yml` with local PostgreSQL and migrations in CI move to stage 2 together with the Better Auth schema.
+**Stage 0 clarification:** stage 0 creates only the Neon project; Prisma, local PGlite (instead of Docker, ADR 0025) and migrations in CI move to stage 2 together with the Better Auth schema.
 
 The estimate assumes the bottleneck is PR review and fixes, not writing code. Hitting Claude subscription limits (see 9.6) can stretch the timeline.
 
@@ -862,7 +862,7 @@ Stage 0 E2E: Chromium only, see ADR 0008.
 ### 9.5 CI/CD
 
 - **On every PR** (GitHub Actions, only affected projects via `nx affected`): lint, typecheck, unit tests with a coverage threshold, build, `npm audit`, CodeQL; Vercel creates a preview version.
-- **Merge to `main`** → automatic deployment to Vercel production; Prisma migrations are applied to the production Neon database.
+- **Merge to `main`** → automatic deployment to Vercel production; Prisma migrations are applied to the production Neon database by the Vercel build (`prisma migrate deploy`, ADR 0025); every PR checks the migrations against a Postgres service (`api:db-check`).
 
 ### 9.6 Claude subscription
 

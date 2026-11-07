@@ -1,6 +1,6 @@
 # 0020. npm install-scripts policy
 
-- Status: Accepted
+- Status: Accepted; `prisma` and `@prisma/engines` rows added by [0025](0025-database-tooling-prisma-7-pglite.md)
 - Date: 2026-11-05
 - Source: issue #4
 
