@@ -49,12 +49,27 @@ test.describe('landing', () => {
   for (const width of [360, 800, 1280]) {
     test(`the deferred chat and sections shift nothing at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
+      // The web font swapping in moves the headline by a few px (fallback and Onest differ in
+      // metrics; more on Linux than on macOS) whatever the sections do, and has nothing to do
+      // with the deferred blocks. Without the font file nothing swaps, so what this test sees is
+      // only the placeholders and the idle swaps.
+      await page.route('**/*.woff2', (route) => route.abort());
       // Plain scripts (as elsewhere in this suite): the e2e project has no DOM typings.
       await page.addInitScript(`
-        window.__shift = 0;
+        window.__shifts = [];
         new PerformanceObserver((list) => {
           for (const entry of list.getEntries()) {
-            if (!entry.hadRecentInput) window.__shift += entry.value;
+            if (entry.hadRecentInput) continue;
+            const where = (s) => s.node ? s.node.nodeName + '.' + (s.node.className || s.node.parentElement?.className || '') : '?';
+            window.__shifts.push({
+              at: Math.round(entry.startTime),
+              value: entry.value,
+              sources: entry.sources.map((s) => ({
+                node: where(s),
+                from: s.previousRect.y + '+' + s.previousRect.height,
+                to: s.currentRect.y + '+' + s.currentRect.height,
+              })),
+            });
           }
         }).observe({ type: 'layout-shift', buffered: true });
       `);
@@ -64,8 +79,10 @@ test.describe('landing', () => {
       await expect(page.getByRole('button', { name: 'Put them on the shelf' })).toBeVisible();
       await page.waitForTimeout(500);
 
-      const total = await page.evaluate<number>('window.__shift');
-      expect(total).toBeLessThan(0.001);
+      // The sources go into the failure message, so a CI failure says what moved.
+      const shifts = await page.evaluate<{ value: number }[]>('window.__shifts');
+      const total = shifts.reduce((sum, shift) => sum + shift.value, 0);
+      expect(total, JSON.stringify(shifts)).toBeLessThan(0.001);
     });
   }
 
