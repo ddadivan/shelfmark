@@ -50,7 +50,10 @@ describe('SessionAuthGuard with a real session', () => {
   });
 
   it('reports isDemo for a demo user', async () => {
-    await t.db.prisma.user.update({ where: { id: users.owner.userId }, data: { isDemo: true } });
+    await t.db.prisma.user.update({
+      where: { id: users.owner.userId },
+      data: { isDemo: true, demoExpiresAt: new Date(Date.now() + 60 * 60 * 1000) },
+    });
     const res = await asUser(t.app, users.owner).get(FIXTURE_PATH.WhoAmI).expect(200);
     expect((res.body as AuthUser).isDemo).toBe(true);
   });
