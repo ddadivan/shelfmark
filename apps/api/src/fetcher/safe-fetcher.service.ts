@@ -5,6 +5,7 @@ import http from 'node:http';
 import type { IncomingMessage } from 'node:http';
 import https from 'node:https';
 import { Inject, Injectable, Optional } from '@nestjs/common';
+import { narrowLimits } from './narrow-limits';
 import { isBlockedAddress, isBlockedHostname } from './ip-policy';
 import { ALLOWED_PROTOCOLS } from './models/allowed-protocols.const';
 import { DEFAULT_ALLOWED_PORTS } from './models/allowed-ports.const';
@@ -73,11 +74,11 @@ export class SafeFetcherService {
   }
 
   /**
-   * `overrides` narrow or change the limits for this call only (for example a shorter budget for a
+   * `overrides` can only tighten the limits for this call (for example a shorter budget for a
    * preview inside a request that has its own deadline); the service defaults stay untouched.
    */
   async fetch(rawUrl: string, overrides?: Partial<FetchLimits>): Promise<SafeFetchResult> {
-    const limits: FetchLimits = { ...this.limits, ...overrides };
+    const limits = narrowLimits(this.limits, overrides);
     const signal = AbortSignal.timeout(limits.totalTimeoutMs);
     let url = this.parseUrl(rawUrl, limits);
     for (let hop = 0; hop <= limits.maxRedirects; hop++) {

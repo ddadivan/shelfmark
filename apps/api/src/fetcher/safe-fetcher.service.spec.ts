@@ -269,6 +269,17 @@ describe('SafeFetcherService', () => {
     expect((await service.fetch(url())).body).toHaveLength(5000);
   });
 
+  it('does not let a per-call override loosen the service limits', async () => {
+    handler = (_req, res) => {
+      res.writeHead(200, { 'Content-Type': HTML });
+      res.end('x'.repeat(5000));
+    };
+    const service = fetcher({ limits: { maxBodyBytes: 1_000 } });
+    expect(await codeOf(service.fetch(url(), { maxBodyBytes: 10_000_000 }))).toBe(
+      SAFE_FETCH_ERROR_CODE.TooLarge,
+    );
+  });
+
   it('times out a server that never answers', async () => {
     handler = () => undefined;
     const service = fetcher({ limits: { totalTimeoutMs: 150 } });
