@@ -1,3 +1,4 @@
+import { _IdGenerator } from '@angular/cdk/a11y';
 import {
   booleanAttribute,
   ChangeDetectionStrategy,
@@ -8,8 +9,6 @@ import {
   viewChild,
 } from '@angular/core';
 import { CommandGroupComponent } from './command-group.component';
-
-let nextItemId = 0;
 
 /**
  * One choice of `ui-command-list` (an option of its listbox). The projected content is the row:
@@ -31,7 +30,7 @@ export class CommandItemComponent {
   readonly disabled = input(false, { transform: booleanAttribute });
 
   /** DOM id of the option; Aria's `aria-activedescendant` points at it. */
-  readonly id = `ui-command-item-${nextItemId++}`;
+  readonly id = inject(_IdGenerator).getId('ui-command-item-');
   /** The group the item sits in, if any. */
   readonly group = inject(CommandGroupComponent, { optional: true });
 

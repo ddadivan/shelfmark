@@ -158,16 +158,24 @@
   }
 }
 
-.ui-command-list__empty:empty {
-  display: none;
+.ui-command-list__status {
+  @include visually-hidden;
 }
 
-.ui-command-list__empty {
+// The empty state: the status region turns visible and takes its padding only now.
+.ui-command-list__status--empty {
   @include type(body);
 
+  position: static;
+  width: auto;
+  height: auto;
   padding: var(--space-6) var(--space-4);
+  margin: 0;
+  overflow: visible;
+  clip-path: none;
   color: var(--text-muted);
   text-align: center;
+  white-space: normal;
 }
 
 .ui-command-list__footer {

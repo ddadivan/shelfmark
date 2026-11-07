@@ -21,6 +21,11 @@
   <ng-content select="[slot=input-end]" />
 </div>
 
+<!--
+  `softDisabled` false: the arrows skip disabled rows instead of stopping on them.
+  `activeDescendant` feeds `aria-activedescendant` of the input; `liveActive` clears it when the
+  row is gone.
+-->
 <ng-template ngComboboxPopup [combobox]="combobox">
   <div
     ngComboboxWidget
@@ -32,9 +37,9 @@
     [softDisabled]="false"
     tabindex="-1"
     [hidden]="empty()"
-    [attr.aria-label]="ariaListName()"
+    [attr.aria-label]="listLabel()"
     [attr.aria-busy]="busy() ? 'true' : null"
-    [activeDescendant]="list.activeDescendant()"
+    [activeDescendant]="liveActive(list.activeDescendant())"
     [value]="noSelection"
     (valueChange)="onListValue()"
     (mousedown)="onListMousedown($event)"
@@ -54,7 +59,7 @@
     </ng-template>
 
     @for (section of sections(); track $index) {
-      @if (groupOf(section); as group) {
+      @if (section.group; as group) {
         <div class="ui-command-list__group" role="group" [attr.aria-labelledby]="group.headingId">
           <div class="ui-command-list__heading" [id]="group.headingId">{{ group.heading() }}</div>
           @for (item of section.items; track item.id) {
@@ -76,7 +81,9 @@
   </div>
 </ng-template>
 
-<div class="ui-command-list__empty" role="status">
+<!-- Always rendered, so a change of its content is announced; visible only for the empty state. -->
+<div class="ui-command-list__status" [class.ui-command-list__status--empty]="empty()" role="status">
+  <ng-content select="[slot=status]" />
   @if (empty()) {
     <ng-content select="[slot=empty]" />
   }

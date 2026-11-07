@@ -1,6 +1,5 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-
-let nextGroupId = 0;
+import { _IdGenerator } from '@angular/cdk/a11y';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 
 /**
  * A titled group of `ui-command-item`s inside `ui-command-list`. The list draws the heading and
@@ -18,5 +17,5 @@ export class CommandGroupComponent {
   readonly heading = input.required<string>();
 
   /** Id of the heading element the list renders (`aria-labelledby` of the group). */
-  readonly headingId = `ui-command-group-${nextGroupId++}`;
+  readonly headingId = inject(_IdGenerator).getId('ui-command-group-');
 }

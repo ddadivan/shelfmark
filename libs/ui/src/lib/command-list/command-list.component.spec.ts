@@ -16,12 +16,14 @@ import type { CommandSelection } from './models/command-selection.interface';
   template: `
     <ui-command-list
       inputLabel="Search links, folders and tags"
+      listLabel="Search results"
       placeholder="Search"
       [busy]="busy()"
       [(query)]="query"
       (selected)="chosen.update((list) => [...list, $event])"
     >
       <kbd slot="input-end">Esc</kbd>
+      <span slot="status">{{ count() }} results</span>
       @if (showLinks()) {
         <ui-command-group heading="3 links">
           <ui-command-item value="a">
@@ -44,6 +46,9 @@ import type { CommandSelection } from './models/command-selection.interface';
       @if (showLoose()) {
         <ui-command-item value="loose">Loose item</ui-command-item>
       }
+      @for (value of extra(); track value) {
+        <ui-command-item [value]="value">{{ value }}</ui-command-item>
+      }
       <p slot="empty">Nothing found</p>
       <span slot="footer"><kbd>↵</kbd> open</span>
     </ui-command-list>
@@ -55,6 +60,8 @@ class HostComponent {
   readonly showLinks = signal(true);
   readonly showFolders = signal(true);
   readonly showLoose = signal(false);
+  readonly extra = signal<string[]>([]);
+  readonly count = signal(4);
   readonly lastDisabled = signal(false);
   readonly chosen = signal<CommandSelection[]>([]);
 }
@@ -107,7 +114,7 @@ describe('CommandListComponent', () => {
     expect(input().getAttribute('aria-controls')).toBe(list.id);
     expect(options()).toHaveLength(4);
     expect(options().map((o) => o.id)).toContain(input().getAttribute('aria-activedescendant'));
-    expect(list.getAttribute('aria-label')).toBe('Search links, folders and tags');
+    expect(list.getAttribute('aria-label')).toBe('Search results');
   });
 
   it('renders groups with a heading that names them and the row slots', () => {
@@ -125,7 +132,97 @@ describe('CommandListComponent', () => {
   it('shows the input-end and footer slots and styles nothing in the empty region', () => {
     expect(el.querySelector('.ui-command-list__field kbd')?.textContent).toBe('Esc');
     expect(el.querySelector('.ui-command-list__footer kbd')?.textContent).toBe('↵');
-    expect(el.querySelector('.ui-command-list__empty')?.textContent?.trim()).toBe('');
+  });
+
+  it('keeps the status region rendered with the status slot, visible only when empty', async () => {
+    const status = (): HTMLElement => el.querySelector<HTMLElement>('[role="status"]')!;
+    expect(status().textContent?.trim()).toBe('4 results');
+    expect(status().classList.contains('ui-command-list__status--empty')).toBe(false);
+    host.count.set(2);
+    await settle(fixture);
+    expect(status().textContent?.trim()).toBe('2 results');
+    host.showLinks.set(false);
+    host.showFolders.set(false);
+    await settle(fixture);
+    expect(el.querySelectorAll('[role="status"]')).toHaveLength(1);
+    expect(status().classList.contains('ui-command-list__status--empty')).toBe(true);
+    expect(status().textContent).toContain('Nothing found');
+    host.showLoose.set(true);
+    await settle(fixture);
+    expect(el.querySelectorAll('[role="status"]')).toHaveLength(1);
+    expect(status().classList.contains('ui-command-list__status--empty')).toBe(false);
+    expect(status().textContent).not.toContain('Nothing found');
+  });
+
+  it('points aria-activedescendant at an existing row only', async () => {
+    const exists = (): boolean =>
+      options().some((o) => o.id === input().getAttribute('aria-activedescendant'));
+    expect(exists()).toBe(true);
+    host.showLinks.set(false);
+    host.showFolders.set(false);
+    await settle(fixture);
+    expect(options()).toHaveLength(0);
+    expect(input().hasAttribute('aria-activedescendant')).toBe(false);
+    host.extra.set(['x']);
+    await settle(fixture);
+    expect(exists()).toBe(true);
+  });
+
+  it('moves the active row to the first enabled one when the active row is deleted', async () => {
+    host.showLinks.set(false);
+    host.extra.set(['x', 'y']);
+    await settle(fixture);
+    await press(KEYBOARD_KEY.End);
+    expect(activeValue()).toBe('y');
+    host.extra.set(['x']);
+    await settle(fixture);
+    expect(activeValue()).toBe('Work');
+    await press(KEYBOARD_KEY.Enter);
+    expect(host.chosen()).toEqual([{ value: 'f', background: false }]);
+  });
+
+  it('resets to the top when results arrive after the query, once', async () => {
+    host.query.set('ng');
+    await settle(fixture);
+    await press(KEYBOARD_KEY.ArrowDown);
+    expect(activeValue()).toBe('NgRx');
+    host.extra.set(['x']);
+    await settle(fixture);
+    expect(activeValue()).toBe('Signal');
+    await press(KEYBOARD_KEY.ArrowDown);
+    host.extra.set(['x', 'y']);
+    await settle(fixture);
+    expect(activeValue()).toBe('NgRx');
+  });
+
+  it('selects the highlighted row after its predecessor was removed', async () => {
+    host.extra.set(['x', 'y']);
+    await settle(fixture);
+    await press(KEYBOARD_KEY.End);
+    host.extra.set(['y']);
+    await settle(fixture);
+    expect(activeValue()).toBe('y');
+    await press(KEYBOARD_KEY.Enter);
+    expect(host.chosen().map((c) => c.value)).toEqual(['y']);
+  });
+
+  it('starts at the first row again when the query changes', async () => {
+    await press(KEYBOARD_KEY.ArrowDown);
+    expect(activeValue()).toBe('NgRx');
+    host.query.set('ng');
+    await settle(fixture);
+    expect(activeValue()).toBe('Signal');
+    await press(KEYBOARD_KEY.Enter);
+    expect(host.chosen().map((c) => c.value)).toEqual(['a']);
+  });
+
+  it('moves off a row that became disabled', async () => {
+    await press(KEYBOARD_KEY.ArrowUp);
+    await press(KEYBOARD_KEY.ArrowUp);
+    expect(activeValue()).toBe('Signals');
+    host.lastDisabled.set(true);
+    await settle(fixture);
+    expect(activeValue()).toBe('Signal');
   });
 
   it('moves with the arrows, wraps around and jumps with Home and End', async () => {
@@ -185,7 +282,12 @@ describe('CommandListComponent', () => {
 
   it('ignores Enter while composing and when nothing is active', async () => {
     await press(KEYBOARD_KEY.Enter, { isComposing: true });
+    await press(KEYBOARD_KEY.Enter, { keyCode: 229 });
     expect(host.chosen()).toEqual([]);
+    // Negative control: the same Enter without the IME key code chooses.
+    await press(KEYBOARD_KEY.Enter, { keyCode: 13 });
+    expect(host.chosen()).toEqual([{ value: 'a', background: false }]);
+    host.chosen.set([]);
     host.showLinks.set(false);
     host.showFolders.set(false);
     await settle(fixture);
@@ -222,7 +324,7 @@ describe('CommandListComponent', () => {
     expect(await axeViolations(el)).toEqual([]);
     host.showLoose.set(true);
     await settle(fixture);
-    expect(status.textContent?.trim()).toBe('');
+    expect(status.textContent).not.toContain('Nothing found');
     expect(el.querySelector('[role="listbox"]')?.hasAttribute('hidden')).toBe(false);
   });
 
