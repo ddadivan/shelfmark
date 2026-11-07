@@ -47,6 +47,11 @@ describe('createAuth options', () => {
     expect(options.advanced?.useSecureCookies).toBe(isProduction);
   });
 
+  it('pins HttpOnly and SameSite=Lax cookie attributes', () => {
+    const { options } = createAuth(prisma, config());
+    expect(options.advanced?.defaultCookieAttributes).toEqual({ sameSite: 'lax', httpOnly: true });
+  });
+
   it('uses 7 day sessions with a 1 day refresh and no cookie cache', () => {
     const { options } = createAuth(prisma, config());
     expect(options.session).toMatchObject({

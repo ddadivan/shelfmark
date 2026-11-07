@@ -52,6 +52,8 @@ export function createAuth(prisma: PrismaClient, config: AuthConfig) {
       // Explicit, not inferred from the URL: Secure + `__Secure-` prefix exactly in production.
       useSecureCookies: config.isProduction,
       cookiePrefix: AUTH_COOKIE_PREFIX,
+      // Pinned, not left to Better Auth's defaults. Lax: the OAuth callback is a cross-site GET.
+      defaultCookieAttributes: { sameSite: 'lax', httpOnly: true },
     },
     telemetry: { enabled: false },
     onAPIError: { errorURL: `${config.baseUrl}/sign-in`, onError: logAuthError },
