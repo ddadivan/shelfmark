@@ -7,20 +7,20 @@
 
 .shell__header {
   display: flex;
-  gap: rem(16px);
+  gap: var(--space-4);
   align-items: center;
   justify-content: space-between;
-  padding: rem(12px) rem(16px);
+  padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid var(--border);
 
   @include tablet-up {
-    padding-inline: rem(24px);
+    padding-inline: var(--space-6);
   }
 }
 
 .shell__user {
   display: flex;
-  gap: rem(8px);
+  gap: var(--space-2);
   align-items: center;
   min-width: 0;
 }
@@ -39,9 +39,9 @@
 }
 
 .shell__main {
-  padding: rem(24px) rem(16px);
+  padding: var(--space-6) var(--space-4);
 
   @include tablet-up {
-    padding-inline: rem(24px);
+    padding-inline: var(--space-6);
   }
 }

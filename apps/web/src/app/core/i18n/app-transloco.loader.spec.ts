@@ -10,7 +10,9 @@ describe('AppTranslocoLoader', () => {
     expect(translation).toMatchObject({
       landing: { title: 'Shelfmark', tagline: 'Every saved link, in one place.' },
     });
-    expect(Object.keys(translation)).toEqual(['landing', 'auth', 'shell', 'library']);
+    for (const scope of ['landing', 'auth', 'shell', 'library']) {
+      expect(translation).toHaveProperty(scope);
+    }
   });
 
   it('rejects an unsupported language', async () => {

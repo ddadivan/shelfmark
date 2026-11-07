@@ -1,6 +1,10 @@
 import { expect, Page, test } from '@playwright/test';
 
+// Same value as MOCK_SESSION_STORAGE_KEY in apps/web/src/app/core/auth/models/mock-session-storage-key.const.ts.
 const MOCK_SESSION_KEY = 'sm-mock-session';
+const SEEDED_FLAG = 'seeded';
+const GITHUB_BUTTON = 'Continue with GitHub';
+const SIGN_OUT_BUTTON = 'Sign out';
 const MOCK_USER = {
   id: 'e2e',
   name: 'E2E User',
@@ -11,14 +15,14 @@ const MOCK_USER = {
 
 async function seedSession(page: Page): Promise<void> {
   await page.addInitScript(
-    ([key, user]) => {
+    ([key, user, flag]) => {
       // Seed once: sign-out clears the key and a reload must not bring the session back.
-      if (!sessionStorage.getItem('seeded')) {
-        sessionStorage.setItem('seeded', '1');
+      if (!sessionStorage.getItem(flag)) {
+        sessionStorage.setItem(flag, '1');
         localStorage.setItem(key, user);
       }
     },
-    [MOCK_SESSION_KEY, JSON.stringify(MOCK_USER)],
+    [MOCK_SESSION_KEY, JSON.stringify(MOCK_USER), SEEDED_FLAG],
   );
 }
 
@@ -33,7 +37,7 @@ test.describe('sign-in flow (mock auth)', () => {
       page.getByRole('heading', { level: 1, name: 'All your links on one shelf' }),
     ).toBeVisible();
 
-    await page.getByRole('button', { name: 'Continue with GitHub' }).click();
+    await page.getByRole('button', { name: GITHUB_BUTTON }).click();
 
     await expect(page).toHaveURL(/\/links$/);
     await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
@@ -47,7 +51,7 @@ test.describe('sign-in flow (mock auth)', () => {
     // The name is hidden on a phone (the avatar stays), so only check that it is rendered.
     await expect(page.getByText(MOCK_USER.name)).toHaveCount(1);
 
-    await page.getByRole('button', { name: 'Sign out' }).click();
+    await page.getByRole('button', { name: SIGN_OUT_BUTTON }).click();
     await expect(page).toHaveURL(/\/sign-in$/);
 
     await page.goto('/links');

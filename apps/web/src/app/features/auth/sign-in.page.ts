@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  input,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { ButtonComponent, LogoComponent, NoticeComponent, NOTICE_KIND } from '@shelfmark/ui';
@@ -8,6 +15,7 @@ import { AuthPending } from '../../core/auth/models/auth-pending.type';
 import { AUTH_PROVIDER } from '../../core/auth/models/auth-provider.const';
 import { AuthProvider } from '../../core/auth/models/auth-provider.type';
 import { AUTH_ROUTE } from '../../core/auth/models/auth-routes.const';
+import { isSignInReason } from '../../core/auth/is-sign-in-reason';
 import { safeReturnUrl } from '../../core/auth/safe-return-url';
 import { SIGN_IN_REASON_KEY } from './models/sign-in-reason-key.const';
 
@@ -26,6 +34,12 @@ export default class SignInPage {
 
   protected readonly auth = inject(AuthStore);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+  private destroyed = false;
+
+  constructor() {
+    this.destroyRef.onDestroy(() => (this.destroyed = true));
+  }
 
   /** `?returnUrl=`, bound from the route; only used after `safeReturnUrl`. */
   readonly returnUrl = input<string>();
@@ -34,9 +48,7 @@ export default class SignInPage {
 
   protected readonly reasonKey = computed<string | null>(() => {
     const reason = this.reason();
-    return reason !== undefined && Object.hasOwn(SIGN_IN_REASON_KEY, reason)
-      ? SIGN_IN_REASON_KEY[reason as keyof typeof SIGN_IN_REASON_KEY]
-      : null;
+    return isSignInReason(reason) ? SIGN_IN_REASON_KEY[reason] : null;
   });
 
   protected isLoading(action: AuthPending): boolean {
@@ -60,7 +72,7 @@ export default class SignInPage {
   }
 
   private async leave(): Promise<void> {
-    if (this.auth.isSignedIn()) {
+    if (!this.destroyed && this.auth.isSignedIn()) {
       await this.router.navigateByUrl(safeReturnUrl(this.returnUrl()) ?? AUTH_ROUTE.Home);
     }
   }

@@ -77,6 +77,7 @@ describe('SignInPage', () => {
     await harness.navigateByUrl('/sign-in?reason=session-expired');
     const root = harness.routeNativeElement as HTMLElement;
 
+    // Colour contrast is off (no layout in jsdom); the e2e axe run covers it once #82 lands.
     const results = await axe.run(root, { rules: { 'color-contrast': { enabled: false } } });
 
     expect(results.violations.map((v) => v.id)).toEqual([]);
