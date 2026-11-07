@@ -1,3 +1,4 @@
+import { firstValueFrom } from 'rxjs';
 import {
   ApplicationConfig,
   inject,
@@ -8,7 +9,6 @@ import {
 } from '@angular/core';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import {
-  PreloadAllModules,
   provideRouter,
   withComponentInputBinding,
   withInMemoryScrolling,
@@ -16,12 +16,14 @@ import {
   withRouterConfig,
 } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
-import { provideTransloco } from '@jsverse/transloco';
+import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { apiBaseInterceptor } from './core/api/api-base.interceptor';
 import { provideAuthApi } from './core/auth/provide-auth-api';
 import { appRoutes } from './app.routes';
 import { translocoConfig } from './core/i18n/transloco.config';
+import { APP_LANG } from './core/i18n/models/app-lang.const';
 import { AppTranslocoLoader } from './core/i18n/app-transloco.loader';
+import { SignedInPreloadingStrategy } from './core/routing/signed-in-preloading.strategy';
 import { provideLinksApi } from './features/links/provide-links-api';
 import { ThemeService } from './core/theme/theme.service';
 
@@ -32,7 +34,8 @@ export const appConfig: ApplicationConfig = {
     provideRouter(
       appRoutes,
       withComponentInputBinding(),
-      withPreloading(PreloadAllModules),
+      // Only for a signed-in user: a guest on the landing must not compete with the first paint.
+      withPreloading(SignedInPreloadingStrategy),
       withRouterConfig({ paramsInheritanceStrategy: 'always' }),
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
     ),
@@ -40,6 +43,9 @@ export const appConfig: ApplicationConfig = {
     // Only the first exists so far; add the others in that order.
     provideHttpClient(withFetch(), withInterceptors([apiBaseInterceptor])),
     provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
+    // Load the default language before the first render: a lazy `en.json` arriving later fills
+    // in empty text and shifts the layout (CLS).
+    provideAppInitializer(() => firstValueFrom(inject(TranslocoService).load(APP_LANG.En))),
     provideAuthApi(),
     ...provideLinksApi(),
     // SwUpdate is not wired: a new version is applied on the next navigation, with no prompt.

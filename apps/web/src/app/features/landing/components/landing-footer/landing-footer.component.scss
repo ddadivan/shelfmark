@@ -1,0 +1,28 @@
+@use 'ui' as *;
+@use '../../landing' as landing;
+
+:host {
+  display: block;
+  border-top: 1px solid var(--border);
+}
+
+.landing-footer {
+  @include landing.wrap;
+  @include type(label);
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  justify-content: space-between;
+  padding-block: var(--space-6);
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.landing-footer__link {
+  @include landing.text-link;
+}
+
+.landing-footer__hint {
+  @include visually-hidden;
+}
