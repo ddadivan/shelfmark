@@ -47,7 +47,7 @@
         [style.--landing-chat-step]="step()"
         (transitionend)="onRiseEnd($event)"
       >
-        @for (message of feed; track $index) {
+        @for (message of feed(); track $index) {
           <li class="landing-chat__slot">
             <app-landing-chat-bubble [message]="message" />
           </li>

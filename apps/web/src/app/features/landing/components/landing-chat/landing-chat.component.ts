@@ -60,12 +60,21 @@ export class LandingChatComponent {
 
   /** The five links of the static frame (reduced motion) and for assistive technology. */
   protected readonly messages = LANDING_CHAT_MESSAGES;
-  /** The feed twice: after `feedSize` rises the track looks the same as at the start. */
-  protected readonly feed = [...LANDING_CHAT_FEED_MESSAGES, ...LANDING_CHAT_FEED_MESSAGES];
+  /**
+   * The feed twice: after `feedSize` rises the track looks the same as at the start. The second
+   * lap is rendered in small batches after the first paint (it is below the window until the
+   * track has risen), so no single task renders all sixteen bubbles.
+   */
+  protected readonly feed = computed(() => [
+    ...LANDING_CHAT_FEED_MESSAGES,
+    ...LANDING_CHAT_FEED_MESSAGES.slice(0, this.secondLap()),
+  ]);
   protected readonly rise = `${LANDING_CHAT_TIMING.RiseMs}ms`;
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
 
   private readonly feedSize = LANDING_CHAT_FEED_MESSAGES.length;
+  /** How many messages of the second lap are in the DOM so far. */
+  private readonly secondLap = signal(0);
   private readonly phase = signal<LandingChatPhase>(LANDING_CHAT_PHASE.Chat);
   private readonly inView = signal(false);
   protected readonly hovered = signal(false);
@@ -120,7 +129,10 @@ export class LandingChatComponent {
       onCleanup(() => clearInterval(timer));
     });
 
-    afterNextRender(() => this.watchViewport());
+    afterNextRender(() => {
+      this.watchViewport();
+      this.fillSecondLap();
+    });
   }
 
   protected toggle(): void {
@@ -163,6 +175,20 @@ export class LandingChatComponent {
     }
     this.snapping.set(false);
     this.step.update((value) => value + 1);
+  }
+
+  private fillSecondLap(): void {
+    if (!this.animated()) {
+      return;
+    }
+    const timer = setInterval(() => {
+      const next = this.secondLap() + LANDING_CHAT_TIMING.LapBatchSize;
+      this.secondLap.set(Math.min(next, this.feedSize));
+      if (next >= this.feedSize) {
+        clearInterval(timer);
+      }
+    }, LANDING_CHAT_TIMING.LapBatchMs);
+    this.destroyRef.onDestroy(() => clearInterval(timer));
   }
 
   private watchViewport(): void {

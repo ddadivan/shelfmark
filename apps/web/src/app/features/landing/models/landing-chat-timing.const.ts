@@ -11,6 +11,10 @@ export const LANDING_CHAT_TIMING = {
   ClearMs: 520,
   /** Delay between two folders landing on the shelf. */
   GroupStaggerMs: 160,
+  /** The second lap of the feed is added this many messages at a time, so no task renders all. */
+  LapBatchSize: 2,
+  /** Pause between two batches of the second lap. */
+  LapBatchMs: 120,
   /** Delay between two cards landing on the shelf. */
   CardStaggerMs: 80,
 } as const;

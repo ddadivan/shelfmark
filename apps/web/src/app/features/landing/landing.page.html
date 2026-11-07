@@ -3,24 +3,26 @@
   <app-landing-hero />
   <!--
     Below the fold: loaded when the browser is idle, so the first paint ships less JS, or at once
-    when the visitor asks for "How it's built" (its target lives in here).
+    when the visitor asks for "How it's built" (its target lives in here). One block per part, each
+    on its own trigger a little apart, so the browser renders them in separate tasks instead of one long one.
   -->
   @defer (on idle; when sectionsRequested()) {
   <app-landing-before-after />
+  } @placeholder {
+  <div class="landing__placeholder"></div>
+  } @defer (on timer(150ms); when sectionsRequested()) {
   <div class="landing__about">
     <app-landing-why />
     <app-landing-built />
   </div>
+  } @defer (on timer(300ms); when sectionsRequested()) {
   <app-landing-finale />
-  } @placeholder {
-  <div class="landing__placeholder"></div>
   }
 </main>
 <!--
   The footer is a separate block on purpose: it is the `contentinfo` landmark and must stay
-  outside `<main>`, and a defer block cannot span the closing `</main>`. Same triggers, so both
-  blocks load together.
+  outside `<main>`, and a defer block cannot span the closing `</main>`. It follows the last section.
 -->
-@defer (on idle; when sectionsRequested()) {
+@defer (on timer(450ms); when sectionsRequested()) {
 <app-landing-footer />
 }

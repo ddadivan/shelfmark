@@ -127,8 +127,22 @@ describe('LandingChatComponent', () => {
   describe('endless feed', () => {
     beforeEach(() => create({ reduced: false }));
 
-    it('renders the feed twice, hidden from assistive technology, with a readable copy', () => {
-      expect(root.querySelectorAll('.landing-chat__slot')).toHaveLength(16);
+    it('renders the first lap at once and the second one in batches after it', async () => {
+      const slots = (): number => root.querySelectorAll('.landing-chat__slot').length;
+
+      expect(slots()).toBe(8);
+
+      await vi.waitFor(() => {
+        settle();
+        expect(slots()).toBe(16);
+      });
+    });
+
+    it('renders the feed twice, hidden from assistive technology, with a readable copy', async () => {
+      await vi.waitFor(() => {
+        settle();
+        expect(root.querySelectorAll('.landing-chat__slot')).toHaveLength(16);
+      });
       expect(track().getAttribute('aria-hidden')).toBe('true');
       expect(root.querySelectorAll('.landing-chat__sr li')).toHaveLength(5);
       expect(shelfButton()?.textContent?.trim()).toBe('Put them on the shelf');
