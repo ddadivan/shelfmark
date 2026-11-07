@@ -16,6 +16,8 @@ import {
 } from '@shelfmark/contracts';
 import { FoldersService } from '../folders/folders.service';
 import { Prisma } from '../generated/prisma/client';
+import { hasPrismaCode } from '../common/prisma/has-prisma-code';
+import { PRISMA_ERROR_CODE } from '../common/prisma/prisma-error-code.const';
 import { PrismaService } from '../prisma/prisma.service';
 import { TAG_ERROR_MESSAGE } from '../tags/models/tag-error-message.const';
 import { TagsService } from '../tags/tags.service';
@@ -25,14 +27,6 @@ import { LINK_ERROR_MESSAGE } from './models/link-error-message.const';
 import { LINK_INCLUDE } from './models/link-include.const';
 import type { LinkDbClient } from './models/link-db-client.type';
 import { toLinkResponse } from './to-link-response';
-
-const UNIQUE_VIOLATION = 'P2002';
-const FOREIGN_KEY_VIOLATION = 'P2003';
-const RECORD_NOT_FOUND = 'P2025';
-
-function hasCode(error: unknown, code: string): boolean {
-  return error instanceof Prisma.PrismaClientKnownRequestError && error.code === code;
-}
 
 /** `null` and blank text both mean "no note". */
 function noteOrNull(note: string | null | undefined): string | null {
@@ -117,7 +111,7 @@ export class LinksWriteService {
         return { link: toLinkResponse(row), created: true };
       });
     } catch (error) {
-      if (key !== undefined && hasCode(error, UNIQUE_VIOLATION)) {
+      if (key !== undefined && hasPrismaCode(error, PRISMA_ERROR_CODE.UniqueViolation)) {
         // A concurrent request with the same key won: answer with its link.
         const replay = await this.findByKey(this.prisma, userId, key);
         if (replay) return { link: replay, created: false };
@@ -229,8 +223,9 @@ export class LinksWriteService {
 
   /** A row or tag removed by a concurrent request between the lookup and the write. */
   private mapVanished(error: unknown): unknown {
-    if (hasCode(error, RECORD_NOT_FOUND)) return new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
-    if (hasCode(error, FOREIGN_KEY_VIOLATION)) {
+    if (hasPrismaCode(error, PRISMA_ERROR_CODE.RecordNotFound))
+      return new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
+    if (hasPrismaCode(error, PRISMA_ERROR_CODE.ForeignKeyViolation)) {
       return new ConflictException(LINK_ERROR_MESSAGE.ChangedMeanwhile);
     }
     return error;

@@ -14,13 +14,14 @@ import {
   type UpdateFolderRequest,
 } from '@shelfmark/contracts';
 import { Prisma } from '../generated/prisma/client';
+import { hasPrismaCode } from '../common/prisma/has-prisma-code';
+import { PRISMA_ERROR_CODE } from '../common/prisma/prisma-error-code.const';
 import { PrismaService } from '../prisma/prisma.service';
 import type { FolderDbClient } from './models/folder-db-client.type';
 import { FOLDER_LOCK_PREFIX } from './models/folder-advisory-lock.const';
 import { toFolderResponse } from './to-folder-response';
 import { wouldCreateCycle } from './would-create-cycle';
 
-const FOREIGN_KEY_VIOLATION = 'P2003';
 const NOT_FOUND = 'Folder not found';
 
 @Injectable()
@@ -163,10 +164,7 @@ export class FoldersService {
   }
 
   private mapForeignKey(error: unknown): unknown {
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === FOREIGN_KEY_VIOLATION
-    ) {
+    if (hasPrismaCode(error, PRISMA_ERROR_CODE.ForeignKeyViolation)) {
       return new NotFoundException(NOT_FOUND);
     }
     return error;
