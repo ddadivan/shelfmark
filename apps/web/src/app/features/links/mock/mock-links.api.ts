@@ -91,6 +91,7 @@ export class MockLinksApi implements LinksApi {
         updatedAt: now,
       };
       this.links = [link, ...this.links];
+      this.data.ensureTags(link.tags);
       return of({ ...link });
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
@@ -147,6 +148,7 @@ export class MockLinksApi implements LinksApi {
         updatedAt: new Date().toISOString(),
       };
       this.links = this.links.map((link) => (link.id === id ? updated : link));
+      this.data.ensureTags(updated.tags);
       return of({ ...updated });
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }

@@ -253,7 +253,12 @@
       "text": "Paste a link to save it to your shelf.",
       "add": "Add link"
     },
-    "refetchFailed": "Couldn't refresh your links. You are seeing the last loaded list."
+    "refetchFailed": "Couldn't refresh your links. You are seeing the last loaded list.",
+    "emptyFiltered": {
+      "title": "No links with these tags",
+      "text": "Nothing you saved has all of the selected tags.",
+      "clear": "Clear filter"
+    }
   },
   "settings": {
     "title": "Settings",
@@ -270,6 +275,76 @@
         "light": "Light",
         "dark": "Dark"
       }
+    }
+  },
+  "tags": {
+    "dialog": {
+      "cancel": "Cancel",
+      "close": "Close"
+    },
+    "sidebar": {
+      "heading": "Tags",
+      "add": "New tag",
+      "list": "Tags",
+      "loadFailed": "Couldn't load your tags.",
+      "empty": "No tags yet. Add one with +.",
+      "menuFor": "Actions for tag {{name}}",
+      "more": "+ {{count}} more",
+      "showLess": "Show less",
+      "menu": {
+        "label": "Tag actions",
+        "show": "Show links",
+        "rename": "Rename",
+        "merge": "Merge into another tag…",
+        "delete": "Delete tag"
+      }
+    },
+    "add": {
+      "label": "New tag",
+      "placeholder": "Tag name",
+      "hint": "Enter saves, Esc cancels. Spaces become dashes.",
+      "done": "Tag “{{name}}” created",
+      "failed": "Couldn't create the tag. Try again.",
+      "limit": "You have reached the limit of {{max}} tags."
+    },
+    "name": {
+      "required": "Enter a tag name",
+      "tooLong": "Use {{max}} characters or fewer",
+      "exists": "There's already a tag “{{name}}”."
+    },
+    "rename": {
+      "label": "Tag name",
+      "conflict": "There's already a tag “{{name}}”. Merge them instead?",
+      "merge": "Merge into “{{name}}”",
+      "failed": "Couldn't rename the tag. The old name is back."
+    },
+    "merge": {
+      "title": "Merge “{{name}}”",
+      "text": "Every link tagged “{{name}}” gets the tag you choose, then “{{name}}” is deleted.",
+      "label": "Merge into",
+      "placeholder": "Choose a tag",
+      "searchLabel": "Search tags",
+      "noResults": "No tags found",
+      "action": "Merge",
+      "required": "Choose a tag to merge into",
+      "failed": "Couldn't merge the tags. Try again.",
+      "done": "Merged “{{name}}” into “{{target}}”"
+    },
+    "delete": {
+      "title": "Delete tag “{{name}}”?",
+      "message": {
+        "one": "It will be removed from {{count}} link. The link itself stays where it is.",
+        "other": "It will be removed from {{count}} links. The links themselves stay where they are."
+      },
+      "confirm": "Delete tag",
+      "undo": "Undo",
+      "done": "Tag “{{name}}” deleted",
+      "failed": "Couldn't delete the tag “{{name}}”. It is back."
+    },
+    "filter": {
+      "label": "Filtered by tags",
+      "remove": "Remove tag filter {{name}}",
+      "clear": "Clear filter"
     }
   }
 }

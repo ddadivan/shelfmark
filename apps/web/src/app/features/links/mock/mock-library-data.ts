@@ -49,12 +49,48 @@ export class MockLibraryData {
     };
   }
 
-  /** Tags with `linkCount`. */
+  /** Stored tags without counts; mutate through `setTags`. */
+  get tagList(): readonly TagResponse[] {
+    return this.tags;
+  }
+
+  setTags(tags: TagResponse[]): void {
+    this.tags = tags;
+  }
+
+  /** Tags with `linkCount`, most used first, then by name (the API order). */
   tagsView(): TagResponse[] {
-    return this.tags.map((tag) => ({
-      ...tag,
-      linkCount: this.links.filter((link) => link.tags.includes(tag.name)).length,
-    }));
+    return this.tags
+      .map((tag) => ({
+        ...tag,
+        linkCount: this.links.filter((link) => link.tags.includes(tag.name)).length,
+      }))
+      .sort((a, b) => b.linkCount - a.linkCount || a.name.localeCompare(b.name));
+  }
+
+  /** Makes sure every name exists as a tag (a link was saved with a new one). */
+  ensureTags(names: readonly string[]): void {
+    for (const name of names) {
+      if (!this.tags.some((tag) => tag.name.toLowerCase() === name.toLowerCase())) {
+        this.tags = [...this.tags, newTag(name)];
+      }
+    }
+  }
+
+  /** Rewrites the tag names of every link; a name that maps to `null` is dropped, duplicates collapse. */
+  retagLinks(map: (name: string) => string | null): void {
+    this.links = this.links.map((link) => {
+      const seen = new Set<string>();
+      const tags: string[] = [];
+      for (const name of link.tags) {
+        const next = map(name);
+        if (next !== null && !seen.has(next.toLowerCase())) {
+          seen.add(next.toLowerCase());
+          tags.push(next);
+        }
+      }
+      return { ...link, tags };
+    });
   }
 
   /** `id` and every descendant of it. */

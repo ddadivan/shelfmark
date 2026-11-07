@@ -28,6 +28,8 @@
     {{ 'shell.sidebar.newFolder' | transloco }}
   </ui-button>
 
+  <app-sidebar-tags />
+
   <ui-menu [ariaLabel]="'shell.sidebar.folderMenu' | transloco" (closed)="menuClosed()">
     <ui-menu-item icon="folder-plus" (activated)="createSubfolder()">
       {{ 'shell.sidebar.menu.newSubfolder' | transloco }}

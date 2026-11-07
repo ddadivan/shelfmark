@@ -21,7 +21,22 @@
     />
     }
   </header>
-  } @if (store.error() && store.count() > 0 && !folderMissing()) {
+  @if (filtered()) {
+  <div class="library__filter" role="group" [attr.aria-label]="'tags.filter.label' | transloco">
+    @for (name of tags(); track name) {
+    <ui-chip
+      removable
+      [removeLabel]="'tags.filter.remove' | transloco: { name: name }"
+      (removed)="removeTag(name)"
+    >
+      {{ name }}
+    </ui-chip>
+    }
+    <ui-button variant="ghost" size="sm" (click)="clearTags()">
+      {{ 'tags.filter.clear' | transloco }}
+    </ui-button>
+  </div>
+  } } @if (store.error() && store.count() > 0 && !folderMissing()) {
   <ui-notice kind="danger" class="library__notice">
     {{ 'library.refetchFailed' | transloco }}
     <ui-button size="sm" (click)="retry()">{{ 'library.error.retry' | transloco }}</ui-button>

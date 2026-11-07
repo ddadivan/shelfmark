@@ -21,6 +21,7 @@ import {
 } from '@shelfmark/ui';
 import { combineLatest, filter, map } from 'rxjs';
 import { FolderActionsService } from '../../features/folders/folder-actions.service';
+import { SidebarTagsComponent } from '../../features/tags/sidebar-tags/sidebar-tags.component';
 import { LINKS_SCOPE } from '../../features/links/models/links-scope.const';
 import { APP_PATH } from '../../models/app-path.const';
 import type { FolderNode } from '../../stores/models/folder-node.interface';
@@ -47,6 +48,7 @@ const FIXED_ROUTES: Readonly<Record<string, string>> = {
     MenuComponent,
     MenuItemComponent,
     MenuSeparatorComponent,
+    SidebarTagsComponent,
     TranslocoPipe,
     TreeComponent,
   ],
