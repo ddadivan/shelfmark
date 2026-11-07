@@ -55,10 +55,13 @@ jobs:
             exit 1
           }
       - run: node --test .claude/hooks/
+      - run: node --test scripts/
       - run: npx nx affected -t lint typecheck test build --output-style=static
       # Guards the production bundle (no e2e-only route, nonce placeholder present, ADR 0022).
       # Only runs when `web` is affected; the build it depends on is cached by the step above.
       - run: npx nx affected -t middleware-shell --output-style=static
+      # The production bundle must not contain the dev/e2e-only mock auth API.
+      - run: npx nx affected -t check-bundle --output-style=static
       # Storybook must build whenever `ui` (or something it depends on) is affected (ADR 0023).
       # Its accessibility run needs a browser and lives in the `e2e` job.
       - name: Build Storybook
