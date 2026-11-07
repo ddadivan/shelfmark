@@ -142,8 +142,10 @@ export default class LibraryPage {
   });
   protected readonly titleKey = computed(() => `library.scope.${this.scope()}`);
   protected readonly emptyKey = computed(() =>
-    this.isFolder() ? 'library.emptyFolder' : 'library.empty',
+    this.isFolder() ? 'library.emptyFolder' : `library.empty.${this.scope()}`,
   );
+  /** Favorites cannot be filled by adding a link, so its empty state points back to all links. */
+  protected readonly canAddFromEmpty = computed(() => this.scope() !== LINKS_SCOPE.Favorites);
   private readonly filter = computed<LinksFilter>(() => {
     const scope = this.scope();
     const folderId = this.folderId();
@@ -242,6 +244,10 @@ export default class LibraryPage {
     // The sidebar loads the folders too (the phone has none yet); the call is shared.
     void this.folders.load();
     this.store.setFilter(this.filter);
+  }
+
+  protected async openUnsorted(): Promise<void> {
+    await this.router.navigateByUrl(`/${APP_PATH.Unsorted}`);
   }
 
   protected async showAll(): Promise<void> {

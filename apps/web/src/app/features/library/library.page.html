@@ -136,9 +136,20 @@
     [heading]="emptyKey() + '.title' | transloco"
     [text]="emptyKey() + '.text' | transloco"
   >
-    <ui-button variant="primary" iconLeft="add" (click)="actions.addLink(addLinkData())">
-      {{ emptyKey() + '.add' | transloco }}
-    </ui-button>
+    <div class="library__empty-actions">
+      @if (isFolder()) {
+      <ui-button (click)="openUnsorted()"
+        >{{ 'library.emptyFolder.unsorted' | transloco }}</ui-button
+      >
+      }
+      <ui-button
+        variant="primary"
+        [iconLeft]="canAddFromEmpty() ? 'add' : undefined"
+        (click)="canAddFromEmpty() ? actions.addLink(addLinkData()) : showAll()"
+      >
+        {{ emptyKey() + '.action' | transloco }}
+      </ui-button>
+    </div>
   </ui-empty-state>
   } @else if (showLinks()) { @if (ui.view() === UI_VIEW.List) {
   <ul class="library__rows" [attr.aria-label]="'library.list.label' | transloco">
