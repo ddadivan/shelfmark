@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { IconComponent } from './icon.component';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
 import { ICON_NAMES } from './models/icon-names.const';
 
 const meta: Meta<IconComponent> = {
@@ -49,6 +50,26 @@ export const Colours: Story = {
         <ui-icon name="star-filled" [size]="24" style="color: var(--text-muted)" />
         <ui-icon name="star-filled" [size]="24" style="color: var(--accent)" />
         <ui-icon name="warning" [size]="24" style="color: var(--danger)" />
+      </div>`,
+  }),
+};
+
+/** Provider marks: GitHub follows `currentColor`, Google keeps its brand colours in both themes. */
+export const ProviderMarks: Story = {
+  render: () => ({
+    props: { themes: Object.values(THEME) },
+    template: `
+      <div class="ds-themes">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane">
+            <ui-icon name="google" [size]="24" label="Google" />
+            <ui-icon name="github" [size]="24" label="GitHub" />
+            <div class="ds-row">
+              <ui-icon name="google" [size]="20" />
+              <ui-icon name="github" [size]="20" />
+            </div>
+          </div>
+        }
       </div>`,
   }),
 };
