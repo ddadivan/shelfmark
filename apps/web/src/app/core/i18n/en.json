@@ -25,6 +25,7 @@
       "hintShelf": "Notes come from your own messages.",
       "putOnShelf": "Put them on the shelf",
       "showChat": "Show the chat again",
+      "pause": "Pause the feed",
       "messages": {
         "watch": {
           "text": "watch later!!",
@@ -45,6 +46,18 @@
         "zoneless": {
           "text": "where was that zoneless article…",
           "time": "Fri 08:47"
+        },
+        "lisbon": {
+          "text": "lisbon, maybe in may",
+          "time": "Sat 11:20"
+        },
+        "icons": {
+          "text": "icons for the side project",
+          "time": "Sun 16:02"
+        },
+        "react": {
+          "text": "read this one day",
+          "time": "Mon 07:58"
         }
       }
     },
@@ -81,7 +94,8 @@
     "beforeAfter": {
       "title": "The same links, before and after",
       "before": "Before: scattered",
-      "after": "After: on one shelf"
+      "after": "After: on one shelf",
+      "pauseMotion": "Pause animations"
     },
     "before": {
       "pingTitle": "+1 in Saved Messages",
@@ -293,7 +307,6 @@
     "accountMenu": "Account menu",
     "settings": "Settings",
     "addLink": "Add link",
-    "search": "Search",
     "sidebar": {
       "nav": "Library",
       "tree": "Views and folders",
@@ -310,7 +323,8 @@
         "move": "Move to…",
         "delete": "Delete folder…"
       }
-    }
+    },
+    "search": "Search"
   },
   "folders": {
     "dialog": {
@@ -425,6 +439,11 @@
       "add": "Add link"
     },
     "refetchFailed": "Couldn't refresh your links. You are seeing the last loaded list.",
+    "emptyFiltered": {
+      "title": "No links with these tags",
+      "text": "Nothing you saved has all of the selected tags.",
+      "clear": "Clear filter"
+    },
     "filter": {
       "label": "Active filters"
     },
@@ -452,43 +471,6 @@
     "pageTitle": {
       "page": "{{page}} · {{app}}",
       "search": "Search: {{query}} · {{app}}"
-    },
-    "emptyFiltered": {
-      "title": "No links with these tags",
-      "text": "Nothing you saved has all of the selected tags.",
-      "clear": "Clear filter"
-    }
-  },
-  "search": {
-    "title": "Search",
-    "close": "Close search",
-    "label": "Search links, folders and tags",
-    "placeholder": "Search links, folders and tags",
-    "results": "Search results",
-    "esc": "Esc",
-    "inFolder": "in {{folder}}",
-    "noteMatches": "note matches:",
-    "showAll": "Show all results for “{{query}}”",
-    "foldersAndTags": "Folders and tags",
-    "linkCount": {
-      "one": "{{count}} link",
-      "other": "{{count}} links"
-    },
-    "tagMeta": {
-      "one": "Tag, {{count}} link",
-      "other": "Tag, {{count}} links"
-    },
-    "status": {
-      "one": "{{count}} result",
-      "other": "{{count}} results"
-    },
-    "hint": "Type to search your links, folders and tags.",
-    "searching": "Searching…",
-    "failed": "Couldn't search. Try again.",
-    "hints": {
-      "move": "move",
-      "open": "open",
-      "background": "open in background"
     }
   },
   "settings": {
@@ -580,6 +562,38 @@
     "count": {
       "one": "{{count}} link",
       "other": "{{count}} links"
+    }
+  },
+  "search": {
+    "title": "Search",
+    "close": "Close search",
+    "label": "Search links, folders and tags",
+    "placeholder": "Search links, folders and tags",
+    "results": "Search results",
+    "esc": "Esc",
+    "inFolder": "in {{folder}}",
+    "noteMatches": "note matches:",
+    "showAll": "Show all results for “{{query}}”",
+    "foldersAndTags": "Folders and tags",
+    "linkCount": {
+      "one": "{{count}} link",
+      "other": "{{count}} links"
+    },
+    "tagMeta": {
+      "one": "Tag, {{count}} link",
+      "other": "Tag, {{count}} links"
+    },
+    "status": {
+      "one": "{{count}} result",
+      "other": "{{count}} results"
+    },
+    "hint": "Type to search your links, folders and tags.",
+    "searching": "Searching…",
+    "failed": "Couldn't search. Try again.",
+    "hints": {
+      "move": "move",
+      "open": "open",
+      "background": "open in background"
     }
   }
 }
