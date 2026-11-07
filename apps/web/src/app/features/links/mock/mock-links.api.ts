@@ -168,13 +168,13 @@ export class MockLinksApi implements LinksApi {
 
   private filter(query: ListLinksQuery): LinkResponse[] {
     const q = query.q?.toLowerCase();
-    const tag = query.tag?.toLowerCase();
+    const wanted = (query.tag ?? []).map((name) => name.toLowerCase());
     return this.links.filter(
       (link) =>
         (query.folderId === undefined || link.folderId === query.folderId) &&
         (!query.unsorted || link.folderId === null) &&
         (query.favorite === undefined || link.isFavorite === query.favorite) &&
-        (tag === undefined || link.tags.some((name) => name.toLowerCase() === tag)) &&
+        wanted.every((tag) => link.tags.some((name) => name.toLowerCase() === tag)) &&
         (q === undefined || link.title.toLowerCase().includes(q)),
     );
   }
