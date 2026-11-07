@@ -35,4 +35,16 @@ describe('narrowLimits', () => {
     expect(narrowLimits(BASE, { totalTimeoutMs: undefined })).toEqual(BASE);
     expect(BASE).toEqual(copy);
   });
+
+  it('ignores overrides that are NaN, negative, zero or infinite', () => {
+    expect(
+      narrowLimits(BASE, {
+        totalTimeoutMs: Number.NaN,
+        maxRedirects: -1,
+        maxBodyBytes: 0,
+        connectTimeoutMs: Number.POSITIVE_INFINITY,
+        maxUrlLength: Number.NEGATIVE_INFINITY,
+      }),
+    ).toEqual(BASE);
+  });
 });
