@@ -87,7 +87,8 @@ const meta: Meta<ToastComponent> = {
       description: {
         component:
           '`ToastService.show({ text, kind, action?, duration? })` renders a `ui-toast` in the toast overlay layer. ' +
-          'One toast at a time, the newest replaces the older. It is announced by one persistent polite live region and never takes focus.',
+          'One toast at a time, the newest replaces the older. It is announced by one persistent polite live region and never takes focus. ' +
+          '`show()` returns `{ dismiss(), closed }`: `closed` is a promise that resolves once with the close reason (`TOAST_CLOSE_REASON`: `action`, `timeout`, `dismissed`, `replaced`).',
       },
     },
   },

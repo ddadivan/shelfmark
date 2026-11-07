@@ -2,6 +2,8 @@ import { ErrorHandler, inject, Service, signal } from '@angular/core';
 import { TOAST_DURATION_MS } from './models/toast-duration.const';
 import type { ToastItem } from './models/toast-item.interface';
 import type { ToastOptions } from './models/toast-options.interface';
+import { TOAST_CLOSE_REASON } from './models/toast-close-reason.const';
+import type { ToastCloseReason } from './models/toast-close-reason.type';
 import { TOAST_KIND } from './models/toast-kind.const';
 
 /**
@@ -13,6 +15,7 @@ import { TOAST_KIND } from './models/toast-kind.const';
 export class ToastStore {
   private readonly current = signal<readonly ToastItem[]>([]);
   private readonly errorHandler = inject(ErrorHandler);
+  private readonly resolvers = new Map<number, (reason: ToastCloseReason) => void>();
   private nextId = 1;
   private timer: ReturnType<typeof setTimeout> | undefined;
   private remaining = 0;
@@ -22,8 +25,14 @@ export class ToastStore {
   readonly items = this.current.asReadonly();
 
   push(options: ToastOptions): ToastItem {
+    const id = this.nextId++;
+    const closed = new Promise<ToastCloseReason>((resolve) => this.resolvers.set(id, resolve));
+    const previous = this.current()[0];
+    if (previous) {
+      this.resolve(previous.id, TOAST_CLOSE_REASON.Replaced);
+    }
     const item: ToastItem = {
-      id: this.nextId++,
+      id,
       kind: options.kind ?? TOAST_KIND.Info,
       text: options.text,
       action: options.action,
@@ -32,6 +41,7 @@ export class ToastStore {
         options.duration ??
           (options.action ? TOAST_DURATION_MS.withAction : TOAST_DURATION_MS.default),
       ),
+      closed,
     };
     this.current.set([item]);
     this.remaining = item.duration;
@@ -41,13 +51,14 @@ export class ToastStore {
     return item;
   }
 
-  dismiss(id: number): void {
+  dismiss(id: number, reason: ToastCloseReason = TOAST_CLOSE_REASON.Dismissed): void {
     if (this.current()[0]?.id !== id) {
       return;
     }
     clearTimeout(this.timer);
     this.timer = undefined;
     this.current.set([]);
+    this.resolve(id, reason);
   }
 
   /** Hover or focus on the toast stops the clock; leaving restarts it with what remained. */
@@ -73,7 +84,7 @@ export class ToastStore {
     } catch (error) {
       this.errorHandler.handleError(error);
     } finally {
-      this.dismiss(item.id);
+      this.dismiss(item.id, TOAST_CLOSE_REASON.Action);
     }
   }
 
@@ -87,7 +98,13 @@ export class ToastStore {
     this.startedAt = Date.now();
     this.timer = setTimeout(() => {
       this.timer = undefined;
-      this.dismiss(item.id);
+      this.dismiss(item.id, TOAST_CLOSE_REASON.Timeout);
     }, this.remaining);
+  }
+
+  /** Settles the `closed` promise of a toast once; later calls do nothing. */
+  private resolve(id: number, reason: ToastCloseReason): void {
+    this.resolvers.get(id)?.(reason);
+    this.resolvers.delete(id);
   }
 }
