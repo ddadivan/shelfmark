@@ -1,4 +1,4 @@
-import { Service } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import {
   LINK_SORT_FIELD,
   PAGE_LIMIT,
@@ -21,7 +21,7 @@ import { MOCK_LATENCY_MS } from '../models/mock-latency.const';
 import { MOCK_LINKS_SCENARIO } from '../models/mock-links-scenario.const';
 import { MOCK_LINKS_SCENARIO_KEY } from '../models/mock-links-scenario-key.const';
 import type { LinksApi } from '../models/links-api.interface';
-import { generateMockLinks } from './generate-mock-links';
+import { MockLibraryData } from './mock-library-data';
 import { normalizeUrl } from './normalize-url';
 
 /**
@@ -33,7 +33,15 @@ import { normalizeUrl } from './normalize-url';
  */
 @Service()
 export class MockLinksApi implements LinksApi {
-  private links: LinkResponse[] = generateMockLinks();
+  private readonly data = inject(MockLibraryData);
+
+  private get links(): LinkResponse[] {
+    return this.data.links;
+  }
+
+  private set links(links: LinkResponse[]) {
+    this.data.links = links;
+  }
 
   preview(url: string): Observable<LinkPreviewResponse> {
     const host = displayHost(url);

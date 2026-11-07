@@ -13,12 +13,17 @@ import {
   SkeletonComponent,
   type SegmentedOption,
 } from '@shelfmark/ui';
+import { Router } from '@angular/router';
 import { InViewDirective } from '../links/in-view/in-view.directive';
 import { LinkActionsService } from '../links/link-actions.service';
 import { LinkCardComponent } from '../links/link-card/link-card.component';
 import { LinkRowComponent } from '../links/link-row/link-row.component';
+import type { AddLinkData } from '../links/models/add-link-data.interface';
+import type { LinksFilter } from '../links/models/links-filter.interface';
 import { LINKS_SCOPE } from '../links/models/links-scope.const';
 import type { LinksScope } from '../links/models/links-scope.type';
+import { APP_PATH } from '../../models/app-path.const';
+import { FoldersStore } from '../../stores/folders.store';
 import { LinksStore } from '../../stores/links.store';
 import { UI_VIEW } from '../../stores/models/ui-view.const';
 import { isUiView } from '../../stores/is-ui-view';
@@ -56,16 +61,45 @@ export default class LibraryPage {
   protected readonly store = inject(LinksStore);
   protected readonly ui = inject(UiStore);
   protected readonly actions = inject(LinkActionsService);
+  private readonly folders = inject(FoldersStore);
+  private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
 
   /** From the route data. */
   readonly scope = input<LinksScope>(LINKS_SCOPE.All);
+  /** From the route (`folders/:folderId`). */
+  readonly folderId = input<string>();
 
   protected readonly UI_VIEW = UI_VIEW;
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly SKELETON_COUNT = SKELETON_COUNT;
 
+  protected readonly isFolder = computed(() => this.scope() === LINKS_SCOPE.Folder);
+  /** The folder of the page, once the folder list has it. */
+  protected readonly folder = computed(() => {
+    const id = this.folderId();
+    return this.isFolder() && id !== undefined ? this.folders.entityMap()[id] : undefined;
+  });
+  /** An unknown or foreign folder id: the page shows "not found" instead of the content. */
+  protected readonly folderMissing = computed(
+    () => this.isFolder() && this.folders.loaded() && this.folder() === undefined,
+  );
+  /** Data of the add-link dialog: the folder of the page is preselected. */
+  protected readonly addLinkData = computed<AddLinkData>(() => {
+    const id = this.folderId();
+    return this.isFolder() && id !== undefined ? { folderId: id } : {};
+  });
   protected readonly titleKey = computed(() => `library.scope.${this.scope()}`);
+  protected readonly emptyKey = computed(() =>
+    this.isFolder() ? 'library.emptyFolder' : 'library.empty',
+  );
+  private readonly filter = computed<LinksFilter>(() => {
+    const folderId = this.folderId();
+    return {
+      scope: this.scope(),
+      ...(this.isFolder() && folderId !== undefined && { folderId }),
+    };
+  });
   protected readonly firstLoad = computed(
     () => !this.store.loaded() && !this.store.error() && this.store.count() === 0,
   );
@@ -94,7 +128,13 @@ export default class LibraryPage {
   });
 
   constructor() {
-    this.store.setFilter(computed(() => ({ scope: this.scope() })));
+    // The sidebar loads the folders too (the phone has none yet); the call is shared.
+    void this.folders.load();
+    this.store.setFilter(this.filter);
+  }
+
+  protected async showAll(): Promise<void> {
+    await this.router.navigateByUrl(`/${APP_PATH.Links}`);
   }
 
   protected setView(view: string): void {
@@ -104,6 +144,6 @@ export default class LibraryPage {
   }
 
   protected retry(): void {
-    this.store.setFilter({ scope: this.scope() });
+    this.store.setFilter(this.filter());
   }
 }

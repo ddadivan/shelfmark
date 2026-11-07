@@ -109,14 +109,30 @@
   "shell": {
     "accountMenu": "Account menu",
     "settings": "Settings",
-    "addLink": "Add link"
+    "addLink": "Add link",
+    "sidebar": {
+      "nav": "Library",
+      "tree": "Views and folders",
+      "folders": "Folders"
+    }
   },
   "library": {
     "title": "All links",
     "scope": {
       "all": "All links",
       "unsorted": "Unsorted",
-      "favorites": "Favorites"
+      "favorites": "Favorites",
+      "folder": "Folder"
+    },
+    "folderNotFound": {
+      "title": "Folder not found",
+      "text": "This folder doesn't exist, or it was deleted.",
+      "action": "Show all links"
+    },
+    "emptyFolder": {
+      "title": "This folder is empty",
+      "text": "Add a link here, or move links in from other folders.",
+      "add": "Add link here"
     },
     "count": "{{count}} links",
     "countMore": "{{count}}+ links",

@@ -1,0 +1,10 @@
+<nav class="sidebar" [attr.aria-label]="'shell.sidebar.nav' | transloco">
+  <ui-tree
+    [fixedNodes]="fixedNodes()"
+    [nodes]="nodes()"
+    [activeId]="activeId()"
+    [heading]="'shell.sidebar.folders' | transloco"
+    [ariaLabel]="'shell.sidebar.tree' | transloco"
+    (selected)="select($event)"
+  />
+</nav>

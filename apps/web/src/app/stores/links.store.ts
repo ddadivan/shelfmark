@@ -18,18 +18,19 @@ import {
   withEntities,
 } from '@ngrx/signals/entities';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import type { LinkResponse, ListLinksQuery } from '@shelfmark/contracts';
+import type { FolderDeleteMode, LinkResponse } from '@shelfmark/contracts';
+import { FOLDER_DELETE_MODE } from '@shelfmark/contracts';
 import { catchError, EMPTY, firstValueFrom, pipe, switchMap, tap } from 'rxjs';
+import { inFilter, linksQuery, sameFilter } from '../features/links/links-filter';
 import { LINKS_API } from '../features/links/models/links-api.const';
 import type { LinksFilter } from '../features/links/models/links-filter.interface';
 import { LINKS_SCOPE } from '../features/links/models/links-scope.const';
-import type { LinksScope } from '../features/links/models/links-scope.type';
 import type { PendingRemoval } from '../features/links/models/pending-removal.interface';
 import { RECENT_LINKS_LIMIT } from '../features/links/models/recent-links-limit.const';
 import type { LinksState } from './models/links-state.interface';
 
 const initialState: LinksState = {
-  scope: LINKS_SCOPE.All,
+  filter: { scope: LINKS_SCOPE.All },
   nextCursor: null,
   loaded: false,
   loading: false,
@@ -39,27 +40,6 @@ const initialState: LinksState = {
   recent: [],
   recentLoaded: false,
 };
-
-function queryFor(scope: LinksScope, cursor?: string): ListLinksQuery {
-  const query: ListLinksQuery = cursor === undefined ? {} : { cursor };
-  if (scope === LINKS_SCOPE.Unsorted) {
-    query.unsorted = true;
-  } else if (scope === LINKS_SCOPE.Favorites) {
-    query.favorite = true;
-  }
-  return query;
-}
-
-function inScope(scope: LinksScope, link: LinkResponse): boolean {
-  switch (scope) {
-    case LINKS_SCOPE.Unsorted:
-      return link.folderId === null;
-    case LINKS_SCOPE.Favorites:
-      return link.isFavorite;
-    default:
-      return true;
-  }
-}
 
 function insertAt<T>(list: readonly T[], index: number, item: T): T[] {
   const copy = [...list];
@@ -77,7 +57,8 @@ export const LinksStore = signalStore(
   { providedIn: 'root' },
   withEntities<LinkResponse>(),
   withState(initialState),
-  withComputed(({ entities, nextCursor }) => ({
+  withComputed(({ entities, nextCursor, filter }) => ({
+    scope: computed(() => filter().scope),
     count: computed(() => entities().length),
     hasMore: computed(() => nextCursor() !== null),
   })),
@@ -128,20 +109,20 @@ export const LinksStore = signalStore(
 
     const setFilter = rxMethod<LinksFilter>(
       pipe(
-        tap(({ scope }) => {
+        tap((filter) => {
           generation++;
-          const changed = scope !== store.scope();
+          const changed = !sameFilter(filter, store.filter());
           patchState(
             store,
-            { scope, loading: true, loadingMore: false, error: false, loadMoreFailed: false },
+            { filter, loading: true, loadingMore: false, error: false, loadMoreFailed: false },
             changed ? removeAllEntities() : {},
             changed ? { loaded: false, nextCursor: null } : {},
           );
         }),
-        switchMap(({ scope }) => {
+        switchMap((filter) => {
           const started = epoch;
           return api()
-            .list(queryFor(scope))
+            .list(linksQuery(filter))
             .pipe(
               tap((page) => {
                 if (started === epoch) {
@@ -176,7 +157,7 @@ export const LinksStore = signalStore(
         const started = generation;
         patchState(store, { loadingMore: true, loadMoreFailed: false });
         try {
-          const page = await firstValueFrom(api().list(queryFor(store.scope(), cursor)));
+          const page = await firstValueFrom(api().list(linksQuery(store.filter(), cursor)));
           if (started !== generation) {
             return;
           }
@@ -226,10 +207,31 @@ export const LinksStore = signalStore(
 
       /** Shows a link that was just saved at the top, when it belongs to the current scope. */
       addSaved(link: LinkResponse): void {
-        if (!store.loaded() || !inScope(store.scope(), link) || store.entityMap()[link.id]) {
+        if (!store.loaded() || !inFilter(store.filter(), link) || store.entityMap()[link.id]) {
           return;
         }
         patchState(store, setAllEntities([link, ...store.entities()]));
+      },
+
+      /**
+       * A folder subtree was deleted on the server: its links leave the loaded lists
+       * (`delete-links`) or become unsorted (`move-to-unsorted`).
+       */
+      applyFolderRemoval(folderIds: readonly string[], mode: FolderDeleteMode): void {
+        const folders = new Set(folderIds);
+        const inFolders = (link: LinkResponse): boolean =>
+          link.folderId !== null && folders.has(link.folderId);
+        if (mode === FOLDER_DELETE_MODE.DeleteLinks) {
+          patchState(store, setAllEntities(store.entities().filter((link) => !inFolders(link))), {
+            recent: store.recent().filter((link) => !inFolders(link)),
+          });
+          return;
+        }
+        const unsort = (link: LinkResponse): LinkResponse =>
+          inFolders(link) ? { ...link, folderId: null } : link;
+        patchState(store, setAllEntities(store.entities().map(unsort)), {
+          recent: store.recent().map(unsort),
+        });
       },
 
       /** Hides a link while its Undo window is open. Returns false when it is not in the feed. */
