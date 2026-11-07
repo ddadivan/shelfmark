@@ -1,0 +1,38 @@
+# 0032. Sentry error monitoring: same-origin tunnel, runtime config, minimal SDKs
+
+- Status: Accepted
+- Date: 2026-11-07
+- Source: issue #109; `docs/PROJECT.md` 5.7 and 5.8 (Logging and monitoring); [0019](0019-vercel-deployment-architecture.md), [0022](0022-csp-nonce-routing-middleware.md), [0020](0020-npm-install-scripts-policy.md)
+
+## Context
+
+Errors from the web app and the API must reach Sentry, without personal data, secrets or saved link URLs, and with no effect when no DSN is configured (local, CI, previews by default). The CSP is strict (`connect-src 'self'`, ADR 0022). The web app is a static build, so it has no server-side runtime environment of its own. Vercel exposes `VERCEL_ENV` and `VERCEL_GIT_COMMIT_SHA` to the API function.
+
+## Decision
+
+- **Two Sentry projects, two env names.** `SENTRY_DSN` (API project) and `SENTRY_WEB_DSN` (web project). Both are optional and public-key style values; names are in `.env.example`. A malformed DSN counts as not configured; monitoring never stops the app from booting.
+- **Same-origin tunnel, CSP unchanged.** The browser SDK posts to `POST /api/monitoring/tunnel`, the API forwards the envelope to Sentry. `connect-src` stays `'self'`. This also keeps ad blockers from dropping events and hides the visitor IP from the ingest host (Sentry sees the function).
+  - The forward target is built from the DSN in our own environment, never from the request. The envelope header must carry a DSN whose host, project id and public key all equal one of the two configured DSNs, otherwise 400. Without any configured DSN the route is 404. So the route is not an open proxy and there is no SSRF surface; for the same reason it does not need the link-preview fetcher (ADR 0027), whose job is untrusted user URLs.
+  - Body: read raw, at most 200 KiB (declared length checked first, then the streamed total); 413 above that. No cookies or credentials are sent upstream, redirects are refused, 5 s timeout, upstream failure is a generic 502 (and a failing tunnel is not reported back to Sentry).
+  - Anonymous on purpose (errors happen without a session). Rate limiting is **not** applied yet: the throttler is in PR #132 (issue #123). Add the stricter limit to this route when it lands.
+- **Runtime config instead of a build-time constant.** `GET /api/monitoring/config` returns `{ dsn, environment, release }` (`dsn` is `null` when unset). The web app calls it once at browser idle time (`requestIdleCallback`, timer fallback); the initializer does not wait, so startup and Lighthouse are unaffected, and errors raised meanwhile are queued (max 10). Only when `dsn` is set does it `import('@sentry/browser')`, which is its own lazy chunk, absent from the initial bundle. Environment and release come from Vercel env on the function, so the static build needs no extra build-time variables and one build works wherever the env is set.
+- **API:** `@sentry/node` started in `createApp()` only when `SENTRY_DSN` is valid. Default integrations are replaced by a minimal list (event filters, function-to-string, linked errors, dedupe, unhandled rejections): no http, fetch, console or express instrumentation, no tracing, no profiling, no runtime channel injection, no breadcrumbs. The global `AllExceptionsFilter` reports 5xx exceptions (tag `requestId`); 4xx are not reported. Without a DSN `reportException` returns before touching the SDK. `api/index.mjs` imports `@sentry/node` statically so Vercel's tracer ships it (needs a Vercel preview check).
+- **Web:** Angular's `ErrorHandler` is replaced by `MonitoringErrorHandler` (console log, then forward). `provideBrowserGlobalErrorListeners` already routes window errors and unhandled rejections there, so the SDK's global handlers are off to avoid double reports. No replay, no tracing, no sessions, no client reports, no breadcrumbs. Zoneless-compatible: no Zone dependency.
+- **Scrubbing (`beforeSend`), both sides:** drop `request` (cookies, headers, query string, body; the browser keeps only the page path without query or fragment), `user` (email, IP), breadcrumbs, `extra`, server name and mechanism data; free text (messages, exception values, transaction) loses URLs, email addresses and `Bearer`/`Basic` tokens. Stack frame file names lose query and fragment. The two implementations (`apps/api/src/monitoring/scrub-event.ts`, `apps/web/src/app/core/monitoring/scrub-event.ts`) are copies: the API cannot import runtime code from `libs` without a webpack alias (apps/api/CLAUDE.md), and the types differ (`@sentry/node` vs `@sentry/browser`). Keep them in sync; both have the same tests.
+- **Dependencies:** `@sentry/node` and `@sentry/browser` 11.11.0, exact pins. No install scripts in the new tree (`npm install-scripts ls` stays clean, no `allowScripts` change). `@sentry/node` 11 declares `@sentry/bundler-plugins` (and through it the `sentry` CLI package) as a dependency; they are only reached through the `@sentry/node/webpack|vite|rollup|esbuild` subpaths, which we do not import, so they are installed but not bundled or traced.
+
+## Consequences
+
+- Nothing is sent, loaded or patched without a DSN; the web app only costs one small cached request (`Cache-Control: public, max-age=300`) after idle.
+- The lazy Sentry chunk is about 430 kB raw (about 146 kB gzip) and loads only when a DSN is configured. Initial bundle budgets are not affected beyond a few kB of own code.
+- Source maps are not uploaded (issue scope), so browser stacks are minified; add an upload step and an auth token (docs/SETUP.md) if that becomes necessary.
+- Tunnel abuse is limited by size and the DSN match until rate limiting lands; a flood can only spend our own Sentry quota.
+- Revisit if the web app gets server-rendered HTML (a build-time DSN would then be cheaper) or if the two scrubbers drift (move to a shared lib with a webpack alias).
+
+## Alternatives considered
+
+- **Allow the ingest origin in `connect-src`** — changes the CSP in `vercel.json` and the middleware (two copies that must match), and exposes visitor IPs and ad-blocker loss. The tunnel keeps the CSP untouched.
+- **Build-time DSN (`define`)** — needs Vercel build env wiring and a rebuild to change; the runtime endpoint costs one idle-time request.
+- **`@sentry/angular`** — brings its own `ErrorHandler`, router tracing and larger bundle; our handler is a few lines.
+- **Sentry's default integrations** — instrument http, fetch, console and add breadcrumbs with URLs (saved links), which conflicts with the privacy rule.
+- **One shared scrubber in `libs/shared`** — needs a webpack alias for the API and generic types over two SDKs; postponed.

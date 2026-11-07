@@ -150,7 +150,7 @@ Settings → **Environment Variables**. Each variable is set per environment: **
 | Better Auth secret, base URL | own value | own value | Stage 2; production base URL `https://<prod-domain>` |
 | Google client ID / secret | production client | stage 2 decision | Stage 2 |
 | GitHub client ID / secret | production app | stage 2 decision | Stage 2 |
-| Sentry DSN | | | Stage 7 |
+| `SENTRY_DSN`, `SENTRY_WEB_DSN` | DSN of the API / web Sentry project | optional, empty by default | Issue #109, ADR 0032. Create two Sentry projects (Node.js for the API, Browser JavaScript for the web), copy each DSN (a public client key, not a secret). Empty = monitoring off. Vercel supplies `VERCEL_ENV` (environment) and `VERCEL_GIT_COMMIT_SHA` (release) itself. Redeploy after setting. |
 
 Mark every secret as **Sensitive** (value cannot be read back in the dashboard). Do not set `PORT` on Vercel. An env change applies only to **new** deployments: redeploy after editing.
 
