@@ -1,8 +1,9 @@
 @use 'typography' as *;
+@use 'utilities' as *;
 
 :host {
   display: block;
-  min-height: 100vh;
+  min-height: 100dvh;
   color: var(--text);
   background: var(--bg);
   font-family: var(--font-sans);
@@ -12,7 +13,7 @@
   display: flex;
   align-items: center;
   height: 3.75rem;
-  padding: 0 var(--space-6);
+  padding-inline: var(--space-6);
   background: var(--surface);
   border-bottom: 1px solid var(--border);
 }
@@ -76,4 +77,8 @@ a {
   &:hover {
     color: var(--text);
   }
+}
+
+.visually-hidden {
+  @include visually-hidden;
 }

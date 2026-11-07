@@ -7,7 +7,7 @@ import { APP_LANG } from '../../core/i18n/models/app-lang.const';
 import { AppTranslocoLoader } from '../../core/i18n/app-transloco.loader';
 import { translocoConfig } from '../../core/i18n/transloco.config';
 import PrivacyPage from './privacy.page';
-import { PROJECT_ISSUES_URL } from './models/project-issues-url.const';
+import { PRIVACY_LINKS } from './models/privacy-links.const';
 
 async function render(): Promise<HTMLElement> {
   await TestBed.configureTestingModule({
@@ -32,11 +32,14 @@ describe('PrivacyPage', () => {
     const headings = [...element.querySelectorAll('h2')].map((h) => h.textContent);
     expect(headings).toEqual([
       'What we store',
-      'Cookies',
+      'Cookies and browser storage',
       "What we don't do",
+      'Link previews',
+      'Rate limits',
       'Where it lives',
       'Demo mode',
-      'Your control',
+      'Your control and retention',
+      'Your rights',
       'Contact',
     ]);
   });
@@ -45,16 +48,20 @@ describe('PrivacyPage', () => {
     const element = await render();
 
     expect(element.textContent).toContain('Last updated 7 November 2026');
-    expect(element.textContent).not.toMatch(/privacy\.[a-z]+/);
+    expect(element.textContent).not.toMatch(/\bprivacy\.[a-zA-Z.]+/);
   });
 
-  it('links home and to the project issues', async () => {
+  it('links home and to the external pages', async () => {
     const element = await render();
 
-    expect(element.querySelector('a[aria-label="Shelfmark home"]')?.getAttribute('href')).toBe('/');
-    expect(element.querySelector(`a[href="${PROJECT_ISSUES_URL}"]`)?.getAttribute('rel')).toBe(
-      'noopener noreferrer',
+    expect(element.querySelector('a[aria-label="Shelfmark, home"]')?.getAttribute('href')).toBe(
+      '/',
     );
+    for (const href of Object.values(PRIVACY_LINKS)) {
+      expect(element.querySelector(`a[href="${href}"]`)?.getAttribute('rel')).toBe(
+        'noopener noreferrer',
+      );
+    }
   });
 
   it('has no axe violations', async () => {

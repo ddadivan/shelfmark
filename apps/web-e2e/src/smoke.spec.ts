@@ -39,7 +39,9 @@ test.describe('privacy page', () => {
 
     expect(response?.status()).toBe(200);
     await expect(page.getByRole('heading', { level: 1, name: 'Privacy policy' })).toBeVisible();
-    await expect(page.getByRole('heading', { level: 2, name: 'Cookies' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { level: 2, name: 'Cookies and browser storage' }),
+    ).toBeVisible();
   });
 
   test('has no horizontal scroll at 360px width', async ({ page }) => {
