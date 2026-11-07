@@ -31,7 +31,8 @@ Updated as work goes on — every session resumes from here.
   - Ready to merge: #82 `feat/62-ui-a11y` (libs/ui a11y audit) → #86 `feat/66-web-sign-in` (sign-in on a mock AuthApi, part of #66) → #87 (agent limit docs) → #88 (no previews for `docs/**`, #84) → #112 (README, #102) → #120 (Lighthouse CI job, #111; ADR 0028 Proposed)
   - Reviewed, need a Vercel preview check: #85 `chore/63-prisma-pglite` (Prisma 7 + PGlite, #63) → #118 `feat/64-better-auth` (Better Auth API, #64, base #85); #117 `feat/93-pwa` (PWA, #93); #79 `feat/70-safe-fetcher` (part of #70)
   - Reviewed, stacked (retarget to `main` after the base merges): #89 (#71 models, base #85); #90 (#73 add-link dialog, base #82); #113 (#91 provider icons), #116 (#92 input loading), #114 (#103 landing), #115 (#101 privacy page) on #82; #121 (#104 chat loop), #122 (#105 scenes) on #114; #124 (#94 settings, base #86)
-  - In progress: #65 `feat/65-auth-guard` (global guard + isolation harness, base #118)
+  - Reviewed, stacked on #118: #125 `feat/65-auth-guard` (global session guard, `@CurrentUser`, route scanner, data-isolation harness, #65; ADR 0029 Proposed)
+  - Next unblocked after merges: #119 (web Better Auth binding, after #86 + #118), #123 (throttler, interceptors, CSRF check; after #125), #72 links API (after #123, #79, #89), #109 Sentry (after the lockfile-touching PRs merge); fold #121's motion logic into #122's `LandingMotionService` when the landing stack is retargeted
   - Author decisions: ADR #80 and #81; duplicate ADR number 0027 (#80 vs #118); #118 decisions A–F; #65 decisions A–E; #89 LinkTag same-user enforcement; #115 legal wording, controller, contact; pause controls on the landing (#121, #122); mockup deviations in #90, #114, #124
   - New issues: stage 6 and 7 #93–#111, #84, #91, #92, #119 (web Better Auth binding), #123 (throttler + interceptors, before #72)
 - [ ] Motion in code — stage 6; promo video — after the stage 1 release
