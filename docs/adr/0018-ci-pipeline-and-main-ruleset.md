@@ -23,6 +23,8 @@ Every PR must be checked automatically and `main` may change only through a gree
 - **`main` ruleset** (`~DEFAULT_BRANCH`, active, no bypass actors): PR required with 0 approvals and squash merge only; required status checks `lint-test-build`, `e2e`, `npm-audit`, `gitleaks` bound to the GitHub Actions app, branch must be up to date; code scanning rule for CodeQL (errors, security high or higher); no deletion, no force push, linear history. Repository setting "require actions pinned to a SHA" on.
 - An `npm audit` failure is fixed by upgrading or an exact `overrides` entry, never by lowering `--audit-level` or adding `--omit=dev`. If no fix exists, the exception is a new ADR.
 
+- **Non-required `lighthouse` job** (issue #111): Lighthouse CI on the `e2e` static build, not in the ruleset; tooling exception in [0028](0028-lighthouse-ci-isolated-lockfile.md).
+
 ## Consequences
 
 - One file to read; required check names are stable as long as job names do not change. Renaming a job means updating the ruleset in the same change.
