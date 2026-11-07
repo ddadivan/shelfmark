@@ -11,7 +11,7 @@ import { MenuComponent } from '../menu/menu.component';
 import { SkeletonComponent } from '../skeleton/skeleton.component';
 import { CardComponent } from './card.component';
 import { CARD_STORY_IMAGE } from './stories/card-story-image.const';
-import { BUTTON_SIZE, BUTTON_VARIANT } from '../button';
+import { BUTTON_HIT_AREA, BUTTON_SIZE, BUTTON_VARIANT } from '../button';
 import { CHIP_VARIANT } from '../chip';
 import { THEME, THEME_ATTRIBUTE } from '../theme';
 import { SKELETON_SHAPE } from '../skeleton';
@@ -52,11 +52,13 @@ const meta: Meta<CardComponent> = {
     selected: false,
     actionsPinned: false,
     reveal: false,
+    headingLevel: 2,
     description: 'opens in a new tab',
   },
   argTypes: {
     image: { control: 'text' },
     href: { control: 'text' },
+    headingLevel: { control: 'inline-radio', options: [1, 2, 3, 4, 5, 6] },
   },
 };
 
@@ -71,7 +73,7 @@ const content = (title = TITLE, favorite = false) => `
   <span slot="overlay" class="cs-overlay"><span>youtube.com</span><strong>Open ↗</strong></span>
   <ui-favicon slot="meta" [src]="favicon" letter="y" />
   <span slot="meta">youtube.com</span>
-  <ui-button slot="favorite" variant="${BUTTON_VARIANT.Ghost}" size="${BUTTON_SIZE.Sm}" iconOnly
+  <ui-button slot="favorite" variant="${BUTTON_VARIANT.Ghost}" size="${BUTTON_SIZE.Sm}" hitArea="${BUTTON_HIT_AREA.Overlay}" iconOnly
     [iconLeft]="${favorite ? "'star-filled'" : "'star'"}"
     [ariaPressed]="${favorite}"
     ariaLabel="${favorite ? 'Remove from favorites' : 'Add to favorites'}" />
@@ -84,7 +86,7 @@ const cardTemplate = (inner: string, attrs = '') => `
   <div class="cs-grid cs-grid--single">
     <ui-card ${attrs}
       [image]="image" [href]="href" [newTab]="newTab" [selected]="selected"
-      [description]="description" [actionsPinned]="actionsPinned" [reveal]="reveal">${inner}</ui-card>
+      [description]="description" [actionsPinned]="actionsPinned" [reveal]="reveal" [headingLevel]="headingLevel">${inner}</ui-card>
   </div>`;
 
 const withProps = (args: object) => ({
@@ -191,6 +193,24 @@ export const Phone: Story = {
   render: (args) => ({
     props: withProps(args),
     template: `<div class="cs-phone">${cardTemplate(content())}</div>`,
+  }),
+};
+
+/**
+ * Heading structure: the page title is the `h1`, every card title an `h2` (`headingLevel`,
+ * 2 by default; use 3 under an `h2` section title). Screen reader users can jump card to card
+ * by heading, and no level is skipped.
+ */
+export const InAGrid: Story = {
+  render: (args) => ({
+    props: withProps(args),
+    template: `
+      <h1 class="cs-heading">Saved links</h1>
+      <div class="cs-grid">
+        <ui-card [image]="image" href="https://example.com/a">${content('Signal Forms in 20 minutes')}</ui-card>
+        <ui-card href="https://example.com/b">${content('Angular Aria patterns')}</ui-card>
+        <ui-card [image]="image" href="https://example.com/c">${content('Zoneless change detection')}</ui-card>
+      </div>`,
   }),
 };
 
