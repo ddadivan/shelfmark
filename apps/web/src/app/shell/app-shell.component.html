@@ -11,16 +11,18 @@
   </ui-button>
   @if (auth.user(); as user) {
     <div class="shell__user">
-      <ui-button
-        class="shell__recent-toggle"
-        variant="ghost"
-        size="sm"
-        iconOnly
-        iconLeft="panel-right"
-        [ariaPressed]="ui.recentVisible()"
-        [ariaLabel]="(ui.recentVisible() ? 'links.recent.hide' : 'links.recent.show') | transloco"
-        (click)="toggleRecent()"
-      />
+      @if (recentToggleLabel(); as label) {
+        <ui-button
+          class="shell__recent-toggle"
+          variant="ghost"
+          size="sm"
+          iconOnly
+          iconLeft="panel-right"
+          [ariaPressed]="ui.recentVisible()"
+          [ariaLabel]="label"
+          (click)="toggleRecent()"
+        />
+      }
       <span class="shell__name">{{ user.name }}</span>
       <ui-button
         [uiMenuTrigger]="accountMenu"
