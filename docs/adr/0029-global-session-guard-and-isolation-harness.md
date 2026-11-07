@@ -2,7 +2,7 @@
 
 - Status: Proposed
 - Date: 2026-11-07
-- Source: issue #65; `docs/PROJECT.md` 5.2, 5.4, 5.8, 6.2; builds on [0007](0007-api-security-baseline.md), [0024](0024-named-constants-as-const.md) and [0027](0027-better-auth-integration.md)
+- Source: issue #65; `docs/PROJECT.md` 5.2, 5.4, 5.8, 6.2; builds on [0007](0007-api-security-baseline.md), [0024](0024-named-constants-as-const.md) and [0030](0030-better-auth-integration.md)
 
 ## Context
 
@@ -16,7 +16,7 @@ From stage 2 every Nest route must need a session, handlers must take the owner 
 
 ## Decision
 
-- **Own thin `SessionAuthGuard`** (`src/auth/session-auth.guard.ts`, registered as `APP_GUARD` in `AuthModule`) on the integration's `AuthService`; `disableGlobalAuthGuard: true` stays. ADR 0027 named this as the fallback.
+- **Own thin `SessionAuthGuard`** (`src/auth/session-auth.guard.ts`, registered as `APP_GUARD` in `AuthModule`) on the integration's `AuthService`; `disableGlobalAuthGuard: true` stays. ADR 0030 named this as the fallback.
   1. The public check comes first and reads `PUBLIC` from the **handler only**, so a class-level `@AllowAnonymous()` fails closed (the scanner also reports it). No session lookup for public routes.
   2. Otherwise `getSession` with `query: { disableRefresh: true }`. The guard is read-only; the sliding refresh happens only through `GET /api/auth/get-session`, which sets the cookie properly. A user who only calls other API routes is signed out after 7 days.
   3. The result goes through `toAuthSessionResponse` (fail closed) into `request.auth`; no session means `UnauthorizedException`.

@@ -2,15 +2,22 @@
 //
 // The mock auth API is bound only in the development and e2e builds (file replacement in
 // apps/web/project.json). Markers must survive minification, so they are string literals the
-// mock owns, never class names. Other issues append their own markers here (#73).
+// mock owns, never class names. Features with their own mocks keep their markers next to the
+// mock and are imported here (Node strips the TypeScript types).
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { PRODUCTION_BUNDLE_MARKERS as LINKS_MOCK_MARKERS } from '../apps/web/src/app/features/links/mock/production-bundle-markers.const.ts';
 
 export const BUNDLE_DIR = join('dist', 'apps', 'web', 'browser');
 
 /** Strings that must never appear in a production bundle. */
-export const MOCK_MARKERS = ['sm-mock-session', 'ada@example.com', 'grace@example.com'];
+export const MOCK_MARKERS = [
+  'sm-mock-session',
+  'ada@example.com',
+  'grace@example.com',
+  ...LINKS_MOCK_MARKERS,
+];
 
 /**
  * Returns every `{ file, marker }` found in the `.js` files under `dir`.

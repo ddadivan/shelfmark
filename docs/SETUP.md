@@ -81,7 +81,7 @@ Variable names that the app reads are decided in stage 2. The Neon ↔ Vercel in
 
 ## 4. OAuth apps
 
-Better Auth serves its routes under `/api/auth/*` (ADR 0012, ADR 0027). The provider callback is `/api/auth/callback/<provider>`, built from `BETTER_AUTH_URL` (confirmed in issue #64).
+Better Auth serves its routes under `/api/auth/*` (ADR 0012, ADR 0030). The provider callback is `/api/auth/callback/<provider>`, built from `BETTER_AUTH_URL` (confirmed in issue #64).
 
 Create **separate OAuth clients for local and production**, so the production secret never sits on your laptop. GitHub OAuth apps allow only one callback URL each, so this is required there anyway.
 

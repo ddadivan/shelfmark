@@ -6,6 +6,8 @@ import { ToastService } from './toast.service';
 import { OVERLAY_LAYER } from '../overlay/models/overlay-layer.const';
 import { overlayLayerClass } from '../overlay/overlay-layer';
 import { TOAST_KIND } from './models/toast-kind.const';
+import { TOAST_CLOSE_REASON } from './models/toast-close-reason.const';
+import type { ToastCloseReason } from './models/toast-close-reason.type';
 
 function setup() {
   const service = TestBed.inject(ToastService);
@@ -239,6 +241,110 @@ describe('ToastService', () => {
     vi.advanceTimersByTime(1000);
     render();
     expect(toasts()).toHaveLength(0);
+  });
+
+  describe('closed', () => {
+    function track(promise: Promise<ToastCloseReason>): ToastCloseReason[] {
+      const seen: ToastCloseReason[] = [];
+      void promise.then((reason) => seen.push(reason));
+      return seen;
+    }
+
+    it('resolves with action when the action button is used', async () => {
+      const service = setup();
+      const ref = service.show({ text: 'x', action: { label: 'Undo', run: vi.fn() } });
+      render();
+      (toasts()[0].querySelector('button') as HTMLButtonElement).click();
+      await expect(ref.closed).resolves.toBe(TOAST_CLOSE_REASON.Action);
+    });
+
+    it('resolves with action even when the action throws', async () => {
+      TestBed.configureTestingModule({
+        providers: [{ provide: ErrorHandler, useValue: { handleError: vi.fn() } }],
+      });
+      const service = setup();
+      const ref = service.show({
+        text: 'x',
+        action: {
+          label: 'Retry',
+          run: () => {
+            throw new Error('boom');
+          },
+        },
+      });
+      render();
+      (toasts()[0].querySelector('button') as HTMLButtonElement).click();
+      await expect(ref.closed).resolves.toBe(TOAST_CLOSE_REASON.Action);
+    });
+
+    it('resolves with action when the action shows another toast', async () => {
+      const service = setup();
+      const ref = service.show({
+        text: 'Deleted',
+        action: { label: 'Undo', run: () => service.show({ text: 'Restored' }) },
+      });
+      render();
+      (toasts()[0].querySelector('button') as HTMLButtonElement).click();
+      render();
+      await expect(ref.closed).resolves.toBe(TOAST_CLOSE_REASON.Action);
+      expect(toasts().some((t) => t.textContent?.includes('Restored'))).toBe(true);
+    });
+
+    it('resolves a pending toast as dismissed when the injector is destroyed', async () => {
+      const service = setup();
+      const ref = service.show({ text: 'x' });
+      TestBed.resetTestingModule();
+      await expect(ref.closed).resolves.toBe(TOAST_CLOSE_REASON.Dismissed);
+      vi.advanceTimersByTime(10_000);
+    });
+
+    it('resolves with timeout when the timer ends, after a pause too', async () => {
+      const service = setup();
+      const ref = service.show({ text: 'x' });
+      render();
+      vi.advanceTimersByTime(3000);
+      toasts()[0].dispatchEvent(new Event('pointerenter'));
+      vi.advanceTimersByTime(10_000);
+      const seen = track(ref.closed);
+      await Promise.resolve();
+      expect(seen).toEqual([]);
+      toasts()[0].dispatchEvent(new Event('pointerleave'));
+      vi.advanceTimersByTime(1000);
+      await expect(ref.closed).resolves.toBe(TOAST_CLOSE_REASON.Timeout);
+    });
+
+    it('resolves with dismissed on ref.dismiss() and on service.dismiss()', async () => {
+      const service = setup();
+      const first = service.show({ text: 'one' });
+      first.dismiss();
+      await expect(first.closed).resolves.toBe(TOAST_CLOSE_REASON.Dismissed);
+      const second = service.show({ text: 'two' });
+      service.dismiss();
+      await expect(second.closed).resolves.toBe(TOAST_CLOSE_REASON.Dismissed);
+    });
+
+    it('resolves with replaced when a newer toast replaces it', async () => {
+      const service = setup();
+      const first = service.show({ text: 'old' });
+      const second = service.show({ text: 'new' });
+      await expect(first.closed).resolves.toBe(TOAST_CLOSE_REASON.Replaced);
+      const seen = track(second.closed);
+      await Promise.resolve();
+      expect(seen).toEqual([]);
+    });
+
+    it('resolves exactly once: the first reason wins', async () => {
+      const service = setup();
+      const ref = service.show({ text: 'x' });
+      const seen = track(ref.closed);
+      ref.dismiss();
+      service.show({ text: 'y' });
+      ref.dismiss();
+      vi.advanceTimersByTime(10_000);
+      await ref.closed;
+      await Promise.resolve();
+      expect(seen).toEqual([TOAST_CLOSE_REASON.Dismissed]);
+    });
   });
 
   it('duration 0 keeps the toast until it is dismissed', () => {
