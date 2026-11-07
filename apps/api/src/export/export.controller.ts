@@ -11,6 +11,11 @@ import { ExportService } from './export.service';
 export class ExportController {
   constructor(private readonly exportService: ExportService) {}
 
+  /**
+   * Streams the file: once the first bytes are sent, a database failure cannot change the status,
+   * so the download aborts (truncated file, logged server-side without user data). Folder
+   * ownership is checked before the stream starts, so a foreign folder is a clean 404.
+   */
   // TODO(#123, PR #132): apply `@RateLimit(RATE_LIMIT.Export)` here when the rate-limit presets land.
   @Get()
   @ApiProduces('application/json', 'text/html')

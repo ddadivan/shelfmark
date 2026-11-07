@@ -1,5 +1,5 @@
 import { Readable } from 'node:stream';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { EXPORT_FORMAT, EXPORT_SCHEMA_VERSION, normalizeTagName } from '@shelfmark/contracts';
 import type { ExportFolder, ExportLink, ExportQuery } from '@shelfmark/contracts';
 import { Prisma } from '../generated/prisma/client';
@@ -34,7 +34,25 @@ const LINK_SELECT = {
 
 @Injectable()
 export class ExportService {
+  private readonly logger = new Logger(ExportService.name);
+
   constructor(private readonly prisma: PrismaService) {}
+
+  /**
+   * Logs a failure after the response has started (the file is then truncated) without any user
+   * data: only the error class, never its message, which may hold query values. Rethrows so the
+   * stream is destroyed and the client sees an aborted download.
+   */
+  private async *guarded(chunks: AsyncGenerator<string>): AsyncGenerator<string> {
+    try {
+      yield* chunks;
+    } catch (error) {
+      this.logger.error(
+        `Export stream failed: ${error instanceof Error ? error.constructor.name : 'unknown'}`,
+      );
+      throw error;
+    }
+  }
 
   /**
    * Validates the scope (a foreign or missing folder is a 404) and returns the file; the body is
@@ -62,13 +80,13 @@ export class ExportService {
       return {
         filename: `shelfmark-${date}.json`,
         contentType: JSON_TYPE,
-        body: Readable.from(this.jsonChunks(folders, byId, base, now)),
+        body: Readable.from(this.guarded(this.jsonChunks(folders, byId, base, now))),
       };
     }
     return {
       filename: `shelfmark-${date}.html`,
       contentType: HTML_TYPE,
-      body: Readable.from(this.htmlChunks(folders, query.folderId, base)),
+      body: Readable.from(this.guarded(this.htmlChunks(folders, query.folderId, base))),
     };
   }
 
@@ -107,7 +125,7 @@ export class ExportService {
       tags: { some: { tag: { userId, name: { equals: name, mode: 'insensitive' } } } },
     }));
     if (search !== '') {
-      // `contains` escapes LIKE wildcards itself; the value is always a bound parameter.
+      // `search` has its LIKE wildcards escaped above; the value is always a bound parameter.
       and.push({
         OR: [
           { title: { contains: search, mode: 'insensitive' } },
@@ -141,13 +159,16 @@ export class ExportService {
     return scope.filter((folder) => keep.has(folder.id));
   }
 
-  private async *linkBatches(where: Prisma.LinkWhereInput): AsyncGenerator<ExportLinkRow[]> {
+  private async *linkBatches(
+    where: Prisma.LinkWhereInput,
+    orderBy: Prisma.LinkOrderByWithRelationInput[] = [{ id: 'asc' }],
+  ): AsyncGenerator<ExportLinkRow[]> {
     let cursor: string | undefined;
     for (;;) {
       const rows: ExportLinkRow[] = await this.prisma.link.findMany({
         where,
         select: LINK_SELECT,
-        orderBy: { id: 'asc' },
+        orderBy,
         take: BATCH_SIZE,
         ...(cursor === undefined ? {} : { cursor: { id: cursor }, skip: 1 }),
       });
@@ -206,6 +227,11 @@ export class ExportService {
     yield ']}\n';
   }
 
+  /**
+   * One pass over the links (batched, ordered by folder then id), grouped by folder in memory as
+   * rendered text, then emitted in tree order. Memory is bounded by the per-user caps; the
+   * database sees one query set, not one per folder.
+   */
   private async *htmlChunks(
     folders: ExportFolderRow[],
     rootId: string | undefined,
@@ -218,35 +244,40 @@ export class ExportService {
         folder.id === rootId || !inScope.has(folder.parentId ?? '') ? null : folder.parentId;
       children.set(key, [...(children.get(key) ?? []), folder]);
     }
-    yield BOOKMARKS_HEAD;
-    if (rootId === undefined) {
-      yield* this.folderLinks(base, null, 1);
+    const depths = new Map<string | null, number>([[null, 1]]);
+    const assign = (parent: string | null, depth: number): void => {
+      for (const folder of children.get(parent) ?? []) {
+        depths.set(folder.id, depth + 1);
+        assign(folder.id, depth + 1);
+      }
+    };
+    assign(null, 1);
+
+    const rendered = new Map<string | null, string[]>();
+    for await (const batch of this.linkBatches(base, [{ folderId: 'asc' }, { id: 'asc' }])) {
+      for (const row of batch) {
+        const text = renderBookmark(row, depths.get(row.folderId) ?? 1);
+        if (text !== '') rendered.set(row.folderId, [...(rendered.get(row.folderId) ?? []), text]);
+      }
     }
-    yield* this.folderTree(children, null, base, 1);
+
+    yield BOOKMARKS_HEAD;
+    yield* this.renderLevel(children, rendered, null, 1);
     yield BOOKMARKS_TAIL;
   }
 
-  private async *folderTree(
+  private *renderLevel(
     children: Map<string | null, ExportFolderRow[]>,
+    rendered: Map<string | null, string[]>,
     parent: string | null,
-    base: Prisma.LinkWhereInput,
     depth: number,
-  ): AsyncGenerator<string> {
+  ): Generator<string> {
+    if (parent === null) yield (rendered.get(null) ?? []).join('');
     for (const folder of children.get(parent) ?? []) {
       yield renderFolderOpen(folder, depth);
-      yield* this.folderLinks(base, folder.id, depth + 1);
-      yield* this.folderTree(children, folder.id, base, depth + 1);
+      yield (rendered.get(folder.id) ?? []).join('');
+      yield* this.renderLevel(children, rendered, folder.id, depth + 1);
       yield renderFolderClose(depth);
-    }
-  }
-
-  private async *folderLinks(
-    base: Prisma.LinkWhereInput,
-    folderId: string | null,
-    depth: number,
-  ): AsyncGenerator<string> {
-    for await (const batch of this.linkBatches({ AND: [base, { folderId }] })) {
-      yield batch.map((row) => renderBookmark(row, depth)).join('');
     }
   }
 }

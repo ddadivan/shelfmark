@@ -157,6 +157,23 @@ describe('GET /api/export', () => {
     expect(html.match(/<A /g)).toHaveLength(1);
   });
 
+  it('replaces commas inside tag names in the HTML TAGS attribute', async () => {
+    const { prisma } = t.db;
+    const userId = users.owner.userId;
+    const tag = await prisma.tag.create({ data: { userId, name: 'a,b' } });
+    await prisma.link.create({
+      data: {
+        userId,
+        url: 'https://comma.example/',
+        normalizedUrl: 'https://comma.example/',
+        title: 'Comma',
+        tags: { create: [{ tagId: tag.id }] },
+      },
+    });
+    const html = (await owner().get('/api/export?format=html').expect(200)).text;
+    expect(html).toContain('TAGS="a-b"');
+  });
+
   it('filters by folder including its subfolders', async () => {
     const { work } = await seed(users.owner.userId);
     const doc = (await owner().get(`/api/export?format=json&folderId=${work.id}`).expect(200))
