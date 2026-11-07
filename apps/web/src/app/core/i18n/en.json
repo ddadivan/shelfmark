@@ -607,7 +607,8 @@
     "invalid": {
       "title": "Nothing to save",
       "text": "This share has no web address starting with http:// or https://, so nothing was saved.",
-      "action": "Go to my links"
+      "action": "Go to my links",
+      "footnote": "To try again, share a page or a link from your browser or another app."
     }
   }
 }
