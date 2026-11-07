@@ -29,7 +29,7 @@ const PLAIN: LinkPreviewResponse = {
   fetched: true,
 };
 
-interface FakeApi extends LinksApi {
+interface FakeApi extends Pick<LinksApi, 'preview' | 'create'> {
   preview: ReturnType<typeof vi.fn<LinksApi['preview']>>;
   create: ReturnType<typeof vi.fn<LinksApi['create']>>;
 }

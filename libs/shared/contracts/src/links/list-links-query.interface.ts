@@ -9,8 +9,13 @@ export interface ListLinksQuery extends CursorQuery {
   /** Only links without a folder; cannot be combined with `folderId`. */
   unsorted?: boolean;
   favorite?: boolean;
-  /** Tag name, matched case-insensitively. */
-  tag?: string;
+  /**
+   * Tag names (repeated parameter `?tag=a&tag=b`), matched case-insensitively; a link must have
+   * all of them (AND). At most `LINK_LIMIT.TagFilterMax`, more is a 400. A single `?tag=a` is
+   * parsed to `['a']`. Empty or absent means no filter, duplicates are collapsed, and each value
+   * is normalized with `normalizeTagName` before matching.
+   */
+  tag?: string[];
   /** Title search, at most `LINK_LIMIT.QueryMax` characters. */
   q?: string;
   /** Defaults to `LINK_SORT_FIELD.CreatedAt`. */

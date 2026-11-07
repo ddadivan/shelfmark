@@ -27,6 +27,7 @@ export { LINK_LIMIT } from './links/link-limit.const';
 export { LINK_SORT_FIELD } from './links/link-sort-field.const';
 
 export type { FolderResponse } from './folders/folder-response.interface';
+export type { LibraryCounts } from './folders/library-counts.interface';
 export type { ListFoldersResponse } from './folders/list-folders-response.interface';
 export type { CreateFolderRequest } from './folders/create-folder-request.interface';
 export type { UpdateFolderRequest } from './folders/update-folder-request.interface';
@@ -41,7 +42,9 @@ export type { CreateTagRequest } from './tags/create-tag-request.interface';
 export type { UpdateTagRequest } from './tags/update-tag-request.interface';
 export type { MergeTagRequest } from './tags/merge-tag-request.interface';
 export type { MergeTagResponse } from './tags/merge-tag-response.type';
+export type { GetTagResponse } from './tags/get-tag-response.type';
 export { TAG_LIMIT } from './tags/tag-limit.const';
+export { normalizeTagName } from './tags/normalize-tag-name';
 
 export type { AuthProvider } from './auth/auth-provider.type';
 export type { AuthUser } from './auth/auth-user.interface';
