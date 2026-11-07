@@ -53,3 +53,5 @@ export type { SocialSignInResponse } from './auth/social-sign-in-response.interf
 export type { SignOutResponse } from './auth/sign-out-response.interface';
 export { AUTH_PROVIDER } from './auth/auth-provider.const';
 export { AUTH_ENDPOINT } from './auth/auth-endpoint.const';
+
+export type { DeleteAccountRequest } from './users/delete-account-request.interface';
