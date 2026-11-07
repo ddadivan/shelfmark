@@ -247,4 +247,51 @@ describe('LibraryPage of a folder', () => {
 
     expect(violations.map((violation) => violation.id)).toEqual([]);
   });
+  describe('tag filter', () => {
+    it('asks for the links of the tags in the query, normalized and without duplicates', async () => {
+      const { api, fixture } = await setup();
+
+      fixture.componentRef.setInput('tag', ['winter sale', 'Docs', 'docs']);
+      await fixture.whenStable();
+
+      expect(api.list).toHaveBeenLastCalledWith({ tag: ['winter-sale', 'Docs'] });
+    });
+
+    it('accepts a single value', async () => {
+      const { api, fixture } = await setup();
+
+      fixture.componentRef.setInput('tag', 'docs');
+      await fixture.whenStable();
+
+      expect(api.list).toHaveBeenLastCalledWith({ tag: ['docs'] });
+    });
+
+    it('shows a removable chip per tag and a Clear button', async () => {
+      const { element, fixture } = await setup();
+
+      fixture.componentRef.setInput('tag', ['docs', 'video']);
+      await fixture.whenStable();
+
+      const group = element.querySelector('.library__filter');
+      expect(group?.querySelectorAll('ui-chip')).toHaveLength(2);
+      expect(group?.textContent).toContain('Clear filter');
+      expect(group?.querySelector('button[aria-label="Remove tag filter docs"]')).not.toBeNull();
+    });
+
+    it('shows no filter row without tags', async () => {
+      const { element } = await setup();
+
+      expect(element.querySelector('.library__filter')).toBeNull();
+    });
+
+    it('says so when no link has all the tags', async () => {
+      const { api, fixture } = await setup();
+      api.list.mockReturnValue(of(page([])));
+
+      fixture.componentRef.setInput('tag', ['docs']);
+      await fixture.whenStable();
+
+      expect(text(fixture)).toContain('No links with these tags');
+    });
+  });
 });

@@ -69,7 +69,17 @@
   <div class="library__grid">
     <ui-skeleton [shape]="SKELETON_SHAPE.Card" [count]="SKELETON_COUNT" />
   </div>
-  } } @else if (empty()) {
+  } } @else if (empty() && filtered()) {
+  <ui-empty-state
+    illustration="empty-feed"
+    [heading]="'library.emptyFiltered.title' | transloco"
+    [text]="'library.emptyFiltered.text' | transloco"
+  >
+    <ui-button variant="primary" (click)="clearTags()">
+      {{ 'library.emptyFiltered.clear' | transloco }}
+    </ui-button>
+  </ui-empty-state>
+  } @else if (empty()) {
   <ui-empty-state
     [illustration]="isFolder() ? 'empty-folder' : 'empty-feed'"
     [heading]="emptyKey() + '.title' | transloco"
