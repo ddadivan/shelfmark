@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { FoldersStore } from '../../stores/folders.store';
 import { LinksStore } from '../../stores/links.store';
 import { SIGN_OUT_FLUSH_TIMEOUT_MS } from './models/sign-out-flush-timeout.const';
 import { AUTH_API } from './auth-api.token';
@@ -142,6 +143,17 @@ describe('AuthStore', () => {
     await store.signOut();
 
     expect(order).toEqual(['flush', 'api', 'reset']);
+  });
+
+  it('forgets the folders of the user on sign-out, next to the links', async () => {
+    const { store } = setup();
+    const folders = TestBed.inject(FoldersStore);
+    const reset = vi.spyOn(folders, 'reset');
+    await store.signIn(AUTH_PROVIDER.Google);
+
+    await store.signOut();
+
+    expect(reset).toHaveBeenCalledTimes(1);
   });
 
   it('still signs out after the timeout when the flush never finishes', async () => {
