@@ -12,6 +12,7 @@ import { AppTranslocoLoader } from '../core/i18n/app-transloco.loader';
 import { translocoConfig } from '../core/i18n/transloco.config';
 import { SearchDialogService } from '../features/search/search-dialog.service';
 import AppShellComponent from './app-shell.component';
+import { SidebarDrawerService } from './drawer/sidebar-drawer.service';
 
 const USER: AuthUser = {
   id: 'u1',
@@ -128,5 +129,61 @@ describe('AppShellComponent', () => {
 
     expect(search.open).toHaveBeenCalledTimes(1);
     expect(search.handleShortcut).toHaveBeenCalledTimes(1);
+  });
+
+  describe('drawer', () => {
+    async function setup() {
+      const api: AuthApi = {
+        getSession: () => Promise.resolve(USER),
+        signIn: vi.fn(),
+        signInDemo: vi.fn(),
+        signOut: vi.fn(() => Promise.resolve()),
+      };
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter([
+            { path: 'settings', children: [] },
+            { path: '', component: AppShellComponent },
+          ]),
+          provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
+          { provide: AUTH_API, useValue: api },
+        ],
+      });
+      await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
+      await TestBed.inject(AuthStore).ensureLoaded();
+      return RouterTestingHarness.create('/');
+    }
+
+    const drawer = () => document.querySelector('app-sidebar-drawer');
+
+    it('opens from the menu button and holds the sidebar', async () => {
+      const harness = await setup();
+      const button = (harness.routeNativeElement as HTMLElement).querySelector<HTMLButtonElement>(
+        'button[aria-label="Open menu"]',
+      );
+
+      button?.click();
+      await harness.fixture.whenStable();
+
+      expect(drawer()?.closest('[role="dialog"]')?.getAttribute('aria-modal')).toBe('true');
+      expect(drawer()?.querySelector('nav[aria-label="Library"]')).not.toBeNull();
+
+      TestBed.inject(SidebarDrawerService).close();
+      await harness.fixture.whenStable();
+
+      expect(drawer()).toBeNull();
+    });
+
+    it('closes when a navigation ends', async () => {
+      const harness = await setup();
+      TestBed.inject(SidebarDrawerService).open();
+      await harness.fixture.whenStable();
+      expect(drawer()).not.toBeNull();
+
+      await TestBed.inject(Router).navigateByUrl('/settings');
+      await harness.fixture.whenStable();
+
+      expect(drawer()).toBeNull();
+    });
   });
 });

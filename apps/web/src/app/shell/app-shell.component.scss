@@ -38,21 +38,50 @@
   }
 }
 
-.shell__add,
-.shell__add-icon {
-  margin-inline: var(--space-4) auto;
-}
-
 .shell__add {
+  margin-inline: var(--space-4) auto;
+
   @include phone {
     display: none;
   }
 }
 
-.shell__add-icon {
+// Phone header (mobile design): menu, logo, then search and account on the right.
+.shell__menu {
+  margin-inline-start: calc(var(--space-2) * -1);
+
   @include tablet-up {
     display: none;
   }
+}
+
+.shell__search {
+  @include phone {
+    margin-inline-start: auto;
+  }
+}
+
+// The floating add button of the phone design.
+.shell__fab {
+  position: fixed;
+  inset-block-end: calc(var(--space-6) + env(safe-area-inset-bottom));
+  inset-inline-end: var(--space-4);
+  z-index: 10;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-popover);
+
+  @include tablet-up {
+    display: none;
+  }
+}
+
+.shell__sidebar {
+  display: block;
+  flex: none;
+  align-self: stretch;
+  width: rem(248px);
+  background: var(--surface);
+  border-inline-end: 1px solid var(--border);
 }
 
 // The recent panel needs room: it exists from the desktop breakpoint up.
@@ -73,6 +102,11 @@
   flex: 1;
   min-width: 0;
   padding: var(--space-6) var(--space-4);
+
+  // Room below the last row for the floating add button.
+  @include phone {
+    padding-block-end: rem(88px);
+  }
 
   @include tablet-up {
     padding-inline: var(--space-6);

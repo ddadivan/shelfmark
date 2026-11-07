@@ -307,6 +307,11 @@
     "accountMenu": "Account menu",
     "settings": "Settings",
     "addLink": "Add link",
+    "menu": "Open menu",
+    "drawer": {
+      "label": "Menu",
+      "close": "Close menu"
+    },
     "sidebar": {
       "nav": "Library",
       "tree": "Views and folders",

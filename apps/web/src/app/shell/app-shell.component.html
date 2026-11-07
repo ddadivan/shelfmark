@@ -1,4 +1,13 @@
 <header class="shell__header">
+  <ui-button
+    class="shell__menu"
+    variant="ghost"
+    iconOnly
+    iconLeft="menu"
+    [ariaLabel]="'shell.menu' | transloco"
+    [ariaExpanded]="drawer.isOpen()"
+    (click)="drawer.open()"
+  />
   <ui-logo />
   <ui-button
     class="shell__add"
@@ -9,16 +18,6 @@
   >
     {{ 'shell.addLink' | transloco }}
   </ui-button>
-  <!-- The phone header has no room for the label: the same action as an icon. -->
-  <ui-button
-    class="shell__add-icon"
-    variant="primary"
-    size="sm"
-    iconOnly
-    iconLeft="add"
-    [ariaLabel]="'shell.addLink' | transloco"
-    (click)="actions.addLink()"
-  />
   <ui-button
     class="shell__search"
     variant="ghost"
@@ -65,11 +64,24 @@
   }
 </header>
 <div class="shell__body">
-  <app-sidebar />
+  <!-- Below the tablet breakpoint the sidebar is the drawer, opened from the header. -->
+  @if (!viewport.phone()) {
+    <div class="shell__sidebar"><app-sidebar /></div>
+  }
   <main class="shell__main">
     <router-outlet />
   </main>
-  @if (ui.recentVisible()) {
+  @if (ui.recentVisible() && viewport.desktop()) {
     <app-recent-links-panel class="shell__recent" />
   }
 </div>
+<!-- Phone: the add action is the floating button of the mobile design. -->
+<ui-button
+  class="shell__fab"
+  variant="primary"
+  size="lg"
+  iconOnly
+  iconLeft="add"
+  [ariaLabel]="'shell.addLink' | transloco"
+  (click)="actions.addLink()"
+/>

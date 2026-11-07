@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterOutlet } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -16,8 +16,10 @@ import { AuthStore } from '../core/auth/auth.store';
 import { LinkActionsService } from '../features/links/link-actions.service';
 import { SearchDialogService } from '../features/search/search-dialog.service';
 import { RecentLinksPanelComponent } from '../features/links/recent/recent-links-panel.component';
+import { ViewportService } from '../core/layout/viewport.service';
 import { UiStore } from '../stores/ui.store';
 import { APP_PATH } from '../models/app-path.const';
+import { SidebarDrawerService } from './drawer/sidebar-drawer.service';
 import { SidebarComponent } from './sidebar/sidebar.component';
 
 /** Layout around the signed-in pages: header with the account menu (settings, sign out), then the page. */
@@ -46,6 +48,8 @@ export default class AppShellComponent {
   protected readonly ui = inject(UiStore);
   protected readonly actions = inject(LinkActionsService);
   protected readonly search = inject(SearchDialogService);
+  protected readonly viewport = inject(ViewportService);
+  protected readonly drawer = inject(SidebarDrawerService);
   private readonly transloco = inject(TranslocoService);
 
   private readonly recentLabels = toSignal(
@@ -60,6 +64,15 @@ export default class AppShellComponent {
     return labels ? (this.ui.recentVisible() ? labels.hide : labels.show) : null;
   });
   private readonly router = inject(Router);
+
+  constructor() {
+    // Growing past the phone breakpoint shows the sidebar inline: the drawer has to go.
+    effect(() => {
+      if (!this.viewport.phone()) {
+        this.drawer.close();
+      }
+    });
+  }
 
   protected async openSettings(): Promise<void> {
     await this.router.navigateByUrl(`/${APP_PATH.Settings}`);

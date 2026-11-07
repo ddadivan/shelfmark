@@ -10,6 +10,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
+  BUTTON_SIZE,
   ButtonComponent,
   MenuComponent,
   MenuItemComponent,
@@ -20,6 +21,7 @@ import {
   type UiTreeNode,
 } from '@shelfmark/ui';
 import { combineLatest, filter, map } from 'rxjs';
+import { ViewportService } from '../../core/layout/viewport.service';
 import { FolderActionsService } from '../../features/folders/folder-actions.service';
 import { SidebarTagsComponent } from '../../features/tags/sidebar-tags/sidebar-tags.component';
 import { LINKS_SCOPE } from '../../features/links/models/links-scope.const';
@@ -59,6 +61,11 @@ const FIXED_ROUTES: Readonly<Record<string, string>> = {
 export class SidebarComponent {
   protected readonly folders = inject(FoldersStore);
   private readonly actions = inject(FolderActionsService);
+  private readonly viewport = inject(ViewportService);
+  /** Text buttons reach the 44px touch target on a phone. */
+  protected readonly buttonSize = computed(() =>
+    this.viewport.phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm,
+  );
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
   private readonly menu = viewChild.required(MenuComponent);
