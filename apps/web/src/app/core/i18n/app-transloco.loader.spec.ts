@@ -7,9 +7,10 @@ describe('AppTranslocoLoader', () => {
   it('loads the en translations', async () => {
     const translation = await loader.getTranslation(APP_LANG.En);
 
-    expect(translation).toEqual({
+    expect(translation).toMatchObject({
       landing: { title: 'Shelfmark', tagline: 'Every saved link, in one place.' },
     });
+    expect(Object.keys(translation)).toEqual(['landing', 'auth', 'shell', 'library']);
   });
 
   it('rejects an unsupported language', async () => {

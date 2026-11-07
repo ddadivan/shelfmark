@@ -1,0 +1,47 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+.shell__header {
+  display: flex;
+  gap: rem(16px);
+  align-items: center;
+  justify-content: space-between;
+  padding: rem(12px) rem(16px);
+  border-bottom: 1px solid var(--border);
+
+  @include tablet-up {
+    padding-inline: rem(24px);
+  }
+}
+
+.shell__user {
+  display: flex;
+  gap: rem(8px);
+  align-items: center;
+  min-width: 0;
+}
+
+.shell__name {
+  @include type(label);
+
+  overflow: hidden;
+  color: var(--text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @include phone {
+    display: none;
+  }
+}
+
+.shell__main {
+  padding: rem(24px) rem(16px);
+
+  @include tablet-up {
+    padding-inline: rem(24px);
+  }
+}

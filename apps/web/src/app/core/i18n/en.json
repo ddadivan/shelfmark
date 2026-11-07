@@ -2,5 +2,26 @@
   "landing": {
     "title": "Shelfmark",
     "tagline": "Every saved link, in one place."
+  },
+  "auth": {
+    "signIn": {
+      "title": "All your links on one shelf",
+      "subtitle": "Save videos, articles, things to buy and courses in one place — and actually find them again.",
+      "google": "Continue with Google",
+      "github": "Continue with GitHub",
+      "demo": "Open the demo",
+      "failed": "We could not sign you in. Try again.",
+      "reason": {
+        "sessionExpired": "Your session has expired. Sign in again.",
+        "demoExpired": "The demo has ended. Open a new one or sign in."
+      }
+    }
+  },
+  "shell": {
+    "signOut": "Sign out"
+  },
+  "library": {
+    "title": "All links",
+    "placeholder": "Your saved links will appear here."
   }
 }
