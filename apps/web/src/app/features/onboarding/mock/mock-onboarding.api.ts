@@ -5,7 +5,7 @@ import { MOCK_SESSION_STORAGE_KEY } from '../../../core/auth/models/mock-session
 import type { OnboardingApi } from '../models/onboarding-api.interface';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 /**

@@ -4,6 +4,7 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { AUTH_API } from '../core/auth/auth-api.token';
+import { ONBOARDING_API } from '../features/onboarding/models/onboarding-api.const';
 import { AuthStore } from '../core/auth/auth.store';
 import { AuthApi } from '../core/auth/models/auth-api.interface';
 import { AuthUser } from '../core/auth/models/auth-user.interface';
@@ -53,6 +54,7 @@ describe('AppShellComponent', () => {
         ]),
         provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
         { provide: AUTH_API, useValue: api },
+        { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
       ],
     });
     await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
@@ -86,6 +88,7 @@ describe('AppShellComponent', () => {
         ]),
         provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
         { provide: AUTH_API, useValue: api },
+        { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
       ],
     });
     await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
@@ -115,6 +118,7 @@ describe('AppShellComponent', () => {
         provideRouter([{ path: '', component: AppShellComponent }]),
         provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
         { provide: AUTH_API, useValue: api },
+        { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
         { provide: SearchDialogService, useValue: search },
       ],
     });
