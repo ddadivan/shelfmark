@@ -40,6 +40,18 @@ NestJS REST API, mounted under `/api` (port 3000). Source of truth: `docs/PROJEC
 - Outbound HTTP (link previews) only through the SSRF-safe fetcher (http/https, private IPs blocked after DNS resolve, timeout, size and redirect limits, no cookies).
 - Prisma with parameterised queries only; never `$queryRawUnsafe`.
 
+## Outbound HTTP: the SSRF-safe fetcher
+
+`src/fetcher/` (`FetcherModule` exports `SafeFetcherService.fetch(url)`) is the only allowed way to make an outbound request. Never use `fetch`, `http.request` or an HTTP client anywhere else. The endpoint that uses it (`POST /api/links/preview`) comes with #65.
+
+- URL: http/https only, no credentials, at most 2048 characters, ports 80 and 443 only (a deliberate decision: an open port range makes the fetcher a port scanner; pages on other ports are rare).
+- DNS is resolved by the fetcher itself; one blocked address in the answer rejects the host. The connection is pinned to the validated addresses through a custom `lookup` (no second lookup, so no DNS rebinding). Blocked ranges: `models/blocked-ip-ranges.const.ts` (private, loopback, link-local incl. cloud metadata, CGNAT, multicast, reserved, NAT64, 6to4, Teredo, unique-local). `ip-policy.ts` expands IPv6 and unwraps IPv4-mapped / compatible forms; anything that is not a canonical IP literal fails closed. `localhost`, `*.localhost`, `*.local` and `*.internal` are refused by name.
+- Every redirect hop goes through the same validation; at most 5 hops. A malformed, empty or non-http(s) `Location` is `InvalidUrl` (or `DisallowedProtocol`), never an unhandled error. No cookies, no `Authorization`, `Accept-Encoding: identity` (a response with any other `Content-Encoding` is `UnsupportedEncoding`), no keep-alive agent (`agent: false`; proxy environment variables such as `NODE_USE_ENV_PROXY` are not honoured, a proxy would bypass the pinned lookup).
+- Limits (`models/fetch-limits.const.ts`): 3 s connect, 8 s total, 2 MB body (checked on `Content-Length` and while streaming). Only `text/html` and `application/xhtml+xml`. The body is decoded with the header charset, else a `<meta charset>`, else UTF-8.
+- Failures are `SafeFetchError` with a `code` (`models/safe-fetch-error-code.const.ts`); messages never carry response data. The caller maps them to a fallback preview.
+- Tests inject `SAFE_FETCHER_OPTIONS` (fake resolver, loopback policy, local port) and run against a `127.0.0.1` server; unit tests never use the network.
+- `src/preview/`: `extractPreview(html, finalUrl)` (parse5; og:title, twitter:title, `<title>`; only the head, first 32 K characters are parsed), `fallbackPreview(url)`, and `normalizeUrl(url)` for duplicate detection (PROJECT.md 6.1). The document is cut at the first `</head>` (a `</head>` inside a comment or script ends it early; the preview then falls back to the URL data, which is acceptable). Image and favicon URLs must be http(s), without credentials, at most 2048 characters; `<base href>` is honoured only when it is http(s). `parse5` is ESM-only and must stay listed in `api/index.mjs`.
+
 ## Commands
 
 ```bash

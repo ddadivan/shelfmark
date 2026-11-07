@@ -14,6 +14,7 @@ import '@nestjs/swagger';
 import 'class-transformer';
 import 'class-validator';
 import 'helmet';
+import 'parse5';
 import 'reflect-metadata';
 import 'swagger-ui-dist';
 import 'tslib';
