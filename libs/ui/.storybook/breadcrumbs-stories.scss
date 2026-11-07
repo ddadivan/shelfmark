@@ -1,0 +1,23 @@
+@use '../src/styles/ui' as *;
+
+// Layout of the Breadcrumbs stories only (never shipped with the library). Class names start
+// with `bc-`.
+
+.bc-panel {
+  display: grid;
+  gap: var(--space-6);
+  min-height: rem(260px);
+  padding: var(--space-6);
+  color: var(--text);
+  background: var(--bg);
+}
+
+.bc-hint {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+// A narrow column, like a phone feed, to show the long name being cut.
+.bc-narrow {
+  max-width: rem(360px);
+}

@@ -1,5 +1,6 @@
 import '@fontsource-variable/onest/wght.css';
 import '../src/styles/global.scss';
+import './breadcrumbs-stories.scss';
 import './card-stories.scss';
 import './display-stories.scss';
 import './dialog-stories.scss';
@@ -9,6 +10,7 @@ import './illustration-stories.scss';
 import './loading-stories.scss';
 import './menu-stories.scss';
 import './ripple-stories.scss';
+import './segmented-stories.scss';
 import './select-stories.scss';
 import './toast-stories.scss';
 import './tooltip-stories.scss';
