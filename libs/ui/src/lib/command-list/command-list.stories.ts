@@ -48,12 +48,14 @@ const TEXTS = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <ui-command-list
+      listLabel="Search results"
       inputLabel="Search links, folders and tags"
       placeholder="Search links, folders and tags"
       [busy]="busy()"
       [(query)]="query"
     >
       <kbd slot="input-end">Esc</kbd>
+      <span slot="status">{{ links().length }} results</span>
       @if (links().length) {
         <ui-command-group [heading]="links().length + ' links'">
           @for (link of links(); track link.id) {
@@ -104,6 +106,7 @@ class StoryResultsComponent {
   template: `
     <ui-dialog title="Search" closeLabel="Close" size="md">
       <ui-command-list
+        listLabel="Search results"
         inputLabel="Search links, folders and tags"
         placeholder="Search"
         (selected)="ref.close($event.value)"
@@ -169,7 +172,12 @@ const meta: Meta<CommandListComponent> = {
       },
     },
   },
-  args: { inputLabel: TEXTS.inputLabel, placeholder: TEXTS.placeholder, busy: false },
+  args: {
+    inputLabel: TEXTS.inputLabel,
+    listLabel: 'Search results',
+    placeholder: TEXTS.placeholder,
+    busy: false,
+  },
 };
 
 export default meta;
@@ -199,7 +207,7 @@ export const Empty: Story = {
     props: args,
     moduleMetadata: { imports },
     template: box(`
-      <ui-command-list [inputLabel]="inputLabel" [placeholder]="placeholder" query="rxjs">
+      <ui-command-list [inputLabel]="inputLabel" listLabel="Search results" [placeholder]="placeholder" query="rxjs">
         <p slot="empty">Nothing found for “rxjs”</p>
         <span slot="footer"><kbd>Esc</kbd> close</span>
       </ui-command-list>`),
@@ -213,7 +221,7 @@ export const Busy: Story = {
     props: args,
     moduleMetadata: { imports },
     template: box(`
-      <ui-command-list [inputLabel]="inputLabel" [placeholder]="placeholder" [busy]="busy" query="sig">
+      <ui-command-list [inputLabel]="inputLabel" listLabel="Search results" [placeholder]="placeholder" [busy]="busy" query="sig">
         <ui-command-group heading="Links">
           <ui-command-item value="a">Signals vs RxJS: when to use which</ui-command-item>
         </ui-command-group>
@@ -227,7 +235,7 @@ export const WithoutGroups: Story = {
     props: args,
     moduleMetadata: { imports },
     template: box(`
-      <ui-command-list [inputLabel]="inputLabel" [placeholder]="placeholder">
+      <ui-command-list [inputLabel]="inputLabel" listLabel="Search results" [placeholder]="placeholder">
         <ui-command-item value="a">Add link <kbd slot="trailing">A</kbd></ui-command-item>
         <ui-command-item value="b">New folder <kbd slot="trailing">N</kbd></ui-command-item>
         <ui-command-item value="c" disabled>Export (soon)</ui-command-item>
@@ -266,7 +274,7 @@ export const AllVariants: Story = {
         @for (theme of themes; track theme) {
           <div [attr.${THEME_ATTRIBUTE}]="theme" class="cls-panel">
             <div class="cls-box">
-              <ui-command-list inputLabel="Search links" query="signal">
+              <ui-command-list listLabel="Search results" inputLabel="Search links" query="signal">
                 <kbd slot="input-end">Esc</kbd>
                 <ui-command-group heading="3 links">
                   <ui-command-item value="a">
@@ -291,12 +299,12 @@ export const AllVariants: Story = {
               </ui-command-list>
             </div>
             <div class="cls-box">
-              <ui-command-list inputLabel="Search links" query="rxjs">
+              <ui-command-list listLabel="Search results" inputLabel="Search links" query="rxjs">
                 <p slot="empty">Nothing found for “rxjs”</p>
               </ui-command-list>
             </div>
             <div class="cls-box">
-              <ui-command-list inputLabel="Search links" query="sig" busy>
+              <ui-command-list listLabel="Search results" inputLabel="Search links" query="sig" busy>
                 <ui-command-item value="a">Signals vs RxJS</ui-command-item>
               </ui-command-list>
             </div>

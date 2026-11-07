@@ -1,6 +1,6 @@
 import { Combobox, ComboboxPopup, ComboboxWidget } from '@angular/aria/combobox';
 import { Listbox, Option } from '@angular/aria/listbox';
-import { DOCUMENT, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import {
   afterRenderEffect,
   booleanAttribute,
@@ -12,14 +12,14 @@ import {
   input,
   model,
   output,
-  inject,
   untracked,
   viewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import { IconComponent } from '../icon/icon.component';
 import { KEYBOARD_KEY } from '../keyboard';
-import { CommandGroupComponent } from './command-group.component';
+import { IME_KEY_CODE } from './models/ime-key-code.const';
+import { scrollIntoList } from './scroll-into-list';
 import { CommandItemComponent } from './command-item.component';
 import type { CommandSection } from './models/command-section.interface';
 import type { CommandSelection } from './models/command-selection.interface';
@@ -70,8 +70,8 @@ export class CommandListComponent {
   /** Accessible name of the search input (required, for example "Search links, folders and tags"). */
   readonly inputLabel = input.required<string>();
   readonly placeholder = input('');
-  /** Accessible name of the results list; `inputLabel` when empty. */
-  readonly listLabel = input('');
+  /** Accessible name of the results list, for example "Search results" (differs from `inputLabel`). */
+  readonly listLabel = input.required<string>();
   /** The results are being updated: `aria-busy` on the list. */
   readonly busy = input(false, { transform: booleanAttribute });
 
@@ -79,9 +79,7 @@ export class CommandListComponent {
   readonly selected = output<CommandSelection>();
 
   protected readonly noSelection: string[] = [];
-  protected readonly ariaListName = computed(() => this.listLabel() || this.inputLabel());
 
-  private readonly document = inject(DOCUMENT);
   private readonly items = contentChildren(CommandItemComponent, { descendants: true });
   private readonly field = viewChild.required<ElementRef<HTMLInputElement>>('field');
   private readonly listbox = viewChild<Listbox<string>>(Listbox);
@@ -102,12 +100,38 @@ export class CommandListComponent {
   protected readonly empty = computed(() => this.items().length === 0);
 
   constructor() {
-    // Keep the option under the arrow keys in view (DOM focus stays in the input).
+    // The active option must always be a row that exists and is enabled: after the items or the
+    // query change, a missing or disabled active row is replaced by the first enabled one, and a
+    // new query starts again at the top (the best match comes first).
+    let lastQuery = this.query();
     afterRenderEffect(() => {
       const listbox = this.listbox();
-      const id = listbox?.activeDescendant();
-      if (id) {
-        untracked(() => this.document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' }));
+      const items = this.items();
+      const query = this.query();
+      // Read the flags here so a row that becomes disabled re-runs the effect.
+      items.forEach((item) => item.disabled());
+      const queryChanged = query !== lastQuery;
+      lastQuery = query;
+      if (!listbox) {
+        return;
+      }
+      untracked(() => {
+        const first = items.findIndex((item) => !item.disabled());
+        const active = items.find((item) => item.id === listbox.activeDescendant());
+        if (first >= 0 && (queryChanged || !active || active.disabled())) {
+          // Aria sorts new options into its collection in a microtask.
+          queueMicrotask(() => listbox.gotoIndex(first));
+        }
+      });
+    });
+    // Keep the option under the arrow keys in view by scrolling the list itself (not the page or
+    // the dialog around it); DOM focus stays in the input.
+    afterRenderEffect(() => {
+      const listbox = this.listbox();
+      const id = this.liveActive(listbox?.activeDescendant());
+      const option = id ? listbox?.element.querySelector<HTMLElement>(`[id="${id}"]`) : null;
+      if (listbox && option) {
+        untracked(() => scrollIntoList(listbox.element, option));
       }
     });
   }
@@ -118,7 +142,9 @@ export class CommandListComponent {
   }
 
   protected onKeydown(event: KeyboardEvent): void {
-    if (event.key !== KEYBOARD_KEY.Enter || event.isComposing) {
+    // keyCode 229 is the Enter that confirms an IME composition (some browsers send it without
+    // `isComposing`).
+    if (event.key !== KEYBOARD_KEY.Enter || event.isComposing || event.keyCode === IME_KEY_CODE) {
       return;
     }
     // The Aria combobox relays a plain Enter to the listbox, which toggles its own selection
@@ -146,8 +172,9 @@ export class CommandListComponent {
     event.preventDefault();
   }
 
-  protected groupOf(section: CommandSection): CommandGroupComponent | null {
-    return section.group;
+  /** The active id only while its row exists (Aria clears it a moment after a row is removed). */
+  protected liveActive(id: string | undefined): string | undefined {
+    return id && this.items().some((item) => item.id === id) ? id : undefined;
   }
 
   private activeItem(): CommandItemComponent | undefined {
