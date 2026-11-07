@@ -92,9 +92,10 @@ $gap: rem(2px);
 }
 
 // Touch-first pointers: 44 px tall items (the track grows with them).
-@media (pointer: coarse) {
-  .ui-seg__item {
-    min-width: rem(44px);
+.ui-seg__item {
+  @include touch-target;
+
+  @include coarse {
     height: rem(44px);
   }
 }
