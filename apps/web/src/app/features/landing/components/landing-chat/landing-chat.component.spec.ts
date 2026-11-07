@@ -127,10 +127,10 @@ describe('LandingChatComponent', () => {
   describe('endless feed', () => {
     beforeEach(() => create({ reduced: false }));
 
-    it('renders the first lap at once and the second one in batches after it', async () => {
+    it('renders the bubbles in batches, not all at once', async () => {
       const slots = (): number => root.querySelectorAll('.landing-chat__slot').length;
 
-      expect(slots()).toBe(8);
+      expect(slots()).toBeLessThan(16);
 
       await vi.waitFor(() => {
         settle();

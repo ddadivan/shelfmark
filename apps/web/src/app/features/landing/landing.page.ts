@@ -40,7 +40,7 @@ export default class LandingPage {
   /** Set when the visitor jumps to a deferred section before the browser went idle. */
   protected readonly sectionsRequested = signal(false);
   private readonly scrollPending = signal(false);
-  private readonly built = viewChild(LandingBuiltComponent, { read: ElementRef });
+  private readonly built = viewChild('built', { read: ElementRef });
 
   constructor() {
     // Opened as `/#how` (new tab, shared link): load the sections and scroll once they exist.

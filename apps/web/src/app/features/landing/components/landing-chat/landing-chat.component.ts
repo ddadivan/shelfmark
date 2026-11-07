@@ -61,20 +61,18 @@ export class LandingChatComponent {
   /** The five links of the static frame (reduced motion) and for assistive technology. */
   protected readonly messages = LANDING_CHAT_MESSAGES;
   /**
-   * The feed twice: after `feedSize` rises the track looks the same as at the start. The second
-   * lap is rendered in small batches after the first paint (it is below the window until the
-   * track has risen), so no single task renders all sixteen bubbles.
+   * The feed twice: after `feedSize` rises the track looks the same as at the start. The
+   * bubbles are rendered in small batches (a few frames), so no single task renders all sixteen.
    */
-  protected readonly feed = computed(() => [
-    ...LANDING_CHAT_FEED_MESSAGES,
-    ...LANDING_CHAT_FEED_MESSAGES.slice(0, this.secondLap()),
-  ]);
+  protected readonly feed = computed(() =>
+    [...LANDING_CHAT_FEED_MESSAGES, ...LANDING_CHAT_FEED_MESSAGES].slice(0, this.rendered()),
+  );
   protected readonly rise = `${LANDING_CHAT_TIMING.RiseMs}ms`;
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
 
   private readonly feedSize = LANDING_CHAT_FEED_MESSAGES.length;
-  /** How many messages of the second lap are in the DOM so far. */
-  private readonly secondLap = signal(0);
+  /** How many feed bubbles are in the DOM so far. */
+  private readonly rendered = signal(0);
   private readonly phase = signal<LandingChatPhase>(LANDING_CHAT_PHASE.Chat);
   private readonly inView = signal(false);
   protected readonly hovered = signal(false);
@@ -131,7 +129,7 @@ export class LandingChatComponent {
 
     afterNextRender(() => {
       this.watchViewport();
-      this.fillSecondLap();
+      this.fillFeed();
     });
   }
 
@@ -177,17 +175,20 @@ export class LandingChatComponent {
     this.step.update((value) => value + 1);
   }
 
-  private fillSecondLap(): void {
+  private fillFeed(): void {
     if (!this.animated()) {
+      // Reduced motion may be switched off later: the feed must then be complete at once.
+      this.rendered.set(this.feedSize * 2);
       return;
     }
     const timer = setInterval(() => {
-      const next = this.secondLap() + LANDING_CHAT_TIMING.LapBatchSize;
-      this.secondLap.set(Math.min(next, this.feedSize));
-      if (next >= this.feedSize) {
+      const total = this.feedSize * 2;
+      const next = Math.min(this.rendered() + LANDING_CHAT_TIMING.BatchSize, total);
+      this.rendered.set(next);
+      if (next >= total) {
         clearInterval(timer);
       }
-    }, LANDING_CHAT_TIMING.LapBatchMs);
+    }, LANDING_CHAT_TIMING.BatchMs);
     this.destroyRef.onDestroy(() => clearInterval(timer));
   }
 

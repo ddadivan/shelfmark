@@ -13,7 +13,7 @@
   } @defer (on timer(150ms); when sectionsRequested()) {
   <div class="landing__about">
     <app-landing-why />
-    <app-landing-built />
+    <app-landing-built #built />
   </div>
   } @defer (on timer(300ms); when sectionsRequested()) {
   <app-landing-finale />

@@ -79,3 +79,17 @@
   flex-wrap: wrap;
   gap: rem(10px);
 }
+
+// Same height as the chat phone it stands in for (measured per breakpoint), so the idle swap
+// causes no layout shift.
+.landing-hero__demo-placeholder {
+  min-height: rem(447px);
+
+  @include tablet-up {
+    min-height: rem(597px);
+  }
+
+  @include desktop {
+    min-height: rem(625px);
+  }
+}
