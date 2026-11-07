@@ -76,7 +76,9 @@ jobs:
         run: |
           projects="$(npx nx show projects --affected --with-target db-check --json)"
           echo "Affected projects with a migration check: ${projects}"
-          if [ "$projects" != "[]" ]; then node apps/api/scripts/db-check.mjs; fi
+          if node -e 'process.exit(JSON.parse(process.argv[1]).length > 0 ? 0 : 1)' "$projects"; then
+            node apps/api/scripts/db-check.mjs
+          fi
         env:
           DATABASE_URL: postgresql://postgres@localhost:5432/postgres
       # Guards the production bundle (no e2e-only route, nonce placeholder present, ADR 0022).

@@ -77,7 +77,7 @@ Variable names that the app reads are decided in stage 2. The Neon ↔ Vercel in
 | pooled | Vercel, set by the integration (branch `production`) | Vercel, set per deployment by the integration | not used (local PGlite) | not needed |
 | direct | Vercel, used by the build for migrations (`DATABASE_URL_UNPOOLED`) | same, for the preview branch | not used | not needed (CI uses a Postgres service) |
 
-`prisma migrate deploy` runs in the Vercel build (`nx run api:migrate-deploy`, only when `VERCEL=1`, ADR 0025), so each deployment migrates its own Neon branch. It reads `DATABASE_URL_UNPOOLED`: enable that variable for the Production and Preview environments (and for the build, not only runtime). CI needs no Neon secret: it checks migrations against a `postgres:17-alpine` service.
+`prisma migrate deploy` runs in the Vercel build (`nx run api:migrate-deploy`, only when `VERCEL=1`, ADR 0025), so each deployment migrates its own Neon branch. It reads `DATABASE_URL_UNPOOLED`: enable that variable for the Production and Preview environments (and for the build, not only runtime). The Preview value of `DATABASE_URL_UNPOOLED` must come from the Neon integration, per preview branch; never set a shared or production value for Preview (the migration script only checks `VERCEL_ENV`, it cannot tell which database a URL points to). Production migrates only for builds of `main`. CI needs no Neon secret: it checks migrations against a `postgres:17-alpine` service.
 
 ## 4. OAuth apps
 

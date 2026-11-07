@@ -19,7 +19,7 @@ NestJS REST API, mounted under `/api` (port 3000). Source of truth: `docs/PROJEC
 - `src/config/` - typed readers for `PORT`, `NODE_ENV` and `DATABASE_URL`, validated at boot; errors never echo a URL. Never loads `.env` files.
 - `src/prisma/` - global `PrismaModule` and `PrismaService` (lazy connect: boot and `/api/health` never touch the database). Not imported by `AppModule` until the first feature needs it (auth, #64).
 - `prisma/` - `schema.prisma` and `migrations/` (checked in); `prisma.config.ts` reads the URLs from the environment only.
-- `scripts/` - `local-db.mjs` (PGlite + socket server, runs a command with the database URLs set), `db-check.mjs`, `migrate-deploy.mjs` (Vercel build only).
+- `scripts/` - `local-db.mjs` (PGlite + socket server, runs a command with the database URLs set), `db-check.mjs`, `migrate-deploy.mjs` (Vercel build only: production of `main` or preview). The persistent data dir `tmp/pglite/api` is locked by a pid file (`.lock`): one process at a time; the shadow database starts only with `--shadow`.
 - `test-utils/test-database.ts` - per test file in-memory PGlite with all migrations applied (`createTestDatabase()`, `truncateAll()`, `close()`).
 - `src/common/` - cross-cutting pieces (request id, error filter, `@AllowAnonymous`).
 - `src/<domain>/` - one module per domain (`auth`, `users`, `links`, `folders`, `tags`, `metadata`, ...) with `*.module.ts`, `*.controller.ts`, `*.service.ts`, `dto/`.
@@ -50,7 +50,7 @@ NestJS REST API, mounted under `/api` (port 3000). Source of truth: `docs/PROJEC
 
 - Conventions: PascalCase model with `@@map` to a snake_case plural table, camelCase fields with `@map` to snake_case columns, `@default(uuid(7)) @db.Uuid` ids, `@db.Timestamptz(3)` timestamps.
 - Never edit an applied migration; add a new one. Destructive changes follow expand-then-contract across deploys (add, backfill and dual-write, switch reads, then drop).
-- Migrations are created locally with `nx run api:db-migrate -- --name <name>`, applied in the Vercel build (`api:migrate-deploy`, only when `VERCEL=1`), and verified in CI against Postgres (`db-check`: deploy plus drift check).
+- Migrations are created locally with `nx run api:db-migrate -- --name <name>`, applied in the Vercel build (`api:migrate-deploy`, only when `VERCEL=1`), and verified in CI: CI runs `scripts/db-check.mjs` (deploy plus drift check) against the Postgres service, and `nx run api:db-check` is the local PGlite equivalent.
 - Never run `migrate reset` against a non-local database.
 
 ## Commands
