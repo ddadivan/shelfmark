@@ -67,6 +67,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
         await expect(sidebar(page).getByText(/There.s already a tag/)).toBeVisible();
         await sidebar(page).getByRole('textbox', { name: 'New tag' }).press('Escape');
         await expect(sidebar(page).getByRole('textbox', { name: 'New tag' })).toHaveCount(0);
+        await expect(sidebar(page).getByRole('button', { name: 'New tag' })).toBeFocused();
       });
 
       test('shows an error when creating fails', async ({ page }) => {
