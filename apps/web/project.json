@@ -83,6 +83,20 @@
         "cwd": "{workspaceRoot}"
       }
     },
+    "check-bundle": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "inputs": [
+        "{workspaceRoot}/scripts/check-production-bundle.mjs",
+        "production",
+        "^production"
+      ],
+      "cache": true,
+      "options": {
+        "command": "node scripts/check-production-bundle.mjs",
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "serve": {
       "continuous": true,
       "executor": "@angular/build:dev-server",
