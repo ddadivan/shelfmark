@@ -112,6 +112,27 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
         await expect(searchField(page)).toHaveCount(0);
       });
 
+      test('opens a link in a new tab with Ctrl+Enter and keeps the dialog open', async ({
+        page,
+        context,
+        isMobile,
+      }) => {
+        test.skip(isMobile, 'no keyboard on the phone project');
+        await page.goto('/links');
+        await expect(searchButton(page)).toBeVisible();
+        await searchButton(page).click();
+        await searchField(page).fill('pasta');
+        await expect(page.getByRole('option', { name: new RegExp(PASTA_TITLE) })).toBeVisible();
+        await searchField(page).press('ArrowDown');
+        const opened = context.waitForEvent('page');
+
+        // Best effort: the browser decides whether a modified click opens a background tab.
+        await searchField(page).press('Control+Enter');
+
+        expect((await opened).url()).toContain('example.com/recipes/pasta');
+        await expect(searchField(page)).toBeVisible();
+      });
+
       test('shows the empty state for a query without results', async ({ page }) => {
         await page.goto('/links');
         await searchButton(page).click();

@@ -39,7 +39,7 @@ import { LinkActionsService } from '../../links/link-actions.service';
 import { linkHost, safeHref, siteLetter } from '../../links/link-view';
 import { LINKS_API } from '../../links/models/links-api.const';
 import { SEARCH_QUERY_PARAM } from '../../links/models/search-query-param.const';
-import { parseSearchQuery } from '../../links/search-query';
+import { parseSearchQuery, splitQuery } from '../../links/search-query';
 import { TAG_QUERY_PARAM } from '../../tags/models/tag-query-param.const';
 import { SEARCH_DEBOUNCE_MS } from '../models/search-debounce-ms.const';
 import { SEARCH_LINK_LIMIT } from '../models/search-link-limit.const';
@@ -91,7 +91,7 @@ export class SearchDialogComponent {
   protected readonly pluralKey = pluralKey;
   protected readonly linkHost = linkHost;
   protected readonly siteLetter = siteLetter;
-  protected readonly modifier = isMacPlatform() ? '⌘' : 'Ctrl';
+  protected readonly mac = isMacPlatform();
 
   /** The text in the input, as typed. */
   protected readonly query = signal('');
@@ -152,17 +152,20 @@ export class SearchDialogComponent {
     return id === null ? undefined : this.folders.entityMap()[id]?.name;
   }
 
-  /** The note, when it is what matched (the title alone does not have every word). */
+  /**
+   * The note, when it is part of why the link matched: the title alone does not have every word
+   * and the note has at least one. Judged against the query the shown results were fetched for
+   * (`state().query`), not the text being typed.
+   */
   protected noteMatch(link: SearchState['links'][number]): string | null {
     if (link.note === null) {
       return null;
     }
+    const words = splitQuery(this.state().query).map((word) => word.toLowerCase());
     const title = link.title.toLowerCase();
-    const matchedInTitle = this.parsed()
-      .toLowerCase()
-      .split(' ')
-      .every((word) => title.includes(word));
-    return matchedInTitle ? null : link.note;
+    const note = link.note.toLowerCase();
+    const titleHasAll = words.every((word) => title.includes(word));
+    return !titleHasAll && words.some((word) => note.includes(word)) ? link.note : null;
   }
 
   protected choose(selection: CommandSelection): void {
@@ -174,13 +177,13 @@ export class SearchDialogComponent {
         this.openLink(id, selection.background);
         break;
       case SEARCH_RESULT_KIND.Folder:
-        this.go([`/${APP_PATH.Folders}`, id], {});
+        void this.go([`/${APP_PATH.Folders}`, id], {});
         break;
       case SEARCH_RESULT_KIND.Tag:
-        this.go([`/${APP_PATH.Links}`], { [TAG_QUERY_PARAM]: id });
+        void this.go([`/${APP_PATH.Links}`], { [TAG_QUERY_PARAM]: id });
         break;
       case SEARCH_RESULT_KIND.All:
-        this.go([`/${APP_PATH.Links}`], { [SEARCH_QUERY_PARAM]: this.state().query });
+        void this.go([`/${APP_PATH.Links}`], { [SEARCH_QUERY_PARAM]: this.state().query });
         break;
       default:
         break;
@@ -204,9 +207,11 @@ export class SearchDialogComponent {
     }
   }
 
-  private go(commands: string[], queryParams: Record<string, string>): void {
-    this.ref.close();
-    void this.router.navigate(commands, { queryParams });
+  /** Navigates first; the dialog closes only when the navigation went through. */
+  private async go(commands: string[], queryParams: Record<string, string>): Promise<void> {
+    if (await this.router.navigate(commands, { queryParams })) {
+      this.ref.close();
+    }
   }
 
   private search(query: string): Observable<SearchState> {

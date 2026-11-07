@@ -362,6 +362,44 @@ describe('LibraryPage of a folder', () => {
       });
     });
 
+    it('clears the search and the tags together with the Clear filter button', async () => {
+      const { element, fixture } = await setup();
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+      fixture.componentRef.setInput('q', 'signal');
+      fixture.componentRef.setInput('tag', 'docs');
+      await fixture.whenStable();
+      [...element.querySelectorAll('.library__filter ui-button')]
+        .find((button) => button.textContent?.includes('Clear filter'))
+        ?.querySelector('button')
+        ?.click();
+
+      expect(navigate).toHaveBeenCalledWith([], {
+        queryParams: { q: null, tag: null },
+        queryParamsHandling: 'merge',
+      });
+    });
+
+    it('searches all folders with the sort kept and the tags dropped', async () => {
+      const { api, element, fixture } = await setup();
+      api.list.mockReturnValue(of(page([])));
+      fixture.componentRef.setInput('scope', LINKS_SCOPE.Favorites);
+      fixture.componentRef.setInput('q', 'zzz');
+      fixture.componentRef.setInput('sort', 'title');
+      fixture.componentRef.setInput('tag', 'docs');
+      await fixture.whenStable();
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+      [...element.querySelectorAll('ui-button')]
+        .find((button) => button.textContent?.includes('Search all folders'))
+        ?.querySelector('button')
+        ?.click();
+
+      expect(navigate).toHaveBeenCalledWith(['/', 'links'], {
+        queryParams: { q: 'zzz', sort: 'title' },
+      });
+    });
+
     it('sets the sort from the menu', async () => {
       const { element, fixture } = await setup();
       const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);

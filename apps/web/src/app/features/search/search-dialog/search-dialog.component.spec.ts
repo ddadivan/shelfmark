@@ -188,7 +188,7 @@ describe('SearchDialogComponent', () => {
       .find((option) => option.textContent?.includes('Show all results'))
       ?.click();
 
-    expect(ref.close).toHaveBeenCalled();
+    await vi.waitFor(() => expect(ref.close).toHaveBeenCalled());
     expect(navigate).toHaveBeenCalledWith(['/links'], { queryParams: { q: 'signal' } });
   });
 
@@ -218,6 +218,54 @@ describe('SearchDialogComponent', () => {
 
     expect(opener.open).toHaveBeenCalledWith(expect.stringContaining('https://'), true);
     expect(ref.close).not.toHaveBeenCalled();
+  });
+
+  it('keeps the dialog open when the navigation does not go through', async () => {
+    const { element, fixture, navigate, ref } = await setup(() => of(page([link(1)], 'next')));
+    navigate.mockResolvedValue(false);
+
+    await type(fixture, 'signal');
+    await advance(fixture, SEARCH_DEBOUNCE_MS + 60);
+    [...element.querySelectorAll<HTMLElement>('[role="option"]')]
+      .find((option) => option.textContent?.includes('Show all results'))
+      ?.click();
+    await fixture.whenStable();
+
+    expect(navigate).toHaveBeenCalled();
+    expect(ref.close).not.toHaveBeenCalled();
+  });
+
+  describe('note match', () => {
+    async function metaOf(query: string, item: LinkResponse): Promise<string> {
+      const { element, fixture } = await setup(() => of(page([item])));
+      await type(fixture, query);
+      await advance(fixture, SEARCH_DEBOUNCE_MS + 60);
+      return (
+        element.querySelector('[role="option"] .ui-command-item__meta')?.textContent ?? ''
+      ).replace(/\s+/gu, ' ');
+    }
+
+    it('shows the note when a word is in it and the title lacks the others', async () => {
+      const meta = await metaOf(
+        'signal interview',
+        link(1, { title: 'Signal Forms', note: 'Interview prep' }),
+      );
+
+      expect(meta).toContain('note matches:');
+      expect(meta).toContain('Interview prep');
+    });
+
+    it('does not show the note for a URL-only match', async () => {
+      const meta = await metaOf('site1', link(1, { title: 'Forms', note: 'Interview prep' }));
+
+      expect(meta).not.toContain('note matches:');
+    });
+
+    it('does not show the note when the title has every word', async () => {
+      const meta = await metaOf('signal', link(1, { title: 'Signal', note: 'signal notes' }));
+
+      expect(meta).not.toContain('note matches:');
+    });
   });
 
   it('says so when nothing matches', async () => {

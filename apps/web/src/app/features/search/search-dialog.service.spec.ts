@@ -47,6 +47,24 @@ describe('SearchDialogService shortcut', () => {
     expect(dialogs.open).toHaveBeenCalledTimes(1);
   });
 
+  it('ignores a keydown without a key (autofill) and IME composition', () => {
+    const { dialogs, service } = setup();
+
+    expect(service.handleShortcut(new Event('keydown') as KeyboardEvent)).toBe(false);
+    expect(
+      service.handleShortcut(keydown({ key: 'k', code: 'KeyK', metaKey: true, isComposing: true })),
+    ).toBe(false);
+    expect(dialogs.open).not.toHaveBeenCalled();
+  });
+
+  it('uses the key on a Latin layout: a Dvorak J on the physical K position is not the shortcut', () => {
+    const { dialogs, service } = setup();
+
+    expect(service.handleShortcut(keydown({ key: 'j', code: 'KeyK', ctrlKey: true }))).toBe(false);
+    expect(service.handleShortcut(keydown({ key: 'k', code: 'KeyV', ctrlKey: true }))).toBe(true);
+    expect(dialogs.open).toHaveBeenCalledTimes(1);
+  });
+
   it('ignores a plain K, other modifiers and other keys', () => {
     const { dialogs, service } = setup();
 

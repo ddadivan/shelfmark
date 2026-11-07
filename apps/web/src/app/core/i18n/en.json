@@ -591,6 +591,7 @@
     "searching": "Searching…",
     "failed": "Couldn't search. Try again.",
     "hints": {
+      "ctrl": "Ctrl",
       "move": "move",
       "open": "open",
       "background": "open in background"

@@ -92,7 +92,14 @@
     <span slot="footer"><kbd>↑</kbd> <kbd>↓</kbd> {{ 'search.hints.move' | transloco }}</span>
     <span slot="footer"><kbd>↵</kbd> {{ 'search.hints.open' | transloco }}</span>
     <span slot="footer"
-      ><kbd>{{ modifier }}</kbd> <kbd>↵</kbd> {{ 'search.hints.background' | transloco }}</span
+      ><kbd>
+        @if (mac) {
+          ⌘
+        } @else {
+          {{ 'search.hints.ctrl' | transloco }}
+        }
+      </kbd>
+      <kbd>↵</kbd> {{ 'search.hints.background' | transloco }}</span
     >
   </ui-command-list>
 </ui-dialog>
