@@ -11,7 +11,7 @@ describe('ngsw-config.json', () => {
     const files = ngswConfig.assetGroups.flatMap((group) => group.resources.files);
 
     expect(files.length).toBeGreaterThan(0);
-    expect(files.filter((file) => file.includes('api'))).toEqual([]);
+    expect(files.filter((file) => /^\/api(\/|$)/.test(file))).toEqual([]);
   });
 
   it('excludes /api and everything below it from navigation fallback', () => {

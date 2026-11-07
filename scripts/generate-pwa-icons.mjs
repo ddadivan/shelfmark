@@ -2,7 +2,9 @@
 //
 // Run manually when the logo changes: `node scripts/generate-pwa-icons.mjs`, then commit the PNGs
 // in apps/web/public/icons. It uses Chromium from the Playwright dev dependency, so no extra
-// package is needed; the output is not part of the build.
+// package is needed; the output is not part of the build. The PNG bytes depend on the Chromium
+// version, so they are not byte-deterministic across versions: regenerate only when the logo
+// changes, not to "refresh" the files.
 //   - icon-192.png / icon-512.png: purpose "any", the rounded app icon on a transparent ground
 //   - icon-maskable-512.png: purpose "maskable", full-bleed square (the mark sits inside the 80%
 //     safe zone, so any launcher mask keeps it whole)

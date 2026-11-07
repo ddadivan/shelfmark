@@ -35,6 +35,7 @@ export const appConfig: ApplicationConfig = {
     ),
     provideHttpClient(withFetch()),
     provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
+    // SwUpdate is not wired: a new version is applied on the next navigation, with no prompt.
     // App shell and static assets only; the worker never touches /api (apps/web/ngsw-config.json).
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),

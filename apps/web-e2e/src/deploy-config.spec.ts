@@ -174,9 +174,16 @@ test.describe('vercel.json deployment config', () => {
   });
 
   test('service worker files are revalidated and the manifest has its media type', () => {
-    const cacheRule = config.headers.find((r) => r.source.includes('ngsw'));
+    const cacheRule = config.headers.find((r) =>
+      r.headers.some((h) => h.key === 'Cache-Control' && h.value === 'no-cache'),
+    );
     const regexp = sourceToRegExp(cacheRule?.source ?? '');
-    for (const path of ['/ngsw.json', '/ngsw-worker.js', '/safety-worker.js']) {
+    for (const path of [
+      '/ngsw.json',
+      '/ngsw-worker.js',
+      '/safety-worker.js',
+      '/worker-basic.min.js',
+    ]) {
       expect(regexp.test(path), path).toBe(true);
     }
     expect(regexp.test('/main-ABCD1234.js')).toBe(false);
@@ -192,18 +199,21 @@ test.describe('vercel.json deployment config', () => {
 
   test('service worker and manifest files are file-like paths, never HTML documents', () => {
     const patterns = readMiddlewareMatcher().map((source) => sourceToRegExp(source));
+    const spa = sourceToRegExp(
+      config.rewrites.find((r) => r.destination === '/index.html')?.source ?? '',
+    );
     for (const path of [
       '/ngsw.json',
       '/ngsw-worker.js',
       '/safety-worker.js',
+      '/worker-basic.min.js',
       '/manifest.webmanifest',
     ]) {
       expect(
         patterns.some((pattern) => pattern.test(path)),
         path,
       ).toBe(false);
-      const spa = config.rewrites.find((r) => r.destination === '/index.html');
-      expect(sourceToRegExp(spa?.source ?? '').test(path), path).toBe(false);
+      expect(spa.test(path), path).toBe(false);
     }
   });
 

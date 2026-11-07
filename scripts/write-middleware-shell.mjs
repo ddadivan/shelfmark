@@ -6,7 +6,6 @@
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { pathToFileURL } from 'node:url';
 
 // Mirrors CSP_NONCE_PLACEHOLDER in libs/web/csp (the app's index.html uses the same literal).
 const PLACEHOLDER = 'CSP_NONCE_PLACEHOLDER';
@@ -41,9 +40,6 @@ if (count < 1) {
   throw new Error(`${indexPath} must contain ${PLACEHOLDER}, found none`);
 }
 
-mkdirSync(outDir, { recursive: true });
-writeFileSync(join(outDir, 'shell.mjs'), `export const shellHtml = ${JSON.stringify(html)};\n`);
-writeFileSync(join(outDir, 'shell.d.mts'), 'export declare const shellHtml: string;\n');
 // The Angular service worker compares `/index.html` with the hash in ngsw.json, and the middleware
 // serves it the shell below as-is (libs/web/csp). If they differ the worker silently degrades to
 // network-only, so the build fails instead.
@@ -56,8 +52,17 @@ const actualHash = createHash('sha1').update(readFileSync(indexPath)).digest('he
 if (actualHash !== expectedHash) {
   throw new Error(`index.html sha1 ${actualHash} differs from ngsw.json (${expectedHash})`);
 }
-const { shellHtml } = await import(pathToFileURL(join(process.cwd(), outDir, 'shell.mjs')).href);
-if (shellHtml !== html || createHash('sha1').update(shellHtml).digest('hex') !== expectedHash) {
-  throw new Error('The middleware shell is not byte-identical to the built index.html');
+const shellModule = `export const shellHtml = ${JSON.stringify(html)};\n`;
+const roundTrip = (await import(`data:text/javascript,${encodeURIComponent(shellModule)}`))
+  .shellHtml;
+if (roundTrip !== html || createHash('sha1').update(roundTrip).digest('hex') !== expectedHash) {
+  throw new Error(
+    'The middleware shell is not byte-identical to the built index.html: the shell was modified after the Angular build',
+  );
 }
+
+// Validated: only now write, so a failed build leaves no stale shell.
+mkdirSync(outDir, { recursive: true });
+writeFileSync(join(outDir, 'shell.mjs'), shellModule);
+writeFileSync(join(outDir, 'shell.d.mts'), 'export declare const shellHtml: string;\n');
 console.log(`Wrote ${join(outDir, 'shell.mjs')} (${html.length} bytes)`);
