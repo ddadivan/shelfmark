@@ -58,7 +58,7 @@ npx nx graph                             # project graph
 
 Issue on the board (Todo) → `project-manager` moves it to In progress → `architect` writes a short plan (larger tasks) → dev agent implements on its branch → `test-engineer` adds tests → `code-reviewer` + `security-reviewer` review the diff, findings go back to the dev agent → tech lead opens the PR, `project-manager` moves to In review → author merges → Done.
 
-The tech lead (main session) is the only one who dispatches agents; subagents cannot call each other. On Pro run at most 1–2 agents in parallel, each in its own git worktree. A blocked agent finishes what it can and reports what blocks it.
+The tech lead (main session) is the only one who dispatches agents; subagents cannot call each other. On Claude Max run at most 4 agents in parallel, each in its own git worktree; avoid parallel edits of shared files (`libs/*/src/index.ts`, `CLAUDE.md`, Storybook `preview.ts`, `package.json`). A blocked agent finishes what it can and reports what blocks it.
 
 **Session end or pause:** update the **Status** section of `docs/PROJECT.md` and leave a comment on the current issue: _Done / Left / Next step_. A new session starts from the board, issues In progress and their last comment.
 
