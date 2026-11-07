@@ -25,6 +25,7 @@
       "hintShelf": "Notes come from your own messages.",
       "putOnShelf": "Put them on the shelf",
       "showChat": "Show the chat again",
+      "pause": "Pause the feed",
       "messages": {
         "watch": {
           "text": "watch later!!",
@@ -45,6 +46,18 @@
         "zoneless": {
           "text": "where was that zoneless article…",
           "time": "Fri 08:47"
+        },
+        "lisbon": {
+          "text": "lisbon, maybe in may",
+          "time": "Sat 11:20"
+        },
+        "icons": {
+          "text": "icons for the side project",
+          "time": "Sun 16:02"
+        },
+        "react": {
+          "text": "read this one day",
+          "time": "Mon 07:58"
         }
       }
     },
