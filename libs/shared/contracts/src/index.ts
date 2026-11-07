@@ -41,6 +41,7 @@ export type { UpdateTagRequest } from './tags/update-tag-request.interface';
 export type { MergeTagRequest } from './tags/merge-tag-request.interface';
 export type { MergeTagResponse } from './tags/merge-tag-response.type';
 export { TAG_LIMIT } from './tags/tag-limit.const';
+export { normalizeTagName } from './tags/normalize-tag-name';
 
 export type { AuthProvider } from './auth/auth-provider.type';
 export type { AuthUser } from './auth/auth-user.interface';
@@ -52,7 +53,6 @@ export type { SocialSignInResponse } from './auth/social-sign-in-response.interf
 export type { SignOutResponse } from './auth/sign-out-response.interface';
 export { AUTH_PROVIDER } from './auth/auth-provider.const';
 export { AUTH_ENDPOINT } from './auth/auth-endpoint.const';
-export { normalizeTagName } from './tags/normalize-tag-name';
 
 export type { DeleteAccountRequest } from './users/delete-account-request.interface';
 export type { OnboardingResponse } from './users/onboarding-response.interface';
