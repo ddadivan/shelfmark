@@ -57,3 +57,12 @@
 .settings__sign-out {
   flex: none;
 }
+
+.settings__export {
+  display: flex;
+  gap: var(--space-2);
+
+  > * {
+    flex: 1;
+  }
+}

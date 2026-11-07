@@ -11,15 +11,43 @@
       </p>
       }
     </div>
-    @if (showLinks() && viewOptions(); as options) {
-    <ui-segmented-control
-      iconOnly
-      [options]="options"
-      [value]="ui.view()"
-      [ariaLabel]="'library.view.label' | transloco"
-      (valueChange)="setView($event)"
-    />
-    }
+    <div class="library__tools">
+      <ui-button
+        [uiMenuTrigger]="exportMenu"
+        variant="secondary"
+        size="sm"
+        iconLeft="download"
+        iconRight="chevron-down"
+      >
+        {{ 'export.menu' | transloco }}
+      </ui-button>
+      <ui-menu #exportMenu align="end" [ariaLabel]="'export.menu' | transloco">
+        @if (viewScope()) {
+        <ui-menu-item icon="download" (activated)="exportView(EXPORT_FORMAT.Json)">
+          {{ 'export.view.json' | transloco }}
+        </ui-menu-item>
+        <ui-menu-item icon="download" (activated)="exportView(EXPORT_FORMAT.Html)">
+          {{ 'export.view.html' | transloco }}
+        </ui-menu-item>
+        <ui-menu-separator />
+        }
+        <ui-menu-item icon="download" (activated)="exportAll(EXPORT_FORMAT.Json)">
+          {{ 'export.all.json' | transloco }}
+        </ui-menu-item>
+        <ui-menu-item icon="download" (activated)="exportAll(EXPORT_FORMAT.Html)">
+          {{ 'export.all.html' | transloco }}
+        </ui-menu-item>
+      </ui-menu>
+      @if (showLinks() && viewOptions(); as options) {
+      <ui-segmented-control
+        iconOnly
+        [options]="options"
+        [value]="ui.view()"
+        [ariaLabel]="'library.view.label' | transloco"
+        (valueChange)="setView($event)"
+      />
+      }
+    </div>
   </header>
   @if (filtered()) {
   <div class="library__filter" role="group" [attr.aria-label]="'tags.filter.label' | transloco">

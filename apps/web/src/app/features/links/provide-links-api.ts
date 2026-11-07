@@ -1,4 +1,6 @@
 import type { Provider } from '@angular/core';
+import { HttpExportApi } from '../export/http/http-export.api';
+import { EXPORT_API } from '../export/models/export-api.const';
 import { FOLDERS_API } from './models/folders-api.const';
 import { LINKS_API } from './models/links-api.const';
 import { TAGS_API } from './models/tags-api.const';
@@ -9,13 +11,15 @@ import { UnavailableTagsApi } from './unavailable/unavailable-tags.api';
 /**
  * Registers the data seams of the links feature (`LINKS_API`, `FOLDERS_API`, `TAGS_API`).
  * Until #72 / #75 / #76 land these are placeholders that reject with a clear error, so no
- * fixtures ship in production. The `development` and `e2e` builds replace this file with
+ * fixtures ship in production. `EXPORT_API` is the real one: it is only a download URL, and a 404
+ * (API not deployed yet) or 401 becomes an error toast. The `development` and `e2e` builds replace this file with
  * `mock/provide-links-api.e2e.ts` (`fileReplacements` in `project.json`).
  */
 export function provideLinksApi(): Provider[] {
   return [
     { provide: LINKS_API, useExisting: UnavailableLinksApi },
     { provide: FOLDERS_API, useExisting: UnavailableFoldersApi },
+    { provide: EXPORT_API, useExisting: HttpExportApi },
     { provide: TAGS_API, useExisting: UnavailableTagsApi },
   ];
 }

@@ -12,6 +12,8 @@ import {
   MenuSeparatorComponent,
   MenuTriggerDirective,
 } from '@shelfmark/ui';
+import { EXPORT_FORMAT, type ExportFormat } from '@shelfmark/contracts';
+import { ExportActionsService } from '../features/export/export-actions.service';
 import { AuthStore } from '../core/auth/auth.store';
 import { LinkActionsService } from '../features/links/link-actions.service';
 import { RecentLinksPanelComponent } from '../features/links/recent/recent-links-panel.component';
@@ -43,6 +45,8 @@ export default class AppShellComponent {
   protected readonly auth = inject(AuthStore);
   protected readonly ui = inject(UiStore);
   protected readonly actions = inject(LinkActionsService);
+  private readonly exporter = inject(ExportActionsService);
+  protected readonly EXPORT_FORMAT = EXPORT_FORMAT;
   private readonly transloco = inject(TranslocoService);
 
   private readonly recentLabels = toSignal(
@@ -60,6 +64,10 @@ export default class AppShellComponent {
 
   protected async openSettings(): Promise<void> {
     await this.router.navigateByUrl(`/${APP_PATH.Settings}`);
+  }
+
+  protected async exportAll(format: ExportFormat): Promise<void> {
+    await this.exporter.download(format);
   }
 
   protected toggleRecent(): void {

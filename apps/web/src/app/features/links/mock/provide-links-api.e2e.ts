@@ -1,4 +1,6 @@
 import type { Provider } from '@angular/core';
+import { MockExportApi } from '../../export/mock/mock-export.api';
+import { EXPORT_API } from '../../export/models/export-api.const';
 import { FOLDERS_API } from '../models/folders-api.const';
 import { LINKS_API } from '../models/links-api.const';
 import { TAGS_API } from '../models/tags-api.const';
@@ -15,5 +17,6 @@ export function provideLinksApi(): Provider[] {
     { provide: LINKS_API, useExisting: MockLinksApi },
     { provide: FOLDERS_API, useExisting: MockFoldersApi },
     { provide: TAGS_API, useExisting: MockTagsApi },
+    { provide: EXPORT_API, useExisting: MockExportApi },
   ];
 }

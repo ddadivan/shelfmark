@@ -26,6 +26,22 @@
   </app-settings-section>
   }
 
+  <app-settings-section [heading]="'settings.data.title' | transloco">
+    <app-settings-row
+      [label]="'settings.data.export.label' | transloco"
+      [hint]="'settings.data.export.hint' | transloco"
+    >
+      <div class="settings__export">
+        <ui-button iconLeft="download" (click)="exportAll(EXPORT_FORMAT.Json)">
+          {{ 'settings.data.export.json' | transloco }}
+        </ui-button>
+        <ui-button iconLeft="download" (click)="exportAll(EXPORT_FORMAT.Html)">
+          {{ 'settings.data.export.html' | transloco }}
+        </ui-button>
+      </div>
+    </app-settings-row>
+  </app-settings-section>
+
   <app-settings-section [heading]="'settings.appearance.title' | transloco">
     <app-settings-row
       #row
