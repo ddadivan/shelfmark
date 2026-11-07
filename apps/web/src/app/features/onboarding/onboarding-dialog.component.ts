@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  Injector,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
   BUTTON_VARIANT,
@@ -34,6 +43,8 @@ export class OnboardingDialogComponent {
   protected readonly count = ONBOARDING_STEPS.length;
 
   private readonly ref = inject<UiDialogRef<OnboardingResult>>(UiDialogRef);
+  private readonly injector = inject(Injector);
+  private readonly nextButton = viewChild.required<ButtonComponent>('nextButton');
 
   /** Current step, starting at 1. */
   protected readonly current = signal(1);
@@ -83,5 +94,15 @@ export class OnboardingDialogComponent {
     }
     this.backwards.set(delta === -1);
     this.current.set(target);
+    if (target === 1) {
+      // Back leaves the DOM on the first step: the primary button takes the focus, so the
+      // keyboard (arrows included) keeps working inside the dialog.
+      afterNextRender(
+        () => {
+          this.nextButton().focus();
+        },
+        { injector: this.injector },
+      );
+    }
   }
 }

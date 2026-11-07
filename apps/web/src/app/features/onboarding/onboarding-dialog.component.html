@@ -27,7 +27,12 @@
         {{ 'onboarding.back' | transloco }}
       </ui-button>
     }
-    <ui-button class="onboarding__next" [variant]="BUTTON_VARIANT.Primary" (click)="next()">
+    <ui-button
+      #nextButton
+      class="onboarding__next"
+      [variant]="BUTTON_VARIANT.Primary"
+      (click)="next()"
+    >
       {{ (last() ? 'onboarding.addFirst' : 'onboarding.next') | transloco }}
     </ui-button>
   </div>

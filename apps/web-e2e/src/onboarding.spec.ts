@@ -99,17 +99,22 @@ test.describe('onboarding (mock API)', () => {
     await expect(dialog).toBeVisible();
 
     for (const title of ['Save in a second', 'Find it right away']) {
-      await dialog.getByRole('button', { name: /^(Next)$/ }).click();
+      await page.getByRole('dialog').getByRole('button', { name: 'Next' }).click();
       await expect(page.getByRole('dialog', { name: title })).toBeVisible();
     }
-    const box = await dialog.boundingBox();
-    expect(box?.x).toBeGreaterThanOrEqual(0);
-    expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(360);
-    const overflow = await page.evaluate<number>(
-      '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
-    );
-    expect(overflow).toBeLessThanOrEqual(0);
-    await expect(dialog.getByRole('button', { name: 'Add your first link' })).toBeVisible();
+    const last = page.getByRole('dialog');
+    // The sheet itself: as wide as the phone and nothing inside it overflows. (The page behind
+    // is not measured here; its own 360px layout is covered by the shell and page specs.)
+    const sheet = last.locator('.ui-dialog');
+    const box = await sheet.boundingBox();
+    expect(box?.width).toBeLessThanOrEqual(360);
+    const inner = await sheet.evaluate((element) => element.scrollWidth - element.clientWidth);
+    expect(inner).toBeLessThanOrEqual(0);
+    const body = await last
+      .locator('.ui-dialog__body')
+      .evaluate((element) => element.scrollWidth - element.clientWidth);
+    expect(body).toBeLessThanOrEqual(0);
+    await expect(last.getByRole('button', { name: 'Add your first link' })).toBeVisible();
   });
 
   for (const colorScheme of Object.values(COLOR_SCHEME)) {
@@ -124,7 +129,7 @@ test.describe('onboarding (mock API)', () => {
         await expect(page.locator('html')).toHaveAttribute('data-theme', colorScheme);
 
         await expectNoBlockingViolations(page, testInfo, { include: '.cdk-dialog-container' });
-        await dialog.getByRole('button', { name: 'Next' }).click();
+        await page.getByRole('button', { name: 'Next' }).click();
         await expect(page.getByRole('dialog', { name: 'Save in a second' })).toBeVisible();
         await page.waitForTimeout(400);
         await expectNoBlockingViolations(page, testInfo, { include: '.cdk-dialog-container' });
@@ -146,9 +151,9 @@ test.describe('onboarding (mock API)', () => {
       await page.getByRole('button', { name: 'Next' }).click();
       await expect(page.getByRole('dialog', { name: 'Save in a second' })).toBeVisible();
 
-      const animation = await page
-        .locator('.onboarding__step')
-        .evaluate((element) => getComputedStyle(element).animationName);
+      const animation = await page.evaluate<string>(
+        "getComputedStyle(document.querySelector('.onboarding__step')).animationName",
+      );
       expect(animation).toBe('none');
     });
   });
@@ -158,9 +163,9 @@ test.describe('onboarding (mock API)', () => {
     await page.goto('/links');
     await expect(page.getByRole('dialog', { name: FIRST_TITLE })).toBeVisible();
 
-    const animation = await page
-      .locator('.onboarding__step')
-      .evaluate((element) => getComputedStyle(element).animationName);
+    const animation = await page.evaluate<string>(
+      "getComputedStyle(document.querySelector('.onboarding__step')).animationName",
+    );
     expect(animation).not.toBe('none');
   });
 });

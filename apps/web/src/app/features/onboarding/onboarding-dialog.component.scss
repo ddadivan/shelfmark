@@ -10,6 +10,9 @@
   gap: var(--space-4);
   align-items: center;
   text-align: center;
+
+  // The sliding step must not make the dialog body scroll sideways while it moves in.
+  overflow-x: clip;
 }
 
 .onboarding__step {

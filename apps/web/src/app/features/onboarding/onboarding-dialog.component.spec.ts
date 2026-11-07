@@ -95,6 +95,11 @@ describe('OnboardingDialogComponent', () => {
     await click(buttonByText('Back'));
     expect(title()).toBe('All your links in one place');
     expect(buttonByText('Back')).toBeUndefined();
+    // The Back button left the DOM: the primary button has the focus, not <body>.
+    await vi.waitFor(() => {
+      TestBed.tick();
+      expect(document.activeElement).toBe(buttonByText('Next'));
+    });
   });
 
   it('moves with the arrow keys and stops at the ends', async () => {
