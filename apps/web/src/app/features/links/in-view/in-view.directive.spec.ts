@@ -1,13 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { InViewDirective } from './in-view.directive';
 
 @Component({
   imports: [InViewDirective],
-  template: '<div appInView (entered)="count = count + 1"></div>',
+  template: '<div appInView [appInViewRecheck]="token()" (entered)="count = count + 1"></div>',
 })
 class HostComponent {
   count = 0;
+  readonly token = signal(0);
 }
 
 class FakeObserver {
@@ -16,7 +17,11 @@ class FakeObserver {
   constructor(readonly callback: (entries: Array<{ isIntersecting: boolean }>) => void) {
     FakeObserver.instances.push(this);
   }
+  observed = 0;
   observe(): void {
+    this.observed++;
+  }
+  unobserve(): void {
     // The fake is driven by the test.
   }
   disconnect(): void {
@@ -40,6 +45,18 @@ describe('InViewDirective', () => {
     expect(fixture.componentInstance.count).toBe(0);
     observer.callback([{ isIntersecting: true }]);
     expect(fixture.componentInstance.count).toBe(1);
+  });
+
+  it('observes the host again when the recheck value changes', async () => {
+    const fixture = TestBed.createComponent(HostComponent);
+    await fixture.whenStable();
+    const [observer] = FakeObserver.instances;
+    expect(observer.observed).toBe(1);
+
+    fixture.componentInstance.token.set(1);
+    await fixture.whenStable();
+
+    expect(observer.observed).toBe(2);
   });
 
   it('disconnects on destroy', async () => {

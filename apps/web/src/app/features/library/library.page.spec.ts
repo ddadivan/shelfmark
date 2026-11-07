@@ -140,7 +140,7 @@ describe('LibraryPage', () => {
     expect(text(fixture)).not.toContain("Couldn't load your links");
   });
 
-  it('keeps showing the links when a refetch of the same scope fails', async () => {
+  it('keeps the links and shows a notice with Retry when a refetch fails', async () => {
     const { api, element, fixture } = await setup();
     api.list.mockReturnValue(throwError(() => new Error('boom')));
 
@@ -148,6 +148,14 @@ describe('LibraryPage', () => {
     await fixture.whenStable();
 
     expect(element.querySelectorAll('app-link-card')).toHaveLength(2);
+    expect(element.querySelector('ui-notice')?.textContent).toContain("Couldn't refresh");
+
+    api.list.mockReturnValue(of(page([link(1), link(2), link(3)])));
+    element.querySelector<HTMLButtonElement>('ui-notice button')?.click();
+    await fixture.whenStable();
+
+    expect(element.querySelector('ui-notice')).toBeNull();
+    expect(element.querySelectorAll('app-link-card')).toHaveLength(3);
   });
 
   it('toggles a favorite from a card', async () => {

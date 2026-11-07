@@ -21,7 +21,12 @@
     }
   </header>
 
-  @if (failed()) {
+  @if (store.error() && store.count() > 0) {
+  <ui-notice kind="danger" class="library__notice">
+    {{ 'library.refetchFailed' | transloco }}
+    <ui-button size="sm" (click)="retry()">{{ 'library.error.retry' | transloco }}</ui-button>
+  </ui-notice>
+  } @if (failed()) {
   <ui-empty-state
     illustration="offline"
     [heading]="'library.error.title' | transloco"
@@ -79,7 +84,12 @@
 
   <ui-load-more [loading]="store.loadingMore()" [text]="'library.loadingMore' | transloco" />
   @if (store.hasMore()) {
-  <div class="library__more" appInView (entered)="store.loadMore()">
+  <div
+    class="library__more"
+    appInView
+    [appInViewRecheck]="store.count()"
+    (entered)="store.loadMore()"
+  >
     @if (store.loadMoreFailed()) {
     <p class="library__more-error">{{ 'library.loadMoreFailed' | transloco }}</p>
     }

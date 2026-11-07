@@ -15,5 +15,8 @@ export const PRODUCTION_BUNDLE_MARKERS = [
   'Mock: delete failed',
   'Mock: list failed',
   'sm-mock-links-scenario',
+  'Saved article',
+  'Note for article',
+  '.example.com/articles/',
   '__e2e/add-link',
 ] as const;

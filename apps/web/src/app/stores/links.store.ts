@@ -89,6 +89,8 @@ export const LinksStore = signalStore(
     const favoriteBusy = new Set<string>();
     // Bumped when the filter changes or the store resets: late responses are dropped.
     let generation = 0;
+    // Bumped only by `reset()`: a response that started before it belongs to the previous user.
+    let epoch = 0;
 
     function mapRecent(id: string, changes: Partial<LinkResponse>): LinkResponse[] {
       return store.recent().map((link) => (link.id === id ? { ...link, ...changes } : link));
@@ -136,23 +138,28 @@ export const LinksStore = signalStore(
             changed ? { loaded: false, nextCursor: null } : {},
           );
         }),
-        switchMap(({ scope }) =>
-          api()
+        switchMap(({ scope }) => {
+          const started = epoch;
+          return api()
             .list(queryFor(scope))
             .pipe(
-              tap((page) =>
-                patchState(
-                  store,
-                  setAllEntities(page.items.filter((link) => !pending.has(link.id))),
-                  { nextCursor: page.nextCursor, loaded: true, loading: false },
-                ),
-              ),
+              tap((page) => {
+                if (started === epoch) {
+                  patchState(
+                    store,
+                    setAllEntities(page.items.filter((link) => !pending.has(link.id))),
+                    { nextCursor: page.nextCursor, loaded: true, loading: false },
+                  );
+                }
+              }),
               catchError(() => {
-                patchState(store, { loading: false, error: true });
+                if (started === epoch) {
+                  patchState(store, { loading: false, error: true });
+                }
                 return EMPTY;
               }),
-            ),
-        ),
+            );
+        }),
       ),
     );
 
@@ -253,8 +260,12 @@ export const LinksStore = signalStore(
 
       /** Records an open: the link moves to the top of "Recently opened". Failures are ignored. */
       async recordOpen(id: string): Promise<void> {
+        const started = epoch;
         try {
           const opened = await firstValueFrom(api().open(id));
+          if (started !== epoch) {
+            return;
+          }
           patchState(store, updateEntity({ id, changes: { lastOpenedAt: opened.lastOpenedAt } }), {
             recent: [opened, ...store.recent().filter((link) => link.id !== id)].slice(
               0,
@@ -267,32 +278,40 @@ export const LinksStore = signalStore(
       },
 
       async loadRecent(): Promise<void> {
+        const started = epoch;
         try {
           const { items } = await firstValueFrom(api().recent({ limit: RECENT_LINKS_LIMIT }));
-          patchState(store, {
-            recent: items.filter((link) => !pending.has(link.id)),
-            recentLoaded: true,
-          });
+          if (started === epoch) {
+            patchState(store, {
+              recent: items.filter((link) => !pending.has(link.id)),
+              recentLoaded: true,
+            });
+          }
         } catch {
-          patchState(store, { recentLoaded: true });
+          if (started === epoch) {
+            patchState(store, { recentLoaded: true });
+          }
         }
       },
 
-      /** Sign-out: sends the deletes still waiting, then forgets everything of this user. */
+      /**
+       * Sign-out: forgets everything of this user and drops responses still in flight. Call
+       * `flushPending()` first (and await it) while the session is still valid; deletes left
+       * here are not sent.
+       */
       reset(): void {
-        const waiting = [...pending.entries()].filter(([, removal]) => !removal.committing);
         pending.clear();
         favoriteBusy.clear();
         generation++;
-        for (const [id] of waiting) {
-          firstValueFrom(api().remove(id)).catch(() => undefined);
-        }
+        epoch++;
         patchState(store, initialState, removeAllEntities());
       },
     };
   }),
   withHooks({
     onInit(store) {
+      // The page is going away: the real `HttpClient` implementation (issue #72) must send these
+      // deletes with `fetch(..., { keepalive: true })` or `navigator.sendBeacon`, or they are lost.
       inject(DOCUMENT).defaultView?.addEventListener('pagehide', () => {
         void store.flushPending();
       });

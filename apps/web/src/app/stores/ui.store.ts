@@ -7,14 +7,18 @@ import type { UiView } from './models/ui-view.type';
 
 const defaults: UiState = { view: UI_VIEW.Cards, recentVisible: true };
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
 /** Reads the stored preferences; anything unexpected falls back to the default for that field. */
 function readState(): UiState {
   try {
     const parsed: unknown = JSON.parse(globalThis.localStorage.getItem(UI_STORAGE_KEY) ?? 'null');
-    if (typeof parsed !== 'object' || parsed === null) {
+    if (!isRecord(parsed)) {
       return defaults;
     }
-    const { view, recentVisible } = parsed as Record<string, unknown>;
+    const { view, recentVisible } = parsed;
     return {
       view: isUiView(view) ? view : defaults.view,
       recentVisible: typeof recentVisible === 'boolean' ? recentVisible : defaults.recentVisible,

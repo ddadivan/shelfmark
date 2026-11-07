@@ -120,7 +120,7 @@ describe('AuthStore', () => {
     expect(store.isSignedIn()).toBe(false);
   });
 
-  it('forgets the links of the user on sign-out, before the session ends', async () => {
+  it('sends waiting deletes, then forgets the links of the user on sign-out, before the session ends', async () => {
     const order: string[] = [];
     const { store } = setup({
       signOut: vi.fn(() => {
@@ -129,6 +129,10 @@ describe('AuthStore', () => {
       }),
     });
     const links = TestBed.inject(LinksStore);
+    vi.spyOn(links, 'flushPending').mockImplementation(async () => {
+      await Promise.resolve();
+      order.push('flush');
+    });
     vi.spyOn(links, 'reset').mockImplementation(() => {
       order.push('reset');
     });
@@ -136,6 +140,6 @@ describe('AuthStore', () => {
 
     await store.signOut();
 
-    expect(order).toEqual(['reset', 'api']);
+    expect(order).toEqual(['flush', 'reset', 'api']);
   });
 });

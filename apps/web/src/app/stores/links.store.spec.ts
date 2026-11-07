@@ -253,6 +253,15 @@ describe('LinksStore', () => {
       expect(ids(store)).toEqual(['id-1', 'id-3']);
     });
 
+    it('keeps a reset from sending deletes: flush first', async () => {
+      const { api, store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      store.remove('id-1');
+
+      store.reset();
+      expect(api.remove).not.toHaveBeenCalled();
+    });
+
     it('flushes every waiting delete', async () => {
       const { api, store } = setup();
       store.setFilter({ scope: LINKS_SCOPE.All });
@@ -365,14 +374,42 @@ describe('LinksStore', () => {
       expect(store.scope()).toBe(LINKS_SCOPE.All);
     });
 
-    it('sends the deletes that still wait for their Undo window', () => {
+    it('drops a first page, a recent list and an open that arrive after the reset', async () => {
+      const list = new Subject<ListLinksResponse>();
+      const recent = new Subject<{ items: LinkResponse[] }>();
+      const open = new Subject<LinkResponse>();
       const { api, store } = setup();
+      api.list.mockReturnValueOnce(list);
+      api.recent.mockReturnValueOnce(recent);
+      api.open.mockReturnValueOnce(open);
       store.setFilter({ scope: LINKS_SCOPE.All });
-      store.remove('id-1');
+      const loadingRecent = store.loadRecent();
+      const opening = store.recordOpen('id-1');
 
       store.reset();
+      list.next(page([link(1)]));
+      recent.next({ items: [link(1)] });
+      recent.complete();
+      open.next(link(1));
+      open.complete();
+      await Promise.all([loadingRecent, opening]);
 
-      expect(api.remove).toHaveBeenCalledWith('id-1');
+      expect(store.count()).toBe(0);
+      expect(store.recent()).toEqual([]);
+      expect(store.recentLoaded()).toBe(false);
+      expect(store.loading()).toBe(false);
+    });
+
+    it('drops a failure that arrives after the reset', () => {
+      const list = new Subject<ListLinksResponse>();
+      const { api, store } = setup();
+      api.list.mockReturnValueOnce(list);
+      store.setFilter({ scope: LINKS_SCOPE.All });
+
+      store.reset();
+      list.error(new Error('boom'));
+
+      expect(store.error()).toBe(false);
     });
 
     it('drops a page that arrives after the reset', async () => {

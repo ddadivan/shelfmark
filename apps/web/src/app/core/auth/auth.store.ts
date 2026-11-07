@@ -46,6 +46,7 @@ export const AuthStore = signalStore(
        */
       async function signOut(): Promise<void> {
         // Before the session ends, so deletes still waiting for their Undo window can be sent.
+        await links.flushPending();
         links.reset();
         try {
           await api.signOut();

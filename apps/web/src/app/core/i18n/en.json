@@ -141,7 +141,8 @@
       "title": "No links here yet",
       "text": "Paste a link to save it to your shelf.",
       "add": "Add link"
-    }
+    },
+    "refetchFailed": "Couldn't refresh your links. You are seeing the last loaded list."
   },
   "settings": {
     "title": "Settings",
