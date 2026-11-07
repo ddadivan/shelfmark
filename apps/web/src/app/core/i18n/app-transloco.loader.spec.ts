@@ -22,7 +22,6 @@ describe('AppTranslocoLoader', () => {
     await expect(loader.getTranslation('de')).rejects.toThrow('Unsupported language: de');
   });
 
-  // Known bug: loaders[lang] reads inherited keys (Object.prototype); remove .fails once the loader uses an own-property check.
   it('does not resolve prototype keys as languages', async () => {
     await expect(loader.getTranslation('constructor')).rejects.toThrow('Unsupported language');
   });

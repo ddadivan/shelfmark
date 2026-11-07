@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, output } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { LogoComponent, ButtonComponent } from '@shelfmark/ui';
 import { LANDING_LINKS } from '../../models/landing-links.const';
@@ -13,4 +13,13 @@ import { LANDING_LINKS } from '../../models/landing-links.const';
 })
 export class LandingHeaderComponent {
   protected readonly LANDING_LINKS = LANDING_LINKS;
+
+  /** The visitor asked for "How it's built"; the page loads the deferred sections and scrolls. */
+  readonly howItsBuiltRequested = output<void>();
+
+  protected onHowItsBuilt(event: Event): void {
+    // The target may not be rendered yet (deferred); the page scrolls once it is.
+    event.preventDefault();
+    this.howItsBuiltRequested.emit();
+  }
 }
