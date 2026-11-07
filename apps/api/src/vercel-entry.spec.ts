@@ -11,6 +11,8 @@ const entryFile = resolve(srcDir, '../../../api/index.mjs');
 /** Packages Nest loads by name at runtime (`loadPackage`), invisible in our imports. */
 const RUNTIME_LOADED = ['class-transformer', 'class-validator', 'swagger-ui-dist'];
 
+const GENERATED_DIR = 'generated';
+
 /** Workspace libraries are bundled by webpack, not loaded from node_modules. */
 const BUNDLED_PREFIX = '@shelfmark/';
 
@@ -18,7 +20,8 @@ function sourceFiles(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const path = join(dir, entry.name);
     if (entry.isDirectory()) {
-      return sourceFiles(path);
+      // The generated Prisma client is bundled by webpack; its runtime import is covered below.
+      return entry.name === GENERATED_DIR ? [] : sourceFiles(path);
     }
     return entry.name.endsWith('.ts') && !entry.name.endsWith('.spec.ts') ? [path] : [];
   });
