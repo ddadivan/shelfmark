@@ -17,7 +17,7 @@ NestJS REST API, mounted under `/api` (port 3000). Source of truth: `docs/PROJEC
 - `src/app/configure-app.ts` - request id, helmet, 100kb JSON limit, `/api` prefix, global `ValidationPipe` (whitelist, forbidNonWhitelisted, transform), `AllExceptionsFilter`, Swagger at `/api/docs` (public in every environment, by decision).
 - `src/config/` - typed reader for `PORT` and `NODE_ENV`, validated at boot. Never loads `.env` files.
 - `src/common/` - cross-cutting pieces (request id, error filter, `@AllowAnonymous`).
-- `src/monitoring/` - Sentry (ADR 0032): `initMonitoring` (no-op without `SENTRY_DSN`, minimal integrations, `scrubEvent` as `beforeSend`), `reportException` (called by the error filter for 5xx), `GET /api/monitoring/config` and `POST /api/monitoring/tunnel` (envelope must name our own DSN, 200 KiB limit, no cookies upstream). Web scrubber twin: `apps/web/src/app/core/monitoring/scrub-event.ts`, keep in sync.
+- `src/monitoring/` - Sentry (ADR 0032): `initMonitoring` (no-op without `SENTRY_DSN`, minimal integrations, `scrubEvent` as `beforeSend`), `reportException` (called by the error filter for 5xx), `GET /api/monitoring/config` and `POST /api/monitoring/tunnel` (envelope must name our own DSN, 64 KiB limit, no cookies upstream). Web scrubber twin: `apps/web/src/app/core/monitoring/scrub-event.ts`, keep in sync.
 - `src/<domain>/` - one module per domain (`auth`, `users`, `links`, `folders`, `tags`, `metadata`, ...) with `*.module.ts`, `*.controller.ts`, `*.service.ts`, `dto/`.
 
 ## Rules

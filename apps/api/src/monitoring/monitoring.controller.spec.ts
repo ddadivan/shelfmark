@@ -115,6 +115,46 @@ describe('monitoring routes', () => {
       expect(fetchMock).not.toHaveBeenCalled();
     });
 
+    it.each([
+      ['a session item', '{"type":"session"}'],
+      ['an attachment item', '{"type":"attachment","length":1}'],
+      ['a replay item', '{"type":"replay_event"}'],
+      ['an event followed by another type', '{"type":"event"}\n{}\n{"type":"client_report"}'],
+    ])('rejects an envelope with %s and sends nothing', async (_label, items) => {
+      await post(`{"dsn":"${WEB_DSN}"}\n${items}\n{}`).expect(400);
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('rejects an envelope with no items', async () => {
+      await post(`{"dsn":"${WEB_DSN}"}`).expect(400);
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('answers with Cache-Control: no-store', async () => {
+      const ok = await post(envelope(WEB_DSN)).expect(204);
+      expect(ok.headers['cache-control']).toBe('no-store');
+      const rejected = await post(envelope('nonsense')).expect(400);
+      expect(rejected.headers['cache-control']).toBe('no-store');
+    });
+
+    it('closes the connection after refusing an oversized body', async () => {
+      const res = await post(`${envelope(WEB_DSN)}\n${'a'.repeat(MAX_ENVELOPE_BYTES)}`).expect(413);
+      expect(res.headers['connection']).toBe('close');
+    });
+
+    it('drops the upstream response body without reading it', async () => {
+      const cancel = vi.fn().mockResolvedValue(undefined);
+      fetchMock.mockResolvedValueOnce({ status: 200, body: { cancel } });
+      await post(envelope(WEB_DSN)).expect(204);
+      expect(cancel).toHaveBeenCalledOnce();
+    });
+
+    it('bounds the upstream call with a timeout signal', async () => {
+      await post(envelope(WEB_DSN)).expect(204);
+      const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+      expect(init.signal).toBeInstanceOf(AbortSignal);
+    });
+
     it('answers 502 when Sentry fails or is unreachable', async () => {
       fetchMock.mockResolvedValueOnce(new Response(null, { status: 500 }));
       await post(envelope(WEB_DSN)).expect(502);

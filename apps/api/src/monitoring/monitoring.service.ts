@@ -11,6 +11,9 @@ import type { MonitoringSettings } from './models/monitoring-settings.interface'
 import { MONITORING_SETTINGS } from './models/monitoring-settings.token';
 import type { ParsedDsn } from './models/parsed-dsn.interface';
 import { readEnvelopeDsn } from './read-envelope-dsn';
+import { readEnvelopeItemTypes } from './read-envelope-item-types';
+
+const ALLOWED_ITEM_TYPE = 'event';
 
 @Injectable()
 export class MonitoringService {
@@ -45,6 +48,11 @@ export class MonitoringService {
         )
       : undefined;
     if (!target) throw new BadRequestException('Invalid envelope');
+    // Only error events: no sessions, attachments, replays, profiles or other item types.
+    const itemTypes = readEnvelopeItemTypes(envelope);
+    if (!itemTypes?.length || itemTypes.some((type) => type !== ALLOWED_ITEM_TYPE)) {
+      throw new BadRequestException('Invalid envelope');
+    }
 
     let status: number;
     try {
@@ -57,6 +65,8 @@ export class MonitoringService {
         signal: AbortSignal.timeout(INGEST_TIMEOUT_MS),
       });
       status = response.status;
+      // Drop the upstream body unread; the request signal still bounds the whole exchange.
+      await response.body?.cancel();
     } catch {
       throw new BadGatewayException();
     }

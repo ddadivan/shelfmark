@@ -29,7 +29,16 @@ export class MonitoringController {
   @Post('tunnel')
   @HttpCode(204)
   @ApiNoContentResponse({ description: 'Envelope forwarded to Sentry.' })
-  async tunnel(@Req() req: Request): Promise<void> {
-    await this.monitoring.forward(await readLimitedBody(req, MAX_ENVELOPE_BYTES));
+  async tunnel(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<void> {
+    res.setHeader('Cache-Control', 'no-store');
+    let body: Buffer;
+    try {
+      body = await readLimitedBody(req, MAX_ENVELOPE_BYTES);
+    } catch (error) {
+      // Reading has stopped; do not keep the connection open for the unread rest.
+      res.setHeader('Connection', 'close');
+      throw error;
+    }
+    await this.monitoring.forward(body);
   }
 }

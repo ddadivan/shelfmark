@@ -9,6 +9,23 @@ describe('scrubText', () => {
     );
     expect(text).toBe('Failed [url] for [email] with Bearer [redacted]');
   });
+
+  it.each([
+    [
+      'bare host with path and query',
+      'saved example.org/private/page?x=1 failed',
+      'saved [url] failed',
+    ],
+    ['www host', 'saved www.mysite.xyz failed', 'saved [url] failed'],
+    ['host with port', 'connect intranet.local:8080/admin', 'connect [url]'],
+    ['ipv4 with port', 'connect 10.0.0.5:3000/x', 'connect [url]'],
+  ])('removes a %s', (_label, input, expected) => {
+    expect(scrubText(input)).toBe(expected);
+  });
+
+  it('keeps ordinary code identifiers', () => {
+    expect(scrubText('TypeError in links.service')).toBe('TypeError in links.service');
+  });
 });
 
 describe('scrubEvent', () => {
@@ -28,17 +45,43 @@ describe('scrubEvent', () => {
       user: { email: 'bob@example.com', ip_address: '1.2.3.4', id: '1' },
       breadcrumbs: [{ message: 'fetch https://private.example' }],
       extra: { body: 'secret' },
+      contexts: {
+        runtime: { name: 'node', version: '26' },
+        os: { name: 'Linux' },
+        app: { app_memory: 1 },
+        trace: { trace_id: 'abc', span_id: 'def' },
+        custom: { link: 'https://private.example' },
+      },
+      tags: {
+        requestId: 'rid-1',
+        route: 'save private.example/page',
+        attempt: 2 as unknown as string,
+      },
       exception: {
         values: [
           {
-            type: 'Error',
-            value: 'Request to https://private.example/x failed for ada@example.com',
+            type: 'PrismaClientKnownRequestError',
+            value:
+              'Invalid `prisma.link.create()` invocation:\n{ data: { url: "https://private.example/x" } }',
             mechanism: { type: 'generic', handled: false, data: { url: 'https://x.test' } },
+            stacktrace: {
+              frames: [
+                {
+                  filename: 'links.service.ts',
+                  function: 'create',
+                  lineno: 10,
+                  abs_path: '/var/task/apps/api/links.service.ts',
+                  context_line: 'const url = "https://private.example"',
+                  pre_context: ['a'],
+                  post_context: ['b'],
+                  vars: { url: 'https://private.example' },
+                },
+              ],
+            },
           },
         ],
       },
       logentry: { message: 'see https://private.example' },
-      tags: { requestId: 'rid-1' },
     };
   }
 
@@ -51,13 +94,40 @@ describe('scrubEvent', () => {
     expect(event.server_name).toBeUndefined();
   });
 
-  it('keeps the request id tag and scrubs free text', () => {
+  it('keeps only the allow-listed contexts', () => {
+    expect(Object.keys(scrubEvent(sample()).contexts ?? {})).toEqual(['runtime', 'os']);
+  });
+
+  it('keeps the requestId tag as is and scrubs other tag values', () => {
+    expect(scrubEvent(sample()).tags).toEqual({
+      requestId: 'rid-1',
+      route: 'save [url]',
+      attempt: 2,
+    });
+  });
+
+  it('withholds the exception message but keeps type and frame location', () => {
+    const [exception] = scrubEvent(sample()).exception?.values ?? [];
+    expect(exception?.type).toBe('PrismaClientKnownRequestError');
+    expect(exception?.value).toBe('Server error (message withheld)');
+    expect(exception?.mechanism?.data).toBeUndefined();
+    expect(exception?.stacktrace?.frames?.[0]).toEqual({
+      filename: 'links.service.ts',
+      function: 'create',
+      lineno: 10,
+    });
+  });
+
+  it('leaves no link, host, email or secret anywhere in the event', () => {
+    const dump = JSON.stringify(scrubEvent(sample()));
+    expect(dump).not.toMatch(
+      /example\.com|private\.example|intranet|x\.test|secret|session|prisma\.link|\/var\/task/,
+    );
+  });
+
+  it('scrubs the free-text fields', () => {
     const event = scrubEvent(sample());
-    const dump = JSON.stringify(event);
-    expect(event.tags).toEqual({ requestId: 'rid-1' });
-    expect(dump).not.toMatch(/example\.com|private\.example|intranet|x\.test|secret|session/);
-    expect(event.exception?.values?.[0]?.value).toBe('Request to [url] failed for [email]');
-    expect(event.exception?.values?.[0]?.mechanism?.data).toBeUndefined();
+    expect(event.message).toBe('Cannot fetch [url] for [email]');
     expect(event.logentry?.message).toBe('see [url]');
   });
 
