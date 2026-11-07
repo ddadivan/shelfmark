@@ -532,6 +532,7 @@ All routes except `/api/auth/*` require a session and work only with the current
 | POST | `/api/links/:id/open` | Record an open (updates `lastOpenedAt`) |
 | DELETE | `/api/links/:id` | Delete |
 | GET | `/api/folders` | All folders as a flat list ordered by name (`parentId` + direct link count) plus `counts` (`all`, `unsorted`, `favorites`) for the fixed sidebar rows; the frontend builds the tree |
+| GET | `/api/folders/:id` | One folder (`GetFolderResponse` = `FolderResponse`, with its direct link count); a foreign or missing id is a 404 |
 | POST | `/api/folders` | Create: `name`, `parentId?`; 409 at the per-user cap (500 folders) |
 | PATCH | `/api/folders/:id` | Rename / move; moving into itself or its own subfolder is forbidden |
 | DELETE | `/api/folders/:id?mode=` | Delete a folder with all subfolders; `mode=delete-links` also deletes the links, `mode=move-to-unsorted` moves them to "Unsorted" |

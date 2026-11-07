@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type { FolderResponse } from '@shelfmark/contracts';
+import type { FolderResponse, GetFolderResponse } from '@shelfmark/contracts';
 
-export class FolderResponseDto implements FolderResponse {
+export class FolderResponseDto implements FolderResponse, GetFolderResponse {
   @ApiProperty({ format: 'uuid' }) id!: string;
   @ApiProperty({ format: 'uuid', nullable: true, type: String }) parentId!: string | null;
   @ApiProperty() name!: string;
