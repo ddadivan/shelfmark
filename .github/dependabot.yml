@@ -17,11 +17,20 @@ updates:
       # stylelint-config-standard-scss targets stylelint 17.
       - dependency-name: stylelint
         versions: ['>=18']
+      # Prisma 7 is the pinned major (ADR 0025); 8 is not adopted yet.
+      - dependency-name: prisma
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@prisma/*'
+        update-types: ['version-update:semver-major']
     groups:
       angular:
         patterns: ['@angular/*', '@angular-devkit/*', '@schematics/angular', '@ngrx/*']
       nx:
         patterns: ['nx', '@nx/*']
+      prisma:
+        patterns: ['prisma', '@prisma/*']
+      pglite:
+        patterns: ['@electric-sql/*']
       nestjs:
         patterns: ['@nestjs/*']
       vitest:

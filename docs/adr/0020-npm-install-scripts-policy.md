@@ -10,7 +10,7 @@ npm 11 warns on `npm ci` that 9 packages have install scripts not covered by `al
 
 ## Decision
 
-All 9 packages are **denied**. The decision is stored in `allowScripts` in `package.json`, keyed by package name (`false` = denied), written by `npm install-scripts deny`. Name-only keys cover future versions; a new version does not reopen the question, a new package does. This is safe while every entry is a denial; an approval keyed by name would also let a compromised later version run its script, so an approved package must be re-reviewed on every version bump.
+All 9 packages are **denied** (11 since #63, which added `prisma` and `@prisma/engines`, see the last two rows). The decision is stored in `allowScripts` in `package.json`, keyed by package name (`false` = denied), written by `npm install-scripts deny`. Name-only keys cover future versions; a new version does not reopen the question, a new package does. This is safe while every entry is a denial; an approval keyed by name would also let a compromised later version run its script, so an approved package must be re-reviewed on every version bump.
 
 | Package               | What the script does                                                         | Decision | Reason                                                                                         |
 | --------------------- | ---------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------- |
@@ -23,6 +23,8 @@ All 9 packages are **denied**. The decision is stored in `allowScripts` in `pack
 | `lmdb`                | `node-gyp-build-optional-packages` (prebuilt lookup, compile fallback)       | Deny     | Prebuilt `@lmdb/*` binaries are loaded at runtime; used by Nx/Angular caches.                  |
 | `msgpackr-extract`    | `node-gyp-build-optional-packages` (prebuilt lookup, compile fallback)       | Deny     | Optional speed-up; prebuilt `@msgpackr-extract/*` exist and msgpackr has a pure JS fallback.   |
 | `nx`                  | `dist/bin/post-install` verifies platform support and updates the Nx Cloud client | Deny | Not critical (30s timeout, errors swallowed); we do not use Nx Cloud. Lint, typecheck, test, build and e2e green without it. |
+| `prisma` | `preinstall-entry.js` runs an optional preinstall hook | Deny | Not needed; the CLI downloads its schema engine on first use (ADR 0025). |
+| `@prisma/engines` | `postinstall.js` downloads the schema engine binary | Deny | Done lazily by the CLI at first use; the runtime uses the query compiler and the `pg` driver adapter, no native engine. |
 
 ### Rule for future packages
 
