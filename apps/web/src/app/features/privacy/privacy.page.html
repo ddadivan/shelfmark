@@ -1,0 +1,52 @@
+<header class="header">
+  <a class="home" routerLink="/" [attr.aria-label]="'privacy.home' | transloco">
+    <ui-logo />
+  </a>
+</header>
+<main>
+  <article class="article">
+    <h1 class="title">{{ 'privacy.title' | transloco }}</h1>
+    <p class="muted">
+      {{ 'privacy.updated' | transloco: { date: 'privacy.updatedDate' | transloco } }}
+    </p>
+    <p>{{ 'privacy.intro' | transloco }}</p>
+
+    <h2>{{ 'privacy.store.title' | transloco }}</h2>
+    <ul>
+      <li>{{ 'privacy.store.account' | transloco }}</li>
+      <li>{{ 'privacy.store.content' | transloco }}</li>
+      <li>{{ 'privacy.store.feedback' | transloco }}</li>
+      <li>{{ 'privacy.store.logs' | transloco }}</li>
+      <li>{{ 'privacy.store.errors' | transloco }}</li>
+    </ul>
+
+    <h2>{{ 'privacy.cookies.title' | transloco }}</h2>
+    <p>{{ 'privacy.cookies.session' | transloco }}</p>
+    <p>{{ 'privacy.cookies.none' | transloco }}</p>
+
+    <h2>{{ 'privacy.dont.title' | transloco }}</h2>
+    <ul>
+      <li>{{ 'privacy.dont.sell' | transloco }}</li>
+      <li>{{ 'privacy.dont.read' | transloco }}</li>
+    </ul>
+
+    <h2>{{ 'privacy.where.title' | transloco }}</h2>
+    <p>{{ 'privacy.where.body' | transloco }}</p>
+
+    <h2>{{ 'privacy.demo.title' | transloco }}</h2>
+    <p>{{ 'privacy.demo.body' | transloco }}</p>
+
+    <h2>{{ 'privacy.control.title' | transloco }}</h2>
+    <p>{{ 'privacy.control.export' | transloco }}</p>
+    <p>{{ 'privacy.control.delete' | transloco }}</p>
+    <p>{{ 'privacy.control.retention' | transloco }}</p>
+
+    <h2>{{ 'privacy.contact.title' | transloco }}</h2>
+    <p>{{ 'privacy.contact.body' | transloco }}</p>
+    <p>
+      <a [href]="issuesUrl" target="_blank" rel="noopener noreferrer"
+        >{{ 'privacy.contact.link' | transloco }}</a
+      >
+    </p>
+  </article>
+</main>

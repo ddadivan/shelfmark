@@ -32,3 +32,25 @@ test.describe('responsive layout', () => {
     expect(overflow).toBeLessThanOrEqual(0);
   });
 });
+
+test.describe('privacy page', () => {
+  test('guest opens /privacy directly', async ({ page }) => {
+    const response = await page.goto('/privacy');
+
+    expect(response?.status()).toBe(200);
+    await expect(page.getByRole('heading', { level: 1, name: 'Privacy policy' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 2, name: 'Cookies' })).toBeVisible();
+  });
+
+  test('has no horizontal scroll at 360px width', async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 780 });
+    await page.goto('/privacy');
+    await expect(page.getByRole('heading', { level: 1, name: 'Privacy policy' })).toBeVisible();
+
+    const overflow = await page.evaluate<number>(
+      '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
+    );
+
+    expect(overflow).toBeLessThanOrEqual(0);
+  });
+});

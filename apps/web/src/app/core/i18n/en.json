@@ -2,5 +2,49 @@
   "landing": {
     "title": "Shelfmark",
     "tagline": "Every saved link, in one place."
+  },
+  "privacy": {
+    "title": "Privacy policy",
+    "home": "Shelfmark home",
+    "updated": "Last updated {{date}}",
+    "updatedDate": "7 November 2026",
+    "intro": "Shelfmark is a personal project that stores the links you save. This page explains what we keep and why, in plain words.",
+    "store": {
+      "title": "What we store",
+      "account": "From Google or GitHub: your name, email address and avatar. They are used only to sign you in and to show who is signed in.",
+      "content": "Your links, titles, notes, folders and tags, and when you last opened a link.",
+      "feedback": "Your answers to the in-app rating: a score from 1 to 10 and, if you write one, a comment.",
+      "logs": "Technical logs (time, request status and a request id) without the content of your links and without secrets.",
+      "errors": "If error monitoring is enabled, error reports sent to Sentry. They carry a request id and are scrubbed of personal data and link contents."
+    },
+    "cookies": {
+      "title": "Cookies",
+      "session": "Shelfmark sets one session cookie to keep you signed in. It is httpOnly, Secure and SameSite, so scripts on the page cannot read it, and it is removed when you sign out.",
+      "none": "There are no advertising, analytics or tracking cookies. Your interface settings (theme, view) stay in your browser's local storage and are never sent to the server."
+    },
+    "dont": {
+      "title": "What we don't do",
+      "sell": "We don't sell or share your data and don't show ads.",
+      "read": "We don't read your links ourselves. Previews are fetched automatically from the page you saved."
+    },
+    "where": {
+      "title": "Where it lives",
+      "body": "The app runs on Vercel in the Frankfurt region (fra1) and the database runs on Neon PostgreSQL in the EU (eu-central-1, Frankfurt). Sign-in is provided by Google and GitHub under their own privacy policies."
+    },
+    "demo": {
+      "title": "Demo mode",
+      "body": "The demo creates a temporary sandbox with sample links, with no personal data from you. It is deleted automatically after 24 hours."
+    },
+    "control": {
+      "title": "Your control",
+      "export": "You can export your links, folders, tags and notes at any time as JSON or as a browser bookmarks file (HTML).",
+      "delete": "You can delete any link at any time, or delete your whole account in Settings. Your account and all its data are removed for good.",
+      "retention": "We keep your data for as long as you have an account. After you delete it, it is removed from the database; backups are not kept beyond the provider's short recovery window."
+    },
+    "contact": {
+      "title": "Contact",
+      "body": "For questions about your data, open an issue in the project repository or write to the contact address published on the GitHub profile of the project owner.",
+      "link": "Open the project issues on GitHub"
+    }
   }
 }
