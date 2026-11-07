@@ -1,0 +1,52 @@
+<ng-template #main>
+  <span class="ui-list-item__title"><ng-content select="[slot=title]" /></span>
+  <span class="ui-list-item__meta"><ng-content select="[slot=meta]" /></span>
+</ng-template>
+
+<div class="ui-list-item__leading"><ng-content select="[slot=leading]" /></div>
+@if (hasThumb()) {
+  <div class="ui-list-item__thumb">
+    @if (thumbSrc(); as url) {
+      <img
+        class="ui-list-item__image"
+        alt=""
+        loading="lazy"
+        decoding="async"
+        referrerpolicy="no-referrer"
+        [src]="url"
+        (error)="failed.set(true)"
+      />
+    } @else {
+      <ui-icon name="image" [size]="16" />
+    }
+  </div>
+}
+@if (href(); as url) {
+  <a
+    class="ui-list-item__link"
+    [attr.href]="url"
+    [attr.target]="newTab() ? '_blank' : null"
+    [attr.rel]="newTab() ? 'noopener noreferrer' : null"
+    [attr.aria-current]="selected() ? 'true' : null"
+    [attr.aria-describedby]="description() ? descriptionId : null"
+    (click)="activated.emit($event)"
+  >
+    <ng-container [ngTemplateOutlet]="main" />
+  </a>
+} @else {
+  <button
+    type="button"
+    class="ui-list-item__link"
+    [attr.aria-current]="selected() ? 'true' : null"
+    [attr.aria-describedby]="description() ? descriptionId : null"
+    (click)="activated.emit($event)"
+  >
+    <ng-container [ngTemplateOutlet]="main" />
+  </button>
+}
+<div class="ui-list-item__trailing">
+  <ng-content select="[slot=trailing]" />
+</div>
+@if (description(); as text) {
+  <span class="ui-list-item__description" [id]="descriptionId">{{ text }}</span>
+}

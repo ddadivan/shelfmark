@@ -2,6 +2,8 @@ import { DOCUMENT } from '@angular/common';
 import { DestroyRef, Directive, effect, ElementRef, inject, input } from '@angular/core';
 import { KEYBOARD_KEY } from '../keyboard';
 
+import { UI_RIPPLE_IGNORE } from './models/ui-ripple-ignore.const';
+
 const MOVE_CANCEL_DISTANCE = 10;
 const FADE_ANIMATION = 'ui-ripple-fade';
 
@@ -35,7 +37,14 @@ function enabledTransform(value: boolean | string | null | undefined): boolean {
 })
 export class RippleDirective {
   readonly enabled = input(true, { alias: 'uiRipple', transform: enabledTransform });
+  /**
+   * CSS selector of regions inside the host that never start a ripple: events whose target is
+   * in a matching element are skipped, without stopping them from bubbling (a row's trailing
+   * controls, whose own press must not ripple the row).
+   */
+  readonly ignore = input<string>('', { alias: 'uiRippleIgnore' });
 
+  private readonly ignoreToken = inject(UI_RIPPLE_IGNORE, { optional: true, self: true });
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly document = inject(DOCUMENT);
   private readonly spans = new Set<HTMLElement>();
@@ -58,6 +67,9 @@ export class RippleDirective {
   }
 
   protected onPointerDown(event: PointerEvent): void {
+    if (this.isIgnored(event)) {
+      return;
+    }
     // Only the primary button; a second finger or right click does not ripple.
     if (event.button !== 0 || !event.isPrimary) {
       return;
@@ -81,6 +93,9 @@ export class RippleDirective {
   }
 
   protected onKeyDown(event: KeyboardEvent): void {
+    if (this.isIgnored(event)) {
+      return;
+    }
     if (event.repeat || (event.key !== KEYBOARD_KEY.Enter && event.key !== KEYBOARD_KEY.Space)) {
       return;
     }
@@ -160,6 +175,11 @@ export class RippleDirective {
       span.remove();
     }
     this.spans.clear();
+  }
+
+  private isIgnored(event: Event): boolean {
+    const selector = this.ignore() || this.ignoreToken;
+    return !!selector && event.target instanceof Element && !!event.target.closest(selector);
   }
 
   private isDisabled(): boolean {
