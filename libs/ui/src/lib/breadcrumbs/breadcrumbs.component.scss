@@ -84,10 +84,10 @@
   color: var(--text);
 }
 
-@media (pointer: coarse) {
-  .ui-crumbs__link {
-    min-width: rem(44px);
-    min-height: rem(44px);
+.ui-crumbs__link {
+  @include touch-target;
+
+  @include coarse {
     padding-block: rem(13px);
   }
 }

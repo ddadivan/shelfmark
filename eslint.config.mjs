@@ -5,6 +5,7 @@ import {
   namedConstantDefinitionFiles,
   namedConstantSelectors,
 } from './eslint.named-constants.mjs';
+import { testingImportAllowedFiles, testingImportPatterns } from './eslint.contracts-testing.mjs';
 
 export default [
   ...nx.configs['flat/base'],
@@ -12,7 +13,15 @@ export default [
   ...nx.configs['flat/javascript'],
   prettier,
   {
-    ignores: ['**/dist', '**/coverage', '**/.nx', '**/.angular', '**/storybook-static', 'docs/**'],
+    ignores: [
+      '**/dist',
+      '**/coverage',
+      '**/.nx',
+      '**/.angular',
+      '**/storybook-static',
+      'docs/**',
+      'tools/lighthouse/**',
+    ],
   },
   {
     // PROJECT.md 5.0: strict typing, no `any`, no silenced compiler errors.
@@ -40,6 +49,14 @@ export default [
   {
     files: namedConstantDefinitionFiles,
     rules: { 'no-restricted-syntax': ['error', ...enumAndKeySelectors] },
+  },
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+    rules: { 'no-restricted-imports': ['error', { patterns: testingImportPatterns }] },
+  },
+  {
+    files: testingImportAllowedFiles,
+    rules: { 'no-restricted-imports': 'off' },
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],

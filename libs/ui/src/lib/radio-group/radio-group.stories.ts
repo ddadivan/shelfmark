@@ -8,7 +8,7 @@ const OPTIONS: RadioOption[] = [
   {
     value: 'move',
     title: 'Move links to Unsorted',
-    description: 'The folders go, all 34 links stay',
+    description: 'Folders are deleted, all 34 links stay',
   },
   { value: 'delete', title: 'Delete links too', description: "This can't be undone" },
 ];

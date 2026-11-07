@@ -148,6 +148,22 @@ a.ui-button {
   &.ui-button--lg {
     width: rem(44px);
   }
+
+  // Touch: the button itself grows to 44px; `hitArea="overlay"` keeps its size instead.
+  &:not(.ui-button--hit-overlay) {
+    @include touch-target;
+  }
+}
+
+// `hitArea="overlay"`: the visual size stays, an invisible `::after` takes the touch. It does
+// not catch pointer events while the button is disabled.
+.ui-button--hit-overlay {
+  @include hit-area(-6px, -10px);
+
+  &:disabled::after,
+  &[aria-disabled='true']::after {
+    pointer-events: none;
+  }
 }
 
 // Reduced motion: no press scale and no ripple (global `ripple` mixin); the pressed state is
