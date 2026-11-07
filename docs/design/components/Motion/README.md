@@ -49,3 +49,7 @@ Feed shifts and deletes use FLIP: measure positions before and after, then anima
 ## Button loading
 
 When `ui-button` enters `loading`, it locks its current width first, so “Save link” → “Saving…” never makes the button jump. The width is released after the spinner leaves.
+
+## Landing exceptions
+
+- The landing page is the only place with scroll reveals (fade + 1rem rise, 320 ms, children staggered 60 ms, once) and before/after scene loops (drift, "+1" ping, 9 s shelf cycle). Loops run only in view and in a visible tab, pause on hover/focus and via a pause button (WCAG 2.2.2), and are static under reduced motion.

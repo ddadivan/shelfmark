@@ -82,6 +82,56 @@ test.describe('landing', () => {
   });
 });
 
+test.describe('landing scenes and reveals', () => {
+  test('sections below the first screen are visible after scrolling to them', async ({ page }) => {
+    await page.goto('/');
+    const finale = page.getByRole('region', { name: 'Empty your Saved Messages.' });
+
+    await finale.scrollIntoViewIfNeeded();
+
+    await expect(finale.getByRole('link', { name: 'Open the demo' })).toBeVisible();
+    await expect(finale.locator('h2')).toHaveCSS('opacity', '1');
+    await expect(page.getByRole('region', { name: 'Why this exists' }).locator('h2')).toHaveCSS(
+      'opacity',
+      '1',
+    );
+  });
+
+  test('the shelf cycles folders and the pause control stops it', async ({ page }) => {
+    await page.goto('/');
+    const shelf = page.getByRole('region', { name: 'The same links, before and after' });
+    await shelf.scrollIntoViewIfNeeded();
+    const pause = shelf.getByRole('button', { name: 'Pause animations' });
+
+    await expect(shelf.getByText('Signal Forms', { exact: false }).first()).toBeVisible({
+      timeout: 6000,
+    });
+    await pause.click();
+    await expect(pause).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  test.describe('reduced motion', () => {
+    test.use({ reducedMotion: 'reduce' });
+
+    test('shows the static final frame with everything visible and no pause control', async ({
+      page,
+    }) => {
+      await page.goto('/');
+      const shelf = page.getByRole('region', { name: 'The same links, before and after' });
+
+      await expect(shelf.locator('h2')).toHaveCSS('opacity', '1');
+      await expect(shelf.getByRole('button', { name: 'Pause animations' })).toHaveCount(0);
+      await expect(page.getByRole('region', { name: 'Empty your Saved Messages.' })).toBeVisible();
+      await expect(
+        page.getByRole('region', { name: 'Empty your Saved Messages.' }).locator('h2'),
+      ).toHaveCSS('opacity', '1');
+
+      await page.waitForTimeout(3500);
+      await expect(shelf.locator('.landing-ba__row--active')).toHaveText('Clothes');
+    });
+  });
+});
+
 const VIEWPORTS = [
   { name: 'desktop', width: 1280, height: 900 },
   { name: 'phone', width: 360, height: 780 },
@@ -90,7 +140,13 @@ const VIEWPORTS = [
 for (const colorScheme of Object.values(COLOR_SCHEME)) {
   for (const viewport of VIEWPORTS) {
     test.describe(`landing accessibility (${colorScheme}, ${viewport.name})`, () => {
-      test.use({ colorScheme, viewport: { width: viewport.width, height: viewport.height } });
+      // The static frame: a scan in the middle of a fade or the folder cycle would read
+      // half-transparent text, so these run without motion and stay deterministic.
+      test.use({
+        colorScheme,
+        reducedMotion: 'reduce',
+        viewport: { width: viewport.width, height: viewport.height },
+      });
 
       test('chat state has no serious or critical axe violations', async ({ page }, testInfo) => {
         await page.goto('/');
@@ -104,6 +160,23 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
         await page.goto('/');
         await page.getByRole('button', { name: 'Put them on the shelf' }).click();
         await expect(page.getByText('Notes come from your own messages.')).toBeVisible();
+        await page.evaluate('document.fonts.ready.then(() => undefined)');
+
+        await expectNoBlockingViolations(page, testInfo);
+      });
+    });
+
+    test.describe(`landing accessibility with motion (${colorScheme}, ${viewport.name})`, () => {
+      test.use({ colorScheme, viewport: { width: viewport.width, height: viewport.height } });
+
+      test('page scrolled to the end has no serious or critical axe violations', async ({
+        page,
+      }, testInfo) => {
+        await page.goto('/');
+        await page.getByRole('contentinfo').scrollIntoViewIfNeeded();
+        await expect(
+          page.getByRole('region', { name: 'Empty your Saved Messages.' }).locator('h2'),
+        ).toHaveCSS('opacity', '1');
         await page.evaluate('document.fonts.ready.then(() => undefined)');
 
         await expectNoBlockingViolations(page, testInfo);

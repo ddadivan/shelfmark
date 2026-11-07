@@ -9,6 +9,7 @@
 
 .landing-ba__inner {
   @include landing.wrap;
+  @include landing.reveal;
 
   display: flex;
   flex-direction: column;
@@ -25,6 +26,10 @@
   @include landing.section-title;
 
   max-width: rem(640px);
+}
+
+.landing-ba__pause {
+  align-self: flex-start;
 }
 
 .landing-ba__scenes {
@@ -87,6 +92,10 @@
   padding-inline-start: var(--space-6);
 }
 
+.landing-ba__row {
+  transition: background-color var(--duration-base) var(--ease-in-out);
+}
+
 .landing-ba__row--active {
   background: var(--accent-bg);
 }
@@ -147,4 +156,24 @@
   color: var(--text-muted);
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+// A new folder's links fade in and rise a little; the first frame has no entrance
+// (Angular only runs `animate.enter` for items added after the first render) and reduced
+// motion never moves the list.
+.landing-ba__item--enter {
+  animation: landing-ba-item-in var(--duration-base) var(--ease-out) both;
+}
+
+@keyframes landing-ba-item-in {
+  from {
+    opacity: 0;
+    transform: translateY(rem(8px));
+  }
+}
+
+@include reduced-motion {
+  .landing-ba__item--enter {
+    animation: none;
+  }
 }

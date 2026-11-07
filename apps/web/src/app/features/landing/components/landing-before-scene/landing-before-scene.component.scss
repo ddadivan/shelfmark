@@ -131,3 +131,71 @@
     bottom: rem(60px);
   }
 }
+
+// Loops: only under `--live` (in view, tab visible, motion allowed), so the default is the
+// static frame. Drift moves the scraps with `translate` (it composes with their `rotate`);
+// the ping fades and pops with `scale`. transform / opacity only, nothing changes layout.
+$drift-duration: 14s;
+$ping-duration: 6s;
+
+.landing-before__before--live {
+  .landing-before__scrap {
+    animation: landing-before-drift $drift-duration var(--ease-in-out) infinite alternate;
+  }
+
+  .landing-before__scrap--tabs {
+    animation-delay: -4s;
+    animation-duration: 11s;
+  }
+
+  .landing-before__scrap--sticky {
+    animation-delay: -7s;
+    animation-duration: 16s;
+  }
+
+  .landing-before__scrap--bookmarks {
+    animation-delay: -2s;
+    animation-duration: 13s;
+  }
+
+  .landing-before__ping {
+    animation: landing-before-ping $ping-duration var(--ease-spring) infinite;
+  }
+}
+
+@keyframes landing-before-drift {
+  from {
+    translate: 0 0;
+  }
+
+  to {
+    translate: rem(6px) rem(-8px);
+  }
+}
+
+@keyframes landing-before-ping {
+  0%,
+  8% {
+    opacity: 0;
+    scale: 0.85;
+  }
+
+  16%,
+  62% {
+    opacity: 1;
+    scale: 1;
+  }
+
+  72%,
+  100% {
+    opacity: 0;
+    scale: 0.95;
+  }
+}
+
+@include reduced-motion {
+  .landing-before__before--live .landing-before__scrap,
+  .landing-before__before--live .landing-before__ping {
+    animation: none;
+  }
+}
