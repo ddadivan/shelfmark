@@ -47,27 +47,35 @@ test.describe('landing', () => {
   });
 
   for (const width of [360, 800, 1280]) {
+    test(`the header has its final height from the first frame at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.addInitScript(`
+        window.__heights = [];
+        const sample = () => {
+          const header = document.querySelector('header');
+          if (header) window.__heights.push(header.getBoundingClientRect().height);
+          if (window.__heights.length < 120) requestAnimationFrame(sample);
+        };
+        requestAnimationFrame(sample);
+      `);
+
+      await gotoLandingLoaded(page);
+
+      const heights = await page.evaluate<number[]>('window.__heights');
+      expect(heights.length).toBeGreaterThan(0);
+      expect(new Set(heights).size, JSON.stringify(heights)).toBe(1);
+    });
+  }
+
+  for (const width of [360, 800, 1280]) {
     test(`the deferred chat and sections shift nothing at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
-      // The web font swapping in moves the headline by a few px (fallback and Onest differ in
-      // metrics; more on Linux than on macOS) whatever the sections do, and has nothing to do
-      // with the deferred blocks. Without the font file nothing swaps, so what this test sees is
-      // only the placeholders and the idle swaps.
-      await page.route('**/*.woff2', (route) => route.abort());
       // Plain scripts (as elsewhere in this suite): the e2e project has no DOM typings.
       await page.addInitScript(`
         window.__shifts = [];
         new PerformanceObserver((list) => {
           for (const entry of list.getEntries()) {
             if (entry.hadRecentInput) continue;
-            // The header growing by its button's height in the very first frames (about 80 ms,
-            // seen on the Linux runner only, the same with or without the web font) is header
-            // code this change does not touch; it shifts <main> down with it. Entries caused by
-            // the header are left out; everything else counts.
-            const fromHeader = entry.sources.some(
-              (s) => s.node && (s.node.nodeName === 'HEADER' || s.node.parentElement?.closest('header')),
-            );
-            if (fromHeader) continue;
             const where = (s) => s.node ? s.node.nodeName + '.' + (s.node.className || s.node.parentElement?.className || '') : '?';
             window.__shifts.push({
               at: Math.round(entry.startTime),
