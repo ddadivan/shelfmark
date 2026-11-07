@@ -1,0 +1,33 @@
+<form [formRoot]="form">
+  <ui-dialog
+    [title]="'folders.delete.title' | transloco: { name: data.folder.name }"
+    [closeLabel]="'folders.dialog.close' | transloco"
+  >
+    <div class="delete-folder__body">
+      <p class="delete-folder__text">{{ textKey() | transloco: textParams() }}</p>
+
+      @if (hasLinks()) {
+        <ui-radio-group
+          [options]="options()"
+          [ariaLabel]="'folders.delete.modeLabel' | transloco"
+          [formField]="form.mode"
+        />
+      }
+
+      @if (failed()) {
+        <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'folders.delete.failed' | transloco }}</ui-notice>
+      }
+    </div>
+
+    <ui-button slot="footer" [disabled]="deleting()" (click)="cancel()">{{
+      'folders.dialog.cancel' | transloco
+    }}</ui-button>
+    <ui-button
+      slot="footer"
+      [type]="BUTTON_TYPE.Submit"
+      [variant]="BUTTON_VARIANT.Danger"
+      [loading]="deleting()"
+      >{{ actionKey() | transloco: { count: data.linkCount } }}</ui-button
+    >
+  </ui-dialog>
+</form>

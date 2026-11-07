@@ -1,5 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import type { LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
+import {
+  FOLDER_DELETE_MODE,
+  type LinkResponse,
+  type ListLinksResponse,
+} from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { NEVER, of, Subject, throwError } from 'rxjs';
 import { LINKS_API } from '../features/links/models/links-api.const';
@@ -15,9 +19,9 @@ function page(items: LinkResponse[], nextCursor: string | null = null): ListLink
   return { items, nextCursor };
 }
 
-function setup() {
+function setup({ items = [link(1), link(2), link(3)] }: { items?: LinkResponse[] } = {}) {
   const api = {
-    list: vi.fn<LinksApi['list']>(() => of(page([link(1), link(2), link(3)]))),
+    list: vi.fn<LinksApi['list']>(() => of(page(items))),
     recent: vi.fn<LinksApi['recent']>(() => of({ items: [link(2)] })),
     update: vi.fn<LinksApi['update']>((id, request) =>
       of(link(Number(id.slice(3)), { ...request, updatedAt: 'later' })),
@@ -375,6 +379,83 @@ describe('LinksStore', () => {
       store.applyEdit(link(2, { title: 'Renamed' }));
 
       expect(store.entityMap()['id-2']?.title).toBe('Renamed');
+    });
+  });
+
+  describe('folder and tag filters', () => {
+    it('asks for the links of a folder, with tags and search', () => {
+      const { api, store } = setup();
+
+      store.setFilter({
+        scope: LINKS_SCOPE.Folder,
+        folderId: 'f1',
+        tags: ['a', 'b'],
+        q: 'ng',
+      });
+
+      expect(api.list).toHaveBeenCalledWith({ folderId: 'f1', tag: ['a', 'b'], q: 'ng' });
+    });
+
+    it('clears the feed when only the folder changes', () => {
+      const pageTwo = new Subject<ListLinksResponse>();
+      const { api, store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.Folder, folderId: 'f1' });
+      api.list.mockReturnValueOnce(pageTwo);
+
+      store.setFilter({ scope: LINKS_SCOPE.Folder, folderId: 'f2' });
+
+      expect(store.count()).toBe(0);
+      expect(store.loaded()).toBe(false);
+    });
+
+    it('shows a saved link in a folder feed only for that folder', () => {
+      const { store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.Folder, folderId: 'f1' });
+
+      store.addSaved(link(8, { folderId: 'f2' }));
+      store.addSaved(link(9, { folderId: 'f1' }));
+
+      expect(ids(store)).toEqual(['id-9', 'id-1', 'id-2', 'id-3']);
+    });
+
+    it('moves the links of a deleted folder to unsorted, or drops them', () => {
+      const { store } = setup({
+        items: [link(1, { folderId: 'f1' }), link(2, { folderId: 'f9' })],
+      });
+      store.setFilter({ scope: LINKS_SCOPE.All });
+
+      store.applyFolderRemoval(['f1'], FOLDER_DELETE_MODE.MoveToUnsorted);
+      expect(store.entityMap()['id-1'].folderId).toBeNull();
+      expect(store.entityMap()['id-2'].folderId).toBe('f9');
+
+      store.applyFolderRemoval(['f9'], FOLDER_DELETE_MODE.DeleteLinks);
+      expect(ids(store)).toEqual(['id-1']);
+    });
+  });
+
+  describe('folder removal and links in their Undo window', () => {
+    it('Undo brings a link back without the deleted folder', () => {
+      const { store } = setup({ items: [link(1, { folderId: 'f1' }), link(2)] });
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      store.remove('id-1');
+
+      store.applyFolderRemoval(['f1'], FOLDER_DELETE_MODE.MoveToUnsorted);
+      store.undoRemove('id-1');
+
+      expect(store.entityMap()['id-1'].folderId).toBeNull();
+    });
+
+    it('Undo cannot bring back a link deleted with its folder', async () => {
+      const { api, store } = setup({ items: [link(1, { folderId: 'f1' }), link(2)] });
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      store.remove('id-1');
+
+      store.applyFolderRemoval(['f1'], FOLDER_DELETE_MODE.DeleteLinks);
+      store.undoRemove('id-1');
+
+      expect(ids(store)).toEqual(['id-2']);
+      expect(await store.commitRemove('id-1')).toBe(true);
+      expect(api.remove).not.toHaveBeenCalled();
     });
   });
 

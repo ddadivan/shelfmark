@@ -1,9 +1,10 @@
 import type { LinkResponse } from '@shelfmark/contracts';
-import type { LinksScope } from '../../features/links/models/links-scope.type';
+import type { LinksFilter } from '../../features/links/models/links-filter.type';
 
 /** State of `LinksStore` besides the link entities. */
 export interface LinksState {
-  scope: LinksScope;
+  /** What the entities were loaded for. */
+  filter: LinksFilter;
   /** Cursor of the next page; `null` on the last one. */
   nextCursor: string | null;
   /** The first page of the current scope has arrived. */

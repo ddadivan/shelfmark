@@ -1,6 +1,7 @@
 import { computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import { FoldersStore } from '../../stores/folders.store';
 import { LinksStore } from '../../stores/links.store';
 import { AUTH_API } from './auth-api.token';
 import { SIGN_OUT_FLUSH_TIMEOUT_MS } from './models/sign-out-flush-timeout.const';
@@ -23,7 +24,13 @@ export const AuthStore = signalStore(
     isSignedIn: computed(() => user() !== null),
   })),
   withMethods(
-    (store, api = inject(AUTH_API), router = inject(Router), links = inject(LinksStore)) => {
+    (
+      store,
+      api = inject(AUTH_API),
+      router = inject(Router),
+      links = inject(LinksStore),
+      folders = inject(FoldersStore),
+    ) => {
       let loading: Promise<void> | null = null;
 
       async function run(
@@ -69,6 +76,7 @@ export const AuthStore = signalStore(
           // The local session ends either way; the server session expires on its own.
         } finally {
           links.reset();
+          folders.reset();
           patchState(store, { user: null, loaded: true, failed: false });
         }
       }
