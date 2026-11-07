@@ -52,7 +52,10 @@ export default class LandingPage {
       if (built && this.scrollPending()) {
         this.scrollPending.set(false);
         const target = (built.nativeElement as HTMLElement).querySelector<HTMLElement>('#how');
-        target?.scrollIntoView();
+        // Guarded: not every environment implements it (jsdom does not).
+        if (typeof target?.scrollIntoView === 'function') {
+          target.scrollIntoView();
+        }
         target?.focus({ preventScroll: true });
       }
     });

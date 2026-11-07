@@ -174,6 +174,105 @@
     },
     "newTab": "opens in a new tab"
   },
+  "links": {
+    "add": {
+      "title": "Add link",
+      "close": "Close",
+      "url": {
+        "label": "Link",
+        "placeholder": "https://",
+        "hint": "Paste a link — the title and preview fill in by themselves",
+        "required": "Enter a link",
+        "invalid": "Enter an address that starts with http:// or https://",
+        "tooLong": "The link is too long (at most {{max}} characters)"
+      },
+      "preview": {
+        "loading": "Loading preview",
+        "loadingHint": "You can keep typing a note and choosing a folder while it loads.",
+        "filled": "Filled in from the page. You can edit the title.",
+        "failed": "Couldn't load a preview. The link will be saved with its address as the title — you can rename it.",
+        "ready": "Preview loaded: {{title}}"
+      },
+      "titleField": {
+        "label": "Title",
+        "required": "Enter a title",
+        "tooLong": "The title is too long (at most {{max}} characters)"
+      },
+      "folder": {
+        "label": "Folder",
+        "unsorted": "Unsorted",
+        "searchLabel": "Search folders",
+        "noResults": "No folders found"
+      },
+      "tags": {
+        "label": "Tags",
+        "placeholder": "Add tag",
+        "max": "Up to {{max}} tags",
+        "create": "Create tag “{name}”",
+        "remove": "Remove tag {name}",
+        "added": "Tag {name} added",
+        "removed": "Tag {name} removed",
+        "duplicate": "Tag {name} is already added",
+        "list": "Tag suggestions"
+      },
+      "note": {
+        "label": "Note",
+        "placeholder": "Why are you saving this?",
+        "hint": "Helps you find it later",
+        "counter": "characters",
+        "tooLong": "The note is too long (at most {{max}} characters)"
+      },
+      "duplicate": {
+        "text": "You already saved this link in {{folder}}. Open it, or save it again."
+      },
+      "saveFailed": "Couldn't save the link. Try again.",
+      "actions": {
+        "cancel": "Cancel",
+        "openSaved": "Open saved",
+        "save": "Save link",
+        "saveAnyway": "Save anyway",
+        "saving": "Saving…"
+      }
+    },
+    "edit": {
+      "title": "Edit link",
+      "meta": "Saved {{created}}, last opened {{opened}}",
+      "metaNever": "Saved {{created}}, never opened",
+      "actions": {
+        "save": "Save changes",
+        "delete": "Delete"
+      }
+    },
+    "item": {
+      "edit": "Edit",
+      "edited": "Changes saved",
+      "openFailed": "Couldn't open the link.",
+      "favorite": "Favorite: {{title}}",
+      "actions": "Actions for {{title}}",
+      "delete": "Delete",
+      "opensInNewTab": "Opens in a new tab",
+      "favoriteFailed": "Couldn't update the favorite.",
+      "retry": "Retry",
+      "deleted": "Link deleted",
+      "undo": "Undo",
+      "deleteFailed": "Couldn't delete the link. It is back in your list.",
+      "saved": "Link saved",
+      "confirm": {
+        "title": "Delete this link?",
+        "message": "“{{title}}” will be deleted.",
+        "confirm": "Delete",
+        "cancel": "Cancel",
+        "close": "Close"
+      }
+    },
+    "recent": {
+      "title": "Recently opened",
+      "empty": "Links you open appear here.",
+      "hide": "Hide recently opened",
+      "show": "Show recently opened",
+      "loading": "Loading recently opened links"
+    }
+  },
   "auth": {
     "signIn": {
       "title": "All your links on one shelf",
@@ -193,11 +292,41 @@
   },
   "shell": {
     "accountMenu": "Account menu",
-    "settings": "Settings"
+    "settings": "Settings",
+    "addLink": "Add link"
   },
   "library": {
     "title": "All links",
-    "placeholder": "Your saved links will appear here."
+    "scope": {
+      "all": "All links",
+      "unsorted": "Unsorted",
+      "favorites": "Favorites"
+    },
+    "count": "{{count}} links",
+    "countMore": "{{count}}+ links",
+    "view": {
+      "label": "View",
+      "cards": "Cards",
+      "list": "List"
+    },
+    "list": {
+      "label": "Saved links"
+    },
+    "loading": "Loading links",
+    "loadingMore": "Loading more links",
+    "loadMore": "Load more",
+    "loadMoreFailed": "Couldn't load more links.",
+    "error": {
+      "title": "Couldn't load your links",
+      "text": "Check your connection and try again.",
+      "retry": "Try again"
+    },
+    "empty": {
+      "title": "No links here yet",
+      "text": "Paste a link to save it to your shelf.",
+      "add": "Add link"
+    },
+    "refetchFailed": "Couldn't refresh your links. You are seeing the last loaded list."
   },
   "settings": {
     "title": "Settings",

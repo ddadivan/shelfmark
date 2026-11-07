@@ -10,7 +10,6 @@ import { LandingRevealDirective } from '../../directives/landing-reveal.directiv
   selector: 'app-landing-built',
   imports: [LandingRevealDirective, TranslocoPipe, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { id: 'how' },
   templateUrl: './landing-built.component.html',
   styleUrl: './landing-built.component.scss',
 })
