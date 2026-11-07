@@ -27,14 +27,14 @@ Updated as work goes on — every session resumes from here.
   - After every production deploy: `BASE_URL=https://shelfmark-app.vercel.app npx nx e2e web-e2e` (the missing-file 404 relies on undocumented Vercel behaviour)
   - Next: stage 1 issues from 9.1 (the author decides when); CSP nonce middleware (#9) before the first `libs/ui` component renders in `apps/web`
   - Verification of protected previews by agents: `vercel curl` and `vercel logs` (CLI login, no bypass token)
-- [ ] Stages 1–7 in progress (status Nov 7, 2026, night session). Open PRs, in suggested merge order:
-  - Ready to merge: #82 `feat/62-ui-a11y` (libs/ui a11y audit) → #86 `feat/66-web-sign-in` (sign-in on a mock AuthApi, part of #66) → #87 (agent limit docs) → #88 (no previews for `docs/**`, #84) → #112 (README, #102) → #120 (Lighthouse CI job, #111; ADR 0028 Proposed)
-  - Reviewed, need a Vercel preview check: #85 `chore/63-prisma-pglite` (Prisma 7 + PGlite, #63) → #118 `feat/64-better-auth` (Better Auth API, #64, base #85); #117 `feat/93-pwa` (PWA, #93); #79 `feat/70-safe-fetcher` (part of #70)
-  - Reviewed, stacked (retarget to `main` after the base merges): #89 (#71 models, base #85); #90 (#73 add-link dialog, base #82); #113 (#91 provider icons), #116 (#92 input loading), #114 (#103 landing), #115 (#101 privacy page) on #82; #121 (#104 chat loop), #122 (#105 scenes) on #114; #124 (#94 settings, base #86)
-  - Reviewed, stacked on #118: #125 `feat/65-auth-guard` (global session guard, `@CurrentUser`, route scanner, data-isolation harness, #65; ADR 0029 Proposed)
-  - Next unblocked after merges: #119 (web Better Auth binding, after #86 + #118), #123 (throttler, interceptors, CSRF check; after #125), #72 links API (after #123, #79, #89), #109 Sentry (after the lockfile-touching PRs merge); fold #121's motion logic into #122's `LandingMotionService` when the landing stack is retargeted
+- [ ] Stages 1–7 in progress (status Nov 7, 2026, end of the cloud session; work continues locally)
+  - Merged on Nov 7: #82 (libs/ui a11y audit, #62), #86 (sign-in on a mock AuthApi, part of #66), #87 (agent limit docs), #88 (no Vercel previews for `docs/**`, #84)
+  - Ready to merge, required checks green or running: #120 (Lighthouse CI job, #111; ADR 0028 Proposed) → #112 (README, #102) → #126 (this status). Each needs "Update branch" after the previous merge (the `main` ruleset requires an up-to-date branch)
+  - Reviewed, base `main`, waiting for the author: #113 (#91 provider icons), #116 (#92 input loading), #90 (#73 add-link dialog; mockup deviations), #114 (#103 landing; mockup deviations), #115 (#101 privacy page; legal wording), #124 (#94 settings; mockup deviations, axe `label-content-name-mismatch` question)
+  - Reviewed, need a Vercel preview check: #85 `chore/63-prisma-pglite` (#63) → #118 `feat/64-better-auth` (#64, base #85) → #125 `feat/65-auth-guard` (#65, base #118; ADR 0029 Proposed); #117 `feat/93-pwa` (#93); #79 `feat/70-safe-fetcher` (part of #70). Vercel previews hit the Hobby daily limit on Nov 7
+  - Stacked (retarget to `main` after the base merges, then merge `origin/main` in): #89 (#71 models, base #85); #118 and #125 (above); #121 (#104 chat loop) and #122 (#105 scenes) on #114
+  - Next unblocked after merges: #119 (web Better Auth binding, after #118), #123 (throttler, interceptors, CSRF check; after #125), #72 links API (after #123, #79, #89), #109 Sentry (after the lockfile-touching PRs merge); fold #121's motion logic into #122's `LandingMotionService` when the landing stack is retargeted
   - Author decisions: ADR #80 and #81; duplicate ADR number 0027 (#80 vs #118); #118 decisions A–F; #65 decisions A–E; #89 LinkTag same-user enforcement; #115 legal wording, controller, contact; pause controls on the landing (#121, #122); mockup deviations in #90, #114, #124
-  - New issues: stage 6 and 7 #93–#111, #84, #91, #92, #119 (web Better Auth binding), #123 (throttler + interceptors, before #72)
 - [ ] Motion in code — stage 6; promo video — after the stage 1 release
 
 ## 1. Problem and idea
