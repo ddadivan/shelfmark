@@ -1,6 +1,6 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { builtinModules } from 'node:module';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 
 // Guards issue #11: Vercel's file tracer only copies packages that `api/index.mjs`
 // imports statically, so every runtime package of the API must be listed there.
@@ -101,6 +101,35 @@ describe('Vercel function entry (api/index.mjs)', () => {
       expect(missing).toEqual([]);
     },
   );
+
+  it.skipIf(!existsSync(bundle))(
+    'emits no numbered async chunks and keeps Prisma query compiler imports dynamic',
+    () => {
+      // Vercel's tracer does not copy webpack's async chunks (2.js, 3.js ...).
+      const chunks = readdirSync(dirname(bundle)).filter((file) => /^\d+\.m?js$/.test(file));
+      expect(chunks).toEqual([]);
+      const code = readFileSync(bundle, 'utf8');
+      // Only once PrismaModule is part of the app (wired in #64) does the bundle contain Prisma.
+      if (code.includes('@prisma/client/runtime/client')) {
+        expect(code).toContain('import("@prisma/client/runtime/query_compiler');
+      }
+    },
+  );
+
+  it('imports the Prisma runtime and driver adapter, never the bare @prisma/client, in the entry', () => {
+    const specifiers = runtimeImports(readFileSync(entryFile, 'utf8'));
+    expect(specifiers).toContain('@prisma/adapter-pg');
+    expect(specifiers).toContain('@prisma/client/runtime/client');
+    expect(specifiers).not.toContain('@prisma/client');
+  });
+
+  it('never imports the bare @prisma/client or PGlite from the API source', () => {
+    const specifiers = sourceFiles(srcDir).flatMap((file) =>
+      runtimeImports(readFileSync(file, 'utf8')),
+    );
+    expect(specifiers).not.toContain('@prisma/client');
+    expect(specifiers.filter((name) => name.includes('pglite'))).toEqual([]);
+  });
 
   it('re-exports the handler bundle as the default export', () => {
     expect(readFileSync(entryFile, 'utf8')).toMatch(
