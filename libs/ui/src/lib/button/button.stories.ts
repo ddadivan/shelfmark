@@ -196,3 +196,24 @@ export const AllVariants: Story = {
     template: `${Object.values(THEME).map(panel).join('')}`,
   }),
 };
+
+/**
+ * Sign-in provider buttons: the secondary large button with a leading brand mark. GitHub is
+ * `currentColor` (follows the text in both themes); the Google "G" keeps its fixed brand colours.
+ * The label names the action, the mark is decorative. Light and dark side by side.
+ */
+export const ProviderButtons: Story = {
+  parameters: { layout: 'padded' },
+  render: () => ({
+    props: { themes: Object.values(THEME) },
+    template: `
+      <div class="ds-themes">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane">
+            <ui-button size="lg" iconLeft="google">Continue with Google</ui-button>
+            <ui-button size="lg" iconLeft="github">Continue with GitHub</ui-button>
+          </div>
+        }
+      </div>`,
+  }),
+};
