@@ -44,6 +44,7 @@ describe('Tags API', () => {
         url: `https://example.test/${n}`,
         normalizedUrl: `https://example.test/${n}`,
         title: `Link ${n}`,
+        titleSortKey: `link ${n}`,
       },
     });
 

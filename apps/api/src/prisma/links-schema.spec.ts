@@ -26,6 +26,7 @@ describe('Library schema (links, folders, tags)', () => {
     url: 'https://example.test/a',
     normalizedUrl: 'https://example.test/a',
     title: 'Example',
+    titleSortKey: 'example',
     ...overrides,
   });
 
