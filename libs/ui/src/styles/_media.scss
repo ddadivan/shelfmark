@@ -13,3 +13,10 @@
     @content;
   }
 }
+
+// Touch and other coarse pointers: larger targets (44px icon buttons, tree rows).
+@mixin coarse {
+  @media (pointer: coarse) {
+    @content;
+  }
+}

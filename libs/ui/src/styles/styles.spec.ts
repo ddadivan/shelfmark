@@ -98,6 +98,35 @@ describe('utility mixins', () => {
     expect(css('.a { @include line-clamp(2); }')).toContain('-webkit-line-clamp: 2');
     expect(css('.a { @include line-clamp(1); }')).toContain('line-clamp: 1');
   });
+
+  it('coarse wraps its content in a pointer: coarse query', () => {
+    const out = css('.a { @include coarse { x: 1; } }');
+    expect(out).toContain('@media (pointer: coarse)');
+  });
+
+  it('hit-area adds an invisible rem-based ::after, with an optional coarse inset', () => {
+    const plain = css('.a { @include hit-area(-6px -4px); }');
+    expect(plain).toContain('position: relative');
+    expect(plain).toContain('inset: -0.375rem -0.25rem');
+    expect(plain).toContain('content: ""');
+    expect(plain).not.toContain('@media');
+    expect(plain).not.toMatch(/\d+px/);
+
+    const coarse = css('.a { @include hit-area(-6px, -10px); }');
+    expect(coarse).toContain('inset: -0.375rem');
+    expect(coarse).toMatch(/@media \(pointer: coarse\)[\s\S]*inset: -0\.625rem/);
+  });
+
+  it('touch-target sets a 44px minimum on coarse pointers only', () => {
+    const out = css('.a { @include touch-target; }');
+    expect(out).toMatch(/@media \(pointer: coarse\)[\s\S]*min-width: 2\.75rem/);
+    expect(out).toContain('min-height: 2.75rem');
+    expect(css('.a { @include touch-target(48px); }')).toContain('min-width: 3rem');
+  });
+
+  it('rem-list converts every value and keeps 0', () => {
+    expect(css('.a { x: rem-list(-6px 0 -16px); }')).toContain('x: -0.375rem 0 -1rem');
+  });
 });
 
 describe('motion mixins', () => {
@@ -226,6 +255,40 @@ describe('overlay mixins', () => {
     expect(output).toContain('.ui-tooltip-description');
     expect(output).toContain('clip-path: inset(50%)');
     expect(output).not.toContain('display: none');
+  });
+});
+
+/** Reads a hex custom property from the `@mixin light` / `@mixin dark` output. */
+function tokenHex(theme: 'light' | 'dark', name: string): string {
+  const out = css(`:root { @include ${theme}; }`);
+  const match = new RegExp(`--${name}:\\s*(#[0-9a-f]{3,6})`).exec(out);
+  if (!match) {
+    throw new Error(`token --${name} not found in ${theme}`);
+  }
+  return match[1];
+}
+
+function luminance(hex: string): number {
+  const full = hex.length === 4 ? `#${[...hex.slice(1)].map((c) => c + c).join('')}` : hex;
+  const [r, g, b] = [1, 3, 5].map((i) => {
+    const c = parseInt(full.slice(i, i + 2), 16) / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function contrast(a: string, b: string): number {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+describe('text-muted contrast (WCAG AA 4.5:1)', () => {
+  it.each(['light', 'dark'] as const)('holds on every surface in %s', (theme) => {
+    expect(tokenHex(theme, 'text-muted')).toBe(theme === 'light' ? '#67676c' : '#9a9aa0');
+    for (const surface of ['bg', 'surface', 'surface-hover', 'surface-pressed', 'accent-bg']) {
+      const ratio = contrast(tokenHex(theme, 'text-muted'), tokenHex(theme, surface));
+      expect(ratio, `${theme} ${surface}`).toBeGreaterThanOrEqual(4.5);
+    }
   });
 });
 

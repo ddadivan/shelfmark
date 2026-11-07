@@ -13,7 +13,15 @@ export default [
   ...nx.configs['flat/javascript'],
   prettier,
   {
-    ignores: ['**/dist', '**/coverage', '**/.nx', '**/.angular', '**/storybook-static', 'docs/**'],
+    ignores: [
+      '**/dist',
+      '**/coverage',
+      '**/.nx',
+      '**/.angular',
+      '**/storybook-static',
+      'docs/**',
+      'tools/lighthouse/**',
+    ],
   },
   {
     // PROJECT.md 5.0: strict typing, no `any`, no silenced compiler errors.

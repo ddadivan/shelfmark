@@ -8,6 +8,7 @@ import {
   linkedSignal,
   output,
 } from '@angular/core';
+import type { HeadingLevel } from '../heading';
 import { IconComponent } from '../icon/icon.component';
 
 let nextId = 0;
@@ -27,7 +28,9 @@ let nextId = 0;
  * tab stop and no interactive element is nested inside another. `favorite` and `actions`
  * sit above that layer, so using them never activates the card. `activated` emits the click
  * (the feature may `preventDefault()` an `href` click to route); `newTab` opens `href` in a
- * new tab with `noopener noreferrer`.
+ * new tab with `noopener noreferrer`. The link sits in a heading of `headingLevel` (default
+ * `h2`), so screen reader users can navigate cards by heading; the heading itself is not
+ * positioned, so the stretched `::after` still covers the card.
  *
  * Images: the app CSP is `img-src 'self' data:`, so external preview images and favicons
  * are blocked and the fallbacks show until stage 3 decides on an image proxy or a CSP change
@@ -69,6 +72,11 @@ export class CardComponent {
   readonly description = input<string>();
   /** Keeps the actions visible without hover or focus, for example while their menu is open. */
   readonly actionsPinned = input(false, { transform: booleanAttribute });
+  /**
+   * Level of the heading that wraps the link (2 by default, under the page `h1`). Set it so the
+   * outline never skips a level, for example 3 under an `h2` section title.
+   */
+  readonly headingLevel = input<HeadingLevel>(2);
   /** Plays the 200 ms fade-in; set it on cards that replace a skeleton. */
   readonly reveal = input(false, { transform: booleanAttribute });
 

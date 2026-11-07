@@ -43,6 +43,12 @@
           "serviceWorker": "apps/web/ngsw-config.json"
         },
         "development": {
+          "fileReplacements": [
+            {
+              "replace": "apps/web/src/app/core/auth/provide-auth-api.ts",
+              "with": "apps/web/src/app/core/auth/provide-auth-api.dev.ts"
+            }
+          ],
           "optimization": false,
           "extractLicenses": false,
           "sourceMap": true
@@ -59,6 +65,10 @@
             {
               "replace": "apps/web/src/app/app.routes.ts",
               "with": "apps/web/src/app/app.routes.e2e.ts"
+            },
+            {
+              "replace": "apps/web/src/app/core/auth/provide-auth-api.ts",
+              "with": "apps/web/src/app/core/auth/provide-auth-api.dev.ts"
             }
           ]
         }
@@ -72,6 +82,20 @@
       "cache": true,
       "options": {
         "command": "node scripts/write-middleware-shell.mjs",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "check-bundle": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "inputs": [
+        "{workspaceRoot}/scripts/check-production-bundle.mjs",
+        "production",
+        "^production"
+      ],
+      "cache": true,
+      "options": {
+        "command": "node scripts/check-production-bundle.mjs",
         "cwd": "{workspaceRoot}"
       }
     },
