@@ -28,6 +28,21 @@ function isUnderAuth(rawPath: string): boolean {
   return path === AUTH_BASE_PATH || path.startsWith(`${AUTH_BASE_PATH}/`);
 }
 
+/** Origin-form targets keep their raw path; absolute-form ones (`GET http://x/api/...`) are parsed. */
+function rawPathOf(originalUrl: string): string {
+  if (originalUrl.startsWith('/')) {
+    return originalUrl.split(/[?#]/)[0];
+  }
+  try {
+    return new URL(originalUrl, 'http://internal').pathname;
+  } catch {
+    return AUTH_BASE_PATH;
+  }
+}
+
+/** Anything that merely looks like the auth prefix is guarded, however it normalises. */
+const LOOKS_LIKE_AUTH = /^\/api\/auth(?![a-z0-9_-])/;
+
 /**
  * Allow-list in front of the Better Auth router. Anything that resolves into `/api/auth` and is not
  * exactly one of `ALLOWED_AUTH_ROUTES` (method and canonical path) gets a 404 in the `ApiError`
@@ -36,8 +51,8 @@ function isUnderAuth(rawPath: string): boolean {
  * parameterised routes `disabledPaths` cannot list (`/reset-password/:token`).
  */
 export function authAllowListMiddleware(req: Request, res: Response, next: NextFunction): void {
-  const rawPath = req.originalUrl.split('?')[0];
-  if (!isUnderAuth(rawPath)) {
+  const rawPath = rawPathOf(req.originalUrl);
+  if (!isUnderAuth(rawPath) && !LOOKS_LIKE_AUTH.test(rawPath.toLowerCase())) {
     next();
     return;
   }

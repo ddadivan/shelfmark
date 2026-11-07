@@ -61,6 +61,11 @@ describe('authAllowListMiddleware', () => {
     ['GET', '/api/auth/./get-session'],
     ['GET', '/api/auth/%2e%2e/auth/get-session'],
     ['GET', '/api/%zz'],
+    ['GET', '/api/auth./x'],
+    ['GET', '/api/auth;x/y'],
+    ['GET', '/api/auth%00/y'],
+    ['GET', '/api/auth/../x'],
+    ['GET', '/api/auth.json'],
     ['HEAD', '/api/auth/get-session'],
     ['OPTIONS', '/api/auth/get-session'],
     ['DELETE', '/api/auth/sign-out'],
@@ -77,6 +82,27 @@ describe('authAllowListMiddleware', () => {
       });
     }
     expect(reached).toEqual([]);
+  });
+
+  it.each([
+    ['GET', 'http://x/api/auth/reset-password/t', false],
+    ['GET', 'https://x:8443/api/auth/get-session/', false],
+    ['GET', 'http://x/api/auth/get-session?a=1', true],
+    ['GET', 'http://x/api/health', true],
+  ])('handles the absolute-form target %s %s', (method, target, passes) => {
+    const next = vi.fn();
+    const status = vi.fn().mockReturnThis();
+    const json = vi.fn();
+    authAllowListMiddleware(
+      { method, originalUrl: target } as unknown as express.Request,
+      { status, json, locals: {} } as unknown as express.Response,
+      next,
+    );
+    expect(next).toHaveBeenCalledTimes(passes ? 1 : 0);
+    expect(status).toHaveBeenCalledTimes(passes ? 0 : 1);
+    if (!passes) {
+      expect(status).toHaveBeenCalledWith(404);
+    }
   });
 
   it('leaves everything outside /api/auth alone', async () => {
@@ -115,8 +141,7 @@ describe('authAllowListMiddleware', () => {
     });
 
     it('serves exactly the allow-list, every other endpoint is a 404 (GET and POST too)', async () => {
-      const allowedUrls = ALLOWED_AUTH_ROUTES.map((route) => route.method);
-      expect(allowedUrls).toHaveLength(4);
+      expect(ALLOWED_AUTH_ROUTES).toHaveLength(4);
       for (const { method, url } of endpoints) {
         const { app, reached } = buildApp();
         await request(app)[method === 'POST' ? 'post' : 'get'](url);

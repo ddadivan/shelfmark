@@ -83,6 +83,14 @@ describe('log redaction', () => {
     );
   });
 
+  it('redacts code, state and token parameters outside full URLs', () => {
+    const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+    logAuthMessage('warn', 'bad /callback?code=abc123&state=xyz&other=1 and ?token=t0k');
+    expect(warn).toHaveBeenCalledExactlyOnceWith(
+      'bad /callback?code=<redacted>&state=<redacted>&other=1 and ?token=<redacted>',
+    );
+  });
+
   it('ignores a malformed code', () => {
     const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
     logAuthError({ status: 'BAD_REQUEST', statusCode: 400, message: 'x', body: { code: 'a b\n' } });

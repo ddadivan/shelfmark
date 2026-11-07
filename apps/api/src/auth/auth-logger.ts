@@ -5,6 +5,7 @@ type AuthLogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 const MAX_MESSAGE_LENGTH = 300;
 const URL_PATTERN = /[a-z][a-z0-9+.-]*:\/\/\S+/gi;
+const SECRET_PARAM_PATTERN = /([?&])(code|state|token)=[^&\s]+/gi;
 const REDACTED = '<redacted>';
 
 /**
@@ -17,6 +18,7 @@ function sanitize(message: string): string {
       // eslint-disable-next-line no-control-regex
       .replace(/[\u0000-\u001f\u007f]+/g, ' ')
       .replace(URL_PATTERN, REDACTED)
+      .replace(SECRET_PARAM_PATTERN, `$1$2=${REDACTED}`)
       .slice(0, MAX_MESSAGE_LENGTH)
   );
 }
