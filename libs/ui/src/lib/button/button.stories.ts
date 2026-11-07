@@ -207,14 +207,11 @@ export const ProviderButtons: Story = {
   render: () => ({
     props: { themes: Object.values(THEME) },
     template: `
-      <div style="display: flex; gap: 1.5rem; flex-wrap: wrap">
+      <div class="ds-themes">
         @for (theme of themes; track theme) {
-          <div
-            [attr.${THEME_ATTRIBUTE}]="theme"
-            style="display: flex; flex-direction: column; gap: 0.625rem; width: 20rem; padding: 1.5rem; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg, 0.75rem)"
-          >
-            <ui-button size="lg" iconLeft="google" style="display: block">Continue with Google</ui-button>
-            <ui-button size="lg" iconLeft="github" style="display: block">Continue with GitHub</ui-button>
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane">
+            <ui-button size="lg" iconLeft="google">Continue with Google</ui-button>
+            <ui-button size="lg" iconLeft="github">Continue with GitHub</ui-button>
           </div>
         }
       </div>`,

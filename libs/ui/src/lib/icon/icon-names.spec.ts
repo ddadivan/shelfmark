@@ -7,7 +7,8 @@ import { ICON_NAMES } from './models/icon-names.const';
 const SPRITE_PATH = resolve(process.cwd(), 'libs/ui/src/assets/icons/sprite.svg');
 const DESIGN_SPRITE_PATH = resolve(process.cwd(), 'docs/design/assets/icons/sprite.svg');
 
-const PROVIDER_SYMBOLS = /<symbol id="sm-(?:google|github)"[\s\S]*?<\/symbol>/g;
+/** The only symbols that may differ from the design sprite (brand marks, see libs/ui/CLAUDE.md). */
+const PROVIDER_SYMBOLS = /<symbol id="sm-(?:google|github)"[\s\S]*?<\/symbol>/;
 
 describe('ICON_NAMES', () => {
   it('matches the symbol ids of the sprite exactly', () => {
@@ -31,7 +32,9 @@ describe('ICON_NAMES', () => {
 
   it('is the design sprite without the root display:none style, plus the provider marks', () => {
     const design = readFileSync(DESIGN_SPRITE_PATH, 'utf8').replace(' style="display:none"', '');
-    const withoutMarks = readFileSync(SPRITE_PATH, 'utf8').replace(PROVIDER_SYMBOLS, '');
+    const withoutMarks = readFileSync(SPRITE_PATH, 'utf8')
+      .replace(PROVIDER_SYMBOLS, '')
+      .replace(PROVIDER_SYMBOLS, '');
 
     expect(withoutMarks).toBe(design);
   });
@@ -43,5 +46,13 @@ describe('ICON_NAMES', () => {
 
     expect(symbol('github')).not.toContain('fill=');
     expect(symbol('google').match(/fill="#[0-9A-F]{6}"/g)).toHaveLength(4);
+  });
+
+  it('keeps active content out of the sprite', () => {
+    const sprite = readFileSync(SPRITE_PATH, 'utf8');
+
+    expect(sprite).not.toContain('<script');
+    expect(sprite).not.toContain('<foreignObject');
+    expect(sprite).not.toContain('href=');
   });
 });
