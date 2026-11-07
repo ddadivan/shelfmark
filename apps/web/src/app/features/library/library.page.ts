@@ -19,7 +19,7 @@ import { LinkActionsService } from '../links/link-actions.service';
 import { LinkCardComponent } from '../links/link-card/link-card.component';
 import { LinkRowComponent } from '../links/link-row/link-row.component';
 import type { AddLinkData } from '../links/models/add-link-data.interface';
-import type { LinksFilter } from '../links/models/links-filter.interface';
+import type { LinksFilter } from '../links/models/links-filter.type';
 import { LINKS_SCOPE } from '../links/models/links-scope.const';
 import type { LinksScope } from '../links/models/links-scope.type';
 import { APP_PATH } from '../../models/app-path.const';
@@ -82,7 +82,9 @@ export default class LibraryPage {
   });
   /** An unknown or foreign folder id: the page shows "not found" instead of the content. */
   protected readonly folderMissing = computed(
-    () => this.isFolder() && this.folders.loaded() && this.folder() === undefined,
+    () =>
+      this.isFolder() &&
+      (this.folderId() === undefined || (this.folders.loaded() && this.folder() === undefined)),
   );
   /** Data of the add-link dialog: the folder of the page is preselected. */
   protected readonly addLinkData = computed<AddLinkData>(() => {
@@ -94,11 +96,13 @@ export default class LibraryPage {
     this.isFolder() ? 'library.emptyFolder' : 'library.empty',
   );
   private readonly filter = computed<LinksFilter>(() => {
+    const scope = this.scope();
     const folderId = this.folderId();
-    return {
-      scope: this.scope(),
-      ...(this.isFolder() && folderId !== undefined && { folderId }),
-    };
+    if (scope !== LINKS_SCOPE.Folder) {
+      return { scope };
+    }
+    // A folder page without an id cannot happen through the router; it shows "not found".
+    return folderId === undefined ? { scope: LINKS_SCOPE.All } : { scope, folderId };
   });
   protected readonly firstLoad = computed(
     () => !this.store.loaded() && !this.store.error() && this.store.count() === 0,

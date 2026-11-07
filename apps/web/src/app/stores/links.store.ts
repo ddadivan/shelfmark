@@ -23,7 +23,7 @@ import { FOLDER_DELETE_MODE } from '@shelfmark/contracts';
 import { catchError, EMPTY, firstValueFrom, pipe, switchMap, tap } from 'rxjs';
 import { inFilter, linksQuery, sameFilter } from '../features/links/links-filter';
 import { LINKS_API } from '../features/links/models/links-api.const';
-import type { LinksFilter } from '../features/links/models/links-filter.interface';
+import type { LinksFilter } from '../features/links/models/links-filter.type';
 import { LINKS_SCOPE } from '../features/links/models/links-scope.const';
 import type { PendingRemoval } from '../features/links/models/pending-removal.interface';
 import { RECENT_LINKS_LIMIT } from '../features/links/models/recent-links-limit.const';
@@ -221,6 +221,17 @@ export const LinksStore = signalStore(
         const folders = new Set(folderIds);
         const inFolders = (link: LinkResponse): boolean =>
           link.folderId !== null && folders.has(link.folderId);
+        // Links in their Undo window follow too, so Undo cannot bring back a deleted link or a
+        // stale folder. One already being sent is left alone.
+        for (const [id, removal] of pending) {
+          if (inFolders(removal.link) && !removal.committing) {
+            if (mode === FOLDER_DELETE_MODE.DeleteLinks) {
+              pending.delete(id);
+            } else {
+              pending.set(id, { ...removal, link: { ...removal.link, folderId: null } });
+            }
+          }
+        }
         if (mode === FOLDER_DELETE_MODE.DeleteLinks) {
           patchState(store, setAllEntities(store.entities().filter((link) => !inFolders(link))), {
             recent: store.recent().filter((link) => !inFolders(link)),

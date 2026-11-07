@@ -22,6 +22,7 @@ import {
   NoticeComponent,
   UiDialogRef,
 } from '@shelfmark/ui';
+import { FOLDER_NAME_ERROR } from '../models/folder-name-error.const';
 import { FOLDER_NAME_MODE } from '../models/folder-name-mode.const';
 import type { FolderNameDialogData } from '../models/folder-name-dialog-data.interface';
 
@@ -65,7 +66,7 @@ export class FolderNameDialogComponent {
       required(path.name, { message: () => this.text('folders.name.required') });
       validate(path.name, ({ value }): ValidationError.WithoutFieldTree | undefined =>
         value() !== '' && value().trim() === ''
-          ? { kind: 'blank', message: this.text('folders.name.required') }
+          ? { kind: FOLDER_NAME_ERROR.Blank, message: this.text('folders.name.required') }
           : undefined,
       );
       maxLength(path.name, FOLDER_LIMIT.NameMax, {

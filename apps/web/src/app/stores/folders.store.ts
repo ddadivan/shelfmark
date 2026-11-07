@@ -45,9 +45,34 @@ export const FoldersStore = signalStore(
     // Only the newest list request may write (a refresh can overtake an older one).
     let requestSeq = 0;
     let firstLoad: Promise<void> | null = null;
+    // A list that was requested before a create / rename / move / remove must not overwrite it
+    // on arrival: `version` changes at the start and the end of every mutation, `inFlight` counts
+    // the running ones. Such a list is dropped and asked for again once nothing is running.
+    let version = 0;
+    let inFlight = 0;
+    let refetchWanted = false;
+
+    function begin(): number {
+      inFlight++;
+      version++;
+      return epoch;
+    }
+
+    function finish(token: number): void {
+      if (token !== epoch) {
+        return;
+      }
+      inFlight--;
+      version++;
+      if (inFlight === 0 && refetchWanted) {
+        refetchWanted = false;
+        void fetchAll();
+      }
+    }
 
     async function fetchAll(): Promise<void> {
       const started = epoch;
+      const startedVersion = version;
       const seq = ++requestSeq;
       if (!store.loaded()) {
         patchState(store, { loading: true, error: false });
@@ -56,6 +81,14 @@ export const FoldersStore = signalStore(
         const response = await firstValueFrom(api().list());
         if (started !== epoch || seq !== requestSeq) {
           return;
+        }
+        if (version !== startedVersion || inFlight > 0) {
+          // Stale against a mutation: ask again now, or when the last mutation ends.
+          if (inFlight > 0) {
+            refetchWanted = true;
+            return;
+          }
+          return fetchAll();
         }
         patchState(store, setAllEntities(byName(response.items)), {
           counts: response.counts,
@@ -115,18 +148,20 @@ export const FoldersStore = signalStore(
 
       /** Creates a folder; resolves with it, or `null` when the request failed. */
       async create(name: string, parentId: string | null): Promise<FolderResponse | null> {
-        const started = epoch;
+        const token = begin();
         try {
           const folder = await firstValueFrom(
             api().create(parentId === null ? { name } : { name, parentId }),
           );
-          if (started !== epoch) {
+          if (token !== epoch) {
             return null;
           }
           patchState(store, setAllEntities(byName([...store.entities(), folder])));
           return folder;
         } catch {
           return null;
+        } finally {
+          finish(token);
         }
       },
 
@@ -136,19 +171,22 @@ export const FoldersStore = signalStore(
         if (!previous) {
           return false;
         }
-        const started = epoch;
+        const token = begin();
         replace(id, { name });
         try {
           const saved = await firstValueFrom(api().update(id, { name }));
-          if (started === epoch) {
+          if (token === epoch) {
             replace(id, { updatedAt: saved.updatedAt });
           }
           return true;
         } catch {
-          if (started === epoch) {
+          // Only while the name is still the optimistic one: a later edit must not be undone.
+          if (token === epoch && store.entityMap()[id]?.name === name) {
             replace(id, { name: previous.name });
           }
           return false;
+        } finally {
+          finish(token);
         }
       },
 
@@ -165,46 +203,63 @@ export const FoldersStore = signalStore(
         ) {
           return false;
         }
-        const started = epoch;
+        const token = begin();
         replace(id, { parentId });
         try {
           const saved = await firstValueFrom(api().update(id, { parentId }));
-          if (started === epoch) {
+          if (token === epoch) {
             replace(id, { updatedAt: saved.updatedAt });
           }
           return true;
         } catch {
-          if (started === epoch) {
+          // Only while the parent is still the optimistic one: a later move must not be undone.
+          if (token === epoch && store.entityMap()[id]?.parentId === parentId) {
             replace(id, { parentId: previous.parentId });
           }
           return false;
+        } finally {
+          finish(token);
         }
       },
 
       /**
-       * Deletes the folder and its subfolders. On success the folders leave the list and the
-       * loaded links follow `mode`; counts are reloaded. Resolves false when the request fails.
+       * Deletes the folder and its subfolders. On success `beforeApply` runs (the caller can leave
+       * the page of a deleted folder), then the folders leave the list and the loaded links follow
+       * `mode`; counts are reloaded. Resolves false when the request fails.
        */
-      async remove(id: string, mode: FolderDeleteMode): Promise<boolean> {
+      async remove(
+        id: string,
+        mode: FolderDeleteMode,
+        beforeApply?: (doomed: readonly string[]) => Promise<void>,
+      ): Promise<boolean> {
         if (!store.entityMap()[id]) {
           return false;
         }
-        const started = epoch;
+        const token = begin();
         const doomed = new Set([id, ...descendantIds(store.entities(), id)]);
         try {
           await firstValueFrom(api().remove(id, mode));
         } catch {
+          finish(token);
           return false;
         }
-        if (started !== epoch) {
+        if (token !== epoch) {
           return true;
         }
-        patchState(
-          store,
-          setAllEntities(store.entities().filter((folder) => !doomed.has(folder.id))),
-        );
-        injector.get(LinksStore).applyFolderRemoval([...doomed], mode);
-        void fetchAll();
+        // The tree may have changed while the request ran (a subfolder created or moved in).
+        for (const below of descendantIds(store.entities(), id)) {
+          doomed.add(below);
+        }
+        await beforeApply?.([...doomed]);
+        if (token === epoch) {
+          patchState(
+            store,
+            setAllEntities(store.entities().filter((folder) => !doomed.has(folder.id))),
+          );
+          injector.get(LinksStore).applyFolderRemoval([...doomed], mode);
+          finish(token);
+          void fetchAll();
+        }
         return true;
       },
 
@@ -212,6 +267,9 @@ export const FoldersStore = signalStore(
       reset(): void {
         epoch++;
         requestSeq++;
+        version++;
+        inFlight = 0;
+        refetchWanted = false;
         firstLoad = null;
         patchState(store, initialState, removeAllEntities());
       },

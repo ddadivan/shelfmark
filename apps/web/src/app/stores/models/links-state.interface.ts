@@ -1,5 +1,5 @@
 import type { LinkResponse } from '@shelfmark/contracts';
-import type { LinksFilter } from '../../features/links/models/links-filter.interface';
+import type { LinksFilter } from '../../features/links/models/links-filter.type';
 
 /** State of `LinksStore` besides the link entities. */
 export interface LinksState {

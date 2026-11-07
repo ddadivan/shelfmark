@@ -109,7 +109,6 @@ export class FolderActionsService {
 
   /** Asks how to treat the links, deletes, and leaves the page when it showed a deleted folder. */
   async delete(folder: FolderResponse): Promise<void> {
-    const doomed = [folder.id, ...this.folders.descendantIds(folder.id)];
     const outcome = { deleted: false };
     await this.dialogs.open<DeleteFolderDialogComponent, boolean, DeleteFolderDialogData>(
       DeleteFolderDialogComponent,
@@ -118,27 +117,32 @@ export class FolderActionsService {
         data: {
           folder,
           linkCount: this.folders.subtreeLinkCount(folder.id),
-          subfolderCount: doomed.length - 1,
+          subfolderCount: this.folders.descendantIds(folder.id).length,
           submit: async (mode) => {
-            outcome.deleted = await this.folders.remove(folder.id, mode);
+            outcome.deleted = await this.folders.remove(folder.id, mode, (doomed) =>
+              this.leaveDeleted(doomed),
+            );
             return outcome.deleted;
           },
         },
       },
     ).result;
-    if (!outcome.deleted) {
-      return;
-    }
-    this.toasts.show({ kind: TOAST_KIND.Success, text: this.t('folders.delete.done') });
-    const active = sidebarActiveId(this.router.url);
-    if (active !== null && doomed.includes(active)) {
-      await this.router.navigateByUrl(`/${APP_PATH.Links}`);
+    if (outcome.deleted) {
+      this.toasts.show({ kind: TOAST_KIND.Success, text: this.t('folders.delete.done') });
     }
   }
 
   /** Opens the add-link dialog with the folder preselected. */
   addLinkHere(folder: FolderResponse): Promise<void> {
     return this.linkActions.addLink({ folderId: folder.id });
+  }
+
+  /** Before the folders disappear: moves off the page of a deleted folder, so it never shows "not found". */
+  private async leaveDeleted(doomed: readonly string[]): Promise<void> {
+    const active = sidebarActiveId(this.router.url);
+    if (active !== null && doomed.includes(active)) {
+      await this.router.navigateByUrl(`/${APP_PATH.Links}`);
+    }
   }
 
   private t(key: string, params?: Record<string, string>): string {

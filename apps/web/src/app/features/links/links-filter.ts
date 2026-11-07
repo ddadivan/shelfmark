@@ -1,5 +1,5 @@
 import type { LinkResponse, ListLinksQuery } from '@shelfmark/contracts';
-import type { LinksFilter } from './models/links-filter.interface';
+import type { LinksFilter } from './models/links-filter.type';
 import { LINKS_SCOPE } from './models/links-scope.const';
 
 /** The `GET /api/links` query of a filter, with an optional cursor. Empty `tags` and `q` are left out. */
@@ -13,9 +13,7 @@ export function linksQuery(filter: LinksFilter, cursor?: string): ListLinksQuery
       query.favorite = true;
       break;
     case LINKS_SCOPE.Folder:
-      if (filter.folderId !== undefined) {
-        query.folderId = filter.folderId;
-      }
+      query.folderId = filter.folderId;
       break;
     default:
       break;

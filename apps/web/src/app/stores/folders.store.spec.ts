@@ -291,6 +291,147 @@ describe('FoldersStore', () => {
     });
   });
 
+  describe('overlapping requests', () => {
+    it('does not let a list requested before a create overwrite it', async () => {
+      const stale = new Subject<ListFoldersResponse>();
+      const created = folder('x', null);
+      const list = vi
+        .fn<FoldersApi['list']>()
+        .mockReturnValueOnce(of(LIST))
+        .mockReturnValueOnce(stale)
+        .mockReturnValue(of({ ...LIST, items: [...LIST.items, created] }));
+      const { store } = setup({ list, create: () => of(created) });
+      await store.load();
+
+      const refreshing = store.refresh();
+      await store.create('x', null);
+      stale.next(LIST);
+      stale.complete();
+      await refreshing;
+
+      expect(names(store)).toEqual(['a', 'b', 'c', 'd', 'x']);
+      expect(list).toHaveBeenCalledTimes(3);
+    });
+
+    it('waits for a running mutation before asking again', async () => {
+      const stale = new Subject<ListFoldersResponse>();
+      const pending = new Subject<FolderResponse>();
+      const list = vi
+        .fn<FoldersApi['list']>()
+        .mockReturnValueOnce(of(LIST))
+        .mockReturnValueOnce(stale)
+        .mockReturnValue(of(LIST));
+      const { store } = setup({ list, update: () => pending });
+      await store.load();
+
+      const renaming = store.rename('d', 'zzz');
+      const refreshing = store.refresh();
+      stale.next(LIST);
+      stale.complete();
+      await refreshing;
+      expect(store.entityMap()['d'].name).toBe('zzz');
+      expect(list).toHaveBeenCalledTimes(2);
+
+      pending.next({ ...folder('d', null), name: 'zzz', updatedAt: 'later' });
+      pending.complete();
+      await renaming;
+      await vi.waitFor(() => {
+        expect(list).toHaveBeenCalledTimes(3);
+      });
+    });
+
+    it('does not undo a later rename when an earlier one fails', async () => {
+      const first = new Subject<FolderResponse>();
+      const second = new Subject<FolderResponse>();
+      const update = vi
+        .fn<FoldersApi['update']>()
+        .mockReturnValueOnce(first)
+        .mockReturnValueOnce(second);
+      const { store } = setup({ update });
+      await store.load();
+
+      const one = store.rename('a', 'first');
+      const two = store.rename('a', 'second');
+      first.error(new Error('no'));
+      expect(await one).toBe(false);
+      second.next({ ...folder('a', null), name: 'second' });
+      second.complete();
+      await two;
+
+      expect(store.entityMap()['a'].name).toBe('second');
+    });
+
+    it('does not undo a later move when an earlier one fails', async () => {
+      const first = new Subject<FolderResponse>();
+      const update = vi
+        .fn<FoldersApi['update']>()
+        .mockReturnValueOnce(first)
+        .mockReturnValueOnce(of(folder('c', 'a')));
+      const { store } = setup({ update });
+      await store.load();
+
+      const one = store.move('c', 'd');
+      await store.move('c', 'a');
+      first.error(new Error('no'));
+      await one;
+
+      expect(store.entityMap()['c'].parentId).toBe('a');
+    });
+
+    it('deletes what was moved into the folder while the request ran', async () => {
+      const removal = new Subject<void>();
+      const list = vi
+        .fn<FoldersApi['list']>()
+        .mockReturnValueOnce(of(LIST))
+        .mockReturnValue(of({ items: [], counts: MOCK_LIBRARY_COUNTS }));
+      const { store } = setup({ list, remove: () => removal });
+      await store.load();
+
+      const removing = store.remove('a', FOLDER_DELETE_MODE.MoveToUnsorted);
+      await store.move('d', 'a');
+      const afterMove = names(store);
+      removal.next();
+      removal.complete();
+      await removing;
+
+      // The reload answers with the server's list (empty here); the local removal came first.
+      expect(afterMove).toEqual(['a', 'b', 'c', 'd']);
+      expect(store.entityMap()['d']).toBeUndefined();
+      expect(names(store)).toEqual([]);
+    });
+
+    it('runs beforeApply after the server answered and before the folders go', async () => {
+      const { store } = setup();
+      await store.load();
+      let seen: string[] = [];
+
+      await store.remove('a', FOLDER_DELETE_MODE.MoveToUnsorted, (doomed) => {
+        seen = [...doomed, ...names(store)];
+        return Promise.resolve();
+      });
+
+      expect(seen).toEqual(['a', 'b', 'c', 'a', 'b', 'c', 'd']);
+    });
+
+    it('does not apply a removal that finishes after the reset', async () => {
+      const removal = new Subject<void>();
+      const { store } = setup({ remove: () => removal });
+      await store.load();
+      const links = TestBed.inject(LinksStore);
+      const applied = vi.spyOn(links, 'applyFolderRemoval');
+
+      const removing = store.remove('a', FOLDER_DELETE_MODE.DeleteLinks);
+      store.reset();
+      removal.next();
+      removal.complete();
+
+      expect(await removing).toBe(true);
+      expect(applied).not.toHaveBeenCalled();
+      expect(store.count()).toBe(0);
+      expect(store.loaded()).toBe(false);
+    });
+  });
+
   describe('reset', () => {
     it('forgets everything', async () => {
       const { store } = setup();

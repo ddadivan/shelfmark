@@ -415,6 +415,32 @@ describe('LinksStore', () => {
     });
   });
 
+  describe('folder removal and links in their Undo window', () => {
+    it('Undo brings a link back without the deleted folder', () => {
+      const { store } = setup({ items: [link(1, { folderId: 'f1' }), link(2)] });
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      store.remove('id-1');
+
+      store.applyFolderRemoval(['f1'], FOLDER_DELETE_MODE.MoveToUnsorted);
+      store.undoRemove('id-1');
+
+      expect(store.entityMap()['id-1'].folderId).toBeNull();
+    });
+
+    it('Undo cannot bring back a link deleted with its folder', async () => {
+      const { api, store } = setup({ items: [link(1, { folderId: 'f1' }), link(2)] });
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      store.remove('id-1');
+
+      store.applyFolderRemoval(['f1'], FOLDER_DELETE_MODE.DeleteLinks);
+      store.undoRemove('id-1');
+
+      expect(ids(store)).toEqual(['id-2']);
+      expect(await store.commitRemove('id-1')).toBe(true);
+      expect(api.remove).not.toHaveBeenCalled();
+    });
+  });
+
   describe('reset', () => {
     it('forgets the feed, the recent list and the scope', async () => {
       const { store } = setup();
