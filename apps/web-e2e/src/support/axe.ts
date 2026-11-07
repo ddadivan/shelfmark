@@ -8,17 +8,17 @@ const REPORT_TYPE = 'application/json';
 
 /**
  * Scans the current page against WCAG 2.2 AA, attaches the full result and fails on
- * serious or critical violations only. `disabledRules` turns off single rules for this scan.
+ * serious or critical violations only. `include` (a CSS selector) limits the scan to that
+ * subtree, for example an open dialog. `disabledRules` turns off single rules for this scan.
  */
 export async function expectNoBlockingViolations(
   page: Page,
   testInfo: TestInfo,
-  disabledRules: readonly string[] = [],
+  options: { readonly include?: string; readonly disabledRules?: readonly string[] } = {},
 ): Promise<void> {
-  const results = await new AxeBuilder({ page })
-    .withTags([...AXE_TAGS])
-    .disableRules([...disabledRules])
-    .analyze();
+  const { include, disabledRules = [] } = options;
+  const builder = new AxeBuilder({ page }).withTags([...AXE_TAGS]).disableRules([...disabledRules]);
+  const results = await (include ? builder.include(include) : builder).analyze();
   await testInfo.attach(REPORT_NAME, {
     body: JSON.stringify(results, null, 2),
     contentType: REPORT_TYPE,

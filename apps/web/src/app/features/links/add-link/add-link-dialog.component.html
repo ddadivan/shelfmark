@@ -1,0 +1,156 @@
+<form [formRoot]="form" class="add-link">
+  <ui-dialog
+    [title]="(editing ? 'links.edit.title' : 'links.add.title') | transloco"
+    [closeLabel]="'links.add.close' | transloco"
+    size="md"
+  >
+    <div class="add-link__fields">
+      <ui-input
+        [type]="INPUT_TYPE.Url"
+        [label]="'links.add.url.label' | transloco"
+        [placeholder]="'links.add.url.placeholder' | transloco"
+        [hint]="'links.add.url.hint' | transloco"
+        [formField]="form.url"
+      />
+
+      <!-- Always present, so changes are announced reliably (notices inserted later may not be). -->
+      <div class="add-link__sr" role="status">
+        @switch (previewState()) {
+          @case (PREVIEW_STATE.Loading) {
+            {{ 'links.add.preview.loading' | transloco }}
+          }
+          @case (PREVIEW_STATE.Ready) {
+            @if (previewData(); as data) {
+              {{ 'links.add.preview.ready' | transloco: { title: data.title } }}
+            }
+            @if (duplicate(); as existing) {
+              {{
+                'links.add.duplicate.text'
+                  | transloco
+                    : { folder: existing.folderName ?? ('links.add.folder.unsorted' | transloco) }
+              }}
+            }
+          }
+        }
+      </div>
+
+      @switch (shownState()) {
+        @case (PREVIEW_STATE.Loading) {
+          <div class="add-link__preview" aria-busy="true">
+            <ui-skeleton [shape]="SKELETON_SHAPE.Line" [count]="3" />
+          </div>
+          <p class="add-link__note">{{ 'links.add.preview.loadingHint' | transloco }}</p>
+        }
+        @case (PREVIEW_STATE.Failed) {
+          <ui-notice [kind]="NOTICE_KIND.Danger">{{
+            'links.add.preview.failed' | transloco
+          }}</ui-notice>
+        }
+        @case (PREVIEW_STATE.Ready) {
+          @if (duplicate(); as existing) {
+            <ui-notice>{{
+              'links.add.duplicate.text'
+                | transloco
+                  : { folder: existing.folderName ?? ('links.add.folder.unsorted' | transloco) }
+            }}</ui-notice>
+          }
+          @if (previewData(); as data) {
+            <div class="add-link__preview">
+              <div class="add-link__meta">
+                <ui-favicon [letter]="previewHost()[0]" />
+                <span class="add-link__host">{{ previewHost() }}</span>
+              </div>
+              <div class="add-link__title">{{ data.title }}</div>
+              @if (data.description) {
+                <div class="add-link__description">{{ data.description }}</div>
+              }
+              <div class="add-link__note">{{ 'links.add.preview.filled' | transloco }}</div>
+            </div>
+          }
+        }
+      }
+
+      <ui-input [label]="'links.add.titleField.label' | transloco" [formField]="form.title" />
+
+      <ui-select
+        [label]="'links.add.folder.label' | transloco"
+        [options]="folderOptions()"
+        [emptyLabel]="'links.add.folder.unsorted' | transloco"
+        [searchLabel]="'links.add.folder.searchLabel' | transloco"
+        [noResultsLabel]="'links.add.folder.noResults' | transloco"
+        searchable
+        [formField]="form.folderId"
+      />
+
+      <ui-tag-input
+        [label]="'links.add.tags.label' | transloco"
+        [placeholder]="'links.add.tags.placeholder' | transloco"
+        [suggestions]="tagSuggestions()"
+        [maxTags]="LINK_LIMIT.TagsMax"
+        [maxTagsLabel]="'links.add.tags.max' | transloco: { max: LINK_LIMIT.TagsMax }"
+        [createLabel]="'links.add.tags.create' | transloco"
+        [removeLabel]="'links.add.tags.remove' | transloco"
+        [addedLabel]="'links.add.tags.added' | transloco"
+        [removedLabel]="'links.add.tags.removed' | transloco"
+        [duplicateLabel]="'links.add.tags.duplicate' | transloco"
+        [listLabel]="'links.add.tags.list' | transloco"
+        [formField]="form.tags"
+      />
+
+      <ui-textarea
+        [label]="'links.add.note.label' | transloco"
+        [placeholder]="'links.add.note.placeholder' | transloco"
+        [hint]="'links.add.note.hint' | transloco"
+        [counterLabel]="'links.add.note.counter' | transloco"
+        [rows]="2"
+        [formField]="form.note"
+      />
+
+      @if (saveFailed()) {
+        <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'links.add.saveFailed' | transloco }}</ui-notice>
+      }
+
+      @if (meta(); as text) {
+        <p class="add-link__note">{{ text }}</p>
+      }
+    </div>
+
+    @if (editing) {
+      <ui-button
+        slot="footer"
+        class="add-link__delete"
+        [variant]="BUTTON_VARIANT.Danger"
+        iconLeft="trash"
+        [disabled]="saving()"
+        (click)="requestDelete()"
+        >{{ 'links.edit.actions.delete' | transloco }}</ui-button
+      >
+    }
+
+    <ui-button slot="footer" class="add-link__action" [disabled]="saving()" (click)="cancel()">{{
+      'links.add.actions.cancel' | transloco
+    }}</ui-button>
+    @if (duplicate() && !editing) {
+      <ui-button slot="footer" class="add-link__action" (click)="openExisting()">{{
+        'links.add.actions.openSaved' | transloco
+      }}</ui-button>
+    }
+    <ui-button
+      slot="footer"
+      class="add-link__action"
+      [type]="BUTTON_TYPE.Submit"
+      [variant]="BUTTON_VARIANT.Primary"
+      [loading]="saving()"
+      >{{
+        (saving()
+          ? 'links.add.actions.saving'
+          : editing
+            ? 'links.edit.actions.save'
+            : duplicate()
+              ? 'links.add.actions.saveAnyway'
+              : 'links.add.actions.save'
+        ) | transloco
+      }}</ui-button
+    >
+  </ui-dialog>
+</form>
