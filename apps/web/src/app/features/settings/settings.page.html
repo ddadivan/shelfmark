@@ -1,0 +1,43 @@
+<div class="settings">
+  <ui-button
+    class="settings__back"
+    variant="ghost"
+    size="sm"
+    iconLeft="chevron-left"
+    [href]="linksHref"
+    (linkClick)="back($event)"
+  >
+    {{ 'settings.back' | transloco }}
+  </ui-button>
+  <h1 class="settings__title">{{ 'settings.title' | transloco }}</h1>
+
+  @if (auth.user(); as user) {
+  <app-settings-section [heading]="'settings.account.title' | transloco">
+    <div class="settings__account">
+      <ui-avatar [name]="user.name" [src]="user.image ?? undefined" size="lg" />
+      <div class="settings__identity">
+        <div class="settings__name">{{ user.name }}</div>
+        <div class="settings__email">{{ user.email }}</div>
+      </div>
+      <ui-button class="settings__sign-out" (click)="signOut()">
+        {{ 'settings.account.signOut' | transloco }}
+      </ui-button>
+    </div>
+  </app-settings-section>
+  }
+
+  <app-settings-section [heading]="'settings.appearance.title' | transloco">
+    <app-settings-row
+      labelId="settings-theme-label"
+      [label]="'settings.appearance.theme.label' | transloco"
+      [hint]="'settings.appearance.theme.hint' | transloco"
+    >
+      <ui-segmented-control
+        ariaLabelledby="settings-theme-label"
+        [options]="themeOptions()"
+        [value]="theme.preference()"
+        (valueChange)="setTheme($event)"
+      />
+    </app-settings-row>
+  </app-settings-section>
+</div>

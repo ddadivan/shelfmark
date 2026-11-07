@@ -1,0 +1,9 @@
+<div class="settings-row__text">
+  <div class="settings-row__label" [id]="labelId()">{{ label() }}</div>
+  @if (hint(); as text) {
+    <div class="settings-row__hint">{{ text }}</div>
+  }
+</div>
+<div class="settings-row__control">
+  <ng-content />
+</div>

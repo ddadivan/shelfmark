@@ -20,10 +20,30 @@
     }
   },
   "shell": {
+    "accountMenu": "Account menu",
+    "settings": "Settings",
     "signOut": "Sign out"
   },
   "library": {
     "title": "All links",
     "placeholder": "Your saved links will appear here."
+  },
+  "settings": {
+    "title": "Settings",
+    "back": "Back to links",
+    "account": {
+      "title": "Account",
+      "signOut": "Sign out"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "theme": {
+        "label": "Theme",
+        "hint": "System follows your device",
+        "system": "System",
+        "light": "Light",
+        "dark": "Dark"
+      }
+    }
   }
 }
