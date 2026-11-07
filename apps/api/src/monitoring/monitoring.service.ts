@@ -1,15 +1,10 @@
-import {
-  BadGatewayException,
-  BadRequestException,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import type { MonitoringConfig } from '@shelfmark/contracts';
 import { INGEST_TIMEOUT_MS } from './models/ingest-timeout-ms.const';
 import type { MonitoringSettings } from './models/monitoring-settings.interface';
-import { MONITORING_SETTINGS } from './models/monitoring-settings.token';
+import { MONITORING_SETTINGS } from './models/monitoring-settings.const';
 import type { ParsedDsn } from './models/parsed-dsn.interface';
+import { TunnelUpstreamException } from './tunnel-upstream.exception';
 import { readEnvelopeDsn } from './read-envelope-dsn';
 import { readEnvelopeItemTypes } from './read-envelope-item-types';
 
@@ -68,8 +63,8 @@ export class MonitoringService {
       // Drop the upstream body unread; the request signal still bounds the whole exchange.
       await response.body?.cancel();
     } catch {
-      throw new BadGatewayException();
+      throw new TunnelUpstreamException();
     }
-    if (status < 200 || status >= 300) throw new BadGatewayException();
+    if (status < 200 || status >= 300) throw new TunnelUpstreamException();
   }
 }

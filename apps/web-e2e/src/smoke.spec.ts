@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/test';
 import { LANDING_HEADLINE } from './models/landing-headline.const';
 
 test.describe('smoke', () => {
@@ -10,11 +10,6 @@ test.describe('smoke', () => {
       }
     });
     page.on('pageerror', (error) => errors.push(error.message));
-    // No API runs in this suite; answer like an API without a Sentry DSN (monitoring off).
-    await page.route('**/api/monitoring/config', (route) =>
-      route.fulfill({ json: { dsn: null, environment: 'test', release: null } }),
-    );
-
     await page.goto('/');
 
     await expect(page.getByRole('heading', { level: 1, name: LANDING_HEADLINE })).toBeVisible();

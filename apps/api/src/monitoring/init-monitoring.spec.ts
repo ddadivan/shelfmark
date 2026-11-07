@@ -1,4 +1,4 @@
-import { init } from '@sentry/node';
+import { init, isInitialized } from '@sentry/node';
 import { initMonitoring } from './init-monitoring';
 import { parseDsn } from './parse-dsn';
 import { scrubEvent } from './scrub-event';
@@ -6,6 +6,7 @@ import { scrubEvent } from './scrub-event';
 vi.mock('@sentry/node', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@sentry/node')>()),
   init: vi.fn(),
+  isInitialized: vi.fn(() => false),
 }));
 
 describe('initMonitoring', () => {
@@ -38,6 +39,14 @@ describe('initMonitoring', () => {
         beforeSend: scrubEvent,
       }),
     );
+  });
+
+  it('starts the SDK only once per process', () => {
+    const apiDsn = parseDsn('https://k@o1.ingest.sentry.io/1');
+    vi.mocked(isInitialized).mockReturnValueOnce(true);
+    const settings = { apiDsn, webDsn: undefined, environment: 'x', release: null };
+    expect(initMonitoring(settings)).toBe(true);
+    expect(init).not.toHaveBeenCalled();
   });
 
   it('omits the release when unknown and drops breadcrumbs', () => {

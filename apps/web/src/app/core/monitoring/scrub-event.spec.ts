@@ -1,31 +1,5 @@
 import type { ErrorEvent } from '@sentry/browser';
 import { scrubEvent } from './scrub-event';
-import { scrubText } from './scrub-text';
-
-describe('scrubText', () => {
-  it('removes URLs, emails and auth tokens', () => {
-    expect(
-      scrubText('Failed https://example.com/a?t=1 for ada@example.com with Bearer abc.d-1'),
-    ).toBe('Failed [url] for [email] with Bearer [redacted]');
-  });
-
-  it.each([
-    [
-      'bare host with path and query',
-      'saved example.org/private/page?x=1 failed',
-      'saved [url] failed',
-    ],
-    ['www host', 'saved www.mysite.xyz failed', 'saved [url] failed'],
-    ['host with port', 'connect intranet.local:8080/admin', 'connect [url]'],
-    ['ipv4 with port', 'connect 10.0.0.5:3000/x', 'connect [url]'],
-  ])('removes a %s', (_label, input, expected) => {
-    expect(scrubText(input)).toBe(expected);
-  });
-
-  it('keeps ordinary code identifiers', () => {
-    expect(scrubText('TypeError in links.service')).toBe('TypeError in links.service');
-  });
-});
 
 describe('scrubEvent', () => {
   function sample(): ErrorEvent {

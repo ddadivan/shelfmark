@@ -1,4 +1,5 @@
-import { expect, test, type Page } from '@playwright/test';
+import { type Page } from '@playwright/test';
+import { expect, test } from './support/test';
 import { buildCsp, createCspMiddleware } from '@shelfmark/web-csp';
 import { LANDING_HEADLINE } from './models/landing-headline.const';
 import { isCiBuild } from './support/build-mode';
@@ -35,7 +36,8 @@ async function applyMiddleware(page: Page): Promise<void> {
   await page.route('**/*', async (route) => {
     const request = route.request();
     if (request.resourceType() !== 'document') {
-      await route.continue();
+      // Not ours: let earlier handlers (the monitoring config stub) answer.
+      await route.fallback();
       return;
     }
     const upstream = await route.fetch();

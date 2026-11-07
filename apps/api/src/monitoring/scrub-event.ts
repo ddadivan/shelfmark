@@ -1,4 +1,5 @@
 import type { ErrorEvent } from '@sentry/node';
+import { REQUEST_ID_TAG } from './models/request-id-tag.const';
 import { scrubText } from './scrub-text';
 
 /** Context keys that carry only runtime facts, never user data. */
@@ -33,7 +34,7 @@ export function scrubEvent(event: ErrorEvent): ErrorEvent {
     event.tags = Object.fromEntries(
       Object.entries(event.tags).map(([key, value]) => [
         key,
-        key === 'requestId' || typeof value !== 'string' ? value : scrubText(value),
+        key === REQUEST_ID_TAG || typeof value !== 'string' ? value : scrubText(value),
       ]),
     );
   }

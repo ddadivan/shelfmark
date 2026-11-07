@@ -4,7 +4,7 @@ import request from 'supertest';
 import { configureApp } from '../app/configure-app';
 import { MAX_ENVELOPE_BYTES } from './models/max-envelope-bytes.const';
 import type { MonitoringSettings } from './models/monitoring-settings.interface';
-import { MONITORING_SETTINGS } from './models/monitoring-settings.token';
+import { MONITORING_SETTINGS } from './models/monitoring-settings.const';
 import { MonitoringModule } from './monitoring.module';
 import { parseDsn } from './parse-dsn';
 

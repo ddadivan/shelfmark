@@ -10,11 +10,10 @@ vi.mock('@sentry/browser', async (importOriginal) => ({
 
 describe('loadSentry', () => {
   it('starts the SDK through the same-origin tunnel with scrubbing and no extras', async () => {
-    const report = await loadSentry({
-      dsn: 'https://k@o1.ingest.sentry.io/2',
-      environment: 'preview',
-      release: 'r1',
-    });
+    const report = await loadSentry(
+      { dsn: 'https://k@o1.ingest.sentry.io/2', environment: 'preview', release: 'r1' },
+      '/api/monitoring/tunnel',
+    );
     const options = vi.mocked(sentry.init).mock.calls[0]?.[0];
     expect(options).toEqual(
       expect.objectContaining({
@@ -37,7 +36,10 @@ describe('loadSentry', () => {
 
   it('omits the release when unknown', async () => {
     vi.mocked(sentry.init).mockClear();
-    await loadSentry({ dsn: 'https://k@o1.ingest.sentry.io/2', environment: 'p', release: null });
+    await loadSentry(
+      { dsn: 'https://k@o1.ingest.sentry.io/2', environment: 'p', release: null },
+      '/api/monitoring/tunnel',
+    );
     expect(vi.mocked(sentry.init).mock.calls[0]?.[0]).not.toHaveProperty('release');
   });
 });

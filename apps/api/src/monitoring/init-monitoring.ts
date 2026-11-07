@@ -3,6 +3,7 @@ import {
   eventFiltersIntegration,
   functionToStringIntegration,
   init,
+  isInitialized,
   linkedErrorsIntegration,
   onUnhandledRejectionIntegration,
 } from '@sentry/node';
@@ -18,6 +19,8 @@ import { scrubEvent } from './scrub-event';
  */
 export function initMonitoring(settings: MonitoringSettings): boolean {
   if (!settings.apiDsn) return false;
+  // createApp() can run more than once in a process (tests, hot restarts): start the SDK once.
+  if (isInitialized()) return true;
   init({
     dsn: settings.apiDsn.dsn,
     environment: settings.environment,

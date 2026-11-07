@@ -1,5 +1,9 @@
 import { Service, inject } from '@angular/core';
-import type { MonitoringConfig } from '@shelfmark/contracts';
+import {
+  MONITORING_CONFIG_ROUTE,
+  MONITORING_TUNNEL_ROUTE,
+  type MonitoringConfig,
+} from '@shelfmark/contracts';
 import { API_BASE_URL } from '../api/api-base-url';
 import { MAX_PENDING_ERRORS } from './models/max-pending-errors.const';
 import type { ErrorReporter } from './models/error-reporter.type';
@@ -33,7 +37,11 @@ export class MonitoringService {
     if (this.started) return;
     this.started = true;
     try {
-      const response = await fetch(`${this.apiBaseUrl}/monitoring/config`, {
+      // Plain `fetch` on purpose: this runs outside the app's HttpClient interceptors (a failure
+      // here must not hit the error interceptor or the global error handler and loop back into
+      // monitoring), and the request carries no credentials.
+      const response = await fetch(`${this.apiBaseUrl}${MONITORING_CONFIG_ROUTE}`, {
+        credentials: 'omit',
         headers: { accept: 'application/json' },
       });
       const config: unknown = response.ok ? await response.json() : undefined;
@@ -41,7 +49,10 @@ export class MonitoringService {
         this.disable();
         return;
       }
-      this.reporter = await this.loadSentry({ ...config, dsn: config.dsn });
+      this.reporter = await this.loadSentry(
+        { ...config, dsn: config.dsn },
+        `${this.apiBaseUrl}${MONITORING_TUNNEL_ROUTE}`,
+      );
       const queued = this.pending;
       this.pending = [];
       queued.forEach((error) => this.reporter?.(error));

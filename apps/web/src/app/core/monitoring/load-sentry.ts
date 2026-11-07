@@ -1,4 +1,3 @@
-import { MONITORING_TUNNEL_PATH } from '@shelfmark/contracts';
 import { scrubEvent } from './scrub-event';
 import type { SentryLoader } from './models/sentry-loader.type';
 
@@ -11,13 +10,13 @@ import type { SentryLoader } from './models/sentry-loader.type';
  * through `provideBrowserGlobalErrorListeners`, so the SDK's own would report each error twice).
  * Events go through the same-origin tunnel, so the CSP stays `connect-src 'self'` (ADR 0032).
  */
-export const loadSentry: SentryLoader = async (config) => {
+export const loadSentry: SentryLoader = async (config, tunnel) => {
   const sentry = await import('@sentry/browser');
   sentry.init({
     dsn: config.dsn,
     environment: config.environment,
     ...(config.release === null ? {} : { release: config.release }),
-    tunnel: MONITORING_TUNNEL_PATH,
+    tunnel,
     sendClientReports: false,
     maxBreadcrumbs: 0,
     defaultIntegrations: [

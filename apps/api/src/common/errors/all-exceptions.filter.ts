@@ -4,13 +4,13 @@ import {
   type ArgumentsHost,
   Catch,
   type ExceptionFilter,
-  BadGatewayException,
   HttpException,
   HttpStatus,
   Logger,
 } from '@nestjs/common';
 import type { ApiError } from '@shelfmark/contracts';
 import type { Request, Response } from 'express';
+import { TunnelUpstreamException } from '../../monitoring/tunnel-upstream.exception';
 import { reportException } from '../../monitoring/report-exception';
 import { REQUEST_ID_LOCAL } from '../request-id/request-id.middleware';
 
@@ -76,10 +76,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger(AllExceptionsFilter.name);
 
   constructor(
-    private readonly report: (exception: unknown, requestId: string) => void = reportException,
+    private readonly report: (
+      exception: unknown,
+      requestId: string,
+    ) => Promise<void> = reportException,
   ) {}
 
-  catch(exception: unknown, host: ArgumentsHost): void {
+  async catch(exception: unknown, host: ArgumentsHost): Promise<void> {
     const http = host.switchToHttp();
     const req = http.getRequest<Request>();
     const res = http.getResponse<Response>();
@@ -93,14 +96,19 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const line = `${req.method} ${req.path} ${statusCode} ${requestId}`;
     if (statusCode >= 500) {
       this.logger.error(line, exception instanceof Error ? exception.stack : String(exception));
-      // Only server faults reach Sentry (client errors are noise). A failing Sentry tunnel is
-      // not reported back to Sentry. Scrubbing happens in the SDK's beforeSend.
-      if (!(exception instanceof BadGatewayException)) this.report(exception, requestId);
     } else {
       this.logger.warn(line);
     }
 
     const body: ApiError = { statusCode, error, message, requestId };
     res.status(statusCode).json(body);
+
+    // After the response is out: only server faults reach Sentry (client errors are noise), the
+    // tunnel's own upstream failure is not reported back to Sentry, and delivery is awaited
+    // (bounded) because the function may freeze once the response is sent. Scrubbing happens in
+    // the SDK's beforeSend.
+    if (statusCode >= 500 && !(exception instanceof TunnelUpstreamException)) {
+      await this.report(exception, requestId);
+    }
   }
 }

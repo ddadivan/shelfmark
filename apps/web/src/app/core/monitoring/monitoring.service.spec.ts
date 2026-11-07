@@ -36,7 +36,10 @@ describe('MonitoringService', () => {
     service.report(new Error('late'));
     expect(loader).not.toHaveBeenCalled();
     expect(reporter).not.toHaveBeenCalled();
-    expect(fetchMock).toHaveBeenCalledWith('/api/monitoring/config', expect.anything());
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/monitoring/config',
+      expect.objectContaining({ credentials: 'omit' }),
+    );
   });
 
   it.each([
@@ -64,7 +67,7 @@ describe('MonitoringService', () => {
     const early = new Error('early');
     service.report(early);
     await service.start();
-    expect(loader).toHaveBeenCalledWith(config);
+    expect(loader).toHaveBeenCalledWith(config, '/api/monitoring/tunnel');
     expect(reporter).toHaveBeenCalledWith(early);
 
     const late = new Error('late');
