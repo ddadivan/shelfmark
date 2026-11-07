@@ -15,8 +15,12 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
     test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
     test.use({ colorScheme });
 
-    test.beforeEach(async ({ page }) => {
+    test.beforeEach(async ({ page, context }) => {
       await seedSession(page);
+      // Opened links go to external hosts: answer them locally so the popup commits at once.
+      await context.route('**/example.com/**', (route) =>
+        route.fulfill({ contentType: 'text/html', body: '<title>ok</title>' }),
+      );
     });
 
     /** Waits for the enter animations: axe measures contrast on the painted colors. */
@@ -108,7 +112,8 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
         const opened = context.waitForEvent('page');
         await searchField(page).press('Enter');
 
-        expect((await opened).url()).toContain('example.com/recipes/pasta');
+        const popup = await opened;
+        await popup.waitForURL(/example\.com\/recipes\/pasta/);
         await expect(searchField(page)).toHaveCount(0);
       });
 
@@ -129,7 +134,8 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
         // Best effort: the browser decides whether a modified click opens a background tab.
         await searchField(page).press('Control+Enter');
 
-        expect((await opened).url()).toContain('example.com/recipes/pasta');
+        const popup = await opened;
+        await popup.waitForURL(/example\.com\/recipes\/pasta/);
         await expect(searchField(page)).toBeVisible();
       });
 
