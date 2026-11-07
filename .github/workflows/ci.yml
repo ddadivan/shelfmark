@@ -127,18 +127,17 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: .nx/cache
-          key: nx-lighthouse-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
-          restore-keys: |
-            nx-lighthouse-${{ runner.os }}-
       - run: npm ci
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
-      # @lhci/cli is run through npx at an exact version, not installed as a dependency: it pulls
-      # nine high `npm audit` advisories (puppeteer-core, proxy-agent, basic-ftp) that would turn
-      # the required `npm-audit` job red. Config and budgets: apps/web-e2e/lighthouserc.cjs.
+      # @lhci/cli lives in its own lockfile (tools/lighthouse, ADR 0028): its dependency tree has
+      # high npm audit advisories that must not reach the root tree or the required npm-audit job.
+      - name: Install Lighthouse CI (install scripts off)
+        run: npm ci --ignore-scripts --prefix tools/lighthouse
+      # Advisories stay visible without failing the job.
+      - name: Audit Lighthouse CI dependencies
+        continue-on-error: true
+        run: npm audit --prefix tools/lighthouse --audit-level=high
       - name: Lighthouse CI
         run: npx nx run web-e2e:lighthouse --output-style=static
       - if: always()

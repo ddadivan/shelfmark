@@ -16,14 +16,15 @@ module.exports = {
       url: paths.map((path) => `${origin}${path}`),
       numberOfRuns: 3,
       // Serves the already built `e2e` bundle; the Nx target builds it first (cached).
+      // Nested `nx` call is intentional: lhci starts and stops this server around its runs.
       startServerCommand: `npx nx run web:serve-static:e2e --port=${port}`,
-      startServerReadyPattern: 'Listening on',
+      startServerReadyPattern: 'Available on',
       startServerReadyTimeout: 180000,
       // Same Chromium Playwright installs for e2e (CHROME_PATH overrides).
       chromePath: process.env.CHROME_PATH || chromium.executablePath(),
       settings: {
-        // Sandbox is unavailable for root / CI containers; the page under test is our own build.
-        chromeFlags: '--no-sandbox --headless=new',
+        // CI runners have no user namespace sandbox; locally keep it on.
+        chromeFlags: process.env.CI ? '--no-sandbox --headless=new' : '--headless=new',
       },
     },
     assert: {

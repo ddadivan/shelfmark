@@ -23,7 +23,7 @@ Every PR must be checked automatically and `main` may change only through a gree
 - **`main` ruleset** (`~DEFAULT_BRANCH`, active, no bypass actors): PR required with 0 approvals and squash merge only; required status checks `lint-test-build`, `e2e`, `npm-audit`, `gitleaks` bound to the GitHub Actions app, branch must be up to date; code scanning rule for CodeQL (errors, security high or higher); no deletion, no force push, linear history. Repository setting "require actions pinned to a SHA" on.
 - An `npm audit` failure is fixed by upgrading or an exact `overrides` entry, never by lowering `--audit-level` or adding `--omit=dev`. If no fix exists, the exception is a new ADR.
 
-- **Non-required `lighthouse` job** (issue #111): Lighthouse CI (`@lhci/cli`, exact version via `npx` in the `web-e2e:lighthouse` target, config in `apps/web-e2e/lighthouserc.cjs`) audits the `e2e` static build with Playwright's Chromium. Assertions: performance, accessibility and best-practices >= 0.9, CLS <= 0.1 (PROJECT.md section 10.1). Reports go to a filesystem artifact, no external upload. It is not in the ruleset; the author decides when to make it required. `@lhci/cli` is not a devDependency because it adds nine high `npm audit` findings, which would fail the required `npm-audit` job; it has no install scripts.
+- **Non-required `lighthouse` job** (issue #111): Lighthouse CI on the `e2e` static build, not in the ruleset; tooling exception in [0028](0028-lighthouse-ci-isolated-lockfile.md).
 
 ## Consequences
 

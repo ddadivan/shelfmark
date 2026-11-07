@@ -9,8 +9,9 @@
     "lighthouse": {
       "executor": "nx:run-commands",
       "dependsOn": ["web:build:e2e"],
+      "cache": false,
       "options": {
-        "command": "npx --yes @lhci/cli@0.16.0 autorun --config=apps/web-e2e/lighthouserc.cjs",
+        "command": "node tools/lighthouse/run.mjs",
         "cwd": "{workspaceRoot}"
       }
     },
