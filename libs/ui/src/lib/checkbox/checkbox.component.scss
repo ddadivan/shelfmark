@@ -98,6 +98,11 @@
 
 .ui-checkbox__error {
   color: var(--danger);
+
+  // The live region stays mounted; while empty it must not add the flex gap below the label.
+  &:empty {
+    margin-block-start: rem(-2px);
+  }
 }
 
 // While an error shows the hint stays in the DOM for `aria-describedby`, like the field shell.

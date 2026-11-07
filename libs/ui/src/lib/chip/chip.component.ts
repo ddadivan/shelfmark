@@ -101,7 +101,6 @@ export class ChipComponent {
       this.removable() &&
       !this.disabled() &&
       !(event.target instanceof Element && event.target.closest('.ui-chip__menu')) &&
-      !(event.target instanceof Element && event.target.closest('.ui-chip__menu')) &&
       (event.key === KEYBOARD_KEY.Delete || event.key === KEYBOARD_KEY.Backspace)
     ) {
       event.preventDefault();

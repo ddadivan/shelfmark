@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { disabled, form, FormField, required } from '@angular/forms/signals';
 import { describe, expect, it } from 'vitest';
 import { axeViolations } from '../../testing/axe';
+import { compileScss } from '../../testing/scss';
 import { CheckboxComponent } from './checkbox.component';
 
 function setup(inputs: Record<string, unknown> = {}) {
@@ -133,6 +134,13 @@ describe('CheckboxComponent', () => {
     expect(host.querySelector('.ui-checkbox__error')).toBe(region);
     expect(region?.textContent).toBe('Oops');
     expect(host.querySelector('.ui-checkbox__hint--hidden')).not.toBeNull();
+  });
+
+  it('cancels the flex gap of the empty error region (compiled CSS)', () => {
+    const css = compileScss('lib/checkbox/checkbox.component.scss');
+    expect(css).toMatch(/\.ui-checkbox__error:empty\s*{[^}]*margin-block-start: -0\.125rem/);
+    expect(css).toMatch(/:host\s*{[^}]*gap: 0\.125rem/);
+    expect(css).not.toMatch(/\.ui-checkbox__error[^{]*{[^}]*display: none/);
   });
 
   it('has no axe violations in any state', async () => {

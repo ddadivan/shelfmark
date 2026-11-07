@@ -53,7 +53,7 @@
   border: 0;
   border-radius: var(--radius-full);
 
-  // The inline-end side stops at the button edge: the remove button or the chip end is next.
+  // The right side (physical inset) stops at the button edge: the remove button or the chip end is next.
   @include hit-area(-6px 0 -6px -4px, -14px 0 -14px -4px);
 
   @media (hover: hover) {
