@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { COLOR_SCHEME } from './models/color-scheme.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { seedSession } from './support/mock-session';
+import { openSidebar } from './support/sidebar';
 
 // Mirror MOCK_ID.FolderReading and its name, and the mock tag (apps/web and libs/shared/contracts);
 // the e2e project cannot import from them.
@@ -14,6 +15,7 @@ const SCREENS = [
   '/unsorted',
   '/favorites',
   `/folders/${READING.id}`,
+  `/links?tag=${DOCS}`,
   '/settings',
 ] as const;
 const WIDTHS = [360, 390, 768] as const;
@@ -129,6 +131,82 @@ test.describe('mobile layout (mock API)', () => {
     expect(await overflow(page)).toBeLessThanOrEqual(0);
   });
 
+  test('a long press on a folder opens its menu', async ({ page }) => {
+    await page.goto('/links');
+    await openDrawer(page);
+    const row = library(page).getByRole('treeitem', { name: new RegExp(`^${READING.name}\\b`) });
+
+    await row.dispatchEvent('pointerdown', { pointerType: 'touch', isPrimary: true, pointerId: 8 });
+    await page.waitForTimeout(LONG_PRESS_MS);
+    await row.dispatchEvent('pointerup', { pointerType: 'touch', isPrimary: true, pointerId: 8 });
+
+    await expect(page.getByRole('menuitem', { name: 'Rename' })).toBeVisible();
+    await expect(page.getByRole('menuitem', { name: 'New subfolder' })).toBeVisible();
+    await expect(page).toHaveURL('/links');
+  });
+
+  test('the "Recently opened" row opens a sheet and focus ends on the menu button', async ({
+    page,
+  }) => {
+    await page.goto('/links');
+    await openDrawer(page);
+
+    await library(page).getByRole('treeitem', { name: 'Recently opened' }).click();
+
+    await expect(drawer(page)).toHaveCount(0);
+    const sheet = page.getByRole('dialog', { name: 'Recently opened' });
+    await expect(sheet).toBeVisible();
+    expect((await sheet.boundingBox())?.width).toBe(page.viewportSize()?.width);
+    expect(await overflow(page)).toBeLessThanOrEqual(0);
+    await page.keyboard.press('Escape');
+    await expect(sheet).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Open menu' })).toBeFocused();
+  });
+
+  test('the drawer footer switches the theme and opens settings', async ({ page }) => {
+    await page.goto('/links');
+    await openDrawer(page);
+    const html = page.locator('html');
+    const before = await html.getAttribute('data-theme');
+
+    await drawer(page).getByRole('button', { name: 'Switch theme' }).click();
+    await expect(html).not.toHaveAttribute('data-theme', before ?? '');
+
+    await drawer(page).getByRole('button', { name: 'Settings' }).click();
+    await expect(page).toHaveURL('/settings');
+    await expect(drawer(page)).toHaveCount(0);
+  });
+
+  test('the header is menu, logo, search, account in that order and the account has no chevron', async ({
+    page,
+  }) => {
+    await page.goto('/links');
+    await expect(page.getByRole('button', { name: 'Account menu' })).toBeVisible();
+
+    const names = await page
+      .getByRole('banner')
+      .getByRole('button')
+      .evaluateAll((buttons) => buttons.map((b) => b.getAttribute('aria-label')));
+
+    expect(names).toEqual(['Open menu', 'Search', 'Account menu']);
+    await expect(page.getByRole('banner').locator('ui-icon[name="chevron-down"]')).toHaveCount(0);
+  });
+
+  test('the add FAB is fixed at the bottom end and does not cover the last row', async ({
+    page,
+  }) => {
+    await page.goto('/links');
+    const fab = page.getByRole('button', { name: 'Add link' });
+
+    const box = await fab.boundingBox();
+    const view = page.viewportSize();
+    expect(box?.width).toBe(56);
+    expect((view?.width ?? 0) - ((box?.x ?? 0) + (box?.width ?? 0))).toBeLessThanOrEqual(24);
+    expect((view?.height ?? 0) - ((box?.y ?? 0) + (box?.height ?? 0))).toBeLessThanOrEqual(48);
+    await page.mouse.wheel(0, 100000);
+    await expect(page.getByRole('button', { name: 'Add link' })).toBeVisible();
+  });
+
   test('adds a link with the floating button', async ({ page }) => {
     await page.goto('/links');
 
@@ -190,6 +268,32 @@ test.describe('mobile layout (mock API)', () => {
         expect(await overflow(page)).toBeLessThanOrEqual(0);
       });
     }
+
+    test(`the dialogs fit ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 780 });
+      await page.goto('/links');
+      await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+
+      await page.getByRole('button', { name: 'Add link' }).click();
+      await expect(page.getByRole('dialog', { name: 'Add link' })).toBeVisible();
+      await settled(page);
+      expect(await overflow(page)).toBeLessThanOrEqual(0);
+      await page.keyboard.press('Escape');
+      await expect(page.getByRole('dialog')).toHaveCount(0);
+
+      await page.getByRole('button', { name: 'Search', exact: true }).click();
+      await expect(page.getByRole('dialog')).toBeVisible();
+      await settled(page);
+      expect(await overflow(page)).toBeLessThanOrEqual(0);
+      await page.keyboard.press('Escape');
+      await expect(page.getByRole('dialog')).toHaveCount(0);
+
+      await openSidebar(page);
+      await page.getByRole('button', { name: 'New folder' }).click();
+      await expect(page.getByRole('dialog', { name: 'New folder' })).toBeVisible();
+      await settled(page);
+      expect(await overflow(page)).toBeLessThanOrEqual(0);
+    });
 
     test(`the open drawer fits ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 780 });

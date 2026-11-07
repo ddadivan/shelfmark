@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { COLOR_SCHEME } from './models/color-scheme.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { seedSession } from './support/mock-session';
+import { closeSidebar, gotoWithSidebar, openSidebar } from './support/sidebar';
 
 // Mirror MOCK_NAME.TagDocs / TagRecipes and MOCK_TAG_NAME (apps/web and libs/shared/contracts);
 // the e2e project cannot import from them.
@@ -45,13 +46,8 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
     }
 
     test.describe('sidebar', () => {
-      test.skip(
-        ({ isMobile }) => isMobile,
-        'on the phone the sidebar is the drawer, covered in mobile.spec.ts',
-      );
-
       test('lists the tags below the folders', async ({ page }) => {
-        await page.goto('/links');
+        await gotoWithSidebar(page, '/links');
 
         await expect(sidebar(page).getByRole('heading', { name: 'Tags' })).toBeVisible();
         await expect(chip(page, DOCS)).toBeVisible();
@@ -61,7 +57,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
       test('adds a tag with Enter, refuses a duplicate ignoring case and cancels with Esc', async ({
         page,
       }) => {
-        await page.goto('/links');
+        await gotoWithSidebar(page, '/links');
 
         await addTag(page, 'winter sale');
         await expect(chip(page, 'winter-sale')).toBeVisible();
@@ -74,7 +70,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
       });
 
       test('shows an error when creating fails', async ({ page }) => {
-        await page.goto('/links');
+        await gotoWithSidebar(page, '/links');
 
         await addTag(page, CREATE_FAILS);
 
@@ -82,7 +78,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
       });
 
       test('shows the 8 most used tags and folds the rest behind "+ N more"', async ({ page }) => {
-        await page.goto('/links');
+        await gotoWithSidebar(page, '/links');
         const visible = sidebar(page).getByRole('list', { name: 'Tags' }).getByRole('button');
         // Make sure there are more than the top count.
         for (let n = 0; n < TAG_TOP_COUNT; n++) {
@@ -105,7 +101,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
       test('a click on a tag opens the links with that tag, and the filter can be cleared', async ({
         page,
       }) => {
-        await page.goto('/links');
+        await gotoWithSidebar(page, '/links');
 
         await chip(page, DOCS).click();
 
@@ -120,7 +116,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
       test('the menu offers show, rename, merge and delete from a right click', async ({
         page,
       }, info) => {
-        await page.goto('/links');
+        await gotoWithSidebar(page, '/links');
 
         await chip(page, DOCS).click({ button: 'right' });
 
@@ -133,7 +129,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
       });
 
       test('the "…" button opens the same menu', async ({ page }) => {
-        await page.goto('/links');
+        await gotoWithSidebar(page, '/links');
 
         // The button is clipped away until the chip is hovered.
         await chip(page, DOCS).hover();
@@ -143,7 +139,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
       });
 
       test('renames a tag in place', async ({ page }) => {
-        await page.goto('/links');
+        await gotoWithSidebar(page, '/links');
 
         await openTagMenu(page, DOCS, 'Rename');
         const field = sidebar(page).getByRole('textbox', { name: 'Tag name' });
@@ -155,7 +151,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
       });
 
       test('a rename into an existing name offers to merge instead', async ({ page }) => {
-        await page.goto('/links');
+        await gotoWithSidebar(page, '/links');
 
         await openTagMenu(page, DOCS, 'Rename');
         const field = sidebar(page).getByRole('textbox', { name: 'Tag name' });
@@ -172,7 +168,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
       });
 
       test('merges through the dialog', async ({ page }, info) => {
-        await page.goto('/links');
+        await gotoWithSidebar(page, '/links');
 
         await openTagMenu(page, DOCS, 'Merge into another tag…');
         const dialog = page.getByRole('dialog', { name: /Merge/ });
@@ -189,7 +185,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
       });
 
       test('deletes after a confirmation, and Undo brings the tag back', async ({ page }, info) => {
-        await page.goto('/links');
+        await gotoWithSidebar(page, '/links');
 
         await openTagMenu(page, DOCS, 'Delete tag');
         const dialog = page.getByRole('alertdialog');
@@ -199,12 +195,15 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
         await dialog.getByRole('button', { name: 'Delete tag' }).click();
 
         await expect(chip(page, DOCS)).toHaveCount(0);
+        // On a phone the open drawer covers the toast and hides the page.
+        await closeSidebar(page);
         await page.getByRole('button', { name: 'Undo' }).click();
+        await openSidebar(page);
         await expect(chip(page, DOCS)).toBeVisible();
       });
 
       test('the inline add field has no axe violations', async ({ page }, info) => {
-        await page.goto('/links');
+        await gotoWithSidebar(page, '/links');
 
         await sidebar(page).getByRole('button', { name: 'New tag' }).click();
         await expect(sidebar(page).getByRole('textbox', { name: 'New tag' })).toBeFocused();
