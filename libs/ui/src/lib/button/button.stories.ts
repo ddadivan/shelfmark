@@ -21,6 +21,7 @@ const meta: Meta<ButtonArgs> = {
     size: BUTTON_SIZE.Md,
     type: BUTTON_TYPE.Button,
     iconOnly: false,
+    fab: false,
     disabled: false,
     loading: false,
     ripple: true,
@@ -49,6 +50,7 @@ const meta: Meta<ButtonArgs> = {
         [iconLeft]="iconLeft"
         [iconRight]="iconRight"
         [iconOnly]="iconOnly"
+        [fab]="fab"
         [ariaLabel]="ariaLabel"
         [disabled]="disabled"
         [loading]="loading"
@@ -89,6 +91,17 @@ export const IconOnly: Story = {
     iconLeft: 'settings',
     ariaLabel: 'Settings',
     variant: BUTTON_VARIANT.Ghost,
+  },
+};
+
+/** Floating action button (phone "Add link"): 3.5rem, popover shadow, 24px icon. */
+export const Fab: Story = {
+  args: {
+    fab: true,
+    iconOnly: true,
+    iconLeft: 'add',
+    ariaLabel: 'Add link',
+    variant: BUTTON_VARIANT.Primary,
   },
 };
 
@@ -178,6 +191,7 @@ const panel = (theme: Theme) => `
         <ui-button [variant]="v" [iconOnly]="true" iconLeft="settings" ariaLabel="Settings" />
         <ui-button [variant]="v" [disabled]="true">Disabled</ui-button>
         <ui-button [variant]="v" [loading]="true">Saving…</ui-button>
+        <ui-button [variant]="v" [fab]="true" [iconOnly]="true" iconLeft="add" ariaLabel="Add link" />
         <ui-button [variant]="v" [loading]="true" [iconOnly]="true" iconLeft="settings" ariaLabel="Saving" />
         <ui-button [variant]="v" href="#links" iconRight="external">Link</ui-button>
         <ui-button [variant]="v" href="#links" [disabled]="true">Disabled link</ui-button>

@@ -70,4 +70,21 @@ describe('ButtonComponent hitArea', () => {
     expect(css).toMatch(/\.ui-button--hit-overlay::after\s*{[^}]*inset: -0\.375rem/);
     expect(css).toMatch(/\.ui-button--hit-overlay:disabled::after[^{]*{[^}]*pointer-events: none/);
   });
+
+  it('styles: every size reaches 44px on coarse pointers, except the overlay hit area', () => {
+    const css = compileScss('lib/button/button.component.scss');
+    const coarse = mediaBlocks(css, /pointer:\s*coarse/).join('\n');
+
+    expect(coarse).toMatch(
+      /\.ui-button:not\(\.ui-button--hit-overlay\)\s*{[^}]*min-height: 2\.75rem/,
+    );
+  });
+
+  it('styles: the fab is 3.5rem with the popover shadow', () => {
+    const css = compileScss('lib/button/button.component.scss');
+
+    expect(css).toMatch(
+      /\.ui-button\.ui-button--fab\s*{[^}]*width: 3\.5rem;[^}]*height: 3\.5rem;[^}]*box-shadow: var\(--shadow-popover\)/,
+    );
+  });
 });

@@ -79,6 +79,8 @@ export class ButtonComponent implements UiFocusTarget {
    * card). The overlay has no ripple (the ripple host clips).
    */
   readonly hitArea = input<ButtonHitArea>(BUTTON_HIT_AREA.Grow);
+  /** Floating action button: 3.5rem square with the popover shadow; use with `iconOnly`. */
+  readonly fab = input(false, { transform: booleanAttribute });
   /** Press ripple; `[ripple]="false"` opts out. */
   readonly ripple = input(true, { transform: booleanAttribute });
   /** `aria-expanded` of the inner element; unset renders no attribute. */
@@ -120,13 +122,18 @@ export class ButtonComponent implements UiFocusTarget {
     if (this.iconOnly()) {
       classes.push('ui-button--icon');
     }
+    if (this.fab()) {
+      classes.push('ui-button--fab');
+    }
     if (this.hasOverlay()) {
       classes.push('ui-button--hit-overlay');
     }
     return classes.join(' ');
   });
 
-  protected readonly iconSize = computed(() => (this.size() === BUTTON_SIZE.Lg ? 20 : 16));
+  protected readonly iconSize = computed(() =>
+    this.fab() ? 24 : this.size() === BUTTON_SIZE.Lg ? 20 : 16,
+  );
   protected readonly singleIcon = computed(() => this.iconLeft() ?? this.iconRight());
 
   private readonly injector = inject(Injector);
