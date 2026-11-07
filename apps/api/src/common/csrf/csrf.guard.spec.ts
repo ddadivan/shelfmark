@@ -48,6 +48,27 @@ describe('CsrfGuard', () => {
     ).toBe(true);
   });
 
+  it('rejects Sec-Fetch-Site cross-site, even with a trusted Origin', () => {
+    expect(() => run('POST', { 'sec-fetch-site': 'cross-site' })).toThrow(ForbiddenException);
+    expect(() => run('DELETE', { origin: TRUSTED, 'sec-fetch-site': 'cross-site' })).toThrow(
+      ForbiddenException,
+    );
+  });
+
+  it.each(['same-origin', 'none'])('accepts Sec-Fetch-Site %s without an Origin', (site) => {
+    expect(run('POST', { 'sec-fetch-site': site })).toBe(true);
+  });
+
+  it('rejects same-site (or an unknown value) without an Origin, accepts it with a trusted one', () => {
+    expect(() => run('POST', { 'sec-fetch-site': 'same-site' })).toThrow(ForbiddenException);
+    expect(() => run('POST', { 'sec-fetch-site': 'weird' })).toThrow(ForbiddenException);
+    expect(run('POST', { origin: TRUSTED, 'sec-fetch-site': 'same-site' })).toBe(true);
+  });
+
+  it('does not check Sec-Fetch-Site on safe methods', () => {
+    expect(run('GET', { 'sec-fetch-site': 'cross-site' })).toBe(true);
+  });
+
   it('ignores an explicit zero-length body', () => {
     expect(run('POST', { 'content-length': '0', 'content-type': 'text/plain' })).toBe(true);
   });

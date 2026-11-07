@@ -34,7 +34,7 @@ export function configureApp(app: NestExpressApplication, options: ConfigureAppO
   app.use(
     createAuthRateLimitMiddleware(
       app.get(ThrottlerStorage, { strict: false }),
-      shouldTrustProxyHeaders(options.isProduction),
+      shouldTrustProxyHeaders(),
       options.authRateLimit ?? RATE_LIMIT.Auth,
     ),
   );

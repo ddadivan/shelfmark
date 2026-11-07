@@ -7,6 +7,8 @@ export interface AuthTestAppOptions {
   env?: Record<string, string | undefined>;
   /** Passed to `configureApp` (helmet). Default: false. */
   isProduction?: boolean;
+  /** Default per-IP limit of every route. Default: effectively unlimited. */
+  defaultRateLimit?: RateLimitPreset;
   /** Auth-route limit. Default: effectively unlimited, so sign-in-heavy specs do not trip it. */
   authRateLimit?: RateLimitPreset;
   /** Register Google and GitHub with random per-run client credentials. Default: true. */

@@ -31,6 +31,17 @@ describe('clientIp', () => {
     expect(clientIp(request, false)).toBe('192.0.2.9');
   });
 
+  it.each(['::ffff:203.0.113.7', '::FFFF:203.0.113.7'])(
+    'unwraps the IPv4-mapped address %s so IPv4 users keep separate buckets',
+    (mapped) => {
+      expect(clientIp(req({}, mapped), false)).toBe('203.0.113.7');
+      expect(clientIp(req({ 'x-forwarded-for': mapped }), true)).toBe('203.0.113.7');
+      expect(clientIp(req({}, '::ffff:203.0.113.8'), false)).not.toBe(
+        clientIp(req({}, mapped), false),
+      );
+    },
+  );
+
   it('groups IPv6 addresses by their /64', () => {
     const a = clientIp(req({}, '2001:db8:1:2:aaaa::1'), false);
     const b = clientIp(req({}, '2001:db8:1:2:bbbb::2'), false);
@@ -46,10 +57,12 @@ describe('clientIp', () => {
 });
 
 describe('shouldTrustProxyHeaders', () => {
-  it('trusts the headers on Vercel and outside production only', () => {
-    expect(shouldTrustProxyHeaders(true, { VERCEL: '1' })).toBe(true);
-    expect(shouldTrustProxyHeaders(false, {})).toBe(true);
-    expect(shouldTrustProxyHeaders(true, {})).toBe(false);
+  it('trusts the headers on Vercel or with the explicit opt-in only', () => {
+    expect(shouldTrustProxyHeaders({ VERCEL: '1' })).toBe(true);
+    expect(shouldTrustProxyHeaders({ TRUST_PROXY_HEADERS: '1' })).toBe(true);
+    expect(shouldTrustProxyHeaders({})).toBe(false);
+    expect(shouldTrustProxyHeaders({ NODE_ENV: 'development' })).toBe(false);
+    expect(shouldTrustProxyHeaders({ TRUST_PROXY_HEADERS: 'true' })).toBe(false);
   });
 });
 

@@ -22,8 +22,8 @@ export function createAuthRateLimitMiddleware(
   storage: ThrottlerStorage,
   trustProxyHeaders: boolean,
   preset: RateLimitPreset = RATE_LIMIT.Auth,
-): (req: Request, res: Response, next: NextFunction) => void {
-  return (req, res, next) => {
+): (req: Request, res: Response, next: NextFunction) => Promise<void> {
+  return async (req, res, next) => {
     if (!req.path.startsWith('/api/auth') || req.path === SESSION_PATH) {
       next();
       return;
@@ -32,18 +32,23 @@ export function createAuthRateLimitMiddleware(
       .update(`${AUTH_THROTTLER_NAME}-${clientIp(req, trustProxyHeaders)}`)
       .digest('hex');
     const { limit, ttl } = preset;
-    storage.increment(key, ttl, limit, ttl, AUTH_THROTTLER_NAME).then((record) => {
-      if (!record.isBlocked) {
-        next();
-        return;
-      }
-      res.setHeader(RETRY_AFTER_HEADER, record.timeToBlockExpire);
-      res.status(TOO_MANY_REQUESTS).json({
-        statusCode: TOO_MANY_REQUESTS,
-        error: 'Too Many Requests',
-        message: RATE_LIMIT_MESSAGE,
-        requestId: String(res.locals[REQUEST_ID_LOCAL] ?? ''),
-      });
-    }, next);
+    let record: Awaited<ReturnType<ThrottlerStorage['increment']>>;
+    try {
+      record = await storage.increment(key, ttl, limit, ttl, AUTH_THROTTLER_NAME);
+    } catch (error: unknown) {
+      next(error);
+      return;
+    }
+    if (!record.isBlocked) {
+      next();
+      return;
+    }
+    res.setHeader(RETRY_AFTER_HEADER, record.timeToBlockExpire);
+    res.status(TOO_MANY_REQUESTS).json({
+      statusCode: TOO_MANY_REQUESTS,
+      error: 'Too Many Requests',
+      message: RATE_LIMIT_MESSAGE,
+      requestId: String(res.locals[REQUEST_ID_LOCAL] ?? ''),
+    });
   };
 }

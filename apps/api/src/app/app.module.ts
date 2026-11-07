@@ -10,7 +10,6 @@ import {
   createRateLimitOptions,
   shouldTrustProxyHeaders,
 } from '../common/rate-limit/rate-limit-options';
-import { readAppConfig } from '../config/app-config';
 import { readAuthConfig } from '../config/auth-config';
 import { HealthModule } from '../health/health.module';
 import { PrismaModule } from '../prisma/prisma.module';
@@ -20,9 +19,7 @@ import { PrismaModule } from '../prisma/prisma.module';
     PrismaModule,
     AuthModule,
     HealthModule,
-    ThrottlerModule.forRoot(
-      createRateLimitOptions(shouldTrustProxyHeaders(readAppConfig().isProduction)),
-    ),
+    ThrottlerModule.forRoot(createRateLimitOptions(shouldTrustProxyHeaders())),
   ],
   providers: [
     // Guards run in registration order, and the order is security-relevant: the rate limiter first,

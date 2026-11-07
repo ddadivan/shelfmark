@@ -31,6 +31,11 @@ class ProbeController {
     return { ok: true };
   }
 
+  @Get('other')
+  other(): { ok: true } {
+    return { ok: true };
+  }
+
   @RateLimit({ limit: 2, ttl: 60_000 })
   @Get('strict')
   strict(): { ok: true } {
@@ -132,6 +137,28 @@ describe('rate limiting over HTTP', () => {
     }
     const res = await request(app.getHttpServer()).get('/api/probe/default').set(VERCEL_IP, ip);
     expect(res.status).toBe(429);
+  });
+
+  it('shares the default bucket across routes: per IP overall, not per route', async () => {
+    const ip = '203.0.113.41';
+    for (let i = 0; i < RATE_LIMIT.Default.limit; i++) {
+      await request(app.getHttpServer()).get('/api/probe/default').set(VERCEL_IP, ip).expect(200);
+    }
+    await request(app.getHttpServer()).get('/api/probe/other').set(VERCEL_IP, ip).expect(429);
+    await request(app.getHttpServer())
+      .get('/api/probe/other')
+      .set(VERCEL_IP, '203.0.113.42')
+      .expect(200);
+  });
+
+  it('keeps a separate bucket per route for @RateLimit overrides', async () => {
+    const ip = '203.0.113.43';
+    await request(app.getHttpServer()).get('/api/probe/default').set(VERCEL_IP, ip).expect(200);
+    await request(app.getHttpServer()).get('/api/probe/strict').set(VERCEL_IP, ip).expect(200);
+    await request(app.getHttpServer()).get('/api/probe/strict').set(VERCEL_IP, ip).expect(200);
+    await request(app.getHttpServer()).get('/api/probe/strict').set(VERCEL_IP, ip).expect(429);
+    // The strict route's counter does not consume the default bucket.
+    await request(app.getHttpServer()).get('/api/probe/other').set(VERCEL_IP, ip).expect(200);
   });
 
   it('never limits a route marked @SkipThrottle', async () => {

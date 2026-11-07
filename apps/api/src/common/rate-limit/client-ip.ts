@@ -11,9 +11,18 @@ function headerValue(headers: Record<string, unknown>, name: string): string | u
   return typeof value === 'string' ? value : undefined;
 }
 
+const IPV4_MAPPED_PREFIX = '::ffff:';
+
+/** `::ffff:203.0.113.7` is the IPv4 client 203.0.113.7: unwrap it so IPv4 users do not share one /64. */
+function unwrapMapped(ip: string): string {
+  if (!ip.toLowerCase().startsWith(IPV4_MAPPED_PREFIX)) return ip;
+  const rest = ip.slice(IPV4_MAPPED_PREFIX.length);
+  return isIP(rest) === 4 ? rest : ip;
+}
+
 function validIp(candidate: string | undefined): string | undefined {
   const trimmed = candidate?.trim();
-  return trimmed !== undefined && isIP(trimmed) !== 0 ? trimmed : undefined;
+  return trimmed !== undefined && isIP(trimmed) !== 0 ? unwrapMapped(trimmed) : undefined;
 }
 
 /**
