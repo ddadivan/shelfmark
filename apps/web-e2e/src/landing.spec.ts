@@ -1,4 +1,4 @@
-import { expect, type Page, test } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { COLOR_SCHEME } from './models/color-scheme.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { LANDING_HEADLINE } from './models/landing-headline.const';
@@ -166,6 +166,79 @@ test.describe('landing scenes and reveals', () => {
   });
 });
 
+test.describe('landing chat motion', () => {
+  const messages = (page: Page): Locator =>
+    page.getByTestId('landing-chat-messages').getByRole('listitem');
+  const track = (page: Page): Locator => page.getByTestId('landing-chat-track');
+  const readStep = (feed: Locator): Promise<string> =>
+    feed.evaluate((el) => el.style.getPropertyValue('--landing-chat-step'));
+
+  test('the feed keeps rising while the block is on screen', async ({ page }) => {
+    await page.goto('/');
+    const feed = track(page);
+    await expect(feed).toBeAttached();
+
+    await expect.poll(() => readStep(feed), { timeout: 8000 }).not.toBe('0');
+  });
+
+  test('the pause button stops the feed and a second press resumes it', async ({ page }) => {
+    await page.goto('/');
+    const feed = track(page);
+    const pause = page.getByRole('button', { name: 'Pause the feed' });
+    await expect.poll(() => readStep(feed), { timeout: 8000 }).not.toBe('0');
+
+    await pause.click();
+    await expect(pause).toHaveAttribute('aria-pressed', 'true');
+    // Move the pointer away from the phone so only the button can be holding the feed.
+    await page.mouse.move(0, 0);
+    const frozen = await readStep(feed);
+    await page.waitForTimeout(4000);
+    expect(await readStep(feed)).toBe(frozen);
+
+    await pause.click();
+    await expect(pause).toHaveAttribute('aria-pressed', 'false');
+    await expect.poll(() => readStep(feed), { timeout: 8000 }).not.toBe(frozen);
+  });
+
+  test('"Put them on the shelf" clears the messages and lands the links', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Put them on the shelf' }).click();
+
+    await expect(page.getByText('Notes come from your own messages.')).toBeVisible();
+    await expect(page.getByTestId('landing-chat-shelf-card')).toHaveCount(5);
+    await expect(track(page)).toHaveCount(0);
+  });
+
+  test.describe('prefers-reduced-motion', () => {
+    test.use({ reducedMotion: 'reduce' });
+
+    test('shows the static final frame: five messages, no moving feed', async ({ page }) => {
+      await page.goto('/');
+
+      await expect(messages(page)).toHaveCount(5);
+      await expect(track(page)).toHaveCount(0);
+    });
+
+    test('swaps to the shelf at once, axe stays clean and nothing scrolls sideways at 360px', async ({
+      page,
+    }, testInfo) => {
+      await page.setViewportSize({ width: 360, height: 780 });
+      await page.goto('/');
+      await expect(messages(page)).toHaveCount(5);
+      await expectNoBlockingViolations(page, testInfo);
+
+      await page.getByRole('button', { name: 'Put them on the shelf' }).click();
+      await expect(page.getByText('Notes come from your own messages.')).toBeVisible();
+      await expectNoBlockingViolations(page, testInfo);
+
+      const overflow = await page.evaluate<number>(
+        '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
+      );
+      expect(overflow).toBeLessThanOrEqual(0);
+    });
+  });
+});
+
 /**
  * Scrolls the page top to bottom in steps, so every section is seen by its reveal observer (an
  * off-screen section stays hidden until it scrolls in; there is no timeout that reveals it).
@@ -216,6 +289,10 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
         await gotoLandingLoaded(page);
         await page.getByRole('button', { name: 'Put them on the shelf' }).click();
         await expect(page.getByText('Notes come from your own messages.')).toBeVisible();
+        // The cards fade in while they land; axe reads the colours of a finished frame.
+        await page.evaluate(
+          'Promise.all(document.getAnimations().map((animation) => animation.finished)).then(() => undefined)',
+        );
         await page.evaluate('document.fonts.ready.then(() => undefined)');
 
         await expectNoBlockingViolations(page, testInfo);
