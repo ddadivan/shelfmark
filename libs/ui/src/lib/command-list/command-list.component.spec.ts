@@ -176,12 +176,23 @@ describe('CommandListComponent', () => {
     expect(activeValue()).toBe('y');
     host.extra.set(['x']);
     await settle(fixture);
-    expect(options().some((o) => o.id === input().getAttribute('aria-activedescendant'))).toBe(
-      true,
-    );
+    expect(activeValue()).toBe('Work');
     await press(KEYBOARD_KEY.Enter);
-    expect(host.chosen().map((c) => c.value)).toEqual([activeValue() === 'Work' ? 'f' : 'x']);
-    expect(host.chosen()).toHaveLength(1);
+    expect(host.chosen()).toEqual([{ value: 'f', background: false }]);
+  });
+
+  it('resets to the top when results arrive after the query, once', async () => {
+    host.query.set('ng');
+    await settle(fixture);
+    await press(KEYBOARD_KEY.ArrowDown);
+    expect(activeValue()).toBe('NgRx');
+    host.extra.set(['x']);
+    await settle(fixture);
+    expect(activeValue()).toBe('Signal');
+    await press(KEYBOARD_KEY.ArrowDown);
+    host.extra.set(['x', 'y']);
+    await settle(fixture);
+    expect(activeValue()).toBe('NgRx');
   });
 
   it('selects the highlighted row after its predecessor was removed', async () => {
@@ -273,6 +284,10 @@ describe('CommandListComponent', () => {
     await press(KEYBOARD_KEY.Enter, { isComposing: true });
     await press(KEYBOARD_KEY.Enter, { keyCode: 229 });
     expect(host.chosen()).toEqual([]);
+    // Negative control: the same Enter without the IME key code chooses.
+    await press(KEYBOARD_KEY.Enter, { keyCode: 13 });
+    expect(host.chosen()).toEqual([{ value: 'a', background: false }]);
+    host.chosen.set([]);
     host.showLinks.set(false);
     host.showFolders.set(false);
     await settle(fixture);

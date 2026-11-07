@@ -102,8 +102,12 @@ export class CommandListComponent {
   constructor() {
     // The active option must always be a row that exists and is enabled: after the items or the
     // query change, a missing or disabled active row is replaced by the first enabled one, and a
-    // new query starts again at the top (the best match comes first).
+    // new query starts again at the top (the best match comes first). Results usually arrive after
+    // the query, so a query change also stays pending until the items next change, which resets
+    // to the top once more.
     let lastQuery = this.query();
+    let lastIds = '';
+    let resetPending = false;
     afterRenderEffect(() => {
       const listbox = this.listbox();
       const items = this.items();
@@ -112,13 +116,21 @@ export class CommandListComponent {
       items.forEach((item) => item.disabled());
       const queryChanged = query !== lastQuery;
       lastQuery = query;
+      const ids = items.map((item) => item.id).join('|');
+      const itemsChanged = ids !== lastIds;
+      lastIds = ids;
+      resetPending = resetPending || queryChanged;
+      const resetToTop = queryChanged || (resetPending && itemsChanged);
+      if (itemsChanged) {
+        resetPending = false;
+      }
       if (!listbox) {
         return;
       }
       untracked(() => {
         const first = items.findIndex((item) => !item.disabled());
         const active = items.find((item) => item.id === listbox.activeDescendant());
-        if (first >= 0 && (queryChanged || !active || active.disabled())) {
+        if (first >= 0 && (resetToTop || !active || active.disabled())) {
           // Aria sorts new options into its collection in a microtask.
           queueMicrotask(() => listbox.gotoIndex(first));
         }
