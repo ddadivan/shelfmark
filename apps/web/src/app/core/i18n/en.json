@@ -17,13 +17,32 @@
       },
       "eyebrow": "Sign in to Shelfmark",
       "privacy": "By continuing you agree to the Privacy policy. We only use your name, email and avatar."
-    }
+    },
+    "signOut": "Sign out"
   },
   "shell": {
-    "signOut": "Sign out"
+    "accountMenu": "Account menu",
+    "settings": "Settings"
   },
   "library": {
     "title": "All links",
     "placeholder": "Your saved links will appear here."
+  },
+  "settings": {
+    "title": "Settings",
+    "back": "Back to links",
+    "account": {
+      "title": "Account"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "theme": {
+        "label": "Theme",
+        "hint": "System follows your device",
+        "system": "System",
+        "light": "Light",
+        "dark": "Dark"
+      }
+    }
   }
 }

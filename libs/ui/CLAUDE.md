@@ -212,6 +212,7 @@ Angular keeps the element until the leave animation ends and a second toggle mid
 - `ui-icon name="…"` draws a symbol from `src/assets/icons/sprite.svg` via `<use href="…#sm-<name>">`. Icons are filled outlines: colour comes from `currentColor`; never ship `stroke`. Sizes 16, 20 or 24 only.
 - The sprite is an external file, not inlined, so the CSP needs no `unsafe-inline`. Its URL is the `ICON_SPRITE_URL` token (default `assets/ui/icons/sprite.svg`); the app maps `libs/ui/src/assets` to `assets/ui`.
 - Add an icon: (1) export a filled-outline SVG, (2) add a `<symbol id="sm-<name>" viewBox="0 0 24 24">` to `sprite.svg` with no `fill`/`stroke`, (3) add `<name>` to `ICON_NAMES` in `lib/icon/models/icon-names.const.ts`. A unit test fails if the two drift apart. Update `docs/design/assets/icons/` too: `libs/ui/src/assets/icons/sprite.svg` must equal `docs/design/assets/icons/sprite.svg` except for the removed root `style="display:none"`, and a unit test fails on drift.
+- Brand-mark exception: `google` and `github` are the only symbols allowed to differ from `docs/design/assets/icons/sprite.svg` and to carry `fill`, and only fixed brand colours, confined to the sprite (GitHub stays `currentColor`, Google has four fixed fills that ignore the host colour). They are listed as `PROVIDER_SYMBOLS` in `lib/icon/icon-names.spec.ts`, which strips them before the design comparison. The large button draws them at 20px (the design draws 18px; sizes stay 16 / 20 / 24).
 
 ## Fonts
 
