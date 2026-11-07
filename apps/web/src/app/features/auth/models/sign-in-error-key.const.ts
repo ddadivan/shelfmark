@@ -10,6 +10,3 @@ export const SIGN_IN_ERROR_KEY = {
   [SIGN_IN_ERROR.AccountNotLinked]: 'auth.signIn.error.notLinked',
   [SIGN_IN_ERROR.UnableToLinkAccount]: 'auth.signIn.error.notLinked',
 } as const satisfies Record<SignInError, string>;
-
-/** Shown for any other `?error=` value. */
-export const SIGN_IN_ERROR_GENERIC_KEY = 'auth.signIn.error.generic';

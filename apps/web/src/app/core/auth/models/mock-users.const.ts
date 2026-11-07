@@ -1,6 +1,4 @@
-import { AUTH_PROVIDER } from '@shelfmark/contracts';
-import type { AuthProvider } from '@shelfmark/contracts';
-import type { AuthUser } from '@shelfmark/contracts';
+import { AUTH_PROVIDER, type AuthProvider, type AuthUser } from '@shelfmark/contracts';
 
 /** Who the mock API signs in for each provider. */
 export const MOCK_USERS: Record<AuthProvider, AuthUser> = {

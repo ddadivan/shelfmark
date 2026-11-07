@@ -1,4 +1,5 @@
 import { expect, Page, test } from '@playwright/test';
+import { AUTH_PROVIDER } from '@shelfmark/contracts';
 import { MOCK_USER, openAccountMenu } from './support/mock-session';
 
 // Same value as REAL_AUTH_API_STORAGE_KEY in apps/web/src/app/core/auth/models/real-auth-api-storage-key.const.ts.
@@ -35,7 +36,7 @@ test.describe('sign-in flow (real auth client, routed API)', () => {
 
     await expect(page).toHaveURL(GOOGLE_AUTHORIZE);
     expect(body).toMatchObject({
-      provider: 'google',
+      provider: AUTH_PROVIDER.Google,
       callbackURL: expect.stringMatching(/\/links$/),
       errorCallbackURL: expect.stringContaining('/sign-in?returnUrl=%2Flinks'),
     });

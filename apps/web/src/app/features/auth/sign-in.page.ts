@@ -8,17 +8,17 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { AUTH_PROVIDER, type AuthProvider } from '@shelfmark/contracts';
 import { ButtonComponent, LogoComponent, NoticeComponent, NOTICE_KIND } from '@shelfmark/ui';
 import { AuthStore } from '../../core/auth/auth.store';
 import { AUTH_DEMO } from '../../core/auth/models/auth-pending.const';
 import { AuthPending } from '../../core/auth/models/auth-pending.type';
-import { AUTH_PROVIDER } from '@shelfmark/contracts';
-import type { AuthProvider } from '@shelfmark/contracts';
 import { AUTH_ROUTE } from '../../core/auth/models/auth-routes.const';
 import { isSignInError } from '../../core/auth/is-sign-in-error';
 import { isSignInReason } from '../../core/auth/is-sign-in-reason';
 import { safeReturnUrl } from '../../core/auth/safe-return-url';
-import { SIGN_IN_ERROR_GENERIC_KEY, SIGN_IN_ERROR_KEY } from './models/sign-in-error-key.const';
+import { SIGN_IN_ERROR_GENERIC_KEY } from './models/sign-in-error-generic-key.const';
+import { SIGN_IN_ERROR_KEY } from './models/sign-in-error-key.const';
 import { SIGN_IN_REASON_KEY } from './models/sign-in-reason-key.const';
 
 /** Sign in with Google or GitHub, or open the demo. Guest-only (`guestOnly` on the route). */

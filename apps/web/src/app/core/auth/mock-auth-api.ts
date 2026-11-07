@@ -1,8 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Service, inject } from '@angular/core';
+import type { AuthProvider, AuthUser } from '@shelfmark/contracts';
 import { AuthApi } from './models/auth-api.interface';
-import type { AuthProvider } from '@shelfmark/contracts';
-import type { AuthUser } from '@shelfmark/contracts';
 import { MOCK_DEMO_USER } from './models/mock-demo-user.const';
 import { MOCK_USERS } from './models/mock-users.const';
 import { MOCK_SESSION_STORAGE_KEY } from './models/mock-session-storage-key.const';

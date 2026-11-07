@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { provideTransloco } from '@jsverse/transloco';
+import { AUTH_PROVIDER, type AuthUser } from '@shelfmark/contracts';
 import { TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { FoldersStore } from '../../stores/folders.store';
 import { LinksStore } from '../../stores/links.store';
@@ -10,8 +11,6 @@ import { translocoConfig } from '../i18n/transloco.config';
 import { AUTH_API } from './auth-api.token';
 import { AuthStore } from './auth.store';
 import { AuthApi } from './models/auth-api.interface';
-import { AUTH_PROVIDER } from '@shelfmark/contracts';
-import type { AuthUser } from '@shelfmark/contracts';
 
 const USER: AuthUser = {
   id: 'u1',
@@ -157,15 +156,26 @@ describe('AuthStore', () => {
     expect(store.isSignedIn()).toBe(false);
   });
 
-  it('passes the return URL to the API and stays a guest while the browser leaves', async () => {
+  it('passes the return URL, stays a guest and keeps pending while the browser leaves', async () => {
     const { api, store } = setup({ signIn: vi.fn(() => Promise.resolve(null)) });
 
     await store.signIn(AUTH_PROVIDER.GitHub, '/links');
 
     expect(api.signIn).toHaveBeenCalledWith(AUTH_PROVIDER.GitHub, '/links');
     expect(store.isSignedIn()).toBe(false);
-    expect(store.pending()).toBeNull();
+    expect(store.pending()).toBe(AUTH_PROVIDER.GitHub);
     expect(store.failed()).toBe(false);
+  });
+
+  it('resets pending when the page comes back from the back/forward cache', async () => {
+    const { store } = setup({ signIn: vi.fn(() => Promise.resolve(null)) });
+    await store.signIn(AUTH_PROVIDER.GitHub, null);
+
+    globalThis.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: false }));
+    expect(store.pending()).toBe(AUTH_PROVIDER.GitHub);
+
+    globalThis.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }));
+    expect(store.pending()).toBeNull();
   });
 
   it('sends waiting deletes before the session ends, then forgets the links of the user on sign-out', async () => {

@@ -59,7 +59,7 @@ export class BetterAuthApi implements AuthApi {
   }
 
   signInDemo(): Promise<AuthUser> {
-    // Demo sign-in has no endpoint yet (#67).
+    // TODO(#67): call the demo endpoint; until then production sign-in by demo always fails.
     return Promise.reject(new Error('Demo sign-in is not available yet'));
   }
 

@@ -2,7 +2,15 @@ import { computed, inject, Injector } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { TOAST_KIND, ToastService } from '@shelfmark/ui';
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import {
+  patchState,
+  signalStore,
+  withComputed,
+  withHooks,
+  withMethods,
+  withState,
+} from '@ngrx/signals';
+import type { AuthProvider, AuthUser } from '@shelfmark/contracts';
 import { FoldersStore } from '../../stores/folders.store';
 import { LinksStore } from '../../stores/links.store';
 import { TagsStore } from '../../stores/tags.store';
@@ -10,9 +18,7 @@ import { AUTH_API } from './auth-api.token';
 import { SIGN_OUT_FLUSH_TIMEOUT_MS } from './models/sign-out-flush-timeout.const';
 import { AUTH_ROUTE } from './models/auth-routes.const';
 import { AUTH_DEMO } from './models/auth-pending.const';
-import type { AuthProvider } from '@shelfmark/contracts';
 import { AuthState } from './models/auth-state.interface';
-import type { AuthUser } from '@shelfmark/contracts';
 
 const initialState: AuthState = { user: null, loaded: false, pending: null, failed: false };
 
@@ -48,11 +54,12 @@ export const AuthStore = signalStore(
         patchState(store, { pending, failed: false });
         try {
           const user = await action();
-          // `null`: the browser is on its way to the provider; the session is read on return.
-          patchState(
-            store,
-            user === null ? { pending: null } : { user, loaded: true, pending: null },
-          );
+          if (user === null) {
+            // The browser is on its way to the provider: keep `pending` (spinner, locked
+            // buttons) until the page unloads. `pageshow` resets it if the page is restored.
+            return;
+          }
+          patchState(store, { user, loaded: true, pending: null });
         } catch {
           patchState(store, { pending: null, failed: true });
         }
@@ -126,4 +133,15 @@ export const AuthStore = signalStore(
       };
     },
   ),
+  withHooks((store) => ({
+    onInit(): void {
+      // Back from the provider through the back/forward cache: the page is restored as it was
+      // left, so a sign-in that was only starting must not stay pending.
+      globalThis.addEventListener?.('pageshow', (event: PageTransitionEvent) => {
+        if (event.persisted && store.pending() !== null) {
+          patchState(store, { pending: null });
+        }
+      });
+    },
+  })),
 );
