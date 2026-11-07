@@ -478,6 +478,10 @@
       "one": "Tag, {{count}} link",
       "other": "Tag, {{count}} links"
     },
+    "status": {
+      "one": "{{count}} result",
+      "other": "{{count}} results"
+    },
     "hint": "Type to search your links, folders and tags.",
     "searching": "Searching…",
     "failed": "Couldn't search. Try again.",

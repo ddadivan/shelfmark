@@ -176,6 +176,7 @@ describe('SearchDialogComponent', () => {
     expect(options.some((text) => text?.includes('Signals club'))).toBe(true);
     expect(options.some((text) => text?.includes('signals'))).toBe(true);
     expect(element.querySelectorAll('mark').length).toBeGreaterThan(0);
+    expect(element.querySelector('[role="status"]')?.textContent).toContain('4 results');
   });
 
   it('offers "Show all results" when there is more and opens the library with the query', async () => {

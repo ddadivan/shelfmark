@@ -124,6 +124,12 @@ export class SearchDialogComponent {
     () => this.folderMatches().length > 0 || this.tagMatches().length > 0,
   );
   protected readonly linkCount = computed(() => this.state().links.length);
+  /** Everything listed: links, folders and tags. */
+  protected readonly resultCount = computed(
+    () => this.linkCount() + this.folderMatches().length + this.tagMatches().length,
+  );
+  /** The results on screen are final for a query: the status region may announce them. */
+  protected readonly settled = computed(() => this.parsed() !== '' && !this.busy());
 
   constructor() {
     // The combobox consumes Esc (`defaultPrevented`, maybe more), which the dialog service then

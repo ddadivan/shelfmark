@@ -11,6 +11,11 @@
     [listLabel]="'search.results' | transloco"
     (selected)="choose($event)"
   >
+    <span slot="status">
+      @if (settled()) {
+        {{ pluralKey('search.status', resultCount()) | transloco: { count: resultCount() } }}
+      }
+    </span>
     <kbd slot="input-end">{{ 'search.esc' | transloco }}</kbd>
 
     @if (linkCount() > 0) {
