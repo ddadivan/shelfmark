@@ -1,4 +1,4 @@
-# 0027. Better Auth integration: configuration, hardening and test harness
+# 0030. Better Auth integration: configuration, hardening and test harness
 
 - Status: Proposed
 - Date: 2026-11-07
