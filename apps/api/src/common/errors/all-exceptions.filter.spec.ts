@@ -80,6 +80,8 @@ describe('AllExceptionsFilter', () => {
   it.each([
     [{ status: 415, type: 'charset.unsupported' }, 415, 'Unsupported Media Type'],
     [{ statusCode: 400, type: 'request.aborted' }, 400, 'Bad Request'],
+    // Better Auth APIError: string `status`, numeric `statusCode`.
+    [{ status: 'UNAUTHORIZED', statusCode: 401 }, 401, 'Unauthorized'],
   ])('maps http-errors %j to a generic 4xx', (exception, code, phrase) => {
     const { json } = callFilter(exception);
     expect(json).toHaveBeenCalledWith({
