@@ -254,6 +254,8 @@ export const LinksStore = signalStore(
       commitRemove,
 
       /** Sends every delete still waiting (page hide, sign-out). */
+      // A delete that is already committing is not awaited: its request went out while the
+      // session was valid.
       async flushPending(): Promise<void> {
         await Promise.all([...pending.keys()].map((id) => commitRemove(id)));
       },

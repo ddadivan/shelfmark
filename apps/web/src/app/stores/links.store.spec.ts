@@ -253,7 +253,7 @@ describe('LinksStore', () => {
       expect(ids(store)).toEqual(['id-1', 'id-3']);
     });
 
-    it('keeps a reset from sending deletes: flush first', async () => {
+    it('does not send waiting deletes on reset', () => {
       const { api, store } = setup();
       store.setFilter({ scope: LINKS_SCOPE.All });
       store.remove('id-1');

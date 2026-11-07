@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { LinksStore } from '../../stores/links.store';
 import { AUTH_API } from './auth-api.token';
+import { SIGN_OUT_FLUSH_TIMEOUT_MS } from './models/sign-out-flush-timeout.const';
 import { AUTH_ROUTE } from './models/auth-routes.const';
 import { AUTH_DEMO } from './models/auth-pending.const';
 import { AuthProvider } from './models/auth-provider.type';
@@ -40,20 +41,36 @@ export const AuthStore = signalStore(
         }
       }
 
+      async function flushWithin(ms: number): Promise<void> {
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        const timeout = new Promise<void>((resolve) => {
+          timer = setTimeout(resolve, ms);
+        });
+        try {
+          await Promise.race([links.flushPending(), timeout]);
+        } catch {
+          // A failed flush restores the links in the store; sign-out goes on.
+        } finally {
+          clearTimeout(timer);
+        }
+      }
+
       /**
        * Clears the session; the mock cannot fail, and a failing API still ends the local session.
        * #64: clear local state only after the server confirms, and surface failures.
        */
       async function signOut(): Promise<void> {
-        // Before the session ends, so deletes still waiting for their Undo window can be sent.
-        await links.flushPending();
-        links.reset();
         try {
+          // Before the session ends, so deletes still waiting for their Undo window can be sent;
+          // never longer than the timeout, and a failure must not keep the user signed in.
+          await flushWithin(SIGN_OUT_FLUSH_TIMEOUT_MS);
           await api.signOut();
         } catch {
           // The local session ends either way; the server session expires on its own.
+        } finally {
+          links.reset();
+          patchState(store, { user: null, loaded: true, failed: false });
         }
-        patchState(store, { user: null, loaded: true, failed: false });
       }
 
       return {
