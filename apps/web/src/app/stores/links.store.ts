@@ -41,6 +41,21 @@ const initialState: LinksState = {
   recentLoaded: false,
 };
 
+/**
+ * Whether an edited link still belongs in the open feed. A favorite flag never removes it (an
+ * unfavorited link stays until the next load); leaving "Unsorted" or the open folder does.
+ */
+function staysAfterEdit(filter: LinksFilter, link: LinkResponse): boolean {
+  switch (filter.scope) {
+    case LINKS_SCOPE.Unsorted:
+      return link.folderId === null;
+    case LINKS_SCOPE.Folder:
+      return link.folderId === filter.folderId;
+    default:
+      return true;
+  }
+}
+
 function insertAt<T>(list: readonly T[], index: number, item: T): T[] {
   const copy = [...list];
   copy.splice(Math.min(index, copy.length), 0, item);
@@ -197,10 +212,16 @@ export const LinksStore = signalStore(
         }
       },
 
-      /** Puts a link the server changed (the edit dialog) into the feed and the recent list. */
+      /**
+       * Puts a link the server changed (the edit dialog) into the feed and the recent list; a link
+       * that no longer matches the open scope leaves the feed.
+       */
       applyEdit(link: LinkResponse): void {
         if (store.entityMap()[link.id]) {
-          patchState(store, setEntity(link));
+          patchState(
+            store,
+            staysAfterEdit(store.filter(), link) ? setEntity(link) : removeEntity(link.id),
+          );
         }
         patchState(store, { recent: mapRecent(link.id, link) });
       },

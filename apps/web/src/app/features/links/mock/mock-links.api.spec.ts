@@ -110,6 +110,13 @@ describe('MockLinksApi', () => {
       expect(rest.items.some((link) => link.id === target.id)).toBe(false);
     });
 
+    it('gets one link by id and fails for an unknown id', async () => {
+      const feed = createApi();
+      const [target] = (await firstValueFrom(feed.list({ limit: 1 }))).items;
+      expect(await firstValueFrom(feed.get(target.id))).toEqual(target);
+      await expect(firstValueFrom(feed.get('missing'))).rejects.toThrow();
+    });
+
     it('puts a created link at the top of the next list', async () => {
       const feed = createApi();
       const link = await firstValueFrom(feed.create({ url: 'https://new.example.org' }));

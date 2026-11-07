@@ -72,6 +72,7 @@
         [link]="link"
         (opened)="actions.open(link)"
         (favoriteToggled)="actions.toggleFavorite(link)"
+        (editRequested)="actions.edit(link)"
         (deleteRequested)="actions.delete(link)"
       />
     </li>
@@ -85,6 +86,7 @@
         [link]="link"
         (opened)="actions.open(link)"
         (favoriteToggled)="actions.toggleFavorite(link)"
+        (editRequested)="actions.edit(link)"
         (deleteRequested)="actions.delete(link)"
       />
     </li>

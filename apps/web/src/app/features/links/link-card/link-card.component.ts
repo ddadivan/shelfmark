@@ -41,6 +41,7 @@ export class LinkCardComponent {
 
   readonly opened = output<void>();
   readonly favoriteToggled = output<void>();
+  readonly editRequested = output<void>();
   readonly deleteRequested = output<void>();
 
   protected readonly href = computed(() => safeHref(this.link().url));

@@ -14,6 +14,7 @@ describe('production placeholder APIs', () => {
       new UnavailableLinksApi().create(),
       new UnavailableLinksApi().list(),
       new UnavailableLinksApi().recent(),
+      new UnavailableLinksApi().get(),
       new UnavailableLinksApi().update(),
       new UnavailableLinksApi().remove(),
       new UnavailableLinksApi().open(),
