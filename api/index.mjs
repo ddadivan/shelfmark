@@ -11,6 +11,7 @@ import '@nestjs/common';
 import '@nestjs/core';
 import '@nestjs/platform-express';
 import '@nestjs/swagger';
+import '@sentry/node';
 import 'class-transformer';
 import 'class-validator';
 import 'helmet';

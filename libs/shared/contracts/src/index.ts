@@ -42,3 +42,6 @@ export type { MergeTagRequest } from './tags/merge-tag-request.interface';
 export type { MergeTagResponse } from './tags/merge-tag-response.type';
 export { TAG_LIMIT } from './tags/tag-limit.const';
 export { normalizeTagName } from './tags/normalize-tag-name';
+
+export type { MonitoringConfig } from './monitoring/monitoring-config.interface';
+export { MONITORING_TUNNEL_PATH } from './monitoring/monitoring-tunnel-path.const';

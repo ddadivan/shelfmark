@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   type ArgumentsHost,
+  BadGatewayException,
   HttpException,
   Logger,
   NotFoundException,
@@ -11,7 +12,11 @@ import { createApp } from '../../app/create-app';
 import { REQUEST_ID_HEADER } from '../request-id/request-id.middleware';
 import { AllExceptionsFilter } from './all-exceptions.filter';
 
-function callFilter(exception: unknown, headersSent = false) {
+function callFilter(
+  exception: unknown,
+  headersSent = false,
+  report: (exception: unknown, requestId: string) => void = () => undefined,
+) {
   const json = vi.fn();
   const status = vi.fn(() => ({ json }));
   const host = {
@@ -20,7 +25,7 @@ function callFilter(exception: unknown, headersSent = false) {
       getResponse: () => ({ locals: { requestId: 'rid-1' }, headersSent, status }),
     }),
   } as unknown as ArgumentsHost;
-  new AllExceptionsFilter().catch(exception, host);
+  new AllExceptionsFilter(report).catch(exception, host);
   return { status, json };
 }
 
@@ -111,6 +116,19 @@ describe('AllExceptionsFilter', () => {
     expect(errorLog).toHaveBeenCalledWith('GET /x 500 rid-1', failure.stack);
     expect(JSON.stringify(json.mock.calls)).not.toContain('secret detail');
     expect(JSON.stringify(json.mock.calls)).not.toContain('at ');
+  });
+
+  it('reports 5xx to monitoring with the request id, but not 4xx or a failing tunnel', () => {
+    vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
+    const report = vi.fn();
+    const failure = new Error('boom');
+    callFilter(failure, false, report);
+    expect(report).toHaveBeenCalledWith(failure, 'rid-1');
+
+    report.mockClear();
+    callFilter(new NotFoundException(), false, report);
+    callFilter(new BadGatewayException(), false, report);
+    expect(report).not.toHaveBeenCalled();
   });
 
   it('logs a stringified non-Error cause', () => {

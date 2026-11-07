@@ -4,12 +4,14 @@ import {
   type ArgumentsHost,
   Catch,
   type ExceptionFilter,
+  BadGatewayException,
   HttpException,
   HttpStatus,
   Logger,
 } from '@nestjs/common';
 import type { ApiError } from '@shelfmark/contracts';
 import type { Request, Response } from 'express';
+import { reportException } from '../../monitoring/report-exception';
 import { REQUEST_ID_LOCAL } from '../request-id/request-id.middleware';
 
 type Normalised = Pick<ApiError, 'statusCode' | 'error' | 'message'>;
@@ -73,6 +75,10 @@ function normalise(exception: unknown): Normalised {
 export class AllExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger(AllExceptionsFilter.name);
 
+  constructor(
+    private readonly report: (exception: unknown, requestId: string) => void = reportException,
+  ) {}
+
   catch(exception: unknown, host: ArgumentsHost): void {
     const http = host.switchToHttp();
     const req = http.getRequest<Request>();
@@ -87,6 +93,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const line = `${req.method} ${req.path} ${statusCode} ${requestId}`;
     if (statusCode >= 500) {
       this.logger.error(line, exception instanceof Error ? exception.stack : String(exception));
+      // Only server faults reach Sentry (client errors are noise). A failing Sentry tunnel is
+      // not reported back to Sentry. Scrubbing happens in the SDK's beforeSend.
+      if (!(exception instanceof BadGatewayException)) this.report(exception, requestId);
     } else {
       this.logger.warn(line);
     }
