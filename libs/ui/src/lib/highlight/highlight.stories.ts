@@ -48,18 +48,17 @@ export const AllVariants: Story = {
       title: 'Angular 22: everything about Signal Forms in 20 minutes',
     },
     template: `
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem">
+      <div class="cls-themes">
         @for (theme of themes; track theme) {
-          <div [attr.${THEME_ATTRIBUTE}]="theme"
-            style="background: var(--surface); color: var(--text); padding: 1rem; display: grid; gap: 0.5rem">
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="cls-hl">
             <ui-highlight [text]="title" query="signal" />
             <ui-highlight [text]="title" query="forms minutes" />
             <ui-highlight [text]="title" [query]="['signal f', 'al form']" />
             <ui-highlight [text]="title" query="rxjs" />
-            <div style="background: var(--surface-hover); padding: 0.5rem">
+            <div class="cls-hl__row cls-hl__row--hover">
               <ui-highlight [text]="title" query="signal" />
             </div>
-            <div style="background: var(--accent-bg); color: var(--accent-text); padding: 0.5rem">
+            <div class="cls-hl__row cls-hl__row--active">
               <ui-highlight [text]="title" query="signal" />
             </div>
           </div>
