@@ -1,0 +1,9 @@
+/** Stable ids shared by the mock fixtures. */
+export const MOCK_ID = {
+  FolderReading: '00000000-0000-4000-8000-000000000101',
+  FolderAngular: '00000000-0000-4000-8000-000000000102',
+  TagDocs: '00000000-0000-4000-8000-000000000201',
+  TagRecipes: '00000000-0000-4000-8000-000000000202',
+  LinkAngular: '00000000-0000-4000-8000-000000000301',
+  LinkPasta: '00000000-0000-4000-8000-000000000302',
+} as const;

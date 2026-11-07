@@ -1,4 +1,5 @@
 import nx from '@nx/eslint-plugin';
+import { testingImportAllowedFiles, testingImportPatterns } from './eslint.contracts-testing.mjs';
 import {
   enumAndKeySelectors,
   namedConstantDefinitionFiles,
@@ -30,6 +31,28 @@ const tsBans = [
   },
 ];
 
+/** Angular import bans; the contracts fixtures ban is dropped for specs, stories and mock folders. */
+const restrictedImports = (banTesting) => ({
+  paths: [
+    { name: 'zone.js', message: 'The app is zoneless.' },
+    { name: '@angular/animations', message: 'Use CSS with animate.enter / animate.leave.' },
+    {
+      name: '@angular/common',
+      importNames: ['CommonModule'],
+      message: 'Import only what you use; no CommonModule.',
+    },
+    {
+      name: '@angular/forms',
+      importNames: ['ReactiveFormsModule', 'FormsModule'],
+      message: 'Use Signal Forms.',
+    },
+  ],
+  patterns: [
+    { group: ['zone.js/*'], message: 'The app is zoneless.' },
+    ...(banTesting ? testingImportPatterns : []),
+  ],
+});
+
 /**
  * Angular rules shared by every Angular project (apps/web, libs/ui): legacy API bans,
  * security bans (PROJECT.md 5.8) and template rules. Spread after the root config.
@@ -53,34 +76,16 @@ export default function angularConfig({ prefix }) {
         ],
         '@angular-eslint/prefer-on-push-component-change-detection': 'error',
         '@angular-eslint/prefer-signals': 'error',
-        'no-restricted-imports': [
-          'error',
-          {
-            paths: [
-              { name: 'zone.js', message: 'The app is zoneless.' },
-              {
-                name: '@angular/animations',
-                message: 'Use CSS with animate.enter / animate.leave.',
-              },
-              {
-                name: '@angular/common',
-                importNames: ['CommonModule'],
-                message: 'Import only what you use; no CommonModule.',
-              },
-              {
-                name: '@angular/forms',
-                importNames: ['ReactiveFormsModule', 'FormsModule'],
-                message: 'Use Signal Forms.',
-              },
-            ],
-            patterns: [{ group: ['zone.js/*'], message: 'The app is zoneless.' }],
-          },
-        ],
+        'no-restricted-imports': ['error', restrictedImports(true)],
         'no-restricted-syntax': ['error', ...tsBans, ...namedConstantSelectors],
         'no-eval': 'error',
         'no-implied-eval': 'error',
         'no-new-func': 'error',
       },
+    },
+    {
+      files: testingImportAllowedFiles,
+      rules: { 'no-restricted-imports': ['error', restrictedImports(false)] },
     },
     {
       // Defining files spell the singleton literals once (ADR 0024).

@@ -5,6 +5,7 @@ import {
   namedConstantDefinitionFiles,
   namedConstantSelectors,
 } from './eslint.named-constants.mjs';
+import { testingImportAllowedFiles, testingImportPatterns } from './eslint.contracts-testing.mjs';
 
 // PROJECT.md 5.8: parameterised queries only. Unsafe raw SQL helpers are banned everywhere.
 const rawSqlSelectors = ['$queryRawUnsafe', '$executeRawUnsafe'].map((name) => ({
@@ -54,6 +55,14 @@ export default [
   {
     files: namedConstantDefinitionFiles,
     rules: { 'no-restricted-syntax': ['error', ...enumAndKeySelectors, ...rawSqlSelectors] },
+  },
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+    rules: { 'no-restricted-imports': ['error', { patterns: testingImportPatterns }] },
+  },
+  {
+    files: testingImportAllowedFiles,
+    rules: { 'no-restricted-imports': 'off' },
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
