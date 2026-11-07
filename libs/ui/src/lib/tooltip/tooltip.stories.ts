@@ -63,7 +63,7 @@ export const OnButton: Story = {
 
 /** An icon-only button: the tooltip repeats its accessible name and shows the shortcut. */
 export const IconOnlyButton: Story = {
-  args: { uiTooltip: 'Search', uiTooltipShortcut: '⌘K' },
+  args: { uiTooltip: 'Cards view', uiTooltipShortcut: 'V C' },
   render: (args) => ({
     props: args,
     moduleMetadata: { imports },
@@ -72,8 +72,8 @@ export const IconOnlyButton: Story = {
         <ui-button
           variant="ghost"
           iconOnly
-          iconLeft="search"
-          ariaLabel="Search"
+          iconLeft="cards"
+          ariaLabel="Cards"
           [uiTooltip]="uiTooltip"
           [position]="position"
           [delay]="delay"
@@ -123,12 +123,12 @@ const variants = (theme: Theme) => `
       <ui-button uiTooltip="Right" position="right">Right</ui-button>
       <ui-button variant="ghost" iconOnly iconLeft="moon" ariaLabel="Switch theme"
         uiTooltip="Dark theme" />
-      <ui-button variant="ghost" iconOnly iconLeft="search" ariaLabel="Search"
-        uiTooltip="Search" uiTooltipShortcut="⌘K" />
+      <ui-button variant="ghost" iconOnly iconLeft="cards" ariaLabel="Cards"
+        uiTooltip="Cards view" uiTooltipShortcut="V C" />
     </div>
     <div class="ts-static">
       <ui-tooltip-panel text="Dark theme" side="top" />
-      <ui-tooltip-panel text="Search" shortcut="⌘K" side="top" />
+      <ui-tooltip-panel text="Cards view" shortcut="V C" side="top" />
     </div>
   </div>`;
 

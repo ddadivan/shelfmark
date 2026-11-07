@@ -53,14 +53,16 @@ describe('StepsComponent', () => {
     expect(dots()).toHaveLength(0);
   });
 
-  it('announces the provided text in a polite live region; dots are hidden', () => {
+  it('is an image named by the label; no live region, dots are hidden', () => {
     const { host, update } = setup();
-    const label = host.querySelector('.ui-steps__label') as HTMLElement;
-    expect(label.textContent).toBe('Step 1 of 3');
-    expect(label.getAttribute('aria-live')).toBe('polite');
+    const steps = host.querySelector('ui-steps') as HTMLElement;
+    expect(steps.getAttribute('role')).toBe('img');
+    expect(steps.getAttribute('aria-label')).toBe('Step 1 of 3');
+    expect(host.querySelector('[aria-live]')).toBeNull();
+    expect(host.querySelector('.ui-steps__label')).toBeNull();
     expect(host.querySelector('.ui-steps__dots')?.getAttribute('aria-hidden')).toBe('true');
     update((c) => c.label.set('Step 2 of 3'));
-    expect(label.textContent).toBe('Step 2 of 3');
+    expect(steps.getAttribute('aria-label')).toBe('Step 2 of 3');
   });
 
   it('has no axe violations', async () => {
