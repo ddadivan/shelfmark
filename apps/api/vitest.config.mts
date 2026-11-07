@@ -1,3 +1,4 @@
+import { resolve } from 'node:path';
 import swc from 'unplugin-swc';
 import { defineConfig } from 'vitest/config';
 
@@ -6,6 +7,15 @@ export default defineConfig({
   cacheDir: '../../node_modules/.vite/apps/api',
   // SWC emits decorator metadata; Vite's own TS transform must not run.
   oxc: false,
+  resolve: {
+    // Workspace library, resolved from source (runtime imports such as AUTH_PROVIDER).
+    alias: {
+      '@shelfmark/contracts': resolve(
+        import.meta.dirname,
+        '../../libs/shared/contracts/src/index.ts',
+      ),
+    },
+  },
   plugins: [swc.vite({ tsconfigFile: './tsconfig.spec.json' })],
   test: {
     name: 'api',
