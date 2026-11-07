@@ -21,16 +21,21 @@ datasource db {
 // Better Auth core models (users, sessions, linked OAuth accounts, verification tokens).
 
 model User {
-  id            String    @id @default(uuid(7)) @db.Uuid
-  name          String
-  email         String    @unique
-  emailVerified Boolean   @default(false) @map("email_verified")
-  image         String?
-  isDemo        Boolean   @default(false) @map("is_demo")
-  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
-  sessions      Session[]
-  accounts      Account[]
+  id                    String    @id @default(uuid(7)) @db.Uuid
+  name                  String
+  email                 String    @unique
+  emailVerified         Boolean   @default(false) @map("email_verified")
+  image                 String?
+  isDemo                Boolean   @default(false) @map("is_demo")
+  onboardingCompletedAt DateTime? @map("onboarding_completed_at") @db.Timestamptz(3)
+  demoExpiresAt         DateTime? @map("demo_expires_at") @db.Timestamptz(3)
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  sessions              Session[]
+  accounts              Account[]
+  folders               Folder[]
+  links                 Link[]
+  tags                  Tag[]
 
   @@map("users")
 }
@@ -81,4 +86,74 @@ model Verification {
 
   @@index([identifier])
   @@map("verifications")
+}
+
+// Library models (PROJECT.md 6.1). Every row belongs to a user; the service layer filters by userId.
+// Same-user integrity of folder/link/tag references is enforced in the service layer, not by composite FKs
+// (Prisma cannot generate `ON DELETE SET NULL (folder_id)`, which Link.folderId needs).
+
+model Folder {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  parentId  String?  @map("parent_id") @db.Uuid
+  name      String   @db.VarChar(100)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent    Folder?  @relation("FolderTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children  Folder[] @relation("FolderTree")
+  links     Link[]
+
+  @@index([userId, parentId])
+  @@map("folders")
+}
+
+model Link {
+  id            String    @id @default(uuid(7)) @db.Uuid
+  userId        String    @map("user_id") @db.Uuid
+  folderId      String?   @map("folder_id") @db.Uuid
+  url           String    @db.VarChar(2048)
+  normalizedUrl String    @map("normalized_url") @db.VarChar(2048)
+  title         String    @db.VarChar(300)
+  note          String?
+  faviconUrl    String?   @map("favicon_url")
+  imageUrl      String?   @map("image_url")
+  isFavorite    Boolean   @default(false) @map("is_favorite")
+  lastOpenedAt  DateTime? @map("last_opened_at") @db.Timestamptz(3)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  folder        Folder?   @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  tags          LinkTag[]
+
+  @@index([userId, createdAt])
+  @@index([userId, normalizedUrl])
+  @@index([userId, lastOpenedAt])
+  @@index([folderId])
+  @@index([title(ops: raw("gin_trgm_ops"))], type: Gin, map: "links_title_trgm_idx")
+  @@map("links")
+}
+
+model Tag {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  name      String    @db.VarChar(50)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  links     LinkTag[]
+
+  @@unique([userId, name])
+  @@map("tags")
+}
+
+model LinkTag {
+  linkId String @map("link_id") @db.Uuid
+  tagId  String @map("tag_id") @db.Uuid
+  link   Link   @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([linkId, tagId])
+  @@index([tagId])
+  @@map("link_tags")
 }
