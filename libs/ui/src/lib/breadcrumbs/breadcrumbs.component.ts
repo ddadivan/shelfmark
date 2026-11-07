@@ -1,10 +1,7 @@
-import { DOCUMENT } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  DestroyRef,
-  inject,
   input,
   numberAttribute,
   output,
@@ -16,8 +13,10 @@ import { MenuItemComponent } from '../menu/menu-item.component';
 import { MenuTriggerDirective } from '../menu/menu-trigger.directive';
 import { MenuComponent } from '../menu/menu.component';
 import { TooltipDirective } from '../tooltip/tooltip.directive';
+import { mediaMatch } from './media-match';
 import { breadcrumbTrail } from './breadcrumbs-trail';
 import { BREADCRUMB_ENTRY_KIND } from './models/breadcrumb-entry-kind.const';
+import { BREADCRUMB_COARSE_QUERY } from './models/breadcrumb-coarse-query.const';
 import { BREADCRUMB_PHONE_QUERY } from './models/breadcrumb-phone-query.const';
 import type { BreadcrumbClick } from './models/breadcrumb-click.interface';
 import type { BreadcrumbItem } from './models/breadcrumb-item.interface';
@@ -25,17 +24,21 @@ import type { BreadcrumbItem } from './models/breadcrumb-item.interface';
 /**
  * Where the current folder sits, with a jump to any level above. A `nav` (named by `ariaLabel`)
  * with an ordered list; the last item is the current page (`aria-current="page"`, not a link).
- * Links are real `<a href>`: a plain click emits `linkClick` (call `preventDefault()` to route
- * in the app), middle and Cmd/Ctrl-click keep native behaviour, like `ui-button`.
+ * Levels with an `href` are real `<a>`: a plain click emits `linkClick` (call `preventDefault()`
+ * to route in the app), middle and Cmd/Ctrl-click keep native behaviour, like `ui-button`. A
+ * level without `href` is a `<button type="button">` that emits `linkClick` too, so it stays
+ * reachable by keyboard.
  *
  * More than `maxItems` levels (default 4, "…" counts): the root, a "…" button that opens a
  * `ui-menu` with the folded levels, and the last `maxItems - 2` levels. Choosing a level from
- * that menu emits `linkClick` with `event: null`. On a phone only the parent and the current
- * level show next to "…" (the root moves into the menu so no level becomes unreachable).
+ * that menu emits `linkClick` with `event: null`; menu items are not links, so a hidden level
+ * cannot open in a new tab. On a phone only the parent and the current level show next to "…"
+ * (the root moves into the menu so no level becomes unreachable).
  *
- * Long names are cut with an ellipsis; the full name shows in a tooltip (hover; keyboard
- * focus on links) when the text is actually truncated. Separators are `aria-hidden`. Sits above the feed,
- * never in the header.
+ * Long names are cut with an ellipsis; the full name shows in a tooltip (hover; keyboard focus
+ * on links and buttons) when the text is actually truncated. Separators are `aria-hidden`.
+ * Targets are at least 24 by 24 px, 44 by 44 px on coarse pointers. Sits above the feed, never
+ * in the header.
  */
 @Component({
   selector: 'ui-breadcrumbs',
@@ -67,27 +70,15 @@ export class BreadcrumbsComponent {
   /** A visible link was clicked, or a level was chosen from the "…" menu. */
   readonly linkClick = output<BreadcrumbClick>();
 
-  private readonly phone = signal(false);
+  private readonly phone = mediaMatch(BREADCRUMB_PHONE_QUERY);
+  /** Touch-first pointer: the "…" button grows to 44 px. */
+  protected readonly coarse = mediaMatch(BREADCRUMB_COARSE_QUERY);
   /** Keys of the entries whose text is cut right now; only they get a tooltip. */
   protected readonly truncated = signal<ReadonlySet<string>>(new Set());
 
   protected readonly trail = computed(() =>
     breadcrumbTrail(this.items(), this.maxItems(), this.phone()),
   );
-
-  constructor() {
-    const query = inject(DOCUMENT).defaultView?.matchMedia?.(BREADCRUMB_PHONE_QUERY);
-    if (query) {
-      this.phone.set(query.matches);
-      const onChange = (event: MediaQueryListEvent): void => {
-        this.phone.set(event.matches);
-      };
-      query.addEventListener('change', onChange);
-      inject(DestroyRef).onDestroy(() => {
-        query.removeEventListener('change', onChange);
-      });
-    }
-  }
 
   protected onLinkClick(event: MouseEvent, item: BreadcrumbItem): void {
     // Modified and non-primary clicks keep the browser's own navigation.

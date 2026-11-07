@@ -46,7 +46,9 @@ function mockPhone(phone: boolean): { change: (matches: boolean) => void } {
     matches: phone && query.includes('width < 40em'),
     media: query,
     addEventListener: (_type: string, fn: (event: MediaQueryListEvent) => void) => {
-      listener = fn;
+      if (query.includes('width < 40em')) {
+        listener = fn;
+      }
     },
     removeEventListener: () => undefined,
   }));
@@ -205,6 +207,48 @@ describe('BreadcrumbsComponent', () => {
     current.dispatchEvent(new Event('pointerenter'));
     fixture.detectChanges();
     expect(current.getAttribute('aria-describedby')).toBeNull();
+  });
+
+  it('renders a level without href as a focusable button that emits linkClick', () => {
+    const { fixture, root, labels } = setup([
+      { label: 'Work' },
+      { label: 'Clients', href: '/f/clients' },
+      { label: 'Angular' },
+    ]);
+    expect(labels()).toEqual(['Work', 'Clients', 'Angular']);
+    const button = root.querySelector('button.ui-crumbs__link') as HTMLButtonElement;
+    expect(button.type).toBe('button');
+    expect(button.tabIndex).toBe(0);
+    expect(root.querySelectorAll('a')).toHaveLength(1);
+    document.body.append(root);
+    button.focus();
+    expect(document.activeElement).toBe(button);
+    button.click();
+    expect(fixture.componentInstance.clicks[0].item.label).toBe('Work');
+    root.remove();
+  });
+
+  it('measures a button for the tooltip too', () => {
+    const { fixture, root } = setup([{ label: 'Work' }, { label: 'Angular' }]);
+    const button = root.querySelector('button.ui-crumbs__link') as HTMLButtonElement;
+    Object.defineProperty(button, 'scrollWidth', { value: 300, configurable: true });
+    Object.defineProperty(button, 'clientWidth', { value: 100, configurable: true });
+    button.dispatchEvent(new Event('focus'));
+    fixture.detectChanges();
+    expect(button.getAttribute('aria-describedby')).toBeTruthy();
+  });
+
+  it('uses a large "…" button on a coarse pointer', () => {
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: query.includes('pointer: coarse'),
+      media: query,
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+    }));
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.componentInstance.items.set(DEEP);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('button.ui-button--lg')).toBeTruthy();
   });
 
   it('keeps links in the tab order', () => {

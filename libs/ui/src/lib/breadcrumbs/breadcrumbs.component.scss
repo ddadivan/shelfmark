@@ -46,7 +46,7 @@
 .ui-crumbs__current {
   display: block;
   max-width: rem(220px);
-  padding: rem(2px) rem(6px);
+  padding: rem(3px) rem(6px);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -57,7 +57,17 @@
   }
 }
 
+// Target size: at least 24 by 24 px, 44 by 44 px on touch-first pointers.
 .ui-crumbs__link {
+  @include type(label);
+
+  min-width: rem(24px);
+  min-height: rem(24px);
+  text-align: start;
+  font-family: inherit;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
   color: var(--text-muted);
   text-decoration: none;
   transition:
@@ -72,4 +82,12 @@
 
 .ui-crumbs__current {
   color: var(--text);
+}
+
+@media (pointer: coarse) {
+  .ui-crumbs__link {
+    min-width: rem(44px);
+    min-height: rem(44px);
+    padding-block: rem(13px);
+  }
 }

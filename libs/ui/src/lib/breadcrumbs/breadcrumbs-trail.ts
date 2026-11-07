@@ -1,12 +1,8 @@
 import { BREADCRUMB_ENTRY_KIND } from './models/breadcrumb-entry-kind.const';
-import type { BreadcrumbEntry } from './models/breadcrumb-entry.interface';
+import type { BreadcrumbEntry } from './models/breadcrumb-entry.type';
+import type { BreadcrumbLevelEntry } from './models/breadcrumb-level-entry.interface';
+import type { BreadcrumbTrail } from './models/breadcrumb-trail.interface';
 import type { BreadcrumbItem } from './models/breadcrumb-item.interface';
-
-export interface BreadcrumbTrail {
-  readonly entries: readonly BreadcrumbEntry[];
-  /** Levels folded into the "…" menu, in order. */
-  readonly hidden: readonly BreadcrumbItem[];
-}
 
 /**
  * Builds the visible trail. More than `max` levels (the "…" slot counts): the root, "…" and the
@@ -22,7 +18,7 @@ export function breadcrumbTrail(
   const tail = phone ? 2 : Math.max(maxItems - 2, 1);
   const collapse = items.length > (phone ? 2 : Math.max(maxItems, 3));
   const lastIndex = items.length - 1;
-  const toEntry = (item: BreadcrumbItem, index: number): BreadcrumbEntry => ({
+  const toEntry = (item: BreadcrumbItem, index: number): BreadcrumbLevelEntry => ({
     key: `${index}`,
     kind: index === lastIndex ? BREADCRUMB_ENTRY_KIND.Current : BREADCRUMB_ENTRY_KIND.Link,
     item,

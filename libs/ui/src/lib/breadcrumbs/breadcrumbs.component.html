@@ -21,7 +21,7 @@
             <ui-button
               [uiMenuTrigger]="menu"
               variant="ghost"
-              size="sm"
+              [size]="coarse() ? 'lg' : 'sm'"
               iconOnly
               iconLeft="more"
               [ariaLabel]="collapsedLabel()"
@@ -32,22 +32,36 @@
               #current
               class="ui-crumbs__current"
               aria-current="page"
-              [uiTooltip]="truncated().has(entry.key) ? (entry.item?.label ?? '') : ''"
+              [uiTooltip]="truncated().has(entry.key) ? entry.item.label : ''"
               (pointerenter)="measure(entry.key, current)"
-              >{{ entry.item?.label }}</span
+              >{{ entry.item.label }}</span
             >
           }
-          @default {
-            <a
-              #link
-              class="ui-crumbs__link"
-              [attr.href]="entry.item?.href"
-              [uiTooltip]="truncated().has(entry.key) ? (entry.item?.label ?? '') : ''"
-              (pointerenter)="measure(entry.key, link)"
-              (focus)="measure(entry.key, link)"
-              (click)="entry.item && onLinkClick($event, entry.item)"
-              >{{ entry.item?.label }}</a
-            >
+          @case (BREADCRUMB_ENTRY_KIND.Link) {
+            @if (entry.item.href !== undefined) {
+              <a
+                #link
+                class="ui-crumbs__link"
+                [attr.href]="entry.item.href"
+                [uiTooltip]="truncated().has(entry.key) ? entry.item.label : ''"
+                (pointerenter)="measure(entry.key, link)"
+                (focus)="measure(entry.key, link)"
+                (click)="onLinkClick($event, entry.item)"
+                >{{ entry.item.label }}</a
+              >
+            } @else {
+              <button
+                #action
+                type="button"
+                class="ui-crumbs__link"
+                [uiTooltip]="truncated().has(entry.key) ? entry.item.label : ''"
+                (pointerenter)="measure(entry.key, action)"
+                (focus)="measure(entry.key, action)"
+                (click)="onLinkClick($event, entry.item)"
+              >
+                {{ entry.item.label }}
+              </button>
+            }
           }
         }
       </li>
