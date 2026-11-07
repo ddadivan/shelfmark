@@ -1,0 +1,150 @@
+@use 'ui' as *;
+@use '../../landing' as landing;
+
+:host {
+  display: block;
+  background: var(--surface);
+  border-block: 1px solid var(--border);
+}
+
+.landing-ba__inner {
+  @include landing.wrap;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding-block: rem(40px);
+
+  @include tablet-up {
+    gap: var(--space-8);
+    padding-block: rem(64px);
+  }
+}
+
+.landing-ba__title {
+  @include landing.section-title;
+
+  max-width: rem(640px);
+}
+
+.landing-ba__scenes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+
+  @include tablet-up {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.landing-ba__scene {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.landing-ba__label {
+  @include type(label);
+
+  margin: 0;
+  font-size: rem(14px);
+  color: var(--text-muted);
+}
+
+// After: the folder tree and the links of the selected folder.
+.landing-ba__after {
+  display: flex;
+  gap: var(--space-4);
+  height: rem(300px);
+  padding: var(--space-4);
+  overflow: hidden;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: rem(18px);
+}
+
+.landing-ba__tree {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: rem(2px);
+  width: rem(110px);
+
+  @include tablet-up {
+    width: rem(150px);
+  }
+}
+
+.landing-ba__row {
+  @include type(label);
+
+  padding: rem(6px) var(--space-2);
+  border-radius: var(--radius-sm);
+}
+
+.landing-ba__row--nested {
+  padding-inline-start: var(--space-6);
+}
+
+.landing-ba__row--active {
+  background: var(--accent-bg);
+}
+
+.landing-ba__section {
+  @include type(caption);
+
+  padding: var(--space-3) var(--space-2) var(--space-1);
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.landing-ba__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(6px);
+  padding: 0 var(--space-2);
+}
+
+.landing-ba__list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: rem(2px);
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.landing-ba__item {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  min-width: 0;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+}
+
+.landing-ba__item-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.landing-ba__item-title {
+  @include type(label);
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.landing-ba__item-note {
+  @include type(caption);
+
+  overflow: hidden;
+  color: var(--text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

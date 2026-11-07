@@ -1,0 +1,72 @@
+@use 'ui' as *;
+@use '../../landing' as landing;
+
+:host {
+  display: block;
+  scroll-margin-top: var(--space-4);
+}
+
+.landing-built {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: rem(22px);
+
+  @include tablet-up {
+    padding: var(--space-6);
+  }
+}
+
+.landing-built__title {
+  @include landing.eyebrow;
+}
+
+.landing-built__text {
+  margin: 0;
+  font-size: rem(15px);
+  line-height: rem(23px);
+}
+
+.landing-built__agents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(6px);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.landing-built__agent {
+  padding: var(--space-1) rem(10px);
+  font-family: var(--font-mono);
+  font-size: rem(12px);
+  line-height: rem(16px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+}
+
+.landing-built__links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.landing-built__link {
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+  font-size: rem(14px);
+  color: var(--text);
+  text-underline-offset: rem(3px);
+}
+
+.landing-built__hint {
+  @include visually-hidden;
+}

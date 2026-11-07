@@ -1,4 +1,11 @@
-<main>
-  <h1>{{ 'landing.title' | transloco }}</h1>
-  <p>{{ 'landing.tagline' | transloco }}</p>
+<app-landing-header />
+<main class="landing">
+  <app-landing-hero />
+  <app-landing-before-after />
+  <div class="landing__about">
+    <app-landing-why />
+    <app-landing-built />
+  </div>
+  <app-landing-finale />
 </main>
+<app-landing-footer />

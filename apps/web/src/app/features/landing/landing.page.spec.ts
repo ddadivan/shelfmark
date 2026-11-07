@@ -1,24 +1,28 @@
-import { firstValueFrom } from 'rxjs';
-import { APP_LANG } from '../../core/i18n/models/app-lang.const';
-import { TestBed } from '@angular/core/testing';
-import { provideTransloco, TranslocoService } from '@jsverse/transloco';
-import { AppTranslocoLoader } from '../../core/i18n/app-transloco.loader';
-import { translocoConfig } from '../../core/i18n/transloco.config';
+import { axeViolations } from '../../../testing/axe';
+import { createTranslated } from '../../../testing/create-translated';
 import LandingPage from './landing.page';
 
 describe('LandingPage', () => {
-  it('renders the translated title and tagline', async () => {
-    await TestBed.configureTestingModule({
-      imports: [LandingPage],
-      providers: [provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader })],
-    }).compileComponents();
+  it('composes the sections under landmarks with one h1', async () => {
+    const fixture = await createTranslated(LandingPage);
+    const root = fixture.nativeElement as HTMLElement;
 
-    await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
-    const fixture = TestBed.createComponent(LandingPage);
-    await fixture.whenStable();
-    const element = fixture.nativeElement as HTMLElement;
+    expect(root.querySelector('header')).not.toBeNull();
+    expect(root.querySelectorAll('main')).toHaveLength(1);
+    expect(root.querySelector('footer')).not.toBeNull();
+    expect(root.querySelectorAll('h1')).toHaveLength(1);
+    const h2 = Array.from(root.querySelectorAll('h2')).map((h) => h.textContent?.trim());
+    expect(h2).toEqual([
+      'The same links, before and after',
+      'Why this exists',
+      "How it's built",
+      'Empty your Saved Messages.',
+    ]);
+  });
 
-    expect(element.querySelector('h1')?.textContent).toBe('Shelfmark');
-    expect(element.querySelector('p')?.textContent).toBe('Every saved link, in one place.');
+  it('has no axe violations', async () => {
+    const fixture = await createTranslated(LandingPage);
+
+    expect(await axeViolations(fixture.nativeElement)).toEqual([]);
   });
 });

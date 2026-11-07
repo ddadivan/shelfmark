@@ -8,7 +8,10 @@ describe('AppTranslocoLoader', () => {
     const translation = await loader.getTranslation(APP_LANG.En);
 
     expect(translation).toMatchObject({
-      landing: { title: 'Shelfmark', tagline: 'Every saved link, in one place.' },
+      landing: {
+        hero: { line1: 'Paste a link.' },
+        finale: { title: 'Empty your Saved Messages.' },
+      },
     });
     for (const scope of ['landing', 'auth', 'shell', 'library']) {
       expect(translation).toHaveProperty(scope);

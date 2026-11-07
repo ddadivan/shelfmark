@@ -1,0 +1,47 @@
+@use 'ui' as *;
+
+// Centred content column shared by every section.
+@mixin wrap {
+  width: 100%;
+  max-width: rem(1180px);
+  padding-inline: var(--space-4);
+  margin-inline: auto;
+
+  @include tablet-up {
+    padding-inline: var(--space-6);
+  }
+}
+
+// Section heading in the page's display scale.
+@mixin section-title {
+  margin: 0;
+  font-size: rem(24px);
+  font-weight: 700;
+  line-height: rem(30px);
+  letter-spacing: -0.025em;
+
+  @include tablet-up {
+    font-size: rem(32px);
+    line-height: rem(38px);
+  }
+}
+
+// Small mono label above a block ("Why this exists").
+@mixin eyebrow {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: rem(12px);
+  font-weight: 400;
+  line-height: rem(16px);
+  color: var(--text-muted);
+}
+
+// Plain text link: muted, full colour on hover and keyboard focus ring from the global rule.
+@mixin text-link {
+  color: var(--text-muted);
+  text-decoration: none;
+
+  @include hover {
+    color: var(--text);
+  }
+}

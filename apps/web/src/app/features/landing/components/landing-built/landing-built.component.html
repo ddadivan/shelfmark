@@ -1,0 +1,37 @@
+<section class="landing-built" aria-labelledby="landing-built-title">
+  <h2 id="landing-built-title" class="landing-built__title">
+    {{ 'landing.built.title' | transloco }}
+  </h2>
+  <p class="landing-built__text">{{ 'landing.built.text' | transloco }}</p>
+  <ul class="landing-built__agents" [attr.aria-label]="'landing.built.agentsLabel' | transloco">
+    @for (agent of agents; track agent) {
+      <li class="landing-built__agent">{{ agent }}</li>
+    }
+  </ul>
+  <ul class="landing-built__links">
+    <li>
+      <a
+        class="landing-built__link"
+        [attr.href]="LANDING_LINKS.Repository"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {{ 'landing.built.code' | transloco }}
+        <ui-icon name="external" [size]="16" />
+        <span class="landing-built__hint">({{ 'landing.newTab' | transloco }})</span>
+      </a>
+    </li>
+    <li>
+      <a
+        class="landing-built__link"
+        [attr.href]="LANDING_LINKS.DecisionLog"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {{ 'landing.built.decisions' | transloco }}
+        <ui-icon name="external" [size]="16" />
+        <span class="landing-built__hint">({{ 'landing.newTab' | transloco }})</span>
+      </a>
+    </li>
+  </ul>
+</section>
