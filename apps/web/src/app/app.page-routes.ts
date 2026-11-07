@@ -6,4 +6,8 @@ export const pageRoutes: Routes = [
     path: '',
     loadComponent: () => import('./features/landing/landing.page'),
   },
+  {
+    path: 'privacy',
+    loadComponent: () => import('./features/privacy/privacy.page'),
+  },
 ];

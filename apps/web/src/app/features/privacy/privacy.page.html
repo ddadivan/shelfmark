@@ -1,0 +1,83 @@
+<header class="header">
+  <a class="home" routerLink="/" [attr.aria-label]="'privacy.home' | transloco">
+    <ui-logo />
+  </a>
+</header>
+<main>
+  <article class="article">
+    @let date = 'privacy.updatedDate' | transloco;
+    <h1 class="title">{{ 'privacy.title' | transloco }}</h1>
+    <p class="muted">{{ 'privacy.updated' | transloco: { date } }}</p>
+    <p>{{ 'privacy.intro' | transloco }}</p>
+
+    <h2>{{ 'privacy.store.title' | transloco }}</h2>
+    <ul>
+      <li>{{ 'privacy.store.account' | transloco }}</li>
+      <li>{{ 'privacy.store.content' | transloco }}</li>
+      <li>{{ 'privacy.store.feedback' | transloco }}</li>
+      <li>{{ 'privacy.store.sessions' | transloco }}</li>
+      <li>{{ 'privacy.store.logs' | transloco }}</li>
+    </ul>
+
+    <h2>{{ 'privacy.cookies.title' | transloco }}</h2>
+    <p>{{ 'privacy.cookies.necessary' | transloco }}</p>
+    <p>{{ 'privacy.cookies.none' | transloco }}</p>
+    <p>{{ 'privacy.cookies.storage' | transloco }}</p>
+
+    <h2>{{ 'privacy.dont.title' | transloco }}</h2>
+    <ul>
+      <li>{{ 'privacy.dont.sell' | transloco }}</li>
+      <li>{{ 'privacy.dont.read' | transloco }}</li>
+    </ul>
+
+    <h2>{{ 'privacy.previews.title' | transloco }}</h2>
+    <p>{{ 'privacy.previews.body' | transloco }}</p>
+
+    <h2>{{ 'privacy.limits.title' | transloco }}</h2>
+    <p>{{ 'privacy.limits.body' | transloco }}</p>
+
+    <h2>{{ 'privacy.where.title' | transloco }}</h2>
+    <p>{{ 'privacy.where.hosting' | transloco }}</p>
+    <p>{{ 'privacy.where.signin' | transloco }}</p>
+    <ul>
+      <li>
+        <a [href]="links.Google" target="_blank" rel="noopener noreferrer"
+          >{{ 'privacy.where.google' | transloco }}<span class="visually-hidden">
+            {{ 'privacy.where.newTab' | transloco }}</span
+          ></a
+        >
+      </li>
+      <li>
+        <a [href]="links.Github" target="_blank" rel="noopener noreferrer"
+          >{{ 'privacy.where.github' | transloco }}<span class="visually-hidden">
+            {{ 'privacy.where.newTab' | transloco }}</span
+          ></a
+        >
+      </li>
+    </ul>
+
+    <h2>{{ 'privacy.demo.title' | transloco }}</h2>
+    <p>{{ 'privacy.demo.body' | transloco }}</p>
+
+    <h2>{{ 'privacy.control.title' | transloco }}</h2>
+    <p>{{ 'privacy.control.export' | transloco }}</p>
+    <p>{{ 'privacy.control.delete' | transloco }}</p>
+    <p>{{ 'privacy.control.retention' | transloco }}</p>
+
+    <h2>{{ 'privacy.rights.title' | transloco }}</h2>
+    <p>{{ 'privacy.rights.body' | transloco }}</p>
+    <p class="muted">{{ 'privacy.rights.basis' | transloco }}</p>
+    <p class="muted">{{ 'privacy.rights.controller' | transloco }}</p>
+
+    <h2>{{ 'privacy.contact.title' | transloco }}</h2>
+    <p>{{ 'privacy.contact.issues' | transloco }}</p>
+    <p>
+      <a [href]="links.Issues" target="_blank" rel="noopener noreferrer"
+        >{{ 'privacy.contact.link' | transloco }}<span class="visually-hidden">
+          {{ 'privacy.where.newTab' | transloco }}</span
+        ></a
+      >
+    </p>
+    <p>{{ 'privacy.contact.private' | transloco }}</p>
+  </article>
+</main>
