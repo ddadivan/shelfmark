@@ -105,6 +105,18 @@ export const Fab: Story = {
   },
 };
 
+/** Full-width button (phone settings: Sign out). The host and the inner button take 100%. */
+export const Block: Story = {
+  render: () => ({
+    template: `
+      <div style="max-inline-size: 22rem; display: grid; gap: 0.75rem">
+        <ui-button block size="lg">Sign out</ui-button>
+        <ui-button block size="lg" variant="ghost">Delete account</ui-button>
+      </div>
+    `,
+  }),
+};
+
 /** Press it: a ripple grows from the touch point (20% of the text colour on filled buttons). */
 export const WithRipple: Story = {
   args: { variant: BUTTON_VARIANT.Primary, size: BUTTON_SIZE.Lg },

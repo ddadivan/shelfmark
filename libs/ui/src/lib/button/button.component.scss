@@ -4,6 +4,11 @@
   display: inline-flex;
 }
 
+:host(.ui-button-host--block) {
+  display: flex;
+  inline-size: 100%;
+}
+
 .ui-button {
   @include type(label);
 
@@ -135,6 +140,11 @@ a.ui-button {
   height: rem(44px);
   padding: 0 rem(18px);
   font-size: rem(15px);
+}
+
+.ui-button.ui-button--block {
+  flex: 1 1 auto;
+  inline-size: 100%;
 }
 
 .ui-button--icon {

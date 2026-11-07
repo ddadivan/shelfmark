@@ -55,6 +55,7 @@ import { BUTTON_TYPE } from './models/button-type.const';
   imports: [IconComponent, NgTemplateOutlet, RippleDirective, SpinnerComponent],
   providers: [{ provide: UI_FOCUS_TARGET, useExisting: ButtonComponent }],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '[class.ui-button-host--block]': 'block()' },
   templateUrl: './button.component.html',
   styleUrl: './button.component.scss',
 })
@@ -79,6 +80,8 @@ export class ButtonComponent implements UiFocusTarget {
    * card). The overlay has no ripple (the ripple host clips).
    */
   readonly hitArea = input<ButtonHitArea>(BUTTON_HIT_AREA.Grow);
+  /** Full-width button: the host and the inner element take 100% of the inline size. */
+  readonly block = input(false, { transform: booleanAttribute });
   /** Floating action button: 3.5rem square with the popover shadow; use with `iconOnly`. */
   readonly fab = input(false, { transform: booleanAttribute });
   /** Press ripple; `[ripple]="false"` opts out. */
@@ -121,6 +124,9 @@ export class ButtonComponent implements UiFocusTarget {
     }
     if (this.iconOnly()) {
       classes.push('ui-button--icon');
+    }
+    if (this.block()) {
+      classes.push('ui-button--block');
     }
     if (this.fab()) {
       classes.push('ui-button--fab');
