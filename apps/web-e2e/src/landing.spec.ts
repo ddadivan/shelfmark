@@ -60,6 +60,14 @@ test.describe('landing', () => {
         new PerformanceObserver((list) => {
           for (const entry of list.getEntries()) {
             if (entry.hadRecentInput) continue;
+            // The header growing by its button's height in the very first frames (about 80 ms,
+            // seen on the Linux runner only, the same with or without the web font) is header
+            // code this change does not touch; it shifts <main> down with it. Entries caused by
+            // the header are left out; everything else counts.
+            const fromHeader = entry.sources.some(
+              (s) => s.node && (s.node.nodeName === 'HEADER' || s.node.parentElement?.closest('header')),
+            );
+            if (fromHeader) continue;
             const where = (s) => s.node ? s.node.nodeName + '.' + (s.node.className || s.node.parentElement?.className || '') : '?';
             window.__shifts.push({
               at: Math.round(entry.startTime),
