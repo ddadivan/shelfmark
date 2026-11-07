@@ -35,12 +35,22 @@ describe('SpinnerComponent', () => {
     expect(host.hasAttribute('aria-label')).toBe(false);
   });
 
-  it('is an indeterminate progressbar with a label', () => {
-    const { host } = setup({ label: 'Loading' });
-    expect(host.getAttribute('role')).toBe('progressbar');
-    expect(host.getAttribute('aria-label')).toBe('Loading');
+  it('is a status region with a label: empty first, then the hidden text', async () => {
+    const { fixture, host } = setup({ label: 'Loading' });
+    const text = host.querySelector('.ui-spinner__text') as HTMLElement;
+    expect(host.getAttribute('role')).toBe('status');
+    expect(host.hasAttribute('aria-label')).toBe(false);
     expect(host.hasAttribute('aria-hidden')).toBe(false);
-    expect(host.hasAttribute('aria-valuenow')).toBe(false);
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(text.textContent).toBe('Loading');
+    fixture.componentRef.setInput('label', 'Saving');
+    fixture.detectChanges();
+    expect(text.textContent).toBe('Saving');
+  });
+
+  it('has no text node without a label', () => {
+    expect(setup().host.querySelector('.ui-spinner__text')).toBeNull();
   });
 
   it('has no axe violations, decorative or labelled', async () => {

@@ -125,6 +125,18 @@ describe('InputComponent', () => {
     expect(host.querySelector('.ui-input__glyph--return')).not.toBeNull();
   });
 
+  it('forwards loadingLabel to the spinner as a status region', () => {
+    const { fixture, host } = setup({ type: INPUT_TYPE.Search, loading: true });
+    expect(host.querySelector('ui-spinner')?.getAttribute('role')).toBeNull();
+    expect(host.querySelector('ui-spinner')?.getAttribute('aria-hidden')).toBe('true');
+    fixture.componentRef.setInput('loadingLabel', 'Searching');
+    fixture.detectChanges();
+    TestBed.tick();
+    const spinner = host.querySelector('ui-spinner');
+    expect(spinner?.getAttribute('role')).toBe('status');
+    expect(spinner?.textContent?.trim()).toBe('Searching');
+  });
+
   it('ignores loading for other types', () => {
     const { host } = setup({ icon: 'link', loading: true });
     expect(host.querySelector('ui-spinner')).toBeNull();

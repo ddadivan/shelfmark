@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import type { HeadingLevel } from '../heading';
 import { IconComponent } from '../icon/icon.component';
 import type { IconName } from '../icon/models/icon-name.type';
 import { IllustrationComponent } from '../illustration/illustration.component';
 import type { IllustrationMotion } from '../illustration/models/illustration-motion.type';
 import type { IllustrationName } from '../illustration/models/illustration-name.type';
-import type { EmptyStateHeadingLevel } from './models/empty-state-heading-level.type';
 
 /**
  * Invites the next action when a space has nothing in it: an `illustration` scene or an
@@ -33,5 +33,5 @@ export class EmptyStateComponent {
   /** Motion of the illustration; omit for the scene's default. */
   readonly illustrationMotion = input<IllustrationMotion>();
   /** Heading level, 2 by default. */
-  readonly headingLevel = input<EmptyStateHeadingLevel>(2);
+  readonly headingLevel = input<HeadingLevel>(2);
 }

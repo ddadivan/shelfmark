@@ -42,6 +42,9 @@
   border: 0;
   border-radius: var(--radius-sm);
 
+  // 24px at rest (WCAG 2.5.8); the hit area grows it to 44px on coarse pointers only.
+  @include hit-area(0, -10px);
+
   @include hover {
     color: var(--text);
     background: var(--surface-hover);
