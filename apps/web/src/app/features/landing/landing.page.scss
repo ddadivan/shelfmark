@@ -1,0 +1,25 @@
+@use 'ui' as *;
+@use './landing' as landing;
+
+:host {
+  display: block;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.landing__about {
+  @include landing.wrap;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-8);
+  align-items: start;
+  padding-block: rem(40px);
+
+  @include desktop {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: rem(64px);
+    padding-block: rem(88px);
+  }
+}

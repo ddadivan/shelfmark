@@ -1,0 +1,16 @@
+<section class="landing-finale" aria-labelledby="landing-finale-title">
+  <h2 id="landing-finale-title" class="landing-finale__title">
+    {{ 'landing.finale.title' | transloco }}
+  </h2>
+  <div class="landing-finale__actions">
+    <ui-button
+      [variant]="BUTTON_VARIANT.Primary"
+      [size]="BUTTON_SIZE.Lg"
+      [href]="LANDING_LINKS.Demo"
+      >{{ 'landing.finale.demo' | transloco }}</ui-button
+    >
+    <ui-button [size]="BUTTON_SIZE.Lg" [href]="LANDING_LINKS.SignIn">{{
+      'landing.finale.signIn' | transloco
+    }}</ui-button>
+  </div>
+</section>

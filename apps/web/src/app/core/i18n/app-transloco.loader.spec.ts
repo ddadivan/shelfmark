@@ -7,8 +7,11 @@ describe('AppTranslocoLoader', () => {
   it('loads the en translations', async () => {
     const translation = await loader.getTranslation(APP_LANG.En);
 
-    expect(translation).toEqual({
-      landing: { title: 'Shelfmark', tagline: 'Every saved link, in one place.' },
+    expect(translation).toMatchObject({
+      landing: {
+        hero: { line1: 'Paste a link.' },
+        finale: { title: 'Empty your Saved Messages.' },
+      },
     });
   });
 
