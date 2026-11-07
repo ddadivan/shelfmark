@@ -58,7 +58,7 @@ export class InputComponent extends UiFieldControl implements FormValueControl<s
    * after the text (before the clear button).
    */
   readonly loading = input(false, { transform: booleanAttribute });
-  /** Announced while `loading` ("Searching"); without it the spinner stays silent. */
+  /** Announced while `loading` ("Searching", "Loading preview"); without it the spinner stays silent. */
   readonly loadingLabel = input('');
 
   private readonly native = viewChild.required<ElementRef<HTMLInputElement>>('native');

@@ -16,7 +16,8 @@ const meta: Meta<InputComponent> = {
           'Single-line field in the shared field shell: the label is always visible, the placeholder ' +
           'only shows an example. With Signal Forms bind it with `[formField]` (value, disabled, ' +
           'required and the first error message of a touched field come from the field); without a ' +
-          'form use `[(value)]` and `error`. While `loading`, `search` swaps its icon for a spinner and other types show one after the text.',
+          'form use `[(value)]` and `error`. While `loading`, `search` swaps its icon for a spinner ' +
+          'and other types show one after the text.',
       },
     },
   },
