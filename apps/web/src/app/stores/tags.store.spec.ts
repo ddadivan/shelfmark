@@ -1,6 +1,11 @@
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { TAG_LIMIT, type LinkResponse, type TagResponse } from '@shelfmark/contracts';
+import {
+  TAG_ERROR_MESSAGE,
+  TAG_LIMIT,
+  type LinkResponse,
+  type TagResponse,
+} from '@shelfmark/contracts';
 import { MOCK_LINKS, MOCK_TAGS } from '@shelfmark/contracts/testing';
 import { NEVER, of, Subject, throwError } from 'rxjs';
 import { LINKS_API } from '../features/links/models/links-api.const';
@@ -128,6 +133,28 @@ describe('TagsStore', () => {
 
       expect(result.outcome).toBe(TAG_OUTCOME.Conflict);
       expect(names(store)).not.toContain('fresh');
+    });
+
+    it('reports the 409 of the tag limit as limit reached, not as a name conflict', async () => {
+      const limit = () =>
+        throwError(
+          () =>
+            new HttpErrorResponse({
+              status: HttpStatusCode.Conflict,
+              error: {
+                statusCode: 409,
+                error: 'Conflict',
+                message: TAG_ERROR_MESSAGE.LimitReached,
+                requestId: 'r1',
+              },
+            }),
+        );
+      const { store } = setup({ create: vi.fn(limit) });
+      await store.load();
+
+      const result = await store.create('fresh');
+
+      expect(result.outcome).toBe(TAG_OUTCOME.LimitReached);
     });
 
     it('reports another failure as failed', async () => {

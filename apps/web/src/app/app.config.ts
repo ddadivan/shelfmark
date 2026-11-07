@@ -16,6 +16,7 @@ import {
 } from '@angular/router';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { apiBaseInterceptor } from './core/api/api-base.interceptor';
+import { errorInterceptor } from './core/api/error.interceptor';
 import { provideAuthApi } from './core/auth/provide-auth-api';
 import { appRoutes } from './app.routes';
 import { translocoConfig } from './core/i18n/transloco.config';
@@ -38,8 +39,8 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
     ),
     // Order matters (PROJECT.md 5.1): apiBase, requestId, retry, loading, error, devLogging.
-    // Only the first exists so far; add the others in that order.
-    provideHttpClient(withFetch(), withInterceptors([apiBaseInterceptor])),
+    // Only apiBase and error exist so far; requestId, retry and loading go between them, devLogging last.
+    provideHttpClient(withFetch(), withInterceptors([apiBaseInterceptor, errorInterceptor])),
     provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
     // Load the default language before the first render: a lazy `en.json` arriving later fills
     // in empty text and shifts the layout (CLS).

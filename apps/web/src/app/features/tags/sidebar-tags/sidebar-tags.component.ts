@@ -293,6 +293,9 @@ export class SidebarTagsComponent {
           this.errorState.set({ key: 'tags.name.exists', params: { name } });
         }
         break;
+      case TAG_OUTCOME.LimitReached:
+        this.errorState.set({ key: 'tags.add.limit', params: { max: TAG_LIMIT.PerUserMax } });
+        break;
       default:
         this.errorState.set({ key: previous ? 'tags.rename.failed' : 'tags.add.failed' });
         break;
