@@ -140,6 +140,8 @@ describe('motion mixins', () => {
     ['enter(fade)', 'ui-reveal var(--duration-base) var(--ease-out) both'],
     ['enter(toast)', 'ui-slide-up var(--duration-slow) var(--ease-out) both'],
     ['enter(sheet)', 'ui-sheet-in var(--duration-slow) var(--ease-drawer) both'],
+    ['enter(drawer)', 'ui-drawer-in var(--duration-slow) var(--ease-drawer) both'],
+    ['leave(drawer)', 'ui-drawer-out var(--duration-base) var(--ease-in) both'],
     ['leave(pop)', 'ui-pop-out var(--duration-fast) var(--ease-out) both'],
     ['leave(toast)', 'ui-toast-out var(--duration-fast) var(--ease-in) both'],
     ['leave(sheet)', 'ui-sheet-out var(--duration-base) var(--ease-in) both'],
@@ -147,29 +149,33 @@ describe('motion mixins', () => {
     expect(css(`.a { @include ${include}; }`)).toContain(`animation: ${animation}`);
   });
 
-  it.each(['enter(pop)', 'enter(toast)', 'enter(sheet)', 'enter(spinner)', 'enter(spinner-grow)'])(
-    '%s falls back to a fade in 200 ms under reduced motion',
-    (include) => {
-      const reduced = reducedMotionBlock(css(`.a { @include ${include}; }`));
-      expect(reduced).toContain('animation: ui-reveal var(--duration-base) var(--ease-out) both');
-      expect(reduced).not.toMatch(/ui-(pop-in|slide-up|sheet-in|spinner-grow)/);
-    },
-  );
+  it.each([
+    'enter(pop)',
+    'enter(toast)',
+    'enter(sheet)',
+    'enter(drawer)',
+    'enter(spinner)',
+    'enter(spinner-grow)',
+  ])('%s falls back to a fade in 200 ms under reduced motion', (include) => {
+    const reduced = reducedMotionBlock(css(`.a { @include ${include}; }`));
+    expect(reduced).toContain('animation: ui-reveal var(--duration-base) var(--ease-out) both');
+    expect(reduced).not.toMatch(/ui-(pop-in|slide-up|sheet-in|drawer-in|spinner-grow)/);
+  });
 
-  it.each(['leave(pop)', 'leave(toast)', 'leave(sheet)', 'leave(spinner-shrink)'])(
+  it.each(['leave(pop)', 'leave(toast)', 'leave(sheet)', 'leave(drawer)', 'leave(spinner-shrink)'])(
     '%s falls back to a plain fade-out under reduced motion',
     (include) => {
       const reduced = reducedMotionBlock(css(`.a { @include ${include}; }`));
       expect(reduced).toContain('ui-fade-out');
-      expect(reduced).not.toMatch(/ui-(pop-out|toast-out|sheet-out|spinner-shrink)/);
+      expect(reduced).not.toMatch(/ui-(pop-out|toast-out|sheet-out|drawer-out|spinner-shrink)/);
     },
   );
 
   it('presets are finite so animate.leave can finish: no infinite, no loader rotation', () => {
-    const presets = ['pop', 'fade', 'toast', 'sheet', 'spinner', 'spinner-grow']
+    const presets = ['pop', 'fade', 'toast', 'sheet', 'drawer', 'spinner', 'spinner-grow']
       .map((n) => `.a { @include enter(${n}); }`)
       .concat(
-        ['pop', 'fade', 'toast', 'sheet', 'spinner', 'spinner-shrink'].map(
+        ['pop', 'fade', 'toast', 'sheet', 'drawer', 'spinner', 'spinner-shrink'].map(
           (n) => `.a { @include leave(${n}); }`,
         ),
       )
@@ -219,6 +225,8 @@ describe('motion mixins', () => {
       'ui-reveal',
       'ui-sheet-in',
       'ui-sheet-out',
+      'ui-drawer-in',
+      'ui-drawer-out',
       'ui-slide-up',
       'ui-toast-out',
       'ui-spin',
