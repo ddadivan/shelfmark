@@ -17,6 +17,7 @@ const DELAY_PROPERTY = '--landing-reveal-delay';
   host: {
     '[class.landing-reveal--pending]': 'state() === STATE.Pending',
     '[class.landing-reveal--shown]': 'state() === STATE.Shown',
+    '(focusin)': 'revealNow()',
   },
 })
 export class LandingRevealDirective {
@@ -27,6 +28,9 @@ export class LandingRevealDirective {
   private readonly motion = inject(LandingMotionService);
   private readonly destroyRef = inject(DestroyRef);
 
+  /** Shows the section at once (set while it is pending); used when focus lands inside it. */
+  private showNow: (() => void) | undefined;
+
   constructor() {
     afterNextRender(() => this.start());
   }
@@ -35,7 +39,7 @@ export class LandingRevealDirective {
     if (this.motion.reducedMotion() || typeof IntersectionObserver === 'undefined') {
       return;
     }
-    if (this.visibleShare() >= LANDING_REVEAL.Threshold) {
+    if (this.isVisibleEnough(this.visiblePixels(), this.host.getBoundingClientRect().height)) {
       return;
     }
     Array.from(this.host.children).forEach((child, index) => {
@@ -47,21 +51,32 @@ export class LandingRevealDirective {
 
     const reveal = (): void => {
       this.state.set(LANDING_REVEAL_STATE.Shown);
+      this.showNow = undefined;
       observer.disconnect();
       clearTimeout(safety);
     };
+    this.showNow = reveal;
     const observer = new IntersectionObserver(
       (entries) => {
         // The observer reports, so the safety net is no longer needed: an off-screen section
         // stays hidden until it scrolls in, however long that takes.
         clearTimeout(safety);
-        if (entries.some((entry) => entry.isIntersecting)) {
+        if (
+          entries.some(
+            (entry) =>
+              entry.isIntersecting &&
+              this.isVisibleEnough(entry.intersectionRect.height, entry.boundingClientRect.height),
+          )
+        ) {
           reveal();
         }
       },
-      { threshold: LANDING_REVEAL.Threshold },
+      // 0 reports the first overlap, so a section taller than five screens (it can never reach
+      // 20% visible) is still seen; the Threshold fires for the usual case.
+      { threshold: [0, LANDING_REVEAL.Threshold] },
     );
-    // Never leave content hidden if the observer does not report at all (cleared on its first report).
+    // Never leave content hidden if the observer does not report at all; the first report
+    // clears this timer.
     const safety = setTimeout(reveal, LANDING_REVEAL.SafetyMs);
     observer.observe(this.host);
     this.destroyRef.onDestroy(() => {
@@ -70,13 +85,33 @@ export class LandingRevealDirective {
     });
   }
 
-  /** Share of the host already inside the viewport (0 when it has no size yet). */
-  private visibleShare(): number {
-    const { top, bottom, height } = this.host.getBoundingClientRect();
-    if (height <= 0) {
-      return 0;
+  /** Keyboard focus inside a hidden section must never land on invisible content. */
+  protected revealNow(): void {
+    this.showNow?.();
+  }
+
+  /**
+   * Enough is visible when it is at least the threshold share of the section, or of the
+   * viewport: a section taller than `1 / Threshold` viewports can never reach the first.
+   */
+  private isVisibleEnough(visiblePixels: number, sectionHeight: number): boolean {
+    if (sectionHeight <= 0 || visiblePixels <= 0) {
+      return false;
     }
-    const viewport = this.host.ownerDocument.defaultView?.innerHeight ?? 0;
-    return (Math.min(bottom, viewport) - Math.max(top, 0)) / height;
+    const threshold = LANDING_REVEAL.Threshold;
+    return (
+      visiblePixels >= sectionHeight * threshold ||
+      visiblePixels >= this.viewportHeight() * threshold
+    );
+  }
+
+  /** Height of the host already inside the viewport (0 when it has no size yet). */
+  private visiblePixels(): number {
+    const { top, bottom } = this.host.getBoundingClientRect();
+    return Math.min(bottom, this.viewportHeight()) - Math.max(top, 0);
+  }
+
+  private viewportHeight(): number {
+    return this.host.ownerDocument.defaultView?.innerHeight ?? 0;
   }
 }

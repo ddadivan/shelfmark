@@ -30,9 +30,17 @@ export class MockIntersectionObserver {
     return [];
   }
 
-  /** Reports every observed element as intersecting or not. */
-  trigger(isIntersecting: boolean): void {
-    const entries = this.observed.map((target) => ({ target, isIntersecting }));
+  /**
+   * Reports every observed element as intersecting or not. `visibleHeight` / `height` set the
+   * entry rects (default: the whole 100 px element when intersecting).
+   */
+  trigger(isIntersecting: boolean, visibleHeight = isIntersecting ? 100 : 0, height = 100): void {
+    const entries = this.observed.map((target) => ({
+      target,
+      isIntersecting,
+      intersectionRect: { height: visibleHeight },
+      boundingClientRect: { height },
+    }));
     this.callback(entries as IntersectionObserverEntry[], this as unknown as IntersectionObserver);
   }
 

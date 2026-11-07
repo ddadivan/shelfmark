@@ -66,6 +66,14 @@
     transition-delay: var(--landing-reveal-delay, 0ms);
   }
 
+  // Print has no scrolling to reveal anything: show every section.
+  @media print {
+    &.landing-reveal--pending > * {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
   @include reduced-motion {
     &.landing-reveal--pending > * {
       opacity: 1;

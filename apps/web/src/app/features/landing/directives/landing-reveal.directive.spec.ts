@@ -38,7 +38,7 @@ describe('LandingRevealDirective', () => {
     const { section } = await create();
 
     expect(section.classList.contains('landing-reveal--pending')).toBe(true);
-    expect(MockIntersectionObserver.instances[0].options?.threshold).toBe(0.2);
+    expect(MockIntersectionObserver.instances[0].options?.threshold).toEqual([0, 0.2]);
   });
 
   it('staggers the children by 60 ms', async () => {
@@ -101,6 +101,33 @@ describe('LandingRevealDirective', () => {
 
     expect(section.classList.contains('landing-reveal--pending')).toBe(true);
     expect(section.classList.contains('landing-reveal--shown')).toBe(false);
+  });
+
+  it('reveals a section taller than five screens once a fifth of the viewport shows it', async () => {
+    vi.stubGlobal('innerHeight', 800);
+    const { fixture, section } = await create();
+    const observer = MockIntersectionObserver.instances[0];
+
+    // 100 of 10 000 px is 1% of the section, but under a fifth of the viewport: still hidden.
+    observer.trigger(true, 100, 10_000);
+    await fixture.whenStable();
+    expect(section.classList.contains('landing-reveal--pending')).toBe(true);
+
+    // 200 px is 1/4 of the viewport, though only 2% of the section.
+    observer.trigger(true, 200, 10_000);
+    await fixture.whenStable();
+    expect(section.classList.contains('landing-reveal--shown')).toBe(true);
+  });
+
+  it('shows a pending section when focus lands inside it', async () => {
+    const { fixture, section } = await create();
+    expect(section.classList.contains('landing-reveal--pending')).toBe(true);
+
+    section.querySelector('p')?.dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+    await fixture.whenStable();
+
+    expect(section.classList.contains('landing-reveal--shown')).toBe(true);
+    expect(MockIntersectionObserver.instances[0].disconnected).toBe(true);
   });
 
   it('never hides content under reduced motion', async () => {
