@@ -7,6 +7,7 @@ NestJS REST API, mounted under `/api` (port 3000). Source of truth: `docs/PROJEC
 - NestJS 12 (`@nestjs/common|core|platform-express` 12.3.3, ESM-only), Express, `@nestjs/swagger` 12, `class-validator` + `class-transformer`, `helmet`.
 - Build: webpack (`webpack-cli build`, tsc loader, ESM output, all dependencies external) into `dist/apps/api` (`main.mjs`, `vercel-handler.mjs`; `.mjs` so the module type is never guessed). No esbuild: it does not emit decorator metadata, which Nest DI needs. No `@nx/nest` (no Nest 12 support), no `@nx/node`, no `@nestjs/cli`, no `@nestjs/config`.
 - `@nx/webpack` 24 has no `webpack` executor, so `build` and `serve` are `nx:run-commands` around `webpack-cli`.
+- Database: Prisma 7 (`prisma-client` generator, ESM, output `src/generated/prisma`, git-ignored, built by the cached `prisma-generate` target) with the `pg` driver adapter (`@prisma/adapter-pg`); no native engine at runtime. Local dev and tests use embedded Postgres (PGlite) instead of Docker (ADR 0025). Prisma's install scripts are denied (ADR 0020): the CLI downloads its schema engine on first use.
 - Tests: Vitest with SWC (`unplugin-swc`, Vite's own TS transform disabled with `oxc: false`) so decorator metadata works. Supertest on `createApp()`.
 
 ## Layout
@@ -15,7 +16,11 @@ NestJS REST API, mounted under `/api` (port 3000). Source of truth: `docs/PROJEC
 - `src/vercel-handler.ts` - second webpack entry (`vercel-handler.mjs`): Vercel Function handler, one Nest app per instance (`createApp()` + `init()`, no `listen`), cached promise reset on failure. Re-exported by the root `api/index.mjs` (ADR 0019).
 - `src/app/create-app.ts` - `NestFactory` (explicit `ExpressAdapter`) + `configureApp`; reused by `main.ts`, the Vercel handler and tests.
 - `src/app/configure-app.ts` - request id, helmet, 100kb JSON limit, `/api` prefix, global `ValidationPipe` (whitelist, forbidNonWhitelisted, transform), `AllExceptionsFilter`, Swagger at `/api/docs` (public in every environment, by decision).
-- `src/config/` - typed reader for `PORT` and `NODE_ENV`, validated at boot. Never loads `.env` files.
+- `src/config/` - typed readers for `PORT`, `NODE_ENV` and `DATABASE_URL`, validated at boot; errors never echo a URL. Never loads `.env` files.
+- `src/prisma/` - global `PrismaModule` and `PrismaService` (lazy connect: boot and `/api/health` never touch the database). Not imported by `AppModule` until the first feature needs it (auth, #64).
+- `prisma/` - `schema.prisma` and `migrations/` (checked in); `prisma.config.ts` reads the URLs from the environment only.
+- `scripts/` - `local-db.mjs` (PGlite + socket server, runs a command with the database URLs set), `db-check.mjs`, `migrate-deploy.mjs` (Vercel build only).
+- `test-utils/test-database.ts` - per test file in-memory PGlite with all migrations applied (`createTestDatabase()`, `truncateAll()`, `close()`).
 - `src/common/` - cross-cutting pieces (request id, error filter, `@AllowAnonymous`).
 - `src/<domain>/` - one module per domain (`auth`, `users`, `links`, `folders`, `tags`, `metadata`, ...) with `*.module.ts`, `*.controller.ts`, `*.service.ts`, `dto/`.
 
@@ -38,15 +43,26 @@ NestJS REST API, mounted under `/api` (port 3000). Source of truth: `docs/PROJEC
 - Never read or create `.env*` files; configuration comes from the platform environment.
 - Never log secrets, tokens, request bodies or personal data. The error filter logs only method, path, status and request id.
 - Outbound HTTP (link previews) only through the SSRF-safe fetcher (http/https, private IPs blocked after DNS resolve, timeout, size and redirect limits, no cookies).
-- Prisma with parameterised queries only; never `$queryRawUnsafe`.
+- Prisma with parameterised queries only; never `$queryRawUnsafe` / `$executeRawUnsafe` (ESLint forbids both).
+- Never read, print or set real database URLs; `local-db.mjs` overrides them with its own loopback URLs.
+
+## Database rules
+
+- Conventions: PascalCase model with `@@map` to a snake_case plural table, camelCase fields with `@map` to snake_case columns, `@default(uuid(7)) @db.Uuid` ids, `@db.Timestamptz(3)` timestamps.
+- Never edit an applied migration; add a new one. Destructive changes follow expand-then-contract across deploys (add, backfill and dual-write, switch reads, then drop).
+- Migrations are created locally with `nx run api:db-migrate -- --name <name>`, applied in the Vercel build (`api:migrate-deploy`, only when `VERCEL=1`), and verified in CI against Postgres (`db-check`: deploy plus drift check).
+- Never run `migrate reset` against a non-local database.
 
 ## Commands
 
 ```bash
-npx nx serve api                  # http://localhost:3000/api (Swagger: /api/docs)
+npx nx serve api                  # http://localhost:3000/api (Swagger: /api/docs), with a local PGlite database (data in tmp/pglite/api)
 # serve cold start: a production build runs first (dependsOn build), then the webpack
 # watch rebuilds and node --watch restarts the server on each change.
 npx nx build api                  # dist/apps/api, run with: node dist/apps/api/main.mjs
+npx nx run api:prisma-generate    # regenerate the client (cached; build, typecheck, lint and test depend on it)
+npx nx run api:db-migrate -- --name <name>   # create and apply a migration on the local database
+npx nx run api:db-check           # apply all migrations to a fresh in-memory database and fail on schema drift
 npx nx test api                   # Vitest, coverage on by default, thresholds 80%
 npx nx run-many -t lint typecheck test build -p api contracts
 ```
@@ -55,4 +71,4 @@ npx nx run-many -t lint typecheck test build -p api contracts
 
 - Specs sit next to the code (`*.spec.ts`).
 - Integration tests build the app with `createApp()` (or `Test.createTestingModule` + `configureApp`) and call it with Supertest; close the app in `afterAll`.
-- Unit-test pure helpers and filters directly; no network, no real database in unit tests.
+- Unit-test pure helpers and filters directly; no network, no real database in unit tests. Database tests use `createTestDatabase()` (in-memory PGlite, no Docker); every user-owned resource needs a data-isolation test against it.
