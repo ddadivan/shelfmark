@@ -8,10 +8,16 @@ const REPORT_TYPE = 'application/json';
 
 /**
  * Scans the current page against WCAG 2.2 AA, attaches the full result and fails on
- * serious or critical violations only.
+ * serious or critical violations only. `include` (a CSS selector) limits the scan to that
+ * subtree, for example an open dialog.
  */
-export async function expectNoBlockingViolations(page: Page, testInfo: TestInfo): Promise<void> {
-  const results = await new AxeBuilder({ page }).withTags([...AXE_TAGS]).analyze();
+export async function expectNoBlockingViolations(
+  page: Page,
+  testInfo: TestInfo,
+  include?: string,
+): Promise<void> {
+  const builder = new AxeBuilder({ page }).withTags([...AXE_TAGS]);
+  const results = await (include ? builder.include(include) : builder).analyze();
   await testInfo.attach(REPORT_NAME, {
     body: JSON.stringify(results, null, 2),
     contentType: REPORT_TYPE,
