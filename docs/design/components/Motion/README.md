@@ -42,6 +42,8 @@ Motion defines Shelfmark's few animations. The one signature moment is saving a 
 
 Feed shifts and deletes use FLIP: measure positions before and after, then animate `transform` from the old place. In Angular: `animate.leave` on the removed card plus a small FLIP helper in `libs/ui` (no library).
 
+**Landing exceptions** (illustrations, not UI; PROJECT.md story 20): chat feed cadence 1.8 s, rise 650 ms, clear 520 ms, shelf landing staggers 160 ms per folder and 80 ms per card. They are named constants in `landing-chat-timing.const.ts`, not tokens.
+
 ## Reduced motion
 
 `prefers-reduced-motion: reduce` removes all movement and scale. Dialogs, menus, toasts, sheets and the landed card simply fade in (200 ms), the sage ring still fades so the new card is findable, colour transitions stay. Spinners and the progress bar keep moving, slower — they are status, not decoration.
