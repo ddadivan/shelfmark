@@ -8,6 +8,7 @@
 
 .landing-finale {
   @include landing.wrap;
+  @include landing.reveal;
 
   display: flex;
   flex-wrap: wrap;

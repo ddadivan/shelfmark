@@ -7,6 +7,8 @@
 }
 
 .landing-built {
+  @include landing.reveal;
+
   scroll-margin-top: var(--space-4);
   display: flex;
   flex-direction: column;

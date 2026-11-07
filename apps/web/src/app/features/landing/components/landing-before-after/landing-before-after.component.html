@@ -1,12 +1,23 @@
 <section class="landing-ba" aria-labelledby="landing-ba-title">
-  <div class="landing-ba__inner">
+  <div class="landing-ba__inner" appLandingReveal>
     <h2 id="landing-ba-title" class="landing-ba__title">
       {{ 'landing.beforeAfter.title' | transloco }}
     </h2>
-    <div class="landing-ba__scenes">
+    @if (!motion.reducedMotion()) {
+      <ui-button class="landing-ba__pause" [ariaPressed]="paused()" (click)="togglePaused()">{{
+        'landing.beforeAfter.pauseMotion' | transloco
+      }}</ui-button>
+    }
+    <div
+      class="landing-ba__scenes"
+      (pointerenter)="engage(true)"
+      (pointerleave)="engage(false)"
+      (focusin)="engage(true)"
+      (focusout)="leaveFocus($event)"
+    >
       <div class="landing-ba__scene">
         <h3 class="landing-ba__label">{{ 'landing.beforeAfter.before' | transloco }}</h3>
-        <app-landing-before-scene />
+        <app-landing-before-scene [paused]="stopped()" />
       </div>
 
       <div class="landing-ba__scene">
@@ -17,6 +28,7 @@
               <div
                 class="landing-ba__row"
                 [class.landing-ba__row--active]="row.id === activeFolder()"
+                [attr.data-testid]="row.id === activeFolder() ? 'landing-ba-active-row' : null"
                 [class.landing-ba__row--nested]="row.depth > 0"
               >
                 {{ row.nameKey | transloco }}
@@ -30,7 +42,7 @@
           </div>
           <ul class="landing-ba__list" [attr.aria-label]="'landing.after.listLabel' | transloco">
             @for (link of lists[activeFolder()]; track link.id) {
-              <li class="landing-ba__item">
+              <li class="landing-ba__item" animate.enter="landing-ba__item--enter">
                 <ui-favicon [letter]="link.letter" />
                 <span class="landing-ba__item-text">
                   <span class="landing-ba__item-title">{{ link.titleKey | transloco }}</span>

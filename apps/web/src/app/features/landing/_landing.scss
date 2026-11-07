@@ -45,3 +45,39 @@
     color: var(--text);
   }
 }
+
+// Scroll reveal for the direct children of an element carrying `appLandingReveal`: fade + 1rem
+// rise over `duration-slow`, each child delayed by `--landing-reveal-delay` (set by the
+// directive). Only the directive's `--pending` class hides content, and reduced motion never does.
+@mixin reveal {
+  &.landing-reveal--pending > * {
+    opacity: 0;
+    transform: translateY(rem(16px));
+  }
+
+  // Longhands on purpose (the easing is set apart so stylelint does not ask for the shorthand).
+  & > * {
+    transition-timing-function: var(--ease-out);
+  }
+
+  &.landing-reveal--shown > * {
+    transition-property: opacity, transform;
+    transition-duration: var(--duration-slow);
+    transition-delay: var(--landing-reveal-delay, 0ms);
+  }
+
+  // Print has no scrolling to reveal anything: show every section.
+  @media print {
+    &.landing-reveal--pending > * {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @include reduced-motion {
+    &.landing-reveal--pending > * {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}

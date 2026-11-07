@@ -9,9 +9,11 @@ import {
   ElementRef,
   inject,
   signal,
+  untracked,
 } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { BUTTON_VARIANT, ButtonComponent, IconComponent, LogoComponent } from '@shelfmark/ui';
+import { LandingMotionService } from '../../landing-motion.service';
 import { LANDING_CHAT_FEED_MESSAGES } from '../../models/landing-chat-feed-messages.const';
 import { LANDING_CHAT_MESSAGES } from '../../models/landing-chat-messages.const';
 import { LANDING_CHAT_PHASE } from '../../models/landing-chat-phase.const';
@@ -19,8 +21,6 @@ import type { LandingChatPhase } from '../../models/landing-chat-phase.type';
 import { LANDING_CHAT_TIMING } from '../../models/landing-chat-timing.const';
 import { LandingChatBubbleComponent } from './landing-chat-bubble/landing-chat-bubble.component';
 import { LandingChatShelfComponent } from './landing-chat-shelf/landing-chat-shelf.component';
-
-const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 
 /**
  * The hero demo: a phone with the "Saved Messages" chat and a button that moves its links onto
@@ -54,6 +54,8 @@ const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 export class LandingChatComponent {
   private readonly document = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);
+  /** Reduced motion and tab visibility, shared with the other landing animations. */
+  private readonly motion = inject(LandingMotionService);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   /** The five links of the static frame (reduced motion) and for assistive technology. */
@@ -65,9 +67,7 @@ export class LandingChatComponent {
 
   private readonly feedSize = LANDING_CHAT_FEED_MESSAGES.length;
   private readonly phase = signal<LandingChatPhase>(LANDING_CHAT_PHASE.Chat);
-  private readonly reducedMotion = signal(false);
   private readonly inView = signal(false);
-  private readonly tabVisible = signal(true);
   protected readonly hovered = signal(false);
   protected readonly focused = signal(false);
   /** The visitor stopped the feed with the pause button (WCAG 2.2.2). */
@@ -79,7 +79,7 @@ export class LandingChatComponent {
   /** The messages are leaving, the shelf is about to show. */
   protected readonly clearing = computed(() => this.phase() === LANDING_CHAT_PHASE.Clearing);
   /** The endless feed is rendered; otherwise the static final frame. */
-  protected readonly animated = computed(() => !this.reducedMotion());
+  protected readonly animated = computed(() => !this.motion.reducedMotion());
 
   /** How many messages the track has risen; `0..feedSize`. */
   protected readonly step = signal(0);
@@ -93,13 +93,22 @@ export class LandingChatComponent {
       !this.hovered() &&
       !this.focused() &&
       this.inView() &&
-      this.tabVisible() &&
+      this.motion.tabVisible() &&
       this.phase() === LANDING_CHAT_PHASE.Chat,
   );
 
   constructor() {
-    this.watchReducedMotion();
-    this.watchTab();
+    // Reduced motion switched on while the messages are leaving: show the shelf now instead of
+    // flashing the static list.
+    effect(() => {
+      if (
+        this.motion.reducedMotion() &&
+        untracked(() => this.phase()) === LANDING_CHAT_PHASE.Clearing
+      ) {
+        clearTimeout(this.clearTimer);
+        this.phase.set(LANDING_CHAT_PHASE.Shelf);
+      }
+    });
     this.destroyRef.onDestroy(() => clearTimeout(this.clearTimer));
 
     // One timer while the feed may run; the cleanup stops it on pause and on destroy.
@@ -154,31 +163,6 @@ export class LandingChatComponent {
     }
     this.snapping.set(false);
     this.step.update((value) => value + 1);
-  }
-
-  private watchReducedMotion(): void {
-    const query = this.document.defaultView?.matchMedia?.(REDUCED_MOTION_QUERY);
-    if (!query) {
-      return;
-    }
-    this.reducedMotion.set(query.matches);
-    const onChange = (event: MediaQueryListEvent): void => {
-      this.reducedMotion.set(event.matches);
-      if (event.matches && this.phase() === LANDING_CHAT_PHASE.Clearing) {
-        // No movement any more: show the shelf now instead of flashing the static list.
-        clearTimeout(this.clearTimer);
-        this.phase.set(LANDING_CHAT_PHASE.Shelf);
-      }
-    };
-    query.addEventListener('change', onChange);
-    this.destroyRef.onDestroy(() => query.removeEventListener('change', onChange));
-  }
-
-  private watchTab(): void {
-    const sync = (): void => this.tabVisible.set(this.document.visibilityState !== 'hidden');
-    sync();
-    this.document.addEventListener('visibilitychange', sync);
-    this.destroyRef.onDestroy(() => this.document.removeEventListener('visibilitychange', sync));
   }
 
   private watchViewport(): void {
