@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { LinksStore } from '../../stores/links.store';
 import { AUTH_API } from './auth-api.token';
 import { AuthStore } from './auth.store';
 import { AuthApi } from './models/auth-api.interface';
@@ -117,5 +118,24 @@ describe('AuthStore', () => {
 
     expect(store.user()).toBeNull();
     expect(store.isSignedIn()).toBe(false);
+  });
+
+  it('forgets the links of the user on sign-out, before the session ends', async () => {
+    const order: string[] = [];
+    const { store } = setup({
+      signOut: vi.fn(() => {
+        order.push('api');
+        return Promise.resolve();
+      }),
+    });
+    const links = TestBed.inject(LinksStore);
+    vi.spyOn(links, 'reset').mockImplementation(() => {
+      order.push('reset');
+    });
+    await store.signIn(AUTH_PROVIDER.Google);
+
+    await store.signOut();
+
+    expect(order).toEqual(['reset', 'api']);
   });
 });
