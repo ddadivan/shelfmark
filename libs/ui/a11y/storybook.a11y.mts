@@ -35,6 +35,12 @@ const DOCS_AXE_EXCLUDES: readonly string[] = [
   '.rejt-tree',
 ];
 
+// Axe rules switched off on docs pages only. An autodocs page renders the primary story twice
+// (the "Primary" block and again in the "Stories" list), so a story with a landmark (the
+// breadcrumbs `nav`) duplicates it by construction. Each story, including "All variants", is
+// still checked for `landmark-unique` on its own page.
+const DOCS_AXE_DISABLED_RULES: readonly string[] = ['landmark-unique'];
+
 function loadStories(): IndexEntry[] {
   const file = new URL('../storybook-static/index.json', import.meta.url);
   const index = JSON.parse(readFileSync(file, 'utf8')) as { entries: Record<string, IndexEntry> };
@@ -99,6 +105,7 @@ for (const story of stories) {
       );
       await page.addScriptTag({ path: axePath });
       const excludes = story.type === 'docs' ? DOCS_AXE_EXCLUDES : [];
+      const disabledRules = story.type === 'docs' ? DOCS_AXE_DISABLED_RULES : [];
       const selector = story.type === 'docs' ? '#storybook-docs' : '#storybook-root';
       // Entry animations and ripples can still be mid-fade on a slow runner, and axe blends the
       // half-way colours. A real violation is stable and still fails after the polling window.
@@ -113,6 +120,7 @@ for (const story of stories) {
                   try {
                     return await axe.run(context, {
                       runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'] },
+                      rules: Object.fromEntries(${JSON.stringify(disabledRules)}.map((id) => [id, { enabled: false }])),
                     });
                   } catch (error) {
                     if (!String(error).includes('already running')) throw error;

@@ -63,12 +63,14 @@ type Story = StoryObj<BreadcrumbsComponent>;
 
 export const Default: Story = {};
 
-export const Collapsed: Story = { args: { items: DEEP } };
+export const Collapsed: Story = { args: { items: DEEP, ariaLabel: 'Breadcrumb (collapsed)' } };
 
-export const MaxItemsFive: Story = { args: { items: DEEP, maxItems: 5 } };
+export const MaxItemsFive: Story = {
+  args: { items: DEEP, maxItems: 5, ariaLabel: 'Breadcrumb (max five)' },
+};
 
 export const LongNames: Story = {
-  args: { items: LONG },
+  args: { items: LONG, ariaLabel: 'Breadcrumb (long names)' },
   render: (args) => ({
     props: args,
     template: `
@@ -78,7 +80,9 @@ export const LongNames: Story = {
   }),
 };
 
-export const SingleLevel: Story = { args: { items: [{ label: 'All links' }] } };
+export const SingleLevel: Story = {
+  args: { items: [{ label: 'All links' }], ariaLabel: 'Breadcrumb (single level)' },
+};
 
 const variants = (theme: Theme) => `
   <div ${THEME_ATTRIBUTE}="${theme}" class="bc-panel">
