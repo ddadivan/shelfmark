@@ -1,5 +1,6 @@
-import { HttpClient, HttpContext, provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { AuthStore } from '../auth/auth.store';
@@ -7,16 +8,16 @@ import { AUTH_ROUTE } from '../auth/models/auth-routes.const';
 import { SIGN_IN_QUERY } from '../auth/models/sign-in-query.const';
 import { SIGN_IN_REASON } from '../auth/models/sign-in-reason.const';
 import { errorInterceptor } from './error.interceptor';
-import { SKIP_ERROR_HANDLING } from './models/skip-error-handling.const';
 
 function setup(url = '/links?tag=a') {
-  const expireSession = vi.fn();
+  const user = signal<{ id: string } | null>({ id: 'u1' });
+  const expireSession = vi.fn(() => user.set(null));
   const navigate = vi.fn(() => Promise.resolve(true));
   TestBed.configureTestingModule({
     providers: [
       provideHttpClient(withInterceptors([errorInterceptor])),
       provideHttpClientTesting(),
-      { provide: AuthStore, useValue: { expireSession } },
+      { provide: AuthStore, useValue: { expireSession, user } },
       { provide: Router, useValue: { url, navigate } },
     ],
   });
@@ -25,6 +26,7 @@ function setup(url = '/links?tag=a') {
     controller: TestBed.inject(HttpTestingController),
     expireSession,
     navigate,
+    user,
   };
 }
 
@@ -73,17 +75,6 @@ describe('errorInterceptor', () => {
     expect(expireSession).not.toHaveBeenCalled();
   });
 
-  it('honours the opt-out context', () => {
-    const { http, controller, expireSession } = setup();
-
-    http
-      .get('/api/links', { context: new HttpContext().set(SKIP_ERROR_HANDLING, true) })
-      .subscribe({ error: () => undefined });
-    unauthorized(controller, '/api/links');
-
-    expect(expireSession).not.toHaveBeenCalled();
-  });
-
   it('leaves other statuses to the caller', () => {
     const { http, controller, expireSession } = setup();
 
@@ -100,6 +91,29 @@ describe('errorInterceptor', () => {
     unauthorized(controller, '/api/links');
 
     expect(expireSession).toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('redirects once for parallel 401s', () => {
+    const { http, controller, expireSession, navigate } = setup();
+
+    http.get('/api/links').subscribe({ error: () => undefined });
+    http.get('/api/folders').subscribe({ error: () => undefined });
+    unauthorized(controller, '/api/links');
+    unauthorized(controller, '/api/folders');
+
+    expect(expireSession).toHaveBeenCalledTimes(1);
+    expect(navigate).toHaveBeenCalledTimes(1);
+  });
+
+  it('ignores a 401 after sign-out', () => {
+    const { http, controller, expireSession, navigate, user } = setup();
+    user.set(null);
+
+    http.get('/api/links').subscribe({ error: () => undefined });
+    unauthorized(controller, '/api/links');
+
+    expect(expireSession).not.toHaveBeenCalled();
     expect(navigate).not.toHaveBeenCalled();
   });
 });

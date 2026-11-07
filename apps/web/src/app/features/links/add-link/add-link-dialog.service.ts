@@ -24,7 +24,7 @@ export class AddLinkDialogService {
     const session: AddLinkSession = {
       saving: null,
       idempotencyKey: data.link === undefined ? globalThis.crypto.randomUUID() : null,
-      sentPayload: null,
+      sentFingerprint: null,
     };
     return this.dialogs
       .open<AddLinkDialogComponent, AddLinkResult, AddLinkDialogData>(AddLinkDialogComponent, {

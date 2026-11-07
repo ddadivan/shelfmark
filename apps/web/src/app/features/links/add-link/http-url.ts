@@ -1,5 +1,3 @@
-export { isHttpUrl } from '@shelfmark/contracts';
-
 /** The host without `www.` for display, or the input when it is not a URL. */
 export function displayHost(value: string): string {
   try {

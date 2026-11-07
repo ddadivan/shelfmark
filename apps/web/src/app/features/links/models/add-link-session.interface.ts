@@ -14,6 +14,6 @@ export interface AddLinkSession {
    * sent. `null` in edit mode.
    */
   idempotencyKey: string | null;
-  /** The payload `idempotencyKey` was last sent with; `null` before the first attempt. */
-  sentPayload: string | null;
+  /** Fingerprint of what the user had entered when `idempotencyKey` was last sent (not the autofilled title or preview hints); `null` before the first attempt. */
+  sentFingerprint: string | null;
 }

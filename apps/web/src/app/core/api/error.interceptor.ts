@@ -8,7 +8,6 @@ import { SIGN_IN_QUERY } from '../auth/models/sign-in-query.const';
 import { SIGN_IN_REASON } from '../auth/models/sign-in-reason.const';
 import { safeReturnUrl } from '../auth/safe-return-url';
 import { API_BASE_URL } from './api-base-url';
-import { SKIP_ERROR_HANDLING } from './models/skip-error-handling.const';
 
 const AUTH_SEGMENT = 'auth';
 
@@ -35,12 +34,12 @@ function isGuardedApiRequest(url: string, base: string): boolean {
  * Global error handling (PROJECT.md 5.1), after the base interceptor. A 401 from `/api/**`
  * (not `/api/auth/**`) means the session is gone: the user is cleared and sent to the sign-in
  * screen with the page they were on as `returnUrl`. Everything else, including 429 and 5xx, is
- * left to the caller. A request opts out with `SKIP_ERROR_HANDLING`.
+ * left to the caller.  Nothing happens when the user is already gone (a parallel 401, or signed out).
  */
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const injector = inject(Injector);
   const base = inject(API_BASE_URL);
-  const guarded = !req.context.get(SKIP_ERROR_HANDLING) && isGuardedApiRequest(req.url, base);
+  const guarded = isGuardedApiRequest(req.url, base);
   return next(req).pipe(
     catchError((error: unknown) => {
       if (
@@ -48,8 +47,12 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         error instanceof HttpErrorResponse &&
         error.status === HttpStatusCode.Unauthorized
       ) {
+        const auth = injector.get(AuthStore);
+        if (auth.user() === null) {
+          return throwError(() => error);
+        }
         const router = injector.get(Router);
-        injector.get(AuthStore).expireSession();
+        auth.expireSession();
         const onSignIn = router.url.split(/[?#]/)[0] === AUTH_ROUTE.SignIn;
         if (!onSignIn) {
           void router.navigate([AUTH_ROUTE.SignIn], {

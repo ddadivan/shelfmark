@@ -19,6 +19,7 @@ import {
 } from '@angular/forms/signals';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
+  isHttpUrl,
   LINK_LIMIT,
   type CreateLinkRequest,
   type LinkDuplicate,
@@ -60,7 +61,7 @@ import { PREVIEW_STATE } from '../models/preview-state.const';
 import type { PreviewState } from '../models/preview-state.type';
 import { relativeTime } from '../relative-time';
 import { buildFolderOptions } from './folder-options';
-import { displayHost, isHttpUrl, urlWithoutScheme } from './http-url';
+import { displayHost, urlWithoutScheme } from './http-url';
 import { saveErrorKey } from './save-error-key';
 
 /** Wait after the last keystroke before the preview is requested (a paste is instant to the eye). */
@@ -343,7 +344,10 @@ export class AddLinkDialogComponent {
         ...(fetched?.faviconUrl && { faviconUrl: fetched.faviconUrl }),
         ...(fetched?.imageUrl && { imageUrl: fetched.imageUrl }),
       };
-      request$ = this.linksApi.create({ ...payload, idempotencyKey: this.keyFor(payload) });
+      request$ = this.linksApi.create({
+        ...payload,
+        idempotencyKey: this.keyFor(this.fingerprint(payload)),
+      });
     }
     this.saving.set(true);
     this.saveError.set(null);
@@ -373,20 +377,34 @@ export class AddLinkDialogComponent {
   }
 
   /**
+   * What the user entered, as text: url, note, folder, tags and the title only when typed. The
+   * autofilled title and the preview hints are sent but left out, so a late preview does not
+   * renew the key of a retry.
+   */
+  private fingerprint(payload: CreateLinkRequest): string {
+    return JSON.stringify({
+      url: payload.url,
+      note: payload.note,
+      folderId: payload.folderId,
+      tags: payload.tags,
+      title: this.form.title().dirty() ? payload.title : undefined,
+    });
+  }
+
+  /**
    * The idempotency key of this save. A retry of the same payload reuses the key (the server
    * replays it); a changed payload needs a new one, because the server ignores the payload of a
    * replayed key.
    */
-  private keyFor(payload: CreateLinkRequest): string {
+  private keyFor(fingerprint: string): string {
     const session = this.data.session;
-    const fingerprint = JSON.stringify(payload);
     if (
       session.idempotencyKey === null ||
-      (session.sentPayload !== null && session.sentPayload !== fingerprint)
+      (session.sentFingerprint !== null && session.sentFingerprint !== fingerprint)
     ) {
       session.idempotencyKey = globalThis.crypto.randomUUID();
     }
-    session.sentPayload = fingerprint;
+    session.sentFingerprint = fingerprint;
     return session.idempotencyKey;
   }
 

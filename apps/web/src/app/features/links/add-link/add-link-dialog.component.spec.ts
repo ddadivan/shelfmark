@@ -433,6 +433,54 @@ describe('AddLinkDialogComponent', () => {
       expect(keyOf(api, 2)).toBe(keyOf(api, 1));
     });
 
+    it('keeps the key when a late preview autofills the title and the hints', async () => {
+      const api = fakeApi(() =>
+        of({
+          ...PLAIN,
+          preview: { ...PLAIN.preview, faviconUrl: 'https://example.org/f.ico' },
+        }).pipe(delay(300)),
+      );
+      api.create.mockReturnValue(throwError(() => new Error('boom')));
+      await setup(api);
+
+      await type('Link', 'https://example.org/post');
+      await save();
+      await until(() => {
+        expect(input('Title').value).toBe('A fine post');
+      });
+      await save();
+
+      expect(api.create.mock.calls[0]?.[0].faviconUrl).toBeUndefined();
+      expect(api.create.mock.calls[1]?.[0].faviconUrl).toBe('https://example.org/f.ico');
+      expect(keyOf(api, 1)).toBe(keyOf(api, 0));
+    });
+
+    it.each(['Title', 'Tags'])('sends a new key after the user edited %s', async (field) => {
+      const api = fakeApi(() => of(PLAIN));
+      api.create.mockReturnValue(throwError(() => new Error('boom')));
+      await setup(api);
+
+      await type('Link', 'https://example.org/post');
+      await until(() => {
+        expect(input('Title').value).toBe('A fine post');
+      });
+      await save();
+      if (field === 'Title') {
+        await type('Title', 'My own title');
+      } else {
+        const tags = dialog().querySelector<HTMLInputElement>('ui-tag-input input');
+        if (!tags) {
+          throw new Error('no tag input');
+        }
+        tags.value = 'docs';
+        tags.dispatchEvent(new Event('input'));
+        tags.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      }
+      await save();
+
+      expect(keyOf(api, 1)).not.toBe(keyOf(api, 0));
+    });
+
     it('starts every new dialog with a new key', async () => {
       const api = fakeApi(() => of(PLAIN));
       const { result } = await setup(api);
