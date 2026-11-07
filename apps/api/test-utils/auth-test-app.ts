@@ -57,15 +57,18 @@ export async function createAuthTestApp(options: AuthTestAppOptions = {}): Promi
 
   const db = await createTestDatabase();
   try {
-    const moduleRef = await Test.createTestingModule({
+    let builder = Test.createTestingModule({
       imports: [AppModule, ...(options.imports ?? [])],
     })
       .overrideProvider(PrismaService)
       .useValue(db.prisma)
       // Every request of a spec comes from one address: one default bucket would trip on long scenarios.
       .overrideProvider(getOptionsToken())
-      .useValue(createRateLimitOptions(true, options.defaultRateLimit ?? UNLIMITED_RATE_LIMIT))
-      .compile();
+      .useValue(createRateLimitOptions(true, options.defaultRateLimit ?? UNLIMITED_RATE_LIMIT));
+    for (const override of options.overrides ?? []) {
+      builder = builder.overrideProvider(override.provide).useValue(override.useValue);
+    }
+    const moduleRef = await builder.compile();
     const app = moduleRef.createNestApplication<NestExpressApplication>(new ExpressAdapter(), {
       bodyParser: false,
     });
