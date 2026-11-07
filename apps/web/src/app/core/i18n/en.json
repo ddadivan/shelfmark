@@ -62,7 +62,19 @@
         "saving": "Saving…"
       }
     },
+    "edit": {
+      "title": "Edit link",
+      "meta": "Saved {{created}}, last opened {{opened}}",
+      "metaNever": "Saved {{created}}, never opened",
+      "actions": {
+        "save": "Save changes",
+        "delete": "Delete"
+      }
+    },
     "item": {
+      "edit": "Edit",
+      "edited": "Changes saved",
+      "openFailed": "Couldn't open the link.",
       "favorite": "Favorite: {{title}}",
       "actions": "Actions for {{title}}",
       "delete": "Delete",

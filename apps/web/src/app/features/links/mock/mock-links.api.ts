@@ -117,6 +117,13 @@ export class MockLinksApi implements LinksApi {
     }).pipe(delay(MOCK_LATENCY_MS.List));
   }
 
+  get(id: string): Observable<LinkResponse> {
+    return defer(() => {
+      const current = this.links.find((link) => link.id === id);
+      return current ? of({ ...current }) : throwError(() => new Error('Mock: get failed'));
+    }).pipe(delay(MOCK_LATENCY_MS.List));
+  }
+
   update(id: string, request: UpdateLinkRequest): Observable<LinkResponse> {
     return defer(() => {
       const current = this.links.find((link) => link.id === id);

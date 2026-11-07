@@ -1,6 +1,6 @@
 <form [formRoot]="form" class="add-link">
   <ui-dialog
-    [title]="'links.add.title' | transloco"
+    [title]="(editing ? 'links.edit.title' : 'links.add.title') | transloco"
     [closeLabel]="'links.add.close' | transloco"
     size="md"
   >
@@ -36,15 +36,19 @@
 
       @switch (previewState()) {
         @case (PREVIEW_STATE.Loading) {
-          <div class="add-link__preview" aria-busy="true">
-            <ui-skeleton [shape]="SKELETON_SHAPE.Line" [count]="3" />
-          </div>
-          <p class="add-link__note">{{ 'links.add.preview.loadingHint' | transloco }}</p>
+          @if (!editing) {
+            <div class="add-link__preview" aria-busy="true">
+              <ui-skeleton [shape]="SKELETON_SHAPE.Line" [count]="3" />
+            </div>
+            <p class="add-link__note">{{ 'links.add.preview.loadingHint' | transloco }}</p>
+          }
         }
         @case (PREVIEW_STATE.Failed) {
-          <ui-notice [kind]="NOTICE_KIND.Danger">{{
-            'links.add.preview.failed' | transloco
-          }}</ui-notice>
+          @if (!editing) {
+            <ui-notice [kind]="NOTICE_KIND.Danger">{{
+              'links.add.preview.failed' | transloco
+            }}</ui-notice>
+          }
         }
         @case (PREVIEW_STATE.Ready) {
           @if (duplicate(); as existing) {
@@ -54,7 +58,7 @@
                   : { folder: existing.folderName ?? ('links.add.folder.unsorted' | transloco) }
             }}</ui-notice>
           }
-          @if (previewData(); as data) {
+          @if (!editing && previewData(); as data) {
             <div class="add-link__preview">
               <div class="add-link__meta">
                 <ui-favicon [letter]="previewHost()[0]" />
@@ -109,12 +113,28 @@
       @if (saveFailed()) {
         <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'links.add.saveFailed' | transloco }}</ui-notice>
       }
+
+      @if (meta(); as text) {
+        <p class="add-link__note">{{ text }}</p>
+      }
     </div>
+
+    @if (editing) {
+      <ui-button
+        slot="footer"
+        class="add-link__delete"
+        [variant]="BUTTON_VARIANT.Danger"
+        iconLeft="trash"
+        [disabled]="saving()"
+        (click)="requestDelete()"
+        >{{ 'links.edit.actions.delete' | transloco }}</ui-button
+      >
+    }
 
     <ui-button slot="footer" class="add-link__action" [disabled]="saving()" (click)="cancel()">{{
       'links.add.actions.cancel' | transloco
     }}</ui-button>
-    @if (duplicate()) {
+    @if (duplicate() && !editing) {
       <ui-button slot="footer" class="add-link__action" (click)="openExisting()">{{
         'links.add.actions.openSaved' | transloco
       }}</ui-button>
@@ -128,9 +148,11 @@
       >{{
         (saving()
           ? 'links.add.actions.saving'
-          : duplicate()
-            ? 'links.add.actions.saveAnyway'
-            : 'links.add.actions.save'
+          : editing
+            ? 'links.edit.actions.save'
+            : duplicate()
+              ? 'links.add.actions.saveAnyway'
+              : 'links.add.actions.save'
         ) | transloco
       }}</ui-button
     >

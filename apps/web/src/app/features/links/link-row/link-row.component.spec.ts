@@ -53,7 +53,9 @@ describe('LinkRowComponent', () => {
     const requested = vi.fn();
     fixture.componentInstance.opened.subscribe(opened);
     fixture.componentInstance.favoriteToggled.subscribe(toggled);
+    const edited = vi.fn();
     fixture.componentInstance.deleteRequested.subscribe(requested);
+    fixture.componentInstance.editRequested.subscribe(edited);
 
     element.querySelector('a')?.addEventListener('click', (event) => event.preventDefault());
     element.querySelector('a')?.click();
@@ -66,8 +68,19 @@ describe('LinkRowComponent', () => {
       .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
       ?.click();
     await fixture.whenStable();
-    document.querySelector<HTMLElement>('[role="menuitem"]')?.click();
+    const items = document.querySelectorAll<HTMLElement>('[role="menuitem"]');
+    expect(items[0].textContent).toContain('Edit');
+    items[0].click();
+    await fixture.whenStable();
+    element
+      .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
+      ?.click();
+    await fixture.whenStable();
+    const second = document.querySelectorAll<HTMLElement>('[role="menuitem"]');
+    expect(second[1].textContent).toContain('Delete');
+    second[1].click();
 
+    expect(edited).toHaveBeenCalledTimes(1);
     expect(opened).toHaveBeenCalledTimes(1);
     expect(toggled).toHaveBeenCalledTimes(1);
     expect(requested).toHaveBeenCalledTimes(1);

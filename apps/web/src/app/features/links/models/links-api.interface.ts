@@ -1,6 +1,7 @@
 import type { Observable } from 'rxjs';
 import type {
   CreateLinkRequest,
+  GetLinkResponse,
   LinkPreviewResponse,
   LinkResponse,
   ListLinksQuery,
@@ -24,6 +25,8 @@ export interface LinksApi {
   list(query?: ListLinksQuery): Observable<ListLinksResponse>;
   /** `GET /api/links/recent`: links by `lastOpenedAt` descending. */
   recent(query?: RecentLinksQuery): Observable<RecentLinksResponse>;
+  /** `GET /api/links/:id`: one link (an "open saved" target that is not in the feed). */
+  get(id: string): Observable<GetLinkResponse>;
   /** `PATCH /api/links/:id`: the updated link. */
   update(id: string, request: UpdateLinkRequest): Observable<LinkResponse>;
   /** `DELETE /api/links/:id`. */

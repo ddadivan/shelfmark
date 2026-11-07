@@ -28,9 +28,21 @@ const PLAIN: LinkPreviewResponse = {
   duplicate: null,
 };
 
-interface FakeApi extends Pick<LinksApi, 'preview' | 'create'> {
+const EDITED: LinkResponse = {
+  ...MOCK_LINKS[0],
+  url: 'https://example.org/saved',
+  title: 'Saved title',
+  note: 'A note',
+  folderId: MOCK_ID.FolderAngular,
+  tags: ['docs'],
+  createdAt: '2026-10-17T12:00:00Z',
+  lastOpenedAt: '2026-11-06T12:00:00Z',
+};
+
+interface FakeApi extends Pick<LinksApi, 'preview' | 'create' | 'update'> {
   preview: ReturnType<typeof vi.fn<LinksApi['preview']>>;
   create: ReturnType<typeof vi.fn<LinksApi['create']>>;
+  update: ReturnType<typeof vi.fn<LinksApi['update']>>;
 }
 
 function fakeApi(preview: () => Observable<LinkPreviewResponse>): FakeApi {
@@ -38,6 +50,9 @@ function fakeApi(preview: () => Observable<LinkPreviewResponse>): FakeApi {
     preview: vi.fn<LinksApi['preview']>(preview),
     create: vi.fn<LinksApi['create']>((request) =>
       of<LinkResponse>({ ...MOCK_LINKS[0], url: request.url, title: request.title ?? request.url }),
+    ),
+    update: vi.fn<LinksApi['update']>((id, request) =>
+      of<LinkResponse>({ ...EDITED, id, ...request } as LinkResponse),
     ),
   };
 }
@@ -409,6 +424,124 @@ describe('AddLinkDialogComponent', () => {
 
     const outcome = await result;
     expect(outcome?.action).toBe(ADD_LINK_ACTION.Saved);
+  });
+
+  describe('edit mode', () => {
+    it('is prefilled, titled "Edit link" and shows when it was saved and opened', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      await setup(api, { link: EDITED });
+
+      expect(dialog().textContent).toContain('Edit link');
+      expect(input('Link').value).toBe('https://example.org/saved');
+      expect(input('Title').value).toBe('Saved title');
+      expect(input('Note').value).toBe('A note');
+      expect(dialog().textContent).toMatch(/Saved .* ago, last opened /);
+      expect(dialog().querySelector('.add-link__preview')).toBeNull();
+      button('Save changes');
+      button('Delete');
+      expect(api.preview).not.toHaveBeenCalled();
+    });
+
+    it('says "never opened" for a link that was not opened', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      await setup(api, { link: { ...EDITED, lastOpenedAt: null } });
+
+      expect(dialog().textContent).toContain('never opened');
+    });
+
+    it('sends only the changed fields and resolves with the updated link', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      const { result } = await setup(api, { link: EDITED });
+
+      await type('Title', ' New title ');
+      await type('Note', '');
+      button('Save changes').click();
+
+      const outcome = await result;
+      expect(api.update).toHaveBeenCalledWith(EDITED.id, { title: 'New title', note: null });
+      expect(api.create).not.toHaveBeenCalled();
+      expect(outcome?.action).toBe(ADD_LINK_ACTION.Saved);
+    });
+
+    it('closes without a request when nothing changed', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      const { result } = await setup(api, { link: EDITED });
+
+      button('Save changes').click();
+
+      expect(await result).toBeUndefined();
+      expect(api.update).not.toHaveBeenCalled();
+    });
+
+    it('does not autofill the title from the preview of a changed URL', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      await setup(api, { link: EDITED });
+
+      await type('Link', 'https://example.org/post');
+      await until(() => {
+        expect(api.preview).toHaveBeenCalledTimes(1);
+      });
+      expect(input('Title').value).toBe('Saved title');
+      expect(dialog().querySelector('.add-link__preview')).toBeNull();
+    });
+
+    it('does not treat the link itself as a duplicate, but warns about another one', async () => {
+      const own = { ...MOCK_LINK_PREVIEW_DUPLICATE.duplicate };
+      const api = fakeApi(() => of(MOCK_LINK_PREVIEW_DUPLICATE));
+      await setup(api, {
+        link: { ...EDITED, id: own.id ?? MOCK_ID.LinkPasta },
+      });
+      await type('Link', MOCK_LINK_PREVIEW_DUPLICATE.preview.url);
+      await until(() => {
+        expect(api.preview).toHaveBeenCalled();
+      });
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      TestBed.tick();
+      expect(dialog().querySelector('ui-notice')).toBeNull();
+    });
+
+    it('warns about a duplicate of another link and offers no "Open saved"', async () => {
+      const api = fakeApi(() => of(MOCK_LINK_PREVIEW_DUPLICATE));
+      await setup(api, { link: { ...EDITED, id: 'another-id' } });
+
+      await type('Link', MOCK_LINK_PREVIEW_DUPLICATE.preview.url);
+      await until(() => {
+        expect(dialog().querySelector('ui-notice')?.textContent).toContain('already saved');
+      });
+      expect(() => button('Open saved')).toThrow();
+      button('Save changes');
+    });
+
+    it('hands the link back to the caller on Delete', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      const { result } = await setup(api, { link: EDITED });
+
+      button('Delete').click();
+
+      expect(await result).toEqual({ action: ADD_LINK_ACTION.Delete, link: EDITED });
+      expect(api.update).not.toHaveBeenCalled();
+    });
+
+    it('shows an error and stays open when the update fails', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      api.update.mockReturnValue(throwError(() => new Error('boom')));
+      await setup(api, { link: EDITED });
+
+      await type('Title', 'Changed');
+      button('Save changes').click();
+      await until(() => {
+        expect(dialog().textContent).toContain("Couldn't save the link");
+      });
+      expect(button('Save changes').disabled).toBe(false);
+    });
+
+    it('has no axe violations', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      await setup(api, { link: EDITED });
+
+      const results = await axe.run(dialog(), { rules: { 'color-contrast': { enabled: false } } });
+      expect(results.violations.map((v) => `${v.id}: ${v.help}`)).toEqual([]);
+    });
   });
 
   it('has no axe violations', async () => {
