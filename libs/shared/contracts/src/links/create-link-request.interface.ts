@@ -6,7 +6,11 @@ export interface CreateLinkRequest {
   title?: string;
   /** At most `LINK_LIMIT.NoteMax`. */
   note?: string;
+  /** UUID of one of the user's folders. */
   folderId?: string;
-  /** Tag names, at most `TAG_LIMIT.NameMax` each; missing tags are created. */
+  /**
+   * Tag names, at most `LINK_LIMIT.TagsMax` of them and `TAG_LIMIT.NameMax` characters each; missing tags are
+   * created. Names are normalised (spaces become hyphens) and unique case-insensitively.
+   */
   tags?: string[];
 }

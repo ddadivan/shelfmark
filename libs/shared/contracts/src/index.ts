@@ -18,6 +18,8 @@ export type { ListLinksQuery } from './links/list-links-query.interface';
 export type { ListLinksResponse } from './links/list-links-response.type';
 export type { RecentLinksQuery } from './links/recent-links-query.interface';
 export type { RecentLinksResponse } from './links/recent-links-response.interface';
+export type { OpenLinkResponse } from './links/open-link-response.type';
+export type { GetLinkResponse } from './links/get-link-response.type';
 export type { LinkSortField } from './links/link-sort-field.type';
 export { LINK_LIMIT } from './links/link-limit.const';
 export { LINK_SORT_FIELD } from './links/link-sort-field.const';

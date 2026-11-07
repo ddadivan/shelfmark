@@ -3,6 +3,9 @@
 DTOs, response types and shared constants for web and api (`docs/PROJECT.md` 6).
 
 - One interface / type / `as const` object per file under `src/<domain>/`; `src/index.ts` only re-exports (`export type` for types, `export` for constants). Fixed sets follow ADR 0024.
-- Query objects (`ListLinksQuery`, ...) describe the typed result; the API coerces query strings to numbers and booleans.
-- `src/testing/` holds mock fixtures for the web (`MOCK_*`, one per file, ids from `MOCK_ID`). Import them only from `@shelfmark/contracts/testing` in specs, stories and dev mocks; never from the main entry or app code.
-- The API cannot import runtime constants (`LINK_LIMIT`, `FOLDER_DELETE_MODE`, ...) until its webpack config aliases and bundles this library (ADR 0024); until then it mirrors the values and uses the types.
+- Query objects (`ListLinksQuery`, ...) describe what the handler sees after parsing, not the raw query strings. Booleans must be parsed explicitly (`'true'` / `'false'`, anything else is a 400); never rely on implicit conversion, so `?favorite=false` stays `false`. Numbers are parsed to integers and range-checked.
+- Tags are referenced by name (`LinkResponse.tags`, `ListLinksQuery.tag`, `CreateLinkRequest.tags`). Renaming or merging a tag therefore invalidates saved `?tag=` URLs.
+- URL fields (`url`, `imageUrl`, `faviconUrl`): the server guarantees http(s); the web still renders them only through a scheme check.
+- Responses: `GET /api/links/:id` returns `GetLinkResponse` and `POST /api/links/:id/open` returns `OpenLinkResponse` (both the full `LinkResponse`). Every `DELETE` endpoint returns 204 with no body.
+- `src/testing/` holds mock fixtures for the web (`MOCK_*`, one per file, ids from `MOCK_ID`, names from `MOCK_NAME`). Import them only from `@shelfmark/contracts/testing` in specs, stories and dev mocks (`testing/` or mock folders); never from the main entry or app code. ESLint enforces this (`no-restricted-imports`).
+- The API cannot import runtime constants (`LINK_LIMIT`, `PAGE_LIMIT`, `FOLDER_DELETE_MODE`, ...) until its webpack config aliases and bundles this library (ADR 0024); until then it mirrors the values and uses the types. Follow-up: bundle the library into the API and drop the mirrored constants.
