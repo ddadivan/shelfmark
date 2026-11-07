@@ -1,6 +1,6 @@
 # 0027. Link preview images and favicons under the CSP
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-07
 - Source: issue #57 (raised in the #35 review); issues #70–#74; `docs/PROJECT.md` 3, 4 (story 4), 5.7, 5.8, 6.1, 7; `docs/SETUP.md` 5.6; [0013](0013-vercel-hobby-hosting.md), [0019](0019-vercel-deployment-architecture.md), [0020](0020-npm-install-scripts-policy.md), [0022](0022-csp-nonce-routing-middleware.md)
 
@@ -32,7 +32,7 @@ Free-tier figures below were published by Vercel and Neon when this ADR was writ
 
 **4. No remote images.** We keep the letter favicon and drop the preview image. Zero cost and zero risk, and the CSP stays strict. It does not meet story 4 or the LinkCard design, so it is the fallback state, not a target.
 
-## Decision (recommended)
+## Decision
 
 **Option 2b: capture at save time through the SSRF-safe fetcher, re-encode, store in Postgres, serve same-origin. The CSP stays `img-src 'self' data:`.** Option 4 stays the fallback whenever capture fails. No browser ever requests a third-party image.
 
