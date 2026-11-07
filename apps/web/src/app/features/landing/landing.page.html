@@ -1,4 +1,26 @@
-<main>
-  <h1>{{ 'landing.title' | transloco }}</h1>
-  <p>{{ 'landing.tagline' | transloco }}</p>
+<app-landing-header (howItsBuiltRequested)="showHowItsBuilt()" />
+<main class="landing">
+  <app-landing-hero />
+  <!--
+    Below the fold: loaded when the browser is idle, so the first paint ships less JS, or at once
+    when the visitor asks for "How it's built" (its target lives in here).
+  -->
+  @defer (on idle; when sectionsRequested()) {
+  <app-landing-before-after />
+  <div class="landing__about">
+    <app-landing-why />
+    <app-landing-built />
+  </div>
+  <app-landing-finale />
+  } @placeholder {
+  <div class="landing__placeholder"></div>
+  }
 </main>
+<!--
+  The footer is a separate block on purpose: it is the `contentinfo` landmark and must stay
+  outside `<main>`, and a defer block cannot span the closing `</main>`. Same triggers, so both
+  blocks load together.
+-->
+@defer (on idle; when sectionsRequested()) {
+<app-landing-footer />
+}

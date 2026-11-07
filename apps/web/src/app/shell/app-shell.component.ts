@@ -1,6 +1,8 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterOutlet } from '@angular/router';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { combineLatest, map } from 'rxjs';
 import {
   AvatarComponent,
   ButtonComponent,
@@ -11,7 +13,11 @@ import {
   MenuTriggerDirective,
 } from '@shelfmark/ui';
 import { AuthStore } from '../core/auth/auth.store';
+import { LinkActionsService } from '../features/links/link-actions.service';
+import { RecentLinksPanelComponent } from '../features/links/recent/recent-links-panel.component';
+import { UiStore } from '../stores/ui.store';
 import { APP_PATH } from '../models/app-path.const';
+import { SidebarComponent } from './sidebar/sidebar.component';
 
 /** Layout around the signed-in pages: header with the account menu (settings, sign out), then the page. */
 @Component({
@@ -26,6 +32,8 @@ import { APP_PATH } from '../models/app-path.const';
     MenuItemComponent,
     MenuSeparatorComponent,
     MenuTriggerDirective,
+    RecentLinksPanelComponent,
+    SidebarComponent,
   ],
   templateUrl: './app-shell.component.html',
   styleUrl: './app-shell.component.scss',
@@ -33,10 +41,29 @@ import { APP_PATH } from '../models/app-path.const';
 })
 export default class AppShellComponent {
   protected readonly auth = inject(AuthStore);
+  protected readonly ui = inject(UiStore);
+  protected readonly actions = inject(LinkActionsService);
+  private readonly transloco = inject(TranslocoService);
+
+  private readonly recentLabels = toSignal(
+    combineLatest([
+      this.transloco.selectTranslate('links.recent.hide'),
+      this.transloco.selectTranslate('links.recent.show'),
+    ]).pipe(map(([hide, show]) => ({ hide, show }))),
+  );
+  /** Name of the recent-panel toggle; `null` until the translations are loaded (an icon-only button needs one). */
+  protected readonly recentToggleLabel = computed(() => {
+    const labels = this.recentLabels();
+    return labels ? (this.ui.recentVisible() ? labels.hide : labels.show) : null;
+  });
   private readonly router = inject(Router);
 
   protected async openSettings(): Promise<void> {
     await this.router.navigateByUrl(`/${APP_PATH.Settings}`);
+  }
+
+  protected toggleRecent(): void {
+    this.ui.setRecentVisible(!this.ui.recentVisible());
   }
 
   protected async signOut(): Promise<void> {

@@ -2,4 +2,5 @@
 export const ADD_LINK_ACTION = {
   Saved: 'saved',
   OpenExisting: 'open-existing',
+  Delete: 'delete',
 } as const;

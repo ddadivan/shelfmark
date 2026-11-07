@@ -1,0 +1,103 @@
+<section class="tags" aria-labelledby="sidebar-tags-heading">
+  <div class="tags__header">
+    <h2 id="sidebar-tags-heading" class="tags__heading">
+      {{ 'tags.sidebar.heading' | transloco }}
+    </h2>
+    <ui-button
+      #addButton
+      variant="ghost"
+      size="sm"
+      iconOnly
+      iconLeft="add"
+      [ariaLabel]="'tags.sidebar.add' | transloco"
+      (click)="startAdd()"
+    />
+  </div>
+
+  @if (adding()) {
+    <ng-container *ngTemplateOutlet="editor" />
+  }
+
+  @if (tags.error()) {
+    <p class="tags__note">
+      {{ 'tags.sidebar.loadFailed' | transloco }}
+      <ui-button size="sm" (click)="retry()">{{ 'shell.sidebar.retry' | transloco }}</ui-button>
+    </p>
+  } @else if (tags.loaded() && tags.count() === 0 && !adding()) {
+    <p class="tags__note">{{ 'tags.sidebar.empty' | transloco }}</p>
+  }
+
+  <ul class="tags__list" [attr.aria-label]="'tags.sidebar.list' | transloco">
+    @for (tag of split().shown; track tag.id) {
+      <li class="tags__item">
+        @if (renamingId() === tag.id) {
+          <ng-container *ngTemplateOutlet="editor" />
+        } @else {
+          <ui-chip
+            clickable
+            [attr.data-tag-id]="tag.id"
+            uiLongPress
+            (uiLongPress)="openMenuFromLongPress(tag, $event)"
+            (contextmenu)="openMenuAt(tag, $event)"
+            (keydown)="openMenuFromKeyboard(tag, $event)"
+            [menuLabel]="'tags.sidebar.menuFor' | transloco: { name: tag.name }"
+            (clicked)="show(tag)"
+            (menuRequested)="openMenuFrom(tag, $event)"
+          >
+            {{ tag.name }}
+          </ui-chip>
+        }
+      </li>
+    }
+    @if (split().foldable) {
+      <li class="tags__item">
+        <ui-button size="sm" variant="ghost" [ariaExpanded]="expanded()" (click)="toggleExpanded()">
+          @if (expanded()) {
+            {{ 'tags.sidebar.showLess' | transloco }}
+          } @else {
+            {{ 'tags.sidebar.more' | transloco: { count: split().hidden } }}
+          }
+        </ui-button>
+      </li>
+    }
+  </ul>
+
+  <ui-menu
+    [ariaLabel]="menuLabel() ?? ('tags.sidebar.menu.label' | transloco)"
+    (closed)="menuClosed()"
+  >
+    <ui-menu-item icon="search" (activated)="showFromMenu()">
+      {{ 'tags.sidebar.menu.show' | transloco }}
+    </ui-menu-item>
+    <ui-menu-item icon="edit" (activated)="renameFromMenu()">
+      {{ 'tags.sidebar.menu.rename' | transloco }}
+    </ui-menu-item>
+    <ui-menu-item icon="tag" (activated)="mergeFromMenu()">
+      {{ 'tags.sidebar.menu.merge' | transloco }}
+    </ui-menu-item>
+    <ui-menu-separator />
+    <ui-menu-item icon="trash" danger (activated)="deleteFromMenu()">
+      {{ 'tags.sidebar.menu.delete' | transloco }}
+    </ui-menu-item>
+  </ui-menu>
+</section>
+
+<ng-template #editor>
+  <form class="tags__editor" [formRoot]="form" (keydown.escape)="cancel()">
+    <ui-input
+      [label]="(renamingId() === null ? 'tags.add.label' : 'tags.rename.label') | transloco"
+      [placeholder]="'tags.add.placeholder' | transloco"
+      [error]="fieldError()"
+      [formField]="form.name"
+    />
+    @if (conflict(); as existing) {
+      <p class="tags__conflict" role="status">
+        {{ 'tags.rename.conflict' | transloco: { name: existing.name } }}
+      </p>
+      <ui-button size="sm" [disabled]="saving()" (click)="mergeIntoConflict()">
+        {{ 'tags.rename.merge' | transloco: { name: existing.name } }}
+      </ui-button>
+    }
+    <p class="tags__hint">{{ 'tags.add.hint' | transloco }}</p>
+  </form>
+</ng-template>

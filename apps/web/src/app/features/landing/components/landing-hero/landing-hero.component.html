@@ -1,0 +1,25 @@
+<section class="landing-hero" aria-labelledby="landing-hero-title">
+  <div class="landing-hero__copy">
+    <p class="landing-hero__eyebrow">{{ 'landing.hero.eyebrow' | transloco }}</p>
+    <h1 id="landing-hero-title" class="landing-hero__title">
+      <span class="landing-hero__line">{{ 'landing.hero.line1' | transloco }}</span
+      >&ngsp;<span class="landing-hero__line">{{ 'landing.hero.line2' | transloco }}</span
+      >&ngsp;<span class="landing-hero__line landing-hero__line--muted">{{
+        'landing.hero.line3' | transloco
+      }}</span>
+    </h1>
+    <p class="landing-hero__lead">{{ 'landing.hero.lead' | transloco }}</p>
+    <div class="landing-hero__actions">
+      <ui-button
+        [variant]="BUTTON_VARIANT.Primary"
+        [size]="BUTTON_SIZE.Lg"
+        [href]="LANDING_LINKS.Demo"
+        >{{ 'landing.hero.demo' | transloco }}</ui-button
+      >
+      <ui-button [size]="BUTTON_SIZE.Lg" [href]="LANDING_LINKS.SignIn">{{
+        'landing.hero.signIn' | transloco
+      }}</ui-button>
+    </div>
+  </div>
+  <app-landing-chat class="landing-hero__demo" />
+</section>

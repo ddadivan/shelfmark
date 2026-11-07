@@ -1,0 +1,203 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+// Before: scraps pinned at fixed spots of a dashed board.
+.landing-before__before {
+  position: relative;
+  height: rem(300px);
+  overflow: hidden;
+  background: var(--bg);
+  border: 1px dashed var(--border-control);
+  border-radius: rem(18px);
+}
+
+.landing-before__ping,
+.landing-before__scrap {
+  position: absolute;
+  font-size: rem(12px);
+  line-height: rem(16px);
+}
+
+.landing-before__ping {
+  top: 46%;
+  left: 50%;
+  width: rem(140px);
+  padding: rem(7px) rem(10px);
+  margin-left: rem(-70px);
+  background: var(--accent-bg);
+  border-radius: rem(12px) rem(12px) rem(4px);
+}
+
+.landing-before__accent {
+  color: var(--accent-text);
+}
+
+.landing-before__muted {
+  color: var(--text-muted);
+}
+
+.landing-before__scrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.landing-before__scrap--bubble {
+  top: rem(24px);
+  left: rem(24px);
+  width: rem(200px);
+  padding: rem(10px) var(--space-3);
+  font-size: rem(13px);
+  line-height: rem(18px);
+  border-radius: rem(14px) rem(14px) rem(14px) rem(4px);
+  rotate: -2deg;
+}
+
+.landing-before__scrap--tabs {
+  top: rem(40px);
+  right: rem(22px);
+  display: flex;
+  gap: rem(2px);
+  background: none;
+  border: 0;
+  rotate: 3deg;
+}
+
+.landing-before__tab {
+  padding: rem(6px) rem(10px);
+  color: var(--text-muted);
+  background: var(--surface-hover);
+  border-radius: rem(8px) rem(8px) 0 0;
+}
+
+.landing-before__tab--active {
+  color: var(--text);
+  background: var(--surface-pressed);
+}
+
+.landing-before__scrap--sticky {
+  bottom: rem(36px);
+  left: rem(40px);
+  width: rem(200px);
+  padding: var(--space-3);
+  font-size: rem(13px);
+  line-height: rem(18px);
+  color: var(--warning);
+  background: var(--warning-bg);
+  border: 0;
+  border-radius: rem(10px);
+  rotate: 2.5deg;
+}
+
+.landing-before__scrap--bookmarks {
+  right: rem(24px);
+  bottom: rem(56px);
+  padding: var(--space-2) var(--space-3);
+  color: var(--text-muted);
+  border-radius: rem(10px);
+  rotate: -4deg;
+}
+
+// On a phone the board is narrow: pin the scraps to separate bands so they do not overlap.
+@include phone {
+  .landing-before__ping {
+    top: rem(144px);
+    left: var(--space-4);
+    width: rem(150px);
+    margin-left: 0;
+  }
+
+  .landing-before__scrap--bubble {
+    top: var(--space-4);
+    left: var(--space-4);
+    width: rem(170px);
+  }
+
+  .landing-before__scrap--tabs {
+    top: rem(112px);
+    right: var(--space-4);
+  }
+
+  .landing-before__scrap--sticky {
+    bottom: rem(12px);
+    left: var(--space-4);
+    width: rem(170px);
+  }
+
+  .landing-before__scrap--bookmarks {
+    right: var(--space-4);
+    bottom: rem(60px);
+  }
+}
+
+// Loops: only under `--live` (in view, tab visible, motion allowed), so the default is the
+// static frame. Drift moves the scraps with `translate` (it composes with their `rotate`);
+// the ping fades and pops with `scale`. transform / opacity only, nothing changes layout.
+// These timings (and the per-scrap durations and delays below) are intentionally CSS-only: they
+// are ambient decoration with no logic behind them, so no TS constant mirrors them.
+$drift-duration: 14s;
+$ping-duration: 6s;
+
+.landing-before__before--live {
+  .landing-before__scrap {
+    animation: landing-before-drift $drift-duration var(--ease-in-out) infinite alternate;
+  }
+
+  .landing-before__scrap--tabs {
+    animation-delay: -4s;
+    animation-duration: 11s;
+  }
+
+  .landing-before__scrap--sticky {
+    animation-delay: -7s;
+    animation-duration: 16s;
+  }
+
+  .landing-before__scrap--bookmarks {
+    animation-delay: -2s;
+    animation-duration: 13s;
+  }
+
+  .landing-before__ping {
+    animation: landing-before-ping $ping-duration var(--ease-spring) infinite;
+  }
+}
+
+@keyframes landing-before-drift {
+  from {
+    translate: 0 0;
+  }
+
+  to {
+    translate: rem(6px) rem(-8px);
+  }
+}
+
+@keyframes landing-before-ping {
+  0%,
+  8% {
+    opacity: 0;
+    scale: 0.85;
+  }
+
+  16%,
+  62% {
+    opacity: 1;
+    scale: 1;
+  }
+
+  72%,
+  100% {
+    opacity: 0;
+    scale: 0.95;
+  }
+}
+
+@include reduced-motion {
+  .landing-before__before--live .landing-before__scrap,
+  .landing-before__before--live .landing-before__ping {
+    animation: none;
+  }
+}
