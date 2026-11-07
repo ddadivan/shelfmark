@@ -10,7 +10,7 @@ import { ONBOARDING_RESULT } from './models/onboarding-result.const';
 import type { OnboardingResult } from './models/onboarding-result.type';
 import type { OnboardingState } from './models/onboarding-state.interface';
 
-const initialState: OnboardingState = { open: false, resetting: false, resetFailed: false };
+const initialState: OnboardingState = { open: false, resetting: false };
 
 /**
  * The welcome tour. It is due while the signed-in user's `onboardingCompletedAt` is `null`; a
@@ -39,7 +39,9 @@ export const OnboardingStore = signalStore(
         try {
           const { onboardingCompletedAt } = await api.complete();
           // A sign-out or a switch to another user meanwhile must not touch the new session.
-          if (auth.user()?.id === userId) {
+          // A reset meanwhile (flag back to null) wins over this older answer.
+          const flag = auth.user()?.onboardingCompletedAt;
+          if (auth.user()?.id === userId && flag !== null && flag !== undefined) {
             auth.setOnboardingCompletedAt(onboardingCompletedAt);
           }
         } catch {
@@ -49,12 +51,16 @@ export const OnboardingStore = signalStore(
 
       async function show(userId: string): Promise<void> {
         patchState(store, { open: true });
-        const result: OnboardingResult =
-          (await dialogs.open<OnboardingDialogComponent, OnboardingResult>(
-            OnboardingDialogComponent,
-            { size: DIALOG_SIZE.Md, autoFocus: '.onboarding__next button' },
-          ).result) ?? ONBOARDING_RESULT.Skipped;
-        patchState(store, { open: false });
+        let result: OnboardingResult;
+        try {
+          result =
+            (await dialogs.open<OnboardingDialogComponent, OnboardingResult>(
+              OnboardingDialogComponent,
+              { size: DIALOG_SIZE.Md, autoFocus: '.onboarding__next button' },
+            ).result) ?? ONBOARDING_RESULT.Skipped;
+        } finally {
+          patchState(store, { open: false });
+        }
         if (auth.user()?.id !== userId) {
           return;
         }
@@ -72,19 +78,19 @@ export const OnboardingStore = signalStore(
           if (!store.due() || store.open() || !user) {
             return;
           }
-          void show(user.id);
+          // A dialog that cannot open leaves the app as it was (`open` is reset in `show`).
+          show(user.id).catch(() => undefined);
         },
         /** Settings, "Show welcome again": clears the flag on the server, then the dialog opens. */
         async reset(): Promise<void> {
           if (store.resetting()) {
             return;
           }
-          patchState(store, { resetting: true, resetFailed: false });
+          patchState(store, { resetting: true });
           try {
             await api.reset();
             auth.setOnboardingCompletedAt(null);
           } catch {
-            patchState(store, { resetFailed: true });
             toasts.show({
               kind: TOAST_KIND.Error,
               text: transloco.translate('settings.welcome.error'),

@@ -173,7 +173,6 @@ describe('OnboardingStore', () => {
     expect(auth.user()?.onboardingCompletedAt).toBeNull();
     expect(store.due()).toBe(true);
     expect(store.resetting()).toBe(false);
-    expect(store.resetFailed()).toBe(false);
   });
 
   it('ignores a second reset while one runs', async () => {
@@ -198,11 +197,39 @@ describe('OnboardingStore', () => {
     await store.reset();
 
     expect(auth.user()?.onboardingCompletedAt).toBe(SERVER_TIME);
-    expect(store.resetFailed()).toBe(true);
     expect(store.resetting()).toBe(false);
     expect(toasts.show).toHaveBeenCalledWith(
       expect.objectContaining({ text: "Couldn't reset the welcome tour. Try again." }),
     );
+  });
+
+  it('lets a reset win over a slower completion answer', async () => {
+    const { store, auth, api, closed } = await setup();
+    const pending = deferred<{ onboardingCompletedAt: string }>();
+    api.complete.mockReturnValueOnce(pending.promise);
+
+    store.openIfDue();
+    closed.resolve(ONBOARDING_RESULT.Skipped);
+    await flush();
+    await store.reset();
+    expect(auth.user()?.onboardingCompletedAt).toBeNull();
+
+    pending.resolve({ onboardingCompletedAt: SERVER_TIME });
+    await flush();
+
+    expect(auth.user()?.onboardingCompletedAt).toBeNull();
+  });
+
+  it('resets open when the dialog cannot be opened', async () => {
+    const { store, dialogs } = await setup();
+    dialogs.open.mockImplementationOnce(() => {
+      throw new Error('no overlay');
+    });
+
+    store.openIfDue();
+    await flush();
+
+    expect(store.open()).toBe(false);
   });
 
   it('takes the flag from the next session after a user switch', async () => {

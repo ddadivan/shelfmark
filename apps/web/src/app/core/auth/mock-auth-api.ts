@@ -3,17 +3,11 @@ import { Service, inject } from '@angular/core';
 import { AuthApi } from './models/auth-api.interface';
 import { AuthProvider } from './models/auth-provider.type';
 import { AuthUser } from './models/auth-user.interface';
+import { LEGACY_ONBOARDING_COMPLETED_AT } from './models/legacy-onboarding-completed-at.const';
+import { StoredUser } from './models/stored-user.interface';
 import { MOCK_DEMO_USER } from './models/mock-demo-user.const';
 import { MOCK_USERS } from './models/mock-users.const';
 import { MOCK_SESSION_STORAGE_KEY } from './models/mock-session-storage-key.const';
-
-/** Sessions seeded before the onboarding flag existed (old e2e seeds) are existing users. */
-const LEGACY_ONBOARDING_COMPLETED_AT = '2020-01-01T00:00:00.000Z';
-
-/** A stored session; the onboarding flag may be missing in old seeds. */
-type StoredUser = Omit<AuthUser, 'onboardingCompletedAt'> & {
-  onboardingCompletedAt?: string | null;
-};
 
 function isStoredUser(value: unknown): value is StoredUser {
   if (typeof value !== 'object' || value === null) {

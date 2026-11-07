@@ -40,12 +40,7 @@
 }
 
 .onboarding__sr {
-  position: absolute;
-  width: rem(1px);
-  height: rem(1px);
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
+  @include visually-hidden;
 }
 
 .onboarding__foot {
@@ -59,19 +54,16 @@
   margin-inline-end: auto;
 }
 
-// Phone: full-width buttons, the main action on top (the DOM order stays Skip, Back, Next).
+// Phone: stacked buttons, the main action on top (the DOM order stays Skip, Back, Next).
 @include phone {
+  // `ui-button` has no full-width mode yet, so the buttons stack centred at their own width.
   .onboarding__foot {
     flex-direction: column-reverse;
+    align-items: center;
   }
 
   .onboarding__skip {
     margin-inline-end: 0;
-  }
-
-  .onboarding__foot ui-button {
-    display: flex;
-    flex-direction: column;
   }
 }
 

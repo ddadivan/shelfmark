@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { MOCK_SESSION_STORAGE_KEY } from '../../../core/auth/models/mock-session-storage-key.const';
+import { MOCK_ONBOARDING_ERROR_MESSAGE } from './models/mock-onboarding-error-message.const';
 import { MockOnboardingApi } from './mock-onboarding.api';
 
 const USER = {
@@ -46,7 +47,7 @@ describe('MockOnboardingApi', () => {
       localStorage.setItem(MOCK_SESSION_STORAGE_KEY, raw);
     }
 
-    await expect(create().complete()).rejects.toThrow('Mock: onboarding store failed');
+    await expect(create().complete()).rejects.toThrow(MOCK_ONBOARDING_ERROR_MESSAGE);
     await expect(create().reset()).rejects.toThrow();
   });
 });

@@ -3,6 +3,4 @@ export interface OnboardingState {
   open: boolean;
   /** "Show welcome again" is waiting for the server. */
   resetting: boolean;
-  /** The last reset failed (cleared by the next attempt). */
-  resetFailed: boolean;
 }

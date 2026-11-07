@@ -6,6 +6,19 @@ import { dismissOnboarding, NEW_USER, openAccountMenu, seedSession } from './sup
 const FIRST_TITLE = 'All your links in one place';
 const GITHUB_BUTTON = 'Continue with GitHub';
 
+/** Waits until no finite animation is still running (the illustration loops forever), so axe reads the colours of a finished frame. */
+async function animationsFinished(page: Page): Promise<void> {
+  await expect
+    .poll(
+      () =>
+        page.evaluate<number>(
+          'document.getAnimations().filter((a) => a.playState === "running" && a.effect?.getComputedTiming().iterations !== Infinity).length',
+        ),
+      { timeout: 10_000 },
+    )
+    .toBe(0);
+}
+
 async function signInAsNewUser(page: Page): Promise<void> {
   await page.goto('/sign-in');
   await page.getByRole('button', { name: GITHUB_BUTTON }).click();
@@ -131,11 +144,11 @@ test.describe('onboarding (mock API)', () => {
         await expectNoBlockingViolations(page, testInfo, { include: '.cdk-dialog-container' });
         await page.getByRole('button', { name: 'Next' }).click();
         await expect(page.getByRole('dialog', { name: 'Save in a second' })).toBeVisible();
-        await page.waitForTimeout(400);
+        await animationsFinished(page);
         await expectNoBlockingViolations(page, testInfo, { include: '.cdk-dialog-container' });
         await page.getByRole('button', { name: 'Next' }).click();
         await expect(page.getByRole('dialog', { name: 'Find it right away' })).toBeVisible();
-        await page.waitForTimeout(400);
+        await animationsFinished(page);
         await expectNoBlockingViolations(page, testInfo, { include: '.cdk-dialog-container' });
       });
     });
