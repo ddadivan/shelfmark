@@ -3,6 +3,7 @@
 :host {
   --ui-spinner-size: #{rem(16px)};
 
+  position: relative;
   display: inline-block;
   flex: none;
   width: var(--ui-spinner-size);
@@ -37,4 +38,8 @@
   border-radius: 50%;
 
   @include loop(spin);
+}
+
+.ui-spinner__text {
+  @include visually-hidden;
 }

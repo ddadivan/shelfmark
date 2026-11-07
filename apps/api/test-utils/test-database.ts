@@ -27,7 +27,7 @@ export function migrationFiles(dir: string = MIGRATIONS_DIR): string[] {
  * port and used through the same `PrismaService` as production. No Docker, no network.
  */
 export async function createTestDatabase(): Promise<TestDatabase> {
-  // pg_trgm is loaded for the search of #71; it is harmless until `CREATE EXTENSION` runs.
+  // pg_trgm must be loaded: the link_models migration runs `CREATE EXTENSION pg_trgm`.
   const db = await PGlite.create({ extensions: { pg_trgm } });
   for (const file of migrationFiles()) {
     await db.exec(readFileSync(file, 'utf8'));

@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import type { HeadingLevel } from '../heading';
 import { axeViolations } from '../../testing/axe';
 import { compileScss, mediaBlocks, withoutMedia } from '../../testing/scss';
 import { ButtonComponent } from '../button/button.component';
@@ -17,6 +18,7 @@ import { CARD_STORY_IMAGE } from './stories/card-story-image.const';
       [description]="description()"
       [actionsPinned]="pinned()"
       [reveal]="reveal()"
+      [headingLevel]="level()"
       (activated)="activated.push($event)"
     >
       <span slot="fallback">Y</span>
@@ -53,6 +55,7 @@ class HostComponent {
   readonly description = signal<string | undefined>(undefined);
   readonly pinned = signal(false);
   readonly reveal = signal(false);
+  readonly level = signal<HeadingLevel>(2);
   readonly activated: MouseEvent[] = [];
   readonly favorites: number[] = [];
   readonly menu: number[] = [];
@@ -102,6 +105,27 @@ describe('CardComponent', () => {
     update((c) => c.newTab.set(true));
     expect(main().getAttribute('target')).toBe('_blank');
     expect(main().getAttribute('rel')).toBe('noopener noreferrer');
+  });
+
+  it('wraps the link in an h2 by default and in the chosen level otherwise', () => {
+    const { card, update } = setup();
+    const heading = () => card.querySelector('.ui-card__heading') as HTMLElement;
+    expect(heading().tagName).toBe('H2');
+    expect(heading().querySelector('.ui-card__link')).not.toBeNull();
+    for (const level of [1, 3, 4, 5, 6] as const) {
+      update((c) => c.level.set(level));
+      expect(heading().tagName).toBe(`H${level}`);
+      expect(heading().querySelector('.ui-card__link')).not.toBeNull();
+    }
+    expect(card.querySelectorAll('.ui-card__heading')).toHaveLength(1);
+  });
+
+  it('keeps the heading static positioned so the link stretches over the card', () => {
+    const css = compileScss('lib/card/card.component.scss');
+    const rule = /\.ui-card__heading\s*{[^}]*}/.exec(css)?.[0] ?? '';
+    expect(rule).toContain('margin: 0');
+    expect(rule).toContain('font: inherit');
+    expect(rule).not.toContain('position');
   });
 
   it('has one activation target; the favorite and the actions are separate siblings', () => {

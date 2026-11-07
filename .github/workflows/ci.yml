@@ -69,6 +69,7 @@ jobs:
             exit 1
           }
       - run: node --test .claude/hooks/
+      - run: node --test scripts/
       - run: npx nx affected -t lint typecheck test build --output-style=static
       # Applies every migration to the Postgres service and fails when the result differs from
       # schema.prisma (a schema change without a migration). Only when `api` is affected.
@@ -84,6 +85,8 @@ jobs:
       # Guards the production bundle (no e2e-only route, nonce placeholder present, ADR 0022).
       # Only runs when `web` is affected; the build it depends on is cached by the step above.
       - run: npx nx affected -t middleware-shell --output-style=static
+      # The production bundle must not contain the dev/e2e-only mock auth API.
+      - run: npx nx affected -t check-bundle --output-style=static
       # Storybook must build whenever `ui` (or something it depends on) is affected (ADR 0023).
       # Its accessibility run needs a browser and lives in the `e2e` job.
       - name: Build Storybook
@@ -134,6 +137,42 @@ jobs:
           path: |
             dist/.playwright/apps/web-e2e/playwright-report
             dist/.playwright/apps/web-e2e/test-output
+          if-no-files-found: ignore
+          retention-days: 7
+
+  # Not a required check (ADR 0018): reports Lighthouse scores, does not gate merges yet.
+  lighthouse:
+    name: lighthouse
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      # @lhci/cli lives in its own lockfile (tools/lighthouse, ADR 0028): its dependency tree has
+      # high npm audit advisories that must not reach the root tree or the required npm-audit job.
+      - name: Install Lighthouse CI (install scripts off)
+        run: npm ci --ignore-scripts --prefix tools/lighthouse
+      # Advisories stay visible without failing the job.
+      - name: Audit Lighthouse CI dependencies
+        continue-on-error: true
+        run: npm audit --prefix tools/lighthouse --audit-level=high
+      - name: Lighthouse CI
+        run: npx nx run web-e2e:lighthouse --output-style=static
+      - if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: lighthouse-report
+          path: dist/lighthouse
           if-no-files-found: ignore
           retention-days: 7
 
