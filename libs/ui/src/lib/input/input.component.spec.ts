@@ -137,9 +137,47 @@ describe('InputComponent', () => {
     expect(spinner?.textContent?.trim()).toBe('Searching');
   });
 
-  it('ignores loading for other types', () => {
-    const { host } = setup({ icon: 'link', loading: true });
-    expect(host.querySelector('ui-spinner')).toBeNull();
+  it('shows a trailing spinner for url and text types while loading, keeping the icon', () => {
+    const { fixture, host } = setup({ type: INPUT_TYPE.Url, icon: 'link', loading: true });
+    const spinner = host.querySelector('.ui-input__spinner');
+    expect(spinner).not.toBeNull();
+    expect(spinner?.getAttribute('aria-hidden')).toBe('true');
+    expect(host.querySelector('ui-icon')).not.toBeNull();
+    expect(host.querySelector('.ui-input__slot ui-spinner')).toBeNull();
+    fixture.componentRef.setInput('type', INPUT_TYPE.Text);
+    fixture.detectChanges();
+    expect(host.querySelector('.ui-input__spinner')).not.toBeNull();
+  });
+
+  it('puts the trailing spinner before the clear button and names it by loadingLabel', () => {
+    const { fixture, host } = setup({
+      type: INPUT_TYPE.Url,
+      loading: true,
+      loadingLabel: 'Loading preview',
+      clearable: true,
+      clearLabel: 'Clear',
+      value: 'https://a.b',
+    });
+    TestBed.tick();
+    fixture.detectChanges();
+    const spinner = host.querySelector('.ui-input__spinner');
+    const clear = host.querySelector('.ui-input__clear');
+    expect(spinner?.getAttribute('role')).toBe('status');
+    expect(spinner?.textContent?.trim()).toBe('Loading preview');
+    expect(
+      spinner!.compareDocumentPosition(clear!) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it('sets aria-busy on the input only while loading', () => {
+    const { fixture, input } = setup({ type: INPUT_TYPE.Url });
+    expect(input().getAttribute('aria-busy')).toBeNull();
+    fixture.componentRef.setInput('loading', true);
+    fixture.detectChanges();
+    expect(input().getAttribute('aria-busy')).toBe('true');
+    fixture.componentRef.setInput('loading', false);
+    fixture.detectChanges();
+    expect(input().getAttribute('aria-busy')).toBeNull();
   });
 
   describe('clear button', () => {
@@ -208,6 +246,10 @@ describe('InputComponent', () => {
     ['error and hint', { error: 'Enter an address', hint: 'Hint' }],
     ['disabled', { disabled: true }],
     ['search loading', { type: INPUT_TYPE.Search, loading: true }],
+    [
+      'url loading with label',
+      { type: INPUT_TYPE.Url, loading: true, loadingLabel: 'Loading preview', icon: 'link' },
+    ],
   ])('has no axe violations (%s)', async (_name, inputs) => {
     const { fixture, host } = setup(inputs);
     fixture.detectChanges();
