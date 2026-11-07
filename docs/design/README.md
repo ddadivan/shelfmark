@@ -16,7 +16,7 @@ Exported from Claude Design. This folder is the source of truth for how the UI l
 | `components/<Name>/README.md` | Spec per component: Angular API, classes, behaviour, rules | One `libs/ui` component (or directive) per folder |
 | `components/<Name>/preview.html` | Component preview (loads tokens + reference.css) | Visual reference / Storybook stories |
 | `components/Motion/README.md` | Motion spec: principles, timing table, reduced motion | Every animation must match it |
-| `assets/icons/` | 44 custom icons + `sprite.svg` | Copy to `libs/ui/assets/icons`, use via `ui-icon` |
+| `assets/icons/` | 44 custom icons + `sprite.svg` (`ui-icon` adds the `google` and `github` brand marks) | Copy to `libs/ui/assets/icons`, use via `ui-icon` |
 | `assets/illustrations/` | 8 SVG illustrations using `var(--token, fallback)` | `ui-illustration` |
 | `assets/logos/` | Logo mark (light, dark, mono) and app icon | Header, favicon, PWA icons |
 | `screens/*.dc.html` | Every screen of stage 1 as HTML mockups (desktop and phone) | Layout and copy reference. They use a small template syntax (`{{value}}`, `<sc-if>`, `<sc-for>`) and a `class Component` script with demo state — read them as markup, not as code to run |
