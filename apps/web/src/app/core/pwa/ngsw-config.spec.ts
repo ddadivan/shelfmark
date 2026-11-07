@@ -26,4 +26,24 @@ describe('ngsw-config.json', () => {
   it('serves the shell from /index.html', () => {
     expect(ngswConfig.index).toBe('/index.html');
   });
+
+  // The share target opens `/share?...` as a navigation: the worker matches the path without the
+  // query, so it must fall back to the shell like any app route.
+  it('serves /share from the shell: not excluded from navigation fallback', () => {
+    const toRegExp = (glob: string) =>
+      new RegExp(
+        `^${glob
+          .replace(/[.+^${}()|[\]\\]/g, '\\$&')
+          .replace(/\*\*/g, '\u0000')
+          .replace(/\*/g, '[^/]*')
+          .replace(/\u0000/g, '.*')}$`,
+      );
+    const include = ngswConfig.navigationUrls.filter((url) => !url.startsWith('!')).map(toRegExp);
+    const exclude = ngswConfig.navigationUrls
+      .filter((url) => url.startsWith('!'))
+      .map((url) => toRegExp(url.slice(1)));
+
+    expect(include.some((re) => re.test('/share'))).toBe(true);
+    expect(exclude.some((re) => re.test('/share'))).toBe(false);
+  });
 });

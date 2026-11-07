@@ -1,0 +1,95 @@
+<main class="share">
+  @switch (state()) { @case (SHARE_STATE.Form) {
+  <form class="share__sheet" [formRoot]="form" aria-labelledby="share-title">
+    <header class="share__header">
+      <ui-logo class="share__logo" [variant]="LOGO_VARIANT.Mark" />
+      <div class="share__heading">
+        <h1 id="share-title" class="share__title">{{ 'share.title' | transloco }}</h1>
+        <p class="share__subtitle">{{ 'share.subtitle' | transloco }}</p>
+      </div>
+    </header>
+
+    <!-- Always present, so changes are announced reliably (notices inserted later may not be). -->
+    <div class="share__sr" role="status">
+      @switch (previewState()) { @case (PREVIEW_STATE.Loading) { {{ 'links.add.preview.loading' |
+      transloco }} } @case (PREVIEW_STATE.Ready) { {{ 'links.add.preview.ready' | transloco: {
+      title: title() } }} @if (duplicate(); as existing) { {{ 'links.add.duplicate.text' | transloco
+      : { folder: existing.folderName ?? ('links.add.folder.unsorted' | transloco) } }} } } }
+    </div>
+
+    @if (duplicate(); as existing) {
+    <ui-notice
+      >{{ 'links.add.duplicate.text' | transloco : { folder: existing.folderName ??
+      ('links.add.folder.unsorted' | transloco) } }}</ui-notice
+    >
+    }
+
+    <div class="share__preview" [attr.aria-busy]="previewState() === PREVIEW_STATE.Loading">
+      <div class="share__meta">
+        <ui-favicon [letter]="host()[0]" />
+        <span class="share__host">{{ host() }}</span>
+      </div>
+      @if (previewState() === PREVIEW_STATE.Loading && title() === '') {
+      <ui-skeleton [shape]="SKELETON_SHAPE.Line" [count]="2" />
+      } @else {
+      <div class="share__link-title">{{ title() }}</div>
+      } @if (description(); as text) {
+      <div class="share__description">{{ text }}</div>
+      }
+      <div class="share__address">{{ address() }}</div>
+    </div>
+
+    @if (previewState() === PREVIEW_STATE.Failed) {
+    <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'links.add.preview.failed' | transloco }}</ui-notice>
+    }
+
+    <ui-select
+      [label]="'links.add.folder.label' | transloco"
+      [options]="folderOptions()"
+      [emptyLabel]="'links.add.folder.unsorted' | transloco"
+      [searchLabel]="'links.add.folder.searchLabel' | transloco"
+      [noResultsLabel]="'links.add.folder.noResults' | transloco"
+      searchable
+      [formField]="form.folderId"
+    />
+
+    <ui-input
+      [label]="'links.add.note.label' | transloco"
+      [placeholder]="'links.add.note.placeholder' | transloco"
+      [formField]="form.note"
+    />
+
+    @if (saveFailed()) {
+    <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'links.add.saveFailed' | transloco }}</ui-notice>
+    }
+
+    <ui-button
+      class="share__action"
+      size="lg"
+      [type]="BUTTON_TYPE.Submit"
+      [variant]="BUTTON_VARIANT.Primary"
+      [loading]="saving()"
+      >{{ (saving() ? 'links.add.actions.saving' : duplicate() ? 'links.add.actions.saveAnyway' :
+      'share.actions.save' ) | transloco }}</ui-button
+    >
+    <ui-button class="share__action" [disabled]="saving()" (click)="leave()"
+      >{{ 'links.add.actions.cancel' | transloco }}</ui-button
+    >
+    <p class="share__footnote">{{ 'share.footnote' | transloco }}</p>
+  </form>
+  } @case (SHARE_STATE.Invalid) {
+  <section class="share__sheet" aria-labelledby="share-title">
+    <header class="share__header">
+      <ui-logo class="share__logo" [variant]="LOGO_VARIANT.Mark" />
+      <div class="share__heading">
+        <h1 id="share-title" class="share__title">{{ 'share.invalid.title' | transloco }}</h1>
+        <p class="share__subtitle">{{ 'share.subtitle' | transloco }}</p>
+      </div>
+    </header>
+    <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'share.invalid.text' | transloco }}</ui-notice>
+    <ui-button class="share__action" size="lg" [variant]="BUTTON_VARIANT.Primary" (click)="leave()"
+      >{{ 'share.invalid.action' | transloco }}</ui-button
+    >
+  </section>
+  } }
+</main>
