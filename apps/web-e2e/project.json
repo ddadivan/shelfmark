@@ -6,6 +6,14 @@
   "tags": ["scope:web", "type:e2e"],
   "implicitDependencies": ["web"],
   "targets": {
+    "lighthouse": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["web:build:e2e"],
+      "options": {
+        "command": "npx --yes @lhci/cli@0.16.0 autorun --config=apps/web-e2e/lighthouserc.cjs",
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
