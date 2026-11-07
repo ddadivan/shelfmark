@@ -8,6 +8,7 @@ Angular 22 client (CSR only, zoneless). Read `docs/PROJECT.md` 5.1 and 7 first. 
 - `core/` — app-wide singletons: `i18n/`, `theme/`, `api/`, later guards, interceptors, `AuthStore`
 - `features/<name>/` — `<name>.page.ts` (default export, lazy via `loadComponent`) plus local components
 - `shell/` — layout around pages; `stores/` — NgRx SignalStore stores
+- `src/testing/` — spec-only helpers (axe runner, translated component factory); excluded from the app build
 - File names `kebab-case.<type>.ts`. Types live one per file in a `models/` folder next to their use (`<name>.type.ts`, `.interface.ts`, `.const.ts`); no TS `enum` (fixed value sets are `as const` objects, ADR 0024); no `any`, no `@ts-ignore`.
 
 ## Rules

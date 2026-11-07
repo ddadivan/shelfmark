@@ -1,0 +1,46 @@
+<section class="landing-ba" aria-labelledby="landing-ba-title">
+  <div class="landing-ba__inner">
+    <h2 id="landing-ba-title" class="landing-ba__title">
+      {{ 'landing.beforeAfter.title' | transloco }}
+    </h2>
+    <div class="landing-ba__scenes">
+      <div class="landing-ba__scene">
+        <h3 class="landing-ba__label">{{ 'landing.beforeAfter.before' | transloco }}</h3>
+        <app-landing-before-scene />
+      </div>
+
+      <div class="landing-ba__scene">
+        <h3 class="landing-ba__label">{{ 'landing.beforeAfter.after' | transloco }}</h3>
+        <div class="landing-ba__after">
+          <div class="landing-ba__tree" aria-hidden="true">
+            @for (row of treeRows; track row.id) {
+              <div
+                class="landing-ba__row"
+                [class.landing-ba__row--active]="row.id === activeFolder()"
+                [class.landing-ba__row--nested]="row.depth > 0"
+              >
+                {{ row.nameKey | transloco }}
+              </div>
+            }
+            <p class="landing-ba__section">{{ 'landing.after.tagsTitle' | transloco }}</p>
+            <div class="landing-ba__tags">
+              <ui-chip>{{ 'landing.after.tags.video' | transloco }}</ui-chip>
+              <ui-chip>{{ 'landing.after.tags.courses' | transloco }}</ui-chip>
+            </div>
+          </div>
+          <ul class="landing-ba__list" [attr.aria-label]="'landing.after.listLabel' | transloco">
+            @for (link of lists[activeFolder()]; track link.id) {
+              <li class="landing-ba__item">
+                <ui-favicon [letter]="link.letter" />
+                <span class="landing-ba__item-text">
+                  <span class="landing-ba__item-title">{{ link.titleKey | transloco }}</span>
+                  <span class="landing-ba__item-note">{{ link.noteKey | transloco }}</span>
+                </span>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
