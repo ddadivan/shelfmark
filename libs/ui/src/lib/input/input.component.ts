@@ -54,6 +54,8 @@ export class InputComponent extends UiFieldControl implements FormValueControl<s
   readonly shortcut = input('');
   /** `search` only: replaces the icon with a spinner while true. */
   readonly loading = input(false, { transform: booleanAttribute });
+  /** Announced while `loading` ("Searching"); without it the spinner stays silent. */
+  readonly loadingLabel = input('');
 
   private readonly native = viewChild.required<ElementRef<HTMLInputElement>>('native');
 

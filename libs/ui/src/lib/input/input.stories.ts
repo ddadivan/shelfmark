@@ -31,6 +31,7 @@ const meta: Meta<InputComponent> = {
     clearLabel: 'Clear',
     shortcut: '',
     loading: false,
+    loadingLabel: 'Searching',
     disabled: false,
     required: false,
     value: '',
@@ -51,6 +52,7 @@ const meta: Meta<InputComponent> = {
           [clearLabel]="clearLabel"
           [shortcut]="shortcut"
           [loading]="loading"
+          [loadingLabel]="loadingLabel"
           [disabled]="disabled"
           [required]="required"
           [(value)]="value"

@@ -2,7 +2,7 @@ Shelfmark is a calm shelf for everything people save: videos, articles, clothes,
 
 ## Content fundamentals
 
-- The interface is in English (translations to Russian and Ukrainian come later, so every string goes through a translation key). Write short, plain, friendly copy; address the user as «you» only when needed and prefer verbs: «Add link», «Saved», «Nothing found».
+- The interface is in English (translations to Ukrainian come later, so every string goes through a translation key). Write short, plain, friendly copy; address the user as «you» only when needed and prefer verbs: «Add link», «Saved», «Nothing found».
 - Buttons are verb-first, 1–3 words, sentence case, no final period: «Add link», «Delete folder», «Open».
 - Empty states invite, not apologise: headline names the space («Your links will live here»), one sentence explains, one button acts.
 - Errors say what happened and what to do, in one sentence: «Couldn't load a preview. The link is saved with its address as the title.»
