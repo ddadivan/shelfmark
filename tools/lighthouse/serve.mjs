@@ -3,6 +3,7 @@
 // the simulated 4G load look about 3x heavier than it is). Adds no other headers: the CSP lives in
 // the Vercel middleware, not in the static files. Listens on loopback only.
 // Usage: node tools/lighthouse/serve.mjs <dir> <port>
+import { existsSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { extname, join, normalize, resolve, sep } from 'node:path';
@@ -10,6 +11,13 @@ import { brotliCompressSync, constants, gzipSync } from 'node:zlib';
 
 const root = resolve(process.argv[2] ?? 'dist/apps/web-e2e-build/browser');
 const port = Number(process.argv[3] ?? 4300);
+
+// Fail fast and loudly when the build is missing, instead of serving 500s that Chrome shows as
+// an interstitial.
+if (!existsSync(join(root, 'index.html'))) {
+  console.error(`No index.html in ${root}: build the e2e bundle first (nx run web:build:e2e).`);
+  process.exit(1);
+}
 
 const types = {
   '.html': 'text/html; charset=utf-8',

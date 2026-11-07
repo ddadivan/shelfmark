@@ -7,7 +7,10 @@ describe('LandingBuiltComponent', () => {
     const fixture = await createTranslated(LandingBuiltComponent);
     const root = fixture.nativeElement as HTMLElement;
 
-    expect(root.id).toBe('how');
+    // One element carries the id (the focusable section), never the host as well.
+    expect(root.id).not.toBe('how');
+    expect(root.querySelectorAll('#how')).toHaveLength(1);
+    expect(root.querySelector('#how')?.getAttribute('tabindex')).toBe('-1');
     expect(root.querySelector('h2')?.textContent?.trim()).toBe("How it's built");
     expect(root.querySelectorAll('.landing-built__agent')).toHaveLength(8);
     expect(root.textContent).toContain('security-reviewer');
