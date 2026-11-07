@@ -49,8 +49,8 @@ export class CheckboxComponent extends UiFieldControl implements FormCheckboxCon
     this.host.querySelector<HTMLInputElement>('input')?.focus(options);
   }
 
-  protected onChange(event: Event): void {
+  protected onChange(checked: boolean): void {
     this.indeterminate.set(false);
-    this.checked.set((event.target as HTMLInputElement).checked);
+    this.checked.set(checked);
   }
 }

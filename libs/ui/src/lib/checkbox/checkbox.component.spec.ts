@@ -112,6 +112,29 @@ describe('CheckboxComponent', () => {
     expect(input.disabled).toBe(true);
   });
 
+  it('re-syncs the native input when the consumer sets the value back', () => {
+    const { fixture, input } = setup();
+    input().click();
+    fixture.detectChanges();
+    expect(input().checked).toBe(true);
+    fixture.componentRef.setInput('checked', false);
+    fixture.detectChanges();
+    expect(input().checked).toBe(false);
+  });
+
+  it('keeps the error live region in the DOM while empty and hides the hint under an error', () => {
+    const { fixture, host } = setup({ hint: 'A hint' });
+    const region = host.querySelector('.ui-checkbox__error');
+    expect(region?.getAttribute('aria-live')).toBe('polite');
+    expect(region?.textContent).toBe('');
+    expect(host.querySelector('.ui-checkbox__hint--hidden')).toBeNull();
+    fixture.componentRef.setInput('error', 'Oops');
+    fixture.detectChanges();
+    expect(host.querySelector('.ui-checkbox__error')).toBe(region);
+    expect(region?.textContent).toBe('Oops');
+    expect(host.querySelector('.ui-checkbox__hint--hidden')).not.toBeNull();
+  });
+
   it('has no axe violations in any state', async () => {
     const plain = setup({ hint: 'A hint' });
     expect(await axeViolations(plain.host)).toEqual([]);

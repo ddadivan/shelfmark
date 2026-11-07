@@ -136,6 +136,22 @@ describe('LongPressDirective', () => {
     expect(cmp.clicks()).toBe(1);
   });
 
+  it('stops swallowing after a pointercancel that follows a fired press (Android)', () => {
+    const { cmp, el } = setup();
+    el.dispatchEvent(pointer('pointerdown'));
+    vi.advanceTimersByTime(LONG_PRESS_DURATION_MS);
+    const menu = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+    el.dispatchEvent(menu);
+    el.dispatchEvent(pointer('pointercancel'));
+    expect(menu.defaultPrevented).toBe(true);
+    vi.advanceTimersByTime(LONG_PRESS_CLICK_GUARD_MS);
+    const later = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+    el.dispatchEvent(later);
+    el.click();
+    expect(later.defaultPrevented).toBe(false);
+    expect(cmp.clicks()).toBe(1);
+  });
+
   it('does nothing while disabled and never reacts to the keyboard', () => {
     const { fixture, cmp, el } = setup();
     cmp.disabled.set(true);

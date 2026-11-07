@@ -34,7 +34,7 @@ import type { UiLongPressEvent } from './models/long-press-event.interface';
     '(pointerdown)': 'onPointerDown($event)',
     '(pointermove)': 'onPointerMove($event)',
     '(pointerup)': 'onPointerEnd()',
-    '(pointercancel)': 'cancel()',
+    '(pointercancel)': 'onPointerEnd()',
     '(contextmenu)': 'onContextMenu($event)',
   },
 })
@@ -72,7 +72,7 @@ export class LongPressDirective {
     if (
       this.disabled() ||
       !event.isPrimary ||
-      !LONG_PRESS_POINTER_TYPES.includes(event.pointerType)
+      !LONG_PRESS_POINTER_TYPES.some((type) => type === event.pointerType)
     ) {
       return;
     }

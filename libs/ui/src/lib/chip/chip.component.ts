@@ -65,7 +65,8 @@ export class ChipComponent {
 
   /**
    * The "..." button was pressed. Carries the button element as the origin for
-   * `ui-menu.openFrom(origin)`; the chip's own action (`clicked`) is not triggered.
+   * `ui-menu.openFrom(origin)`; the chip's own action (`clicked`) is not triggered, and
+   * Delete / Backspace on the focused menu button never remove the chip.
    */
   readonly menuRequested = output<HTMLElement>();
 
@@ -90,15 +91,17 @@ export class ChipComponent {
       ?.focus(options);
   }
 
-  protected onMenuClick(event: MouseEvent): void {
+  protected onMenuClick(event: MouseEvent, origin: HTMLElement): void {
     event.stopPropagation();
-    this.menuRequested.emit(event.currentTarget as HTMLElement);
+    this.menuRequested.emit(origin);
   }
 
   protected onKeydown(event: KeyboardEvent): void {
     if (
       this.removable() &&
       !this.disabled() &&
+      !(event.target instanceof Element && event.target.closest('.ui-chip__menu')) &&
+      !(event.target instanceof Element && event.target.closest('.ui-chip__menu')) &&
       (event.key === KEYBOARD_KEY.Delete || event.key === KEYBOARD_KEY.Backspace)
     ) {
       event.preventDefault();

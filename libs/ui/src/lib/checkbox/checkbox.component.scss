@@ -33,7 +33,7 @@
   place-items: center;
   width: rem(18px);
   height: rem(18px);
-  margin-top: rem(1px);
+  margin-top: rem(2px);
   color: var(--surface);
   background: var(--surface);
   border: 1.5px solid var(--border-control);
@@ -80,10 +80,8 @@
 }
 
 .ui-checkbox__text {
-  @include type(label);
+  @include type(body);
 
-  font-size: rem(14px);
-  line-height: rem(20px);
   color: var(--text);
 }
 
@@ -100,10 +98,11 @@
 
 .ui-checkbox__error {
   color: var(--danger);
+}
 
-  &:empty {
-    display: none;
-  }
+// While an error shows the hint stays in the DOM for `aria-describedby`, like the field shell.
+.ui-checkbox__hint--hidden {
+  @include visually-hidden;
 }
 
 :host(.ui-checkbox--disabled) {

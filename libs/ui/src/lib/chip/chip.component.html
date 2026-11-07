@@ -22,11 +22,12 @@
 @if (menuLabel(); as label) {
   <button
     type="button"
+    #menu
     class="ui-chip__menu"
     [disabled]="disabled()"
     [attr.aria-label]="label"
     aria-haspopup="menu"
-    (click)="onMenuClick($event)"
+    (click)="onMenuClick($event, menu)"
   >
     <ui-icon name="more" />
   </button>

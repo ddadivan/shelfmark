@@ -1,5 +1,6 @@
 <label class="ui-checkbox__label" [attr.for]="controlId">
   <input
+    #box
     type="checkbox"
     class="ui-checkbox__input"
     [id]="controlId"
@@ -10,7 +11,7 @@
     [attr.aria-required]="required() ? 'true' : null"
     [attr.aria-invalid]="showInvalid() ? 'true' : null"
     [attr.aria-describedby]="describedBy()"
-    (change)="onChange($event)"
+    (change)="onChange(box.checked)"
     (blur)="touch.emit()"
   />
   <span class="ui-checkbox__box" aria-hidden="true">
@@ -23,6 +24,8 @@
   <span class="ui-checkbox__text">{{ label() }}</span>
 </label>
 @if (hint()) {
-  <span class="ui-checkbox__hint" [id]="hintId">{{ hint() }}</span>
+  <span class="ui-checkbox__hint" [class.ui-checkbox__hint--hidden]="!!message()" [id]="hintId">{{
+    hint()
+  }}</span>
 }
 <span class="ui-checkbox__error" [id]="errorId" aria-live="polite">{{ message() }}</span>
