@@ -24,12 +24,12 @@ body{margin:0}
 <h2 class="cap">In the link form: type a new name and press Enter</h2>
 <div style="position: relative; width: 360px; height: 250px;">
 <div class="sm-field"><label class="sm-field__label">Tags</label>
-<div class="sm-field__control sm-taginput is-focus"><span class="sm-chip">clothes<button type="button" class="sm-chip__remove" aria-label="Remove tag clothes"><svg class="x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></span><input aria-label="Add tag" value="wint" role="combobox" aria-expanded="true"></div></div>
-<div class="sm-listbox sm-pop-in" role="listbox" style="position: absolute; left: 0; right: 0; top: 74px; --sm-origin: top left;">
+<div class="sm-field__control sm-taginput is-focus"><span class="sm-chip">clothes<button type="button" class="sm-chip__remove" aria-label="Remove tag clothes"><svg class="x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></span><input aria-label="Add tag" value="wint" role="combobox" aria-expanded="true" aria-controls="tag-suggest" aria-autocomplete="list" aria-activedescendant="tag-create"></div></div>
+<div class="sm-listbox sm-pop-in" id="tag-suggest" role="listbox" aria-label="Tag suggestions" style="position: absolute; left: 0; right: 0; top: 74px; --sm-origin: top left;">
 <div class="sm-menu__item" role="option">winter<span class="sm-menu__hint" style="color: var(--text-muted); font-size: 12px;">12 links</span></div>
 <div class="sm-menu__item" role="option">winter-sale<span class="sm-menu__hint" style="color: var(--text-muted); font-size: 12px;">3 links</span></div>
-<div class="sm-menu__sep" role="separator"></div>
-<div class="sm-menu__item is-selected" role="option" aria-selected="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Create tag “wint”<span class="sm-menu__hint sm-kbd">Enter</span></div>
+<div class="sm-menu__sep" role="none"></div>
+<div class="sm-menu__item is-selected" id="tag-create" role="option" aria-selected="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Create tag “wint”<span class="sm-menu__hint sm-kbd">Enter</span></div>
 </div>
 </div>
 <p class="note">Matches come first, “Create tag” is always the last row. Enter or comma creates the tag and turns it into a chip. Up to 50 characters; spaces become dashes.</p>
