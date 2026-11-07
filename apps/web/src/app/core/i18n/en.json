@@ -515,6 +515,10 @@
       "label": "Filtered by tags",
       "remove": "Remove tag filter {{name}}",
       "clear": "Clear filter"
+    },
+    "count": {
+      "one": "{{count}} link",
+      "other": "{{count}} links"
     }
   }
 }

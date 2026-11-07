@@ -86,7 +86,6 @@
       [label]="(renamingId() === null ? 'tags.add.label' : 'tags.rename.label') | transloco"
       [placeholder]="'tags.add.placeholder' | transloco"
       [error]="fieldError()"
-      [disabled]="saving()"
       [formField]="form.name"
     />
     @if (conflict(); as existing) {
