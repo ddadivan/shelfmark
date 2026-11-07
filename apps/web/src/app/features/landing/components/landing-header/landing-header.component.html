@@ -1,9 +1,12 @@
 <header class="landing-header">
   <ui-logo class="landing-header__logo" [wordmark]="'landing.header.brand' | transloco" />
   <nav class="landing-header__nav" [attr.aria-label]="'landing.header.navLabel' | transloco">
-    <a class="landing-header__link" [attr.href]="LANDING_LINKS.HowItsBuilt">{{
-      'landing.header.howItsBuilt' | transloco
-    }}</a>
+    <a
+      class="landing-header__link"
+      [attr.href]="LANDING_LINKS.HowItsBuilt"
+      (click)="onHowItsBuilt($event)"
+      >{{ 'landing.header.howItsBuilt' | transloco }}</a
+    >
     <a
       class="landing-header__link"
       [attr.href]="LANDING_LINKS.Repository"

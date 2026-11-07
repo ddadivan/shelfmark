@@ -8,7 +8,7 @@
 const { chromium } = require('@playwright/test');
 
 const port = process.env.LHCI_PORT ?? '4300';
-const origin = `http://localhost:${port}`;
+const origin = `http://127.0.0.1:${port}`;
 
 // Extension point: add the main screen here once it exists (#74). It needs a signed-in session
 // or a stub API first, so only public pages belong in this list until then.
