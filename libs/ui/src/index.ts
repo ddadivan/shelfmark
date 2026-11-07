@@ -1,4 +1,5 @@
 export * from './lib/avatar';
+export * from './lib/breadcrumbs';
 export * from './lib/button';
 export * from './lib/card';
 export * from './lib/chip';
@@ -23,6 +24,7 @@ export * from './lib/progress-bar';
 export * from './lib/radio-group';
 export * from './lib/ripple';
 export * from './lib/save-status';
+export * from './lib/segmented-control';
 export * from './lib/select';
 export * from './lib/skeleton';
 export * from './lib/spinner';
