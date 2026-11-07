@@ -1,7 +1,7 @@
 // Static SPA server for the Lighthouse run: serves the `e2e` build like production does, with
 // brotli / gzip responses (Vercel compresses; the plain file server sends raw bytes, which makes
 // the simulated 4G load look about 3x heavier than it is). Adds no other headers: the CSP lives in
-// the Vercel middleware, not in the static files. Usage: node tools/lighthouse/serve.mjs <dir> <port>
+// the Vercel middleware, not in the static files. Listens on loopback only. Usage: node tools/lighthouse/serve.mjs <dir> <port>
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { extname, join, normalize, resolve, sep } from 'node:path';
@@ -22,6 +22,17 @@ const types = {
 };
 const compressible = new Set(['.html', '.js', '.css', '.json', '.svg', '.txt', '.ico']);
 const cache = new Map();
+
+/** Accepted codings from `Accept-Encoding`, honouring q-values (`q=0` means refused). */
+function accepts(header, coding) {
+  for (const part of header.split(',')) {
+    const [name, ...params] = part.trim().toLowerCase().split(';');
+    if (name !== coding) continue;
+    const q = params.map((p) => p.trim()).find((p) => p.startsWith('q='));
+    return q === undefined ? true : Number(q.slice(2)) > 0;
+  }
+  return false;
+}
 
 async function resolveFile(urlPath) {
   const candidate = normalize(join(root, decodeURIComponent(urlPath)));
@@ -50,6 +61,10 @@ async function body(file, encoding) {
 
 createServer(async (req, res) => {
   try {
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
+      res.writeHead(405, { allow: 'GET, HEAD' }).end();
+      return;
+    }
     const { pathname } = new URL(req.url ?? '/', 'http://localhost');
     const file = await resolveFile(pathname);
     if (!file) {
@@ -60,9 +75,9 @@ createServer(async (req, res) => {
     const accepted = String(req.headers['accept-encoding'] ?? '');
     const encoding = !compressible.has(ext)
       ? null
-      : /\bbr\b/.test(accepted)
+      : accepts(accepted, 'br')
         ? 'br'
-        : /\bgzip\b/.test(accepted)
+        : accepts(accepted, 'gzip')
           ? 'gzip'
           : null;
     const payload = await body(file, encoding);
@@ -76,4 +91,4 @@ createServer(async (req, res) => {
   } catch {
     res.writeHead(500).end();
   }
-}).listen(port, () => console.log(`Available on http://localhost:${port}`));
+}).listen(port, '127.0.0.1', () => console.log(`Available on http://127.0.0.1:${port}`));

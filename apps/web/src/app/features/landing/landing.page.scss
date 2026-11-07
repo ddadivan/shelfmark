@@ -8,7 +8,9 @@
   color: var(--text);
 }
 
-// Reserves the space of the deferred sections, so nothing below the hero jumps when they arrive.
+// Reserves space for the deferred sections, so nothing below the hero jumps when they arrive.
+// A lower bound only: the real sections are taller (about 3 to 5 screens), and everything below
+// the fold shifts when they land, which is outside the viewport and does not count as CLS.
 .landing__placeholder {
   min-height: 100dvh;
 }

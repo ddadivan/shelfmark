@@ -13,6 +13,21 @@ describe('LandingHeaderComponent', () => {
     expect(root.querySelector('a[href="/sign-in"]')?.textContent).toContain('Sign in');
   });
 
+  it('asks the page for "How it\'s built" instead of following the anchor', async () => {
+    const fixture = await createTranslated(LandingHeaderComponent);
+    const requested = vi.fn();
+    fixture.componentInstance.howItsBuiltRequested.subscribe(requested);
+    const link = (fixture.nativeElement as HTMLElement).querySelector<HTMLAnchorElement>(
+      'a[href="#how"]',
+    );
+    const click = new MouseEvent('click', { bubbles: true, cancelable: true });
+
+    link?.dispatchEvent(click);
+
+    expect(requested).toHaveBeenCalledTimes(1);
+    expect(click.defaultPrevented).toBe(true);
+  });
+
   it('opens GitHub in a new tab with noopener', async () => {
     const fixture = await createTranslated(LandingHeaderComponent);
     const link = (fixture.nativeElement as HTMLElement).querySelector<HTMLAnchorElement>(

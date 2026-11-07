@@ -2,6 +2,7 @@ import { expect, type Page, test } from '@playwright/test';
 import { COLOR_SCHEME } from './models/color-scheme.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { LANDING_HEADLINE } from './models/landing-headline.const';
+import { gotoLandingLoaded } from './support/landing';
 
 test.describe('landing', () => {
   test('a guest sees the headline and the sections in order', async ({ page }) => {
@@ -9,13 +10,27 @@ test.describe('landing', () => {
 
     await expect(page.getByRole('heading', { level: 1, name: LANDING_HEADLINE })).toBeVisible();
     await expect(page.getByRole('main')).toBeVisible();
-    const headings = await page.getByRole('heading', { level: 2 }).allTextContents();
-    expect(headings.map((text) => text.trim())).toEqual([
+    // Auto-waits: the sections below the hero are deferred (on idle).
+    await expect(page.getByRole('heading', { level: 2 })).toHaveText([
       'The same links, before and after',
       'Why this exists',
       "How it's built",
       'Empty your Saved Messages.',
     ]);
+  });
+
+  test('"How it\'s built" in the header scrolls to and focuses the section', async ({ page }) => {
+    // The header link is hidden on a phone by design (sign-in stays), so use a desktop width.
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto('/');
+    await expect(page.getByRole('heading', { level: 1, name: LANDING_HEADLINE })).toBeVisible();
+
+    // Straight away, possibly before the deferred sections are idle-loaded.
+    await page.getByRole('banner').getByRole('link', { name: "How it's built" }).click();
+
+    const section = page.getByRole('region', { name: "How it's built" });
+    await expect(section).toBeInViewport();
+    await expect(section).toBeFocused();
   });
 
   test('"Put them on the shelf" swaps the chat for the shelf and back', async ({ page }) => {
@@ -70,8 +85,7 @@ test.describe('landing', () => {
 
   test('has no horizontal scroll at 360px width', async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 780 });
-    await page.goto('/');
-    await expect(page.getByRole('heading', { level: 1, name: LANDING_HEADLINE })).toBeVisible();
+    await gotoLandingLoaded(page);
 
     const overflow = await page.evaluate<number>(
       '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
@@ -161,15 +175,14 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
       });
 
       test('chat state has no serious or critical axe violations', async ({ page }, testInfo) => {
-        await page.goto('/');
-        await expect(page.getByRole('heading', { level: 1, name: LANDING_HEADLINE })).toBeVisible();
+        await gotoLandingLoaded(page);
         await page.evaluate('document.fonts.ready.then(() => undefined)');
 
         await expectNoBlockingViolations(page, testInfo);
       });
 
       test('shelf state has no serious or critical axe violations', async ({ page }, testInfo) => {
-        await page.goto('/');
+        await gotoLandingLoaded(page);
         await page.getByRole('button', { name: 'Put them on the shelf' }).click();
         await expect(page.getByText('Notes come from your own messages.')).toBeVisible();
         await page.evaluate('document.fonts.ready.then(() => undefined)');
