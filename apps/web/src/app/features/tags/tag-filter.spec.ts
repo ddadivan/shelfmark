@@ -1,4 +1,4 @@
-import { LINK_LIMIT } from '@shelfmark/contracts';
+import { LINK_LIMIT, TAG_LIMIT } from '@shelfmark/contracts';
 import { parseTagFilter } from './tag-filter';
 
 describe('parseTagFilter', () => {
@@ -29,5 +29,11 @@ describe('parseTagFilter', () => {
 
   it('ignores values that are not text', () => {
     expect(parseTagFilter([1, null, 'docs', { a: 1 }])).toEqual(['docs']);
+  });
+
+  it('cuts a value to the tag name limit', () => {
+    const [name] = parseTagFilter('x'.repeat(TAG_LIMIT.NameMax + 20));
+
+    expect(name).toHaveLength(TAG_LIMIT.NameMax);
   });
 });

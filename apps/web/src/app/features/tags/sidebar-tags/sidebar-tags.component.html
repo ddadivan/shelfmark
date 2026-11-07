@@ -4,6 +4,7 @@
       {{ 'tags.sidebar.heading' | transloco }}
     </h2>
     <ui-button
+      #addButton
       variant="ghost"
       size="sm"
       iconOnly
@@ -34,6 +35,7 @@
         } @else {
           <ui-chip
             clickable
+            [attr.data-tag-id]="tag.id"
             uiLongPress
             (uiLongPress)="openMenuFromLongPress(tag, $event)"
             (contextmenu)="openMenuAt(tag, $event)"

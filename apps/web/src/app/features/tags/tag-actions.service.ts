@@ -1,13 +1,13 @@
 import { inject, Service } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
-import type { TagResponse } from '@shelfmark/contracts';
+import { normalizeTagName, type TagResponse } from '@shelfmark/contracts';
 import { DIALOG_SIZE, DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { APP_PATH } from '../../models/app-path.const';
 import { TAG_OUTCOME } from '../../stores/models/tag-outcome.const';
 import { TagsStore } from '../../stores/tags.store';
-import { pluralKey } from '../folders/plural-key';
-import { UndoToastService } from '../links/undo-toast.service';
+import { pluralKey } from '../../core/i18n/plural-key';
+import { UndoToastService } from '../../core/undo/undo-toast.service';
 import type { MergeTagDialogData } from './models/merge-tag-dialog-data.interface';
 import { TAG_QUERY_PARAM } from './models/tag-query-param.const';
 import { MergeTagDialogComponent } from './merge-tag-dialog/merge-tag-dialog.component';
@@ -35,24 +35,25 @@ export class TagActionsService {
 
   /** Asks for the target in a dialog, then merges `tag` into it. */
   async merge(tag: TagResponse): Promise<void> {
-    const outcome = { target: null as TagResponse | null };
     await this.dialogs.open<MergeTagDialogComponent, boolean, MergeTagDialogData>(
       MergeTagDialogComponent,
       {
         size: DIALOG_SIZE.Sm,
         data: {
           tag,
+          // The toast and the filter follow here, not after the dialog: closing it (Esc, backdrop)
+          // while the request runs must not skip them.
           submit: async (targetId) => {
             const result = await this.tags.merge(tag.id, targetId);
-            outcome.target = result.outcome === TAG_OUTCOME.Done ? (result.tag ?? null) : null;
-            return outcome.target !== null;
+            if (result.outcome !== TAG_OUTCOME.Done || !result.tag) {
+              return false;
+            }
+            this.mergedInto(tag, result.tag);
+            return true;
           },
         },
       },
     ).result;
-    if (outcome.target) {
-      this.mergedInto(tag, outcome.target);
-    }
   }
 
   /** Merges without a dialog (the offer after a rename hit an existing name). */
@@ -115,14 +116,20 @@ export class TagActionsService {
 
   /** Points the `?tag=` filter of the open page at `to` (`null` removes it) when it has `from`. */
   private async retargetFilter(from: string, to: string | null): Promise<void> {
-    const current = this.router.parseUrl(this.router.url).queryParamMap.getAll(TAG_QUERY_PARAM);
-    if (!current.some((name) => name.toLowerCase() === from.toLowerCase())) {
+    // The URL may spell a tag differently (spaces, case); compare the way the filter reads it.
+    const current = this.router
+      .parseUrl(this.router.url)
+      .queryParamMap.getAll(TAG_QUERY_PARAM)
+      .map((name) => normalizeTagName(name));
+    const same = (name: string): boolean =>
+      name.toLowerCase() === normalizeTagName(from).toLowerCase();
+    if (!current.some(same)) {
       return;
     }
     const seen = new Set<string>();
     const next: string[] = [];
     for (const name of current) {
-      const mapped = name.toLowerCase() === from.toLowerCase() ? to : name;
+      const mapped = same(name) ? to : name;
       if (mapped !== null && !seen.has(mapped.toLowerCase())) {
         seen.add(mapped.toLowerCase());
         next.push(mapped);

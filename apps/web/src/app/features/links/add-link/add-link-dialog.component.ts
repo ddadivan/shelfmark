@@ -46,7 +46,7 @@ import {
 import { firstValueFrom, switchMap, tap, timer, type Observable } from 'rxjs';
 import { FoldersStore } from '../../../stores/folders.store';
 import { TagsStore } from '../../../stores/tags.store';
-import { pluralKey } from '../../folders/plural-key';
+import { pluralKey } from '../../../core/i18n/plural-key';
 import { normalizeTagNames } from '../../tags/normalize-tag-names';
 import { ADD_LINK_ACTION } from '../models/add-link-action.const';
 import type { AddLinkDialogData } from '../models/add-link-dialog-data.interface';

@@ -10,7 +10,7 @@ import { AddLinkDialogService } from './add-link/add-link-dialog.service';
 import { ADD_LINK_ACTION } from './models/add-link-action.const';
 import type { AddLinkData } from './models/add-link-data.interface';
 import { LINKS_API } from './models/links-api.const';
-import { UndoToastService } from './undo-toast.service';
+import { UndoToastService } from '../../core/undo/undo-toast.service';
 
 /**
  * What a user can do with a link from the feed, the recent panel and the header: open, favorite,

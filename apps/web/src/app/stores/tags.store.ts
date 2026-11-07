@@ -61,6 +61,11 @@ export const TagsStore = signalStore(
     let inFlight = 0;
     let refetchWanted = false;
     const pending = new Map<string, { tag: TagResponse; committing: boolean }>();
+    // Renames of one tag can overlap (the second starts from the optimistic name of the first).
+    // The links still carry the name the server confirmed last, so `renameTag` goes from that
+    // one, not from the optimistic name.
+    const renaming = new Map<string, { confirmed: string; running: number; done: number }>();
+    let renameSeq = 0;
 
     function begin(): number {
       inFlight++;
@@ -129,7 +134,8 @@ export const TagsStore = signalStore(
       if (!removal || removal.committing) {
         return true;
       }
-      const token = epoch;
+      // Counted as a mutation: a list requested before it ends must not bring the tag back.
+      const token = begin();
       removal.committing = true;
       try {
         await firstValueFrom(api().remove(id));
@@ -138,6 +144,8 @@ export const TagsStore = signalStore(
           restore(id);
         }
         return false;
+      } finally {
+        finish(token);
       }
       if (token === epoch) {
         pending.delete(id);
@@ -165,7 +173,15 @@ export const TagsStore = signalStore(
         if (store.loaded()) {
           return Promise.resolve();
         }
-        firstLoad ??= fetchAll().finally(() => (firstLoad = null));
+        if (firstLoad === null) {
+          const request: Promise<void> = fetchAll().finally(() => {
+            // `reset()` may have started a newer load meanwhile: clear only our own.
+            if (firstLoad === request) {
+              firstLoad = null;
+            }
+          });
+          firstLoad = request;
+        }
         return firstLoad;
       },
 
@@ -177,9 +193,6 @@ export const TagsStore = signalStore(
         // New names need ids and known ones new counts: the list answers both.
         return refresh();
       },
-
-      /** The tag with this name (case-insensitively), if the user has one. */
-      byName: (name: string): TagResponse | undefined => owner(name),
 
       /** Creates an empty tag. */
       async create(name: string): Promise<TagResult> {
@@ -219,14 +232,27 @@ export const TagsStore = signalStore(
           return { outcome: TAG_OUTCOME.Conflict, tag: taken };
         }
         const token = begin();
+        const state = renaming.get(id) ?? { confirmed: previous.name, running: 0, done: 0 };
+        const seq = ++renameSeq;
+        state.running++;
+        renaming.set(id, state);
         replace(id, { name });
         try {
           const saved = await firstValueFrom(api().update(id, { name }));
           if (token !== epoch) {
             return { outcome: TAG_OUTCOME.Failed };
           }
-          replace(id, { name: saved.name, updatedAt: saved.updatedAt });
-          links().renameTag(previous.name, saved.name);
+          // Only while this is still the newest name: an older reply must not undo a newer edit.
+          if (store.entityMap()[id]?.name === name) {
+            replace(id, { name: saved.name, updatedAt: saved.updatedAt });
+          }
+          // Replies can arrive out of order; the server applied them in request order, so a
+          // reply older than one already applied has nothing left to say about the links.
+          if (seq > state.done) {
+            links().renameTag(state.confirmed, saved.name);
+            state.confirmed = saved.name;
+            state.done = seq;
+          }
           return { outcome: TAG_OUTCOME.Done, tag: saved };
         } catch (error) {
           // Only while the name is still the optimistic one: a later edit must not be undone.
@@ -237,6 +263,9 @@ export const TagsStore = signalStore(
             ? { outcome: TAG_OUTCOME.Conflict, ...ownerField(owner(name, id)) }
             : { outcome: TAG_OUTCOME.Failed };
         } finally {
+          if (token === epoch && --state.running === 0) {
+            renaming.delete(id);
+          }
           finish(token);
         }
       },
@@ -305,6 +334,7 @@ export const TagsStore = signalStore(
         refetchWanted = false;
         firstLoad = null;
         pending.clear();
+        renaming.clear();
         patchState(store, initialState, removeAllEntities());
       },
     };

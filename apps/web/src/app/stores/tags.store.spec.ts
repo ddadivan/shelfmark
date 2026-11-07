@@ -459,4 +459,72 @@ describe('TagsStore', () => {
       expect(api.list).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('review fixes', () => {
+    it('does not let a list requested before a delete commit bring the tag back', async () => {
+      const slow = new Subject<readonly TagResponse[]>();
+      const list = vi
+        .fn<TagsApi['list']>()
+        .mockReturnValueOnce(of(LIST))
+        .mockReturnValueOnce(slow)
+        .mockReturnValue(of(LIST.filter((item) => item.name !== 'winter')));
+      const gone = new Subject<void>();
+      const { store } = setup({ list, remove: vi.fn(() => gone) });
+      await store.load();
+      store.hide('tag-winter');
+
+      const refreshing = store.refresh();
+      const committing = store.commitRemove('tag-winter');
+      // The old list still has the tag; it arrives while the delete runs.
+      slow.next(LIST);
+      slow.complete();
+      gone.next();
+      gone.complete();
+      await Promise.all([refreshing, committing]);
+      await store.refresh();
+
+      expect(names(store)).not.toContain('winter');
+    });
+
+    it('starts a new first load after reset even if the old one settles later', async () => {
+      const old = new Subject<readonly TagResponse[]>();
+      const list = vi
+        .fn<TagsApi['list']>()
+        .mockReturnValueOnce(old)
+        .mockReturnValue(of([tag('fresh')]));
+      const { store } = setup({ list });
+
+      const first = store.load();
+      store.reset();
+      const second = store.load();
+      old.next(LIST);
+      old.complete();
+      await Promise.all([first, second]);
+      // A third caller reuses nothing stale and gets the loaded list.
+      await store.load();
+
+      expect(names(store)).toEqual(['fresh']);
+      expect(list).toHaveBeenCalledTimes(2);
+    });
+
+    it('renames links from the name the server confirmed when two renames overlap', async () => {
+      const first = new Subject<TagResponse>();
+      const update = vi
+        .fn<TagsApi['update']>()
+        .mockReturnValueOnce(first)
+        .mockImplementation((id, request) => of({ ...tag(request.name), id }));
+      const { store, linksStore } = setup({ update }, [link('l1', ['winter'])]);
+      await store.load();
+      linksStore.setFilter({ scope: LINKS_SCOPE.All });
+
+      const older = store.rename('tag-winter', 'summer');
+      await store.rename('tag-winter', 'autumn');
+      first.next({ ...tag('summer'), id: 'tag-winter' });
+      first.complete();
+      await older;
+
+      expect(linksStore.entities()[0].tags).toEqual(['autumn']);
+      expect(names(store)).toContain('autumn');
+    });
+  });
 });

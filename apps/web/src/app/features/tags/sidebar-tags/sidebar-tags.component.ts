@@ -1,13 +1,17 @@
 import { NgTemplateOutlet } from '@angular/common';
 import {
+  afterNextRender,
   afterRenderEffect,
   ChangeDetectionStrategy,
   Component,
   computed,
+  ElementRef,
   inject,
+  Injector,
   signal,
   viewChild,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { form, FormField, FormRoot } from '@angular/forms/signals';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { TAG_LIMIT, normalizeTagName, type TagResponse } from '@shelfmark/contracts';
@@ -64,6 +68,12 @@ export class SidebarTagsComponent {
   private readonly transloco = inject(TranslocoService);
   private readonly menu = viewChild.required(MenuComponent);
   private readonly field = viewChild(InputComponent);
+  private readonly addButton = viewChild('addButton', { read: ElementRef });
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+  private readonly injector = inject(Injector);
+
+  /** Ticks when the active language or its translations change, so messages re-translate. */
+  private readonly i18n = toSignal(this.transloco.events$, { initialValue: undefined });
 
   protected readonly expanded = signal(false);
   protected readonly split = computed(() => splitTags(this.tags.entities(), this.expanded()));
@@ -78,7 +88,16 @@ export class SidebarTagsComponent {
     submission: { action: () => this.save() },
   });
   protected readonly saving = signal(false);
-  protected readonly fieldError = signal('');
+  private readonly errorState = signal<{
+    key: string;
+    params?: Record<string, unknown>;
+  } | null>(null);
+  /** The message under the field, translated again when the language changes. */
+  protected readonly fieldError = computed(() => {
+    this.i18n();
+    const error = this.errorState();
+    return error ? this.transloco.translate(error.key, error.params) : '';
+  });
   /** The existing tag a rename ran into: the merge is offered. */
   protected readonly conflict = signal<TagResponse | null>(null);
 
@@ -119,11 +138,24 @@ export class SidebarTagsComponent {
     this.openEditor(tag.name, tag.id, false);
   }
 
+  /** Closes the editor; focus goes back to the renamed chip, or to the "+" button. */
   protected cancel(): void {
+    const renamedId = this.renamingId();
     this.adding.set(false);
     this.renamingId.set(null);
-    this.fieldError.set('');
+    this.errorState.set(null);
     this.conflict.set(null);
+    afterNextRender(() => this.restoreFocus(renamedId), { injector: this.injector });
+  }
+
+  private restoreFocus(renamedId: string | null): void {
+    const chip =
+      renamedId === null
+        ? null
+        : this.host.querySelector<HTMLElement>(
+            `ui-chip[data-tag-id="${CSS.escape(renamedId)}"] button.ui-chip__body`,
+          );
+    (chip ?? this.addButton()?.nativeElement.querySelector('button'))?.focus();
   }
 
   protected async mergeIntoConflict(): Promise<void> {
@@ -211,7 +243,7 @@ export class SidebarTagsComponent {
   }
 
   private openEditor(name: string, renamingId: string | null, adding: boolean): void {
-    this.fieldError.set('');
+    this.errorState.set(null);
     this.conflict.set(null);
     this.model.set({ name });
     this.renamingId.set(renamingId);
@@ -226,7 +258,7 @@ export class SidebarTagsComponent {
     const name = normalizeTagName(this.model().name);
     const error = this.validate(name);
     if (error) {
-      this.fieldError.set(this.transloco.translate(error.key, { max: error.max }));
+      this.errorState.set({ key: error.key, params: { max: error.max } });
       return;
     }
     const renamingId = this.renamingId();
@@ -236,7 +268,7 @@ export class SidebarTagsComponent {
       return;
     }
     this.saving.set(true);
-    this.fieldError.set('');
+    this.errorState.set(null);
     this.conflict.set(null);
     const result = previous
       ? await this.tags.rename(previous.id, name)
@@ -258,13 +290,11 @@ export class SidebarTagsComponent {
         if (previous && result.tag) {
           this.conflict.set(result.tag);
         } else {
-          this.fieldError.set(this.transloco.translate('tags.name.exists', { name }));
+          this.errorState.set({ key: 'tags.name.exists', params: { name } });
         }
         break;
       default:
-        this.fieldError.set(
-          this.transloco.translate(previous ? 'tags.rename.failed' : 'tags.add.failed'),
-        );
+        this.errorState.set({ key: previous ? 'tags.rename.failed' : 'tags.add.failed' });
         break;
     }
     return;

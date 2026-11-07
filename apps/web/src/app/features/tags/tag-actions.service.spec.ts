@@ -9,8 +9,8 @@ import { TAGS_API } from '../links/models/tags-api.const';
 import { MockLibraryData } from '../links/mock/mock-library-data';
 import { MockLinksApi } from '../links/mock/mock-links.api';
 import { MockTagsApi } from '../links/mock/mock-tags.api';
-import type { UndoToastOptions } from '../links/models/undo-toast-options.interface';
-import { UndoToastService } from '../links/undo-toast.service';
+import type { UndoToastOptions } from '../../core/undo/models/undo-toast-options.interface';
+import { UndoToastService } from '../../core/undo/undo-toast.service';
 import { TagActionsService } from './tag-actions.service';
 
 async function setup(confirmed = true) {
@@ -116,6 +116,35 @@ describe('TagActionsService', () => {
       expect(merged).toBe(true);
       expect(data.tagList.some((tag) => tag.id === MOCK_ID.TagDocs)).toBe(false);
       await vi.waitFor(() => expect(router.url).toBe('/links?tag=recipes'));
+    });
+  });
+
+  describe('merge dialog', () => {
+    it('updates the filter in submit, so closing the dialog mid-merge loses nothing', async () => {
+      const { actions, store, router, data } = await setup();
+      await router.navigateByUrl('/links?tag=docs');
+      const dialogs = TestBed.inject(DialogService);
+      let submit: ((targetId: string) => Promise<boolean>) | undefined;
+      vi.spyOn(dialogs, 'open').mockImplementation(((_component: unknown, config: unknown) => {
+        submit = (config as { data: { submit: typeof submit } }).data.submit;
+        return { result: Promise.resolve(undefined) };
+      }) as unknown as typeof dialogs.open);
+
+      await actions.merge(docs(store));
+      const merged = await submit?.(MOCK_ID.TagRecipes);
+
+      expect(merged).toBe(true);
+      expect(data.tagList.some((tag) => tag.id === MOCK_ID.TagDocs)).toBe(false);
+      await vi.waitFor(() => expect(router.url).toBe('/links?tag=recipes'));
+    });
+
+    it('reads the filter from the URL the way the page does (spaces, case)', async () => {
+      const { actions, router } = await setup();
+      await router.navigateByUrl('/links?tag=Winter%20Sale');
+
+      actions.renamed('winter-sale', 'summer');
+
+      await vi.waitFor(() => expect(router.url).toBe('/links?tag=summer'));
     });
   });
 
