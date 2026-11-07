@@ -45,7 +45,7 @@
       <ui-button
         [uiMenuTrigger]="accountMenu"
         variant="ghost"
-        size="sm"
+        [size]="viewport.phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm"
         iconRight="chevron-down"
         [ariaLabel]="'shell.accountMenu' | transloco"
       >

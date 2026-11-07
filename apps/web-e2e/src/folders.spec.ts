@@ -41,7 +41,10 @@ test.describe('folders (mock API)', () => {
   }
 
   test.describe('sidebar', () => {
-    test.skip(({ isMobile }) => isMobile, 'the phone drawer is a separate issue (#97)');
+    test.skip(
+      ({ isMobile }) => isMobile,
+      'on the phone the sidebar is the drawer, covered in mobile.spec.ts',
+    );
 
     test('lists the fixed rows and the folder tree, and opens a folder', async ({ page }) => {
       await page.goto('/links');

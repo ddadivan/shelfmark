@@ -5,6 +5,7 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { combineLatest, map } from 'rxjs';
 import {
   AvatarComponent,
+  BUTTON_SIZE,
   ButtonComponent,
   LogoComponent,
   MenuComponent,
@@ -49,6 +50,7 @@ export default class AppShellComponent {
   protected readonly actions = inject(LinkActionsService);
   protected readonly search = inject(SearchDialogService);
   protected readonly viewport = inject(ViewportService);
+  protected readonly BUTTON_SIZE = BUTTON_SIZE;
   protected readonly drawer = inject(SidebarDrawerService);
   private readonly transloco = inject(TranslocoService);
 

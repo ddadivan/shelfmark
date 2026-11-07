@@ -45,7 +45,10 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
     }
 
     test.describe('sidebar', () => {
-      test.skip(({ isMobile }) => isMobile, 'the phone drawer is a separate issue (#97)');
+      test.skip(
+        ({ isMobile }) => isMobile,
+        'on the phone the sidebar is the drawer, covered in mobile.spec.ts',
+      );
 
       test('lists the tags below the folders', async ({ page }) => {
         await page.goto('/links');
