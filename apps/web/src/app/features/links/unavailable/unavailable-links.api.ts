@@ -7,10 +7,34 @@ import { UNAVAILABLE_MESSAGE } from '../models/unavailable-message.const';
 @Service()
 export class UnavailableLinksApi implements LinksApi {
   preview(): Observable<never> {
-    return throwError(() => new Error(UNAVAILABLE_MESSAGE));
+    return this.fail();
   }
 
   create(): Observable<never> {
+    return this.fail();
+  }
+
+  list(): Observable<never> {
+    return this.fail();
+  }
+
+  recent(): Observable<never> {
+    return this.fail();
+  }
+
+  update(): Observable<never> {
+    return this.fail();
+  }
+
+  remove(): Observable<never> {
+    return this.fail();
+  }
+
+  open(): Observable<never> {
+    return this.fail();
+  }
+
+  private fail(): Observable<never> {
     return throwError(() => new Error(UNAVAILABLE_MESSAGE));
   }
 }

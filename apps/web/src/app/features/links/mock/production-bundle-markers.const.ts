@@ -9,5 +9,11 @@ export const PRODUCTION_BUNDLE_MARKERS = [
   'save-fails.example',
   'Mock: preview failed',
   'Mock: save failed',
+  'patch-fails.example',
+  'delete-fails.example',
+  'Mock: update failed',
+  'Mock: delete failed',
+  'Mock: list failed',
+  'sm-mock-links-scenario',
   '__e2e/add-link',
 ] as const;
