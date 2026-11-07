@@ -8,6 +8,7 @@ export const SAFE_FETCH_ERROR_CODE = {
   Timeout: 'timeout',
   TooLarge: 'too-large',
   NotHtml: 'not-html',
+  UnsupportedEncoding: 'unsupported-encoding',
   HttpError: 'http-error',
   NetworkError: 'network-error',
 } as const;

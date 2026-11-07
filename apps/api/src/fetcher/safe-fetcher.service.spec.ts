@@ -1,6 +1,7 @@
 import { createServer } from 'node:http';
 import type { IncomingMessage, Server, ServerResponse } from 'node:http';
-import type { AddressInfo } from 'node:net';
+import { createServer as createTcpServer } from 'node:net';
+import type { AddressInfo, Server as TcpServer, Socket } from 'node:net';
 import { Test } from '@nestjs/testing';
 import { FetcherModule } from './fetcher.module';
 import { SAFE_FETCH_ERROR_CODE } from './models/safe-fetch-error-code.const';
@@ -322,15 +323,57 @@ describe('SafeFetcherService', () => {
     expect(await codeOf(fetcher().fetch(url()))).toBe(SAFE_FETCH_ERROR_CODE.NetworkError);
   });
 
-  it('times out a connect to an unroutable address', async () => {
-    const service = new SafeFetcherService({
-      allowedPorts: [80],
-      isAddressAllowed: () => true,
-      limits: { connectTimeoutMs: 100, totalTimeoutMs: 1_000 },
-    });
-    const code = await codeOf(service.fetch('http://203.0.113.1/'));
-    // Sandboxes without a route fail fast with a network error instead of hanging.
-    expect([SAFE_FETCH_ERROR_CODE.Timeout, SAFE_FETCH_ERROR_CODE.NetworkError]).toContain(code);
+  it('times out against a TCP server that accepts but never responds (offline)', async () => {
+    const stalled: TcpServer = createTcpServer({ pauseOnConnect: true });
+    const sockets: Socket[] = [];
+    stalled.on('connection', (socket) => sockets.push(socket));
+    await new Promise<void>((resolve) => stalled.listen(0, LOOPBACK, resolve));
+    const stalledPort = (stalled.address() as AddressInfo).port;
+    try {
+      const service = fetcher({
+        allowedPorts: [stalledPort],
+        limits: { connectTimeoutMs: 5_000, totalTimeoutMs: 200 },
+      });
+      expect(await codeOf(service.fetch(`http://${LOOPBACK}:${stalledPort}/`))).toBe(
+        SAFE_FETCH_ERROR_CODE.Timeout,
+      );
+    } finally {
+      for (const socket of sockets) {
+        socket.destroy();
+      }
+      await new Promise<void>((resolve) => stalled.close(() => resolve()));
+    }
+  });
+
+  it('rejects a malformed, empty or non-http redirect target', async () => {
+    for (const [location, expected] of [
+      ['http://[', SAFE_FETCH_ERROR_CODE.InvalidUrl],
+      ['', SAFE_FETCH_ERROR_CODE.InvalidUrl],
+      ['   ', SAFE_FETCH_ERROR_CODE.InvalidUrl],
+      ['data:text/html,hi', SAFE_FETCH_ERROR_CODE.DisallowedProtocol],
+      ['javascript:alert(1)', SAFE_FETCH_ERROR_CODE.DisallowedProtocol],
+    ] as const) {
+      handler = (_req, res) => {
+        res.writeHead(302, { Location: location });
+        res.end();
+      };
+      expect(await codeOf(fetcher().fetch(url()))).toBe(expected);
+    }
+  });
+
+  it('rejects compressed responses and accepts an explicit identity encoding', async () => {
+    for (const encoding of ['gzip', 'br', 'deflate']) {
+      handler = (_req, res) => {
+        res.writeHead(200, { 'Content-Type': HTML, 'Content-Encoding': encoding });
+        res.end('x');
+      };
+      expect(await codeOf(fetcher().fetch(url()))).toBe(SAFE_FETCH_ERROR_CODE.UnsupportedEncoding);
+    }
+    handler = (_req, res) => {
+      res.writeHead(200, { 'Content-Type': HTML, 'Content-Encoding': 'identity' });
+      res.end('plain');
+    };
+    expect((await fetcher().fetch(url())).body).toBe('plain');
   });
 
   it.each([

@@ -1,4 +1,6 @@
 import { BlockList, isIP } from 'node:net';
+import { BLOCKED_HOST_NAMES } from './models/blocked-host-names.const';
+import { BLOCKED_HOST_SUFFIXES } from './models/blocked-host-suffixes.const';
 import { BLOCKED_IP_RANGES } from './models/blocked-ip-ranges.const';
 import { IP_FAMILY } from './models/ip-family.const';
 
@@ -12,9 +14,6 @@ const IPV4_MARKER_INDEX = 5;
 /** Index of the first of the two groups that hold the embedded IPv4 address. */
 const IPV4_TAIL_INDEX = 6;
 const IPV4_OCTETS = 4;
-
-const BLOCKED_HOST_NAMES: readonly string[] = ['localhost'];
-const BLOCKED_HOST_SUFFIXES: readonly string[] = ['.localhost', '.local', '.internal'];
 
 const blockList = new BlockList();
 for (const range of BLOCKED_IP_RANGES) {

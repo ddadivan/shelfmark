@@ -1,14 +1,14 @@
 import { lookup as dnsLookup } from 'node:dns/promises';
-import type { LookupFunction } from 'node:net';
 import { isIP } from 'node:net';
+import type { LookupFunction, Socket } from 'node:net';
 import http from 'node:http';
-import https from 'node:https';
 import type { IncomingMessage } from 'node:http';
-import type { Socket } from 'node:net';
+import https from 'node:https';
 import { Inject, Injectable, Optional } from '@nestjs/common';
 import { isBlockedAddress, isBlockedHostname } from './ip-policy';
 import { ALLOWED_PROTOCOLS } from './models/allowed-protocols.const';
 import { DEFAULT_ALLOWED_PORTS } from './models/allowed-ports.const';
+import { DEFAULT_CHARSET } from './models/default-charset.const';
 import { DEFAULT_PORT_BY_PROTOCOL } from './models/default-ports.const';
 import { DEFAULT_FETCH_LIMITS } from './models/fetch-limits.const';
 import type { FetchLimits } from './models/fetch-limits.interface';
@@ -19,14 +19,14 @@ import { REDIRECT_STATUSES } from './models/redirect-statuses.const';
 import { SAFE_FETCH_ERROR_CODE } from './models/safe-fetch-error-code.const';
 import type { SafeFetchResult } from './models/safe-fetch-result.interface';
 import type { SafeFetcherOptions } from './models/safe-fetcher-options.interface';
-import { SAFE_FETCHER_OPTIONS } from './models/safe-fetcher-options.token';
+import { SAFE_FETCHER_OPTIONS } from './models/safe-fetcher-options.const';
 import type { DnsResolver } from './models/dns-resolver.type';
 import type { AddressPolicy } from './models/address-policy.type';
 import { SafeFetchError } from './safe-fetch.error';
 
 const HTTP_OK_MIN = 200;
 const HTTP_OK_MAX = 299;
-const DEFAULT_CHARSET = 'utf-8';
+const IDENTITY_ENCODING = 'identity';
 const CHARSET_SNIFF_BYTES = 1024;
 const HEADER_CHARSET = /charset\s*=\s*["']?([\w:.-]+)/i;
 const META_CHARSET = /<meta[^>]+charset\s*=\s*["']?([\w:.-]+)/i;
@@ -81,9 +81,21 @@ export class SafeFetcherService {
       if ('result' in response) {
         return { finalUrl: url.href, ...response.result };
       }
-      url = this.parseUrl(new URL(response.redirectTo, url).href);
+      url = this.parseUrl(this.resolveRedirect(response.location, url));
     }
     throw new SafeFetchError(SAFE_FETCH_ERROR_CODE.TooManyRedirects, 'Too many redirects');
+  }
+
+  /** A malformed or empty `Location` is an invalid URL; the result still goes through `parseUrl`. */
+  private resolveRedirect(location: string, base: URL): string {
+    if (location.trim() === '') {
+      throw new SafeFetchError(SAFE_FETCH_ERROR_CODE.InvalidUrl, 'Redirect target is empty');
+    }
+    try {
+      return new URL(location, base).href;
+    } catch {
+      throw new SafeFetchError(SAFE_FETCH_ERROR_CODE.InvalidUrl, 'Redirect target is not valid');
+    }
   }
 
   private parseUrl(rawUrl: string): URL {
@@ -193,6 +205,9 @@ export class SafeFetcherService {
         url,
         {
           method: 'GET',
+          // A fresh, unshared agent per request: no keep-alive pool. Proxy environment variables
+          // (NODE_USE_ENV_PROXY, HTTP_PROXY) are not honoured: a proxy would resolve DNS itself and
+          // bypass the pinned lookup.
           agent: false,
           lookup: pinnedLookup,
           // No cookies and no credentials are ever sent.
@@ -204,7 +219,7 @@ export class SafeFetcherService {
           },
         },
         (response) => {
-          this.handleResponse(response, url, finish, resolve, reject, fail);
+          this.handleResponse(response, finish, () => settled, resolve, reject, fail);
         },
       );
 
@@ -232,8 +247,8 @@ export class SafeFetcherService {
 
   private handleResponse(
     response: IncomingMessage,
-    url: URL,
     finish: (action: () => void) => void,
+    isSettled: () => boolean,
     resolve: (value: HopResponse) => void,
     reject: (reason: SafeFetchError) => void,
     fail: (error: SafeFetchError) => void,
@@ -243,7 +258,7 @@ export class SafeFetcherService {
 
     if (REDIRECT_STATUSES.includes(status) && location !== undefined) {
       response.destroy();
-      finish(() => resolve({ redirectTo: new URL(location, url).href }));
+      finish(() => resolve({ location }));
       return;
     }
     if (status < HTTP_OK_MIN || status > HTTP_OK_MAX) {
@@ -251,6 +266,14 @@ export class SafeFetcherService {
       finish(() =>
         reject(new SafeFetchError(SAFE_FETCH_ERROR_CODE.HttpError, 'Unexpected status', status)),
       );
+      return;
+    }
+
+    const encoding = (response.headers['content-encoding'] ?? IDENTITY_ENCODING)
+      .trim()
+      .toLowerCase();
+    if (encoding !== IDENTITY_ENCODING) {
+      fail(new SafeFetchError(SAFE_FETCH_ERROR_CODE.UnsupportedEncoding, 'Response is compressed'));
       return;
     }
 
@@ -270,6 +293,9 @@ export class SafeFetcherService {
     const chunks: Buffer[] = [];
     let received = 0;
     response.on('data', (chunk: Buffer) => {
+      if (isSettled()) {
+        return;
+      }
       received += chunk.length;
       if (received > this.limits.maxBodyBytes) {
         fail(new SafeFetchError(SAFE_FETCH_ERROR_CODE.TooLarge, 'Response is too large'));
