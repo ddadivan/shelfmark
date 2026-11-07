@@ -3,6 +3,66 @@
     "title": "Shelfmark",
     "tagline": "Every saved link, in one place."
   },
+  "links": {
+    "add": {
+      "title": "Add link",
+      "close": "Close",
+      "url": {
+        "label": "Link",
+        "placeholder": "https://",
+        "hint": "Paste a link — the title and preview fill in by themselves",
+        "required": "Enter a link",
+        "invalid": "Enter an address that starts with http:// or https://",
+        "tooLong": "The link is too long (at most {{max}} characters)"
+      },
+      "preview": {
+        "loading": "Loading preview",
+        "loadingHint": "You can keep typing a note and choosing a folder while it loads.",
+        "filled": "Filled in from the page. You can edit the title.",
+        "failed": "Couldn't load a preview. The link will be saved with its address as the title — you can rename it.",
+        "ready": "Preview loaded: {{title}}"
+      },
+      "titleField": {
+        "label": "Title",
+        "tooLong": "The title is too long (at most {{max}} characters)"
+      },
+      "folder": {
+        "label": "Folder",
+        "unsorted": "Unsorted",
+        "searchLabel": "Search folders",
+        "noResults": "No folders found"
+      },
+      "tags": {
+        "label": "Tags",
+        "placeholder": "Add tag",
+        "max": "Up to {{max}} tags",
+        "create": "Create tag “{name}”",
+        "remove": "Remove tag {name}",
+        "added": "Tag {name} added",
+        "removed": "Tag {name} removed",
+        "duplicate": "Tag {name} is already added",
+        "list": "Tag suggestions"
+      },
+      "note": {
+        "label": "Note",
+        "placeholder": "Why are you saving this?",
+        "hint": "Helps you find it later",
+        "counter": "characters",
+        "tooLong": "The note is too long (at most {{max}} characters)"
+      },
+      "duplicate": {
+        "text": "You already saved this link in {{folder}}. Open it, or save it again."
+      },
+      "saveFailed": "Couldn't save the link. Try again.",
+      "actions": {
+        "cancel": "Cancel",
+        "openSaved": "Open saved",
+        "save": "Save link",
+        "saveAnyway": "Save anyway",
+        "saving": "Saving…"
+      }
+    }
+  },
   "auth": {
     "signIn": {
       "title": "All your links on one shelf",
@@ -17,14 +77,34 @@
       },
       "eyebrow": "Sign in to Shelfmark",
       "privacy": "By continuing you agree to the Privacy policy. We only use your name, email and avatar."
-    }
+    },
+    "signOut": "Sign out"
   },
   "shell": {
+    "accountMenu": "Account menu",
+    "settings": "Settings",
     "signOut": "Sign out"
   },
   "library": {
     "title": "All links",
     "placeholder": "Your saved links will appear here."
+  },
+  "settings": {
+    "title": "Settings",
+    "back": "Back to links",
+    "account": {
+      "title": "Account"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "theme": {
+        "label": "Theme",
+        "hint": "System follows your device",
+        "system": "System",
+        "light": "Light",
+        "dark": "Dark"
+      }
+    }
   },
   "privacy": {
     "title": "Privacy policy",
