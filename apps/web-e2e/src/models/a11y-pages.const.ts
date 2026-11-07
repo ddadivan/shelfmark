@@ -1,7 +1,8 @@
 import type { A11yPage } from './a11y-page.interface';
+import { LANDING_HEADLINE } from './landing-headline.const';
 
 export const A11Y_PAGES: readonly A11yPage[] = [
-  { path: '/', heading: 'Shelfmark' },
+  { path: '/', heading: LANDING_HEADLINE },
   { path: '/sign-in', heading: 'All your links on one shelf' },
   {
     path: '/settings',

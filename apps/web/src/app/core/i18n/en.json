@@ -1,7 +1,177 @@
 {
   "landing": {
-    "title": "Shelfmark",
-    "tagline": "Every saved link, in one place."
+    "header": {
+      "navLabel": "Main",
+      "brand": "Shelfmark",
+      "howItsBuilt": "How it's built",
+      "github": "GitHub",
+      "signIn": "Sign in"
+    },
+    "hero": {
+      "eyebrow": "For everything you send to Saved Messages",
+      "line1": "Paste a link.",
+      "line2": "Find it again.",
+      "line3": "Even in a year.",
+      "lead": "Telegram is where links go to be forgotten. Shelfmark keeps them in folders, with a note on why you saved each one, and finds any of them in two keystrokes.",
+      "demo": "Open the demo",
+      "signIn": "Sign in"
+    },
+    "chat": {
+      "savedMessages": "Saved Messages",
+      "savedSubtitle": "new links every day, none findable",
+      "shelfTitle": "Your shelf",
+      "shelfSubtitle": "5 links in 4 folders, each with a note",
+      "hintChat": "Five links, five different days.",
+      "hintShelf": "Notes come from your own messages.",
+      "putOnShelf": "Put them on the shelf",
+      "showChat": "Show the chat again",
+      "messages": {
+        "watch": {
+          "text": "watch later!!",
+          "time": "Mon 23:41"
+        },
+        "coat": {
+          "text": "this coat, wait for the sale",
+          "time": "Tue 09:12"
+        },
+        "course": {
+          "text": "Fwd: Frontend Weekly",
+          "time": "Wed 18:30"
+        },
+        "ramen": {
+          "text": "ramen recipe, friday?",
+          "time": "Thu 21:05"
+        },
+        "zoneless": {
+          "text": "where was that zoneless article…",
+          "time": "Fri 08:47"
+        }
+      }
+    },
+    "shelf": {
+      "folders": {
+        "angular": "Work / Angular",
+        "courses": "Courses",
+        "clothes": "Clothes",
+        "recipes": "Recipes"
+      },
+      "links": {
+        "signalForms": {
+          "title": "Signal Forms in 20 minutes",
+          "note": "Watch later"
+        },
+        "zoneless": {
+          "title": "Zoneless change detection",
+          "note": "The article about zoneless"
+        },
+        "nestjs": {
+          "title": "NestJS for frontend developers",
+          "note": "From Frontend Weekly"
+        },
+        "coat": {
+          "title": "Wool coat, graphite",
+          "note": "Wait for the sale"
+        },
+        "ramen": {
+          "title": "The best weeknight ramen",
+          "note": "Friday?"
+        }
+      }
+    },
+    "beforeAfter": {
+      "title": "The same links, before and after",
+      "before": "Before: scattered",
+      "after": "After: on one shelf"
+    },
+    "before": {
+      "pingTitle": "+1 in Saved Messages",
+      "pingLink": "youtu.be/…",
+      "bubbleTitle": "Saved messages",
+      "bubbleLink": "youtube.com/watch?v=ng22…",
+      "tabCoat": "Wool coat…",
+      "tabCourse": "NestJS c…",
+      "tabMore": "+ 37",
+      "sticky": "watch later: ramen recipe?? link somewhere in chat",
+      "bookmarks": "Bookmarks bar (91)",
+      "summary": "Links scattered across Saved Messages, browser tabs, sticky notes and a bookmarks bar."
+    },
+    "after": {
+      "treeLabel": "Folders",
+      "listLabel": "Links in the selected folder",
+      "tagsTitle": "Tags",
+      "tags": {
+        "video": "video",
+        "courses": "courses"
+      },
+      "folders": {
+        "clothes": "Clothes",
+        "work": "Work",
+        "angular": "Angular",
+        "recipes": "Recipes"
+      },
+      "links": {
+        "coat": {
+          "title": "Wool coat, graphite",
+          "note": "Wait for the sale, size M"
+        },
+        "boots": {
+          "title": "Leather Chelsea boots",
+          "note": "For the winter"
+        },
+        "jumper": {
+          "title": "Merino crew-neck jumper",
+          "note": "Gift idea"
+        },
+        "signalForms": {
+          "title": "Signal Forms in 20 minutes",
+          "note": "Watch on the weekend"
+        },
+        "nestjs": {
+          "title": "NestJS for frontend developers",
+          "note": "For the side project"
+        },
+        "zoneless": {
+          "title": "Zoneless change detection",
+          "note": "Read before stage 0"
+        },
+        "ramen": {
+          "title": "The best weeknight ramen",
+          "note": "Friday dinner"
+        },
+        "focaccia": {
+          "title": "Focaccia, no knead",
+          "note": "For Sunday"
+        },
+        "kimchi": {
+          "title": "Kimchi in a jar",
+          "note": "Needs a big jar"
+        }
+      }
+    },
+    "why": {
+      "title": "Why this exists",
+      "quote": "“My Saved Messages in Telegram had hundreds of links: courses, a coat I wanted, a ramen recipe, that one article about zoneless Angular. I could never find any of them again. So I built the shelf I wanted.”",
+      "author": "Dmytro",
+      "authorName": "Dmytro Dadivan",
+      "role": "Frontend developer"
+    },
+    "built": {
+      "title": "How it's built",
+      "text": "Angular 22 with signals, NestJS, PostgreSQL. Planned, coded, tested and reviewed by a team of Claude Code agents, with every decision in the open.",
+      "agentsLabel": "Claude Code agents",
+      "code": "Read the code on GitHub",
+      "decisions": "Read the decision log"
+    },
+    "finale": {
+      "title": "Empty your Saved Messages.",
+      "demo": "Open the demo",
+      "signIn": "Sign in"
+    },
+    "footer": {
+      "copyright": "© 2026 Shelfmark",
+      "github": "GitHub"
+    },
+    "newTab": "opens in a new tab"
   },
   "links": {
     "add": {

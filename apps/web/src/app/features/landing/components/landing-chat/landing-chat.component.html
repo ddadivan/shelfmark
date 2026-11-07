@@ -1,0 +1,72 @@
+<div class="landing-chat__phone" role="group" aria-labelledby="landing-chat-title">
+  <div class="landing-chat__bar">
+    @if (sorted()) {
+      <ui-logo class="landing-chat__mark" variant="mark" />
+      <span class="landing-chat__heading">
+        <span id="landing-chat-title" class="landing-chat__title">{{
+          'landing.chat.shelfTitle' | transloco
+        }}</span>
+        <span class="landing-chat__subtitle">{{ 'landing.chat.shelfSubtitle' | transloco }}</span>
+      </span>
+    } @else {
+      <span class="landing-chat__avatar" aria-hidden="true">
+        <ui-icon name="bookmark" [size]="16" />
+      </span>
+      <span class="landing-chat__heading">
+        <span id="landing-chat-title" class="landing-chat__title">{{
+          'landing.chat.savedMessages' | transloco
+        }}</span>
+        <span class="landing-chat__subtitle">{{ 'landing.chat.savedSubtitle' | transloco }}</span>
+      </span>
+    }
+  </div>
+
+  @if (sorted()) {
+    <ul id="landing-chat-body" class="landing-chat__shelf">
+      @for (group of groups; track group.id) {
+        <li class="landing-chat__group">
+          <p class="landing-chat__folder">{{ group.folderKey | transloco }}</p>
+          <ul class="landing-chat__cards">
+            @for (link of group.links; track link.id) {
+              <li class="landing-chat__card">
+                <ui-favicon [letter]="link.letter" />
+                <span class="landing-chat__card-text">
+                  <span class="landing-chat__card-title">{{ link.titleKey | transloco }}</span>
+                  <span class="landing-chat__card-note">{{ link.noteKey | transloco }}</span>
+                </span>
+              </li>
+            }
+          </ul>
+        </li>
+      }
+    </ul>
+  } @else {
+    <ul id="landing-chat-body" class="landing-chat__messages">
+      @for (message of messages; track message.id) {
+        <li class="landing-chat__message">
+          <div class="landing-chat__bubble">
+            <span class="landing-chat__text">{{ message.textKey | transloco }}</span>
+            <span class="landing-chat__link">
+              <ui-favicon [letter]="message.letter" />
+              <span class="landing-chat__url">{{ message.url }}</span>
+              <span class="landing-chat__time">{{ message.timeKey | transloco }}</span>
+            </span>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</div>
+
+<div class="landing-chat__footer">
+  <p class="landing-chat__hint">
+    {{ (sorted() ? 'landing.chat.hintShelf' : 'landing.chat.hintChat') | transloco }}
+  </p>
+  <ui-button
+    [variant]="sorted() ? BUTTON_VARIANT.Ghost : BUTTON_VARIANT.Primary"
+    ariaControls="landing-chat-body"
+    (click)="toggle()"
+  >
+    {{ (sorted() ? 'landing.chat.showChat' : 'landing.chat.putOnShelf') | transloco }}
+  </ui-button>
+</div>
