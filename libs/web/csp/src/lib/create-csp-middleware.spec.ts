@@ -33,6 +33,15 @@ describe('createCspMiddleware', () => {
     expect(response?.headers.get('Cache-Control')).toBe('private, no-store');
   });
 
+  it('hands the service worker the shell as built, so its hash check passes', async () => {
+    const response = handle('/index.html?ngsw-cache-bust=0.123');
+
+    expect(await response?.text()).toBe(SHELL);
+    expect(response?.headers.get('Content-Security-Policy')).toContain(
+      "style-src 'self' 'nonce-CSP_NONCE_PLACEHOLDER'",
+    );
+  });
+
   it('uses a different nonce for every request', () => {
     expect(nonceOf(handle('/') as Response)).not.toBe(nonceOf(handle('/') as Response));
   });
