@@ -20,6 +20,7 @@ export * from './lib/list-item';
 export * from './lib/load-more';
 export * from './lib/loader-timing';
 export * from './lib/logo';
+export * from './lib/media';
 export * from './lib/long-press';
 export * from './lib/menu';
 export * from './lib/meter';

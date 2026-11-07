@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { compile, compileString } from 'sass';
+import { PHONE_MEDIA_QUERY } from '../lib/media';
 import { THEME, THEME_ATTRIBUTE } from '../lib/theme';
 
 const STYLES_PATH = 'libs/ui/src/styles';
@@ -56,6 +57,10 @@ describe('breakpoint mixins', () => {
     expect(out).toContain('@media (40em <= width < 64em)');
     expect(out).toContain('@media (width >= 64em)');
     expect(out).not.toMatch(/\d+px/);
+  });
+
+  it('PHONE_MEDIA_QUERY equals the query the phone mixin compiles to', () => {
+    expect(css('.a { @include phone { x: 1; } }')).toContain(`@media ${PHONE_MEDIA_QUERY}`);
   });
 
   it('tablet-up starts exactly where phone ends', () => {
