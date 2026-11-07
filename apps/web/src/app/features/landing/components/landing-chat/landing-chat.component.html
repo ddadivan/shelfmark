@@ -37,7 +37,7 @@
       class="landing-chat__feed"
       [class.landing-chat__feed--clearing]="clearing()"
     >
-      <!-- Decorative loop: the five links below are what assistive technology reads. -->
+      <!-- Decorative loop: the hero carries the text version for assistive technology. -->
       <ul
         class="landing-chat__track"
         data-testid="landing-chat-track"
@@ -51,11 +51,6 @@
           <li class="landing-chat__slot">
             <app-landing-chat-bubble [message]="message" />
           </li>
-        }
-      </ul>
-      <ul class="landing-chat__sr">
-        @for (message of messages; track message.id) {
-          <li>{{ message.textKey | transloco }} {{ message.url }}</li>
         }
       </ul>
     </div>

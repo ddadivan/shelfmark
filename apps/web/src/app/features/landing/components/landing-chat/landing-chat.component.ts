@@ -62,7 +62,8 @@ export class LandingChatComponent {
   protected readonly messages = LANDING_CHAT_MESSAGES;
   /**
    * The feed twice: after `feedSize` rises the track looks the same as at the start. The
-   * bubbles are rendered in small batches (a few frames), so no single task renders all sixteen.
+   * bubbles are rendered in small batches (the first one with the component), so no single task
+   * renders all sixteen, and the loop starts only when they are all there.
    */
   protected readonly feed = computed(() =>
     [...LANDING_CHAT_FEED_MESSAGES, ...LANDING_CHAT_FEED_MESSAGES].slice(0, this.rendered()),
@@ -72,7 +73,7 @@ export class LandingChatComponent {
 
   private readonly feedSize = LANDING_CHAT_FEED_MESSAGES.length;
   /** How many feed bubbles are in the DOM so far. */
-  private readonly rendered = signal(0);
+  private readonly rendered = signal<number>(LANDING_CHAT_TIMING.BatchSize);
   private readonly phase = signal<LandingChatPhase>(LANDING_CHAT_PHASE.Chat);
   private readonly inView = signal(false);
   protected readonly hovered = signal(false);
@@ -100,6 +101,7 @@ export class LandingChatComponent {
       !this.hovered() &&
       !this.focused() &&
       this.inView() &&
+      this.rendered() >= this.feedSize * 2 &&
       this.motion.tabVisible() &&
       this.phase() === LANDING_CHAT_PHASE.Chat,
   );
@@ -176,13 +178,15 @@ export class LandingChatComponent {
   }
 
   private fillFeed(): void {
+    const total = this.feedSize * 2;
     if (!this.animated()) {
       // Reduced motion may be switched off later: the feed must then be complete at once.
-      this.rendered.set(this.feedSize * 2);
+      this.rendered.set(total);
       return;
     }
+    // The first batch is part of the first render (the feed is never seen empty); the rest
+    // follows in small steps so no single task renders every bubble.
     const timer = setInterval(() => {
-      const total = this.feedSize * 2;
       const next = Math.min(this.rendered() + LANDING_CHAT_TIMING.BatchSize, total);
       this.rendered.set(next);
       if (next >= total) {

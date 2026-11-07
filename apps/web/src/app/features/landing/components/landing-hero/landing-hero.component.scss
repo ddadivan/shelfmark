@@ -80,16 +80,14 @@
   gap: rem(10px);
 }
 
-// Same height as the chat phone it stands in for (measured per breakpoint), so the idle swap
-// causes no layout shift.
+// Stands in for the chat phone while it loads (same height from the shared size mixin), so the
+// swap causes no layout shift. It sits in the same grid cell as the demo.
 .landing-hero__demo-placeholder {
-  min-height: rem(447px);
+  @include landing.chat-size;
 
-  @include tablet-up {
-    min-height: rem(597px);
-  }
+  min-height: calc(var(--landing-chat-height) + var(--landing-chat-chrome));
+}
 
-  @include desktop {
-    min-height: rem(625px);
-  }
+.landing-hero__sr {
+  @include visually-hidden;
 }

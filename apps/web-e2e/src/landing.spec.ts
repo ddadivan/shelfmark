@@ -39,7 +39,35 @@ test.describe('landing', () => {
     const section = page.getByRole('region', { name: "How it's built" });
     await expect(section).toBeInViewport();
     await expect(section).toBeFocused();
+
+    // Settled: every deferred block (the footer comes last) is in, and the target did not move.
+    await expect(page.getByRole('contentinfo')).toBeAttached();
+    await expect(section).toBeInViewport();
+    await expect(section).toBeFocused();
   });
+
+  for (const width of [360, 800, 1280]) {
+    test(`the deferred chat and sections shift nothing at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      // Plain scripts (as elsewhere in this suite): the e2e project has no DOM typings.
+      await page.addInitScript(`
+        window.__shift = 0;
+        new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            if (!entry.hadRecentInput) window.__shift += entry.value;
+          }
+        }).observe({ type: 'layout-shift', buffered: true });
+      `);
+
+      await gotoLandingLoaded(page);
+      // The chat swaps in on idle, after the headline: wait for it, then for the page to settle.
+      await expect(page.getByRole('button', { name: 'Put them on the shelf' })).toBeVisible();
+      await page.waitForTimeout(500);
+
+      const total = await page.evaluate<number>('window.__shift');
+      expect(total).toBeLessThan(0.001);
+    });
+  }
 
   test('"Put them on the shelf" swaps the chat for the shelf and back', async ({ page }) => {
     await page.goto('/');

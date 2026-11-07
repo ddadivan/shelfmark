@@ -63,11 +63,22 @@ describe('LandingChatComponent', () => {
     settle();
   };
 
-  async function create(options: { reduced: boolean }): Promise<void> {
+  const slots = (): number => root.querySelectorAll('.landing-chat__slot').length;
+  /** The bubbles arrive in batches on a real timer; the loop starts once all are there. */
+  const feedComplete = (): Promise<void> =>
+    vi.waitFor(() => {
+      settle();
+      expect(slots()).toBe(16);
+    });
+
+  async function create(options: { reduced: boolean; filled?: boolean }): Promise<void> {
     stubReducedMotion(options.reduced);
     vi.stubGlobal('IntersectionObserver', FakeIntersectionObserver);
     fixture = await createTranslated(LandingChatComponent);
     root = fixture.nativeElement as HTMLElement;
+    if (!options.reduced && options.filled !== false) {
+      await feedComplete();
+    }
     vi.useFakeTimers();
   }
 
@@ -127,24 +138,10 @@ describe('LandingChatComponent', () => {
   describe('endless feed', () => {
     beforeEach(() => create({ reduced: false }));
 
-    it('renders the bubbles in batches, not all at once', async () => {
-      const slots = (): number => root.querySelectorAll('.landing-chat__slot').length;
-
-      expect(slots()).toBeLessThan(16);
-
-      await vi.waitFor(() => {
-        settle();
-        expect(slots()).toBe(16);
-      });
-    });
-
-    it('renders the feed twice, hidden from assistive technology, with a readable copy', async () => {
-      await vi.waitFor(() => {
-        settle();
-        expect(root.querySelectorAll('.landing-chat__slot')).toHaveLength(16);
-      });
+    it('renders the feed twice, hidden from assistive technology', () => {
+      expect(slots()).toBe(16);
       expect(track().getAttribute('aria-hidden')).toBe('true');
-      expect(root.querySelectorAll('.landing-chat__sr li')).toHaveLength(5);
+      expect(root.querySelector('.landing-chat__sr')).toBeNull();
       expect(shelfButton()?.textContent?.trim()).toBe('Put them on the shelf');
     });
 
@@ -411,6 +408,38 @@ describe('LandingChatComponent', () => {
       settle();
 
       expect(await axeViolations(root)).toEqual([]);
+    });
+  });
+
+  describe('batched rendering', () => {
+    it('renders the first batch with the component and the rest over a few batches', async () => {
+      await create({ reduced: false, filled: false });
+
+      expect(slots()).toBe(LANDING_CHAT_TIMING.BatchSize);
+
+      await feedComplete();
+      expect(slots()).toBe(16);
+    });
+
+    it('starts the loop only once every bubble is there', async () => {
+      await create({ reduced: false, filled: false });
+      observer().emit(true);
+      settle();
+      expect(track().classList.contains('landing-chat__track--running')).toBe(false);
+
+      vi.useRealTimers();
+      await feedComplete();
+      expect(track().classList.contains('landing-chat__track--running')).toBe(true);
+    });
+
+    it('stops adding bubbles when destroyed', async () => {
+      await create({ reduced: false, filled: false });
+      vi.useRealTimers();
+
+      fixture.destroy();
+      await new Promise((resolve) => setTimeout(resolve, 3 * LANDING_CHAT_TIMING.BatchMs));
+
+      expect(slots()).toBe(LANDING_CHAT_TIMING.BatchSize);
     });
   });
 });
