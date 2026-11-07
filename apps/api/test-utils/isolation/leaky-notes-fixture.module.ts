@@ -39,7 +39,6 @@ function createLeakyController(leak: Leak): Type<unknown> {
       if (note && (ignoreOwner || note.ownerId === user.id)) return note;
       if (note && leak === LEAK.Forbidden) throw new ForbiddenException();
       if (note && leak === LEAK.Distinguishable) throw new NotFoundException('Note is not yours');
-      if (leak === LEAK.Body) throw new NotFoundException({ message: 'Note not found', id });
       throw new NotFoundException('Note not found');
     }
 

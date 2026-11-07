@@ -85,6 +85,18 @@ export class NotesFixtureController {
   }
 }
 
+/** Answers with the user the guard resolved (guard integration specs). */
+@Controller('__fixture/whoami')
+export class WhoAmIFixtureController {
+  @Get()
+  whoAmI(@CurrentUser() user: AuthUser): AuthUser {
+    return user;
+  }
+}
+
 /** Test-only (`createAuthTestApp({ imports: [NotesFixtureModule] })`), never part of `AppModule`. */
-@Module({ controllers: [NotesFixtureController], providers: [NotesFixtureService] })
+@Module({
+  controllers: [NotesFixtureController, WhoAmIFixtureController],
+  providers: [NotesFixtureService],
+})
 export class NotesFixtureModule {}

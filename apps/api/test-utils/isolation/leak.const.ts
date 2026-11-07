@@ -12,6 +12,4 @@ export const LEAK = {
   Forbidden: 'forbidden',
   /** A foreign read is a 404 whose message differs from a missing id's. */
   Distinguishable: 'distinguishable',
-  /** A 404 body that carries the id. */
-  Body: 'body',
 } as const;
