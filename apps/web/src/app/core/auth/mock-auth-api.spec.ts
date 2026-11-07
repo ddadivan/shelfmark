@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { MockAuthApi } from './mock-auth-api';
-import { AUTH_PROVIDER } from './models/auth-provider.const';
+import { AUTH_PROVIDER } from '@shelfmark/contracts';
 import { MOCK_SESSION_STORAGE_KEY } from './models/mock-session-storage-key.const';
 
 describe('MockAuthApi', () => {

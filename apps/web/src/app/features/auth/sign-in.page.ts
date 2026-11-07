@@ -12,11 +12,13 @@ import { ButtonComponent, LogoComponent, NoticeComponent, NOTICE_KIND } from '@s
 import { AuthStore } from '../../core/auth/auth.store';
 import { AUTH_DEMO } from '../../core/auth/models/auth-pending.const';
 import { AuthPending } from '../../core/auth/models/auth-pending.type';
-import { AUTH_PROVIDER } from '../../core/auth/models/auth-provider.const';
-import { AuthProvider } from '../../core/auth/models/auth-provider.type';
+import { AUTH_PROVIDER } from '@shelfmark/contracts';
+import type { AuthProvider } from '@shelfmark/contracts';
 import { AUTH_ROUTE } from '../../core/auth/models/auth-routes.const';
+import { isSignInError } from '../../core/auth/is-sign-in-error';
 import { isSignInReason } from '../../core/auth/is-sign-in-reason';
 import { safeReturnUrl } from '../../core/auth/safe-return-url';
+import { SIGN_IN_ERROR_GENERIC_KEY, SIGN_IN_ERROR_KEY } from './models/sign-in-error-key.const';
 import { SIGN_IN_REASON_KEY } from './models/sign-in-reason-key.const';
 
 /** Sign in with Google or GitHub, or open the demo. Guest-only (`guestOnly` on the route). */
@@ -46,6 +48,17 @@ export default class SignInPage {
   /** `?reason=`, bound from the route; unknown values show nothing. */
   readonly reason = input<string>();
 
+  /** `?error=`, appended by Better Auth when the OAuth flow fails; unknown codes get a generic text. */
+  readonly error = input<string>();
+
+  protected readonly errorKey = computed<string | null>(() => {
+    const error = this.error();
+    if (!error) {
+      return null;
+    }
+    return isSignInError(error) ? SIGN_IN_ERROR_KEY[error] : SIGN_IN_ERROR_GENERIC_KEY;
+  });
+
   protected readonly reasonKey = computed<string | null>(() => {
     const reason = this.reason();
     return isSignInReason(reason) ? SIGN_IN_REASON_KEY[reason] : null;
@@ -62,7 +75,7 @@ export default class SignInPage {
   }
 
   protected async signIn(provider: AuthProvider): Promise<void> {
-    await this.auth.signIn(provider);
+    await this.auth.signIn(provider, safeReturnUrl(this.returnUrl()));
     await this.leave();
   }
 

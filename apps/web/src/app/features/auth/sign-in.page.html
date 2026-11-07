@@ -9,6 +9,8 @@
 
     @if (reasonKey(); as key) {
     <ui-notice [kind]="NOTICE_KIND.Warning">{{ key | transloco }}</ui-notice>
+    } @if (errorKey(); as key) {
+    <ui-notice [kind]="NOTICE_KIND.Danger">{{ key | transloco }}</ui-notice>
     } @if (auth.failed()) {
     <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'auth.signIn.failed' | transloco }}</ui-notice>
     }
