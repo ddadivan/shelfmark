@@ -6,6 +6,7 @@ import { AvatarComponent, ButtonComponent, SegmentedControlComponent } from '@sh
 import type { SegmentedOption } from '@shelfmark/ui';
 import { combineLatest, map } from 'rxjs';
 import { AuthStore } from '../../core/auth/auth.store';
+import { OnboardingStore } from '../onboarding/onboarding.store';
 import { THEME_PREFERENCE } from '../../core/theme/models/theme-preference.const';
 import { isThemePreference } from '../../core/theme/is-theme-preference';
 import { ThemeService } from '../../core/theme/theme.service';
@@ -32,6 +33,7 @@ import { SettingsSectionComponent } from './settings-section.component';
 export default class SettingsPage {
   protected readonly auth = inject(AuthStore);
   protected readonly theme = inject(ThemeService);
+  protected readonly onboarding = inject(OnboardingStore);
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
 

@@ -488,6 +488,12 @@
         "light": "Light",
         "dark": "Dark"
       }
+    },
+    "welcome": {
+      "title": "Welcome tour",
+      "hint": "See the 3-step introduction again",
+      "action": "Show welcome again",
+      "error": "Couldn't reset the welcome tour. Try again."
     }
   },
   "tags": {
@@ -595,6 +601,26 @@
       "move": "move",
       "open": "open",
       "background": "open in background"
+    }
+  },
+  "onboarding": {
+    "stepLabel": "Step {{current}} of {{count}}",
+    "announce": "Step {{current}} of {{count}}: {{title}}",
+    "skip": "Skip",
+    "back": "Back",
+    "next": "Next",
+    "addFirst": "Add your first link",
+    "collect": {
+      "title": "All your links in one place",
+      "text": "Videos, articles, things to buy, courses — everything you save lives on one calm shelf instead of chats and tabs."
+    },
+    "save": {
+      "title": "Save in a second",
+      "text": "Paste a link and the title and preview fill in by themselves. Add a note so you remember why you saved it."
+    },
+    "find": {
+      "title": "Find it right away",
+      "text": "Folders, tags, favorites and search with ⌘K bring back any link in a couple of keystrokes."
     }
   }
 }
