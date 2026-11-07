@@ -1,3 +1,9 @@
+import { afterEach, beforeEach, vi } from 'vitest';
+import {
+  MockIntersectionObserver,
+  setTabState,
+  stubReducedMotion,
+} from '../../../../../testing/mock-intersection-observer';
 import { axeViolations } from '../../../../../testing/axe';
 import { createTranslated } from '../../../../../testing/create-translated';
 import { LandingBeforeSceneComponent } from './landing-before-scene.component';
@@ -15,5 +21,72 @@ describe('LandingBeforeSceneComponent', () => {
     const fixture = await createTranslated(LandingBeforeSceneComponent);
 
     expect(await axeViolations(fixture.nativeElement)).toEqual([]);
+  });
+
+  describe('loops', () => {
+    const LIVE = 'landing-before__before--live';
+
+    beforeEach(() => {
+      MockIntersectionObserver.install();
+      stubReducedMotion(false);
+    });
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+      setTabState(true);
+    });
+
+    async function board(): Promise<{
+      fixture: Awaited<ReturnType<typeof createTranslated>>;
+      el: Element;
+    }> {
+      const fixture = await createTranslated(LandingBeforeSceneComponent);
+      fixture.detectChanges();
+      return {
+        fixture,
+        el: (fixture.nativeElement as HTMLElement).querySelector('[role="img"]') as Element,
+      };
+    }
+
+    it('is a static frame until it is in the viewport', async () => {
+      const { el } = await board();
+
+      expect(el.classList.contains(LIVE)).toBe(false);
+    });
+
+    it('drifts and pings while visible, and stops when it leaves or the tab hides', async () => {
+      const { fixture, el } = await board();
+
+      MockIntersectionObserver.triggerAll(true);
+      fixture.detectChanges();
+      expect(el.classList.contains(LIVE)).toBe(true);
+
+      setTabState(false);
+      fixture.detectChanges();
+      expect(el.classList.contains(LIVE)).toBe(false);
+
+      setTabState(true);
+      MockIntersectionObserver.triggerAll(false);
+      fixture.detectChanges();
+      expect(el.classList.contains(LIVE)).toBe(false);
+    });
+
+    it('stays static under reduced motion', async () => {
+      stubReducedMotion(true);
+      const { fixture, el } = await board();
+
+      MockIntersectionObserver.triggerAll(true);
+      fixture.detectChanges();
+
+      expect(el.classList.contains(LIVE)).toBe(false);
+    });
+
+    it('disconnects its observer on destroy', async () => {
+      const { fixture } = await board();
+
+      fixture.destroy();
+
+      expect(MockIntersectionObserver.instances.every((o) => o.disconnected)).toBe(true);
+    });
   });
 });
