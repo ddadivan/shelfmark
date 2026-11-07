@@ -64,3 +64,28 @@ describe('logAuthError', () => {
     expect(error.mock.calls).toEqual([['Unexpected TypeError'], ['Unexpected error']]);
   });
 });
+
+describe('log redaction', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('redacts URLs in messages and logs the error code', () => {
+    const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+    logAuthError({
+      status: 'FORBIDDEN',
+      statusCode: 403,
+      message: 'Invalid callbackURL: https://evil.example/path?token=abc and more',
+      body: { code: 'INVALID_CALLBACK_URL' },
+    });
+    expect(warn).toHaveBeenCalledExactlyOnceWith(
+      'FORBIDDEN INVALID_CALLBACK_URL: Invalid callbackURL: <redacted> and more',
+    );
+  });
+
+  it('ignores a malformed code', () => {
+    const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+    logAuthError({ status: 'BAD_REQUEST', statusCode: 400, message: 'x', body: { code: 'a b\n' } });
+    expect(warn).toHaveBeenCalledExactlyOnceWith('BAD_REQUEST: x');
+  });
+});

@@ -215,6 +215,18 @@ describe('Better Auth sign-in flow', () => {
       expect(await t.db.prisma.session.count()).toBe(1);
     });
 
+    it('refuses GitHub users without an email (email_not_found) and creates nothing', async () => {
+      await expect(
+        signInAs(t.app, t.baseUrl, {
+          provider: AUTH_PROVIDER.GitHub,
+          email: '',
+          name: 'No Mail',
+        }),
+      ).rejects.toThrow(/error=email_not_found/);
+      expect(await t.db.prisma.user.count()).toBe(0);
+      expect(await t.db.prisma.session.count()).toBe(0);
+    });
+
     it('keeps different emails as different users', async () => {
       const a = await signInAs(t.app, t.baseUrl, { email: 'a@example.test', name: 'A' });
       const b = await signInAs(t.app, t.baseUrl, { email: 'b@example.test', name: 'B' });

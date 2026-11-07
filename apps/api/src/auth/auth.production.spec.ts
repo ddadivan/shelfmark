@@ -3,6 +3,7 @@ import request from 'supertest';
 import { createAuthTestApp } from '../../test-utils/auth-test-app';
 import type { AuthTestApp } from '../../test-utils/models/auth-test-app.interface';
 import { setCookiesOf, signInAs } from '../../test-utils/sign-in-as';
+import { NODE_ENV } from '../config/models/node-env.const';
 
 const PRODUCTION_URL = 'https://app.example.test';
 
@@ -12,7 +13,7 @@ describe('Better Auth in production configuration', () => {
   beforeAll(async () => {
     t = await createAuthTestApp({
       isProduction: true,
-      env: { NODE_ENV: 'production', BETTER_AUTH_URL: PRODUCTION_URL },
+      env: { NODE_ENV: NODE_ENV.Production, BETTER_AUTH_URL: PRODUCTION_URL },
     });
   });
 

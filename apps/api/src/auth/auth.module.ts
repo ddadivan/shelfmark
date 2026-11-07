@@ -22,6 +22,7 @@ import { warnMissingProviders } from './warn-missing-providers';
     BetterAuthModule.forRootAsync({
       imports: [PrismaModule],
       inject: [PrismaService],
+      // Global so #65 can inject `AuthService` (the guard reads sessions through it) anywhere.
       isGlobal: true,
       disableGlobalAuthGuard: true,
       useFactory: (prisma: PrismaService) => {

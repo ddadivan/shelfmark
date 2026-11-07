@@ -1,14 +1,24 @@
-import { Logger } from '@nestjs/common';
+import { isRecord } from '../common/util/is-record';
+import { AUTH_NEST_LOGGER as logger } from './models/auth-nest-logger.const';
 
 type AuthLogLevel = 'debug' | 'info' | 'warn' | 'error';
 
-const logger = new Logger('Auth');
 const MAX_MESSAGE_LENGTH = 300;
+const URL_PATTERN = /[a-z][a-z0-9+.-]*:\/\/\S+/gi;
+const REDACTED = '<redacted>';
 
-/** Messages can embed request-controlled values (a rejected URL): no line breaks, bounded length. */
+/**
+ * Messages can embed request-controlled values (a rejected callback URL): URLs are replaced, line
+ * breaks and control characters removed, length bounded.
+ */
 function sanitize(message: string): string {
-  // eslint-disable-next-line no-control-regex
-  return message.replace(/[\u0000-\u001f\u007f]+/g, ' ').slice(0, MAX_MESSAGE_LENGTH);
+  return (
+    message
+      // eslint-disable-next-line no-control-regex
+      .replace(/[\u0000-\u001f\u007f]+/g, ' ')
+      .replace(URL_PATTERN, REDACTED)
+      .slice(0, MAX_MESSAGE_LENGTH)
+  );
 }
 
 /**
@@ -33,16 +43,18 @@ export function logAuthMessage(level: AuthLogLevel, rawMessage: string): void {
   }
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
+function errorCode(error: Record<string, unknown>): string | undefined {
+  const body = error['body'];
+  const code = isRecord(body) ? body['code'] : undefined;
+  return typeof code === 'string' && /^[A-Z0-9_]{1,80}$/.test(code) ? code : undefined;
 }
 
 /**
  * `onAPIError.onError` handler. Without it Better Auth also prints `error.message` through its own
  * console logger, outside our adapter. Client errors (4xx, rejected callback URLs, bad state) are
- * warnings; everything else is an error. Only the status and the message of Better Auth's own
- * errors are logged; for any other error only its class name, because its message can carry SQL or
- * provider data.
+ * warnings; everything else is an error. For Better Auth's own errors it logs the status, the error
+ * `code` and the message with URLs redacted; for any other error only its class name, because its
+ * message can carry SQL or provider data.
  */
 export function logAuthError(error: unknown): void {
   if (
@@ -52,7 +64,11 @@ export function logAuthError(error: unknown): void {
   ) {
     const statusCode = error['statusCode'];
     const isClientError = typeof statusCode === 'number' && statusCode >= 400 && statusCode < 500;
-    logAuthMessage(isClientError ? 'warn' : 'error', `${error['status']}: ${error['message']}`);
+    const code = errorCode(error);
+    logAuthMessage(
+      isClientError ? 'warn' : 'error',
+      `${error['status']}${code ? ` ${code}` : ''}: ${error['message']}`,
+    );
     return;
   }
   logAuthMessage('error', `Unexpected ${isRecord(error) ? String(error['name']) : 'error'}`);

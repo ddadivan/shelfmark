@@ -74,6 +74,32 @@ describe('Better Auth security', () => {
         .expect(403);
     });
 
+    it('keeps the origin check on even when TEST is truthy (Better Auth test-mode default)', async () => {
+      const { cookie } = await signInAs(t.app, t.baseUrl, { email: 't@example.test', name: 'T' });
+      const previous = process.env['TEST'];
+      process.env['TEST'] = 'true';
+      try {
+        await request(server())
+          .post(AUTH_ENDPOINT.SignOut)
+          .set('Origin', EVIL)
+          .set('Cookie', cookie)
+          .send({})
+          .expect(403);
+        await request(server())
+          .post(AUTH_ENDPOINT.SignInSocial)
+          .set('Origin', t.baseUrl)
+          .send({ provider: AUTH_PROVIDER.GitHub, callbackURL: `${EVIL}/` })
+          .expect(403);
+      } finally {
+        if (previous === undefined) {
+          delete process.env['TEST'];
+        } else {
+          process.env['TEST'] = previous;
+        }
+      }
+      expect(await t.db.prisma.session.count()).toBe(1);
+    });
+
     it('rejects an unknown provider', async () => {
       const res = await request(server())
         .post(AUTH_ENDPOINT.SignInSocial)
@@ -177,6 +203,15 @@ describe('Better Auth security', () => {
       expect(get.status).toBe(404);
       expect(post.status).toBe(404);
     });
+
+    it.each(['/reset-password/abc', '/callback/facebook', '/Get-Session', '/get-session/'])(
+      'GET /api/auth%s is a 404 from the allow-list',
+      async (path) => {
+        const res = await request(server()).get(`/api/auth${path}`);
+        expect(res.status).toBe(404);
+        expect(res.body).toMatchObject({ statusCode: 404, requestId: expect.any(String) });
+      },
+    );
 
     it('cannot create users, set isDemo or change a profile through the router', async () => {
       const { cookie, userId } = await signInAs(t.app, t.baseUrl, {

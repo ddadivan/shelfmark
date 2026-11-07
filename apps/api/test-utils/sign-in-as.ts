@@ -39,6 +39,12 @@ export function toCookieHeader(setCookies: string[], previous = ''): string {
   return [...jar].map(([name, value]) => `${name}=${value}`).join('; ');
 }
 
+function expectStatus(actual: number, expected: number, step: string): void {
+  if (actual !== expected) {
+    throw new Error(`${step} answered ${actual}, expected ${expected}`);
+  }
+}
+
 /**
  * Signs a user in through the real Better Auth flow with the provider faked by
  * `stubOAuthProviders`: POST sign-in/social, then the provider callback with the `state` from the
@@ -64,13 +70,14 @@ export async function signInAs(
     },
     google: { sub: String(accountId), name: options.name, email: options.email, emailVerified },
   });
+  const label = `signInAs(${options.email}, ${provider})`;
   try {
     const server = app.getHttpServer();
     const start = await request(server)
       .post(AUTH_ENDPOINT.SignInSocial)
       .set('Origin', baseUrl)
-      .send({ provider, callbackURL: `${baseUrl}/` })
-      .expect(200);
+      .send({ provider, callbackURL: `${baseUrl}/` });
+    expectStatus(start.status, 200, `${label}: sign-in/social`);
     const { url } = start.body as SocialSignInResponse;
     const state = new URL(url).searchParams.get('state') ?? '';
     const stateCookies = toCookieHeader(setCookiesOf(start));
@@ -78,23 +85,22 @@ export async function signInAs(
     const callback = await request(server)
       .get(`/api/auth/callback/${provider}`)
       .query({ code: 'fake-code', state })
-      .set('Cookie', stateCookies)
-      .expect(302);
+      .set('Cookie', stateCookies);
+    expectStatus(callback.status, 302, `${label}: callback`);
     const setCookies = setCookiesOf(callback);
     if (!setCookies.some((header) => SESSION_COOKIE.test(header))) {
       throw new Error(
-        `Sign-in did not create a session (redirected to ${callback.headers['location']})`,
+        `${label}: the callback did not create a session ` +
+          `(status ${callback.status}, redirected to ${callback.headers['location']})`,
       );
     }
     const cookie = toCookieHeader(setCookies, stateCookies);
 
-    const session = await request(server)
-      .get(AUTH_ENDPOINT.GetSession)
-      .set('Cookie', cookie)
-      .expect(200);
+    const session = await request(server).get(AUTH_ENDPOINT.GetSession).set('Cookie', cookie);
+    expectStatus(session.status, 200, `${label}: get-session`);
     const body = session.body as GetSessionResponse;
     if (!body) {
-      throw new Error('Session cookie was not accepted by get-session');
+      throw new Error(`${label}: get-session returned null for the new session cookie`);
     }
     return { userId: body.user.id, cookie };
   } finally {

@@ -15,6 +15,8 @@ const DEFAULT_BASE_URL = 'http://localhost:4200';
  * The whole API (`AppModule`) on an in-memory PGlite database, with a random auth secret and
  * random Google and GitHub client credentials per call, so no secret is ever written down.
  * Environment overrides (`options.env`) apply until `close()`. Pair it with `stubOAuthProviders`.
+ * One instance at a time per spec file: the overrides live in `process.env`, which is shared by
+ * every test of the file, so close an app before creating the next one.
  */
 export async function createAuthTestApp(options: AuthTestAppOptions = {}): Promise<AuthTestApp> {
   const authSecret = randomBytes(32).toString('hex');

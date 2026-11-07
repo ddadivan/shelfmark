@@ -23,6 +23,8 @@ export default defineConfig({
     environment: 'node',
     include: ['src/**/*.spec.ts', 'scripts/**/*.spec.ts'],
     setupFiles: ['./vitest.setup.ts'],
+    // Each DB spec boots its own PGlite; parallel files make the first hook slow on small machines.
+    hookTimeout: 30_000,
     reporters: ['default'],
     coverage: {
       // On by default so `nx test api` enforces the thresholds; filtered runs (`-t foo`) may fail them.

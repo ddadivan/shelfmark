@@ -1,14 +1,15 @@
 import { randomBytes } from 'node:crypto';
 import { readAuthConfig } from './auth-config';
 import { AUTH_DEFAULT_SECRET } from './models/auth-default-secret.const';
+import { NODE_ENV } from './models/node-env.const';
 
 // Every secret is generated per run: fixtures hold none.
 const secret = randomBytes(32).toString('hex');
 const clientSecret = randomBytes(16).toString('hex');
-const PROD = { NODE_ENV: 'production', BETTER_AUTH_URL: 'https://app.example.test' };
+const PROD = { NODE_ENV: NODE_ENV.Production, BETTER_AUTH_URL: 'https://app.example.test' };
 
 function env(extra: NodeJS.ProcessEnv = {}): NodeJS.ProcessEnv {
-  return { NODE_ENV: 'test', BETTER_AUTH_SECRET: secret, ...extra };
+  return { NODE_ENV: NODE_ENV.Test, BETTER_AUTH_SECRET: secret, ...extra };
 }
 
 describe('readAuthConfig', () => {
@@ -40,7 +41,7 @@ describe('readAuthConfig', () => {
   });
 
   it('requires the base URL in production (no fallback)', () => {
-    expect(() => readAuthConfig(env({ NODE_ENV: 'production' }))).toThrow(
+    expect(() => readAuthConfig(env({ NODE_ENV: NODE_ENV.Production }))).toThrow(
       /BETTER_AUTH_URL is required in production/,
     );
     expect(() => readAuthConfig(env({ NODE_ENV: undefined }))).toThrow(

@@ -38,7 +38,7 @@ describe('createAuth options', () => {
     const { options } = createAuth(prisma, config());
     const advanced: Record<string, unknown> = { ...options.advanced };
     expect(advanced['disableCSRFCheck']).toBeUndefined();
-    expect(advanced['disableOriginCheck']).toBeUndefined();
+    expect(advanced['disableOriginCheck']).toBe(false);
     expect(JSON.stringify(options)).not.toMatch(/skipStateCookieCheck/);
   });
 
@@ -61,10 +61,12 @@ describe('createAuth options', () => {
     });
   });
 
-  it('keeps IP tracking on so per-IP rate limiting stays active', () => {
+  it('reads the client IP from the Vercel header first and keeps tracking on', () => {
     const { options } = createAuth(prisma, config());
     const advanced: Record<string, unknown> = { ...options.advanced };
-    expect(advanced['ipAddress']).toBeUndefined();
+    expect(advanced['ipAddress']).toEqual({
+      ipAddressHeaders: ['x-vercel-forwarded-for', 'x-forwarded-for'],
+    });
   });
 
   it('registers only the configured providers', () => {

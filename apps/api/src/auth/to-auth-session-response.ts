@@ -1,8 +1,5 @@
 import type { AuthSessionResponse } from '@shelfmark/contracts';
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
-}
+import { isRecord } from '../common/util/is-record';
 
 function toIsoString(value: unknown): string | null {
   if (value instanceof Date) {

@@ -16,9 +16,14 @@ const GET_SESSION_PATH = '/get-session';
 /**
  * Builds the Better Auth instance for one Prisma client and one validated configuration. Never a
  * module-level singleton, so tests can inject the in-memory database. Never sets
- * `disableCSRFCheck`, `disableOriginCheck` or `skipStateCookieCheck`.
+ * `disableCSRFCheck`, `disableOriginCheck: true` or `skipStateCookieCheck`. `disabledPaths` is the
+ * second layer behind `authAllowListMiddleware`; the parameter exists for the drift-guard spec.
  */
-export function createAuth(prisma: PrismaClient, config: AuthConfig) {
+export function createAuth(
+  prisma: PrismaClient,
+  config: AuthConfig,
+  disabledPaths: readonly string[] = DISABLED_AUTH_PATHS,
+) {
   const { google, github } = config.providers;
   return betterAuth({
     appName: 'Shelfmark',
@@ -52,12 +57,18 @@ export function createAuth(prisma: PrismaClient, config: AuthConfig) {
       // Explicit, not inferred from the URL: Secure + `__Secure-` prefix exactly in production.
       useSecureCookies: config.isProduction,
       cookiePrefix: AUTH_COOKIE_PREFIX,
+      // Explicit false: without it Better Auth defaults to skipping the origin and CSRF checks
+      // whenever it thinks it runs tests (NODE_ENV=test or a truthy TEST).
+      disableOriginCheck: false,
+      // Vercel sets x-vercel-forwarded-for and clients cannot control it; x-forwarded-for is the
+      // fallback for local runs. A header with several addresses is ignored without trustedProxies.
+      ipAddress: { ipAddressHeaders: ['x-vercel-forwarded-for', 'x-forwarded-for'] },
       // Pinned, not left to Better Auth's defaults. Lax: the OAuth callback is a cross-site GET.
       defaultCookieAttributes: { sameSite: 'lax', httpOnly: true },
     },
     telemetry: { enabled: false },
     onAPIError: { errorURL: `${config.baseUrl}/sign-in`, onError: logAuthError },
-    disabledPaths: [...DISABLED_AUTH_PATHS],
+    disabledPaths: [...disabledPaths],
     logger: { level: 'warn', log: (level, message) => logAuthMessage(level, message) },
     databaseHooks: {
       account: {
