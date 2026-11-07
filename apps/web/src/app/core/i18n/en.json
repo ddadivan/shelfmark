@@ -323,7 +323,8 @@
         "move": "Move to…",
         "delete": "Delete folder…"
       }
-    }
+    },
+    "search": "Search"
   },
   "folders": {
     "dialog": {
@@ -442,6 +443,34 @@
       "title": "No links with these tags",
       "text": "Nothing you saved has all of the selected tags.",
       "clear": "Clear filter"
+    },
+    "filter": {
+      "label": "Active filters"
+    },
+    "sort": {
+      "label": "Sort: {{sort}}",
+      "menu": "Sort links",
+      "newest": "Newest first",
+      "oldest": "Oldest first",
+      "title": "Title A–Z"
+    },
+    "search": {
+      "chip": "Search: {{query}}",
+      "remove": "Remove search {{query}}"
+    },
+    "emptySearch": {
+      "title": "Nothing found for “{{query}}”",
+      "text": "Try another word, or search in all folders.",
+      "clear": "Clear search",
+      "all": "Search all folders"
+    },
+    "breadcrumb": {
+      "label": "Breadcrumb",
+      "collapsed": "Show hidden folders"
+    },
+    "pageTitle": {
+      "page": "{{page}} · {{app}}",
+      "search": "Search: {{query}} · {{app}}"
     }
   },
   "export": {
@@ -555,6 +584,39 @@
     "count": {
       "one": "{{count}} link",
       "other": "{{count}} links"
+    }
+  },
+  "search": {
+    "title": "Search",
+    "close": "Close search",
+    "label": "Search links, folders and tags",
+    "placeholder": "Search links, folders and tags",
+    "results": "Search results",
+    "esc": "Esc",
+    "inFolder": "in {{folder}}",
+    "noteMatches": "note matches:",
+    "showAll": "Show all results for “{{query}}”",
+    "foldersAndTags": "Folders and tags",
+    "linkCount": {
+      "one": "{{count}} link",
+      "other": "{{count}} links"
+    },
+    "tagMeta": {
+      "one": "Tag, {{count}} link",
+      "other": "Tag, {{count}} links"
+    },
+    "status": {
+      "one": "{{count}} result",
+      "other": "{{count}} results"
+    },
+    "hint": "Type to search your links, folders and tags.",
+    "searching": "Searching…",
+    "failed": "Couldn't search. Try again.",
+    "hints": {
+      "ctrl": "Ctrl",
+      "move": "move",
+      "open": "open",
+      "background": "open in background"
     }
   }
 }

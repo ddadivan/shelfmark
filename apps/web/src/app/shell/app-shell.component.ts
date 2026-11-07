@@ -16,6 +16,7 @@ import { EXPORT_FORMAT, type ExportFormat } from '@shelfmark/contracts';
 import { ExportActionsService } from '../features/export/export-actions.service';
 import { AuthStore } from '../core/auth/auth.store';
 import { LinkActionsService } from '../features/links/link-actions.service';
+import { SearchDialogService } from '../features/search/search-dialog.service';
 import { RecentLinksPanelComponent } from '../features/links/recent/recent-links-panel.component';
 import { UiStore } from '../stores/ui.store';
 import { APP_PATH } from '../models/app-path.const';
@@ -37,6 +38,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     RecentLinksPanelComponent,
     SidebarComponent,
   ],
+  host: { '(document:keydown)': 'onKeydown($event)' },
   templateUrl: './app-shell.component.html',
   styleUrl: './app-shell.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -47,6 +49,7 @@ export default class AppShellComponent {
   protected readonly actions = inject(LinkActionsService);
   private readonly exporter = inject(ExportActionsService);
   protected readonly EXPORT_FORMAT = EXPORT_FORMAT;
+  protected readonly search = inject(SearchDialogService);
   private readonly transloco = inject(TranslocoService);
 
   private readonly recentLabels = toSignal(
@@ -68,6 +71,10 @@ export default class AppShellComponent {
 
   protected async exportAll(format: ExportFormat): Promise<void> {
     await this.exporter.download(format);
+  }
+
+  protected onKeydown(event: KeyboardEvent): void {
+    this.search.handleShortcut(event);
   }
 
   protected toggleRecent(): void {

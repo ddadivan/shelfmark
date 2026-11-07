@@ -80,3 +80,21 @@
   align-items: center;
   margin-bottom: var(--space-4);
 }
+
+.library__controls {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.library__crumbs {
+  display: block;
+  margin-bottom: var(--space-3);
+}
+
+.library__empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: center;
+}

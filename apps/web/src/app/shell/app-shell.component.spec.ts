@@ -10,6 +10,7 @@ import { AuthUser } from '../core/auth/models/auth-user.interface';
 import { APP_LANG } from '../core/i18n/models/app-lang.const';
 import { AppTranslocoLoader } from '../core/i18n/app-transloco.loader';
 import { translocoConfig } from '../core/i18n/transloco.config';
+import { SearchDialogService } from '../features/search/search-dialog.service';
 import AppShellComponent from './app-shell.component';
 
 const USER: AuthUser = {
@@ -95,5 +96,37 @@ describe('AppShellComponent', () => {
     await harness.fixture.whenStable();
 
     expect(TestBed.inject(Router).url).toBe('/settings');
+  });
+
+  it('opens the search from the header button and from Cmd+K', async () => {
+    const api: AuthApi = {
+      getSession: () => Promise.resolve(USER),
+      signIn: vi.fn(),
+      signInDemo: vi.fn(),
+      signOut: vi.fn(() => Promise.resolve()),
+    };
+    const search = {
+      open: vi.fn(),
+      handleShortcut: vi.fn(),
+    };
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([{ path: '', component: AppShellComponent }]),
+        provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
+        { provide: AUTH_API, useValue: api },
+        { provide: SearchDialogService, useValue: search },
+      ],
+    });
+    await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
+    await TestBed.inject(AuthStore).ensureLoaded();
+    const harness = await RouterTestingHarness.create('/');
+
+    (harness.routeNativeElement as HTMLElement)
+      .querySelector<HTMLButtonElement>('button[aria-label="Search"]')
+      ?.click();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', code: 'KeyK', metaKey: true }));
+
+    expect(search.open).toHaveBeenCalledTimes(1);
+    expect(search.handleShortcut).toHaveBeenCalledTimes(1);
   });
 });
