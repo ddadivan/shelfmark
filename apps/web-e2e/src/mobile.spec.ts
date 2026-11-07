@@ -66,7 +66,11 @@ test.describe('mobile layout (mock API)', () => {
     await openDrawer(page);
     for (let n = 0; n < 12; n++) {
       await page.keyboard.press('Tab');
-      expect(await drawer(page).evaluate((el) => el.contains(document.activeElement))).toBe(true);
+      expect(
+        await page.evaluate<boolean>(
+          "!!document.querySelector('[role=dialog][aria-label=Menu]')?.contains(document.activeElement)",
+        ),
+      ).toBe(true);
     }
     await page.keyboard.press('Escape');
 
