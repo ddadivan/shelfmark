@@ -265,7 +265,7 @@ See ADR 0004.
 
 CSR without SSR, zoneless, Transloco, strict-CSP build: ADR 0005; state: ADR 0009; UI library: ADR 0014; `rem`/`em` units: ADR 0015.
 
-**Routes (Angular Router).** Every feature is lazy-loaded (`loadComponent`), except the public landing (the LCP page, eager) and no route preloading (it competes with the first paint; Lighthouse budget). Router: `provideRouter(routes, withComponentInputBinding(), withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }), withRouterConfig({ paramsInheritanceStrategy: 'always' }))`, so path params, query and `data` reach components as `input()`.
+**Routes (Angular Router).** Every feature is lazy-loaded (`loadComponent`), except the public landing (the LCP page, eager). Router: `provideRouter(routes, withComponentInputBinding(), withPreloading(SignedInPreloadingStrategy), withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }), withRouterConfig({ paramsInheritanceStrategy: 'always' }))`, so path params, query and `data` reach components as `input()`. `SignedInPreloadingStrategy` (`core/routing`) preloads lazy routes only once the session is known to be signed-in; a guest never preloads, so the landing keeps its Lighthouse budget.
 
 | URL | Screen | Access | Feature (lazy) |
 | --- | --- | --- | --- |
@@ -910,7 +910,7 @@ Stage 1 is considered successful when all acceptance criteria are met, the app p
 | Functionality | All 24 stories of section 4 (including "Onboarding") are done according to their acceptance criteria |
 | Tests | Coverage ≥ 80% (`apps/api`, `libs/ui`); e2e of key scenarios pass on desktop and phone |
 | Security | All 5.8 measures are in place; 0 critical and high vulnerabilities in `npm audit` and CodeQL |
-| Interface quality | Lighthouse ≥ 90 for performance, accessibility and best practices on the main screen |
+| Interface quality | Lighthouse ≥ 90 for performance, accessibility and best practices on the main screen (the lab run serves the `e2e` build through `tools/lighthouse/serve.mjs` with brotli/gzip like Vercel; the plain file server sends raw bytes and overstates the load about 3x; the budget is unchanged) |
 | Design | Screens match the Claude Design mockups in both themes and on phone |
 | Usage | The author moves their links into the service and uses it every day for 2 weeks |
 

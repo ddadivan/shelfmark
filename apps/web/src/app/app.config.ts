@@ -11,6 +11,7 @@ import {
   provideRouter,
   withComponentInputBinding,
   withInMemoryScrolling,
+  withPreloading,
   withRouterConfig,
 } from '@angular/router';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
@@ -20,6 +21,7 @@ import { appRoutes } from './app.routes';
 import { translocoConfig } from './core/i18n/transloco.config';
 import { APP_LANG } from './core/i18n/models/app-lang.const';
 import { AppTranslocoLoader } from './core/i18n/app-transloco.loader';
+import { SignedInPreloadingStrategy } from './core/routing/signed-in-preloading.strategy';
 import { ThemeService } from './core/theme/theme.service';
 
 export const appConfig: ApplicationConfig = {
@@ -29,6 +31,8 @@ export const appConfig: ApplicationConfig = {
     provideRouter(
       appRoutes,
       withComponentInputBinding(),
+      // Only for a signed-in user: a guest on the landing must not compete with the first paint.
+      withPreloading(SignedInPreloadingStrategy),
       withRouterConfig({ paramsInheritanceStrategy: 'always' }),
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
     ),
