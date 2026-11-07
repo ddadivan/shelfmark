@@ -1,4 +1,5 @@
 @use 'functions' as *;
+@use 'media' as *;
 
 // Hides content visually but keeps it for screen readers: live regions, "Step N of M" text.
 @mixin visually-hidden {
@@ -20,4 +21,33 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: $lines;
   line-clamp: $lines;
+}
+
+// Invisible hit area around a small control: an absolutely positioned `::after` that grows the
+// target without changing the visible size. `$inset` is a list of negative px offsets (1 to 4
+// values, as in `inset`); `$coarse-inset` replaces it under `pointer: coarse` when given.
+@mixin hit-area($inset, $coarse-inset: null) {
+  position: relative;
+
+  &::after {
+    position: absolute;
+    inset: rem-list($inset);
+    content: '';
+  }
+
+  @if $coarse-inset {
+    @include coarse {
+      &::after {
+        inset: rem-list($coarse-inset);
+      }
+    }
+  }
+}
+
+// Minimum interactive size on coarse pointers (44px).
+@mixin touch-target($size: 44px) {
+  @include coarse {
+    min-width: rem($size);
+    min-height: rem($size);
+  }
 }
