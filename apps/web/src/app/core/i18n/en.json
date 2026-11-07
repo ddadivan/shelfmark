@@ -424,6 +424,34 @@
       "add": "Add link"
     },
     "refetchFailed": "Couldn't refresh your links. You are seeing the last loaded list.",
+    "filter": {
+      "label": "Active filters"
+    },
+    "sort": {
+      "label": "Sort: {{sort}}",
+      "menu": "Sort links",
+      "newest": "Newest first",
+      "oldest": "Oldest first",
+      "title": "Title A–Z"
+    },
+    "search": {
+      "chip": "Search: {{query}}",
+      "remove": "Remove search {{query}}"
+    },
+    "emptySearch": {
+      "title": "Nothing found for “{{query}}”",
+      "text": "Try another word, or search in all folders.",
+      "clear": "Clear search",
+      "all": "Search all folders"
+    },
+    "breadcrumb": {
+      "label": "Breadcrumb",
+      "collapsed": "Show hidden folders"
+    },
+    "pageTitle": {
+      "page": "{{page}} · {{app}}",
+      "search": "Search: {{query}} · {{app}}"
+    },
     "emptyFiltered": {
       "title": "No links with these tags",
       "text": "Nothing you saved has all of the selected tags.",

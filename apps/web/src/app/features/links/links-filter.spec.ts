@@ -35,6 +35,15 @@ describe('linksQuery', () => {
   });
 });
 
+describe('inFilter search', () => {
+  it('matches the title, the note and the URL, every word', () => {
+    const link = { ...LINK, title: 'Signal Forms', note: 'Interview prep', url: 'https://a.dev/x' };
+    expect(inFilter({ scope: LINKS_SCOPE.All, q: 'interview' }, link)).toBe(true);
+    expect(inFilter({ scope: LINKS_SCOPE.All, q: 'a.dev forms' }, link)).toBe(true);
+    expect(inFilter({ scope: LINKS_SCOPE.All, q: 'forms pasta' }, link)).toBe(false);
+  });
+});
+
 describe('inFilter', () => {
   it('checks the scope', () => {
     expect(inFilter({ scope: LINKS_SCOPE.Unsorted }, LINK)).toBe(true);

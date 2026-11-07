@@ -1,6 +1,14 @@
 <ui-progress-bar [active]="refetching()" [label]="'library.loading' | transloco" />
 <section class="library" [attr.aria-busy]="store.loading()">
-  @if (!folderMissing()) {
+  @if (!folderMissing()) { @if (crumbs(); as trail) {
+  <ui-breadcrumbs
+    class="library__crumbs"
+    [items]="trail"
+    [ariaLabel]="'library.breadcrumb.label' | transloco"
+    [collapsedLabel]="'library.breadcrumb.collapsed' | transloco"
+    (linkClick)="openCrumb($event)"
+  />
+  }
   <header class="library__toolbar">
     <div class="library__heading">
       <h1 class="library__title">{{ folder()?.name ?? (titleKey() | transloco) }}</h1>
@@ -12,18 +20,46 @@
       }
     </div>
     @if (showLinks() && viewOptions(); as options) {
-    <ui-segmented-control
-      iconOnly
-      [options]="options"
-      [value]="ui.view()"
-      [ariaLabel]="'library.view.label' | transloco"
-      (valueChange)="setView($event)"
-    />
+    <div class="library__controls">
+      <ui-button
+        [uiMenuTrigger]="sortMenu"
+        variant="ghost"
+        size="sm"
+        iconRight="chevron-down"
+        [ariaLabel]="'library.sort.label' | transloco: { sort: SORT_OPTION_KEYS[feedSort()] | transloco }"
+      >
+        {{ SORT_OPTION_KEYS[feedSort()] | transloco }}
+      </ui-button>
+      <ui-menu #sortMenu align="end" [ariaLabel]="'library.sort.menu' | transloco">
+        @for (option of SORT_OPTIONS; track option) {
+        <ui-menu-item type="radio" [selected]="option === feedSort()" (activated)="setSort(option)">
+          {{ SORT_OPTION_KEYS[option] | transloco }}
+        </ui-menu-item>
+        }
+      </ui-menu>
+      <ui-segmented-control
+        iconOnly
+        [options]="options"
+        [value]="ui.view()"
+        [ariaLabel]="'library.view.label' | transloco"
+        (valueChange)="setView($event)"
+      />
+    </div>
     }
   </header>
   @if (filtered()) {
-  <div class="library__filter" role="group" [attr.aria-label]="'tags.filter.label' | transloco">
-    @for (name of tags(); track name) {
+  <div class="library__filter" role="group" [attr.aria-label]="'library.filter.label' | transloco">
+    @if (searching()) {
+    <ui-chip
+      variant="neutral"
+      icon="search"
+      removable
+      [removeLabel]="'library.search.remove' | transloco: { query: query() }"
+      (removed)="clearSearch()"
+    >
+      {{ 'library.search.chip' | transloco: { query: query() } }}
+    </ui-chip>
+    } @for (name of tags(); track name) {
     <ui-chip
       removable
       [removeLabel]="'tags.filter.remove' | transloco: { name: name }"
@@ -32,7 +68,7 @@
       {{ name }}
     </ui-chip>
     }
-    <ui-button variant="ghost" size="sm" (click)="clearTags()">
+    <ui-button variant="ghost" size="sm" (click)="clearAll()">
       {{ 'tags.filter.clear' | transloco }}
     </ui-button>
   </div>
@@ -69,7 +105,22 @@
   <div class="library__grid">
     <ui-skeleton [shape]="SKELETON_SHAPE.Card" [count]="SKELETON_COUNT" />
   </div>
-  } } @else if (empty() && filtered()) {
+  } } @else if (empty() && searching()) {
+  <ui-empty-state
+    illustration="not-found"
+    [heading]="'library.emptySearch.title' | transloco: { query: query() }"
+    [text]="'library.emptySearch.text' | transloco"
+  >
+    <div class="library__empty-actions">
+      <ui-button (click)="clearSearch()">{{ 'library.emptySearch.clear' | transloco }}</ui-button>
+      @if (scope() !== LINKS_SCOPE.All) {
+      <ui-button (click)="searchEverywhere()">
+        {{ 'library.emptySearch.all' | transloco }}
+      </ui-button>
+      }
+    </div>
+  </ui-empty-state>
+  } @else if (empty() && filtered()) {
   <ui-empty-state
     illustration="empty-feed"
     [heading]="'library.emptyFiltered.title' | transloco"
