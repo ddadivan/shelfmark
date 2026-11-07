@@ -1,10 +1,16 @@
 import { TestBed } from '@angular/core/testing';
-import { ToastService, type ToastOptions } from '@shelfmark/ui';
+import {
+  TOAST_CLOSE_REASON,
+  ToastService,
+  type ToastCloseReason,
+  type ToastOptions,
+} from '@shelfmark/ui';
 import { DELETE_UNDO_MS } from './models/delete-undo.const';
 import { UndoToastService } from './undo-toast.service';
 
 function setup() {
   const shown: ToastOptions[] = [];
+  const closers: Array<(reason: ToastCloseReason) => void> = [];
   TestBed.configureTestingModule({
     providers: [
       {
@@ -12,19 +18,21 @@ function setup() {
         useValue: {
           show: (options: ToastOptions) => {
             shown.push(options);
-            return { dismiss: () => undefined };
+            return {
+              dismiss: () => undefined,
+              closed: new Promise<ToastCloseReason>((resolve) => closers.push(resolve)),
+            };
           },
         },
       },
     ],
   });
-  return { shown, service: TestBed.inject(UndoToastService) };
+  return { shown, closers, service: TestBed.inject(UndoToastService) };
 }
 
-describe('UndoToastService', () => {
-  beforeEach(() => vi.useFakeTimers());
-  afterEach(() => vi.useRealTimers());
+const flush = () => new Promise<void>((resolve) => setTimeout(resolve));
 
+describe('UndoToastService', () => {
   const options = () => ({
     text: 'Link deleted',
     actionLabel: 'Undo',
@@ -41,26 +49,30 @@ describe('UndoToastService', () => {
     expect(shown[0].action?.label).toBe('Undo');
   });
 
-  it('expires after the window when Undo was not pressed', () => {
-    const { service } = setup();
-    const callbacks = options();
-    service.show(callbacks);
+  it.each([TOAST_CLOSE_REASON.Timeout, TOAST_CLOSE_REASON.Dismissed, TOAST_CLOSE_REASON.Replaced])(
+    'commits when the toast closes with "%s"',
+    async (reason) => {
+      const { closers, service } = setup();
+      const callbacks = options();
+      service.show(callbacks);
+      expect(callbacks.onExpire).not.toHaveBeenCalled();
 
-    vi.advanceTimersByTime(DELETE_UNDO_MS - 1);
-    expect(callbacks.onExpire).not.toHaveBeenCalled();
-    vi.advanceTimersByTime(1);
+      closers[0](reason);
+      await flush();
 
-    expect(callbacks.onExpire).toHaveBeenCalledTimes(1);
-    expect(callbacks.onUndo).not.toHaveBeenCalled();
-  });
+      expect(callbacks.onExpire).toHaveBeenCalledTimes(1);
+      expect(callbacks.onUndo).not.toHaveBeenCalled();
+    },
+  );
 
-  it('undoes without expiring afterwards', () => {
-    const { shown, service } = setup();
+  it('undoes without committing when the toast closes after the action', async () => {
+    const { shown, closers, service } = setup();
     const callbacks = options();
     service.show(callbacks);
 
     shown[0].action?.run();
-    vi.advanceTimersByTime(DELETE_UNDO_MS);
+    closers[0](TOAST_CLOSE_REASON.Action);
+    await flush();
 
     expect(callbacks.onUndo).toHaveBeenCalledTimes(1);
     expect(callbacks.onExpire).not.toHaveBeenCalled();

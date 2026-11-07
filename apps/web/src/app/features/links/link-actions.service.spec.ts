@@ -1,7 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 import type { LinkResponse } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
-import { DialogService, TOAST_KIND, ToastService, type ToastOptions } from '@shelfmark/ui';
+import {
+  DialogService,
+  TOAST_CLOSE_REASON,
+  TOAST_KIND,
+  ToastService,
+  type ToastCloseReason,
+  type ToastOptions,
+} from '@shelfmark/ui';
 import { of, throwError } from 'rxjs';
 import { LinksStore } from '../../stores/links.store';
 import { loadEnglish, provideTranslocoForTest } from '../../testing/transloco-testing';
@@ -37,9 +44,33 @@ async function setup(confirmed = true) {
       {
         provide: ToastService,
         useValue: {
+          // Behaves like the real toast: closes by timeout, or with "action" when Undo runs.
           show: (options: ToastOptions) => {
-            toasts.push(options);
-            return { dismiss: () => undefined };
+            let close: (reason: ToastCloseReason) => void = () => undefined;
+            const closed = new Promise<ToastCloseReason>((resolve) => {
+              close = resolve;
+            });
+            const timer = setTimeout(
+              () => close(TOAST_CLOSE_REASON.Timeout),
+              options.duration ?? 4000,
+            );
+            const run = options.action?.run;
+            toasts.push(
+              options.action && run
+                ? {
+                    ...options,
+                    action: {
+                      label: options.action.label,
+                      run: () => {
+                        run();
+                        clearTimeout(timer);
+                        close(TOAST_CLOSE_REASON.Action);
+                      },
+                    },
+                  }
+                : options,
+            );
+            return { dismiss: () => close(TOAST_CLOSE_REASON.Dismissed), closed };
           },
         },
       },
