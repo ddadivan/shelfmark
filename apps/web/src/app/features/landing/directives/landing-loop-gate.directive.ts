@@ -1,4 +1,12 @@
-import { computed, DestroyRef, Directive, ElementRef, inject, signal } from '@angular/core';
+import {
+  computed,
+  DestroyRef,
+  Directive,
+  DOCUMENT,
+  ElementRef,
+  inject,
+  signal,
+} from '@angular/core';
 import { LandingMotionService } from '../landing-motion.service';
 
 /**
@@ -18,10 +26,11 @@ export class LandingLoopGateDirective {
   );
 
   constructor() {
-    if (typeof IntersectionObserver === 'undefined') {
+    const view = inject(DOCUMENT).defaultView;
+    if (!view || typeof view.IntersectionObserver !== 'function') {
       return;
     }
-    const observer = new IntersectionObserver((entries) => {
+    const observer = new view.IntersectionObserver((entries) => {
       const latest = entries.at(-1);
       if (latest) {
         this.inViewport.set(latest.isIntersecting);

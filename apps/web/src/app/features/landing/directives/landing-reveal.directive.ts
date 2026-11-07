@@ -52,13 +52,16 @@ export class LandingRevealDirective {
     };
     const observer = new IntersectionObserver(
       (entries) => {
+        // The observer reports, so the safety net is no longer needed: an off-screen section
+        // stays hidden until it scrolls in, however long that takes.
+        clearTimeout(safety);
         if (entries.some((entry) => entry.isIntersecting)) {
           reveal();
         }
       },
       { threshold: LANDING_REVEAL.Threshold },
     );
-    // Never leave content hidden if the observer does not report.
+    // Never leave content hidden if the observer does not report at all (cleared on its first report).
     const safety = setTimeout(reveal, LANDING_REVEAL.SafetyMs);
     observer.observe(this.host);
     this.destroyRef.onDestroy(() => {

@@ -134,6 +134,14 @@ test.describe('landing scenes and reveals', () => {
     });
     await pause.click();
     await expect(pause).toHaveAttribute('aria-pressed', 'true');
+
+    // Pointer away from the scene, so only the button can be holding the cycle. The folders
+    // advance every 3 s: a longer wait on the same active row proves the cycle stopped.
+    await page.mouse.move(0, 0);
+    const activeRow = shelf.getByTestId('landing-ba-active-row');
+    const frozen = await activeRow.textContent();
+    await page.waitForTimeout(3500);
+    await expect(activeRow).toHaveText(frozen ?? '');
   });
 
   test.describe('reduced motion', () => {
@@ -153,10 +161,25 @@ test.describe('landing scenes and reveals', () => {
       ).toHaveCSS('opacity', '1');
 
       await page.waitForTimeout(3500);
-      await expect(shelf.locator('.landing-ba__row--active')).toHaveText('Clothes');
+      await expect(shelf.getByTestId('landing-ba-active-row')).toHaveText('Clothes');
     });
   });
 });
+
+/**
+ * Scrolls the page top to bottom in steps, so every section is seen by its reveal observer (an
+ * off-screen section stays hidden until it scrolls in; there is no timeout that reveals it).
+ */
+async function scrollThrough(page: Page): Promise<void> {
+  await page.evaluate(`(async () => {
+    const root = document.scrollingElement ?? document.documentElement;
+    for (let y = 0; y < root.scrollHeight; y += innerHeight / 2) {
+      scrollTo(0, y);
+      await new Promise((resolve) => setTimeout(resolve, 120));
+    }
+    scrollTo(0, root.scrollHeight);
+  })()`);
+}
 
 /** Waits for the reveal transitions to end, so axe never reads half-transparent text. */
 async function settleReveals(page: Page): Promise<void> {
@@ -205,12 +228,12 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
       test('page scrolled to the end has no serious or critical axe violations', async ({
         page,
       }, testInfo) => {
-        await page.goto('/');
-        await page.getByRole('contentinfo').scrollIntoViewIfNeeded();
+        await gotoLandingLoaded(page);
+        // Scroll through the page: each section reveals when it comes into view.
+        await scrollThrough(page);
         await expect(
           page.getByRole('region', { name: 'Empty your Saved Messages.' }).locator('h2'),
         ).toHaveCSS('opacity', '1');
-        // Sections skipped by the jump reveal through the 1 s safety timeout.
         await settleReveals(page);
         await page.evaluate('document.fonts.ready.then(() => undefined)');
 
@@ -220,7 +243,9 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
       test('shelf with the pause button pressed has no serious or critical axe violations', async ({
         page,
       }, testInfo) => {
-        await page.goto('/');
+        await gotoLandingLoaded(page);
+        // Every section reveals when it is seen; then come back to the shelf and pause it.
+        await scrollThrough(page);
         const shelf = page.getByRole('region', { name: 'The same links, before and after' });
         await shelf.scrollIntoViewIfNeeded();
         await shelf.getByRole('button', { name: 'Pause animations' }).click();

@@ -28,6 +28,7 @@
               <div
                 class="landing-ba__row"
                 [class.landing-ba__row--active]="row.id === activeFolder()"
+                [attr.data-testid]="row.id === activeFolder() ? 'landing-ba-active-row' : null"
                 [class.landing-ba__row--nested]="row.depth > 0"
               >
                 {{ row.nameKey | transloco }}

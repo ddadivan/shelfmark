@@ -92,6 +92,17 @@ describe('LandingRevealDirective', () => {
     expect(MockIntersectionObserver.instances[0].disconnected).toBe(true);
   });
 
+  it('keeps an off-screen section hidden past the safety timeout once the observer has reported', async () => {
+    const { fixture, section } = await create();
+
+    MockIntersectionObserver.instances[0].trigger(false);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await fixture.whenStable();
+
+    expect(section.classList.contains('landing-reveal--pending')).toBe(true);
+    expect(section.classList.contains('landing-reveal--shown')).toBe(false);
+  });
+
   it('never hides content under reduced motion', async () => {
     stubReducedMotion(true);
 

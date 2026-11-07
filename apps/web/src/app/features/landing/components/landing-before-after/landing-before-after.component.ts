@@ -75,8 +75,12 @@ export class LandingBeforeAfterComponent {
   }
 
   protected leaveFocus(event: FocusEvent): void {
-    const area = event.currentTarget as Node;
-    if (!(event.relatedTarget instanceof Node) || !area.contains(event.relatedTarget)) {
+    const area = event.currentTarget;
+    if (
+      !(area instanceof Node) ||
+      !(event.relatedTarget instanceof Node) ||
+      !area.contains(event.relatedTarget)
+    ) {
       this.engaged.set(false);
     }
   }

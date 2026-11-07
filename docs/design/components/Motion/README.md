@@ -52,4 +52,6 @@ When `ui-button` enters `loading`, it locks its current width first, so “Save 
 
 ## Landing exceptions
 
-- The landing page is the only place with scroll reveals (fade + 1rem rise, 320 ms, children staggered 60 ms, once) and before/after scene loops (drift, "+1" ping, 9 s shelf cycle). Loops run only in view and in a visible tab, pause on hover/focus and via a pause button (WCAG 2.2.2), and are static under reduced motion.
+- The landing page is the only place with scroll reveals (fade + 1rem rise, 320 ms, children staggered 60 ms, once), the hero chat feed (an endless loop) and before/after scene loops (drift, "+1" ping, 9 s shelf cycle). They are illustrations in `loop` mode, the case principle 1 allows (PROJECT.md story 20), not UI.
+- Loops run only in view and in a visible tab, pause on hover/focus over the illustration and via a pause button (WCAG 2.2.2), and are static under reduced motion. The pause button sits outside the hover/focus area, so pressing it twice always resumes.
+- Chat feed cadence 1.8 s, rise 650 ms, clear 520 ms, shelf landing staggers 160 ms per folder and 80 ms per card. They are named constants in `landing-chat-timing.const.ts`, not tokens.
