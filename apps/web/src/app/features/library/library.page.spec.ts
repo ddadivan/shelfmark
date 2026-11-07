@@ -149,7 +149,7 @@ describe('LibraryPage', () => {
     it('says Unsorted is empty and offers Add link', async () => {
       const { element } = await empty(LINKS_SCOPE.Unsorted);
 
-      expect(element.querySelector('ui-empty-state h2')?.textContent).toBe('Nothing in Unsorted');
+      expect(element.querySelector('ui-empty-state h2')?.textContent).toBe('Unsorted is empty');
       expect(buttons(element)).toEqual(['Add link']);
     });
 
@@ -157,7 +157,9 @@ describe('LibraryPage', () => {
       const { element, fixture } = await empty(LINKS_SCOPE.Favorites);
       const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
 
-      expect(element.querySelector('ui-empty-state h2')?.textContent).toBe('No favorites yet');
+      expect(element.querySelector('ui-empty-state h2')?.textContent).toBe(
+        'Your favorites will live here',
+      );
       expect(buttons(element)).toEqual(['Show all links']);
       element.querySelector<HTMLButtonElement>('ui-empty-state button')?.click();
       await fixture.whenStable();
@@ -175,7 +177,28 @@ describe('LibraryPage', () => {
         'No links with these tags',
       );
       element.querySelector<HTMLButtonElement>('ui-empty-state button')?.click();
-      expect(navigate).toHaveBeenCalled();
+      expect(navigate).toHaveBeenCalledWith([], {
+        queryParams: { tag: null },
+        queryParamsHandling: 'merge',
+      });
+    });
+
+    it('clears the tag filter on the favorites scope too', async () => {
+      const { api, element, fixture } = await setup();
+      api.list.mockReturnValue(of(page([])));
+      fixture.componentRef.setInput('scope', LINKS_SCOPE.Favorites);
+      fixture.componentRef.setInput('tag', 'nothing');
+      await fixture.whenStable();
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+      expect(element.querySelector('ui-empty-state h2')?.textContent).toBe(
+        'No links with these tags',
+      );
+      element.querySelector<HTMLButtonElement>('ui-empty-state button')?.click();
+      expect(navigate).toHaveBeenCalledWith([], {
+        queryParams: { tag: null },
+        queryParamsHandling: 'merge',
+      });
     });
   });
 

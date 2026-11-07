@@ -441,13 +441,13 @@
         "action": "Add link"
       },
       "unsorted": {
-        "title": "Nothing in Unsorted",
+        "title": "Unsorted is empty",
         "text": "Links you save without a folder wait here until you file them.",
         "action": "Add link"
       },
       "favorites": {
-        "title": "No favorites yet",
-        "text": "Star a link to keep it close at hand.",
+        "title": "Your favorites will live here",
+        "text": "Tap the star on a link to keep it here.",
         "action": "Show all links"
       }
     },

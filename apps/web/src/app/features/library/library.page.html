@@ -141,14 +141,15 @@
       <ui-button (click)="openUnsorted()"
         >{{ 'library.emptyFolder.unsorted' | transloco }}</ui-button
       >
-      }
-      <ui-button
-        variant="primary"
-        [iconLeft]="canAddFromEmpty() ? 'add' : undefined"
-        (click)="canAddFromEmpty() ? actions.addLink(addLinkData()) : showAll()"
-      >
+      } @if (canAddLink()) {
+      <ui-button variant="primary" iconLeft="add" (click)="actions.addLink(addLinkData())">
         {{ emptyKey() + '.action' | transloco }}
       </ui-button>
+      } @else {
+      <ui-button variant="primary" (click)="showAll()">
+        {{ emptyKey() + '.action' | transloco }}
+      </ui-button>
+      }
     </div>
   </ui-empty-state>
   } @else if (showLinks()) { @if (ui.view() === UI_VIEW.List) {
