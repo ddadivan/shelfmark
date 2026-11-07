@@ -57,6 +57,7 @@ describe('Better Auth logging', () => {
   it('never logs secrets, codes, provider tokens or session tokens across the flows', async () => {
     const output = captureOutput();
     let leaked: string[];
+    let logged: string;
     try {
       const server = t.app.getHttpServer();
       // Successful flows with both providers and a sign-out.
@@ -103,7 +104,7 @@ describe('Better Auth logging', () => {
         .set('Origin', t.baseUrl)
         .send({ provider: AUTH_PROVIDER.GitHub, callbackURL: 'https://evil.example/' });
 
-      const logged = output.text();
+      logged = output.text();
       const watched = [
         ...t.secrets,
         AUTH_CODE,
@@ -115,6 +116,8 @@ describe('Better Auth logging', () => {
       output.restore();
     }
     expect(leaked).toEqual([]);
+    // Nothing may reach Better Auth's own console logger (it prints extra arguments).
+    expect(logged).not.toContain('[Better Auth]');
   });
 
   it('logs the provider failure by message only (the adapter drops the arguments)', async () => {
