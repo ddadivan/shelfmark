@@ -72,16 +72,21 @@ export class SafeFetcherService {
     this.allowedPorts = options?.allowedPorts ?? DEFAULT_ALLOWED_PORTS;
   }
 
-  async fetch(rawUrl: string): Promise<SafeFetchResult> {
-    const signal = AbortSignal.timeout(this.limits.totalTimeoutMs);
-    let url = this.parseUrl(rawUrl);
-    for (let hop = 0; hop <= this.limits.maxRedirects; hop++) {
+  /**
+   * `overrides` narrow or change the limits for this call only (for example a shorter budget for a
+   * preview inside a request that has its own deadline); the service defaults stay untouched.
+   */
+  async fetch(rawUrl: string, overrides?: Partial<FetchLimits>): Promise<SafeFetchResult> {
+    const limits: FetchLimits = { ...this.limits, ...overrides };
+    const signal = AbortSignal.timeout(limits.totalTimeoutMs);
+    let url = this.parseUrl(rawUrl, limits);
+    for (let hop = 0; hop <= limits.maxRedirects; hop++) {
       const addresses = await this.resolveAllowed(url, signal);
-      const response = await this.requestOnce(url, addresses, signal);
+      const response = await this.requestOnce(url, addresses, signal, limits);
       if ('result' in response) {
         return { finalUrl: url.href, ...response.result };
       }
-      url = this.parseUrl(this.resolveRedirect(response.location, url));
+      url = this.parseUrl(this.resolveRedirect(response.location, url), limits);
     }
     throw new SafeFetchError(SAFE_FETCH_ERROR_CODE.TooManyRedirects, 'Too many redirects');
   }
@@ -98,8 +103,8 @@ export class SafeFetcherService {
     }
   }
 
-  private parseUrl(rawUrl: string): URL {
-    if (rawUrl.length > this.limits.maxUrlLength) {
+  private parseUrl(rawUrl: string, limits: FetchLimits): URL {
+    if (rawUrl.length > limits.maxUrlLength) {
       throw new SafeFetchError(SAFE_FETCH_ERROR_CODE.InvalidUrl, 'URL is too long');
     }
     let url: URL;
@@ -167,6 +172,7 @@ export class SafeFetcherService {
     url: URL,
     addresses: readonly string[],
     signal: AbortSignal,
+    limits: FetchLimits,
   ): Promise<HopResponse> {
     const transport = url.protocol === ALLOWED_PROTOCOLS.Https ? https : http;
     const pinnedLookup: LookupFunction = (_hostname, options, callback) => {
@@ -219,7 +225,7 @@ export class SafeFetcherService {
           },
         },
         (response) => {
-          this.handleResponse(response, finish, () => settled, resolve, reject, fail);
+          this.handleResponse(response, limits, finish, () => settled, resolve, reject, fail);
         },
       );
 
@@ -227,7 +233,7 @@ export class SafeFetcherService {
         if (socket.connecting) {
           connectTimer = setTimeout(
             () => fail(new SafeFetchError(SAFE_FETCH_ERROR_CODE.Timeout, 'Connection timed out')),
-            this.limits.connectTimeoutMs,
+            limits.connectTimeoutMs,
           );
           socket.once('connect', () => clearTimeout(connectTimer));
         }
@@ -247,6 +253,7 @@ export class SafeFetcherService {
 
   private handleResponse(
     response: IncomingMessage,
+    limits: FetchLimits,
     finish: (action: () => void) => void,
     isSettled: () => boolean,
     resolve: (value: HopResponse) => void,
@@ -285,7 +292,7 @@ export class SafeFetcherService {
       return;
     }
     const declaredLength = Number(response.headers['content-length']);
-    if (Number.isFinite(declaredLength) && declaredLength > this.limits.maxBodyBytes) {
+    if (Number.isFinite(declaredLength) && declaredLength > limits.maxBodyBytes) {
       fail(new SafeFetchError(SAFE_FETCH_ERROR_CODE.TooLarge, 'Response is too large'));
       return;
     }
@@ -297,7 +304,7 @@ export class SafeFetcherService {
         return;
       }
       received += chunk.length;
-      if (received > this.limits.maxBodyBytes) {
+      if (received > limits.maxBodyBytes) {
         fail(new SafeFetchError(SAFE_FETCH_ERROR_CODE.TooLarge, 'Response is too large'));
         return;
       }
