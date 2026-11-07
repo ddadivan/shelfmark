@@ -8,11 +8,9 @@ import {
 } from '@angular/core';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import {
-  PreloadAllModules,
   provideRouter,
   withComponentInputBinding,
   withInMemoryScrolling,
-  withPreloading,
   withRouterConfig,
 } from '@angular/router';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
@@ -31,7 +29,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(
       appRoutes,
       withComponentInputBinding(),
-      withPreloading(PreloadAllModules),
       withRouterConfig({ paramsInheritanceStrategy: 'always' }),
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
     ),

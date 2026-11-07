@@ -8,6 +8,11 @@
   color: var(--text);
 }
 
+// Reserves the space of the deferred sections, so nothing below the hero jumps when they arrive.
+.landing__placeholder {
+  min-height: 100dvh;
+}
+
 .landing__about {
   @include landing.wrap;
 

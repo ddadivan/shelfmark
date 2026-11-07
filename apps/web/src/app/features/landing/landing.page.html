@@ -1,11 +1,18 @@
 <app-landing-header />
 <main class="landing">
   <app-landing-hero />
+  <!-- Below the fold: loaded when the browser is idle, so the first paint ships less JS. -->
+  @defer (on idle) {
   <app-landing-before-after />
   <div class="landing__about">
     <app-landing-why />
     <app-landing-built />
   </div>
   <app-landing-finale />
+  } @placeholder {
+  <div class="landing__placeholder"></div>
+  }
 </main>
+@defer (on idle) {
 <app-landing-footer />
+}
