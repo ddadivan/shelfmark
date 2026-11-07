@@ -1,0 +1,238 @@
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  LINK_LIMIT,
+  normalizeTagName,
+  normalizeUrl,
+  TAG_LIMIT,
+  type CreateLinkRequest,
+  type LinkResponse,
+  type OpenLinkResponse,
+  type UpdateLinkRequest,
+} from '@shelfmark/contracts';
+import { FoldersService } from '../folders/folders.service';
+import { Prisma } from '../generated/prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
+import { TAG_ERROR_MESSAGE } from '../tags/models/tag-error-message.const';
+import { TagsService } from '../tags/tags.service';
+import { LinkPreviewService } from './link-preview.service';
+import type { CreateLinkResult } from './models/create-link-result.interface';
+import { LINK_ERROR_MESSAGE } from './models/link-error-message.const';
+import { LINK_INCLUDE } from './models/link-include.const';
+import type { LinkDbClient } from './models/link-db-client.type';
+import { toLinkResponse } from './to-link-response';
+
+const UNIQUE_VIOLATION = 'P2002';
+const FOREIGN_KEY_VIOLATION = 'P2003';
+const RECORD_NOT_FOUND = 'P2025';
+
+function hasCode(error: unknown, code: string): boolean {
+  return error instanceof Prisma.PrismaClientKnownRequestError && error.code === code;
+}
+
+/** `null` and blank text both mean "no note". */
+function noteOrNull(note: string | null | undefined): string | null {
+  return note === undefined || note === null || note.trim() === '' ? null : note;
+}
+
+/** The title when the page gave none: the URL, cut to the title limit. */
+function titleOrUrl(title: string, url: string): string {
+  const clean = title.trim();
+  return (clean === '' ? url : clean).slice(0, LINK_LIMIT.TitleMax);
+}
+
+/**
+ * Writes of the links API. Locks are always taken in the order `folders:` then `tags:` (ADR 0033);
+ * the page fetch of a create runs before the transaction, never inside it.
+ */
+@Injectable()
+export class LinksWriteService {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly folders: FoldersService,
+    private readonly tags: TagsService,
+    private readonly previews: LinkPreviewService,
+  ) {}
+
+  async create(userId: string, request: CreateLinkRequest): Promise<CreateLinkResult> {
+    const normalizedUrl = this.normalize(request.url);
+    this.assertTagNames(request.tags);
+    const key = request.idempotencyKey;
+    if (key !== undefined) {
+      // Cheap replay check first: a retry must not fetch the page again.
+      const replay = await this.findByKey(this.prisma, userId, key);
+      if (replay) return { link: replay, created: false };
+    }
+
+    let title = request.title;
+    let faviconSourceUrl = request.faviconUrl ?? null;
+    let imageSourceUrl = request.imageUrl ?? null;
+    if (title === undefined) {
+      const { preview, fetched } = await this.previews.load(request.url);
+      title = titleOrUrl(preview.title, request.url);
+      if (fetched) {
+        faviconSourceUrl ??= preview.faviconUrl;
+        imageSourceUrl ??= preview.imageUrl;
+      }
+    }
+    const finalTitle = title;
+
+    try {
+      return await this.prisma.$transaction(async (tx) => {
+        // Folder lock first: it serializes this insert against folder moves and deletes and makes the
+        // per-user count below exact. Tags are locked inside `resolveNames`, after it.
+        await this.folders.lockTree(tx, userId);
+        if (key !== undefined) {
+          const replay = await this.findByKey(tx, userId, key);
+          if (replay) return { link: replay, created: false };
+        }
+        if (request.folderId !== undefined) {
+          await this.requireFolder(tx, userId, request.folderId);
+        }
+        const total = await tx.link.count({ where: { userId } });
+        if (total >= LINK_LIMIT.PerUserMax) {
+          throw new ConflictException(LINK_ERROR_MESSAGE.LimitReached);
+        }
+        const tagIds = await this.tags.resolveNames(userId, request.tags ?? [], tx);
+        const row = await tx.link.create({
+          data: {
+            userId,
+            folderId: request.folderId ?? null,
+            url: request.url,
+            normalizedUrl,
+            title: finalTitle,
+            titleSortKey: finalTitle.toLowerCase(),
+            note: noteOrNull(request.note),
+            faviconSourceUrl,
+            imageSourceUrl,
+            idempotencyKey: key ?? null,
+            tags: { create: tagIds.map((tagId) => ({ tagId })) },
+          },
+          include: LINK_INCLUDE,
+        });
+        return { link: toLinkResponse(row), created: true };
+      });
+    } catch (error) {
+      if (key !== undefined && hasCode(error, UNIQUE_VIOLATION)) {
+        // A concurrent request with the same key won: answer with its link.
+        const replay = await this.findByKey(this.prisma, userId, key);
+        if (replay) return { link: replay, created: false };
+      }
+      throw this.mapVanished(error);
+    }
+  }
+
+  async update(userId: string, id: string, request: UpdateLinkRequest): Promise<LinkResponse> {
+    const data = this.updateData(request);
+    this.assertTagNames(request.tags);
+    try {
+      return await this.prisma.$transaction(async (tx) => {
+        if (typeof request.folderId === 'string') {
+          await this.folders.lockTree(tx, userId);
+          await this.requireFolder(tx, userId, request.folderId);
+        }
+        const current = await tx.link.findFirst({ where: { id, userId }, select: { id: true } });
+        if (!current) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
+
+        if (request.tags !== undefined) {
+          // Held until commit, so a merge or a concurrent tag write cannot interleave with the swap.
+          await this.tags.lockUserTags(tx, userId);
+          const tagIds = await this.tags.resolveNames(userId, request.tags, tx);
+          await tx.linkTag.deleteMany({ where: { linkId: id } });
+          await tx.linkTag.createMany({ data: tagIds.map((tagId) => ({ linkId: id, tagId })) });
+        }
+        const touched = Object.keys(data).length > 0 || request.tags !== undefined;
+        const row = await tx.link.update({
+          where: { id, userId },
+          data: touched ? { ...data, updatedAt: new Date() } : data,
+          include: LINK_INCLUDE,
+        });
+        return toLinkResponse(row);
+      });
+    } catch (error) {
+      throw this.mapVanished(error);
+    }
+  }
+
+  /** Records an open without touching `updatedAt` (an open is not an edit). */
+  async open(userId: string, id: string): Promise<OpenLinkResponse> {
+    const touched = await this.prisma.$executeRaw`
+      UPDATE links SET last_opened_at = date_trunc('milliseconds', now())
+      WHERE id = ${id}::uuid AND user_id = ${userId}::uuid`;
+    if (touched === 0) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
+    const row = await this.prisma.link.findFirst({ where: { id, userId }, include: LINK_INCLUDE });
+    if (!row) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
+    return toLinkResponse(row);
+  }
+
+  async remove(userId: string, id: string): Promise<void> {
+    const result = await this.prisma.link.deleteMany({ where: { id, userId } });
+    if (result.count === 0) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
+  }
+
+  /** The columns a PATCH changes; absent fields stay untouched. */
+  private updateData(request: UpdateLinkRequest): Prisma.LinkUncheckedUpdateInput {
+    const data: Prisma.LinkUncheckedUpdateInput = {};
+    if (request.url !== undefined) {
+      data.url = request.url;
+      data.normalizedUrl = this.normalize(request.url);
+      // The old hints described the old page.
+      data.faviconSourceUrl = null;
+      data.imageSourceUrl = null;
+    }
+    if (request.title !== undefined) {
+      data.title = request.title;
+      data.titleSortKey = request.title.toLowerCase();
+    }
+    if (request.note !== undefined) data.note = noteOrNull(request.note);
+    if (request.folderId !== undefined) data.folderId = request.folderId;
+    if (request.isFavorite !== undefined) data.isFavorite = request.isFavorite;
+    return data;
+  }
+
+  /** The normalized URL must fit its column; percent-encoding can make it longer than the input. */
+  private normalize(url: string): string {
+    const normalized = normalizeUrl(url);
+    if (normalized.length > LINK_LIMIT.UrlMax) {
+      throw new BadRequestException(LINK_ERROR_MESSAGE.UrlTooLong);
+    }
+    return normalized;
+  }
+
+  /** 404 for a foreign or missing folder: they look the same. */
+  private requireFolder(tx: LinkDbClient, userId: string, folderId: string): Promise<void> {
+    return this.folders.requireOwned(tx, userId, folderId);
+  }
+
+  /** Rejects an over-long tag name before any page is fetched or transaction opened. */
+  private assertTagNames(names: readonly string[] | undefined): void {
+    if (names?.some((name) => normalizeTagName(name).length > TAG_LIMIT.NameMax)) {
+      throw new BadRequestException(TAG_ERROR_MESSAGE.NameTooLong);
+    }
+  }
+
+  private async findByKey(
+    db: LinkDbClient,
+    userId: string,
+    key: string,
+  ): Promise<LinkResponse | null> {
+    const row = await db.link.findFirst({
+      where: { userId, idempotencyKey: key },
+      include: LINK_INCLUDE,
+    });
+    return row ? toLinkResponse(row) : null;
+  }
+
+  /** A row or tag removed by a concurrent request between the lookup and the write. */
+  private mapVanished(error: unknown): unknown {
+    if (hasCode(error, RECORD_NOT_FOUND)) return new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
+    if (hasCode(error, FOREIGN_KEY_VIOLATION)) {
+      return new ConflictException(LINK_ERROR_MESSAGE.ChangedMeanwhile);
+    }
+    return error;
+  }
+}

@@ -204,7 +204,7 @@ export class TagsService {
    * Serializes tag creation per user until the transaction ends, so the count-then-insert cap
    * check cannot be raced. The key is namespaced, so it never blocks the folders lock.
    */
-  private async lockUserTags(db: TagDbClient, userId: string): Promise<void> {
+  async lockUserTags(db: TagDbClient, userId: string): Promise<void> {
     await db.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${TAG_LOCK_PREFIX + userId}, 0))`;
   }
 
