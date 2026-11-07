@@ -12,6 +12,7 @@ export const PRODUCTION_BUNDLE_MARKERS = [
   'patch-fails.example',
   'delete-fails.example',
   'Mock: update failed',
+  'Mock: get failed',
   'Mock: delete failed',
   'Mock: list failed',
   'sm-mock-links-scenario',

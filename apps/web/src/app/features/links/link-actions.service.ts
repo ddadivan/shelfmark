@@ -1,20 +1,24 @@
-import { inject, Service } from '@angular/core';
+import { inject, Injector, Service } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import type { LinkResponse } from '@shelfmark/contracts';
+import { firstValueFrom } from 'rxjs';
 import { DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { LinksStore } from '../../stores/links.store';
 import { AddLinkDialogService } from './add-link/add-link-dialog.service';
 import { ADD_LINK_ACTION } from './models/add-link-action.const';
+import { LINKS_API } from './models/links-api.const';
 import { UndoToastService } from './undo-toast.service';
 
 /**
  * What a user can do with a link from the feed, the recent panel and the header: open, favorite,
- * delete (confirm, optimistic removal, Undo) and add. Texts come through Transloco here, so
+ * edit, delete (confirm, optimistic removal, Undo) and add. Texts come through Transloco here, so
  * the components only emit.
  */
 @Service()
 export class LinkActionsService {
   private readonly store = inject(LinksStore);
+  // Resolved on use: the shell injects this service where specs provide no `LINKS_API`.
+  private readonly injector = inject(Injector);
   private readonly dialogs = inject(DialogService);
   private readonly toasts = inject(ToastService);
   private readonly undoToast = inject(UndoToastService);
@@ -63,6 +67,30 @@ export class LinkActionsService {
     if (result?.action === ADD_LINK_ACTION.Saved) {
       this.store.addSaved(result.link);
       this.toasts.show({ kind: TOAST_KIND.Success, text: this.t('links.item.saved') });
+    } else if (result?.action === ADD_LINK_ACTION.OpenExisting) {
+      // "Open saved": the already saved link opens in its edit dialog.
+      await this.openSaved(result.existing.id);
+    }
+  }
+
+  /** Opens the add-link dialog in edit mode; a change replaces the link in the feed. */
+  async edit(link: LinkResponse): Promise<void> {
+    const result = await this.addLinkDialog.open({ link });
+    if (result?.action === ADD_LINK_ACTION.Saved) {
+      this.store.applyEdit(result.link);
+      this.toasts.show({ kind: TOAST_KIND.Success, text: this.t('links.item.edited') });
+    } else if (result?.action === ADD_LINK_ACTION.Delete) {
+      await this.delete(result.link);
+    }
+  }
+
+  private async openSaved(id: string): Promise<void> {
+    try {
+      const link =
+        this.store.entityMap()[id] ?? (await firstValueFrom(this.injector.get(LINKS_API).get(id)));
+      await this.edit(link);
+    } catch {
+      this.toasts.show({ kind: TOAST_KIND.Error, text: this.t('links.item.openFailed') });
     }
   }
 

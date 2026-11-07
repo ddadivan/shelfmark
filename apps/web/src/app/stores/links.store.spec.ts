@@ -350,6 +350,24 @@ describe('LinksStore', () => {
       expect(ids(store)).not.toContain('id-9');
     });
 
+    it('removes an edited link that no longer belongs in Unsorted', () => {
+      const { store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.Unsorted });
+
+      store.applyEdit(link(2, { folderId: 'f1' }));
+
+      expect(ids(store)).not.toContain('id-2');
+    });
+
+    it('keeps an unfavorited link in Favorites until the next load', () => {
+      const { store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.Favorites });
+
+      store.applyEdit(link(2, { isFavorite: false }));
+
+      expect(ids(store)).toContain('id-2');
+    });
+
     it('applies an edit from the server', () => {
       const { store } = setup();
       store.setFilter({ scope: LINKS_SCOPE.All });
