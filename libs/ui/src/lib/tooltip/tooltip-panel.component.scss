@@ -52,6 +52,6 @@
   &__kbd {
     margin-inline-start: var(--space-2);
     font: inherit;
-    opacity: 0.7;
+    color: color-mix(in srgb, var(--on-primary) 70%, var(--primary));
   }
 }

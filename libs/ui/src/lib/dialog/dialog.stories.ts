@@ -101,7 +101,7 @@ const confirmText: ConfirmDialogConfig = {
 
 const destructiveText: ConfirmDialogConfig = {
   title: 'Delete folder “Work”?',
-  message: 'It has 34 links and 2 subfolders. This cannot be undone.',
+  message: 'It has 34 links and 2 subfolders. What should happen to the links?',
   confirmLabel: 'Delete folder',
   cancelLabel: 'Cancel',
   closeLabel: 'Close',
@@ -273,7 +273,7 @@ const frame = (theme: Theme) => `
     <p class="dst-hint">${theme} theme: static panels (open the stories above for the live dialog)</p>
     <div class="dst-scrim">
       <ui-dialog title="Delete folder “Work”?" closeLabel="Close">
-        <p class="dst-text">It has 34 links and 2 subfolders. This cannot be undone.</p>
+        <p class="dst-text">It has 34 links and 2 subfolders. What should happen to the links?</p>
         <ui-button slot="footer">Cancel</ui-button>
         <ui-button slot="footer" variant="danger">Delete folder</ui-button>
       </ui-dialog>
