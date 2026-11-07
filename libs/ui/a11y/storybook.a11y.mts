@@ -5,7 +5,8 @@ import { THEME, THEME_ATTRIBUTE } from '../src/lib/theme';
 
 // Runs axe-core (including colour contrast) on every story of the built Storybook, in a real
 // browser, under the production CSP from libs/ui/vercel.json (see serve-storybook.mjs).
-// Each story is checked in the light and the dark theme.
+// Each story and each docs page (auto-generated component docs and the Foundations pages) is
+// checked in the light and the dark theme.
 
 interface IndexEntry {
   readonly id: string;
@@ -25,12 +26,20 @@ interface AxeResult {
 const axePath = createRequire(import.meta.url).resolve('axe-core/axe.min.js');
 const themes = Object.values(THEME);
 
+// Storybook internals that cannot be changed from this repository, excluded from the docs pages
+// only. Our components and our docs content are never excluded; the props table and the controls
+// are checked and re-skinned with tokens in .storybook/foundations.scss instead.
+const DOCS_AXE_EXCLUDES: readonly string[] = [
+  // The object / array control (react-json-tree) renders <li> rows directly in a <div>, which
+  // fails the `listitem` rule. It is Storybook's JSON editor, not our markup.
+  '.rejt-tree',
+];
+
 function loadStories(): IndexEntry[] {
   const file = new URL('../storybook-static/index.json', import.meta.url);
   const index = JSON.parse(readFileSync(file, 'utf8')) as { entries: Record<string, IndexEntry> };
   return Object.values(index.entries).filter(
-    (entry) =>
-      entry.type === 'story' || (entry.type === 'docs' && entry.title.startsWith('Foundations/')),
+    (entry) => entry.type === 'story' || entry.type === 'docs',
   );
 }
 
@@ -69,7 +78,15 @@ for (const story of stories) {
         `/iframe.html?id=${story.id}&viewMode=${story.type === 'docs' ? 'docs' : 'story'}&globals=theme:${theme}`,
       );
       await page.waitForSelector('body.sb-show-main:not(.sb-show-errordisplay)');
-      if (story.type === 'docs') await page.waitForSelector('#storybook-docs .sbdocs');
+      if (story.type === 'docs') {
+        await page.waitForSelector('#storybook-docs .sbdocs');
+        // A docs page renders its stories inline, each one asynchronously: wait until every
+        // story block has rendered its component.
+        await page.waitForFunction(
+          `[...document.querySelectorAll('#storybook-docs [data-story-block]')].every(
+            (block) => block.querySelector('[data-sb-story-uid]')?.childElementCount)`,
+        );
+      }
       // The theme decorator runs after the first render: wait for it, then for fonts and for any
       // running colour transition, so axe never reads half-way colours.
       await page.waitForFunction(
@@ -81,6 +98,7 @@ for (const story of stories) {
           .map((a) => a.finished.catch(() => undefined))))`,
       );
       await page.addScriptTag({ path: axePath });
+      const excludes = story.type === 'docs' ? DOCS_AXE_EXCLUDES : [];
       const selector = story.type === 'docs' ? '#storybook-docs' : '#storybook-root';
       // Entry animations and ripples can still be mid-fade on a slow runner, and axe blends the
       // half-way colours. A real violation is stable and still fails after the polling window.
@@ -89,10 +107,11 @@ for (const story of stories) {
           async () => {
             const results = await page.evaluate<AxeResult>(
               `(async () => {
+                const context = { include: [document.querySelector(${JSON.stringify(selector)})], exclude: ${JSON.stringify(excludes)}.map((selector) => [selector]) };
                 // The Storybook a11y addon runs its own axe on render; axe allows one run at a time.
                 for (let attempt = 0; attempt < 25; attempt++) {
                   try {
-                    return await axe.run(document.querySelector(${JSON.stringify(selector)}), {
+                    return await axe.run(context, {
                       runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'] },
                     });
                   } catch (error) {

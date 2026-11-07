@@ -185,7 +185,7 @@ Onest (variable) is self-hosted through `@fontsource-variable/onest` (SIL OFL 1.
 
 - `npx nx storybook ui` serves, `npx nx build-storybook ui` builds (Vite, `@storybook/angular-vite`). The toolbar switches light and dark (`data-theme` on `html`).
 - `Foundations/*` docs pages (`src/foundations/*.stories.ts`): colours and shadows in both themes side by side, type styles, spacing, radii, the Motion tables with live demos (`animate.enter` / `animate.leave`), breakpoints and focus. Page styles live in `.storybook/foundations.scss`; token lists in `src/foundations/models/`.
-- Published as the Vercel project `shelfmark-ui` (`libs/ui/vercel.json`, ADR 0023, `docs/SETUP.md` 5.7). `nx test-storybook ui` builds it, serves `storybook-static` with the headers from `vercel.json` and runs axe-core (including colour contrast) on every story in both themes in Chromium; a CSP violation fails the run.
+- Published as the Vercel project `shelfmark-ui` (`libs/ui/vercel.json`, ADR 0023, `docs/SETUP.md` 5.7). `nx test-storybook ui` builds it, serves `storybook-static` with the headers from `vercel.json` and runs axe-core (including colour contrast) on every story and every docs page (the auto-generated component docs and the `Foundations/*` pages, all `type: "docs"` entries of `index.json`) in both themes in Chromium; a CSP violation fails the run. A docs page is checked once all its inline stories have rendered. The only exclusion is `.rejt-tree` (Storybook's JSON control, `<li>` rows without a list parent), listed with its reason in `DOCS_AXE_EXCLUDES` in `a11y/storybook.a11y.mts`; never exclude our components. Storybook paints its docs chrome (props table, boolean switch) with a fixed light theme, so `.storybook/foundations.scss` re-skins those parts with tokens; when a new docs page fails on `.docblock-argstable` or a control, fix it there.
 - Every component has a story file with one story per variant and state plus an "All variants" story that shows both themes. The a11y addon runs axe in a real browser (including colour contrast) and fails the story on violations.
 
 ## Tests
@@ -198,7 +198,7 @@ Onest (variable) is self-hosted through `@fontsource-variable/onest` (SIL OFL 1.
 ```bash
 npx nx storybook ui
 npx nx build-storybook ui
-npx nx test-storybook ui           # axe on every story, light and dark, under the production CSP (libs/ui/a11y); it never reuses a running server, so parallel runs need different `STORYBOOK_PORT` values (default 6007)
+npx nx test-storybook ui           # axe on every story and docs page, light and dark, under the production CSP (libs/ui/a11y); it never reuses a running server, so parallel runs need different `STORYBOOK_PORT` values (default 6007)
 npx nx test ui --coverage
 npx nx run-many -t lint typecheck test build -p ui
 npm run lint:styles
