@@ -157,7 +157,7 @@ const variants = (theme: Theme) => `
         <ui-menu-item icon="moon" type="radio">Dark</ui-menu-item>
         <ui-menu-item icon="monitor" type="radio" selected>System</ui-menu-item>
         <ui-menu-separator />
-        <ui-menu-item icon="download" [disabled]="true" shortcut="JSON">Export all links</ui-menu-item>
+        <ui-menu-item icon="download" [disabled]="true" shortcut="JSON or HTML">Export all links</ui-menu-item>
         <ui-menu-item icon="logout" danger>Sign out</ui-menu-item>
       </ui-menu>
     </div>

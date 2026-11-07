@@ -1,0 +1,50 @@
+<main class="sign-in">
+  <div class="sign-in__panel">
+    <ui-logo />
+    <div class="sign-in__intro">
+      <p class="sign-in__eyebrow">{{ 'auth.signIn.eyebrow' | transloco }}</p>
+      <h1 class="sign-in__title">{{ 'auth.signIn.title' | transloco }}</h1>
+      <p class="sign-in__subtitle">{{ 'auth.signIn.subtitle' | transloco }}</p>
+    </div>
+
+    @if (reasonKey(); as key) {
+    <ui-notice [kind]="NOTICE_KIND.Warning">{{ key | transloco }}</ui-notice>
+    } @if (auth.failed()) {
+    <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'auth.signIn.failed' | transloco }}</ui-notice>
+    }
+
+    <div class="sign-in__actions">
+      <ui-button
+        class="sign-in__button"
+        size="lg"
+        [loading]="isLoading(AUTH_PROVIDER.Google)"
+        [disabled]="isLocked(AUTH_PROVIDER.Google)"
+        (click)="signIn(AUTH_PROVIDER.Google)"
+      >
+        {{ 'auth.signIn.google' | transloco }}
+      </ui-button>
+      <ui-button
+        class="sign-in__button"
+        size="lg"
+        [loading]="isLoading(AUTH_PROVIDER.GitHub)"
+        [disabled]="isLocked(AUTH_PROVIDER.GitHub)"
+        (click)="signIn(AUTH_PROVIDER.GitHub)"
+      >
+        {{ 'auth.signIn.github' | transloco }}
+      </ui-button>
+      <ui-button
+        class="sign-in__button"
+        variant="ghost"
+        size="lg"
+        [loading]="isLoading(AUTH_DEMO)"
+        [disabled]="isLocked(AUTH_DEMO)"
+        (click)="signInDemo()"
+      >
+        {{ 'auth.signIn.demo' | transloco }}
+      </ui-button>
+    </div>
+
+    <!-- Plain text until the /privacy page exists; then "Privacy policy" becomes a link. -->
+    <p class="sign-in__privacy">{{ 'auth.signIn.privacy' | transloco }}</p>
+  </div>
+</main>

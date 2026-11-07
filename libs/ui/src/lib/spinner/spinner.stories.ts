@@ -23,7 +23,7 @@ export const Small: Story = { args: { size: SPINNER_SIZE.Sm } };
 
 export const Large: Story = { args: { size: SPINNER_SIZE.Lg } };
 
-/** With `label` the spinner is an indeterminate `progressbar`; without it it is decorative. */
+/** With `label` the spinner is a `role="status"` region; without it it is decorative. */
 export const Labelled: Story = { args: { label: 'Loading links' } };
 
 /** Every size in both themes, independent of the toolbar. */
