@@ -1,12 +1,16 @@
 import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { provideTransloco } from '@jsverse/transloco';
+import { AUTH_PROVIDER, type AuthUser } from '@shelfmark/contracts';
+import { TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { FoldersStore } from '../../stores/folders.store';
 import { LinksStore } from '../../stores/links.store';
 import { SIGN_OUT_FLUSH_TIMEOUT_MS } from './models/sign-out-flush-timeout.const';
+import { AppTranslocoLoader } from '../i18n/app-transloco.loader';
+import { translocoConfig } from '../i18n/transloco.config';
 import { AUTH_API } from './auth-api.token';
 import { AuthStore } from './auth.store';
 import { AuthApi } from './models/auth-api.interface';
-import { AUTH_PROVIDER } from './models/auth-provider.const';
-import { AuthUser } from './models/auth-user.interface';
 
 const USER: AuthUser = {
   id: 'u1',
@@ -24,7 +28,12 @@ function setup(overrides: Partial<AuthApi> = {}) {
     signOut: vi.fn(() => Promise.resolve()),
     ...overrides,
   };
-  TestBed.configureTestingModule({ providers: [{ provide: AUTH_API, useValue: api }] });
+  TestBed.configureTestingModule({
+    providers: [
+      { provide: AUTH_API, useValue: api },
+      provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
+    ],
+  });
   return { api, store: TestBed.inject(AuthStore) };
 }
 
@@ -72,7 +81,7 @@ describe('AuthStore', () => {
     expect(store.pending()).toBe(AUTH_PROVIDER.Google);
     await done;
 
-    expect(api.signIn).toHaveBeenCalledWith(AUTH_PROVIDER.Google);
+    expect(api.signIn).toHaveBeenCalledWith(AUTH_PROVIDER.Google, null);
     expect(store.pending()).toBeNull();
     expect(store.user()).toEqual(USER);
   });
@@ -112,14 +121,61 @@ describe('AuthStore', () => {
     expect(api.signIn).toHaveBeenCalledTimes(1);
   });
 
-  it('clears the user on sign-out, even when the API fails', async () => {
+  it('keeps the user signed in and shows an error when sign-out fails', async () => {
     const { store } = setup({ signOut: vi.fn(() => Promise.reject(new Error('down'))) });
+    const show = vi.spyOn(TestBed.inject(ToastService), 'show');
+    const links = vi.spyOn(TestBed.inject(LinksStore), 'reset');
     await store.signIn(AUTH_PROVIDER.Google);
 
-    await store.signOut();
+    const signedOut = await store.signOut();
+
+    expect(signedOut).toBe(false);
+    expect(store.user()).toEqual(USER);
+    expect(store.isSignedIn()).toBe(true);
+    expect(links).not.toHaveBeenCalled();
+    expect(show).toHaveBeenCalledWith(expect.objectContaining({ kind: TOAST_KIND.Error }));
+  });
+
+  it('does not leave the page when sign-out fails', async () => {
+    const { store } = setup({ signOut: vi.fn(() => Promise.reject(new Error('down'))) });
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl');
+    await store.signIn(AUTH_PROVIDER.Google);
+
+    await store.signOutAndLeave();
+
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('clears the user after a confirmed sign-out', async () => {
+    const { store } = setup();
+    await store.signIn(AUTH_PROVIDER.Google);
+
+    expect(await store.signOut()).toBe(true);
 
     expect(store.user()).toBeNull();
     expect(store.isSignedIn()).toBe(false);
+  });
+
+  it('passes the return URL, stays a guest and keeps pending while the browser leaves', async () => {
+    const { api, store } = setup({ signIn: vi.fn(() => Promise.resolve(null)) });
+
+    await store.signIn(AUTH_PROVIDER.GitHub, '/links');
+
+    expect(api.signIn).toHaveBeenCalledWith(AUTH_PROVIDER.GitHub, '/links');
+    expect(store.isSignedIn()).toBe(false);
+    expect(store.pending()).toBe(AUTH_PROVIDER.GitHub);
+    expect(store.failed()).toBe(false);
+  });
+
+  it('resets pending when the page comes back from the back/forward cache', async () => {
+    const { store } = setup({ signIn: vi.fn(() => Promise.resolve(null)) });
+    await store.signIn(AUTH_PROVIDER.GitHub, null);
+
+    globalThis.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: false }));
+    expect(store.pending()).toBe(AUTH_PROVIDER.GitHub);
+
+    globalThis.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }));
+    expect(store.pending()).toBeNull();
   });
 
   it('sends waiting deletes before the session ends, then forgets the links of the user on sign-out', async () => {

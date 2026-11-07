@@ -1,6 +1,16 @@
-import { computed, inject } from '@angular/core';
+import { computed, inject, Injector } from '@angular/core';
 import { Router } from '@angular/router';
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import { TranslocoService } from '@jsverse/transloco';
+import { TOAST_KIND, ToastService } from '@shelfmark/ui';
+import {
+  patchState,
+  signalStore,
+  withComputed,
+  withHooks,
+  withMethods,
+  withState,
+} from '@ngrx/signals';
+import type { AuthProvider, AuthUser } from '@shelfmark/contracts';
 import { FoldersStore } from '../../stores/folders.store';
 import { LinksStore } from '../../stores/links.store';
 import { TagsStore } from '../../stores/tags.store';
@@ -8,9 +18,7 @@ import { AUTH_API } from './auth-api.token';
 import { SIGN_OUT_FLUSH_TIMEOUT_MS } from './models/sign-out-flush-timeout.const';
 import { AUTH_ROUTE } from './models/auth-routes.const';
 import { AUTH_DEMO } from './models/auth-pending.const';
-import { AuthProvider } from './models/auth-provider.type';
 import { AuthState } from './models/auth-state.interface';
-import { AuthUser } from './models/auth-user.interface';
 
 const initialState: AuthState = { user: null, loaded: false, pending: null, failed: false };
 
@@ -32,19 +40,26 @@ export const AuthStore = signalStore(
       links = inject(LinksStore),
       folders = inject(FoldersStore),
       tags = inject(TagsStore),
+      injector = inject(Injector),
     ) => {
       let loading: Promise<void> | null = null;
 
       async function run(
         pending: AuthState['pending'],
-        action: () => Promise<AuthUser>,
+        action: () => Promise<AuthUser | null>,
       ): Promise<void> {
         if (store.pending() !== null) {
           return;
         }
         patchState(store, { pending, failed: false });
         try {
-          patchState(store, { user: await action(), loaded: true, pending: null });
+          const user = await action();
+          if (user === null) {
+            // The browser is on its way to the provider: keep `pending` (spinner, locked
+            // buttons) until the page unloads. `pageshow` resets it if the page is restored.
+            return;
+          }
+          patchState(store, { user, loaded: true, pending: null });
         } catch {
           patchState(store, { pending: null, failed: true });
         }
@@ -65,23 +80,27 @@ export const AuthStore = signalStore(
       }
 
       /**
-       * Clears the session; the mock cannot fail, and a failing API still ends the local session.
-       * #64: clear local state only after the server confirms, and surface failures.
+       * Ends the session. Local state is cleared only after the server confirmed; on failure the
+       * user stays signed in and sees an error. Resolves with whether the user signed out.
        */
-      async function signOut(): Promise<void> {
+      async function signOut(): Promise<boolean> {
+        // Before the session ends, so deletes still waiting for their Undo window can be sent;
+        // never longer than the timeout.
+        await flushWithin(SIGN_OUT_FLUSH_TIMEOUT_MS);
         try {
-          // Before the session ends, so deletes still waiting for their Undo window can be sent;
-          // never longer than the timeout, and a failure must not keep the user signed in.
-          await flushWithin(SIGN_OUT_FLUSH_TIMEOUT_MS);
           await api.signOut();
         } catch {
-          // The local session ends either way; the server session expires on its own.
-        } finally {
-          links.reset();
-          folders.reset();
-          tags.reset();
-          patchState(store, { user: null, loaded: true, failed: false });
+          injector.get(ToastService).show({
+            kind: TOAST_KIND.Error,
+            text: injector.get(TranslocoService).translate('auth.signOutFailed'),
+          });
+          return false;
         }
+        links.reset();
+        folders.reset();
+        tags.reset();
+        patchState(store, { user: null, loaded: true, failed: false });
+        return true;
       }
 
       return {
@@ -101,15 +120,28 @@ export const AuthStore = signalStore(
             .finally(() => (loading = null));
           return loading;
         },
-        signIn: (provider: AuthProvider) => run(provider, () => api.signIn(provider)),
+        signIn: (provider: AuthProvider, returnUrl: string | null = null) =>
+          run(provider, () => api.signIn(provider, returnUrl)),
         signInDemo: () => run(AUTH_DEMO, () => api.signInDemo()),
         signOut,
-        /** Signs out, then goes to the sign-in screen. */
+        /** Signs out, then goes to the sign-in screen (not when sign-out failed). */
         async signOutAndLeave(): Promise<void> {
-          await signOut();
-          await router.navigateByUrl(AUTH_ROUTE.SignIn);
+          if (await signOut()) {
+            await router.navigateByUrl(AUTH_ROUTE.SignIn);
+          }
         },
       };
     },
   ),
+  withHooks((store) => ({
+    onInit(): void {
+      // Back from the provider through the back/forward cache: the page is restored as it was
+      // left, so a sign-in that was only starting must not stay pending.
+      globalThis.addEventListener?.('pageshow', (event: PageTransitionEvent) => {
+        if (event.persisted && store.pending() !== null) {
+          patchState(store, { pending: null });
+        }
+      });
+    },
+  })),
 );
