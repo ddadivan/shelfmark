@@ -12,6 +12,7 @@ import './menu-stories.scss';
 import './ripple-stories.scss';
 import './segmented-stories.scss';
 import './select-stories.scss';
+import './tag-input-stories.scss';
 import './toast-stories.scss';
 import './tooltip-stories.scss';
 import './tree-stories.scss';

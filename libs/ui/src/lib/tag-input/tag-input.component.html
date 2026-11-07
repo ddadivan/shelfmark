@@ -1,0 +1,93 @@
+<ui-field-shell
+  [controlId]="controlId"
+  [label]="label()"
+  [hint]="hint()"
+  [error]="message()"
+  [invalid]="showInvalid()"
+  [disabled]="disabled()"
+  (click)="onShellClick($event)"
+>
+  <div #box class="ui-tag-input__box" (mousedown)="onBoxMousedown($event)">
+    @for (tag of value(); track $index) {
+      <ui-chip
+        class="ui-tag-input__chip"
+        [attr.aria-disabled]="disabled() ? 'true' : null"
+        removable
+        [removeLabel]="chipLabel(tag)"
+        [disabled]="disabled()"
+        (removed)="onChipRemoved($index)"
+        >{{ tag }}</ui-chip
+      >
+    }
+    <input
+      #field
+      ngCombobox
+      #combobox="ngCombobox"
+      type="text"
+      class="ui-tag-input__input"
+      autocomplete="off"
+      spellcheck="false"
+      [id]="controlId"
+      [disabled]="disabled()"
+      [softDisabled]="false"
+      [readonly]="atLimit()"
+      [value]="query()"
+      (valueChange)="onQuery($event)"
+      (expandedChange)="onExpandedChange($event)"
+      [attr.placeholder]="inputPlaceholder() || null"
+      [attr.aria-required]="required() ? 'true' : null"
+      [attr.aria-invalid]="showInvalid() ? 'true' : null"
+      [attr.aria-describedby]="describedBy()"
+      (keydown)="onKeydown($event)"
+    />
+  </div>
+</ui-field-shell>
+
+<span class="ui-tag-input__status" role="status">{{ announcement() }}</span>
+
+<div
+  #popup
+  class="ui-tag-input__popup"
+  [class.ui-tag-input__popup--shown]="attached()"
+  (mousedown)="onPopupMousedown($event)"
+>
+  <ng-template ngComboboxPopup [combobox]="combobox">
+    <div
+      class="ui-tag-input__panel"
+      animate.enter="ui-tag-input--enter"
+      animate.leave="ui-tag-input--leave"
+    >
+      <div
+        ngComboboxWidget
+        ngListbox
+        #list="ngListbox"
+        class="ui-tag-input__list"
+        focusMode="activedescendant"
+        selectionMode="explicit"
+        tabindex="-1"
+        [attr.aria-label]="listName()"
+        [activeDescendant]="list.activeDescendant()"
+        [value]="noSelection"
+        (valueChange)="onListValue($event)"
+      >
+        @for (row of rows(); track row.key) {
+          <div
+            ngOption
+            uiRipple
+            class="ui-tag-input__option"
+            [class.ui-tag-input__option--create]="row.create"
+            [value]="row.key"
+            [label]="row.label"
+            [attr.aria-label]="row.countLabel ? row.label + ', ' + row.countLabel : null"
+          >
+            <ui-icon class="ui-tag-input__option-icon" [name]="rowIcon(row)" [size]="16" />
+            <span class="ui-tag-input__option-label">{{ row.label }}</span>
+            @if (row.countLabel) {
+              <span class="ui-tag-input__count">{{ row.countLabel }}</span>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </ng-template>
+</div>
