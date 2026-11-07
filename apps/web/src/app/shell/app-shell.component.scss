@@ -38,13 +38,19 @@
   }
 }
 
-.shell__add {
+.shell__add,
+.shell__add-icon {
   margin-inline: var(--space-4) auto;
 }
 
-// On a phone only the icon shows; the button keeps its name through `aria-label`.
-.shell__search-label {
+.shell__add {
   @include phone {
+    display: none;
+  }
+}
+
+.shell__add-icon {
+  @include tablet-up {
     display: none;
   }
 }

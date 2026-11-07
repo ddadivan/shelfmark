@@ -100,6 +100,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
         test.skip(isMobile, 'no keyboard on the phone project');
         await page.goto('/links');
 
+        await expect(searchButton(page)).toBeVisible();
         await page.keyboard.press('Control+k');
         await searchField(page).fill('pasta');
         await expect(page.getByRole('option', { name: new RegExp(PASTA_TITLE) })).toBeVisible();

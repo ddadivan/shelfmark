@@ -9,16 +9,25 @@
   >
     {{ 'shell.addLink' | transloco }}
   </ui-button>
+  <!-- The phone header has no room for the label: the same action as an icon. -->
+  <ui-button
+    class="shell__add-icon"
+    variant="primary"
+    size="sm"
+    iconOnly
+    iconLeft="add"
+    [ariaLabel]="'shell.addLink' | transloco"
+    (click)="actions.addLink()"
+  />
   <ui-button
     class="shell__search"
     variant="ghost"
     size="sm"
+    iconOnly
     iconLeft="search"
     [ariaLabel]="'shell.search' | transloco"
     (click)="search.open()"
-  >
-    <span class="shell__search-label">{{ 'shell.search' | transloco }}</span>
-  </ui-button>
+  />
   @if (auth.user(); as user) {
     <div class="shell__user">
       @if (recentToggleLabel(); as label) {
