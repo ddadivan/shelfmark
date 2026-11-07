@@ -1,8 +1,9 @@
 <ui-progress-bar [active]="refetching()" [label]="'library.loading' | transloco" />
 <section class="library" [attr.aria-busy]="store.loading()">
+  @if (!folderMissing()) {
   <header class="library__toolbar">
     <div class="library__heading">
-      <h1 class="library__title">{{ titleKey() | transloco }}</h1>
+      <h1 class="library__title">{{ folder()?.name ?? (titleKey() | transloco) }}</h1>
       @if (showLinks()) {
       <p class="library__count">
         {{ (store.hasMore() ? 'library.countMore' : 'library.count') | transloco: { count:
@@ -20,13 +21,22 @@
     />
     }
   </header>
-
-  @if (store.error() && store.count() > 0) {
+  } @if (store.error() && store.count() > 0 && !folderMissing()) {
   <ui-notice kind="danger" class="library__notice">
     {{ 'library.refetchFailed' | transloco }}
     <ui-button size="sm" (click)="retry()">{{ 'library.error.retry' | transloco }}</ui-button>
   </ui-notice>
-  } @if (failed()) {
+  } @if (folderMissing()) {
+  <ui-empty-state
+    illustration="not-found"
+    [heading]="'library.folderNotFound.title' | transloco"
+    [text]="'library.folderNotFound.text' | transloco"
+  >
+    <ui-button variant="primary" (click)="showAll()">
+      {{ 'library.folderNotFound.action' | transloco }}
+    </ui-button>
+  </ui-empty-state>
+  } @else if (failed()) {
   <ui-empty-state
     illustration="offline"
     [heading]="'library.error.title' | transloco"
@@ -46,12 +56,12 @@
   </div>
   } } @else if (empty()) {
   <ui-empty-state
-    illustration="empty-feed"
-    [heading]="'library.empty.title' | transloco"
-    [text]="'library.empty.text' | transloco"
+    [illustration]="isFolder() ? 'empty-folder' : 'empty-feed'"
+    [heading]="emptyKey() + '.title' | transloco"
+    [text]="emptyKey() + '.text' | transloco"
   >
-    <ui-button variant="primary" iconLeft="add" (click)="actions.addLink()">
-      {{ 'library.empty.add' | transloco }}
+    <ui-button variant="primary" iconLeft="add" (click)="actions.addLink(addLinkData())">
+      {{ emptyKey() + '.add' | transloco }}
     </ui-button>
   </ui-empty-state>
   } @else if (showLinks()) { @if (ui.view() === UI_VIEW.List) {

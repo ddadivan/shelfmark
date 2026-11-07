@@ -20,4 +20,10 @@ export const PRODUCTION_BUNDLE_MARKERS = [
   'Note for article',
   '.example.com/articles/',
   '__e2e/add-link',
+  'Mock: folder create failed',
+  'Mock: folder update failed',
+  'Mock: folder delete failed',
+  'Fail on create',
+  'Fail on update',
+  'Fail on delete',
 ] as const;

@@ -1,0 +1,30 @@
+@use 'ui' as *;
+
+:host {
+  display: none;
+
+  // Below the tablet breakpoint there is no sidebar yet: the phone drawer is issue #97.
+  @include tablet-up {
+    display: block;
+    flex: none;
+    align-self: stretch;
+    width: rem(248px);
+    background: var(--surface);
+    border-inline-end: 1px solid var(--border);
+  }
+}
+
+.sidebar {
+  padding: var(--space-3);
+}
+
+.sidebar__error {
+  @include type(caption);
+
+  margin: var(--space-3) 0 0;
+  color: var(--text-muted);
+}
+
+.sidebar__new {
+  margin-top: var(--space-3);
+}

@@ -305,14 +305,112 @@
   "shell": {
     "accountMenu": "Account menu",
     "settings": "Settings",
-    "addLink": "Add link"
+    "addLink": "Add link",
+    "sidebar": {
+      "nav": "Library",
+      "tree": "Views and folders",
+      "folders": "Folders",
+      "newFolder": "New folder",
+      "folderActions": "Actions for {{name}}",
+      "folderMenu": "Folder actions",
+      "loadFailed": "Couldn't load your folders.",
+      "retry": "Try again",
+      "menu": {
+        "newSubfolder": "New subfolder",
+        "addLink": "Add link here",
+        "rename": "Rename",
+        "move": "Move to…",
+        "delete": "Delete folder…"
+      }
+    }
+  },
+  "folders": {
+    "dialog": {
+      "close": "Close",
+      "cancel": "Cancel"
+    },
+    "name": {
+      "label": "Name",
+      "placeholder": "For example, Reading list",
+      "required": "Enter a folder name",
+      "tooLong": "Use {{max}} characters or fewer"
+    },
+    "create": {
+      "title": "New folder",
+      "titleIn": "New folder in “{{parent}}”",
+      "action": "Create folder",
+      "saving": "Creating…",
+      "failed": "Couldn't create the folder. Try again.",
+      "done": "Folder created",
+      "limit": "You have reached the limit of {{max}} folders."
+    },
+    "rename": {
+      "title": "Rename folder",
+      "action": "Rename",
+      "saving": "Renaming…",
+      "failed": "Couldn't rename the folder. The old name is back."
+    },
+    "move": {
+      "title": "Move “{{name}}”",
+      "label": "Move to",
+      "topLevel": "Top level",
+      "searchLabel": "Search folders",
+      "noResults": "No folders found",
+      "action": "Move",
+      "failed": "Couldn't move the folder. It is back where it was."
+    },
+    "delete": {
+      "title": "Delete folder “{{name}}”?",
+      "textEmpty": "This folder is empty.",
+      "textNoLinks": "It has {{subfolders}} and no links.",
+      "textLinks": "It has {{links}}. What should happen to the links?",
+      "textBoth": "It has {{links}} and {{subfolders}}. What should happen to the links?",
+      "links": {
+        "one": "{{count}} link",
+        "other": "{{count}} links"
+      },
+      "subfolders": {
+        "one": "{{count}} subfolder",
+        "other": "{{count}} subfolders"
+      },
+      "modeLabel": "What happens to the links",
+      "move": {
+        "title": "Move links to Unsorted",
+        "desc": {
+          "one": "The folders are deleted, the link stays",
+          "other": "The folders are deleted, all {{count}} links stay"
+        }
+      },
+      "remove": {
+        "title": "Delete links too",
+        "desc": "This can't be undone"
+      },
+      "action": "Delete folder",
+      "actionWithLinks": {
+        "one": "Delete folder and {{count}} link",
+        "other": "Delete folder and {{count}} links"
+      },
+      "failed": "Couldn't delete the folder. Nothing was changed.",
+      "done": "Folder deleted"
+    }
   },
   "library": {
     "title": "All links",
     "scope": {
       "all": "All links",
       "unsorted": "Unsorted",
-      "favorites": "Favorites"
+      "favorites": "Favorites",
+      "folder": "Folder"
+    },
+    "folderNotFound": {
+      "title": "Folder not found",
+      "text": "This folder doesn't exist, or it was deleted.",
+      "action": "Show all links"
+    },
+    "emptyFolder": {
+      "title": "This folder is empty",
+      "text": "Add a link here, or move links in from other folders.",
+      "add": "Add link here"
     },
     "count": "{{count}} links",
     "countMore": "{{count}}+ links",
