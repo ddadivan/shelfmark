@@ -21,6 +21,8 @@ const TEXTS = {
   removeLabel: 'Remove tag {name}',
   addedLabel: 'Tag {name} added',
   removedLabel: 'Tag {name} removed',
+  duplicateLabel: 'Tag {name} is already added',
+  listLabel: 'Tag suggestions',
   maxTagsLabel: 'Up to 3 tags',
 };
 
@@ -69,6 +71,8 @@ const meta: Meta<TagInputComponent> = {
           [removeLabel]="removeLabel"
           [addedLabel]="addedLabel"
           [removedLabel]="removedLabel"
+          [duplicateLabel]="duplicateLabel"
+          [listLabel]="listLabel"
           [maxTagsLabel]="maxTagsLabel"
           [(value)]="value"
         />
@@ -169,6 +173,8 @@ export const AllVariants: Story = {
         removeLabel="Remove tag {name}"
         addedLabel="Tag {name} added"
         removedLabel="Tag {name} removed"
+        duplicateLabel="Tag {name} is already added"
+        listLabel="Tag suggestions"
         maxTagsLabel="Up to 5 tags"
         [maxTags]="5"
         [suggestions]="suggestions"

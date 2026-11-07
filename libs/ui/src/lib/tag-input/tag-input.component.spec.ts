@@ -29,6 +29,8 @@ const SUGGESTIONS: TagSuggestion[] = [
       removeLabel="Remove tag {name}"
       addedLabel="Tag {name} added"
       removedLabel="Tag {name} removed"
+      duplicateLabel="Tag {name} is already added"
+      [listLabel]="listLabel()"
       [suggestions]="suggestions"
       [maxTags]="maxTags()"
       [error]="error()"
@@ -43,6 +45,7 @@ class HostComponent {
   readonly suggestions = SUGGESTIONS;
   readonly maxTags = signal<number | undefined>(undefined);
   readonly error = signal('');
+  readonly listLabel = signal('Tag suggestions');
   readonly disabled = signal(false);
   readonly value = signal<string[]>(['angular', 'courses']);
   readonly touches = signal(0);
@@ -180,6 +183,45 @@ describe('TagInputComponent', () => {
     expect(host.value().at(-1)).toHaveLength(50);
   });
 
+  it('announces a duplicate and keeps the input cleared', async () => {
+    const { type, press, status, input, host } = await setup();
+    await type('Angular');
+    await press(KEYBOARD_KEY.Enter);
+    expect(host.value()).toHaveLength(2);
+    expect(status()).toBe('Tag Angular is already added');
+    expect(input.value).toBe('');
+  });
+
+  it('names the list by the label when listLabel is empty', async () => {
+    const { fixture, host, type, listbox } = await setup();
+    host.listLabel.set('');
+    await settle(fixture);
+    await type('s');
+    expect(listbox()?.getAttribute('aria-label')).toBe('Tags');
+  });
+
+  it('keeps focus in the input on a press of the box padding, not on a button', async () => {
+    const { root, input, chips } = await setup();
+    input.focus();
+    const box = root.querySelector('.ui-tag-input__box') as HTMLElement;
+    const pad = new MouseEvent('mousedown', { bubbles: true, cancelable: true });
+    box.dispatchEvent(pad);
+    expect(pad.defaultPrevented).toBe(true);
+    const onButton = new MouseEvent('mousedown', { bubbles: true, cancelable: true });
+    chips()[0]?.querySelector('.ui-chip__remove')?.dispatchEvent(onButton);
+    expect(onButton.defaultPrevented).toBe(false);
+  });
+
+  it('does not touch while a chip is removed and its button is destroyed', async () => {
+    const { chips, fixture, host } = await setup();
+    const remove = chips()[0]?.querySelector('.ui-chip__remove') as HTMLElement;
+    remove.focus();
+    remove.click();
+    remove.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: null }));
+    await settle(fixture);
+    expect(host.touches()).toBe(0);
+  });
+
   it('does not swallow Enter in an empty input (form submit)', async () => {
     const { press } = await setup();
     const event = await press(KEYBOARD_KEY.Enter);
@@ -221,6 +263,8 @@ describe('TagInputComponent', () => {
     await type('s');
     expect(input.getAttribute('aria-expanded')).toBe('true');
     expect(input.getAttribute('aria-controls')).toBe(listbox()?.id);
+    expect(input.getAttribute('aria-autocomplete')).toBe('list');
+    expect(listbox()?.getAttribute('aria-label')).toBe('Tag suggestions');
     expect(names()).toEqual(['signals12 links', 'design', 'Create tag “s”']);
     expect(listbox()?.closest(`.${overlayLayerClass(OVERLAY_LAYER.Menu)}`)).not.toBeNull();
     expect(options()[2]?.classList).toContain('ui-tag-input__option--create');

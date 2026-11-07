@@ -1,6 +1,5 @@
-import { Combobox, ComboboxPopup } from '@angular/aria/combobox';
+import { Combobox, ComboboxPopup, ComboboxWidget } from '@angular/aria/combobox';
 import { Listbox, Option } from '@angular/aria/listbox';
-import { ComboboxWidget } from '@angular/aria/combobox';
 import { DOCUMENT } from '@angular/common';
 import {
   afterNextRender,
@@ -99,6 +98,10 @@ export class TagInputComponent extends UiFieldControl implements FormValueContro
   readonly addedLabel = input('');
   /** Announced after a tag is removed, for example `Tag {name} removed`. */
   readonly removedLabel = input('');
+  /** Announced when the tag is already there, for example `Tag {name} is already added`. */
+  readonly duplicateLabel = input('');
+  /** Accessible name of the suggestion list, for example "Tag suggestions"; `label` when empty. */
+  readonly listLabel = input('');
 
   private readonly overlays = inject(UiOverlay);
   private readonly injector = inject(Injector);
@@ -137,6 +140,8 @@ export class TagInputComponent extends UiFieldControl implements FormValueContro
   private detachSubscription: Subscription | null = null;
   private resizeObserver: ResizeObserver | null = null;
   private syncing = false;
+  /** A chip is being removed: its button is destroyed, so the focus-out has no related target. */
+  private removing = false;
 
   constructor() {
     super();
@@ -191,6 +196,8 @@ export class TagInputComponent extends UiFieldControl implements FormValueContro
   protected rowIcon(row: TagInputRow): TagInputIcon {
     return row.create ? TAG_INPUT_ICON.Create : TAG_INPUT_ICON.Tag;
   }
+
+  protected readonly listName = computed(() => this.listLabel() || this.label());
 
   protected chipLabel(tag: string): string {
     return fillName(this.removeLabel(), tag);
@@ -248,9 +255,11 @@ export class TagInputComponent extends UiFieldControl implements FormValueContro
 
   /** The chip's remove button or key: remove it and move focus to a sibling chip, else the input. */
   protected onChipRemoved(index: number): void {
+    this.removing = true;
     this.remove(index);
     afterNextRender(
       () => {
+        this.removing = false;
         const chips = this.chips();
         const target = chips[index] ?? chips[index - 1];
         if (target) {
@@ -274,6 +283,13 @@ export class TagInputComponent extends UiFieldControl implements FormValueContro
     }
   }
 
+  /** A press on the box padding or a chip label must not blur the input (an early `touch`). */
+  protected onBoxMousedown(event: MouseEvent): void {
+    if (!(event.target instanceof Element) || !event.target.closest('button, input')) {
+      event.preventDefault();
+    }
+  }
+
   /** The popup keeps focus in the input: a press on an option or the scrollbar must not move it. */
   protected onPopupMousedown(event: MouseEvent): void {
     event.preventDefault();
@@ -286,7 +302,7 @@ export class TagInputComponent extends UiFieldControl implements FormValueContro
       return;
     }
     // A window or tab switch has no related target while the document is not focused.
-    if (next === null && !this.document.hasFocus()) {
+    if (next === null && (!this.document.hasFocus() || this.removing)) {
       return;
     }
     this.announcement.set('');
@@ -341,6 +357,7 @@ export class TagInputComponent extends UiFieldControl implements FormValueContro
       return;
     }
     if (includesTag(this.value(), name)) {
+      this.announce(this.duplicateLabel(), name);
       return;
     }
     this.value.update((tags) => [...tags, name]);
@@ -411,7 +428,7 @@ export class TagInputComponent extends UiFieldControl implements FormValueContro
     );
   }
 
-  /** The pane is at least as wide as the field box. */
+  /** The pane is at least as wide as the field box (measured px on purpose, as in `ui-select`). */
   private syncWidth(): void {
     this.overlay?.pane.style.setProperty('min-width', `${this.box().nativeElement.offsetWidth}px`);
   }

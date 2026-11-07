@@ -7,7 +7,7 @@
   [disabled]="disabled()"
   (click)="onShellClick($event)"
 >
-  <div #box class="ui-tag-input__box">
+  <div #box class="ui-tag-input__box" (mousedown)="onBoxMousedown($event)">
     @for (tag of value(); track $index) {
       <ui-chip
         class="ui-tag-input__chip"
@@ -65,7 +65,7 @@
         focusMode="activedescendant"
         selectionMode="explicit"
         tabindex="-1"
-        [attr.aria-label]="label()"
+        [attr.aria-label]="listName()"
         [activeDescendant]="list.activeDescendant()"
         [value]="noSelection"
         (valueChange)="onListValue($event)"
