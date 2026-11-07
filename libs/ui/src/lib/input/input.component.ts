@@ -27,7 +27,8 @@ import { INPUT_TYPE } from './models/input-type.const';
  *
  * The label is always visible (the placeholder only shows an example). `search` draws the search
  * icon by default and swaps it for `ui-spinner` in the same 16px slot while `loading`, so the
- * field never shifts. `clearable` shows a clear button (`clearLabel` is its accessible name)
+ * field never shifts; other types show the spinner after the text, in `--text-muted`, and the
+ * text keeps its room. `clearable` shows a clear button (`clearLabel` is its accessible name)
  * that empties the field and keeps focus in it.
  */
 @Component({
@@ -52,8 +53,13 @@ export class InputComponent extends UiFieldControl implements FormValueControl<s
   readonly clearLabel = input('');
   /** Keyboard shortcut hint on the right, for example `⌘K`. */
   readonly shortcut = input('');
-  /** `search` only: replaces the icon with a spinner while true. */
+  /**
+   * Shows a spinner while true and sets `aria-busy`: `search` swaps its icon, other types show it
+   * after the text (before the clear button).
+   */
   readonly loading = input(false, { transform: booleanAttribute });
+  /** Announced while `loading` ("Searching", "Loading preview"); without it the spinner stays silent. */
+  readonly loadingLabel = input('');
 
   private readonly native = viewChild.required<ElementRef<HTMLInputElement>>('native');
 
@@ -63,6 +69,10 @@ export class InputComponent extends UiFieldControl implements FormValueControl<s
       (this.type() === INPUT_TYPE.Search ? ('search' satisfies IconName) : undefined),
   );
   protected readonly spinning = computed(() => this.type() === INPUT_TYPE.Search && this.loading());
+  /** Other types: the spinner sits after the text, before the clear button. */
+  protected readonly trailingSpinner = computed(
+    () => this.type() !== INPUT_TYPE.Search && this.loading(),
+  );
   protected readonly showClear = computed(
     () => this.clearable() && !!this.clearLabel() && !this.disabled() && this.value() !== '',
   );

@@ -1,5 +1,6 @@
 import type { LinkPreviewResponse } from '../links/link-preview-response.interface';
 import { MOCK_ID } from './mock-id.const';
+import { MOCK_NAME } from './mock-name.const';
 
 /** Preview of an already saved URL, so the duplicate warning can be shown. */
 export const MOCK_LINK_PREVIEW_DUPLICATE: LinkPreviewResponse = {
@@ -14,6 +15,6 @@ export const MOCK_LINK_PREVIEW_DUPLICATE: LinkPreviewResponse = {
     id: MOCK_ID.LinkAngular,
     title: 'Angular overview',
     folderId: MOCK_ID.FolderAngular,
-    folderName: 'Angular',
+    folderName: MOCK_NAME.FolderAngular,
   },
 };
