@@ -2,8 +2,8 @@ import { type INestApplicationContext, RequestMethod } from '@nestjs/common';
 import { METHOD_METADATA, PATH_METADATA, ROUTE_ARGS_METADATA } from '@nestjs/common/constants';
 import { DiscoveryService, MetadataScanner } from '@nestjs/core';
 import { API_GLOBAL_PREFIX } from '../../app/models/api-global-prefix.const';
-import { AUTH_BASE_PATH } from '../../auth/models/auth-base-path.const';
 import { currentUserFactory } from './current-user.decorator';
+import { EXPECTED_ALL_VERB_MOUNTS } from './models/expected-all-verb-mount.const';
 import { AUTH_METADATA_KEY } from './models/auth-metadata-key.const';
 import type { FoundController } from './models/found-controller.interface';
 import type { FoundRoute } from './models/found-route.interface';
@@ -117,6 +117,7 @@ export function expressRouteKeys(app: { getHttpAdapter(): { getInstance(): unkno
   if (!Array.isArray(stack)) throw new Error('Cannot read the Express router stack');
   const verbs = ['get', 'post', 'put', 'patch', 'delete'];
   const keys: string[] = [];
+  const expected = [...EXPECTED_ALL_VERB_MOUNTS];
   for (const layer of stack) {
     const route: unknown = Reflect.get(layer as object, 'route');
     if (typeof route !== 'object' || route === null) continue;
@@ -125,12 +126,14 @@ export function expressRouteKeys(app: { getHttpAdapter(): { getInstance(): unkno
     if (typeof path !== 'string' || typeof methods !== 'object' || methods === null) continue;
     if (path.startsWith(`/${API_GLOBAL_PREFIX}/docs`)) continue;
     const served = verbs.filter((verb) => Reflect.get(methods, verb) === true);
-    // Better Auth's mount (every verb, outside Nest's router) is the only all-verb layer allowed.
+    // Better Auth's mount (every verb, outside Nest's router): only the expected layers, each once.
     if (served.length === verbs.length && Object.keys(methods).length > verbs.length) {
-      // Also `/api` itself: the integration's mount for the auth router, which no Nest route uses.
-      const mount = path === `/${API_GLOBAL_PREFIX}`;
-      if (mount || path === AUTH_BASE_PATH || path.startsWith(`${AUTH_BASE_PATH}/`)) continue;
-      keys.push(`ALL ${path}`);
+      const index = expected.indexOf(path);
+      if (index === -1) {
+        keys.push(`ALL ${path}`);
+      } else {
+        expected.splice(index, 1);
+      }
       continue;
     }
     for (const verb of served) keys.push(`${verb.toUpperCase()} ${path}`);

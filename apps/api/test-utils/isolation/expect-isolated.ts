@@ -3,9 +3,9 @@ import type { Test } from 'supertest';
 import { expect } from 'vitest';
 import { ISOLATION_OPERATION } from '../models/isolation-operation.const';
 import type { IsolationScenario } from '../models/isolation-scenario.interface';
+import type { IsolationOperationRequest } from '../models/isolation-operation-request.type';
 import type { IsolationUsers } from '../models/isolation-users.interface';
 import type { RequestOutcome } from '../models/request-outcome.interface';
-import type { TestAgent } from '../models/test-agent.interface';
 import { randomUuidV7 } from './random-uuid-v7';
 import { anonymous, asUser } from './test-agent';
 
@@ -29,8 +29,6 @@ function shape(outcome: RequestOutcome, id: string): unknown {
     typeof value === 'string' ? value.split(id).join('<id>') : value;
   return { statusCode, error, message: mask(message) };
 }
-
-type Operation = (agent: TestAgent, id: string) => Test;
 
 /**
  * Runs the data-isolation checks of PROJECT.md 5.8 for one user-owned resource:
@@ -65,14 +63,14 @@ export async function expectIsolated(
   const before = await run(scenario.read(owner, id));
   expect(before.status, 'the owner must read the new resource (status 200)').toBe(200);
 
-  const operations: [string, Operation | undefined][] = [
+  const operations: [string, IsolationOperationRequest | undefined][] = [
     ['read', (agent, target) => scenario.read(agent, target)],
     ['update', scenario.update?.bind(scenario)],
     ['remove', scenario.remove?.bind(scenario)],
     ['reference', scenario.reference?.bind(scenario)],
   ];
   const present = operations.filter(
-    (entry): entry is [string, Operation] => entry[1] !== undefined,
+    (entry): entry is [string, IsolationOperationRequest] => entry[1] !== undefined,
   );
 
   for (const [name, operation] of present) {

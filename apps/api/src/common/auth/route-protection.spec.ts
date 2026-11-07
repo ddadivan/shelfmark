@@ -243,3 +243,30 @@ describe('route scanner (negative tests)', () => {
     );
   });
 });
+
+describe('expressRouteKeys (negative tests)', () => {
+  const ALL_METHODS = Object.fromEntries(
+    ['get', 'post', 'put', 'patch', 'delete', 'head', 'options'].map((m) => [m, true]),
+  );
+  const mount = (path: string) => ({ route: { path, methods: ALL_METHODS } });
+  const appWith = (...layers: object[]) => ({
+    getHttpAdapter: () => ({ getInstance: () => ({ router: { stack: layers } }) }),
+  });
+  const expectedMounts = [mount('/api'), mount('/api/auth'), mount('/api/auth/*path')];
+
+  it('accepts exactly the Better Auth mounts', () => {
+    expect(expressRouteKeys(appWith(...expectedMounts))).toEqual([]);
+  });
+
+  it('reports a rogue app.all route', () => {
+    expect(expressRouteKeys(appWith(...expectedMounts, mount('/api/evil')))).toEqual([
+      'ALL /api/evil',
+    ]);
+  });
+
+  it('reports an extra copy of an expected all-verb layer', () => {
+    expect(expressRouteKeys(appWith(...expectedMounts, mount('/api/auth')))).toEqual([
+      'ALL /api/auth',
+    ]);
+  });
+});
