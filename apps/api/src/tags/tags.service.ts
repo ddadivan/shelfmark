@@ -7,15 +7,23 @@ import {
 import { normalizeTagName, TAG_LIMIT } from '@shelfmark/contracts';
 import type { ListTagsResponse, TagResponse } from '@shelfmark/contracts';
 import { PrismaService } from '../prisma/prisma.service';
+import { TAG_LOCK_PREFIX } from './models/tag-advisory-lock.const';
 import type { TagDbClient } from './models/tag-db-client.type';
 import type { TagWithCount } from './models/tag-with-count.interface';
 
 const UNIQUE_VIOLATION = 'P2002';
+const FOREIGN_KEY_VIOLATION = 'P2003';
+
+function hasCode(error: unknown, code: string): boolean {
+  return typeof error === 'object' && error !== null && Reflect.get(error, 'code') === code;
+}
 
 function isUniqueViolation(error: unknown): boolean {
-  return (
-    typeof error === 'object' && error !== null && Reflect.get(error, 'code') === UNIQUE_VIOLATION
-  );
+  return hasCode(error, UNIQUE_VIOLATION);
+}
+
+function isForeignKeyViolation(error: unknown): boolean {
+  return hasCode(error, FOREIGN_KEY_VIOLATION);
 }
 
 function toResponse(tag: TagWithCount): TagResponse {
@@ -56,14 +64,14 @@ export class TagsService {
   }
 
   async create(userId: string, name: string): Promise<TagResponse> {
-    const count = await this.prisma.tag.count({ where: { userId } });
-    if (count >= TAG_LIMIT.PerUserMax) throw new ConflictException('Tag limit reached');
     try {
-      const tag = await this.prisma.tag.create({
-        data: { userId, name },
-        select: tagSelect(userId),
+      return await this.prisma.$transaction(async (tx) => {
+        await this.lockUserTags(tx, userId);
+        const count = await tx.tag.count({ where: { userId } });
+        if (count >= TAG_LIMIT.PerUserMax) throw new ConflictException('Tag limit reached');
+        const tag = await tx.tag.create({ data: { userId, name }, select: tagSelect(userId) });
+        return toResponse(tag);
       });
-      return toResponse(tag);
     } catch (error) {
       throw this.conflictOr(error);
     }
@@ -89,7 +97,21 @@ export class TagsService {
   }
 
   /** Moves the links of `sourceId` onto `targetId` and deletes the source, in one transaction. */
-  merge(userId: string, sourceId: string, targetId: string): Promise<TagResponse> {
+  async merge(userId: string, sourceId: string, targetId: string): Promise<TagResponse> {
+    try {
+      return await this.mergeInTransaction(userId, sourceId, targetId);
+    } catch (error) {
+      // A concurrent delete of the target between the lookup and the insert: the target is gone.
+      if (isForeignKeyViolation(error)) throw new NotFoundException('Tag not found');
+      throw error;
+    }
+  }
+
+  private mergeInTransaction(
+    userId: string,
+    sourceId: string,
+    targetId: string,
+  ): Promise<TagResponse> {
     return this.prisma.$transaction(async (tx) => {
       // Both lookups come first: a foreign or missing tag is a 404 even when the ids are equal.
       await this.read(tx, userId, sourceId);
@@ -124,6 +146,7 @@ export class TagsService {
     }
     if (wanted.size === 0) return [];
 
+    await this.lockUserTags(tx, userId);
     let all = await tx.tag.findMany({ where: { userId }, select: { id: true, name: true } });
     const known = new Set(all.map((tag) => tag.name.toLowerCase()));
     const missing = [...wanted.entries()].filter(([key]) => !known.has(key));
@@ -140,6 +163,14 @@ export class TagsService {
     }
     const idByKey = new Map(all.map((tag) => [tag.name.toLowerCase(), tag.id]));
     return [...wanted.keys()].flatMap((key) => idByKey.get(key) ?? []);
+  }
+
+  /**
+   * Serializes tag creation per user until the transaction ends, so the count-then-insert cap
+   * check cannot be raced. The key is namespaced, so it never blocks the folders lock.
+   */
+  private async lockUserTags(db: TagDbClient, userId: string): Promise<void> {
+    await db.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${TAG_LOCK_PREFIX + userId}, 0))`;
   }
 
   private async read(db: TagDbClient, userId: string, id: string): Promise<TagResponse> {

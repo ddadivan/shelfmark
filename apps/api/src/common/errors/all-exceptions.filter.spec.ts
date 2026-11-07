@@ -92,19 +92,27 @@ describe('AllExceptionsFilter', () => {
     });
   });
 
-  it.each([new Error('secret detail'), 'boom', null, { type: 'other' }, { status: 302 }])(
-    'hides details of %j behind a 500',
-    (exception) => {
-      const { status, json } = callFilter(exception);
-      expect(status).toHaveBeenCalledWith(500);
-      expect(json).toHaveBeenCalledWith({
-        statusCode: 500,
-        error: 'Internal Server Error',
-        message: 'Internal Server Error',
-        requestId: 'rid-1',
-      });
-    },
-  );
+  it.each([
+    new Error('secret detail'),
+    'boom',
+    null,
+    { type: 'other' },
+    { status: 302 },
+    // Shape of a Prisma known request error: the code and meta must never reach the client.
+    Object.assign(new Error('Unique constraint failed on tags_user_id_lower_name_key'), {
+      code: 'P2002',
+      meta: { target: ['user_id'] },
+    }),
+  ])('hides details of %j behind a 500', (exception) => {
+    const { status, json } = callFilter(exception);
+    expect(status).toHaveBeenCalledWith(500);
+    expect(json).toHaveBeenCalledWith({
+      statusCode: 500,
+      error: 'Internal Server Error',
+      message: 'Internal Server Error',
+      requestId: 'rid-1',
+    });
+  });
 
   it('logs the stack server-side but not in the response', () => {
     const errorLog = vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);

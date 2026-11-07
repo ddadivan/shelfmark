@@ -177,6 +177,20 @@ describe('Tags API', () => {
       expect(await t.db.prisma.link.count()).toBe(3);
     });
 
+    it('does not move a foreign link attached to the source tag', async () => {
+      const source = await createTag(owner, 'src');
+      const target = await createTag(owner, 'dst');
+      const mine = await createLink(users.owner.userId, 1);
+      const foreign = await createLink(users.intruder.userId, 2);
+      await attach(mine.id, source.id);
+      await attach(foreign.id, source.id);
+
+      await owner.post(`/api/tags/${source.id}/merge`).send({ targetTagId: target.id }).expect(200);
+
+      const rows = await t.db.prisma.linkTag.findMany({ where: { tagId: target.id } });
+      expect(rows.map((r) => r.linkId)).toEqual([mine.id]);
+    });
+
     it('answers 400 when merging a tag into itself', async () => {
       const tag = await createTag(owner, 'self');
       await owner.post(`/api/tags/${tag.id}/merge`).send({ targetTagId: tag.id }).expect(400);
