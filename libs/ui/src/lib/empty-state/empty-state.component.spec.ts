@@ -2,12 +2,12 @@ import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { axeViolations } from '../../testing/axe';
 import { ButtonComponent } from '../button/button.component';
+import type { HeadingLevel } from '../heading';
 import type { IconName } from '../icon/models/icon-name.type';
+import { ILLUSTRATION_MOTION } from '../illustration/models/illustration-motion.const';
 import type { IllustrationMotion } from '../illustration/models/illustration-motion.type';
 import type { IllustrationName } from '../illustration/models/illustration-name.type';
 import { EmptyStateComponent } from './empty-state.component';
-import type { EmptyStateHeadingLevel } from './models/empty-state-heading-level.type';
-import { ILLUSTRATION_MOTION } from '../illustration/models/illustration-motion.const';
 
 @Component({
   imports: [EmptyStateComponent, ButtonComponent],
@@ -32,7 +32,7 @@ class HostComponent {
   readonly icon = signal<IconName | undefined>('bookmark');
   readonly illustration = signal<IllustrationName | undefined>(undefined);
   readonly motion = signal<IllustrationMotion | undefined>(undefined);
-  readonly level = signal<EmptyStateHeadingLevel>(2);
+  readonly level = signal<HeadingLevel>(2);
   readonly withAction = signal(true);
   readonly clicks = signal(0);
 }
@@ -94,7 +94,7 @@ describe('EmptyStateComponent', () => {
     expect(host.querySelector('h2')).not.toBeNull();
   });
 
-  it.each<EmptyStateHeadingLevel>([1, 2, 3, 4, 5, 6])('renders the heading as h%i', (level) => {
+  it.each<HeadingLevel>([1, 2, 3, 4, 5, 6])('renders the heading as h%i', (level) => {
     const { host, update } = setup();
     update((c) => c.level.set(level));
     expect(host.querySelectorAll('h1, h2, h3, h4, h5, h6')).toHaveLength(1);
