@@ -61,6 +61,32 @@
         "saveAnyway": "Save anyway",
         "saving": "Saving…"
       }
+    },
+    "item": {
+      "favorite": "Favorite: {{title}}",
+      "actions": "Actions for {{title}}",
+      "delete": "Delete",
+      "opensInNewTab": "Opens in a new tab",
+      "favoriteFailed": "Couldn't update the favorite.",
+      "retry": "Retry",
+      "deleted": "Link deleted",
+      "undo": "Undo",
+      "deleteFailed": "Couldn't delete the link. It is back in your list.",
+      "saved": "Link saved",
+      "confirm": {
+        "title": "Delete this link?",
+        "message": "“{{title}}” will be deleted.",
+        "confirm": "Delete",
+        "cancel": "Cancel",
+        "close": "Close"
+      }
+    },
+    "recent": {
+      "title": "Recently opened",
+      "empty": "Links you open appear here.",
+      "hide": "Hide recently opened",
+      "show": "Show recently opened",
+      "loading": "Loading recently opened links"
     }
   },
   "auth": {
@@ -82,11 +108,41 @@
   },
   "shell": {
     "accountMenu": "Account menu",
-    "settings": "Settings"
+    "settings": "Settings",
+    "addLink": "Add link"
   },
   "library": {
     "title": "All links",
-    "placeholder": "Your saved links will appear here."
+    "scope": {
+      "all": "All links",
+      "unsorted": "Unsorted",
+      "favorites": "Favorites"
+    },
+    "count": "{{count}} links",
+    "countMore": "{{count}}+ links",
+    "view": {
+      "label": "View",
+      "cards": "Cards",
+      "list": "List"
+    },
+    "list": {
+      "label": "Saved links"
+    },
+    "loading": "Loading links",
+    "loadingMore": "Loading more links",
+    "loadMore": "Load more",
+    "loadMoreFailed": "Couldn't load more links.",
+    "error": {
+      "title": "Couldn't load your links",
+      "text": "Check your connection and try again.",
+      "retry": "Try again"
+    },
+    "empty": {
+      "title": "No links here yet",
+      "text": "Paste a link to save it to your shelf.",
+      "add": "Add link"
+    },
+    "refetchFailed": "Couldn't refresh your links. You are seeing the last loaded list."
   },
   "settings": {
     "title": "Settings",
