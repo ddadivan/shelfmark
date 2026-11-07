@@ -139,6 +139,14 @@ export class AddLinkDialogComponent {
           ? undefined
           : { kind: 'url', message: this.text('links.add.url.invalid') };
       });
+      if (this.editing) {
+        // Adding may leave the title empty (the preview fills it); an edit must not lose it.
+        validate(path.title, ({ value }): ValidationError.WithoutFieldTree | undefined =>
+          value().trim() === ''
+            ? { kind: 'required', message: this.text('links.add.titleField.required') }
+            : undefined,
+        );
+      }
       maxLength(path.title, LINK_LIMIT.TitleMax, {
         message: () => this.text('links.add.titleField.tooLong', { max: LINK_LIMIT.TitleMax }),
       });
@@ -200,8 +208,14 @@ export class AddLinkDialogComponent {
     return this.preview.hasValue() ? PREVIEW_STATE.Ready : PREVIEW_STATE.Loading;
   });
 
+  /** What the template shows: an edit has no preview card, only the duplicate notice. */
+  protected readonly shownState = computed<PreviewState>(() => {
+    const state = this.previewState();
+    return this.editing && state !== PREVIEW_STATE.Ready ? PREVIEW_STATE.Idle : state;
+  });
+
   protected readonly previewData = computed(() =>
-    this.previewState() === PREVIEW_STATE.Ready && this.preview.hasValue()
+    !this.editing && this.previewState() === PREVIEW_STATE.Ready && this.preview.hasValue()
       ? this.preview.value().preview
       : null,
   );
@@ -324,7 +338,7 @@ export class AddLinkDialogComponent {
     if (url !== link.url) {
       changes.url = url;
     }
-    if (title !== '' && title !== link.title) {
+    if (title !== link.title) {
       changes.title = title;
     }
     if (note !== (link.note ?? '')) {

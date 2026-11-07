@@ -9,9 +9,14 @@ describe('relativeTime', () => {
     ['2026-11-07T09:00:00Z', '3 hours ago'],
     ['2026-11-06T11:00:00Z', 'yesterday'],
     ['2026-10-17T12:00:00Z', '3 weeks ago'],
+    ['2026-09-07T12:00:00Z', '2 months ago'],
     ['2025-11-07T12:00:00Z', 'last year'],
     ['2026-11-08T12:00:00Z', 'now'],
   ])('%s -> %s', (iso, expected) => {
     expect(relativeTime(iso, NOW, 'en')).toBe(expected);
+  });
+
+  it('follows the locale', () => {
+    expect(relativeTime('2026-11-06T11:00:00Z', NOW, 'uk')).toBe('учора');
   });
 });

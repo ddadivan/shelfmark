@@ -34,21 +34,17 @@
         }
       </div>
 
-      @switch (previewState()) {
+      @switch (shownState()) {
         @case (PREVIEW_STATE.Loading) {
-          @if (!editing) {
-            <div class="add-link__preview" aria-busy="true">
-              <ui-skeleton [shape]="SKELETON_SHAPE.Line" [count]="3" />
-            </div>
-            <p class="add-link__note">{{ 'links.add.preview.loadingHint' | transloco }}</p>
-          }
+          <div class="add-link__preview" aria-busy="true">
+            <ui-skeleton [shape]="SKELETON_SHAPE.Line" [count]="3" />
+          </div>
+          <p class="add-link__note">{{ 'links.add.preview.loadingHint' | transloco }}</p>
         }
         @case (PREVIEW_STATE.Failed) {
-          @if (!editing) {
-            <ui-notice [kind]="NOTICE_KIND.Danger">{{
-              'links.add.preview.failed' | transloco
-            }}</ui-notice>
-          }
+          <ui-notice [kind]="NOTICE_KIND.Danger">{{
+            'links.add.preview.failed' | transloco
+          }}</ui-notice>
         }
         @case (PREVIEW_STATE.Ready) {
           @if (duplicate(); as existing) {
@@ -58,7 +54,7 @@
                   : { folder: existing.folderName ?? ('links.add.folder.unsorted' | transloco) }
             }}</ui-notice>
           }
-          @if (!editing && previewData(); as data) {
+          @if (previewData(); as data) {
             <div class="add-link__preview">
               <div class="add-link__meta">
                 <ui-favicon [letter]="previewHost()[0]" />

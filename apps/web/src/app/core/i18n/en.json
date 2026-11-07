@@ -24,6 +24,7 @@
       },
       "titleField": {
         "label": "Title",
+        "required": "Enter a title",
         "tooLong": "The title is too long (at most {{max}} characters)"
       },
       "folder": {

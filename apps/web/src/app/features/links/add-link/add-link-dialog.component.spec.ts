@@ -3,7 +3,7 @@ import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import type { LinkPreviewResponse, LinkResponse } from '@shelfmark/contracts';
 import { MOCK_ID, MOCK_LINK_PREVIEW_DUPLICATE, MOCK_LINKS } from '@shelfmark/contracts/testing';
 import axe from 'axe-core';
-import { delay, of, throwError, type Observable } from 'rxjs';
+import { delay, of, tap, throwError, type Observable } from 'rxjs';
 import { APP_LANG } from '../../../core/i18n/models/app-lang.const';
 import { AppTranslocoLoader } from '../../../core/i18n/app-transloco.loader';
 import { translocoConfig } from '../../../core/i18n/transloco.config';
@@ -52,7 +52,7 @@ function fakeApi(preview: () => Observable<LinkPreviewResponse>): FakeApi {
       of<LinkResponse>({ ...MOCK_LINKS[0], url: request.url, title: request.title ?? request.url }),
     ),
     update: vi.fn<LinksApi['update']>((id, request) =>
-      of<LinkResponse>({ ...EDITED, id, ...request } as LinkResponse),
+      of<LinkResponse>({ ...EDITED, id, ...request }),
     ),
   };
 }
@@ -485,17 +485,17 @@ describe('AddLinkDialogComponent', () => {
       expect(dialog().querySelector('.add-link__preview')).toBeNull();
     });
 
-    it('does not treat the link itself as a duplicate, but warns about another one', async () => {
-      const own = { ...MOCK_LINK_PREVIEW_DUPLICATE.duplicate };
-      const api = fakeApi(() => of(MOCK_LINK_PREVIEW_DUPLICATE));
-      await setup(api, {
-        link: { ...EDITED, id: own.id ?? MOCK_ID.LinkPasta },
+    it('does not treat the link itself as a duplicate', async () => {
+      let answered!: () => void;
+      const previewAnswered = new Promise<void>((resolve) => {
+        answered = resolve;
       });
+      const api = fakeApi(() => of(MOCK_LINK_PREVIEW_DUPLICATE).pipe(tap({ complete: answered })));
+      await setup(api, { link: { ...EDITED, id: MOCK_ID.LinkAngular } });
       await type('Link', MOCK_LINK_PREVIEW_DUPLICATE.preview.url);
-      await until(() => {
-        expect(api.preview).toHaveBeenCalled();
-      });
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await previewAnswered;
+      // Let the resource publish the answer and the view render it.
+      await Promise.resolve();
       TestBed.tick();
       expect(dialog().querySelector('ui-notice')).toBeNull();
     });
@@ -510,6 +510,18 @@ describe('AddLinkDialogComponent', () => {
       });
       expect(() => button('Open saved')).toThrow();
       button('Save changes');
+    });
+
+    it('requires a title and does not save without one', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      await setup(api, { link: EDITED });
+
+      await type('Title', '  ');
+      button('Save changes').click();
+      await until(() => {
+        expect(dialog().textContent).toContain('Enter a title');
+      });
+      expect(api.update).not.toHaveBeenCalled();
     });
 
     it('hands the link back to the caller on Delete', async () => {
