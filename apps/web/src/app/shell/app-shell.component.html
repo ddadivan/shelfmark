@@ -1,0 +1,15 @@
+<header class="shell__header">
+  <ui-logo />
+  @if (auth.user(); as user) {
+    <div class="shell__user">
+      <ui-avatar [name]="user.name" [src]="user.image ?? undefined" size="sm" />
+      <span class="shell__name">{{ user.name }}</span>
+      <ui-button variant="ghost" size="sm" iconLeft="logout" (click)="signOut()">
+        {{ 'shell.signOut' | transloco }}
+      </ui-button>
+    </div>
+  }
+</header>
+<main class="shell__main">
+  <router-outlet />
+</main>

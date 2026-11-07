@@ -29,3 +29,4 @@ test-results/
 # Angular / Vitest
 .angular/
 __screenshots__/
+.lighthouseci/
