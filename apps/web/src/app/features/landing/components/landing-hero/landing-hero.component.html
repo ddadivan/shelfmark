@@ -21,5 +21,27 @@
       }}</ui-button>
     </div>
   </div>
-  <app-landing-chat class="landing-hero__demo" />
+  <!--
+    What the animated chat says, for assistive technology. It lives here, not in the chat, so it
+    is there before the deferred chat loads and is not repeated by it. With reduced motion the
+    chat shows the same five links as a visible static frame.
+  -->
+  @if (!motion.reducedMotion()) {
+    <ul class="landing-hero__sr" [attr.aria-label]="'landing.chat.savedMessages' | transloco">
+      @for (message of messages; track message.id) {
+        <li>{{ message.textKey | transloco }} {{ message.url }}</li>
+      }
+    </ul>
+  }
+  <!--
+    The demo loads when the browser is idle: its code and its first render stay out of the task
+    that paints the headline. The placeholder (also shown while the chunk loads) has the phone's height, so nothing moves.
+  -->
+  @defer (on idle) {
+    <app-landing-chat class="landing-hero__demo" />
+  } @placeholder {
+    <div class="landing-hero__demo-placeholder" aria-hidden="true"></div>
+  } @loading {
+    <div class="landing-hero__demo-placeholder" aria-hidden="true"></div>
+  }
 </section>
