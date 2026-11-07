@@ -315,6 +315,102 @@ describe('AddLinkDialogComponent', () => {
     expect(await result).toBeUndefined();
   });
 
+  it('does not let a slow earlier preview overwrite the title of a later URL', async () => {
+    const slow: LinkPreviewResponse = {
+      ...PLAIN,
+      preview: { ...PLAIN.preview, title: 'Slow A' },
+    };
+    const fast: LinkPreviewResponse = {
+      ...PLAIN,
+      preview: { ...PLAIN.preview, title: 'Fast B' },
+    };
+    const api = fakeApi(() => of(PLAIN));
+    api.preview.mockImplementation((url) =>
+      url.endsWith('/a') ? of(slow).pipe(delay(1200)) : of(fast).pipe(delay(20)),
+    );
+    await setup(api);
+
+    await type('Link', 'https://example.org/a');
+    await until(() => {
+      expect(api.preview).toHaveBeenCalledTimes(1);
+    });
+    await type('Link', 'https://example.org/b');
+    await until(() => {
+      expect(input('Title').value).toBe('Fast B');
+    });
+    await new Promise((resolve) => setTimeout(resolve, 1400));
+    TestBed.tick();
+    expect(input('Title').value).toBe('Fast B');
+  });
+
+  it('clears an autofilled title when the URL is no longer valid, but keeps a typed one', async () => {
+    const api = fakeApi(() => of(PLAIN));
+    await setup(api);
+
+    await type('Link', 'https://example.org/post');
+    await until(() => {
+      expect(input('Title').value).toBe('A fine post');
+    });
+    await type('Link', 'https://');
+    await until(() => {
+      expect(input('Title').value).toBe('');
+    });
+
+    await type('Link', 'https://example.org/post');
+    await until(() => {
+      expect(input('Title').value).toBe('A fine post');
+    });
+    await type('Title', 'Mine');
+    await type('Link', '');
+    TestBed.tick();
+    expect(input('Title').value).toBe('Mine');
+  });
+
+  it('moves focus to the first invalid field when saving fails validation', async () => {
+    const api = fakeApi(() => of(PLAIN));
+    await setup(api);
+
+    button('Save link').click();
+    await until(() => {
+      expect(document.activeElement).toBe(input('Link'));
+    });
+  });
+
+  it('announces the preview through the always-present status region', async () => {
+    const api = fakeApi(() => of(MOCK_LINK_PREVIEW_DUPLICATE).pipe(delay(30)));
+    await setup(api);
+    const region = dialog().querySelector('.add-link__sr[role="status"]');
+    expect(region).not.toBeNull();
+
+    await type('Link', MOCK_LINK_PREVIEW_DUPLICATE.preview.url);
+    await until(() => {
+      expect(region?.textContent).toContain('Loading preview');
+    });
+    await until(() => {
+      expect(region?.textContent).toContain('Preview loaded: Angular overview');
+      expect(region?.textContent).toContain('You already saved this link in Angular');
+    });
+  });
+
+  it('disables Cancel while saving and still resolves the caller when dismissed mid-save', async () => {
+    const api = fakeApi(() => of(PLAIN));
+    api.create.mockImplementation((request) =>
+      of<LinkResponse>({ ...MOCK_LINKS[0], url: request.url }).pipe(delay(200)),
+    );
+    const { result } = await setup(api);
+
+    await type('Link', 'https://example.org/post');
+    button('Save link').click();
+    await until(() => {
+      expect(button('Cancel').disabled).toBe(true);
+    });
+    // Dismiss through the header close button while the request is in flight.
+    dialog().querySelector<HTMLButtonElement>('button[aria-label="Close"]')?.click();
+
+    const outcome = await result;
+    expect(outcome?.action).toBe(ADD_LINK_ACTION.Saved);
+  });
+
   it('has no axe violations', async () => {
     const api = fakeApi(() => of(MOCK_LINK_PREVIEW_DUPLICATE));
     await setup(api);

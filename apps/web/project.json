@@ -44,7 +44,13 @@
         "development": {
           "optimization": false,
           "extractLicenses": false,
-          "sourceMap": true
+          "sourceMap": true,
+          "fileReplacements": [
+            {
+              "replace": "apps/web/src/app/features/links/provide-links-api.ts",
+              "with": "apps/web/src/app/features/links/mock/provide-links-api.e2e.ts"
+            }
+          ]
         },
         "e2e": {
           "budgets": [
@@ -57,6 +63,10 @@
             {
               "replace": "apps/web/src/app/app.routes.ts",
               "with": "apps/web/src/app/app.routes.e2e.ts"
+            },
+            {
+              "replace": "apps/web/src/app/features/links/provide-links-api.ts",
+              "with": "apps/web/src/app/features/links/mock/provide-links-api.e2e.ts"
             }
           ]
         }

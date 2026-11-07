@@ -41,9 +41,13 @@
     }
   }
 
+  // 44px on a phone or a coarse pointer. The chevron stays 16px: it is a second way to do
+  // what the row does (row click and arrow keys), the "equivalent control" exception of 2.5.8.
   @include phone {
     min-height: rem(44px);
   }
+
+  @include touch-target;
 
   @include hover {
     background: var(--surface-hover);

@@ -1,8 +1,5 @@
-import { inject, InjectionToken } from '@angular/core';
-import { MockTagsApi } from '../mock/mock-tags.api';
+import { InjectionToken } from '@angular/core';
 import type { TagsApi } from './tags-api.interface';
 
-/** Default is the mock until the tags feature (#76) provides the real API. */
-export const TAGS_API = new InjectionToken<TagsApi>('TAGS_API', {
-  factory: () => inject(MockTagsApi),
-});
+/** No default: `provideLinksApi()` registers the implementation, specs provide their own. */
+export const TAGS_API = new InjectionToken<TagsApi>('TAGS_API');

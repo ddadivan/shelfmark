@@ -65,6 +65,7 @@ export class ButtonComponent {
 - Only CSS custom properties from tokens (`var(--surface)`, `var(--space-4)`, `var(--duration-base)`, `var(--ease-out)`).
 - Sizes in `rem` via `rem($px)`; px only for border widths, outline, outline-offset, box-shadow, the 2px progress bar. Breakpoints in `em`.
 - `:hover` only inside `@media (hover: hover)`; `:focus-visible` ring per BRAND; `@media (prefers-reduced-motion: reduce)` removes movement and scale.
+- Target size: every pointer target is at least 24 x 24 px and 44 x 44 under `pointer: coarse`; a smaller visual gets `@include hit-area(...)` or `touch-target` (see `libs/ui/CLAUDE.md`). No `opacity` for busy, stale or secondary text.
 - No `::ng-deep`, no hard-coded colours, no `!important`.
 
 ## 5. Story

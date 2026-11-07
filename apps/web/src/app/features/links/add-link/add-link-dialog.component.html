@@ -13,9 +13,24 @@
         [formField]="form.url"
       />
 
-      <div class="add-link__status" role="status">
-        @if (previewState() === PREVIEW_STATE.Loading) {
-          <span class="add-link__sr">{{ 'links.add.preview.loading' | transloco }}</span>
+      <!-- Always present, so changes are announced reliably (notices inserted later may not be). -->
+      <div class="add-link__sr" role="status">
+        @switch (previewState()) {
+          @case (PREVIEW_STATE.Loading) {
+            {{ 'links.add.preview.loading' | transloco }}
+          }
+          @case (PREVIEW_STATE.Ready) {
+            @if (previewData(); as data) {
+              {{ 'links.add.preview.ready' | transloco: { title: data.title } }}
+            }
+            @if (duplicate(); as existing) {
+              {{
+                'links.add.duplicate.text'
+                  | transloco
+                    : { folder: existing.folderName ?? ('links.add.folder.unsorted' | transloco) }
+              }}
+            }
+          }
         }
       </div>
 
@@ -96,7 +111,7 @@
       }
     </div>
 
-    <ui-button slot="footer" class="add-link__action" (click)="cancel()">{{
+    <ui-button slot="footer" class="add-link__action" [disabled]="saving()" (click)="cancel()">{{
       'links.add.actions.cancel' | transloco
     }}</ui-button>
     @if (duplicate()) {

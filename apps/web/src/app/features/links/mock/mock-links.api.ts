@@ -2,6 +2,7 @@ import { Service } from '@angular/core';
 import type { CreateLinkRequest, LinkPreviewResponse, LinkResponse } from '@shelfmark/contracts';
 import { MOCK_LINK_PREVIEW_DUPLICATE } from '@shelfmark/contracts/testing';
 import { delay, type Observable, of, switchMap, throwError } from 'rxjs';
+import { displayHost } from '../add-link/http-url';
 import { MOCK_HOST } from '../models/mock-host.const';
 import { MOCK_LATENCY_MS } from '../models/mock-latency.const';
 import type { LinksApi } from '../models/links-api.interface';
@@ -15,7 +16,7 @@ import { normalizeUrl } from './normalize-url';
 @Service()
 export class MockLinksApi implements LinksApi {
   preview(url: string): Observable<LinkPreviewResponse> {
-    const host = hostOf(url);
+    const host = displayHost(url);
     if (host === MOCK_HOST.Unreachable) {
       return throwError(() => new Error('Mock: preview failed')).pipe(
         delay(MOCK_LATENCY_MS.Preview),
@@ -45,7 +46,7 @@ export class MockLinksApi implements LinksApi {
     return of(request).pipe(
       delay(MOCK_LATENCY_MS.Create),
       switchMap((body) => {
-        if (hostOf(body.url) === MOCK_HOST.SaveFails) {
+        if (displayHost(body.url) === MOCK_HOST.SaveFails) {
           return throwError(() => new Error('Mock: save failed'));
         }
         const now = new Date().toISOString();
@@ -66,13 +67,5 @@ export class MockLinksApi implements LinksApi {
         return of(link);
       }),
     );
-  }
-}
-
-function hostOf(url: string): string {
-  try {
-    return new URL(url).hostname.replace(/^www\./, '');
-  } catch {
-    return url;
   }
 }

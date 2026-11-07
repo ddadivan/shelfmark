@@ -1,10 +1,11 @@
 import { expect, test, type Page } from '@playwright/test';
 import { buildCsp, createCspMiddleware } from '@shelfmark/web-csp';
+import { isCiBuild } from './support/build-mode';
 import { readCsp, readVercelConfig } from './support/vercel-config';
 
 const staticCsp = readCsp(readVercelConfig());
 const deployedUrl = process.env['BASE_URL'];
-const isProductionBuild = !!process.env['CI'];
+const isProductionBuild = isCiBuild();
 const deepLink = '/folders/does-not-matter';
 const testPage = '/__e2e/csp';
 const noncePattern = /^[A-Za-z0-9+/]{22}==$/;

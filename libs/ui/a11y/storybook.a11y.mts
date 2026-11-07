@@ -119,7 +119,7 @@ for (const story of stories) {
                 for (let attempt = 0; attempt < 25; attempt++) {
                   try {
                     return await axe.run(context, {
-                      runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'] },
+                      runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] },
                       rules: Object.fromEntries(${JSON.stringify(disabledRules)}.map((id) => [id, { enabled: false }])),
                     });
                   } catch (error) {

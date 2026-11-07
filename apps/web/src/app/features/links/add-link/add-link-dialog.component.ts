@@ -1,5 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+  untracked,
+} from '@angular/core';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import {
   form,
   FormField,
@@ -32,7 +40,8 @@ import {
 } from '@shelfmark/ui';
 import { firstValueFrom, switchMap, tap, timer } from 'rxjs';
 import { ADD_LINK_ACTION } from '../models/add-link-action.const';
-import type { AddLinkData } from '../models/add-link-data.interface';
+import type { AddLinkDialogData } from '../models/add-link-dialog-data.interface';
+import type { AddLinkSaved } from '../models/add-link-saved.interface';
 import type { AddLinkFormModel } from '../models/add-link-form-model.interface';
 import type { AddLinkResult } from '../models/add-link-result.type';
 import { FOLDERS_API } from '../models/folders-api.const';
@@ -90,12 +99,15 @@ export class AddLinkDialogComponent {
   private readonly tagsApi = inject(TAGS_API);
   private readonly ref = inject<UiDialogRef<AddLinkResult>>(UiDialogRef);
   private readonly transloco = inject(TranslocoService);
-  private readonly data = injectDialogData<AddLinkData | undefined>();
+  private readonly data = injectDialogData<AddLinkDialogData>();
+
+  /** Ticks when the active language or its translations change, so messages re-translate. */
+  private readonly i18n = toSignal(this.transloco.events$, { initialValue: undefined });
 
   private readonly model = signal<AddLinkFormModel>({
     url: '',
     title: '',
-    folderId: this.data?.folderId ?? null,
+    folderId: this.data.folderId ?? null,
     tags: [],
     note: '',
   });
@@ -120,7 +132,14 @@ export class AddLinkDialogComponent {
         message: () => this.text('links.add.note.tooLong', { max: LINK_LIMIT.NoteMax }),
       });
     },
-    { submission: { action: () => this.save() } },
+    {
+      submission: {
+        action: () => this.save(),
+        onInvalid: () => {
+          this.form().errorSummary()[0]?.fieldTree().focusBoundControl();
+        },
+      },
+    },
   );
 
   /** The typed URL once it is a valid http(s) URL; the preview follows it. */
@@ -179,6 +198,20 @@ export class AddLinkDialogComponent {
       : null,
   );
 
+  constructor() {
+    // The preview is gone (URL emptied or no longer valid): drop a title it filled in.
+    effect(() => {
+      if (this.previewUrl() === undefined) {
+        untracked(() => {
+          const title = this.form.title();
+          if (!title.dirty()) {
+            title.value.set('');
+          }
+        });
+      }
+    });
+  }
+
   protected readonly saving = signal(false);
   protected readonly saveFailed = signal(false);
 
@@ -203,7 +236,7 @@ export class AddLinkDialogComponent {
     this.saving.set(true);
     this.saveFailed.set(false);
     try {
-      const link = await firstValueFrom(
+      const pending = firstValueFrom(
         this.linksApi.create({
           url: value.url.trim(),
           ...(title && { title }),
@@ -211,9 +244,12 @@ export class AddLinkDialogComponent {
           ...(value.folderId !== null && { folderId: value.folderId }),
           ...(value.tags.length > 0 && { tags: value.tags }),
         }),
-      );
+      ).then((link): AddLinkSaved => ({ action: ADD_LINK_ACTION.Saved, link }));
+      // Kept for the service: the caller gets the result even if the dialog was dismissed meanwhile.
+      this.data.session.saving = pending.catch(() => undefined);
+      const saved = await pending;
       // `saving` stays on: the button keeps its spinner while the dialog leaves.
-      this.ref.close({ action: ADD_LINK_ACTION.Saved, link });
+      this.ref.close(saved);
     } catch {
       this.saving.set(false);
       this.saveFailed.set(true);
@@ -228,7 +264,9 @@ export class AddLinkDialogComponent {
     }
   }
 
+  /** Reads `i18n` so a validation message re-translates when the language changes or loads. */
   private text(key: string, params?: Record<string, unknown>): string {
+    this.i18n();
     return this.transloco.translate(key, params);
   }
 }

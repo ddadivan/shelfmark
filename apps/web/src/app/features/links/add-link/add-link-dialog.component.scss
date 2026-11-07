@@ -13,13 +13,6 @@
   padding: rem(2px);
 }
 
-// Live region for screen readers: present from the start so the change is announced.
-.add-link__status {
-  &:empty {
-    display: none;
-  }
-}
-
 .add-link__sr {
   position: absolute;
   width: rem(1px);

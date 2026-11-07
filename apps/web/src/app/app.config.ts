@@ -18,6 +18,7 @@ import { provideTransloco } from '@jsverse/transloco';
 import { appRoutes } from './app.routes';
 import { translocoConfig } from './core/i18n/transloco.config';
 import { AppTranslocoLoader } from './core/i18n/app-transloco.loader';
+import { provideLinksApi } from './features/links/provide-links-api';
 import { ThemeService } from './core/theme/theme.service';
 
 export const appConfig: ApplicationConfig = {
@@ -33,6 +34,7 @@ export const appConfig: ApplicationConfig = {
     ),
     provideHttpClient(withFetch()),
     provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
+    ...provideLinksApi(),
     provideAppInitializer(() => inject(ThemeService).init()),
   ],
 };

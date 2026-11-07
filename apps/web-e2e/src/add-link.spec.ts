@@ -1,14 +1,19 @@
 import { expect, test, type Page } from '@playwright/test';
-import { axeViolations } from './support/axe';
+import { COLOR_SCHEME } from './models/color-scheme.const';
+import { expectNoBlockingViolations } from './support/axe';
+import { isStaticBuild } from './support/build-mode';
 
 const testPage = '/__e2e/add-link';
 const dialogSelector = '.cdk-dialog-container';
 const duplicateUrl = 'https://angular.dev/overview';
-const isE2eBuild = !!process.env['CI'];
+const outcome = {
+  savedPrefix: 'Outcome: saved: ',
+  openExistingPrefix: 'Outcome: open-existing:',
+} as const;
 
 test.describe('add link dialog (mock API)', () => {
   test.skip(
-    !isE2eBuild,
+    !isStaticBuild(),
     'The harness page only exists in the e2e build (CI=1); the dev server does not route it',
   );
 
@@ -32,7 +37,7 @@ test.describe('add link dialog (mock API)', () => {
 
     await expect(dialog).toBeHidden();
     await expect(page.locator('#outcome')).toHaveText(
-      'Outcome: saved: Page on example.org | https://example.org/post',
+      `${outcome.savedPrefix}Page on example.org | https://example.org/post`,
     );
   });
 
@@ -46,6 +51,7 @@ test.describe('add link dialog (mock API)', () => {
       dialog.getByText('Enter an address that starts with http:// or https://'),
     ).toBeVisible();
     await expect(dialog).toBeVisible();
+    await expect(dialog.getByLabel('Link', { exact: true })).toBeFocused();
   });
 
   test('a saved URL shows the duplicate notice; "Open saved" opens the existing link', async ({
@@ -55,11 +61,11 @@ test.describe('add link dialog (mock API)', () => {
 
     await dialog.getByLabel('Link', { exact: true }).fill(duplicateUrl);
     await expect(
-      dialog.getByRole('status').filter({ hasText: 'You already saved this link in Angular' }),
+      dialog.locator('ui-notice', { hasText: 'You already saved this link in Angular' }),
     ).toBeVisible();
 
     await dialog.getByRole('button', { name: 'Open saved' }).click();
-    await expect(page.locator('#outcome')).toContainText('Outcome: open-existing:');
+    await expect(page.locator('#outcome')).toContainText(outcome.openExistingPrefix);
   });
 
   test('"Save anyway" saves the duplicate', async ({ page }) => {
@@ -68,7 +74,7 @@ test.describe('add link dialog (mock API)', () => {
     await dialog.getByLabel('Link', { exact: true }).fill(duplicateUrl);
     await dialog.getByRole('button', { name: 'Save anyway' }).click();
 
-    await expect(page.locator('#outcome')).toContainText('Outcome: saved:');
+    await expect(page.locator('#outcome')).toContainText(outcome.savedPrefix);
   });
 
   test('a failing preview keeps the link saveable', async ({ page }) => {
@@ -90,14 +96,16 @@ test.describe('add link dialog (mock API)', () => {
     await expect(page.getByRole('button', { name: 'Open add link' })).toBeFocused();
   });
 
-  for (const colorScheme of ['light', 'dark'] as const) {
-    test(`has no axe violations with a duplicate notice (${colorScheme})`, async ({ page }) => {
+  for (const colorScheme of Object.values(COLOR_SCHEME)) {
+    test(`has no axe violations with a duplicate notice (${colorScheme})`, async ({
+      page,
+    }, testInfo) => {
       await page.emulateMedia({ colorScheme });
       const dialog = await open(page);
       await dialog.getByLabel('Link', { exact: true }).fill(duplicateUrl);
       await expect(dialog.getByRole('button', { name: 'Open saved' })).toBeVisible();
 
-      expect(await axeViolations(page, dialogSelector)).toEqual([]);
+      await expectNoBlockingViolations(page, testInfo, dialogSelector);
     });
   }
 

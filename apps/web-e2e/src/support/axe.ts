@@ -1,21 +1,35 @@
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
-import { workspaceRoot } from '@nx/devkit';
-import type { Page } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+import { expect, type Page, type TestInfo } from '@playwright/test';
+import { AXE_BLOCKING_IMPACTS } from '../models/axe-blocking-impacts.const';
+import { AXE_TAGS } from '../models/axe-tags.const';
+
+const REPORT_NAME = 'axe-results';
+const REPORT_TYPE = 'application/json';
 
 /**
- * Runs axe-core (real browser, colour contrast included) on the elements matching `selector`
- * and returns the violations as `rule: help (nodes)`; empty when clean.
+ * Scans the current page against WCAG 2.2 AA, attaches the full result and fails on
+ * serious or critical violations only. `include` (a CSS selector) limits the scan to that
+ * subtree, for example an open dialog.
  */
-export async function axeViolations(page: Page, selector: string): Promise<string[]> {
-  await page.addScriptTag({
-    content: readFileSync(join(workspaceRoot, 'node_modules/axe-core/axe.min.js'), 'utf8'),
+export async function expectNoBlockingViolations(
+  page: Page,
+  testInfo: TestInfo,
+  include?: string,
+): Promise<void> {
+  const builder = new AxeBuilder({ page }).withTags([...AXE_TAGS]);
+  const results = await (include ? builder.include(include) : builder).analyze();
+  await testInfo.attach(REPORT_NAME, {
+    body: JSON.stringify(results, null, 2),
+    contentType: REPORT_TYPE,
   });
-  return page.evaluate<string[], string>(
-    `(async () => {
-      const results = await globalThis.axe.run(document.querySelector(${JSON.stringify(selector)}));
-      return results.violations.map((v) => v.id + ': ' + v.help + ' (' + v.nodes.length + ')');
-    })()`,
-    selector,
-  );
+
+  const blocking = results.violations
+    .filter((violation) => AXE_BLOCKING_IMPACTS.some((impact) => impact === violation.impact))
+    .map((violation) => ({
+      id: violation.id,
+      impact: violation.impact,
+      help: violation.help,
+      targets: violation.nodes.map((node) => node.target.join(' ')),
+    }));
+  expect(blocking).toEqual([]);
 }

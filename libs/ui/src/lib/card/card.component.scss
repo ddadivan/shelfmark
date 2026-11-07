@@ -68,11 +68,6 @@
 :host(.ui-card--selected) {
   background: var(--accent-bg);
   border-color: var(--accent);
-
-  // `text-muted` on `accent-bg` is below 4.5:1 in the light theme.
-  .ui-card__meta {
-    color: var(--accent-text);
-  }
 }
 
 // Media ---------------------------------------------------------------------------------------
@@ -183,6 +178,13 @@
   display: flex;
   flex: none;
   align-items: center;
+}
+
+// The heading wraps the link. It stays static positioned (the link's `::after` is stretched
+// over the card) and carries no type of its own.
+.ui-card__heading {
+  margin: 0;
+  font: inherit;
 }
 
 // The one activation target: a native link or button reset to look like text.

@@ -19,7 +19,8 @@
         "loading": "Loading preview",
         "loadingHint": "You can keep typing a note and choosing a folder while it loads.",
         "filled": "Filled in from the page. You can edit the title.",
-        "failed": "Couldn't load a preview. The link will be saved with its address as the title — you can rename it."
+        "failed": "Couldn't load a preview. The link will be saved with its address as the title — you can rename it.",
+        "ready": "Preview loaded: {{title}}"
       },
       "titleField": {
         "label": "Title",

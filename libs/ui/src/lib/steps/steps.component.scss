@@ -5,10 +5,6 @@
   display: inline-flex;
 }
 
-.ui-steps__label {
-  @include visually-hidden;
-}
-
 .ui-steps__dots {
   display: flex;
   gap: rem(6px);
