@@ -27,6 +27,7 @@ import 'class-transformer';
 import 'class-validator';
 import 'express';
 import 'helmet';
+import 'parse5';
 import 'reflect-metadata';
 import 'rxjs';
 import 'swagger-ui-dist';
