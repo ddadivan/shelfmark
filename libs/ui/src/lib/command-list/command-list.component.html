@@ -1,0 +1,85 @@
+<div class="ui-command-list__field">
+  <ui-icon class="ui-command-list__icon" name="search" [size]="20" />
+  <input
+    #field
+    ngCombobox
+    #combobox="ngCombobox"
+    alwaysExpanded
+    type="text"
+    class="ui-command-list__input"
+    autocomplete="off"
+    autocapitalize="off"
+    spellcheck="false"
+    enterkeyhint="go"
+    [softDisabled]="false"
+    [value]="query()"
+    [attr.aria-label]="inputLabel()"
+    [attr.placeholder]="placeholder() || null"
+    (valueChange)="query.set($event)"
+    (keydown)="onKeydown($event)"
+  />
+  <ng-content select="[slot=input-end]" />
+</div>
+
+<ng-template ngComboboxPopup [combobox]="combobox">
+  <div
+    ngComboboxWidget
+    ngListbox
+    #list="ngListbox"
+    class="ui-command-list__list"
+    focusMode="activedescendant"
+    selectionMode="explicit"
+    [softDisabled]="false"
+    tabindex="-1"
+    [hidden]="empty()"
+    [attr.aria-label]="ariaListName()"
+    [attr.aria-busy]="busy() ? 'true' : null"
+    [activeDescendant]="list.activeDescendant()"
+    [value]="noSelection"
+    (valueChange)="onListValue()"
+    (mousedown)="onListMousedown($event)"
+  >
+    <ng-template #option let-item>
+      <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events -- the keyboard path is Enter in the combobox input (Aria relays the arrows, `onKeydown` chooses) -->
+      <div
+        ngOption
+        class="ui-command-list__option"
+        [id]="item.id"
+        [value]="item.value()"
+        [disabled]="item.disabled()"
+        (click)="onOptionClick(item, $event)"
+      >
+        <ng-container [ngTemplateOutlet]="item.body()" />
+      </div>
+    </ng-template>
+
+    @for (section of sections(); track $index) {
+      @if (groupOf(section); as group) {
+        <div class="ui-command-list__group" role="group" [attr.aria-labelledby]="group.headingId">
+          <div class="ui-command-list__heading" [id]="group.headingId">{{ group.heading() }}</div>
+          @for (item of section.items; track item.id) {
+            <ng-container
+              [ngTemplateOutlet]="option"
+              [ngTemplateOutletContext]="{ $implicit: item }"
+            />
+          }
+        </div>
+      } @else {
+        @for (item of section.items; track item.id) {
+          <ng-container
+            [ngTemplateOutlet]="option"
+            [ngTemplateOutletContext]="{ $implicit: item }"
+          />
+        }
+      }
+    }
+  </div>
+</ng-template>
+
+<div class="ui-command-list__empty" role="status">
+  @if (empty()) {
+    <ng-content select="[slot=empty]" />
+  }
+</div>
+
+<div class="ui-command-list__footer"><ng-content select="[slot=footer]" /></div>
