@@ -1,6 +1,7 @@
 import {
   ApplicationConfig,
   inject,
+  isDevMode,
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
@@ -14,6 +15,7 @@ import {
   withPreloading,
   withRouterConfig,
 } from '@angular/router';
+import { provideServiceWorker } from '@angular/service-worker';
 import { provideTransloco } from '@jsverse/transloco';
 import { appRoutes } from './app.routes';
 import { translocoConfig } from './core/i18n/transloco.config';
@@ -33,6 +35,11 @@ export const appConfig: ApplicationConfig = {
     ),
     provideHttpClient(withFetch()),
     provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
+    // App shell and static assets only; the worker never touches /api (apps/web/ngsw-config.json).
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
     provideAppInitializer(() => inject(ThemeService).init()),
   ],
 };
