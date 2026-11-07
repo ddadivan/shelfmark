@@ -11,6 +11,11 @@ describe('production placeholder APIs', () => {
     const calls = [
       new UnavailableLinksApi().preview(),
       new UnavailableLinksApi().create(),
+      new UnavailableLinksApi().list(),
+      new UnavailableLinksApi().recent(),
+      new UnavailableLinksApi().update(),
+      new UnavailableLinksApi().remove(),
+      new UnavailableLinksApi().open(),
       new UnavailableFoldersApi().list(),
       new UnavailableTagsApi().list(),
     ];
