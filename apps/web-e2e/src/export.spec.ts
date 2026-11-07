@@ -6,6 +6,10 @@ import { openAccountMenu, seedSession } from './support/mock-session';
 
 // Mirrors EXPORT_MOCK_MARKER (apps/web); this project cannot import it.
 const MOCK_MARKER = 'sm-mock-export';
+// Mirrors MOCK_EXPORT_FAILS_TAG: the first mock export with this tag fails, the retry succeeds.
+const FAILS_TAG = 'mock-fail';
+// Mirrors MOCK_ID.FolderReading (libs/shared/contracts).
+const READING_ID = '00000000-0000-4000-8000-000000000101';
 
 /** The second line of the mock file: the URL the real API would have been asked for. */
 async function requestedUrl(download: Download): Promise<string> {
@@ -66,6 +70,44 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
       expect(await requestedUrl(await download)).toBe(
         '/api/export?format=json&tag=docs&tag=c%2B%2B',
       );
+    });
+
+    test('a folder view exports that folder', async ({ page }) => {
+      await page.goto(`/folders/${READING_ID}`);
+      await page.getByRole('button', { name: 'Export' }).click();
+
+      const download = page.waitForEvent('download');
+      await page.getByRole('menuitem', { name: 'This view as JSON' }).click();
+
+      expect(await requestedUrl(await download)).toBe(
+        `/api/export?format=json&folderId=${READING_ID}`,
+      );
+    });
+
+    test('a failed export toasts and the retry downloads the file', async ({ page }) => {
+      await page.goto(`/links?tag=${FAILS_TAG}`);
+      await page.getByRole('button', { name: 'Export' }).click();
+      await page.getByRole('menuitem', { name: 'This view as JSON' }).click();
+
+      await expect(page.getByText("Couldn't export your links. Try again.")).toBeVisible();
+
+      const download = page.waitForEvent('download');
+      await page.getByRole('button', { name: 'Try again' }).click();
+
+      expect(await requestedUrl(await download)).toBe(`/api/export?format=json&tag=${FAILS_TAG}`);
+      await expect(page.getByText("Couldn't export your links. Try again.")).toBeHidden();
+    });
+
+    test('the toolbar does not scroll the page sideways at 360px', async ({ page }) => {
+      await page.setViewportSize({ width: 360, height: 780 });
+      await page.goto('/links?tag=docs');
+      await expect(page.getByRole('button', { name: 'Export' })).toBeVisible();
+      await settled(page);
+
+      const overflow = await page.evaluate<number>(
+        '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
+      );
+      expect(overflow).toBeLessThanOrEqual(0);
     });
 
     test('the account menu exports everything', async ({ page }) => {
