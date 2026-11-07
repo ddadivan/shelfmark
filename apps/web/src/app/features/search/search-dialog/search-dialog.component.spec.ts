@@ -113,8 +113,6 @@ async function advance(fixture: ComponentFixture<unknown>, ms: number): Promise<
 }
 
 describe('SearchDialogComponent', () => {
-  afterEach(() => {});
-
   it('shows the hint and asks nothing for an empty query', async () => {
     const { api, element } = await setup();
 
