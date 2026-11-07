@@ -20,7 +20,7 @@
         <div class="settings__email">{{ user.email }}</div>
       </div>
       <ui-button class="settings__sign-out" (click)="signOut()">
-        {{ 'settings.account.signOut' | transloco }}
+        {{ 'auth.signOut' | transloco }}
       </ui-button>
     </div>
   </app-settings-section>
@@ -28,16 +28,18 @@
 
   <app-settings-section [heading]="'settings.appearance.title' | transloco">
     <app-settings-row
-      labelId="settings-theme-label"
+      #row
       [label]="'settings.appearance.theme.label' | transloco"
       [hint]="'settings.appearance.theme.hint' | transloco"
     >
+      @if (themeOptions(); as options) {
       <ui-segmented-control
-        ariaLabelledby="settings-theme-label"
-        [options]="themeOptions()"
+        [ariaLabelledby]="row.labelId"
+        [options]="options"
         [value]="theme.preference()"
         (valueChange)="setTheme($event)"
       />
+      }
     </app-settings-row>
   </app-settings-section>
 </div>

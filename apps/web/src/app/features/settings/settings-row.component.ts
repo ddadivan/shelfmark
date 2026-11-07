@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
+let nextRowId = 0;
+
 /** One setting: label and hint on the start side, the control (projected) on the end side. */
 @Component({
   selector: 'app-settings-row',
@@ -13,6 +15,6 @@ export class SettingsRowComponent {
   readonly label = input.required<string>();
   /** Already translated hint under the label. */
   readonly hint = input<string>();
-  /** Id of the label, so the control can name itself with `aria-labelledby`. */
-  readonly labelId = input.required<string>();
+  /** Unique id of the label; bind it to the control's `aria-labelledby` via a template ref. */
+  readonly labelId = `settings-row-label-${nextRowId++}`;
 }

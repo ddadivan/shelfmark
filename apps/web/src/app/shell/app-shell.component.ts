@@ -11,7 +11,6 @@ import {
   MenuTriggerDirective,
 } from '@shelfmark/ui';
 import { AuthStore } from '../core/auth/auth.store';
-import { AUTH_ROUTE } from '../core/auth/models/auth-routes.const';
 import { APP_PATH } from '../models/app-path.const';
 
 /** Layout around the signed-in pages: header with the account menu (settings, sign out), then the page. */
@@ -41,7 +40,6 @@ export default class AppShellComponent {
   }
 
   protected async signOut(): Promise<void> {
-    await this.auth.signOut();
-    await this.router.navigateByUrl(AUTH_ROUTE.SignIn);
+    await this.auth.signOutAndLeave();
   }
 }
