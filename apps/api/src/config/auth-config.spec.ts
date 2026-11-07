@@ -54,6 +54,13 @@ describe('readAuthConfig', () => {
     ).toThrow(/must use https in production/);
   });
 
+  it.each(['true', '1', 'false'])('refuses TEST=%s in production, allows it elsewhere', (value) => {
+    expect(() => readAuthConfig(env({ ...PROD, TEST: value }))).toThrow(
+      /TEST must not be set in production/,
+    );
+    expect(readAuthConfig(env({ TEST: value })).isProduction).toBe(false);
+  });
+
   it('accepts an https base URL in production', () => {
     const config = readAuthConfig(env(PROD));
     expect(config.baseUrl).toBe('https://app.example.test');

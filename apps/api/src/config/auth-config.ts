@@ -1,5 +1,6 @@
 import { AUTH_DEFAULT_SECRET } from './models/auth-default-secret.const';
 import { AUTH_DEV_BASE_URL } from './models/auth-dev-base-url.const';
+import { AUTH_TEST_FLAG } from './models/auth-test-flag.const';
 import { AUTH_ENV } from './models/auth-env.const';
 import { AUTH_SECRET_MIN_LENGTH } from './models/auth-secret-min-length.const';
 import type { AuthConfig } from './models/auth-config.interface';
@@ -62,10 +63,16 @@ function readProvider(
  * - `BETTER_AUTH_SECRET` is always required (an ephemeral secret would sign everyone out on restart).
  * - `BETTER_AUTH_URL` is required in production (previews included) and must be https there; outside
  *   production it defaults to the web dev server.
+ * - `TEST` must not be set in production (it disables Better Auth's CSRF and origin checks).
  * - Provider variables come in pairs; a missing pair means the provider is not registered.
  */
 export function readAuthConfig(env: NodeJS.ProcessEnv = process.env): AuthConfig {
   const { isProduction } = readAppConfig(env);
+
+  // Better Auth treats a truthy TEST like NODE_ENV=test and skips its origin and CSRF checks.
+  if (isProduction && readVar(env, AUTH_TEST_FLAG) !== undefined) {
+    throw new Error(`Invalid configuration: ${AUTH_TEST_FLAG} must not be set in production`);
+  }
 
   const secret = readVar(env, AUTH_ENV.Secret);
   if (secret === undefined) {
