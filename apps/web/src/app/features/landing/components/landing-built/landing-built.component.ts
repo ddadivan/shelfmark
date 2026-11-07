@@ -9,7 +9,6 @@ import { LANDING_LINKS } from '../../models/landing-links.const';
   selector: 'app-landing-built',
   imports: [TranslocoPipe, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { id: 'how' },
   templateUrl: './landing-built.component.html',
   styleUrl: './landing-built.component.scss',
 })

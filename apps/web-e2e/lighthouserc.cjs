@@ -19,7 +19,8 @@ module.exports = {
     collect: {
       url: paths.map((path) => `${origin}${path}`),
       numberOfRuns: 3,
-      // Serves the already built `e2e` bundle (the Nx target builds it first, cached),
+      // Serves the `e2e` bundle (the Nx target builds it first, nested and cached; a `dependsOn` with
+      // a configuration does not resolve for this target, so the build is an explicit step),
       // compressed like production; lhci starts and stops this server around its runs.
       startServerCommand: `node tools/lighthouse/serve.mjs dist/apps/web-e2e-build/browser ${port}`,
       startServerReadyPattern: 'Available on',

@@ -13,6 +13,23 @@ async function createLoaded() {
 }
 
 describe('LandingPage', () => {
+  afterEach(() => {
+    history.replaceState(null, '', '/');
+    vi.restoreAllMocks();
+  });
+
+  it('opened with #how, loads the sections and focuses that section', async () => {
+    history.replaceState(null, '', '/#how');
+    const focus = vi.spyOn(HTMLElement.prototype, 'focus');
+
+    const fixture = await createLoaded();
+    await fixture.whenStable();
+
+    const target = (fixture.nativeElement as HTMLElement).querySelector('#how');
+    expect(target).not.toBeNull();
+    expect(focus.mock.contexts).toContain(target);
+  });
+
   it('composes the sections under landmarks with one h1', async () => {
     const fixture = await createLoaded();
     const root = fixture.nativeElement as HTMLElement;

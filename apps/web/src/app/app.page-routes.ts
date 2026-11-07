@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { LINKS_SCOPE } from './features/links/models/links-scope.const';
 import { APP_PATH } from './models/app-path.const';
 import { authOnly, guestOnly, redirectToSignIn } from './core/auth/auth.guards';
 import LandingPage from './features/landing/landing.page';
@@ -21,12 +22,24 @@ export const pageRoutes: Routes = [
     loadComponent: () => import('./shell/app-shell.component'),
     children: [
       { path: '', pathMatch: 'full', redirectTo: APP_PATH.Links },
-      { path: APP_PATH.Links, loadComponent: libraryPage },
+      { path: APP_PATH.Links, loadComponent: libraryPage, data: { scope: LINKS_SCOPE.All } },
+      {
+        path: APP_PATH.Unsorted,
+        loadComponent: libraryPage,
+        data: { scope: LINKS_SCOPE.Unsorted },
+      },
+      {
+        path: APP_PATH.Favorites,
+        loadComponent: libraryPage,
+        data: { scope: LINKS_SCOPE.Favorites },
+      },
       { path: APP_PATH.Settings, loadComponent: settingsPage },
     ],
   },
   // A guest on a protected URL: to sign-in, then back.
   { path: APP_PATH.Links, canActivate: [redirectToSignIn], children: [] },
+  { path: APP_PATH.Unsorted, canActivate: [redirectToSignIn], children: [] },
+  { path: APP_PATH.Favorites, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Settings, canActivate: [redirectToSignIn], children: [] },
   {
     path: APP_PATH.SignIn,

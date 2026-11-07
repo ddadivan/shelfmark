@@ -22,6 +22,7 @@ import { translocoConfig } from './core/i18n/transloco.config';
 import { APP_LANG } from './core/i18n/models/app-lang.const';
 import { AppTranslocoLoader } from './core/i18n/app-transloco.loader';
 import { SignedInPreloadingStrategy } from './core/routing/signed-in-preloading.strategy';
+import { provideLinksApi } from './features/links/provide-links-api';
 import { ThemeService } from './core/theme/theme.service';
 
 export const appConfig: ApplicationConfig = {
@@ -44,6 +45,7 @@ export const appConfig: ApplicationConfig = {
     // in empty text and shifts the layout (CLS).
     provideAppInitializer(() => firstValueFrom(inject(TranslocoService).load(APP_LANG.En))),
     provideAuthApi(),
+    ...provideLinksApi(),
     provideAppInitializer(() => inject(ThemeService).init()),
   ],
 };
