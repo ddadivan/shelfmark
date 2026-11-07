@@ -13,6 +13,11 @@ describe('TagsService merge errors', () => {
     await expect(service.merge('u', 'a', 'b')).rejects.toBeInstanceOf(NotFoundException);
   });
 
+  it('maps a missing record (P2025) to 404', async () => {
+    const service = serviceFailingWith(Object.assign(new Error('gone'), { code: 'P2025' }));
+    await expect(service.merge('u', 'a', 'b')).rejects.toBeInstanceOf(NotFoundException);
+  });
+
   it('rethrows other errors unchanged', async () => {
     const failure = new Error('boom');
     await expect(serviceFailingWith(failure).merge('u', 'a', 'b')).rejects.toBe(failure);

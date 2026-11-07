@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type { TagResponse } from '@shelfmark/contracts';
+import type { GetTagResponse, TagResponse } from '@shelfmark/contracts';
 
-export class TagResponseDto implements TagResponse {
+export class TagResponseDto implements TagResponse, GetTagResponse {
   @ApiProperty({ format: 'uuid' })
   id!: string;
 

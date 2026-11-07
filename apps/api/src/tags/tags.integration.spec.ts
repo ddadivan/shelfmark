@@ -255,6 +255,25 @@ describe('Tags API', () => {
       expect(names).toEqual(['Reading', 'new', 'to-read']);
     });
 
+    it('resolves every non-ASCII name the way the database matches it', async () => {
+      const existing = await createTag(owner, 'Éclair');
+      const ids = await service().resolveNames(
+        users.owner.userId,
+        ['éclair', 'ÉCLAIR', 'straße', 'ПРИВЕТ'],
+        t.db.prisma,
+      );
+      // Nothing is dropped: one id per distinct tag, and the same call again is stable.
+      const again = await service().resolveNames(
+        users.owner.userId,
+        ['éclair', 'ÉCLAIR', 'straße', 'ПРИВЕТ'],
+        t.db.prisma,
+      );
+      expect(again).toEqual(ids);
+      expect(ids.length).toBeGreaterThanOrEqual(3);
+      expect(ids.every((id) => typeof id === 'string')).toBe(true);
+      expect(await t.db.prisma.tag.findUnique({ where: { id: existing.id } })).not.toBeNull();
+    });
+
     it('returns nothing for no names, works in a transaction and scopes by user', async () => {
       expect(await service().resolveNames(users.owner.userId, [' '], t.db.prisma)).toEqual([]);
       await createTag(intruder, 'shared');

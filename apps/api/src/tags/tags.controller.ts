@@ -11,9 +11,11 @@ import {
   Post,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNoContentResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -39,6 +41,8 @@ export class TagsController {
 
   @Get(':id')
   @ApiOkResponse({ type: TagResponseDto })
+  @ApiNotFoundResponse({ description: 'Unknown or foreign tag' })
+  @ApiBadRequestResponse({ description: 'Invalid id or body' })
   get(
     @CurrentUser() user: AuthUser,
     @Param('id', ParseUUIDPipe) id: string,
@@ -47,6 +51,7 @@ export class TagsController {
   }
 
   @Post()
+  @ApiBadRequestResponse({ description: 'Invalid id or body' })
   @ApiCreatedResponse({ type: TagResponseDto })
   @ApiConflictResponse({
     description: 'The name exists (case-insensitively) or the tag limit is reached',
@@ -56,6 +61,8 @@ export class TagsController {
   }
 
   @Patch(':id')
+  @ApiNotFoundResponse({ description: 'Unknown or foreign tag' })
+  @ApiBadRequestResponse({ description: 'Invalid id or body' })
   @ApiOkResponse({ type: TagResponseDto })
   @ApiConflictResponse({ description: 'Another tag has this name (case-insensitively)' })
   update(
@@ -67,6 +74,8 @@ export class TagsController {
   }
 
   @Delete(':id')
+  @ApiNotFoundResponse({ description: 'Unknown or foreign tag' })
+  @ApiBadRequestResponse({ description: 'Invalid id' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse({ description: 'The tag is deleted; its links stay' })
   remove(@CurrentUser() user: AuthUser, @Param('id', ParseUUIDPipe) id: string): Promise<void> {
@@ -74,6 +83,8 @@ export class TagsController {
   }
 
   @Post(':id/merge')
+  @ApiNotFoundResponse({ description: 'Unknown or foreign tag' })
+  @ApiBadRequestResponse({ description: 'Invalid id or body, or merging a tag into itself' })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: TagResponseDto, description: 'The surviving target tag' })
   merge(
