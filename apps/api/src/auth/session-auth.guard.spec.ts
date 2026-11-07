@@ -83,7 +83,14 @@ describe('SessionAuthGuard', () => {
     const { guard, context, request } = setup();
     await expect(guard.canActivate(context)).resolves.toBe(true);
     expect(request.auth).toEqual({
-      user: { id: 'u1', name: 'Ada', email: 'ada@example.com', image: null, isDemo: false },
+      user: {
+        id: 'u1',
+        name: 'Ada',
+        email: 'ada@example.com',
+        image: null,
+        isDemo: false,
+        demoExpiresAt: null,
+      },
       session: { expiresAt: '2030-01-01T00:00:00.000Z' },
     });
     expect(JSON.stringify(request)).not.toContain('secret-token');
