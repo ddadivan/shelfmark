@@ -92,6 +92,8 @@
     "@nestjs/platform-express": "12.3.3",
     "@nestjs/swagger": "12.1.0",
     "@ngrx/signals": "22.0.1",
+    "@sentry/browser": "11.11.0",
+    "@sentry/node": "11.11.0",
     "class-transformer": "0.5.1",
     "class-validator": "0.15.1",
     "helmet": "8.3.0",
