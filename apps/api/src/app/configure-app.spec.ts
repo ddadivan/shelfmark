@@ -1,5 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import type { NestExpressApplication } from '@nestjs/platform-express';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { createRateLimitOptions } from '../common/rate-limit/rate-limit-options';
 import { Test } from '@nestjs/testing';
 import { IsInt, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -81,7 +83,10 @@ describe('configureApp', () => {
     let app: NestExpressApplication;
 
     beforeAll(async () => {
-      const moduleRef = await Test.createTestingModule({ controllers: [EchoController] }).compile();
+      const moduleRef = await Test.createTestingModule({
+        imports: [ThrottlerModule.forRoot(createRateLimitOptions(true))],
+        controllers: [EchoController],
+      }).compile();
       app = moduleRef.createNestApplication<NestExpressApplication>({ bodyParser: false });
       configureApp(app, { isProduction: false });
       await app.init();

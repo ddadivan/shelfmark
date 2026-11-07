@@ -9,6 +9,7 @@ import type { AuthTestApp } from './models/auth-test-app.interface';
 import type { AuthTestAppOptions } from './models/auth-test-app-options.interface';
 import { createTestDatabase } from './test-database';
 
+const UNLIMITED_AUTH_RATE_LIMIT = { limit: 1_000_000, ttl: 60_000 };
 const DEFAULT_BASE_URL = 'http://localhost:4200';
 
 /**
@@ -63,7 +64,10 @@ export async function createAuthTestApp(options: AuthTestAppOptions = {}): Promi
     const app = moduleRef.createNestApplication<NestExpressApplication>(new ExpressAdapter(), {
       bodyParser: false,
     });
-    configureApp(app, { isProduction: options.isProduction ?? false });
+    configureApp(app, {
+      isProduction: options.isProduction ?? false,
+      authRateLimit: options.authRateLimit ?? UNLIMITED_AUTH_RATE_LIMIT,
+    });
     await app.init();
     return {
       app,
