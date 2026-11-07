@@ -226,9 +226,25 @@ describe('LandingChatComponent', () => {
           button.textContent?.includes('Pause the feed'),
         ) as HTMLButtonElement;
 
+      const phone = (): HTMLElement => root.querySelector('.landing-chat__phone') as HTMLElement;
+
       beforeEach(() => {
         observer().emit(true);
         settle();
+      });
+
+      it('resumes when unpausing with focus on the pause button', () => {
+        // Focus and pointer on the button are outside the phone, so they never hold the feed.
+        pauseButton().dispatchEvent(new Event('focusin', { bubbles: true }));
+        pauseButton().dispatchEvent(new Event('pointerenter', { bubbles: true }));
+        pauseButton().click();
+        settle();
+        expect(vi.getTimerCount()).toBe(0);
+
+        pauseButton().click();
+        settle();
+        advance(LANDING_CHAT_TIMING.MessageIntervalMs);
+        expect(step()).toBe('1');
       });
 
       it('stops and restarts the feed with the pause button, announced by aria-pressed', () => {
@@ -248,26 +264,26 @@ describe('LandingChatComponent', () => {
       });
 
       it('pauses while the pointer is over the chat and resumes when it leaves', () => {
-        fixture.nativeElement.dispatchEvent(new Event('pointerenter'));
+        phone().dispatchEvent(new Event('pointerenter'));
         settle();
         expect(vi.getTimerCount()).toBe(0);
         advance(5 * LANDING_CHAT_TIMING.MessageIntervalMs);
         expect(step()).toBe('0');
 
-        fixture.nativeElement.dispatchEvent(new Event('pointerleave'));
+        phone().dispatchEvent(new Event('pointerleave'));
         settle();
         advance(LANDING_CHAT_TIMING.MessageIntervalMs);
         expect(step()).toBe('1');
       });
 
       it('pauses while focus is inside the chat and resumes on focusout', () => {
-        fixture.nativeElement.dispatchEvent(new Event('focusin'));
+        phone().dispatchEvent(new Event('focusin'));
         settle();
         expect(vi.getTimerCount()).toBe(0);
         advance(5 * LANDING_CHAT_TIMING.MessageIntervalMs);
         expect(step()).toBe('0');
 
-        fixture.nativeElement.dispatchEvent(new Event('focusout'));
+        phone().dispatchEvent(new Event('focusout'));
         settle();
         advance(LANDING_CHAT_TIMING.MessageIntervalMs);
         expect(step()).toBe('1');

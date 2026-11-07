@@ -1,4 +1,12 @@
-<div class="landing-chat__phone" role="group" aria-labelledby="landing-chat-title">
+<div
+  class="landing-chat__phone"
+  role="group"
+  aria-labelledby="landing-chat-title"
+  (pointerenter)="hovered.set(true)"
+  (pointerleave)="hovered.set(false)"
+  (focusin)="focused.set(true)"
+  (focusout)="focused.set(false)"
+>
   <div class="landing-chat__bar">
     @if (sorted()) {
       <ui-logo class="landing-chat__mark" variant="mark" />
@@ -32,6 +40,7 @@
       <!-- Decorative loop: the five links below are what assistive technology reads. -->
       <ul
         class="landing-chat__track"
+        data-testid="landing-chat-track"
         aria-hidden="true"
         [class.landing-chat__track--snap]="snapping()"
         [class.landing-chat__track--running]="running()"
@@ -51,7 +60,7 @@
       </ul>
     </div>
   } @else {
-    <ul id="landing-chat-body" class="landing-chat__messages">
+    <ul id="landing-chat-body" class="landing-chat__messages" data-testid="landing-chat-messages">
       @for (message of messages; track message.id) {
         <li class="landing-chat__message">
           <app-landing-chat-bubble [message]="message" />

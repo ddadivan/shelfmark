@@ -10,6 +10,7 @@
         @for (link of group.links; track link.id) {
           <li
             class="landing-chat-shelf__card"
+            data-testid="landing-chat-shelf-card"
             [style.animation-delay.ms]="
               groupIndex * timing.GroupStaggerMs + $index * timing.CardStaggerMs
             "

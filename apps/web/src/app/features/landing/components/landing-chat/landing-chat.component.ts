@@ -28,7 +28,9 @@ const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
  *
  * Motion (story 20): the chat is an endless feed. Every `MessageIntervalMs` the track rises by one
  * slot (`transform` only); the list is the feed twice, so after one lap the track snaps back
- * unseen. The loop runs only while the block is in the viewport and the tab is visible. With
+ * unseen. The loop runs only while the block is in the viewport and the tab is visible. Hover
+ * and focus pause it only over the phone itself: the buttons below sit outside that area, so
+ * pressing "Pause" and pressing it again always resumes the feed (WCAG 2.2.2). With
  * `prefers-reduced-motion` nothing moves: the chat shows its five links as a static frame and
  * the swap to the shelf is instant.
  */
@@ -47,10 +49,6 @@ const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
   styleUrl: './landing-chat.component.scss',
   host: {
     '[style.--landing-chat-rise]': 'rise',
-    '(pointerenter)': 'hovered.set(true)',
-    '(pointerleave)': 'hovered.set(false)',
-    '(focusin)': 'focused.set(true)',
-    '(focusout)': 'focused.set(false)',
   },
 })
 export class LandingChatComponent {
@@ -70,8 +68,8 @@ export class LandingChatComponent {
   private readonly reducedMotion = signal(false);
   private readonly inView = signal(false);
   private readonly tabVisible = signal(true);
-  private readonly hovered = signal(false);
-  private readonly focused = signal(false);
+  protected readonly hovered = signal(false);
+  protected readonly focused = signal(false);
   /** The visitor stopped the feed with the pause button (WCAG 2.2.2). */
   protected readonly userPaused = signal(false);
   private clearTimer: ReturnType<typeof setTimeout> | undefined;
