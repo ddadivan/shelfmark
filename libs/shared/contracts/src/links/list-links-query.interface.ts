@@ -2,15 +2,16 @@ import type { CursorQuery } from '../pagination/cursor-query.interface';
 import type { SortOrder } from '../pagination/sort-order.type';
 import type { LinkSortField } from './link-sort-field.type';
 
-/** `GET /api/links` query. Booleans and numbers arrive as strings and are coerced by the API. */
+/** `GET /api/links` query. The handler sees the parsed values: booleans and numbers, not strings. */
 export interface ListLinksQuery extends CursorQuery {
+  /** UUID of a folder. */
   folderId?: string;
   /** Only links without a folder; cannot be combined with `folderId`. */
   unsorted?: boolean;
   favorite?: boolean;
-  /** Tag name. */
+  /** Tag name, matched case-insensitively. */
   tag?: string;
-  /** Title search. */
+  /** Title search, at most `LINK_LIMIT.QueryMax` characters. */
   q?: string;
   /** Defaults to `LINK_SORT_FIELD.CreatedAt`. */
   sort?: LinkSortField;

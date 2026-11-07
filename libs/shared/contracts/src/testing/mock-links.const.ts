@@ -1,8 +1,9 @@
 import type { LinkResponse } from '../links/link-response.interface';
 import { MOCK_ID } from './mock-id.const';
+import { MOCK_NAME } from './mock-name.const';
 import { MOCK_TIMESTAMP } from './mock-timestamp.const';
 
-export const MOCK_LINKS: LinkResponse[] = [
+export const MOCK_LINKS: ReadonlyArray<Readonly<LinkResponse>> = [
   {
     id: MOCK_ID.LinkAngular,
     folderId: MOCK_ID.FolderAngular,
@@ -13,7 +14,7 @@ export const MOCK_LINKS: LinkResponse[] = [
     imageUrl: null,
     isFavorite: true,
     lastOpenedAt: MOCK_TIMESTAMP,
-    tags: ['docs'],
+    tags: [MOCK_NAME.TagDocs],
     createdAt: MOCK_TIMESTAMP,
     updatedAt: MOCK_TIMESTAMP,
   },
@@ -27,7 +28,7 @@ export const MOCK_LINKS: LinkResponse[] = [
     imageUrl: null,
     isFavorite: false,
     lastOpenedAt: null,
-    tags: ['recipes'],
+    tags: [MOCK_NAME.TagRecipes],
     createdAt: MOCK_TIMESTAMP,
     updatedAt: MOCK_TIMESTAMP,
   },
