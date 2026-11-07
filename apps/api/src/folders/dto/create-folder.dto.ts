@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { FOLDER_LIMIT, type CreateFolderRequest } from '@shelfmark/contracts';
 import { IsOptional, IsString, IsUUID, MaxLength, MinLength } from 'class-validator';
-import { TrimString } from './trim-string';
+import { TrimString } from './trim-string.decorator';
 
 export class CreateFolderDto implements CreateFolderRequest {
   @ApiProperty({ minLength: 1, maxLength: FOLDER_LIMIT.NameMax, example: 'Recipes' })

@@ -15,6 +15,7 @@ import {
 } from '@shelfmark/contracts';
 import { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import type { FolderDbClient } from './models/folder-db-client.type';
 import { FOLDER_LOCK_PREFIX } from './models/folder-advisory-lock.const';
 import { toFolderResponse } from './to-folder-response';
 import { wouldCreateCycle } from './would-create-cycle';
@@ -27,12 +28,14 @@ export class FoldersService {
   constructor(private readonly prisma: PrismaService) {}
 
   async list(userId: string): Promise<ListFoldersResponse> {
-    const [rows, perFolder, all, unsorted, favorites] = await Promise.all([
+    // One batch transaction: rows and counts come from the same snapshot.
+    const [rows, perFolder, all, unsorted, favorites] = await this.prisma.$transaction([
       this.prisma.folder.findMany({ where: { userId }, orderBy: [{ name: 'asc' }, { id: 'asc' }] }),
       this.prisma.link.groupBy({
         by: ['folderId'],
         where: { userId, folderId: { not: null } },
         _count: { _all: true },
+        orderBy: { folderId: 'asc' },
       }),
       this.prisma.link.count({ where: { userId } }),
       this.prisma.link.count({ where: { userId, folderId: null } }),
@@ -137,17 +140,22 @@ export class FoldersService {
     await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${FOLDER_LOCK_PREFIX + userId}, 0))`;
   }
 
-  private async requireOwned(
-    tx: Prisma.TransactionClient,
-    userId: string,
-    id: string,
-  ): Promise<void> {
-    const found = await tx.folder.findFirst({ where: { id, userId }, select: { id: true } });
+  /**
+   * Throws 404 unless the folder exists and belongs to the user (foreign looks like missing).
+   * For other modules that reference a folder (links). Callers that create or move links into a
+   * folder must also take the `folders:` lock in the same transaction, so a concurrent
+   * `delete-links` cannot miss a link inserted after its subtree query.
+   */
+  async requireOwned(db: FolderDbClient, userId: string, folderId: string): Promise<void> {
+    const found = await db.folder.findFirst({
+      where: { id: folderId, userId },
+      select: { id: true },
+    });
     if (!found) throw new NotFoundException(NOT_FOUND);
   }
 
   private directLinkCount(
-    client: Prisma.TransactionClient | PrismaService,
+    client: FolderDbClient,
     userId: string,
     folderId: string,
   ): Promise<number> {

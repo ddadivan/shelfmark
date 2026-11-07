@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { FOLDER_LIMIT, type UpdateFolderRequest } from '@shelfmark/contracts';
 import { IsOptional, IsString, IsUUID, MaxLength, MinLength } from 'class-validator';
-import { TrimString } from './trim-string';
+import { TrimString } from './trim-string.decorator';
 
 export class UpdateFolderDto implements UpdateFolderRequest {
   @ApiPropertyOptional({ minLength: 1, maxLength: FOLDER_LIMIT.NameMax })

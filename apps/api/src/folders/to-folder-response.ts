@@ -1,12 +1,5 @@
 import type { FolderResponse } from '@shelfmark/contracts';
-
-interface FolderRow {
-  id: string;
-  parentId: string | null;
-  name: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import type { FolderRow } from './models/folder-row.interface';
 
 export function toFolderResponse(row: FolderRow, linkCount: number): FolderResponse {
   return {

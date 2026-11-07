@@ -78,6 +78,14 @@ describe('folders API', () => {
     });
   });
 
+  it('reads one folder with its direct link count', async () => {
+    const id = await createFolder(a, 'Counted');
+    await addLink(users.owner.userId, { folderId: id });
+    await addLink(users.owner.userId, { folderId: id });
+    const res = await a.get(`${BASE}/${id}`).expect(200);
+    expect(res.body).toMatchObject({ id, name: 'Counted', parentId: null, linkCount: 2 });
+  });
+
   it('moves into a foreign parent are 404 and leave the folder alone', async () => {
     const foreign = await createFolder(a, 'Foreign');
     const mine = await createFolder(b, 'Mine');
