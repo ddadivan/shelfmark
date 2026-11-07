@@ -1,0 +1,73 @@
+@use 'ui' as *;
+
+.sign-in {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: var(--space-6) var(--space-4);
+  background: var(--bg);
+  color: var(--text);
+
+  @include tablet-up {
+    padding: rem(48px);
+  }
+}
+
+.sign-in__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  width: 100%;
+  max-width: rem(400px);
+}
+
+.sign-in__intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.sign-in__eyebrow {
+  @include type(label);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.sign-in__privacy {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.sign-in__title {
+  @include type(display);
+
+  margin: 0;
+
+  @include phone {
+    // Phone: the `title` type style; the 32px display size wraps to three lines at 360px.
+    @include type(title);
+  }
+}
+
+.sign-in__subtitle {
+  @include type(body);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.sign-in__actions {
+  display: flex;
+  flex-direction: column;
+  gap: rem(10px);
+}
+
+// The host is a column flex box so the native button inside stretches to the full width.
+.sign-in__button {
+  display: flex;
+  flex-direction: column;
+}
