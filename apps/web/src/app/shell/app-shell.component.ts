@@ -14,6 +14,7 @@ import {
 } from '@shelfmark/ui';
 import { AuthStore } from '../core/auth/auth.store';
 import { LinkActionsService } from '../features/links/link-actions.service';
+import { SearchDialogService } from '../features/search/search-dialog.service';
 import { RecentLinksPanelComponent } from '../features/links/recent/recent-links-panel.component';
 import { UiStore } from '../stores/ui.store';
 import { APP_PATH } from '../models/app-path.const';
@@ -35,6 +36,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     RecentLinksPanelComponent,
     SidebarComponent,
   ],
+  host: { '(document:keydown)': 'onKeydown($event)' },
   templateUrl: './app-shell.component.html',
   styleUrl: './app-shell.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,6 +45,7 @@ export default class AppShellComponent {
   protected readonly auth = inject(AuthStore);
   protected readonly ui = inject(UiStore);
   protected readonly actions = inject(LinkActionsService);
+  protected readonly search = inject(SearchDialogService);
   private readonly transloco = inject(TranslocoService);
 
   private readonly recentLabels = toSignal(
@@ -60,6 +63,10 @@ export default class AppShellComponent {
 
   protected async openSettings(): Promise<void> {
     await this.router.navigateByUrl(`/${APP_PATH.Settings}`);
+  }
+
+  protected onKeydown(event: KeyboardEvent): void {
+    this.search.handleShortcut(event);
   }
 
   protected toggleRecent(): void {

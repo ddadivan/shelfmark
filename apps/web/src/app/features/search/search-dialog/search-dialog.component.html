@@ -1,0 +1,93 @@
+<ui-dialog
+  class="search-dialog"
+  [title]="'search.title' | transloco"
+  [closeLabel]="'search.close' | transloco"
+>
+  <ui-command-list
+    [(query)]="query"
+    [busy]="busy()"
+    [inputLabel]="'search.label' | transloco"
+    [placeholder]="'search.placeholder' | transloco"
+    [listLabel]="'search.results' | transloco"
+    (selected)="choose($event)"
+  >
+    <kbd slot="input-end">{{ 'search.esc' | transloco }}</kbd>
+
+    @if (linkCount() > 0) {
+      <ui-command-group
+        [heading]="
+          (state().more ? 'library.countMore' : 'library.count') | transloco: { count: linkCount() }
+        "
+      >
+        @for (link of state().links; track link.id) {
+          <ui-command-item [value]="SEARCH_RESULT_KIND.Link + ':' + link.id">
+            <ui-favicon
+              slot="leading"
+              [src]="link.faviconUrl ?? undefined"
+              [letter]="siteLetter(link.url)"
+            />
+            <ui-highlight [text]="link.title" [query]="state().query" />
+            <span slot="meta">
+              {{ linkHost(link.url) }}
+              @if (folderName(link.folderId); as folder) {
+                {{ 'search.inFolder' | transloco: { folder: folder } }}
+              }
+              @if (noteMatch(link); as note) {
+                {{ 'search.noteMatches' | transloco }}
+                <ui-highlight [text]="note" [query]="state().query" />
+              }
+            </span>
+          </ui-command-item>
+        }
+        @if (state().more) {
+          <ui-command-item [value]="SEARCH_RESULT_KIND.All">
+            <ui-icon slot="leading" name="search" [size]="16" />
+            {{ 'search.showAll' | transloco: { query: state().query } }}
+          </ui-command-item>
+        }
+      </ui-command-group>
+    }
+
+    @if (hasLocal()) {
+      <ui-command-group [heading]="'search.foldersAndTags' | transloco">
+        @for (match of folderMatches(); track match.folder.id) {
+          <ui-command-item [value]="SEARCH_RESULT_KIND.Folder + ':' + match.folder.id">
+            <ui-icon slot="leading" name="folder" [size]="16" />
+            <ui-highlight [text]="match.path" [query]="parsed()" />
+            <span slot="trailing">{{
+              pluralKey('search.linkCount', match.folder.linkCount)
+                | transloco: { count: match.folder.linkCount }
+            }}</span>
+          </ui-command-item>
+        }
+        @for (tag of tagMatches(); track tag.id) {
+          <ui-command-item [value]="SEARCH_RESULT_KIND.Tag + ':' + tag.name">
+            <ui-icon slot="leading" name="tag" [size]="16" />
+            <ui-highlight [text]="tag.name" [query]="parsed()" />
+            <span slot="meta">{{
+              pluralKey('search.tagMeta', tag.linkCount) | transloco: { count: tag.linkCount }
+            }}</span>
+          </ui-command-item>
+        }
+      </ui-command-group>
+    }
+
+    <p slot="empty" class="search-dialog__empty">
+      @if (parsed() === '') {
+        {{ 'search.hint' | transloco }}
+      } @else if (busy()) {
+        {{ 'search.searching' | transloco }}
+      } @else if (state().failed) {
+        {{ 'search.failed' | transloco }}
+      } @else {
+        {{ 'library.emptySearch.title' | transloco: { query: parsed() } }}
+      }
+    </p>
+
+    <span slot="footer"><kbd>↑</kbd> <kbd>↓</kbd> {{ 'search.hints.move' | transloco }}</span>
+    <span slot="footer"><kbd>↵</kbd> {{ 'search.hints.open' | transloco }}</span>
+    <span slot="footer"
+      ><kbd>{{ modifier }}</kbd> <kbd>↵</kbd> {{ 'search.hints.background' | transloco }}</span
+    >
+  </ui-command-list>
+</ui-dialog>

@@ -293,6 +293,7 @@
     "accountMenu": "Account menu",
     "settings": "Settings",
     "addLink": "Add link",
+    "search": "Search",
     "sidebar": {
       "nav": "Library",
       "tree": "Views and folders",
@@ -456,6 +457,34 @@
       "title": "No links with these tags",
       "text": "Nothing you saved has all of the selected tags.",
       "clear": "Clear filter"
+    }
+  },
+  "search": {
+    "title": "Search",
+    "close": "Close search",
+    "label": "Search links, folders and tags",
+    "placeholder": "Search links, folders and tags",
+    "results": "Search results",
+    "esc": "Esc",
+    "inFolder": "in {{folder}}",
+    "noteMatches": "note matches:",
+    "showAll": "Show all results for “{{query}}”",
+    "foldersAndTags": "Folders and tags",
+    "linkCount": {
+      "one": "{{count}} link",
+      "other": "{{count}} links"
+    },
+    "tagMeta": {
+      "one": "Tag, {{count}} link",
+      "other": "Tag, {{count}} links"
+    },
+    "hint": "Type to search your links, folders and tags.",
+    "searching": "Searching…",
+    "failed": "Couldn't search. Try again.",
+    "hints": {
+      "move": "move",
+      "open": "open",
+      "background": "open in background"
     }
   },
   "settings": {

@@ -42,6 +42,13 @@
   margin-inline: var(--space-4) auto;
 }
 
+// On a phone only the icon shows; the button keeps its name through `aria-label`.
+.shell__search-label {
+  @include phone {
+    display: none;
+  }
+}
+
 // The recent panel needs room: it exists from the desktop breakpoint up.
 .shell__recent-toggle {
   display: none;

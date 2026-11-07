@@ -9,6 +9,16 @@
   >
     {{ 'shell.addLink' | transloco }}
   </ui-button>
+  <ui-button
+    class="shell__search"
+    variant="ghost"
+    size="sm"
+    iconLeft="search"
+    [ariaLabel]="'shell.search' | transloco"
+    (click)="search.open()"
+  >
+    <span class="shell__search-label">{{ 'shell.search' | transloco }}</span>
+  </ui-button>
   @if (auth.user(); as user) {
     <div class="shell__user">
       @if (recentToggleLabel(); as label) {
