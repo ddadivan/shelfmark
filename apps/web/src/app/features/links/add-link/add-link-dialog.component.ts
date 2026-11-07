@@ -44,12 +44,12 @@ import {
   type TagSuggestion,
 } from '@shelfmark/ui';
 import { firstValueFrom, switchMap, tap, timer, type Observable } from 'rxjs';
+import { FoldersStore } from '../../../stores/folders.store';
 import { ADD_LINK_ACTION } from '../models/add-link-action.const';
 import type { AddLinkDialogData } from '../models/add-link-dialog-data.interface';
 import type { AddLinkSaved } from '../models/add-link-saved.interface';
 import type { AddLinkFormModel } from '../models/add-link-form-model.interface';
 import type { AddLinkResult } from '../models/add-link-result.type';
-import { FOLDERS_API } from '../models/folders-api.const';
 import { LINKS_API } from '../models/links-api.const';
 import { PREVIEW_STATE } from '../models/preview-state.const';
 import type { PreviewState } from '../models/preview-state.type';
@@ -105,7 +105,7 @@ export class AddLinkDialogComponent {
   protected readonly LINK_LIMIT = LINK_LIMIT;
 
   private readonly linksApi = inject(LINKS_API);
-  private readonly foldersApi = inject(FOLDERS_API);
+  private readonly folders = inject(FoldersStore);
   private readonly tagsApi = inject(TAGS_API);
   private readonly ref = inject<UiDialogRef<AddLinkResult>>(UiDialogRef);
   private readonly transloco = inject(TranslocoService);
@@ -188,12 +188,9 @@ export class AddLinkDialogComponent {
       ),
   });
 
-  private readonly folders = rxResource({ stream: () => this.foldersApi.list() });
   private readonly tags = rxResource({ stream: () => this.tagsApi.list() });
 
-  protected readonly folderOptions = computed(() =>
-    buildFolderOptions(this.folders.hasValue() ? this.folders.value() : []),
-  );
+  protected readonly folderOptions = computed(() => buildFolderOptions(this.folders.entities()));
   protected readonly tagSuggestions = computed<TagSuggestion[]>(() =>
     (this.tags.hasValue() ? this.tags.value() : []).map((tag) => ({ name: tag.name })),
   );
@@ -247,6 +244,8 @@ export class AddLinkDialogComponent {
   });
 
   constructor() {
+    // Usually loaded by the sidebar already; the options fill in when the list arrives.
+    void this.folders.load();
     // The preview is gone (URL emptied or no longer valid): drop a title it filled in.
     // An `effect` because the field tree exposes `dirty()` but has no value-change hook, and the
     // form model is a plain signal, so a `linkedSignal` could not see whether the user typed.

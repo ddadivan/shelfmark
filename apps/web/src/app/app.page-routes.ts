@@ -33,6 +33,11 @@ export const pageRoutes: Routes = [
         loadComponent: libraryPage,
         data: { scope: LINKS_SCOPE.Favorites },
       },
+      {
+        path: `${APP_PATH.Folders}/:folderId`,
+        loadComponent: libraryPage,
+        data: { scope: LINKS_SCOPE.Folder },
+      },
       { path: APP_PATH.Settings, loadComponent: settingsPage },
     ],
   },
@@ -40,6 +45,7 @@ export const pageRoutes: Routes = [
   { path: APP_PATH.Links, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Unsorted, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Favorites, canActivate: [redirectToSignIn], children: [] },
+  { path: `${APP_PATH.Folders}/:folderId`, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Settings, canActivate: [redirectToSignIn], children: [] },
   {
     path: APP_PATH.SignIn,

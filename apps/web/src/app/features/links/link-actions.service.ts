@@ -3,9 +3,11 @@ import { TranslocoService } from '@jsverse/transloco';
 import type { LinkResponse } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
 import { DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
+import { FoldersStore } from '../../stores/folders.store';
 import { LinksStore } from '../../stores/links.store';
 import { AddLinkDialogService } from './add-link/add-link-dialog.service';
 import { ADD_LINK_ACTION } from './models/add-link-action.const';
+import type { AddLinkData } from './models/add-link-data.interface';
 import { LINKS_API } from './models/links-api.const';
 import { UndoToastService } from './undo-toast.service';
 
@@ -17,6 +19,7 @@ import { UndoToastService } from './undo-toast.service';
 @Service()
 export class LinkActionsService {
   private readonly store = inject(LinksStore);
+  private readonly folders = inject(FoldersStore);
   // Resolved on use: the shell injects this service where specs provide no `LINKS_API`.
   private readonly injector = inject(Injector);
   private readonly dialogs = inject(DialogService);
@@ -32,6 +35,7 @@ export class LinkActionsService {
 
   async toggleFavorite(link: LinkResponse): Promise<void> {
     if (await this.store.toggleFavorite(link.id)) {
+      void this.folders.refresh();
       return;
     }
     this.toasts.show({
@@ -62,10 +66,11 @@ export class LinkActionsService {
   }
 
   /** Opens the add-link dialog; a saved link shows at once in the feed. */
-  async addLink(): Promise<void> {
-    const result = await this.addLinkDialog.open();
+  async addLink(data: AddLinkData = {}): Promise<void> {
+    const result = await this.addLinkDialog.open(data);
     if (result?.action === ADD_LINK_ACTION.Saved) {
       this.store.addSaved(result.link);
+      void this.folders.refresh();
       this.toasts.show({ kind: TOAST_KIND.Success, text: this.t('links.item.saved') });
     } else if (result?.action === ADD_LINK_ACTION.OpenExisting) {
       // "Open saved": the already saved link opens in its edit dialog.
@@ -95,7 +100,9 @@ export class LinkActionsService {
   }
 
   private async commitDelete(id: string): Promise<void> {
-    if (!(await this.store.commitRemove(id))) {
+    if (await this.store.commitRemove(id)) {
+      void this.folders.refresh();
+    } else {
       this.toasts.show({ kind: TOAST_KIND.Error, text: this.t('links.item.deleteFailed') });
     }
   }
