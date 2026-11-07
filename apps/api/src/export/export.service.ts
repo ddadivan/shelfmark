@@ -71,7 +71,7 @@ export class ExportService {
     const scope = this.scopeOf(allFolders, query.folderId);
     const scopeIds = new Set(scope.map((folder) => folder.id));
     const base = this.baseWhere(userId, query, query.folderId === undefined ? null : scopeIds);
-    const filtered = (query.tag?.length ?? 0) > 0 || (query.q ?? '').trim() !== '';
+    const filtered = this.normalizedTags(query).length > 0 || (query.q ?? '').trim() !== '';
     const folders = filtered ? await this.nonEmpty(scope, byId, base) : scope;
 
     const date = now.toISOString().slice(0, 10);
@@ -87,6 +87,18 @@ export class ExportService {
       contentType: EXPORT_CONTENT_TYPE.Html,
       body: Readable.from(this.guarded(this.htmlChunks(folders, query.folderId, base))),
     };
+  }
+
+  /** Tag filter values after normalisation: empty ones dropped, case-insensitive duplicates collapsed. */
+  private normalizedTags(query: ExportQuery): string[] {
+    return [
+      ...new Map(
+        (query.tag ?? [])
+          .map(normalizeTagName)
+          .filter((name) => name !== '')
+          .map((name) => [name.toLowerCase(), name] as const),
+      ).values(),
+    ];
   }
 
   private scopeOf(all: ExportFolderRow[], rootId?: string): ExportFolderRow[] {
@@ -110,14 +122,7 @@ export class ExportService {
     query: ExportQuery,
     scopeIds: Set<string> | null,
   ): Prisma.LinkWhereInput {
-    const tags = [
-      ...new Map(
-        (query.tag ?? [])
-          .map(normalizeTagName)
-          .filter((name) => name !== '')
-          .map((name) => [name.toLowerCase(), name] as const),
-      ).values(),
-    ];
+    const tags = this.normalizedTags(query);
     // Prisma passes `contains` through as LIKE `%value%` without escaping wildcards: escape them.
     const search = (query.q ?? '').trim().replace(/[\\%_]/g, (char) => `\\${char}`);
     const and: Prisma.LinkWhereInput[] = tags.map((name) => ({

@@ -267,9 +267,11 @@ describe('GET /api/export', () => {
 
   it('treats an empty tag value as no filter', async () => {
     await seed(users.owner.userId);
+    await t.db.prisma.folder.create({ data: { userId: users.owner.userId, name: 'Empty' } });
     const doc = (await owner().get('/api/export?format=json&tag=').expect(200))
       .body as ExportDocument;
     expect(doc.links).toHaveLength(4);
+    expect(doc.folders.map((f) => f.path)).toContainEqual(['Empty']);
   });
 
   it('validates the query', async () => {
