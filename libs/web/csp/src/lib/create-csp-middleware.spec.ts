@@ -33,13 +33,37 @@ describe('createCspMiddleware', () => {
     expect(response?.headers.get('Cache-Control')).toBe('private, no-store');
   });
 
-  it('hands the service worker the shell as built, so its hash check passes', async () => {
-    const response = handle('/index.html?ngsw-cache-bust=0.123');
+  describe('service worker shell fetch', () => {
+    const swHeaders = { 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors' };
 
-    expect(await response?.text()).toBe(SHELL);
-    expect(response?.headers.get('Content-Security-Policy')).toContain(
-      "style-src 'self' 'nonce-CSP_NONCE_PLACEHOLDER'",
-    );
+    function handleWith(path: string, headers: Record<string, string>): Response {
+      return createCspMiddleware(SHELL)(new Request(`${origin}${path}`, { headers })) as Response;
+    }
+
+    it('gets the shell as built, so the ngsw.json hash check passes', async () => {
+      const response = handleWith('/index.html?ngsw-cache-bust=0.123', swHeaders);
+
+      expect(await response.text()).toBe(SHELL);
+      expect(nonceOf(response)).toBe('CSP_NONCE_PLACEHOLDER');
+      expect(response.headers.get('Cache-Control')).toBe('private, no-store');
+      expect(response.headers.get('Vary')).toBe('Sec-Fetch-Dest, Sec-Fetch-Mode');
+    });
+
+    it.each([
+      ['/foo?ngsw-cache-bust=1', swHeaders],
+      ['/?ngsw-cache-bust=1', swHeaders],
+      ['/index.html', swHeaders],
+      ['/index.html?ngsw-cache-bust=1', { ...swHeaders, 'Sec-Fetch-Dest': 'document' }],
+      ['/index.html?ngsw-cache-bust=1', { 'Sec-Fetch-Mode': 'cors' }],
+      ['/index.html?ngsw-cache-bust=1', {}],
+      ['/index.html?ngsw-cache-bust=1', { ...swHeaders, 'Sec-Fetch-Mode': 'navigate' }],
+      ['/index.html?ngsw-cache-bust=1', { 'Sec-Fetch-Dest': 'empty' }],
+    ])('gets a random nonce for %s with %j', async (path, headers) => {
+      const response = handleWith(path, headers);
+
+      expect(nonceOf(response)).not.toBe('CSP_NONCE_PLACEHOLDER');
+      expect(await response.text()).not.toContain('CSP_NONCE_PLACEHOLDER');
+    });
   });
 
   it('uses a different nonce for every request', () => {
