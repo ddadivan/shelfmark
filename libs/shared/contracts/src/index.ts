@@ -42,3 +42,5 @@ export type { MergeTagRequest } from './tags/merge-tag-request.interface';
 export type { MergeTagResponse } from './tags/merge-tag-response.type';
 export { TAG_LIMIT } from './tags/tag-limit.const';
 export { normalizeTagName } from './tags/normalize-tag-name';
+
+export type { OnboardingResponse } from './users/onboarding-response.interface';

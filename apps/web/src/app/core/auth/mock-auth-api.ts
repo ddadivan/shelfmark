@@ -7,7 +7,15 @@ import { MOCK_DEMO_USER } from './models/mock-demo-user.const';
 import { MOCK_USERS } from './models/mock-users.const';
 import { MOCK_SESSION_STORAGE_KEY } from './models/mock-session-storage-key.const';
 
-function isAuthUser(value: unknown): value is AuthUser {
+/** Sessions seeded before the onboarding flag existed (old e2e seeds) are existing users. */
+const LEGACY_ONBOARDING_COMPLETED_AT = '2020-01-01T00:00:00.000Z';
+
+/** A stored session; the onboarding flag may be missing in old seeds. */
+type StoredUser = Omit<AuthUser, 'onboardingCompletedAt'> & {
+  onboardingCompletedAt?: string | null;
+};
+
+function isStoredUser(value: unknown): value is StoredUser {
   if (typeof value !== 'object' || value === null) {
     return false;
   }
@@ -17,7 +25,10 @@ function isAuthUser(value: unknown): value is AuthUser {
     typeof candidate.name === 'string' &&
     typeof candidate.email === 'string' &&
     (candidate.image === null || typeof candidate.image === 'string') &&
-    typeof candidate.isDemo === 'boolean'
+    typeof candidate.isDemo === 'boolean' &&
+    (candidate.onboardingCompletedAt === undefined ||
+      candidate.onboardingCompletedAt === null ||
+      typeof candidate.onboardingCompletedAt === 'string')
   );
 }
 
@@ -53,7 +64,16 @@ export class MockAuthApi implements AuthApi {
     }
     try {
       const parsed: unknown = JSON.parse(raw);
-      return isAuthUser(parsed) ? parsed : null;
+      if (!isStoredUser(parsed)) {
+        return null;
+      }
+      return {
+        ...parsed,
+        onboardingCompletedAt:
+          parsed.onboardingCompletedAt === undefined
+            ? LEGACY_ONBOARDING_COMPLETED_AT
+            : parsed.onboardingCompletedAt,
+      };
     } catch {
       return null;
     }

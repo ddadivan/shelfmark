@@ -104,6 +104,13 @@ export const AuthStore = signalStore(
         signIn: (provider: AuthProvider) => run(provider, () => api.signIn(provider)),
         signInDemo: () => run(AUTH_DEMO, () => api.signInDemo()),
         signOut,
+        /** Sets the onboarding flag of the signed-in user; no-op for a guest. */
+        setOnboardingCompletedAt(onboardingCompletedAt: string | null): void {
+          const user = store.user();
+          if (user) {
+            patchState(store, { user: { ...user, onboardingCompletedAt } });
+          }
+        },
         /** Signs out, then goes to the sign-in screen. */
         async signOutAndLeave(): Promise<void> {
           await signOut();

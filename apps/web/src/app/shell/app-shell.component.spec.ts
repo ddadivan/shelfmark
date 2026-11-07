@@ -19,6 +19,7 @@ const USER: AuthUser = {
   email: 'a@example.com',
   image: null,
   isDemo: false,
+  onboardingCompletedAt: '2020-01-01T00:00:00.000Z',
 };
 
 function menuItem(label: string): HTMLElement | undefined {
