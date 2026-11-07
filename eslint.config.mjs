@@ -7,13 +7,27 @@ import {
 } from './eslint.named-constants.mjs';
 import { testingImportAllowedFiles, testingImportPatterns } from './eslint.contracts-testing.mjs';
 
+// PROJECT.md 5.8: parameterised queries only. Unsafe raw SQL helpers are banned everywhere.
+const rawSqlSelectors = ['$queryRawUnsafe', '$executeRawUnsafe'].map((name) => ({
+  selector: `Identifier[name='${name}']`,
+  message: `${name} is forbidden: use the tagged-template $queryRaw / $executeRaw (parameterised).`,
+}));
+
 export default [
   ...nx.configs['flat/base'],
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
   prettier,
   {
-    ignores: ['**/dist', '**/coverage', '**/.nx', '**/.angular', '**/storybook-static', 'docs/**'],
+    ignores: [
+      '**/dist',
+      '**/coverage',
+      'apps/api/src/generated',
+      '**/.nx',
+      '**/.angular',
+      '**/storybook-static',
+      'docs/**',
+    ],
   },
   {
     // PROJECT.md 5.0: strict typing, no `any`, no silenced compiler errors.
@@ -36,11 +50,11 @@ export default [
     // ADR 0024: named constants, no TS enum. Projects that set no-restricted-syntax themselves
     // (eslint.angular.mjs) spread the same selectors.
     files: ['**/*.ts', '**/*.tsx'],
-    rules: { 'no-restricted-syntax': ['error', ...namedConstantSelectors] },
+    rules: { 'no-restricted-syntax': ['error', ...namedConstantSelectors, ...rawSqlSelectors] },
   },
   {
     files: namedConstantDefinitionFiles,
-    rules: { 'no-restricted-syntax': ['error', ...enumAndKeySelectors] },
+    rules: { 'no-restricted-syntax': ['error', ...enumAndKeySelectors, ...rawSqlSelectors] },
   },
   {
     files: ['**/*.ts', '**/*.tsx'],

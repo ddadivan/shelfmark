@@ -6,11 +6,15 @@
 // copies each package and its dependency tree into the function (issue #11).
 // `swagger-ui-dist` is a direct dependency (pinned to the version @nestjs/swagger uses) so this
 // import and `includeFiles` in vercel.json do not rely on npm hoisting.
+// Prisma: never import the bare `@prisma/client` (its entry needs the generated client); the
+// generated client in the bundle only needs `@prisma/client/runtime/client`.
 // `apps/api/src/vercel-entry.spec.ts` fails if the bundle needs a package missing here.
 import '@nestjs/common';
 import '@nestjs/core';
 import '@nestjs/platform-express';
 import '@nestjs/swagger';
+import '@prisma/adapter-pg';
+import '@prisma/client/runtime/client';
 import 'class-transformer';
 import 'class-validator';
 import 'helmet';

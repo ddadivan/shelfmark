@@ -25,6 +25,20 @@ jobs:
     permissions:
       contents: read
       actions: read
+    # Real Postgres for the migration check only (ADR 0025); unit tests use in-memory PGlite.
+    # Trust auth: the container is reachable from this job only and holds no data.
+    services:
+      postgres:
+        image: postgres:17-alpine@sha256:3540c0362c809df084ffac0ae69fe794515f9de92692f02178bcdce0ef0302ac
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -56,6 +70,17 @@ jobs:
           }
       - run: node --test .claude/hooks/
       - run: npx nx affected -t lint typecheck test build --output-style=static
+      # Applies every migration to the Postgres service and fails when the result differs from
+      # schema.prisma (a schema change without a migration). Only when `api` is affected.
+      - name: Check migrations against Postgres
+        run: |
+          projects="$(npx nx show projects --affected --with-target db-check --json)"
+          echo "Affected projects with a migration check: ${projects}"
+          if node -e 'process.exit(JSON.parse(process.argv[1]).length > 0 ? 0 : 1)' "$projects"; then
+            node apps/api/scripts/db-check.mjs
+          fi
+        env:
+          DATABASE_URL: postgresql://postgres@localhost:5432/postgres
       # Guards the production bundle (no e2e-only route, nonce placeholder present, ADR 0022).
       # Only runs when `web` is affected; the build it depends on is cached by the step above.
       - run: npx nx affected -t middleware-shell --output-style=static
