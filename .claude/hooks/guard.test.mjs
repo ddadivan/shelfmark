@@ -1,13 +1,48 @@
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
-import { test } from 'node:test';
+import { after, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const guard = join(here, 'guard.mjs');
 
-function run(toolInput, tool = 'Bash', cwd = here) {
+// The guard reads the current branch of the cwd it is given. Never use the real
+// checkout as cwd: CI on a push to main runs on branch main, so every "allowed"
+// commit case would be blocked there. Use throwaway repos with a known branch.
+const tempRepos = [];
+
+function tempRepo(branch) {
+  const dir = mkdtempSync(join(tmpdir(), 'guard-test-'));
+  tempRepos.push(dir);
+  const git = (...args) => execFileSync('git', args, { cwd: dir, stdio: 'ignore' });
+  git('init', '-q', '-b', branch);
+  git(
+    '-c',
+    'user.name=guard-test',
+    '-c',
+    'user.email=guard-test@example.test',
+    '-c',
+    'commit.gpgsign=false',
+    'commit',
+    '-q',
+    '--allow-empty',
+    '-m',
+    'init',
+  );
+  return dir;
+}
+
+const featureRepo = tempRepo('feat/test');
+const mainRepo = tempRepo('main');
+
+after(() => {
+  for (const dir of tempRepos) rmSync(dir, { recursive: true, force: true });
+});
+
+function run(toolInput, tool = 'Bash', cwd = featureRepo) {
   return spawnSync('node', [guard], {
     input: JSON.stringify({ tool_name: tool, tool_input: toolInput, cwd }),
     encoding: 'utf8',
@@ -176,32 +211,26 @@ for (const command of allowed) {
   });
 }
 
-test('blocks a commit on main', () => {
-  // Needs a checkout that is on main: use a throwaway repo.
-  const result = spawnSync('node', ['-e', mainCommitScript()], { encoding: 'utf8' });
-  assert.equal(result.status, 0, result.stderr);
+test('blocks a commit on main, allows other git commands there', () => {
+  const commit = run({ command: 'git commit -m x' }, 'Bash', mainRepo);
+  assert.equal(commit.status, 2, commit.stderr);
+  assert.match(commit.stderr, /committing on main is not allowed/);
+  const status = run({ command: 'git status' }, 'Bash', mainRepo);
+  assert.equal(status.status, 0, status.stderr);
 });
 
-function mainCommitScript() {
-  return `
-    const { spawnSync, execFileSync } = require('node:child_process');
-    const { mkdtempSync } = require('node:fs');
-    const { tmpdir } = require('node:os');
-    const { join } = require('node:path');
-    const dir = mkdtempSync(join(tmpdir(), 'guard-'));
-    execFileSync('git', ['init', '-b', 'main'], { cwd: dir, stdio: 'ignore' });
-    const r = spawnSync('node', [${JSON.stringify(guard)}], {
-      input: JSON.stringify({ tool_name: 'Bash', tool_input: { command: 'git commit -m x' }, cwd: dir }),
-      encoding: 'utf8',
-    });
-    if (r.status !== 2) { console.error('expected exit 2, got ' + r.status); process.exit(1); }
-    const ok = spawnSync('node', [${JSON.stringify(guard)}], {
-      input: JSON.stringify({ tool_name: 'Bash', tool_input: { command: 'git status' }, cwd: dir }),
-      encoding: 'utf8',
-    });
-    if (ok.status !== 0) { console.error('expected exit 0, got ' + ok.status); process.exit(1); }
-  `;
-}
+test('blocks a push from a main checkout', () => {
+  const result = run({ command: 'git push' }, 'Bash', mainRepo);
+  assert.equal(result.status, 2, result.stderr);
+  assert.match(result.stderr, /pushing to main is not allowed/);
+});
+
+test('allows a commit and push on a feature branch', () => {
+  const commit = run({ command: 'git commit -m x' });
+  assert.equal(commit.status, 0, commit.stderr);
+  const push = run({ command: 'git push -u origin feat/test' });
+  assert.equal(push.status, 0, push.stderr);
+});
 
 test('blocks --no-verify', () => {
   const result = bash('git commit --no-verify -m x');
