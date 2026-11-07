@@ -1,6 +1,6 @@
 # 0026. OAuth on preview deployments
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-07
 - Source: issue #68; `docs/SETUP.md` 4, 5.3, 5.4; `docs/PROJECT.md` 5.4, 5.7, 5.8; [0012](0012-better-auth-oauth.md), [0013](0013-vercel-hobby-hosting.md), [0019](0019-vercel-deployment-architecture.md)
 
@@ -59,7 +59,7 @@ This is Option 1 with Option 2's alias as `productionURL`. Preview clients are r
 - Registering `https://vercel.app/...`, or relying on GitHub wildcard matching. Any Vercel project could then receive authorization codes.
 - Adding each preview URL to the Google client by hand. Google offers no API for this on web clients, and it does not scale.
 
-## Recommendation (proposed decision)
+## Decision
 
 Adopt **Option 3**. Previews sign in only through the demo flow. Google and GitHub OAuth run only on localhost (local clients) and production (production clients). This is the only option that adds no credential to previews and widens nothing on production. It costs the author nothing and matches how e2e signs in anyway. If a real need for OAuth on previews appears later (for example account linking in the backlog), move to **Option 4** in a new ADR. **Do not adopt Option 1:** a secret shared with every preview could take over production accounts.
 
@@ -69,7 +69,7 @@ Adopt **Option 3**. Previews sign in only through the demo flow. Google and GitH
 - #66 (sign-in screen): the screen asks the API which sign-in methods are enabled (a public, read-only response in `libs/shared/contracts`) and renders only those. Translation keys cover the case where only demo is available.
 - #67 (demo) becomes a hard dependency for testing auth on previews. Demo sign-in must stay enabled on Preview.
 - The post-deploy checklist in `docs/PROJECT.md` Status gains one item: after a production deploy that touches auth, sign in with Google and GitHub by hand.
-- `docs/SETUP.md` 4 and 5.3 must be updated once the author decides: the preview row says "no OAuth, demo only", and the Google and GitHub client variables are Production only.
+- `docs/SETUP.md` 4 and 5.3 must be updated: the preview row says "no OAuth, demo only", and the Google and GitHub client variables are Production only.
 - Revisit this decision if previews need OAuth-only features, or if the product moves to a custom domain. A custom domain would allow subdomain previews, which changes the options.
 
 ## Author steps (Option 3)
