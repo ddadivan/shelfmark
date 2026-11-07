@@ -1,7 +1,8 @@
 @use 'ui' as *;
+@use '../../landing' as landing;
 
 :host {
-  --landing-chat-height: #{rem(300px)};
+  @include landing.chat-size;
 
   // One message slot in the feed: the bubble plus the gap above it.
   --landing-chat-slot: #{rem(76px)};
@@ -12,7 +13,6 @@
   display: block;
 
   @include tablet-up {
-    --landing-chat-height: #{rem(478px)};
     --landing-chat-start: 7;
   }
 }
@@ -149,11 +149,6 @@
     opacity: 0;
     transform: translateX(#{rem(40px)}) scale(0.96);
   }
-}
-
-// Text for assistive technology; the moving feed is hidden from it.
-.landing-chat__sr {
-  @include visually-hidden;
 }
 
 .landing-chat__message {
