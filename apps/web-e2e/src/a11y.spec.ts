@@ -32,7 +32,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
           await expect(page.getByRole('dialog')).toBeVisible();
         }
 
-        await expectNoBlockingViolations(page, testInfo, disabledRules);
+        await expectNoBlockingViolations(page, testInfo, { disabledRules });
       });
     }
   });
