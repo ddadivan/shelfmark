@@ -1,7 +1,28 @@
 <header class="shell__header">
   <ui-logo />
+  <ui-button
+    class="shell__add"
+    variant="primary"
+    size="sm"
+    iconLeft="add"
+    (click)="actions.addLink()"
+  >
+    {{ 'shell.addLink' | transloco }}
+  </ui-button>
   @if (auth.user(); as user) {
     <div class="shell__user">
+      @if (recentToggleLabel(); as label) {
+        <ui-button
+          class="shell__recent-toggle"
+          variant="ghost"
+          size="sm"
+          iconOnly
+          iconLeft="panel-right"
+          [ariaPressed]="ui.recentVisible()"
+          [ariaLabel]="label"
+          (click)="toggleRecent()"
+        />
+      }
       <span class="shell__name">{{ user.name }}</span>
       <ui-button
         [uiMenuTrigger]="accountMenu"
@@ -24,6 +45,12 @@
     </div>
   }
 </header>
-<main class="shell__main">
-  <router-outlet />
-</main>
+<div class="shell__body">
+  <app-sidebar />
+  <main class="shell__main">
+    <router-outlet />
+  </main>
+  @if (ui.recentVisible()) {
+    <app-recent-links-panel class="shell__recent" />
+  }
+</div>

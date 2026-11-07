@@ -1,0 +1,297 @@
+import { TestBed, type ComponentFixture } from '@angular/core/testing';
+import type { FolderResponse, LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
+import { MOCK_FOLDERS, MOCK_LIBRARY_COUNTS, MOCK_LINKS } from '@shelfmark/contracts/testing';
+import { DialogService } from '@shelfmark/ui';
+import axe from 'axe-core';
+import { of, Subject, throwError } from 'rxjs';
+import { FOLDERS_API } from '../links/models/folders-api.const';
+import type { FoldersApi } from '../links/models/folders-api.interface';
+import { LINKS_API } from '../links/models/links-api.const';
+import type { LinksApi } from '../links/models/links-api.interface';
+import { LINKS_SCOPE } from '../links/models/links-scope.const';
+import { UI_STORAGE_KEY } from '../../stores/models/ui-storage-key.const';
+import { UI_VIEW } from '../../stores/models/ui-view.const';
+import { UiStore } from '../../stores/ui.store';
+import { loadEnglish, provideTranslocoForTest } from '../../testing/transloco-testing';
+import LibraryPage from './library.page';
+
+function link(n: number, changes: Partial<LinkResponse> = {}): LinkResponse {
+  return {
+    ...MOCK_LINKS[0],
+    id: `id-${n}`,
+    title: `Link ${n}`,
+    url: `https://site${n}.example.com/a`,
+    isFavorite: false,
+    ...changes,
+  };
+}
+
+function page(items: LinkResponse[], nextCursor: string | null = null): ListLinksResponse {
+  return { items, nextCursor };
+}
+
+async function setup(first: Subject<ListLinksResponse> | null = null) {
+  const api = {
+    list: vi.fn<LinksApi['list']>(() => first ?? of(page([link(1), link(2)], 'c1'))),
+    update: vi.fn<LinksApi['update']>((id) => of(link(Number(id.slice(3))))),
+    recent: vi.fn<LinksApi['recent']>(() => of({ items: [] })),
+  };
+  TestBed.configureTestingModule({
+    providers: [
+      provideTranslocoForTest(),
+      { provide: LINKS_API, useValue: api },
+      { provide: DialogService, useValue: { confirm: vi.fn(() => Promise.resolve(false)) } },
+    ],
+  });
+  await loadEnglish();
+  const fixture = TestBed.createComponent(LibraryPage);
+  fixture.componentRef.setInput('scope', LINKS_SCOPE.All);
+  await fixture.whenStable();
+  return { api, fixture, element: fixture.nativeElement as HTMLElement };
+}
+
+const text = (fixture: ComponentFixture<LibraryPage>) =>
+  (fixture.nativeElement as HTMLElement).textContent ?? '';
+
+describe('LibraryPage', () => {
+  beforeEach(() => localStorage.removeItem(UI_STORAGE_KEY));
+  afterAll(() => localStorage.removeItem(UI_STORAGE_KEY));
+
+  it('shows a skeleton and no cards while the first page loads', async () => {
+    const { element } = await setup(new Subject<ListLinksResponse>());
+
+    expect(element.querySelector('section')?.getAttribute('aria-busy')).toBe('true');
+    expect(element.querySelector('ui-skeleton')).not.toBeNull();
+    expect(element.querySelector('app-link-card')).toBeNull();
+  });
+
+  it('shows the heading, the count and the cards, with more to load', async () => {
+    const { element, fixture } = await setup();
+
+    expect(element.querySelector('h1')?.textContent).toBe('All links');
+    expect(text(fixture)).toContain('2+ links');
+    expect(element.querySelectorAll('app-link-card')).toHaveLength(2);
+    expect(element.querySelector('ui-skeleton')).toBeNull();
+  });
+
+  it('names the heading after the scope', async () => {
+    const { fixture, element } = await setup();
+
+    fixture.componentRef.setInput('scope', LINKS_SCOPE.Favorites);
+    await fixture.whenStable();
+
+    expect(element.querySelector('h1')?.textContent).toBe('Favorites');
+  });
+
+  it('shows rows when the list view is chosen', async () => {
+    localStorage.setItem(UI_STORAGE_KEY, JSON.stringify({ view: UI_VIEW.List }));
+    const { element } = await setup();
+
+    expect(element.querySelectorAll('app-link-row')).toHaveLength(2);
+    expect(element.querySelector('app-link-card')).toBeNull();
+  });
+
+  it('switches the view with the segmented control and remembers it', async () => {
+    const { element, fixture } = await setup();
+
+    element.querySelector<HTMLInputElement>('input[type="radio"][value="list"]')?.click();
+    await fixture.whenStable();
+
+    expect(TestBed.inject(UiStore).view()).toBe(UI_VIEW.List);
+    expect(element.querySelectorAll('app-link-row')).toHaveLength(2);
+  });
+
+  it('loads the next page from the visible button', async () => {
+    const { api, element, fixture } = await setup();
+    api.list.mockReturnValueOnce(of(page([link(3)])));
+
+    [...element.querySelectorAll('ui-button')]
+      .find((button) => button.textContent?.includes('Load more'))
+      ?.querySelector('button')
+      ?.click();
+    await fixture.whenStable();
+
+    expect(api.list).toHaveBeenLastCalledWith({ cursor: 'c1' });
+    expect(element.querySelectorAll('app-link-card')).toHaveLength(3);
+    expect(text(fixture)).toContain('3 links');
+    expect(text(fixture)).not.toContain('Load more');
+  });
+
+  it('shows the empty state with an Add link action', async () => {
+    const { api, element, fixture } = await setup();
+    api.list.mockReturnValue(of(page([])));
+    fixture.componentRef.setInput('scope', LINKS_SCOPE.Unsorted);
+    await fixture.whenStable();
+
+    expect(text(fixture)).toContain('No links here yet');
+    expect(element.querySelector('ui-empty-state button')?.textContent).toContain('Add link');
+  });
+
+  it('shows the error state and retries', async () => {
+    const { api, element, fixture } = await setup();
+    api.list.mockReturnValue(throwError(() => new Error('boom')));
+    fixture.componentRef.setInput('scope', LINKS_SCOPE.Favorites);
+    await fixture.whenStable();
+    expect(text(fixture)).toContain("Couldn't load your links");
+
+    api.list.mockReturnValue(of(page([link(5)])));
+    element.querySelector<HTMLButtonElement>('ui-empty-state button')?.click();
+    await fixture.whenStable();
+
+    expect(element.querySelectorAll('app-link-card')).toHaveLength(1);
+    expect(text(fixture)).not.toContain("Couldn't load your links");
+  });
+
+  it('keeps the links and shows a notice with Retry when a refetch fails', async () => {
+    const { api, element, fixture } = await setup();
+    api.list.mockReturnValue(throwError(() => new Error('boom')));
+
+    fixture.componentInstance['retry']();
+    await fixture.whenStable();
+
+    expect(element.querySelectorAll('app-link-card')).toHaveLength(2);
+    expect(element.querySelector('ui-notice')?.textContent).toContain("Couldn't refresh");
+
+    api.list.mockReturnValue(of(page([link(1), link(2), link(3)])));
+    element.querySelector<HTMLButtonElement>('ui-notice button')?.click();
+    await fixture.whenStable();
+
+    expect(element.querySelector('ui-notice')).toBeNull();
+    expect(element.querySelectorAll('app-link-card')).toHaveLength(3);
+  });
+
+  it('toggles a favorite from a card', async () => {
+    const { api, element, fixture } = await setup();
+
+    element.querySelector<HTMLButtonElement>('button[aria-label="Favorite: Link 1"]')?.click();
+    await fixture.whenStable();
+
+    expect(api.update).toHaveBeenCalledWith('id-1', { isFavorite: true });
+    expect(
+      element.querySelector('button[aria-label="Favorite: Link 1"]')?.getAttribute('aria-pressed'),
+    ).toBe('true');
+  });
+
+  it('has no axe violations', async () => {
+    const { element } = await setup();
+    document.body.append(element);
+
+    const { violations } = await axe.run(element, {
+      rules: { 'color-contrast': { enabled: false } },
+    });
+    element.remove();
+
+    expect(violations.map((violation) => violation.id)).toEqual([]);
+  });
+});
+
+describe('LibraryPage of a folder', () => {
+  const FOLDER: FolderResponse = { ...MOCK_FOLDERS[0], id: 'f1', name: 'Reading list' };
+
+  async function setupFolder(folderId: string, items: LinkResponse[] = [link(1)]) {
+    const linksApi = {
+      list: vi.fn<LinksApi['list']>(() => of(page(items))),
+      recent: vi.fn<LinksApi['recent']>(() => of({ items: [] })),
+    };
+    const foldersApi = {
+      list: vi.fn<FoldersApi['list']>(() => of({ items: [FOLDER], counts: MOCK_LIBRARY_COUNTS })),
+    };
+    TestBed.configureTestingModule({
+      providers: [
+        provideTranslocoForTest(),
+        { provide: LINKS_API, useValue: linksApi },
+        { provide: FOLDERS_API, useValue: foldersApi },
+        { provide: DialogService, useValue: { confirm: vi.fn(() => Promise.resolve(false)) } },
+      ],
+    });
+    await loadEnglish();
+    const fixture = TestBed.createComponent(LibraryPage);
+    fixture.componentRef.setInput('scope', LINKS_SCOPE.Folder);
+    fixture.componentRef.setInput('folderId', folderId);
+    await fixture.whenStable();
+    return { linksApi, fixture, element: fixture.nativeElement as HTMLElement };
+  }
+
+  it('asks for the links of the folder and shows its name as the heading', async () => {
+    const { linksApi, element } = await setupFolder('f1');
+
+    expect(linksApi.list).toHaveBeenCalledWith({ folderId: 'f1' });
+    expect(element.querySelector('h1')?.textContent).toBe('Reading list');
+    expect(element.querySelectorAll('app-link-card')).toHaveLength(1);
+  });
+
+  it('says so when the folder is empty and offers to add a link here', async () => {
+    const { element, fixture } = await setupFolder('f1', []);
+
+    expect(text(fixture)).toContain('This folder is empty');
+    expect(element.querySelector('ui-empty-state button')?.textContent).toContain('Add link here');
+  });
+
+  it('shows "not found" instead of the content for an unknown folder', async () => {
+    const { element, fixture } = await setupFolder('gone');
+
+    expect(text(fixture)).toContain('Folder not found');
+    expect(element.querySelector('h1')).toBeNull();
+    expect(element.querySelector('app-link-card')).toBeNull();
+    expect(element.querySelector('ui-segmented-control')).toBeNull();
+  });
+
+  it('has no axe violations on the not-found state', async () => {
+    const { element } = await setupFolder('gone');
+    document.body.append(element);
+
+    const { violations } = await axe.run(element, {
+      rules: { 'color-contrast': { enabled: false } },
+    });
+    element.remove();
+
+    expect(violations.map((violation) => violation.id)).toEqual([]);
+  });
+  describe('tag filter', () => {
+    it('asks for the links of the tags in the query, normalized and without duplicates', async () => {
+      const { api, fixture } = await setup();
+
+      fixture.componentRef.setInput('tag', ['winter sale', 'Docs', 'docs']);
+      await fixture.whenStable();
+
+      expect(api.list).toHaveBeenLastCalledWith({ tag: ['winter-sale', 'Docs'] });
+    });
+
+    it('accepts a single value', async () => {
+      const { api, fixture } = await setup();
+
+      fixture.componentRef.setInput('tag', 'docs');
+      await fixture.whenStable();
+
+      expect(api.list).toHaveBeenLastCalledWith({ tag: ['docs'] });
+    });
+
+    it('shows a removable chip per tag and a Clear button', async () => {
+      const { element, fixture } = await setup();
+
+      fixture.componentRef.setInput('tag', ['docs', 'video']);
+      await fixture.whenStable();
+
+      const group = element.querySelector('.library__filter');
+      expect(group?.querySelectorAll('ui-chip')).toHaveLength(2);
+      expect(group?.textContent).toContain('Clear filter');
+      expect(group?.querySelector('button[aria-label="Remove tag filter docs"]')).not.toBeNull();
+    });
+
+    it('shows no filter row without tags', async () => {
+      const { element } = await setup();
+
+      expect(element.querySelector('.library__filter')).toBeNull();
+    });
+
+    it('says so when no link has all the tags', async () => {
+      const { api, fixture } = await setup();
+      api.list.mockReturnValue(of(page([])));
+
+      fixture.componentRef.setInput('tag', ['docs']);
+      await fixture.whenStable();
+
+      expect(text(fixture)).toContain('No links with these tags');
+    });
+  });
+});

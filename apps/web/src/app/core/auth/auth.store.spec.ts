@@ -1,4 +1,7 @@
 import { TestBed } from '@angular/core/testing';
+import { FoldersStore } from '../../stores/folders.store';
+import { LinksStore } from '../../stores/links.store';
+import { SIGN_OUT_FLUSH_TIMEOUT_MS } from './models/sign-out-flush-timeout.const';
 import { AUTH_API } from './auth-api.token';
 import { AuthStore } from './auth.store';
 import { AuthApi } from './models/auth-api.interface';
@@ -117,5 +120,69 @@ describe('AuthStore', () => {
 
     expect(store.user()).toBeNull();
     expect(store.isSignedIn()).toBe(false);
+  });
+
+  it('sends waiting deletes before the session ends, then forgets the links of the user on sign-out', async () => {
+    const order: string[] = [];
+    const { store } = setup({
+      signOut: vi.fn(() => {
+        order.push('api');
+        return Promise.resolve();
+      }),
+    });
+    const links = TestBed.inject(LinksStore);
+    vi.spyOn(links, 'flushPending').mockImplementation(async () => {
+      await Promise.resolve();
+      order.push('flush');
+    });
+    vi.spyOn(links, 'reset').mockImplementation(() => {
+      order.push('reset');
+    });
+    await store.signIn(AUTH_PROVIDER.Google);
+
+    await store.signOut();
+
+    expect(order).toEqual(['flush', 'api', 'reset']);
+  });
+
+  it('forgets the folders of the user on sign-out, next to the links', async () => {
+    const { store } = setup();
+    const folders = TestBed.inject(FoldersStore);
+    const reset = vi.spyOn(folders, 'reset');
+    await store.signIn(AUTH_PROVIDER.Google);
+
+    await store.signOut();
+
+    expect(reset).toHaveBeenCalledTimes(1);
+  });
+
+  it('still signs out after the timeout when the flush never finishes', async () => {
+    vi.useFakeTimers();
+    try {
+      const { api, store } = setup();
+      const links = TestBed.inject(LinksStore);
+      vi.spyOn(links, 'flushPending').mockReturnValue(new Promise<void>(() => undefined));
+      await store.signIn(AUTH_PROVIDER.Google);
+
+      const done = store.signOut();
+      await vi.advanceTimersByTimeAsync(SIGN_OUT_FLUSH_TIMEOUT_MS);
+      await done;
+
+      expect(api.signOut).toHaveBeenCalled();
+      expect(store.user()).toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('still signs out when the flush rejects', async () => {
+    const { api, store } = setup();
+    vi.spyOn(TestBed.inject(LinksStore), 'flushPending').mockRejectedValue(new Error('boom'));
+    await store.signIn(AUTH_PROVIDER.Google);
+
+    await store.signOut();
+
+    expect(api.signOut).toHaveBeenCalled();
+    expect(store.user()).toBeNull();
   });
 });
