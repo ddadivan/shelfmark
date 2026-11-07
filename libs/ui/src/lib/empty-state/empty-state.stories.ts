@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
-import { ICON_NAMES } from '../icon/models/icon-names.const';
-import { ILLUSTRATION_NAMES } from '../illustration/models/illustration-names.const';
 import { ButtonComponent } from '../button/button.component';
-import { EmptyStateComponent } from './empty-state.component';
-import { THEME, THEME_ATTRIBUTE } from '../theme';
+import { ICON_NAMES } from '../icon/models/icon-names.const';
 import { ILLUSTRATION_MOTION } from '../illustration/models/illustration-motion.const';
+import { ILLUSTRATION_NAMES } from '../illustration/models/illustration-names.const';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
+import { EmptyStateComponent } from './empty-state.component';
 
 const meta: Meta<EmptyStateComponent> = {
   title: 'Components/EmptyState',
