@@ -70,7 +70,7 @@ Stage 1 is a personal responsive web service: the user adds links manually and f
 
 - folders / collections;
 - tags;
-- search by title;
+- search by title, note and URL;
 - a common feed of all links.
 
 **"Recently opened" panel.** On the right, a feed of the most recently opened links. The panel is optional: it can be hidden.
@@ -104,7 +104,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 
 **Search and browsing:**
 
-- search by title;
+- search by title, note and URL;
 - a common feed of all links;
 - view toggle: cards with previews / list;
 - a right-hand "Recently opened" panel that can be hidden.
@@ -178,7 +178,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 ### Search and browsing
 
 14. **Common feed.** The "All links" section shows all of the user's links.
-15. **Search.** Search by title finds links in all folders.
+15. **Search.** Search by title, note and URL finds links in all folders (every word of the query must match, at most 5 words).
 16. **Sorting.** By date added (newest first, the default) and by title.
 17. **View.** A "cards / list" toggle; the choice is remembered.
 18. **Recently opened.** A panel of recently opened links on the right; it can be hidden, and the state is remembered.
@@ -379,7 +379,7 @@ NestJS choice: ADR 0010; API build and tests: ADR 0006; API security baseline: A
 | --- | --- |
 | Relational data: users → folders → links ↔ tags | PostgreSQL tables and relations |
 | Nested folders | `parentId` field + recursive query (recursive CTE) |
-| Search by title | Built-in PostgreSQL search (`pg_trgm` / full-text search) |
+| Search by title, note and URL | Built-in PostgreSQL search (`pg_trgm` / full-text search) |
 | Duplicate links | Index on the "user + URL" pair |
 | Schema migrations | Prisma Migrate |
 | Local development | PostgreSQL in Docker |
@@ -510,7 +510,7 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 
 **URL normalisation** (for duplicates): lowercase host, no `#fragment`, no `utm_*` params and no trailing `/`. Duplicates are allowed (the user can "save anyway"), so the index is non-unique.
 
-**Indexes:** `Link(userId, createdAt)`, `Link(userId, normalizedUrl)`, `Link(userId, lastOpenedAt)`, `Link.title` (`pg_trgm` for search), `Folder(userId, parentId)`.
+**Indexes:** `Link(userId, createdAt)`, `Link(userId, normalizedUrl)`, `Link(userId, lastOpenedAt)`, `Link.title`, `Link.note` and `Link.url` (`pg_trgm` GIN for search), `Folder(userId, parentId)`.
 
 **Interface settings** (view, panel) are not stored in the database, only in `localStorage`.
 
@@ -524,7 +524,7 @@ All routes except `/api/auth/*` require a session and work only with the current
 | GET | `/api/me` | Current user |
 | DELETE | `/api/me` | Delete the account and all data |
 | POST | `/api/links/preview` | For a URL, return title, icon, image + the existing link if it is a duplicate (for form autofill) |
-| GET | `/api/links` | List with filters: `folderId`, `unsorted`, `favorite`, `tag` (repeated, `?tag=a&tag=b`: AND, case-insensitive, max 5, more is a 400; empty or absent = no filter), `q` (search), `sort` (`createdAt` / `title`), `order`, `cursor`, `limit` |
+| GET | `/api/links` | List with filters: `folderId`, `unsorted`, `favorite`, `tag` (repeated, `?tag=a&tag=b`: AND, case-insensitive, max 5, more is a 400; empty or absent = no filter), `q` (search in title, note and URL; every word must match, at most 5 words), `sort` (`createdAt` / `title`), `order`, `cursor`, `limit` |
 | GET | `/api/links/recent` | Recently opened (by `lastOpenedAt`), `limit` |
 | GET | `/api/links/:id` | One link |
 | POST | `/api/links` | Create: `url`, `title?`, `note?`, `folderId?`, `tags?` (names; new tags are created automatically) |

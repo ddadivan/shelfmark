@@ -107,7 +107,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
         await chip(page, DOCS).click();
 
         await expect(page).toHaveURL(/\/links\?tag=docs$/);
-        const filter = page.getByRole('group', { name: 'Filtered by tags' });
+        const filter = page.getByRole('group', { name: 'Active filters' });
         await expect(filter).toBeVisible();
         await filter.getByRole('button', { name: 'Clear filter' }).click();
         await expect(page).toHaveURL(/\/links$/);
@@ -215,7 +215,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
       test('?tag= filters the feed and shows removable chips', async ({ page }, info) => {
         await page.goto(`/links?tag=${DOCS}&tag=${RECIPES}`);
 
-        const filter = page.getByRole('group', { name: 'Filtered by tags' });
+        const filter = page.getByRole('group', { name: 'Active filters' });
         await expect(filter.getByText(DOCS, { exact: true })).toBeVisible();
         await expect(filter.getByText(RECIPES, { exact: true })).toBeVisible();
 
@@ -237,7 +237,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
 
       test('fits the viewport without horizontal scroll', async ({ page }) => {
         await page.goto(`/links?tag=${DOCS}`);
-        await expect(page.getByRole('group', { name: 'Filtered by tags' })).toBeVisible();
+        await expect(page.getByRole('group', { name: 'Active filters' })).toBeVisible();
 
         const overflow = await page.evaluate<number>(
           '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',

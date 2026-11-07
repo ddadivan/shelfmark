@@ -1,6 +1,7 @@
 import type { LinkResponse, ListLinksQuery } from '@shelfmark/contracts';
 import type { LinksFilter } from './models/links-filter.type';
 import { LINKS_SCOPE } from './models/links-scope.const';
+import { matchesQuery } from './search-query';
 
 /** The `GET /api/links` query of a filter, with an optional cursor. Empty `tags` and `q` are left out. */
 export function linksQuery(filter: LinksFilter, cursor?: string): ListLinksQuery {
@@ -56,7 +57,7 @@ export function inFilter(filter: LinksFilter, link: LinkResponse): boolean {
   }
   const names = link.tags.map((name) => name.toLowerCase());
   const tagsMatch = (filter.tags ?? []).every((tag) => names.includes(tag.toLowerCase()));
-  const queryMatch = !filter.q || link.title.toLowerCase().includes(filter.q.toLowerCase());
+  const queryMatch = !filter.q || matchesQuery(link, filter.q);
   return tagsMatch && queryMatch;
 }
 
