@@ -5,6 +5,7 @@ import {
   namedConstantDefinitionFiles,
   namedConstantSelectors,
 } from './eslint.named-constants.mjs';
+import { testingImportAllowedFiles, testingImportPatterns } from './eslint.contracts-testing.mjs';
 
 export default [
   ...nx.configs['flat/base'],
@@ -40,6 +41,14 @@ export default [
   {
     files: namedConstantDefinitionFiles,
     rules: { 'no-restricted-syntax': ['error', ...enumAndKeySelectors] },
+  },
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+    rules: { 'no-restricted-imports': ['error', { patterns: testingImportPatterns }] },
+  },
+  {
+    files: testingImportAllowedFiles,
+    rules: { 'no-restricted-imports': 'off' },
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
