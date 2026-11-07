@@ -24,7 +24,7 @@ Conventions:
 
 Port notes: keep the API on **3000** (`PORT`); the web dev proxy targets it. If 4200 is busy, run e2e with `E2E_PORT=4210 npx nx e2e web-e2e`. `nx serve api` sets `NODE_ENV=development` for you.
 
-The local database is PGlite (embedded PostgreSQL, ADR 0025): no Docker and nothing to install; `npx nx serve api` starts it. The first `prisma` command downloads its schema engine, so it needs network access. How local secrets are loaded (the API never reads `.env` files today) is decided in stage 2; `.env*` stays git-ignored either way.
+The local database is PGlite (embedded PostgreSQL, ADR 0025): no Docker and nothing to install; `npx nx serve api` starts it. The first `prisma` command downloads its schema engine, so it needs network access. Local secrets (Better Auth, OAuth clients) are exported in the shell that starts the API, or injected by a password-manager CLI (section 4.3); the API never reads `.env` files and `.env*` stays git-ignored.
 
 ## 2. GitHub
 
@@ -81,11 +81,11 @@ Variable names that the app reads are decided in stage 2. The Neon ↔ Vercel in
 
 ## 4. OAuth apps
 
-Better Auth serves its routes under `/api/auth/*` (ADR 0012). Its convention for the provider callback is `/api/auth/callback/<provider>`. **Confirm the exact paths when Better Auth is wired in stage 2.**
+Better Auth serves its routes under `/api/auth/*` (ADR 0012, ADR 0027). The provider callback is `/api/auth/callback/<provider>`, built from `BETTER_AUTH_URL` (confirmed in issue #64).
 
 Create **separate OAuth clients for local and production**, so the production secret never sits on your laptop. GitHub OAuth apps allow only one callback URL each, so this is required there anyway.
 
-Callback URLs (confirm in stage 2):
+Callback URLs:
 
 | Environment | Google | GitHub |
 | --- | --- | --- |
@@ -95,7 +95,7 @@ Callback URLs (confirm in stage 2):
 
 Local uses port **4200**, not 3000: the browser talks to the web dev server, which proxies `/api` to the API.
 
-**Open question for stage 2 (previews).** Every preview has a new URL. Google rejects wildcard redirect URIs and a GitHub app has one callback URL, so OAuth on previews needs one of: Better Auth's OAuth proxy plugin (callback through production), a stable preview alias with its own clients, or no OAuth on previews (demo sign-in only). Decide in stage 2; until then do not create preview clients.
+**Open question (previews, ADR 0026).** Every preview has a new URL. Google rejects wildcard redirect URIs and a GitHub app has one callback URL, so OAuth on previews needs one of: Better Auth's OAuth proxy plugin (callback through production), a stable preview alias with its own clients, or no OAuth on previews (demo sign-in only). Until it is decided do not create preview clients: previews run without provider variables (OAuth unavailable there, health and docs still work) and need their own `BETTER_AUTH_SECRET` and `BETTER_AUTH_URL` (section 5.3).
 
 ### 4.1 Google (console.cloud.google.com)
 
@@ -111,7 +111,7 @@ Local uses port **4200**, not 3000: the browser talks to the web dev server, whi
   - `Shelfmark local`: Authorized redirect URIs = the local Google URL above.
   - `Shelfmark production`: Authorized redirect URIs = the production Google URL above.
   - Authorized JavaScript origins: not needed (the server does the redirect).
-- [ ] Copy each **Client ID** and **Client secret** (the secret is shown in full only at creation — download the JSON if offered, store it in your password manager, then delete the file). Production values go into Vercel → Production (section 5.3). Names: decided in stage 2.
+- [ ] Copy each **Client ID** and **Client secret** (the secret is shown in full only at creation — download the JSON if offered, store it in your password manager, then delete the file). Names: `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. Production values go into Vercel → Production (section 5.3); the local pair is exported in your shell (see "Run locally" below).
 
 ### 4.2 GitHub (github.com)
 
@@ -119,11 +119,31 @@ Local uses port **4200**, not 3000: the browser talks to the web dev server, whi
   - `Shelfmark (local)`: Homepage URL `http://localhost:4200`, Authorization callback URL = the local GitHub URL above.
   - `Shelfmark (production)`: Homepage URL `https://<prod-domain>`, callback = the production GitHub URL above.
   - Leave **Enable Device Flow** off.
-- [ ] In each app: copy the **Client ID**, click **Generate a new client secret**, copy it once (shown only now) into your password manager. Production values go into Vercel → Production. Names: decided in stage 2.
+- [ ] In each app: copy the **Client ID**, click **Generate a new client secret**, copy it once (shown only now) into your password manager. Names: `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`. Production values go into Vercel → Production; the local pair is exported in your shell.
 
 ### 4.3 Better Auth secret
 
-Better Auth also needs a random signing secret and the public base URL per environment. Generate the secret yourself (e.g. `openssl rand -base64 32`), one value **per environment**, never reused. Names decided in stage 2.
+Better Auth also needs a random signing secret and the public base URL per environment. Generate the secret yourself (e.g. `openssl rand -base64 32`, at least 32 characters), one value **per environment**, never reused.
+
+| Name | Local | Production | Preview |
+| --- | --- | --- | --- |
+| `BETTER_AUTH_SECRET` | required, own value | required, own value | required, own value |
+| `BETTER_AUTH_URL` | optional (defaults to `http://localhost:4200`) | `https://<prod-domain>` (required, https, origin only) | required (https, origin only), e.g. the stable branch alias |
+| `BETTER_AUTH_TRUSTED_ORIGINS` | optional | optional | optional |
+
+`BETTER_AUTH_URL` is an origin only (no path, no trailing slash). There is no fallback to Vercel's own URL variables: the API refuses to boot in production without it. `BETTER_AUTH_TRUSTED_ORIGINS` is a comma-separated list of extra exact origins (no wildcards); the base URL is always trusted.
+
+**Run locally.** Never put these in a `.env` file. Export them in the shell that starts the API, or inject them with a password-manager CLI, before `npx nx serve api` (`local-db.mjs` passes `process.env` through):
+
+```bash
+export BETTER_AUTH_SECRET=…        # your local secret
+export GITHUB_CLIENT_ID=… GITHUB_CLIENT_SECRET=…
+export GOOGLE_CLIENT_ID=… GOOGLE_CLIENT_SECRET=…
+npx nx serve api    # http://localhost:3000, behind the web dev proxy on :4200
+npx nx serve web    # sign in at http://localhost:4200
+```
+
+A provider whose pair is missing is simply disabled (the API logs which variable names to set); half a pair stops the boot. `BETTER_AUTH_SECRET` is required in every environment.
 
 ## 5. Vercel
 
@@ -146,10 +166,11 @@ Settings → **Environment Variables**. Each variable is set per environment: **
 | Name | Production | Preview | Notes |
 | --- | --- | --- | --- |
 | `NODE_ENV` | `production` | `production` | Required for helmet HSTS and `upgrade-insecure-requests` (ADR 0007). Unset also means production, but set it explicitly. Vercel may already set it; verify. |
-| database URLs | integration | integration | Injected by Neon (section 3); names the app reads decided in stage 2 |
-| Better Auth secret, base URL | own value | own value | Stage 2; production base URL `https://<prod-domain>` |
-| Google client ID / secret | production client | stage 2 decision | Stage 2 |
-| GitHub client ID / secret | production app | stage 2 decision | Stage 2 |
+| `DATABASE_URL`, `DATABASE_URL_UNPOOLED` | integration | integration | Injected by Neon (section 3) |
+| `BETTER_AUTH_SECRET` | own value | own value (a different one) | Required: without it the API does not boot (health and docs included) |
+| `BETTER_AUTH_URL` | `https://<prod-domain>` | the preview origin, https | Required in production mode, previews included; no fallback |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | production client | not set until ADR 0026 is decided | Both or neither; mark Sensitive |
+| `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | production app | not set until ADR 0026 is decided | Both or neither; mark Sensitive |
 | Sentry DSN | | | Stage 7 |
 
 Mark every secret as **Sensitive** (value cannot be read back in the dashboard). Do not set `PORT` on Vercel. An env change applies only to **new** deployments: redeploy after editing.
@@ -194,7 +215,7 @@ A second Vercel project from the same repository publishes the component showcas
 | --- | --- | --- |
 | Neon connection strings | Vercel env (via integration); GitHub Environment secret only if CI migrates | repo, chat, issues, logs |
 | OAuth client secrets, Better Auth secret | Vercel env (Production / Preview); local ones only on your machine | repo, chat, issues, logs |
-| Local development values | a git-ignored local file on your machine (format decided in stage 2) | anywhere shared |
+| Local development values | exported in your shell or injected by a password-manager CLI (section 4.3), never a file in the repository | anywhere shared |
 | Backup copy | your password manager | notes, screenshots |
 
 Rules:

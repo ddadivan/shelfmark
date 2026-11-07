@@ -40,3 +40,14 @@ export type { UpdateTagRequest } from './tags/update-tag-request.interface';
 export type { MergeTagRequest } from './tags/merge-tag-request.interface';
 export type { MergeTagResponse } from './tags/merge-tag-response.type';
 export { TAG_LIMIT } from './tags/tag-limit.const';
+
+export type { AuthProvider } from './auth/auth-provider.type';
+export type { AuthUser } from './auth/auth-user.interface';
+export type { AuthSession } from './auth/auth-session.interface';
+export type { AuthSessionResponse } from './auth/auth-session-response.interface';
+export type { GetSessionResponse } from './auth/get-session-response.type';
+export type { SocialSignInRequest } from './auth/social-sign-in-request.interface';
+export type { SocialSignInResponse } from './auth/social-sign-in-response.interface';
+export type { SignOutResponse } from './auth/sign-out-response.interface';
+export { AUTH_PROVIDER } from './auth/auth-provider.const';
+export { AUTH_ENDPOINT } from './auth/auth-endpoint.const';
