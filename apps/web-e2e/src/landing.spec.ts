@@ -46,8 +46,6 @@ test.describe('landing', () => {
     }
   });
 
-  // The `/sign-in` route does not exist yet (auth pages, PR #86), so the router rejects the
-  // navigation; this checks the link targets. Add a `toHaveURL` click-through once it lands.
   test('the call-to-action buttons point to sign-in', async ({ page }) => {
     await page.goto('/');
     const finale = page.getByRole('region', { name: 'Empty your Saved Messages.' });
@@ -61,6 +59,13 @@ test.describe('landing', () => {
       'href',
       '/sign-in',
     );
+  });
+
+  test('the header sign-in link opens the sign-in page', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('banner').getByRole('link', { name: 'Sign in' }).click();
+
+    await expect(page).toHaveURL(/\/sign-in$/);
   });
 
   test('has no horizontal scroll at 360px width', async ({ page }) => {
