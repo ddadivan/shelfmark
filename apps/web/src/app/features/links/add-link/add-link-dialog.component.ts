@@ -200,6 +200,8 @@ export class AddLinkDialogComponent {
 
   constructor() {
     // The preview is gone (URL emptied or no longer valid): drop a title it filled in.
+    // An `effect` because the field tree exposes `dirty()` but has no value-change hook, and the
+    // form model is a plain signal, so a `linkedSignal` could not see whether the user typed.
     effect(() => {
       if (this.previewUrl() === undefined) {
         untracked(() => {

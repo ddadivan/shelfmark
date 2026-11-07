@@ -6,9 +6,10 @@ import { isStaticBuild } from './support/build-mode';
 const testPage = '/__e2e/add-link';
 const dialogSelector = '.cdk-dialog-container';
 const duplicateUrl = 'https://angular.dev/overview';
+// Mirror `E2E_ADD_LINK_OUTCOME` (apps/web harness page); the e2e project cannot import from apps/web.
 const outcome = {
   savedPrefix: 'Outcome: saved: ',
-  openExistingPrefix: 'Outcome: open-existing:',
+  openExistingPrefix: 'Outcome: open-existing: ',
 } as const;
 
 test.describe('add link dialog (mock API)', () => {
