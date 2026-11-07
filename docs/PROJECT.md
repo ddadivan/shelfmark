@@ -562,7 +562,7 @@ A minimalist, recognisable interface with light and dark themes on the own UI li
 | `surface` (cards, panels) | `#FFFFFF` | `#1C1C1F` |
 | `border` | `#E5E5E2` | `#2C2C30` |
 | `text` | `#18181A` | `#EDEDEF` |
-| `text-muted` | `#6E6E73` | `#9A9AA0` |
+| `text-muted` | `#67676C` | `#9A9AA0` |
 | `primary` (primary button) / text on it | `#18181A` / `#FFFFFF` | `#EDEDEF` / `#131315` |
 | `accent` (sage: star, icons) | `#4F7A4B` | `#8DBB86` |
 | `accent-bg` (active item, tag chip) | `#E5EEE2` | `#22301F` |
@@ -586,6 +586,19 @@ A minimalist, recognisable interface with light and dark themes on the own UI li
 **Style units are `rem`.** Font sizes, spacing, control heights, radii and widths are written in `rem` (16 px base, tokens are converted: `space-1` = 0.25rem, `space-4` = 1rem, 15 px font = 0.9375rem), so the interface scales with the font size in browser and system settings. `html { font-size: 100% }`: the root is not overridden. Only border widths (1px), focus rings and shadows stay in `px`; breakpoints are in `em`. The exact stylelint exception list: border widths (`border*`), `outline`, `outline-offset`, `box-shadow` and the loading bar height (2px). In SVG icons `stroke-width` is not set in px. Mockups and the design system are specified in px for clarity; `ui-dev` converts them via the SCSS function `rem($px)`, and stylelint forbids `px` outside the exception list.
 
 **Ripple (the `uiRipple` directive in `libs/ui`, the Ripple component in the design system).** On press, a text-coloured circle spreads from the touch point (6% in the light theme, 10% in the dark, 20% on filled buttons; values from the Motion spec), grows for 450 ms while the finger is held, and fades over 350 ms after release. Starts on `pointerdown`, cancelled on scroll (movement > 10 px), from the centre for keyboard. Where: all buttons (together with the 0.97 press scale), sidebar and mobile menu rows, menu and select list items, link list rows, clickable tags, toggle items. Not on: link cards, input fields, dialogs, landing. With `prefers-reduced-motion`: no ripple, only the pressed background.
+
+**Accessibility: WCAG 2.1 AA (design audit, November 2026).** Every screen was run through axe-core and checked by hand; the findings are fixed in the design system and the mockups. Rules the agents follow in `libs/ui`:
+
+- `text-muted` (light theme `#67676C`) holds 4.5:1 not only on `bg` and `surface` but also on `surface-hover`, `surface-pressed` and `accent-bg`, so counts on a selected row and dates in chips stay readable. Text is never dimmed with `opacity` (stale search results do not fade; they are marked `aria-busy`).
+- The segmented control is a `role="radiogroup"`; each item is `role="radio"` with `aria-checked`, not just an `is-active` class.
+- The welcome step indicator is `role="img"` with `aria-label="Step N of M"`; a spinner with a label is `role="status"`.
+- The card title is one level below the page heading (`h2` under `h1`), with no skipped levels.
+- Tag autocomplete follows the combobox pattern: `aria-controls`, `aria-autocomplete`, `aria-activedescendant`; the listbox has an `aria-label` and contains only options.
+- `role="dialog"` / `alertdialog` and `aria-modal` sit on the CDK container; a form inside stays a plain `<form>`.
+- Target size is at least 24×24 everywhere (WCAG 2.5.8); on touch screens (`pointer: coarse`) icon buttons are 44×44, and the star and the chip's remove button are enlarged with an invisible `::after`.
+- Every UI string is English (the remaining non-English examples were removed from the design-system docs) and goes through translation keys.
+
+In CI: `@axe-core/playwright` on the key screens in both themes; the build fails on serious and critical violations (a `test-engineer` task).
 
 **Loading states** (the Loading and Skeleton components in the design system, the "Loading states" and "Loading · phone" screens). One indicator per wait, chosen by what is loading:
 

@@ -5,4 +5,4 @@ Toast confirms a completed action and offers undo for deletions.
 **Classes:** `sm-toast` (`--success`, `--error`), `sm-toast__text`, `sm-toast__action`; enters with `sm-slide-up`.
 
 - 4 s by default, 8 s with an action; pauses on hover; announced via `aria-live="polite"`.
-- Text is short and past tense: "Link saved". No "successfully".
+- Text is short and past tense: «Link saved». No «successfully».

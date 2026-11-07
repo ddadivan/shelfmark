@@ -11,7 +11,7 @@ Which one:
 - **Small, safe changes** (favorite, move, rename, tag) → optimistic update, no loader; on failure roll back and show an error toast with Retry.
 - **Infinite scroll** → `sm-loadmore` row under the last item.
 - **Link preview** → skeleton inside the preview box; after 8 s give up and let the user fill the title.
-- **Search** → keep previous results dimmed, spinner in the field instead of the search icon.
+- **Search** → keep previous results as they are (never dim them: faded text drops below 4.5:1), mark the list `aria-busy="true"` and show the spinner in the field instead of the search icon.
 - **Export** → `sm-meter` with a percentage when the size is known, otherwise inline bar.
 - **App start** → `sm-boot`: logo and a 96px inline bar, only if start takes longer than 300 ms.
 
