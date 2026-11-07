@@ -6,6 +6,7 @@ export * from './lib/checkbox';
 export * from './lib/chip';
 export * from './lib/command-list';
 export * from './lib/dialog';
+export * from './lib/drawer';
 export * from './lib/empty-state';
 export * from './lib/favicon';
 export * from './lib/field';

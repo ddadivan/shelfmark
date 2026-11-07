@@ -1,0 +1,67 @@
+@use '../../styles/ui' as *;
+
+:host {
+  display: block;
+}
+
+// Pinned to the inline-start edge by `DrawerService` (global position strategy).
+.ui-drawer {
+  display: flex;
+  flex-direction: column;
+  width: min(19.5rem, calc(100vw - #{rem(48px)}));
+
+  // `--ui-drawer-height` is only for static docs panels; the real drawer is the full viewport.
+  height: var(--ui-drawer-height, 100dvh);
+  padding-block: env(safe-area-inset-top) env(safe-area-inset-bottom);
+  padding-inline-start: env(safe-area-inset-left);
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: var(--shadow-popover);
+
+  &:dir(rtl) {
+    --ui-inline-sign: 1;
+  }
+}
+
+.ui-drawer--enter {
+  @include enter(drawer);
+}
+
+.ui-drawer--leave {
+  @include leave(drawer);
+}
+
+.ui-drawer__head {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  min-height: rem(56px);
+  padding-block: 0;
+  padding-inline: var(--space-4) var(--space-2);
+  border-block-end: 1px solid var(--border);
+}
+
+.ui-drawer__head-slot {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.ui-drawer__body {
+  flex: 1;
+  min-height: 0;
+  padding: var(--space-3);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.ui-drawer__foot {
+  flex: none;
+  padding: var(--space-3) var(--space-4);
+  border-block-start: 1px solid var(--border);
+
+  &:empty {
+    display: none;
+  }
+}
