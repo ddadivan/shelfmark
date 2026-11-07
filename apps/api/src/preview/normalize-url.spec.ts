@@ -19,6 +19,19 @@ describe('normalizeUrl', () => {
     expect(normalizeUrl(input)).toBe(expected);
   });
 
+  it.each([
+    ['mailto:a@b.com', 'mailto:a@b.com'],
+    ['mailto://a@b.com', 'mailto://a@b.com'],
+    ['  tel:+123#x ', 'tel:+123'],
+    ['javascript:alert(1)#f', 'javascript:alert(1)'],
+  ])('keeps non-http(s) %s apart: %s', (input, expected) => {
+    expect(normalizeUrl(input)).toBe(expected);
+  });
+
+  it('keeps the query order as written', () => {
+    expect(normalizeUrl('https://example.com/a?b=1&a=2')).toBe('https://example.com/a?b=1&a=2');
+  });
+
   it('maps equivalent URLs to the same value', () => {
     expect(normalizeUrl('https://EXAMPLE.com/x/?utm_source=a#top')).toBe(
       normalizeUrl('https://example.com/x'),

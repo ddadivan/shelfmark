@@ -87,6 +87,53 @@ describe('extractPreview', () => {
     expect(extractPreview(padded, PAGE).title).toBe('x');
   });
 
+  it.each([
+    ['javascript:alert(1)'],
+    ['data:image/png;base64,AAAA'],
+    ['https://user:pass@cdn.example.com/a.png'],
+    [`https://cdn.example.com/${'a'.repeat(2_100)}.png`],
+  ])('rejects the image URL %#', (value) => {
+    const html = page(`<meta property="og:image" content="${value}">`);
+    expect(extractPreview(html, PAGE).imageUrl).toBeNull();
+  });
+
+  it('rejects unsafe favicon URLs and falls back to /favicon.ico', () => {
+    const html = page(
+      '<link rel="icon" href="javascript:alert(1)"><link rel="icon" href="https://u:p@x.com/i.ico">',
+    );
+    expect(extractPreview(html, PAGE).faviconUrl).toBe('https://example.com/favicon.ico');
+  });
+
+  it('resolves relative URLs against an http(s) <base href> only', () => {
+    const withBase = page(
+      '<base href="https://cdn.example.org/assets/"><meta property="og:image" content="a.png">',
+    );
+    expect(extractPreview(withBase, PAGE).imageUrl).toBe('https://cdn.example.org/assets/a.png');
+    const badBase = page(
+      '<base href="javascript:alert(1)"><meta property="og:image" content="/a.png">',
+    );
+    expect(extractPreview(badBase, PAGE).imageUrl).toBe('https://example.com/a.png');
+  });
+
+  it('falls back to name when property is not a known key', () => {
+    const html = page('<meta property="x:other" name="description" content="from name">');
+    expect(extractPreview(html, PAGE).description).toBe('from name');
+  });
+
+  it('parses 64 KB of pathological markup quickly', () => {
+    const inputs = [
+      '<b><i>'.repeat(10_800),
+      '<table><tr><td>'.repeat(4_300),
+      '<svg><g>'.repeat(8_200),
+      '<a><b><a><b>'.repeat(5_400),
+    ];
+    const start = performance.now();
+    for (const input of inputs) {
+      extractPreview(`<title>t</title>${input}`, PAGE);
+    }
+    expect(performance.now() - start).toBeLessThan(1_500);
+  });
+
   it('reads meta tags inside templates', () => {
     const html = `<template><meta property="og:title" content="in template"></template>`;
     expect(extractPreview(html, PAGE).title).toBe('in template');

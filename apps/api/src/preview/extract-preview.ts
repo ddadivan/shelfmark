@@ -1,39 +1,41 @@
 import type { LinkPreview } from '@shelfmark/contracts';
 import { parse } from 'parse5';
-import type { DefaultTreeAdapterMap } from 'parse5';
 import { ALLOWED_PROTOCOLS } from '../fetcher/models/allowed-protocols.const';
+import type { CollectedTags } from './models/collected-tags.interface';
+import type { HtmlElement } from './models/html-element.type';
+import type { HtmlNode } from './models/html-node.type';
+import { HTML_ATTRIBUTE } from './models/html-attribute.const';
+import { HTML_NODE_NAME } from './models/html-node-name.const';
 import { HTML_TAG } from './models/html-tag.const';
 import { META_KEY } from './models/meta-key.const';
 import { PREVIEW_LIMITS } from './models/preview-limits.const';
-
-type Node = DefaultTreeAdapterMap['node'];
-type Element = DefaultTreeAdapterMap['element'];
 
 const FAVICON_PATH = '/favicon.ico';
 const ICON_REL = 'icon';
 const APPLE_ICON_REL = 'apple-touch-icon';
 
-interface CollectedTags {
-  meta: Map<string, string>;
-  title: string | null;
-  icons: string[];
-  appleIcons: string[];
-}
+const KNOWN_META_KEYS: ReadonlySet<string> = new Set(Object.values(META_KEY));
 
-function attribute(element: Element, name: string): string | undefined {
+function attribute(element: HtmlElement, name: string): string | undefined {
   return element.attrs.find((attr) => attr.name === name)?.value;
 }
 
-function textOf(element: Element): string {
+function textOf(element: HtmlElement): string {
   return element.childNodes
-    .map((child) => ('value' in child && child.nodeName === '#text' ? child.value : ''))
+    .map((child) => ('value' in child && child.nodeName === HTML_NODE_NAME.Text ? child.value : ''))
     .join('');
 }
 
 /** Iterative walk (no recursion, so deeply nested markup cannot overflow the stack). */
-function collect(root: Node): CollectedTags {
-  const tags: CollectedTags = { meta: new Map(), title: null, icons: [], appleIcons: [] };
-  const stack: Node[] = [root];
+function collect(root: HtmlNode): CollectedTags {
+  const tags: CollectedTags = {
+    meta: new Map(),
+    title: null,
+    icons: [],
+    appleIcons: [],
+    baseHref: null,
+  };
+  const stack: HtmlNode[] = [root];
   while (stack.length > 0) {
     const node = stack.pop();
     if (node === undefined || !('childNodes' in node)) {
@@ -41,16 +43,23 @@ function collect(root: Node): CollectedTags {
     }
     if ('tagName' in node) {
       if (node.tagName === HTML_TAG.Meta) {
-        const key = (attribute(node, 'property') ?? attribute(node, 'name'))?.toLowerCase();
-        const content = attribute(node, 'content');
+        // `property` wins only when it is a key we know; otherwise `name` is the fallback.
+        const property = attribute(node, HTML_ATTRIBUTE.Property)?.toLowerCase();
+        const key =
+          property !== undefined && KNOWN_META_KEYS.has(property)
+            ? property
+            : attribute(node, HTML_ATTRIBUTE.Name)?.toLowerCase();
+        const content = attribute(node, HTML_ATTRIBUTE.Content);
         if (key !== undefined && content !== undefined && !tags.meta.has(key)) {
           tags.meta.set(key, content);
         }
       } else if (node.tagName === HTML_TAG.Title && tags.title === null) {
         tags.title = textOf(node);
+      } else if (node.tagName === HTML_TAG.Base) {
+        tags.baseHref ??= attribute(node, HTML_ATTRIBUTE.Href) ?? null;
       } else if (node.tagName === HTML_TAG.Link) {
-        const rel = (attribute(node, 'rel') ?? '').toLowerCase().split(/\s+/);
-        const href = attribute(node, 'href');
+        const rel = (attribute(node, HTML_ATTRIBUTE.Rel) ?? '').toLowerCase().split(/\s+/);
+        const href = attribute(node, HTML_ATTRIBUTE.Href);
         if (href !== undefined && href.trim() !== '') {
           if (rel.includes(ICON_REL)) {
             tags.icons.push(href);
@@ -67,7 +76,7 @@ function collect(root: Node): CollectedTags {
         stack.push(child);
       }
     }
-    if ('content' in node && node.nodeName === 'template') {
+    if ('content' in node && node.nodeName === HTML_NODE_NAME.Template) {
       stack.push(node.content);
     }
   }
@@ -92,7 +101,10 @@ function firstOf(meta: Map<string, string>, keys: readonly string[]): string | u
     .find((value) => value !== undefined && value.trim() !== '');
 }
 
-/** Resolves against the page URL; only absolute http(s) URLs are returned. */
+/**
+ * Resolves against `base`; only http(s) URLs without credentials and within the length limit are
+ * returned (the value ends up in `<img src>` on the client).
+ */
 function absoluteHttpUrl(value: string | undefined, base: string): string | null {
   if (value === undefined) {
     return null;
@@ -100,7 +112,12 @@ function absoluteHttpUrl(value: string | undefined, base: string): string | null
   try {
     const url = new URL(value.trim(), base);
     const protocols: readonly string[] = Object.values(ALLOWED_PROTOCOLS);
-    return protocols.includes(url.protocol) ? url.href : null;
+    const acceptable =
+      protocols.includes(url.protocol) &&
+      url.username === '' &&
+      url.password === '' &&
+      url.href.length <= PREVIEW_LIMITS.maxUrlLength;
+    return acceptable ? url.href : null;
   } catch {
     return null;
   }
@@ -145,6 +162,8 @@ export function extractPreview(html: string, pageUrl: string): LinkPreview {
     firstOf(tags.meta, [META_KEY.OgDescription, META_KEY.TwitterDescription, META_KEY.Description]),
     PREVIEW_LIMITS.maxDescriptionLength,
   );
+  // `<base href>` counts only when it is itself a plain http(s) URL.
+  const base = absoluteHttpUrl(tags.baseHref ?? undefined, pageUrl) ?? pageUrl;
   const imageUrl = absoluteHttpUrl(
     firstOf(tags.meta, [
       META_KEY.OgImage,
@@ -152,11 +171,11 @@ export function extractPreview(html: string, pageUrl: string): LinkPreview {
       META_KEY.TwitterImage,
       META_KEY.TwitterImageSrc,
     ]),
-    pageUrl,
+    base,
   );
   const faviconUrl =
     [...tags.icons, ...tags.appleIcons]
-      .map((href) => absoluteHttpUrl(href, pageUrl))
+      .map((href) => absoluteHttpUrl(href, base))
       .find((href) => href !== null) ?? originFavicon(pageUrl);
 
   return { url: pageUrl, title, description, imageUrl, faviconUrl };
