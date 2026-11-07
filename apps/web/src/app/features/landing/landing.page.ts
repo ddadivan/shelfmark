@@ -1,11 +1,14 @@
+import { DOCUMENT } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   effect,
   ElementRef,
+  inject,
   signal,
   viewChild,
 } from '@angular/core';
+import { LANDING_LINKS } from './models/landing-links.const';
 import { LandingBeforeAfterComponent } from './components/landing-before-after/landing-before-after.component';
 import { LandingBuiltComponent } from './components/landing-built/landing-built.component';
 import { LandingFinaleComponent } from './components/landing-finale/landing-finale.component';
@@ -37,6 +40,10 @@ export default class LandingPage {
   private readonly built = viewChild(LandingBuiltComponent, { read: ElementRef });
 
   constructor() {
+    // Opened as `/#how` (new tab, shared link): load the sections and scroll once they exist.
+    if (inject(DOCUMENT).defaultView?.location.hash === LANDING_LINKS.HowItsBuilt) {
+      this.showHowItsBuilt();
+    }
     effect(() => {
       const built = this.built();
       if (built && this.scrollPending()) {
