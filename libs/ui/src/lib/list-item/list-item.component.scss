@@ -31,11 +31,6 @@
 
 :host(.ui-list-item--selected) {
   background: var(--accent-bg);
-
-  // `text-muted` on `accent-bg` is below 4.5:1 in the light theme.
-  .ui-list-item__meta {
-    color: var(--accent-text);
-  }
 }
 
 :host(:has(.ui-list-item__link:focus-visible)) {
