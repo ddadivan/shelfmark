@@ -103,16 +103,23 @@ describe('Vercel function entry (api/index.mjs)', () => {
   );
 
   it.skipIf(!existsSync(bundle))(
-    'emits no numbered async chunks and keeps Prisma query compiler imports dynamic',
+    'emits no numbered async chunks (Vercel does not trace them)',
     () => {
-      // Vercel's tracer does not copy webpack's async chunks (2.js, 3.js ...).
       const chunks = readdirSync(dirname(bundle)).filter((file) => /^\d+\.m?js$/.test(file));
       expect(chunks).toEqual([]);
-      const code = readFileSync(bundle, 'utf8');
-      // Only once PrismaModule is part of the app (wired in #64) does the bundle contain Prisma.
-      if (code.includes('@prisma/client/runtime/client')) {
-        expect(code).toContain('import("@prisma/client/runtime/query_compiler');
-      }
+    },
+  );
+
+  // The externals plugin itself is covered by scripts/esm-externals.plugin.spec.ts (including a
+  // real webpack compile). This asserts the real bundle once Prisma is in it.
+  const bundleHasPrisma =
+    existsSync(bundle) && readFileSync(bundle, 'utf8').includes('@prisma/client/runtime/client');
+  it.skipIf(!bundleHasPrisma)(
+    'keeps the Prisma query compiler import dynamic (skipped until #64 imports PrismaModule)',
+    () => {
+      expect(readFileSync(bundle, 'utf8')).toContain(
+        'import("@prisma/client/runtime/query_compiler',
+      );
     },
   );
 
