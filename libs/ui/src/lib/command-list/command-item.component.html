@@ -1,0 +1,8 @@
+<ng-template #body>
+  <span class="ui-command-item__leading"><ng-content select="[slot=leading]" /></span>
+  <span class="ui-command-item__main">
+    <span class="ui-command-item__title"><ng-content /></span>
+    <span class="ui-command-item__meta"><ng-content select="[slot=meta]" /></span>
+  </span>
+  <span class="ui-command-item__trailing"><ng-content select="[slot=trailing]" /></span>
+</ng-template>

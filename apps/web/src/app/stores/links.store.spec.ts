@@ -1,5 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import type { LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
+import {
+  FOLDER_DELETE_MODE,
+  type LinkResponse,
+  type ListLinksResponse,
+} from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { NEVER, of, Subject, throwError } from 'rxjs';
 import { LINKS_API } from '../features/links/models/links-api.const';
@@ -15,9 +19,9 @@ function page(items: LinkResponse[], nextCursor: string | null = null): ListLink
   return { items, nextCursor };
 }
 
-function setup() {
+function setup({ items = [link(1), link(2), link(3)] }: { items?: LinkResponse[] } = {}) {
   const api = {
-    list: vi.fn<LinksApi['list']>(() => of(page([link(1), link(2), link(3)]))),
+    list: vi.fn<LinksApi['list']>(() => of(page(items))),
     recent: vi.fn<LinksApi['recent']>(() => of({ items: [link(2)] })),
     update: vi.fn<LinksApi['update']>((id, request) =>
       of(link(Number(id.slice(3)), { ...request, updatedAt: 'later' })),
@@ -350,6 +354,24 @@ describe('LinksStore', () => {
       expect(ids(store)).not.toContain('id-9');
     });
 
+    it('removes an edited link that no longer belongs in Unsorted', () => {
+      const { store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.Unsorted });
+
+      store.applyEdit(link(2, { folderId: 'f1' }));
+
+      expect(ids(store)).not.toContain('id-2');
+    });
+
+    it('keeps an unfavorited link in Favorites until the next load', () => {
+      const { store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.Favorites });
+
+      store.applyEdit(link(2, { isFavorite: false }));
+
+      expect(ids(store)).toContain('id-2');
+    });
+
     it('applies an edit from the server', () => {
       const { store } = setup();
       store.setFilter({ scope: LINKS_SCOPE.All });
@@ -357,6 +379,165 @@ describe('LinksStore', () => {
       store.applyEdit(link(2, { title: 'Renamed' }));
 
       expect(store.entityMap()['id-2']?.title).toBe('Renamed');
+    });
+  });
+
+  describe('folder and tag filters', () => {
+    it('asks for the links of a folder, with tags and search', () => {
+      const { api, store } = setup();
+
+      store.setFilter({
+        scope: LINKS_SCOPE.Folder,
+        folderId: 'f1',
+        tags: ['a', 'b'],
+        q: 'ng',
+      });
+
+      expect(api.list).toHaveBeenCalledWith({ folderId: 'f1', tag: ['a', 'b'], q: 'ng' });
+    });
+
+    it('clears the feed when only the folder changes', () => {
+      const pageTwo = new Subject<ListLinksResponse>();
+      const { api, store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.Folder, folderId: 'f1' });
+      api.list.mockReturnValueOnce(pageTwo);
+
+      store.setFilter({ scope: LINKS_SCOPE.Folder, folderId: 'f2' });
+
+      expect(store.count()).toBe(0);
+      expect(store.loaded()).toBe(false);
+    });
+
+    it('shows a saved link in a folder feed only for that folder', () => {
+      const { store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.Folder, folderId: 'f1' });
+
+      store.addSaved(link(8, { folderId: 'f2' }));
+      store.addSaved(link(9, { folderId: 'f1' }));
+
+      expect(ids(store)).toEqual(['id-9', 'id-1', 'id-2', 'id-3']);
+    });
+
+    it('moves the links of a deleted folder to unsorted, or drops them', () => {
+      const { store } = setup({
+        items: [link(1, { folderId: 'f1' }), link(2, { folderId: 'f9' })],
+      });
+      store.setFilter({ scope: LINKS_SCOPE.All });
+
+      store.applyFolderRemoval(['f1'], FOLDER_DELETE_MODE.MoveToUnsorted);
+      expect(store.entityMap()['id-1'].folderId).toBeNull();
+      expect(store.entityMap()['id-2'].folderId).toBe('f9');
+
+      store.applyFolderRemoval(['f9'], FOLDER_DELETE_MODE.DeleteLinks);
+      expect(ids(store)).toEqual(['id-1']);
+    });
+  });
+
+  describe('folder removal and links in their Undo window', () => {
+    it('Undo brings a link back without the deleted folder', () => {
+      const { store } = setup({ items: [link(1, { folderId: 'f1' }), link(2)] });
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      store.remove('id-1');
+
+      store.applyFolderRemoval(['f1'], FOLDER_DELETE_MODE.MoveToUnsorted);
+      store.undoRemove('id-1');
+
+      expect(store.entityMap()['id-1'].folderId).toBeNull();
+    });
+
+    it('Undo cannot bring back a link deleted with its folder', async () => {
+      const { api, store } = setup({ items: [link(1, { folderId: 'f1' }), link(2)] });
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      store.remove('id-1');
+
+      store.applyFolderRemoval(['f1'], FOLDER_DELETE_MODE.DeleteLinks);
+      store.undoRemove('id-1');
+
+      expect(ids(store)).toEqual(['id-2']);
+      expect(await store.commitRemove('id-1')).toBe(true);
+      expect(api.remove).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('tag rename and drop', () => {
+    const tagged = () => ({
+      items: [
+        link(1, { tags: ['winter', 'docs'] }),
+        link(2, { tags: ['Docs', 'winter'] }),
+        link(3),
+      ],
+    });
+
+    it('renames the tag in the feed and the recent list, ignoring case', async () => {
+      const { api, store } = setup(tagged());
+      api.recent.mockReturnValue(of({ items: [link(2, { tags: ['Docs', 'winter'] })] }));
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      await store.loadRecent();
+
+      store.renameTag('WINTER', 'summer');
+
+      expect(store.entityMap()['id-1'].tags).toEqual(['summer', 'docs']);
+      expect(store.entityMap()['id-2'].tags).toEqual(['Docs', 'summer']);
+      expect(store.recent()[0].tags).toEqual(['Docs', 'summer']);
+      expect(store.entityMap()['id-3'].tags).toEqual(MOCK_LINKS[0].tags);
+    });
+
+    it('collapses a link that has both tags after a merge', () => {
+      const { store } = setup({ items: [link(1, { tags: ['winter', 'clothes', 'Winter'] })] });
+      store.setFilter({ scope: LINKS_SCOPE.All });
+
+      store.renameTag('winter', 'clothes');
+
+      expect(store.entityMap()['id-1'].tags).toEqual(['clothes']);
+    });
+
+    it('drops the tag from the feed and the recent list', async () => {
+      const { api, store } = setup(tagged());
+      api.recent.mockReturnValue(of({ items: [link(2, { tags: ['Docs', 'winter'] })] }));
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      await store.loadRecent();
+
+      store.dropTag('winter');
+
+      expect(store.entityMap()['id-1'].tags).toEqual(['docs']);
+      expect(store.recent()[0].tags).toEqual(['Docs']);
+    });
+
+    it('keeps Undo from bringing back a link with the old tag name', () => {
+      const { store } = setup(tagged());
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      store.remove('id-1');
+
+      store.renameTag('winter', 'summer');
+      store.undoRemove('id-1');
+
+      expect(store.entityMap()['id-1'].tags).toEqual(['summer', 'docs']);
+    });
+
+    it('keeps Undo from bringing back a link with a dropped tag', () => {
+      const { store } = setup(tagged());
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      store.remove('id-1');
+
+      store.dropTag('winter');
+      store.undoRemove('id-1');
+
+      expect(store.entityMap()['id-1'].tags).toEqual(['docs']);
+    });
+
+    it('leaves a delete that is already being sent alone', async () => {
+      const { api, store } = setup(tagged());
+      const gone = new Subject<void>();
+      api.remove.mockReturnValue(gone);
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      store.remove('id-1');
+
+      const committing = store.commitRemove('id-1');
+      store.renameTag('winter', 'summer');
+      gone.error(new Error('down'));
+      await committing;
+
+      expect(store.entityMap()['id-1'].tags).toEqual(['winter', 'docs']);
     });
   });
 

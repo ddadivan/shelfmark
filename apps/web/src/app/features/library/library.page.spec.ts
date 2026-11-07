@@ -1,9 +1,11 @@
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
-import type { LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
-import { MOCK_LINKS } from '@shelfmark/contracts/testing';
+import type { FolderResponse, LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
+import { MOCK_FOLDERS, MOCK_LIBRARY_COUNTS, MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { DialogService } from '@shelfmark/ui';
 import axe from 'axe-core';
 import { of, Subject, throwError } from 'rxjs';
+import { FOLDERS_API } from '../links/models/folders-api.const';
+import type { FoldersApi } from '../links/models/folders-api.interface';
 import { LINKS_API } from '../links/models/links-api.const';
 import type { LinksApi } from '../links/models/links-api.interface';
 import { LINKS_SCOPE } from '../links/models/links-scope.const';
@@ -180,5 +182,116 @@ describe('LibraryPage', () => {
     element.remove();
 
     expect(violations.map((violation) => violation.id)).toEqual([]);
+  });
+});
+
+describe('LibraryPage of a folder', () => {
+  const FOLDER: FolderResponse = { ...MOCK_FOLDERS[0], id: 'f1', name: 'Reading list' };
+
+  async function setupFolder(folderId: string, items: LinkResponse[] = [link(1)]) {
+    const linksApi = {
+      list: vi.fn<LinksApi['list']>(() => of(page(items))),
+      recent: vi.fn<LinksApi['recent']>(() => of({ items: [] })),
+    };
+    const foldersApi = {
+      list: vi.fn<FoldersApi['list']>(() => of({ items: [FOLDER], counts: MOCK_LIBRARY_COUNTS })),
+    };
+    TestBed.configureTestingModule({
+      providers: [
+        provideTranslocoForTest(),
+        { provide: LINKS_API, useValue: linksApi },
+        { provide: FOLDERS_API, useValue: foldersApi },
+        { provide: DialogService, useValue: { confirm: vi.fn(() => Promise.resolve(false)) } },
+      ],
+    });
+    await loadEnglish();
+    const fixture = TestBed.createComponent(LibraryPage);
+    fixture.componentRef.setInput('scope', LINKS_SCOPE.Folder);
+    fixture.componentRef.setInput('folderId', folderId);
+    await fixture.whenStable();
+    return { linksApi, fixture, element: fixture.nativeElement as HTMLElement };
+  }
+
+  it('asks for the links of the folder and shows its name as the heading', async () => {
+    const { linksApi, element } = await setupFolder('f1');
+
+    expect(linksApi.list).toHaveBeenCalledWith({ folderId: 'f1' });
+    expect(element.querySelector('h1')?.textContent).toBe('Reading list');
+    expect(element.querySelectorAll('app-link-card')).toHaveLength(1);
+  });
+
+  it('says so when the folder is empty and offers to add a link here', async () => {
+    const { element, fixture } = await setupFolder('f1', []);
+
+    expect(text(fixture)).toContain('This folder is empty');
+    expect(element.querySelector('ui-empty-state button')?.textContent).toContain('Add link here');
+  });
+
+  it('shows "not found" instead of the content for an unknown folder', async () => {
+    const { element, fixture } = await setupFolder('gone');
+
+    expect(text(fixture)).toContain('Folder not found');
+    expect(element.querySelector('h1')).toBeNull();
+    expect(element.querySelector('app-link-card')).toBeNull();
+    expect(element.querySelector('ui-segmented-control')).toBeNull();
+  });
+
+  it('has no axe violations on the not-found state', async () => {
+    const { element } = await setupFolder('gone');
+    document.body.append(element);
+
+    const { violations } = await axe.run(element, {
+      rules: { 'color-contrast': { enabled: false } },
+    });
+    element.remove();
+
+    expect(violations.map((violation) => violation.id)).toEqual([]);
+  });
+  describe('tag filter', () => {
+    it('asks for the links of the tags in the query, normalized and without duplicates', async () => {
+      const { api, fixture } = await setup();
+
+      fixture.componentRef.setInput('tag', ['winter sale', 'Docs', 'docs']);
+      await fixture.whenStable();
+
+      expect(api.list).toHaveBeenLastCalledWith({ tag: ['winter-sale', 'Docs'] });
+    });
+
+    it('accepts a single value', async () => {
+      const { api, fixture } = await setup();
+
+      fixture.componentRef.setInput('tag', 'docs');
+      await fixture.whenStable();
+
+      expect(api.list).toHaveBeenLastCalledWith({ tag: ['docs'] });
+    });
+
+    it('shows a removable chip per tag and a Clear button', async () => {
+      const { element, fixture } = await setup();
+
+      fixture.componentRef.setInput('tag', ['docs', 'video']);
+      await fixture.whenStable();
+
+      const group = element.querySelector('.library__filter');
+      expect(group?.querySelectorAll('ui-chip')).toHaveLength(2);
+      expect(group?.textContent).toContain('Clear filter');
+      expect(group?.querySelector('button[aria-label="Remove tag filter docs"]')).not.toBeNull();
+    });
+
+    it('shows no filter row without tags', async () => {
+      const { element } = await setup();
+
+      expect(element.querySelector('.library__filter')).toBeNull();
+    });
+
+    it('says so when no link has all the tags', async () => {
+      const { api, fixture } = await setup();
+      api.list.mockReturnValue(of(page([])));
+
+      fixture.componentRef.setInput('tag', ['docs']);
+      await fixture.whenStable();
+
+      expect(text(fixture)).toContain('No links with these tags');
+    });
   });
 });

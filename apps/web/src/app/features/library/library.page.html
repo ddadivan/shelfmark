@@ -1,8 +1,9 @@
 <ui-progress-bar [active]="refetching()" [label]="'library.loading' | transloco" />
 <section class="library" [attr.aria-busy]="store.loading()">
+  @if (!folderMissing()) {
   <header class="library__toolbar">
     <div class="library__heading">
-      <h1 class="library__title">{{ titleKey() | transloco }}</h1>
+      <h1 class="library__title">{{ folder()?.name ?? (titleKey() | transloco) }}</h1>
       @if (showLinks()) {
       <p class="library__count">
         {{ (store.hasMore() ? 'library.countMore' : 'library.count') | transloco: { count:
@@ -20,13 +21,37 @@
     />
     }
   </header>
-
-  @if (store.error() && store.count() > 0) {
+  @if (filtered()) {
+  <div class="library__filter" role="group" [attr.aria-label]="'tags.filter.label' | transloco">
+    @for (name of tags(); track name) {
+    <ui-chip
+      removable
+      [removeLabel]="'tags.filter.remove' | transloco: { name: name }"
+      (removed)="removeTag(name)"
+    >
+      {{ name }}
+    </ui-chip>
+    }
+    <ui-button variant="ghost" size="sm" (click)="clearTags()">
+      {{ 'tags.filter.clear' | transloco }}
+    </ui-button>
+  </div>
+  } } @if (store.error() && store.count() > 0 && !folderMissing()) {
   <ui-notice kind="danger" class="library__notice">
     {{ 'library.refetchFailed' | transloco }}
     <ui-button size="sm" (click)="retry()">{{ 'library.error.retry' | transloco }}</ui-button>
   </ui-notice>
-  } @if (failed()) {
+  } @if (folderMissing()) {
+  <ui-empty-state
+    illustration="not-found"
+    [heading]="'library.folderNotFound.title' | transloco"
+    [text]="'library.folderNotFound.text' | transloco"
+  >
+    <ui-button variant="primary" (click)="showAll()">
+      {{ 'library.folderNotFound.action' | transloco }}
+    </ui-button>
+  </ui-empty-state>
+  } @else if (failed()) {
   <ui-empty-state
     illustration="offline"
     [heading]="'library.error.title' | transloco"
@@ -44,14 +69,24 @@
   <div class="library__grid">
     <ui-skeleton [shape]="SKELETON_SHAPE.Card" [count]="SKELETON_COUNT" />
   </div>
-  } } @else if (empty()) {
+  } } @else if (empty() && filtered()) {
   <ui-empty-state
     illustration="empty-feed"
-    [heading]="'library.empty.title' | transloco"
-    [text]="'library.empty.text' | transloco"
+    [heading]="'library.emptyFiltered.title' | transloco"
+    [text]="'library.emptyFiltered.text' | transloco"
   >
-    <ui-button variant="primary" iconLeft="add" (click)="actions.addLink()">
-      {{ 'library.empty.add' | transloco }}
+    <ui-button variant="primary" (click)="clearTags()">
+      {{ 'library.emptyFiltered.clear' | transloco }}
+    </ui-button>
+  </ui-empty-state>
+  } @else if (empty()) {
+  <ui-empty-state
+    [illustration]="isFolder() ? 'empty-folder' : 'empty-feed'"
+    [heading]="emptyKey() + '.title' | transloco"
+    [text]="emptyKey() + '.text' | transloco"
+  >
+    <ui-button variant="primary" iconLeft="add" (click)="actions.addLink(addLinkData())">
+      {{ emptyKey() + '.add' | transloco }}
     </ui-button>
   </ui-empty-state>
   } @else if (showLinks()) { @if (ui.view() === UI_VIEW.List) {
@@ -62,6 +97,7 @@
         [link]="link"
         (opened)="actions.open(link)"
         (favoriteToggled)="actions.toggleFavorite(link)"
+        (editRequested)="actions.edit(link)"
         (deleteRequested)="actions.delete(link)"
       />
     </li>
@@ -75,6 +111,7 @@
         [link]="link"
         (opened)="actions.open(link)"
         (favoriteToggled)="actions.toggleFavorite(link)"
+        (editRequested)="actions.edit(link)"
         (deleteRequested)="actions.delete(link)"
       />
     </li>
