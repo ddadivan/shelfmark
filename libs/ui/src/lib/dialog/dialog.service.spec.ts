@@ -32,6 +32,23 @@ class EditDialogComponent {
   protected readonly ref = inject<UiDialogRef<string>>(UiDialogRef);
 }
 
+/** Same shape as the form story: a plain <form> around the dialog, Cancel left of the submit. */
+@Component({
+  imports: [DialogComponent, ButtonComponent],
+  template: `
+    <form (submit)="$event.preventDefault(); ref.close('saved')">
+      <ui-dialog title="Edit link" closeLabel="Close">
+        <input id="form-input" aria-label="Link" />
+        <ui-button slot="footer" (click)="ref.close('cancelled')">Cancel</ui-button>
+        <ui-button slot="footer" variant="primary" type="submit">Save link</ui-button>
+      </ui-dialog>
+    </form>
+  `,
+})
+class FormDialogComponent {
+  protected readonly ref = inject<UiDialogRef<string>>(UiDialogRef);
+}
+
 const confirmConfig: ConfirmDialogConfig = {
   title: 'Delete folder “Work”?',
   message: 'It has 12 links.',
@@ -270,6 +287,32 @@ describe('DialogService', () => {
       settle();
       expect(await axeViolations(container())).toEqual([]);
       ref.close();
+    });
+  });
+
+  describe('form inside a dialog', () => {
+    it('keeps a plain form with no role, and the submit button is its default button', () => {
+      service.open(FormDialogComponent);
+      settle();
+      const form = container().querySelector('form');
+      expect(form).not.toBeNull();
+      expect(form?.hasAttribute('role')).toBe(false);
+      expect(form?.ariaLabel).toBeNull();
+      const buttons = Array.from(form?.querySelectorAll('button') ?? []);
+      // Enter in a field triggers the first submit button of the form: it must be "Save link".
+      expect(buttons.find((element) => element.type === 'submit')?.textContent.trim()).toBe(
+        'Save link',
+      );
+      expect(button('Cancel').type).toBe('button');
+    });
+
+    it('submits through the default button and closes with the result', async () => {
+      const ref = service.open<FormDialogComponent, string>(FormDialogComponent);
+      settle();
+      // Enter in a field makes the browser click the default (first submit) button.
+      container().querySelector<HTMLButtonElement>('button[type="submit"]')?.click();
+      await closed();
+      expect(await ref.result).toBe('saved');
     });
   });
 
