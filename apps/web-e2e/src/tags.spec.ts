@@ -64,9 +64,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
         await expect(chip(page, 'winter-sale')).toBeVisible();
 
         await addTag(page, 'WINTER-SALE');
-        await expect(
-          sidebar(page).getByText('There’s already a tag', { exact: false }),
-        ).toBeVisible();
+        await expect(sidebar(page).getByText(/There.s already a tag/)).toBeVisible();
         await sidebar(page).getByRole('textbox', { name: 'New tag' }).press('Escape');
         await expect(sidebar(page).getByRole('textbox', { name: 'New tag' })).toHaveCount(0);
       });
@@ -76,7 +74,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
 
         await addTag(page, CREATE_FAILS);
 
-        await expect(sidebar(page).getByText('Couldn’t create the tag')).toBeVisible();
+        await expect(sidebar(page).getByText(/Couldn.t create the tag/)).toBeVisible();
       });
 
       test('shows the 8 most used tags and folds the rest behind "+ N more"', async ({ page }) => {
@@ -85,15 +83,18 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
         // Make sure there are more than the top count.
         for (let n = 0; n < TAG_TOP_COUNT; n++) {
           await addTag(page, `extra-${n}`);
-          await expect(chip(page, `extra-${n}`)).toBeVisible();
+          // The field closes once the tag is saved. New tags have no links, so they sort last.
+          await expect(sidebar(page).getByRole('textbox', { name: 'New tag' })).toHaveCount(0);
         }
 
         const more = sidebar(page).getByRole('button', { name: /^\+ \d+ more$/ });
         await expect(more).toBeVisible();
         await expect(more).toHaveAttribute('aria-expanded', 'false');
+        await expect(chip(page, 'extra-7')).toHaveCount(0);
         await more.click();
-        await expect(sidebar(page).getByRole('button', { name: 'Show less' })).toBeVisible();
+        await expect(chip(page, 'extra-7')).toBeVisible();
         await sidebar(page).getByRole('button', { name: 'Show less' }).click();
+        await expect(chip(page, 'extra-7')).toHaveCount(0);
         await expect(more).toBeVisible();
       });
 
