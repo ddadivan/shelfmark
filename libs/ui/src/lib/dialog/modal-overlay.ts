@@ -8,6 +8,26 @@ import { raiseOverlayLayers } from '../overlay/overlay-stacking';
 import { overlayLayerClass, setOverlayLayer } from '../overlay/overlay-layer';
 
 /**
+ * Focus fallback after a modal closed: when focus is on <body> (or nowhere), the container of
+ * the topmost remaining modal takes it (the CDK container is `tabindex="-1"`), so its keyboard
+ * handling (Esc, Tab) keeps working. Does nothing when focus is somewhere or no modal is left.
+ */
+function restoreFocusToTopModal(overlayContainer: HTMLElement | null): void {
+  const active = document.activeElement;
+  if (active && active !== document.body && active.isConnected) {
+    return;
+  }
+  const modals = overlayContainer?.querySelectorAll<HTMLElement>('.cdk-dialog-container');
+  const top = modals?.item(modals.length - 1);
+  if (top) {
+    if (!top.hasAttribute('tabindex')) {
+      top.setAttribute('tabindex', '-1');
+    }
+    top.focus({ preventScroll: true });
+  }
+}
+
+/**
  * Opens `component` as a modal on the CDK `Dialog` for `DialogService` and `DrawerService`:
  * the scrim and the `dialog` overlay layer, `aria-modal`, a ref that plays the leave animation
  * before the overlay goes away, and Esc / scrim closing (both off when not `dismissible`; the
@@ -49,6 +69,15 @@ export function openModalOverlay<C, R, D>(
   setOverlayLayer(cdkRef.overlayRef.hostElement, OVERLAY_LAYER.Dialog);
   // Popovers stack by show time: toasts (and menus, tooltips) that already exist must stay above.
   raiseOverlayLayers(cdkRef.overlayRef.hostElement);
+
+  // The CDK has already tried to give focus back to the trigger. When that trigger is gone (a
+  // menu item that opened a dialog inside a drawer) or cannot take focus, focus would stay on
+  // <body>, outside every focus trap, and Esc would no longer reach the modal underneath.
+  // (The host leaves the container on dispose, so the container is read now.)
+  const overlayContainer = cdkRef.overlayRef.hostElement.parentElement;
+  cdkRef.closed.subscribe(() => {
+    restoreFocusToTopModal(overlayContainer);
+  });
 
   cdkRef.keydownEvents.subscribe((event) => {
     if (event.key === KEYBOARD_KEY.Escape && options.dismissible && !event.defaultPrevented) {
