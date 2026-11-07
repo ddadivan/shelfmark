@@ -1,12 +1,10 @@
-import { InjectionToken, inject } from '@angular/core';
-import { MockAuthApi } from './mock-auth-api';
+import { InjectionToken } from '@angular/core';
 import { AuthApi } from './models/auth-api.interface';
 
 /**
- * The authentication backend. This is the seam for #64: replace the factory with the Better Auth
- * client (or provide the token in `app.config.ts`); `AuthStore`, guards and pages stay as they are.
+ * The authentication backend. It has no default: `app.config.ts` provides it through
+ * `provideAuthApi()`, whose file is replaced per build (see `project.json`): production gets the
+ * always-signed-out `UnavailableAuthApi`, development and e2e get `MockAuthApi`. #64 puts the
+ * Better Auth client into `provide-auth-api.ts`.
  */
-export const AUTH_API = new InjectionToken<AuthApi>('AUTH_API', {
-  providedIn: 'root',
-  factory: () => inject(MockAuthApi),
-});
+export const AUTH_API = new InjectionToken<AuthApi>('AUTH_API');

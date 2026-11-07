@@ -16,6 +16,7 @@ import {
 } from '@angular/router';
 import { provideTransloco } from '@jsverse/transloco';
 import { apiBaseInterceptor } from './core/api/api-base.interceptor';
+import { provideAuthApi } from './core/auth/provide-auth-api';
 import { appRoutes } from './app.routes';
 import { translocoConfig } from './core/i18n/transloco.config';
 import { AppTranslocoLoader } from './core/i18n/app-transloco.loader';
@@ -36,6 +37,7 @@ export const appConfig: ApplicationConfig = {
     // Only the first exists so far; add the others in that order.
     provideHttpClient(withFetch(), withInterceptors([apiBaseInterceptor])),
     provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
+    provideAuthApi(),
     provideAppInitializer(() => inject(ThemeService).init()),
   ],
 };

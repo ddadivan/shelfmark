@@ -42,15 +42,23 @@ export const AuthStore = signalStore(
         if (store.loaded()) {
           return Promise.resolve();
         }
+        // A failed request leaves `loaded` false and clears `loading`, so the next guard call
+        // retries; the current navigation is treated as a guest (fail-closed).
         loading ??= api
           .getSession()
-          .catch(() => null)
-          .then((user) => patchState(store, { user, loaded: true }));
+          .then(
+            (user) => patchState(store, { user, loaded: true }),
+            () => undefined,
+          )
+          .finally(() => (loading = null));
         return loading;
       },
       signIn: (provider: AuthProvider) => run(provider, () => api.signIn(provider)),
       signInDemo: () => run(AUTH_DEMO, () => api.signInDemo()),
-      /** Clears the session; a failing API still ends the local session. */
+      /**
+       * Clears the session; the mock cannot fail, and a failing API still ends the local session.
+       * #64: clear local state only after the server confirms, and surface failures.
+       */
       async signOut(): Promise<void> {
         try {
           await api.signOut();

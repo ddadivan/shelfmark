@@ -42,6 +42,12 @@
           "outputHashing": "all"
         },
         "development": {
+          "fileReplacements": [
+            {
+              "replace": "apps/web/src/app/core/auth/provide-auth-api.ts",
+              "with": "apps/web/src/app/core/auth/provide-auth-api.dev.ts"
+            }
+          ],
           "optimization": false,
           "extractLicenses": false,
           "sourceMap": true
@@ -57,6 +63,10 @@
             {
               "replace": "apps/web/src/app/app.routes.ts",
               "with": "apps/web/src/app/app.routes.e2e.ts"
+            },
+            {
+              "replace": "apps/web/src/app/core/auth/provide-auth-api.ts",
+              "with": "apps/web/src/app/core/auth/provide-auth-api.dev.ts"
             }
           ]
         }

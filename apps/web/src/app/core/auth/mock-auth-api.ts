@@ -3,33 +3,9 @@ import { Service, inject } from '@angular/core';
 import { AuthApi } from './models/auth-api.interface';
 import { AuthProvider } from './models/auth-provider.type';
 import { AuthUser } from './models/auth-user.interface';
-import { AUTH_PROVIDER } from './models/auth-provider.const';
+import { MOCK_DEMO_USER } from './models/mock-demo-user.const';
+import { MOCK_USERS } from './models/mock-users.const';
 import { MOCK_SESSION_STORAGE_KEY } from './models/mock-session-storage-key.const';
-
-const MOCK_USERS: Record<AuthProvider, AuthUser> = {
-  [AUTH_PROVIDER.Google]: {
-    id: 'mock-google',
-    name: 'Ada Lovelace',
-    email: 'ada@example.com',
-    image: null,
-    isDemo: false,
-  },
-  [AUTH_PROVIDER.GitHub]: {
-    id: 'mock-github',
-    name: 'Grace Hopper',
-    email: 'grace@example.com',
-    image: null,
-    isDemo: false,
-  },
-};
-
-const MOCK_DEMO_USER: AuthUser = {
-  id: 'mock-demo',
-  name: 'Demo user',
-  email: 'demo@example.com',
-  image: null,
-  isDemo: true,
-};
 
 function isAuthUser(value: unknown): value is AuthUser {
   if (typeof value !== 'object' || value === null) {

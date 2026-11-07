@@ -46,12 +46,20 @@ describe('AuthStore', () => {
     expect(store.isSignedIn()).toBe(true);
   });
 
-  it('treats a failing session request as a guest', async () => {
-    const { store } = setup({ getSession: vi.fn(() => Promise.reject(new Error('down'))) });
+  it('treats a failing session request as a guest and retries on the next call', async () => {
+    const getSession = vi
+      .fn<AuthApi['getSession']>()
+      .mockRejectedValueOnce(new Error('down'))
+      .mockResolvedValueOnce(USER);
+    const { store } = setup({ getSession });
 
     await store.ensureLoaded();
-
     expect(store.isSignedIn()).toBe(false);
+    expect(store.loaded()).toBe(false);
+
+    await store.ensureLoaded();
+    expect(getSession).toHaveBeenCalledTimes(2);
+    expect(store.isSignedIn()).toBe(true);
   });
 
   it('signs in with a provider and shows it as pending meanwhile', async () => {
