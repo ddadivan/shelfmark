@@ -89,8 +89,17 @@ model Verification {
 }
 
 // Library models (PROJECT.md 6.1). Every row belongs to a user; the service layer filters by userId.
-// Same-user integrity of folder/link/tag references is enforced in the service layer, not by composite FKs
-// (Prisma cannot generate `ON DELETE SET NULL (folder_id)`, which Link.folderId needs).
+// Same-user integrity: Folder.parent uses a composite FK (parentId, userId) -> (id, userId), so a
+// folder tree never crosses users. Link.folder, LinkTag.link and LinkTag.tag stay single-column FKs:
+// Link.folderId needs `ON DELETE SET NULL (folder_id)`, which Prisma cannot generate, and LinkTag has
+// no userId (PROJECT.md 6.1). Plain-SQL CHECKs and the case-insensitive tag index live in the migration.
+//
+// The service layer (#72) must enforce:
+// - ownership of folderId, parentId and every link/tag id through a `userId` filter, with cross-user
+//   404 tests (never 403);
+// - no folder cycles on move (walk the ancestors of the new parent);
+// - title truncated to LINK_LIMIT.TitleMax when the preview fails and the URL is used as title;
+// - faviconUrl and imageUrl set server-side only (from the preview), never from client input.
 
 model Folder {
   id        String   @id @default(uuid(7)) @db.Uuid
@@ -100,11 +109,13 @@ model Folder {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  parent    Folder?  @relation("FolderTree", fields: [parentId], references: [id], onDelete: Cascade)
+  parent    Folder?  @relation("FolderTree", fields: [parentId, userId], references: [id, userId], onDelete: Cascade)
   children  Folder[] @relation("FolderTree")
   links     Link[]
 
+  @@unique([id, userId])
   @@index([userId, parentId])
+  @@index([parentId])
   @@map("folders")
 }
 
@@ -116,8 +127,8 @@ model Link {
   normalizedUrl String    @map("normalized_url") @db.VarChar(2048)
   title         String    @db.VarChar(300)
   note          String?
-  faviconUrl    String?   @map("favicon_url")
-  imageUrl      String?   @map("image_url")
+  faviconUrl    String?   @map("favicon_url") @db.VarChar(2048)
+  imageUrl      String?   @map("image_url") @db.VarChar(2048)
   isFavorite    Boolean   @default(false) @map("is_favorite")
   lastOpenedAt  DateTime? @map("last_opened_at") @db.Timestamptz(3)
   createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
