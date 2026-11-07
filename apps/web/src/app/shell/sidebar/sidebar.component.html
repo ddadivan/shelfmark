@@ -5,6 +5,45 @@
     [activeId]="activeId()"
     [heading]="'shell.sidebar.folders' | transloco"
     [ariaLabel]="'shell.sidebar.tree' | transloco"
+    [menuLabel]="menuLabel()"
+    [menuNodeId]="menuNodeId()"
     (selected)="select($event)"
+    (contextMenu)="openMenu($event)"
   />
+
+  @if (folders.error()) {
+    <p class="sidebar__error">
+      {{ 'shell.sidebar.loadFailed' | transloco }}
+      <ui-button size="sm" (click)="retry()">{{ 'shell.sidebar.retry' | transloco }}</ui-button>
+    </p>
+  }
+
+  <ui-button
+    class="sidebar__new"
+    variant="ghost"
+    size="sm"
+    iconLeft="folder-plus"
+    (click)="createTopLevel()"
+  >
+    {{ 'shell.sidebar.newFolder' | transloco }}
+  </ui-button>
+
+  <ui-menu [ariaLabel]="'shell.sidebar.folderMenu' | transloco" (closed)="menuClosed()">
+    <ui-menu-item icon="folder-plus" (activated)="createSubfolder()">
+      {{ 'shell.sidebar.menu.newSubfolder' | transloco }}
+    </ui-menu-item>
+    <ui-menu-item icon="add" (activated)="addLinkHere()">
+      {{ 'shell.sidebar.menu.addLink' | transloco }}
+    </ui-menu-item>
+    <ui-menu-item icon="edit" (activated)="rename()">
+      {{ 'shell.sidebar.menu.rename' | transloco }}
+    </ui-menu-item>
+    <ui-menu-item icon="folder-move" (activated)="move()">
+      {{ 'shell.sidebar.menu.move' | transloco }}
+    </ui-menu-item>
+    <ui-menu-separator />
+    <ui-menu-item icon="trash" danger (activated)="remove()">
+      {{ 'shell.sidebar.menu.delete' | transloco }}
+    </ui-menu-item>
+  </ui-menu>
 </nav>
