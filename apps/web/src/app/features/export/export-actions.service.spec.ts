@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { EXPORT_FORMAT } from '@shelfmark/contracts';
 import { ToastService } from '@shelfmark/ui';
-import { firstValueFrom, of, throwError } from 'rxjs';
+import { firstValueFrom, of, Subject, throwError } from 'rxjs';
 import { APP_LANG } from '../../core/i18n/models/app-lang.const';
 import { AppTranslocoLoader } from '../../core/i18n/app-transloco.loader';
 import { translocoConfig } from '../../core/i18n/transloco.config';
@@ -56,6 +56,33 @@ describe('ExportActionsService', () => {
     const options = show.mock.calls[0][0];
     expect(options.text).toBe("Couldn't export your links. Try again.");
     options.action?.run();
+    expect(download).toHaveBeenCalledTimes(2);
+  });
+
+  it('ignores a second export while one runs, then allows the next', async () => {
+    const pending = new Subject<undefined>();
+    const download = vi.fn(() => pending);
+    const { service } = await setup({ download });
+
+    const first = service.download(EXPORT_FORMAT.Json);
+    await service.download(EXPORT_FORMAT.Html);
+    expect(download).toHaveBeenCalledOnce();
+
+    pending.next(undefined);
+    pending.complete();
+    await first;
+    download.mockReturnValue(of(undefined) as never);
+    await service.download(EXPORT_FORMAT.Html);
+    expect(download).toHaveBeenCalledTimes(2);
+  });
+
+  it('allows a new export after a failure', async () => {
+    const download = vi.fn(() => throwError(() => new Error('boom')));
+    const { service } = await setup({ download });
+
+    await service.download(EXPORT_FORMAT.Json);
+    await service.download(EXPORT_FORMAT.Json);
+
     expect(download).toHaveBeenCalledTimes(2);
   });
 });

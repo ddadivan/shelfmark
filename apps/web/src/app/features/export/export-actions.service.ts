@@ -17,8 +17,17 @@ export class ExportActionsService {
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
 
-  /** Downloads `format` for `scope` (the whole library when omitted). */
+  private running = false;
+
+  /**
+   * Downloads `format` for `scope` (the whole library when omitted). Ignored while another
+   * export runs, so a double click does not save the file twice.
+   */
   async download(format: ExportFormat, scope: ExportScope = {}): Promise<void> {
+    if (this.running) {
+      return;
+    }
+    this.running = true;
     try {
       await firstValueFrom(this.injector.get(EXPORT_API).download(format, scope), {
         defaultValue: undefined,
@@ -32,6 +41,8 @@ export class ExportActionsService {
           run: () => void this.download(format, scope),
         },
       });
+    } finally {
+      this.running = false;
     }
   }
 }

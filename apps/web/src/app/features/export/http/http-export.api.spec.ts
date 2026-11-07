@@ -18,6 +18,39 @@ describe('HttpExportApi', () => {
     vi.restoreAllMocks();
   });
 
+  it('revokes the object URL after the save', () => {
+    vi.useFakeTimers();
+    const { api, http } = setup();
+    const revoke = vi.fn();
+    vi.stubGlobal(
+      'URL',
+      Object.assign(URL, { createObjectURL: () => 'blob:x', revokeObjectURL: revoke }),
+    );
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {
+      /* no real download in jsdom */
+    });
+
+    api.download(EXPORT_FORMAT.Json, {}).subscribe();
+    http.expectOne('/api/export?format=json').flush(new Blob(['{}']));
+    expect(revoke).not.toHaveBeenCalled();
+    vi.runAllTimers();
+
+    expect(revoke).toHaveBeenCalledExactlyOnceWith('blob:x');
+    vi.useRealTimers();
+  });
+
+  it('fails on a response without a body and saves nothing', () => {
+    const { api, http } = setup();
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click');
+    let failed = false;
+
+    api.download(EXPORT_FORMAT.Json, {}).subscribe({ error: () => (failed = true) });
+    http.expectOne('/api/export?format=json').flush(null);
+
+    expect(failed).toBe(true);
+    expect(click).not.toHaveBeenCalled();
+  });
+
   it('requests the built URL and saves the file under the server file name', () => {
     const { api, http } = setup();
     const create = vi.fn(() => 'blob:x');
@@ -70,5 +103,17 @@ describe('fileNameOf', () => {
     expect(fileNameOf('attachment; filename="../x/y.json"', 'f')).toBe('.._x_y.json');
     expect(fileNameOf(null, 'f')).toBe('f');
     expect(fileNameOf('inline', 'f')).toBe('f');
+  });
+
+  it('drops control characters', () => {
+    expect(fileNameOf('attachment; filename="a\u0000b\u001f.json\u007f"', 'f')).toBe('ab.json');
+    expect(fileNameOf('attachment; filename="\u0001\u0002"', 'f')).toBe('f');
+  });
+
+  it('falls back for dot-only names', () => {
+    expect(fileNameOf('attachment; filename=".."', 'f')).toBe('f');
+    expect(fileNameOf('attachment; filename="."', 'f')).toBe('f');
+    expect(fileNameOf('attachment; filename="..."', 'f')).toBe('f');
+    expect(fileNameOf('attachment; filename=".hidden"', 'f')).toBe('.hidden');
   });
 });

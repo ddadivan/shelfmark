@@ -26,13 +26,15 @@ export class HttpExportApi implements ExportApi {
       .get(buildExportUrl(this.base, format, scope), { observe: 'response', responseType: 'blob' })
       .pipe(
         map((response) => {
+          // A 2xx without a body is not a file: surface it as a failure, not a silent no-op.
+          if (!response.body) {
+            throw new Error('Export response has no body');
+          }
           const name = fileNameOf(
             response.headers.get('Content-Disposition'),
             EXPORT_FILE_NAME[format],
           );
-          if (response.body) {
-            saveBlob(this.doc, response.body, name);
-          }
+          saveBlob(this.doc, response.body, name);
         }),
       );
   }

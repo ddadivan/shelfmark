@@ -11,9 +11,11 @@ import { UnavailableTagsApi } from './unavailable/unavailable-tags.api';
 /**
  * Registers the data seams of the links feature (`LINKS_API`, `FOLDERS_API`, `TAGS_API`).
  * Until #72 / #75 / #76 land these are placeholders that reject with a clear error, so no
- * fixtures ship in production. `EXPORT_API` is the real one: it is only a download URL, and a 404
- * (API not deployed yet) or 401 becomes an error toast. The `development` and `e2e` builds replace this file with
- * `mock/provide-links-api.e2e.ts` (`fileReplacements` in `project.json`).
+ * fixtures ship in production. `EXPORT_API` is the real one: it only fetches a file, and a 404
+ * (API not deployed yet) or 401 becomes an error toast. It is registered here, not in
+ * `app.config.ts`, because this file is the single seam `fileReplacements` swaps: the
+ * `development` and `e2e` builds replace it with `mock/provide-links-api.e2e.ts`, which
+ * provides `MockExportApi` instead, so no export code needs its own build switch.
  */
 export function provideLinksApi(): Provider[] {
   return [

@@ -16,9 +16,26 @@ export function saveBlob(doc: Document, blob: Blob, fileName: string): void {
 }
 
 const FILE_NAME = /filename="?([^";]+)"?/i;
+const DOTS_ONLY = /^\.+$/;
 
-/** The file name of a `Content-Disposition` header without path separators, or the fallback. */
+const DEL = 0x7f;
+const SPACE = 0x20;
+
+function withoutControlChars(text: string): string {
+  return Array.from(text)
+    .filter((char) => {
+      const code = char.codePointAt(0) ?? SPACE;
+      return code >= SPACE && code !== DEL;
+    })
+    .join('');
+}
+
+/**
+ * The file name of a `Content-Disposition` header, or the fallback. Path separators become `_`,
+ * control characters are dropped, and a name of only dots (`.`, `..`) is not a file name.
+ */
 export function fileNameOf(disposition: string | null, fallback: string): string {
-  const name = disposition ? FILE_NAME.exec(disposition)?.[1]?.replace(/[\\/]/g, '_').trim() : '';
-  return name || fallback;
+  const raw = disposition ? FILE_NAME.exec(disposition)?.[1] : undefined;
+  const name = raw && withoutControlChars(raw).replace(/[\\/]/g, '_').trim();
+  return name && !DOTS_ONLY.test(name) ? name : fallback;
 }
