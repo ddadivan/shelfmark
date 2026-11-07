@@ -52,7 +52,10 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
       expect(jsonFile.suggestedFilename()).toBe('shelfmark-export.json');
       expect(await requestedUrl(jsonFile)).toBe('/api/export?format=json');
 
+      // The first menu is still leaving: opening now would toggle it shut.
+      await expect(page.getByRole('menu')).toBeHidden();
       await page.getByRole('button', { name: 'Export' }).click();
+      await expect(page.getByRole('menuitem', { name: 'Everything as JSON' })).toBeVisible();
       const html = page.waitForEvent('download');
       await page.getByRole('menuitem', { name: 'Everything as Bookmarks HTML' }).click();
       const htmlFile = await html;
