@@ -117,25 +117,49 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
         await expect(searchField(page)).toHaveCount(0);
       });
 
-      test('opens a link in a new tab with Ctrl+Enter and keeps the dialog open', async ({
+      test('sends a modified click to a new-tab anchor with Ctrl+Enter and keeps the dialog open', async ({
         page,
-        context,
         isMobile,
       }) => {
         test.skip(isMobile, 'no keyboard on the phone project');
+        // Whether a synthetic modified click really opens a background tab is the browser's call
+        // (it does in desktop Chromium, not on every headless runner), so assert what the app
+        // sends: the click event and the anchor it goes to.
+        await page.addInitScript(`
+          window.__bgClicks = [];
+          const dispatch = HTMLAnchorElement.prototype.dispatchEvent;
+          HTMLAnchorElement.prototype.dispatchEvent = function (event) {
+            window.__bgClicks.push({
+              type: event.type,
+              modified: event.ctrlKey || event.metaKey,
+              href: this.href,
+              target: this.target,
+              rel: this.rel,
+            });
+            return dispatch.call(this, event);
+          };
+        `);
         await page.goto('/links');
         await expect(searchButton(page)).toBeVisible();
         await searchButton(page).click();
         await searchField(page).fill('pasta');
         await expect(page.getByRole('option', { name: new RegExp(PASTA_TITLE) })).toBeVisible();
         await searchField(page).press('ArrowDown');
-        const opened = context.waitForEvent('page');
 
-        // Best effort: the browser decides whether a modified click opens a background tab.
         await searchField(page).press('Control+Enter');
 
-        const popup = await opened;
-        await popup.waitForURL(/example\.com\/recipes\/pasta/);
+        await expect.poll(() => page.evaluate('window.__bgClicks.length')).toBeGreaterThan(0);
+        const clicks =
+          await page.evaluate<
+            { type: string; modified: boolean; href: string; target: string; rel: string }[]
+          >('window.__bgClicks');
+        expect(clicks[0]).toMatchObject({
+          type: 'click',
+          modified: true,
+          target: '_blank',
+          rel: 'noopener noreferrer',
+        });
+        expect(clicks[0].href).toContain('example.com/recipes/pasta');
         await expect(searchField(page)).toBeVisible();
       });
 
