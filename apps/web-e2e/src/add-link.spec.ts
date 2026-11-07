@@ -106,7 +106,7 @@ test.describe('add link dialog (mock API)', () => {
       await dialog.getByLabel('Link', { exact: true }).fill(duplicateUrl);
       await expect(dialog.getByRole('button', { name: 'Open saved' })).toBeVisible();
 
-      await expectNoBlockingViolations(page, testInfo, dialogSelector);
+      await expectNoBlockingViolations(page, testInfo, { include: dialogSelector });
     });
   }
 

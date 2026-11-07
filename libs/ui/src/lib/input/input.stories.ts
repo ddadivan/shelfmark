@@ -16,7 +16,8 @@ const meta: Meta<InputComponent> = {
           'Single-line field in the shared field shell: the label is always visible, the placeholder ' +
           'only shows an example. With Signal Forms bind it with `[formField]` (value, disabled, ' +
           'required and the first error message of a touched field come from the field); without a ' +
-          'form use `[(value)]` and `error`. `search` swaps its icon for a spinner while `loading`.',
+          'form use `[(value)]` and `error`. While `loading`, `search` swaps its icon for a spinner ' +
+          'and other types show one after the text.',
       },
     },
   },
@@ -90,6 +91,18 @@ export const SearchLoading: Story = {
   args: { ...Search.args, loading: true, value: 'angular' },
 };
 
+/** Other types show the spinner after the text, before the clear button (add-link preview). */
+export const UrlLoading: Story = {
+  args: {
+    type: INPUT_TYPE.Url,
+    icon: 'link',
+    clearable: true,
+    loading: true,
+    loadingLabel: 'Loading preview',
+    value: 'https://stepik.org/course/nestjs',
+  },
+};
+
 export const Filled: Story = {
   args: { label: 'Title', value: "Angular 22: what's new" },
 };
@@ -135,6 +148,8 @@ export const AllVariants: Story = {
               hint="Title and preview fill in by themselves" />
             <ui-input label="Search" type="search" placeholder="Search links" shortcut="⌘K" />
             <ui-input label="Search (loading)" type="search" value="angular" [loading]="true" />
+            <ui-input label="Link (loading)" type="url" icon="link" value="https://stepik.org/course/nestjs"
+              [loading]="true" loadingLabel="Loading preview" [clearable]="true" clearLabel="Clear" />
             <ui-input label="Title" value="Angular 22: what's new" />
             <ui-input label="Empty" placeholder="Placeholder shows an example" />
             <ui-input label="Link" type="url" value="youtube com/ng22"
