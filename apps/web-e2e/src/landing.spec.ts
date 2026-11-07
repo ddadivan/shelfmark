@@ -33,6 +33,14 @@ test.describe('landing', () => {
     await expect(section).toBeFocused();
   });
 
+  test('opening the page with #how scrolls to and focuses the section', async ({ page }) => {
+    await page.goto('/#how');
+
+    const section = page.getByRole('region', { name: "How it's built" });
+    await expect(section).toBeInViewport();
+    await expect(section).toBeFocused();
+  });
+
   test('"Put them on the shelf" swaps the chat for the shelf and back', async ({ page }) => {
     await page.goto('/');
     await expect(page.getByText('Five links, five different days.')).toBeVisible();
