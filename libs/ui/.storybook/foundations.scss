@@ -213,6 +213,14 @@
   box-shadow: var(--shadow-card-hover);
 }
 
+.fd-shadow--card-spread {
+  box-shadow: var(--shadow-card-spread);
+}
+
+.fd-shadow--card-press {
+  box-shadow: var(--shadow-card-press);
+}
+
 .fd-shadow--popover {
   box-shadow: var(--shadow-popover);
 }

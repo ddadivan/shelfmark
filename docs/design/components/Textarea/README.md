@@ -1,4 +1,4 @@
-Textarea is a multi-line field for the link note "why I saved it".
+Textarea is a multi-line field for the link note «why I saved it».
 
 **Angular:** `ui-textarea` — inputs `label`, `placeholder`, `hint`, `maxLength` (shows a counter), `rows` (default 3, auto-grows to 8); Signal Forms binding.
 

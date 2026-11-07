@@ -1,4 +1,4 @@
-LinkRow shows one link in the compact list view and in "Recently opened".
+LinkRow shows one link in the compact list view and in «Recently opened».
 
 **Angular:** domain component `link-row` built from `ui-list-item`: input `link`, `compact` (hides tags, used in the recent panel); same outputs as LinkCard.
 

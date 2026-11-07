@@ -74,8 +74,8 @@ a{color:inherit}a:hover{color:inherit}
 <div style="display: flex; align-items: center; gap: 10px;">
 <button class="sm-btn sm-btn--ghost sm-btn--sm sm-ripple-host" onPointerDown="{{ripple}}">Newest first<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
 <div class="sm-seg sm-seg--slide" role="radiogroup" aria-label="View" style="--seg-n: 2; --seg-i: {{segIndex}};">
-<button class="sm-seg__item {{cardsActive}}" role="radio" aria-label="Cards" onClick="{{showCards}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg></button>
-<button class="sm-seg__item {{listActive}}" role="radio" aria-label="List" onClick="{{showList}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M5 6v.01M5 12v.01M5 18v.01"/></svg></button>
+<button class="sm-seg__item {{cardsActive}}" role="radio" aria-checked="{{isCards}}" aria-label="Cards" onClick="{{showCards}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg></button>
+<button class="sm-seg__item {{listActive}}" role="radio" aria-checked="{{isList}}" aria-label="List" onClick="{{showList}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M5 6v.01M5 12v.01M5 18v.01"/></svg></button>
 </div>
 <button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm sm-ripple-host" onPointerDown="{{ripple}}" aria-label="Toggle recently opened" onClick="{{toggleRecent}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M15 4v16"/></svg></button>
 <span style="position: relative;"><button class="sm-btn sm-btn--secondary sm-btn--sm sm-ripple-host" onPointerDown="{{ripple}}" aria-haspopup="menu" aria-expanded="{{menuOpen}}" onClick="{{toggleMenu}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Export</button>
@@ -92,7 +92,7 @@ a{color:inherit}a:hover{color:inherit}
 </div>
 <div class="sm-card__body">
 <div class="sm-card__meta" style="justify-content: space-between;"><span style="display: flex; align-items: center; gap: 6px; min-width: 0; overflow: hidden;"><span class="sm-favicon">{{l.fav}}</span>{{l.site}}</span><span class="sm-star {{l.starClass}}" aria-label="Favorite"><svg width="16" height="16" viewBox="0 0 24 24" fill="{{l.starFill}}" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M12 17.75l-6.17 3.24 1.18-6.87-5-4.86 6.9-1 3.09-6.26 3.09 6.26 6.9 1-5 4.86 1.18 6.87z"/></svg></span></div>
-<h3 class="sm-card__title">{{l.title}}</h3>
+<h2 class="sm-card__title">{{l.title}}</h2>
 <p class="sm-card__note">{{l.note}}</p>
 <div class="sm-card__tags"><span class="sm-chip">{{l.tag}}</span></div>
 </div>

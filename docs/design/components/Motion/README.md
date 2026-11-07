@@ -2,7 +2,7 @@ Motion defines Shelfmark's few animations. The one signature moment is saving a 
 
 ## Principles
 
-1. **Motion answers the user.** Nothing moves on its own except loaders and illustrations in their `loop` mode (landing, welcome steps, sign-in). No entrance animations on page sections, no other ambient loops.
+1. **Motion answers the user.** Nothing moves on its own except loaders. No entrance animations on page sections, no ambient loops.
 2. **Fast in, faster out.** Entrances `duration-base` (200 ms), exits `duration-fast` (120 ms), press-down `duration-instant` (80 ms). Only the saved card, toasts and sheets use `duration-slow` (320 ms). Nothing in the UI runs longer than 320 ms except the 1.8 s sage ring fading from a new card.
 3. **The right curve for the job.**
    - `ease-out` — anything appearing or reacting: menus, dialogs, toasts, spinners, press-down.
@@ -12,7 +12,7 @@ Motion defines Shelfmark's few animations. The one signature moment is saving a 
    - `ease-spring` — a small overshoot for small things: the landed card, the star, press release. Never on dialogs or large surfaces.
    - Never `linear` except for spinners and the indeterminate bar.
 4. **Animate `transform` and `opacity`.** Colour changes use transitions on `background-color`, `color`, `border-color`. Two deliberate exceptions: the button spinner animates its margin so the label slides over (one tiny element, 200 ms), and the tree uses `grid-template-rows` to expand. No animation libraries.
-5. **Start from something real.** Scale from 0.96 (dialogs) or 0.4 (spinners), never from 0. Menus and listboxes scale from the trigger (`transform-origin` set from the anchor via `--sm-origin` in the reference; `libs/ui` names it `--ui-origin`); dialogs from the centre.
+5. **Start from something real.** Scale from 0.96 (dialogs) or 0.4 (spinners), never from 0. Menus and listboxes scale from the trigger (`transform-origin` set from the anchor via `--sm-origin`); dialogs from the centre.
 6. **Interruptible.** Hover, press, tree and theme use CSS transitions so a reversed action reverses smoothly. In Angular, menus and dialogs open with `animate.enter` and close with `animate.leave`; a second click mid-animation must work.
 7. **Hover only where there is a pointer.** All `:hover` styles live in `@media (hover: hover)`, so tapping on a phone never leaves a stuck highlight.
 

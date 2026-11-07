@@ -28,9 +28,9 @@ a{color:inherit}
 </div>
 <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
 <div class="sm-seg" role="radiogroup" aria-label="Loading phase">
-<button class="sm-seg__item {{segFirst}}" role="radio" style="width: auto; padding: 0 12px;" onClick="{{showFirst}}">First load</button>
-<button class="sm-seg__item {{segNav}}" role="radio" style="width: auto; padding: 0 12px;" onClick="{{showNav}}">Switching folder</button>
-<button class="sm-seg__item {{segDone}}" role="radio" style="width: auto; padding: 0 12px;" onClick="{{showDone}}">Loaded</button>
+<button class="sm-seg__item {{segFirst}}" role="radio" aria-checked="{{segFirstOn}}" style="width: auto; padding: 0 12px;" onClick="{{showFirst}}">First load</button>
+<button class="sm-seg__item {{segNav}}" role="radio" aria-checked="{{segNavOn}}" style="width: auto; padding: 0 12px;" onClick="{{showNav}}">Switching folder</button>
+<button class="sm-seg__item {{segDone}}" role="radio" aria-checked="{{segDoneOn}}" style="width: auto; padding: 0 12px;" onClick="{{showDone}}">Loaded</button>
 </div>
 <button class="sm-btn sm-btn--secondary sm-btn--sm" onClick="{{replay}}">Play the sequence</button>
 </div>
@@ -90,7 +90,7 @@ a{color:inherit}
 <div class="sm-card__media" style="background: {{l.media}};"></div>
 <div class="sm-card__body">
 <div class="sm-card__meta"><span class="sm-favicon">{{l.fav}}</span>{{l.site}}</div>
-<h3 class="sm-card__title">{{l.title}}</h3>
+<h2 class="sm-card__title">{{l.title}}</h2>
 <div class="sm-card__tags"><span class="sm-chip">{{l.tag}}</span></div>
 </div>
 </a>
@@ -106,13 +106,13 @@ a{color:inherit}
 <section style="display: flex; flex-direction: column; gap: 10px;">
 <h2 class="cap">Search in progress — type to try</h2>
 <div class="panel" style="padding: 14px; display: flex; flex-direction: column; gap: 8px; height: 220px; box-sizing: border-box;">
-<label class="sm-field__control" style="background: var(--bg);"><span style="width: 16px; height: 16px; display: inline-grid; place-items: center; color: var(--text-muted); flex: none;"><span class="sm-spinner sm-spinner--sm {{qLeave}}" style="display: {{qSpin}};" aria-label="Searching"></span><span class="sm-icon-in" style="display: {{qIcon}};"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span></span><input aria-label="Search" value="signal forms" onInput="{{typed}}"><span class="sm-kbd">Esc</span></label>
-<div style="opacity: .55; display: flex; flex-direction: column; gap: 2px;">
+<label class="sm-field__control" style="background: var(--bg);"><span style="width: 16px; height: 16px; display: inline-grid; place-items: center; color: var(--text-muted); flex: none;"><span class="sm-spinner sm-spinner--sm {{qLeave}}" style="display: {{qSpin}};" role="status" aria-label="Searching"></span><span class="sm-icon-in" style="display: {{qIcon}};"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span></span><input aria-label="Search" value="signal forms" onInput="{{typed}}"><span class="sm-kbd">Esc</span></label>
+<div aria-busy="true" style="display: flex; flex-direction: column; gap: 2px;">
 <div class="sm-row" style="cursor: default; padding: 8px;"><span class="sm-favicon">Y</span><span class="sm-row__main"><span class="sm-row__title">Signal Forms in 20 minutes</span><span class="sm-row__meta">Work / Angular</span></span></div>
 <div class="sm-row" style="cursor: default; padding: 8px;"><span class="sm-favicon">A</span><span class="sm-row__main"><span class="sm-row__title">Forms guide</span><span class="sm-row__meta">Work / Angular</span></span></div>
 </div>
 </div>
-<p class="note">Previous results stay, dimmed. The spinner takes the place of the search icon.</p>
+<p class="note">Previous results stay as they are (no dimming, so the text keeps its contrast). The spinner takes the place of the search icon.</p>
 </section>
 
 <section style="display: flex; flex-direction: column; gap: 10px;">
@@ -186,7 +186,7 @@ class Component extends DCLogic {
       isFirst, isNav, treeReady: !isFirst,
       treeBusy: isFirst ? 'true' : 'false', mainBusy: isFirst || isNav ? 'true' : 'false',
       revealCls: isDone ? 'sm-reveal' : '',
-      segFirst: isFirst ? 'is-active' : '', segNav: isNav ? 'is-active' : '', segDone: isDone ? 'is-active' : '',
+      segFirst: isFirst ? 'is-active' : '', segNav: isNav ? 'is-active' : '', segDone: isDone ? 'is-active' : '', segFirstOn: String(isFirst), segNavOn: String(isNav), segDoneOn: String(isDone),
       phaseNote: notes[phase],
       folderTitle: isDone ? 'Clothes' : 'Angular',
       countLine: isDone ? '21 links' : '12 links, 2 subfolders',
