@@ -1,0 +1,10 @@
+@use 'ui' as *;
+
+.search-dialog__empty {
+  @include type(body);
+
+  padding: var(--space-6) var(--space-4);
+  margin: 0;
+  color: var(--text-muted);
+  text-align: center;
+}

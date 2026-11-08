@@ -24,6 +24,10 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
         }
         await page.goto(path);
         await expect(page.getByRole('heading', { level: 1, name: heading })).toBeVisible();
+        if (path === '/') {
+          // The landing defers its lower sections: scan the whole page, not just the hero.
+          await expect(page.getByRole('contentinfo')).toBeVisible();
+        }
         await expect(page.locator('html')).toHaveAttribute('data-theme', colorScheme);
         await waitForFonts(page);
 
@@ -32,7 +36,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
           await expect(page.getByRole('dialog')).toBeVisible();
         }
 
-        await expectNoBlockingViolations(page, testInfo, disabledRules);
+        await expectNoBlockingViolations(page, testInfo, { disabledRules });
       });
     }
   });

@@ -1,0 +1,91 @@
+<div
+  class="landing-chat__phone"
+  role="group"
+  aria-labelledby="landing-chat-title"
+  (pointerenter)="hovered.set(true)"
+  (pointerleave)="hovered.set(false)"
+  (focusin)="focused.set(true)"
+  (focusout)="focused.set(false)"
+>
+  <div class="landing-chat__bar">
+    @if (sorted()) {
+      <ui-logo class="landing-chat__mark" variant="mark" />
+      <span class="landing-chat__heading">
+        <span id="landing-chat-title" class="landing-chat__title">{{
+          'landing.chat.shelfTitle' | transloco
+        }}</span>
+        <span class="landing-chat__subtitle">{{ 'landing.chat.shelfSubtitle' | transloco }}</span>
+      </span>
+    } @else {
+      <span class="landing-chat__avatar" aria-hidden="true">
+        <ui-icon name="bookmark" [size]="16" />
+      </span>
+      <span class="landing-chat__heading">
+        <span id="landing-chat-title" class="landing-chat__title">{{
+          'landing.chat.savedMessages' | transloco
+        }}</span>
+        <span class="landing-chat__subtitle">{{ 'landing.chat.savedSubtitle' | transloco }}</span>
+      </span>
+    }
+  </div>
+
+  @if (sorted()) {
+    <app-landing-chat-shelf id="landing-chat-body" />
+  } @else if (animated()) {
+    <div
+      id="landing-chat-body"
+      class="landing-chat__feed"
+      [class.landing-chat__feed--clearing]="clearing()"
+    >
+      <!-- Decorative loop: the hero carries the text version for assistive technology. -->
+      <ul
+        class="landing-chat__track"
+        data-testid="landing-chat-track"
+        aria-hidden="true"
+        [class.landing-chat__track--snap]="snapping()"
+        [class.landing-chat__track--running]="running()"
+        [style.--landing-chat-step]="step()"
+        (transitionend)="onRiseEnd($event)"
+      >
+        @for (message of feed(); track $index) {
+          <li class="landing-chat__slot">
+            <app-landing-chat-bubble [message]="message" />
+          </li>
+        }
+      </ul>
+    </div>
+  } @else {
+    <ul id="landing-chat-body" class="landing-chat__messages" data-testid="landing-chat-messages">
+      @for (message of messages; track message.id) {
+        <li class="landing-chat__message">
+          <app-landing-chat-bubble [message]="message" />
+        </li>
+      }
+    </ul>
+  }
+</div>
+
+<div class="landing-chat__footer">
+  <p class="landing-chat__hint">
+    {{ (sorted() ? 'landing.chat.hintShelf' : 'landing.chat.hintChat') | transloco }}
+  </p>
+  <div class="landing-chat__actions">
+    @if (animated() && !sorted()) {
+      <ui-button
+        [variant]="BUTTON_VARIANT.Ghost"
+        ariaControls="landing-chat-body"
+        [ariaPressed]="userPaused()"
+        (click)="togglePause()"
+      >
+        {{ 'landing.chat.pause' | transloco }}
+      </ui-button>
+    }
+    <ui-button
+      [variant]="sorted() ? BUTTON_VARIANT.Ghost : BUTTON_VARIANT.Primary"
+      ariaControls="landing-chat-body"
+      (click)="toggle()"
+    >
+      {{ (sorted() ? 'landing.chat.showChat' : 'landing.chat.putOnShelf') | transloco }}
+    </ui-button>
+  </div>
+</div>

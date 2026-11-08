@@ -1,0 +1,39 @@
+/**
+ * Literal strings that must never appear in the production bundle (`dist/apps/web/browser`):
+ * they survive minification and exist only in the mocks and the e2e harness.
+ * Imported by `scripts/check-production-bundle.mjs`, so keep this file free of imports.
+ */
+export const PRODUCTION_BUNDLE_MARKERS = [
+  'angular.dev/overview',
+  'unreachable.example',
+  'save-fails.example',
+  'Mock: preview failed',
+  'Mock: save failed',
+  'patch-fails.example',
+  'delete-fails.example',
+  'Mock: update failed',
+  'Mock: get failed',
+  'Mock: delete failed',
+  'Mock: list failed',
+  'sm-mock-links-scenario',
+  'Saved article',
+  'Note for article',
+  '.example.com/articles/',
+  '__e2e/add-link',
+  'Mock: folder create failed',
+  'Mock: folder update failed',
+  'Mock: folder delete failed',
+  'Fail on create',
+  'Fail on update',
+  'Fail on delete',
+  'Mock: tag create failed',
+  'Mock: tag update failed',
+  'Mock: tag delete failed',
+  'fail-on-create',
+  'fail-on-update',
+  'fail-on-delete',
+  'Mock: onboarding store failed',
+  'Mock: export failed',
+  'sm-mock-export',
+  'mock-fail',
+] as const;

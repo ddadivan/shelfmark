@@ -31,8 +31,16 @@ export class ToastService {
   }
 
   show(options: ToastOptions): ToastRef {
+    // A toast that appears over a dialog or drawer opened after the region must come to the front
+    // (top-layer order is show order). A toast already on screen is up there from its own raise.
+    // Toasts that are only leaving are not in the store, so a toast shown during a leave counts as
+    // the first; the raise skips a region that still has a leaving toast (`raiseOverlayLayers`).
+    const first = this.store.items().length === 0;
     const item = this.store.push(options);
-    return { dismiss: () => this.store.dismiss(item.id) };
+    if (first) {
+      this.region.raise();
+    }
+    return { dismiss: () => this.store.dismiss(item.id), closed: item.closed };
   }
 
   /** Closes the toast on screen, if any. */
