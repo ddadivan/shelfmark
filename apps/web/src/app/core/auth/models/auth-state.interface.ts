@@ -1,5 +1,5 @@
 import { AuthPending } from './auth-pending.type';
-import { AuthUser } from './auth-user.interface';
+import type { AuthUser } from '@shelfmark/contracts';
 
 export interface AuthState {
   user: AuthUser | null;

@@ -295,6 +295,13 @@
       "github": "Continue with GitHub",
       "demo": "Open the demo",
       "failed": "We could not sign you in. Try again.",
+      "error": {
+        "generic": "Sign-in did not finish. Try again.",
+        "denied": "Sign-in was cancelled. Try again when you are ready.",
+        "emailMissing": "Your GitHub account has no verified email. Verify an email in your GitHub settings, or sign in with Google.",
+        "restart": "The sign-in took too long or was interrupted. Start again.",
+        "notLinked": "This email already belongs to an account that could not be linked. Sign in with the provider you used before."
+      },
       "reason": {
         "sessionExpired": "Your session has expired. Sign in again.",
         "demoExpired": "The demo has ended. Open a new one or sign in."
@@ -302,7 +309,8 @@
       "eyebrow": "Sign in to Shelfmark",
       "privacy": "By continuing you agree to the Privacy policy. We only use your name, email and avatar."
     },
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "signOutFailed": "We could not sign you out. Try again."
   },
   "shell": {
     "accountMenu": "Account menu",

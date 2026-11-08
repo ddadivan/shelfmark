@@ -8,7 +8,7 @@ import { AUTH_API } from '../../core/auth/auth-api.token';
 import { ONBOARDING_API } from '../onboarding/models/onboarding-api.const';
 import { AuthStore } from '../../core/auth/auth.store';
 import { AuthApi } from '../../core/auth/models/auth-api.interface';
-import { AuthUser } from '../../core/auth/models/auth-user.interface';
+import type { AuthUser } from '@shelfmark/contracts';
 import { APP_LANG } from '../../core/i18n/models/app-lang.const';
 import { AppTranslocoLoader } from '../../core/i18n/app-transloco.loader';
 import { translocoConfig } from '../../core/i18n/transloco.config';
