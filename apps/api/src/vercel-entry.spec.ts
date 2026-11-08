@@ -111,17 +111,46 @@ describe('Vercel function entry (api/index.mjs)', () => {
   );
 
   // The externals plugin itself is covered by scripts/esm-externals.plugin.spec.ts (including a
-  // real webpack compile). This asserts the real bundle once Prisma is in it.
-  const bundleHasPrisma =
-    existsSync(bundle) && readFileSync(bundle, 'utf8').includes('@prisma/client/runtime/client');
-  it.skipIf(!bundleHasPrisma)(
-    'keeps the Prisma query compiler import dynamic (skipped until #64 imports PrismaModule)',
+  // real webpack compile). These assert the real bundle: PrismaModule is part of the app since #64.
+  it.skipIf(!existsSync(bundle))(
+    'keeps the Prisma query compiler import dynamic in the built bundle',
     () => {
-      expect(readFileSync(bundle, 'utf8')).toContain(
-        'import("@prisma/client/runtime/query_compiler',
-      );
+      const code = readFileSync(bundle, 'utf8');
+      expect(code).toContain('@prisma/client/runtime/client');
+      expect(code).toContain('import("@prisma/client/runtime/query_compiler');
     },
   );
+
+  it.skipIf(!existsSync(bundle))(
+    'imports Better Auth and its Nest integration as static ESM imports from the entry',
+    () => {
+      const code = readFileSync(bundle, 'utf8');
+      const entry = new Set(runtimeImports(readFileSync(entryFile, 'utf8')));
+      for (const specifier of [
+        '@thallesp/nestjs-better-auth',
+        'better-auth',
+        'better-auth/adapters/prisma',
+        'better-auth/api',
+      ]) {
+        expect(code).toContain(`from "${specifier}";`);
+        expect(entry).toContain(specifier);
+      }
+    },
+  );
+
+  it('imports Better Auth, its Nest integration and express (required by name) in the entry', () => {
+    const specifiers = runtimeImports(readFileSync(entryFile, 'utf8'));
+    for (const specifier of [
+      '@thallesp/nestjs-better-auth',
+      'better-auth',
+      'better-auth/adapters/prisma',
+      'better-auth/api',
+      'better-auth/node',
+      'express',
+    ]) {
+      expect(specifiers).toContain(specifier);
+    }
+  });
 
   it('imports the Prisma runtime and driver adapter, never the bare @prisma/client, in the entry', () => {
     const specifiers = runtimeImports(readFileSync(entryFile, 'utf8'));

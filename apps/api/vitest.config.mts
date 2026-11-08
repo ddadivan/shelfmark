@@ -1,3 +1,4 @@
+import { resolve } from 'node:path';
 import swc from 'unplugin-swc';
 import { defineConfig } from 'vitest/config';
 
@@ -6,12 +7,24 @@ export default defineConfig({
   cacheDir: '../../node_modules/.vite/apps/api',
   // SWC emits decorator metadata; Vite's own TS transform must not run.
   oxc: false,
+  resolve: {
+    // Workspace library, resolved from source (runtime imports such as AUTH_PROVIDER).
+    alias: {
+      '@shelfmark/contracts': resolve(
+        import.meta.dirname,
+        '../../libs/shared/contracts/src/index.ts',
+      ),
+    },
+  },
   plugins: [swc.vite({ tsconfigFile: './tsconfig.spec.json' })],
   test: {
     name: 'api',
     globals: true,
     environment: 'node',
     include: ['src/**/*.spec.ts', 'scripts/**/*.spec.ts'],
+    setupFiles: ['./vitest.setup.ts'],
+    // Each DB spec boots its own PGlite; parallel files make the first hook slow on small machines.
+    hookTimeout: 30_000,
     reporters: ['default'],
     coverage: {
       // On by default so `nx test api` enforces the thresholds; filtered runs (`-t foo`) may fail them.

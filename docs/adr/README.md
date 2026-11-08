@@ -52,3 +52,4 @@ Routine features, bug fixes and choices already fully covered by an existing ADR
 | [0026](0026-oauth-on-preview-deployments.md) | OAuth on preview deployments: demo sign-in only on previews, OAuth on localhost and production | Accepted | 2026-11-07 |
 | [0027](0027-link-preview-images-under-csp.md) | Link preview images and favicons: captured at save time through the SSRF-safe fetcher, stored in Postgres, served same-origin; CSP unchanged | Accepted | 2026-11-07 |
 | [0028](0028-lighthouse-ci-isolated-lockfile.md) | Lighthouse CI in an isolated lockfile outside the root audit scope | Proposed | 2026-11-07 |
+| [0030](0030-better-auth-integration.md) | Better Auth integration: environment rules, allowed surface, token stripping, session filtering, test harness | Proposed | 2026-11-07 |
