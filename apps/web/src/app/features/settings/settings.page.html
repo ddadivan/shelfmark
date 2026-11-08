@@ -58,4 +58,15 @@
       }
     </app-settings-row>
   </app-settings-section>
+
+  <app-settings-section [heading]="'settings.welcome.title' | transloco">
+    <app-settings-row
+      [label]="'settings.welcome.title' | transloco"
+      [hint]="'settings.welcome.hint' | transloco"
+    >
+      <ui-button [disabled]="onboarding.resetting()" (click)="onboarding.reset()">
+        {{ 'settings.welcome.action' | transloco }}
+      </ui-button>
+    </app-settings-row>
+  </app-settings-section>
 </div>

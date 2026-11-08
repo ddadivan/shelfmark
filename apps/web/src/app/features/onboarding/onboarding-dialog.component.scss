@@ -1,0 +1,88 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.onboarding {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  align-items: center;
+  text-align: center;
+
+  // The sliding step must not make the dialog body scroll sideways while it moves in.
+  overflow-x: clip;
+}
+
+.onboarding__step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  align-items: center;
+  animation: onboarding-next var(--duration-slow) var(--ease-out) both;
+
+  &--back {
+    animation-name: onboarding-prev;
+  }
+}
+
+.onboarding__scene {
+  --ui-illustration-width: #{rem(280px)};
+}
+
+.onboarding__text {
+  @include type(body);
+
+  max-width: rem(420px);
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.onboarding__sr {
+  @include visually-hidden;
+}
+
+.onboarding__foot {
+  display: flex;
+  flex: 1;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+.onboarding__skip {
+  margin-inline-end: auto;
+}
+
+// Phone: stacked buttons, the main action on top (the DOM order stays Skip, Back, Next).
+@include phone {
+  // `ui-button` has no full-width mode yet, so the buttons stack centred at their own width.
+  .onboarding__foot {
+    flex-direction: column-reverse;
+    align-items: center;
+  }
+
+  .onboarding__skip {
+    margin-inline-end: 0;
+  }
+}
+
+@keyframes onboarding-next {
+  from {
+    opacity: 0;
+    transform: translateX(#{rem(24px)});
+  }
+}
+
+@keyframes onboarding-prev {
+  from {
+    opacity: 0;
+    transform: translateX(#{rem(-24px)});
+  }
+}
+
+@include reduced-motion {
+  .onboarding__step {
+    animation: none;
+  }
+}
