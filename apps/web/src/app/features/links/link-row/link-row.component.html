@@ -5,7 +5,7 @@
   [description]="href() ? ('links.item.opensInNewTab' | transloco) : undefined"
   (activated)="open()"
 >
-  <ui-favicon slot="leading" [letter]="letter()" />
+  <ui-favicon slot="leading" [src]="favicon()" [letter]="letter()" />
   <span slot="title">{{ link().title }}</span>
   <span slot="meta">{{ host() }}</span>
   <div slot="trailing" class="link-row__trailing">

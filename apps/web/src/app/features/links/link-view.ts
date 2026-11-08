@@ -15,3 +15,14 @@ export function linkHost(url: string): string {
 export function siteLetter(url: string): string {
   return displayHost(url).charAt(0).toUpperCase();
 }
+
+/** Same-origin prefix of the captured copies served by the API (ADR 0027). */
+const LINK_IMAGE_PATH_PREFIX = '/api/links/';
+
+/**
+ * The image URL when it is a path of our own API (`/api/links/{id}/image?v=...`), else
+ * `undefined`. A remote URL is never bound: the CSP would block it and it would leak the user.
+ */
+export function ownImageUrl(url: string | null): string | undefined {
+  return url?.startsWith(LINK_IMAGE_PATH_PREFIX) ? url : undefined;
+}

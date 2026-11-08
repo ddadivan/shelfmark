@@ -25,6 +25,32 @@ async function setup(link: LinkResponse = LINK) {
 }
 
 describe('LinkCardComponent', () => {
+  it('shows the captured same-origin image and icon', async () => {
+    const { element } = await setup({
+      ...LINK,
+      imageUrl: '/api/links/abc/image?v=0123456789abcdef',
+      faviconUrl: '/api/links/abc/favicon?v=0123456789abcdef',
+    });
+
+    const sources = Array.from(element.querySelectorAll('img')).map((img) =>
+      img.getAttribute('src'),
+    );
+    expect(sources).toEqual([
+      '/api/links/abc/image?v=0123456789abcdef',
+      '/api/links/abc/favicon?v=0123456789abcdef',
+    ]);
+  });
+
+  it('never loads a remote image, only the letter fallback', async () => {
+    const { element } = await setup({
+      ...LINK,
+      imageUrl: 'https://evil.test/a.png',
+      faviconUrl: 'https://evil.test/i.png',
+    });
+
+    expect(element.querySelectorAll('img')).toHaveLength(0);
+  });
+
   it('opens the title in a new tab without leaking the opener', async () => {
     const { element } = await setup();
 

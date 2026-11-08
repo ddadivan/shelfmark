@@ -23,6 +23,21 @@ async function setup(link: LinkResponse = LINK) {
 }
 
 describe('LinkRowComponent', () => {
+  it('shows the captured same-origin icon', async () => {
+    const { element } = await setup({
+      ...LINK,
+      faviconUrl: '/api/links/abc/favicon?v=0123456789abcdef',
+    });
+    expect(element.querySelector('img')?.getAttribute('src')).toBe(
+      '/api/links/abc/favicon?v=0123456789abcdef',
+    );
+  });
+
+  it('never loads a remote icon', async () => {
+    const { element } = await setup({ ...LINK, faviconUrl: 'https://evil.test/i.png' });
+    expect(element.querySelector('img')).toBeNull();
+  });
+
   it('opens the title in a new tab and shows the host and two tags', async () => {
     const { element } = await setup();
 
