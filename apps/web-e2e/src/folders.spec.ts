@@ -161,6 +161,28 @@ test.describe('folders (mock API)', () => {
       await expect(row(page, READING.name)).toBeVisible();
     });
 
+    test('moving a folder under a collapsed parent puts focus on that parent row', async ({
+      page,
+    }) => {
+      await gotoWithSidebar(page, '/links');
+      await createFolder(page, 'Archive');
+      await expect(page.getByRole('heading', { level: 1, name: 'Archive' })).toBeVisible();
+      await openSidebar(page);
+      await expect(row(page, READING.name)).toBeVisible();
+
+      await row(page, READING.name).focus();
+      await page.keyboard.press('Shift+F10');
+      await page.getByRole('menuitem', { name: 'Move to…' }).click();
+      const dialog = page.getByRole('dialog', { name: `Move “${READING.name}”` });
+      await dialog.getByRole('combobox').click();
+      await page.getByRole('option').filter({ hasText: 'Archive' }).click();
+      await dialog.getByRole('button', { name: 'Move' }).click();
+
+      await expect(dialog).toBeHidden();
+      // Archive is collapsed, so the moved row is hidden: focus must not fall to <body>.
+      await expect(row(page, 'Archive')).toBeFocused();
+    });
+
     test('deleting a folder keeps its links in Unsorted by default', async ({ page }) => {
       await gotoWithSidebar(page, `/folders/${READING.id}`);
 

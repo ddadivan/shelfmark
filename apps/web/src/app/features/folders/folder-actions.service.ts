@@ -5,6 +5,7 @@ import { FOLDER_LIMIT, type FolderResponse } from '@shelfmark/contracts';
 import { DIALOG_SIZE, DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { APP_PATH } from '../../models/app-path.const';
 import { sidebarActiveId } from '../../shell/sidebar/sidebar-active-id';
+import { SidebarTreeFocusService } from '../../shell/sidebar/sidebar-tree-focus.service';
 import { FoldersStore } from '../../stores/folders.store';
 import { LinkActionsService } from '../links/link-actions.service';
 import { DeleteFolderDialogComponent } from './delete-folder-dialog/delete-folder-dialog.component';
@@ -29,6 +30,7 @@ export class FolderActionsService {
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
   private readonly linkActions = inject(LinkActionsService);
+  private readonly treeFocus = inject(SidebarTreeFocusService);
 
   /** Creates a folder at the top level or inside `parent`, then opens it. */
   async create(parent: FolderResponse | null = null): Promise<void> {
@@ -93,6 +95,11 @@ export class FolderActionsService {
       MoveFolderDialogComponent,
       {
         size: DIALOG_SIZE.Sm,
+        // The moved row may be gone (under a collapsed parent): focus the row or its new parent.
+        restoreFocus: () => {
+          this.treeFocus.restoreFocusNear(folder.id);
+          return null;
+        },
         data: {
           folder,
           submit: (parentId) => {
