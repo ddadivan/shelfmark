@@ -14,6 +14,7 @@ import { EXPORT_FORMAT, type ExportFormat } from '@shelfmark/contracts';
 import { ExportActionsService } from '../export/export-actions.service';
 import { AuthStore } from '../../core/auth/auth.store';
 import { ViewportService } from '../../core/layout/viewport.service';
+import { OnboardingStore } from '../onboarding/onboarding.store';
 import { THEME_PREFERENCE } from '../../core/theme/models/theme-preference.const';
 import { isThemePreference } from '../../core/theme/is-theme-preference';
 import { ThemeService } from '../../core/theme/theme.service';
@@ -44,6 +45,7 @@ export default class SettingsPage {
     this.viewport.phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Md,
   );
   protected readonly theme = inject(ThemeService);
+  protected readonly onboarding = inject(OnboardingStore);
   private readonly exporter = inject(ExportActionsService);
   protected readonly EXPORT_FORMAT = EXPORT_FORMAT;
   private readonly router = inject(Router);

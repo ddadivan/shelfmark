@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  untracked,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterOutlet } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -18,6 +25,7 @@ import { EXPORT_FORMAT, type ExportFormat } from '@shelfmark/contracts';
 import { ExportActionsService } from '../features/export/export-actions.service';
 import { AuthStore } from '../core/auth/auth.store';
 import { LinkActionsService } from '../features/links/link-actions.service';
+import { OnboardingStore } from '../features/onboarding/onboarding.store';
 import { SearchDialogService } from '../features/search/search-dialog.service';
 import { RecentLinksPanelComponent } from '../features/links/recent/recent-links-panel.component';
 import { ViewportService } from '../core/layout/viewport.service';
@@ -86,6 +94,17 @@ export default class AppShellComponent {
       }
     });
   }
+
+  private readonly onboarding = inject(OnboardingStore);
+
+  /** The welcome dialog opens whenever it becomes due: first sign-in, or "Show welcome again". */
+  private readonly welcome = effect(() => {
+    if (this.onboarding.due()) {
+      untracked(() => {
+        this.onboarding.openIfDue();
+      });
+    }
+  });
 
   protected async openSettings(): Promise<void> {
     await this.router.navigateByUrl(`/${APP_PATH.Settings}`);

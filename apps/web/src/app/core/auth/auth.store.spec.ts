@@ -14,6 +14,7 @@ const USER: AuthUser = {
   email: 'a@example.com',
   image: null,
   isDemo: false,
+  onboardingCompletedAt: '2020-01-01T00:00:00.000Z',
 };
 
 function setup(overrides: Partial<AuthApi> = {}) {
@@ -63,6 +64,16 @@ describe('AuthStore', () => {
     await store.ensureLoaded();
     expect(getSession).toHaveBeenCalledTimes(2);
     expect(store.isSignedIn()).toBe(true);
+  });
+
+  it('sets the onboarding flag of the signed-in user, and ignores a guest', async () => {
+    const { store } = setup();
+    store.setOnboardingCompletedAt('2026-01-01T00:00:00.000Z');
+    expect(store.user()).toBeNull();
+
+    await store.signIn(AUTH_PROVIDER.Google);
+    store.setOnboardingCompletedAt('2026-01-01T00:00:00.000Z');
+    expect(store.user()?.onboardingCompletedAt).toBe('2026-01-01T00:00:00.000Z');
   });
 
   it('signs in with a provider and shows it as pending meanwhile', async () => {
