@@ -6,6 +6,7 @@
     [kind]="item.kind"
     [text]="item.text"
     [actionLabel]="item.action?.label"
+    [actionHint]="item.actionHint"
     (action)="store.runAction(item)"
     (pausedChange)="store.setPaused(item.id, $event)"
   />

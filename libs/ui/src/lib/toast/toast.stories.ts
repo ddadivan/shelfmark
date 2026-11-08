@@ -4,6 +4,7 @@ import { ButtonComponent } from '../button/button.component';
 import type { ToastKind } from './models/toast-kind.type';
 import { ToastComponent } from './toast.component';
 import { ToastService } from './toast.service';
+import { TOAST_SHORTCUT } from './models/toast-shortcut.const';
 import { THEME, THEME_ATTRIBUTE } from '../theme';
 import { TOAST_KIND } from './models/toast-kind.const';
 
@@ -12,6 +13,7 @@ import { TOAST_KIND } from './models/toast-kind.const';
   // eslint-disable-next-line @angular-eslint/component-selector -- story helper, not a library selector
   selector: 'ts-toast-demo',
   imports: [ButtonComponent],
+  host: { '(document:keydown)': 'toasts.handleShortcut($event)' },
   template: `
     <div class="tt-row">
       @for (kind of kinds; track kind) {
@@ -24,13 +26,15 @@ import { TOAST_KIND } from './models/toast-kind.const';
     </div>
     <p class="tt-hint">
       Bottom-left from 640px, bottom-centre on phones. 4 s, 8 s with an action; hover or focus the
-      toast to hold the timer. Last result: {{ last || 'none' }}
+      toast to hold the timer. {{ shortcut }} moves focus to the action of the toast on screen;
+      focus goes back where it was when the toast closes. Last result: {{ last || 'none' }}
     </p>
   `,
 })
 class ToastDemoComponent {
-  private readonly toasts = inject(ToastService);
+  protected readonly toasts = inject(ToastService);
   protected readonly kinds: readonly ToastKind[] = Object.values(TOAST_KIND);
+  protected readonly shortcut = TOAST_SHORTCUT.label;
   protected last = '';
 
   protected show(kind: ToastKind): void {
@@ -41,6 +45,7 @@ class ToastDemoComponent {
   protected undo(): void {
     this.toasts.show({
       text: 'Link deleted',
+      actionHint: `Press ${TOAST_SHORTCUT.label} to reach Undo`,
       action: {
         label: 'Undo',
         run: () => {
@@ -87,7 +92,8 @@ const meta: Meta<ToastComponent> = {
       description: {
         component:
           '`ToastService.show({ text, kind, action?, duration? })` renders a `ui-toast` in the toast overlay layer. ' +
-          'One toast at a time, the newest replaces the older. It is announced by one persistent polite live region and never takes focus. ' +
+          'One toast at a time, the newest replaces the older. It is announced by one persistent polite live region and never takes focus by itself; the timer pauses on hover and focus. ' +
+          '`handleShortcut(event)` (Alt+Shift+T, `TOAST_SHORTCUT`) focuses the action of the toast on screen and focus returns to where it was when the toast closes; `actionHint` is a visually hidden text announced with the toast. ' +
           '`show()` returns `{ dismiss(), closed }`: `closed` is a promise that resolves once with the close reason (`TOAST_CLOSE_REASON`: `action`, `timeout`, `dismissed`, `replaced`).',
       },
     },

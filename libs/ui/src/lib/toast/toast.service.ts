@@ -6,6 +6,7 @@ import type { ToastOptions } from './models/toast-options.interface';
 import type { ToastRef } from './models/toast-ref.interface';
 import { ToastRegionComponent } from './toast-region.component';
 import { ToastStore } from './toast-store';
+import { TOAST_SHORTCUT } from './models/toast-shortcut.const';
 import { OVERLAY_LAYER } from '../overlay/models/overlay-layer.const';
 
 /**
@@ -21,6 +22,8 @@ export class ToastService {
   private readonly store = inject(ToastStore);
   private readonly region: ConnectedOverlay;
   private readonly regionRef: ComponentRef<ToastRegionComponent>;
+  /** Where focus was when `focusAction()` took it, so it can go back when the toast closes. */
+  private returnTo: HTMLElement | undefined;
 
   constructor() {
     this.region = inject(UiOverlay).global({
@@ -40,6 +43,9 @@ export class ToastService {
     if (first) {
       this.region.raise();
     }
+    void item.closed.then(() => {
+      this.restoreFocus();
+    });
     return { dismiss: () => this.store.dismiss(item.id), closed: item.closed };
   }
 
@@ -61,10 +67,52 @@ export class ToastService {
     if (!this.store.items()[0]?.action) {
       return;
     }
-    const actions = (
-      this.regionRef.location.nativeElement as HTMLElement
-    ).querySelectorAll<HTMLElement>('.ui-toast__action');
+    const regionElement = this.regionRef.location.nativeElement as HTMLElement;
+    const active = document.activeElement;
+    if (active instanceof HTMLElement && !regionElement.contains(active)) {
+      this.returnTo = active;
+    }
+    const actions = regionElement.querySelectorAll<HTMLElement>('.ui-toast__action');
     // A replaced toast can still be leaving: the newest one is last.
     actions.item(actions.length - 1).focus();
+  }
+
+  /**
+   * Handles the global shortcut (`TOAST_SHORTCUT`, Alt+Shift+T): focuses the action of the toast
+   * on screen and cancels the key. Returns true when it did. The app calls it from its document
+   * keydown handler.
+   */
+  handleShortcut(event: KeyboardEvent): boolean {
+    if (
+      event.defaultPrevented ||
+      event.code !== TOAST_SHORTCUT.code ||
+      !event.altKey ||
+      !event.shiftKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      !this.store.items()[0]?.action
+    ) {
+      return false;
+    }
+    event.preventDefault();
+    this.focusAction();
+    return true;
+  }
+
+  /**
+   * After a toast that had focus closes, focus goes back to where it was. It only moves when it
+   * is still in the region (or lost to the body): the user or an action may have moved it.
+   */
+  private restoreFocus(): void {
+    const target = this.returnTo;
+    this.returnTo = undefined;
+    if (!target?.isConnected) {
+      return;
+    }
+    const active = document.activeElement;
+    const regionElement = this.regionRef.location.nativeElement as HTMLElement;
+    if (!active || active === document.body || regionElement.contains(active)) {
+      target.focus();
+    }
   }
 }

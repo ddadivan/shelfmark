@@ -48,3 +48,7 @@
     @include focus-ring(0);
   }
 }
+
+.ui-toast__hint {
+  @include visually-hidden;
+}

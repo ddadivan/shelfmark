@@ -414,6 +414,103 @@ describe('ToastService', () => {
     outside.remove();
   });
 
+  it('handleShortcut() focuses the action of the toast on screen and cancels the key', () => {
+    const service = setup();
+    service.show({ text: 'Link deleted', action: { label: 'Undo', run: vi.fn() } });
+    render();
+    const event = new KeyboardEvent('keydown', {
+      code: 'KeyT',
+      altKey: true,
+      shiftKey: true,
+      cancelable: true,
+    });
+    expect(service.handleShortcut(event)).toBe(true);
+    expect(event.defaultPrevented).toBe(true);
+    expect(document.activeElement).toBe(toasts()[0].querySelector('button'));
+  });
+
+  it('handleShortcut() ignores other keys, other modifiers and toasts without an action', () => {
+    const service = setup();
+    const key = (init: KeyboardEventInit) =>
+      new KeyboardEvent('keydown', { code: 'KeyT', altKey: true, shiftKey: true, ...init });
+    service.show({ text: 'No action' });
+    render();
+    expect(service.handleShortcut(key({}))).toBe(false);
+    service.show({ text: 'Link deleted', action: { label: 'Undo', run: vi.fn() } });
+    render();
+    expect(service.handleShortcut(key({ code: 'KeyK' }))).toBe(false);
+    expect(service.handleShortcut(key({ shiftKey: false }))).toBe(false);
+    expect(service.handleShortcut(key({ altKey: false }))).toBe(false);
+    expect(service.handleShortcut(key({ ctrlKey: true }))).toBe(false);
+    expect(service.handleShortcut(key({ metaKey: true }))).toBe(false);
+    expect(document.activeElement).toBe(document.body);
+  });
+
+  it('announces the hint only for a toast with an action', () => {
+    const service = setup();
+    service.show({ text: 'Plain', actionHint: 'Press it' });
+    render();
+    expect(toasts()[0].querySelector('.ui-toast__hint')).toBeNull();
+    service.show({
+      text: 'Link deleted',
+      actionHint: 'Press Alt+Shift+T to reach Undo',
+      action: { label: 'Undo', run: vi.fn() },
+    });
+    render();
+    expect(toasts().at(-1)?.querySelector('.ui-toast__hint')?.textContent).toBe(
+      'Press Alt+Shift+T to reach Undo',
+    );
+  });
+
+  describe('focus return', () => {
+    async function focusedToast() {
+      const service = setup();
+      const outside = document.createElement('button');
+      document.body.append(outside);
+      outside.focus();
+      const ref = service.show({ text: 'Link deleted', action: { label: 'Undo', run: vi.fn() } });
+      render();
+      service.focusAction();
+      return { service, outside, ref };
+    }
+
+    it('goes back when the action runs', async () => {
+      const { outside } = await focusedToast();
+      (toasts()[0].querySelector('button') as HTMLButtonElement).click();
+      await vi.advanceTimersByTimeAsync(0);
+      expect(document.activeElement).toBe(outside);
+      outside.remove();
+    });
+
+    it('goes back when the toast is dismissed', async () => {
+      const { outside, ref } = await focusedToast();
+      ref.dismiss();
+      await vi.advanceTimersByTimeAsync(0);
+      expect(document.activeElement).toBe(outside);
+      outside.remove();
+    });
+
+    it('leaves focus alone when the user already moved it', async () => {
+      const { outside, ref } = await focusedToast();
+      const other = document.createElement('button');
+      document.body.append(other);
+      other.focus();
+      ref.dismiss();
+      await vi.advanceTimersByTimeAsync(0);
+      expect(document.activeElement).toBe(other);
+      outside.remove();
+      other.remove();
+    });
+
+    it('does nothing when the old target is gone', async () => {
+      const { outside, ref } = await focusedToast();
+      outside.remove();
+      ref.dismiss();
+      await vi.advanceTimersByTimeAsync(0);
+      expect(document.activeElement).not.toBe(outside);
+    });
+  });
+
   it('never moves focus', () => {
     const service = setup();
     const outside = document.createElement('button');

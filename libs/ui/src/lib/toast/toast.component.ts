@@ -38,6 +38,8 @@ export class ToastComponent {
   readonly text = input.required<string>();
   /** Action button text; no button without it. */
   readonly actionLabel = input<string>();
+  /** Visually hidden text read with the toast, e.g. how to reach the action by keyboard. */
+  readonly actionHint = input<string>();
   readonly action = output<void>();
   /** True while the pointer is over the toast or focus is inside it. */
   readonly pausedChange = output<boolean>();
