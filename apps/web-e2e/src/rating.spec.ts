@@ -255,8 +255,6 @@ test.describe('app rating (mock API)', () => {
       }, testInfo) => {
         const dialog = await openRating(page);
         await expect(page.locator('html')).toHaveAttribute('data-theme', colorScheme);
-        // Let the entrance animation finish so contrast is measured on the final colours.
-        await page.waitForTimeout(0);
         await page.clock.runFor(500);
         await expectNoBlockingViolations(page, testInfo, { include: '.cdk-dialog-container' });
 
