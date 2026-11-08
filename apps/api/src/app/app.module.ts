@@ -5,9 +5,10 @@ import { SessionAuthGuard } from '../auth/session-auth.guard';
 import { ExportModule } from '../export/export.module';
 import { HealthModule } from '../health/health.module';
 import { PrismaModule } from '../prisma/prisma.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, HealthModule, ExportModule],
+  imports: [PrismaModule, AuthModule, HealthModule, UsersModule, ExportModule],
   providers: [
     // Guards run in registration order, and the order is security-relevant: the rate-limit guard
     // (`@nestjs/throttler`, #123) must be registered BEFORE this one, so a flood is rejected before
