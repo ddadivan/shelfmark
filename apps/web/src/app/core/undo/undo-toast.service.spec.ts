@@ -1,7 +1,9 @@
 import { TestBed } from '@angular/core/testing';
+import { TranslocoService } from '@jsverse/transloco';
 import {
   TOAST_CLOSE_REASON,
   ToastService,
+  toastShortcutLabel,
   type ToastCloseReason,
   type ToastOptions,
 } from '@shelfmark/ui';
@@ -13,6 +15,13 @@ function setup() {
   const closers: Array<(reason: ToastCloseReason) => void> = [];
   TestBed.configureTestingModule({
     providers: [
+      {
+        provide: TranslocoService,
+        useValue: {
+          translate: (key: string, params: Record<string, string>) =>
+            `${key}|${params['shortcut']}|${params['action']}`,
+        },
+      },
       {
         provide: ToastService,
         useValue: {
@@ -47,6 +56,14 @@ describe('UndoToastService', () => {
 
     expect(shown[0]).toMatchObject({ text: 'Link deleted', duration: DELETE_UNDO_MS });
     expect(shown[0].action?.label).toBe('Undo');
+  });
+
+  it('hints at the shortcut that reaches the action', () => {
+    const { shown, service } = setup();
+
+    service.show(options());
+
+    expect(shown[0].actionHint).toBe(`toast.actionHint|${toastShortcutLabel()}|Undo`);
   });
 
   it.each([TOAST_CLOSE_REASON.Timeout, TOAST_CLOSE_REASON.Dismissed, TOAST_CLOSE_REASON.Replaced])(

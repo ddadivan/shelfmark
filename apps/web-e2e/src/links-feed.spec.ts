@@ -106,6 +106,31 @@ test.describe('links feed (mock API)', () => {
     await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
   });
 
+  test('Undo is reachable by keyboard with the toast shortcut', async ({ page }) => {
+    await openFeed(page);
+    const title = await firstTitle(page);
+
+    await page
+      .locator('ui-card')
+      .first()
+      .getByRole('button', { name: /^Actions for / })
+      .click();
+    await page.getByRole('menuitem', { name: 'Delete' }).click();
+    await page.getByRole('alertdialog').getByRole('button', { name: 'Delete' }).press('Enter');
+    await expect(page.getByText('Link deleted')).toBeVisible();
+    // The hint is part of the polite live region, so it is announced with the toast.
+    await expect(page.locator('ui-toast-region')).toContainText('Press Alt+Shift+T to reach Undo');
+
+    await page.keyboard.press('Alt+Shift+T');
+    const undo = page.getByRole('button', { name: 'Undo' });
+    await expect(undo).toBeFocused();
+    await page.keyboard.press('Enter');
+
+    await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
+    await expect(undo).toHaveCount(0);
+    await expect(page.locator('ui-toast-region').getByRole('button')).toHaveCount(0);
+  });
+
   test('cancelling the confirmation keeps the link', async ({ page }) => {
     await openFeed(page);
     const title = await firstTitle(page);
