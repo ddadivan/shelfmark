@@ -240,9 +240,7 @@ test.describe('folders (mock API)', () => {
     await expect(page.getByRole('heading', { level: 1, name: READING.name })).toBeVisible();
     await expect(page.locator('ui-card').first()).toBeVisible();
 
-    await expectNoBlockingViolations(page, testInfo, {
-      disabledRules: ['label-content-name-mismatch'],
-    });
+    await expectNoBlockingViolations(page, testInfo);
   });
 
   test('an unknown folder shows "not found" instead of the content', async ({ page }, testInfo) => {
@@ -250,9 +248,7 @@ test.describe('folders (mock API)', () => {
 
     await expect(page.getByRole('heading', { name: 'Folder not found' })).toBeVisible();
     await expect(page.locator('ui-card')).toHaveCount(0);
-    await expectNoBlockingViolations(page, testInfo, {
-      disabledRules: ['label-content-name-mismatch'],
-    });
+    await expectNoBlockingViolations(page, testInfo);
 
     await page.getByRole('button', { name: 'Show all links' }).click();
     await expect(page).toHaveURL('/links');
@@ -284,8 +280,6 @@ test.describe('folders (mock API)', () => {
     await page.goto(`/folders/${READING.id}`);
     await expect(page.locator('ui-card').first()).toBeVisible();
 
-    await expectNoBlockingViolations(page, testInfo, {
-      disabledRules: ['label-content-name-mismatch'],
-    });
+    await expectNoBlockingViolations(page, testInfo);
   });
 });

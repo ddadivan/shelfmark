@@ -7,7 +7,7 @@
     (error)="failed.set(true)"
   />
 } @else if (initials(); as letters) {
-  <span class="ui-avatar__initials">{{ letters }}</span>
+  <span class="ui-avatar__initials" aria-hidden="true" [attr.data-initials]="letters"></span>
 } @else {
   <ui-icon name="user" [size]="iconSize()" />
 }
