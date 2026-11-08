@@ -1,0 +1,71 @@
+@use '../src/styles/ui' as *;
+
+// Layout of the CommandList and Highlight stories only (never shipped with the library).
+// Class names start with `cls-`.
+
+.cls-themes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.cls-panel {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+  padding: var(--space-6);
+  color: var(--text);
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+}
+
+.cls-box {
+  width: min(100vw - rem(48px), rem(640px));
+  overflow: hidden;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-popover);
+}
+
+.cls-box .ui-command-list__list {
+  max-height: rem(320px);
+}
+
+.cls-demo {
+  display: grid;
+  gap: var(--space-4);
+  min-height: rem(320px);
+  padding: var(--space-8) var(--space-6);
+  color: var(--text);
+  background: var(--bg);
+  place-content: start;
+}
+
+.cls-result {
+  @include type(body);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.cls-hl {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  color: var(--text);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+}
+
+.cls-hl__row {
+  padding: var(--space-2);
+}
+
+.cls-hl__row--hover {
+  background: var(--surface-hover);
+}
+
+.cls-hl__row--active {
+  color: var(--accent-text);
+  background: var(--accent-bg);
+}

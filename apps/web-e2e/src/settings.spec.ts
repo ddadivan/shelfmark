@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { MOCK_USER, openAccountMenu, seedSession } from './support/mock-session';
+import { dismissOnboarding, MOCK_USER, openAccountMenu, seedSession } from './support/mock-session';
 
 test.describe('settings (mock auth)', () => {
   test('a guest on /settings lands on sign-in and returns after signing in', async ({ page }) => {
@@ -8,6 +8,7 @@ test.describe('settings (mock auth)', () => {
     await expect(page).toHaveURL(/\/sign-in\?returnUrl=%2Fsettings$/);
     await page.getByRole('button', { name: 'Continue with GitHub' }).click();
 
+    await dismissOnboarding(page);
     await expect(page).toHaveURL(/\/settings$/);
     await expect(page.getByRole('heading', { level: 1, name: 'Settings' })).toBeVisible();
   });

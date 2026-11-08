@@ -24,6 +24,8 @@ import { IconComponent } from '../icon/icon.component';
 import type { IconName } from '../icon/models/icon-name.type';
 import { RippleDirective } from '../ripple/ripple.directive';
 import { SpinnerComponent } from '../spinner/spinner.component';
+import { BUTTON_FAB_ICON_SIZE } from './models/button-fab-icon-size.const';
+import { BUTTON_ICON_SIZE } from './models/button-icon-size.const';
 import { BUTTON_HIT_AREA } from './models/button-hit-area.const';
 import type { ButtonHitArea } from './models/button-hit-area.type';
 import type { ButtonHaspopup } from './models/button-haspopup.type';
@@ -55,6 +57,7 @@ import { BUTTON_TYPE } from './models/button-type.const';
   imports: [IconComponent, NgTemplateOutlet, RippleDirective, SpinnerComponent],
   providers: [{ provide: UI_FOCUS_TARGET, useExisting: ButtonComponent }],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '[class.ui-button-host--block]': 'block()' },
   templateUrl: './button.component.html',
   styleUrl: './button.component.scss',
 })
@@ -79,6 +82,10 @@ export class ButtonComponent implements UiFocusTarget {
    * card). The overlay has no ripple (the ripple host clips).
    */
   readonly hitArea = input<ButtonHitArea>(BUTTON_HIT_AREA.Grow);
+  /** Full-width button: the host and the inner element take 100% of the inline size. */
+  readonly block = input(false, { transform: booleanAttribute });
+  /** Floating action button: 3.5rem square with the popover shadow; use with `iconOnly`. */
+  readonly fab = input(false, { transform: booleanAttribute });
   /** Press ripple; `[ripple]="false"` opts out. */
   readonly ripple = input(true, { transform: booleanAttribute });
   /** `aria-expanded` of the inner element; unset renders no attribute. */
@@ -120,13 +127,21 @@ export class ButtonComponent implements UiFocusTarget {
     if (this.iconOnly()) {
       classes.push('ui-button--icon');
     }
+    if (this.block()) {
+      classes.push('ui-button--block');
+    }
+    if (this.fab()) {
+      classes.push('ui-button--fab');
+    }
     if (this.hasOverlay()) {
       classes.push('ui-button--hit-overlay');
     }
     return classes.join(' ');
   });
 
-  protected readonly iconSize = computed(() => (this.size() === BUTTON_SIZE.Lg ? 20 : 16));
+  protected readonly iconSize = computed(() =>
+    this.fab() ? BUTTON_FAB_ICON_SIZE : BUTTON_ICON_SIZE[this.size()],
+  );
   protected readonly singleIcon = computed(() => this.iconLeft() ?? this.iconRight());
 
   private readonly injector = inject(Injector);

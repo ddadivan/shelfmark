@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { axeViolations } from '../../testing/axe';
 import { UI_TREE_CONTEXT_MENU_TRIGGER } from './models/tree-context-menu-trigger.const';
 import type { UiTreeContextMenuEvent } from './models/tree-context-menu-event.interface';
@@ -11,6 +12,7 @@ import { TREE_STORY_NAME } from './stories/tree-story-name.const';
 import { TREE_STORY_NESTED } from './stories/tree-story-nested.const';
 import { TreeComponent } from './tree.component';
 import { KEYBOARD_KEY } from '../keyboard';
+import { LONG_PRESS_DURATION_MS } from '../long-press';
 
 @Component({
   imports: [TreeComponent],
@@ -82,6 +84,93 @@ async function setup() {
 describe('TreeComponent', () => {
   afterEach(() => {
     document.body.replaceChildren();
+  });
+
+  describe('focus fallback', () => {
+    const without = (id: string): readonly UiTreeNode[] =>
+      TREE_STORY_NESTED.map((node) => ({
+        ...node,
+        children: node.children?.filter((child) => child.id !== id),
+      })).filter((node) => node.id !== id);
+
+    async function focusSetup() {
+      const ctx = await setup();
+      const tree = ctx.fixture.debugElement.query(By.directive(TreeComponent))
+        .componentInstance as TreeComponent;
+      return { ...ctx, component: tree };
+    }
+
+    it('focusRow focuses a visible row and refuses hidden and unknown rows', async () => {
+      const { component, item } = await focusSetup();
+      expect(component.focusRow(TREE_STORY_ID.Courses)).toBe(true);
+      expect(document.activeElement).toBe(item(TREE_STORY_NAME.Courses));
+      // Shoes sits in the collapsed Clothes folder.
+      expect(component.focusRow(TREE_STORY_ID.Shoes)).toBe(false);
+      expect(component.focusRow('nope')).toBe(false);
+      expect(document.activeElement).toBe(item(TREE_STORY_NAME.Courses));
+    });
+
+    it('restoreFocusNear takes the nearest visible ancestor of a row hidden by a collapsed folder', async () => {
+      const { component, host, fixture, item } = await focusSetup();
+      const moved = TREE_STORY_NESTED[0].children?.[0] as UiTreeNode;
+      host.nodes.set([
+        { ...TREE_STORY_NESTED[0], children: [TREE_STORY_NESTED[0].children?.[1] as UiTreeNode] },
+        { ...TREE_STORY_NESTED[1], children: [moved, ...(TREE_STORY_NESTED[1].children ?? [])] },
+        TREE_STORY_NESTED[2],
+      ]);
+      await settle(fixture);
+      expect(component.restoreFocusNear(TREE_STORY_ID.Angular)).toBe(TREE_STORY_ID.Clothes);
+      expect(document.activeElement).toBe(item(TREE_STORY_NAME.Clothes));
+    });
+
+    it('restoreFocusNear prefers the row itself when it is visible', async () => {
+      const { component, item } = await focusSetup();
+      expect(component.restoreFocusNear(TREE_STORY_ID.Courses)).toBe(TREE_STORY_ID.Courses);
+      expect(document.activeElement).toBe(item(TREE_STORY_NAME.Courses));
+    });
+
+    it('moves focus to the parent when the focused row is removed', async () => {
+      const { host, fixture, item } = await focusSetup();
+      item(TREE_STORY_NAME.Courses).focus();
+      host.nodes.set(without(TREE_STORY_ID.Courses));
+      await settle(fixture);
+      expect(document.activeElement).toBe(item(TREE_STORY_NAME.Work));
+    });
+
+    it('falls back to the previous sibling for a top-level row', async () => {
+      const { host, fixture, item } = await focusSetup();
+      item(TREE_STORY_NAME.Recipes).focus();
+      host.nodes.set(without(TREE_STORY_ID.Recipes));
+      await settle(fixture);
+      expect(document.activeElement).toBe(item(TREE_STORY_NAME.Clothes));
+    });
+
+    it('falls back to the first row when the first folder is removed', async () => {
+      const { host, fixture, item } = await focusSetup();
+      item(TREE_STORY_NAME.Work).focus();
+      host.nodes.set(without(TREE_STORY_ID.Work));
+      await settle(fixture);
+      expect(document.activeElement).toBe(item(TREE_STORY_NAME.All));
+    });
+
+    it('leaves focus alone when it is not on the removed row', async () => {
+      const { host, fixture, item } = await focusSetup();
+      const outside = document.createElement('button');
+      document.body.appendChild(outside);
+      item(TREE_STORY_NAME.Courses).focus();
+      outside.focus();
+      host.nodes.set(without(TREE_STORY_ID.Courses));
+      await settle(fixture);
+      expect(document.activeElement).toBe(outside);
+    });
+
+    it('returns null when the tree has no row', async () => {
+      const { host, fixture, component } = await focusSetup();
+      host.nodes.set([]);
+      host.fixed.set([]);
+      await settle(fixture);
+      expect(component.restoreFocusNear('gone')).toBeNull();
+    });
   });
 
   describe('structure and ARIA', () => {
@@ -506,6 +595,47 @@ describe('TreeComponent', () => {
         new PointerEvent('pointerdown', { bubbles: true, button: 0, clientX: 5, clientY: 5 }),
       );
       expect(row(TREE_STORY_NAME.Work).querySelector(':scope > .ui-ripple')).toBeNull();
+    });
+
+    describe('long press', () => {
+      const touch = (type: string): PointerEvent =>
+        new PointerEvent(type, {
+          bubbles: true,
+          cancelable: true,
+          isPrimary: true,
+          pointerType: 'touch',
+          clientX: 40,
+          clientY: 60,
+        });
+
+      afterEach(() => {
+        vi.useRealTimers();
+      });
+
+      it('emits contextMenu at the touch point for a folder row', async () => {
+        const { row, host } = await setup();
+        vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+        const work = row(TREE_STORY_NAME.Work);
+        work.dispatchEvent(touch('pointerdown'));
+        vi.advanceTimersByTime(LONG_PRESS_DURATION_MS);
+        expect(host.menus).toHaveLength(1);
+        expect(host.menus[0]).toMatchObject({
+          trigger: UI_TREE_CONTEXT_MENU_TRIGGER.Pointer,
+          position: { x: 40, y: 60 },
+          anchor: work,
+        });
+        expect(host.menus[0].node.id).toBe(TREE_STORY_ID.Work);
+      });
+
+      it('does nothing on a fixed row or before the hold has passed', async () => {
+        const { row, host } = await setup();
+        vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+        row(TREE_STORY_NAME.All).dispatchEvent(touch('pointerdown'));
+        vi.advanceTimersByTime(LONG_PRESS_DURATION_MS);
+        row(TREE_STORY_NAME.Work).dispatchEvent(touch('pointerdown'));
+        vi.advanceTimersByTime(LONG_PRESS_DURATION_MS - 1);
+        expect(host.menus).toHaveLength(0);
+      });
     });
 
     it('has no menu on fixed rows and none without menuLabel', async () => {

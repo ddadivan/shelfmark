@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { disabled, form, FormField, minLength } from '@angular/forms/signals';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../../testing/axe';
@@ -322,6 +323,22 @@ describe('TagInputComponent', () => {
     options().at(-1)?.click();
     await settle(fixture);
     expect(host.value().at(-1)).toBe('zed');
+  });
+
+  it('resets the listbox selection once per choice, without a value feedback loop', async () => {
+    const { type, options, host, fixture } = await setup();
+    const instance = fixture.debugElement.query(By.directive(TagInputComponent)).componentInstance;
+    const handler = vi.spyOn(instance, 'onListValue');
+    await type('zed');
+    options().at(-1)?.click();
+    await settle(fixture);
+    expect(host.value().at(-1)).toBe('zed');
+    // The choice and the reset that follows it; the empty reset must not reset again.
+    expect(handler.mock.calls.length).toBeLessThanOrEqual(2);
+    const resets = handler.mock.calls.filter(
+      ([selected]) => (selected as readonly string[]).length === 0,
+    );
+    expect(resets.length).toBeLessThanOrEqual(1);
   });
 
   it('closes on Esc, keeps the text, and stops Esc from reaching a dialog only while open', async () => {
