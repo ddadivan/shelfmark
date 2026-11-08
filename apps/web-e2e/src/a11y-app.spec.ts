@@ -12,7 +12,7 @@ test.describe('app-wide accessibility (mock API)', () => {
     test.describe(`${colorScheme} theme`, () => {
       test.use({ colorScheme });
 
-      for (const { name, open, include, only, disabledRules } of A11Y_SCREENS) {
+      for (const { name, open, include, disabledRules, only } of A11Y_SCREENS) {
         test(`${name}: no serious or critical axe violations`, async ({ page }, testInfo) => {
           test.skip(!!only && testInfo.project.name !== only, `${only} project only`);
 

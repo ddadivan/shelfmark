@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import type { E2eProject } from './e2e-project.type';
 
 export interface A11yScreen {
   /** Test title; unique in the matrix. */
@@ -7,8 +8,11 @@ export interface A11yScreen {
   open: (page: Page) => Promise<void>;
   /** CSS selector that limits the scan, for example an open dialog; the whole page when absent. */
   include?: string;
-  /** Runs on the phone project only (`phone`) or on the desktop project only (`desktop`). */
-  only?: 'phone' | 'desktop';
-  /** axe rule ids turned off for this screen, with the reason documented in the matrix. */
+  /** axe rule ids turned off for this screen, with the reason documented where it is set. */
   disabledRules?: readonly string[];
+  /**
+   * Runs on this project only. Set `Desktop` for overlays whose layout is the same on a phone;
+   * a screen that is laid out differently on a phone runs on both.
+   */
+  only?: E2eProject;
 }

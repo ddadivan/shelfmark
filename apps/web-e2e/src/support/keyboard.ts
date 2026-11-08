@@ -2,49 +2,43 @@ import { expect, type Locator, type Page } from '@playwright/test';
 
 const MAX_STEPS = 60;
 
-/**
- * Moves focus with Tab (or Shift+Tab with `reverse`) until `target` has it. Fails with the step
- * count when it is never reached, which means the control is not keyboard reachable.
- */
-export async function tabTo(
-  page: Page,
-  target: Locator,
-  options: { readonly reverse?: boolean } = {},
-): Promise<void> {
-  const key = options.reverse ? 'Shift+Tab' : 'Tab';
-  for (let step = 0; step < MAX_STEPS; step++) {
-    if (await target.evaluate((el) => el === el.ownerDocument.activeElement).catch(() => false)) {
-      return;
-    }
-    await page.keyboard.press(key);
-  }
-  await expect(
-    target,
-    `focus never reached the target in ${MAX_STEPS} ${key} presses`,
-  ).toBeFocused();
+type FocusKey = 'Tab' | 'Shift+Tab' | 'ArrowDown' | 'ArrowUp';
+
+async function hasFocus(target: Locator): Promise<boolean> {
+  // `count()` does not wait, so a target that is not in the DOM fails fast instead of waiting for it.
+  return (
+    (await target.count()) === 1 &&
+    (await target.evaluate((el) => el === el.ownerDocument.activeElement))
+  );
 }
 
-/** Presses an arrow key until `target` has focus (menus, trees, listboxes). */
-export async function arrowTo(
+/**
+ * Presses `key` until `target` has focus: Tab / Shift+Tab walk the tab order, the arrows walk
+ * inside a menu or tree. Fails with the step count when it is never reached, which means the
+ * control is not keyboard reachable.
+ */
+export async function pressUntilFocused(
   page: Page,
   target: Locator,
-  key: 'ArrowDown' | 'ArrowUp' = 'ArrowDown',
+  key: FocusKey = 'Tab',
 ): Promise<void> {
   for (let step = 0; step < MAX_STEPS; step++) {
-    if (await target.evaluate((el) => el === el.ownerDocument.activeElement).catch(() => false)) {
+    if (await hasFocus(target)) {
       return;
     }
     await page.keyboard.press(key);
   }
-  await expect(
-    target,
-    `focus never reached the target in ${MAX_STEPS} ${key} presses`,
-  ).toBeFocused();
+  await expect(target, `focus never reached the target in ${MAX_STEPS} ${key} presses`).toBeFocused(
+    {
+      timeout: 1000,
+    },
+  );
 }
 
 /**
  * The focused element shows a focus indicator: it matches `:focus-visible` and has an outline,
- * or sits in a field wrapper that draws the focus as a border and halo (libs/ui field focus).
+ * or sits in a `ui-field-shell` wrapper (libs/ui text fields, selects), which draws the focus as
+ * a border and halo (`field-focus` mixin) and removes the outline from the bare input.
  */
 export async function expectVisibleFocus(page: Page): Promise<void> {
   const state = await page.evaluate<{ visible: boolean; indicator: boolean; tag: string }>(`(() => {

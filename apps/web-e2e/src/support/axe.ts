@@ -9,7 +9,7 @@ const REPORT_TYPE = 'application/json';
 /**
  * Scans the current page against WCAG 2.2 AA, attaches the full result and fails on
  * serious or critical violations only. `include` (a CSS selector) limits the scan to that
- * subtree, for example an open dialog. `disabledRules` turns off single rules for this scan.
+ * subtree, for example an open dialog; `disabledRules` turns off single rule ids for this scan.
  */
 export async function expectNoBlockingViolations(
   page: Page,

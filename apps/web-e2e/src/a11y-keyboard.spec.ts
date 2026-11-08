@@ -1,14 +1,23 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { openFeed } from './support/a11y-flows';
-import { activeOption, arrowTo, expectVisibleFocus, tabTo } from './support/keyboard';
-import { openSidebar } from './support/sidebar';
+import { activeOption, expectVisibleFocus, pressUntilFocused } from './support/keyboard';
 
 const READING = 'Reading';
 const DOCS = 'docs';
 const NEW_URL = 'https://example.org/keyboard';
 const ARCHIVE = 'Archive';
+// The phone width of the layout (the `phone` project).
+const PHONE_WIDTH = 360;
+const PHONE_HEIGHT = 780;
 
-/** Esc-free, mouse-free: every step below uses the keyboard only, after the page has loaded. */
+/** Focuses the control with Tab, checks the indicator, then activates it with `key`. */
+async function activate(page: Page, target: Locator, key = 'Enter') {
+  await pressUntilFocused(page, target);
+  await expectVisibleFocus(page);
+  await page.keyboard.press(key);
+}
+
+/** After the page has loaded, every step below uses the keyboard only (Esc included). */
 test.describe('keyboard-only flows (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
   test.skip(({ isMobile }) => isMobile, 'a phone has no keyboard; the desktop project covers it');
@@ -16,13 +25,6 @@ test.describe('keyboard-only flows (mock API)', () => {
   const library = (page: Page) => page.getByRole('navigation', { name: 'Library' });
   const row = (page: Page, name: string) =>
     library(page).getByRole('treeitem', { name: new RegExp(`^${name}\\b`) });
-
-  /** Focuses the control with Tab, checks the indicator, then activates it with `key`. */
-  async function activate(page: Page, target: ReturnType<Page['locator']>, key = 'Enter') {
-    await tabTo(page, target);
-    await expectVisibleFocus(page);
-    await page.keyboard.press(key);
-  }
 
   test('adds a link and focus returns to the trigger', async ({ page }) => {
     await openFeed(page);
@@ -62,14 +64,14 @@ test.describe('keyboard-only flows (mock API)', () => {
     const actions = card.getByRole('button', { name: /^Actions for / });
 
     await activate(page, actions);
-    await arrowTo(page, page.getByRole('menuitem', { name: 'Edit' }));
+    await pressUntilFocused(page, page.getByRole('menuitem', { name: 'Edit' }), 'ArrowDown');
     await expectVisibleFocus(page);
     await page.keyboard.press('Enter');
     const dialog = page.getByRole('dialog', { name: 'Edit link' });
     await expect(dialog).toBeVisible();
 
     const title = dialog.getByLabel('Title', { exact: true });
-    await tabTo(page, title);
+    await pressUntilFocused(page, title);
     await expectVisibleFocus(page);
     await page.keyboard.press('ControlOrMeta+a');
     await page.keyboard.type('Renamed by keyboard');
@@ -93,7 +95,7 @@ test.describe('keyboard-only flows (mock API)', () => {
     const title = await card.getByRole('heading').innerText();
 
     await activate(page, card.getByRole('button', { name: /^Actions for / }));
-    await arrowTo(page, page.getByRole('menuitem', { name: 'Edit' }));
+    await pressUntilFocused(page, page.getByRole('menuitem', { name: 'Edit' }), 'ArrowDown');
     await page.keyboard.press('Enter');
     const edit = page.getByRole('dialog', { name: 'Edit link' });
     await expect(edit).toBeVisible();
@@ -104,9 +106,12 @@ test.describe('keyboard-only flows (mock API)', () => {
     await activate(page, confirm.getByRole('button', { name: 'Delete' }));
 
     await expect(page.getByRole('heading', { name: title, exact: true })).toHaveCount(0);
+    // The card that opened the dialog is gone, so focus has nowhere to return to and falls back
+    // to <body>; the browser keeps the removed card as the starting point of the next Tab.
+    await expect(page.locator('body')).toBeFocused();
     // The toast sits at the end of the document: Shift+Tab from the deleted card wraps round to it.
     const undo = page.getByRole('button', { name: 'Undo' });
-    await tabTo(page, undo, { reverse: true });
+    await pressUntilFocused(page, undo, 'Shift+Tab');
     await expectVisibleFocus(page);
     await page.keyboard.press('Enter');
     await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
@@ -124,16 +129,16 @@ test.describe('keyboard-only flows (mock API)', () => {
     await expect(page.getByRole('heading', { level: 1, name: ARCHIVE })).toBeVisible();
 
     // The tree has one tab stop (roving tabindex): Tab enters it, the arrows move inside.
-    await tabTo(page, library(page).locator('[role="treeitem"][tabindex="0"]'));
-    await arrowTo(page, row(page, READING));
+    await pressUntilFocused(page, library(page).locator('[role="treeitem"][tabindex="0"]'));
+    await pressUntilFocused(page, row(page, READING), 'ArrowDown');
     await expectVisibleFocus(page);
     await page.keyboard.press('Shift+F10');
-    await arrowTo(page, page.getByRole('menuitem', { name: 'Move to…' }));
+    await pressUntilFocused(page, page.getByRole('menuitem', { name: 'Move to…' }), 'ArrowDown');
     await page.keyboard.press('Enter');
     const move = page.getByRole('dialog', { name: `Move “${READING}”` });
     await expect(move).toBeVisible();
 
-    await tabTo(page, move.getByRole('combobox'));
+    await pressUntilFocused(page, move.getByRole('combobox'));
     await expectVisibleFocus(page);
     await page.keyboard.press('Enter');
     const option = page.getByRole('option').filter({ hasText: ARCHIVE });
@@ -146,21 +151,46 @@ test.describe('keyboard-only flows (mock API)', () => {
     // Reading now sits in the collapsed Archive, so its row (the opener) is gone and focus has no
     // element to return to; the keyboard path on is Tab into the tree, then Right to expand.
     await expect(row(page, READING)).toHaveCount(0);
-    await tabTo(page, library(page).locator('[role="treeitem"][tabindex="0"]'));
-    await arrowTo(page, row(page, ARCHIVE));
+    await expect(page.locator('body')).toBeFocused();
+    await pressUntilFocused(page, library(page).locator('[role="treeitem"][tabindex="0"]'));
+    await pressUntilFocused(page, row(page, ARCHIVE), 'ArrowDown');
     await expectVisibleFocus(page);
     await page.keyboard.press('ArrowRight');
     await expect(row(page, READING)).toBeVisible();
+  });
+
+  test('renames a folder: the field has focus and focus returns to the row', async ({ page }) => {
+    await openFeed(page);
+
+    await pressUntilFocused(page, library(page).locator('[role="treeitem"][tabindex="0"]'));
+    await pressUntilFocused(page, row(page, READING), 'ArrowDown');
+    await page.keyboard.press('Shift+F10');
+    await pressUntilFocused(page, page.getByRole('menuitem', { name: 'Rename' }), 'ArrowDown');
+    await page.keyboard.press('Enter');
+    const dialog = page.getByRole('dialog', { name: 'Rename folder' });
+    await expect(dialog).toBeVisible();
+
+    const field = dialog.getByLabel('Name');
+    await expect(field).toBeFocused();
+    await expect(field).toHaveValue(READING);
+    await expectVisibleFocus(page);
+    await page.keyboard.press('ControlOrMeta+a');
+    await page.keyboard.type('Library');
+    await page.keyboard.press('Enter');
+
+    await expect(dialog).toBeHidden();
+    await expect(row(page, 'Library')).toBeFocused();
+    await expectVisibleFocus(page);
   });
 
   test('renames a tag with the keyboard', async ({ page }) => {
     await openFeed(page);
     const chip = library(page).getByRole('button', { name: DOCS, exact: true });
 
-    await tabTo(page, chip);
+    await pressUntilFocused(page, chip);
     await expectVisibleFocus(page);
     await page.keyboard.press('Shift+F10');
-    await arrowTo(page, page.getByRole('menuitem', { name: 'Rename' }));
+    await pressUntilFocused(page, page.getByRole('menuitem', { name: 'Rename' }), 'ArrowDown');
     await page.keyboard.press('Enter');
 
     const field = library(page).getByRole('textbox', { name: 'Tag name' });
@@ -176,9 +206,14 @@ test.describe('keyboard-only flows (mock API)', () => {
     await expect(renamed).toBeFocused();
     await expectVisibleFocus(page);
   });
+});
 
-  test('reaches the phone drawer opener with Tab and returns focus on close', async ({ page }) => {
-    await page.setViewportSize({ width: 360, height: 780 });
+test.describe('keyboard-only drawer (mock API)', () => {
+  test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
+  test.skip(({ isMobile }) => isMobile, 'a phone has no keyboard; the desktop project covers it');
+  test.use({ viewport: { width: PHONE_WIDTH, height: PHONE_HEIGHT } });
+
+  test('reaches the drawer opener with Tab and returns focus on close', async ({ page }) => {
     await openFeed(page);
     const opener = page.getByRole('button', { name: 'Open menu' });
 
@@ -190,6 +225,5 @@ test.describe('keyboard-only flows (mock API)', () => {
     await expect(drawer).toHaveCount(0);
     await expect(opener).toBeFocused();
     await expectVisibleFocus(page);
-    await openSidebar(page);
   });
 });
