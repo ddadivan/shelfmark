@@ -2,16 +2,30 @@
 
 .library__toolbar {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-4);
   align-items: center;
   justify-content: space-between;
   margin-bottom: var(--space-4);
 }
 
+.library__heading {
+  min-width: 0;
+}
+
+.library__tools {
+  display: flex;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  gap: var(--space-2);
+  align-items: center;
+}
+
 .library__title {
   @include type(title);
 
   margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .library__count {
@@ -64,4 +78,30 @@
 .library__notice {
   display: block;
   margin-bottom: var(--space-4);
+}
+
+.library__filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.library__controls {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.library__crumbs {
+  display: block;
+  margin-bottom: var(--space-3);
+}
+
+.library__empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: center;
 }

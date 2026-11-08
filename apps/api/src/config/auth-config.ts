@@ -2,6 +2,8 @@ import { AUTH_DEFAULT_SECRET } from './models/auth-default-secret.const';
 import { AUTH_DEV_BASE_URL } from './models/auth-dev-base-url.const';
 import { AUTH_TEST_FLAG } from './models/auth-test-flag.const';
 import { AUTH_ENV } from './models/auth-env.const';
+import { VERCEL_ENV_VAR } from './models/vercel-env.const';
+import { VERCEL_ENVIRONMENT } from './models/vercel-environment.const';
 import { AUTH_SECRET_MIN_LENGTH } from './models/auth-secret-min-length.const';
 import type { AuthConfig } from './models/auth-config.interface';
 import type { AuthProviderCredentials } from './models/auth-provider-credentials.interface';
@@ -41,6 +43,12 @@ function parseOrigin(name: string, value: string, requireHttps: boolean): string
   return url.origin;
 }
 
+/** Vercel exposes hostnames without a scheme; they are validated as https origins. */
+function readVercelOrigin(env: NodeJS.ProcessEnv, name: string): string | undefined {
+  const host = readVar(env, name);
+  return host === undefined ? undefined : parseOrigin(name, `https://${host}`, true);
+}
+
 function readProvider(
   env: NodeJS.ProcessEnv,
   idName: string,
@@ -63,8 +71,12 @@ function readProvider(
  * - `BETTER_AUTH_SECRET` is always required (an ephemeral secret would sign everyone out on restart).
  * - `BETTER_AUTH_URL` is required in production (previews included) and must be https there; outside
  *   production it defaults to the web dev server.
+ * - On Vercel preview deployments only (`VERCEL_ENV=preview`), an unset `BETTER_AUTH_URL` falls back to
+ *   `VERCEL_BRANCH_URL`, then `VERCEL_URL` (every preview has its own origin, ADR 0026), and both
+ *   hostnames are trusted origins. Production never falls back.
  * - `TEST` must not be set in production (it disables Better Auth's CSRF and origin checks).
- * - Provider variables come in pairs; a missing pair means the provider is not registered.
+ * - Provider variables come in pairs. Outside production a missing pair means the provider is not
+ *   registered; production (not previews) requires both providers (ADR 0026).
  */
 export function readAuthConfig(env: NodeJS.ProcessEnv = process.env): AuthConfig {
   const { isProduction } = readAppConfig(env);
@@ -87,13 +99,25 @@ export function readAuthConfig(env: NodeJS.ProcessEnv = process.env): AuthConfig
     throw new Error(`Invalid configuration: ${AUTH_ENV.Secret} must not be the default secret`);
   }
 
+  const isPreview =
+    isProduction && readVar(env, VERCEL_ENV_VAR.Environment) === VERCEL_ENVIRONMENT.Preview;
+  const previewOrigins = isPreview
+    ? [
+        readVercelOrigin(env, VERCEL_ENV_VAR.BranchUrl),
+        readVercelOrigin(env, VERCEL_ENV_VAR.Url),
+      ].filter((origin): origin is string => origin !== undefined)
+    : [];
+
   const rawUrl = readVar(env, AUTH_ENV.Url);
-  if (rawUrl === undefined && isProduction) {
+  if (rawUrl === undefined && isProduction && previewOrigins.length === 0) {
     throw new Error(`Invalid configuration: ${AUTH_ENV.Url} is required in production`);
   }
-  const baseUrl = parseOrigin(AUTH_ENV.Url, rawUrl ?? AUTH_DEV_BASE_URL, isProduction);
+  const baseUrl =
+    rawUrl === undefined && isProduction
+      ? previewOrigins[0]
+      : parseOrigin(AUTH_ENV.Url, rawUrl ?? AUTH_DEV_BASE_URL, isProduction);
 
-  const trustedOrigins = new Set<string>([baseUrl]);
+  const trustedOrigins = new Set<string>([baseUrl, ...previewOrigins]);
   const rawTrusted = readVar(env, AUTH_ENV.TrustedOrigins);
   if (rawTrusted !== undefined) {
     for (const entry of rawTrusted.split(',')) {
@@ -110,14 +134,28 @@ export function readAuthConfig(env: NodeJS.ProcessEnv = process.env): AuthConfig
     }
   }
 
+  const providers = {
+    google: readProvider(env, AUTH_ENV.GoogleClientId, AUTH_ENV.GoogleClientSecret),
+    github: readProvider(env, AUTH_ENV.GitHubClientId, AUTH_ENV.GitHubClientSecret),
+  };
+  // ADR 0026: production must not silently lose a sign-in method. Previews run demo-only.
+  if (isProduction && !isPreview) {
+    if (!providers.google) {
+      throw new Error(
+        `Invalid configuration: ${AUTH_ENV.GoogleClientId} and ${AUTH_ENV.GoogleClientSecret} are required in production`,
+      );
+    }
+    if (!providers.github) {
+      throw new Error(
+        `Invalid configuration: ${AUTH_ENV.GitHubClientId} and ${AUTH_ENV.GitHubClientSecret} are required in production`,
+      );
+    }
+  }
   return {
     secret,
     baseUrl,
     trustedOrigins: [...trustedOrigins],
-    providers: {
-      google: readProvider(env, AUTH_ENV.GoogleClientId, AUTH_ENV.GoogleClientSecret),
-      github: readProvider(env, AUTH_ENV.GitHubClientId, AUTH_ENV.GitHubClientSecret),
-    },
+    providers,
     isProduction,
   };
 }

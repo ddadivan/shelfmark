@@ -3,6 +3,7 @@ export const APP_PATH = {
   Links: 'links',
   Unsorted: 'unsorted',
   Favorites: 'favorites',
+  Folders: 'folders',
   Settings: 'settings',
   SignIn: 'sign-in',
 } as const;

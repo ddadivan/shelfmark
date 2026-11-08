@@ -18,6 +18,10 @@
   border-radius: var(--radius-sm);
   transition: background-color var(--duration-fast) var(--ease-out);
 
+  @include coarse {
+    min-height: rem(44px);
+  }
+
   &:focus-visible {
     @include focus-ring(-2px);
   }

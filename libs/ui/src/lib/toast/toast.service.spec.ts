@@ -453,4 +453,43 @@ describe('ToastService', () => {
       expect(await axeViolations(region())).toEqual([]);
     }
   });
+
+  it('puts the region in a passthrough CDK pane, so the strip never blocks the page', () => {
+    setup();
+    const pane = region().closest('.cdk-overlay-pane');
+    expect(pane?.classList.contains('ui-overlay-pane--passthrough')).toBe(true);
+  });
+
+  describe('over a modal overlay', () => {
+    function regionHost(): HTMLElement {
+      return region().closest('.ui-overlay-layer--toast') as HTMLElement;
+    }
+
+    it('raises the region when the first toast appears, so it is above an open drawer', () => {
+      const service = setup();
+      // The test DOM has no Popover API: stand-ins on the host element.
+      const raise = vi.fn();
+      Object.assign(regionHost(), { hidePopover: raise, showPopover: vi.fn() });
+      service.show({ text: 'Tag deleted', action: { label: 'Undo', run: vi.fn() } });
+      render();
+      expect(raise).toHaveBeenCalledTimes(1);
+      // A second toast is already in front: no flicker.
+      service.show({ text: 'Another' });
+      expect(raise).toHaveBeenCalledTimes(1);
+    });
+
+    it('is never aria-hidden by a modal overlay: the region sits in the overlay container', () => {
+      const service = setup();
+      document.body.setAttribute('aria-hidden', 'false');
+      service.show({ text: 'Tag deleted' });
+      render();
+      let node: HTMLElement | null = region();
+      while (node && node !== document.body) {
+        expect(node.getAttribute('aria-hidden')).toBeNull();
+        node = node.parentElement;
+      }
+      expect(region().closest('.cdk-overlay-container')).not.toBeNull();
+      document.body.removeAttribute('aria-hidden');
+    });
+  });
 });

@@ -19,6 +19,12 @@
   padding: rem(8px);
 }
 
+:host {
+  @include coarse {
+    min-height: rem(44px);
+  }
+}
+
 :host(.ui-list-item--reveal) {
   @include enter(fade);
 }

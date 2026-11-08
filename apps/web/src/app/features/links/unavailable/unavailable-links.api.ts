@@ -22,6 +22,10 @@ export class UnavailableLinksApi implements LinksApi {
     return this.fail();
   }
 
+  get(): Observable<never> {
+    return this.fail();
+  }
+
   update(): Observable<never> {
     return this.fail();
   }

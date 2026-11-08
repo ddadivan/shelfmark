@@ -8,7 +8,10 @@ describe('AppTranslocoLoader', () => {
     const translation = await loader.getTranslation(APP_LANG.En);
 
     expect(translation).toMatchObject({
-      landing: { title: 'Shelfmark', tagline: 'Every saved link, in one place.' },
+      landing: {
+        hero: { line1: 'Paste a link.' },
+        finale: { title: 'Empty your Saved Messages.' },
+      },
     });
     for (const scope of ['landing', 'auth', 'shell', 'library']) {
       expect(translation).toHaveProperty(scope);
@@ -19,7 +22,6 @@ describe('AppTranslocoLoader', () => {
     await expect(loader.getTranslation('de')).rejects.toThrow('Unsupported language: de');
   });
 
-  // Known bug: loaders[lang] reads inherited keys (Object.prototype); remove .fails once the loader uses an own-property check.
   it('does not resolve prototype keys as languages', async () => {
     await expect(loader.getTranslation('constructor')).rejects.toThrow('Unsupported language');
   });

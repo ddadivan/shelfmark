@@ -1,0 +1,64 @@
+@use 'ui' as *;
+@use '../../landing' as landing;
+
+:host {
+  display: block;
+}
+
+.landing-why {
+  @include landing.reveal;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.landing-why__title {
+  @include landing.eyebrow;
+}
+
+.landing-why__figure {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin: 0;
+}
+
+.landing-why__quote {
+  max-width: rem(640px);
+  margin: 0;
+  font-size: rem(17px);
+  line-height: rem(27px);
+  letter-spacing: -0.005em;
+
+  @include tablet-up {
+    font-size: rem(20px);
+    line-height: rem(31px);
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.landing-why__author {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.landing-why__who {
+  display: flex;
+  flex-direction: column;
+}
+
+.landing-why__name {
+  font-weight: 600;
+}
+
+.landing-why__role {
+  @include type(label);
+
+  font-weight: 400;
+  color: var(--text-muted);
+}

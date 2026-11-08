@@ -92,9 +92,25 @@ describe('LinkCardComponent', () => {
       .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
       ?.click();
     await fixture.whenStable();
-    const item = document.querySelector<HTMLElement>('[role="menuitem"]');
-    expect(item?.textContent).toContain('Delete');
-    item?.click();
+    const item = document.querySelectorAll<HTMLElement>('[role="menuitem"]')[1];
+    expect(item.textContent).toContain('Delete');
+    item.click();
+
+    expect(requested).toHaveBeenCalledTimes(1);
+  });
+
+  it('emits editRequested from the first item of the actions menu', async () => {
+    const { fixture, element } = await setup();
+    const requested = vi.fn();
+    fixture.componentInstance.editRequested.subscribe(requested);
+
+    element
+      .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
+      ?.click();
+    await fixture.whenStable();
+    const item = document.querySelectorAll<HTMLElement>('[role="menuitem"]')[0];
+    expect(item.textContent).toContain('Edit');
+    item.click();
 
     expect(requested).toHaveBeenCalledTimes(1);
   });

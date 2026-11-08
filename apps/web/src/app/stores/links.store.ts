@@ -18,18 +18,19 @@ import {
   withEntities,
 } from '@ngrx/signals/entities';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import type { LinkResponse, ListLinksQuery } from '@shelfmark/contracts';
+import type { FolderDeleteMode, LinkResponse } from '@shelfmark/contracts';
+import { FOLDER_DELETE_MODE, LINK_SORT_FIELD, SORT_ORDER } from '@shelfmark/contracts';
 import { catchError, EMPTY, firstValueFrom, pipe, switchMap, tap } from 'rxjs';
+import { inFilter, linksQuery, sameFilter } from '../features/links/links-filter';
 import { LINKS_API } from '../features/links/models/links-api.const';
-import type { LinksFilter } from '../features/links/models/links-filter.interface';
+import type { LinksFilter } from '../features/links/models/links-filter.type';
 import { LINKS_SCOPE } from '../features/links/models/links-scope.const';
-import type { LinksScope } from '../features/links/models/links-scope.type';
 import type { PendingRemoval } from '../features/links/models/pending-removal.interface';
 import { RECENT_LINKS_LIMIT } from '../features/links/models/recent-links-limit.const';
 import type { LinksState } from './models/links-state.interface';
 
 const initialState: LinksState = {
-  scope: LINKS_SCOPE.All,
+  filter: { scope: LINKS_SCOPE.All },
   nextCursor: null,
   loaded: false,
   loading: false,
@@ -40,25 +41,36 @@ const initialState: LinksState = {
   recentLoaded: false,
 };
 
-function queryFor(scope: LinksScope, cursor?: string): ListLinksQuery {
-  const query: ListLinksQuery = cursor === undefined ? {} : { cursor };
-  if (scope === LINKS_SCOPE.Unsorted) {
-    query.unsorted = true;
-  } else if (scope === LINKS_SCOPE.Favorites) {
-    query.favorite = true;
-  }
-  return query;
-}
-
-function inScope(scope: LinksScope, link: LinkResponse): boolean {
-  switch (scope) {
+/**
+ * Whether an edited link still belongs in the open feed. A favorite flag never removes it (an
+ * unfavorited link stays until the next load); leaving "Unsorted" or the open folder does.
+ */
+function staysAfterEdit(filter: LinksFilter, link: LinkResponse): boolean {
+  switch (filter.scope) {
     case LINKS_SCOPE.Unsorted:
       return link.folderId === null;
-    case LINKS_SCOPE.Favorites:
-      return link.isFavorite;
+    case LINKS_SCOPE.Folder:
+      return link.folderId === filter.folderId;
     default:
       return true;
   }
+}
+
+/** `link` with the tag `from` renamed to `to` (or dropped for `null`); other tags keep their order, no duplicates. */
+function retagLink(link: LinkResponse, from: string, to: string | null): LinkResponse {
+  if (!link.tags.some((name) => name.toLowerCase() === from.toLowerCase())) {
+    return link;
+  }
+  const seen = new Set<string>();
+  const tags: string[] = [];
+  for (const name of link.tags) {
+    const next = name.toLowerCase() === from.toLowerCase() ? to : name;
+    if (next !== null && !seen.has(next.toLowerCase())) {
+      seen.add(next.toLowerCase());
+      tags.push(next);
+    }
+  }
+  return { ...link, tags };
 }
 
 function insertAt<T>(list: readonly T[], index: number, item: T): T[] {
@@ -77,7 +89,8 @@ export const LinksStore = signalStore(
   { providedIn: 'root' },
   withEntities<LinkResponse>(),
   withState(initialState),
-  withComputed(({ entities, nextCursor }) => ({
+  withComputed(({ entities, nextCursor, filter }) => ({
+    scope: computed(() => filter().scope),
     count: computed(() => entities().length),
     hasMore: computed(() => nextCursor() !== null),
   })),
@@ -128,20 +141,20 @@ export const LinksStore = signalStore(
 
     const setFilter = rxMethod<LinksFilter>(
       pipe(
-        tap(({ scope }) => {
+        tap((filter) => {
           generation++;
-          const changed = scope !== store.scope();
+          const changed = !sameFilter(filter, store.filter());
           patchState(
             store,
-            { scope, loading: true, loadingMore: false, error: false, loadMoreFailed: false },
+            { filter, loading: true, loadingMore: false, error: false, loadMoreFailed: false },
             changed ? removeAllEntities() : {},
             changed ? { loaded: false, nextCursor: null } : {},
           );
         }),
-        switchMap(({ scope }) => {
+        switchMap((filter) => {
           const started = epoch;
           return api()
-            .list(queryFor(scope))
+            .list(linksQuery(filter))
             .pipe(
               tap((page) => {
                 if (started === epoch) {
@@ -176,7 +189,7 @@ export const LinksStore = signalStore(
         const started = generation;
         patchState(store, { loadingMore: true, loadMoreFailed: false });
         try {
-          const page = await firstValueFrom(api().list(queryFor(store.scope(), cursor)));
+          const page = await firstValueFrom(api().list(linksQuery(store.filter(), cursor)));
           if (started !== generation) {
             return;
           }
@@ -216,20 +229,97 @@ export const LinksStore = signalStore(
         }
       },
 
-      /** Puts a link the server changed (the edit dialog) into the feed and the recent list. */
+      /**
+       * Puts a link the server changed (the edit dialog) into the feed and the recent list; a link
+       * that no longer matches the open scope leaves the feed.
+       */
       applyEdit(link: LinkResponse): void {
         if (store.entityMap()[link.id]) {
-          patchState(store, setEntity(link));
+          patchState(
+            store,
+            staysAfterEdit(store.filter(), link) ? setEntity(link) : removeEntity(link.id),
+          );
         }
         patchState(store, { recent: mapRecent(link.id, link) });
       },
 
       /** Shows a link that was just saved at the top, when it belongs to the current scope. */
       addSaved(link: LinkResponse): void {
-        if (!store.loaded() || !inScope(store.scope(), link) || store.entityMap()[link.id]) {
+        const { sort, order } = store.filter();
+        // At the top only in the default order; other orders show it on the next load.
+        const newestFirst = (sort ?? LINK_SORT_FIELD.CreatedAt) === LINK_SORT_FIELD.CreatedAt;
+        const descending = (order ?? SORT_ORDER.Desc) === SORT_ORDER.Desc;
+        if (
+          !store.loaded() ||
+          !newestFirst ||
+          !descending ||
+          !inFilter(store.filter(), link) ||
+          store.entityMap()[link.id]
+        ) {
           return;
         }
         patchState(store, setAllEntities([link, ...store.entities()]));
+      },
+
+      /**
+       * A folder subtree was deleted on the server: its links leave the loaded lists
+       * (`delete-links`) or become unsorted (`move-to-unsorted`).
+       */
+      applyFolderRemoval(folderIds: readonly string[], mode: FolderDeleteMode): void {
+        const folders = new Set(folderIds);
+        const inFolders = (link: LinkResponse): boolean =>
+          link.folderId !== null && folders.has(link.folderId);
+        // Links in their Undo window follow too, so Undo cannot bring back a deleted link or a
+        // stale folder. One already being sent is left alone.
+        for (const [id, removal] of pending) {
+          if (inFolders(removal.link) && !removal.committing) {
+            if (mode === FOLDER_DELETE_MODE.DeleteLinks) {
+              pending.delete(id);
+            } else {
+              pending.set(id, { ...removal, link: { ...removal.link, folderId: null } });
+            }
+          }
+        }
+        if (mode === FOLDER_DELETE_MODE.DeleteLinks) {
+          patchState(store, setAllEntities(store.entities().filter((link) => !inFolders(link))), {
+            recent: store.recent().filter((link) => !inFolders(link)),
+          });
+          return;
+        }
+        const unsort = (link: LinkResponse): LinkResponse =>
+          inFolders(link) ? { ...link, folderId: null } : link;
+        patchState(store, setAllEntities(store.entities().map(unsort)), {
+          recent: store.recent().map(unsort),
+        });
+      },
+
+      /**
+       * A tag was renamed or merged on the server: the loaded links, the recent list and links in
+       * their Undo window carry the new name (a link that has both collapses to one).
+       */
+      renameTag(from: string, to: string): void {
+        const retag = (link: LinkResponse): LinkResponse => retagLink(link, from, to);
+        for (const [id, removal] of pending) {
+          if (!removal.committing) {
+            pending.set(id, { ...removal, link: retag(removal.link) });
+          }
+        }
+        patchState(store, setAllEntities(store.entities().map(retag)), {
+          recent: store.recent().map(retag),
+        });
+      },
+
+      /** A tag was deleted on the server: it leaves every loaded link, also those in their Undo window. */
+      dropTag(name: string): void {
+        const drop = (link: LinkResponse): LinkResponse => retagLink(link, name, null);
+        for (const [id, removal] of pending) {
+          if (!removal.committing) {
+            pending.set(id, { ...removal, link: drop(removal.link) });
+          }
+        }
+        patchState(store, setAllEntities(store.entities().map(drop)), {
+          recent: store.recent().map(drop),
+        });
       },
 
       /** Hides a link while its Undo window is open. Returns false when it is not in the feed. */
