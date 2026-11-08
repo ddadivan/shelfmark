@@ -17,7 +17,7 @@ Security is part of done (PROJECT.md 5.8): Helmet, CSP, HSTS, errors without int
 - **Request id**: `X-Request-Id` middleware runs first; an incoming id is accepted only if it matches `^[\w.-]{1,128}$`, otherwise a UUID is generated.
 - **Config from `process.env` only**, validated at boot (`PORT`, `NODE_ENV`); no `.env` loading, no `@nestjs/config`. **`NODE_ENV` is fail-safe**: only explicit `development` or `test` is non-production; unset means production. `nx serve` sets `development`.
 - **Swagger UI at `/api/docs` is public in every environment**, including production — author decision: portfolio project, the API holds no secrets.
-- Deferred to a stage-2 issue: throttling (`@nestjs/throttler`), Logging and Timeout interceptors. `@AllowAnonymous()` is a no-op marker until the global auth guard (stage 2).
+- Global session guard and `@AllowAnonymous()`: done in #65 ([0029](0029-global-session-guard-and-isolation-harness.md)). Still deferred to a follow-up issue that lands before #72: throttling (`@nestjs/throttler`), Logging and Timeout interceptors (#123).
 
 ## Consequences
 

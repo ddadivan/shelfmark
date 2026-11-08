@@ -54,7 +54,9 @@ export async function createAuthTestApp(options: AuthTestAppOptions = {}): Promi
 
   const db = await createTestDatabase();
   try {
-    const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
+    const moduleRef = await Test.createTestingModule({
+      imports: [AppModule, ...(options.imports ?? [])],
+    })
       .overrideProvider(PrismaService)
       .useValue(db.prisma)
       .compile();
