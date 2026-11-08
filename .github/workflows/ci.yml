@@ -122,28 +122,44 @@ jobs:
     timeout-minutes: 20
     permissions:
       contents: read
+      actions: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - uses: nrwl/nx-set-shas@e602fada7ad5987b0f7b1905e7a99ea1c661514c # v5.1.0
+      # Scores only move when the web app changes: PRs that leave `web` untouched skip the audit.
+      # Pushes to main always run it, so main keeps a baseline report.
+      - name: Detect affected web app
+        id: web
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then echo "needed=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          projects="$(npx nx show projects --affected --projects web --json)"
+          echo "Affected: ${projects}"
+          if [ "$projects" = "[]" ]; then echo "needed=false" >> "$GITHUB_OUTPUT"; else echo "needed=true" >> "$GITHUB_OUTPUT"; fi
       - name: Install Chromium
+        if: steps.web.outputs.needed == 'true'
         run: npx playwright install --with-deps chromium
       # @lhci/cli lives in its own lockfile (tools/lighthouse, ADR 0028): its dependency tree has
       # high npm audit advisories that must not reach the root tree or the required npm-audit job.
       - name: Install Lighthouse CI (install scripts off)
+        if: steps.web.outputs.needed == 'true'
         run: npm ci --ignore-scripts --prefix tools/lighthouse
       # Advisories stay visible without failing the job.
       - name: Audit Lighthouse CI dependencies
+        if: steps.web.outputs.needed == 'true'
         continue-on-error: true
         run: npm audit --prefix tools/lighthouse --audit-level=high
       - name: Lighthouse CI
+        if: steps.web.outputs.needed == 'true'
         run: npx nx run web-e2e:lighthouse --output-style=static
-      - if: always()
+      - if: always() && steps.web.outputs.needed == 'true'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: lighthouse-report
