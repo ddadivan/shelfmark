@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { DialogService } from '@shelfmark/ui';
-import type { AuthUser, FeedbackMilestone } from '@shelfmark/contracts';
+import { AUTH_PROVIDER, type AuthUser, type FeedbackMilestone } from '@shelfmark/contracts';
 import { AUTH_API } from '../../core/auth/auth-api.token';
 import { AuthStore } from '../../core/auth/auth.store';
 import type { AuthApi } from '../../core/auth/models/auth-api.interface';
@@ -38,7 +38,7 @@ async function setup(
   const closed = deferred<undefined>();
   const authApi: AuthApi = {
     getSession: () => Promise.resolve(session),
-    signIn: vi.fn(),
+    signIn: vi.fn(() => Promise.resolve(user({ id: 'u2' }))),
     signInDemo: vi.fn(),
     signOut: vi.fn(() => Promise.resolve()),
   };
@@ -194,5 +194,30 @@ describe('RatingStore', () => {
     await advance(0);
 
     expect(api.record).not.toHaveBeenCalled();
+  });
+
+  it('watches a second user that replaces the first while eligible stays true', async () => {
+    const { store, auth, api } = await setup();
+    store.watch();
+    await advance(1000);
+
+    // Another user signs in while the first look still waits: no stop() in between.
+    await auth.signIn(AUTH_PROVIDER.Google);
+    store.watch();
+    await advance(RATING_DELAY.Show);
+
+    expect(api.prompt).toHaveBeenCalledTimes(1);
+  });
+
+  it('looks once per user and load, even after a sign-out and sign-in as the same user', async () => {
+    const { store, api } = await setup(user(), null);
+
+    store.watch();
+    await advance(RATING_DELAY.Show);
+    store.stop();
+    store.watch();
+    await advance(RATING_DELAY.Show * 2);
+
+    expect(api.prompt).toHaveBeenCalledTimes(1);
   });
 });

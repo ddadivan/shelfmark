@@ -708,7 +708,6 @@
   },
   "rating": {
     "title": "How do you like Shelfmark so far?",
-    "announce": "{{title}}",
     "scale": {
       "label": "Rating from 1 to 10",
       "score": "{{score}} out of 10",

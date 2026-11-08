@@ -18,10 +18,6 @@
   color: var(--text-muted);
 }
 
-.rating__sr {
-  @include visually-hidden;
-}
-
 .rating__foot {
   display: flex;
   flex: 1;

@@ -17,7 +17,7 @@ const FEEDBACK_TITLE = 'What would make it better?';
 async function openLibrary(
   page: Page,
   daysAgo: number,
-  user: Record<string, unknown> = MOCK_USER,
+  user: Record<string, unknown> = { ...MOCK_USER, onboardingCompletedAt: '2026-06-01T00:00:00Z' },
 ): Promise<void> {
   await page.clock.install({ time: NOW });
   await seedSession(page, user);

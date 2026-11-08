@@ -19,6 +19,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
+function isEntries(value: unknown): value is MockRatingState['entries'] {
+  return isRecord(value) && Object.values(value).every((entry) => isRecord(entry));
+}
+
 function isMilestone(value: string): value is FeedbackMilestone {
   return Object.values<string>(FEEDBACK_MILESTONE).includes(value);
 }
@@ -76,7 +80,11 @@ export class MockRatingApi implements RatingApi {
     }
     try {
       const user: unknown = JSON.parse(raw);
-      return isRecord(user) && user['isDemo'] !== true && user['onboardingCompletedAt'] !== null;
+      return (
+        isRecord(user) &&
+        user['isDemo'] !== true &&
+        typeof user['onboardingCompletedAt'] === 'string'
+      );
     } catch {
       return false;
     }
@@ -90,8 +98,8 @@ export class MockRatingApi implements RatingApi {
         if (typeof parsed['createdAt'] === 'string') {
           state.createdAt = parsed['createdAt'];
         }
-        if (isRecord(parsed['entries'])) {
-          state.entries = parsed['entries'] as MockRatingState['entries'];
+        if (isEntries(parsed['entries'])) {
+          state.entries = parsed['entries'];
         }
       }
     } catch {

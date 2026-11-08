@@ -41,6 +41,8 @@ export const RatingStore = signalStore(
       let timer: ReturnType<typeof setTimeout> | undefined;
       /** The user the current look belongs to; null while idle. */
       let watching: string | null = null;
+      /** The last user a look was started for; `stop()` keeps it, so it is once per user per load. */
+      let lastLookedUserId: string | null = null;
 
       function stillWatching(userId: string): boolean {
         return watching === userId && auth.user()?.id === userId;
@@ -66,6 +68,7 @@ export const RatingStore = signalStore(
           patchState(store, { open: false });
         }
         // Not now, Esc and the scrim: the skip is recorded so the milestone is not asked again.
+        // After a failed score save the server may answer 409 (score mismatch); that is swallowed.
         if (!scored() && auth.user()?.id === userId) {
           await api.record({ milestone, score: null }).catch(() => undefined);
         }
@@ -96,13 +99,16 @@ export const RatingStore = signalStore(
       }
 
       return {
-        /** Starts the look for the signed-in user; no-op while one runs or when not eligible. */
+        /** Starts the look for the signed-in user; no-op when not eligible or already done for this user. */
         watch(): void {
           const user = auth.user();
-          if (!store.eligible() || !user || watching === user.id) {
+          if (!store.eligible() || !user || lastLookedUserId === user.id) {
             return;
           }
+          // Another user replaces a look that is still waiting.
+          clearTimeout(timer);
           watching = user.id;
+          lastLookedUserId = user.id;
           schedule(user.id, RATING_DELAY.Show);
         },
         /** Cancels a pending look (sign-out, demo, onboarding shown again). */

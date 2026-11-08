@@ -40,7 +40,7 @@ import { scoreForKey } from './score-for-key';
  * feedback for 1 to 7 or thanks for 8 to 10, and thanks after the feedback. The thank-you step
  * closes by itself after 4 s. The score is saved the moment it is picked; "Not now", Esc and the
  * scrim close the dialog without one and the store records the skip. Digits 1 to 9 and 0 (= 10)
- * move focus to that score on the first step (Enter picks it); focus starts on the dialog itself.
+ * move focus to that score on the first step (Enter picks it); focus starts on the dialog itself. While focus is not in the scale (on the dialog, or on "Not now") the first ArrowLeft / ArrowRight enters it: ArrowRight at 1, ArrowLeft at 10 (intended).
  * The step slides in 24px and fades; reduced motion shows it at once.
  */
 @Component({

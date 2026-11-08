@@ -116,8 +116,10 @@ export default class AppShellComponent {
   /** The rating look starts for an eligible user (not demo, onboarding done) and stops otherwise. */
   private readonly ratingWatch = effect(() => {
     const eligible = this.rating.eligible();
+    // Read so that a switch to another user (eligible stays true) runs the effect again.
+    const userId = this.auth.user()?.id;
     untracked(() => {
-      if (eligible) {
+      if (eligible && userId !== undefined) {
         this.rating.watch();
       } else {
         this.rating.stop();
