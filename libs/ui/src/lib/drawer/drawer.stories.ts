@@ -125,13 +125,14 @@ export const LongContent: Story = {
   }),
 };
 
+// Both frames render on one page, so each nav needs its own name (axe landmark-unique).
 const frame = (theme: Theme) => `
   <div ${THEME_ATTRIBUTE}="${theme}" class="drs-gallery">
     <p class="drs-hint">${theme} theme: static panel (open the stories above for the live drawer)</p>
     <div class="drs-scrim">
       <ui-drawer closeLabel="Close menu">
         <span slot="head" class="drs-title">Shelfmark</span>
-        <nav class="drs-nav" aria-label="Library">
+        <nav class="drs-nav" aria-label="Library, ${theme} theme">
           <ui-button variant="ghost">All links</ui-button>
           <ui-button variant="ghost">Favorites</ui-button>
           <p class="drs-section">Folders</p>

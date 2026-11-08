@@ -142,8 +142,10 @@ test.describe('folders (mock API)', () => {
 
       await expect(dialog).toBeHidden();
       await openSidebar(page);
-      await row(page, 'Archive').click();
-      await openSidebar(page);
+      // Expand "Archive" with its twisty, which toggles without choosing the row. Clicking the row
+      // also chooses it, and on a phone that closes the drawer, so the check below raced it.
+      await row(page, 'Archive').locator('.ui-tree__twist').first().click();
+      await expect(row(page, 'Archive')).toHaveAttribute('aria-expanded', 'true');
       await expect(row(page, READING.name)).toBeVisible();
     });
 
