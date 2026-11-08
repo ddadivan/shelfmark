@@ -15,3 +15,14 @@ export function linkHost(url: string): string {
 export function siteLetter(url: string): string {
   return displayHost(url).charAt(0).toUpperCase();
 }
+
+/** Image paths of our own API, as built by `linkImagePath` (ADR 0027). */
+const OWN_IMAGE_PATH = /^\/api\/links\/[0-9a-f-]{36}\/(favicon|image)\?v=[0-9a-f]{16}$/;
+
+/**
+ * The image URL when it is exactly a path of our own API (`/api/links/{id}/image?v=...`), else
+ * `undefined`. A remote URL is never bound: the CSP would block it and it would leak the user.
+ */
+export function ownImageUrl(url: string | null): string | undefined {
+  return url !== null && OWN_IMAGE_PATH.test(url) ? url : undefined;
+}

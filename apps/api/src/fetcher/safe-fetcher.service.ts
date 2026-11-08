@@ -14,11 +14,21 @@ import { DEFAULT_PORT_BY_PROTOCOL } from './models/default-ports.const';
 import { DEFAULT_FETCH_LIMITS } from './models/fetch-limits.const';
 import type { FetchLimits } from './models/fetch-limits.interface';
 import { FETCH_USER_AGENT } from './models/fetch-user-agent.const';
+import { FETCH_KIND } from './models/fetch-kind.const';
+import type { FetchKind } from './models/fetch-kind.type';
 import type { HopResponse } from './models/hop-response.type';
 import { HTML_CONTENT_TYPES } from './models/html-content-types.const';
+import { DEFAULT_IMAGE_FETCH_LIMITS } from './models/image-fetch-limits.const';
+import {
+  IMAGE_BINARY_CONTENT_TYPES,
+  IMAGE_CONTENT_TYPE_PREFIX,
+  REJECTED_IMAGE_CONTENT_TYPES,
+} from './models/image-content-types.const';
+import type { RawResponse } from './models/raw-response.interface';
 import { REDIRECT_STATUSES } from './models/redirect-statuses.const';
 import { SAFE_FETCH_ERROR_CODE } from './models/safe-fetch-error-code.const';
 import type { SafeFetchResult } from './models/safe-fetch-result.interface';
+import type { SafeImageResult } from './models/safe-image-result.interface';
 import type { SafeFetcherOptions } from './models/safe-fetcher-options.interface';
 import { SAFE_FETCHER_OPTIONS } from './models/safe-fetcher-options.const';
 import type { DnsResolver } from './models/dns-resolver.type';
@@ -36,6 +46,14 @@ const defaultResolver: DnsResolver = async (hostname) => {
   const records = await dnsLookup(hostname, { all: true, verbatim: true });
   return records.map((record) => record.address);
 };
+
+function isImageContentType(contentType: string): boolean {
+  if (REJECTED_IMAGE_CONTENT_TYPES.includes(contentType)) return false;
+  return (
+    contentType.startsWith(IMAGE_CONTENT_TYPE_PREFIX) ||
+    IMAGE_BINARY_CONTENT_TYPES.includes(contentType)
+  );
+}
 
 function stripBrackets(hostname: string): string {
   return hostname.startsWith('[') && hostname.endsWith(']') ? hostname.slice(1, -1) : hostname;
@@ -62,12 +80,14 @@ function decodeBody(bytes: Buffer, contentType: string): string {
 @Injectable()
 export class SafeFetcherService {
   private readonly limits: FetchLimits;
+  private readonly imageLimits: FetchLimits;
   private readonly resolve: DnsResolver;
   private readonly isAddressAllowed: AddressPolicy;
   private readonly allowedPorts: readonly number[];
 
   constructor(@Optional() @Inject(SAFE_FETCHER_OPTIONS) options?: SafeFetcherOptions) {
     this.limits = { ...DEFAULT_FETCH_LIMITS, ...options?.limits };
+    this.imageLimits = { ...this.limits, ...DEFAULT_IMAGE_FETCH_LIMITS, ...options?.limits };
     this.resolve = options?.resolve ?? defaultResolver;
     this.isAddressAllowed = options?.isAddressAllowed ?? ((address) => !isBlockedAddress(address));
     this.allowedPorts = options?.allowedPorts ?? DEFAULT_ALLOWED_PORTS;
@@ -78,14 +98,47 @@ export class SafeFetcherService {
    * preview inside a request that has its own deadline); the service defaults stay untouched.
    */
   async fetch(rawUrl: string, overrides?: Partial<FetchLimits>): Promise<SafeFetchResult> {
-    const limits = narrowLimits(this.limits, overrides);
+    const response = await this.run(rawUrl, narrowLimits(this.limits, overrides), FETCH_KIND.Html);
+    return {
+      finalUrl: response.finalUrl,
+      status: response.result.status,
+      contentType: response.result.contentType,
+      body: decodeBody(response.result.bytes, response.result.contentTypeHeader),
+    };
+  }
+
+  /**
+   * Image mode (ADR 0027): same URL and address policy, redirect re-validation and pinned
+   * connection as `fetch`, but the body stays raw and only image-like response types pass
+   * (never HTML, never SVG). The bytes are untrusted: the caller sniffs the format and re-encodes.
+   * Defaults are 3 MB and 5 s; `overrides` can only tighten them.
+   */
+  async fetchImage(rawUrl: string, overrides?: Partial<FetchLimits>): Promise<SafeImageResult> {
+    const response = await this.run(
+      rawUrl,
+      narrowLimits(this.imageLimits, overrides),
+      FETCH_KIND.Image,
+    );
+    return {
+      finalUrl: response.finalUrl,
+      status: response.result.status,
+      contentType: response.result.contentType,
+      bytes: response.result.bytes,
+    };
+  }
+
+  private async run(
+    rawUrl: string,
+    limits: FetchLimits,
+    kind: FetchKind,
+  ): Promise<{ finalUrl: string; result: RawResponse }> {
     const signal = AbortSignal.timeout(limits.totalTimeoutMs);
     let url = this.parseUrl(rawUrl, limits);
     for (let hop = 0; hop <= limits.maxRedirects; hop++) {
       const addresses = await this.resolveAllowed(url, signal);
-      const response = await this.requestOnce(url, addresses, signal, limits);
+      const response = await this.requestOnce(url, addresses, signal, limits, kind);
       if ('result' in response) {
-        return { finalUrl: url.href, ...response.result };
+        return { finalUrl: url.href, result: response.result };
       }
       url = this.parseUrl(this.resolveRedirect(response.location, url), limits);
     }
@@ -174,6 +227,7 @@ export class SafeFetcherService {
     addresses: readonly string[],
     signal: AbortSignal,
     limits: FetchLimits,
+    kind: FetchKind,
   ): Promise<HopResponse> {
     const transport = url.protocol === ALLOWED_PROTOCOLS.Https ? https : http;
     const pinnedLookup: LookupFunction = (_hostname, options, callback) => {
@@ -220,13 +274,16 @@ export class SafeFetcherService {
           // No cookies and no credentials are ever sent.
           headers: {
             'User-Agent': FETCH_USER_AGENT,
-            Accept: `${HTML_CONTENT_TYPES.Html},${HTML_CONTENT_TYPES.Xhtml};q=0.9`,
+            Accept:
+              kind === FETCH_KIND.Image
+                ? 'image/avif,image/webp,image/png,image/jpeg,image/gif,image/x-icon,image/*;q=0.8'
+                : `${HTML_CONTENT_TYPES.Html},${HTML_CONTENT_TYPES.Xhtml};q=0.9`,
             'Accept-Encoding': 'identity',
             Connection: 'close',
           },
         },
         (response) => {
-          this.handleResponse(response, limits, finish, () => settled, resolve, reject, fail);
+          this.handleResponse(response, limits, kind, finish, () => settled, resolve, reject, fail);
         },
       );
 
@@ -255,6 +312,7 @@ export class SafeFetcherService {
   private handleResponse(
     response: IncomingMessage,
     limits: FetchLimits,
+    kind: FetchKind,
     finish: (action: () => void) => void,
     isSettled: () => boolean,
     resolve: (value: HopResponse) => void,
@@ -287,8 +345,12 @@ export class SafeFetcherService {
 
     const contentTypeHeader = response.headers['content-type'] ?? '';
     const contentType = (contentTypeHeader.split(';')[0] ?? '').trim().toLowerCase();
-    const htmlTypes: readonly string[] = Object.values(HTML_CONTENT_TYPES);
-    if (!htmlTypes.includes(contentType)) {
+    if (kind === FETCH_KIND.Image) {
+      if (!isImageContentType(contentType)) {
+        fail(new SafeFetchError(SAFE_FETCH_ERROR_CODE.NotImage, 'Response is not an image'));
+        return;
+      }
+    } else if (!(Object.values(HTML_CONTENT_TYPES) as string[]).includes(contentType)) {
       fail(new SafeFetchError(SAFE_FETCH_ERROR_CODE.NotHtml, 'Response is not HTML'));
       return;
     }
@@ -317,7 +379,8 @@ export class SafeFetcherService {
           result: {
             status,
             contentType,
-            body: decodeBody(Buffer.concat(chunks), contentTypeHeader),
+            contentTypeHeader,
+            bytes: Buffer.concat(chunks),
           },
         }),
       );

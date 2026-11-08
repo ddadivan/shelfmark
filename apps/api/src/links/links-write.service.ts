@@ -17,6 +17,7 @@ import {
   type OpenLinkResponse,
   type UpdateLinkRequest,
 } from '@shelfmark/contracts';
+import { REQUEST_TIMEOUT_MS } from '../common/interceptors/models/request-timeout.const';
 import { FoldersService } from '../folders/folders.service';
 import { Prisma } from '../generated/prisma/client';
 import { stripControlChars } from '../common/validation/has-control-chars';
@@ -24,11 +25,16 @@ import { hasPrismaCode } from '../common/prisma/has-prisma-code';
 import { PRISMA_ERROR_CODE } from '../common/prisma/prisma-error-code.const';
 import { PrismaService } from '../prisma/prisma.service';
 import { TagsService } from '../tags/tags.service';
+import { LinkImageCaptureService } from './images/link-image-capture.service';
 import { LinkPreviewService } from './link-preview.service';
+import type { CaptureSources } from './images/models/capture-sources.interface';
 import type { CreateLinkResult } from './models/create-link-result.interface';
 import { LINK_INCLUDE } from './models/link-include.const';
 import type { LinkDbClient } from './models/link-db-client.type';
 import { toLinkResponse } from './to-link-response';
+
+/** Time of the request kept free for the response after a capture. */
+const CREATE_RESPONSE_MARGIN_MS = 1_000;
 
 /** `null` and blank text both mean "no note". */
 function noteOrNull(note: string | null | undefined): string | null {
@@ -53,6 +59,7 @@ export class LinksWriteService {
     private readonly folders: FoldersService,
     private readonly tags: TagsService,
     private readonly previews: LinkPreviewService,
+    private readonly images: LinkImageCaptureService,
   ) {}
 
   /** `isDemo` comes from the session (never the request): demo sandboxes have a lower link cap. */
@@ -61,6 +68,7 @@ export class LinksWriteService {
     request: CreateLinkRequest,
     isDemo = false,
   ): Promise<CreateLinkResult> {
+    const startedAt = Date.now();
     const normalizedUrl = this.normalize(request.url);
     this.assertTagNames(request.tags);
     const key = request.idempotencyKey;
@@ -86,8 +94,9 @@ export class LinksWriteService {
     }
     const finalTitle = title;
 
+    let result: CreateLinkResult;
     try {
-      return await this.prisma.$transaction(async (tx) => {
+      result = await this.prisma.$transaction(async (tx) => {
         // Folder lock first: it serializes this insert against folder moves and deletes and makes the
         // per-user count below exact. Tags are locked inside `resolveNames`, after it.
         await this.folders.lockTree(tx, userId);
@@ -126,6 +135,31 @@ export class LinksWriteService {
       }
       throw this.mapVanished(error);
     }
+    // After the commit and outside any transaction: the remote fetches must never hold a lock.
+    return this.attachImages(userId, result, { faviconSourceUrl, imageSourceUrl }, startedAt);
+  }
+
+  /**
+   * Best-effort image capture for a link this request just created (ADR 0027). It gets what is left
+   * of the request budget; a failure leaves the link as it is, without images.
+   */
+  private async attachImages(
+    userId: string,
+    result: CreateLinkResult,
+    sources: CaptureSources,
+    startedAt: number,
+  ): Promise<CreateLinkResult> {
+    if (!result.created || (sources.faviconSourceUrl === null && sources.imageSourceUrl === null)) {
+      return result;
+    }
+    const left = REQUEST_TIMEOUT_MS - CREATE_RESPONSE_MARGIN_MS - (Date.now() - startedAt);
+    const stored = await this.images.capture(userId, result.link.id, sources, left);
+    if (!stored) return result;
+    const row = await this.prisma.link.findFirst({
+      where: { id: result.link.id, userId },
+      include: LINK_INCLUDE,
+    });
+    return row ? { link: toLinkResponse(row), created: true } : result;
   }
 
   async update(userId: string, id: string, request: UpdateLinkRequest): Promise<LinkResponse> {
@@ -137,8 +171,18 @@ export class LinksWriteService {
           await this.folders.lockTree(tx, userId);
           await this.requireFolder(tx, userId, request.folderId);
         }
-        const current = await tx.link.findFirst({ where: { id, userId }, select: { id: true } });
+        const current = await tx.link.findFirst({
+          where: { id, userId },
+          select: { id: true, normalizedUrl: true },
+        });
         if (!current) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
+        // Only a really different page invalidates the captured images and the source hints (the
+        // same URL written differently keeps them); the card then falls back to the site letter.
+        if (data.normalizedUrl !== undefined && data.normalizedUrl !== current.normalizedUrl) {
+          await tx.linkImage.deleteMany({ where: { linkId: id, userId } });
+          data.faviconSourceUrl = null;
+          data.imageSourceUrl = null;
+        }
 
         if (request.tags !== undefined) {
           // Held until commit, so a merge or a concurrent tag write cannot interleave with the swap.
@@ -182,9 +226,6 @@ export class LinksWriteService {
     if (request.url !== undefined) {
       data.url = request.url;
       data.normalizedUrl = this.normalize(request.url);
-      // The old hints described the old page.
-      data.faviconSourceUrl = null;
-      data.imageSourceUrl = null;
     }
     if (request.title !== undefined) {
       data.title = request.title;

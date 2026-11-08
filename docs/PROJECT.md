@@ -501,10 +501,12 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 | `normalizedUrl` | string | For duplicate detection (see below) |
 | `title` | string (≤ 300) | From the preview, or the URL if the preview did not load |
 | `note` | text, null | "Why I saved it", ≤ 2000 characters |
-| `faviconUrl` | string, null | Site icon |
-| `imageUrl` | string, null | Preview image (Open Graph) |
+| `faviconUrl` | string, null | In the API: same-origin path `/api/links/{id}/favicon?v=…` of the captured site icon, `null` if none (ADR 0027) |
+| `imageUrl` | string, null | In the API: same-origin path `/api/links/{id}/image?v=…` of the captured preview image, `null` if none (ADR 0027) |
 | `isFavorite` | boolean | Defaults to `false` |
 | `lastOpenedAt` | timestamp, null | For the "Recently opened" panel |
+
+**LinkImage** (ADR 0027): re-encoded copy of a link's favicon or preview image: `id`, `userId`, `linkId` (cascade), `kind` (`favicon` | `preview`), `contentType` (always `image/webp`), `bytes` (≤ 64 KB), `width`, `height`, `sha256`; unique per `linkId + kind`.
 
 **Tag**: a tag: `id`, `userId`, `name` (≤ 50); unique per `userId + name` pair.
 

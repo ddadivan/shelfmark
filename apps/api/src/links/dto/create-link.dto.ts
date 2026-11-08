@@ -68,13 +68,21 @@ export class CreateLinkDto implements CreateLinkRequest {
   @IsUUID()
   idempotencyKey?: string;
 
-  @ApiPropertyOptional({ maxLength: LINK_LIMIT.UrlMax, description: 'Source hint, never fetched' })
+  @ApiPropertyOptional({
+    maxLength: LINK_LIMIT.UrlMax,
+    description:
+      'Source hint: fetched server-side through the SSRF-safe fetcher, re-encoded and size-capped',
+  })
   @IsOptional()
   @TrimString()
   @IsHttpUrl()
   faviconUrl?: string;
 
-  @ApiPropertyOptional({ maxLength: LINK_LIMIT.UrlMax, description: 'Source hint, never fetched' })
+  @ApiPropertyOptional({
+    maxLength: LINK_LIMIT.UrlMax,
+    description:
+      'Source hint: fetched server-side through the SSRF-safe fetcher, re-encoded and size-capped',
+  })
   @IsOptional()
   @TrimString()
   @IsHttpUrl()

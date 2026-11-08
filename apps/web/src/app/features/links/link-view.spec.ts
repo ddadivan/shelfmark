@@ -1,4 +1,4 @@
-import { linkHost, safeHref, siteLetter } from './link-view';
+import { linkHost, ownImageUrl, safeHref, siteLetter } from './link-view';
 
 describe('link view helpers', () => {
   it('allows only http(s) hrefs', () => {
@@ -12,5 +12,16 @@ describe('link view helpers', () => {
   it('shows the host without www and its capital letter', () => {
     expect(linkHost('https://www.example.com/a')).toBe('example.com');
     expect(siteLetter('https://www.example.com/a')).toBe('E');
+  });
+
+  it('binds only image paths of our own API', () => {
+    const own = '/api/links/0197a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b/image?v=abcdef0123456789';
+    expect(ownImageUrl(own)).toBe(own);
+    expect(ownImageUrl(null)).toBeUndefined();
+    expect(ownImageUrl(`${own}&x=1`)).toBeUndefined();
+    expect(ownImageUrl('/api/links/x/image?v=abcdef0123456789')).toBeUndefined();
+    expect(ownImageUrl('https://evil.test/a.png')).toBeUndefined();
+    expect(ownImageUrl('//evil.test/a.png')).toBeUndefined();
+    expect(ownImageUrl('data:image/png;base64,AAAA')).toBeUndefined();
   });
 });

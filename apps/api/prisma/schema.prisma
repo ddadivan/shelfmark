@@ -39,6 +39,7 @@ model User {
   accounts              Account[]
   folders               Folder[]
   links                 Link[]
+  linkImages            LinkImage[]
   tags                  Tag[]
   feedback              Feedback[]
 
@@ -136,8 +137,9 @@ model Link {
   note             String?
   faviconUrl       String?   @map("favicon_url") @db.VarChar(2048)
   imageUrl         String?   @map("image_url") @db.VarChar(2048)
-  // Source URLs as sent by the client or found in the preview; never fetched here. faviconUrl and
-  // imageUrl stay null until the image capture of #149 (ADR 0027).
+  // Remote source URLs as sent by the client or found in the preview; the capture fetches them
+  // server-side (ADR 0027). faviconUrl and imageUrl above are dead columns, always null: the
+  // response derives its same-origin image paths from link_images (follow-up: drop them).
   faviconSourceUrl String?   @map("favicon_source_url") @db.VarChar(2048)
   imageSourceUrl   String?   @map("image_source_url") @db.VarChar(2048)
   // Client-generated UUID that makes a retried create return the first link (ADR 0033).
@@ -149,6 +151,7 @@ model Link {
   user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   folder           Folder?   @relation(fields: [folderId], references: [id], onDelete: SetNull)
   tags             LinkTag[]
+  images           LinkImage[]
 
   @@unique([userId, idempotencyKey])
   @@index([userId, createdAt, id])
@@ -160,6 +163,29 @@ model Link {
   @@index([note(ops: raw("gin_trgm_ops"))], type: Gin, map: "links_note_trgm_idx")
   @@index([url(ops: raw("gin_trgm_ops"))], type: Gin, map: "links_url_trgm_idx")
   @@map("links")
+}
+
+// Re-encoded copy of a link's favicon or preview image (ADR 0027): WebP, at most 64 KB. Served
+// same-origin by /api/links/:id/favicon|image, always filtered by userId.
+model LinkImage {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  linkId      String   @map("link_id") @db.Uuid
+  // 'favicon' | 'preview' (LINK_IMAGE_KIND); a CHECK in the migration keeps it closed.
+  kind        String   @db.VarChar(16)
+  contentType String   @map("content_type") @db.VarChar(64)
+  bytes       Bytes
+  width       Int
+  height      Int
+  sha256      String   @db.VarChar(64)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  link        Link     @relation(fields: [linkId], references: [id], onDelete: Cascade)
+
+  @@unique([linkId, kind])
+  @@index([userId])
+  @@map("link_images")
 }
 
 model Tag {
