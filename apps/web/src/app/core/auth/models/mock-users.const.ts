@@ -8,6 +8,7 @@ export const MOCK_USERS: Record<AuthProvider, AuthUser> = {
     email: 'ada@example.com',
     image: null,
     isDemo: false,
+    demoExpiresAt: null,
   },
   [AUTH_PROVIDER.GitHub]: {
     id: 'mock-github',
@@ -15,5 +16,6 @@ export const MOCK_USERS: Record<AuthProvider, AuthUser> = {
     email: 'grace@example.com',
     image: null,
     isDemo: false,
+    demoExpiresAt: null,
   },
 };

@@ -18,13 +18,16 @@ const USER: AuthUser = {
   email: 'a@example.com',
   image: null,
   isDemo: false,
+  demoExpiresAt: null,
 };
 
 async function setup(signIn: AuthApi['signIn'] = () => Promise.resolve(USER)) {
   const api: AuthApi = {
     getSession: () => Promise.resolve(null),
     signIn: vi.fn(signIn),
-    signInDemo: vi.fn(() => Promise.resolve({ ...USER, isDemo: true })),
+    signInDemo: vi.fn(() =>
+      Promise.resolve({ ...USER, isDemo: true, demoExpiresAt: '2030-01-02T00:00:00.000Z' }),
+    ),
     signOut: () => Promise.resolve(),
   };
   TestBed.configureTestingModule({

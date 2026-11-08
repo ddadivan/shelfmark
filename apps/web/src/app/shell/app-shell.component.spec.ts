@@ -18,6 +18,7 @@ const USER: AuthUser = {
   email: 'a@example.com',
   image: null,
   isDemo: false,
+  demoExpiresAt: null,
 };
 
 function menuItem(label: string): HTMLElement | undefined {

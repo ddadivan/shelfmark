@@ -10,6 +10,7 @@ export const MOCK_USER = {
   email: 'e2e@example.com',
   image: null,
   isDemo: false,
+  demoExpiresAt: null,
 };
 
 /** Signs the mock auth API in before the app starts. */

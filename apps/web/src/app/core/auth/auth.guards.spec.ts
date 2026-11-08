@@ -13,6 +13,7 @@ const USER: AuthUser = {
   email: 'a@example.com',
   image: null,
   isDemo: false,
+  demoExpiresAt: null,
 };
 
 @Component({ selector: 'app-landing-stub', template: 'landing' })

@@ -22,6 +22,7 @@ const USER: AuthUser = {
   email: 'ada@example.com',
   image: null,
   isDemo: false,
+  demoExpiresAt: null,
 };
 
 async function setup() {

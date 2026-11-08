@@ -18,13 +18,16 @@ const USER: AuthUser = {
   email: 'a@example.com',
   image: null,
   isDemo: false,
+  demoExpiresAt: null,
 };
 
 function setup(overrides: Partial<AuthApi> = {}) {
   const api: AuthApi = {
     getSession: vi.fn(() => Promise.resolve<AuthUser | null>(null)),
     signIn: vi.fn(() => Promise.resolve(USER)),
-    signInDemo: vi.fn(() => Promise.resolve({ ...USER, isDemo: true })),
+    signInDemo: vi.fn(() =>
+      Promise.resolve({ ...USER, isDemo: true, demoExpiresAt: '2030-01-02T00:00:00.000Z' }),
+    ),
     signOut: vi.fn(() => Promise.resolve()),
     ...overrides,
   };

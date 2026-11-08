@@ -13,6 +13,7 @@ const user: AuthUser = {
   email: 'ada@example.com',
   image: null,
   isDemo: false,
+  demoExpiresAt: null,
 };
 
 function setup(sessionUser: AuthUser | null) {

@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Service, inject } from '@angular/core';
-import type { AuthProvider, AuthUser } from '@shelfmark/contracts';
+import { DEMO_LIMIT, type AuthProvider, type AuthUser } from '@shelfmark/contracts';
 import { AuthApi } from './models/auth-api.interface';
 import { MOCK_DEMO_USER } from './models/mock-demo-user.const';
 import { MOCK_USERS } from './models/mock-users.const';
@@ -16,7 +16,8 @@ function isAuthUser(value: unknown): value is AuthUser {
     typeof candidate.name === 'string' &&
     typeof candidate.email === 'string' &&
     (candidate.image === null || typeof candidate.image === 'string') &&
-    typeof candidate.isDemo === 'boolean'
+    typeof candidate.isDemo === 'boolean' &&
+    (candidate.demoExpiresAt === null || typeof candidate.demoExpiresAt === 'string')
   );
 }
 
@@ -37,7 +38,12 @@ export class MockAuthApi implements AuthApi {
   }
 
   signInDemo(): Promise<AuthUser> {
-    return Promise.resolve(this.persist(MOCK_DEMO_USER));
+    return Promise.resolve(
+      this.persist({
+        ...MOCK_DEMO_USER,
+        demoExpiresAt: new Date(Date.now() + DEMO_LIMIT.SessionHours * 3_600_000).toISOString(),
+      }),
+    );
   }
 
   signOut(): Promise<void> {
