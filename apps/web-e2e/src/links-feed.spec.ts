@@ -111,6 +111,29 @@ test.describe('links feed (mock API)', () => {
     await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
   });
 
+  test('Undo is reachable by keyboard with Alt+Shift+T, and focus goes back', async ({ page }) => {
+    await openFeed(page);
+    const title = await firstTitle(page);
+    const trigger = page
+      .locator('ui-card')
+      .first()
+      .getByRole('button', { name: /^Actions for / });
+
+    await trigger.click();
+    await page.getByRole('menuitem', { name: 'Delete' }).click();
+    await page.getByRole('alertdialog').getByRole('button', { name: 'Delete' }).press('Enter');
+    await expect(page.getByText('Link deleted')).toBeVisible();
+
+    await page.keyboard.press('Alt+Shift+T');
+    const undo = page.getByRole('button', { name: 'Undo' });
+    await expect(undo).toBeFocused();
+    await page.keyboard.press('Enter');
+
+    await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
+    await expect(undo).toHaveCount(0);
+    await expect(page.locator('ui-toast-region').getByRole('button')).toHaveCount(0);
+  });
+
   test('cancelling the confirmation keeps the link', async ({ page }) => {
     await openFeed(page);
     const title = await firstTitle(page);

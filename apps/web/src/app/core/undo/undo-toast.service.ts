@@ -1,5 +1,6 @@
 import { inject, Service } from '@angular/core';
-import { TOAST_CLOSE_REASON, ToastService } from '@shelfmark/ui';
+import { TranslocoService } from '@jsverse/transloco';
+import { TOAST_CLOSE_REASON, TOAST_SHORTCUT, ToastService } from '@shelfmark/ui';
 import { DELETE_UNDO_MS } from './models/delete-undo.const';
 import type { UndoToastOptions } from './models/undo-toast-options.interface';
 
@@ -12,11 +13,16 @@ import type { UndoToastOptions } from './models/undo-toast-options.interface';
 @Service()
 export class UndoToastService {
   private readonly toasts = inject(ToastService);
+  private readonly transloco = inject(TranslocoService);
 
   show(options: UndoToastOptions): void {
     const ref = this.toasts.show({
       text: options.text,
       duration: DELETE_UNDO_MS,
+      actionHint: this.transloco.translate('shell.toast.actionHint', {
+        shortcut: TOAST_SHORTCUT.label,
+        action: options.actionLabel,
+      }),
       action: { label: options.actionLabel, run: () => options.onUndo() },
     });
     void ref.closed.then((reason) => {

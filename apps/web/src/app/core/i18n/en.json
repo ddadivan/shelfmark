@@ -305,6 +305,9 @@
     "signOut": "Sign out"
   },
   "shell": {
+    "toast": {
+      "actionHint": "Press {{shortcut}} to reach {{action}}"
+    },
     "accountMenu": "Account menu",
     "settings": "Settings",
     "addLink": "Add link",
