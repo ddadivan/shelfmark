@@ -506,7 +506,7 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 
 **LinkTag**: many-to-many relation: `linkId`, `tagId` (composite PK).
 
-**Feedback**: ratings and feedback: `id`, `userId`, `milestone` (`day3` | `week1` | `month1` | `year1`), `score` (1–10, `null` = skipped), `comment` (≤ 2000, optional), `createdAt`; unique on `userId + milestone`. The presence of a row tells the frontend that the milestone has already been shown.
+**Feedback**: ratings and feedback: `id`, `userId`, `milestone` (`day3` | `week1` | `month1` | `year1`), `score` (1–10, `null` = skipped), `comment` (≤ 2000, optional), `createdAt`, `updatedAt`; unique on `userId + milestone`; DB CHECKs: milestone in the set, score null or 1–10, comment ≤ 2000 characters, no comment without a score. The presence of a row means the milestone is answered; the frontend does not read the table but asks `GET /api/feedback/prompt`.
 
 **URL normalisation** (for duplicates): lowercase host, no `#fragment`, no `utm_*` params and no trailing `/`. Duplicates are allowed (the user can "save anyway"), so the index is non-unique.
 
@@ -537,6 +537,8 @@ All routes except `/api/auth/*` require a session and work only with the current
 | PATCH | `/api/folders/:id` | Rename / move; moving into itself or its own subfolder is forbidden |
 | DELETE | `/api/folders/:id?mode=` | Delete a folder with all subfolders; `mode=delete-links` also deletes the links, `mode=move-to-unsorted` moves them to "Unsorted" |
 | GET, POST, GET /:id, PATCH /:id, DELETE /:id, POST /:id/merge | `/api/tags` | The user's tags with link counts, sorted by link count descending, then name; read one tag with its count (404 if unknown or foreign); create an empty tag (409 if the name is taken or at the per-user cap of 1000), rename (409 if the name is taken; changing only the case of its own name is allowed), delete (links remain), merge with another tag (merging into itself is a 400). Names are normalized with `normalizeTagName` (trim, whitespace runs become one hyphen) on create and rename |
+| GET | `/api/feedback/prompt` | Which rating dialog to show now: `{ milestone }`, the latest reached milestone without a row, `null` for demo users and before onboarding (no-store) |
+| POST | `/api/feedback` | Save a rating, feedback or a skip `{ milestone, score \| null, comment? }` (204; 403 demo, 409 onboarding pending / milestone not reached / different score stored; same score appends the comment) |
 
 **General API rules:**
 
