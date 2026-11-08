@@ -164,8 +164,45 @@ test.describe('links feed (mock API)', () => {
     );
     await page.goto('/links');
 
-    await expect(page.getByRole('heading', { name: 'No links here yet' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Your links will live here' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Add link' })).toHaveCount(2);
+
+    await page.getByRole('main').getByRole('button', { name: 'Add link' }).click();
+    await expect(page.getByRole('dialog')).toBeVisible();
+  });
+
+  test.describe('new-account feed', () => {
+    test.beforeEach(async ({ page }) => {
+      await page.addInitScript(
+        ([key, value]) => sessionStorage.setItem(key, value),
+        [SCENARIO_KEY, SCENARIO.empty],
+      );
+    });
+
+    test('fits the viewport without horizontal scroll', async ({ page }) => {
+      await page.goto('/links');
+      await expect(page.getByRole('heading', { name: 'Your links will live here' })).toBeVisible();
+
+      const overflow = await page.evaluate<number>(
+        '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
+      );
+      expect(overflow).toBeLessThanOrEqual(0);
+    });
+
+    for (const colorScheme of Object.values(COLOR_SCHEME)) {
+      test(`has no axe violations (${colorScheme})`, async ({ page }, testInfo) => {
+        await page.emulateMedia({ colorScheme });
+        await page.goto('/links');
+        await expect(page.locator('html')).toHaveAttribute('data-theme', colorScheme);
+        await expect(
+          page.getByRole('heading', { name: 'Your links will live here' }),
+        ).toBeVisible();
+
+        await expectNoBlockingViolations(page, testInfo, {
+          disabledRules: ['label-content-name-mismatch'],
+        });
+      });
+    }
   });
 
   test('shows the error state', async ({ page }) => {

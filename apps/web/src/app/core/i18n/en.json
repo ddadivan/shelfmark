@@ -411,8 +411,9 @@
     },
     "emptyFolder": {
       "title": "This folder is empty",
-      "text": "Add a link here, or move links in from other folders.",
-      "add": "Add link here"
+      "text": "Add a link here, or move links from Unsorted.",
+      "action": "Add link",
+      "unsorted": "Open Unsorted"
     },
     "count": "{{count}} links",
     "countMore": "{{count}}+ links",
@@ -434,9 +435,21 @@
       "retry": "Try again"
     },
     "empty": {
-      "title": "No links here yet",
-      "text": "Paste a link to save it to your shelf.",
-      "add": "Add link"
+      "all": {
+        "title": "Your links will live here",
+        "text": "Paste a link to a video, an article or something to buy — the title and preview fill in by themselves.",
+        "action": "Add link"
+      },
+      "unsorted": {
+        "title": "Unsorted is empty",
+        "text": "Links you save without a folder wait here until you file them.",
+        "action": "Add link"
+      },
+      "favorites": {
+        "title": "Your favorites will live here",
+        "text": "Tap the star on a link to keep it here.",
+        "action": "Show all links"
+      }
     },
     "refetchFailed": "Couldn't refresh your links. You are seeing the last loaded list.",
     "emptyFiltered": {
