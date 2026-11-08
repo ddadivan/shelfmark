@@ -1,4 +1,4 @@
-import { AuthUser } from './auth-user.interface';
+import type { AuthUser } from '@shelfmark/contracts';
 
 /** Who the mock API signs in for the demo. */
 export const MOCK_DEMO_USER: AuthUser = {

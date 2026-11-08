@@ -44,6 +44,8 @@ export function createAuth(
       additionalFields: {
         // input: false = a client can never set it, not on sign-in and not through any route.
         isDemo: { type: 'boolean', input: false, defaultValue: false },
+        // Same: only `POST|DELETE /api/me/onboarding` change it. Read through get-session.
+        onboardingCompletedAt: { type: 'date', required: false, input: false },
       },
     },
     session: {

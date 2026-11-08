@@ -5,4 +5,6 @@ export interface AuthUser {
   email: string;
   image: string | null;
   isDemo: boolean;
+  /** ISO time the onboarding was completed or skipped; `null` while it is still due. */
+  onboardingCompletedAt: string | null;
 }
