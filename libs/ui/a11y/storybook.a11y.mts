@@ -134,7 +134,7 @@ for (const story of stories) {
               (v) => `${v.id}: ${v.help} (${v.nodes.map((n) => n.target.join(' ')).join(' | ')})`,
             );
           },
-          { timeout: 3000, intervals: [0, 250, 500, 1000] },
+          { timeout: 10_000, intervals: [0, 250, 500, 1000] },
         )
         .toEqual([]);
       expect(await page.evaluate<string[]>(`globalThis.__cspViolations ?? []`)).toEqual([]);

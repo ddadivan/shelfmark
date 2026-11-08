@@ -129,7 +129,8 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Run e2e and Storybook a11y tests
         if: steps.browser.outputs.needed == 'true'
-        run: npx nx affected -t e2e test-storybook --output-style=static
+        # One target at a time: web-e2e and test-storybook each use 4 browser workers.
+        run: npx nx affected -t e2e test-storybook --parallel=1 --output-style=static
       - if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
