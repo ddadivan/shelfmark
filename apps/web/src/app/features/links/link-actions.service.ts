@@ -71,14 +71,19 @@ export class LinkActionsService {
   async addLink(data: AddLinkData = {}): Promise<void> {
     const result = await this.addLinkDialog.open(data);
     if (result?.action === ADD_LINK_ACTION.Saved) {
-      this.store.addSaved(result.link);
-      void this.folders.refresh();
-      void this.tags.noteLinkSaved();
-      this.toasts.show({ kind: TOAST_KIND.Success, text: this.t('links.item.saved') });
+      this.noteSaved(result.link);
     } else if (result?.action === ADD_LINK_ACTION.OpenExisting) {
       // "Open saved": the already saved link opens in its edit dialog.
       await this.openSaved(result.existing.id);
     }
+  }
+
+  /** A link was saved (dialog or share page): it shows in the feed, the counts refresh, a toast confirms. */
+  noteSaved(link: LinkResponse): void {
+    this.store.addSaved(link);
+    void this.folders.refresh();
+    void this.tags.noteLinkSaved();
+    this.toasts.show({ kind: TOAST_KIND.Success, text: this.t('links.item.saved') });
   }
 
   /** Opens the add-link dialog in edit mode; a change replaces the link in the feed. */

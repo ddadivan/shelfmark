@@ -658,6 +658,20 @@
       "background": "open in background"
     }
   },
+  "share": {
+    "title": "Save to Shelfmark",
+    "subtitle": "Shared from another app",
+    "footnote": "After saving you land in your library.",
+    "actions": {
+      "save": "Save"
+    },
+    "invalid": {
+      "title": "Nothing to save",
+      "text": "This share has no web address starting with http:// or https://, so nothing was saved.",
+      "action": "Go to my links",
+      "footnote": "To try again, share a page or a link from your browser or another app."
+    }
+  },
   "onboarding": {
     "stepLabel": "Step {{current}} of {{count}}",
     "announce": "Step {{current}} of {{count}}: {{title}}",
