@@ -17,6 +17,7 @@ import { LinkActionsService } from '../features/links/link-actions.service';
 import { RecentLinksPanelComponent } from '../features/links/recent/recent-links-panel.component';
 import { UiStore } from '../stores/ui.store';
 import { APP_PATH } from '../models/app-path.const';
+import { DemoBannerComponent } from './demo-banner/demo-banner.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 
 /** Layout around the signed-in pages: header with the account menu (settings, sign out), then the page. */
@@ -26,6 +27,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     RouterOutlet,
     TranslocoPipe,
     AvatarComponent,
+    DemoBannerComponent,
     ButtonComponent,
     LogoComponent,
     MenuComponent,

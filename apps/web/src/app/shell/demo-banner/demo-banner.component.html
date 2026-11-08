@@ -1,0 +1,13 @@
+@if (demoUser()) {
+  <div class="demo-banner" role="status">
+    <span class="demo-banner__text">
+      <strong class="demo-banner__title">{{ 'shell.demoBanner.title' | transloco }}</strong>
+      @if (remainingKey(); as key) {
+        {{ key | transloco: { hours: hoursLeft() } }}
+      }
+    </span>
+    <ui-button [variant]="BUTTON_VARIANT.Primary" [size]="BUTTON_SIZE.Sm" (click)="signInOwn()">
+      {{ 'shell.demoBanner.signIn' | transloco }}
+    </ui-button>
+  </div>
+}

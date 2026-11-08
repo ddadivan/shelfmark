@@ -1,0 +1,23 @@
+@use 'ui' as *;
+
+.demo-banner {
+  @include type(caption);
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2) var(--space-4);
+  color: var(--accent-text);
+  background: var(--accent-bg);
+}
+
+.demo-banner__text {
+  min-width: 0;
+  text-align: center;
+}
+
+.demo-banner__title {
+  font-weight: 600;
+}
