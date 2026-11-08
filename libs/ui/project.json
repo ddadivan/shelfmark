@@ -34,15 +34,24 @@
         "coverageExclude": ["**/*.stories.ts", "**/index.ts", "**/models/**", "**/testing/**"]
       }
     },
+    "build-storybook": {
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/package.json",
+        { "externalDependencies": ["storybook"] }
+      ]
+    },
     "test-storybook": {
       "executor": "nx:run-commands",
       "dependsOn": ["build-storybook"],
       "cache": true,
       "inputs": [
-        "sharedGlobals",
-        "{projectRoot}/a11y/**/*",
-        "{projectRoot}/vercel.json",
-        "{projectRoot}/storybook-static/**/*"
+        "default",
+        "^production",
+        "{workspaceRoot}/package.json",
+        { "dependentTasksOutputFiles": "**/*", "transitive": false },
+        { "externalDependencies": ["@playwright/test", "axe-core"] }
       ],
       "options": {
         "command": "playwright test -c libs/ui/a11y/playwright.storybook.config.mts",
