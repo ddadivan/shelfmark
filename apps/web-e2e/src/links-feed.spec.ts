@@ -198,9 +198,7 @@ test.describe('links feed (mock API)', () => {
           page.getByRole('heading', { name: 'Your links will live here' }),
         ).toBeVisible();
 
-        await expectNoBlockingViolations(page, testInfo, {
-          disabledRules: ['label-content-name-mismatch'],
-        });
+        await expectNoBlockingViolations(page, testInfo);
       });
     }
   });
@@ -244,11 +242,7 @@ test.describe('links feed (mock API)', () => {
       await page.emulateMedia({ colorScheme });
       await openFeed(page);
       await expect(page.locator('html')).toHaveAttribute('data-theme', colorScheme);
-
-      // The account menu trigger is named "Account menu" but its avatar initials count as text.
-      await expectNoBlockingViolations(page, testInfo, {
-        disabledRules: ['label-content-name-mismatch'],
-      });
+      await expectNoBlockingViolations(page, testInfo);
     });
 
     test(`has no axe violations in the list view (${colorScheme})`, async ({ page }, testInfo) => {
@@ -257,9 +251,7 @@ test.describe('links feed (mock API)', () => {
       await page.getByRole('radio', { name: 'List' }).click();
       await expect(page.locator('ui-list-item').first()).toBeVisible();
 
-      await expectNoBlockingViolations(page, testInfo, {
-        disabledRules: ['label-content-name-mismatch'],
-      });
+      await expectNoBlockingViolations(page, testInfo);
     });
   }
 });

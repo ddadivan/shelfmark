@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import axe from 'axe-core';
 import { axeViolations } from '../../testing/axe';
 import { AvatarComponent } from './avatar.component';
 import { initialsOf } from './initials';
@@ -17,6 +18,14 @@ class HostComponent {
   readonly label = signal<string | undefined>(undefined);
 }
 
+@Component({
+  imports: [AvatarComponent],
+  template: `<button type="button" aria-label="Account menu">
+    <ui-avatar name="Dmytro Dadivan" size="sm" />
+  </button>`,
+})
+class ButtonHostComponent {}
+
 function setup() {
   const fixture = TestBed.createComponent(HostComponent);
   fixture.detectChanges();
@@ -27,6 +36,13 @@ function setup() {
     fixture.detectChanges();
   };
   return { host, avatar, update };
+}
+
+function expectInitials(avatar: HTMLElement, letters: string): void {
+  const el = avatar.querySelector('.ui-avatar__initials');
+  expect(el?.getAttribute('data-initials')).toBe(letters);
+  expect(el?.getAttribute('aria-hidden')).toBe('true');
+  expect(el?.textContent).toBe('');
 }
 
 describe('initialsOf', () => {
@@ -53,7 +69,7 @@ describe('initialsOf', () => {
 describe('AvatarComponent', () => {
   it('shows initials without an image and is decorative by default', () => {
     const { avatar } = setup();
-    expect(avatar.querySelector('.ui-avatar__initials')?.textContent).toBe('DD');
+    expectInitials(avatar, 'DD');
     expect(avatar.querySelector('img')).toBeNull();
     expect(avatar.getAttribute('aria-hidden')).toBe('true');
     expect(avatar.hasAttribute('role')).toBe(false);
@@ -93,7 +109,7 @@ describe('AvatarComponent', () => {
     avatar.querySelector('img')?.dispatchEvent(new Event('error'));
     update(() => undefined);
     expect(avatar.querySelector('img')).toBeNull();
-    expect(avatar.querySelector('.ui-avatar__initials')?.textContent).toBe('DD');
+    expectInitials(avatar, 'DD');
     update((c) => c.src.set('https://example.test/b.png'));
     expect(avatar.querySelector('img')?.getAttribute('src')).toBe('https://example.test/b.png');
   });
@@ -104,6 +120,20 @@ describe('AvatarComponent', () => {
     expect(avatar.querySelector('ui-icon')).not.toBeNull();
     update((c) => c.size.set(AVATAR_SIZE.Lg));
     expect(avatar.querySelector('ui-icon')?.classList.contains('ui-icon--24')).toBe(true);
+  });
+
+  it('passes label-content-name-mismatch inside a labelled button', async () => {
+    const fixture = TestBed.createComponent(ButtonHostComponent);
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    const results = await axe.run(host, {
+      rules: {
+        'color-contrast': { enabled: false },
+        'label-content-name-mismatch': { enabled: true },
+      },
+    });
+    expect(results.violations.map((v) => v.id)).toEqual([]);
+    expect(host.querySelector('button')?.textContent?.trim()).toBe('');
   });
 
   it('has no axe violations decorative, labelled, with image and icon', async () => {

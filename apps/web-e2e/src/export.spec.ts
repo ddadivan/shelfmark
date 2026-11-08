@@ -40,9 +40,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
       await page.goto('/links');
       await page.getByRole('button', { name: 'Export' }).click();
       await settled(page);
-      await expectNoBlockingViolations(page, testInfo, {
-        disabledRules: ['label-content-name-mismatch'],
-      });
+      await expectNoBlockingViolations(page, testInfo);
       // No folder or tag narrows "All links": only the two "everything" items.
       await expect(page.getByRole('menuitem', { name: /^This view/ })).toHaveCount(0);
 
@@ -127,9 +125,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
       await page.goto('/settings');
       await expect(page.getByText('Export your data')).toBeVisible();
       await settled(page);
-      await expectNoBlockingViolations(page, testInfo, {
-        disabledRules: ['label-content-name-mismatch'],
-      });
+      await expectNoBlockingViolations(page, testInfo);
 
       const download = page.waitForEvent('download');
       await page.getByRole('button', { name: 'Bookmarks HTML' }).click();
