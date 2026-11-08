@@ -113,7 +113,7 @@ describe('link images (ADR 0027)', () => {
     expect(body.equals(png)).toBe(false);
     expect(body.length).toBeLessThanOrEqual(64 * 1024);
 
-    const etag = res.headers.etag;
+    const etag = res.headers['etag'];
     expect(etag).toBeDefined();
     await a
       .get(link.imageUrl ?? '')
