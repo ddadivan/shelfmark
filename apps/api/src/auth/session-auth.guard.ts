@@ -11,6 +11,7 @@ import { fromNodeHeaders } from 'better-auth/node';
 import { AUTH_METADATA_KEY } from '../common/auth/models/auth-metadata-key.const';
 import type { AuthenticatedRequest } from '../common/auth/models/authenticated-request.interface';
 import { isRecord } from '../common/util/is-record';
+import { enforceDemoExpiry } from './enforce-demo-expiry';
 import { toAuthSessionResponse } from './to-auth-session-response';
 
 /** Better Auth statuses that mean "no valid session". */
@@ -29,6 +30,7 @@ function statusOf(error: unknown): number | undefined {
  * - The public check comes first, so public routes never touch the database.
  * - Read-only: `disableRefresh` keeps the sliding refresh with `GET /api/auth/get-session`, which
  *   sets the new cookie correctly.
+ * - A demo user past `demoExpiresAt` (or without one) is a 401 (ADR 0034).
  * - The raw session (token, IP, user agent) never lands on the request: only the contract shape.
  * - Better Auth 400/401/403 is a 401. A 429 is a 503, so a throttled lookup does not sign the user
  *   out. Anything else (a database outage, another status) is rethrown and the error filter answers
@@ -63,7 +65,8 @@ export class SessionAuthGuard implements CanActivate {
       if (status === TOO_MANY_REQUESTS) throw new ServiceUnavailableException();
       throw error;
     }
-    const auth = toAuthSessionResponse(raw);
+    // Expired demo sandboxes are a 401 even while the cookie and the database session are still valid.
+    const auth = enforceDemoExpiry(toAuthSessionResponse(raw));
     if (!auth) throw new UnauthorizedException();
     request.auth = auth;
     return true;

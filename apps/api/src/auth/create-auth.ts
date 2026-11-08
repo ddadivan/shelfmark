@@ -4,6 +4,8 @@ import { createAuthMiddleware } from 'better-auth/api';
 import type { AuthConfig } from '../config/models/auth-config.interface';
 import type { PrismaClient } from '../generated/prisma/client';
 import { logAuthError, logAuthMessage } from './auth-logger';
+import { demoSessionPlugin } from './demo-session.plugin';
+import { enforceDemoExpiry } from './enforce-demo-expiry';
 import { AUTH_BASE_PATH } from './models/auth-base-path.const';
 import { AUTH_COOKIE_PREFIX } from './models/auth-cookie-prefix.const';
 import { AUTH_SESSION_LIFETIME } from './models/auth-session-lifetime.const';
@@ -43,6 +45,8 @@ export function createAuth(
       additionalFields: {
         // input: false = a client can never set it, not on sign-in and not through any route.
         isDemo: { type: 'boolean', input: false, defaultValue: false },
+        // Set by `DemoService` only; the demo session and `get-session` end at this time.
+        demoExpiresAt: { type: 'date', required: false, input: false },
       },
     },
     session: {
@@ -66,6 +70,8 @@ export function createAuth(
       // Pinned, not left to Better Auth's defaults. Lax: the OAuth callback is a cross-site GET.
       defaultCookieAttributes: { sameSite: 'lax', httpOnly: true },
     },
+    // Server-only plugin endpoint behind `POST /api/demo`; never on the HTTP router.
+    plugins: [demoSessionPlugin()],
     telemetry: { enabled: false },
     onAPIError: { errorURL: `${config.baseUrl}/sign-in`, onError: logAuthError },
     disabledPaths: [...disabledPaths],
@@ -82,7 +88,8 @@ export function createAuth(
         if (ctx.path !== GET_SESSION_PATH || !ctx.request) {
           return;
         }
-        return ctx.json(toAuthSessionResponse(ctx.context.returned));
+        // A demo session ends with its sandbox: expired (or without expiry) is signed out, others are capped.
+        return ctx.json(enforceDemoExpiry(toAuthSessionResponse(ctx.context.returned)));
       }),
     },
   });

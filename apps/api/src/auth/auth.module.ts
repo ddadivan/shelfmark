@@ -3,6 +3,7 @@ import { AuthModule as BetterAuthModule } from '@thallesp/nestjs-better-auth';
 import { readAuthConfig } from '../config/auth-config';
 import { PrismaModule } from '../prisma/prisma.module';
 import { PrismaService } from '../prisma/prisma.service';
+import { DemoSessionService } from './demo-session.service';
 import { createAuth } from './create-auth';
 import { warnMissingProviders } from './warn-missing-providers';
 
@@ -37,5 +38,7 @@ import { warnMissingProviders } from './warn-missing-providers';
       },
     }),
   ],
+  providers: [DemoSessionService],
+  exports: [DemoSessionService],
 })
 export class AuthModule {}
