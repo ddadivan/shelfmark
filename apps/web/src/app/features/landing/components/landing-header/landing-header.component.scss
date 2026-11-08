@@ -1,0 +1,52 @@
+@use 'ui' as *;
+@use '../../landing' as landing;
+
+:host {
+  display: block;
+}
+
+.landing-header {
+  @include landing.wrap;
+
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  justify-content: space-between;
+  padding-block: var(--space-4);
+
+  @include tablet-up {
+    padding-block: var(--space-6);
+  }
+}
+
+.landing-header__logo {
+  --ui-logo-size: #{rem(24px)};
+
+  @include tablet-up {
+    --ui-logo-size: #{rem(28px)};
+  }
+}
+
+.landing-header__nav {
+  display: flex;
+
+  // The sign-in button is 36px tall (`ui-button`); the nav keeps that block size even before the
+  // button is styled, so the header has its final height from the first frame (no CLS).
+  min-block-size: rem(36px);
+  gap: var(--space-6);
+  align-items: center;
+}
+
+.landing-header__link {
+  @include type(label);
+  @include landing.text-link;
+
+  // Anchors and GitHub are secondary on a phone; sign-in stays.
+  @include phone {
+    display: none;
+  }
+}
+
+.landing-header__hint {
+  @include visually-hidden;
+}

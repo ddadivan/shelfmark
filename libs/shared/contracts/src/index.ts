@@ -44,6 +44,15 @@ export type { GetTagResponse } from './tags/get-tag-response.type';
 export { TAG_LIMIT } from './tags/tag-limit.const';
 export { normalizeTagName } from './tags/normalize-tag-name';
 
+export type { OnboardingResponse } from './users/onboarding-response.interface';
+export type { ExportFormat } from './export/export-format.type';
+export type { ExportQuery } from './export/export-query.interface';
+export type { ExportFolder } from './export/export-folder.interface';
+export type { ExportLink } from './export/export-link.interface';
+export type { ExportDocument } from './export/export-document.interface';
+export { EXPORT_FORMAT } from './export/export-format.const';
+export { EXPORT_SCHEMA_VERSION } from './export/export-schema-version.const';
+
 export type { AuthProvider } from './auth/auth-provider.type';
 export type { AuthUser } from './auth/auth-user.interface';
 export type { AuthSession } from './auth/auth-session.interface';

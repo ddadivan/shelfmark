@@ -15,7 +15,7 @@ import { loadEnglish, provideTranslocoForTest } from '../../testing/transloco-te
 import { AddLinkDialogService } from './add-link/add-link-dialog.service';
 import { LinkActionsService } from './link-actions.service';
 import { ADD_LINK_ACTION } from './models/add-link-action.const';
-import { DELETE_UNDO_MS } from './models/delete-undo.const';
+import { DELETE_UNDO_MS } from '../../core/undo/models/delete-undo.const';
 import { LINKS_API } from './models/links-api.const';
 import type { LinksApi } from './models/links-api.interface';
 import { LINKS_SCOPE } from './models/links-scope.const';
@@ -28,6 +28,7 @@ async function setup(confirmed = true) {
   const toasts: ToastOptions[] = [];
   const api = {
     list: vi.fn<LinksApi['list']>(() => of({ items: [link(1), link(2)], nextCursor: null })),
+    get: vi.fn<LinksApi['get']>((id) => of(link(Number(id.slice(3))))),
     update: vi.fn<LinksApi['update']>((id) =>
       of({ ...link(Number(id.slice(3))), isFavorite: true }),
     ),
@@ -178,6 +179,88 @@ describe('LinkActionsService', () => {
     actions.open(link(2));
 
     expect(api.open).toHaveBeenCalledWith('id-2');
+  });
+
+  describe('edit', () => {
+    it('opens the dialog in edit mode and puts the saved link into the feed', async () => {
+      const { actions, addLinkOpen, store, toasts } = await setup();
+      addLinkOpen.mockResolvedValue({
+        action: ADD_LINK_ACTION.Saved,
+        link: { ...link(1), title: 'Renamed' },
+      });
+
+      await actions.edit(link(1));
+
+      expect(addLinkOpen).toHaveBeenCalledWith({ link: link(1) });
+      expect(store.entityMap()['id-1']?.title).toBe('Renamed');
+      expect(toasts[0]).toMatchObject({ kind: TOAST_KIND.Success, text: 'Changes saved' });
+    });
+
+    it('does nothing when the dialog is dismissed', async () => {
+      const { actions, addLinkOpen, store, toasts } = await setup();
+      addLinkOpen.mockResolvedValue(undefined);
+
+      await actions.edit(link(1));
+
+      expect(store.entityMap()['id-1']?.title).toBe('Link 1');
+      expect(toasts).toEqual([]);
+    });
+
+    it('runs the confirm and Undo delete flow when Delete was chosen', async () => {
+      const { actions, addLinkOpen, confirm, store, toasts } = await setup();
+      addLinkOpen.mockResolvedValue({ action: ADD_LINK_ACTION.Delete, link: link(1) });
+
+      await actions.edit(link(1));
+
+      expect(confirm).toHaveBeenCalled();
+      expect(ids(store)).toEqual(['id-2']);
+      expect(toasts[0].text).toBe('Link deleted');
+    });
+  });
+
+  describe('open saved', () => {
+    it('opens the edit dialog of a link that is in the feed', async () => {
+      const { actions, addLinkOpen, api } = await setup();
+      addLinkOpen
+        .mockResolvedValueOnce({
+          action: ADD_LINK_ACTION.OpenExisting,
+          existing: { id: 'id-2', title: 'Link 2', folderId: null, folderName: null },
+        })
+        .mockResolvedValueOnce(undefined);
+
+      await actions.addLink();
+
+      expect(addLinkOpen).toHaveBeenLastCalledWith({ link: link(2) });
+      expect(api.get).not.toHaveBeenCalled();
+    });
+
+    it('fetches a link that is not in the feed', async () => {
+      const { actions, addLinkOpen, api } = await setup();
+      addLinkOpen
+        .mockResolvedValueOnce({
+          action: ADD_LINK_ACTION.OpenExisting,
+          existing: { id: 'id-7', title: 'Link 7', folderId: null, folderName: null },
+        })
+        .mockResolvedValueOnce(undefined);
+
+      await actions.addLink();
+
+      expect(api.get).toHaveBeenCalledWith('id-7');
+      expect(addLinkOpen).toHaveBeenLastCalledWith({ link: link(7) });
+    });
+
+    it('tells the user when the link cannot be loaded', async () => {
+      const { actions, addLinkOpen, api, toasts } = await setup();
+      api.get.mockReturnValue(throwError(() => new Error('boom')));
+      addLinkOpen.mockResolvedValueOnce({
+        action: ADD_LINK_ACTION.OpenExisting,
+        existing: { id: 'id-7', title: 'Link 7', folderId: null, folderName: null },
+      });
+
+      await actions.addLink();
+
+      expect(toasts[0]).toMatchObject({ kind: TOAST_KIND.Error, text: "Couldn't open the link." });
+    });
   });
 
   describe('add link', () => {

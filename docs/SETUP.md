@@ -95,7 +95,7 @@ Callback URLs:
 
 Local uses port **4200**, not 3000: the browser talks to the web dev server, which proxies `/api` to the API.
 
-**Open question (previews, ADR 0026).** Every preview has a new URL. Google rejects wildcard redirect URIs and a GitHub app has one callback URL, so OAuth on previews needs one of: Better Auth's OAuth proxy plugin (callback through production), a stable preview alias with its own clients, or no OAuth on previews (demo sign-in only). Until it is decided do not create preview clients: previews run without provider variables (OAuth unavailable there, health and docs still work) and need their own `BETTER_AUTH_SECRET` and `BETTER_AUTH_URL` (section 5.3).
+**Previews (ADR 0026).** Every preview has a new URL and Google rejects wildcard redirect URIs, so previews run without OAuth (demo sign-in only) and you create no preview clients. A preview needs only its own `BETTER_AUTH_SECRET`: with `VERCEL_ENV=preview` and no `BETTER_AUTH_URL`, the API uses `https://$VERCEL_BRANCH_URL` (then `https://$VERCEL_URL`) as the base URL and trusts both hostnames (section 5.3).
 
 ### 4.1 Google (console.cloud.google.com)
 
@@ -128,10 +128,10 @@ Better Auth also needs a random signing secret and the public base URL per envir
 | Name | Local | Production | Preview |
 | --- | --- | --- | --- |
 | `BETTER_AUTH_SECRET` | required, own value | required, own value | required, own value |
-| `BETTER_AUTH_URL` | optional (defaults to `http://localhost:4200`) | `https://<prod-domain>` (required, https, origin only) | required (https, origin only), e.g. the stable branch alias |
+| `BETTER_AUTH_URL` | optional (defaults to `http://localhost:4200`) | `https://<prod-domain>` (required, https, origin only) | not needed: derived from `VERCEL_BRANCH_URL` / `VERCEL_URL`; an explicit value wins |
 | `BETTER_AUTH_TRUSTED_ORIGINS` | optional | optional | optional |
 
-`BETTER_AUTH_URL` is an origin only (no path, no trailing slash). There is no fallback to Vercel's own URL variables: the API refuses to boot in production without it. `BETTER_AUTH_TRUSTED_ORIGINS` is a comma-separated list of extra exact origins (no wildcards); the base URL is always trusted.
+`BETTER_AUTH_URL` is an origin only (no path, no trailing slash). Production has no fallback to Vercel's URL variables: the API refuses to boot in production without it. Only on Vercel previews (`VERCEL_ENV=preview`) an unset value falls back to `https://$VERCEL_BRANCH_URL`, then `https://$VERCEL_URL` (hostnames are validated as https origins; both are added to the trusted origins). `BETTER_AUTH_TRUSTED_ORIGINS` is a comma-separated list of extra exact origins (no wildcards); the base URL is always trusted.
 
 **Run locally.** Never put these in a `.env` file. Export them in the shell that starts the API, or inject them with a password-manager CLI, before `npx nx serve api` (`local-db.mjs` passes `process.env` through):
 
@@ -143,7 +143,7 @@ npx nx serve api    # http://localhost:3000, behind the web dev proxy on :4200
 npx nx serve web    # sign in at http://localhost:4200
 ```
 
-A provider whose pair is missing is simply disabled (the API logs which variable names to set); half a pair stops the boot. `BETTER_AUTH_SECRET` is required in every environment.
+Locally and on previews a provider whose pair is missing is simply disabled (the API logs which variable names to set). In production (not previews) both providers are required and a missing pair stops the boot (ADR 0026); half a pair stops the boot everywhere. `BETTER_AUTH_SECRET` is required in every environment.
 
 ## 5. Vercel
 
@@ -168,7 +168,7 @@ Settings → **Environment Variables**. Each variable is set per environment: **
 | `NODE_ENV` | `production` | `production` | Required for helmet HSTS and `upgrade-insecure-requests` (ADR 0007). Unset also means production, but set it explicitly. Vercel may already set it; verify. |
 | `DATABASE_URL`, `DATABASE_URL_UNPOOLED` | integration | integration | Injected by Neon (section 3) |
 | `BETTER_AUTH_SECRET` | own value | own value (a different one) | Required: without it the API does not boot (health and docs included) |
-| `BETTER_AUTH_URL` | `https://<prod-domain>` | the preview origin, https | Required in production mode, previews included; no fallback |
+| `BETTER_AUTH_URL` | `https://<prod-domain>` | leave unset | Required in production; on previews derived from the Vercel branch URL (ADR 0026 update) |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | production client | not set until ADR 0026 is decided | Both or neither; mark Sensitive |
 | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | production app | not set until ADR 0026 is decided | Both or neither; mark Sensitive |
 | Sentry DSN | | | Stage 7 |

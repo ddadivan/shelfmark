@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { compile, compileString } from 'sass';
+import { PHONE_MEDIA_QUERY } from '../lib/media';
 import { THEME, THEME_ATTRIBUTE } from '../lib/theme';
 
 const STYLES_PATH = 'libs/ui/src/styles';
@@ -56,6 +57,10 @@ describe('breakpoint mixins', () => {
     expect(out).toContain('@media (40em <= width < 64em)');
     expect(out).toContain('@media (width >= 64em)');
     expect(out).not.toMatch(/\d+px/);
+  });
+
+  it('PHONE_MEDIA_QUERY equals the query the phone mixin compiles to', () => {
+    expect(css('.a { @include phone { x: 1; } }')).toContain(`@media ${PHONE_MEDIA_QUERY}`);
   });
 
   it('tablet-up starts exactly where phone ends', () => {
@@ -135,6 +140,8 @@ describe('motion mixins', () => {
     ['enter(fade)', 'ui-reveal var(--duration-base) var(--ease-out) both'],
     ['enter(toast)', 'ui-slide-up var(--duration-slow) var(--ease-out) both'],
     ['enter(sheet)', 'ui-sheet-in var(--duration-slow) var(--ease-drawer) both'],
+    ['enter(drawer)', 'ui-drawer-in var(--duration-slow) var(--ease-drawer) both'],
+    ['leave(drawer)', 'ui-drawer-out var(--duration-base) var(--ease-in) both'],
     ['leave(pop)', 'ui-pop-out var(--duration-fast) var(--ease-out) both'],
     ['leave(toast)', 'ui-toast-out var(--duration-fast) var(--ease-in) both'],
     ['leave(sheet)', 'ui-sheet-out var(--duration-base) var(--ease-in) both'],
@@ -142,29 +149,33 @@ describe('motion mixins', () => {
     expect(css(`.a { @include ${include}; }`)).toContain(`animation: ${animation}`);
   });
 
-  it.each(['enter(pop)', 'enter(toast)', 'enter(sheet)', 'enter(spinner)', 'enter(spinner-grow)'])(
-    '%s falls back to a fade in 200 ms under reduced motion',
-    (include) => {
-      const reduced = reducedMotionBlock(css(`.a { @include ${include}; }`));
-      expect(reduced).toContain('animation: ui-reveal var(--duration-base) var(--ease-out) both');
-      expect(reduced).not.toMatch(/ui-(pop-in|slide-up|sheet-in|spinner-grow)/);
-    },
-  );
+  it.each([
+    'enter(pop)',
+    'enter(toast)',
+    'enter(sheet)',
+    'enter(drawer)',
+    'enter(spinner)',
+    'enter(spinner-grow)',
+  ])('%s falls back to a fade in 200 ms under reduced motion', (include) => {
+    const reduced = reducedMotionBlock(css(`.a { @include ${include}; }`));
+    expect(reduced).toContain('animation: ui-reveal var(--duration-base) var(--ease-out) both');
+    expect(reduced).not.toMatch(/ui-(pop-in|slide-up|sheet-in|drawer-in|spinner-grow)/);
+  });
 
-  it.each(['leave(pop)', 'leave(toast)', 'leave(sheet)', 'leave(spinner-shrink)'])(
+  it.each(['leave(pop)', 'leave(toast)', 'leave(sheet)', 'leave(drawer)', 'leave(spinner-shrink)'])(
     '%s falls back to a plain fade-out under reduced motion',
     (include) => {
       const reduced = reducedMotionBlock(css(`.a { @include ${include}; }`));
       expect(reduced).toContain('ui-fade-out');
-      expect(reduced).not.toMatch(/ui-(pop-out|toast-out|sheet-out|spinner-shrink)/);
+      expect(reduced).not.toMatch(/ui-(pop-out|toast-out|sheet-out|drawer-out|spinner-shrink)/);
     },
   );
 
   it('presets are finite so animate.leave can finish: no infinite, no loader rotation', () => {
-    const presets = ['pop', 'fade', 'toast', 'sheet', 'spinner', 'spinner-grow']
+    const presets = ['pop', 'fade', 'toast', 'sheet', 'drawer', 'spinner', 'spinner-grow']
       .map((n) => `.a { @include enter(${n}); }`)
       .concat(
-        ['pop', 'fade', 'toast', 'sheet', 'spinner', 'spinner-shrink'].map(
+        ['pop', 'fade', 'toast', 'sheet', 'drawer', 'spinner', 'spinner-shrink'].map(
           (n) => `.a { @include leave(${n}); }`,
         ),
       )
@@ -214,6 +225,8 @@ describe('motion mixins', () => {
       'ui-reveal',
       'ui-sheet-in',
       'ui-sheet-out',
+      'ui-drawer-in',
+      'ui-drawer-out',
       'ui-slide-up',
       'ui-toast-out',
       'ui-spin',
@@ -248,6 +261,13 @@ describe('overlay mixins', () => {
     expect(z('dialog')).toBeLessThan(z('menu'));
     expect(z('menu')).toBeLessThan(z('toast'));
     expect(z('toast')).toBeLessThan(z('tooltip'));
+  });
+
+  it('passthrough panes out-rank the CDK pane rule (two classes, pointer-events none)', () => {
+    const output = css('@include overlay-passthrough;');
+    expect(output).toMatch(
+      /\.cdk-overlay-pane\.ui-overlay-pane--passthrough\s*\{\s*pointer-events:\s*none/,
+    );
   });
 
   it('hides the tooltip description visually but not from assistive technology', () => {
@@ -290,6 +310,24 @@ describe('text-muted contrast (WCAG AA 4.5:1)', () => {
       expect(ratio, `${theme} ${surface}`).toBeGreaterThanOrEqual(4.5);
     }
   });
+});
+
+describe('highlight mark contrast (WCAG AA 4.5:1)', () => {
+  it.each(['light', 'dark'] as const)('highlight-text on highlight-bg holds in %s', (theme) => {
+    const ratio = contrast(tokenHex(theme, 'highlight-text'), tokenHex(theme, 'highlight-bg'));
+    expect(ratio).toBeGreaterThanOrEqual(4.5);
+    // Documented in libs/ui/CLAUDE.md and BRAND.md (light 9.4:1, dark 6.9:1).
+    expect(ratio).toBeGreaterThan(theme === 'light' ? 9 : 6.5);
+  });
+
+  it.each(['light', 'dark'] as const)(
+    'the mark stands out from the row backgrounds in %s',
+    (theme) => {
+      for (const row of ['surface', 'surface-hover', 'accent-bg']) {
+        expect(tokenHex(theme, 'highlight-bg'), `${theme} ${row}`).not.toBe(tokenHex(theme, row));
+      }
+    },
+  );
 });
 
 describe('themes', () => {

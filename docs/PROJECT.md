@@ -27,14 +27,16 @@ Updated as work goes on — every session resumes from here.
   - After every production deploy: `BASE_URL=https://shelfmark-app.vercel.app npx nx e2e web-e2e` (the missing-file 404 relies on undocumented Vercel behaviour)
   - Next: stage 1 issues from 9.1 (the author decides when); CSP nonce middleware (#9) before the first `libs/ui` component renders in `apps/web`
   - Verification of protected previews by agents: `vercel curl` and `vercel logs` (CLI login, no bypass token)
-- [ ] Stages 1–7 in progress (status Nov 7, 2026, end of the cloud session; work continues locally)
-  - Merged on Nov 7: #82 (libs/ui a11y audit, #62), #86 (sign-in on a mock AuthApi, part of #66), #87 (agent limit docs), #88 (no Vercel previews for `docs/**`, #84)
-  - Ready to merge, required checks green or running: #120 (Lighthouse CI job, #111; ADR 0028 Proposed) → #112 (README, #102) → #126 (this status). Each needs "Update branch" after the previous merge (the `main` ruleset requires an up-to-date branch)
-  - Reviewed, base `main`, waiting for the author: #113 (#91 provider icons), #116 (#92 input loading), #90 (#73 add-link dialog; mockup deviations), #114 (#103 landing; mockup deviations), #115 (#101 privacy page; legal wording), #124 (#94 settings; mockup deviations, axe `label-content-name-mismatch` question)
-  - Reviewed, need a Vercel preview check: #85 `chore/63-prisma-pglite` (#63) → #118 `feat/64-better-auth` (#64, base #85) → #125 `feat/65-auth-guard` (#65, base #118; ADR 0029 Proposed); #117 `feat/93-pwa` (#93); #79 `feat/70-safe-fetcher` (part of #70). Vercel previews hit the Hobby daily limit on Nov 7
-  - Stacked (retarget to `main` after the base merges, then merge `origin/main` in): #89 (#71 models, base #85); #118 and #125 (above); #121 (#104 chat loop) and #122 (#105 scenes) on #114
-  - Next unblocked after merges: #119 (web Better Auth binding, after #118), #123 (throttler, interceptors, CSRF check; after #125), #72 links API (after #123, #79, #89), #109 Sentry (after the lockfile-touching PRs merge); fold #121's motion logic into #122's `LandingMotionService` when the landing stack is retargeted
-  - Author decisions: ADR #80 and #81; duplicate ADR number 0027 (#80 vs #118); #118 decisions A–F; #65 decisions A–E; #89 LinkTag same-user enforcement; #115 legal wording, controller, contact; pause controls on the landing (#121, #122); mockup deviations in #90, #114, #124
+- [ ] Stages 1–7 in progress (status Nov 8, 2026, afternoon)
+  - Merged by Nov 8: feed, add-link and edit, folders and tags (web), libs/ui (checkbox, long press, chip menu, highlight, command list), landing with animations and performance, search / sort / breadcrumbs / ⌘K (#144), export menu (#153), empty states (#154), onboarding web (#157), mobile layout and phone drawer (#160), avatar initials (#167)
+  - Draft, retargeted to `main` after #160: #168 (#98 app-wide axe matrix and keyboard flows), #169 (#164 toast shortcut to reach Undo; needs a manual browser and screen-reader check), #170 (#165 focus restore when a dialog opener disappears)
+  - Neon free plan allows 10 branches per project, and the Vercel integration creates one per preview deployment, also for branches that need no database. When the limit is hit, the preview build fails with `DATABASE_URL_UNPOOLED is not set for this build`. Fix: the author deletes unused `preview/*` branches in Neon (merged ones first); the integration then recreates the missing branch and redeploys on its own
+  - Auth stack, draft, waiting for merges and Vercel preview checks: #85 → #89 → #118 → #125 (#118 preview is Ready since Nov 8 after the Neon cleanup; the step 4 checks in its PR body are still open); on #125: #132 (rate limit, CSRF), #137 (tags API), #138 (folders API), #145 (account deletion), #146 (export API), #148 (web Better Auth), #151 (onboarding API, on #145), #152 (links API, #72)
+  - Stacked on #152, draft, reviewed: #156 (#155 web wiring of the real APIs), #159 (#100 rating API), #161 (#67 demo API, cron, ADR 0034). Stacked on #148: #162 (#67 demo web, `ui-notice` info kind and banner). Stacked on #117: #158 (#95 Share target)
+  - Also draft, waiting for the author: #79 fetcher, #117 PWA, #139 Sentry (preview and DSNs), #115 privacy (legal text)
+  - Test harness: `apps/api/test-utils/exchange-socket-server.ts` (on #152) serialises PGlite protocol exchanges; it fixes the random `links.concurrency` failures (P2039)
+  - Next: #100 rating web (needs a design decision: no mockup for the rating dialogs), #110 release security check (last)
+  - Author decisions: listed in the PRs and issue plans: #155 (`ApiError` code, 429/5xx toasts), #99 (PROJECT.md 6 onboarding endpoint, demo users and onboarding), #158 (folder chips, bare hosts), #159 / #100 (comment append, design for the dialogs, export), #161 / #67 (path `/api/demo`, rate-limit store, cap, CAPTCHA follow-up, `CRON_SECRET` in Vercel), #162 (banner copy vs PROJECT.md 4.21), #169 (toast shortcut, Toast spec update)
 - [ ] Motion in code — stage 6; promo video — after the stage 1 release
 
 ## 1. Problem and idea
@@ -70,7 +72,7 @@ Stage 1 is a personal responsive web service: the user adds links manually and f
 
 - folders / collections;
 - tags;
-- search by title;
+- search by title, note and URL;
 - a common feed of all links.
 
 **"Recently opened" panel.** On the right, a feed of the most recently opened links. The panel is optional: it can be hidden.
@@ -104,7 +106,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 
 **Search and browsing:**
 
-- search by title;
+- search by title, note and URL;
 - a common feed of all links;
 - view toggle: cards with previews / list;
 - a right-hand "Recently opened" panel that can be hidden.
@@ -178,7 +180,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 ### Search and browsing
 
 14. **Common feed.** The "All links" section shows all of the user's links.
-15. **Search.** Search by title finds links in all folders.
+15. **Search.** Search by title, note and URL finds links in all folders (every word of the query must match, at most 5 words).
 16. **Sorting.** By date added (newest first, the default) and by title.
 17. **View.** A "cards / list" toggle; the choice is remembered.
 18. **Recently opened.** A panel of recently opened links on the right; it can be hidden, and the state is remembered.
@@ -265,7 +267,7 @@ See ADR 0004.
 
 CSR without SSR, zoneless, Transloco, strict-CSP build: ADR 0005; state: ADR 0009; UI library: ADR 0014; `rem`/`em` units: ADR 0015.
 
-**Routes (Angular Router).** Every feature is lazy-loaded (`loadComponent`). Router: `provideRouter(routes, withComponentInputBinding(), withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }), withPreloading(PreloadAllModules), withRouterConfig({ paramsInheritanceStrategy: 'always' }))`, so path params, query and `data` reach components as `input()`.
+**Routes (Angular Router).** Every feature is lazy-loaded (`loadComponent`), except the public landing (the LCP page, eager). Router: `provideRouter(routes, withComponentInputBinding(), withPreloading(SignedInPreloadingStrategy), withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }), withRouterConfig({ paramsInheritanceStrategy: 'always' }))`, so path params, query and `data` reach components as `input()`. `SignedInPreloadingStrategy` (`core/routing`) preloads lazy routes only once the session is known to be signed-in; a guest never preloads, so the landing keeps its Lighthouse budget.
 
 | URL | Screen | Access | Feature (lazy) |
 | --- | --- | --- | --- |
@@ -379,7 +381,7 @@ NestJS choice: ADR 0010; API build and tests: ADR 0006; API security baseline: A
 | --- | --- |
 | Relational data: users → folders → links ↔ tags | PostgreSQL tables and relations |
 | Nested folders | `parentId` field + recursive query (recursive CTE) |
-| Search by title | Built-in PostgreSQL search (`pg_trgm` / full-text search) |
+| Search by title, note and URL | Built-in PostgreSQL search (`pg_trgm` / full-text search) |
 | Duplicate links | Index on the "user + URL" pair |
 | Schema migrations | Prisma Migrate |
 | Local development and tests | PGlite (embedded PostgreSQL, no Docker), see [ADR 0025](adr/0025-database-tooling-prisma-7-pglite.md) |
@@ -510,7 +512,7 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 
 **URL normalisation** (for duplicates): lowercase host, no `#fragment`, no `utm_*` params and no trailing `/`. Duplicates are allowed (the user can "save anyway"), so the index is non-unique.
 
-**Indexes:** `Link(userId, createdAt)`, `Link(userId, normalizedUrl)`, `Link(userId, lastOpenedAt)`, `Link.title` (`pg_trgm` for search), `Folder(userId, parentId)`.
+**Indexes:** `Link(userId, createdAt)`, `Link(userId, normalizedUrl)`, `Link(userId, lastOpenedAt)`, `Link.title`, `Link.note` and `Link.url` (`pg_trgm` GIN for search), `Folder(userId, parentId)`.
 
 **Interface settings** (view, panel) are not stored in the database, only in `localStorage`.
 
@@ -524,7 +526,7 @@ All routes except `/api/auth/*` require a session and work only with the current
 | GET | `/api/me` | Current user |
 | DELETE | `/api/me` | Delete the account and all data |
 | POST | `/api/links/preview` | For a URL, return title, icon, image + the existing link if it is a duplicate (for form autofill) |
-| GET | `/api/links` | List with filters: `folderId`, `unsorted`, `favorite`, `tag` (repeated, `?tag=a&tag=b`: AND, case-insensitive, max 5, more is a 400; empty or absent = no filter), `q` (search), `sort` (`createdAt` / `title`), `order`, `cursor`, `limit` |
+| GET | `/api/links` | List with filters: `folderId`, `unsorted`, `favorite`, `tag` (repeated, `?tag=a&tag=b`: AND, case-insensitive, max 5, more is a 400; empty or absent = no filter), `q` (search in title, note and URL; every word must match, at most 5 words), `sort` (`createdAt` / `title`), `order`, `cursor`, `limit` |
 | GET | `/api/links/recent` | Recently opened (by `lastOpenedAt`), `limit` |
 | GET | `/api/links/:id` | One link |
 | POST | `/api/links` | Create: `url`, `title?`, `note?`, `folderId?`, `tags?` (names; new tags are created automatically) |
@@ -910,7 +912,7 @@ Stage 1 is considered successful when all acceptance criteria are met, the app p
 | Functionality | All 24 stories of section 4 (including "Onboarding") are done according to their acceptance criteria |
 | Tests | Coverage ≥ 80% (`apps/api`, `libs/ui`); e2e of key scenarios pass on desktop and phone |
 | Security | All 5.8 measures are in place; 0 critical and high vulnerabilities in `npm audit` and CodeQL |
-| Interface quality | Lighthouse ≥ 90 for performance, accessibility and best practices on the main screen |
+| Interface quality | Lighthouse ≥ 90 for performance, accessibility and best practices on the main screen (the lab run serves the `e2e` build through `tools/lighthouse/serve.mjs` with brotli/gzip like Vercel; the plain file server sends raw bytes and overstates the load about 3x; the budget is unchanged) |
 | Design | Screens match the Claude Design mockups in both themes and on phone |
 | Usage | The author moves their links into the service and uses it every day for 2 weeks |
 

@@ -77,3 +77,13 @@
     flex: 1;
   }
 }
+
+// Edit mode: Delete sits at the start of the footer, away from the confirming actions.
+.add-link__delete {
+  margin-inline-end: auto;
+
+  @include phone {
+    order: 1;
+    margin-inline-end: 0;
+  }
+}

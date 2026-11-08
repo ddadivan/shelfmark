@@ -1,4 +1,4 @@
-import { Service } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import {
   LINK_SORT_FIELD,
   PAGE_LIMIT,
@@ -21,7 +21,8 @@ import { MOCK_LATENCY_MS } from '../models/mock-latency.const';
 import { MOCK_LINKS_SCENARIO } from '../models/mock-links-scenario.const';
 import { MOCK_LINKS_SCENARIO_KEY } from '../models/mock-links-scenario-key.const';
 import type { LinksApi } from '../models/links-api.interface';
-import { generateMockLinks } from './generate-mock-links';
+import { MockLibraryData } from './mock-library-data';
+import { matchesQuery } from '../search-query';
 import { normalizeUrl } from './normalize-url';
 
 /**
@@ -33,7 +34,15 @@ import { normalizeUrl } from './normalize-url';
  */
 @Service()
 export class MockLinksApi implements LinksApi {
-  private links: LinkResponse[] = generateMockLinks();
+  private readonly data = inject(MockLibraryData);
+
+  private get links(): LinkResponse[] {
+    return this.data.links;
+  }
+
+  private set links(links: LinkResponse[]) {
+    this.data.links = links;
+  }
 
   preview(url: string): Observable<LinkPreviewResponse> {
     const host = displayHost(url);
@@ -83,6 +92,7 @@ export class MockLinksApi implements LinksApi {
         updatedAt: now,
       };
       this.links = [link, ...this.links];
+      this.data.ensureTags(link.tags);
       return of({ ...link });
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
@@ -117,6 +127,13 @@ export class MockLinksApi implements LinksApi {
     }).pipe(delay(MOCK_LATENCY_MS.List));
   }
 
+  get(id: string): Observable<LinkResponse> {
+    return defer(() => {
+      const current = this.links.find((link) => link.id === id);
+      return current ? of({ ...current }) : throwError(() => new Error('Mock: get failed'));
+    }).pipe(delay(MOCK_LATENCY_MS.List));
+  }
+
   update(id: string, request: UpdateLinkRequest): Observable<LinkResponse> {
     return defer(() => {
       const current = this.links.find((link) => link.id === id);
@@ -132,6 +149,7 @@ export class MockLinksApi implements LinksApi {
         updatedAt: new Date().toISOString(),
       };
       this.links = this.links.map((link) => (link.id === id ? updated : link));
+      this.data.ensureTags(updated.tags);
       return of({ ...updated });
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
@@ -160,7 +178,6 @@ export class MockLinksApi implements LinksApi {
   }
 
   private filter(query: ListLinksQuery): LinkResponse[] {
-    const q = query.q?.toLowerCase();
     const wanted = (query.tag ?? []).map((name) => name.toLowerCase());
     return this.links.filter(
       (link) =>
@@ -168,7 +185,7 @@ export class MockLinksApi implements LinksApi {
         (!query.unsorted || link.folderId === null) &&
         (query.favorite === undefined || link.isFavorite === query.favorite) &&
         wanted.every((tag) => link.tags.some((name) => name.toLowerCase() === tag)) &&
-        (q === undefined || link.title.toLowerCase().includes(q)),
+        (query.q === undefined || matchesQuery(link, query.q)),
     );
   }
 }
@@ -176,7 +193,9 @@ export class MockLinksApi implements LinksApi {
 function sort(links: LinkResponse[], query: ListLinksQuery): LinkResponse[] {
   const field = query.sort ?? LINK_SORT_FIELD.CreatedAt;
   const direction = (query.order ?? SORT_ORDER.Desc) === SORT_ORDER.Desc ? -1 : 1;
-  return [...links].sort((a, b) => direction * a[field].localeCompare(b[field]));
+  const key = (link: LinkResponse): string =>
+    field === LINK_SORT_FIELD.Title ? link.title.toLowerCase() : link[field];
+  return [...links].sort((a, b) => direction * key(a).localeCompare(key(b)));
 }
 
 function encodeCursor(offset: number): string {

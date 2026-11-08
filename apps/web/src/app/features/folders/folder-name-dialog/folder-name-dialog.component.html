@@ -1,0 +1,29 @@
+<form [formRoot]="form">
+  <ui-dialog
+    [title]="titleKey() | transloco: { parent: data.parentName }"
+    [closeLabel]="'folders.dialog.close' | transloco"
+  >
+    <div class="folder-name__fields">
+      <ui-input
+        [label]="'folders.name.label' | transloco"
+        [placeholder]="'folders.name.placeholder' | transloco"
+        [formField]="form.name"
+      />
+
+      @if (failed()) {
+        <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'folders.create.failed' | transloco }}</ui-notice>
+      }
+    </div>
+
+    <ui-button slot="footer" [disabled]="saving()" (click)="cancel()">{{
+      'folders.dialog.cancel' | transloco
+    }}</ui-button>
+    <ui-button
+      slot="footer"
+      [type]="BUTTON_TYPE.Submit"
+      [variant]="BUTTON_VARIANT.Primary"
+      [loading]="saving()"
+      >{{ (saving() ? savingKey() : actionKey()) | transloco }}</ui-button
+    >
+  </ui-dialog>
+</form>

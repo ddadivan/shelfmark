@@ -13,11 +13,10 @@ import { MenuItemComponent } from '../menu/menu-item.component';
 import { MenuTriggerDirective } from '../menu/menu-trigger.directive';
 import { MenuComponent } from '../menu/menu.component';
 import { TooltipDirective } from '../tooltip/tooltip.directive';
-import { mediaMatch } from './media-match';
+import { mediaMatch, PHONE_MEDIA_QUERY } from '../media';
 import { breadcrumbTrail } from './breadcrumbs-trail';
 import { BREADCRUMB_ENTRY_KIND } from './models/breadcrumb-entry-kind.const';
 import { BREADCRUMB_COARSE_QUERY } from './models/breadcrumb-coarse-query.const';
-import { BREADCRUMB_PHONE_QUERY } from './models/breadcrumb-phone-query.const';
 import type { BreadcrumbClick } from './models/breadcrumb-click.interface';
 import type { BreadcrumbItem } from './models/breadcrumb-item.interface';
 
@@ -70,7 +69,7 @@ export class BreadcrumbsComponent {
   /** A visible link was clicked, or a level was chosen from the "…" menu. */
   readonly linkClick = output<BreadcrumbClick>();
 
-  private readonly phone = mediaMatch(BREADCRUMB_PHONE_QUERY);
+  private readonly phone = mediaMatch(PHONE_MEDIA_QUERY);
   /** Touch-first pointer: the "…" button grows to 44 px. */
   protected readonly coarse = mediaMatch(BREADCRUMB_COARSE_QUERY);
   /** Keys of the entries whose text is cut right now; only they get a tooltip. */

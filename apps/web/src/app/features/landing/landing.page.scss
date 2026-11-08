@@ -1,0 +1,41 @@
+@use 'ui' as *;
+@use './landing' as landing;
+
+:host {
+  display: block;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--text);
+}
+
+// Reserves space for the deferred sections, so nothing below the hero jumps when they arrive.
+// A lower bound only: the real sections are taller (about 3 to 5 screens), and everything below
+// the fold shifts when they land, which is outside the viewport and does not count as CLS.
+.landing__placeholder {
+  min-height: 100dvh;
+}
+
+// Lower bounds for the other deferred blocks (the real ones are taller), same idea as above.
+.landing__placeholder--about {
+  min-height: 60dvh;
+}
+
+.landing__placeholder--finale {
+  min-height: 40dvh;
+}
+
+.landing__about {
+  @include landing.wrap;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-8);
+  align-items: start;
+  padding-block: rem(40px);
+
+  @include desktop {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: rem(64px);
+    padding-block: rem(88px);
+  }
+}
