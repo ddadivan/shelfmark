@@ -1,4 +1,5 @@
-import { displayHost, isHttpUrl } from './add-link/http-url';
+import { isHttpUrl } from '@shelfmark/contracts';
+import { displayHost } from './add-link/http-url';
 
 /** The URL when it is safe to put in an `href` (http or https only), else `undefined`. */
 export function safeHref(url: string): string | undefined {

@@ -5,13 +5,12 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { normalizeTagName, TAG_LIMIT } from '@shelfmark/contracts';
+import { normalizeTagName, TAG_ERROR_MESSAGE, TAG_LIMIT } from '@shelfmark/contracts';
 import type { ListTagsResponse, TagResponse } from '@shelfmark/contracts';
 import { escapeLike } from '../common/util/escape-like';
 import { hasPrismaCode } from '../common/prisma/has-prisma-code';
 import { PRISMA_ERROR_CODE } from '../common/prisma/prisma-error-code.const';
 import { PrismaService } from '../prisma/prisma.service';
-import { TAG_ERROR_MESSAGE } from './models/tag-error-message.const';
 import { TAG_LOCK_PREFIX } from './models/tag-advisory-lock.const';
 import type { TagDbClient } from './models/tag-db-client.type';
 import type { TagWithCount } from './models/tag-with-count.interface';
