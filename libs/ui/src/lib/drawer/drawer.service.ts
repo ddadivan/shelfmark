@@ -35,6 +35,7 @@ export class DrawerService {
       autoFocus: 'first-tabbable',
       dismissible: true,
       scrimClose: true,
+      restoreFocus: config.restoreFocus,
       positionStrategy: this.overlay.position().global().top('0').start('0'),
       providers: () => [{ provide: UI_DIALOG_DATA, useValue: config.data }],
     });

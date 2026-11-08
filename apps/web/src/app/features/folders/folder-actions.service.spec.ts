@@ -15,6 +15,8 @@ import { MockLinksApi } from '../links/mock/mock-links.api';
 import { MockTagsApi } from '../links/mock/mock-tags.api';
 import { FolderActionsService } from './folder-actions.service';
 import type { MoveFolderDialogData } from './models/move-folder-dialog-data.interface';
+import type { TreeComponent } from '@shelfmark/ui';
+import { SidebarTreeFocusService } from '../../shell/sidebar/sidebar-tree-focus.service';
 import { MoveFolderDialogComponent } from './move-folder-dialog/move-folder-dialog.component';
 
 async function setup() {
@@ -116,6 +118,9 @@ describe('FolderActionsService', () => {
       const done = actions.create();
       await opened();
       expect(dialog().textContent).toContain('New folder');
+      await until(() => {
+        expect(document.activeElement).toBe(nameField());
+      });
       type('Projects');
       button('Create folder').click();
       await closed();
@@ -184,6 +189,9 @@ describe('FolderActionsService', () => {
       const done = actions.rename(store.entityMap()[MOCK_ID.FolderAngular]);
       await opened();
       expect(nameField().value).toBe(MOCK_NAME.FolderAngular);
+      await until(() => {
+        expect(document.activeElement).toBe(nameField());
+      });
       type('NG');
       button('Rename').click();
       await closed();
@@ -256,6 +264,49 @@ describe('FolderActionsService', () => {
       await done;
 
       expect(store.entityMap()[MOCK_ID.FolderAngular].parentId).toBe(MOCK_ID.FolderReading);
+    });
+  });
+
+  describe('move focus', () => {
+    it('asks the sidebar tree for the moved row when the opener is gone', async () => {
+      const { actions, store } = await setup();
+      const restoreFocusNear = vi.fn(() => MOCK_ID.FolderReading);
+      TestBed.inject(SidebarTreeFocusService).register({
+        restoreFocusNear,
+      } as unknown as TreeComponent);
+      const opener = document.createElement('button');
+      document.body.appendChild(opener);
+      opener.focus();
+
+      const done = actions.move(store.entityMap()[MOCK_ID.FolderAngular]);
+      await opened();
+      opener.remove();
+      button('Move').click();
+      await closed();
+      await done;
+
+      expect(restoreFocusNear).toHaveBeenCalledWith(MOCK_ID.FolderAngular);
+    });
+
+    it('leaves focus to the dialog when the opener still exists', async () => {
+      const { actions, store } = await setup();
+      const restoreFocusNear = vi.fn(() => null);
+      TestBed.inject(SidebarTreeFocusService).register({
+        restoreFocusNear,
+      } as unknown as TreeComponent);
+      const opener = document.createElement('button');
+      document.body.appendChild(opener);
+      opener.focus();
+
+      const done = actions.move(store.entityMap()[MOCK_ID.FolderAngular]);
+      await opened();
+      button('Move').click();
+      await closed();
+      await done;
+
+      expect(restoreFocusNear).not.toHaveBeenCalled();
+      expect(document.activeElement).toBe(opener);
+      opener.remove();
     });
   });
 

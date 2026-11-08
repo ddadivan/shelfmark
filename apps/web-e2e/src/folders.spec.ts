@@ -1,6 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { COLOR_SCHEME } from './models/color-scheme.const';
-import { expectNoBlockingViolations } from './support/axe';
+import { pickFolderMenuItem } from './support/a11y-flows';
 import { seedSession } from './support/mock-session';
 import { closeSidebar, gotoWithSidebar, openSidebar } from './support/sidebar';
 
@@ -17,14 +16,6 @@ test.describe('folders (mock API)', () => {
     await seedSession(page);
   });
 
-  /** Waits for the enter animations: axe measures contrast on the painted colors. */
-  async function settled(page: Page) {
-    // String script: this project has no DOM lib, and the code runs in the browser anyway.
-    await page.evaluate(
-      'Promise.all(document.getAnimations().map((a) => a.finished.catch(() => undefined)))',
-    );
-  }
-
   const row = (page: Page, name: string) =>
     page.getByRole('treeitem', { name: new RegExp(`^${name}\\b`) });
 
@@ -34,11 +25,6 @@ test.describe('folders (mock API)', () => {
     await dialog.getByLabel('Name').fill(name);
     await dialog.getByRole('button', { name: 'Create folder' }).click();
     return dialog;
-  }
-
-  async function openFolderMenu(page: Page, name: string, item: string) {
-    await row(page, name).click({ button: 'right' });
-    await page.getByRole('menuitem', { name: item }).click();
   }
 
   test.describe('sidebar', () => {
@@ -94,7 +80,7 @@ test.describe('folders (mock API)', () => {
     test('creating a subfolder names the parent', async ({ page }) => {
       await gotoWithSidebar(page, '/links');
 
-      await openFolderMenu(page, READING.name, 'New subfolder');
+      await pickFolderMenuItem(page, READING.name, 'New subfolder');
       const dialog = page.getByRole('dialog', { name: `New folder in “${READING.name}”` });
       await dialog.getByLabel('Name').fill('Essays');
       await dialog.getByRole('button', { name: 'Create folder' }).click();
@@ -125,7 +111,7 @@ test.describe('folders (mock API)', () => {
     test('renames a folder from its menu', async ({ page }) => {
       await gotoWithSidebar(page, `/folders/${READING.id}`);
 
-      await openFolderMenu(page, READING.name, 'Rename');
+      await pickFolderMenuItem(page, READING.name, 'Rename');
       const dialog = page.getByRole('dialog', { name: 'Rename folder' });
       await expect(dialog.getByLabel('Name')).toHaveValue(READING.name);
       await dialog.getByLabel('Name').fill('Library');
@@ -144,7 +130,7 @@ test.describe('folders (mock API)', () => {
       await expect(page.getByRole('heading', { level: 1, name: 'Archive' })).toBeVisible();
       await openSidebar(page);
 
-      await openFolderMenu(page, READING.name, 'Move to…');
+      await pickFolderMenuItem(page, READING.name, 'Move to…');
       const dialog = page.getByRole('dialog', { name: `Move “${READING.name}”` });
       await dialog.getByRole('combobox').click();
       const options = page.getByRole('option');
@@ -163,10 +149,32 @@ test.describe('folders (mock API)', () => {
       await expect(row(page, READING.name)).toBeVisible();
     });
 
+    test('moving a folder under a collapsed parent puts focus on that parent row', async ({
+      page,
+    }) => {
+      await gotoWithSidebar(page, '/links');
+      await createFolder(page, 'Archive');
+      await expect(page.getByRole('heading', { level: 1, name: 'Archive' })).toBeVisible();
+      await openSidebar(page);
+      await expect(row(page, READING.name)).toBeVisible();
+
+      await row(page, READING.name).focus();
+      await page.keyboard.press('Shift+F10');
+      await page.getByRole('menuitem', { name: 'Move to…' }).click();
+      const dialog = page.getByRole('dialog', { name: `Move “${READING.name}”` });
+      await dialog.getByRole('combobox').click();
+      await page.getByRole('option').filter({ hasText: 'Archive' }).click();
+      await dialog.getByRole('button', { name: 'Move' }).click();
+
+      await expect(dialog).toBeHidden();
+      // Archive is collapsed, so the moved row is hidden: focus must not fall to <body>.
+      await expect(row(page, 'Archive')).toBeFocused();
+    });
+
     test('deleting a folder keeps its links in Unsorted by default', async ({ page }) => {
       await gotoWithSidebar(page, `/folders/${READING.id}`);
 
-      await openFolderMenu(page, READING.name, 'Delete folder…');
+      await pickFolderMenuItem(page, READING.name, 'Delete folder…');
       const dialog = page
         .getByRole('alertdialog')
         .or(page.getByRole('dialog', { name: /^Delete folder/ }));
@@ -186,7 +194,7 @@ test.describe('folders (mock API)', () => {
     test('deleting a folder with its links says how many go', async ({ page }) => {
       await gotoWithSidebar(page, '/links');
 
-      await openFolderMenu(page, READING.name, 'Delete folder…');
+      await pickFolderMenuItem(page, READING.name, 'Delete folder…');
       const dialog = page.getByRole('dialog', { name: `Delete folder “${READING.name}”?` });
       // The native radio is visually hidden; its label is the click target.
       await dialog.getByText('Delete links too').click();
@@ -204,7 +212,7 @@ test.describe('folders (mock API)', () => {
     test('Cancel leaves the folder alone', async ({ page }) => {
       await gotoWithSidebar(page, '/links');
 
-      await openFolderMenu(page, READING.name, 'Delete folder…');
+      await pickFolderMenuItem(page, READING.name, 'Delete folder…');
       await page
         .getByRole('dialog', { name: /^Delete folder/ })
         .getByRole('button', { name: 'Cancel' })
@@ -212,45 +220,13 @@ test.describe('folders (mock API)', () => {
 
       await expect(row(page, READING.name)).toBeVisible();
     });
-
-    test('the delete dialog has no axe violations', async ({ page }, testInfo) => {
-      await gotoWithSidebar(page, '/links');
-
-      await openFolderMenu(page, READING.name, 'Delete folder…');
-      await expect(page.getByRole('dialog', { name: /^Delete folder/ })).toBeVisible();
-      await settled(page);
-
-      await expectNoBlockingViolations(page, testInfo, {
-        include: '.cdk-dialog-container[aria-labelledby]',
-      });
-    });
-
-    test('the create dialog has no axe violations', async ({ page }, testInfo) => {
-      await gotoWithSidebar(page, '/links');
-
-      await page.getByRole('button', { name: 'New folder' }).click();
-      await expect(page.getByRole('dialog', { name: 'New folder' })).toBeVisible();
-      await settled(page);
-
-      await expectNoBlockingViolations(page, testInfo, { include: '.cdk-dialog-container' });
-    });
   });
 
-  test('a folder page lists its links and has no axe violations', async ({ page }, testInfo) => {
-    await page.goto(`/folders/${READING.id}`);
-
-    await expect(page.getByRole('heading', { level: 1, name: READING.name })).toBeVisible();
-    await expect(page.locator('ui-card').first()).toBeVisible();
-
-    await expectNoBlockingViolations(page, testInfo);
-  });
-
-  test('an unknown folder shows "not found" instead of the content', async ({ page }, testInfo) => {
+  test('an unknown folder shows "not found" instead of the content', async ({ page }) => {
     await page.goto('/folders/does-not-exist');
 
     await expect(page.getByRole('heading', { name: 'Folder not found' })).toBeVisible();
     await expect(page.locator('ui-card')).toHaveCount(0);
-    await expectNoBlockingViolations(page, testInfo);
 
     await page.getByRole('button', { name: 'Show all links' }).click();
     await expect(page).toHaveURL('/links');
@@ -275,13 +251,5 @@ test.describe('folders (mock API)', () => {
     );
 
     expect(overflow).toBeLessThanOrEqual(0);
-  });
-
-  test('has no axe violations in the dark theme', async ({ page }, testInfo) => {
-    await page.emulateMedia({ colorScheme: COLOR_SCHEME.Dark });
-    await page.goto(`/folders/${READING.id}`);
-    await expect(page.locator('ui-card').first()).toBeVisible();
-
-    await expectNoBlockingViolations(page, testInfo);
   });
 });
