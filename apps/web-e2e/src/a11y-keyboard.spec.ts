@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { openFeed } from './support/a11y-flows';
-import { arrowTo, expectVisibleFocus, tabTo } from './support/keyboard';
+import { activeOption, arrowTo, expectVisibleFocus, tabTo } from './support/keyboard';
 import { openSidebar } from './support/sidebar';
 
 const READING = 'Reading';
@@ -138,14 +138,7 @@ test.describe('keyboard-only flows (mock API)', () => {
     await page.keyboard.press('Enter');
     const option = page.getByRole('option').filter({ hasText: ARCHIVE });
     await expect(option).toBeVisible();
-    // Options are reached with aria-activedescendant: the arrows move `data-active`, not focus.
-    for (let step = 0; step < 10; step++) {
-      if ((await option.getAttribute('data-active')) === 'true') {
-        break;
-      }
-      await page.keyboard.press('ArrowDown');
-    }
-    await expect(option).toHaveAttribute('data-active', 'true');
+    await activeOption(page, option);
     await page.keyboard.press('Enter');
     await activate(page, move.getByRole('button', { name: 'Move' }));
 

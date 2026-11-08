@@ -66,3 +66,19 @@ export async function expectVisibleFocus(page: Page): Promise<void> {
     indicator: true,
   });
 }
+
+/**
+ * Options of a listbox are reached with aria-activedescendant: the arrows move `data-active`, not
+ * focus. Waits for the list to settle on one active option, then steps until it is `option`.
+ */
+export async function activeOption(page: Page, option: Locator): Promise<void> {
+  const active = page.locator('[role="option"][data-active="true"]');
+  for (let step = 0; step < 10; step++) {
+    await expect(active).toHaveCount(1);
+    if ((await option.getAttribute('data-active')) === 'true') {
+      return;
+    }
+    await page.keyboard.press('ArrowDown');
+  }
+  await expect(option).toHaveAttribute('data-active', 'true');
+}
