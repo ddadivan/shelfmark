@@ -29,6 +29,8 @@ model User {
   isDemo                Boolean   @default(false) @map("is_demo")
   onboardingCompletedAt DateTime? @map("onboarding_completed_at") @db.Timestamptz(3)
   demoExpiresAt         DateTime? @map("demo_expires_at") @db.Timestamptz(3)
+  // HMAC of the creating client IP for the per-IP demo quota (#67); never the raw address.
+  demoSourceHash        String?   @map("demo_source_hash")
   createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
   sessions              Session[]
