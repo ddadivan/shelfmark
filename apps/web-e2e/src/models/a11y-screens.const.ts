@@ -207,7 +207,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
       await expect(page.getByRole('dialog', { name: /^Delete folder/ })).toBeVisible();
     },
     include: TITLED_DIALOG_SELECTOR,
-    only: E2E_PROJECT.Desktop,
+    // Both projects: the confirmation is a sheet on a phone.
   },
   {
     name: 'tag menu',
@@ -229,7 +229,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
       await expect(library.getByRole('textbox', { name: 'New tag' })).toBeFocused();
     },
     include: 'app-sidebar',
-    only: E2E_PROJECT.Desktop,
+    // Both projects: on a phone the field lives in the drawer.
   },
   {
     name: 'merge tag dialog',
