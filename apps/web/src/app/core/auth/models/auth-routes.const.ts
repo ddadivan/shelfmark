@@ -4,4 +4,5 @@ import { APP_PATH } from '../../../models/app-path.const';
 export const AUTH_ROUTE = {
   Home: '/',
   SignIn: `/${APP_PATH.SignIn}`,
+  Links: `/${APP_PATH.Links}`,
 } as const;

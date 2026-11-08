@@ -6,4 +6,5 @@ export const APP_PATH = {
   Folders: 'folders',
   Settings: 'settings',
   SignIn: 'sign-in',
+  Demo: 'demo',
 } as const;

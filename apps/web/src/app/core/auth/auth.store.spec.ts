@@ -8,6 +8,9 @@ import { LinksStore } from '../../stores/links.store';
 import { SIGN_OUT_FLUSH_TIMEOUT_MS } from './models/sign-out-flush-timeout.const';
 import { AppTranslocoLoader } from '../i18n/app-transloco.loader';
 import { translocoConfig } from '../i18n/transloco.config';
+import { DemoSignInError } from './demo-sign-in-error';
+import { DEMO_ERROR } from './models/demo-error.const';
+import { SIGN_IN_REASON } from './models/sign-in-reason.const';
 import { AUTH_API } from './auth-api.token';
 import { AuthStore } from './auth.store';
 import { AuthApi } from './models/auth-api.interface';
@@ -95,6 +98,43 @@ describe('AuthStore', () => {
     await store.signInDemo();
 
     expect(store.user()?.isDemo).toBe(true);
+  });
+
+  it('keeps a typed demo failure and clears it on the next attempt', async () => {
+    const signInDemo = vi
+      .fn<AuthApi['signInDemo']>()
+      .mockRejectedValueOnce(new DemoSignInError(DEMO_ERROR.RateLimited))
+      .mockResolvedValueOnce({ ...USER, isDemo: true, demoExpiresAt: '2030-01-02T00:00:00.000Z' });
+    const { store } = setup({ signInDemo });
+
+    await store.signInDemo();
+    expect(store.failed()).toBe(true);
+    expect(store.demoError()).toBe(DEMO_ERROR.RateLimited);
+
+    await store.signInDemo();
+    expect(store.demoError()).toBeNull();
+    expect(store.isSignedIn()).toBe(true);
+  });
+
+  it('has no demo error for a plain failure', async () => {
+    const { store } = setup({ signInDemo: vi.fn(() => Promise.reject(new Error('down'))) });
+
+    await store.signInDemo();
+
+    expect(store.failed()).toBe(true);
+    expect(store.demoError()).toBeNull();
+  });
+
+  it('leaves to the sign-in screen with a reason after sign-out', async () => {
+    const { store } = setup();
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    await store.signIn(AUTH_PROVIDER.Google);
+
+    await store.signOutAndLeave(SIGN_IN_REASON.DemoExpired);
+
+    expect(navigate).toHaveBeenCalledWith(['/sign-in'], {
+      queryParams: { reason: 'demo-expired' },
+    });
   });
 
   it('marks a failed sign-in and clears the flag on the next attempt', async () => {

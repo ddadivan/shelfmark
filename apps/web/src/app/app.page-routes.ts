@@ -41,6 +41,8 @@ export const pageRoutes: Routes = [
       { path: APP_PATH.Settings, loadComponent: settingsPage },
     ],
   },
+  // Starts a demo session (or goes to the library when already signed in).
+  { path: APP_PATH.Demo, loadComponent: () => import('./features/auth/demo-start.page') },
   // A guest on a protected URL: to sign-in, then back.
   { path: APP_PATH.Links, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Unsorted, canActivate: [redirectToSignIn], children: [] },

@@ -15,12 +15,21 @@ import { FoldersStore } from '../../stores/folders.store';
 import { LinksStore } from '../../stores/links.store';
 import { TagsStore } from '../../stores/tags.store';
 import { AUTH_API } from './auth-api.token';
+import { DemoSignInError } from './demo-sign-in-error';
 import { SIGN_OUT_FLUSH_TIMEOUT_MS } from './models/sign-out-flush-timeout.const';
 import { AUTH_ROUTE } from './models/auth-routes.const';
+import { SIGN_IN_QUERY } from './models/sign-in-query.const';
+import type { SignInReason } from './models/sign-in-reason.type';
 import { AUTH_DEMO } from './models/auth-pending.const';
 import { AuthState } from './models/auth-state.interface';
 
-const initialState: AuthState = { user: null, loaded: false, pending: null, failed: false };
+const initialState: AuthState = {
+  user: null,
+  loaded: false,
+  pending: null,
+  failed: false,
+  demoError: null,
+};
 
 /**
  * The current user, cached for the whole app. `ensureLoaded()` asks the API once (guards await
@@ -51,7 +60,7 @@ export const AuthStore = signalStore(
         if (store.pending() !== null) {
           return;
         }
-        patchState(store, { pending, failed: false });
+        patchState(store, { pending, failed: false, demoError: null });
         try {
           const user = await action();
           if (user === null) {
@@ -60,8 +69,12 @@ export const AuthStore = signalStore(
             return;
           }
           patchState(store, { user, loaded: true, pending: null });
-        } catch {
-          patchState(store, { pending: null, failed: true });
+        } catch (error) {
+          patchState(store, {
+            pending: null,
+            failed: true,
+            demoError: error instanceof DemoSignInError ? error.kind : null,
+          });
         }
       }
 
@@ -124,10 +137,15 @@ export const AuthStore = signalStore(
           run(provider, () => api.signIn(provider, returnUrl)),
         signInDemo: () => run(AUTH_DEMO, () => api.signInDemo()),
         signOut,
-        /** Signs out, then goes to the sign-in screen (not when sign-out failed). */
-        async signOutAndLeave(): Promise<void> {
+        /**
+         * Signs out, then goes to the sign-in screen, with `?reason=` when given (not when
+         * sign-out failed).
+         */
+        async signOutAndLeave(reason?: SignInReason): Promise<void> {
           if (await signOut()) {
-            await router.navigateByUrl(AUTH_ROUTE.SignIn);
+            await router.navigate([AUTH_ROUTE.SignIn], {
+              queryParams: reason ? { [SIGN_IN_QUERY.Reason]: reason } : {},
+            });
           }
         },
       };

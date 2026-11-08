@@ -10,6 +10,8 @@ import type { AuthUser } from '@shelfmark/contracts';
 import { APP_LANG } from '../../core/i18n/models/app-lang.const';
 import { AppTranslocoLoader } from '../../core/i18n/app-transloco.loader';
 import { translocoConfig } from '../../core/i18n/transloco.config';
+import { DemoSignInError } from '../../core/auth/demo-sign-in-error';
+import { DEMO_ERROR } from '../../core/auth/models/demo-error.const';
 import SignInPage from './sign-in.page';
 
 const USER: AuthUser = {
@@ -21,12 +23,17 @@ const USER: AuthUser = {
   demoExpiresAt: null,
 };
 
-async function setup(signIn: AuthApi['signIn'] = () => Promise.resolve(USER)) {
+async function setup(
+  signIn: AuthApi['signIn'] = () => Promise.resolve(USER),
+  signInDemo?: AuthApi['signInDemo'],
+) {
   const api: AuthApi = {
     getSession: () => Promise.resolve(null),
     signIn: vi.fn(signIn),
-    signInDemo: vi.fn(() =>
-      Promise.resolve({ ...USER, isDemo: true, demoExpiresAt: '2030-01-02T00:00:00.000Z' }),
+    signInDemo: vi.fn(
+      signInDemo ??
+        (() =>
+          Promise.resolve({ ...USER, isDemo: true, demoExpiresAt: '2030-01-02T00:00:00.000Z' })),
     ),
     signOut: () => Promise.resolve(),
   };
@@ -89,6 +96,9 @@ describe('SignInPage', () => {
   it.each([
     ['session-expired', 'Your session has expired. Sign in again.'],
     ['demo-expired', 'The demo has ended. Open a new one or sign in.'],
+    ['demo-limit', 'Too many demos'],
+    ['demo-unavailable', 'The demo is full'],
+    ['demo-failed', 'could not open the demo'],
   ])('explains reason=%s', async (reason, text) => {
     const { harness } = await setup();
     await harness.navigateByUrl(`/sign-in?reason=${reason}`);
@@ -96,6 +106,29 @@ describe('SignInPage', () => {
     expect(
       (harness.routeNativeElement as HTMLElement).querySelector('ui-notice')?.textContent,
     ).toContain(text);
+  });
+
+  it('opens the library after the demo button and explains a rate-limited demo', async () => {
+    const { api, harness, router } = await setup();
+    await harness.navigateByUrl('/sign-in');
+    button(harness.routeNativeElement as HTMLElement, 'demo').click();
+    await harness.fixture.whenStable();
+    expect(api.signInDemo).toHaveBeenCalledTimes(1);
+    expect(router.url).toBe('/');
+
+    TestBed.resetTestingModule();
+    const limited = await setup(undefined, () =>
+      Promise.reject(new DemoSignInError(DEMO_ERROR.RateLimited)),
+    );
+    await limited.harness.navigateByUrl('/sign-in');
+    const root = limited.harness.routeNativeElement as HTMLElement;
+    button(root, 'demo').click();
+    await limited.harness.fixture.whenStable();
+    limited.harness.detectChanges();
+
+    expect(root.querySelectorAll('ui-notice')).toHaveLength(1);
+    expect(root.querySelector('ui-notice')?.textContent).toContain('Too many demos');
+    expect(limited.router.url).toBe('/sign-in');
   });
 
   it('ignores an unknown reason', async () => {
