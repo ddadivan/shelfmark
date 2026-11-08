@@ -7,6 +7,7 @@ import { AuthStore } from '../../core/auth/auth.store';
 import { AUTH_ROUTE } from '../../core/auth/models/auth-routes.const';
 import { DIALOG_FIRST_FIELD } from '../../models/dialog-first-field.const';
 import { DeleteAccountDialogComponent } from './delete-account-dialog.component';
+import { DELETE_ACCOUNT_TEXT_ID } from './models/delete-account-text-id.const';
 import { ACCOUNT_DELETION_API } from './models/account-deletion-api.const';
 import { ACCOUNT_DELETION_OUTCOME } from './models/account-deletion-outcome.const';
 import type { AccountDeletionOutcome } from './models/account-deletion-outcome.type';
@@ -32,24 +33,27 @@ export class AccountDeletionService {
     if (!user || user.isDemo) {
       return;
     }
-    const outcome: { value: AccountDeletionOutcome | null } = { value: null };
+    // The request outlives the dialog: whatever closes it, a confirmed deletion must end the session.
+    const request: { current: Promise<AccountDeletionOutcome> | null } = { current: null };
     await this.dialogs.open<DeleteAccountDialogComponent, boolean, DeleteAccountDialogData>(
       DeleteAccountDialogComponent,
       {
         size: DIALOG_SIZE.Sm,
         role: DIALOG_ROLE.AlertDialog,
         scrimClose: false,
+        describedBy: DELETE_ACCOUNT_TEXT_ID,
         autoFocus: DIALOG_FIRST_FIELD,
         data: {
           email: user.email,
-          submit: async (email) => {
-            outcome.value = await this.delete(email);
-            return outcome.value;
+          submit: (email) => {
+            request.current = this.delete(email);
+            return request.current;
           },
         },
       },
     ).result;
-    if (outcome.value === ACCOUNT_DELETION_OUTCOME.Deleted) {
+    const outcome = request.current ? await request.current : null;
+    if (outcome === ACCOUNT_DELETION_OUTCOME.Deleted) {
       // The server cleared the cookie; drop the user and the cached library without a sign-out call.
       this.auth.expireSession();
       await this.router.navigateByUrl(AUTH_ROUTE.Home);

@@ -91,6 +91,24 @@ async function submit(): Promise<void> {
   await vi.waitFor(() => TestBed.tick());
 }
 
+function deferred<T>() {
+  let resolve: (value: T) => void = () => undefined;
+  let reject: (reason: unknown) => void = () => undefined;
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { promise, resolve, reject };
+}
+
+function pressEscape(): void {
+  const target = container()?.querySelector('input') ?? document.body;
+  target.dispatchEvent(
+    new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }),
+  );
+  TestBed.tick();
+}
+
 describe('AccountDeletionService', () => {
   afterEach(() => {
     TestBed.inject(DialogService);
@@ -184,5 +202,107 @@ describe('AccountDeletionService', () => {
 
     expect(container()).toBeNull();
     expect(store.isSignedIn()).toBe(true);
+  });
+
+  it('describes the alert dialog by the warning text', async () => {
+    const { service } = await setup();
+    void service.open();
+    const dialog = await opened();
+
+    const panel = dialog.querySelector('[role="alertdialog"]') ?? dialog;
+    const id = panel.getAttribute('aria-describedby');
+    expect(id).toBe('delete-account-text');
+    expect(document.getElementById(id ?? '')?.textContent).toContain('deleted for good');
+  });
+
+  it('ignores Esc and drops the close button while the request is pending, then finishes the deletion', async () => {
+    const pending = deferred<void>();
+    const { service, store } = await setup(USER, () => pending.promise);
+    const expire = vi.spyOn(store, 'expireSession');
+    const open = service.open();
+    await opened();
+    await type('ada@example.com');
+    await submit();
+
+    pressEscape();
+    expect(container()).not.toBeNull();
+    expect(container()?.querySelector('button[aria-label="Close"]')).toBeNull();
+    expect(expire).not.toHaveBeenCalled();
+
+    pending.resolve();
+    await open;
+
+    expect(expire).toHaveBeenCalledTimes(1);
+    expect(store.isSignedIn()).toBe(false);
+    expect(TestBed.inject(Router).url).toBe('/');
+    await vi.waitFor(() => {
+      TestBed.tick();
+      expect(document.body.textContent).toContain('Your account and all your data were deleted.');
+    });
+  });
+
+  it('still ends the session when the dialog went away before the server answered', async () => {
+    const pending = deferred<void>();
+    const { service, store } = await setup(USER, () => pending.promise);
+    const opening = vi.spyOn(TestBed.inject(DialogService), 'open');
+    const open = service.open();
+    await opened();
+    await type('ada@example.com');
+    await submit();
+
+    // Something outside the dialog (a sheet swipe, a route change) closes it mid-request.
+    opening.mock.results[0]?.value.close(false);
+    await Promise.resolve();
+    pending.resolve();
+    await open;
+
+    await vi.waitFor(() => expect(store.isSignedIn()).toBe(false));
+  });
+
+  it.each([[400], [429], [500], [401]])(
+    'never ends the session for a %i answer',
+    async (status) => {
+      const { service, store } = await setup(USER, () =>
+        Promise.reject(new HttpErrorResponse({ status })),
+      );
+      const expire = vi.spyOn(store, 'expireSession');
+      void service.open();
+      await opened();
+      await type('ada@example.com');
+      await submit();
+      await vi.waitFor(() => TestBed.tick());
+
+      expect(expire).not.toHaveBeenCalled();
+    },
+  );
+
+  it('puts focus back on the field after a failed attempt', async () => {
+    const { service } = await setup(USER, () =>
+      Promise.reject(new HttpErrorResponse({ status: 500 })),
+    );
+    void service.open();
+    await opened();
+    await type('ada@example.com');
+    await submit();
+
+    await vi.waitFor(() => {
+      TestBed.tick();
+      expect(document.activeElement).toBe(container()?.querySelector('input'));
+    });
+  });
+
+  it('announces an inline error assertively', async () => {
+    const { service } = await setup(USER, () =>
+      Promise.reject(new HttpErrorResponse({ status: 429 })),
+    );
+    void service.open();
+    await opened();
+    await type('ada@example.com');
+    await submit();
+
+    await vi.waitFor(() => {
+      TestBed.tick();
+      expect(container()?.querySelector('ui-notice')?.getAttribute('role')).toBe('alert');
+    });
   });
 });

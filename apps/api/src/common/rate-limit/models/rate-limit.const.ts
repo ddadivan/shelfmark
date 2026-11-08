@@ -9,7 +9,7 @@ const HOUR_MS = 60 * MINUTE_MS;
  * is applied to the sign-in, callback and sign-out routes by `authRateLimitMiddleware`, because
  * Better Auth is mounted outside Nest's router. The limits of routes that do not exist yet
  * (`AddLink`, `Preview` #72, `Demo` #67, `Export` #107) are ready here so those issues only
- * decorate their handler.
+ * decorate their handler. `DeleteAccount` guards `DELETE /api/me` (irreversible, so strict).
  */
 export const RATE_LIMIT = {
   Default: { limit: 120, ttl: MINUTE_MS },

@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  Injector,
+  signal,
+} from '@angular/core';
 import { form, FormField, FormRoot } from '@angular/forms/signals';
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
@@ -14,6 +22,7 @@ import {
 } from '@shelfmark/ui';
 import { ACCOUNT_DELETION_ERROR_KEY } from './models/account-deletion-error-key.const';
 import { ACCOUNT_DELETION_OUTCOME } from './models/account-deletion-outcome.const';
+import { DELETE_ACCOUNT_TEXT_ID } from './models/delete-account-text-id.const';
 import type { DeleteAccountDialogData } from './models/delete-account-dialog-data.interface';
 
 /**
@@ -41,6 +50,9 @@ export class DeleteAccountDialogComponent {
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   protected readonly NOTICE_KIND = NOTICE_KIND;
 
+  protected readonly TEXT_ID = DELETE_ACCOUNT_TEXT_ID;
+
+  private readonly injector = inject(Injector);
   private readonly ref = inject<UiDialogRef<boolean>>(UiDialogRef);
   protected readonly data = injectDialogData<DeleteAccountDialogData>();
 
@@ -54,6 +66,13 @@ export class DeleteAccountDialogComponent {
   );
   protected readonly deleting = signal(false);
   protected readonly errorKey = signal<string | null>(null);
+
+  /** While the request runs the dialog cannot be dismissed: the modal overlay honours this. */
+  protected blockEscape(event: Event): void {
+    if (this.deleting()) {
+      event.preventDefault();
+    }
+  }
 
   protected cancel(): void {
     this.ref.close(false);
@@ -78,5 +97,7 @@ export class DeleteAccountDialogComponent {
       return;
     }
     this.errorKey.set(ACCOUNT_DELETION_ERROR_KEY[outcome]);
+    // The button that had focus was busy; the field is where the user corrects the attempt.
+    afterNextRender(() => this.form.email().focusBoundControl(), { injector: this.injector });
   }
 }

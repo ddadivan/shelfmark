@@ -77,6 +77,18 @@ async function setup(session: AuthUser | null = user()) {
 const flush = () => new Promise<void>((resolve) => setTimeout(resolve));
 
 describe('OnboardingStore', () => {
+  it('is cleared when the session ends, however it ends', async () => {
+    const { store, auth, closed } = await setup();
+    store.openIfDue();
+    expect(store.open()).toBe(true);
+
+    auth.expireSession();
+
+    expect(store.open()).toBe(false);
+    expect(store.resetting()).toBe(false);
+    closed.resolve(undefined);
+  });
+
   it('is due while the flag is null', async () => {
     const { store } = await setup();
 

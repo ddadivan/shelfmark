@@ -15,6 +15,7 @@ import { FoldersStore } from '../../stores/folders.store';
 import { LinksStore } from '../../stores/links.store';
 import { TagsStore } from '../../stores/tags.store';
 import { AUTH_API } from './auth-api.token';
+import { SessionScope } from './session-scope.service';
 import { DemoSignInError } from './demo-sign-in-error';
 import { SIGN_OUT_FLUSH_TIMEOUT_MS } from './models/sign-out-flush-timeout.const';
 import { AUTH_ROUTE } from './models/auth-routes.const';
@@ -51,8 +52,20 @@ export const AuthStore = signalStore(
       folders = inject(FoldersStore),
       tags = inject(TagsStore),
       injector = inject(Injector),
+      scope = inject(SessionScope),
     ) => {
       let loading: Promise<void> | null = null;
+
+      /**
+       * Forgets everything cached for the user: the library, and whatever else registered with
+       * `SessionScope` (onboarding and rating, which depend on this store).
+       */
+      function clearUserState(): void {
+        links.reset();
+        folders.reset();
+        tags.reset();
+        scope.end();
+      }
 
       async function run(
         pending: AuthState['pending'],
@@ -110,9 +123,7 @@ export const AuthStore = signalStore(
           });
           return false;
         }
-        links.reset();
-        folders.reset();
-        tags.reset();
+        clearUserState();
         patchState(store, { user: null, loaded: true, failed: false });
         return true;
       }
@@ -148,9 +159,7 @@ export const AuthStore = signalStore(
           } catch {
             // Expected when the session expired on the server; nothing to tell the user.
           }
-          links.reset();
-          folders.reset();
-          tags.reset();
+          clearUserState();
           patchState(store, { user: null, loaded: true, pending: null, failed: false });
           await router.navigate([AUTH_ROUTE.SignIn], {
             queryParams: { [SIGN_IN_QUERY.Reason]: SIGN_IN_REASON.DemoExpired },
@@ -161,9 +170,7 @@ export const AuthStore = signalStore(
          * without calling the API. Navigation is the caller's job.
          */
         expireSession(): void {
-          links.reset();
-          folders.reset();
-          tags.reset();
+          clearUserState();
           patchState(store, { user: null, loaded: true, pending: null, failed: false });
         },
         /** Sets the onboarding flag of the signed-in user; no-op for a guest. */

@@ -4,6 +4,7 @@ import { patchState, signalStore, withComputed, withMethods, withState } from '@
 import type { FeedbackMilestone } from '@shelfmark/contracts';
 import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
 import { AuthStore } from '../../core/auth/auth.store';
+import { SessionScope } from '../../core/auth/session-scope.service';
 import { RATING_API } from './models/rating-api.const';
 import { RATING_DELAY } from './models/rating-delay.const';
 import type { RatingDialogData } from './models/rating-dialog-data.interface';
@@ -37,6 +38,7 @@ export const RatingStore = signalStore(
       api = inject(RATING_API),
       dialogs = inject(DialogService),
       doc = inject(DOCUMENT),
+      scope = inject(SessionScope),
     ) => {
       let timer: ReturnType<typeof setTimeout> | undefined;
       /** The user the current look belongs to; null while idle. */
@@ -98,6 +100,15 @@ export const RatingStore = signalStore(
         await show(userId, milestone);
       }
 
+      function clear(): void {
+        clearTimeout(timer);
+        timer = undefined;
+        watching = null;
+        lastLookedUserId = null;
+        patchState(store, initialState);
+      }
+      scope.onEnd(clear);
+
       return {
         /** Starts the look for the signed-in user; no-op when not eligible or already done for this user. */
         watch(): void {
@@ -111,6 +122,8 @@ export const RatingStore = signalStore(
           lastLookedUserId = user.id;
           schedule(user.id, RATING_DELAY.Show);
         },
+        /** Session end: cancels the look and forgets that this load already looked. */
+        clear,
         /** Cancels a pending look (sign-out, demo, onboarding shown again). */
         stop(): void {
           clearTimeout(timer);

@@ -5,6 +5,7 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   AvatarComponent,
   BUTTON_SIZE,
+  BUTTON_VARIANT,
   ButtonComponent,
   SegmentedControlComponent,
 } from '@shelfmark/ui';
@@ -45,7 +46,13 @@ export default class SettingsPage {
   protected readonly signOutSize = computed(() =>
     this.viewport.phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Md,
   );
+  protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   protected readonly theme = inject(ThemeService);
+  /** Demo sandboxes expire by themselves, so only real accounts can be deleted. */
+  protected readonly canDeleteAccount = computed(() => {
+    const user = this.auth.user();
+    return user !== null && !user.isDemo;
+  });
   protected readonly onboarding = inject(OnboardingStore);
   private readonly exporter = inject(ExportActionsService);
   protected readonly EXPORT_FORMAT = EXPORT_FORMAT;

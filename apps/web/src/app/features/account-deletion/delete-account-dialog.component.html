@@ -1,10 +1,12 @@
-<form [formRoot]="form">
+<form [formRoot]="form" (keydown.escape)="blockEscape($event)">
   <ui-dialog
     [title]="'settings.delete.dialog.title' | transloco"
-    [closeLabel]="'settings.delete.dialog.close' | transloco"
+    [closeLabel]="deleting() ? undefined : ('settings.delete.dialog.close' | transloco)"
   >
     <div class="delete-account__body">
-      <p class="delete-account__text">{{ 'settings.delete.dialog.text' | transloco }}</p>
+      <p class="delete-account__text" [id]="TEXT_ID">
+        {{ 'settings.delete.dialog.text' | transloco }}
+      </p>
 
       <ui-input
         [label]="'settings.delete.dialog.label' | transloco"

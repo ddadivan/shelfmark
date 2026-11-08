@@ -12,6 +12,7 @@ import { DemoSignInError } from './demo-sign-in-error';
 import { DEMO_ERROR } from './models/demo-error.const';
 import { SIGN_IN_REASON } from './models/sign-in-reason.const';
 import { AUTH_API } from './auth-api.token';
+import { SessionScope } from './session-scope.service';
 import { AuthStore } from './auth.store';
 import { AuthApi } from './models/auth-api.interface';
 
@@ -57,6 +58,21 @@ describe('AuthStore', () => {
     expect(store.loaded()).toBe(true);
     expect(reset).toHaveBeenCalled();
     expect(api.signOut).not.toHaveBeenCalled();
+  });
+
+  it('tells the session scope when the session ends, on every path', async () => {
+    const { store, api } = setup();
+    await store.ensureLoaded();
+    vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    const ended = vi.fn();
+    TestBed.inject(SessionScope).onEnd(ended);
+
+    store.expireSession();
+    await store.signOut();
+    await store.expireDemo();
+
+    expect(ended).toHaveBeenCalledTimes(3);
+    expect(api.signOut).toHaveBeenCalledTimes(2);
   });
 
   it('is a guest until the session says otherwise', () => {

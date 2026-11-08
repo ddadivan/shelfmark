@@ -3,6 +3,7 @@ import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import type { DeleteAccountRequest } from '@shelfmark/contracts';
 import { MOCK_SESSION_STORAGE_KEY } from '../../../core/auth/models/mock-session-storage-key.const';
+import { MOCK_RATING_STORAGE_KEY } from '../../rating/mock/models/mock-rating-storage-key.const';
 import type { AccountDeletionApi } from '../models/account-deletion-api.interface';
 import { MOCK_ACCOUNT_DELETION_SCENARIO } from './models/mock-account-deletion-scenario.const';
 import { MOCK_ACCOUNT_DELETION_SCENARIO_STORAGE_KEY } from './models/mock-account-deletion-scenario-storage-key.const';
@@ -51,6 +52,8 @@ export class MockAccountDeletionApi implements AccountDeletionApi {
       return failure(HttpStatusCode.InternalServerError);
     }
     this.storage?.removeItem(MOCK_SESSION_STORAGE_KEY);
+    // The user's other mock data goes with the account.
+    this.storage?.removeItem(MOCK_RATING_STORAGE_KEY);
     return Promise.resolve();
   }
 }
