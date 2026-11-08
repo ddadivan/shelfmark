@@ -10,6 +10,9 @@
         [class.ui-tree__row--folder]="folder"
         [style.--ui-tree-level]="level"
         [uiRipple]="true"
+        uiLongPress
+        [uiLongPressDisabled]="!folder"
+        (uiLongPress)="onLongPress($event, node, row)"
         [parent]="parent"
         [value]="node.id"
         [label]="node.name"

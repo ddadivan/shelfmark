@@ -1,24 +1,25 @@
 <header class="shell__header">
-  <ui-logo />
   <ui-button
-    class="shell__add"
-    variant="primary"
-    size="sm"
-    iconLeft="add"
-    (click)="actions.addLink()"
-  >
-    {{ 'shell.addLink' | transloco }}
-  </ui-button>
-  <!-- The phone header has no room for the label: the same action as an icon. -->
-  <ui-button
-    class="shell__add-icon"
-    variant="primary"
-    size="sm"
+    class="shell__menu"
+    variant="ghost"
     iconOnly
-    iconLeft="add"
-    [ariaLabel]="'shell.addLink' | transloco"
-    (click)="actions.addLink()"
+    iconLeft="menu"
+    [ariaLabel]="'shell.menu' | transloco"
+    [ariaExpanded]="nav.isOpen()"
+    (click)="nav.open()"
   />
+  <ui-logo />
+  @if (!viewport.phone()) {
+    <ui-button
+      class="shell__add"
+      variant="primary"
+      size="sm"
+      iconLeft="add"
+      (click)="actions.addLink()"
+    >
+      {{ 'shell.addLink' | transloco }}
+    </ui-button>
+  }
   <ui-button
     class="shell__search"
     variant="ghost"
@@ -46,8 +47,8 @@
       <ui-button
         [uiMenuTrigger]="accountMenu"
         variant="ghost"
-        size="sm"
-        iconRight="chevron-down"
+        [size]="accountButtonSize()"
+        [iconRight]="accountIconRight()"
         [ariaLabel]="'shell.accountMenu' | transloco"
       >
         <ui-avatar [name]="user.name" [src]="user.image ?? undefined" size="sm" />
@@ -55,6 +56,12 @@
       <ui-menu #accountMenu align="end" [ariaLabel]="'shell.accountMenu' | transloco">
         <ui-menu-item icon="settings" (activated)="openSettings()">
           {{ 'shell.settings' | transloco }}
+        </ui-menu-item>
+        <ui-menu-item icon="download" (activated)="exportAll(EXPORT_FORMAT.Json)">
+          {{ 'export.all.json' | transloco }}
+        </ui-menu-item>
+        <ui-menu-item icon="download" (activated)="exportAll(EXPORT_FORMAT.Html)">
+          {{ 'export.all.html' | transloco }}
         </ui-menu-item>
         <ui-menu-separator />
         <ui-menu-item icon="logout" (activated)="signOut()">
@@ -65,11 +72,26 @@
   }
 </header>
 <div class="shell__body">
-  <app-sidebar />
+  <!-- Below the phone breakpoint (40em) the sidebar is the drawer, opened from the header. -->
+  @if (!viewport.phone()) {
+    <div class="shell__sidebar"><app-sidebar /></div>
+  }
   <main class="shell__main">
     <router-outlet />
   </main>
-  @if (ui.recentVisible()) {
+  @if (ui.recentVisible() && viewport.desktop()) {
     <app-recent-links-panel class="shell__recent" />
   }
 </div>
+<!-- Phone: the add action is the floating button of the mobile design (header button is off). -->
+@if (viewport.phone()) {
+  <ui-button
+    class="shell__fab"
+    variant="primary"
+    iconOnly
+    fab
+    iconLeft="add"
+    [ariaLabel]="'shell.addLink' | transloco"
+    (click)="actions.addLink()"
+  />
+}

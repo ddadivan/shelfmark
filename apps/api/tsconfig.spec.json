@@ -3,7 +3,14 @@
   "compilerOptions": {
     "rootDir": "../..",
     "outDir": "../../dist/out-tsc",
+    "allowJs": true,
     "types": ["node", "vitest/globals"]
   },
-  "include": ["vitest.config.mts", "src/**/*.ts"]
+  "include": [
+    "vitest.config.mts",
+    "src/**/*.ts",
+    "test-utils/**/*.ts",
+    "scripts/**/*.ts",
+    "scripts/**/*.mjs"
+  ]
 }

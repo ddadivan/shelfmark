@@ -33,3 +33,10 @@
   height: 100%;
   object-fit: cover;
 }
+
+// The initials are drawn from an attribute, not a text node: axe's label-content-name-mismatch
+// (WCAG 2.5.3) counts visible text even under aria-hidden, which clashed with the aria-label of
+// a button that holds a decorative avatar. Pseudo-element content is not part of the DOM text.
+.ui-avatar__initials::before {
+  content: attr(data-initials);
+}

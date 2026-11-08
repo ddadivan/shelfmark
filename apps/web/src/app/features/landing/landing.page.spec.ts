@@ -14,6 +14,7 @@ async function createLoaded() {
 
 describe('LandingPage', () => {
   afterEach(() => {
+    Reflect.deleteProperty(HTMLElement.prototype, 'scrollIntoView');
     history.replaceState(null, '', '/');
     vi.restoreAllMocks();
   });
@@ -57,7 +58,6 @@ describe('LandingPage', () => {
     expect(scrollIntoView).toHaveBeenCalledTimes(1);
     expect(seen).toEqual([true]);
     expect(root.querySelector('.landing__placeholder')).toBeNull();
-    Reflect.deleteProperty(HTMLElement.prototype, 'scrollIntoView');
   });
 
   it('composes the sections under landmarks with one h1', async () => {

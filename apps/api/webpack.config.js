@@ -11,6 +11,12 @@ module.exports = {
     filename: '[name].mjs',
   },
   experiments: { outputModule: true },
+  // Workspace library: bundled from source for runtime imports (type-only imports need nothing).
+  resolve: {
+    alias: {
+      '@shelfmark/contracts': join(__dirname, '../../libs/shared/contracts/src/index.ts'),
+    },
+  },
   externalsType: 'module',
   plugins: [
     new NxAppWebpackPlugin({

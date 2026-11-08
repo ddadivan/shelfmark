@@ -25,6 +25,7 @@ import { APP_LANG } from './core/i18n/models/app-lang.const';
 import { AppTranslocoLoader } from './core/i18n/app-transloco.loader';
 import { SignedInPreloadingStrategy } from './core/routing/signed-in-preloading.strategy';
 import { provideLinksApi } from './features/links/provide-links-api';
+import { provideOnboardingApi } from './features/onboarding/provide-onboarding-api';
 import { ThemeService } from './core/theme/theme.service';
 
 export const appConfig: ApplicationConfig = {
@@ -48,6 +49,7 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => firstValueFrom(inject(TranslocoService).load(APP_LANG.En))),
     provideAuthApi(),
     ...provideLinksApi(),
+    provideOnboardingApi(),
     // SwUpdate is not wired: a new version is applied on the next navigation, with no prompt.
     // App shell and static assets only; the worker never touches /api (apps/web/ngsw-config.json).
     provideServiceWorker('ngsw-worker.js', {

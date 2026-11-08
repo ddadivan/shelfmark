@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
+import { authAllowListMiddleware } from '../auth/auth-allow-list.middleware';
 import { AllExceptionsFilter } from '../common/errors/all-exceptions.filter';
 import { requestIdMiddleware } from '../common/request-id/request-id.middleware';
 import type { ConfigureAppOptions } from './configure-app-options.interface';
@@ -22,6 +23,8 @@ export function configureApp(app: NestExpressApplication, options: ConfigureAppO
           hsts: false,
         }),
   );
+  // Before the body parsers and the Better Auth router: only the four named auth routes get through.
+  app.use(authAllowListMiddleware);
   app.useBodyParser('json', { limit: '100kb' });
   app.setGlobalPrefix('api');
   app.useGlobalPipes(
