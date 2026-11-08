@@ -24,6 +24,11 @@ class HostComponent {
   readonly ariaDisabled = signal<string | null>(null);
 }
 
+/** A px custom length of the ripple circle as a number; jsdom 31 rounds serialised lengths. */
+function px(el: HTMLElement, property: string): number {
+  return parseFloat(el.style.getPropertyValue(property));
+}
+
 function pointer(type: string, x: number, y: number, init: PointerEventInit = {}): PointerEvent {
   return new PointerEvent(type, {
     bubbles: true,
@@ -82,9 +87,9 @@ describe('RippleDirective', () => {
     const radius = Math.hypot(150, 30);
     expect(spans(row)).toHaveLength(1);
     expect(span.getAttribute('aria-hidden')).toBe('true');
-    expect(span.style.getPropertyValue('width')).toBe(`${radius * 2}px`);
-    expect(span.style.getPropertyValue('left')).toBe(`${50 - radius}px`);
-    expect(span.style.getPropertyValue('top')).toBe(`${10 - radius}px`);
+    expect(px(span, 'width')).toBeCloseTo(radius * 2, 2);
+    expect(px(span, 'left')).toBeCloseTo(50 - radius, 2);
+    expect(px(span, 'top')).toBeCloseTo(10 - radius, 2);
     expect(span.classList.contains('is-out')).toBe(false);
   });
 
@@ -144,8 +149,8 @@ describe('RippleDirective', () => {
 
       // Centre of a 200x40 host is (100, 20); farthest corner is 100 x 20 away.
       const radius = Math.hypot(100, 20);
-      expect(span.style.getPropertyValue('left')).toBe(`${100 - radius}px`);
-      expect(span.style.getPropertyValue('top')).toBe(`${20 - radius}px`);
+      expect(px(span, 'left')).toBeCloseTo(100 - radius, 2);
+      expect(px(span, 'top')).toBeCloseTo(20 - radius, 2);
 
       row.dispatchEvent(key('keydown', k, { repeat: true }));
 

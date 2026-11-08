@@ -206,6 +206,9 @@ describe('UiOverlay', () => {
     ];
     overlay.release();
     TestBed.tick();
+    // A change notification makes Angular race a zero-delay timeout against requestAnimationFrame
+    // (jsdom 31 has rAF by default); run it so only the overlay's own fallback timer is left.
+    vi.advanceTimersByTime(0);
     expect(vi.getTimerCount()).toBe(1);
     overlay.cancelRelease();
     expect(vi.getTimerCount()).toBe(0);

@@ -53,7 +53,15 @@ describe('LandingChatComponent', () => {
   const observer = (): FakeIntersectionObserver => FakeIntersectionObserver.instances[0];
   const shelfButton = (): HTMLButtonElement | undefined =>
     Array.from(root.querySelectorAll('button')).at(-1);
-  const settle = (): void => TestBed.tick();
+  const settle = (): void => {
+    TestBed.tick();
+    if (vi.isFakeTimers()) {
+      // A change notification makes Angular race a zero-delay timeout against
+      // requestAnimationFrame (jsdom 31 has rAF by default). Run that zero-delay callback so
+      // the pair clears itself and only the feed's own timers (all with a delay) stay counted.
+      vi.advanceTimersByTime(0);
+    }
+  };
   const advance = (ms: number): void => {
     vi.advanceTimersByTime(ms);
     settle();
