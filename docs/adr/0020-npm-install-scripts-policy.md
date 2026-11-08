@@ -26,6 +26,10 @@ All 9 packages are **denied** (11 since #63, which added `prisma` and `@prisma/e
 | `prisma` | `preinstall-entry.js` runs an optional preinstall hook | Deny | Not needed; the CLI downloads its schema engine on first use (ADR 0025). |
 | `@prisma/engines` | `postinstall.js` downloads the schema engine binary | Deny | Done lazily by the CLI at first use; the runtime uses the query compiler and the `pg` driver adapter, no native engine. |
 
+### Reviewed without an install script
+
+- `sharp` (0.35.5, added by #149, ADR 0027): **no install script** (`npm install-scripts ls` stays clean, no `allowScripts` row). It ships its native code as prebuilt optional packages (`@img/sharp-<platform>`, `@img/sharp-libvips-<platform>`) that npm installs for the current platform only; there is no compile fallback. Pinned to an exact version. On Vercel (Linux x64, `npm ci --include=dev`) `api/index.mjs` imports `sharp` statically and `vercel.json` `includeFiles` adds `node_modules/@img/**`, because the file tracer does not follow sharp's runtime `require` of the platform package.
+
 ### Rule for future packages
 
 - New install scripts are **denied by default**. CI enforces it: the `lint-test-build` job fails unless `npm install-scripts ls` reports "No packages with unreviewed install scripts" (the command itself exits 0 either way, checked with npm 11.20.0).

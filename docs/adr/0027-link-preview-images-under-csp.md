@@ -67,3 +67,10 @@ Free-tier figures below were published by Vercel and Neon when this ADR was writ
 - **#72** (links API): `sharp` review per 0020, capture on create / URL change, the two image endpoints, `Link` contract paths, data-isolation and header tests, throttling shared with link creation.
 - **#73** (add-link dialog): favicon letter only, never binds remote preview URLs.
 - **#74** (feed): binds the same-origin `faviconUrl` / `imageUrl`. The `libs/ui` docs of `ui-favicon`, `ui-card` and `ui-list-item` drop the "until stage 3" note. An e2e test asserts no CSP violations and no third-party image requests.
+
+## Implementation notes (#149, links API)
+
+- `sharp` 0.35.5 was reviewed under [0020](0020-npm-install-scripts-policy.md): no install script, so the `image-size` fallback was not needed.
+- The fetcher got `fetchImage(url, overrides?)` next to `fetch`: same URL, address and redirect policy, raw bytes, response types `image/*` (not `image/svg+xml`) and `application/octet-stream`; 3 MB, 5 s, 3 redirects by default, per-call overrides only tighten. The real format comes from the magic bytes (`sniffImageFormat`), which allow PNG, JPEG, GIF, WebP, AVIF and ICO. libvips cannot read ICO, so `decodeIco` takes the biggest entry (embedded PNG, or a 1/4/8/24/32-bit BMP converted to RGBA).
+- Capture runs after the create transaction commits, only for the created link (never on an idempotent replay), with what is left of `REQUEST_TIMEOUT_MS` (minus 1 s), at most 5 s, skipped below 1 s. `PATCH` with a new URL deletes the old images and does **not** capture again (the page fetch plus the capture would not fit the 8 s request timeout); the card shows the letter until a later re-capture feature exists.
+- Stored under a `CHECK` for the kind and for 64 KB. `faviconUrl` / `imageUrl` columns of `Link` stay unused (the response derives the paths from `link_images`).
