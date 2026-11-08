@@ -454,6 +454,12 @@ describe('ToastService', () => {
     }
   });
 
+  it('puts the region in a passthrough CDK pane, so the strip never blocks the page', () => {
+    setup();
+    const pane = region().closest('.cdk-overlay-pane');
+    expect(pane?.classList.contains('ui-overlay-pane--passthrough')).toBe(true);
+  });
+
   describe('over a modal overlay', () => {
     function regionHost(): HTMLElement {
       return region().closest('.ui-overlay-layer--toast') as HTMLElement;

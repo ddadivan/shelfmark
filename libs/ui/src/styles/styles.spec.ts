@@ -263,6 +263,13 @@ describe('overlay mixins', () => {
     expect(z('toast')).toBeLessThan(z('tooltip'));
   });
 
+  it('passthrough panes out-rank the CDK pane rule (two classes, pointer-events none)', () => {
+    const output = css('@include overlay-passthrough;');
+    expect(output).toMatch(
+      /\.cdk-overlay-pane\.ui-overlay-pane--passthrough\s*\{\s*pointer-events:\s*none/,
+    );
+  });
+
   it('hides the tooltip description visually but not from assistive technology', () => {
     const output = css('@include tooltip-description;');
     expect(output).toContain('.ui-tooltip-description');
