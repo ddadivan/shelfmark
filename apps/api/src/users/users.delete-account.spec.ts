@@ -38,7 +38,7 @@ async function seedLibrary(t: AuthTestApp, userId: string, label: string): Promi
       bytes: Buffer.from('webp'),
       width: 16,
       height: 16,
-      sha256: label.padEnd(64, '0'),
+      sha256: 'a'.repeat(64),
     },
   });
 }
