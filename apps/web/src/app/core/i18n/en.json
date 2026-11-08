@@ -672,5 +672,8 @@
       "title": "Find it right away",
       "text": "Folders, tags, favorites and search with ⌘K bring back any link in a couple of keystrokes."
     }
+  },
+  "toast": {
+    "actionHint": "Press {{shortcut}} to reach {{action}}"
   }
 }
