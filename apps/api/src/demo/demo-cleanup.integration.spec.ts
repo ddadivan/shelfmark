@@ -265,6 +265,45 @@ describe('GET /api/cron/demo-cleanup', () => {
       expect(left.map((user) => user.id).sort()).toEqual([live.id, regular.id].sort());
     });
 
+    it('stops instead of spinning when a read batch deletes nothing', async () => {
+      const live = await t.db.prisma.user.create({
+        data: {
+          name: 'L',
+          email: 'live2@demo.shelfmark.invalid',
+          isDemo: true,
+          demoExpiresAt: new Date(Date.now() + HOUR_MS),
+        },
+      });
+      const find = vi
+        .spyOn(t.db.prisma.user, 'findMany')
+        .mockResolvedValue([{ id: live.id }, { id: live.id }] as never);
+      try {
+        const result = await t.app.get(DemoCleanupService).run({ batchSize: 2 });
+        expect(result).toEqual({ deleted: 0, hasMore: false });
+        expect(find).toHaveBeenCalledTimes(1);
+      } finally {
+        find.mockRestore();
+      }
+      expect(await t.db.prisma.user.count()).toBe(1);
+    });
+
+    it('also deletes a demo user without an expiry once it is older than the session limit', async () => {
+      // The database check forbids this row; drop it for this test to prove the cleanup copes.
+      await t.db.prisma.$executeRaw`ALTER TABLE users DROP CONSTRAINT users_demo_expiry_check`;
+      const old = new Date(Date.now() - 25 * HOUR_MS);
+      await t.db.prisma.user.createMany({
+        data: [
+          { name: 'Old', email: 'o@demo.shelfmark.invalid', isDemo: true, createdAt: old },
+          { name: 'New', email: 'n@demo.shelfmark.invalid', isDemo: true },
+          { name: 'Reg', email: 'reg-old@example.test', createdAt: old },
+        ],
+      });
+      const result = await t.app.get(DemoCleanupService).run();
+      expect(result).toEqual({ deleted: 1, hasMore: false });
+      const left = (await t.db.prisma.user.findMany()).map((user) => user.name).sort();
+      expect(left).toEqual(['New', 'Reg']);
+    });
+
     it('uses a batch of 100 and a 5 second budget by default', () => {
       expect(DEMO_CLEANUP_LIMITS).toEqual({ BatchSize: 100, BudgetMs: 5000 });
     });

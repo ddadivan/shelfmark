@@ -35,5 +35,6 @@ export async function signInDemo(
   const body = res.body as DemoSessionResponse;
   const cookie = toCookieHeader(setCookiesOf(res));
   if (cookie === '') throw new Error('signInDemo: the response set no session cookie');
-  return { userId: body.user.id, cookie, demoExpiresAt: body.user.demoExpiresAt ?? '' };
+  if (body.user.demoExpiresAt === null) throw new Error('signInDemo: demoExpiresAt is null');
+  return { userId: body.user.id, cookie, demoExpiresAt: body.user.demoExpiresAt };
 }

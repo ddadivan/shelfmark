@@ -1,5 +1,4 @@
-import { DEMO_ENDPOINT } from '@shelfmark/contracts';
-import { CRON_ROUTE } from '../../../demo/models/cron-route.const';
+import { CRON_ENDPOINT, DEMO_ENDPOINT } from '@shelfmark/contracts';
 import { HTTP_METHOD } from './http-method.const';
 import type { PublicRoute } from './public-route.interface';
 
@@ -22,7 +21,7 @@ export const PUBLIC_ROUTES: readonly PublicRoute[] = [
   },
   {
     method: HTTP_METHOD.Get,
-    path: CRON_ROUTE.Path,
+    path: CRON_ENDPOINT.DemoCleanup,
     reason:
       'Vercel Cron cannot send a session: authenticated by the CRON_SECRET bearer guard on the handler, fails closed (ADR 0034)',
   },

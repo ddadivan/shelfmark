@@ -1,8 +1,9 @@
-import { createHmac, randomUUID } from 'node:crypto';
+import { createHmac, hkdfSync, randomUUID } from 'node:crypto';
 import { Injectable, Logger, ServiceUnavailableException } from '@nestjs/common';
 import { DEMO_LIMIT } from '@shelfmark/contracts';
 import { DemoSessionService } from '../auth/demo-session.service';
 import type { DemoSessionStart } from '../auth/models/demo-session-start.interface';
+import type { Prisma } from '../generated/prisma/client';
 import { readAuthConfig } from '../config/auth-config';
 import { PrismaService } from '../prisma/prisma.service';
 import { DEMO_SEED } from './demo-seed';
@@ -11,10 +12,12 @@ import { DEMO_CREATE_LOCK } from './models/demo-lock.const';
 import { DEMO_QUOTA } from './models/demo-quota.const';
 import { DEMO_SOURCE_HASH_LABEL } from './models/demo-source-hash-label.const';
 import { DEMO_USER } from './models/demo-user.const';
+import { networkOf } from './network-of';
 import { seedDemoLibrary } from './seed-demo-library';
 
 const MS_PER_HOUR = 60 * 60 * 1000;
 const MS_PER_SECOND = 1000;
+const HASH_KEY_BYTES = 32;
 
 /**
  * Creates demo sandboxes (#67, ADR 0034): quota and cap checks, then the user and its seed library in
@@ -23,7 +26,10 @@ const MS_PER_SECOND = 1000;
 @Injectable()
 export class DemoService {
   private readonly logger = new Logger(DemoService.name);
-  private readonly hashKey = readAuthConfig().secret;
+  // A dedicated key derived from the auth secret (HKDF), so the secret itself never keys the hash.
+  private readonly hashKey = Buffer.from(
+    hkdfSync('sha256', readAuthConfig().secret, '', DEMO_SOURCE_HASH_LABEL, HASH_KEY_BYTES),
+  );
 
   constructor(
     private readonly prisma: PrismaService,
@@ -35,6 +41,8 @@ export class DemoService {
     const now = new Date();
     const expiresAt = new Date(now.getTime() + DEMO_LIMIT.SessionHours * MS_PER_HOUR);
     const sourceHash = this.hashSource(sourceKey);
+    const network = networkOf(sourceKey);
+    const networkHash = network === null ? null : this.hashSource(network);
     const id = randomUUID();
 
     await this.prisma.$transaction(async (tx) => {
@@ -42,20 +50,9 @@ export class DemoService {
       // is the few bulk statements below.
       await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${DEMO_CREATE_LOCK}, 0))`;
 
-      const recent = await tx.user.findMany({
-        where: {
-          isDemo: true,
-          demoSourceHash: sourceHash,
-          createdAt: { gt: new Date(now.getTime() - DEMO_QUOTA.WindowMs) },
-        },
-        orderBy: { createdAt: 'desc' },
-        take: DEMO_QUOTA.PerSource,
-        select: { createdAt: true },
-      });
-      if (recent.length >= DEMO_QUOTA.PerSource) {
-        const oldest = recent[recent.length - 1].createdAt;
-        const wait = oldest.getTime() + DEMO_QUOTA.WindowMs - now.getTime();
-        throw new DemoQuotaExceededException(Math.max(1, Math.ceil(wait / MS_PER_SECOND)));
+      await this.assertQuota(tx, { demoSourceHash: sourceHash }, DEMO_QUOTA.PerSource, now);
+      if (networkHash !== null) {
+        await this.assertQuota(tx, { demoNetworkHash: networkHash }, DEMO_QUOTA.PerNetwork, now);
       }
 
       const active = await tx.user.count({
@@ -72,6 +69,7 @@ export class DemoService {
           isDemo: true,
           demoExpiresAt: expiresAt,
           demoSourceHash: sourceHash,
+          demoNetworkHash: networkHash,
         },
       });
       await seedDemoLibrary(tx, id, DEMO_SEED, now);
@@ -88,7 +86,31 @@ export class DemoService {
     }
   }
 
-  /** HMAC-SHA256 of the client key, keyed with the auth secret: stable per client, useless without it. */
+  /** 429 when `limit` demo users with this hash were created within the window. */
+  private async assertQuota(
+    tx: Prisma.TransactionClient,
+    hash: Prisma.UserWhereInput,
+    limit: number,
+    now: Date,
+  ): Promise<void> {
+    const recent = await tx.user.findMany({
+      where: {
+        isDemo: true,
+        ...hash,
+        createdAt: { gt: new Date(now.getTime() - DEMO_QUOTA.WindowMs) },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      select: { createdAt: true },
+    });
+    if (recent.length >= limit) {
+      const oldest = recent[recent.length - 1].createdAt;
+      const wait = oldest.getTime() + DEMO_QUOTA.WindowMs - now.getTime();
+      throw new DemoQuotaExceededException(Math.max(1, Math.ceil(wait / MS_PER_SECOND)));
+    }
+  }
+
+  /** HMAC-SHA256 of the client key, keyed with the HKDF-derived key: stable per client, useless without it. */
   private hashSource(sourceKey: string): string {
     return createHmac('sha256', this.hashKey)
       .update(`${DEMO_SOURCE_HASH_LABEL}${sourceKey}`)

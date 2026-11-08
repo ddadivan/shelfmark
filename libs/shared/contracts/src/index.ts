@@ -60,4 +60,5 @@ export { AUTH_ENDPOINT } from './auth/auth-endpoint.const';
 
 export type { DemoSessionResponse } from './demo/demo-session-response.type';
 export { DEMO_ENDPOINT } from './demo/demo-endpoint.const';
+export { CRON_ENDPOINT } from './demo/cron-endpoint.const';
 export { DEMO_LIMIT } from './demo/demo-limit.const';

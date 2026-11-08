@@ -46,6 +46,24 @@ describe('CronSecretGuard', () => {
     expect(() => guard.canActivate(contextWith('Bearer undefined'))).toThrow(UnauthorizedException);
   });
 
+  it('warns about a missing secret once per process, not on every request', async () => {
+    vi.resetModules();
+    const { Logger } = await import('@nestjs/common');
+    const { CronSecretGuard: Fresh } = await import('./cron-secret.guard');
+    const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+    delete process.env[CRON_ENV.Secret];
+    try {
+      for (let i = 0; i < 3; i++) {
+        expect(() => new Fresh().canActivate(contextWith(undefined))).toThrow(
+          UnauthorizedException,
+        );
+      }
+      expect(warn).toHaveBeenCalledTimes(1);
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
   it('fails closed when the secret is empty or shorter than 32 characters', () => {
     for (const short of ['', 'x'.repeat(31)]) {
       process.env[CRON_ENV.Secret] = short;

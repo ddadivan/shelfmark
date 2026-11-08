@@ -1,5 +1,6 @@
 import { AUTH_ENDPOINT, DEMO_ENDPOINT, DEMO_LIMIT } from '@shelfmark/contracts';
 import type { ApiError, DemoSessionResponse, GetSessionResponse } from '@shelfmark/contracts';
+import { createHmac, hkdfSync } from 'node:crypto';
 import request from 'supertest';
 import { createAuthTestApp } from '../../test-utils/auth-test-app';
 import type { AuthTestApp } from '../../test-utils/models/auth-test-app.interface';
@@ -91,6 +92,8 @@ describe('POST /api/demo', () => {
     const header = setCookiesOf(res).find((c) => c.includes('session_token='));
     expect(header).toMatch(/^__Secure-/);
     expect(header).toMatch(/;\s*Secure/i);
+    expect(header).toMatch(/HttpOnly/i);
+    expect(Number(/Max-Age=(\d+)/i.exec(header ?? '')?.[1])).toBeLessThanOrEqual(86_400);
   });
 
   it('gives a cookie that signs in: get-session reports the demo user', async () => {
@@ -113,6 +116,36 @@ describe('POST /api/demo', () => {
     await post('198.51.100.8').expect(201);
     const hashes = (await t.db.prisma.user.findMany()).map((u) => u.demoSourceHash);
     expect(new Set(hashes).size).toBe(2);
+  });
+
+  it('keys the source hash with an HKDF-derived key, not the auth secret itself', async () => {
+    await post().expect(201);
+    const { demoSourceHash } = await t.db.prisma.user.findFirstOrThrow();
+    const secret = t.secrets[0];
+    const derived = Buffer.from(hkdfSync('sha256', secret, '', 'shelfmark-demo-source-v1:', 32));
+    const message = `shelfmark-demo-source-v1:${SOURCE}`;
+    expect(demoSourceHash).toBe(createHmac('sha256', derived).update(message).digest('hex'));
+    expect(demoSourceHash).not.toBe(createHmac('sha256', secret).update(message).digest('hex'));
+  });
+
+  it('also limits an IPv6 /48 network across its /64s, but not IPv4 by network', async () => {
+    for (let i = 0; i < DEMO_QUOTA.PerNetwork; i++) {
+      resetRateLimits(t.app);
+      await post(`2001:db8:abcd:${i + 1}::7`).expect(201);
+    }
+    resetRateLimits(t.app);
+    // A new /64 inside the same /48: the per-/64 quota is untouched, the network quota is not.
+    const res = await post('2001:db8:abcd:ffff::7').expect(429);
+    expect(Number(res.headers['retry-after'])).toBeGreaterThan(0);
+    // Another /48 is unaffected.
+    await post('2001:db8:abce:1::7').expect(201);
+    const users = await t.db.prisma.user.findMany();
+    expect(users.every((user) => user.demoNetworkHash !== null)).toBe(true);
+  });
+
+  it('stores no network hash for an IPv4 client', async () => {
+    await post().expect(201);
+    expect((await t.db.prisma.user.findFirstOrThrow()).demoNetworkHash).toBeNull();
   });
 
   it('answers 400 to a body with fields and creates nothing', async () => {

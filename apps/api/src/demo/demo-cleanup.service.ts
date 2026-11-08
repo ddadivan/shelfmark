@@ -1,8 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { DEMO_LIMIT } from '@shelfmark/contracts';
 import { PrismaService } from '../prisma/prisma.service';
 import { DEMO_CLEANUP_LIMITS } from './models/demo-cleanup-limits.const';
 import type { DemoCleanupOptions } from './models/demo-cleanup-options.interface';
 import type { DemoCleanupResponse } from './models/demo-cleanup-response.interface';
+
+const MS_PER_HOUR = 60 * 60 * 1000;
 
 /**
  * Deletes expired demo users (ADR 0034). The foreign keys cascade, so one user delete removes the
@@ -25,7 +28,18 @@ export class DemoCleanupService {
 
     for (;;) {
       const now = new Date();
-      const expired = { isDemo: true, demoExpiresAt: { lte: now } };
+      // Expired, or (defence in depth, the database check forbids it) a demo user that never got an
+      // expiry and is older than the session limit.
+      const expired = {
+        isDemo: true,
+        OR: [
+          { demoExpiresAt: { lte: now } },
+          {
+            demoExpiresAt: null,
+            createdAt: { lt: new Date(now.getTime() - DEMO_LIMIT.SessionHours * MS_PER_HOUR) },
+          },
+        ],
+      };
       const batch = await this.prisma.user.findMany({
         where: expired,
         orderBy: { demoExpiresAt: 'asc' },
@@ -38,6 +52,8 @@ export class DemoCleanupService {
         where: { id: { in: batch.map((user) => user.id) }, ...expired },
       });
       deleted += result.count;
+      // Nothing deleted although rows were read: they changed meanwhile; stop instead of spinning.
+      if (result.count === 0) break;
       if (batch.length < batchSize) break;
       if (Date.now() - started >= budgetMs) {
         hasMore = (await this.prisma.user.count({ where: expired, take: 1 })) > 0;

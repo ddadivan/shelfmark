@@ -1,6 +1,8 @@
-/** The cleanup route. `Path` must equal the `crons` path in `vercel.json` (a spec checks it). */
+import { CRON_ENDPOINT } from '@shelfmark/contracts';
+
+/** The cleanup route. `Path` (from the contracts) must equal the `crons` path in `vercel.json` (a spec checks it). */
 export const CRON_ROUTE = {
   Controller: 'cron',
   DemoCleanup: 'demo-cleanup',
-  Path: '/api/cron/demo-cleanup',
+  Path: CRON_ENDPOINT.DemoCleanup,
 } as const;

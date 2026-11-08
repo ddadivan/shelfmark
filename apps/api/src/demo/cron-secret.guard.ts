@@ -13,6 +13,9 @@ import { DEMO_ERROR_MESSAGE } from './models/demo-error-message.const';
 
 const BEARER_PREFIX = 'Bearer ';
 
+/** The misconfiguration is logged once per process, not on every request. */
+let warned = false;
+
 function digest(value: string): Buffer {
   return createHash('sha256').update(value).digest();
 }
@@ -31,7 +34,10 @@ export class CronSecretGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const secret = process.env[CRON_ENV.Secret];
     if (secret === undefined || secret.length < CRON_SECRET_MIN_LENGTH) {
-      this.logger.warn(`${CRON_ENV.Secret} is missing or too short: cron requests are refused`);
+      if (!warned) {
+        warned = true;
+        this.logger.warn(`${CRON_ENV.Secret} is missing or too short: cron requests are refused`);
+      }
       throw new UnauthorizedException(DEMO_ERROR_MESSAGE.Unauthorized);
     }
     const header = context.switchToHttp().getRequest<Request>().headers.authorization;
