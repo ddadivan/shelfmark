@@ -1,6 +1,6 @@
 import { DestroyRef, Service, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, NavigationSkipped, Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { DrawerService, type UiDialogRef } from '@shelfmark/ui';
 import { filter } from 'rxjs';
@@ -8,7 +8,7 @@ import { MobileNavComponent } from './mobile-nav.component';
 
 /**
  * Opens the phone menu (`MobileNavComponent`) in the `libs/ui` drawer. It closes itself when a
- * navigation ends; the shell closes it when the viewport grows past the phone width. Focus
+ * navigation ends or is skipped (a tap on the current route); the shell closes it when the viewport grows past the phone width. Focus
  * returns to the menu button (the drawer restores it).
  */
 @Service()
@@ -24,7 +24,8 @@ export class MobileNavService {
   constructor() {
     inject(Router)
       .events.pipe(
-        filter((event) => event instanceof NavigationEnd),
+        // A tap on the current route ends in `NavigationSkipped`, not `NavigationEnd`.
+        filter((event) => event instanceof NavigationEnd || event instanceof NavigationSkipped),
         takeUntilDestroyed(inject(DestroyRef)),
       )
       .subscribe(() => {

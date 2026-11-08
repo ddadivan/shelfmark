@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { COLOR_SCHEME } from './models/color-scheme.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { seedSession } from './support/mock-session';
@@ -8,7 +8,6 @@ import { openSidebar } from './support/sidebar';
 // the e2e project cannot import from them.
 const READING = { id: '00000000-0000-4000-8000-000000000101', name: 'Reading' };
 const DOCS = 'docs';
-const LONG_PRESS_MS = 800;
 
 const SCREENS = [
   '/links',
@@ -43,6 +42,14 @@ test.describe('mobile layout (mock API)', () => {
     await page.getByRole('button', { name: 'Open menu' }).click();
     await expect(drawer(page)).toBeVisible();
     await expect(library(page).getByRole('treeitem', { name: /^All links/ })).toBeVisible();
+  }
+
+  /** Touch down, wait for the menu the long press opens (the app's own timer fires), lift. */
+  async function longPress(page: Page, target: Locator, menuItem: string) {
+    const touch = { pointerType: 'touch', isPrimary: true, pointerId: 7 };
+    await target.dispatchEvent('pointerdown', touch);
+    await expect(page.getByRole('menuitem', { name: menuItem })).toBeVisible();
+    await target.dispatchEvent('pointerup', touch);
   }
 
   async function overflow(page: Page): Promise<number> {
@@ -86,9 +93,53 @@ test.describe('mobile layout (mock API)', () => {
     await expect(drawer(page)).toHaveCount(0);
 
     await openDrawer(page);
-    await page.mouse.click(350, 400);
+    // The strip right of the drawer is the scrim.
+    const panel = await drawer(page).boundingBox();
+    const view = page.viewportSize();
+    const edge = (panel?.x ?? 0) + (panel?.width ?? 0);
+    await page.mouse.click(edge + ((view?.width ?? 0) - edge) / 2, (view?.height ?? 0) / 2);
     await expect(drawer(page)).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Open menu' })).toBeFocused();
+  });
+
+  test('the menu button reports aria-expanded while the drawer is open', async ({ page }) => {
+    await page.goto('/links');
+    const opener = page.getByRole('button', { name: 'Open menu' });
+    await expect(opener).toHaveAttribute('aria-expanded', 'false');
+
+    await openDrawer(page);
+    await expect(opener).toHaveAttribute('aria-expanded', 'true');
+
+    await page.keyboard.press('Escape');
+    await expect(drawer(page)).toHaveCount(0);
+    await expect(opener).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('closes when the viewport grows past 40em', async ({ page }) => {
+    await page.goto('/links');
+    await openDrawer(page);
+
+    await page.setViewportSize({ width: 700, height: 780 });
+
+    await expect(drawer(page)).toHaveCount(0);
+    await expect(page.getByRole('navigation', { name: 'Library' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Open menu' })).toBeHidden();
+  });
+
+  test('tapping the current route closes the drawer', async ({ page }) => {
+    await page.goto('/links');
+    await openDrawer(page);
+    await library(page)
+      .getByRole('treeitem', { name: /^All links/ })
+      .click();
+    await expect(drawer(page)).toHaveCount(0);
+    await expect(page).toHaveURL('/links');
+
+    await page.goto('/settings');
+    await openDrawer(page);
+    await drawer(page).getByRole('button', { name: 'Settings' }).click();
+    await expect(drawer(page)).toHaveCount(0);
+    await expect(page).toHaveURL('/settings');
   });
 
   test('navigates to a folder and closes on navigation', async ({ page }) => {
@@ -109,13 +160,7 @@ test.describe('mobile layout (mock API)', () => {
     await openDrawer(page);
     const chip = library(page).getByRole('button', { name: DOCS, exact: true });
 
-    await chip.dispatchEvent('pointerdown', {
-      pointerType: 'touch',
-      isPrimary: true,
-      pointerId: 7,
-    });
-    await page.waitForTimeout(LONG_PRESS_MS);
-    await chip.dispatchEvent('pointerup', { pointerType: 'touch', isPrimary: true, pointerId: 7 });
+    await longPress(page, chip, 'Rename');
 
     await expect(page.getByRole('menuitem', { name: 'Rename' })).toBeVisible();
     await expect(page.getByRole('menuitem', { name: 'Delete tag' })).toBeVisible();
@@ -176,9 +221,7 @@ test.describe('mobile layout (mock API)', () => {
     await openDrawer(page);
     const row = library(page).getByRole('treeitem', { name: new RegExp(`^${READING.name}\\b`) });
 
-    await row.dispatchEvent('pointerdown', { pointerType: 'touch', isPrimary: true, pointerId: 8 });
-    await page.waitForTimeout(LONG_PRESS_MS);
-    await row.dispatchEvent('pointerup', { pointerType: 'touch', isPrimary: true, pointerId: 8 });
+    await longPress(page, row, 'Rename');
 
     await expect(page.getByRole('menuitem', { name: 'Rename' })).toBeVisible();
     await expect(page.getByRole('menuitem', { name: 'New subfolder' })).toBeVisible();
@@ -241,8 +284,9 @@ test.describe('mobile layout (mock API)', () => {
     const box = await fab.boundingBox();
     const view = page.viewportSize();
     expect(box?.width).toBe(56);
-    expect((view?.width ?? 0) - ((box?.x ?? 0) + (box?.width ?? 0))).toBeLessThanOrEqual(24);
-    expect((view?.height ?? 0) - ((box?.y ?? 0) + (box?.height ?? 0))).toBeLessThanOrEqual(48);
+    // space-4 from the end edge and space-6 from the bottom (no safe area in the test browser).
+    expect((view?.width ?? 0) - ((box?.x ?? 0) + (box?.width ?? 0))).toBeCloseTo(16, 0);
+    expect((view?.height ?? 0) - ((box?.y ?? 0) + (box?.height ?? 0))).toBeCloseTo(24, 0);
     await page.mouse.wheel(0, 100000);
     await expect(page.getByRole('button', { name: 'Add link' })).toBeVisible();
   });

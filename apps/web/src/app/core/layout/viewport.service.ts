@@ -11,7 +11,7 @@ const BELOW_DESKTOP_QUERY = '(width < 64em)';
  */
 @Service()
 export class ViewportService {
-  /** Below 40em: the sidebar is a drawer. */
+  /** Below the phone breakpoint (40em): the sidebar is a drawer. */
   readonly phone = mediaMatch(PHONE_MEDIA_QUERY);
   private readonly belowDesktop = mediaMatch(BELOW_DESKTOP_QUERY);
   /** From 64em: the recent panel has room. */

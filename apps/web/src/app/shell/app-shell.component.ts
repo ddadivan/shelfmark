@@ -6,6 +6,7 @@ import { combineLatest, map } from 'rxjs';
 import {
   AvatarComponent,
   BUTTON_SIZE,
+  type IconName,
   ButtonComponent,
   LogoComponent,
   MenuComponent,
@@ -54,7 +55,6 @@ export default class AppShellComponent {
   protected readonly EXPORT_FORMAT = EXPORT_FORMAT;
   protected readonly search = inject(SearchDialogService);
   protected readonly viewport = inject(ViewportService);
-  protected readonly BUTTON_SIZE = BUTTON_SIZE;
   protected readonly nav = inject(MobileNavService);
   private readonly transloco = inject(TranslocoService);
 
@@ -70,6 +70,13 @@ export default class AppShellComponent {
     return labels ? (this.ui.recentVisible() ? labels.hide : labels.show) : null;
   });
   private readonly router = inject(Router);
+  /** Phone: the 44px touch size and no chevron next to the avatar. */
+  protected readonly accountButtonSize = computed(() =>
+    this.viewport.phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm,
+  );
+  protected readonly accountIconRight = computed<IconName | undefined>(() =>
+    this.viewport.phone() ? undefined : 'chevron-down',
+  );
 
   constructor() {
     // Growing past the phone breakpoint shows the sidebar inline: the drawer has to go.

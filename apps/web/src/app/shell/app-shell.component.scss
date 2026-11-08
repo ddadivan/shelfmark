@@ -57,12 +57,13 @@
   }
 }
 
-// The floating add button of the phone design.
+// The floating add button of the phone design. No z-index: it comes after the page in the DOM and
+// dialogs, menus and toasts have their own overlay layers above it. MobileHome has it 20px / 28px
+// from the edges; there are no such tokens, so it takes the nearest ones (16px / 24px).
 .shell__fab {
   position: fixed;
   inset-block-end: calc(var(--space-6) + env(safe-area-inset-bottom));
   inset-inline-end: calc(var(--space-4) + env(safe-area-inset-right));
-  z-index: 10;
 }
 
 .shell__sidebar {

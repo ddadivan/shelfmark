@@ -222,6 +222,16 @@ describe('AppShellComponent', () => {
       expect(drawer()).toBeNull();
     });
 
+    it('closes when the current route is tapped again (navigation skipped)', async () => {
+      const { harness, root } = await setup(true);
+      await openDrawer(harness, root);
+
+      await TestBed.inject(Router).navigateByUrl('/');
+      await harness.fixture.whenStable();
+
+      expect(drawer()).toBeNull();
+    });
+
     it('closes when the viewport grows past the phone width', async () => {
       const { harness, root } = await setup(true);
       await openDrawer(harness, root);

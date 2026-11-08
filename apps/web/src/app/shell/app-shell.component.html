@@ -47,8 +47,8 @@
       <ui-button
         [uiMenuTrigger]="accountMenu"
         variant="ghost"
-        [size]="viewport.phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm"
-        [iconRight]="viewport.phone() ? undefined : 'chevron-down'"
+        [size]="accountButtonSize()"
+        [iconRight]="accountIconRight()"
         [ariaLabel]="'shell.accountMenu' | transloco"
       >
         <ui-avatar [name]="user.name" [src]="user.image ?? undefined" size="sm" />
@@ -72,7 +72,7 @@
   }
 </header>
 <div class="shell__body">
-  <!-- Below the tablet breakpoint the sidebar is the drawer, opened from the header. -->
+  <!-- Below the phone breakpoint (40em) the sidebar is the drawer, opened from the header. -->
   @if (!viewport.phone()) {
     <div class="shell__sidebar"><app-sidebar /></div>
   }

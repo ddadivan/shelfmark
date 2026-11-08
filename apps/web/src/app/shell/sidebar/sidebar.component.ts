@@ -33,10 +33,10 @@ import type { FolderNode } from '../../stores/models/folder-node.interface';
 import { FoldersStore } from '../../stores/folders.store';
 import { sidebarActiveId } from './sidebar-active-id';
 
-/** The fixed rows and their routes. */
 /** Id of the "Recently opened" row (phone drawer); it opens a sheet instead of a route. */
 const RECENT_ROW_ID = 'recent';
 
+/** The fixed rows and their routes. */
 const FIXED_ROUTES: Readonly<Record<string, string>> = {
   [LINKS_SCOPE.All]: APP_PATH.Links,
   [LINKS_SCOPE.Unsorted]: APP_PATH.Unsorted,

@@ -40,7 +40,9 @@ import { SettingsSectionComponent } from './settings-section.component';
 export default class SettingsPage {
   protected readonly auth = inject(AuthStore);
   protected readonly viewport = inject(ViewportService);
-  protected readonly BUTTON_SIZE = BUTTON_SIZE;
+  protected readonly signOutSize = computed(() =>
+    this.viewport.phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Md,
+  );
   protected readonly theme = inject(ThemeService);
   private readonly exporter = inject(ExportActionsService);
   protected readonly EXPORT_FORMAT = EXPORT_FORMAT;

@@ -22,7 +22,7 @@
       <ui-button
         class="settings__sign-out"
         [block]="viewport.phone()"
-        [size]="viewport.phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Md"
+        [size]="signOutSize()"
         (click)="signOut()"
       >
         {{ 'auth.signOut' | transloco }}
