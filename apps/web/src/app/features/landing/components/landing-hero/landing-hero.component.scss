@@ -79,3 +79,15 @@
   flex-wrap: wrap;
   gap: rem(10px);
 }
+
+// Stands in for the chat phone while it loads (same height from the shared size mixin), so the
+// swap causes no layout shift. It sits in the same grid cell as the demo.
+.landing-hero__demo-placeholder {
+  @include landing.chat-size;
+
+  min-height: calc(var(--landing-chat-height) + var(--landing-chat-chrome));
+}
+
+.landing-hero__sr {
+  @include visually-hidden;
+}

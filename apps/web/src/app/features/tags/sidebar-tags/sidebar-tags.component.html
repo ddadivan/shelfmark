@@ -21,7 +21,9 @@
   @if (tags.error()) {
     <p class="tags__note">
       {{ 'tags.sidebar.loadFailed' | transloco }}
-      <ui-button size="sm" (click)="retry()">{{ 'shell.sidebar.retry' | transloco }}</ui-button>
+      <ui-button [size]="buttonSize()" (click)="retry()">{{
+        'shell.sidebar.retry' | transloco
+      }}</ui-button>
     </p>
   } @else if (tags.loaded() && tags.count() === 0 && !adding()) {
     <p class="tags__note">{{ 'tags.sidebar.empty' | transloco }}</p>
@@ -51,7 +53,12 @@
     }
     @if (split().foldable) {
       <li class="tags__item">
-        <ui-button size="sm" variant="ghost" [ariaExpanded]="expanded()" (click)="toggleExpanded()">
+        <ui-button
+          [size]="buttonSize()"
+          variant="ghost"
+          [ariaExpanded]="expanded()"
+          (click)="toggleExpanded()"
+        >
           @if (expanded()) {
             {{ 'tags.sidebar.showLess' | transloco }}
           } @else {
@@ -94,7 +101,7 @@
       <p class="tags__conflict" role="status">
         {{ 'tags.rename.conflict' | transloco: { name: existing.name } }}
       </p>
-      <ui-button size="sm" [disabled]="saving()" (click)="mergeIntoConflict()">
+      <ui-button [size]="buttonSize()" [disabled]="saving()" (click)="mergeIntoConflict()">
         {{ 'tags.rename.merge' | transloco: { name: existing.name } }}
       </ui-button>
     }

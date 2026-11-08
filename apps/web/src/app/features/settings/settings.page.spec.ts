@@ -5,6 +5,7 @@ import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import axe from 'axe-core';
 import { firstValueFrom } from 'rxjs';
 import { AUTH_API } from '../../core/auth/auth-api.token';
+import { ONBOARDING_API } from '../onboarding/models/onboarding-api.const';
 import { AuthStore } from '../../core/auth/auth.store';
 import { AuthApi } from '../../core/auth/models/auth-api.interface';
 import { AuthUser } from '../../core/auth/models/auth-user.interface';
@@ -22,10 +23,12 @@ const USER: AuthUser = {
   email: 'ada@example.com',
   image: null,
   isDemo: false,
+  onboardingCompletedAt: '2020-01-01T00:00:00.000Z',
 };
 
 async function setup() {
   localStorage.removeItem(THEME_STORAGE_KEY);
+  const onboardingApi = { complete: vi.fn(), reset: vi.fn(() => Promise.resolve()) };
   const api: AuthApi = {
     getSession: () => Promise.resolve(USER),
     signIn: vi.fn(),
@@ -41,6 +44,7 @@ async function setup() {
       ]),
       provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
       { provide: AUTH_API, useValue: api },
+      { provide: ONBOARDING_API, useValue: onboardingApi },
     ],
   });
   await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
@@ -48,7 +52,14 @@ async function setup() {
   await store.ensureLoaded();
   const theme = TestBed.inject(ThemeService);
   const harness = await RouterTestingHarness.create('/settings');
-  return { api, store, theme, harness, root: harness.routeNativeElement as HTMLElement };
+  return {
+    api,
+    onboardingApi,
+    store,
+    theme,
+    harness,
+    root: harness.routeNativeElement as HTMLElement,
+  };
 }
 
 function radio(root: HTMLElement, label: string): HTMLInputElement {
@@ -98,6 +109,23 @@ describe('SettingsPage', () => {
     expect(api.signOut).toHaveBeenCalled();
     expect(store.isSignedIn()).toBe(false);
     expect(TestBed.inject(Router).url).toBe('/sign-in');
+  });
+
+  it('resets the welcome tour from its own section, one request at a time', async () => {
+    const { onboardingApi, store, root, harness } = await setup();
+    const button = Array.from(root.querySelectorAll('button')).find((b) =>
+      b.textContent?.includes('Show welcome again'),
+    );
+
+    expect(root.textContent).toContain('Welcome tour');
+    expect(root.textContent).toContain('See the 3-step introduction again');
+    button?.click();
+    button?.click();
+    await harness.fixture.whenStable();
+
+    expect(onboardingApi.reset).toHaveBeenCalledTimes(1);
+    expect(store.user()?.onboardingCompletedAt).toBeNull();
+    expect(button?.disabled).toBe(false);
   });
 
   it('goes back to the links', async () => {
