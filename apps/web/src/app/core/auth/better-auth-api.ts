@@ -12,6 +12,7 @@ import {
   type SocialSignInRequest,
   type SocialSignInResponse,
 } from '@shelfmark/contracts';
+import { skipErrorToast } from '../api/skip-error-toast';
 import { DemoSignInError } from './demo-sign-in-error';
 import { DEMO_ERROR } from './models/demo-error.const';
 import { AuthApi } from './models/auth-api.interface';
@@ -67,7 +68,13 @@ export class BetterAuthApi implements AuthApi {
   async signInDemo(): Promise<AuthUser> {
     let body: DemoSessionResponse | null;
     try {
-      body = await firstValueFrom(this.http.post<DemoSessionResponse>(DEMO_ENDPOINT.Create, {}));
+      body = await firstValueFrom(
+        this.http.post<DemoSessionResponse>(
+          DEMO_ENDPOINT.Create,
+          {},
+          { context: skipErrorToast() },
+        ),
+      );
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
         if (error.status === HttpStatusCode.TooManyRequests) {
