@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { buildCsp, createCspMiddleware } from '@shelfmark/web-csp';
+import { LANDING_HEADLINE } from './models/landing-headline.const';
 import { isCiBuild } from './support/build-mode';
 import { readCsp, readVercelConfig } from './support/vercel-config';
 
@@ -96,7 +97,7 @@ test.describe('Content-Security-Policy', () => {
 
     test('renders the landing page under the policy', async ({ page }) => {
       await page.goto('/');
-      await expect(page.getByRole('heading', { level: 1, name: 'Shelfmark' })).toBeVisible();
+      await expect(page.getByRole('heading', { level: 1, name: LANDING_HEADLINE })).toBeVisible();
     });
 
     test('applies component styles of ui-button, ui-icon and a CDK overlay', async ({ page }) => {
@@ -105,7 +106,9 @@ test.describe('Content-Security-Policy', () => {
 
       const button = page.getByRole('button', { name: 'Open overlay' });
       await expect(button).toBeVisible();
-      await expect(button).toHaveCSS('height', '36px');
+      // A coarse pointer (the phone project has touch) raises every ui-button to the 2.75rem touch target.
+      const coarse = test.info().project.use.hasTouch === true;
+      await expect(button).toHaveCSS('height', coarse ? '44px' : '36px');
       await expect(page.getByRole('img', { name: 'Star' })).toBeVisible();
 
       await button.click();
@@ -134,7 +137,7 @@ test.describe('Content-Security-Policy', () => {
     test('blocks an injected inline style without the nonce', async ({ page }) => {
       await collectViolations(page);
       await page.goto('/');
-      await expect(page.getByRole('heading', { level: 1, name: 'Shelfmark' })).toBeVisible();
+      await expect(page.getByRole('heading', { level: 1, name: LANDING_HEADLINE })).toBeVisible();
 
       await page.evaluate(`
         const style = document.createElement('style');

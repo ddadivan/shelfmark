@@ -1,0 +1,23 @@
+@use 'ui' as *;
+
+:host {
+  display: contents;
+}
+
+.link-row__trailing {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.link-row__tags {
+  display: flex;
+  gap: var(--space-1);
+  padding: 0;
+  margin: 0 var(--space-2) 0 0;
+  list-style: none;
+
+  @include phone {
+    display: none;
+  }
+}

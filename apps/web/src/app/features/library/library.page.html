@@ -1,4 +1,233 @@
-<section class="library">
-  <h1 class="library__title">{{ 'library.title' | transloco }}</h1>
-  <p class="library__hint">{{ 'library.placeholder' | transloco }}</p>
+<ui-progress-bar [active]="refetching()" [label]="'library.loading' | transloco" />
+<section class="library" [attr.aria-busy]="store.loading()">
+  @if (!folderMissing()) { @if (crumbs(); as trail) {
+  <ui-breadcrumbs
+    class="library__crumbs"
+    [items]="trail"
+    [ariaLabel]="'library.breadcrumb.label' | transloco"
+    [collapsedLabel]="'library.breadcrumb.collapsed' | transloco"
+    (linkClick)="openCrumb($event)"
+  />
+  }
+  <header class="library__toolbar">
+    <div class="library__heading">
+      <h1 class="library__title">{{ folder()?.name ?? (titleKey() | transloco) }}</h1>
+      @if (showLinks()) {
+      <p class="library__count">
+        {{ (store.hasMore() ? 'library.countMore' : 'library.count') | transloco: { count:
+        store.count() } }}
+      </p>
+      }
+    </div>
+    <div class="library__tools">
+      @if (showLinks() && viewOptions(); as options) {
+      <div class="library__controls">
+        <ui-button
+          [uiMenuTrigger]="sortMenu"
+          variant="ghost"
+          size="sm"
+          iconRight="chevron-down"
+          [ariaLabel]="'library.sort.label' | transloco: { sort: SORT_OPTION_KEYS[feedSort()] | transloco }"
+        >
+          {{ SORT_OPTION_KEYS[feedSort()] | transloco }}
+        </ui-button>
+        <ui-menu #sortMenu align="end" [ariaLabel]="'library.sort.menu' | transloco">
+          @for (option of SORT_OPTIONS; track option) {
+          <ui-menu-item
+            type="radio"
+            [selected]="option === feedSort()"
+            (activated)="setSort(option)"
+          >
+            {{ SORT_OPTION_KEYS[option] | transloco }}
+          </ui-menu-item>
+          }
+        </ui-menu>
+        <ui-segmented-control
+          iconOnly
+          [options]="options"
+          [value]="ui.view()"
+          [ariaLabel]="'library.view.label' | transloco"
+          (valueChange)="setView($event)"
+        />
+      </div>
+      }
+      <ui-button
+        [uiMenuTrigger]="exportMenu"
+        variant="secondary"
+        size="sm"
+        iconLeft="download"
+        iconRight="chevron-down"
+      >
+        {{ 'export.menu' | transloco }}
+      </ui-button>
+      <ui-menu #exportMenu align="end" [ariaLabel]="'export.menu' | transloco">
+        @if (viewScope()) {
+        <ui-menu-item icon="download" (activated)="exportView(EXPORT_FORMAT.Json)">
+          {{ 'export.view.json' | transloco }}
+        </ui-menu-item>
+        <ui-menu-item icon="download" (activated)="exportView(EXPORT_FORMAT.Html)">
+          {{ 'export.view.html' | transloco }}
+        </ui-menu-item>
+        <ui-menu-separator />
+        }
+        <ui-menu-item icon="download" (activated)="exportAll(EXPORT_FORMAT.Json)">
+          {{ 'export.all.json' | transloco }}
+        </ui-menu-item>
+        <ui-menu-item icon="download" (activated)="exportAll(EXPORT_FORMAT.Html)">
+          {{ 'export.all.html' | transloco }}
+        </ui-menu-item>
+      </ui-menu>
+    </div>
+  </header>
+  @if (filtered()) {
+  <div class="library__filter" role="group" [attr.aria-label]="'library.filter.label' | transloco">
+    @if (searching()) {
+    <ui-chip
+      variant="neutral"
+      icon="search"
+      removable
+      [removeLabel]="'library.search.remove' | transloco: { query: query() }"
+      (removed)="clearSearch()"
+    >
+      {{ 'library.search.chip' | transloco: { query: query() } }}
+    </ui-chip>
+    } @for (name of tags(); track name) {
+    <ui-chip
+      removable
+      [removeLabel]="'tags.filter.remove' | transloco: { name: name }"
+      (removed)="removeTag(name)"
+    >
+      {{ name }}
+    </ui-chip>
+    }
+    <ui-button variant="ghost" size="sm" (click)="clearAll()">
+      {{ 'tags.filter.clear' | transloco }}
+    </ui-button>
+  </div>
+  } } @if (store.error() && store.count() > 0 && !folderMissing()) {
+  <ui-notice kind="danger" class="library__notice">
+    {{ 'library.refetchFailed' | transloco }}
+    <ui-button size="sm" (click)="retry()">{{ 'library.error.retry' | transloco }}</ui-button>
+  </ui-notice>
+  } @if (folderMissing()) {
+  <ui-empty-state
+    illustration="not-found"
+    [heading]="'library.folderNotFound.title' | transloco"
+    [text]="'library.folderNotFound.text' | transloco"
+  >
+    <ui-button variant="primary" (click)="showAll()">
+      {{ 'library.folderNotFound.action' | transloco }}
+    </ui-button>
+  </ui-empty-state>
+  } @else if (failed()) {
+  <ui-empty-state
+    illustration="offline"
+    [heading]="'library.error.title' | transloco"
+    [text]="'library.error.text' | transloco"
+  >
+    <ui-button variant="primary" (click)="retry()">
+      {{ 'library.error.retry' | transloco }}
+    </ui-button>
+  </ui-empty-state>
+  } @else if (firstLoad()) { @if (ui.view() === UI_VIEW.List) {
+  <div class="library__rows">
+    <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="SKELETON_COUNT" />
+  </div>
+  } @else {
+  <div class="library__grid">
+    <ui-skeleton [shape]="SKELETON_SHAPE.Card" [count]="SKELETON_COUNT" />
+  </div>
+  } } @else if (empty() && searching()) {
+  <ui-empty-state
+    illustration="not-found"
+    [heading]="'library.emptySearch.title' | transloco: { query: query() }"
+    [text]="'library.emptySearch.text' | transloco"
+  >
+    <div class="library__empty-actions">
+      <ui-button (click)="clearSearch()">{{ 'library.emptySearch.clear' | transloco }}</ui-button>
+      @if (scope() !== LINKS_SCOPE.All) {
+      <ui-button (click)="searchEverywhere()">
+        {{ 'library.emptySearch.all' | transloco }}
+      </ui-button>
+      }
+    </div>
+  </ui-empty-state>
+  } @else if (empty() && filtered()) {
+  <ui-empty-state
+    illustration="empty-feed"
+    [heading]="'library.emptyFiltered.title' | transloco"
+    [text]="'library.emptyFiltered.text' | transloco"
+  >
+    <ui-button variant="primary" (click)="clearTags()">
+      {{ 'library.emptyFiltered.clear' | transloco }}
+    </ui-button>
+  </ui-empty-state>
+  } @else if (empty()) {
+  <ui-empty-state
+    [illustration]="isFolder() ? 'empty-folder' : 'empty-feed'"
+    [heading]="emptyKey() + '.title' | transloco"
+    [text]="emptyKey() + '.text' | transloco"
+  >
+    <div class="library__empty-actions">
+      @if (isFolder()) {
+      <ui-button (click)="openUnsorted()"
+        >{{ 'library.emptyFolder.unsorted' | transloco }}</ui-button
+      >
+      } @if (canAddLink()) {
+      <ui-button variant="primary" iconLeft="add" (click)="actions.addLink(addLinkData())">
+        {{ emptyKey() + '.action' | transloco }}
+      </ui-button>
+      } @else {
+      <ui-button variant="primary" (click)="showAll()">
+        {{ emptyKey() + '.action' | transloco }}
+      </ui-button>
+      }
+    </div>
+  </ui-empty-state>
+  } @else if (showLinks()) { @if (ui.view() === UI_VIEW.List) {
+  <ul class="library__rows" [attr.aria-label]="'library.list.label' | transloco">
+    @for (link of store.entities(); track link.id) {
+    <li>
+      <app-link-row
+        [link]="link"
+        (opened)="actions.open(link)"
+        (favoriteToggled)="actions.toggleFavorite(link)"
+        (editRequested)="actions.edit(link)"
+        (deleteRequested)="actions.delete(link)"
+      />
+    </li>
+    }
+  </ul>
+  } @else {
+  <ul class="library__grid" [attr.aria-label]="'library.list.label' | transloco">
+    @for (link of store.entities(); track link.id) {
+    <li>
+      <app-link-card
+        [link]="link"
+        (opened)="actions.open(link)"
+        (favoriteToggled)="actions.toggleFavorite(link)"
+        (editRequested)="actions.edit(link)"
+        (deleteRequested)="actions.delete(link)"
+      />
+    </li>
+    }
+  </ul>
+  }
+
+  <ui-load-more [loading]="store.loadingMore()" [text]="'library.loadingMore' | transloco" />
+  @if (store.hasMore()) {
+  <div
+    class="library__more"
+    appInView
+    [appInViewRecheck]="store.count()"
+    (entered)="store.loadMore()"
+  >
+    @if (store.loadMoreFailed()) {
+    <p class="library__more-error">{{ 'library.loadMoreFailed' | transloco }}</p>
+    }
+    <ui-button [disabled]="store.loadingMore()" (click)="store.loadMore()">
+      {{ 'library.loadMore' | transloco }}
+    </ui-button>
+  </div>
+  } }
 </section>

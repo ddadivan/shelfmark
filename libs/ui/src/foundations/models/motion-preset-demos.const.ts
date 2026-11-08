@@ -4,6 +4,11 @@ export const MOTION_PRESET_DEMOS: readonly MotionPresetDemo[] = [
   { name: 'pop', label: 'Menu, listbox, dialog', timing: '200 ms in, 120 ms out, ease-out' },
   { name: 'toast', label: 'Toast', timing: '320 ms in (ease-out), 120 ms out (ease-in)' },
   { name: 'sheet', label: 'Bottom sheet', timing: '320 ms in (ease-drawer), 200 ms out (ease-in)' },
+  {
+    name: 'drawer',
+    label: 'Side drawer (phone menu)',
+    timing: '320 ms in (ease-drawer), 200 ms out (ease-in), from the inline-start edge',
+  },
   { name: 'fade', label: 'Skeleton to content', timing: '200 ms in, 120 ms out, ease-out' },
   {
     name: 'spinner',

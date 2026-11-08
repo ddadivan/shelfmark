@@ -1,0 +1,63 @@
+@use '../src/styles/ui' as *;
+
+// Layout of the Drawer stories only (never shipped with the library). Class names start with `drs-`.
+
+.drs-panel {
+  display: grid;
+  gap: var(--space-4);
+  min-height: rem(320px);
+  padding: var(--space-8) var(--space-6);
+  color: var(--text);
+  background: var(--bg);
+  place-content: start;
+}
+
+.drs-gallery {
+  display: grid;
+  gap: var(--space-6);
+  padding: var(--space-6);
+  color: var(--text);
+  background: var(--bg);
+}
+
+.drs-hint {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+// A static drawer inside a scrim; the height replaces the full viewport.
+.drs-scrim {
+  --ui-drawer-height: #{rem(420px)};
+
+  display: flex;
+  max-width: rem(390px);
+  overflow: hidden;
+  background: var(--overlay);
+  border-radius: var(--radius-lg);
+}
+
+.drs-nav {
+  display: grid;
+  gap: rem(2px);
+}
+
+.drs-section {
+  @include type(caption);
+
+  padding: var(--space-3) var(--space-2) var(--space-1);
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.drs-title {
+  @include type(heading);
+}
+
+.drs-paragraph {
+  @include type(body);
+
+  margin: 0 0 var(--space-3);
+  color: var(--text-muted);
+}
