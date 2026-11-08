@@ -31,6 +31,7 @@ import 'helmet';
 import 'parse5';
 import 'reflect-metadata';
 import 'rxjs';
+import 'sharp';
 import 'swagger-ui-dist';
 import 'tslib';
 

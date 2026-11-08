@@ -20,14 +20,17 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiProduces,
   ApiTags,
 } from '@nestjs/swagger';
-import type { AuthUser } from '@shelfmark/contracts';
+import { LINK_IMAGE_KIND, type AuthUser } from '@shelfmark/contracts';
 import type { Response } from 'express';
 import { CurrentUser } from '../common/auth/current-user.decorator';
 import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
 import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
 import { CreateLinkDto } from './dto/create-link.dto';
+import { LinkImagesService } from './images/link-images.service';
+import { sendLinkImage } from './images/send-link-image';
 import { LinkPreviewRequestDto } from './dto/link-preview-request.dto';
 import { LinkPreviewResponseDto } from './dto/link-preview-response.dto';
 import { LinkResponseDto } from './dto/link-response.dto';
@@ -45,6 +48,7 @@ export class LinksController {
   constructor(
     private readonly links: LinksService,
     private readonly writes: LinksWriteService,
+    private readonly images: LinkImagesService,
   ) {}
 
   @Post('preview')
@@ -95,6 +99,32 @@ export class LinksController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<LinkResponseDto> {
     return this.links.get(user.id, id);
+  }
+
+  @Get(':id/favicon')
+  @ApiProduces('image/webp')
+  @ApiOkResponse({ description: 'The captured site icon (WebP, 32x32)' })
+  @ApiNotFoundResponse({ description: 'Unknown or foreign link, or no icon was captured' })
+  @ApiOperation({ summary: 'Site icon of a link, same-origin' })
+  async favicon(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    sendLinkImage(res, await this.images.find(user.id, id, LINK_IMAGE_KIND.Favicon));
+  }
+
+  @Get(':id/image')
+  @ApiProduces('image/webp')
+  @ApiOkResponse({ description: 'The captured preview image (WebP, 640x360)' })
+  @ApiNotFoundResponse({ description: 'Unknown or foreign link, or no image was captured' })
+  @ApiOperation({ summary: 'Preview image of a link, same-origin' })
+  async image(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    sendLinkImage(res, await this.images.find(user.id, id, LINK_IMAGE_KIND.Preview));
   }
 
   @Post()
