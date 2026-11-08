@@ -1,6 +1,6 @@
 # 0019. Vercel deployment architecture: static web, API function, headers, CLI policy
 
-- Status: Proposed
+- Status: Proposed; build command and function files amended by [0025](0025-database-tooling-prisma-7-pglite.md) (migrations in the build, Prisma query compiler in `includeFiles`)
 - Date: 2026-11-05
 - Source: issue #3; `docs/PROJECT.md` 5.7, 5.8, 9.2; `docs/SETUP.md` 5.6; [0006](0006-api-nestjs-build-and-tests.md), [0007](0007-api-security-baseline.md), [0013](0013-vercel-hobby-hosting.md)
 
