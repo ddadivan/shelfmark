@@ -16,6 +16,7 @@ import type {
 import type { Observable } from 'rxjs';
 import { API_BASE_URL } from '../../../core/api/api-base-url';
 import type { LinksApi } from '../models/links-api.interface';
+import { skipErrorToast } from '../../../core/api/skip-error-toast';
 
 /**
  * `LinksApi` over `/api/links`. `create` answers 201 for a new link and 200 when the
@@ -28,11 +29,13 @@ export class HttpLinksApi implements LinksApi {
 
   preview(url: string): Observable<LinkPreviewResponse> {
     const body: LinkPreviewRequest = { url };
-    return this.http.post<LinkPreviewResponse>(`${this.url()}/preview`, body);
+    return this.http.post<LinkPreviewResponse>(`${this.url()}/preview`, body, {
+      context: skipErrorToast(),
+    });
   }
 
   create(request: CreateLinkRequest): Observable<LinkResponse> {
-    return this.http.post<LinkResponse>(this.url(), request);
+    return this.http.post<LinkResponse>(this.url(), request, { context: skipErrorToast() });
   }
 
   list(query: ListLinksQuery = {}): Observable<ListLinksResponse> {
@@ -50,15 +53,19 @@ export class HttpLinksApi implements LinksApi {
   }
 
   update(id: string, request: UpdateLinkRequest): Observable<LinkResponse> {
-    return this.http.patch<LinkResponse>(this.url(id), request);
+    return this.http.patch<LinkResponse>(this.url(id), request, { context: skipErrorToast() });
   }
 
   remove(id: string): Observable<void> {
-    return this.http.delete<void>(this.url(id));
+    return this.http.delete<void>(this.url(id), { context: skipErrorToast() });
   }
 
   open(id: string): Observable<OpenLinkResponse> {
-    return this.http.post<OpenLinkResponse>(`${this.url(id)}/open`, {});
+    return this.http.post<OpenLinkResponse>(
+      `${this.url(id)}/open`,
+      {},
+      { context: skipErrorToast() },
+    );
   }
 
   private url(id?: string): string {

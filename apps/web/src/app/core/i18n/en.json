@@ -706,6 +706,10 @@
       "text": "Folders, tags, favorites and search with ⌘K bring back any link in a couple of keystrokes."
     }
   },
+  "errors": {
+    "rateLimited": "Too many requests. Try again in a moment.",
+    "server": "Something went wrong on our side. Try again."
+  },
   "toast": {
     "actionHint": "Press {{shortcut}} to reach {{action}}"
   }

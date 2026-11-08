@@ -8,6 +8,8 @@ import { SIGN_IN_QUERY } from '../auth/models/sign-in-query.const';
 import { SIGN_IN_REASON } from '../auth/models/sign-in-reason.const';
 import { safeReturnUrl } from '../auth/safe-return-url';
 import { API_BASE_URL } from './api-base-url';
+import { ApiErrorToastService } from './api-error-toast.service';
+import { SKIP_ERROR_TOAST } from './models/skip-error-toast.const';
 
 const AUTH_SEGMENT = 'auth';
 
@@ -33,8 +35,10 @@ function isGuardedApiRequest(url: string, base: string): boolean {
 /**
  * Global error handling (PROJECT.md 5.1), after the base interceptor. A 401 from `/api/**`
  * (not `/api/auth/**`) means the session is gone: the user is cleared and sent to the sign-in
- * screen with the page they were on as `returnUrl`. Everything else, including 429 and 5xx, is
- * left to the caller.  Nothing happens when the user is already gone (a parallel 401, or signed out).
+ * screen with the page they were on as `returnUrl`. Nothing happens when the user is already gone
+ * (a parallel 401, or signed out). A 429 or 5xx from the same requests shows one error toast
+ * unless the caller opted out with `SKIP_ERROR_TOAST` (it shows its own message). Every error is
+ * rethrown, so callers still see it.
  */
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const injector = inject(Injector);
@@ -42,6 +46,13 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const guarded = isGuardedApiRequest(req.url, base);
   return next(req).pipe(
     catchError((error: unknown) => {
+      if (guarded && error instanceof HttpErrorResponse && !req.context.get(SKIP_ERROR_TOAST)) {
+        if (error.status === HttpStatusCode.TooManyRequests) {
+          injector.get(ApiErrorToastService).show('errors.rateLimited');
+        } else if (error.status >= HttpStatusCode.InternalServerError && error.status < 600) {
+          injector.get(ApiErrorToastService).show('errors.server');
+        }
+      }
       if (
         guarded &&
         error instanceof HttpErrorResponse &&

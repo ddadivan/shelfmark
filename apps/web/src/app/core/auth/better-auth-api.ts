@@ -20,6 +20,7 @@ import { SIGN_IN_QUERY } from './models/sign-in-query.const';
 import { NAVIGATE } from './navigate.token';
 import { providerRedirectUrl } from './provider-redirect-url';
 import { safeReturnUrl } from './safe-return-url';
+import { skipErrorToast } from '../api/skip-error-toast';
 
 /**
  * Production `AuthApi`: the Better Auth routes of the API (ADR 0030) over `HttpClient`, so the
@@ -67,7 +68,13 @@ export class BetterAuthApi implements AuthApi {
   async signInDemo(): Promise<AuthUser> {
     let body: DemoSessionResponse | null;
     try {
-      body = await firstValueFrom(this.http.post<DemoSessionResponse>(DEMO_ENDPOINT.Create, {}));
+      body = await firstValueFrom(
+        this.http.post<DemoSessionResponse>(
+          DEMO_ENDPOINT.Create,
+          {},
+          { context: skipErrorToast() },
+        ),
+      );
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
         if (error.status === HttpStatusCode.TooManyRequests) {

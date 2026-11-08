@@ -11,6 +11,7 @@ import type {
 import { map, type Observable } from 'rxjs';
 import { API_BASE_URL } from '../../../core/api/api-base-url';
 import type { TagsApi } from '../models/tags-api.interface';
+import { skipErrorToast } from '../../../core/api/skip-error-toast';
 
 /**
  * `TagsApi` over `/api/tags`. Not registered yet: `provideLinksApi()` binds the placeholder
@@ -26,20 +27,22 @@ export class HttpTagsApi implements TagsApi {
   }
 
   create(request: CreateTagRequest): Observable<TagResponse> {
-    return this.http.post<TagResponse>(this.url(), request);
+    return this.http.post<TagResponse>(this.url(), request, { context: skipErrorToast() });
   }
 
   update(id: string, request: UpdateTagRequest): Observable<TagResponse> {
-    return this.http.patch<TagResponse>(this.url(id), request);
+    return this.http.patch<TagResponse>(this.url(id), request, { context: skipErrorToast() });
   }
 
   remove(id: string): Observable<void> {
-    return this.http.delete<void>(this.url(id));
+    return this.http.delete<void>(this.url(id), { context: skipErrorToast() });
   }
 
   merge(id: string, targetTagId: string): Observable<MergeTagResponse> {
     const body: MergeTagRequest = { targetTagId };
-    return this.http.post<MergeTagResponse>(`${this.url(id)}/merge`, body);
+    return this.http.post<MergeTagResponse>(`${this.url(id)}/merge`, body, {
+      context: skipErrorToast(),
+    });
   }
 
   private url(id?: string): string {

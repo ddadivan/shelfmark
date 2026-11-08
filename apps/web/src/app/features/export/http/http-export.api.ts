@@ -9,6 +9,7 @@ import { EXPORT_FILE_NAME } from '../models/export-file-name.const';
 import type { ExportApi } from '../models/export-api.interface';
 import type { ExportScope } from '../models/export-scope.interface';
 import { fileNameOf, saveBlob } from '../save-blob';
+import { skipErrorToast } from '../../../core/api/skip-error-toast';
 
 /**
  * `ExportApi` over `GET /api/export`. The file is fetched with the session cookie (same origin)
@@ -23,7 +24,11 @@ export class HttpExportApi implements ExportApi {
 
   download(format: ExportFormat, scope: ExportScope): Observable<void> {
     return this.http
-      .get(buildExportUrl(this.base, format, scope), { observe: 'response', responseType: 'blob' })
+      .get(buildExportUrl(this.base, format, scope), {
+        observe: 'response',
+        responseType: 'blob',
+        context: skipErrorToast(),
+      })
       .pipe(
         map((response) => {
           // A 2xx without a body is not a file: surface it as a failure, not a silent no-op.
