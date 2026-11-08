@@ -245,9 +245,14 @@ export class TagInputComponent extends UiFieldControl implements FormValueContro
   }
 
   protected onListValue(selected: readonly string[]): void {
+    // The reset below emits `valueChange` again, with the empty selection: handling that one would
+    // reset again, endlessly (a stack overflow). An empty selection has nothing to add.
+    if (selected.length === 0) {
+      return;
+    }
     const key = selected[selected.length - 1];
     const row = this.rows().find((r) => r.key === key);
-    this.listbox()?.value.set([]);
+    this.listbox()?.value.set(this.noSelection);
     if (row) {
       this.add(row.name);
     }

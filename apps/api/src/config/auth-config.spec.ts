@@ -6,7 +6,17 @@ import { NODE_ENV } from './models/node-env.const';
 // Every secret is generated per run: fixtures hold none.
 const secret = randomBytes(32).toString('hex');
 const clientSecret = randomBytes(16).toString('hex');
-const PROD = { NODE_ENV: NODE_ENV.Production, BETTER_AUTH_URL: 'https://app.example.test' };
+const PROVIDERS = {
+  GOOGLE_CLIENT_ID: 'google-id',
+  GOOGLE_CLIENT_SECRET: clientSecret,
+  GITHUB_CLIENT_ID: 'github-id',
+  GITHUB_CLIENT_SECRET: clientSecret,
+};
+const PROD = {
+  NODE_ENV: NODE_ENV.Production,
+  BETTER_AUTH_URL: 'https://app.example.test',
+  ...PROVIDERS,
+};
 
 function env(extra: NodeJS.ProcessEnv = {}): NodeJS.ProcessEnv {
   return { NODE_ENV: NODE_ENV.Test, BETTER_AUTH_SECRET: secret, ...extra };
@@ -137,6 +147,29 @@ describe('readAuthConfig', () => {
   });
 
   it.each([
+    [
+      'Google',
+      'GOOGLE_CLIENT_ID',
+      /GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET are required in production/,
+    ],
+    [
+      'GitHub',
+      'GITHUB_CLIENT_ID',
+      /GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET are required in production/,
+    ],
+  ])('refuses production without %s sign-in (ADR 0026)', (_name, idVar, message) => {
+    const secretVar = idVar.replace('_ID', '_SECRET');
+    expect(() =>
+      readAuthConfig(env({ ...PROD, [idVar]: undefined, [secretVar]: undefined })),
+    ).toThrow(message);
+  });
+
+  it('allows a missing provider outside production', () => {
+    const config = readAuthConfig(env());
+    expect(config.providers).toEqual({ google: undefined, github: undefined });
+  });
+
+  it.each([
     [{ GOOGLE_CLIENT_ID: 'id' }, /GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET must be set together/],
     [
       { GOOGLE_CLIENT_SECRET: 'x' },
@@ -162,5 +195,77 @@ describe('readAuthConfig', () => {
       );
     expect(attempt).toThrow();
     expect(attempt).not.toThrow(new RegExp(`${secret}|${clientSecret}`));
+  });
+
+  describe('Vercel preview deployments', () => {
+    const PREVIEW = { NODE_ENV: NODE_ENV.Production, VERCEL_ENV: 'preview' };
+    const branch = 'shelfmark-git-feat-x-team.vercel.app';
+    const deployment = 'shelfmark-abc123-team.vercel.app';
+
+    it('boots without any OAuth provider (demo-only previews, ADR 0026)', () => {
+      const config = readAuthConfig(env({ ...PREVIEW, VERCEL_BRANCH_URL: branch }));
+      expect(config.providers).toEqual({ google: undefined, github: undefined });
+    });
+
+    it('falls back to the branch URL and trusts both hostnames', () => {
+      const config = readAuthConfig(
+        env({ ...PREVIEW, VERCEL_BRANCH_URL: branch, VERCEL_URL: deployment }),
+      );
+      expect(config.baseUrl).toBe(`https://${branch}`);
+      expect(config.trustedOrigins).toEqual([`https://${branch}`, `https://${deployment}`]);
+    });
+
+    it('falls back to the deployment URL when the branch URL is missing', () => {
+      const config = readAuthConfig(env({ ...PREVIEW, VERCEL_URL: deployment }));
+      expect(config.baseUrl).toBe(`https://${deployment}`);
+      expect(config.trustedOrigins).toEqual([`https://${deployment}`]);
+    });
+
+    it('still requires BETTER_AUTH_URL when both Vercel URLs are missing', () => {
+      expect(() => readAuthConfig(env(PREVIEW))).toThrow(/BETTER_AUTH_URL is required/);
+    });
+
+    it('keeps an explicit BETTER_AUTH_URL as the base URL', () => {
+      const config = readAuthConfig(
+        env({ ...PREVIEW, ...PROD, VERCEL_BRANCH_URL: branch, VERCEL_URL: deployment }),
+      );
+      expect(config.baseUrl).toBe('https://app.example.test');
+      expect(config.trustedOrigins).toEqual([
+        'https://app.example.test',
+        `https://${branch}`,
+        `https://${deployment}`,
+      ]);
+    });
+
+    it.each(['production', undefined])(
+      'does not fall back outside preview (VERCEL_ENV=%s)',
+      (vercelEnv) => {
+        expect(() =>
+          readAuthConfig(
+            env({
+              NODE_ENV: NODE_ENV.Production,
+              VERCEL_ENV: vercelEnv,
+              VERCEL_BRANCH_URL: branch,
+              VERCEL_URL: deployment,
+            }),
+          ),
+        ).toThrow(/BETTER_AUTH_URL is required in production/);
+      },
+    );
+
+    it.each(['evil.test/path', 'user@evil.test', 'evil.test/', 'a b.test'])(
+      'rejects a malicious VERCEL_BRANCH_URL (%j)',
+      (value) => {
+        expect(() => readAuthConfig(env({ ...PREVIEW, VERCEL_BRANCH_URL: value }))).toThrow(
+          /VERCEL_BRANCH_URL/,
+        );
+      },
+    );
+
+    it('rejects a malicious VERCEL_URL', () => {
+      expect(() => readAuthConfig(env({ ...PREVIEW, VERCEL_URL: 'evil.test:99/x' }))).toThrow(
+        /VERCEL_URL/,
+      );
+    });
   });
 });

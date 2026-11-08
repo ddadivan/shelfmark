@@ -1,4 +1,5 @@
 import { Injector, runInInjectionContext } from '@angular/core';
+import { LINK_SORT_FIELD, SORT_ORDER } from '@shelfmark/contracts';
 import { MOCK_LINK_PREVIEW_DUPLICATE } from '@shelfmark/contracts/testing';
 import { firstValueFrom } from 'rxjs';
 import { MOCK_HOST } from '../models/mock-host.const';
@@ -71,6 +72,26 @@ describe('MockLinksApi', () => {
 
   describe('feed', () => {
     afterEach(() => sessionStorage.removeItem(MOCK_LINKS_SCENARIO_KEY));
+
+    it('searches the title, the note and the URL, every word', async () => {
+      const feed = createApi();
+      const note = await firstValueFrom(feed.list({ q: 'note for article', limit: 100 }));
+      expect(note.items.length).toBeGreaterThan(0);
+      expect(note.items.every((link) => link.note !== null)).toBe(true);
+      const url = await firstValueFrom(feed.list({ q: 'angular.dev', limit: 100 }));
+      expect(url.items.some((link) => link.url.includes('angular.dev'))).toBe(true);
+      const both = await firstValueFrom(feed.list({ q: 'saved zzz-none', limit: 100 }));
+      expect(both.items).toEqual([]);
+    });
+
+    it('sorts by title ignoring case, ascending', async () => {
+      const feed = createApi();
+      const { items } = await firstValueFrom(
+        feed.list({ sort: LINK_SORT_FIELD.Title, order: SORT_ORDER.Asc, limit: 100 }),
+      );
+      const titles = items.map((link) => link.title.toLowerCase());
+      expect(titles).toEqual([...titles].sort((a, b) => a.localeCompare(b)));
+    });
 
     it('pages through every link with the cursor', async () => {
       const feed = createApi();

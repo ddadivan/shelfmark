@@ -32,4 +32,8 @@ export const PRODUCTION_BUNDLE_MARKERS = [
   'fail-on-create',
   'fail-on-update',
   'fail-on-delete',
+  'Mock: onboarding store failed',
+  'Mock: export failed',
+  'sm-mock-export',
+  'mock-fail',
 ] as const;
