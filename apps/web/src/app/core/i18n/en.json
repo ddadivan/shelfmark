@@ -706,6 +706,32 @@
       "text": "Folders, tags, favorites and search with ⌘K bring back any link in a couple of keystrokes."
     }
   },
+  "rating": {
+    "title": "How do you like Shelfmark so far?",
+    "scale": {
+      "label": "Rating from 1 to 10",
+      "score": "{{score}} out of 10",
+      "low": "Not really",
+      "high": "Love it"
+    },
+    "notNow": "Not now",
+    "feedback": {
+      "title": "What would make it better?",
+      "label": "Your feedback",
+      "placeholder": "Tell us what is missing or annoying",
+      "counter": "characters",
+      "send": "Send",
+      "sending": "Sending…",
+      "skip": "Skip",
+      "error": "Couldn't send your feedback. Try again."
+    },
+    "thanks": {
+      "title": "Thank you",
+      "text": "Your rating helps us make Shelfmark better.",
+      "textFeedback": "We read every message.",
+      "close": "Close"
+    }
+  },
   "errors": {
     "rateLimited": "Too many requests. Try again in a moment.",
     "server": "Something went wrong on our side. Try again."

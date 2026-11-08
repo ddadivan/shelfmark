@@ -1,0 +1,73 @@
+<form [formRoot]="form">
+  <ui-dialog [title]="titleKey() | transloco" size="md">
+    @switch (step()) {
+      @case (RATING_STEP.Rate) {
+        <div class="rating__step">
+          <app-score-scale
+            [attr.aria-label]="'rating.scale.label' | transloco"
+            (picked)="rate($event)"
+          />
+        </div>
+      }
+      @case (RATING_STEP.Feedback) {
+        <div class="rating__step">
+          <ui-textarea
+            [label]="'rating.feedback.label' | transloco"
+            [placeholder]="'rating.feedback.placeholder' | transloco"
+            [counterLabel]="'rating.feedback.counter' | transloco"
+            [rows]="4"
+            [formField]="form.comment"
+          />
+          @if (failed()) {
+            <ui-notice [kind]="NOTICE_KIND.Danger">{{
+              'rating.feedback.error' | transloco
+            }}</ui-notice>
+          }
+        </div>
+      }
+      @case (RATING_STEP.Thanks) {
+        <div class="rating__step">
+          <p class="rating__text">
+            {{
+              (wroteFeedback() ? 'rating.thanks.textFeedback' : 'rating.thanks.text') | transloco
+            }}
+          </p>
+        </div>
+      }
+    }
+
+    <div slot="footer" class="rating__foot">
+      @switch (step()) {
+        @case (RATING_STEP.Rate) {
+          <ui-button [variant]="BUTTON_VARIANT.Ghost" [block]="phone()" (click)="close()">
+            {{ 'rating.notNow' | transloco }}
+          </ui-button>
+        }
+        @case (RATING_STEP.Feedback) {
+          <ui-button [block]="phone()" [disabled]="sending()" (click)="close()">
+            {{ 'rating.feedback.skip' | transloco }}
+          </ui-button>
+          <ui-button
+            [type]="BUTTON_TYPE.Submit"
+            [variant]="BUTTON_VARIANT.Primary"
+            [block]="phone()"
+            [disabled]="blank()"
+            [loading]="sending()"
+          >
+            {{ (sending() ? 'rating.feedback.sending' : 'rating.feedback.send') | transloco }}
+          </ui-button>
+        }
+        @case (RATING_STEP.Thanks) {
+          <ui-button
+            #closeButton
+            [variant]="BUTTON_VARIANT.Primary"
+            [block]="phone()"
+            (click)="close()"
+          >
+            {{ 'rating.thanks.close' | transloco }}
+          </ui-button>
+        }
+      }
+    </div>
+  </ui-dialog>
+</form>

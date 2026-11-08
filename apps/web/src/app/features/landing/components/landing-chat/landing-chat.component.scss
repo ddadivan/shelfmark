@@ -12,6 +12,13 @@
 
   display: block;
 
+  // The final size, from the first frame: Angular creates the deferred component's empty shell in
+  // one task and fills it in a later one, and on a slow device a frame is painted in between. Without
+  // this the shell is a few rem tall and the hero (and all below it) jumps up and back.
+  min-height: calc(
+    var(--landing-chat-height) + var(--landing-chat-chrome) + var(--landing-chat-touch)
+  );
+
   @include tablet-up {
     --landing-chat-start: 7;
   }

@@ -89,6 +89,13 @@
   --landing-chat-height: #{rem(300px)};
   --landing-chat-chrome: #{rem(147px)};
 
+  // Touch: the footer buttons reach 44px instead of 36px, so the phone is this much taller.
+  --landing-chat-touch: 0rem;
+
+  @include coarse {
+    --landing-chat-touch: #{rem(8px)};
+  }
+
   @include tablet-up {
     --landing-chat-height: #{rem(478px)};
     --landing-chat-chrome: #{rem(119px)};

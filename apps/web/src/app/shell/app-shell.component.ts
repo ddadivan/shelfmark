@@ -27,6 +27,7 @@ import { ExportActionsService } from '../features/export/export-actions.service'
 import { AuthStore } from '../core/auth/auth.store';
 import { LinkActionsService } from '../features/links/link-actions.service';
 import { OnboardingStore } from '../features/onboarding/onboarding.store';
+import { RatingStore } from '../features/rating/rating.store';
 import { SearchDialogService } from '../features/search/search-dialog.service';
 import { RecentLinksPanelComponent } from '../features/links/recent/recent-links-panel.component';
 import { ViewportService } from '../core/layout/viewport.service';
@@ -108,6 +109,22 @@ export default class AppShellComponent {
         this.onboarding.openIfDue();
       });
     }
+  });
+
+  private readonly rating = inject(RatingStore);
+
+  /** The rating look starts for an eligible user (not demo, onboarding done) and stops otherwise. */
+  private readonly ratingWatch = effect(() => {
+    const eligible = this.rating.eligible();
+    // Read so that a switch to another user (eligible stays true) runs the effect again.
+    const userId = this.auth.user()?.id;
+    untracked(() => {
+      if (eligible && userId !== undefined) {
+        this.rating.watch();
+      } else {
+        this.rating.stop();
+      }
+    });
   });
 
   protected async openSettings(): Promise<void> {
