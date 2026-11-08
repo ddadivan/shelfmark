@@ -28,7 +28,8 @@ export class BetterAuthApi implements AuthApi {
 
   async getSession(): Promise<AuthUser | null> {
     const body = await firstValueFrom(this.http.get<GetSessionResponse>(AUTH_ENDPOINT.GetSession));
-    return body?.user ?? null;
+    const user = body?.user;
+    return user ? { ...user, onboardingCompletedAt: user.onboardingCompletedAt ?? null } : null;
   }
 
   /**

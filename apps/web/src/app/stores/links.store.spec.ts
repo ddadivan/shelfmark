@@ -334,6 +334,15 @@ describe('LinksStore', () => {
       expect(ids(store)[0]).toBe('id-9');
     });
 
+    it('leaves a saved link for the next load when the order is not newest first', () => {
+      const { store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.All, sort: 'title', order: 'asc' });
+
+      store.addSaved(link(9));
+
+      expect(ids(store)).not.toContain('id-9');
+    });
+
     it('does not show a saved link that is not a favorite in the favorites scope', () => {
       const { store } = setup();
       store.setFilter({ scope: LINKS_SCOPE.Favorites });

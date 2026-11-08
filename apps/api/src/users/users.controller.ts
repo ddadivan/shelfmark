@@ -1,0 +1,58 @@
+import { Body, Controller, Delete, HttpCode, HttpStatus, Logger, Req, Res } from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
+  ApiNoContentResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import type { AuthUser } from '@shelfmark/contracts';
+import type { Request, Response } from 'express';
+import { SET_COOKIE_HEADER } from '../auth/models/auth-session-cookie.const';
+import { SessionCookieService } from '../auth/session-cookie.service';
+import { CurrentUser } from '../common/auth/current-user.decorator';
+import { ApiErrorResponseDto } from '../common/errors/dto/api-error-response.dto';
+import { DeleteAccountRequestDto } from './dto/delete-account-request.dto';
+import { UsersService } from './users.service';
+
+@ApiTags('me')
+@Controller('me')
+export class UsersController {
+  private readonly logger = new Logger(UsersController.name);
+
+  constructor(
+    private readonly users: UsersService,
+    private readonly sessionCookies: SessionCookieService,
+  ) {}
+
+  @Delete()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete the account and all data' })
+  @ApiNoContentResponse({ description: 'Deleted; the session cookie is cleared' })
+  @ApiBadRequestResponse({
+    type: ApiErrorResponseDto,
+    description: 'Invalid body, or the email does not match the account',
+  })
+  @ApiUnauthorizedResponse({ type: ApiErrorResponseDto, description: 'No valid session' })
+  async deleteAccount(
+    @CurrentUser() user: AuthUser,
+    @Body() body: DeleteAccountRequestDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<void> {
+    await this.users.deleteAccount(user, body);
+    // The account is gone: whatever happens now must still answer 204 with an expired cookie.
+    let cookies: string[];
+    try {
+      cookies = await this.sessionCookies.clearingCookies(req.headers);
+    } catch (error) {
+      // Message only: never the stack, headers or the cause object (they can hold the cookie).
+      const reason = error instanceof Error ? error.message : 'unknown error';
+      this.logger.warn(`Sign-out failed after account deletion: ${user.id} (${reason})`);
+      cookies = this.sessionCookies.fallbackClearingCookies();
+    }
+    for (const cookie of cookies) {
+      res.append(SET_COOKIE_HEADER, cookie);
+    }
+  }
+}

@@ -7,4 +7,5 @@ export const MOCK_DEMO_USER: AuthUser = {
   email: 'demo@example.com',
   image: null,
   isDemo: true,
+  onboardingCompletedAt: null,
 };

@@ -134,6 +134,13 @@ export const AuthStore = signalStore(
           tags.reset();
           patchState(store, { user: null, loaded: true, pending: null, failed: false });
         },
+        /** Sets the onboarding flag of the signed-in user; no-op for a guest. */
+        setOnboardingCompletedAt(onboardingCompletedAt: string | null): void {
+          const user = store.user();
+          if (user) {
+            patchState(store, { user: { ...user, onboardingCompletedAt } });
+          }
+        },
         /** Signs out, then goes to the sign-in screen (not when sign-out failed). */
         async signOutAndLeave(): Promise<void> {
           if (await signOut()) {

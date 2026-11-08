@@ -11,6 +11,9 @@
   --radius-sm: #{rem(6px)};
   --radius-md: #{rem(10px)};
   --radius-lg: #{rem(14px)};
+
+  // Floating action button (mockup: 56px square, 18px radius); no other component uses it.
+  --radius-fab: #{rem(18px)};
   --radius-full: #{rem(999px)};
   --duration-instant: 80ms;
   --duration-fast: 120ms;

@@ -23,6 +23,7 @@ import { MOCK_LINKS_SCENARIO } from '../models/mock-links-scenario.const';
 import { MOCK_LINKS_SCENARIO_KEY } from '../models/mock-links-scenario-key.const';
 import type { LinksApi } from '../models/links-api.interface';
 import { MockLibraryData } from './mock-library-data';
+import { matchesQuery } from '../search-query';
 
 /**
  * `LinksApi` over generated data with simulated latency, until the real API (#72). State is
@@ -185,7 +186,6 @@ export class MockLinksApi implements LinksApi {
   }
 
   private filter(query: ListLinksQuery): LinkResponse[] {
-    const q = query.q?.toLowerCase();
     const wanted = (query.tag ?? []).map((name) => name.toLowerCase());
     return this.links.filter(
       (link) =>
@@ -193,7 +193,7 @@ export class MockLinksApi implements LinksApi {
         (!query.unsorted || link.folderId === null) &&
         (query.favorite === undefined || link.isFavorite === query.favorite) &&
         wanted.every((tag) => link.tags.some((name) => name.toLowerCase() === tag)) &&
-        (q === undefined || link.title.toLowerCase().includes(q)),
+        (query.q === undefined || matchesQuery(link, query.q)),
     );
   }
 }
@@ -201,7 +201,9 @@ export class MockLinksApi implements LinksApi {
 function sort(links: LinkResponse[], query: ListLinksQuery): LinkResponse[] {
   const field = query.sort ?? LINK_SORT_FIELD.CreatedAt;
   const direction = (query.order ?? SORT_ORDER.Desc) === SORT_ORDER.Desc ? -1 : 1;
-  return [...links].sort((a, b) => direction * a[field].localeCompare(b[field]));
+  const key = (link: LinkResponse): string =>
+    field === LINK_SORT_FIELD.Title ? link.title.toLowerCase() : link[field];
+  return [...links].sort((a, b) => direction * key(a).localeCompare(key(b)));
 }
 
 function encodeCursor(offset: number): string {

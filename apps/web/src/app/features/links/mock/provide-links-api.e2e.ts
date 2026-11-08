@@ -1,5 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { inject, type Provider } from '@angular/core';
+import { MockExportApi } from '../../export/mock/mock-export.api';
+import { EXPORT_API } from '../../export/models/export-api.const';
 import { REAL_AUTH_API_STORAGE_KEY } from '../../../core/auth/models/real-auth-api-storage-key.const';
 import { HttpFoldersApi } from '../http/http-folders.api';
 import { HttpLinksApi } from '../http/http-links.api';
@@ -40,5 +42,6 @@ export function provideLinksApi(): Provider[] {
       provide: TAGS_API,
       useFactory: (): TagsApi => (useRealApi() ? inject(HttpTagsApi) : inject(MockTagsApi)),
     },
+    { provide: EXPORT_API, useExisting: MockExportApi },
   ];
 }

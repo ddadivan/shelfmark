@@ -5,7 +5,11 @@ import { MOCK_USER, openAccountMenu } from './support/mock-session';
 // Same value as REAL_AUTH_API_STORAGE_KEY in apps/web/src/app/core/auth/models/real-auth-api-storage-key.const.ts.
 const REAL_AUTH_API_KEY = 'sm-real-auth-api';
 const GOOGLE_AUTHORIZE = 'https://accounts.google.com/o/oauth2/v2/auth?client_id=e2e';
-const SESSION = { user: MOCK_USER, session: { expiresAt: '2030-01-01T00:00:00.000Z' } };
+// The API always sends onboardingCompletedAt; a missing one reads as null and opens the welcome tour.
+const SESSION = {
+  user: { ...MOCK_USER, onboardingCompletedAt: '2026-01-01T00:00:00.000Z' },
+  session: { expiresAt: '2030-01-01T00:00:00.000Z' },
+};
 
 /** Binds the real Better Auth client (instead of the mock) and answers get-session. */
 async function useRealAuthApi(page: Page, session: typeof SESSION | null): Promise<void> {
@@ -16,6 +20,10 @@ async function useRealAuthApi(page: Page, session: typeof SESSION | null): Promi
 }
 
 test.describe('sign-in flow (real auth client, routed API)', () => {
+  // The production build registers the PWA service worker, and page.route never sees the
+  // requests it makes, so the routed auth API would be bypassed.
+  test.use({ serviceWorkers: 'block' });
+
   test('starts the OAuth redirect with same-origin callback URLs', async ({ page }) => {
     await useRealAuthApi(page, null);
     let body: unknown;

@@ -288,7 +288,8 @@
       "empty": "Links you open appear here.",
       "hide": "Hide recently opened",
       "show": "Show recently opened",
-      "loading": "Loading recently opened links"
+      "loading": "Loading recently opened links",
+      "close": "Close"
     }
   },
   "auth": {
@@ -320,6 +321,12 @@
     "accountMenu": "Account menu",
     "settings": "Settings",
     "addLink": "Add link",
+    "menu": "Open menu",
+    "drawer": {
+      "label": "Menu",
+      "close": "Close menu",
+      "theme": "Switch theme"
+    },
     "sidebar": {
       "nav": "Library",
       "tree": "Views and folders",
@@ -336,7 +343,8 @@
         "move": "Move to…",
         "delete": "Delete folder…"
       }
-    }
+    },
+    "search": "Search"
   },
   "folders": {
     "dialog": {
@@ -423,8 +431,9 @@
     },
     "emptyFolder": {
       "title": "This folder is empty",
-      "text": "Add a link here, or move links in from other folders.",
-      "add": "Add link here"
+      "text": "Add a link here, or move links from Unsorted.",
+      "action": "Add link",
+      "unsorted": "Open Unsorted"
     },
     "count": "{{count}} links",
     "countMore": "{{count}}+ links",
@@ -446,15 +455,68 @@
       "retry": "Try again"
     },
     "empty": {
-      "title": "No links here yet",
-      "text": "Paste a link to save it to your shelf.",
-      "add": "Add link"
+      "all": {
+        "title": "Your links will live here",
+        "text": "Paste a link to a video, an article or something to buy — the title and preview fill in by themselves.",
+        "action": "Add link"
+      },
+      "unsorted": {
+        "title": "Unsorted is empty",
+        "text": "Links you save without a folder wait here until you file them.",
+        "action": "Add link"
+      },
+      "favorites": {
+        "title": "Your favorites will live here",
+        "text": "Tap the star on a link to keep it here.",
+        "action": "Show all links"
+      }
     },
     "refetchFailed": "Couldn't refresh your links. You are seeing the last loaded list.",
     "emptyFiltered": {
       "title": "No links with these tags",
       "text": "Nothing you saved has all of the selected tags.",
       "clear": "Clear filter"
+    },
+    "filter": {
+      "label": "Active filters"
+    },
+    "sort": {
+      "label": "Sort: {{sort}}",
+      "menu": "Sort links",
+      "newest": "Newest first",
+      "oldest": "Oldest first",
+      "title": "Title A–Z"
+    },
+    "search": {
+      "chip": "Search: {{query}}",
+      "remove": "Remove search {{query}}"
+    },
+    "emptySearch": {
+      "title": "Nothing found for “{{query}}”",
+      "text": "Try another word, or search in all folders.",
+      "clear": "Clear search",
+      "all": "Search all folders"
+    },
+    "breadcrumb": {
+      "label": "Breadcrumb",
+      "collapsed": "Show hidden folders"
+    },
+    "pageTitle": {
+      "page": "{{page}} · {{app}}",
+      "search": "Search: {{query}} · {{app}}"
+    }
+  },
+  "export": {
+    "menu": "Export",
+    "failed": "Couldn't export your links. Try again.",
+    "retry": "Try again",
+    "view": {
+      "json": "This view as JSON",
+      "html": "This view as Bookmarks HTML"
+    },
+    "all": {
+      "json": "Everything as JSON",
+      "html": "Everything as Bookmarks HTML"
     }
   },
   "settings": {
@@ -462,6 +524,15 @@
     "back": "Back to links",
     "account": {
       "title": "Account"
+    },
+    "data": {
+      "title": "Your data",
+      "export": {
+        "label": "Export your data",
+        "hint": "All your folders, tags and links in one file",
+        "json": "JSON",
+        "html": "Bookmarks HTML"
+      }
     },
     "appearance": {
       "title": "Appearance",
@@ -472,6 +543,12 @@
         "light": "Light",
         "dark": "Dark"
       }
+    },
+    "welcome": {
+      "title": "Welcome tour",
+      "hint": "See the 3-step introduction again",
+      "action": "Show welcome again",
+      "error": "Couldn't reset the welcome tour. Try again."
     }
   },
   "tags": {
@@ -547,5 +624,61 @@
       "one": "{{count}} link",
       "other": "{{count}} links"
     }
+  },
+  "search": {
+    "title": "Search",
+    "close": "Close search",
+    "label": "Search links, folders and tags",
+    "placeholder": "Search links, folders and tags",
+    "results": "Search results",
+    "esc": "Esc",
+    "inFolder": "in {{folder}}",
+    "noteMatches": "note matches:",
+    "showAll": "Show all results for “{{query}}”",
+    "foldersAndTags": "Folders and tags",
+    "linkCount": {
+      "one": "{{count}} link",
+      "other": "{{count}} links"
+    },
+    "tagMeta": {
+      "one": "Tag, {{count}} link",
+      "other": "Tag, {{count}} links"
+    },
+    "status": {
+      "one": "{{count}} result",
+      "other": "{{count}} results"
+    },
+    "hint": "Type to search your links, folders and tags.",
+    "searching": "Searching…",
+    "failed": "Couldn't search. Try again.",
+    "hints": {
+      "ctrl": "Ctrl",
+      "move": "move",
+      "open": "open",
+      "background": "open in background"
+    }
+  },
+  "onboarding": {
+    "stepLabel": "Step {{current}} of {{count}}",
+    "announce": "Step {{current}} of {{count}}: {{title}}",
+    "skip": "Skip",
+    "back": "Back",
+    "next": "Next",
+    "addFirst": "Add your first link",
+    "collect": {
+      "title": "All your links in one place",
+      "text": "Videos, articles, things to buy, courses — everything you save lives on one calm shelf instead of chats and tabs."
+    },
+    "save": {
+      "title": "Save in a second",
+      "text": "Paste a link and the title and preview fill in by themselves. Add a note so you remember why you saved it."
+    },
+    "find": {
+      "title": "Find it right away",
+      "text": "Folders, tags, favorites and search with ⌘K bring back any link in a couple of keystrokes."
+    }
+  },
+  "toast": {
+    "actionHint": "Press {{shortcut}} to reach {{action}}"
   }
 }

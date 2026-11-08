@@ -16,6 +16,7 @@ import { form, FormField, FormRoot } from '@angular/forms/signals';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { TAG_LIMIT, normalizeTagName, type TagResponse } from '@shelfmark/contracts';
 import {
+  BUTTON_SIZE,
   BUTTON_VARIANT,
   ButtonComponent,
   ChipComponent,
@@ -31,6 +32,7 @@ import {
 } from '@shelfmark/ui';
 import { TAG_OUTCOME } from '../../../stores/models/tag-outcome.const';
 import { TagsStore } from '../../../stores/tags.store';
+import { ViewportService } from '../../../core/layout/viewport.service';
 import { TagActionsService } from '../tag-actions.service';
 import { splitTags } from '../tag-split';
 
@@ -63,6 +65,11 @@ export class SidebarTagsComponent {
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
 
   protected readonly tags = inject(TagsStore);
+  private readonly viewport = inject(ViewportService);
+  /** Text buttons reach the 44px touch target on a phone. */
+  protected readonly buttonSize = computed(() =>
+    this.viewport.phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm,
+  );
   private readonly actions = inject(TagActionsService);
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
