@@ -1,18 +1,30 @@
-import { Body, Controller, Delete, HttpCode, HttpStatus, Logger, Req, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  Logger,
+  Post,
+  Req,
+  Res,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiNoContentResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import type { AuthUser } from '@shelfmark/contracts';
+import type { AuthUser, OnboardingResponse } from '@shelfmark/contracts';
 import type { Request, Response } from 'express';
 import { SET_COOKIE_HEADER } from '../auth/models/auth-session-cookie.const';
 import { SessionCookieService } from '../auth/session-cookie.service';
 import { CurrentUser } from '../common/auth/current-user.decorator';
 import { ApiErrorResponseDto } from '../common/errors/dto/api-error-response.dto';
 import { DeleteAccountRequestDto } from './dto/delete-account-request.dto';
+import { OnboardingResponseDto } from './dto/onboarding-response.dto';
 import { UsersService } from './users.service';
 
 @ApiTags('me')
@@ -54,5 +66,23 @@ export class UsersController {
     for (const cookie of cookies) {
       res.append(SET_COOKIE_HEADER, cookie);
     }
+  }
+
+  @Post('onboarding')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Mark the onboarding as completed (idempotent)' })
+  @ApiOkResponse({ type: OnboardingResponseDto })
+  @ApiUnauthorizedResponse({ type: ApiErrorResponseDto, description: 'No valid session' })
+  completeOnboarding(@CurrentUser() user: AuthUser): Promise<OnboardingResponse> {
+    return this.users.completeOnboarding(user);
+  }
+
+  @Delete('onboarding')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Show the onboarding again' })
+  @ApiNoContentResponse({ description: 'The completed flag is cleared' })
+  @ApiUnauthorizedResponse({ type: ApiErrorResponseDto, description: 'No valid session' })
+  resetOnboarding(@CurrentUser() user: AuthUser): Promise<void> {
+    return this.users.resetOnboarding(user);
   }
 }
