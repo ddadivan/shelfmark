@@ -1,0 +1,141 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.share {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: 100dvh;
+  background: var(--surface-hover);
+  color: var(--text);
+
+  @include tablet-up {
+    align-items: center;
+    padding: rem(48px);
+  }
+}
+
+// A sheet at the bottom of the phone (mockup), a centred card from the tablet breakpoint up.
+.share__sheet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: rem(440px);
+  padding: var(--space-5) var(--space-4) var(--space-6);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: var(--shadow-popover);
+
+  @include tablet-up {
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+  }
+}
+
+.share__header {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.share__logo {
+  --ui-logo-size: #{rem(28px)};
+
+  flex: none;
+}
+
+.share__heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.share__title {
+  @include type(heading);
+
+  margin: 0;
+}
+
+.share__subtitle {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.share__sr {
+  position: absolute;
+  width: rem(1px);
+  height: rem(1px);
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.share__preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+  padding: var(--space-3);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.share__meta {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-width: 0;
+  color: var(--text-muted);
+
+  @include type(caption);
+}
+
+.share__host {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.share__link-title {
+  @include type(label);
+
+  overflow-wrap: anywhere;
+}
+
+.share__description,
+.share__address {
+  @include type(caption);
+
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.share__address {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+// The host is a column flex box so the native button inside stretches to the full width.
+.share__action {
+  display: flex;
+  flex-direction: column;
+}
+
+.share__footnote {
+  @include type(caption);
+
+  margin: 0;
+  text-align: center;
+  color: var(--text-muted);
+}

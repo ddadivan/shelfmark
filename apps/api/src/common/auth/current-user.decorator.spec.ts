@@ -7,7 +7,14 @@ function contextWith(request: object): ExecutionContext {
 
 describe('currentUserFactory', () => {
   it('returns the user the guard put on the request', () => {
-    const user = { id: 'u1', name: 'Ada', email: 'a@example.com', image: null, isDemo: false };
+    const user = {
+      id: 'u1',
+      name: 'Ada',
+      email: 'a@example.com',
+      image: null,
+      isDemo: false,
+      onboardingCompletedAt: null,
+    };
     expect(
       currentUserFactory(undefined, contextWith({ auth: { user, session: { expiresAt: 'x' } } })),
     ).toBe(user);
