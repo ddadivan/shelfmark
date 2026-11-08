@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { decide, isDeployRelevant } from './vercel-ignore-build.mjs';
+import {
+  decide,
+  decideStorybook,
+  isDeployRelevant,
+  isStorybookRelevant,
+} from './vercel-ignore-build.mjs';
 
 const diff = (files) => () => files;
 
@@ -84,6 +89,64 @@ describe('decide', () => {
     assert.equal(
       decide({ env: 'preview', previousSha: 'abc', changedFiles: diff(files) }).skip,
       true,
+    );
+  });
+});
+
+describe('isStorybookRelevant', () => {
+  it('treats library sources, stories, styles and workspace setup as Storybook inputs', () => {
+    for (const file of [
+      'libs/ui/src/lib/button/button.component.ts',
+      'libs/ui/src/lib/drawer/drawer.stories.ts',
+      'libs/ui/.storybook/preview.ts',
+      'libs/ui/src/styles/tokens.scss',
+      'libs/ui/README.md',
+      'package-lock.json',
+      'tsconfig.base.json',
+    ]) {
+      assert.equal(isStorybookRelevant(file), true, file);
+    }
+  });
+
+  it('ignores unit tests, the a11y runner and everything outside the library', () => {
+    for (const file of [
+      'libs/ui/src/lib/button/button.component.spec.ts',
+      'libs/ui/a11y/storybook.a11y.mts',
+      'apps/web/src/main.ts',
+      'apps/api/src/main.ts',
+      'docs/PROJECT.md',
+      '.github/workflows/ci.yml',
+    ]) {
+      assert.equal(isStorybookRelevant(file), false, file);
+    }
+  });
+});
+
+describe('decideStorybook', () => {
+  const input = (ref, files) => ({ ref, previousSha: 'abc', changedFiles: diff(files) });
+
+  it('skips every branch but main', () => {
+    assert.equal(decideStorybook(input('feat/x', ['libs/ui/src/index.ts'])).skip, true);
+  });
+
+  it('skips a main merge that changed no Storybook input', () => {
+    assert.equal(decideStorybook(input('main', ['apps/web/src/main.ts'])).skip, true);
+  });
+
+  it('builds a main merge that changed the library', () => {
+    const files = ['apps/web/src/main.ts', 'libs/ui/src/lib/card/card.component.scss'];
+    assert.equal(decideStorybook(input('main', files)).skip, false);
+  });
+
+  it('builds on main without an earlier deployment, an empty diff or a failed diff', () => {
+    assert.equal(
+      decideStorybook({ ref: 'main', previousSha: undefined, changedFiles: diff([]) }).skip,
+      false,
+    );
+    assert.equal(decideStorybook(input('main', [])).skip, false);
+    assert.equal(
+      decideStorybook({ ref: 'main', previousSha: 'abc', changedFiles: () => null }).skip,
+      false,
     );
   });
 });
