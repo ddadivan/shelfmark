@@ -33,14 +33,17 @@ Node 26 LTS is required (`nvm use` reads `.nvmrc`). The pre-commit hook (lefthoo
 
 ```bash
 npm ci                                   # install
+npm start                                # web on http://localhost:4200 (npx nx serve web; mock APIs)
+npm run start:api                        # api on http://localhost:3000/api (npx nx serve api)
+npm run start:all                        # web + api together (npx nx run-many -t serve -p web api)
 npm run lint:styles                      # stylelint on css/scss (rem/em rules)
 npm run format:check                     # prettier check
-npx nx serve web                         # web on http://localhost:4200
-npx nx serve api                         # api on http://localhost:3000/api
-npx nx affected -t lint typecheck test build   # what CI runs
-npx nx test <project> --coverage         # unit tests (Vitest)
-npx nx e2e web-e2e                       # Playwright
-npx nx storybook ui                      # component showcase
+npm run affected                         # what CI runs (npx nx affected -t lint typecheck test build)
+npm test                                 # all unit tests (npx nx run-many -t test)
+npx nx test <project> --coverage         # unit tests of one project (Vitest)
+npm run e2e                              # Playwright (npx nx e2e web-e2e)
+npm run storybook                        # component showcase (npx nx storybook ui)
+npm run build                            # web + api production builds
 npx nx graph                             # project graph
 ```
 

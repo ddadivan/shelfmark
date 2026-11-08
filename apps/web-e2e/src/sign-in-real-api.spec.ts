@@ -1,4 +1,5 @@
-import { expect, Page, test } from '@playwright/test';
+import { type Page } from '@playwright/test';
+import { expect, test } from './support/test';
 import { AUTH_PROVIDER } from '@shelfmark/contracts';
 import { MOCK_USER, openAccountMenu } from './support/mock-session';
 

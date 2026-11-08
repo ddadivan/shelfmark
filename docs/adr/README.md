@@ -55,5 +55,6 @@ Routine features, bug fixes and choices already fully covered by an existing ADR
 | [0029](0029-global-session-guard-and-isolation-harness.md) | Global session guard on AuthService, public-route allow-list and scanner, data-isolation harness | Proposed | 2026-11-07 |
 | [0030](0030-better-auth-integration.md) | Better Auth integration: environment rules, allowed surface, token stripping, session filtering, test harness | Proposed | 2026-11-07 |
 | [0031](0031-rate-limiting-and-request-interceptors.md) | Rate limiting (throttler, in-memory), Logging and Timeout interceptors, CSRF origin guard | Proposed | 2026-11-07 |
+| [0032](0032-sentry-error-monitoring.md) | Sentry error monitoring: same-origin tunnel, runtime config, minimal SDKs | Accepted | 2026-11-07 |
 | [0033](0033-links-search-cursor-idempotency.md) | Links API: escaped multi-word search, keyset cursor, idempotent create, global lock order (folders before tags) | Proposed | 2026-11-07 |
 | [0034](0034-demo-session-and-cleanup-cron.md) | Demo sign-in: server-only session plugin, 24h expiry in four places, Postgres quota and cap, cron GET exception | Proposed | 2026-11-08 |

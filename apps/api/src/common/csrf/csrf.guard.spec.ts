@@ -3,9 +3,9 @@ import { CsrfGuard } from './csrf.guard';
 
 const TRUSTED = 'https://app.example.test';
 
-function run(method: string, headers: Record<string, string>): boolean {
+function run(method: string, headers: Record<string, string>, path = '/api/links'): boolean {
   const context = {
-    switchToHttp: () => ({ getRequest: () => ({ method, headers }) }),
+    switchToHttp: () => ({ getRequest: () => ({ method, headers, path }) }),
   } as never;
   return new CsrfGuard([TRUSTED]).canActivate(context);
 }
@@ -71,5 +71,39 @@ describe('CsrfGuard', () => {
 
   it('ignores an explicit zero-length body', () => {
     expect(run('POST', { 'content-length': '0', 'content-type': 'text/plain' })).toBe(true);
+  });
+
+  describe('the Sentry tunnel exemption', () => {
+    const TUNNEL = '/api/monitoring/tunnel';
+    const text = { 'content-length': '5', 'content-type': 'text/plain;charset=UTF-8' };
+
+    it('lets text/plain through with the trusted Origin', () => {
+      expect(run('POST', { ...text, origin: TRUSTED }, TUNNEL)).toBe(true);
+    });
+
+    it('still rejects a foreign Origin and cross-site fetches', () => {
+      expect(() => run('POST', { ...text, origin: 'https://evil.test' }, TUNNEL)).toThrow(
+        ForbiddenException,
+      );
+      expect(() => run('POST', { ...text, 'sec-fetch-site': 'cross-site' }, TUNNEL)).toThrow(
+        ForbiddenException,
+      );
+    });
+
+    it('still rejects text/plain on any other route', () => {
+      expect(() => run('POST', { ...text, origin: TRUSTED }, '/api/links')).toThrow(
+        UnsupportedMediaTypeException,
+      );
+      expect(() => run('POST', text, `${TUNNEL}/x`)).toThrow(UnsupportedMediaTypeException);
+      expect(() => run('POST', text, `${TUNNEL}/`)).toThrow(UnsupportedMediaTypeException);
+    });
+
+    it('does not exempt another method on the tunnel path', () => {
+      expect(() => run('PUT', text, TUNNEL)).toThrow(UnsupportedMediaTypeException);
+      expect(() => run('DELETE', text, TUNNEL)).toThrow(UnsupportedMediaTypeException);
+      expect(() => run('PUT', { ...text, origin: 'https://evil.test' }, TUNNEL)).toThrow(
+        ForbiddenException,
+      );
+    });
   });
 });

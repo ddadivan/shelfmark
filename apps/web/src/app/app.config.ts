@@ -26,12 +26,14 @@ import { APP_LANG } from './core/i18n/models/app-lang.const';
 import { AppTranslocoLoader } from './core/i18n/app-transloco.loader';
 import { SignedInPreloadingStrategy } from './core/routing/signed-in-preloading.strategy';
 import { provideLinksApi } from './features/links/provide-links-api';
+import { provideMonitoring } from './core/monitoring/provide-monitoring';
 import { provideOnboardingApi } from './features/onboarding/provide-onboarding-api';
 import { ThemeService } from './core/theme/theme.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
+    provideMonitoring(),
     provideZonelessChangeDetection(),
     provideRouter(
       appRoutes,

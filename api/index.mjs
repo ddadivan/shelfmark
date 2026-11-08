@@ -18,6 +18,7 @@ import '@nestjs/swagger';
 import '@nestjs/throttler';
 import '@prisma/adapter-pg';
 import '@prisma/client/runtime/client';
+import '@sentry/node';
 import '@thallesp/nestjs-better-auth';
 import 'better-auth';
 import 'better-auth/adapters/prisma';

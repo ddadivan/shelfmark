@@ -1,4 +1,5 @@
-import { expect, test, type Page } from '@playwright/test';
+import { type Page } from '@playwright/test';
+import { expect, test } from './support/test';
 import { dismissOnboarding, NEW_USER, openAccountMenu, seedSession } from './support/mock-session';
 
 const FIRST_TITLE = 'All your links in one place';
