@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { DEMO_LIMIT } from '@shelfmark/contracts';
 import { COLOR_SCHEME } from './models/color-scheme.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { demoUser, openAccountMenu, seedSession } from './support/mock-session';
@@ -21,8 +22,25 @@ test.describe('demo sign-in (mock auth)', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
     const banner = page.getByRole('status').filter({ hasText: BANNER_TITLE });
     await expect(banner).toBeVisible();
-    await expect(banner).toContainText('resets in 24 hours');
+    await expect(banner).toContainText(`resets in ${DEMO_LIMIT.SessionHours} hours`);
   });
+
+  for (const [failure, reason, text] of [
+    ['rate-limited', 'demo-limit', 'Too many demos'],
+    ['unavailable', 'demo-unavailable', 'The demo is full'],
+  ]) {
+    // The e2e build uses the mock auth API, which fails the demo on this localStorage key.
+    test(`/demo explains a ${failure} demo on the sign-in screen`, async ({ page }) => {
+      await page.addInitScript(
+        ([key, value]) => localStorage.setItem(key, value),
+        ['sm-mock-demo-failure', failure],
+      );
+      await page.goto('/demo');
+
+      await expect(page).toHaveURL(new RegExp(`/sign-in\\?reason=${reason}$`));
+      await expect(page.getByText(text)).toBeVisible();
+    });
+  }
 
   test('the sign-in demo button opens the library with the banner', async ({ page }) => {
     await page.goto('/sign-in');

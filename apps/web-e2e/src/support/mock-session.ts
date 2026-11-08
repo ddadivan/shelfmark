@@ -2,6 +2,7 @@ import { Page } from '@playwright/test';
 
 // Same value as MOCK_SESSION_STORAGE_KEY in apps/web/src/app/core/auth/models/mock-session-storage-key.const.ts.
 const MOCK_SESSION_KEY = 'sm-mock-session';
+const MS_PER_HOUR = 3_600_000;
 const SEEDED_FLAG = 'seeded';
 
 export const MOCK_USER = {
@@ -20,7 +21,7 @@ export function demoUser(hours: number) {
     id: 'e2e-demo',
     name: 'Demo user',
     isDemo: true,
-    demoExpiresAt: new Date(Date.now() + hours * 3_600_000).toISOString(),
+    demoExpiresAt: new Date(Date.now() + hours * MS_PER_HOUR).toISOString(),
   };
 }
 

@@ -131,6 +131,19 @@ describe('SignInPage', () => {
     expect(limited.router.url).toBe('/sign-in');
   });
 
+  it('shows one notice when the demo failed and the reason is in the URL', async () => {
+    const { harness } = await setup(undefined, () =>
+      Promise.reject(new DemoSignInError(DEMO_ERROR.RateLimited)),
+    );
+    await harness.navigateByUrl('/sign-in?reason=demo-limit');
+    const root = harness.routeNativeElement as HTMLElement;
+    button(root, 'demo').click();
+    await harness.fixture.whenStable();
+    harness.detectChanges();
+
+    expect(root.querySelectorAll('ui-notice')).toHaveLength(1);
+  });
+
   it('ignores an unknown reason', async () => {
     const { harness } = await setup();
     await harness.navigateByUrl('/sign-in?reason=<b>x</b>');

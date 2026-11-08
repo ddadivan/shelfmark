@@ -8,12 +8,17 @@ import {
   signal,
 } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { ButtonComponent, BUTTON_SIZE, BUTTON_VARIANT } from '@shelfmark/ui';
+import {
+  ButtonComponent,
+  BUTTON_SIZE,
+  BUTTON_VARIANT,
+  NoticeComponent,
+  NOTICE_KIND,
+} from '@shelfmark/ui';
 import { AuthStore } from '../../core/auth/auth.store';
-import { SIGN_IN_REASON } from '../../core/auth/models/sign-in-reason.const';
+import { MS_PER_HOUR } from '../../core/models/ms-per-hour.const';
 import { pluralKey } from '../../core/i18n/plural-key';
 import { DEMO_BANNER_TICK_MS } from './models/demo-banner-tick.const';
-import { MS_PER_HOUR } from './models/ms-per-hour.const';
 
 /**
  * Strip above the app header while the user is in a demo (PROJECT.md 5.4): how long the sandbox
@@ -22,12 +27,12 @@ import { MS_PER_HOUR } from './models/ms-per-hour.const';
  */
 @Component({
   selector: 'app-demo-banner',
-  imports: [TranslocoPipe, ButtonComponent],
+  imports: [TranslocoPipe, ButtonComponent, NoticeComponent],
   templateUrl: './demo-banner.component.html',
-  styleUrl: './demo-banner.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DemoBannerComponent {
+  protected readonly NOTICE_KIND = NOTICE_KIND;
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
 
@@ -40,14 +45,16 @@ export class DemoBannerComponent {
     return user?.isDemo ? user : null;
   });
 
+  /** Milliseconds until the sandbox ends; `null` when there is no expiry to show. */
+  private readonly msLeft = computed<number | null>(() => {
+    const expiresAt = this.demoUser()?.demoExpiresAt;
+    return expiresAt ? Date.parse(expiresAt) - this.now() : null;
+  });
+
   /** Whole hours left, rounded up, never below 1 while the demo runs; `null` when unknown. */
   protected readonly hoursLeft = computed<number | null>(() => {
-    const expiresAt = this.demoUser()?.demoExpiresAt;
-    if (!expiresAt) {
-      return null;
-    }
-    const left = Date.parse(expiresAt) - this.now();
-    return Math.max(1, Math.ceil(left / MS_PER_HOUR));
+    const left = this.msLeft();
+    return left === null ? null : Math.max(1, Math.ceil(left / MS_PER_HOUR));
   });
 
   protected readonly remainingKey = computed(() => {
@@ -55,23 +62,30 @@ export class DemoBannerComponent {
     return hours === null ? null : pluralKey('shell.demoBanner.remaining', hours);
   });
 
-  private readonly expired = computed(() => {
-    const expiresAt = this.demoUser()?.demoExpiresAt;
-    return !!expiresAt && Date.parse(expiresAt) <= this.now();
-  });
+  /** The sign-out from the button is running; the button waits. */
+  protected readonly leaving = signal(false);
 
   constructor() {
     const timer = setInterval(() => this.now.set(Date.now()), DEMO_BANNER_TICK_MS);
     inject(DestroyRef).onDestroy(() => clearInterval(timer));
     effect(() => {
-      if (this.expired() && !this.expiryHandled) {
+      const left = this.msLeft();
+      if (left !== null && left <= 0 && !this.expiryHandled) {
         this.expiryHandled = true;
-        void this.auth.signOutAndLeave(SIGN_IN_REASON.DemoExpired);
+        void this.auth.expireDemo();
       }
     });
   }
 
   protected async signInOwn(): Promise<void> {
-    await this.auth.signOutAndLeave();
+    if (this.leaving()) {
+      return;
+    }
+    this.leaving.set(true);
+    try {
+      await this.auth.signOutAndLeave();
+    } finally {
+      this.leaving.set(false);
+    }
   }
 }

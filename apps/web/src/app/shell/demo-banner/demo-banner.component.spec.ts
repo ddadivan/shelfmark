@@ -3,6 +3,7 @@ import { provideRouter, Router } from '@angular/router';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import type { AuthUser } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
+import { ToastService } from '@shelfmark/ui';
 import { AUTH_API } from '../../core/auth/auth-api.token';
 import { AuthStore } from '../../core/auth/auth.store';
 import { AuthApi } from '../../core/auth/models/auth-api.interface';
@@ -102,6 +103,51 @@ describe('DemoBannerComponent', () => {
     expect(navigate).toHaveBeenCalledWith(['/sign-in'], {
       queryParams: { reason: 'demo-expired' },
     });
+  });
+
+  it('clears local state and leaves even when the server session is gone at expiry', async () => {
+    const { api, fixture, store, navigate, root } = await setup(
+      demoIn(2 * 60_000),
+      vi.fn(() => Promise.reject(new Error('401'))),
+    );
+    const show = vi.spyOn(TestBed.inject(ToastService), 'show');
+
+    await vi.advanceTimersByTimeAsync(3 * 60_000);
+    fixture.detectChanges();
+    await vi.advanceTimersByTimeAsync(0);
+    fixture.detectChanges();
+
+    expect(api.signOut).toHaveBeenCalledTimes(1);
+    expect(store.isSignedIn()).toBe(false);
+    expect(show).not.toHaveBeenCalled();
+    expect(navigate).toHaveBeenCalledWith(['/sign-in'], {
+      queryParams: { reason: 'demo-expired' },
+    });
+    expect(root.querySelector('[role="status"]')).toBeNull();
+  });
+
+  it('ignores a second click while the sign-out runs', async () => {
+    let finish: () => void = () => undefined;
+    const { api, fixture, root } = await setup(
+      demoIn(5 * HOUR),
+      () => new Promise<void>((resolve) => (finish = resolve)),
+    );
+    const button = root.querySelector('button');
+
+    button?.click();
+    button?.click();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(api.signOut).toHaveBeenCalledTimes(1);
+    finish();
+    await vi.advanceTimersByTimeAsync(0);
+    fixture.detectChanges();
+  });
+
+  it('is an info notice banner with the action in its slot', async () => {
+    const { root } = await setup(demoIn(5 * HOUR));
+
+    expect(root.querySelector('ui-notice.ui-notice--banner.ui-notice--info')).not.toBeNull();
+    expect(root.querySelector('.ui-notice__action button')).not.toBeNull();
   });
 
   it('does not sign out again on later ticks after the expiry', async () => {

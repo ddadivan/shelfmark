@@ -13,7 +13,7 @@
     <ui-notice [kind]="NOTICE_KIND.Danger">{{ key | transloco }}</ui-notice>
     } @if (demoErrorKey(); as key) {
     <ui-notice [kind]="NOTICE_KIND.Warning">{{ key | transloco }}</ui-notice>
-    } @else if (auth.failed()) {
+    } @else if (auth.failed() && !auth.demoError()) {
     <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'auth.signIn.failed' | transloco }}</ui-notice>
     }
 

@@ -1,6 +1,10 @@
 import { DOCUMENT } from '@angular/common';
 import { Service, inject } from '@angular/core';
 import { DEMO_LIMIT, type AuthProvider, type AuthUser } from '@shelfmark/contracts';
+import { MS_PER_HOUR } from '../models/ms-per-hour.const';
+import { DemoSignInError } from './demo-sign-in-error';
+import { DEMO_ERROR } from './models/demo-error.const';
+import { MOCK_DEMO_FAILURE_STORAGE_KEY } from './models/mock-demo-failure-storage-key.const';
 import { AuthApi } from './models/auth-api.interface';
 import { MOCK_DEMO_USER } from './models/mock-demo-user.const';
 import { MOCK_USERS } from './models/mock-users.const';
@@ -38,10 +42,14 @@ export class MockAuthApi implements AuthApi {
   }
 
   signInDemo(): Promise<AuthUser> {
+    const failure = this.storage?.getItem(MOCK_DEMO_FAILURE_STORAGE_KEY);
+    if (failure === DEMO_ERROR.RateLimited || failure === DEMO_ERROR.Unavailable) {
+      return Promise.reject(new DemoSignInError(failure));
+    }
     return Promise.resolve(
       this.persist({
         ...MOCK_DEMO_USER,
-        demoExpiresAt: new Date(Date.now() + DEMO_LIMIT.SessionHours * 3_600_000).toISOString(),
+        demoExpiresAt: new Date(Date.now() + DEMO_LIMIT.SessionHours * MS_PER_HOUR).toISOString(),
       }),
     );
   }

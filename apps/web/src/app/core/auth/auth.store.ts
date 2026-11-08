@@ -19,6 +19,7 @@ import { DemoSignInError } from './demo-sign-in-error';
 import { SIGN_OUT_FLUSH_TIMEOUT_MS } from './models/sign-out-flush-timeout.const';
 import { AUTH_ROUTE } from './models/auth-routes.const';
 import { SIGN_IN_QUERY } from './models/sign-in-query.const';
+import { SIGN_IN_REASON } from './models/sign-in-reason.const';
 import type { SignInReason } from './models/sign-in-reason.type';
 import { AUTH_DEMO } from './models/auth-pending.const';
 import { AuthState } from './models/auth-state.interface';
@@ -137,6 +138,24 @@ export const AuthStore = signalStore(
           run(provider, () => api.signIn(provider, returnUrl)),
         signInDemo: () => run(AUTH_DEMO, () => api.signInDemo()),
         signOut,
+        /**
+         * The demo ran out: the server session is probably gone already, so a failing sign-out
+         * call is ignored. Local state is cleared and the sign-in screen shows the reason.
+         */
+        async expireDemo(): Promise<void> {
+          try {
+            await api.signOut();
+          } catch {
+            // Expected when the session expired on the server; nothing to tell the user.
+          }
+          links.reset();
+          folders.reset();
+          tags.reset();
+          patchState(store, { user: null, loaded: true, failed: false });
+          await router.navigate([AUTH_ROUTE.SignIn], {
+            queryParams: { [SIGN_IN_QUERY.Reason]: SIGN_IN_REASON.DemoExpired },
+          });
+        },
         /**
          * Signs out, then goes to the sign-in screen, with `?reason=` when given (not when
          * sign-out failed).

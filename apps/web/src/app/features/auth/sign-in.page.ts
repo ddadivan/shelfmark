@@ -68,7 +68,8 @@ export default class SignInPage {
   /** Why the demo button failed, when the API said so (too many demos, sandbox full). */
   protected readonly demoErrorKey = computed<string | null>(() => {
     const error = this.auth.demoError();
-    return error ? SIGN_IN_REASON_KEY[DEMO_ERROR_REASON[error]] : null;
+    // After `/demo` failed the reason is in the URL already; one notice is enough.
+    return error && this.reasonKey() === null ? SIGN_IN_REASON_KEY[DEMO_ERROR_REASON[error]] : null;
   });
 
   protected isLoading(action: AuthPending): boolean {
