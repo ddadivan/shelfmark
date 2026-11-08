@@ -9,7 +9,9 @@ import { isRecord } from '../common/util/is-record';
 @Injectable()
 export class EmptyBodyPipe implements PipeTransform<unknown, undefined> {
   transform(value: unknown): undefined {
-    const empty = value === undefined || (isRecord(value) && Object.keys(value).length === 0);
+    const empty =
+      value === undefined ||
+      (isRecord(value) && !Array.isArray(value) && Object.keys(value).length === 0);
     if (!empty) throw new BadRequestException('Request body must be empty');
     return undefined;
   }
