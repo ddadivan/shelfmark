@@ -12,6 +12,7 @@ function auth(user: Partial<AuthSessionResponse['user']>, expiresAt: string): Au
       image: null,
       isDemo: false,
       demoExpiresAt: null,
+      onboardingCompletedAt: null,
       ...user,
     },
     session: { expiresAt },

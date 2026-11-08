@@ -19,6 +19,9 @@ class DemoUserDto implements AuthUser {
 
   @ApiProperty({ type: String, format: 'date-time', nullable: true })
   demoExpiresAt!: string | null;
+
+  @ApiProperty({ type: String, format: 'date-time', nullable: true })
+  onboardingCompletedAt!: string | null;
 }
 
 class DemoSessionDto implements AuthSession {

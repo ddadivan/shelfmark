@@ -21,8 +21,8 @@ import { SessionCookieService } from './session-cookie.service';
  * `{ code, message }` shape.
  */
 @Module({
-  providers: [SessionCookieService],
-  exports: [SessionCookieService],
+  providers: [SessionCookieService, DemoSessionService],
+  exports: [SessionCookieService, DemoSessionService],
   imports: [
     BetterAuthModule.forRootAsync({
       imports: [PrismaModule],
@@ -41,7 +41,5 @@ import { SessionCookieService } from './session-cookie.service';
       },
     }),
   ],
-  providers: [DemoSessionService],
-  exports: [DemoSessionService],
 })
 export class AuthModule {}

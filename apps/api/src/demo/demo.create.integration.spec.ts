@@ -79,8 +79,8 @@ describe('POST /api/demo', () => {
 
   it('marks the cookie Secure in production', async () => {
     await t.close();
+    // Production now requires both OAuth providers to be configured (ADR 0026).
     t = await createAuthTestApp({
-      providers: false,
       isProduction: true,
       env: { NODE_ENV: 'production', BETTER_AUTH_URL: 'https://app.example.test' },
     });
