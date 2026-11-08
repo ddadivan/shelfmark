@@ -38,10 +38,79 @@
   }
 }
 
+.shell__add {
+  margin-inline: var(--space-4) auto;
+}
+
+// Phone header (mobile design): menu, logo, then search and account on the right.
+.shell__menu {
+  margin-inline-start: calc(var(--space-2) * -1);
+
+  @include tablet-up {
+    display: none;
+  }
+}
+
+.shell__search {
+  @include phone {
+    margin-inline-start: auto;
+  }
+}
+
+// The floating add button of the phone design. No z-index: it comes after the page in the DOM and
+// dialogs, menus and toasts have their own overlay layers above it. MobileHome has it 20px / 28px
+// from the edges; there are no such tokens, so it takes the nearest ones (16px / 24px).
+.shell__fab {
+  position: fixed;
+  inset-block-end: calc(var(--space-6) + env(safe-area-inset-bottom));
+  inset-inline-end: calc(var(--space-4) + env(safe-area-inset-right));
+}
+
+.shell__sidebar {
+  display: block;
+  flex: none;
+  align-self: stretch;
+  width: rem(248px);
+  background: var(--surface);
+  border-inline-end: 1px solid var(--border);
+}
+
+// The recent panel needs room: it exists from the desktop breakpoint up.
+.shell__recent-toggle {
+  display: none;
+
+  @include desktop {
+    display: inline-flex;
+  }
+}
+
+.shell__body {
+  display: flex;
+  align-items: flex-start;
+}
+
 .shell__main {
+  flex: 1;
+  min-width: 0;
   padding: var(--space-6) var(--space-4);
+
+  // Room below the last row for the floating add button.
+  @include phone {
+    padding-block-end: calc(rem(88px) + env(safe-area-inset-bottom));
+  }
 
   @include tablet-up {
     padding-inline: var(--space-6);
+  }
+}
+
+.shell__recent {
+  display: none;
+
+  @include desktop {
+    display: block;
+    flex: none;
+    width: rem(280px);
+    padding: var(--space-6) var(--space-6) var(--space-6) 0;
   }
 }
