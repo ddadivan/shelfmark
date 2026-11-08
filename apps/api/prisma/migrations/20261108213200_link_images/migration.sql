@@ -30,3 +30,5 @@ ALTER TABLE "link_images" ADD CONSTRAINT "link_images_link_id_fkey" FOREIGN KEY 
 -- Hand-written constraints (Prisma cannot express CHECKs): closed kind set and the 64 KB cap of ADR 0027.
 ALTER TABLE "link_images" ADD CONSTRAINT "link_images_kind_check" CHECK ("kind" IN ('favicon', 'preview'));
 ALTER TABLE "link_images" ADD CONSTRAINT "link_images_bytes_size_check" CHECK (octet_length("bytes") <= 65536);
+ALTER TABLE "link_images" ADD CONSTRAINT "link_images_content_type_check" CHECK ("content_type" = 'image/webp');
+ALTER TABLE "link_images" ADD CONSTRAINT "link_images_sha256_check" CHECK ("sha256" ~ '^[0-9a-f]{64}$');

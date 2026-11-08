@@ -1,3 +1,4 @@
+import { DECODED_ICO_KIND } from './models/decoded-ico-kind.const';
 import type { DecodedIco } from './models/decoded-ico.type';
 import type { IcoEntry } from './models/ico-entry.interface';
 
@@ -112,7 +113,7 @@ function decodeDib(data: Buffer): DecodedIco | null {
   } else if (depth === 32 && !anyAlpha) {
     for (let at = 3; at < raw.length; at += RGBA) raw[at] = 255;
   }
-  return { kind: 'raw', raw, width, height };
+  return { kind: DECODED_ICO_KIND.Raw, raw, width, height };
 }
 
 /**
@@ -125,7 +126,7 @@ export function decodeIco(bytes: Buffer): DecodedIco | null {
   if (best === undefined) return null;
   const data = bytes.subarray(best.offset, best.offset + best.size);
   if (data.subarray(0, PNG_SIGNATURE.length).equals(PNG_SIGNATURE)) {
-    return { kind: 'png', png: data };
+    return { kind: DECODED_ICO_KIND.Png, png: data };
   }
   return decodeDib(data);
 }

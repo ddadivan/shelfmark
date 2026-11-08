@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import type { LinkImageKind } from '@shelfmark/contracts';
 import sharp, { type Sharp } from 'sharp';
 import { decodeIco } from './decode-ico';
+import { DECODED_ICO_KIND } from './models/decoded-ico-kind.const';
 import { IMAGE_FORMAT } from './models/image-format.const';
 import { LINK_IMAGE_SPECS, MAX_INPUT_PIXELS } from './models/link-image-specs.const';
 import type { ProcessedImage } from './models/processed-image.interface';
@@ -22,7 +23,7 @@ function open(bytes: Buffer): Sharp | null {
   if (format !== IMAGE_FORMAT.Ico) return sharp(bytes, options);
   const ico = decodeIco(bytes);
   if (ico === null) return null;
-  if (ico.kind === 'png') return sharp(ico.png, options);
+  if (ico.kind === DECODED_ICO_KIND.Png) return sharp(ico.png, options);
   return sharp(ico.raw, {
     ...options,
     raw: { width: ico.width, height: ico.height, channels: RGBA_CHANNELS },

@@ -107,6 +107,7 @@ describe('link images (ADR 0027)', () => {
     expect(res.headers['cross-origin-resource-policy']).toBe('same-origin');
     expect(res.headers['content-disposition']).toBe('inline');
     expect(res.headers['cache-control']).toBe('private, max-age=31536000, immutable');
+    expect(res.headers['vary']).toContain('Cookie');
     const body = res.body as Buffer;
     expect(body.subarray(0, 4).toString('latin1')).toBe('RIFF');
     expect(body.subarray(8, 12).toString('latin1')).toBe('WEBP');
@@ -213,6 +214,18 @@ describe('link images (ADR 0027)', () => {
     await a.get(`${BASE}/${link.id}/image`).expect(404);
   });
 
+  it('keeps the images when PATCH writes the same URL, even differently', async () => {
+    const link = await create(a);
+    const same = (
+      await a.patch(`${BASE}/${link.id}`).send({ url: 'https://SITE.test/page' }).expect(200)
+    ).body as LinkResponse;
+    expect(same.imageUrl).toBe(link.imageUrl);
+    expect(same.faviconUrl).toBe(link.faviconUrl);
+    expect(await t.db.prisma.linkImage.count()).toBe(2);
+    const row = await t.db.prisma.link.findUniqueOrThrow({ where: { id: link.id } });
+    expect(row.imageSourceUrl).toBe(IMAGE_URL);
+  });
+
   it('removes the images with the link and with the account', async () => {
     const link = await create(a);
     await a.delete(`${BASE}/${link.id}`).expect(204);
@@ -267,13 +280,13 @@ describe('link images (ADR 0027)', () => {
         users.owner.userId,
         link.id,
         { faviconSourceUrl: FAVICON_URL, imageSourceUrl: IMAGE_URL },
-        500,
+        1_500,
       );
       expect(stored).toBe(false);
       expect(fetchImage).not.toHaveBeenCalled();
     });
 
-    it('caps its time at 5 seconds even when more is left', async () => {
+    it('caps its time at 5 seconds (4 for the fetch) even when more is left', async () => {
       const service = t.app.get(LinkImageCaptureService);
       const link = await create(a, { imageUrl: undefined, faviconUrl: undefined });
       await service.capture(
@@ -282,7 +295,22 @@ describe('link images (ADR 0027)', () => {
         { faviconSourceUrl: null, imageSourceUrl: IMAGE_URL },
         60_000,
       );
-      expect(fetchImage.mock.calls[0]?.[1]).toEqual({ totalTimeoutMs: 5_000 });
+      expect(fetchImage.mock.calls[0]?.[1]).toEqual({ totalTimeoutMs: 4_000 });
+    });
+
+    it('gives up at the deadline when a download hangs', async () => {
+      const service = t.app.get(LinkImageCaptureService);
+      const link = await create(a, { imageUrl: undefined, faviconUrl: undefined });
+      fetchImage.mockImplementation(() => new Promise<SafeImageResult>(() => undefined));
+      const started = Date.now();
+      const stored = await service.capture(
+        users.owner.userId,
+        link.id,
+        { faviconSourceUrl: null, imageSourceUrl: IMAGE_URL },
+        2_000,
+      );
+      expect(stored).toBe(false);
+      expect(Date.now() - started).toBeLessThan(3_500);
     });
 
     it('never stores images for a link of another user', async () => {

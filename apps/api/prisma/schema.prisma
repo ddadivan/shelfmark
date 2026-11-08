@@ -137,8 +137,9 @@ model Link {
   note             String?
   faviconUrl       String?   @map("favicon_url") @db.VarChar(2048)
   imageUrl         String?   @map("image_url") @db.VarChar(2048)
-  // Source URLs as sent by the client or found in the preview; never fetched here. faviconUrl and
-  // imageUrl stay null until the image capture of #149 (ADR 0027).
+  // Remote source URLs as sent by the client or found in the preview; the capture fetches them
+  // server-side (ADR 0027). faviconUrl and imageUrl above are dead columns, always null: the
+  // response derives its same-origin image paths from link_images (follow-up: drop them).
   faviconSourceUrl String?   @map("favicon_source_url") @db.VarChar(2048)
   imageSourceUrl   String?   @map("image_source_url") @db.VarChar(2048)
   // Client-generated UUID that makes a retried create return the first link (ADR 0033).

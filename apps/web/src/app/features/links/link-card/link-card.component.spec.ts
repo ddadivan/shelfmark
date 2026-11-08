@@ -28,16 +28,16 @@ describe('LinkCardComponent', () => {
   it('shows the captured same-origin image and icon', async () => {
     const { element } = await setup({
       ...LINK,
-      imageUrl: '/api/links/abc/image?v=0123456789abcdef',
-      faviconUrl: '/api/links/abc/favicon?v=0123456789abcdef',
+      imageUrl: '/api/links/0197a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b/image?v=0123456789abcdef',
+      faviconUrl: '/api/links/0197a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b/favicon?v=0123456789abcdef',
     });
 
     const sources = Array.from(element.querySelectorAll('img')).map((img) =>
       img.getAttribute('src'),
     );
     expect(sources).toEqual([
-      '/api/links/abc/image?v=0123456789abcdef',
-      '/api/links/abc/favicon?v=0123456789abcdef',
+      '/api/links/0197a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b/image?v=0123456789abcdef',
+      '/api/links/0197a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b/favicon?v=0123456789abcdef',
     ]);
   });
 

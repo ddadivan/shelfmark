@@ -19,6 +19,7 @@ export function sendLinkImage(res: Response, image: StoredLinkImage): void {
     .setHeader('Cross-Origin-Resource-Policy', 'same-origin')
     .setHeader('Content-Disposition', 'inline')
     .setHeader('Cache-Control', IMAGE_CACHE_CONTROL)
+    .setHeader('Vary', 'Cookie')
     .setHeader('ETag', `"${image.sha256}"`)
     .send(image.bytes);
 }

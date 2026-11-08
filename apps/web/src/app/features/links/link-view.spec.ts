@@ -15,9 +15,11 @@ describe('link view helpers', () => {
   });
 
   it('binds only image paths of our own API', () => {
-    const own = '/api/links/0197a1b2/image?v=abcdef0123456789';
+    const own = '/api/links/0197a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b/image?v=abcdef0123456789';
     expect(ownImageUrl(own)).toBe(own);
     expect(ownImageUrl(null)).toBeUndefined();
+    expect(ownImageUrl(`${own}&x=1`)).toBeUndefined();
+    expect(ownImageUrl('/api/links/x/image?v=abcdef0123456789')).toBeUndefined();
     expect(ownImageUrl('https://evil.test/a.png')).toBeUndefined();
     expect(ownImageUrl('//evil.test/a.png')).toBeUndefined();
     expect(ownImageUrl('data:image/png;base64,AAAA')).toBeUndefined();

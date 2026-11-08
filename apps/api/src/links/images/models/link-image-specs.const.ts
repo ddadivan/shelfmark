@@ -20,5 +20,5 @@ export const LINK_IMAGE_SPECS: Readonly<Record<LinkImageKind, LinkImageSpec>> = 
   },
 };
 
-/** Decoded pixels a remote image may have (24 MP); a decompression bomb stays below this. */
-export const MAX_INPUT_PIXELS = 24_000_000;
+/** Decoded pixels a remote image may have (16 MP, plenty for a 640x360 target): bounds memory per image. */
+export const MAX_INPUT_PIXELS = 16_000_000;

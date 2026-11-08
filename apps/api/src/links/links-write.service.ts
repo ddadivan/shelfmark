@@ -171,11 +171,18 @@ export class LinksWriteService {
           await this.folders.lockTree(tx, userId);
           await this.requireFolder(tx, userId, request.folderId);
         }
-        const current = await tx.link.findFirst({ where: { id, userId }, select: { id: true } });
+        const current = await tx.link.findFirst({
+          where: { id, userId },
+          select: { id: true, normalizedUrl: true },
+        });
         if (!current) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
-        // The captured images described the old page; the card falls back to the site letter.
-        if (request.url !== undefined)
+        // Only a really different page invalidates the captured images and the source hints (the
+        // same URL written differently keeps them); the card then falls back to the site letter.
+        if (data.normalizedUrl !== undefined && data.normalizedUrl !== current.normalizedUrl) {
           await tx.linkImage.deleteMany({ where: { linkId: id, userId } });
+          data.faviconSourceUrl = null;
+          data.imageSourceUrl = null;
+        }
 
         if (request.tags !== undefined) {
           // Held until commit, so a merge or a concurrent tag write cannot interleave with the swap.
@@ -219,9 +226,6 @@ export class LinksWriteService {
     if (request.url !== undefined) {
       data.url = request.url;
       data.normalizedUrl = this.normalize(request.url);
-      // The old hints described the old page.
-      data.faviconSourceUrl = null;
-      data.imageSourceUrl = null;
     }
     if (request.title !== undefined) {
       data.title = request.title;

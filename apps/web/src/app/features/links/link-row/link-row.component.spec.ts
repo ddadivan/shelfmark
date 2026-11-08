@@ -26,10 +26,10 @@ describe('LinkRowComponent', () => {
   it('shows the captured same-origin icon', async () => {
     const { element } = await setup({
       ...LINK,
-      faviconUrl: '/api/links/abc/favicon?v=0123456789abcdef',
+      faviconUrl: '/api/links/0197a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b/favicon?v=0123456789abcdef',
     });
     expect(element.querySelector('img')?.getAttribute('src')).toBe(
-      '/api/links/abc/favicon?v=0123456789abcdef',
+      '/api/links/0197a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b/favicon?v=0123456789abcdef',
     );
   });
 
