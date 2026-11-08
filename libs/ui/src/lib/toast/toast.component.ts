@@ -40,6 +40,8 @@ export class ToastComponent {
   readonly actionLabel = input<string>();
   /** Visually hidden text read with the toast, e.g. how to reach the action by keyboard. */
   readonly actionHint = input<string>();
+  /** Shortcut shown as a small `kbd` next to the action (not on phones); needs an action. */
+  readonly shortcut = input<string>();
   readonly action = output<void>();
   /** True while the pointer is over the toast or focus is inside it. */
   readonly pausedChange = output<boolean>();

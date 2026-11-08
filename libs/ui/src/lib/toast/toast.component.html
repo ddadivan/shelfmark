@@ -4,5 +4,8 @@
   <span class="ui-toast__hint">{{ hint }}</span>
 }
 @if (actionLabel(); as label) {
+  @if (shortcut(); as keys) {
+    <kbd class="ui-toast__kbd" aria-hidden="true">{{ keys }}</kbd>
+  }
   <button type="button" class="ui-toast__action" (click)="action.emit()">{{ label }}</button>
 }

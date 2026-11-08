@@ -7,6 +7,7 @@
     [text]="item.text"
     [actionLabel]="item.action?.label"
     [actionHint]="item.actionHint"
+    [shortcut]="item.actionHint ? shortcut : undefined"
     (action)="store.runAction(item)"
     (pausedChange)="store.setPaused(item.id, $event)"
   />

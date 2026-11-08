@@ -52,3 +52,21 @@
 .ui-toast__hint {
   @include visually-hidden;
 }
+
+// A subtle key hint for keyboard users; phones have no keyboard to use it.
+.ui-toast__kbd {
+  @include type(caption);
+
+  display: none;
+  flex: none;
+  padding: 0 rem(5px);
+  font-family: var(--font-mono);
+  color: color-mix(in srgb, var(--on-primary) 80%, transparent);
+  white-space: nowrap;
+  border: 1px solid color-mix(in srgb, var(--on-primary) 40%, transparent);
+  border-radius: rem(5px);
+
+  @include tablet-up {
+    display: inline-block;
+  }
+}

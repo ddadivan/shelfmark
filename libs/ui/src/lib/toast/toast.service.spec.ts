@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../../testing/axe';
 import { ToastService } from './toast.service';
+import { toastShortcutLabel } from './toast-shortcut-label';
 import { OVERLAY_LAYER } from '../overlay/models/overlay-layer.const';
 import { overlayLayerClass } from '../overlay/overlay-layer';
 import { TOAST_KIND } from './models/toast-kind.const';
@@ -443,7 +444,24 @@ describe('ToastService', () => {
     expect(service.handleShortcut(key({ altKey: false }))).toBe(false);
     expect(service.handleShortcut(key({ ctrlKey: true }))).toBe(false);
     expect(service.handleShortcut(key({ metaKey: true }))).toBe(false);
+    expect(service.handleShortcut(key({ isComposing: true }))).toBe(false);
+    const prevented = key({ cancelable: true });
+    prevented.preventDefault();
+    expect(service.handleShortcut(prevented)).toBe(false);
     expect(document.activeElement).toBe(document.body);
+  });
+
+  it('labels the shortcut for the platform and shows it only with a hint', () => {
+    expect(toastShortcutLabel(true)).toBe('Option+Shift+T');
+    expect(toastShortcutLabel(false)).toBe('Alt+Shift+T');
+    expect(toastShortcutLabel()).toMatch(/^(Alt|Option)\+Shift\+T$/);
+    const service = setup();
+    service.show({ text: 'Plain', action: { label: 'Undo', run: vi.fn() } });
+    render();
+    expect(toasts()[0].querySelector('kbd')).toBeNull();
+    service.show({ text: 'Hinted', actionHint: 'Hint', action: { label: 'Undo', run: vi.fn() } });
+    render();
+    expect(toasts().at(-1)?.querySelector('kbd')?.textContent).toBe(toastShortcutLabel());
   });
 
   it('announces the hint only for a toast with an action', () => {
@@ -463,7 +481,7 @@ describe('ToastService', () => {
   });
 
   describe('focus return', () => {
-    async function focusedToast() {
+    function focusedToast() {
       const service = setup();
       const outside = document.createElement('button');
       document.body.append(outside);
@@ -475,7 +493,7 @@ describe('ToastService', () => {
     }
 
     it('goes back when the action runs', async () => {
-      const { outside } = await focusedToast();
+      const { outside } = focusedToast();
       (toasts()[0].querySelector('button') as HTMLButtonElement).click();
       await vi.advanceTimersByTimeAsync(0);
       expect(document.activeElement).toBe(outside);
@@ -483,15 +501,32 @@ describe('ToastService', () => {
     });
 
     it('goes back when the toast is dismissed', async () => {
-      const { outside, ref } = await focusedToast();
+      const { outside, ref } = focusedToast();
       ref.dismiss();
       await vi.advanceTimersByTimeAsync(0);
       expect(document.activeElement).toBe(outside);
       outside.remove();
     });
 
+    it('does not move focus when the focused toast is replaced', async () => {
+      const { service, outside } = focusedToast();
+      service.show({ text: 'Newer', action: { label: 'Undo', run: vi.fn() } });
+      await vi.advanceTimersByTimeAsync(0);
+      expect(document.activeElement).not.toBe(outside);
+      outside.remove();
+    });
+
+    it('does not take body as the place to return to', () => {
+      const service = setup();
+      const ref = service.show({ text: 'Link deleted', action: { label: 'Undo', run: vi.fn() } });
+      render();
+      service.focusAction();
+      ref.dismiss();
+      expect(document.activeElement).not.toBeNull();
+    });
+
     it('leaves focus alone when the user already moved it', async () => {
-      const { outside, ref } = await focusedToast();
+      const { outside, ref } = focusedToast();
       const other = document.createElement('button');
       document.body.append(other);
       other.focus();
@@ -503,11 +538,11 @@ describe('ToastService', () => {
     });
 
     it('does nothing when the old target is gone', async () => {
-      const { outside, ref } = await focusedToast();
+      const { outside, ref } = focusedToast();
       outside.remove();
       ref.dismiss();
       await vi.advanceTimersByTimeAsync(0);
-      expect(document.activeElement).not.toBe(outside);
+      expect(document.activeElement).toBe(document.body);
     });
   });
 

@@ -11,7 +11,7 @@ export interface ToastOptions {
   readonly duration?: number;
   /**
    * Screen-reader hint announced with a toast that has an action, already translated
-   * ("Press Alt+Shift+T to reach Undo"). Use `TOAST_SHORTCUT.label` for the key.
+   * ("Press Alt+Shift+T to reach Undo"). Use `toastShortcutLabel()` for the key.
    */
   readonly actionHint?: string;
 }

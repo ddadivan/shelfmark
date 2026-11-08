@@ -4,7 +4,7 @@ import { ButtonComponent } from '../button/button.component';
 import type { ToastKind } from './models/toast-kind.type';
 import { ToastComponent } from './toast.component';
 import { ToastService } from './toast.service';
-import { TOAST_SHORTCUT } from './models/toast-shortcut.const';
+import { toastShortcutLabel } from './toast-shortcut-label';
 import { THEME, THEME_ATTRIBUTE } from '../theme';
 import { TOAST_KIND } from './models/toast-kind.const';
 
@@ -34,7 +34,7 @@ import { TOAST_KIND } from './models/toast-kind.const';
 class ToastDemoComponent {
   protected readonly toasts = inject(ToastService);
   protected readonly kinds: readonly ToastKind[] = Object.values(TOAST_KIND);
-  protected readonly shortcut = TOAST_SHORTCUT.label;
+  protected readonly shortcut = toastShortcutLabel();
   protected last = '';
 
   protected show(kind: ToastKind): void {
@@ -45,7 +45,7 @@ class ToastDemoComponent {
   protected undo(): void {
     this.toasts.show({
       text: 'Link deleted',
-      actionHint: `Press ${TOAST_SHORTCUT.label} to reach Undo`,
+      actionHint: `Press ${toastShortcutLabel()} to reach Undo`,
       action: {
         label: 'Undo',
         run: () => {
@@ -93,7 +93,7 @@ const meta: Meta<ToastComponent> = {
         component:
           '`ToastService.show({ text, kind, action?, duration? })` renders a `ui-toast` in the toast overlay layer. ' +
           'One toast at a time, the newest replaces the older. It is announced by one persistent polite live region and never takes focus by itself; the timer pauses on hover and focus. ' +
-          '`handleShortcut(event)` (Alt+Shift+T, `TOAST_SHORTCUT`) focuses the action of the toast on screen and focus returns to where it was when the toast closes; `actionHint` is a visually hidden text announced with the toast. ' +
+          '`handleShortcut(event)` (Alt+Shift+T, Option+Shift+T on macOS) focuses the action of the toast on screen and focus returns to where it was when the toast closes; `actionHint` is a visually hidden text announced with the toast. ' +
           '`show()` returns `{ dismiss(), closed }`: `closed` is a promise that resolves once with the close reason (`TOAST_CLOSE_REASON`: `action`, `timeout`, `dismissed`, `replaced`).',
       },
     },
@@ -127,7 +127,10 @@ export const Kinds: Story = {
 
 /** With the Undo action after a delete. */
 export const WithUndo: Story = {
-  render: () => staticView(`<ui-toast text="Link deleted" actionLabel="Undo" />`),
+  render: () =>
+    staticView(
+      `<ui-toast text="Link deleted" actionLabel="Undo" actionHint="Press Alt+Shift+T to reach Undo" shortcut="Alt+Shift+T" />`,
+    ),
 };
 
 /** Long text wraps; the action stays on the right. */
@@ -151,7 +154,7 @@ export const AllVariants: Story = {
           <div [attr.${THEME_ATTRIBUTE}]="theme" class="tt-panel tt-static">
             <ui-toast kind="info" text="Link moved" />
             <ui-toast kind="success" text="Link saved to Work / Angular" actionLabel="View" />
-            <ui-toast kind="info" text="Link deleted" actionLabel="Undo" />
+            <ui-toast kind="info" text="Link deleted" actionLabel="Undo" actionHint="Press Alt+Shift+T to reach Undo" shortcut="Alt+Shift+T" />
             <ui-toast kind="error" text="Couldn't save. Check your connection." actionLabel="Retry" />
           </div>
         }
