@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  DEMO_LIMIT,
   LINK_LIMIT,
   normalizeTagName,
   normalizeUrl,
@@ -211,9 +212,16 @@ export class LinksWriteService {
   }
 
   private async assertUnderLimit(db: LinkDbClient, userId: string): Promise<void> {
+    // Demo sandboxes are capped far lower (PROJECT.md 5.8); the owner is read from the same client,
+    // so the check stays inside the caller's transaction and lock.
+    const owner = await db.user.findUnique({ where: { id: userId }, select: { isDemo: true } });
+    const isDemo = owner?.isDemo === true;
+    const max = isDemo ? DEMO_LIMIT.MaxLinks : LINK_LIMIT.PerUserMax;
     const total = await db.link.count({ where: { userId } });
-    if (total >= LINK_LIMIT.PerUserMax) {
-      throw new ConflictException(LINK_ERROR_MESSAGE.LimitReached);
+    if (total >= max) {
+      throw new ConflictException(
+        isDemo ? LINK_ERROR_MESSAGE.DemoLimitReached : LINK_ERROR_MESSAGE.LimitReached,
+      );
     }
   }
 
