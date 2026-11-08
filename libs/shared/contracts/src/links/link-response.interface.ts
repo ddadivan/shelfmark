@@ -6,7 +6,9 @@ export interface LinkResponse {
   url: string;
   title: string;
   note: string | null;
+  /** Same-origin path `/api/links/{id}/favicon?v=<hash>` when a copy was captured (ADR 0027), else `null`. */
   faviconUrl: string | null;
+  /** Same-origin path `/api/links/{id}/image?v=<hash>` when a copy was captured (ADR 0027), else `null`. */
   imageUrl: string | null;
   isFavorite: boolean;
   /** ISO timestamp of the last open; `null` if never opened. */

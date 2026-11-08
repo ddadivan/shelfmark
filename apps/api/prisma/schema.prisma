@@ -39,6 +39,7 @@ model User {
   accounts              Account[]
   folders               Folder[]
   links                 Link[]
+  linkImages            LinkImage[]
   tags                  Tag[]
   feedback              Feedback[]
 
@@ -149,6 +150,7 @@ model Link {
   user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   folder           Folder?   @relation(fields: [folderId], references: [id], onDelete: SetNull)
   tags             LinkTag[]
+  images           LinkImage[]
 
   @@unique([userId, idempotencyKey])
   @@index([userId, createdAt, id])
@@ -160,6 +162,29 @@ model Link {
   @@index([note(ops: raw("gin_trgm_ops"))], type: Gin, map: "links_note_trgm_idx")
   @@index([url(ops: raw("gin_trgm_ops"))], type: Gin, map: "links_url_trgm_idx")
   @@map("links")
+}
+
+// Re-encoded copy of a link's favicon or preview image (ADR 0027): WebP, at most 64 KB. Served
+// same-origin by /api/links/:id/favicon|image, always filtered by userId.
+model LinkImage {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  linkId      String   @map("link_id") @db.Uuid
+  // 'favicon' | 'preview' (LINK_IMAGE_KIND); a CHECK in the migration keeps it closed.
+  kind        String   @db.VarChar(16)
+  contentType String   @map("content_type") @db.VarChar(64)
+  bytes       Bytes
+  width       Int
+  height      Int
+  sha256      String   @db.VarChar(64)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  link        Link     @relation(fields: [linkId], references: [id], onDelete: Cascade)
+
+  @@unique([linkId, kind])
+  @@index([userId])
+  @@map("link_images")
 }
 
 model Tag {
