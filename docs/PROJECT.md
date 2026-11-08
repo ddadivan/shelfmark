@@ -28,14 +28,15 @@ Updated as work goes on — every session resumes from here.
   - Next: stage 1 issues from 9.1 (the author decides when); CSP nonce middleware (#9) before the first `libs/ui` component renders in `apps/web`
   - Verification of protected previews by agents: `vercel curl` and `vercel logs` (CLI login, no bypass token)
 - [ ] Stages 1–7 in progress (status Nov 8, 2026, end of the overnight cloud session)
-  - Merged by Nov 8: feed, add-link and edit, folders and tags (web), libs/ui (checkbox, long press, chip menu, highlight, command list), landing with animations and performance, search / sort / breadcrumbs / ⌘K (#144), export menu (#153), empty states (#154)
-  - Ready to merge, base `main`: #157 (onboarding web, part of #99) → #160 (#97 mobile layout and phone drawer). Merge #157 first; #160 then needs `origin/main` merged in (small conflict in the app shell and settings, plus the `ONBOARDING_API` stub in the shell spec)
+  - Merged by Nov 8: feed, add-link and edit, folders and tags (web), libs/ui (checkbox, long press, chip menu, highlight, command list), landing with animations and performance, search / sort / breadcrumbs / ⌘K (#144), export menu (#153), empty states (#154), onboarding web (#157)
+  - Ready to merge, base `main`: #160 (#97 mobile layout, phone drawer, `ui-button` fab / block, toast and focus fixes), #167 (#166 avatar initials, axe `label-content-name-mismatch` enabled). Either order
+  - Stacked on #160 (draft; retarget to `main` after it merges — CI runs only for PRs into `main`): #168 (#98 app-wide axe matrix and keyboard flows), #169 (#164 toast shortcut to reach Undo; needs a manual browser and screen-reader check), #170 (#165 focus restore when a dialog opener disappears)
   - Auth stack, draft, waiting for merges and Vercel preview checks: #85 → #89 → #118 → #125; on #125: #132 (rate limit, CSRF), #137 (tags API), #138 (folders API), #145 (account deletion), #146 (export API), #148 (web Better Auth), #151 (onboarding API, on #145), #152 (links API, #72)
   - Stacked on #152, draft, reviewed: #156 (#155 web wiring of the real APIs), #159 (#100 rating API), #161 (#67 demo API, cron, ADR 0034). Stacked on #148: #162 (#67 demo web, `ui-notice` info kind and banner). Stacked on #117: #158 (#95 Share target)
   - Also draft, waiting for the author: #79 fetcher, #117 PWA, #139 Sentry (preview and DSNs), #115 privacy (legal text)
   - Test harness: `apps/api/test-utils/exchange-socket-server.ts` (on #152) serialises PGlite protocol exchanges; it fixes the random `links.concurrency` failures (P2039)
-  - Next: #98 app-wide a11y and dark theme pass (after #157 and #160), #100 rating web (needs a design decision: no mockup for the rating dialogs), #110 release security check (last)
-  - Author decisions: listed in the PRs and issue plans: #155 (`ApiError` code, 429/5xx toasts), #157 / #99 (PROJECT.md 6 onboarding endpoint, demo users and onboarding), #158 (folder chips, bare hosts), #159 / #100 (comment append, design for the dialogs, export), #161 / #67 (path `/api/demo`, rate-limit store, cap, CAPTCHA follow-up, `CRON_SECRET` in Vercel), #162 (banner copy vs PROJECT.md 4.21)
+  - Next: #100 rating web (needs a design decision: no mockup for the rating dialogs), #110 release security check (last)
+  - Author decisions: listed in the PRs and issue plans: #155 (`ApiError` code, 429/5xx toasts), #99 (PROJECT.md 6 onboarding endpoint, demo users and onboarding), #158 (folder chips, bare hosts), #159 / #100 (comment append, design for the dialogs, export), #161 / #67 (path `/api/demo`, rate-limit store, cap, CAPTCHA follow-up, `CRON_SECRET` in Vercel), #162 (banner copy vs PROJECT.md 4.21), #169 (toast shortcut, Toast spec update)
 - [ ] Motion in code — stage 6; promo video — after the stage 1 release
 
 ## 1. Problem and idea
