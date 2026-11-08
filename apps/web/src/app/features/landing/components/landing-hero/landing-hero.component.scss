@@ -85,7 +85,9 @@
 .landing-hero__demo-placeholder {
   @include landing.chat-size;
 
-  min-height: calc(var(--landing-chat-height) + var(--landing-chat-chrome));
+  min-height: calc(
+    var(--landing-chat-height) + var(--landing-chat-chrome) + var(--landing-chat-touch)
+  );
 }
 
 .landing-hero__sr {
