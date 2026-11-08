@@ -10,6 +10,8 @@ import {
 import type { AuthUser } from '@shelfmark/contracts';
 import type { Response } from 'express';
 import { CurrentUser } from '../common/auth/current-user.decorator';
+import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
+import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
 import { ExportQueryDto } from './dto/export-query.dto';
 import { ExportService } from './export.service';
 import { EXPORT_CONTENT_TYPE } from './models/export-content-type.const';
@@ -26,7 +28,8 @@ export class ExportController {
    * HTML renders the whole library before its first byte, so a failure in that pass aborts the
    * stream too instead of answering 5xx. The source stream is destroyed when the client aborts.
    */
-  // TODO(#123, PR #132): apply `@RateLimit(RATE_LIMIT.Export)` here when the rate-limit presets land.
+  // A full export reads every link of the user: stricter than the global default (PROJECT.md 5.8).
+  @RateLimit(RATE_LIMIT.Export)
   @Get()
   @ApiProduces(...Object.values(EXPORT_CONTENT_TYPE))
   @ApiOkResponse({
