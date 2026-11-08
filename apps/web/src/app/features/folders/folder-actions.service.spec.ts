@@ -116,6 +116,9 @@ describe('FolderActionsService', () => {
       const done = actions.create();
       await opened();
       expect(dialog().textContent).toContain('New folder');
+      await until(() => {
+        expect(document.activeElement).toBe(nameField());
+      });
       type('Projects');
       button('Create folder').click();
       await closed();

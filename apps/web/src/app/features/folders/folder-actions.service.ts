@@ -4,6 +4,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { FOLDER_LIMIT, type FolderResponse } from '@shelfmark/contracts';
 import { DIALOG_SIZE, DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { APP_PATH } from '../../models/app-path.const';
+import { DIALOG_FIRST_FIELD } from '../../models/dialog-first-field.const';
 import { sidebarActiveId } from '../../shell/sidebar/sidebar-active-id';
 import { FoldersStore } from '../../stores/folders.store';
 import { LinkActionsService } from '../links/link-actions.service';
@@ -44,6 +45,7 @@ export class FolderActionsService {
       FolderNameDialogComponent,
       {
         size: DIALOG_SIZE.Sm,
+        autoFocus: DIALOG_FIRST_FIELD,
         data: {
           mode: FOLDER_NAME_MODE.Create,
           parentName: parent?.name ?? null,
@@ -66,6 +68,7 @@ export class FolderActionsService {
       FolderNameDialogComponent,
       {
         size: DIALOG_SIZE.Sm,
+        autoFocus: DIALOG_FIRST_FIELD,
         data: {
           mode: FOLDER_NAME_MODE.Rename,
           parentName: null,
