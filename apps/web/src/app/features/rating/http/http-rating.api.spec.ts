@@ -1,6 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { SKIP_ERROR_TOAST } from '../../../core/api/models/skip-error-toast.const';
 import { HttpRatingApi } from './http-rating.api';
 
 function setup() {
@@ -52,5 +53,21 @@ describe('HttpRatingApi', () => {
     http.expectOne('/api/feedback').flush(null, { status: 409, statusText: 'Conflict' });
 
     await expect(result).rejects.toBeDefined();
+  });
+
+  it('skips the global error toast on both calls', async () => {
+    const { api, http } = setup();
+
+    const prompt = api.prompt();
+    const promptRequest = http.expectOne('/api/feedback/prompt');
+    expect(promptRequest.request.context.get(SKIP_ERROR_TOAST)).toBe(true);
+    promptRequest.flush({ milestone: null });
+    await prompt;
+
+    const record = api.record({ milestone: 'day3', score: null });
+    const recordRequest = http.expectOne('/api/feedback');
+    expect(recordRequest.request.context.get(SKIP_ERROR_TOAST)).toBe(true);
+    recordRequest.flush(null, { status: 204, statusText: 'No Content' });
+    await record;
   });
 });

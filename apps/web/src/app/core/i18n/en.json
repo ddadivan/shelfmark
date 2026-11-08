@@ -732,6 +732,10 @@
       "close": "Close"
     }
   },
+  "errors": {
+    "rateLimited": "Too many requests. Try again in a moment.",
+    "server": "Something went wrong on our side. Try again."
+  },
   "toast": {
     "actionHint": "Press {{shortcut}} to reach {{action}}"
   }
