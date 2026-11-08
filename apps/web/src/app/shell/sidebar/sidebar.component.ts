@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   input,
   output,
@@ -32,6 +33,7 @@ import { APP_PATH } from '../../models/app-path.const';
 import type { FolderNode } from '../../stores/models/folder-node.interface';
 import { FoldersStore } from '../../stores/folders.store';
 import { sidebarActiveId } from './sidebar-active-id';
+import { SidebarTreeFocusService } from './sidebar-tree-focus.service';
 
 /** Id of the "Recently opened" row (phone drawer); it opens a sheet instead of a route. */
 const RECENT_ROW_ID = 'recent';
@@ -80,6 +82,8 @@ export class SidebarComponent {
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
   private readonly menu = viewChild.required(MenuComponent);
+  private readonly tree = viewChild.required(TreeComponent);
+  private readonly treeFocus = inject(SidebarTreeFocusService);
 
   private readonly url = toSignal(
     this.router.events.pipe(
@@ -166,6 +170,7 @@ export class SidebarComponent {
 
   constructor() {
     void this.folders.load();
+    effect((onCleanup) => onCleanup(this.treeFocus.register(this.tree())));
   }
 
   protected retry(): void {

@@ -1,6 +1,6 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { builtinModules } from 'node:module';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 
 // Guards issue #11: Vercel's file tracer only copies packages that `api/index.mjs`
 // imports statically, so every runtime package of the API must be listed there.
@@ -11,6 +11,8 @@ const entryFile = resolve(srcDir, '../../../api/index.mjs');
 /** Packages Nest loads by name at runtime (`loadPackage`), invisible in our imports. */
 const RUNTIME_LOADED = ['class-transformer', 'class-validator', 'swagger-ui-dist'];
 
+const GENERATED_DIR = 'generated';
+
 /** Workspace libraries are bundled by webpack, not loaded from node_modules. */
 const BUNDLED_PREFIX = '@shelfmark/';
 
@@ -18,7 +20,8 @@ function sourceFiles(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const path = join(dir, entry.name);
     if (entry.isDirectory()) {
-      return sourceFiles(path);
+      // The generated Prisma client is bundled by webpack; its runtime import is covered below.
+      return entry.name === GENERATED_DIR ? [] : sourceFiles(path);
     }
     return entry.name.endsWith('.ts') && !entry.name.endsWith('.spec.ts') ? [path] : [];
   });
@@ -98,6 +101,86 @@ describe('Vercel function entry (api/index.mjs)', () => {
       expect(missing).toEqual([]);
     },
   );
+
+  it.skipIf(!existsSync(bundle))(
+    'emits no numbered async chunks (Vercel does not trace them)',
+    () => {
+      const chunks = readdirSync(dirname(bundle)).filter((file) => /^\d+\.m?js$/.test(file));
+      expect(chunks).toEqual([]);
+    },
+  );
+
+  // The externals plugin itself is covered by scripts/esm-externals.plugin.spec.ts (including a
+  // real webpack compile). These assert the real bundle: PrismaModule is part of the app since #64.
+  it.skipIf(!existsSync(bundle))(
+    'keeps the Prisma query compiler import dynamic in the built bundle',
+    () => {
+      const code = readFileSync(bundle, 'utf8');
+      expect(code).toContain('@prisma/client/runtime/client');
+      expect(code).toContain('import("@prisma/client/runtime/query_compiler');
+    },
+  );
+
+  it.skipIf(!existsSync(bundle))(
+    'imports Better Auth and its Nest integration as static ESM imports from the entry',
+    () => {
+      const code = readFileSync(bundle, 'utf8');
+      const entry = new Set(runtimeImports(readFileSync(entryFile, 'utf8')));
+      for (const specifier of [
+        '@thallesp/nestjs-better-auth',
+        'better-auth',
+        'better-auth/adapters/prisma',
+        'better-auth/api',
+      ]) {
+        expect(code).toContain(`from "${specifier}";`);
+        expect(entry).toContain(specifier);
+      }
+    },
+  );
+
+  it('imports Better Auth, its Nest integration and express (required by name) in the entry', () => {
+    const specifiers = runtimeImports(readFileSync(entryFile, 'utf8'));
+    for (const specifier of [
+      '@thallesp/nestjs-better-auth',
+      'better-auth',
+      'better-auth/adapters/prisma',
+      'better-auth/api',
+      'better-auth/node',
+      'express',
+    ]) {
+      expect(specifiers).toContain(specifier);
+    }
+  });
+
+  it('imports the Prisma runtime and driver adapter, never the bare @prisma/client, in the entry', () => {
+    const specifiers = runtimeImports(readFileSync(entryFile, 'utf8'));
+    expect(specifiers).toContain('@prisma/adapter-pg');
+    expect(specifiers).toContain('@prisma/client/runtime/client');
+    expect(specifiers).not.toContain('@prisma/client');
+  });
+
+  it('never imports the bare @prisma/client or PGlite from the API source', () => {
+    const specifiers = sourceFiles(srcDir).flatMap((file) =>
+      runtimeImports(readFileSync(file, 'utf8')),
+    );
+    expect(specifiers).not.toContain('@prisma/client');
+    expect(specifiers.filter((name) => name.includes('pglite'))).toEqual([]);
+  });
+
+  // `includeFiles` in vercel.json ships only `node_modules/swagger-ui-dist/**`. A second, nested
+  // copy (e.g. under `@nestjs/swagger/node_modules`) is the one Nest serves from, and its assets are
+  // not in the function, so `/api/docs` loads a blank page. The `overrides` entry keeps one copy.
+  it('installs a single copy of swagger-ui-dist, the one includeFiles ships', () => {
+    const lock = JSON.parse(
+      readFileSync(resolve(srcDir, '../../../package-lock.json'), 'utf8'),
+    ) as {
+      packages: Record<string, unknown>;
+    };
+    const copies = Object.keys(lock.packages).filter((path) =>
+      path.endsWith('node_modules/swagger-ui-dist'),
+    );
+    expect(copies).toEqual(['node_modules/swagger-ui-dist']);
+  });
 
   it('re-exports the handler bundle as the default export', () => {
     expect(readFileSync(entryFile, 'utf8')).toMatch(

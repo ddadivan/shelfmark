@@ -1,7 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { COLOR_SCHEME } from './models/color-scheme.const';
-import { expectNoBlockingViolations } from './support/axe';
 import { seedSession } from './support/mock-session';
+import { settled } from './support/settled';
 import { openSidebar } from './support/sidebar';
 
 // Mirror MOCK_ID.FolderReading and its name, and the mock tag (apps/web and libs/shared/contracts);
@@ -26,14 +25,6 @@ test.describe('mobile layout (mock API)', () => {
   test.beforeEach(async ({ page }) => {
     await seedSession(page);
   });
-
-  /** Waits for the enter animations: axe measures contrast on the painted colors. */
-  async function settled(page: Page) {
-    // String script: this project has no DOM lib, and the code runs in the browser anyway.
-    await page.evaluate(
-      'Promise.all(document.getAnimations().map((a) => a.finished.catch(() => undefined)))',
-    );
-  }
 
   const drawer = (page: Page) => page.getByRole('dialog', { name: 'Menu' });
   const library = (page: Page) => drawer(page).getByRole('navigation', { name: 'Library' });
@@ -335,27 +326,6 @@ test.describe('mobile layout (mock API)', () => {
       expect(box?.height, name).toBeGreaterThanOrEqual(44);
     }
   });
-
-  for (const colorScheme of Object.values(COLOR_SCHEME)) {
-    test.describe(`${colorScheme} theme`, () => {
-      test.use({ colorScheme });
-
-      test('the open drawer has no serious or critical axe violations', async ({
-        page,
-      }, testInfo) => {
-        await page.goto('/links');
-        await expect(page.locator('html')).toHaveAttribute('data-theme', colorScheme);
-
-        await openDrawer(page);
-        await settled(page);
-
-        await expectNoBlockingViolations(page, testInfo, {
-          include: '[role="dialog"]',
-          disabledRules: ['label-content-name-mismatch'],
-        });
-      });
-    });
-  }
 
   for (const width of WIDTHS) {
     for (const path of SCREENS) {
