@@ -3,6 +3,7 @@ import { FetcherModule } from '../fetcher/fetcher.module';
 import { FoldersModule } from '../folders/folders.module';
 import { TagsModule } from '../tags/tags.module';
 import { LinkImageCaptureService } from './images/link-image-capture.service';
+import { LinkImageRecaptureService } from './images/link-image-recapture.service';
 import { LinkImagesService } from './images/link-images.service';
 import { LinkPreviewService } from './link-preview.service';
 import { LinksController } from './links.controller';
@@ -17,6 +18,7 @@ import { LinksService } from './links.service';
     LinksWriteService,
     LinkPreviewService,
     LinkImageCaptureService,
+    LinkImageRecaptureService,
     LinkImagesService,
   ],
   exports: [LinksService, LinksWriteService],

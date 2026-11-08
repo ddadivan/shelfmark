@@ -2,10 +2,15 @@ import { LINK_IMAGE_KIND, type LinkImageKind, type LinkResponse } from '@shelfma
 import { linkImagePath } from './images/link-image-path';
 import type { LinkWithTags } from './models/link-with-tags.type';
 
-/** The same-origin path of the stored image of a kind, `null` when none was captured. */
+/**
+ * The same-origin path of the stored image of a kind. A link whose capture is pending (its page
+ * changed) gets the path with `v=pending`: requesting it triggers the lazy re-capture (a 404 shows
+ * the letter). `null` when nothing was captured and nothing is pending.
+ */
 function imagePath(row: LinkWithTags, kind: LinkImageKind): string | null {
   const image = row.images.find((entry) => entry.kind === kind);
-  return image ? linkImagePath(row.id, kind, image.sha256) : null;
+  if (image) return linkImagePath(row.id, kind, image.sha256);
+  return row.captureAttemptedAt === null ? linkImagePath(row.id, kind) : null;
 }
 
 /**

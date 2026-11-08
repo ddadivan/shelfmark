@@ -2,6 +2,9 @@ import { LINK_IMAGE_KIND, type LinkImageKind } from '@shelfmark/contracts';
 
 const VERSION_LENGTH = 16;
 
+/** `v` of a link whose capture is pending: no hash exists yet. */
+const PENDING_VERSION = 'pending';
+
 /** The route segment of each kind: `/api/links/:id/favicon` and `/api/links/:id/image`. */
 export const LINK_IMAGE_SEGMENT: Readonly<Record<LinkImageKind, string>> = {
   [LINK_IMAGE_KIND.Favicon]: 'favicon',
@@ -12,6 +15,7 @@ export const LINK_IMAGE_SEGMENT: Readonly<Record<LinkImageKind, string>> = {
  * Same-origin URL of a stored image. `v` is a prefix of the content hash, so a new capture gets a
  * new URL and the response can be cached for a year (ADR 0027).
  */
-export function linkImagePath(linkId: string, kind: LinkImageKind, sha256: string): string {
-  return `/api/links/${linkId}/${LINK_IMAGE_SEGMENT[kind]}?v=${sha256.slice(0, VERSION_LENGTH)}`;
+export function linkImagePath(linkId: string, kind: LinkImageKind, sha256?: string): string {
+  const version = sha256 === undefined ? PENDING_VERSION : sha256.slice(0, VERSION_LENGTH);
+  return `/api/links/${linkId}/${LINK_IMAGE_SEGMENT[kind]}?v=${version}`;
 }

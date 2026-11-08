@@ -209,7 +209,8 @@ describe('link images (ADR 0027)', () => {
     const moved = (
       await a.patch(`${BASE}/${link.id}`).send({ url: 'https://other.test/' }).expect(200)
     ).body as LinkResponse;
-    expect(moved).toMatchObject({ imageUrl: null, faviconUrl: null });
+    expect(moved.imageUrl).toBe(`/api/links/${link.id}/image?v=pending`);
+    expect(moved.faviconUrl).toBe(`/api/links/${link.id}/favicon?v=pending`);
     expect(await t.db.prisma.linkImage.count()).toBe(0);
     await a.get(`${BASE}/${link.id}/image`).expect(404);
   });
