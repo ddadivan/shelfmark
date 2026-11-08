@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
-import { expect, test, type Download } from '@playwright/test';
+import { type Download } from '@playwright/test';
+import { expect, test } from './support/test';
 import { openAccountMenu, seedSession } from './support/mock-session';
 
 // Mirrors EXPORT_MOCK_MARKER (apps/web); this project cannot import it.

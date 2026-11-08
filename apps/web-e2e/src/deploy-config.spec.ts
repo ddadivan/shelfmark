@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/test';
 import { buildCsp, HTML_MATCHER } from '@shelfmark/web-csp';
 import {
   headerRulesWithCsp,

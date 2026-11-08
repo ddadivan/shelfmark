@@ -10,6 +10,8 @@ import {
 } from '@nestjs/common';
 import type { ApiError } from '@shelfmark/contracts';
 import type { Request, Response } from 'express';
+import { TunnelUpstreamException } from '../../monitoring/tunnel-upstream.exception';
+import { reportException } from '../../monitoring/report-exception';
 import { REQUEST_ID_LOCAL } from '../request-id/request-id.middleware';
 
 type Normalised = Pick<ApiError, 'statusCode' | 'error' | 'message'>;
@@ -76,7 +78,14 @@ function normalise(exception: unknown): Normalised {
 export class AllExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger(AllExceptionsFilter.name);
 
-  catch(exception: unknown, host: ArgumentsHost): void {
+  constructor(
+    private readonly report: (
+      exception: unknown,
+      requestId: string,
+    ) => Promise<void> = reportException,
+  ) {}
+
+  async catch(exception: unknown, host: ArgumentsHost): Promise<void> {
     const http = host.switchToHttp();
     const req = http.getRequest<Request>();
     const res = http.getResponse<Response>();
@@ -96,5 +105,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     const body: ApiError = { statusCode, error, message, requestId };
     res.status(statusCode).json(body);
+
+    // After the response is out: only server faults reach Sentry (client errors are noise), the
+    // tunnel's own upstream failure is not reported back to Sentry, and delivery is awaited
+    // (bounded) because the function may freeze once the response is sent. Scrubbing happens in
+    // the SDK's beforeSend.
+    if (statusCode >= 500 && !(exception instanceof TunnelUpstreamException)) {
+      await this.report(exception, requestId);
+    }
   }
 }

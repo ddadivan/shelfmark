@@ -1,4 +1,5 @@
-import { expect, test, type Page } from '@playwright/test';
+import { type Page } from '@playwright/test';
+import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
 
 // Mirror the contract mock links (libs/shared/contracts/src/testing); the e2e project cannot

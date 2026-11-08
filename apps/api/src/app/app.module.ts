@@ -17,6 +17,7 @@ import { ExportModule } from '../export/export.module';
 import { FoldersModule } from '../folders/folders.module';
 import { HealthModule } from '../health/health.module';
 import { LinksModule } from '../links/links.module';
+import { MonitoringModule } from '../monitoring/monitoring.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { TagsModule } from '../tags/tags.module';
 import { UsersModule } from '../users/users.module';
@@ -26,6 +27,7 @@ import { UsersModule } from '../users/users.module';
     PrismaModule,
     AuthModule,
     HealthModule,
+    MonitoringModule,
     TagsModule,
     FoldersModule,
     LinksModule,
