@@ -14,6 +14,7 @@ export const BUNDLE_DIR = join('dist', 'apps', 'web', 'browser');
 /** Strings that must never appear in a production bundle. */
 export const MOCK_MARKERS = [
   'sm-mock-session',
+  'sm-real-auth-api',
   'ada@example.com',
   'grace@example.com',
   ...LINKS_MOCK_MARKERS,

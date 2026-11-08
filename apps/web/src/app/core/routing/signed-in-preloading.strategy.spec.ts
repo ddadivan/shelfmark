@@ -3,7 +3,7 @@ import { Route } from '@angular/router';
 import { firstValueFrom, of } from 'rxjs';
 import { AUTH_API } from '../auth/auth-api.token';
 import { AuthStore } from '../auth/auth.store';
-import { AuthUser } from '../auth/models/auth-user.interface';
+import type { AuthUser } from '@shelfmark/contracts';
 import { SignedInPreloadingStrategy } from './signed-in-preloading.strategy';
 
 const route: Route = { path: 'links' };
