@@ -1,0 +1,19 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.delete-folder__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  // Room for the focus ring of the radios at the edge of the scrolling body.
+  padding: rem(2px);
+}
+
+.delete-folder__text {
+  margin: 0;
+  color: var(--text-muted);
+}

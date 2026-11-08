@@ -1,0 +1,35 @@
+<form [formRoot]="form">
+  <ui-dialog
+    [title]="'tags.merge.title' | transloco: { name: data.tag.name }"
+    [closeLabel]="'tags.dialog.close' | transloco"
+  >
+    <div class="merge-tag__fields">
+      <p class="merge-tag__text">{{ 'tags.merge.text' | transloco: { name: data.tag.name } }}</p>
+
+      <ui-select
+        [label]="'tags.merge.label' | transloco"
+        [options]="options()"
+        [placeholder]="'tags.merge.placeholder' | transloco"
+        [searchLabel]="'tags.merge.searchLabel' | transloco"
+        [noResultsLabel]="'tags.merge.noResults' | transloco"
+        searchable
+        [formField]="form.targetId"
+      />
+
+      @if (failed()) {
+        <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'tags.merge.failed' | transloco }}</ui-notice>
+      }
+    </div>
+
+    <ui-button slot="footer" [disabled]="merging()" (click)="cancel()">{{
+      'tags.dialog.cancel' | transloco
+    }}</ui-button>
+    <ui-button
+      slot="footer"
+      [type]="BUTTON_TYPE.Submit"
+      [variant]="BUTTON_VARIANT.Primary"
+      [loading]="merging()"
+      >{{ 'tags.merge.action' | transloco }}</ui-button
+    >
+  </ui-dialog>
+</form>

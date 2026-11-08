@@ -1,7 +1,191 @@
 {
   "landing": {
-    "title": "Shelfmark",
-    "tagline": "Every saved link, in one place."
+    "header": {
+      "navLabel": "Main",
+      "brand": "Shelfmark",
+      "howItsBuilt": "How it's built",
+      "github": "GitHub",
+      "signIn": "Sign in"
+    },
+    "hero": {
+      "eyebrow": "For everything you send to Saved Messages",
+      "line1": "Paste a link.",
+      "line2": "Find it again.",
+      "line3": "Even in a year.",
+      "lead": "Telegram is where links go to be forgotten. Shelfmark keeps them in folders, with a note on why you saved each one, and finds any of them in two keystrokes.",
+      "demo": "Open the demo",
+      "signIn": "Sign in"
+    },
+    "chat": {
+      "savedMessages": "Saved Messages",
+      "savedSubtitle": "new links every day, none findable",
+      "shelfTitle": "Your shelf",
+      "shelfSubtitle": "5 links in 4 folders, each with a note",
+      "hintChat": "Five links, five different days.",
+      "hintShelf": "Notes come from your own messages.",
+      "putOnShelf": "Put them on the shelf",
+      "showChat": "Show the chat again",
+      "pause": "Pause the feed",
+      "messages": {
+        "watch": {
+          "text": "watch later!!",
+          "time": "Mon 23:41"
+        },
+        "coat": {
+          "text": "this coat, wait for the sale",
+          "time": "Tue 09:12"
+        },
+        "course": {
+          "text": "Fwd: Frontend Weekly",
+          "time": "Wed 18:30"
+        },
+        "ramen": {
+          "text": "ramen recipe, friday?",
+          "time": "Thu 21:05"
+        },
+        "zoneless": {
+          "text": "where was that zoneless article…",
+          "time": "Fri 08:47"
+        },
+        "lisbon": {
+          "text": "lisbon, maybe in may",
+          "time": "Sat 11:20"
+        },
+        "icons": {
+          "text": "icons for the side project",
+          "time": "Sun 16:02"
+        },
+        "react": {
+          "text": "read this one day",
+          "time": "Mon 07:58"
+        }
+      }
+    },
+    "shelf": {
+      "folders": {
+        "angular": "Work / Angular",
+        "courses": "Courses",
+        "clothes": "Clothes",
+        "recipes": "Recipes"
+      },
+      "links": {
+        "signalForms": {
+          "title": "Signal Forms in 20 minutes",
+          "note": "Watch later"
+        },
+        "zoneless": {
+          "title": "Zoneless change detection",
+          "note": "The article about zoneless"
+        },
+        "nestjs": {
+          "title": "NestJS for frontend developers",
+          "note": "From Frontend Weekly"
+        },
+        "coat": {
+          "title": "Wool coat, graphite",
+          "note": "Wait for the sale"
+        },
+        "ramen": {
+          "title": "The best weeknight ramen",
+          "note": "Friday?"
+        }
+      }
+    },
+    "beforeAfter": {
+      "title": "The same links, before and after",
+      "before": "Before: scattered",
+      "after": "After: on one shelf",
+      "pauseMotion": "Pause animations"
+    },
+    "before": {
+      "pingTitle": "+1 in Saved Messages",
+      "pingLink": "youtu.be/…",
+      "bubbleTitle": "Saved messages",
+      "bubbleLink": "youtube.com/watch?v=ng22…",
+      "tabCoat": "Wool coat…",
+      "tabCourse": "NestJS c…",
+      "tabMore": "+ 37",
+      "sticky": "watch later: ramen recipe?? link somewhere in chat",
+      "bookmarks": "Bookmarks bar (91)",
+      "summary": "Links scattered across Saved Messages, browser tabs, sticky notes and a bookmarks bar."
+    },
+    "after": {
+      "treeLabel": "Folders",
+      "listLabel": "Links in the selected folder",
+      "tagsTitle": "Tags",
+      "tags": {
+        "video": "video",
+        "courses": "courses"
+      },
+      "folders": {
+        "clothes": "Clothes",
+        "work": "Work",
+        "angular": "Angular",
+        "recipes": "Recipes"
+      },
+      "links": {
+        "coat": {
+          "title": "Wool coat, graphite",
+          "note": "Wait for the sale, size M"
+        },
+        "boots": {
+          "title": "Leather Chelsea boots",
+          "note": "For the winter"
+        },
+        "jumper": {
+          "title": "Merino crew-neck jumper",
+          "note": "Gift idea"
+        },
+        "signalForms": {
+          "title": "Signal Forms in 20 minutes",
+          "note": "Watch on the weekend"
+        },
+        "nestjs": {
+          "title": "NestJS for frontend developers",
+          "note": "For the side project"
+        },
+        "zoneless": {
+          "title": "Zoneless change detection",
+          "note": "Read before stage 0"
+        },
+        "ramen": {
+          "title": "The best weeknight ramen",
+          "note": "Friday dinner"
+        },
+        "focaccia": {
+          "title": "Focaccia, no knead",
+          "note": "For Sunday"
+        },
+        "kimchi": {
+          "title": "Kimchi in a jar",
+          "note": "Needs a big jar"
+        }
+      }
+    },
+    "why": {
+      "title": "Why this exists",
+      "quote": "“My Saved Messages in Telegram had hundreds of links: courses, a coat I wanted, a ramen recipe, that one article about zoneless Angular. I could never find any of them again. So I built the shelf I wanted.”",
+      "author": "Dmytro",
+      "authorName": "Dmytro Dadivan",
+      "role": "Frontend developer"
+    },
+    "built": {
+      "title": "How it's built",
+      "text": "Angular 22 with signals, NestJS, PostgreSQL. Planned, coded, tested and reviewed by a team of Claude Code agents, with every decision in the open.",
+      "agentsLabel": "Claude Code agents",
+      "code": "Read the code on GitHub",
+      "decisions": "Read the decision log"
+    },
+    "finale": {
+      "title": "Empty your Saved Messages.",
+      "demo": "Open the demo",
+      "signIn": "Sign in"
+    },
+    "footer": {
+      "copyright": "© 2026 Shelfmark",
+      "github": "GitHub"
+    },
+    "newTab": "opens in a new tab"
   },
   "links": {
     "add": {
@@ -24,6 +208,7 @@
       },
       "titleField": {
         "label": "Title",
+        "required": "Enter a title",
         "tooLong": "The title is too long (at most {{max}} characters)"
       },
       "folder": {
@@ -61,6 +246,45 @@
         "saveAnyway": "Save anyway",
         "saving": "Saving…"
       }
+    },
+    "edit": {
+      "title": "Edit link",
+      "meta": "Saved {{created}}, last opened {{opened}}",
+      "metaNever": "Saved {{created}}, never opened",
+      "actions": {
+        "save": "Save changes",
+        "delete": "Delete"
+      }
+    },
+    "item": {
+      "edit": "Edit",
+      "edited": "Changes saved",
+      "openFailed": "Couldn't open the link.",
+      "favorite": "Favorite: {{title}}",
+      "actions": "Actions for {{title}}",
+      "delete": "Delete",
+      "opensInNewTab": "Opens in a new tab",
+      "favoriteFailed": "Couldn't update the favorite.",
+      "retry": "Retry",
+      "deleted": "Link deleted",
+      "undo": "Undo",
+      "deleteFailed": "Couldn't delete the link. It is back in your list.",
+      "saved": "Link saved",
+      "confirm": {
+        "title": "Delete this link?",
+        "message": "“{{title}}” will be deleted.",
+        "confirm": "Delete",
+        "cancel": "Cancel",
+        "close": "Close"
+      }
+    },
+    "recent": {
+      "title": "Recently opened",
+      "empty": "Links you open appear here.",
+      "hide": "Hide recently opened",
+      "show": "Show recently opened",
+      "loading": "Loading recently opened links",
+      "close": "Close"
     }
   },
   "auth": {
@@ -82,17 +306,220 @@
   },
   "shell": {
     "accountMenu": "Account menu",
-    "settings": "Settings"
+    "settings": "Settings",
+    "addLink": "Add link",
+    "menu": "Open menu",
+    "drawer": {
+      "label": "Menu",
+      "close": "Close menu",
+      "theme": "Switch theme"
+    },
+    "sidebar": {
+      "nav": "Library",
+      "tree": "Views and folders",
+      "folders": "Folders",
+      "newFolder": "New folder",
+      "folderActions": "Actions for {{name}}",
+      "folderMenu": "Folder actions",
+      "loadFailed": "Couldn't load your folders.",
+      "retry": "Try again",
+      "menu": {
+        "newSubfolder": "New subfolder",
+        "addLink": "Add link here",
+        "rename": "Rename",
+        "move": "Move to…",
+        "delete": "Delete folder…"
+      }
+    },
+    "search": "Search"
+  },
+  "folders": {
+    "dialog": {
+      "close": "Close",
+      "cancel": "Cancel"
+    },
+    "name": {
+      "label": "Name",
+      "placeholder": "For example, Reading list",
+      "required": "Enter a folder name",
+      "tooLong": "Use {{max}} characters or fewer"
+    },
+    "create": {
+      "title": "New folder",
+      "titleIn": "New folder in “{{parent}}”",
+      "action": "Create folder",
+      "saving": "Creating…",
+      "failed": "Couldn't create the folder. Try again.",
+      "done": "Folder created",
+      "limit": "You have reached the limit of {{max}} folders."
+    },
+    "rename": {
+      "title": "Rename folder",
+      "action": "Rename",
+      "saving": "Renaming…",
+      "failed": "Couldn't rename the folder. The old name is back."
+    },
+    "move": {
+      "title": "Move “{{name}}”",
+      "label": "Move to",
+      "topLevel": "Top level",
+      "searchLabel": "Search folders",
+      "noResults": "No folders found",
+      "action": "Move",
+      "failed": "Couldn't move the folder. It is back where it was."
+    },
+    "delete": {
+      "title": "Delete folder “{{name}}”?",
+      "textEmpty": "This folder is empty.",
+      "textNoLinks": "It has {{subfolders}} and no links.",
+      "textLinks": "It has {{links}}. What should happen to the links?",
+      "textBoth": "It has {{links}} and {{subfolders}}. What should happen to the links?",
+      "links": {
+        "one": "{{count}} link",
+        "other": "{{count}} links"
+      },
+      "subfolders": {
+        "one": "{{count}} subfolder",
+        "other": "{{count}} subfolders"
+      },
+      "modeLabel": "What happens to the links",
+      "move": {
+        "title": "Move links to Unsorted",
+        "desc": {
+          "one": "The folders are deleted, the link stays",
+          "other": "The folders are deleted, all {{count}} links stay"
+        }
+      },
+      "remove": {
+        "title": "Delete links too",
+        "desc": "This can't be undone"
+      },
+      "action": "Delete folder",
+      "actionWithLinks": {
+        "one": "Delete folder and {{count}} link",
+        "other": "Delete folder and {{count}} links"
+      },
+      "failed": "Couldn't delete the folder. Nothing was changed.",
+      "done": "Folder deleted"
+    }
   },
   "library": {
     "title": "All links",
-    "placeholder": "Your saved links will appear here."
+    "scope": {
+      "all": "All links",
+      "unsorted": "Unsorted",
+      "favorites": "Favorites",
+      "folder": "Folder"
+    },
+    "folderNotFound": {
+      "title": "Folder not found",
+      "text": "This folder doesn't exist, or it was deleted.",
+      "action": "Show all links"
+    },
+    "emptyFolder": {
+      "title": "This folder is empty",
+      "text": "Add a link here, or move links from Unsorted.",
+      "action": "Add link",
+      "unsorted": "Open Unsorted"
+    },
+    "count": "{{count}} links",
+    "countMore": "{{count}}+ links",
+    "view": {
+      "label": "View",
+      "cards": "Cards",
+      "list": "List"
+    },
+    "list": {
+      "label": "Saved links"
+    },
+    "loading": "Loading links",
+    "loadingMore": "Loading more links",
+    "loadMore": "Load more",
+    "loadMoreFailed": "Couldn't load more links.",
+    "error": {
+      "title": "Couldn't load your links",
+      "text": "Check your connection and try again.",
+      "retry": "Try again"
+    },
+    "empty": {
+      "all": {
+        "title": "Your links will live here",
+        "text": "Paste a link to a video, an article or something to buy — the title and preview fill in by themselves.",
+        "action": "Add link"
+      },
+      "unsorted": {
+        "title": "Unsorted is empty",
+        "text": "Links you save without a folder wait here until you file them.",
+        "action": "Add link"
+      },
+      "favorites": {
+        "title": "Your favorites will live here",
+        "text": "Tap the star on a link to keep it here.",
+        "action": "Show all links"
+      }
+    },
+    "refetchFailed": "Couldn't refresh your links. You are seeing the last loaded list.",
+    "emptyFiltered": {
+      "title": "No links with these tags",
+      "text": "Nothing you saved has all of the selected tags.",
+      "clear": "Clear filter"
+    },
+    "filter": {
+      "label": "Active filters"
+    },
+    "sort": {
+      "label": "Sort: {{sort}}",
+      "menu": "Sort links",
+      "newest": "Newest first",
+      "oldest": "Oldest first",
+      "title": "Title A–Z"
+    },
+    "search": {
+      "chip": "Search: {{query}}",
+      "remove": "Remove search {{query}}"
+    },
+    "emptySearch": {
+      "title": "Nothing found for “{{query}}”",
+      "text": "Try another word, or search in all folders.",
+      "clear": "Clear search",
+      "all": "Search all folders"
+    },
+    "breadcrumb": {
+      "label": "Breadcrumb",
+      "collapsed": "Show hidden folders"
+    },
+    "pageTitle": {
+      "page": "{{page}} · {{app}}",
+      "search": "Search: {{query}} · {{app}}"
+    }
+  },
+  "export": {
+    "menu": "Export",
+    "failed": "Couldn't export your links. Try again.",
+    "retry": "Try again",
+    "view": {
+      "json": "This view as JSON",
+      "html": "This view as Bookmarks HTML"
+    },
+    "all": {
+      "json": "Everything as JSON",
+      "html": "Everything as Bookmarks HTML"
+    }
   },
   "settings": {
     "title": "Settings",
     "back": "Back to links",
     "account": {
       "title": "Account"
+    },
+    "data": {
+      "title": "Your data",
+      "export": {
+        "label": "Export your data",
+        "hint": "All your folders, tags and links in one file",
+        "json": "JSON",
+        "html": "Bookmarks HTML"
+      }
     },
     "appearance": {
       "title": "Appearance",
@@ -103,6 +530,139 @@
         "light": "Light",
         "dark": "Dark"
       }
+    },
+    "welcome": {
+      "title": "Welcome tour",
+      "hint": "See the 3-step introduction again",
+      "action": "Show welcome again",
+      "error": "Couldn't reset the welcome tour. Try again."
+    }
+  },
+  "tags": {
+    "dialog": {
+      "cancel": "Cancel",
+      "close": "Close"
+    },
+    "sidebar": {
+      "heading": "Tags",
+      "add": "New tag",
+      "list": "Tags",
+      "loadFailed": "Couldn't load your tags.",
+      "empty": "No tags yet. Add one with +.",
+      "menuFor": "Actions for tag {{name}}",
+      "more": "+ {{count}} more",
+      "showLess": "Show less",
+      "menu": {
+        "label": "Tag actions",
+        "show": "Show links",
+        "rename": "Rename",
+        "merge": "Merge into another tag…",
+        "delete": "Delete tag"
+      }
+    },
+    "add": {
+      "label": "New tag",
+      "placeholder": "Tag name",
+      "hint": "Enter saves, Esc cancels. Spaces become dashes.",
+      "done": "Tag “{{name}}” created",
+      "failed": "Couldn't create the tag. Try again.",
+      "limit": "You have reached the limit of {{max}} tags."
+    },
+    "name": {
+      "required": "Enter a tag name",
+      "tooLong": "Use {{max}} characters or fewer",
+      "exists": "There's already a tag “{{name}}”."
+    },
+    "rename": {
+      "label": "Tag name",
+      "conflict": "There's already a tag “{{name}}”. Merge them instead?",
+      "merge": "Merge into “{{name}}”",
+      "failed": "Couldn't rename the tag. The old name is back."
+    },
+    "merge": {
+      "title": "Merge “{{name}}”",
+      "text": "Every link tagged “{{name}}” gets the tag you choose, then “{{name}}” is deleted.",
+      "label": "Merge into",
+      "placeholder": "Choose a tag",
+      "searchLabel": "Search tags",
+      "noResults": "No tags found",
+      "action": "Merge",
+      "required": "Choose a tag to merge into",
+      "failed": "Couldn't merge the tags. Try again.",
+      "done": "Merged “{{name}}” into “{{target}}”"
+    },
+    "delete": {
+      "title": "Delete tag “{{name}}”?",
+      "message": {
+        "one": "It will be removed from {{count}} link. The link itself stays where it is.",
+        "other": "It will be removed from {{count}} links. The links themselves stay where they are."
+      },
+      "confirm": "Delete tag",
+      "undo": "Undo",
+      "done": "Tag “{{name}}” deleted",
+      "failed": "Couldn't delete the tag “{{name}}”. It is back."
+    },
+    "filter": {
+      "label": "Filtered by tags",
+      "remove": "Remove tag filter {{name}}",
+      "clear": "Clear filter"
+    },
+    "count": {
+      "one": "{{count}} link",
+      "other": "{{count}} links"
+    }
+  },
+  "search": {
+    "title": "Search",
+    "close": "Close search",
+    "label": "Search links, folders and tags",
+    "placeholder": "Search links, folders and tags",
+    "results": "Search results",
+    "esc": "Esc",
+    "inFolder": "in {{folder}}",
+    "noteMatches": "note matches:",
+    "showAll": "Show all results for “{{query}}”",
+    "foldersAndTags": "Folders and tags",
+    "linkCount": {
+      "one": "{{count}} link",
+      "other": "{{count}} links"
+    },
+    "tagMeta": {
+      "one": "Tag, {{count}} link",
+      "other": "Tag, {{count}} links"
+    },
+    "status": {
+      "one": "{{count}} result",
+      "other": "{{count}} results"
+    },
+    "hint": "Type to search your links, folders and tags.",
+    "searching": "Searching…",
+    "failed": "Couldn't search. Try again.",
+    "hints": {
+      "ctrl": "Ctrl",
+      "move": "move",
+      "open": "open",
+      "background": "open in background"
+    }
+  },
+  "onboarding": {
+    "stepLabel": "Step {{current}} of {{count}}",
+    "announce": "Step {{current}} of {{count}}: {{title}}",
+    "skip": "Skip",
+    "back": "Back",
+    "next": "Next",
+    "addFirst": "Add your first link",
+    "collect": {
+      "title": "All your links in one place",
+      "text": "Videos, articles, things to buy, courses — everything you save lives on one calm shelf instead of chats and tabs."
+    },
+    "save": {
+      "title": "Save in a second",
+      "text": "Paste a link and the title and preview fill in by themselves. Add a note so you remember why you saved it."
+    },
+    "find": {
+      "title": "Find it right away",
+      "text": "Folders, tags, favorites and search with ⌘K bring back any link in a couple of keystrokes."
     }
   }
 }

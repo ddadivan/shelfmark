@@ -8,10 +8,10 @@
   "targets": {
     "lighthouse": {
       "executor": "nx:run-commands",
-      "dependsOn": ["web:build:e2e"],
       "cache": false,
       "options": {
-        "command": "node tools/lighthouse/run.mjs",
+        "commands": ["npx nx run web:build:e2e", "node tools/lighthouse/run.mjs"],
+        "parallel": false,
         "cwd": "{workspaceRoot}"
       }
     },

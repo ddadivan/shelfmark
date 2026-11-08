@@ -8,10 +8,20 @@ import { UnavailableTagsApi } from './unavailable-tags.api';
 // mock provider (`fileReplacements`), so the placeholders are tested directly.
 describe('production placeholder APIs', () => {
   it('reject every call with the "not available yet" error', async () => {
+    const folders = new UnavailableFoldersApi();
     const calls = [
       new UnavailableLinksApi().preview(),
       new UnavailableLinksApi().create(),
-      new UnavailableFoldersApi().list(),
+      new UnavailableLinksApi().list(),
+      new UnavailableLinksApi().recent(),
+      new UnavailableLinksApi().get(),
+      new UnavailableLinksApi().update(),
+      new UnavailableLinksApi().remove(),
+      new UnavailableLinksApi().open(),
+      folders.list(),
+      folders.create(),
+      folders.update(),
+      folders.remove(),
       new UnavailableTagsApi().list(),
     ];
     for (const call of calls) {
