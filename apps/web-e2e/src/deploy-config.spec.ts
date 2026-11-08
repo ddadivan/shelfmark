@@ -173,6 +173,50 @@ test.describe('vercel.json deployment config', () => {
     expect(regexp.test('/main.js')).toBe(false);
   });
 
+  test('service worker files are revalidated and the manifest has its media type', () => {
+    const cacheRule = config.headers.find((r) =>
+      r.headers.some((h) => h.key === 'Cache-Control' && h.value === 'no-cache'),
+    );
+    const regexp = sourceToRegExp(cacheRule?.source ?? '');
+    for (const path of [
+      '/ngsw.json',
+      '/ngsw-worker.js',
+      '/safety-worker.js',
+      '/worker-basic.min.js',
+    ]) {
+      expect(regexp.test(path), path).toBe(true);
+    }
+    expect(regexp.test('/main-ABCD1234.js')).toBe(false);
+    expect(cacheRule?.headers).toEqual([{ key: 'Cache-Control', value: 'no-cache' }]);
+
+    const manifestRule = config.headers.find((r) => r.source.includes('manifest'));
+    expect(sourceToRegExp(manifestRule?.source ?? '').test('/manifest.webmanifest')).toBe(true);
+    expect(manifestRule?.headers).toContainEqual({
+      key: 'Content-Type',
+      value: 'application/manifest+json; charset=utf-8',
+    });
+  });
+
+  test('service worker and manifest files are file-like paths, never HTML documents', () => {
+    const patterns = readMiddlewareMatcher().map((source) => sourceToRegExp(source));
+    const spa = sourceToRegExp(
+      config.rewrites.find((r) => r.destination === '/index.html')?.source ?? '',
+    );
+    for (const path of [
+      '/ngsw.json',
+      '/ngsw-worker.js',
+      '/safety-worker.js',
+      '/worker-basic.min.js',
+      '/manifest.webmanifest',
+    ]) {
+      expect(
+        patterns.some((pattern) => pattern.test(path)),
+        path,
+      ).toBe(false);
+      expect(spa.test(path), path).toBe(false);
+    }
+  });
+
   test('API rewrite sends /api/* to the function without named params', () => {
     const regexp = sourceToRegExp(apiRewrite.source);
     for (const path of ['/api/health', '/api/docs', '/api/docs/swagger-ui.css']) {

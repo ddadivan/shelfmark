@@ -20,6 +20,7 @@ const USER: AuthUser = {
   image: null,
   isDemo: false,
   demoExpiresAt: null,
+  onboardingCompletedAt: '2020-01-01T00:00:00.000Z',
 };
 const DEMO: AuthUser = { ...USER, isDemo: true, demoExpiresAt: '2030-01-02T00:00:00.000Z' };
 

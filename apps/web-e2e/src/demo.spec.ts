@@ -19,6 +19,8 @@ test.describe('demo sign-in (mock auth)', () => {
     await demoLink.click();
 
     await expect(page).toHaveURL(/\/links$/);
+    // A fresh demo user gets the welcome dialog; skip it so the page behind is reachable.
+    await page.getByRole('dialog').getByRole('button', { name: 'Skip' }).click();
     await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
     const banner = page.getByRole('status').filter({ hasText: BANNER_TITLE });
     await expect(banner).toBeVisible();

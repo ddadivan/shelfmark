@@ -23,7 +23,9 @@ function isStoredUser(value: unknown): value is StoredUser {
     typeof candidate.email === 'string' &&
     (candidate.image === null || typeof candidate.image === 'string') &&
     typeof candidate.isDemo === 'boolean' &&
-    (candidate.demoExpiresAt === null || typeof candidate.demoExpiresAt === 'string') &&
+    (candidate.demoExpiresAt === undefined ||
+      candidate.demoExpiresAt === null ||
+      typeof candidate.demoExpiresAt === 'string') &&
     (candidate.onboardingCompletedAt === undefined ||
       candidate.onboardingCompletedAt === null ||
       typeof candidate.onboardingCompletedAt === 'string')
@@ -76,6 +78,7 @@ export class MockAuthApi implements AuthApi {
       }
       return {
         ...parsed,
+        demoExpiresAt: parsed.demoExpiresAt ?? null,
         onboardingCompletedAt:
           parsed.onboardingCompletedAt === undefined
             ? LEGACY_ONBOARDING_COMPLETED_AT
