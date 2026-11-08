@@ -5,7 +5,8 @@ import type { FolderResponse, LinkResponse, ListLinksResponse } from '@shelfmark
 import { MOCK_FOLDERS, MOCK_LIBRARY_COUNTS, MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { DialogService } from '@shelfmark/ui';
 import axe from 'axe-core';
-import { of, Subject, throwError } from 'rxjs';
+import { of, Subject, throwError, type Observable } from 'rxjs';
+import { AddLinkDialogService } from '../links/add-link/add-link-dialog.service';
 import { FOLDERS_API } from '../links/models/folders-api.const';
 import type { FoldersApi } from '../links/models/folders-api.interface';
 import { LINKS_API } from '../links/models/links-api.const';
@@ -32,7 +33,7 @@ function page(items: LinkResponse[], nextCursor: string | null = null): ListLink
   return { items, nextCursor };
 }
 
-async function setup(first: Subject<ListLinksResponse> | null = null) {
+async function setup(first: Observable<ListLinksResponse> | null = null) {
   const api = {
     list: vi.fn<LinksApi['list']>(() => first ?? of(page([link(1), link(2)], 'c1'))),
     update: vi.fn<LinksApi['update']>((id) => of(link(Number(id.slice(3))))),
@@ -119,14 +120,86 @@ describe('LibraryPage', () => {
     expect(text(fixture)).not.toContain('Load more');
   });
 
-  it('shows the empty state with an Add link action', async () => {
-    const { api, element, fixture } = await setup();
-    api.list.mockReturnValue(of(page([])));
-    fixture.componentRef.setInput('scope', LINKS_SCOPE.Unsorted);
-    await fixture.whenStable();
+  describe('empty states', () => {
+    async function empty(scope: (typeof LINKS_SCOPE)[keyof typeof LINKS_SCOPE]) {
+      const ctx = await setup(of(page([])));
+      ctx.fixture.componentRef.setInput('scope', scope);
+      await ctx.fixture.whenStable();
+      return ctx;
+    }
+    const buttons = (element: HTMLElement) =>
+      [...element.querySelectorAll('ui-empty-state button')].map((b) => b.textContent?.trim());
 
-    expect(text(fixture)).toContain('No links here yet');
-    expect(element.querySelector('ui-empty-state button')?.textContent).toContain('Add link');
+    it('invites the first link on the feed and opens the add-link dialog', async () => {
+      const { element, fixture } = await empty(LINKS_SCOPE.All);
+
+      expect(element.querySelector('ui-empty-state h2')?.textContent).toBe(
+        'Your links will live here',
+      );
+      expect(element.querySelector('ui-illustration')).not.toBeNull();
+      expect(buttons(element)).toEqual(['Add link']);
+      const open = vi
+        .spyOn(TestBed.inject(AddLinkDialogService), 'open')
+        .mockResolvedValue(undefined);
+      element.querySelector<HTMLButtonElement>('ui-empty-state button')?.click();
+      await fixture.whenStable();
+      expect(open).toHaveBeenCalled();
+    });
+
+    it('says Unsorted is empty and offers Add link', async () => {
+      const { element } = await empty(LINKS_SCOPE.Unsorted);
+
+      expect(element.querySelector('ui-empty-state h2')?.textContent).toBe('Unsorted is empty');
+      expect(buttons(element)).toEqual(['Add link']);
+    });
+
+    it('says there are no favorites and points back to all links', async () => {
+      const { element, fixture } = await empty(LINKS_SCOPE.Favorites);
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+
+      expect(element.querySelector('ui-empty-state h2')?.textContent).toBe(
+        'Your favorites will live here',
+      );
+      expect(buttons(element)).toEqual(['Show all links']);
+      element.querySelector<HTMLButtonElement>('ui-empty-state button')?.click();
+      await fixture.whenStable();
+      expect(navigate).toHaveBeenCalledWith('/links');
+    });
+
+    it('says a tag has no links and clears the filter', async () => {
+      const { api, element, fixture } = await setup();
+      api.list.mockReturnValue(of(page([])));
+      fixture.componentRef.setInput('tag', 'nothing');
+      await fixture.whenStable();
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+      expect(element.querySelector('ui-empty-state h2')?.textContent).toBe(
+        'No links with these tags',
+      );
+      element.querySelector<HTMLButtonElement>('ui-empty-state button')?.click();
+      expect(navigate).toHaveBeenCalledWith([], {
+        queryParams: { tag: null },
+        queryParamsHandling: 'merge',
+      });
+    });
+
+    it('clears the tag filter on the favorites scope too', async () => {
+      const { api, element, fixture } = await setup();
+      api.list.mockReturnValue(of(page([])));
+      fixture.componentRef.setInput('scope', LINKS_SCOPE.Favorites);
+      fixture.componentRef.setInput('tag', 'nothing');
+      await fixture.whenStable();
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+      expect(element.querySelector('ui-empty-state h2')?.textContent).toBe(
+        'No links with these tags',
+      );
+      element.querySelector<HTMLButtonElement>('ui-empty-state button')?.click();
+      expect(navigate).toHaveBeenCalledWith([], {
+        queryParams: { tag: null },
+        queryParamsHandling: 'merge',
+      });
+    });
   });
 
   it('shows the error state and retries', async () => {
@@ -226,7 +299,9 @@ describe('LibraryPage of a folder', () => {
     const { element, fixture } = await setupFolder('f1', []);
 
     expect(text(fixture)).toContain('This folder is empty');
-    expect(element.querySelector('ui-empty-state button')?.textContent).toContain('Add link here');
+    expect(
+      [...element.querySelectorAll('ui-empty-state button')].map((b) => b.textContent?.trim()),
+    ).toEqual(['Open Unsorted', 'Add link']);
   });
 
   it('shows "not found" instead of the content for an unknown folder', async () => {

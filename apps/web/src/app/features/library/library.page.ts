@@ -56,6 +56,7 @@ import { LinksStore } from '../../stores/links.store';
 import { UI_VIEW } from '../../stores/models/ui-view.const';
 import { isUiView } from '../../stores/is-ui-view';
 import { UiStore } from '../../stores/ui.store';
+import { EMPTY_KEYS } from './models/empty-keys.const';
 import { SORT_OPTION_KEYS } from './models/sort-option-keys.const';
 import { SORT_OPTIONS } from './models/sort-options.const';
 import { VIEW_OPTION_KEYS } from './models/view-option-keys.const';
@@ -149,8 +150,10 @@ export default class LibraryPage {
   });
   protected readonly titleKey = computed(() => `library.scope.${this.scope()}`);
   protected readonly emptyKey = computed(() =>
-    this.isFolder() ? 'library.emptyFolder' : 'library.empty',
+    this.isFolder() ? 'library.emptyFolder' : EMPTY_KEYS[this.scope()],
   );
+  /** Favorites cannot be filled by adding a link, so its empty state points back to all links. */
+  protected readonly canAddLink = computed(() => this.scope() !== LINKS_SCOPE.Favorites);
   private readonly filter = computed<LinksFilter>(() => {
     const scope = this.scope();
     const folderId = this.folderId();
@@ -251,6 +254,10 @@ export default class LibraryPage {
     // The sidebar loads the folders too (the phone has none yet); the call is shared.
     void this.folders.load();
     this.store.setFilter(this.filter);
+  }
+
+  protected async openUnsorted(): Promise<void> {
+    await this.router.navigateByUrl(`/${APP_PATH.Unsorted}`);
   }
 
   protected async exportView(format: ExportFormat): Promise<void> {
