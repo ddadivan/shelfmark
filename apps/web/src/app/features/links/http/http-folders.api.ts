@@ -10,8 +10,8 @@ import type {
 } from '@shelfmark/contracts';
 import type { Observable } from 'rxjs';
 import { API_BASE_URL } from '../../../core/api/api-base-url';
-import type { FoldersApi } from '../models/folders-api.interface';
 import { skipErrorToast } from '../../../core/api/skip-error-toast';
+import type { FoldersApi } from '../models/folders-api.interface';
 
 /**
  * `FoldersApi` over `/api/folders`. Not registered yet: `provideLinksApi()` binds the

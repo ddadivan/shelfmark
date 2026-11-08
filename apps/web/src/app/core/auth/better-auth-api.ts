@@ -12,6 +12,7 @@ import {
   type SocialSignInRequest,
   type SocialSignInResponse,
 } from '@shelfmark/contracts';
+import { skipErrorToast } from '../api/skip-error-toast';
 import { DemoSignInError } from './demo-sign-in-error';
 import { DEMO_ERROR } from './models/demo-error.const';
 import { AuthApi } from './models/auth-api.interface';
@@ -20,7 +21,6 @@ import { SIGN_IN_QUERY } from './models/sign-in-query.const';
 import { NAVIGATE } from './navigate.token';
 import { providerRedirectUrl } from './provider-redirect-url';
 import { safeReturnUrl } from './safe-return-url';
-import { skipErrorToast } from '../api/skip-error-toast';
 
 /**
  * Production `AuthApi`: the Better Auth routes of the API (ADR 0030) over `HttpClient`, so the

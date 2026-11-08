@@ -12,6 +12,8 @@ import { skipErrorToast } from './skip-error-toast';
 
 function setup() {
   const show = vi.fn();
+  const expireSession = vi.fn();
+  const navigate = vi.fn();
   TestBed.configureTestingModule({
     providers: [
       provideHttpClient(withInterceptors([errorInterceptor])),
@@ -20,15 +22,17 @@ function setup() {
       { provide: TranslocoService, useValue: { translate: (key: string) => `t:${key}` } },
       {
         provide: AuthStore,
-        useValue: { expireSession: vi.fn(), user: signal({ id: 'u1' }) },
+        useValue: { expireSession, user: signal({ id: 'u1' }) },
       },
-      { provide: Router, useValue: { url: '/links', navigate: vi.fn() } },
+      { provide: Router, useValue: { url: '/links', navigate } },
     ],
   });
   return {
     http: TestBed.inject(HttpClient),
     controller: TestBed.inject(HttpTestingController),
     show,
+    expireSession,
+    navigate,
   };
 }
 
@@ -103,6 +107,40 @@ describe('errorInterceptor toasts', () => {
     fail(controller, '/api/monitoring/tunnel', 503);
 
     expect(show).not.toHaveBeenCalled();
+  });
+
+  it('toasts a 599 but not a 600', () => {
+    const { http, controller, show } = setup();
+
+    http.get('/api/links').subscribe({ error: () => undefined });
+    fail(controller, '/api/links', 600);
+    expect(show).not.toHaveBeenCalled();
+
+    http.get('/api/links').subscribe({ error: () => undefined });
+    fail(controller, '/api/links', 599);
+    expect(show).toHaveBeenCalledTimes(1);
+  });
+
+  it('still expires the session on a 401 and shows no toast', () => {
+    const { http, controller, show, expireSession, navigate } = setup();
+
+    http.get('/api/links').subscribe({ error: () => undefined });
+    fail(controller, '/api/links', 401);
+
+    expect(show).not.toHaveBeenCalled();
+    expect(expireSession).toHaveBeenCalledTimes(1);
+    expect(navigate).toHaveBeenCalledTimes(1);
+  });
+
+  it('an opted-out failure does not suppress a later toast for the same error', () => {
+    const { http, controller, show } = setup();
+
+    http.get('/api/links', { context: skipErrorToast() }).subscribe({ error: () => undefined });
+    fail(controller, '/api/links', 500);
+    http.get('/api/folders').subscribe({ error: () => undefined });
+    fail(controller, '/api/folders', 500);
+
+    expect(show).toHaveBeenCalledTimes(1);
   });
 
   it('does not toast when the caller opted out, and still rethrows', () => {

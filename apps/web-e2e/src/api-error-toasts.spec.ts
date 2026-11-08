@@ -10,7 +10,18 @@ const SESSION = {
 };
 
 /** Real auth client and real data APIs, with every `/api` data request answered with `status`. */
-async function failApi(page: Page, status: number): Promise<void> {
+async function failApi(page: Page, status: number): Promise<{ failed: () => number }> {
+  let failed = 0;
+  page.on('response', (response) => {
+    const { pathname } = new URL(response.url());
+    if (
+      response.status() === status &&
+      pathname.startsWith('/api/') &&
+      !pathname.startsWith('/api/auth/')
+    ) {
+      failed += 1;
+    }
+  });
   await page.addInitScript((key) => localStorage.setItem(key, '1'), REAL_AUTH_API_KEY);
   await page.route('**/api/auth/get-session', (route) =>
     route.fulfill({ contentType: 'application/json', body: JSON.stringify(SESSION) }),
@@ -22,6 +33,16 @@ async function failApi(page: Page, status: number): Promise<void> {
       !url.pathname.startsWith('/api/monitoring/'),
     (route) => route.fulfill({ status, contentType: 'application/json', body: '{}' }),
   );
+  return { failed: () => failed };
+}
+
+/** Expects `text` once on screen although several requests failed (the dedupe, not a lucky timing). */
+async function expectSingleToast(page: Page, api: { failed: () => number }, text: string) {
+  const toast = page.getByText(text);
+  await expect(toast).toHaveCount(1);
+  await expect.poll(api.failed).toBeGreaterThan(1);
+  await page.waitForLoadState('networkidle');
+  await expect(toast).toHaveCount(1);
 }
 
 test.describe('API error toasts (real APIs, routed failures)', () => {
@@ -30,18 +51,18 @@ test.describe('API error toasts (real APIs, routed failures)', () => {
   test.use({ serviceWorkers: 'block' });
 
   test('a 429 shows the rate-limit toast once', async ({ page }) => {
-    await failApi(page, 429);
+    const api = await failApi(page, 429);
 
     await page.goto('/links');
 
-    await expect(page.getByText('Too many requests. Try again in a moment.')).toHaveCount(1);
+    await expectSingleToast(page, api, 'Too many requests. Try again in a moment.');
   });
 
   test('a 500 shows the server-error toast once', async ({ page }) => {
-    await failApi(page, 500);
+    const api = await failApi(page, 500);
 
     await page.goto('/links');
 
-    await expect(page.getByText('Something went wrong on our side. Try again.')).toHaveCount(1);
+    await expectSingleToast(page, api, 'Something went wrong on our side. Try again.');
   });
 });

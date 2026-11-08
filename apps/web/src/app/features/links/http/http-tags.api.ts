@@ -10,8 +10,8 @@ import type {
 } from '@shelfmark/contracts';
 import { map, type Observable } from 'rxjs';
 import { API_BASE_URL } from '../../../core/api/api-base-url';
-import type { TagsApi } from '../models/tags-api.interface';
 import { skipErrorToast } from '../../../core/api/skip-error-toast';
+import type { TagsApi } from '../models/tags-api.interface';
 
 /**
  * `TagsApi` over `/api/tags`. Not registered yet: `provideLinksApi()` binds the placeholder

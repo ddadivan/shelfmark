@@ -33,7 +33,7 @@ function isGuardedApiRequest(url: string, base: string): boolean {
   );
 }
 
-/** True for the Sentry tunnel (`/api/monitoring/tunnel`). */
+/** True for the Sentry tunnel (`/api/monitoring/tunnel`). Only called for a guarded URL, which parses. */
 function isTunnelRequest(url: string, base: string): boolean {
   return new URL(url, globalThis.location.origin).pathname === `${base}${MONITORING_TUNNEL_ROUTE}`;
 }
@@ -53,9 +53,9 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((error: unknown) => {
       // The Sentry tunnel is a background request: a failure there must never reach the user.
-      const toasts =
+      const shouldToast =
         guarded && !req.context.get(SKIP_ERROR_TOAST) && !isTunnelRequest(req.url, base);
-      if (toasts && error instanceof HttpErrorResponse) {
+      if (shouldToast && error instanceof HttpErrorResponse) {
         if (error.status === HttpStatusCode.TooManyRequests) {
           injector.get(ApiErrorToastService).show('errors.rateLimited');
         } else if (error.status >= HttpStatusCode.InternalServerError && error.status < 600) {
