@@ -1,12 +1,15 @@
 import { ComponentPortal } from '@angular/cdk/portal';
 import { inject, Service, type ComponentRef } from '@angular/core';
 import type { ConnectedOverlay } from '../overlay/connected-overlay';
+import { OVERLAY_LAYER } from '../overlay/models/overlay-layer.const';
 import { UiOverlay } from '../overlay/overlay.service';
+import { TOAST_CLOSE_REASON } from './models/toast-close-reason.const';
+import type { ToastCloseReason } from './models/toast-close-reason.type';
+import { TOAST_SHORTCUT } from './models/toast-shortcut.const';
 import type { ToastOptions } from './models/toast-options.interface';
 import type { ToastRef } from './models/toast-ref.interface';
 import { ToastRegionComponent } from './toast-region.component';
 import { ToastStore } from './toast-store';
-import { OVERLAY_LAYER } from '../overlay/models/overlay-layer.const';
 
 /**
  * Short confirmations and undo. `show()` renders a `ui-toast` in the `toast` overlay layer
@@ -21,6 +24,8 @@ export class ToastService {
   private readonly store = inject(ToastStore);
   private readonly region: ConnectedOverlay;
   private readonly regionRef: ComponentRef<ToastRegionComponent>;
+  /** Where focus was when `focusAction()` took it, so it can go back when the toast closes. */
+  private returnTo: { readonly id: number; readonly element: HTMLElement } | undefined;
 
   constructor() {
     this.region = inject(UiOverlay).global({
@@ -40,6 +45,9 @@ export class ToastService {
     if (first) {
       this.region.raise();
     }
+    void item.closed.then((reason) => {
+      this.restoreFocus(item.id, reason);
+    });
     return { dismiss: () => this.store.dismiss(item.id), closed: item.closed };
   }
 
@@ -61,10 +69,64 @@ export class ToastService {
     if (!this.store.items()[0]?.action) {
       return;
     }
-    const actions = (
-      this.regionRef.location.nativeElement as HTMLElement
-    ).querySelectorAll<HTMLElement>('.ui-toast__action');
+    const regionElement = this.regionRef.location.nativeElement as HTMLElement;
+    const active = document.activeElement;
+    if (
+      active instanceof HTMLElement &&
+      active !== document.body &&
+      !regionElement.contains(active)
+    ) {
+      this.returnTo = { id: this.store.items()[0].id, element: active };
+    }
+    const actions = regionElement.querySelectorAll<HTMLElement>('.ui-toast__action');
     // A replaced toast can still be leaving: the newest one is last.
     actions.item(actions.length - 1).focus();
+  }
+
+  /**
+   * Handles the global shortcut (`TOAST_SHORTCUT`, Alt+Shift+T): focuses the action of the toast
+   * on screen and cancels the key. Returns true when it did. The app calls it from its document
+   * keydown handler.
+   */
+  handleShortcut(event: KeyboardEvent): boolean {
+    if (
+      event.defaultPrevented ||
+      event.isComposing ||
+      event.code !== TOAST_SHORTCUT.code ||
+      !event.altKey ||
+      !event.shiftKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      !this.store.items()[0]?.action
+    ) {
+      return false;
+    }
+    event.preventDefault();
+    this.focusAction();
+    return true;
+  }
+
+  /**
+   * After the toast that was focused closes (action or dismissed, not replaced: the newer toast
+   * stays where it is), focus goes back to where it was. It only moves when it is still in the
+   * region (or lost to the body): the user or an action may have moved it.
+   */
+  private restoreFocus(id: number, reason: ToastCloseReason): void {
+    const target = this.returnTo;
+    if (target?.id !== id) {
+      return;
+    }
+    this.returnTo = undefined;
+    if (reason !== TOAST_CLOSE_REASON.Action && reason !== TOAST_CLOSE_REASON.Dismissed) {
+      return;
+    }
+    if (!target.element.isConnected) {
+      return;
+    }
+    const active = document.activeElement;
+    const regionElement = this.regionRef.location.nativeElement as HTMLElement;
+    if (!active || active === document.body || regionElement.contains(active)) {
+      target.element.focus();
+    }
   }
 }

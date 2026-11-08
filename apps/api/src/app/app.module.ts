@@ -11,6 +11,7 @@ import {
   shouldTrustProxyHeaders,
 } from '../common/rate-limit/rate-limit-options';
 import { readAuthConfig } from '../config/auth-config';
+import { ExportModule } from '../export/export.module';
 import { HealthModule } from '../health/health.module';
 import { PrismaModule } from '../prisma/prisma.module';
 
@@ -19,6 +20,7 @@ import { PrismaModule } from '../prisma/prisma.module';
     PrismaModule,
     AuthModule,
     HealthModule,
+    ExportModule,
     // Async so the environment is read at DI time, not at import time.
     ThrottlerModule.forRootAsync({
       useFactory: () => createRateLimitOptions(shouldTrustProxyHeaders()),

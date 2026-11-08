@@ -48,6 +48,7 @@ export class ToastStore {
       kind: options.kind ?? TOAST_KIND.Info,
       text: options.text,
       action: options.action,
+      actionHint: options.action ? options.actionHint : undefined,
       duration: Math.max(
         0,
         options.duration ??
