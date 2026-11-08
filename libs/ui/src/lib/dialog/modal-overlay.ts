@@ -27,6 +27,11 @@ function restoreFocusToTopModal(overlayContainer: HTMLElement | null): void {
   }
 }
 
+/** True when the element that opened the modal can no longer take focus back. */
+function isDetached(opener: Element | null): boolean {
+  return !opener || opener === document.body || !opener.isConnected;
+}
+
 /**
  * Opens `component` as a modal on the CDK `Dialog` for `DialogService` and `DrawerService`:
  * the scrim and the `dialog` overlay layer, `aria-modal`, a ref that plays the leave animation
@@ -38,6 +43,7 @@ export function openModalOverlay<C, R, D>(
   component: ComponentType<C>,
   options: ModalOverlayOptions<R, C, D>,
 ): UiDialogRef<R, C> {
+  const opener = document.activeElement;
   const holder: { ref?: UiDialogRef<R, C> } = {};
 
   const cdkRef = deps.dialog.open<R, D, C>(component, {
@@ -76,6 +82,10 @@ export function openModalOverlay<C, R, D>(
   // (The host leaves the container on dispose, so the container is read now.)
   const overlayContainer = cdkRef.overlayRef.hostElement.parentElement;
   cdkRef.closed.subscribe(() => {
+    // The caller's resolver only counts when the opener is gone (the CDK restored it otherwise).
+    if (options.restoreFocus && isDetached(opener)) {
+      options.restoreFocus()?.focus();
+    }
     restoreFocusToTopModal(overlayContainer);
   });
 
