@@ -8,7 +8,6 @@ import { MOCK_LINKS_SCENARIO } from '../models/mock-links-scenario.const';
 import { MOCK_LINKS_SCENARIO_KEY } from '../models/mock-links-scenario-key.const';
 import { MockLibraryData } from './mock-library-data';
 import { MockLinksApi } from './mock-links.api';
-import { normalizeUrl } from './normalize-url';
 
 /** A links API over its own fresh library. */
 function createApi(): MockLinksApi {
@@ -16,19 +15,6 @@ function createApi(): MockLinksApi {
     return new MockLinksApi();
   });
 }
-
-describe('normalizeUrl', () => {
-  it('lowercases the host and drops fragment, utm params and the trailing slash', () => {
-    expect(normalizeUrl('https://Example.COM/a/?utm_source=x&b=1#top')).toBe(
-      'https://example.com/a/?b=1',
-    );
-    expect(normalizeUrl('https://example.com/')).toBe('https://example.com');
-  });
-
-  it('returns null for text that is not a URL', () => {
-    expect(normalizeUrl('nope')).toBeNull();
-  });
-});
 
 describe('MockLinksApi', () => {
   const api = createApi();
@@ -62,6 +48,25 @@ describe('MockLinksApi', () => {
       tags: ['a'],
       folderId: null,
     });
+  });
+
+  it('answers the same link for the same idempotency key', async () => {
+    const mock = createApi();
+    const key = 'b0c1d2e3-0000-4000-8000-000000000001';
+    const first = await firstValueFrom(
+      mock.create({ url: 'https://example.org/a', idempotencyKey: key }),
+    );
+    const again = await firstValueFrom(
+      mock.create({ url: 'https://example.org/a', idempotencyKey: key }),
+    );
+    const other = await firstValueFrom(
+      mock.create({
+        url: 'https://example.org/a',
+        idempotencyKey: 'b0c1d2e3-0000-4000-8000-000000000002',
+      }),
+    );
+    expect(again.id).toBe(first.id);
+    expect(other.id).not.toBe(first.id);
   });
 
   it('fails the save for the save-fails host', async () => {

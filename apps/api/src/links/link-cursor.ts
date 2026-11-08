@@ -1,5 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import {
+  LINK_ERROR_MESSAGE,
   LINK_SORT_FIELD,
   PAGE_LIMIT,
   SORT_ORDER,
@@ -9,7 +10,6 @@ import {
 import type { Prisma } from '../generated/prisma/client';
 import { isRecord } from '../common/util/is-record';
 import { hasControlChars } from '../common/validation/has-control-chars';
-import { LINK_ERROR_MESSAGE } from './models/link-error-message.const';
 import { LINK_CURSOR_VERSION } from './models/link-cursor-version.const';
 import type { LinkCursor } from './models/link-cursor.interface';
 

@@ -124,6 +124,16 @@ export const AuthStore = signalStore(
           run(provider, () => api.signIn(provider, returnUrl)),
         signInDemo: () => run(AUTH_DEMO, () => api.signInDemo()),
         signOut,
+        /**
+         * The server no longer knows this session (401): forget the user and the cached library
+         * without calling the API. Navigation is the caller's job.
+         */
+        expireSession(): void {
+          links.reset();
+          folders.reset();
+          tags.reset();
+          patchState(store, { user: null, loaded: true, pending: null, failed: false });
+        },
         /** Sets the onboarding flag of the signed-in user; no-op for a guest. */
         setOnboardingCompletedAt(onboardingCompletedAt: string | null): void {
           const user = store.user();

@@ -40,6 +40,20 @@ function setup(overrides: Partial<AuthApi> = {}) {
 }
 
 describe('AuthStore', () => {
+  it('forgets the user and the cached library when the session expires', async () => {
+    const { api, store } = setup({ getSession: vi.fn(() => Promise.resolve(USER)) });
+    await store.ensureLoaded();
+    const links = TestBed.inject(LinksStore);
+    const reset = vi.spyOn(links, 'reset');
+
+    store.expireSession();
+
+    expect(store.user()).toBeNull();
+    expect(store.loaded()).toBe(true);
+    expect(reset).toHaveBeenCalled();
+    expect(api.signOut).not.toHaveBeenCalled();
+  });
+
   it('is a guest until the session says otherwise', () => {
     const { store } = setup();
 
