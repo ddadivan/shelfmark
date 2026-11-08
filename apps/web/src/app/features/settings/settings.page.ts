@@ -10,6 +10,8 @@ import {
 } from '@shelfmark/ui';
 import type { SegmentedOption } from '@shelfmark/ui';
 import { combineLatest, map } from 'rxjs';
+import { EXPORT_FORMAT, type ExportFormat } from '@shelfmark/contracts';
+import { ExportActionsService } from '../export/export-actions.service';
 import { AuthStore } from '../../core/auth/auth.store';
 import { ViewportService } from '../../core/layout/viewport.service';
 import { THEME_PREFERENCE } from '../../core/theme/models/theme-preference.const';
@@ -40,6 +42,8 @@ export default class SettingsPage {
   protected readonly viewport = inject(ViewportService);
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
   protected readonly theme = inject(ThemeService);
+  private readonly exporter = inject(ExportActionsService);
+  protected readonly EXPORT_FORMAT = EXPORT_FORMAT;
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
 
@@ -69,6 +73,10 @@ export default class SettingsPage {
   protected async back(event: MouseEvent): Promise<void> {
     event.preventDefault();
     await this.router.navigateByUrl(this.linksHref);
+  }
+
+  protected async exportAll(format: ExportFormat): Promise<void> {
+    await this.exporter.download(format);
   }
 
   protected async signOut(): Promise<void> {

@@ -68,3 +68,12 @@
     flex: 1 1 100%;
   }
 }
+
+.settings__export {
+  display: flex;
+  gap: var(--space-2);
+
+  > * {
+    flex: 1;
+  }
+}

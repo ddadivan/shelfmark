@@ -19,6 +19,7 @@ import {
   LoadMoreComponent,
   MenuComponent,
   MenuItemComponent,
+  MenuSeparatorComponent,
   MenuTriggerDirective,
   NoticeComponent,
   ProgressBarComponent,
@@ -29,7 +30,10 @@ import {
   type BreadcrumbItem,
   type SegmentedOption,
 } from '@shelfmark/ui';
+import { EXPORT_FORMAT, type ExportFormat } from '@shelfmark/contracts';
 import { Router } from '@angular/router';
+import { ExportActionsService } from '../export/export-actions.service';
+import { exportScopeOf } from '../export/export-url';
 import { TAG_QUERY_PARAM } from '../tags/models/tag-query-param.const';
 import { parseTagFilter } from '../tags/tag-filter';
 import { feedSortQuery, parseFeedSort } from '../links/feed-sort';
@@ -78,6 +82,7 @@ const SKELETON_COUNT = 8;
     LoadMoreComponent,
     MenuComponent,
     MenuItemComponent,
+    MenuSeparatorComponent,
     MenuTriggerDirective,
     NoticeComponent,
     ProgressBarComponent,
@@ -92,6 +97,7 @@ export default class LibraryPage {
   protected readonly store = inject(LinksStore);
   protected readonly ui = inject(UiStore);
   protected readonly actions = inject(LinkActionsService);
+  private readonly exporter = inject(ExportActionsService);
   private readonly folders = inject(FoldersStore);
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
@@ -109,6 +115,7 @@ export default class LibraryPage {
   readonly sort = input<unknown>();
 
   protected readonly UI_VIEW = UI_VIEW;
+  protected readonly EXPORT_FORMAT = EXPORT_FORMAT;
   protected readonly LINKS_SCOPE = LINKS_SCOPE;
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly SKELETON_COUNT = SKELETON_COUNT;
@@ -163,6 +170,8 @@ export default class LibraryPage {
       ? { scope: LINKS_SCOPE.All, ...options }
       : { scope, folderId, ...options };
   });
+  /** What "This view" exports; `undefined` when the view has no export equivalent. */
+  protected readonly viewScope = computed(() => exportScopeOf(this.filter()));
   protected readonly firstLoad = computed(
     () => !this.store.loaded() && !this.store.error() && this.store.count() === 0,
   );
@@ -242,6 +251,14 @@ export default class LibraryPage {
     // The sidebar loads the folders too (the phone has none yet); the call is shared.
     void this.folders.load();
     this.store.setFilter(this.filter);
+  }
+
+  protected async exportView(format: ExportFormat): Promise<void> {
+    await this.exporter.download(format, this.viewScope());
+  }
+
+  protected async exportAll(format: ExportFormat): Promise<void> {
+    await this.exporter.download(format);
   }
 
   protected async showAll(): Promise<void> {

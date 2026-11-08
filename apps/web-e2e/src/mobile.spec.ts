@@ -259,6 +259,21 @@ test.describe('mobile layout (mock API)', () => {
     await expect(page.getByText('Link saved')).toBeVisible();
   });
 
+  test('the bottom-most control stays clickable while a toast is visible', async ({ page }) => {
+    await page.goto('/links');
+    const fab = page.getByRole('button', { name: 'Add link' });
+    await fab.click();
+    const dialog = page.getByRole('dialog', { name: 'Add link' });
+    await dialog.getByLabel('Link', { exact: true }).fill('https://mobile.example/toast');
+    await dialog.getByRole('button', { name: /Save/ }).click();
+    await expect(page.getByText('Link saved')).toBeVisible();
+
+    // The toast sits at the bottom edge; its pane must not swallow clicks next to it.
+    await fab.click();
+
+    await expect(page.getByRole('dialog', { name: 'Add link' })).toBeVisible();
+  });
+
   test('keeps the touch targets of the header and the drawer at 44px', async ({ page }) => {
     await page.goto('/links');
     const header = page.getByRole('banner').getByRole('button');

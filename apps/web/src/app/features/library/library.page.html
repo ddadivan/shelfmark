@@ -19,33 +19,65 @@
       </p>
       }
     </div>
-    @if (showLinks() && viewOptions(); as options) {
-    <div class="library__controls">
+    <div class="library__tools">
+      @if (showLinks() && viewOptions(); as options) {
+      <div class="library__controls">
+        <ui-button
+          [uiMenuTrigger]="sortMenu"
+          variant="ghost"
+          size="sm"
+          iconRight="chevron-down"
+          [ariaLabel]="'library.sort.label' | transloco: { sort: SORT_OPTION_KEYS[feedSort()] | transloco }"
+        >
+          {{ SORT_OPTION_KEYS[feedSort()] | transloco }}
+        </ui-button>
+        <ui-menu #sortMenu align="end" [ariaLabel]="'library.sort.menu' | transloco">
+          @for (option of SORT_OPTIONS; track option) {
+          <ui-menu-item
+            type="radio"
+            [selected]="option === feedSort()"
+            (activated)="setSort(option)"
+          >
+            {{ SORT_OPTION_KEYS[option] | transloco }}
+          </ui-menu-item>
+          }
+        </ui-menu>
+        <ui-segmented-control
+          iconOnly
+          [options]="options"
+          [value]="ui.view()"
+          [ariaLabel]="'library.view.label' | transloco"
+          (valueChange)="setView($event)"
+        />
+      </div>
+      }
       <ui-button
-        [uiMenuTrigger]="sortMenu"
-        variant="ghost"
+        [uiMenuTrigger]="exportMenu"
+        variant="secondary"
         size="sm"
+        iconLeft="download"
         iconRight="chevron-down"
-        [ariaLabel]="'library.sort.label' | transloco: { sort: SORT_OPTION_KEYS[feedSort()] | transloco }"
       >
-        {{ SORT_OPTION_KEYS[feedSort()] | transloco }}
+        {{ 'export.menu' | transloco }}
       </ui-button>
-      <ui-menu #sortMenu align="end" [ariaLabel]="'library.sort.menu' | transloco">
-        @for (option of SORT_OPTIONS; track option) {
-        <ui-menu-item type="radio" [selected]="option === feedSort()" (activated)="setSort(option)">
-          {{ SORT_OPTION_KEYS[option] | transloco }}
+      <ui-menu #exportMenu align="end" [ariaLabel]="'export.menu' | transloco">
+        @if (viewScope()) {
+        <ui-menu-item icon="download" (activated)="exportView(EXPORT_FORMAT.Json)">
+          {{ 'export.view.json' | transloco }}
         </ui-menu-item>
+        <ui-menu-item icon="download" (activated)="exportView(EXPORT_FORMAT.Html)">
+          {{ 'export.view.html' | transloco }}
+        </ui-menu-item>
+        <ui-menu-separator />
         }
+        <ui-menu-item icon="download" (activated)="exportAll(EXPORT_FORMAT.Json)">
+          {{ 'export.all.json' | transloco }}
+        </ui-menu-item>
+        <ui-menu-item icon="download" (activated)="exportAll(EXPORT_FORMAT.Html)">
+          {{ 'export.all.html' | transloco }}
+        </ui-menu-item>
       </ui-menu>
-      <ui-segmented-control
-        iconOnly
-        [options]="options"
-        [value]="ui.view()"
-        [ariaLabel]="'library.view.label' | transloco"
-        (valueChange)="setView($event)"
-      />
     </div>
-    }
   </header>
   @if (filtered()) {
   <div class="library__filter" role="group" [attr.aria-label]="'library.filter.label' | transloco">
