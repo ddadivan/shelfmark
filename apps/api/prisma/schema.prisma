@@ -29,6 +29,10 @@ model User {
   isDemo                Boolean   @default(false) @map("is_demo")
   onboardingCompletedAt DateTime? @map("onboarding_completed_at") @db.Timestamptz(3)
   demoExpiresAt         DateTime? @map("demo_expires_at") @db.Timestamptz(3)
+  // HMAC of the creating client IP for the per-IP demo quota (#67); never the raw address.
+  demoSourceHash        String?   @map("demo_source_hash")
+  // Same for the wider IPv6 /48 network (null for IPv4 clients).
+  demoNetworkHash       String?   @map("demo_network_hash")
   createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
   sessions              Session[]
@@ -36,6 +40,7 @@ model User {
   folders               Folder[]
   links                 Link[]
   tags                  Tag[]
+  feedback              Feedback[]
 
   @@map("users")
 }
@@ -179,4 +184,21 @@ model LinkTag {
   @@id([linkId, tagId])
   @@index([tagId])
   @@map("link_tags")
+}
+
+// App rating (#100, PROJECT.md 4 story 24): one row per user and milestone ("day3", "week1", "month1",
+// "year1"). `score` null records "not now". Plain-SQL CHECKs (milestone set, score 1-10, comment
+// length, no comment without a score) live in the migration. The comment is user text: never logged.
+model Feedback {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  milestone String   @db.VarChar(10)
+  score     Int?     @db.SmallInt
+  comment   String?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, milestone])
+  @@map("feedback")
 }

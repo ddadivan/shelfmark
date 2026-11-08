@@ -117,7 +117,7 @@ export class LinksController {
     @Body() body: CreateLinkDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<LinkResponseDto> {
-    const { link, created } = await this.writes.create(user.id, body);
+    const { link, created } = await this.writes.create(user.id, body, user.isDemo);
     if (!created) res.status(HttpStatus.OK);
     return link;
   }

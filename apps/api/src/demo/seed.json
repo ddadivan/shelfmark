@@ -1,0 +1,225 @@
+{
+  "folders": [
+    {
+      "key": "work",
+      "name": "Work",
+      "parent": null
+    },
+    {
+      "key": "angular",
+      "name": "Angular",
+      "parent": "work"
+    },
+    {
+      "key": "courses",
+      "name": "Courses",
+      "parent": null
+    },
+    {
+      "key": "clothes",
+      "name": "Clothes",
+      "parent": null
+    },
+    {
+      "key": "recipes",
+      "name": "Recipes",
+      "parent": null
+    }
+  ],
+  "tags": [
+    "angular",
+    "typescript",
+    "reading",
+    "tutorial",
+    "design",
+    "reference",
+    "cooking",
+    "shopping"
+  ],
+  "links": [
+    {
+      "url": "https://12factor.net/",
+      "title": "The Twelve-Factor App",
+      "folder": "work",
+      "tags": ["reading", "reference"],
+      "isFavorite": true,
+      "createdDaysAgo": 21,
+      "lastOpenedDaysAgo": 5,
+      "note": "Checklist for the new service."
+    },
+    {
+      "url": "https://martinfowler.com/articles/microservices.html",
+      "title": "Microservices",
+      "folder": "work",
+      "tags": ["reading"],
+      "isFavorite": false,
+      "createdDaysAgo": 18,
+      "lastOpenedDaysAgo": 12
+    },
+    {
+      "url": "https://www.nngroup.com/articles/ten-usability-heuristics/",
+      "title": "10 Usability Heuristics for User Interface Design",
+      "folder": "work",
+      "tags": ["design", "reference"],
+      "isFavorite": true,
+      "createdDaysAgo": 9,
+      "lastOpenedDaysAgo": 2
+    },
+    {
+      "url": "https://angular.dev/guide/signals",
+      "title": "Angular Signals",
+      "folder": "angular",
+      "tags": ["angular", "reference"],
+      "isFavorite": true,
+      "createdDaysAgo": 14,
+      "lastOpenedDaysAgo": 1,
+      "note": "Read before the refactor."
+    },
+    {
+      "url": "https://angular.dev/guide/templates",
+      "title": "Angular templates",
+      "folder": "angular",
+      "tags": ["angular", "tutorial"],
+      "isFavorite": false,
+      "createdDaysAgo": 13,
+      "lastOpenedDaysAgo": 6
+    },
+    {
+      "url": "https://angular.dev/tools/cli",
+      "title": "Angular CLI",
+      "folder": "angular",
+      "tags": ["angular", "reference"],
+      "isFavorite": false,
+      "createdDaysAgo": 12,
+      "lastOpenedDaysAgo": null
+    },
+    {
+      "url": "https://www.typescriptlang.org/docs/handbook/intro.html",
+      "title": "TypeScript Handbook",
+      "folder": "angular",
+      "tags": ["typescript", "reference"],
+      "isFavorite": false,
+      "createdDaysAgo": 11,
+      "lastOpenedDaysAgo": 3
+    },
+    {
+      "url": "https://github.com/angular/angular",
+      "title": "angular/angular on GitHub",
+      "folder": "angular",
+      "tags": ["angular"],
+      "isFavorite": false,
+      "createdDaysAgo": 6,
+      "lastOpenedDaysAgo": null
+    },
+    {
+      "url": "https://web.dev/learn",
+      "title": "Learn Web Development",
+      "folder": "courses",
+      "tags": ["tutorial"],
+      "isFavorite": false,
+      "createdDaysAgo": 26,
+      "lastOpenedDaysAgo": 8
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development",
+      "title": "MDN Learn web development",
+      "folder": "courses",
+      "tags": ["tutorial", "reference"],
+      "isFavorite": true,
+      "createdDaysAgo": 24,
+      "lastOpenedDaysAgo": null
+    },
+    {
+      "url": "https://www.freecodecamp.org/learn",
+      "title": "freeCodeCamp curriculum",
+      "folder": "courses",
+      "tags": ["tutorial"],
+      "isFavorite": false,
+      "createdDaysAgo": 20,
+      "lastOpenedDaysAgo": 15
+    },
+    {
+      "url": "https://ocw.mit.edu/",
+      "title": "MIT OpenCourseWare",
+      "folder": "courses",
+      "tags": ["reading"],
+      "isFavorite": false,
+      "createdDaysAgo": 7,
+      "lastOpenedDaysAgo": null
+    },
+    {
+      "url": "https://www.uniqlo.com/",
+      "title": "Uniqlo",
+      "folder": "clothes",
+      "tags": ["shopping"],
+      "isFavorite": false,
+      "createdDaysAgo": 16,
+      "lastOpenedDaysAgo": null
+    },
+    {
+      "url": "https://www.patagonia.com/worn-wear/",
+      "title": "Patagonia Worn Wear",
+      "folder": "clothes",
+      "tags": ["shopping", "reading"],
+      "isFavorite": false,
+      "createdDaysAgo": 10,
+      "lastOpenedDaysAgo": 4,
+      "note": "Repair before replacing."
+    },
+    {
+      "url": "https://www.everlane.com/",
+      "title": "Everlane",
+      "folder": "clothes",
+      "tags": ["shopping"],
+      "isFavorite": false,
+      "createdDaysAgo": 4,
+      "lastOpenedDaysAgo": null
+    },
+    {
+      "url": "https://smittenkitchen.com/",
+      "title": "Smitten Kitchen",
+      "folder": "recipes",
+      "tags": ["cooking"],
+      "isFavorite": true,
+      "createdDaysAgo": 22,
+      "lastOpenedDaysAgo": 9
+    },
+    {
+      "url": "https://www.budgetbytes.com/",
+      "title": "Budget Bytes",
+      "folder": "recipes",
+      "tags": ["cooking"],
+      "isFavorite": false,
+      "createdDaysAgo": 15,
+      "lastOpenedDaysAgo": null
+    },
+    {
+      "url": "https://www.bbcgoodfood.com/recipes/collection/pasta-recipes",
+      "title": "Pasta recipes",
+      "folder": "recipes",
+      "tags": ["cooking", "reading"],
+      "isFavorite": false,
+      "createdDaysAgo": 3,
+      "lastOpenedDaysAgo": 0,
+      "note": "Try the tomato one on Sunday."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS",
+      "title": "CSS reference on MDN",
+      "folder": null,
+      "tags": ["reference", "design"],
+      "isFavorite": false,
+      "createdDaysAgo": 2,
+      "lastOpenedDaysAgo": 1
+    },
+    {
+      "url": "https://news.ycombinator.com/",
+      "title": "Hacker News",
+      "folder": null,
+      "tags": ["reading"],
+      "isFavorite": false,
+      "createdDaysAgo": 0,
+      "lastOpenedDaysAgo": null
+    }
+  ]
+}

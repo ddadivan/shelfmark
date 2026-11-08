@@ -73,5 +73,18 @@ export type { DemoSessionResponse } from './demo/demo-session-response.type';
 export { DEMO_ENDPOINT } from './demo/demo-endpoint.const';
 export { DEMO_LIMIT } from './demo/demo-limit.const';
 
+export type { DemoSessionResponse } from './demo/demo-session-response.type';
+export { DEMO_ENDPOINT } from './demo/demo-endpoint.const';
+export { CRON_ENDPOINT } from './demo/cron-endpoint.const';
+export { DEMO_LIMIT } from './demo/demo-limit.const';
+export type { FeedbackMilestone } from './feedback/feedback-milestone.type';
+export type { FeedbackScore } from './feedback/feedback-score.type';
+export type { FeedbackPromptResponse } from './feedback/feedback-prompt-response.interface';
+export type { RecordFeedbackRequest } from './feedback/record-feedback-request.interface';
+export { FEEDBACK_MILESTONE } from './feedback/feedback-milestone.const';
+export { FEEDBACK_MILESTONE_DAYS } from './feedback/feedback-milestone-days.const';
+export { FEEDBACK_LIMIT } from './feedback/feedback-limit.const';
+export { FEEDBACK_ENDPOINT } from './feedback/feedback-endpoint.const';
+export { dueFeedbackMilestone, reachedFeedbackMilestone } from './feedback/due-feedback-milestone';
 export type { DeleteAccountRequest } from './users/delete-account-request.interface';
 export { USER_LIMIT } from './users/user-limit.const';

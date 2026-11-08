@@ -171,6 +171,7 @@ Settings → **Environment Variables**. Each variable is set per environment: **
 | `BETTER_AUTH_URL` | `https://<prod-domain>` | leave unset | Required in production; on previews derived from the Vercel branch URL (ADR 0026 update) |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | production client | not set until ADR 0026 is decided | Both or neither; mark Sensitive |
 | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | production app | not set until ADR 0026 is decided | Both or neither; mark Sensitive |
+| `CRON_SECRET` | own value, at least 32 characters | not set | Mark Sensitive. Vercel sends it as `Authorization: Bearer …` to the daily demo cleanup (`vercel.json` `crons`, ADR 0034); see 5.8. Cron jobs run on Production deployments only |
 | Sentry DSN | | | Stage 7 |
 
 Mark every secret as **Sensitive** (value cannot be read back in the dashboard). Do not set `PORT` on Vercel. An env change applies only to **new** deployments: redeploy after editing.
@@ -208,6 +209,15 @@ A second Vercel project from the same repository publishes the component showcas
 - Install `cd ../.. && npm ci --include=dev`, build `cd ../.. && npx nx build-storybook ui --output-style=static`, output `storybook-static` (all from `libs/ui/vercel.json`; a project whose Root Directory is `libs/ui` ignores the repository-root `vercel.json` and `middleware.ts` of `shelfmark-app`).
 - Production URL: `https://shelfmark-ui.vercel.app` (if the name is taken, note the real one here).
 - On the first preview check: the manager and a story load, the response has one `Content-Security-Policy` header (the relaxed one from ADR 0023) and the other security headers, the browser console shows no CSP violation.
+
+### 5.8 Demo cleanup cron (`CRON_SECRET`)
+
+The demo sign-in (#67) creates a 24 hour sandbox user per visitor. A Vercel Cron job calls `GET /api/cron/demo-cleanup` daily at 03:17 UTC (`crons` in `vercel.json`, within the Hobby limit of once per day) and deletes expired demo users with all their data.
+
+- [ ] Generate the secret yourself: `openssl rand -base64 48` (at least 32 characters; shorter counts as unset).
+- [ ] Vercel → Settings → Environment Variables → add `CRON_SECRET` for **Production** only, mark it **Sensitive**, then redeploy. Vercel adds `Authorization: Bearer <CRON_SECRET>` to each cron request by itself.
+- [ ] Without the variable the route answers 401 to everyone (fails closed) and expired sandboxes are never deleted, though they stop working after 24 hours.
+- [ ] After the first deploy: Vercel → Settings → Cron Jobs shows `/api/cron/demo-cleanup`; use **Run** once and check the response `{ "deleted": …, "hasMore": false }` in the logs.
 
 ## 6. Secrets policy
 
@@ -254,5 +264,6 @@ Prevention layers: gitleaks in the pre-commit hook (locally) and in CI (CI task)
 | 14 | ~~Docker Desktop for local PostgreSQL~~ not needed (PGlite, ADR 0025) | local machine | - | dropped |
 | 15 | ~~Migration secret in a GitHub `production` environment~~ not needed (Vercel build migrates, ADR 0025) | GitHub Environments | - | dropped |
 | 16 | Privacy policy URL, publish the Google app | Google Auth Platform | author | stage 7 |
+| 17 | `CRON_SECRET` (32+ characters) in Vercel Production for the demo cleanup cron | Vercel env | author | demo sign-in (#67) |
 
 The showcase builds only from `main`: `ignoreCommand` in `libs/ui/vercel.json` skips every other branch (issue #50), so PRs create no `shelfmark-ui` deployments and the Hobby deployment limit is spent on the app project. Storybook on PRs is checked by CI (`nx test-storybook ui`).
