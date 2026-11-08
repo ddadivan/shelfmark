@@ -12,7 +12,7 @@ The quality bar asks for Lighthouse >= 90 (performance, accessibility, best prac
 
 - Lighthouse CI is installed from its own lockfile, `tools/lighthouse/package.json` (exact `@lhci/cli`) and `package-lock.json`, with `npm ci --ignore-scripts --prefix tools/lighthouse`. It is not a root dependency and is outside the root audit, lint and format scope.
 - Install scripts stay off ([0020](0020-npm-install-scripts-policy.md)); `npm install-scripts ls` in that directory reports none.
-- It only runs in the non-required `lighthouse` CI job and locally through `nx run web-e2e:lighthouse`. It audits our own static build, handles no secrets and the job has `contents: read` only.
+- It only runs in the non-required `lighthouse` CI job (on pull requests only when `web` is affected, on every push to `main`) and locally through `nx run web-e2e:lighthouse`. It audits our own static build, handles no secrets and the job has `contents: read` only.
 - The advisories stay visible: the job runs `npm audit --prefix tools/lighthouse --audit-level=high` with `continue-on-error`.
 - Dependabot tracks `/tools/lighthouse` weekly, so updates (and fixes of the advisories) arrive as PRs.
 - If `lighthouse` is made a required check, or a fix-less critical advisory appears, this ADR is revisited.
