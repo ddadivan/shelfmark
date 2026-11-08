@@ -20,6 +20,10 @@ async function useRealAuthApi(page: Page, session: typeof SESSION | null): Promi
 }
 
 test.describe('sign-in flow (real auth client, routed API)', () => {
+  // The production build registers the PWA service worker, and page.route never sees the
+  // requests it makes, so the routed auth API would be bypassed.
+  test.use({ serviceWorkers: 'block' });
+
   test('starts the OAuth redirect with same-origin callback URLs', async ({ page }) => {
     await useRealAuthApi(page, null);
     let body: unknown;
