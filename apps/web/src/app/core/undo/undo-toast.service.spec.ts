@@ -3,6 +3,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import {
   TOAST_CLOSE_REASON,
   ToastService,
+  toastShortcutLabel,
   type ToastCloseReason,
   type ToastOptions,
 } from '@shelfmark/ui';
@@ -62,7 +63,7 @@ describe('UndoToastService', () => {
 
     service.show(options());
 
-    expect(shown[0].actionHint).toBe('shell.toast.actionHint|Alt+Shift+T|Undo');
+    expect(shown[0].actionHint).toBe(`toast.actionHint|${toastShortcutLabel()}|Undo`);
   });
 
   it.each([TOAST_CLOSE_REASON.Timeout, TOAST_CLOSE_REASON.Dismissed, TOAST_CLOSE_REASON.Replaced])(

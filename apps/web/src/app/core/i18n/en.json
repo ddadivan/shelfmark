@@ -305,9 +305,6 @@
     "signOut": "Sign out"
   },
   "shell": {
-    "toast": {
-      "actionHint": "Press {{shortcut}} to reach {{action}}"
-    },
     "accountMenu": "Account menu",
     "settings": "Settings",
     "addLink": "Add link",
@@ -667,5 +664,8 @@
       "title": "Find it right away",
       "text": "Folders, tags, favorites and search with ⌘K bring back any link in a couple of keystrokes."
     }
+  },
+  "toast": {
+    "actionHint": "Press {{shortcut}} to reach {{action}}"
   }
 }

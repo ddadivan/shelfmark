@@ -1,6 +1,6 @@
 import { inject, Service } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
-import { TOAST_CLOSE_REASON, TOAST_SHORTCUT, ToastService } from '@shelfmark/ui';
+import { TOAST_CLOSE_REASON, ToastService, toastShortcutLabel } from '@shelfmark/ui';
 import { DELETE_UNDO_MS } from './models/delete-undo.const';
 import type { UndoToastOptions } from './models/undo-toast-options.interface';
 
@@ -19,8 +19,8 @@ export class UndoToastService {
     const ref = this.toasts.show({
       text: options.text,
       duration: DELETE_UNDO_MS,
-      actionHint: this.transloco.translate('shell.toast.actionHint', {
-        shortcut: TOAST_SHORTCUT.label,
+      actionHint: this.transloco.translate('toast.actionHint', {
+        shortcut: toastShortcutLabel(),
         action: options.actionLabel,
       }),
       action: { label: options.actionLabel, run: () => options.onUndo() },
