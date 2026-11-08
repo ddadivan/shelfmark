@@ -25,6 +25,7 @@ function user(overrides: Partial<AuthUser> = {}): AuthUser {
     email: 'a@example.com',
     image: null,
     isDemo: false,
+    demoExpiresAt: null,
     onboardingCompletedAt: null,
     ...overrides,
   };

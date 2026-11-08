@@ -1,15 +1,19 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import {
   AUTH_ENDPOINT,
+  DEMO_ENDPOINT,
   type AuthProvider,
   type AuthUser,
+  type DemoSessionResponse,
   type GetSessionResponse,
   type SignOutResponse,
   type SocialSignInRequest,
   type SocialSignInResponse,
 } from '@shelfmark/contracts';
+import { DemoSignInError } from './demo-sign-in-error';
+import { DEMO_ERROR } from './models/demo-error.const';
 import { AuthApi } from './models/auth-api.interface';
 import { AUTH_ROUTE } from './models/auth-routes.const';
 import { SIGN_IN_QUERY } from './models/sign-in-query.const';
@@ -59,9 +63,26 @@ export class BetterAuthApi implements AuthApi {
     return null;
   }
 
-  signInDemo(): Promise<AuthUser> {
-    // TODO(#67): call the demo endpoint; until then production sign-in by demo always fails.
-    return Promise.reject(new Error('Demo sign-in is not available yet'));
+  /** Creates the demo sandbox (201 with the session). 429 and 503 become typed `DemoSignInError`s. */
+  async signInDemo(): Promise<AuthUser> {
+    let body: DemoSessionResponse | null;
+    try {
+      body = await firstValueFrom(this.http.post<DemoSessionResponse>(DEMO_ENDPOINT.Create, {}));
+    } catch (error) {
+      if (error instanceof HttpErrorResponse) {
+        if (error.status === HttpStatusCode.TooManyRequests) {
+          throw new DemoSignInError(DEMO_ERROR.RateLimited);
+        }
+        if (error.status === HttpStatusCode.ServiceUnavailable) {
+          throw new DemoSignInError(DEMO_ERROR.Unavailable);
+        }
+      }
+      throw error;
+    }
+    if (!body?.user?.isDemo) {
+      throw new Error('The demo response did not contain a demo user');
+    }
+    return body.user;
   }
 
   async signOut(): Promise<void> {

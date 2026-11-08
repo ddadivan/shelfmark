@@ -153,13 +153,13 @@ test.describe('landing', () => {
     }
   });
 
-  test('the call-to-action buttons point to sign-in', async ({ page }) => {
+  test('the call-to-action buttons point to sign-in and the demo', async ({ page }) => {
     await page.goto('/');
     const finale = page.getByRole('region', { name: 'Empty your Saved Messages.' });
 
     await expect(finale.getByRole('link', { name: 'Open the demo' })).toHaveAttribute(
       'href',
-      '/sign-in',
+      '/demo',
     );
     await expect(finale.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/sign-in');
     await expect(page.getByRole('banner').getByRole('link', { name: 'Sign in' })).toHaveAttribute(

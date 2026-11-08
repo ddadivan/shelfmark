@@ -96,6 +96,7 @@ describe('SessionAuthGuard', () => {
         email: 'ada@example.com',
         image: null,
         isDemo: false,
+        demoExpiresAt: null,
         onboardingCompletedAt: null,
       },
       session: { expiresAt: '2030-01-01T00:00:00.000Z' },

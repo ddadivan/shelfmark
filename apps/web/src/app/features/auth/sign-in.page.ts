@@ -19,6 +19,7 @@ import { isSignInReason } from '../../core/auth/is-sign-in-reason';
 import { safeReturnUrl } from '../../core/auth/safe-return-url';
 import { SIGN_IN_ERROR_GENERIC_KEY } from './models/sign-in-error-generic-key.const';
 import { SIGN_IN_ERROR_KEY } from './models/sign-in-error-key.const';
+import { DEMO_ERROR_REASON } from './models/demo-error-reason.const';
 import { SIGN_IN_REASON_KEY } from './models/sign-in-reason-key.const';
 
 /** Sign in with Google or GitHub, or open the demo. Guest-only (`guestOnly` on the route). */
@@ -62,6 +63,13 @@ export default class SignInPage {
   protected readonly reasonKey = computed<string | null>(() => {
     const reason = this.reason();
     return isSignInReason(reason) ? SIGN_IN_REASON_KEY[reason] : null;
+  });
+
+  /** Why the demo button failed, when the API said so (too many demos, sandbox full). */
+  protected readonly demoErrorKey = computed<string | null>(() => {
+    const error = this.auth.demoError();
+    // After `/demo` failed the reason is in the URL already; one notice is enough.
+    return error && this.reasonKey() === null ? SIGN_IN_REASON_KEY[DEMO_ERROR_REASON[error]] : null;
   });
 
   protected isLoading(action: AuthPending): boolean {

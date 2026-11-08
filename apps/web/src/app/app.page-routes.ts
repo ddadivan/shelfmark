@@ -42,6 +42,8 @@ export const pageRoutes: Routes = [
       { path: APP_PATH.Settings, loadComponent: settingsPage },
     ],
   },
+  // Starts a demo session (or goes to the library when already signed in).
+  { path: APP_PATH.Demo, loadComponent: () => import('./features/auth/demo-start.page') },
   // Web Share Target (Android): outside the shell, a quick save sheet. Signed-in only.
   { path: APP_PATH.Share, canMatch: [authOnly], loadComponent: sharePage },
   // A guest on a protected URL: to sign-in, then back.

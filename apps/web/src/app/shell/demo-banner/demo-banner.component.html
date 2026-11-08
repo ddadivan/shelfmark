@@ -1,0 +1,17 @@
+@if (demoUser()) {
+  <ui-notice [kind]="NOTICE_KIND.Info" banner>
+    <strong>{{ 'shell.demoBanner.title' | transloco }}</strong>
+    @if (remainingKey(); as key) {
+      {{ key | transloco: { hours: hoursLeft() } }}
+    }
+    <ui-button
+      uiNoticeAction
+      [variant]="BUTTON_VARIANT.Primary"
+      [size]="BUTTON_SIZE.Sm"
+      [disabled]="leaving()"
+      (click)="signInOwn()"
+    >
+      {{ 'shell.demoBanner.signIn' | transloco }}
+    </ui-button>
+  </ui-notice>
+}

@@ -20,7 +20,7 @@ export function toAuthSessionResponse(value: unknown): AuthSessionResponse | nul
   if (!isRecord(value) || !isRecord(value['user']) || !isRecord(value['session'])) {
     return null;
   }
-  const { id, name, email, image, isDemo, onboardingCompletedAt } = value['user'];
+  const { id, name, email, image, isDemo, demoExpiresAt, onboardingCompletedAt } = value['user'];
   const expiresAt = toIsoString(value['session']['expiresAt']);
   if (
     typeof id !== 'string' ||
@@ -37,6 +37,7 @@ export function toAuthSessionResponse(value: unknown): AuthSessionResponse | nul
       email,
       image: typeof image === 'string' ? image : null,
       isDemo: isDemo === true,
+      demoExpiresAt: isDemo === true ? toIsoString(demoExpiresAt) : null,
       onboardingCompletedAt: toIsoString(onboardingCompletedAt),
     },
     session: { expiresAt },

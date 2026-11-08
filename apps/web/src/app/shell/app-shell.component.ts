@@ -32,6 +32,7 @@ import { RecentLinksPanelComponent } from '../features/links/recent/recent-links
 import { ViewportService } from '../core/layout/viewport.service';
 import { UiStore } from '../stores/ui.store';
 import { APP_PATH } from '../models/app-path.const';
+import { DemoBannerComponent } from './demo-banner/demo-banner.component';
 import { MobileNavService } from './mobile-nav/mobile-nav.service';
 import { SidebarComponent } from './sidebar/sidebar.component';
 
@@ -42,6 +43,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     RouterOutlet,
     TranslocoPipe,
     AvatarComponent,
+    DemoBannerComponent,
     ButtonComponent,
     LogoComponent,
     MenuComponent,
