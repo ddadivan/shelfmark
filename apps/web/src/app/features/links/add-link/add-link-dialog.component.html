@@ -54,6 +54,9 @@
                   : { folder: existing.folderName ?? ('links.add.folder.unsorted' | transloco) }
             }}</ui-notice>
           }
+          @if (noPreview()) {
+            <ui-notice>{{ 'links.add.preview.unavailable' | transloco }}</ui-notice>
+          }
           @if (previewData(); as data) {
             <div class="add-link__preview">
               <div class="add-link__meta">
@@ -106,8 +109,10 @@
         [formField]="form.note"
       />
 
-      @if (saveFailed()) {
-        <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'links.add.saveFailed' | transloco }}</ui-notice>
+      @if (saveError(); as key) {
+        <ui-notice [kind]="NOTICE_KIND.Danger">{{
+          key | transloco: { max: LINK_LIMIT.PerUserMax }
+        }}</ui-notice>
       }
 
       @if (meta(); as text) {

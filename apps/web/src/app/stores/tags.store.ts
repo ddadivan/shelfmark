@@ -9,8 +9,9 @@ import {
   withState,
 } from '@ngrx/signals';
 import { removeAllEntities, setAllEntities, withEntities } from '@ngrx/signals/entities';
-import { TAG_LIMIT, type TagResponse } from '@shelfmark/contracts';
+import { TAG_ERROR_MESSAGE, TAG_LIMIT, type TagResponse } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
+import { hasApiMessage } from '../core/api/api-error';
 import { isConflictError } from '../core/api/is-conflict-error';
 import { TAGS_API } from '../features/links/models/tags-api.const';
 import { LinksStore } from './links.store';
@@ -209,6 +210,9 @@ export const TagsStore = signalStore(
           patchState(store, setAllEntities(sorted([...store.entities(), tag])));
           return { outcome: TAG_OUTCOME.Done, tag };
         } catch (error) {
+          if (hasApiMessage(error, TAG_ERROR_MESSAGE.LimitReached)) {
+            return { outcome: TAG_OUTCOME.LimitReached };
+          }
           if (isConflictError(error)) {
             return { outcome: TAG_OUTCOME.Conflict, ...ownerField(owner(name)) };
           }

@@ -8,6 +8,8 @@ import {
   LINK_LIMIT,
   normalizeTagName,
   normalizeUrl,
+  LINK_ERROR_MESSAGE,
+  TAG_ERROR_MESSAGE,
   TAG_LIMIT,
   type CreateLinkRequest,
   type LinkResponse,
@@ -20,11 +22,9 @@ import { stripControlChars } from '../common/validation/has-control-chars';
 import { hasPrismaCode } from '../common/prisma/has-prisma-code';
 import { PRISMA_ERROR_CODE } from '../common/prisma/prisma-error-code.const';
 import { PrismaService } from '../prisma/prisma.service';
-import { TAG_ERROR_MESSAGE } from '../tags/models/tag-error-message.const';
 import { TagsService } from '../tags/tags.service';
 import { LinkPreviewService } from './link-preview.service';
 import type { CreateLinkResult } from './models/create-link-result.interface';
-import { LINK_ERROR_MESSAGE } from './models/link-error-message.const';
 import { LINK_INCLUDE } from './models/link-include.const';
 import type { LinkDbClient } from './models/link-db-client.type';
 import { toLinkResponse } from './to-link-response';

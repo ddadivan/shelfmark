@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import {
   FOLDER_DELETE_MODE,
+  FOLDER_ERROR_MESSAGE,
   FOLDER_LIMIT,
   type CreateFolderRequest,
   type FolderDeleteMode,
@@ -21,8 +22,6 @@ import type { FolderDbClient } from './models/folder-db-client.type';
 import { FOLDER_LOCK_PREFIX } from './models/folder-advisory-lock.const';
 import { toFolderResponse } from './to-folder-response';
 import { wouldCreateCycle } from './would-create-cycle';
-
-const NOT_FOUND = 'Folder not found';
 
 @Injectable()
 export class FoldersService {
@@ -51,7 +50,7 @@ export class FoldersService {
 
   async get(userId: string, id: string): Promise<FolderResponse> {
     const row = await this.prisma.folder.findFirst({ where: { id, userId } });
-    if (!row) throw new NotFoundException(NOT_FOUND);
+    if (!row) throw new NotFoundException(FOLDER_ERROR_MESSAGE.NotFound);
     return toFolderResponse(row, await this.directLinkCount(this.prisma, userId, id));
   }
 
@@ -62,7 +61,7 @@ export class FoldersService {
         if (request.parentId !== undefined) await this.requireOwned(tx, userId, request.parentId);
         const total = await tx.folder.count({ where: { userId } });
         if (total >= FOLDER_LIMIT.PerUserMax) {
-          throw new ConflictException(`Folder limit reached (${FOLDER_LIMIT.PerUserMax})`);
+          throw new ConflictException(FOLDER_ERROR_MESSAGE.LimitReached);
         }
         const row = await tx.folder.create({
           data: { userId, name: request.name, parentId: request.parentId ?? null },
@@ -79,7 +78,7 @@ export class FoldersService {
       return await this.prisma.$transaction(async (tx) => {
         await this.lockTree(tx, userId);
         const current = await tx.folder.findFirst({ where: { id, userId } });
-        if (!current) throw new NotFoundException(NOT_FOUND);
+        if (!current) throw new NotFoundException(FOLDER_ERROR_MESSAGE.NotFound);
 
         const data: Prisma.FolderUncheckedUpdateInput = {};
         if (request.name !== undefined) data.name = request.name;
@@ -91,7 +90,7 @@ export class FoldersService {
               select: { id: true, parentId: true },
             });
             if (wouldCreateCycle(id, request.parentId, nodes)) {
-              throw new BadRequestException('A folder cannot be moved into itself or a subfolder');
+              throw new BadRequestException(FOLDER_ERROR_MESSAGE.MoveIntoDescendant);
             }
           }
           data.parentId = request.parentId;
@@ -111,7 +110,7 @@ export class FoldersService {
     await this.prisma.$transaction(async (tx) => {
       await this.lockTree(tx, userId);
       const current = await tx.folder.findFirst({ where: { id, userId }, select: { id: true } });
-      if (!current) throw new NotFoundException(NOT_FOUND);
+      if (!current) throw new NotFoundException(FOLDER_ERROR_MESSAGE.NotFound);
 
       if (mode === FOLDER_DELETE_MODE.DeleteLinks) {
         const subtree = await tx.$queryRaw<{ id: string }[]>`
@@ -152,7 +151,7 @@ export class FoldersService {
       where: { id: folderId, userId },
       select: { id: true },
     });
-    if (!found) throw new NotFoundException(NOT_FOUND);
+    if (!found) throw new NotFoundException(FOLDER_ERROR_MESSAGE.NotFound);
   }
 
   private directLinkCount(
@@ -165,7 +164,7 @@ export class FoldersService {
 
   private mapForeignKey(error: unknown): unknown {
     if (hasPrismaCode(error, PRISMA_ERROR_CODE.ForeignKeyViolation)) {
-      return new NotFoundException(NOT_FOUND);
+      return new NotFoundException(FOLDER_ERROR_MESSAGE.NotFound);
     }
     return error;
   }

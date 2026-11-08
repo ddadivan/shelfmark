@@ -5,6 +5,7 @@ import {
   PAGE_LIMIT,
   SORT_ORDER,
   type GetLinkResponse,
+  LINK_ERROR_MESSAGE,
   type ListLinksQuery,
   type LinkDuplicate,
   type LinkPreviewResponse,
@@ -17,7 +18,6 @@ import { cursorKey, cursorWhere, decodeCursor, encodeCursor, linkOrderBy } from 
 import { LinkPreviewService } from './link-preview.service';
 import { buildLinkWhere } from './link-where';
 import { LINK_CURSOR_VERSION } from './models/link-cursor-version.const';
-import { LINK_ERROR_MESSAGE } from './models/link-error-message.const';
 import { LINK_INCLUDE } from './models/link-include.const';
 import { toLinkResponse } from './to-link-response';
 
