@@ -12,6 +12,7 @@ import {
 } from '../common/rate-limit/rate-limit-options';
 import { readAuthConfig } from '../config/auth-config';
 import { DemoModule } from '../demo/demo.module';
+import { FeedbackModule } from '../feedback/feedback.module';
 import { ExportModule } from '../export/export.module';
 import { FoldersModule } from '../folders/folders.module';
 import { HealthModule } from '../health/health.module';
@@ -29,6 +30,7 @@ import { UsersModule } from '../users/users.module';
     FoldersModule,
     LinksModule,
     DemoModule,
+    FeedbackModule,
     UsersModule,
     ExportModule,
     // Async so the environment is read at DI time, not at import time.
