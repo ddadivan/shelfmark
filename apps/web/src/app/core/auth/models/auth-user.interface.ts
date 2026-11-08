@@ -9,4 +9,6 @@ export interface AuthUser {
   /** Avatar URL, or `null` to show initials. */
   image: string | null;
   isDemo: boolean;
+  /** ISO time the onboarding was completed or skipped; `null` while it is still due. */
+  onboardingCompletedAt: string | null;
 }

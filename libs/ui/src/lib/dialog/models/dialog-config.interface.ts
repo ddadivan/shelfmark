@@ -17,4 +17,10 @@ export interface UiDialogConfig<D = undefined> {
   readonly describedBy?: string;
   /** What gets focus on open: `first-tabbable` (default), `first-heading`, `dialog`, a CSS selector or `false`. */
   readonly autoFocus?: string | boolean;
+  /**
+   * Where focus goes on close when the element that opened the dialog is gone from the page (a
+   * tree row that was removed or moved). Evaluated at close time and used only then; return
+   * `null` for no preference. Without it focus falls back to the topmost remaining modal.
+   */
+  readonly restoreFocus?: () => HTMLElement | null;
 }

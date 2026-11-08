@@ -67,22 +67,34 @@ test.describe('landing', () => {
     });
   }
 
+  test('the hero headline has its text in the first frame it is rendered', async ({ page }) => {
+    // Plain script (as elsewhere in this suite): the e2e project has no DOM typings.
+    await page.addInitScript(`
+      window.__firstHero = null;
+      const sample = () => {
+        const title = document.querySelector('.landing-hero__title');
+        if (title) {
+          window.__firstHero = (title.textContent || '').trim();
+        } else {
+          requestAnimationFrame(sample);
+        }
+      };
+      requestAnimationFrame(sample);
+    `);
+
+    await gotoLandingLoaded(page);
+
+    const firstHero = await page.evaluate<string | null>('window.__firstHero');
+    expect(firstHero, 'the headline never rendered').not.toBeNull();
+    expect(firstHero).toBe(LANDING_HEADLINE);
+  });
+
   for (const width of [360, 800, 1280]) {
     test(`the deferred chat and sections shift nothing at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       // Plain scripts (as elsewhere in this suite): the e2e project has no DOM typings.
       await page.addInitScript(`
         window.__shifts = [];
-        window.__textAt = null;
-        // The frame in which the headline first has a height: the translated text of the hero
-        // arrives one frame after the first paint, in the app as on main (#147), and moves
-        // everything below it. Shifts up to that frame are not this change's.
-        const watchText = (time) => {
-          const title = document.querySelector('.landing-hero__title');
-          if (title && title.getBoundingClientRect().height > 0) window.__textAt = time;
-          else requestAnimationFrame(watchText);
-        };
-        requestAnimationFrame(watchText);
         new PerformanceObserver((list) => {
           for (const entry of list.getEntries()) {
             if (entry.hadRecentInput) continue;
@@ -106,10 +118,7 @@ test.describe('landing', () => {
       await page.waitForTimeout(500);
 
       // The sources go into the failure message, so a CI failure says what moved.
-      const textAt = await page.evaluate<number | null>('window.__textAt');
-      expect(textAt, 'the headline text never showed').not.toBeNull();
-      const all = await page.evaluate<{ at: number; value: number }[]>('window.__shifts');
-      const shifts = all.filter((shift) => shift.at > (textAt ?? 0));
+      const shifts = await page.evaluate<{ at: number; value: number }[]>('window.__shifts');
       const total = shifts.reduce((sum, shift) => sum + shift.value, 0);
       expect(total, JSON.stringify(shifts)).toBeLessThan(0.001);
     });

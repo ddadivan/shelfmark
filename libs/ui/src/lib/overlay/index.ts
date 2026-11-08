@@ -13,3 +13,4 @@ export { connectedSide, overlayTransformOrigin, setOverlayOrigin } from './overl
 export { overlayLayerClass, setOverlayLayer } from './overlay-layer';
 export { UiOverlay } from './overlay.service';
 export { sidePositions } from './side-positions';
+export { raiseOverlayLayers } from './overlay-stacking';

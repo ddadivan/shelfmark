@@ -16,7 +16,10 @@ export interface ListLinksQuery extends CursorQuery {
    * is normalized with `normalizeTagName` before matching.
    */
   tag?: string[];
-  /** Title search, at most `LINK_LIMIT.QueryMax` characters. */
+  /**
+   * Search in title, note and URL, case-insensitive. At most `LINK_LIMIT.QueryMax` characters;
+   * the words are separated by white space, every word must match (AND), at most 5 words.
+   */
   q?: string;
   /** Defaults to `LINK_SORT_FIELD.CreatedAt`. */
   sort?: LinkSortField;

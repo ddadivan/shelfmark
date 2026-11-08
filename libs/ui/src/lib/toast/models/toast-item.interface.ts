@@ -9,6 +9,7 @@ export interface ToastItem {
   readonly text: string;
   readonly action: ToastAction | undefined;
   readonly duration: number;
+  readonly actionHint: string | undefined;
   /** Resolves once with the close reason. */
   readonly closed: Promise<ToastCloseReason>;
 }
