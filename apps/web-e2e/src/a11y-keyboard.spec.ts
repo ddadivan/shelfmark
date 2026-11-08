@@ -148,12 +148,10 @@ test.describe('keyboard-only flows (mock API)', () => {
     await activate(page, move.getByRole('button', { name: 'Move' }));
 
     await expect(move).toBeHidden();
-    // Reading now sits in the collapsed Archive, so its row (the opener) is gone and focus has no
-    // element to return to; the keyboard path on is Tab into the tree, then Right to expand.
+    // Reading now sits in the collapsed Archive, so its row (the opener) is gone: focus moves to
+    // its new parent row (#165) instead of falling to <body>, and Right expands it.
     await expect(row(page, READING)).toHaveCount(0);
-    await expect(page.locator('body')).toBeFocused();
-    await pressUntilFocused(page, library(page).locator('[role="treeitem"][tabindex="0"]'));
-    await pressUntilFocused(page, row(page, ARCHIVE), 'ArrowDown');
+    await expect(row(page, ARCHIVE)).toBeFocused();
     await expectVisibleFocus(page);
     await page.keyboard.press('ArrowRight');
     await expect(row(page, READING)).toBeVisible();

@@ -11,6 +11,7 @@ import {
   Injector,
   input,
   output,
+  viewChild,
   viewChildren,
 } from '@angular/core';
 import { ButtonComponent } from '../button/button.component';
@@ -66,6 +67,7 @@ export class TreeComponent {
   private echoTimer: ReturnType<typeof setTimeout> | undefined;
 
   private readonly injector = inject(Injector);
+  private readonly tree = viewChild.required(Tree);
   private readonly items = viewChildren(TreeItem);
   /** Where every row has been seen (kept for removed rows, so focus can find a neighbour). */
   private readonly lastKnown = new Map<string, TreeRowPlace>();
@@ -92,6 +94,9 @@ export class TreeComponent {
     if (!item?.visible()) {
       return false;
     }
+    // Make it the Aria tree's active row first: with roving focus the arrow keys move from the
+    // active row, so a plain DOM focus would leave Up / Down / Right / Left acting elsewhere.
+    this.tree()._pattern.activeItem.set(item._pattern);
     item.element.focus();
     return true;
   }
