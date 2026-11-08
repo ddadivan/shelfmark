@@ -13,8 +13,19 @@ export const MOCK_USER = {
   demoExpiresAt: null,
 };
 
-/** Signs the mock auth API in before the app starts. */
-export async function seedSession(page: Page): Promise<void> {
+/** A demo user whose sandbox ends `hours` from now. */
+export function demoUser(hours: number) {
+  return {
+    ...MOCK_USER,
+    id: 'e2e-demo',
+    name: 'Demo user',
+    isDemo: true,
+    demoExpiresAt: new Date(Date.now() + hours * 3_600_000).toISOString(),
+  };
+}
+
+/** Signs the mock auth API in before the app starts (as `user`, a regular user by default). */
+export async function seedSession(page: Page, user: object = MOCK_USER): Promise<void> {
   await page.addInitScript(
     ([key, user, flag]) => {
       // Seed once: sign-out clears the key and a reload must not bring the session back.
@@ -23,7 +34,7 @@ export async function seedSession(page: Page): Promise<void> {
         localStorage.setItem(key, user);
       }
     },
-    [MOCK_SESSION_KEY, JSON.stringify(MOCK_USER), SEEDED_FLAG],
+    [MOCK_SESSION_KEY, JSON.stringify(user), SEEDED_FLAG],
   );
 }
 
