@@ -7,6 +7,5 @@ export const MOCK_DEMO_USER: Omit<AuthUser, 'demoExpiresAt'> = {
   email: 'demo@example.com',
   image: null,
   isDemo: true,
-  demoExpiresAt: null,
   onboardingCompletedAt: null,
 };
