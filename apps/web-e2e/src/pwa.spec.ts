@@ -17,6 +17,7 @@ interface Manifest {
   theme_color: string;
   background_color: string;
   icons: ManifestIcon[];
+  share_target?: { action: string; method: string; params: Record<string, string> };
 }
 
 // Local `nx serve` is a development build without a service worker; CI and a deployed URL are
@@ -55,6 +56,21 @@ test.describe('PWA manifest', () => {
       expect(iconResponse.status(), icon.src).toBe(200);
       expect(iconResponse.headers()['content-type'], icon.src).toBe(icon.type);
     }
+  });
+
+  test('registers the Android share target (GET /share with url, text, title)', async ({
+    page,
+    request,
+  }) => {
+    await page.goto('/');
+    const response = await request.get(new URL('manifest.webmanifest', page.url()).toString());
+    const manifest = (await response.json()) as Manifest;
+
+    expect(manifest.share_target).toEqual({
+      action: '/share',
+      method: 'GET',
+      params: { url: 'url', text: 'text', title: 'title' },
+    });
   });
 
   test('declares a theme colour per colour scheme and the iOS meta tags', async ({ page }) => {
@@ -99,6 +115,11 @@ test.describe('service worker', () => {
       .filter((rule) => !rule.positive)
       .map((rule) => new RegExp(rule.regex));
     expect(excluded.some((re) => re.test('/api/auth/callback/github'))).toBe(true);
+    // The share target opens `/share?...`: a navigation that must fall back to the shell.
+    expect(excluded.some((re) => re.test('/share'))).toBe(false);
+    expect(
+      config.navigationUrls.some((rule) => rule.positive && new RegExp(rule.regex).test('/share')),
+    ).toBe(true);
   });
 
   test('registers and takes control after the first load', async ({ page }) => {
