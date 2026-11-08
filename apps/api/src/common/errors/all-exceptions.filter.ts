@@ -63,7 +63,10 @@ function normalise(exception: unknown): Normalised {
   }
 
   // http-errors from body-parser (415 charset/encoding, request.aborted, ...).
-  const status = readProperty(exception, 'status') ?? readProperty(exception, 'statusCode');
+  // Better Auth's APIError has a string `status` ('UNAUTHORIZED') and a numeric `statusCode`: use
+  // whichever of the two is a number.
+  const candidates = [readProperty(exception, 'status'), readProperty(exception, 'statusCode')];
+  const status = candidates.find((value): value is number => typeof value === 'number');
   if (typeof status === 'number' && Number.isInteger(status) && status >= 400 && status <= 499) {
     return generic(status);
   }

@@ -1,4 +1,5 @@
 import { Injector, runInInjectionContext } from '@angular/core';
+import { LINK_SORT_FIELD, SORT_ORDER } from '@shelfmark/contracts';
 import { MOCK_LINK_PREVIEW_DUPLICATE } from '@shelfmark/contracts/testing';
 import { firstValueFrom } from 'rxjs';
 import { MOCK_HOST } from '../models/mock-host.const';
@@ -7,7 +8,6 @@ import { MOCK_LINKS_SCENARIO } from '../models/mock-links-scenario.const';
 import { MOCK_LINKS_SCENARIO_KEY } from '../models/mock-links-scenario-key.const';
 import { MockLibraryData } from './mock-library-data';
 import { MockLinksApi } from './mock-links.api';
-import { normalizeUrl } from './normalize-url';
 
 /** A links API over its own fresh library. */
 function createApi(): MockLinksApi {
@@ -15,19 +15,6 @@ function createApi(): MockLinksApi {
     return new MockLinksApi();
   });
 }
-
-describe('normalizeUrl', () => {
-  it('lowercases the host and drops fragment, utm params and the trailing slash', () => {
-    expect(normalizeUrl('https://Example.COM/a/?utm_source=x&b=1#top')).toBe(
-      'https://example.com/a/?b=1',
-    );
-    expect(normalizeUrl('https://example.com/')).toBe('https://example.com');
-  });
-
-  it('returns null for text that is not a URL', () => {
-    expect(normalizeUrl('nope')).toBeNull();
-  });
-});
 
 describe('MockLinksApi', () => {
   const api = createApi();
@@ -63,6 +50,25 @@ describe('MockLinksApi', () => {
     });
   });
 
+  it('answers the same link for the same idempotency key', async () => {
+    const mock = createApi();
+    const key = 'b0c1d2e3-0000-4000-8000-000000000001';
+    const first = await firstValueFrom(
+      mock.create({ url: 'https://example.org/a', idempotencyKey: key }),
+    );
+    const again = await firstValueFrom(
+      mock.create({ url: 'https://example.org/a', idempotencyKey: key }),
+    );
+    const other = await firstValueFrom(
+      mock.create({
+        url: 'https://example.org/a',
+        idempotencyKey: 'b0c1d2e3-0000-4000-8000-000000000002',
+      }),
+    );
+    expect(again.id).toBe(first.id);
+    expect(other.id).not.toBe(first.id);
+  });
+
   it('fails the save for the save-fails host', async () => {
     await expect(
       firstValueFrom(api.create({ url: `https://${MOCK_HOST.SaveFails}` })),
@@ -71,6 +77,26 @@ describe('MockLinksApi', () => {
 
   describe('feed', () => {
     afterEach(() => sessionStorage.removeItem(MOCK_LINKS_SCENARIO_KEY));
+
+    it('searches the title, the note and the URL, every word', async () => {
+      const feed = createApi();
+      const note = await firstValueFrom(feed.list({ q: 'note for article', limit: 100 }));
+      expect(note.items.length).toBeGreaterThan(0);
+      expect(note.items.every((link) => link.note !== null)).toBe(true);
+      const url = await firstValueFrom(feed.list({ q: 'angular.dev', limit: 100 }));
+      expect(url.items.some((link) => link.url.includes('angular.dev'))).toBe(true);
+      const both = await firstValueFrom(feed.list({ q: 'saved zzz-none', limit: 100 }));
+      expect(both.items).toEqual([]);
+    });
+
+    it('sorts by title ignoring case, ascending', async () => {
+      const feed = createApi();
+      const { items } = await firstValueFrom(
+        feed.list({ sort: LINK_SORT_FIELD.Title, order: SORT_ORDER.Asc, limit: 100 }),
+      );
+      const titles = items.map((link) => link.title.toLowerCase());
+      expect(titles).toEqual([...titles].sort((a, b) => a.localeCompare(b)));
+    });
 
     it('pages through every link with the cursor', async () => {
       const feed = createApi();

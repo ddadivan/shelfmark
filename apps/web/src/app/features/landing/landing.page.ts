@@ -8,6 +8,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { LandingMotionService } from './landing-motion.service';
 import { LANDING_LINKS } from './models/landing-links.const';
 import { LandingBeforeAfterComponent } from './components/landing-before-after/landing-before-after.component';
 import { LandingBuiltComponent } from './components/landing-built/landing-built.component';
@@ -29,6 +30,8 @@ import { LandingWhyComponent } from './components/landing-why/landing-why.compon
     LandingFinaleComponent,
     LandingFooterComponent,
   ],
+  // Per page, so the motion listeners are removed when the visitor leaves the landing page.
+  providers: [LandingMotionService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './landing.page.html',
   styleUrl: './landing.page.scss',
@@ -37,7 +40,9 @@ export default class LandingPage {
   /** Set when the visitor jumps to a deferred section before the browser went idle. */
   protected readonly sectionsRequested = signal(false);
   private readonly scrollPending = signal(false);
-  private readonly built = viewChild(LandingBuiltComponent, { read: ElementRef });
+  private readonly built = viewChild('built', { read: ElementRef });
+  /** The section above "How it's built": the scroll waits for it, or the page would jump. */
+  private readonly beforeAfter = viewChild('beforeAfter', { read: ElementRef });
 
   constructor() {
     // Opened as `/#how` (new tab, shared link): load the sections and scroll once they exist.
@@ -46,7 +51,7 @@ export default class LandingPage {
     }
     effect(() => {
       const built = this.built();
-      if (built && this.scrollPending()) {
+      if (built && this.beforeAfter() && this.scrollPending()) {
         this.scrollPending.set(false);
         const target = (built.nativeElement as HTMLElement).querySelector<HTMLElement>('#how');
         // Guarded: not every environment implements it (jsdom does not).

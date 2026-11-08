@@ -1,13 +1,8 @@
-import { SetMetadata } from '@nestjs/common';
-
-export const ALLOW_ANONYMOUS_KEY = 'shelfmark:allow-anonymous';
-
 /**
- * Marks a route as reachable without a session. Named like Better Auth's
- * decorator so the global auth guard (stage 2) can honour it. Every use must
- * be justified in the PR description.
- *
- * NO-OP until the global AuthGuard from stage 2 exists: all routes are
- * currently public.
+ * Marks a route as reachable without a session. This is the integration's own decorator (metadata
+ * key `PUBLIC`); `SessionAuthGuard` reads it before any session lookup. Every use must be
+ * justified in the PR description, in a comment at the use site and as an entry in `PUBLIC_ROUTES`
+ * (a spec fails otherwise). Never put it on a controller class. Swagger (`/api/docs`) and
+ * `/api/auth/*` are mounted outside Nest's router, so the guard never sees them.
  */
-export const AllowAnonymous = () => SetMetadata(ALLOW_ANONYMOUS_KEY, true);
+export { AllowAnonymous } from '@thallesp/nestjs-better-auth';

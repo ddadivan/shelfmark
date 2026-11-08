@@ -1,0 +1,125 @@
+@use 'ui' as *;
+
+// Glow ring of a landed card: the one motion that outlasts 320 ms (Motion README, principle 2).
+$glow-duration: 1.8s;
+
+:host {
+  display: block;
+}
+
+// Shelf: the same links in folders, each with its note.
+.landing-chat-shelf__list {
+  display: flex;
+  flex-direction: column;
+  gap: rem(10px);
+  min-height: var(--landing-chat-height);
+  padding: var(--space-4);
+  margin: 0;
+  list-style: none;
+  background: var(--bg);
+}
+
+.landing-chat-shelf__group {
+  display: flex;
+  flex-direction: column;
+  gap: rem(6px);
+}
+
+.landing-chat-shelf__folder {
+  padding: 0 rem(2px);
+  margin: 0;
+  font-size: rem(12px);
+  font-weight: 600;
+  line-height: rem(16px);
+  color: var(--text-muted);
+}
+
+.landing-chat-shelf__cards {
+  display: flex;
+  flex-direction: column;
+  gap: rem(6px);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.landing-chat-shelf__card {
+  position: relative;
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-width: 0;
+  padding: rem(9px) var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+// The links land on the shelf: folders fade in, cards drop in with a small spring and a ring.
+@media (prefers-reduced-motion: no-preference) {
+  .landing-chat-shelf__group {
+    animation: ui-reveal var(--duration-base) var(--ease-out) both;
+  }
+
+  .landing-chat-shelf__card {
+    animation: landing-chat-shelf-land var(--duration-slow) var(--ease-spring) both;
+
+    &::after {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      content: '';
+      border-radius: inherit;
+      box-shadow: inset 0 0 0 2px var(--accent);
+      animation: landing-chat-shelf-glow $glow-duration var(--ease-out) both;
+      animation-delay: inherit;
+    }
+  }
+}
+
+@keyframes landing-chat-shelf-land {
+  from {
+    opacity: 0;
+    transform: translateY(#{rem(-28px)}) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes landing-chat-shelf-glow {
+  0%,
+  55% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.landing-chat-shelf__card-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.landing-chat-shelf__card-title {
+  overflow: hidden;
+  font-size: rem(14px);
+  font-weight: 600;
+  line-height: rem(19px);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.landing-chat-shelf__card-note {
+  overflow: hidden;
+  font-size: rem(12px);
+  line-height: rem(16px);
+  color: var(--text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

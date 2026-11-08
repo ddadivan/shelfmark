@@ -1,0 +1,195 @@
+@use '../../styles/ui' as *;
+@use '../field/field-parts' as *;
+
+// `ViewEncapsulation.None`: the slotted `kbd` hints and the rows rendered from `ui-command-item`
+// templates belong to other views, so everything hangs off `.ui-command-list`.
+.ui-command-list {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  color: var(--text);
+  background: var(--surface);
+
+  // Keyboard hint (`Esc`, an arrow, the Enter symbol): input end slot, footer and item trailing.
+  kbd {
+    @include type(caption);
+
+    flex: none;
+    padding: 0 rem(5px);
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: rem(5px);
+  }
+}
+
+.ui-command-list__field {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+
+  // The bare input has no outline of its own, so the row shows the keyboard focus.
+  &:has(.ui-command-list__input:focus-visible) {
+    @include focus-ring(-2px);
+  }
+}
+
+.ui-command-list__icon {
+  flex: none;
+  color: var(--text-muted);
+}
+
+.ui-command-list__input {
+  @include field-native;
+
+  font-size: rem(17px);
+  line-height: rem(24px);
+}
+
+.ui-command-list__list {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+  min-height: 0;
+  padding: var(--space-2);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  &[hidden] {
+    display: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.ui-command-list__group {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+}
+
+// Section heading of the Tree ("3 links").
+.ui-command-list__heading {
+  @include type(caption);
+
+  padding: var(--space-2) var(--space-3) var(--space-1);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ui-command-list__option {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  padding: rem(8px) var(--space-3);
+  cursor: pointer;
+  user-select: none;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  @include hover {
+    background: var(--surface-hover);
+  }
+
+  &:active {
+    background: var(--surface-pressed);
+  }
+
+  // The option under the arrow keys (DOM focus stays in the input).
+  &[data-active='true'] {
+    background: var(--accent-bg);
+
+    @include focus-ring(-2px);
+  }
+
+  &[aria-disabled='true'] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  @include coarse {
+    @include touch-target;
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+.ui-command-item__leading,
+.ui-command-item__trailing {
+  display: inline-flex;
+  flex: none;
+  gap: var(--space-1);
+  align-items: center;
+  color: var(--text-muted);
+
+  &:empty {
+    display: none;
+  }
+}
+
+.ui-command-item__main {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ui-command-item__title {
+  @include type(body);
+  @include line-clamp(1);
+}
+
+.ui-command-item__meta {
+  @include type(caption);
+  @include line-clamp(1);
+
+  color: var(--text-muted);
+
+  &:empty {
+    display: none;
+  }
+}
+
+.ui-command-list__status {
+  @include visually-hidden;
+}
+
+// The empty state: the status region turns visible and takes its padding only now.
+.ui-command-list__status--empty {
+  @include type(body);
+
+  position: static;
+  width: auto;
+  height: auto;
+  padding: var(--space-6) var(--space-4);
+  margin: 0;
+  overflow: visible;
+  clip-path: none;
+  color: var(--text-muted);
+  text-align: center;
+  white-space: normal;
+}
+
+.ui-command-list__footer {
+  @include type(caption);
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: center;
+  padding: rem(10px) var(--space-4);
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+
+  &:empty {
+    display: none;
+  }
+}

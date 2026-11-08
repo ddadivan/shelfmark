@@ -1,6 +1,21 @@
 @use '@angular/cdk' as cdk;
 @use 'ui' as *;
 
+// Metric-matched fallback for Onest: while the web font loads, text is set in Arial scaled and
+// re-spaced to Onest's metrics, so the swap moves almost nothing (no CLS from the font).
+// Numbers: Onest has 1000 units per em, ascender 970, descender -305, line gap 0 (hhea and
+// OS/2 typo agree; read from onest-latin-wght-normal.woff2). size-adjust 102% is the measured
+// width of Onest relative to Arial over UI strings (1.040 at weight 400, 1.010 at 700).
+// ascent-override = 970 / 1000 / 1.02, descent-override = 305 / 1000 / 1.02.
+@font-face {
+  font-family: 'Onest Fallback';
+  src: local('Arial'), local('Helvetica'), local('Liberation Sans'), local('Arimo');
+  size-adjust: 102%;
+  ascent-override: 95.1%;
+  descent-override: 29.9%;
+  line-gap-override: 0%;
+}
+
 :root {
   @include scale;
 }

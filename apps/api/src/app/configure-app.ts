@@ -1,10 +1,16 @@
 import { ValidationPipe } from '@nestjs/common';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ThrottlerStorage } from '@nestjs/throttler';
 import helmet from 'helmet';
+import { authAllowListMiddleware } from '../auth/auth-allow-list.middleware';
 import { AllExceptionsFilter } from '../common/errors/all-exceptions.filter';
+import { createAuthRateLimitMiddleware } from '../common/rate-limit/auth-rate-limit.middleware';
+import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
+import { shouldTrustProxyHeaders } from '../common/rate-limit/rate-limit-options';
 import { requestIdMiddleware } from '../common/request-id/request-id.middleware';
 import type { ConfigureAppOptions } from './configure-app-options.interface';
+import { API_GLOBAL_PREFIX } from './models/api-global-prefix.const';
 
 /** Shared setup for the real server, tests and the future Vercel handler. */
 export function configureApp(app: NestExpressApplication, options: ConfigureAppOptions): void {
@@ -22,8 +28,18 @@ export function configureApp(app: NestExpressApplication, options: ConfigureAppO
           hsts: false,
         }),
   );
+  // Before the body parsers and the Better Auth router: only the four named auth routes get through.
+  app.use(authAllowListMiddleware);
+  // Stricter per-IP limit on sign-in, callback and sign-out (Better Auth sits outside Nest's guards).
+  app.use(
+    createAuthRateLimitMiddleware(
+      app.get(ThrottlerStorage, { strict: false }),
+      shouldTrustProxyHeaders(),
+      options.authRateLimit ?? RATE_LIMIT.Auth,
+    ),
+  );
   app.useBodyParser('json', { limit: '100kb' });
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix(API_GLOBAL_PREFIX);
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

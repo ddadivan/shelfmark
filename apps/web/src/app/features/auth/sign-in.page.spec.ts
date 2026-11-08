@@ -6,7 +6,7 @@ import axe from 'axe-core';
 import { firstValueFrom } from 'rxjs';
 import { AUTH_API } from '../../core/auth/auth-api.token';
 import { AuthApi } from '../../core/auth/models/auth-api.interface';
-import { AuthUser } from '../../core/auth/models/auth-user.interface';
+import type { AuthUser } from '@shelfmark/contracts';
 import { APP_LANG } from '../../core/i18n/models/app-lang.const';
 import { AppTranslocoLoader } from '../../core/i18n/app-transloco.loader';
 import { translocoConfig } from '../../core/i18n/transloco.config';
@@ -18,6 +18,7 @@ const USER: AuthUser = {
   email: 'a@example.com',
   image: null,
   isDemo: false,
+  onboardingCompletedAt: '2020-01-01T00:00:00.000Z',
 };
 
 async function setup(signIn: AuthApi['signIn'] = () => Promise.resolve(USER)) {
@@ -109,7 +110,7 @@ describe('SignInPage', () => {
     button(harness.routeNativeElement as HTMLElement, 'GitHub').click();
     await harness.fixture.whenStable();
 
-    expect(api.signIn).toHaveBeenCalledWith('github');
+    expect(api.signIn).toHaveBeenCalledWith('github', '/links?tag=a');
     expect(router.url).toBe('/links?tag=a');
   });
 
@@ -125,6 +126,28 @@ describe('SignInPage', () => {
       expect(router.url).toBe('/');
     },
   );
+
+  it.each([
+    ['email_not_found', 'no verified email'],
+    ['access_denied', 'was cancelled'],
+    ['state_mismatch', 'Start again'],
+    ['account_not_linked', 'could not be linked'],
+    ['something_new', 'Sign-in did not finish'],
+  ])('explains the OAuth failure error=%s', async (error, text) => {
+    const { harness } = await setup();
+    await harness.navigateByUrl(`/sign-in?error=${error}`);
+
+    expect(
+      (harness.routeNativeElement as HTMLElement).querySelector('ui-notice')?.textContent,
+    ).toContain(text);
+  });
+
+  it('shows nothing for a missing error', async () => {
+    const { harness } = await setup();
+    await harness.navigateByUrl('/sign-in?error=');
+
+    expect((harness.routeNativeElement as HTMLElement).querySelector('ui-notice')).toBeNull();
+  });
 
   it('opens the demo', async () => {
     const { api, harness, router } = await setup();

@@ -334,6 +334,15 @@ describe('LinksStore', () => {
       expect(ids(store)[0]).toBe('id-9');
     });
 
+    it('leaves a saved link for the next load when the order is not newest first', () => {
+      const { store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.All, sort: 'title', order: 'asc' });
+
+      store.addSaved(link(9));
+
+      expect(ids(store)).not.toContain('id-9');
+    });
+
     it('does not show a saved link that is not a favorite in the favorites scope', () => {
       const { store } = setup();
       store.setFilter({ scope: LINKS_SCOPE.Favorites });
@@ -456,6 +465,88 @@ describe('LinksStore', () => {
       expect(ids(store)).toEqual(['id-2']);
       expect(await store.commitRemove('id-1')).toBe(true);
       expect(api.remove).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('tag rename and drop', () => {
+    const tagged = () => ({
+      items: [
+        link(1, { tags: ['winter', 'docs'] }),
+        link(2, { tags: ['Docs', 'winter'] }),
+        link(3),
+      ],
+    });
+
+    it('renames the tag in the feed and the recent list, ignoring case', async () => {
+      const { api, store } = setup(tagged());
+      api.recent.mockReturnValue(of({ items: [link(2, { tags: ['Docs', 'winter'] })] }));
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      await store.loadRecent();
+
+      store.renameTag('WINTER', 'summer');
+
+      expect(store.entityMap()['id-1'].tags).toEqual(['summer', 'docs']);
+      expect(store.entityMap()['id-2'].tags).toEqual(['Docs', 'summer']);
+      expect(store.recent()[0].tags).toEqual(['Docs', 'summer']);
+      expect(store.entityMap()['id-3'].tags).toEqual(MOCK_LINKS[0].tags);
+    });
+
+    it('collapses a link that has both tags after a merge', () => {
+      const { store } = setup({ items: [link(1, { tags: ['winter', 'clothes', 'Winter'] })] });
+      store.setFilter({ scope: LINKS_SCOPE.All });
+
+      store.renameTag('winter', 'clothes');
+
+      expect(store.entityMap()['id-1'].tags).toEqual(['clothes']);
+    });
+
+    it('drops the tag from the feed and the recent list', async () => {
+      const { api, store } = setup(tagged());
+      api.recent.mockReturnValue(of({ items: [link(2, { tags: ['Docs', 'winter'] })] }));
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      await store.loadRecent();
+
+      store.dropTag('winter');
+
+      expect(store.entityMap()['id-1'].tags).toEqual(['docs']);
+      expect(store.recent()[0].tags).toEqual(['Docs']);
+    });
+
+    it('keeps Undo from bringing back a link with the old tag name', () => {
+      const { store } = setup(tagged());
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      store.remove('id-1');
+
+      store.renameTag('winter', 'summer');
+      store.undoRemove('id-1');
+
+      expect(store.entityMap()['id-1'].tags).toEqual(['summer', 'docs']);
+    });
+
+    it('keeps Undo from bringing back a link with a dropped tag', () => {
+      const { store } = setup(tagged());
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      store.remove('id-1');
+
+      store.dropTag('winter');
+      store.undoRemove('id-1');
+
+      expect(store.entityMap()['id-1'].tags).toEqual(['docs']);
+    });
+
+    it('leaves a delete that is already being sent alone', async () => {
+      const { api, store } = setup(tagged());
+      const gone = new Subject<void>();
+      api.remove.mockReturnValue(gone);
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      store.remove('id-1');
+
+      const committing = store.commitRemove('id-1');
+      store.renameTag('winter', 'summer');
+      gone.error(new Error('down'));
+      await committing;
+
+      expect(store.entityMap()['id-1'].tags).toEqual(['winter', 'docs']);
     });
   });
 

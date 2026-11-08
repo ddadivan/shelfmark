@@ -1,10 +1,7 @@
-import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
-import { COLOR_SCHEME } from './models/color-scheme.const';
-import { expectNoBlockingViolations } from './support/axe';
+import { openCardEdit } from './support/a11y-flows';
 import { seedSession } from './support/mock-session';
 
-const DIALOG_SELECTOR = '.cdk-dialog-container';
 // Mirrors the mock duplicate fixture (`MOCK_LINK_PREVIEW_DUPLICATE`); e2e cannot import apps/web.
 const DUPLICATE_URL = 'https://angular.dev/overview';
 
@@ -17,17 +14,8 @@ test.describe('edit link (mock API)', () => {
     await expect(page.locator('ui-card').first()).toBeVisible();
   });
 
-  async function openEdit(page: Page) {
-    const card = page.locator('ui-card').first();
-    await card.getByRole('button', { name: /^Actions for / }).click();
-    await page.getByRole('menuitem', { name: 'Edit' }).click();
-    const dialog = page.getByRole('dialog', { name: 'Edit link' });
-    await expect(dialog).toBeVisible();
-    return dialog;
-  }
-
   test('edits the title and the card shows it', async ({ page }) => {
-    const dialog = await openEdit(page);
+    const dialog = await openCardEdit(page);
     await expect(dialog.getByText(/^Saved .*, (last opened .*|never opened)$/)).toBeVisible();
 
     await dialog.getByLabel('Title', { exact: true }).fill('A renamed link');
@@ -41,7 +29,7 @@ test.describe('edit link (mock API)', () => {
   test('Cancel keeps the link as it was', async ({ page }) => {
     const card = page.locator('ui-card').first();
     const before = await card.getByRole('heading').innerText();
-    const dialog = await openEdit(page);
+    const dialog = await openCardEdit(page);
 
     await dialog.getByLabel('Title', { exact: true }).fill('Never saved');
     await dialog.getByRole('button', { name: 'Cancel' }).click();
@@ -52,7 +40,7 @@ test.describe('edit link (mock API)', () => {
 
   test('Delete asks first and Undo brings the link back', async ({ page }) => {
     const title = await page.locator('ui-card').first().getByRole('heading').innerText();
-    const dialog = await openEdit(page);
+    const dialog = await openCardEdit(page);
 
     await dialog.getByRole('button', { name: 'Delete' }).click();
     const confirm = page.getByRole('alertdialog');
@@ -77,23 +65,11 @@ test.describe('edit link (mock API)', () => {
   });
 
   test('fits the viewport without horizontal scroll', async ({ page }) => {
-    await openEdit(page);
+    await openCardEdit(page);
 
     const overflow = await page.evaluate<number>(
       '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
     );
     expect(overflow).toBeLessThanOrEqual(0);
   });
-
-  for (const colorScheme of Object.values(COLOR_SCHEME)) {
-    test(`has no axe violations (${colorScheme})`, async ({ page }, testInfo) => {
-      await page.emulateMedia({ colorScheme });
-      await page.reload();
-      await expect(page.locator('ui-card').first()).toBeVisible();
-      await expect(page.locator('html')).toHaveAttribute('data-theme', colorScheme);
-      await openEdit(page);
-
-      await expectNoBlockingViolations(page, testInfo, { include: DIALOG_SELECTOR });
-    });
-  }
 });

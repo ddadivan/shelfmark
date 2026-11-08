@@ -2,6 +2,8 @@ import { Controller, Get, HttpCode, Post, Req, Res } from '@nestjs/common';
 import { ApiNoContentResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 import { AllowAnonymous } from '../common/auth/allow-anonymous.decorator';
+import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
+import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
 import { MonitoringConfigResponseDto } from './dto/monitoring-config-response.dto';
 import { MAX_ENVELOPE_BYTES } from './models/max-envelope-bytes.const';
 import { MonitoringService } from './monitoring.service';
@@ -24,8 +26,9 @@ export class MonitoringController {
 
   // Anonymous on purpose: errors can happen before or without a session. The route only
   // forwards envelopes that name our own DSN, with a size limit, and never forwards cookies.
-  // Rate limiting arrives with the throttler (issue #123).
+  // Stricter per-IP limit than the default (the AddLink preset, 30 per minute).
   @AllowAnonymous()
+  @RateLimit(RATE_LIMIT.AddLink)
   @Post('tunnel')
   @HttpCode(204)
   @ApiNoContentResponse({ description: 'Envelope forwarded to Sentry.' })

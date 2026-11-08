@@ -108,7 +108,9 @@ test.describe('Content-Security-Policy', () => {
 
       const button = page.getByRole('button', { name: 'Open overlay' });
       await expect(button).toBeVisible();
-      await expect(button).toHaveCSS('height', '36px');
+      // A coarse pointer (the phone project has touch) raises every ui-button to the 2.75rem touch target.
+      const coarse = test.info().project.use.hasTouch === true;
+      await expect(button).toHaveCSS('height', coarse ? '44px' : '36px');
       await expect(page.getByRole('img', { name: 'Star' })).toBeVisible();
 
       await button.click();

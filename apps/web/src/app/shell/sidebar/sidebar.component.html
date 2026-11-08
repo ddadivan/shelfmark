@@ -14,19 +14,23 @@
   @if (folders.error()) {
     <p class="sidebar__error">
       {{ 'shell.sidebar.loadFailed' | transloco }}
-      <ui-button size="sm" (click)="retry()">{{ 'shell.sidebar.retry' | transloco }}</ui-button>
+      <ui-button [size]="buttonSize()" (click)="retry()">{{
+        'shell.sidebar.retry' | transloco
+      }}</ui-button>
     </p>
   }
 
   <ui-button
     class="sidebar__new"
     variant="ghost"
-    size="sm"
+    [size]="buttonSize()"
     iconLeft="folder-plus"
     (click)="createTopLevel()"
   >
     {{ 'shell.sidebar.newFolder' | transloco }}
   </ui-button>
+
+  <app-sidebar-tags />
 
   <ui-menu [ariaLabel]="'shell.sidebar.folderMenu' | transloco" (closed)="menuClosed()">
     <ui-menu-item icon="folder-plus" (activated)="createSubfolder()">

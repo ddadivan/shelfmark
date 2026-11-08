@@ -25,6 +25,7 @@
       "hintShelf": "Notes come from your own messages.",
       "putOnShelf": "Put them on the shelf",
       "showChat": "Show the chat again",
+      "pause": "Pause the feed",
       "messages": {
         "watch": {
           "text": "watch later!!",
@@ -45,6 +46,18 @@
         "zoneless": {
           "text": "where was that zoneless article…",
           "time": "Fri 08:47"
+        },
+        "lisbon": {
+          "text": "lisbon, maybe in may",
+          "time": "Sat 11:20"
+        },
+        "icons": {
+          "text": "icons for the side project",
+          "time": "Sun 16:02"
+        },
+        "react": {
+          "text": "read this one day",
+          "time": "Mon 07:58"
         }
       }
     },
@@ -81,7 +94,8 @@
     "beforeAfter": {
       "title": "The same links, before and after",
       "before": "Before: scattered",
-      "after": "After: on one shelf"
+      "after": "After: on one shelf",
+      "pauseMotion": "Pause animations"
     },
     "before": {
       "pingTitle": "+1 in Saved Messages",
@@ -190,7 +204,8 @@
         "loadingHint": "You can keep typing a note and choosing a folder while it loads.",
         "filled": "Filled in from the page. You can edit the title.",
         "failed": "Couldn't load a preview. The link will be saved with its address as the title — you can rename it.",
-        "ready": "Preview loaded: {{title}}"
+        "ready": "Preview loaded: {{title}}",
+        "unavailable": "No preview is available for this page. The link will be saved with its address as the title — you can rename it."
       },
       "titleField": {
         "label": "Title",
@@ -225,6 +240,10 @@
         "text": "You already saved this link in {{folder}}. Open it, or save it again."
       },
       "saveFailed": "Couldn't save the link. Try again.",
+      "saveFailedLimit": "You have reached the limit of {{max}} saved links. Delete some to save more.",
+      "saveFailedChanged": "A folder or tag changed while saving. Try again.",
+      "saveFailedRateLimit": "Too many requests. Wait a moment and try again.",
+      "saveFailedInvalid": "The link couldn't be saved because some details are invalid. Check the address, title and note.",
       "actions": {
         "cancel": "Cancel",
         "openSaved": "Open saved",
@@ -269,7 +288,8 @@
       "empty": "Links you open appear here.",
       "hide": "Hide recently opened",
       "show": "Show recently opened",
-      "loading": "Loading recently opened links"
+      "loading": "Loading recently opened links",
+      "close": "Close"
     }
   },
   "auth": {
@@ -280,6 +300,13 @@
       "github": "Continue with GitHub",
       "demo": "Open the demo",
       "failed": "We could not sign you in. Try again.",
+      "error": {
+        "generic": "Sign-in did not finish. Try again.",
+        "denied": "Sign-in was cancelled. Try again when you are ready.",
+        "emailMissing": "Your GitHub account has no verified email. Verify an email in your GitHub settings, or sign in with Google.",
+        "restart": "The sign-in took too long or was interrupted. Start again.",
+        "notLinked": "This email already belongs to an account that could not be linked. Sign in with the provider you used before."
+      },
       "reason": {
         "sessionExpired": "Your session has expired. Sign in again.",
         "demoExpired": "The demo has ended. Open a new one or sign in."
@@ -287,12 +314,19 @@
       "eyebrow": "Sign in to Shelfmark",
       "privacy": "By continuing you agree to the Privacy policy. We only use your name, email and avatar."
     },
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "signOutFailed": "We could not sign you out. Try again."
   },
   "shell": {
     "accountMenu": "Account menu",
     "settings": "Settings",
     "addLink": "Add link",
+    "menu": "Open menu",
+    "drawer": {
+      "label": "Menu",
+      "close": "Close menu",
+      "theme": "Switch theme"
+    },
     "sidebar": {
       "nav": "Library",
       "tree": "Views and folders",
@@ -309,7 +343,8 @@
         "move": "Move to…",
         "delete": "Delete folder…"
       }
-    }
+    },
+    "search": "Search"
   },
   "folders": {
     "dialog": {
@@ -396,8 +431,9 @@
     },
     "emptyFolder": {
       "title": "This folder is empty",
-      "text": "Add a link here, or move links in from other folders.",
-      "add": "Add link here"
+      "text": "Add a link here, or move links from Unsorted.",
+      "action": "Add link",
+      "unsorted": "Open Unsorted"
     },
     "count": "{{count}} links",
     "countMore": "{{count}}+ links",
@@ -419,17 +455,84 @@
       "retry": "Try again"
     },
     "empty": {
-      "title": "No links here yet",
-      "text": "Paste a link to save it to your shelf.",
-      "add": "Add link"
+      "all": {
+        "title": "Your links will live here",
+        "text": "Paste a link to a video, an article or something to buy — the title and preview fill in by themselves.",
+        "action": "Add link"
+      },
+      "unsorted": {
+        "title": "Unsorted is empty",
+        "text": "Links you save without a folder wait here until you file them.",
+        "action": "Add link"
+      },
+      "favorites": {
+        "title": "Your favorites will live here",
+        "text": "Tap the star on a link to keep it here.",
+        "action": "Show all links"
+      }
     },
-    "refetchFailed": "Couldn't refresh your links. You are seeing the last loaded list."
+    "refetchFailed": "Couldn't refresh your links. You are seeing the last loaded list.",
+    "emptyFiltered": {
+      "title": "No links with these tags",
+      "text": "Nothing you saved has all of the selected tags.",
+      "clear": "Clear filter"
+    },
+    "filter": {
+      "label": "Active filters"
+    },
+    "sort": {
+      "label": "Sort: {{sort}}",
+      "menu": "Sort links",
+      "newest": "Newest first",
+      "oldest": "Oldest first",
+      "title": "Title A–Z"
+    },
+    "search": {
+      "chip": "Search: {{query}}",
+      "remove": "Remove search {{query}}"
+    },
+    "emptySearch": {
+      "title": "Nothing found for “{{query}}”",
+      "text": "Try another word, or search in all folders.",
+      "clear": "Clear search",
+      "all": "Search all folders"
+    },
+    "breadcrumb": {
+      "label": "Breadcrumb",
+      "collapsed": "Show hidden folders"
+    },
+    "pageTitle": {
+      "page": "{{page}} · {{app}}",
+      "search": "Search: {{query}} · {{app}}"
+    }
+  },
+  "export": {
+    "menu": "Export",
+    "failed": "Couldn't export your links. Try again.",
+    "retry": "Try again",
+    "view": {
+      "json": "This view as JSON",
+      "html": "This view as Bookmarks HTML"
+    },
+    "all": {
+      "json": "Everything as JSON",
+      "html": "Everything as Bookmarks HTML"
+    }
   },
   "settings": {
     "title": "Settings",
     "back": "Back to links",
     "account": {
       "title": "Account"
+    },
+    "data": {
+      "title": "Your data",
+      "export": {
+        "label": "Export your data",
+        "hint": "All your folders, tags and links in one file",
+        "json": "JSON",
+        "html": "Bookmarks HTML"
+      }
     },
     "appearance": {
       "title": "Appearance",
@@ -440,6 +543,156 @@
         "light": "Light",
         "dark": "Dark"
       }
+    },
+    "welcome": {
+      "title": "Welcome tour",
+      "hint": "See the 3-step introduction again",
+      "action": "Show welcome again",
+      "error": "Couldn't reset the welcome tour. Try again."
     }
+  },
+  "tags": {
+    "dialog": {
+      "cancel": "Cancel",
+      "close": "Close"
+    },
+    "sidebar": {
+      "heading": "Tags",
+      "add": "New tag",
+      "list": "Tags",
+      "loadFailed": "Couldn't load your tags.",
+      "empty": "No tags yet. Add one with +.",
+      "menuFor": "Actions for tag {{name}}",
+      "more": "+ {{count}} more",
+      "showLess": "Show less",
+      "menu": {
+        "label": "Tag actions",
+        "show": "Show links",
+        "rename": "Rename",
+        "merge": "Merge into another tag…",
+        "delete": "Delete tag"
+      }
+    },
+    "add": {
+      "label": "New tag",
+      "placeholder": "Tag name",
+      "hint": "Enter saves, Esc cancels. Spaces become dashes.",
+      "done": "Tag “{{name}}” created",
+      "failed": "Couldn't create the tag. Try again.",
+      "limit": "You have reached the limit of {{max}} tags."
+    },
+    "name": {
+      "required": "Enter a tag name",
+      "tooLong": "Use {{max}} characters or fewer",
+      "exists": "There's already a tag “{{name}}”."
+    },
+    "rename": {
+      "label": "Tag name",
+      "conflict": "There's already a tag “{{name}}”. Merge them instead?",
+      "merge": "Merge into “{{name}}”",
+      "failed": "Couldn't rename the tag. The old name is back."
+    },
+    "merge": {
+      "title": "Merge “{{name}}”",
+      "text": "Every link tagged “{{name}}” gets the tag you choose, then “{{name}}” is deleted.",
+      "label": "Merge into",
+      "placeholder": "Choose a tag",
+      "searchLabel": "Search tags",
+      "noResults": "No tags found",
+      "action": "Merge",
+      "required": "Choose a tag to merge into",
+      "failed": "Couldn't merge the tags. Try again.",
+      "done": "Merged “{{name}}” into “{{target}}”"
+    },
+    "delete": {
+      "title": "Delete tag “{{name}}”?",
+      "message": {
+        "one": "It will be removed from {{count}} link. The link itself stays where it is.",
+        "other": "It will be removed from {{count}} links. The links themselves stay where they are."
+      },
+      "confirm": "Delete tag",
+      "undo": "Undo",
+      "done": "Tag “{{name}}” deleted",
+      "failed": "Couldn't delete the tag “{{name}}”. It is back."
+    },
+    "filter": {
+      "label": "Filtered by tags",
+      "remove": "Remove tag filter {{name}}",
+      "clear": "Clear filter"
+    },
+    "count": {
+      "one": "{{count}} link",
+      "other": "{{count}} links"
+    }
+  },
+  "search": {
+    "title": "Search",
+    "close": "Close search",
+    "label": "Search links, folders and tags",
+    "placeholder": "Search links, folders and tags",
+    "results": "Search results",
+    "esc": "Esc",
+    "inFolder": "in {{folder}}",
+    "noteMatches": "note matches:",
+    "showAll": "Show all results for “{{query}}”",
+    "foldersAndTags": "Folders and tags",
+    "linkCount": {
+      "one": "{{count}} link",
+      "other": "{{count}} links"
+    },
+    "tagMeta": {
+      "one": "Tag, {{count}} link",
+      "other": "Tag, {{count}} links"
+    },
+    "status": {
+      "one": "{{count}} result",
+      "other": "{{count}} results"
+    },
+    "hint": "Type to search your links, folders and tags.",
+    "searching": "Searching…",
+    "failed": "Couldn't search. Try again.",
+    "hints": {
+      "ctrl": "Ctrl",
+      "move": "move",
+      "open": "open",
+      "background": "open in background"
+    }
+  },
+  "share": {
+    "title": "Save to Shelfmark",
+    "subtitle": "Shared from another app",
+    "footnote": "After saving you land in your library.",
+    "actions": {
+      "save": "Save"
+    },
+    "invalid": {
+      "title": "Nothing to save",
+      "text": "This share has no web address starting with http:// or https://, so nothing was saved.",
+      "action": "Go to my links",
+      "footnote": "To try again, share a page or a link from your browser or another app."
+    }
+  },
+  "onboarding": {
+    "stepLabel": "Step {{current}} of {{count}}",
+    "announce": "Step {{current}} of {{count}}: {{title}}",
+    "skip": "Skip",
+    "back": "Back",
+    "next": "Next",
+    "addFirst": "Add your first link",
+    "collect": {
+      "title": "All your links in one place",
+      "text": "Videos, articles, things to buy, courses — everything you save lives on one calm shelf instead of chats and tabs."
+    },
+    "save": {
+      "title": "Save in a second",
+      "text": "Paste a link and the title and preview fill in by themselves. Add a note so you remember why you saved it."
+    },
+    "find": {
+      "title": "Find it right away",
+      "text": "Folders, tags, favorites and search with ⌘K bring back any link in a couple of keystrokes."
+    }
+  },
+  "toast": {
+    "actionHint": "Press {{shortcut}} to reach {{action}}"
   }
 }

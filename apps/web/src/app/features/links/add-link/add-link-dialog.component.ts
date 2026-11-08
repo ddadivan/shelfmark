@@ -19,8 +19,11 @@ import {
 } from '@angular/forms/signals';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
+  isHttpUrl,
   LINK_LIMIT,
+  type CreateLinkRequest,
   type LinkDuplicate,
+  type LinkPreview,
   type LinkResponse,
   type UpdateLinkRequest,
 } from '@shelfmark/contracts';
@@ -45,6 +48,9 @@ import {
 } from '@shelfmark/ui';
 import { firstValueFrom, switchMap, tap, timer, type Observable } from 'rxjs';
 import { FoldersStore } from '../../../stores/folders.store';
+import { TagsStore } from '../../../stores/tags.store';
+import { pluralKey } from '../../../core/i18n/plural-key';
+import { normalizeTagNames } from '../../tags/normalize-tag-names';
 import { ADD_LINK_ACTION } from '../models/add-link-action.const';
 import type { AddLinkDialogData } from '../models/add-link-dialog-data.interface';
 import type { AddLinkSaved } from '../models/add-link-saved.interface';
@@ -53,10 +59,10 @@ import type { AddLinkResult } from '../models/add-link-result.type';
 import { LINKS_API } from '../models/links-api.const';
 import { PREVIEW_STATE } from '../models/preview-state.const';
 import type { PreviewState } from '../models/preview-state.type';
-import { TAGS_API } from '../models/tags-api.const';
 import { relativeTime } from '../relative-time';
 import { buildFolderOptions } from './folder-options';
-import { displayHost, isHttpUrl, urlWithoutScheme } from './http-url';
+import { displayHost, urlWithoutScheme } from './http-url';
+import { saveErrorKey } from './save-error-key';
 
 /** Wait after the last keystroke before the preview is requested (a paste is instant to the eye). */
 const PREVIEW_DEBOUNCE_MS = 350;
@@ -106,7 +112,7 @@ export class AddLinkDialogComponent {
 
   private readonly linksApi = inject(LINKS_API);
   private readonly folders = inject(FoldersStore);
-  private readonly tagsApi = inject(TAGS_API);
+  private readonly tagStore = inject(TagsStore);
   private readonly ref = inject<UiDialogRef<AddLinkResult>>(UiDialogRef);
   private readonly transloco = inject(TranslocoService);
   private readonly data = injectDialogData<AddLinkDialogData>();
@@ -122,7 +128,7 @@ export class AddLinkDialogComponent {
     url: this.original?.url ?? '',
     title: this.original?.title ?? '',
     folderId: this.original ? this.original.folderId : (this.data.folderId ?? null),
-    tags: [...(this.original?.tags ?? [])],
+    tags: [...normalizeTagNames(this.original?.tags ?? [])],
     note: this.original?.note ?? '',
   });
 
@@ -179,7 +185,10 @@ export class AddLinkDialogComponent {
         switchMap(() => this.linksApi.preview(url)),
         tap({
           next: (response) => {
-            this.autofillTitle(response.preview.title);
+            // Not fetched: `preview.title` is only the URL; the server defaults the title itself.
+            if (response.fetched) {
+              this.autofillTitle(response.preview.title);
+            }
           },
           error: () => {
             this.autofillTitle(urlWithoutScheme(url));
@@ -188,12 +197,16 @@ export class AddLinkDialogComponent {
       ),
   });
 
-  private readonly tags = rxResource({ stream: () => this.tagsApi.list() });
-
   protected readonly folderOptions = computed(() => buildFolderOptions(this.folders.entities()));
-  protected readonly tagSuggestions = computed<TagSuggestion[]>(() =>
-    (this.tags.hasValue() ? this.tags.value() : []).map((tag) => ({ name: tag.name })),
-  );
+  protected readonly tagSuggestions = computed<TagSuggestion[]>(() => {
+    this.i18n();
+    return this.tagStore.entities().map((tag) => ({
+      name: tag.name,
+      countLabel: this.transloco.translate(pluralKey('tags.count', tag.linkCount), {
+        count: tag.linkCount,
+      }),
+    }));
+  });
 
   protected readonly previewState = computed<PreviewState>(() => {
     if (this.previewUrl() === undefined) {
@@ -211,8 +224,20 @@ export class AddLinkDialogComponent {
     return this.editing && state !== PREVIEW_STATE.Ready ? PREVIEW_STATE.Idle : state;
   });
 
+  /** The page could not be fetched: the preview only echoes the URL (the duplicate still counts). */
+  protected readonly noPreview = computed(
+    () =>
+      !this.editing &&
+      this.previewState() === PREVIEW_STATE.Ready &&
+      this.preview.hasValue() &&
+      !this.preview.value().fetched,
+  );
+
   protected readonly previewData = computed(() =>
-    !this.editing && this.previewState() === PREVIEW_STATE.Ready && this.preview.hasValue()
+    !this.editing &&
+    this.previewState() === PREVIEW_STATE.Ready &&
+    this.preview.hasValue() &&
+    this.preview.value().fetched
       ? this.preview.value().preview
       : null,
   );
@@ -246,6 +271,16 @@ export class AddLinkDialogComponent {
   constructor() {
     // Usually loaded by the sidebar already; the options fill in when the list arrives.
     void this.folders.load();
+    void this.tagStore.load();
+    // Tags leave the field the way the API stores them: `normalizeTagName`, deduplicated.
+    effect(() => {
+      const field = this.form.tags();
+      const tags = field.value();
+      const normalized = normalizeTagNames(tags);
+      if (normalized !== tags) {
+        untracked(() => field.value.set([...normalized]));
+      }
+    });
     // The preview is gone (URL emptied or no longer valid): drop a title it filled in.
     // An `effect` because the field tree exposes `dirty()` but has no value-change hook, and the
     // form model is a plain signal, so a `linkedSignal` could not see whether the user typed.
@@ -262,7 +297,8 @@ export class AddLinkDialogComponent {
   }
 
   protected readonly saving = signal(false);
-  protected readonly saveFailed = signal(false);
+  /** Translation key of why the last save failed; `null` while nothing failed. */
+  protected readonly saveError = signal<string | null>(null);
 
   protected openExisting(): void {
     const existing = this.duplicate();
@@ -288,6 +324,7 @@ export class AddLinkDialogComponent {
     const value = this.model();
     const title = value.title.trim();
     const note = value.note.trim();
+    const tags = [...normalizeTagNames(value.tags)];
     let request$: Observable<LinkResponse>;
     if (this.original) {
       const changes = this.changes();
@@ -297,16 +334,23 @@ export class AddLinkDialogComponent {
       }
       request$ = this.linksApi.update(this.original.id, changes);
     } else {
-      request$ = this.linksApi.create({
+      const fetched = this.fetchedPreview();
+      const payload: CreateLinkRequest = {
         url: value.url.trim(),
         ...(title && { title }),
         ...(note && { note }),
         ...(value.folderId !== null && { folderId: value.folderId }),
-        ...(value.tags.length > 0 && { tags: value.tags }),
+        ...(tags.length > 0 && { tags }),
+        ...(fetched?.faviconUrl && { faviconUrl: fetched.faviconUrl }),
+        ...(fetched?.imageUrl && { imageUrl: fetched.imageUrl }),
+      };
+      request$ = this.linksApi.create({
+        ...payload,
+        idempotencyKey: this.keyFor(this.fingerprint(payload)),
       });
     }
     this.saving.set(true);
-    this.saveFailed.set(false);
+    this.saveError.set(null);
     try {
       const pending = firstValueFrom(request$).then((link): AddLinkSaved => ({
         action: ADD_LINK_ACTION.Saved,
@@ -317,10 +361,51 @@ export class AddLinkDialogComponent {
       const saved = await pending;
       // `saving` stays on: the button keeps its spinner while the dialog leaves.
       this.ref.close(saved);
-    } catch {
+    } catch (error) {
       this.saving.set(false);
-      this.saveFailed.set(true);
+      this.saveError.set(saveErrorKey(error));
     }
+  }
+
+  /** The loaded preview of the current URL when the server could fetch the page. */
+  private fetchedPreview(): LinkPreview | null {
+    return this.previewState() === PREVIEW_STATE.Ready &&
+      this.preview.hasValue() &&
+      this.preview.value().fetched
+      ? this.preview.value().preview
+      : null;
+  }
+
+  /**
+   * What the user entered, as text: url, note, folder, tags and the title only when typed. The
+   * autofilled title and the preview hints are sent but left out, so a late preview does not
+   * renew the key of a retry.
+   */
+  private fingerprint(payload: CreateLinkRequest): string {
+    return JSON.stringify({
+      url: payload.url,
+      note: payload.note,
+      folderId: payload.folderId,
+      tags: payload.tags,
+      title: this.form.title().dirty() ? payload.title : undefined,
+    });
+  }
+
+  /**
+   * The idempotency key of this save. A retry of the same payload reuses the key (the server
+   * replays it); a changed payload needs a new one, because the server ignores the payload of a
+   * replayed key.
+   */
+  private keyFor(fingerprint: string): string {
+    const session = this.data.session;
+    if (
+      session.idempotencyKey === null ||
+      (session.sentFingerprint !== null && session.sentFingerprint !== fingerprint)
+    ) {
+      session.idempotencyKey = globalThis.crypto.randomUUID();
+    }
+    session.sentFingerprint = fingerprint;
+    return session.idempotencyKey;
   }
 
   /** Edit mode: only the fields that differ from the saved link. */
@@ -334,6 +419,7 @@ export class AddLinkDialogComponent {
     const url = value.url.trim();
     const title = value.title.trim();
     const note = value.note.trim();
+    const tags = [...normalizeTagNames(value.tags)];
     if (url !== link.url) {
       changes.url = url;
     }
@@ -346,11 +432,8 @@ export class AddLinkDialogComponent {
     if (value.folderId !== link.folderId) {
       changes.folderId = value.folderId;
     }
-    if (
-      value.tags.length !== link.tags.length ||
-      value.tags.some((tag, index) => tag !== link.tags[index])
-    ) {
-      changes.tags = value.tags;
+    if (tags.length !== link.tags.length || tags.some((tag, index) => tag !== link.tags[index])) {
+      changes.tags = tags;
     }
     return changes;
   }

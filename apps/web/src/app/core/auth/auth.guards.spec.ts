@@ -5,7 +5,8 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { AUTH_API } from './auth-api.token';
 import { authOnly, guestOnly, redirectToSignIn } from './auth.guards';
 import { AuthApi } from './models/auth-api.interface';
-import { AuthUser } from './models/auth-user.interface';
+import { safeReturnUrl } from './safe-return-url';
+import type { AuthUser } from '@shelfmark/contracts';
 
 const USER: AuthUser = {
   id: 'u1',
@@ -13,6 +14,7 @@ const USER: AuthUser = {
   email: 'a@example.com',
   image: null,
   isDemo: false,
+  onboardingCompletedAt: '2020-01-01T00:00:00.000Z',
 };
 
 @Component({ selector: 'app-landing-stub', template: 'landing' })
@@ -31,6 +33,8 @@ const routes: Routes = [
     children: [{ path: 'links', children: [] }],
   },
   { path: 'links', canActivate: [redirectToSignIn], children: [] },
+  { path: 'share', canMatch: [authOnly], component: ShellStub },
+  { path: 'share', canActivate: [redirectToSignIn], children: [] },
   { path: 'sign-in', canMatch: [guestOnly], component: SignInStub },
   { path: 'sign-in', redirectTo: 'links' },
 ];
@@ -66,6 +70,20 @@ describe('auth guards', () => {
     await harness.navigateByUrl('/links?tag=a');
 
     expect(router.url).toBe('/sign-in?returnUrl=%2Flinks%3Ftag%3Da');
+  });
+
+  it('keeps the whole share query for the way back after sign-in', async () => {
+    const { harness, router } = await setup(null);
+
+    await harness.navigateByUrl('/share?text=Look%20https%3A%2F%2Fexample.com%2Fa&title=Hi');
+
+    const returnUrl = router.parseUrl(router.url).queryParams['returnUrl'];
+    // The router may write a `:` unescaped; what matters is the same params after the way back.
+    expect(router.parseUrl(returnUrl).queryParams).toEqual({
+      text: 'Look https://example.com/a',
+      title: 'Hi',
+    });
+    expect(safeReturnUrl(returnUrl)).toBe(returnUrl);
   });
 
   it('lets a signed-in user open a protected URL', async () => {

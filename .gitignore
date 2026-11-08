@@ -29,4 +29,7 @@ test-results/
 # Angular / Vitest
 .angular/
 __screenshots__/
+
+# Prisma generated client (rebuilt by the prisma-generate target)
+apps/api/src/generated/
 .lighthouseci/

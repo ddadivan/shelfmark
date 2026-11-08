@@ -45,3 +45,56 @@
     color: var(--text);
   }
 }
+
+// Scroll reveal for the direct children of an element carrying `appLandingReveal`: fade + 1rem
+// rise over `duration-slow`, each child delayed by `--landing-reveal-delay` (set by the
+// directive). Only the directive's `--pending` class hides content, and reduced motion never does.
+@mixin reveal {
+  &.landing-reveal--pending > * {
+    opacity: 0;
+    transform: translateY(rem(16px));
+  }
+
+  // Longhands on purpose (the easing is set apart so stylelint does not ask for the shorthand).
+  & > * {
+    transition-timing-function: var(--ease-out);
+  }
+
+  &.landing-reveal--shown > * {
+    transition-property: opacity, transform;
+    transition-duration: var(--duration-slow);
+    transition-delay: var(--landing-reveal-delay, 0ms);
+  }
+
+  // Print has no scrolling to reveal anything: show every section.
+  @media print {
+    &.landing-reveal--pending > * {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @include reduced-motion {
+    &.landing-reveal--pending > * {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+// Size of the hero chat phone, shared by the chat and by the placeholder that stands in for it
+// while it loads: the feed window plus the rest of the phone (bar, hint and buttons), so both
+// have the same height at every breakpoint and the swap shifts nothing.
+@mixin chat-size {
+  --landing-chat-height: #{rem(300px)};
+  --landing-chat-chrome: #{rem(147px)};
+
+  @include tablet-up {
+    --landing-chat-height: #{rem(478px)};
+    --landing-chat-chrome: #{rem(119px)};
+  }
+
+  @include desktop {
+    --landing-chat-chrome: #{rem(147px)};
+  }
+}

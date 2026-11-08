@@ -27,14 +27,16 @@ Updated as work goes on — every session resumes from here.
   - After every production deploy: `BASE_URL=https://shelfmark-app.vercel.app npx nx e2e web-e2e` (the missing-file 404 relies on undocumented Vercel behaviour)
   - Next: stage 1 issues from 9.1 (the author decides when); CSP nonce middleware (#9) before the first `libs/ui` component renders in `apps/web`
   - Verification of protected previews by agents: `vercel curl` and `vercel logs` (CLI login, no bypass token)
-- [ ] Stages 1–7 in progress (status Nov 7, 2026, end of the cloud session; work continues locally)
-  - Merged on Nov 7: #82 (libs/ui a11y audit, #62), #86 (sign-in on a mock AuthApi, part of #66), #87 (agent limit docs), #88 (no Vercel previews for `docs/**`, #84)
-  - Ready to merge, required checks green or running: #120 (Lighthouse CI job, #111; ADR 0028 Proposed) → #112 (README, #102) → #126 (this status). Each needs "Update branch" after the previous merge (the `main` ruleset requires an up-to-date branch)
-  - Reviewed, base `main`, waiting for the author: #113 (#91 provider icons), #116 (#92 input loading), #90 (#73 add-link dialog; mockup deviations), #114 (#103 landing; mockup deviations), #115 (#101 privacy page; legal wording), #124 (#94 settings; mockup deviations, axe `label-content-name-mismatch` question)
-  - Reviewed, need a Vercel preview check: #85 `chore/63-prisma-pglite` (#63) → #118 `feat/64-better-auth` (#64, base #85) → #125 `feat/65-auth-guard` (#65, base #118; ADR 0029 Proposed); #117 `feat/93-pwa` (#93); #79 `feat/70-safe-fetcher` (part of #70). Vercel previews hit the Hobby daily limit on Nov 7
-  - Stacked (retarget to `main` after the base merges, then merge `origin/main` in): #89 (#71 models, base #85); #118 and #125 (above); #121 (#104 chat loop) and #122 (#105 scenes) on #114
-  - Next unblocked after merges: #119 (web Better Auth binding, after #118), #123 (throttler, interceptors, CSRF check; after #125), #72 links API (after #123, #79, #89), #109 Sentry (after the lockfile-touching PRs merge); fold #121's motion logic into #122's `LandingMotionService` when the landing stack is retargeted
-  - Author decisions: ADR #80 and #81; duplicate ADR number 0027 (#80 vs #118); #118 decisions A–F; #65 decisions A–E; #89 LinkTag same-user enforcement; #115 legal wording, controller, contact; pause controls on the landing (#121, #122); mockup deviations in #90, #114, #124
+- [ ] Stages 1–7 in progress (status Nov 8, 2026, afternoon)
+  - Merged by Nov 8: feed, add-link and edit, folders and tags (web), libs/ui (checkbox, long press, chip menu, highlight, command list), landing with animations and performance, search / sort / breadcrumbs / ⌘K (#144), export menu (#153), empty states (#154), onboarding web (#157), mobile layout and phone drawer (#160), avatar initials (#167)
+  - Draft, retargeted to `main` after #160: #168 (#98 app-wide axe matrix and keyboard flows), #169 (#164 toast shortcut to reach Undo; needs a manual browser and screen-reader check), #170 (#165 focus restore when a dialog opener disappears)
+  - Neon free plan allows 10 branches per project, and the Vercel integration creates one per preview deployment, also for branches that need no database. When the limit is hit, the preview build fails with `DATABASE_URL_UNPOOLED is not set for this build`. Fix: the author deletes unused `preview/*` branches in Neon (merged ones first); the integration then recreates the missing branch and redeploys on its own
+  - Auth stack, draft, waiting for merges and Vercel preview checks: #85 → #89 → #118 → #125 (#118 preview is Ready since Nov 8 after the Neon cleanup; the step 4 checks in its PR body are still open); on #125: #132 (rate limit, CSRF), #137 (tags API), #138 (folders API), #145 (account deletion), #146 (export API), #148 (web Better Auth), #151 (onboarding API, on #145), #152 (links API, #72)
+  - Stacked on #152, draft, reviewed: #156 (#155 web wiring of the real APIs), #159 (#100 rating API), #161 (#67 demo API, cron, ADR 0034). Stacked on #148: #162 (#67 demo web, `ui-notice` info kind and banner). Stacked on #117: #158 (#95 Share target)
+  - Also draft, waiting for the author: #79 fetcher, #117 PWA, #139 Sentry (preview and DSNs), #115 privacy (legal text)
+  - Test harness: `apps/api/test-utils/exchange-socket-server.ts` (on #152) serialises PGlite protocol exchanges; it fixes the random `links.concurrency` failures (P2039)
+  - Next: #100 rating web (needs a design decision: no mockup for the rating dialogs), #110 release security check (last)
+  - Author decisions: listed in the PRs and issue plans: #155 (`ApiError` code, 429/5xx toasts), #99 (PROJECT.md 6 onboarding endpoint, demo users and onboarding), #158 (folder chips, bare hosts), #159 / #100 (comment append, design for the dialogs, export), #161 / #67 (path `/api/demo`, rate-limit store, cap, CAPTCHA follow-up, `CRON_SECRET` in Vercel), #162 (banner copy vs PROJECT.md 4.21), #169 (toast shortcut, Toast spec update)
 - [ ] Motion in code — stage 6; promo video — after the stage 1 release
 
 ## 1. Problem and idea
@@ -70,7 +72,7 @@ Stage 1 is a personal responsive web service: the user adds links manually and f
 
 - folders / collections;
 - tags;
-- search by title;
+- search by title, note and URL;
 - a common feed of all links.
 
 **"Recently opened" panel.** On the right, a feed of the most recently opened links. The panel is optional: it can be hidden.
@@ -104,7 +106,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 
 **Search and browsing:**
 
-- search by title;
+- search by title, note and URL;
 - a common feed of all links;
 - view toggle: cards with previews / list;
 - a right-hand "Recently opened" panel that can be hidden.
@@ -178,7 +180,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 ### Search and browsing
 
 14. **Common feed.** The "All links" section shows all of the user's links.
-15. **Search.** Search by title finds links in all folders.
+15. **Search.** Search by title, note and URL finds links in all folders (every word of the query must match, at most 5 words).
 16. **Sorting.** By date added (newest first, the default) and by title.
 17. **View.** A "cards / list" toggle; the choice is remembered.
 18. **Recently opened.** A panel of recently opened links on the right; it can be hidden, and the state is remembered.
@@ -379,10 +381,10 @@ NestJS choice: ADR 0010; API build and tests: ADR 0006; API security baseline: A
 | --- | --- |
 | Relational data: users → folders → links ↔ tags | PostgreSQL tables and relations |
 | Nested folders | `parentId` field + recursive query (recursive CTE) |
-| Search by title | Built-in PostgreSQL search (`pg_trgm` / full-text search) |
+| Search by title, note and URL | Built-in PostgreSQL search (`pg_trgm` / full-text search) |
 | Duplicate links | Index on the "user + URL" pair |
 | Schema migrations | Prisma Migrate |
-| Local development | PostgreSQL in Docker |
+| Local development and tests | PGlite (embedded PostgreSQL, no Docker), see [ADR 0025](adr/0025-database-tooling-prisma-7-pglite.md) |
 | Cloud database | Neon, free tier (see 5.7) |
 
 **A cache (Redis)** is not needed in stage 1.
@@ -426,11 +428,13 @@ Stage 1 runs for free on **Vercel (Hobby) + Neon** and is available at a public 
 
 - **Vercel Cron** (free on Hobby): daily cleanup of expired demo sandboxes;
 - **Sentry** (free tier): frontend and backend errors with `requestId`, without personal data or link contents;
-- **PWA**: `@angular/pwa`: a manifest with an icon from the logo, a service worker for the app shell, `share_target` in the manifest.
+- **PWA**: a hand-written manifest (`apps/web/public/manifest.webmanifest`, icons from the logo, `share_target`: `GET /share` with `url`, `text`, `title`) and `apps/web/ngsw-config.json` for the Angular service worker (`@angular/service-worker`, app shell and static assets only, never `/api`); no `@angular/pwa` schematic. The CSP is unchanged: `worker-src` falls back to `script-src 'self'`, `manifest-src` to `default-src 'self'`.
+  - **Android "Share" target:** `/share` (`features/share`, signed-in only; a guest returns to the full `/share?…` URL after sign-in). The query is untrusted: `extractSharedLink` keeps the first `http(s)` URL of `url`, then of `text`, and drops every other scheme, addresses with credentials and anything over the contract length; `title` is only an initial title hint. Everything is shown as text. No usable URL shows an error and saves nothing. The service worker serves `/share` from the shell (it matches the path without the query).
+  - **iPhone:** iOS has no Web Share Target for web apps, so there is no entry in the iOS "Share" menu. On iPhone Shelfmark is installed with Safari "Share → Add to Home Screen" and links are saved by pasting them in the app.
 
 **Environments:**
 
-- **local**: PostgreSQL in Docker, `.env` only locally;
+- **local**: PGlite (no Docker), `.env` only locally;
 - **preview**: Vercel preview deployment + a separate Neon database branch (not production);
 - **production**: `main` → Vercel + the Neon `production` branch.
 
@@ -506,11 +510,11 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 
 **LinkTag**: many-to-many relation: `linkId`, `tagId` (composite PK).
 
-**Feedback**: ratings and feedback: `id`, `userId`, `milestone` (`day3` | `week1` | `month1` | `year1`), `score` (1–10, `null` = skipped), `comment` (≤ 2000, optional), `createdAt`; unique on `userId + milestone`. The presence of a row tells the frontend that the milestone has already been shown.
+**Feedback**: ratings and feedback: `id`, `userId`, `milestone` (`day3` | `week1` | `month1` | `year1`), `score` (1–10, `null` = skipped), `comment` (≤ 2000, optional), `createdAt`, `updatedAt`; unique on `userId + milestone`; DB CHECKs: milestone in the set, score null or 1–10, comment ≤ 2000 characters, no comment without a score. The presence of a row means the milestone is answered; the frontend does not read the table but asks `GET /api/feedback/prompt`.
 
 **URL normalisation** (for duplicates): lowercase host, no `#fragment`, no `utm_*` params and no trailing `/`. Duplicates are allowed (the user can "save anyway"), so the index is non-unique.
 
-**Indexes:** `Link(userId, createdAt)`, `Link(userId, normalizedUrl)`, `Link(userId, lastOpenedAt)`, `Link.title` (`pg_trgm` for search), `Folder(userId, parentId)`.
+**Indexes:** `Link(userId, createdAt)`, `Link(userId, normalizedUrl)`, `Link(userId, lastOpenedAt)`, `Link.title`, `Link.note` and `Link.url` (`pg_trgm` GIN for search), `Folder(userId, parentId)`.
 
 **Interface settings** (view, panel) are not stored in the database, only in `localStorage`.
 
@@ -524,7 +528,7 @@ All routes except `/api/auth/*` require a session and work only with the current
 | GET | `/api/me` | Current user |
 | DELETE | `/api/me` | Delete the account and all data |
 | POST | `/api/links/preview` | For a URL, return title, icon, image + the existing link if it is a duplicate (for form autofill) |
-| GET | `/api/links` | List with filters: `folderId`, `unsorted`, `favorite`, `tag` (repeated, `?tag=a&tag=b`: AND, case-insensitive, max 5, more is a 400; empty or absent = no filter), `q` (search), `sort` (`createdAt` / `title`), `order`, `cursor`, `limit` |
+| GET | `/api/links` | List with filters: `folderId`, `unsorted`, `favorite`, `tag` (repeated, `?tag=a&tag=b`: AND, case-insensitive, max 5, more is a 400; empty or absent = no filter), `q` (search in title, note and URL; every word must match, at most 5 words), `sort` (`createdAt` / `title`), `order`, `cursor`, `limit` |
 | GET | `/api/links/recent` | Recently opened (by `lastOpenedAt`), `limit` |
 | GET | `/api/links/:id` | One link |
 | POST | `/api/links` | Create: `url`, `title?`, `note?`, `folderId?`, `tags?` (names; new tags are created automatically) |
@@ -532,10 +536,13 @@ All routes except `/api/auth/*` require a session and work only with the current
 | POST | `/api/links/:id/open` | Record an open (updates `lastOpenedAt`) |
 | DELETE | `/api/links/:id` | Delete |
 | GET | `/api/folders` | All folders as a flat list ordered by name (`parentId` + direct link count) plus `counts` (`all`, `unsorted`, `favorites`) for the fixed sidebar rows; the frontend builds the tree |
+| GET | `/api/folders/:id` | Read one folder (`GetFolderResponse` = `FolderResponse`, with its direct link count); 404 if unknown or foreign |
 | POST | `/api/folders` | Create: `name`, `parentId?`; 409 at the per-user cap (500 folders) |
 | PATCH | `/api/folders/:id` | Rename / move; moving into itself or its own subfolder is forbidden |
 | DELETE | `/api/folders/:id?mode=` | Delete a folder with all subfolders; `mode=delete-links` also deletes the links, `mode=move-to-unsorted` moves them to "Unsorted" |
-| GET, POST, PATCH /:id, DELETE /:id, POST /:id/merge | `/api/tags` | The user's tags with link counts, sorted by link count descending, then name; create an empty tag (409 if the name is taken or at the per-user cap of 1000), rename (409 if the name is taken; changing only the case of its own name is allowed), delete (links remain), merge with another tag (merging into itself is a 400). Names are normalized with `normalizeTagName` (trim, whitespace runs become one hyphen) on create and rename |
+| GET, POST, GET /:id, PATCH /:id, DELETE /:id, POST /:id/merge | `/api/tags` | The user's tags with link counts, sorted by link count descending, then name; read one tag with its count (404 if unknown or foreign); create an empty tag (409 if the name is taken or at the per-user cap of 1000), rename (409 if the name is taken; changing only the case of its own name is allowed), delete (links remain), merge with another tag (merging into itself is a 400). Names are normalized with `normalizeTagName` (trim, whitespace runs become one hyphen) on create and rename |
+| GET | `/api/feedback/prompt` | Which rating dialog to show now: `{ milestone }`, the latest reached milestone without a row, `null` for demo users and before onboarding (no-store) |
+| POST | `/api/feedback` | Save a rating, feedback or a skip `{ milestone, score \| null, comment? }` (204; 403 demo, 409 onboarding pending / milestone not reached / different score stored; same score appends the comment) |
 
 **General API rules:**
 
@@ -545,9 +552,9 @@ All routes except `/api/auth/*` require a session and work only with the current
 
 **Additionally:** `PATCH /api/me` with `{ onboardingCompleted: true | false }` marks onboarding as completed or resets it ("Show onboarding again"); `GET /api/me` returns `onboardingCompletedAt`.
 
-**Demo, export, PWA:** `POST /api/demo` creates a demo sandbox and session (strict per-IP rate limit); `GET /api/export?format=json|html` (+ optional `folderId`, `tag` (repeated, same AND semantics as the list), `q`, the same filters as the list) downloads the current folder or all data; receiving a link from the "Share" menu (Web Share Target) needs no separate endpoint: the manifest opens the `/share?url=…` route (GET), and the page saves via `POST /api/links`.
+**Demo, export, PWA:** `POST /api/demo` creates a demo sandbox and session (strict per-IP rate limit); `GET /api/export?format=json|html` (+ optional `folderId`, `tag` (repeated, same AND semantics as the list), `q`, the same filters as the list) downloads the current folder (with its subfolders) or all data; `q` searches title, note and URL; the HTML file omits links whose URL is not http(s); receiving a link from the "Share" menu (Web Share Target) needs no separate endpoint: the manifest opens the `/share?url=…` route (GET), and the page saves via `POST /api/links`.
 
-**App rating:** `GET /api/me` returns `ratingPrompt: 'day3' | 'week1' | 'month1' | 'year1' | null`, which dialog to show now (computed by the backend from `createdAt` and the `Feedback` table); `POST /api/feedback` `{ milestone, score | null, comment? }` saves a rating, feedback or a skip; resubmitting for the same milestone appends to the comment. Rate-limited; the feedback text is stored as is and rendered only as text (no HTML).
+**App rating:** `GET /api/feedback/prompt` (no-store) returns `{ milestone: 'day3' | 'week1' | 'month1' | 'year1' | null }`, which dialog to show now (the latest reached milestone without a `Feedback` row, computed by the backend from `User.createdAt`; `null` for demo users and before onboarding is completed); `POST /api/feedback` `{ milestone, score | null, comment? }` answers 204 and saves a rating, feedback or a skip (a comment needs a score). Errors: 400 invalid body (or combined comment over 2000 characters), 403 demo user, 409 onboarding pending, milestone not reached yet, or a different score already stored for the milestone. Resubmitting for the same milestone with the same score appends the comment after a blank line. Rate-limited; the feedback text is stored as is and rendered only as text (no HTML).
 
 ## 7. Design and UX (Claude Design)
 
@@ -829,7 +836,7 @@ Stage 1 is 8 stages (GitHub milestones), roughly 8–9 weeks at \~3 hours a day;
 | 6 | Polish | Mobile version, dark theme, empty states, accessibility | \~1 week |
 | 7 | Release | 5.8 check, account deletion, privacy policy, README, Storybook online | 3–4 days |
 
-**Stage 0 clarification:** stage 0 creates only the Neon project; Prisma, `docker-compose.yml` with local PostgreSQL and migrations in CI move to stage 2 together with the Better Auth schema.
+**Stage 0 clarification:** stage 0 creates only the Neon project; Prisma, local PGlite (instead of Docker, ADR 0025) and migrations in CI move to stage 2 together with the Better Auth schema.
 
 The estimate assumes the bottleneck is PR review and fixes, not writing code. Hitting Claude subscription limits (see 9.6) can stretch the timeline.
 
@@ -870,7 +877,7 @@ Stage 0 E2E: Chromium only, see ADR 0008.
 ### 9.5 CI/CD
 
 - **On every PR** (GitHub Actions, only affected projects via `nx affected`): lint, typecheck, unit tests with a coverage threshold, build, `npm audit`, CodeQL; Vercel creates a preview version.
-- **Merge to `main`** → automatic deployment to Vercel production; Prisma migrations are applied to the production Neon database.
+- **Merge to `main`** → automatic deployment to Vercel production; Prisma migrations are applied to the production Neon database by the Vercel build (`prisma migrate deploy`, ADR 0025); every PR checks the migrations against a Postgres service (`scripts/db-check.mjs`; `nx run api:db-check` is the local PGlite equivalent).
 
 ### 9.6 Claude subscription
 

@@ -1,11 +1,8 @@
 import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
-import { COLOR_SCHEME } from './models/color-scheme.const';
-import { expectNoBlockingViolations } from './support/axe';
 import { isStaticBuild } from './support/build-mode';
 
 const testPage = '/__e2e/add-link';
-const dialogSelector = '.cdk-dialog-container';
 const duplicateUrl = 'https://angular.dev/overview';
 // Mirror `E2E_ADD_LINK_OUTCOME` (apps/web harness page); the e2e project cannot import from apps/web.
 const outcome = {
@@ -97,19 +94,6 @@ test.describe('add link dialog (mock API)', () => {
     await expect(dialog).toBeHidden();
     await expect(page.getByRole('button', { name: 'Open add link' })).toBeFocused();
   });
-
-  for (const colorScheme of Object.values(COLOR_SCHEME)) {
-    test(`has no axe violations with a duplicate notice (${colorScheme})`, async ({
-      page,
-    }, testInfo) => {
-      await page.emulateMedia({ colorScheme });
-      const dialog = await open(page);
-      await dialog.getByLabel('Link', { exact: true }).fill(duplicateUrl);
-      await expect(dialog.getByRole('button', { name: 'Open saved' })).toBeVisible();
-
-      await expectNoBlockingViolations(page, testInfo, { include: dialogSelector });
-    });
-  }
 
   test('fits a 360px phone without horizontal scroll and keeps the actions reachable', async ({
     page,

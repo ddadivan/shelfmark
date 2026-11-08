@@ -1,7 +1,10 @@
 import type { NestExpressApplication } from '@nestjs/platform-express';
+import { APP_GUARD } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import request from 'supertest';
 import { configureApp } from '../app/configure-app';
+import { createRateLimitOptions } from '../common/rate-limit/rate-limit-options';
 import { MAX_ENVELOPE_BYTES } from './models/max-envelope-bytes.const';
 import type { MonitoringSettings } from './models/monitoring-settings.interface';
 import { MONITORING_SETTINGS } from './models/monitoring-settings.const';
@@ -22,7 +25,15 @@ function envelope(dsn: string | undefined): string {
 }
 
 async function buildApp(settings: MonitoringSettings): Promise<NestExpressApplication> {
-  const moduleRef = await Test.createTestingModule({ imports: [MonitoringModule] })
+  // The rate limiter the real AppModule puts in front of every route. The CsrfGuard is left out
+  // on purpose: it answers 415 to the browser SDK's text/plain envelope (open question, see PR).
+  const moduleRef = await Test.createTestingModule({
+    imports: [
+      MonitoringModule,
+      ThrottlerModule.forRootAsync({ useFactory: () => createRateLimitOptions(false) }),
+    ],
+    providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
+  })
     .overrideProvider(MONITORING_SETTINGS)
     .useValue(settings)
     .compile();

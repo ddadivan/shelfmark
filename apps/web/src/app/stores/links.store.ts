@@ -19,7 +19,7 @@ import {
 } from '@ngrx/signals/entities';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import type { FolderDeleteMode, LinkResponse } from '@shelfmark/contracts';
-import { FOLDER_DELETE_MODE } from '@shelfmark/contracts';
+import { FOLDER_DELETE_MODE, LINK_SORT_FIELD, SORT_ORDER } from '@shelfmark/contracts';
 import { catchError, EMPTY, firstValueFrom, pipe, switchMap, tap } from 'rxjs';
 import { inFilter, linksQuery, sameFilter } from '../features/links/links-filter';
 import { LINKS_API } from '../features/links/models/links-api.const';
@@ -54,6 +54,23 @@ function staysAfterEdit(filter: LinksFilter, link: LinkResponse): boolean {
     default:
       return true;
   }
+}
+
+/** `link` with the tag `from` renamed to `to` (or dropped for `null`); other tags keep their order, no duplicates. */
+function retagLink(link: LinkResponse, from: string, to: string | null): LinkResponse {
+  if (!link.tags.some((name) => name.toLowerCase() === from.toLowerCase())) {
+    return link;
+  }
+  const seen = new Set<string>();
+  const tags: string[] = [];
+  for (const name of link.tags) {
+    const next = name.toLowerCase() === from.toLowerCase() ? to : name;
+    if (next !== null && !seen.has(next.toLowerCase())) {
+      seen.add(next.toLowerCase());
+      tags.push(next);
+    }
+  }
+  return { ...link, tags };
 }
 
 function insertAt<T>(list: readonly T[], index: number, item: T): T[] {
@@ -228,7 +245,17 @@ export const LinksStore = signalStore(
 
       /** Shows a link that was just saved at the top, when it belongs to the current scope. */
       addSaved(link: LinkResponse): void {
-        if (!store.loaded() || !inFilter(store.filter(), link) || store.entityMap()[link.id]) {
+        const { sort, order } = store.filter();
+        // At the top only in the default order; other orders show it on the next load.
+        const newestFirst = (sort ?? LINK_SORT_FIELD.CreatedAt) === LINK_SORT_FIELD.CreatedAt;
+        const descending = (order ?? SORT_ORDER.Desc) === SORT_ORDER.Desc;
+        if (
+          !store.loaded() ||
+          !newestFirst ||
+          !descending ||
+          !inFilter(store.filter(), link) ||
+          store.entityMap()[link.id]
+        ) {
           return;
         }
         patchState(store, setAllEntities([link, ...store.entities()]));
@@ -263,6 +290,35 @@ export const LinksStore = signalStore(
           inFolders(link) ? { ...link, folderId: null } : link;
         patchState(store, setAllEntities(store.entities().map(unsort)), {
           recent: store.recent().map(unsort),
+        });
+      },
+
+      /**
+       * A tag was renamed or merged on the server: the loaded links, the recent list and links in
+       * their Undo window carry the new name (a link that has both collapses to one).
+       */
+      renameTag(from: string, to: string): void {
+        const retag = (link: LinkResponse): LinkResponse => retagLink(link, from, to);
+        for (const [id, removal] of pending) {
+          if (!removal.committing) {
+            pending.set(id, { ...removal, link: retag(removal.link) });
+          }
+        }
+        patchState(store, setAllEntities(store.entities().map(retag)), {
+          recent: store.recent().map(retag),
+        });
+      },
+
+      /** A tag was deleted on the server: it leaves every loaded link, also those in their Undo window. */
+      dropTag(name: string): void {
+        const drop = (link: LinkResponse): LinkResponse => retagLink(link, name, null);
+        for (const [id, removal] of pending) {
+          if (!removal.committing) {
+            pending.set(id, { ...removal, link: drop(removal.link) });
+          }
+        }
+        patchState(store, setAllEntities(store.entities().map(drop)), {
+          recent: store.recent().map(drop),
         });
       },
 
