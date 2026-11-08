@@ -39,7 +39,8 @@
             { "type": "initial", "maximumWarning": "500kb", "maximumError": "1mb" },
             { "type": "anyComponentStyle", "maximumWarning": "4kb", "maximumError": "8kb" }
           ],
-          "outputHashing": "all"
+          "outputHashing": "all",
+          "serviceWorker": "apps/web/ngsw-config.json"
         },
         "development": {
           "fileReplacements": [
@@ -66,6 +67,7 @@
             { "type": "anyComponentStyle", "maximumWarning": "4kb", "maximumError": "8kb" }
           ],
           "outputHashing": "all",
+          "serviceWorker": "apps/web/ngsw-config.json",
           "outputPath": "dist/apps/web-e2e-build",
           "fileReplacements": [
             {
