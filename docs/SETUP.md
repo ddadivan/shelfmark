@@ -181,7 +181,7 @@ Settings → **Environment Variables**. Each variable is set per environment: **
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | production client | not set until ADR 0026 is decided | Both or neither; mark Sensitive |
 | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | production app | not set until ADR 0026 is decided | Both or neither; mark Sensitive |
 | `CRON_SECRET` | own value, at least 32 characters | not set | Mark Sensitive. Vercel sends it as `Authorization: Bearer …` to the daily demo cleanup (`vercel.json` `crons`, ADR 0034); see 5.8. Cron jobs run on Production deployments only |
-| Sentry DSN | | | Stage 7 |
+| `SENTRY_DSN`, `SENTRY_WEB_DSN` | DSN of the API / web Sentry project | optional, empty by default | Issue #109, ADR 0032. Create two Sentry projects (Node.js for the API, Browser JavaScript for the web), copy each DSN (a public client key, not a secret). Empty = monitoring off. Vercel supplies `VERCEL_ENV` (environment) and `VERCEL_GIT_COMMIT_SHA` (release) itself. Redeploy after setting. |
 
 Mark every secret as **Sensitive** (value cannot be read back in the dashboard). Do not set `PORT` on Vercel. An env change applies only to **new** deployments: redeploy after editing.
 

@@ -1,0 +1,47 @@
+import { Controller, Get, HttpCode, Post, Req, Res } from '@nestjs/common';
+import { ApiNoContentResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import type { Request, Response } from 'express';
+import { AllowAnonymous } from '../common/auth/allow-anonymous.decorator';
+import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
+import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
+import { MonitoringConfigResponseDto } from './dto/monitoring-config-response.dto';
+import { MAX_ENVELOPE_BYTES } from './models/max-envelope-bytes.const';
+import { MonitoringService } from './monitoring.service';
+import { readLimitedBody } from './read-limited-body';
+
+@ApiTags('monitoring')
+@Controller('monitoring')
+export class MonitoringController {
+  constructor(private readonly monitoring: MonitoringService) {}
+
+  // Anonymous on purpose: the web app reads it before any sign-in. It carries the public
+  // DSN (a send-only client key), the environment name and the release, nothing else.
+  @AllowAnonymous()
+  @Get('config')
+  @ApiOkResponse({ type: MonitoringConfigResponseDto })
+  config(@Res({ passthrough: true }) res: Response): MonitoringConfigResponseDto {
+    res.setHeader('Cache-Control', 'public, max-age=300');
+    return this.monitoring.getConfig();
+  }
+
+  // Anonymous on purpose: errors can happen before or without a session. The route only
+  // forwards envelopes that name our own DSN, with a size limit, and never forwards cookies.
+  // Stricter per-IP limit than the default (the AddLink preset, 30 per minute).
+  @AllowAnonymous()
+  @RateLimit(RATE_LIMIT.AddLink)
+  @Post('tunnel')
+  @HttpCode(204)
+  @ApiNoContentResponse({ description: 'Envelope forwarded to Sentry.' })
+  async tunnel(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<void> {
+    res.setHeader('Cache-Control', 'no-store');
+    let body: Buffer;
+    try {
+      body = await readLimitedBody(req, MAX_ENVELOPE_BYTES);
+    } catch (error) {
+      // Reading has stopped; do not keep the connection open for the unread rest.
+      res.setHeader('Connection', 'close');
+      throw error;
+    }
+    await this.monitoring.forward(body);
+  }
+}

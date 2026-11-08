@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { workspaceRoot } from '@nx/devkit';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/test';
 
 function read(path: string): string {
   return readFileSync(join(workspaceRoot, path), 'utf8');

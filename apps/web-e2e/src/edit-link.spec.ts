@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/test';
 import { openCardEdit } from './support/a11y-flows';
 import { seedSession } from './support/mock-session';
 

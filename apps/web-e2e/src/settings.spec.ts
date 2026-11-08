@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/test';
 import { dismissOnboarding, MOCK_USER, openAccountMenu, seedSession } from './support/mock-session';
 
 test.describe('settings (mock auth)', () => {
