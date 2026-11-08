@@ -19,7 +19,7 @@ import {
 } from '@ngrx/signals/entities';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import type { FolderDeleteMode, LinkResponse } from '@shelfmark/contracts';
-import { FOLDER_DELETE_MODE } from '@shelfmark/contracts';
+import { FOLDER_DELETE_MODE, LINK_SORT_FIELD, SORT_ORDER } from '@shelfmark/contracts';
 import { catchError, EMPTY, firstValueFrom, pipe, switchMap, tap } from 'rxjs';
 import { inFilter, linksQuery, sameFilter } from '../features/links/links-filter';
 import { LINKS_API } from '../features/links/models/links-api.const';
@@ -245,7 +245,17 @@ export const LinksStore = signalStore(
 
       /** Shows a link that was just saved at the top, when it belongs to the current scope. */
       addSaved(link: LinkResponse): void {
-        if (!store.loaded() || !inFilter(store.filter(), link) || store.entityMap()[link.id]) {
+        const { sort, order } = store.filter();
+        // At the top only in the default order; other orders show it on the next load.
+        const newestFirst = (sort ?? LINK_SORT_FIELD.CreatedAt) === LINK_SORT_FIELD.CreatedAt;
+        const descending = (order ?? SORT_ORDER.Desc) === SORT_ORDER.Desc;
+        if (
+          !store.loaded() ||
+          !newestFirst ||
+          !descending ||
+          !inFilter(store.filter(), link) ||
+          store.entityMap()[link.id]
+        ) {
           return;
         }
         patchState(store, setAllEntities([link, ...store.entities()]));

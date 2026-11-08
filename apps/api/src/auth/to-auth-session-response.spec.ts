@@ -1,7 +1,14 @@
 import { toAuthSessionResponse } from './to-auth-session-response';
 
 const expiresAt = new Date('2030-01-01T00:00:00.000Z');
-const user = { id: 'u1', name: 'Ada', email: 'ada@example.test', image: null, isDemo: false };
+const user = {
+  id: 'u1',
+  name: 'Ada',
+  email: 'ada@example.test',
+  image: null,
+  isDemo: false,
+  onboardingCompletedAt: null,
+};
 
 describe('toAuthSessionResponse', () => {
   it('maps to exactly the contract and drops token, IP address and user agent', () => {

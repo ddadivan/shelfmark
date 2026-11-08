@@ -1,13 +1,14 @@
 import { DOCUMENT } from '@angular/common';
 import { Service, inject } from '@angular/core';
+import type { AuthProvider, AuthUser } from '@shelfmark/contracts';
 import { AuthApi } from './models/auth-api.interface';
-import { AuthProvider } from './models/auth-provider.type';
-import { AuthUser } from './models/auth-user.interface';
+import { LEGACY_ONBOARDING_COMPLETED_AT } from './models/legacy-onboarding-completed-at.const';
+import { StoredUser } from './models/stored-user.interface';
 import { MOCK_DEMO_USER } from './models/mock-demo-user.const';
 import { MOCK_USERS } from './models/mock-users.const';
 import { MOCK_SESSION_STORAGE_KEY } from './models/mock-session-storage-key.const';
 
-function isAuthUser(value: unknown): value is AuthUser {
+function isStoredUser(value: unknown): value is StoredUser {
   if (typeof value !== 'object' || value === null) {
     return false;
   }
@@ -17,7 +18,10 @@ function isAuthUser(value: unknown): value is AuthUser {
     typeof candidate.name === 'string' &&
     typeof candidate.email === 'string' &&
     (candidate.image === null || typeof candidate.image === 'string') &&
-    typeof candidate.isDemo === 'boolean'
+    typeof candidate.isDemo === 'boolean' &&
+    (candidate.onboardingCompletedAt === undefined ||
+      candidate.onboardingCompletedAt === null ||
+      typeof candidate.onboardingCompletedAt === 'string')
   );
 }
 
@@ -53,7 +57,16 @@ export class MockAuthApi implements AuthApi {
     }
     try {
       const parsed: unknown = JSON.parse(raw);
-      return isAuthUser(parsed) ? parsed : null;
+      if (!isStoredUser(parsed)) {
+        return null;
+      }
+      return {
+        ...parsed,
+        onboardingCompletedAt:
+          parsed.onboardingCompletedAt === undefined
+            ? LEGACY_ONBOARDING_COMPLETED_AT
+            : parsed.onboardingCompletedAt,
+      };
     } catch {
       return null;
     }

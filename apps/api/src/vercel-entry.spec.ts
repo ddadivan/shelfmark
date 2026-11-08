@@ -167,6 +167,21 @@ describe('Vercel function entry (api/index.mjs)', () => {
     expect(specifiers.filter((name) => name.includes('pglite'))).toEqual([]);
   });
 
+  // `includeFiles` in vercel.json ships only `node_modules/swagger-ui-dist/**`. A second, nested
+  // copy (e.g. under `@nestjs/swagger/node_modules`) is the one Nest serves from, and its assets are
+  // not in the function, so `/api/docs` loads a blank page. The `overrides` entry keeps one copy.
+  it('installs a single copy of swagger-ui-dist, the one includeFiles ships', () => {
+    const lock = JSON.parse(
+      readFileSync(resolve(srcDir, '../../../package-lock.json'), 'utf8'),
+    ) as {
+      packages: Record<string, unknown>;
+    };
+    const copies = Object.keys(lock.packages).filter((path) =>
+      path.endsWith('node_modules/swagger-ui-dist'),
+    );
+    expect(copies).toEqual(['node_modules/swagger-ui-dist']);
+  });
+
   it('re-exports the handler bundle as the default export', () => {
     expect(readFileSync(entryFile, 'utf8')).toMatch(
       /export \{ default \} from '\.\.\/dist\/apps\/api\/vercel-handler\.mjs';/,

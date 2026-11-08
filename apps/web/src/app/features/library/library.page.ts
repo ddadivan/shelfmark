@@ -1,22 +1,47 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { combineLatest, map } from 'rxjs';
 import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+  input,
+} from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { Title } from '@angular/platform-browser';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { combineLatest, map, switchMap } from 'rxjs';
+import {
+  BreadcrumbsComponent,
   ButtonComponent,
   ChipComponent,
   EmptyStateComponent,
   LoadMoreComponent,
+  MenuComponent,
+  MenuItemComponent,
+  MenuSeparatorComponent,
+  MenuTriggerDirective,
   NoticeComponent,
   ProgressBarComponent,
   SegmentedControlComponent,
   SKELETON_SHAPE,
   SkeletonComponent,
+  type BreadcrumbClick,
+  type BreadcrumbItem,
   type SegmentedOption,
 } from '@shelfmark/ui';
+import { EXPORT_FORMAT, type ExportFormat } from '@shelfmark/contracts';
 import { Router } from '@angular/router';
+import { ExportActionsService } from '../export/export-actions.service';
+import { exportScopeOf } from '../export/export-url';
 import { TAG_QUERY_PARAM } from '../tags/models/tag-query-param.const';
 import { parseTagFilter } from '../tags/tag-filter';
+import { feedSortQuery, parseFeedSort } from '../links/feed-sort';
+import { FEED_SORT } from '../links/models/feed-sort.const';
+import type { FeedSort } from '../links/models/feed-sort.type';
+import { SEARCH_QUERY_PARAM } from '../links/models/search-query-param.const';
+import { SORT_QUERY_PARAM } from '../links/models/sort-query-param.const';
+import { parseSearchQuery } from '../links/search-query';
 import { InViewDirective } from '../links/in-view/in-view.directive';
 import { LinkActionsService } from '../links/link-actions.service';
 import { LinkCardComponent } from '../links/link-card/link-card.component';
@@ -31,6 +56,9 @@ import { LinksStore } from '../../stores/links.store';
 import { UI_VIEW } from '../../stores/models/ui-view.const';
 import { isUiView } from '../../stores/is-ui-view';
 import { UiStore } from '../../stores/ui.store';
+import { EMPTY_KEYS } from './models/empty-keys.const';
+import { SORT_OPTION_KEYS } from './models/sort-option-keys.const';
+import { SORT_OPTIONS } from './models/sort-options.const';
 import { VIEW_OPTION_KEYS } from './models/view-option-keys.const';
 
 /** Number of placeholders shown while the first page loads. */
@@ -45,6 +73,7 @@ const SKELETON_COUNT = 8;
   selector: 'app-library-page',
   imports: [
     TranslocoPipe,
+    BreadcrumbsComponent,
     ButtonComponent,
     ChipComponent,
     EmptyStateComponent,
@@ -52,6 +81,10 @@ const SKELETON_COUNT = 8;
     LinkCardComponent,
     LinkRowComponent,
     LoadMoreComponent,
+    MenuComponent,
+    MenuItemComponent,
+    MenuSeparatorComponent,
+    MenuTriggerDirective,
     NoticeComponent,
     ProgressBarComponent,
     SegmentedControlComponent,
@@ -65,9 +98,11 @@ export default class LibraryPage {
   protected readonly store = inject(LinksStore);
   protected readonly ui = inject(UiStore);
   protected readonly actions = inject(LinkActionsService);
+  private readonly exporter = inject(ExportActionsService);
   private readonly folders = inject(FoldersStore);
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
+  private readonly title = inject(Title);
 
   /** From the route data. */
   readonly scope = input<LinksScope>(LINKS_SCOPE.All);
@@ -75,14 +110,26 @@ export default class LibraryPage {
   readonly folderId = input<string>();
   /** From the query (`?tag=a&tag=b`): one value or a list; see `parseTagFilter`. */
   readonly tag = input<string | readonly string[]>();
+  /** From the query (`?q=signal store`): the search text; see `parseSearchQuery`. */
+  readonly q = input<unknown>();
+  /** From the query (`?sort=oldest`): see `parseFeedSort`. */
+  readonly sort = input<unknown>();
 
   protected readonly UI_VIEW = UI_VIEW;
+  protected readonly EXPORT_FORMAT = EXPORT_FORMAT;
+  protected readonly LINKS_SCOPE = LINKS_SCOPE;
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly SKELETON_COUNT = SKELETON_COUNT;
+  protected readonly SORT_OPTIONS = SORT_OPTIONS;
+  protected readonly SORT_OPTION_KEYS = SORT_OPTION_KEYS;
 
   /** The tags of the filter: normalized, deduplicated, at most `LINK_LIMIT.TagFilterMax`. */
   protected readonly tags = computed(() => parseTagFilter(this.tag()));
-  protected readonly filtered = computed(() => this.tags().length > 0);
+  /** The search text: normalized; empty for no search. */
+  protected readonly query = computed(() => parseSearchQuery(this.q()));
+  protected readonly feedSort = computed<FeedSort>(() => parseFeedSort(this.sort()));
+  protected readonly searching = computed(() => this.query() !== '');
+  protected readonly filtered = computed(() => this.tags().length > 0 || this.searching());
 
   protected readonly isFolder = computed(() => this.scope() === LINKS_SCOPE.Folder);
   /** The folder of the page, once the folder list has it. */
@@ -103,13 +150,21 @@ export default class LibraryPage {
   });
   protected readonly titleKey = computed(() => `library.scope.${this.scope()}`);
   protected readonly emptyKey = computed(() =>
-    this.isFolder() ? 'library.emptyFolder' : 'library.empty',
+    this.isFolder() ? 'library.emptyFolder' : EMPTY_KEYS[this.scope()],
   );
+  /** Favorites cannot be filled by adding a link, so its empty state points back to all links. */
+  protected readonly canAddLink = computed(() => this.scope() !== LINKS_SCOPE.Favorites);
   private readonly filter = computed<LinksFilter>(() => {
     const scope = this.scope();
     const folderId = this.folderId();
     const tags = this.tags();
-    const options = tags.length > 0 ? { tags } : {};
+    const q = this.query();
+    const sort = this.feedSort();
+    const options = {
+      ...(tags.length > 0 ? { tags } : {}),
+      ...(q === '' ? {} : { q }),
+      ...(sort === FEED_SORT.Newest ? {} : feedSortQuery(sort)),
+    };
     if (scope !== LINKS_SCOPE.Folder) {
       return { scope, ...options };
     }
@@ -118,6 +173,8 @@ export default class LibraryPage {
       ? { scope: LINKS_SCOPE.All, ...options }
       : { scope, folderId, ...options };
   });
+  /** What "This view" exports; `undefined` when the view has no export equivalent. */
+  protected readonly viewScope = computed(() => exportScopeOf(this.filter()));
   protected readonly firstLoad = computed(
     () => !this.store.loaded() && !this.store.error() && this.store.count() === 0,
   );
@@ -145,10 +202,70 @@ export default class LibraryPage {
       : null;
   });
 
+  /** The document title the app started with (the brand), the suffix of every page title. */
+  private readonly appName = this.title.getTitle();
+  private readonly rootLabel = toSignal(this.transloco.selectTranslate('library.scope.all'));
+  private readonly scopeLabel = toSignal(
+    toObservable(this.titleKey).pipe(switchMap((key) => this.transloco.selectTranslate(key))),
+  );
+  /** The heading of the page; `undefined` until translated. */
+  private readonly heading = computed(() => this.folder()?.name ?? this.scopeLabel());
+  /** The trail of a folder page: "All links", the ancestors (links) and the folder itself. */
+  protected readonly crumbs = computed<BreadcrumbItem[] | null>(() => {
+    const id = this.folderId();
+    const root = this.rootLabel();
+    if (!this.isFolder() || id === undefined || root === undefined || !this.folder()) {
+      return null;
+    }
+    const path = this.folders.pathTo(id);
+    return [
+      { label: root, href: `/${APP_PATH.Links}` },
+      ...path.map((folder, index) =>
+        index === path.length - 1
+          ? { label: folder.name }
+          : { label: folder.name, href: `/${APP_PATH.Folders}/${folder.id}` },
+      ),
+    ];
+  });
+  /** The tab title: "<heading> · <app>", or "Search: <query> · <app>" while searching. */
+  private readonly pageTitle = toSignal(
+    toObservable(computed(() => ({ query: this.query(), heading: this.heading() }))).pipe(
+      switchMap(({ query, heading }) =>
+        query === ''
+          ? this.transloco.selectTranslate('library.pageTitle.page', {
+              page: heading ?? '',
+              app: this.appName,
+            })
+          : this.transloco.selectTranslate('library.pageTitle.search', {
+              query,
+              app: this.appName,
+            }),
+      ),
+    ),
+  );
   constructor() {
+    effect(() => {
+      const text = this.pageTitle();
+      if (text !== undefined && this.heading() !== undefined) {
+        this.title.setTitle(text);
+      }
+    });
+    inject(DestroyRef).onDestroy(() => this.title.setTitle(this.appName));
     // The sidebar loads the folders too (the phone has none yet); the call is shared.
     void this.folders.load();
     this.store.setFilter(this.filter);
+  }
+
+  protected async openUnsorted(): Promise<void> {
+    await this.router.navigateByUrl(`/${APP_PATH.Unsorted}`);
+  }
+
+  protected async exportView(format: ExportFormat): Promise<void> {
+    await this.exporter.download(format, this.viewScope());
+  }
+
+  protected async exportAll(format: ExportFormat): Promise<void> {
+    await this.exporter.download(format);
   }
 
   protected async showAll(): Promise<void> {
@@ -165,11 +282,43 @@ export default class LibraryPage {
     await this.setTags([]);
   }
 
-  private async setTags(tags: readonly string[]): Promise<void> {
-    await this.router.navigate([], {
-      queryParams: { [TAG_QUERY_PARAM]: tags.length > 0 ? tags : null },
-      queryParamsHandling: 'merge',
+  /** Takes the search out of the filter. */
+  protected async clearSearch(): Promise<void> {
+    await this.setQueryParams({ [SEARCH_QUERY_PARAM]: null });
+  }
+
+  /** Clears everything the filter holds: the search and the tags. */
+  protected async clearAll(): Promise<void> {
+    await this.setQueryParams({ [SEARCH_QUERY_PARAM]: null, [TAG_QUERY_PARAM]: null });
+  }
+
+  /** Repeats the search in all folders (the "all links" page keeps the query and sort, drops the tags). */
+  protected async searchEverywhere(): Promise<void> {
+    await this.router.navigate(['/', APP_PATH.Links], {
+      queryParams: {
+        [SEARCH_QUERY_PARAM]: this.query(),
+        [SORT_QUERY_PARAM]: this.feedSort() === FEED_SORT.Newest ? null : this.feedSort(),
+      },
     });
+  }
+
+  protected async setSort(sort: FeedSort): Promise<void> {
+    await this.setQueryParams({ [SORT_QUERY_PARAM]: sort === FEED_SORT.Newest ? null : sort });
+  }
+
+  protected async openCrumb(click: BreadcrumbClick): Promise<void> {
+    click.event?.preventDefault();
+    if (click.item.href) {
+      await this.router.navigateByUrl(click.item.href);
+    }
+  }
+
+  private async setQueryParams(params: Record<string, unknown>): Promise<void> {
+    await this.router.navigate([], { queryParams: params, queryParamsHandling: 'merge' });
+  }
+
+  private async setTags(tags: readonly string[]): Promise<void> {
+    await this.setQueryParams({ [TAG_QUERY_PARAM]: tags.length > 0 ? tags : null });
   }
 
   protected setView(view: string): void {

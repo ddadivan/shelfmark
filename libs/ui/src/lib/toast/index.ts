@@ -5,5 +5,7 @@ export { TOAST_KIND } from './models/toast-kind.const';
 export type { ToastKind } from './models/toast-kind.type';
 export type { ToastOptions } from './models/toast-options.interface';
 export type { ToastRef } from './models/toast-ref.interface';
+export { TOAST_SHORTCUT } from './models/toast-shortcut.const';
 export { ToastComponent } from './toast.component';
+export { toastShortcutLabel } from './toast-shortcut-label';
 export { ToastService } from './toast.service';

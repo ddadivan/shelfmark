@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
   FaviconComponent,
@@ -22,6 +22,9 @@ const SKELETON_COUNT = 4;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecentLinksPanelComponent {
+  /** Off where a dialog title already names the list (the phone sheet). */
+  readonly showTitle = input(true, { transform: booleanAttribute });
+
   protected readonly store = inject(LinksStore);
   protected readonly actions = inject(LinkActionsService);
 

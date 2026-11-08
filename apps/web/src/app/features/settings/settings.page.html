@@ -19,12 +19,33 @@
         <div class="settings__name">{{ user.name }}</div>
         <div class="settings__email">{{ user.email }}</div>
       </div>
-      <ui-button class="settings__sign-out" (click)="signOut()">
+      <ui-button
+        class="settings__sign-out"
+        [block]="viewport.phone()"
+        [size]="signOutSize()"
+        (click)="signOut()"
+      >
         {{ 'auth.signOut' | transloco }}
       </ui-button>
     </div>
   </app-settings-section>
   }
+
+  <app-settings-section [heading]="'settings.data.title' | transloco">
+    <app-settings-row
+      [label]="'settings.data.export.label' | transloco"
+      [hint]="'settings.data.export.hint' | transloco"
+    >
+      <div class="settings__export">
+        <ui-button iconLeft="download" (click)="exportAll(EXPORT_FORMAT.Json)">
+          {{ 'settings.data.export.json' | transloco }}
+        </ui-button>
+        <ui-button iconLeft="download" (click)="exportAll(EXPORT_FORMAT.Html)">
+          {{ 'settings.data.export.html' | transloco }}
+        </ui-button>
+      </div>
+    </app-settings-row>
+  </app-settings-section>
 
   <app-settings-section [heading]="'settings.appearance.title' | transloco">
     <app-settings-row
@@ -40,6 +61,17 @@
         (valueChange)="setTheme($event)"
       />
       }
+    </app-settings-row>
+  </app-settings-section>
+
+  <app-settings-section [heading]="'settings.welcome.title' | transloco">
+    <app-settings-row
+      [label]="'settings.welcome.title' | transloco"
+      [hint]="'settings.welcome.hint' | transloco"
+    >
+      <ui-button [disabled]="onboarding.resetting()" (click)="onboarding.reset()">
+        {{ 'settings.welcome.action' | transloco }}
+      </ui-button>
     </app-settings-row>
   </app-settings-section>
 </div>

@@ -5,6 +5,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { PrismaService } from '../prisma/prisma.service';
 import { createAuth } from './create-auth';
 import { warnMissingProviders } from './warn-missing-providers';
+import { SessionCookieService } from './session-cookie.service';
 
 /**
  * Mounts Better Auth on `/api/auth/*` through the community Nest integration. Settings that matter:
@@ -19,6 +20,8 @@ import { warnMissingProviders } from './warn-missing-providers';
  * `{ code, message }` shape.
  */
 @Module({
+  providers: [SessionCookieService],
+  exports: [SessionCookieService],
   imports: [
     BetterAuthModule.forRootAsync({
       imports: [PrismaModule],
