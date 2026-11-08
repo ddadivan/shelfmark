@@ -428,7 +428,7 @@ Stage 1 runs for free on **Vercel (Hobby) + Neon** and is available at a public 
 
 - **Vercel Cron** (free on Hobby): daily cleanup of expired demo sandboxes;
 - **Sentry** (free tier): frontend and backend errors with `requestId`, without personal data or link contents;
-- **PWA**: `@angular/pwa`: a manifest with an icon from the logo, a service worker for the app shell, `share_target` in the manifest.
+- **PWA**: a hand-written manifest (`apps/web/public/manifest.webmanifest`, icons from the logo, `share_target` to come) and `apps/web/ngsw-config.json` for the Angular service worker (`@angular/service-worker`, app shell and static assets only, never `/api`); no `@angular/pwa` schematic. The CSP is unchanged: `worker-src` falls back to `script-src 'self'`, `manifest-src` to `default-src 'self'`.
 
 **Environments:**
 
@@ -534,6 +534,7 @@ All routes except `/api/auth/*` require a session and work only with the current
 | POST | `/api/links/:id/open` | Record an open (updates `lastOpenedAt`) |
 | DELETE | `/api/links/:id` | Delete |
 | GET | `/api/folders` | All folders as a flat list ordered by name (`parentId` + direct link count) plus `counts` (`all`, `unsorted`, `favorites`) for the fixed sidebar rows; the frontend builds the tree |
+| GET | `/api/folders/:id` | Read one folder (`GetFolderResponse` = `FolderResponse`, with its direct link count); 404 if unknown or foreign |
 | POST | `/api/folders` | Create: `name`, `parentId?`; 409 at the per-user cap (500 folders) |
 | PATCH | `/api/folders/:id` | Rename / move; moving into itself or its own subfolder is forbidden |
 | DELETE | `/api/folders/:id?mode=` | Delete a folder with all subfolders; `mode=delete-links` also deletes the links, `mode=move-to-unsorted` moves them to "Unsorted" |
