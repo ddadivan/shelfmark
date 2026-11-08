@@ -163,4 +163,71 @@ describe('readAuthConfig', () => {
     expect(attempt).toThrow();
     expect(attempt).not.toThrow(new RegExp(`${secret}|${clientSecret}`));
   });
+
+  describe('Vercel preview deployments', () => {
+    const PREVIEW = { NODE_ENV: NODE_ENV.Production, VERCEL_ENV: 'preview' };
+    const branch = 'shelfmark-git-feat-x-team.vercel.app';
+    const deployment = 'shelfmark-abc123-team.vercel.app';
+
+    it('falls back to the branch URL and trusts both hostnames', () => {
+      const config = readAuthConfig(
+        env({ ...PREVIEW, VERCEL_BRANCH_URL: branch, VERCEL_URL: deployment }),
+      );
+      expect(config.baseUrl).toBe(`https://${branch}`);
+      expect(config.trustedOrigins).toEqual([`https://${branch}`, `https://${deployment}`]);
+    });
+
+    it('falls back to the deployment URL when the branch URL is missing', () => {
+      const config = readAuthConfig(env({ ...PREVIEW, VERCEL_URL: deployment }));
+      expect(config.baseUrl).toBe(`https://${deployment}`);
+      expect(config.trustedOrigins).toEqual([`https://${deployment}`]);
+    });
+
+    it('still requires BETTER_AUTH_URL when both Vercel URLs are missing', () => {
+      expect(() => readAuthConfig(env(PREVIEW))).toThrow(/BETTER_AUTH_URL is required/);
+    });
+
+    it('keeps an explicit BETTER_AUTH_URL as the base URL', () => {
+      const config = readAuthConfig(
+        env({ ...PREVIEW, ...PROD, VERCEL_BRANCH_URL: branch, VERCEL_URL: deployment }),
+      );
+      expect(config.baseUrl).toBe('https://app.example.test');
+      expect(config.trustedOrigins).toEqual([
+        'https://app.example.test',
+        `https://${branch}`,
+        `https://${deployment}`,
+      ]);
+    });
+
+    it.each(['production', undefined])(
+      'does not fall back outside preview (VERCEL_ENV=%s)',
+      (vercelEnv) => {
+        expect(() =>
+          readAuthConfig(
+            env({
+              NODE_ENV: NODE_ENV.Production,
+              VERCEL_ENV: vercelEnv,
+              VERCEL_BRANCH_URL: branch,
+              VERCEL_URL: deployment,
+            }),
+          ),
+        ).toThrow(/BETTER_AUTH_URL is required in production/);
+      },
+    );
+
+    it.each(['evil.test/path', 'user@evil.test', 'evil.test/', 'a b.test'])(
+      'rejects a malicious VERCEL_BRANCH_URL (%j)',
+      (value) => {
+        expect(() => readAuthConfig(env({ ...PREVIEW, VERCEL_BRANCH_URL: value }))).toThrow(
+          /VERCEL_BRANCH_URL/,
+        );
+      },
+    );
+
+    it('rejects a malicious VERCEL_URL', () => {
+      expect(() => readAuthConfig(env({ ...PREVIEW, VERCEL_URL: 'evil.test:99/x' }))).toThrow(
+        /VERCEL_URL/,
+      );
+    });
+  });
 });
