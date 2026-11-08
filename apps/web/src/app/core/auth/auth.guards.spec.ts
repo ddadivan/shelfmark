@@ -6,7 +6,7 @@ import { AUTH_API } from './auth-api.token';
 import { authOnly, guestOnly, redirectToSignIn } from './auth.guards';
 import { AuthApi } from './models/auth-api.interface';
 import { safeReturnUrl } from './safe-return-url';
-import { AuthUser } from './models/auth-user.interface';
+import type { AuthUser } from '@shelfmark/contracts';
 
 const USER: AuthUser = {
   id: 'u1',

@@ -536,6 +536,7 @@ All routes except `/api/auth/*` require a session and work only with the current
 | POST | `/api/links/:id/open` | Record an open (updates `lastOpenedAt`) |
 | DELETE | `/api/links/:id` | Delete |
 | GET | `/api/folders` | All folders as a flat list ordered by name (`parentId` + direct link count) plus `counts` (`all`, `unsorted`, `favorites`) for the fixed sidebar rows; the frontend builds the tree |
+| GET | `/api/folders/:id` | Read one folder (`GetFolderResponse` = `FolderResponse`, with its direct link count); 404 if unknown or foreign |
 | POST | `/api/folders` | Create: `name`, `parentId?`; 409 at the per-user cap (500 folders) |
 | PATCH | `/api/folders/:id` | Rename / move; moving into itself or its own subfolder is forbidden |
 | DELETE | `/api/folders/:id?mode=` | Delete a folder with all subfolders; `mode=delete-links` also deletes the links, `mode=move-to-unsorted` moves them to "Unsorted" |
@@ -549,7 +550,7 @@ All routes except `/api/auth/*` require a session and work only with the current
 
 **Additionally:** `PATCH /api/me` with `{ onboardingCompleted: true | false }` marks onboarding as completed or resets it ("Show onboarding again"); `GET /api/me` returns `onboardingCompletedAt`.
 
-**Demo, export, PWA:** `POST /api/demo` creates a demo sandbox and session (strict per-IP rate limit); `GET /api/export?format=json|html` (+ optional `folderId`, `tag` (repeated, same AND semantics as the list), `q`, the same filters as the list) downloads the current folder or all data; receiving a link from the "Share" menu (Web Share Target) needs no separate endpoint: the manifest opens the `/share?url=…` route (GET), and the page saves via `POST /api/links`.
+**Demo, export, PWA:** `POST /api/demo` creates a demo sandbox and session (strict per-IP rate limit); `GET /api/export?format=json|html` (+ optional `folderId`, `tag` (repeated, same AND semantics as the list), `q`, the same filters as the list) downloads the current folder (with its subfolders) or all data; `q` searches title, note and URL; the HTML file omits links whose URL is not http(s); receiving a link from the "Share" menu (Web Share Target) needs no separate endpoint: the manifest opens the `/share?url=…` route (GET), and the page saves via `POST /api/links`.
 
 **App rating:** `GET /api/me` returns `ratingPrompt: 'day3' | 'week1' | 'month1' | 'year1' | null`, which dialog to show now (computed by the backend from `createdAt` and the `Feedback` table); `POST /api/feedback` `{ milestone, score | null, comment? }` saves a rating, feedback or a skip; resubmitting for the same milestone appends to the comment. Rate-limited; the feedback text is stored as is and rendered only as text (no HTML).
 

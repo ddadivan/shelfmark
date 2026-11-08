@@ -26,6 +26,7 @@ export { LINK_SORT_FIELD } from './links/link-sort-field.const';
 
 export type { FolderResponse } from './folders/folder-response.interface';
 export type { LibraryCounts } from './folders/library-counts.interface';
+export type { GetFolderResponse } from './folders/get-folder-response.type';
 export type { ListFoldersResponse } from './folders/list-folders-response.interface';
 export type { CreateFolderRequest } from './folders/create-folder-request.interface';
 export type { UpdateFolderRequest } from './folders/update-folder-request.interface';
@@ -62,3 +63,6 @@ export type { SocialSignInResponse } from './auth/social-sign-in-response.interf
 export type { SignOutResponse } from './auth/sign-out-response.interface';
 export { AUTH_PROVIDER } from './auth/auth-provider.const';
 export { AUTH_ENDPOINT } from './auth/auth-endpoint.const';
+
+export type { DeleteAccountRequest } from './users/delete-account-request.interface';
+export { USER_LIMIT } from './users/user-limit.const';

@@ -6,6 +6,7 @@ import type { PrismaClient } from '../generated/prisma/client';
 import { logAuthError, logAuthMessage } from './auth-logger';
 import { AUTH_BASE_PATH } from './models/auth-base-path.const';
 import { AUTH_COOKIE_PREFIX } from './models/auth-cookie-prefix.const';
+import { AUTH_SESSION_COOKIE } from './models/auth-session-cookie.const';
 import { AUTH_SESSION_LIFETIME } from './models/auth-session-lifetime.const';
 import { DISABLED_AUTH_PATHS } from './models/disabled-auth-path.const';
 import { stripOAuthTokens } from './strip-oauth-tokens';
@@ -43,6 +44,8 @@ export function createAuth(
       additionalFields: {
         // input: false = a client can never set it, not on sign-in and not through any route.
         isDemo: { type: 'boolean', input: false, defaultValue: false },
+        // Same: only `POST|DELETE /api/me/onboarding` change it. Read through get-session.
+        onboardingCompletedAt: { type: 'date', required: false, input: false },
       },
     },
     session: {
@@ -64,7 +67,10 @@ export function createAuth(
       // fallback for local runs. A header with several addresses is ignored without trustedProxies.
       ipAddress: { ipAddressHeaders: ['x-vercel-forwarded-for', 'x-forwarded-for'] },
       // Pinned, not left to Better Auth's defaults. Lax: the OAuth callback is a cross-site GET.
-      defaultCookieAttributes: { sameSite: 'lax', httpOnly: true },
+      defaultCookieAttributes: {
+        sameSite: AUTH_SESSION_COOKIE.SameSite,
+        httpOnly: AUTH_SESSION_COOKIE.HttpOnly,
+      },
     },
     telemetry: { enabled: false },
     onAPIError: { errorURL: `${config.baseUrl}/sign-in`, onError: logAuthError },

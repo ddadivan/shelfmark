@@ -45,8 +45,8 @@ apps/api/src/<domain>/
 ## 3. Controller
 
 - Thin: parse, call service, return contract type. Swagger decorators on every route.
-- Current user from the Better Auth session decorator; never from the body or query.
-- Routes are protected by the global guard; mark public ones explicitly with `@AllowAnonymous()` and justify it in the PR.
+- Current user from `@CurrentUser()` (`user.id`, `src/common/auth`); never from the body, params or query. Never import the integration's `Session` decorator (ESLint forbids it).
+- Routes are protected by the global `SessionAuthGuard`; a public route needs `@AllowAnonymous()` on the handler (never the class), an entry in `PUBLIC_ROUTES`, a comment at the use site and a justification in the PR.
 - Stricter `@Throttle()` on expensive routes (create link, preview, export, demo).
 
 ## 4. Service
@@ -64,7 +64,7 @@ Throw Nest HTTP exceptions; the global `ExceptionFilter` renders `{ statusCode, 
 
 - Service: happy path, validation edges, not-found.
 - Controller: status codes and response shape.
-- **Isolation:** for every route, user B gets 404 for user A's resources and lists never include A's data.
+- **Isolation:** `createIsolationUsers(t)` + `expectIsolated(t.app, users, scenario)` (`apps/api/test-utils/isolation`): user B gets 404 for user A's resources and lists never include A's data; provide or explicitly skip `update`, `remove`, `list`, `reference`.
 - Coverage ≥ 80% for `apps/api`.
 
 ## 7. Done when
