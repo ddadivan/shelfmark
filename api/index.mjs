@@ -15,6 +15,7 @@ import '@nestjs/common';
 import '@nestjs/core';
 import '@nestjs/platform-express';
 import '@nestjs/swagger';
+import '@nestjs/throttler';
 import '@prisma/adapter-pg';
 import '@prisma/client/runtime/client';
 import '@thallesp/nestjs-better-auth';
@@ -27,6 +28,7 @@ import 'class-validator';
 import 'express';
 import 'helmet';
 import 'reflect-metadata';
+import 'rxjs';
 import 'swagger-ui-dist';
 import 'tslib';
 
