@@ -25,6 +25,7 @@ const PREVIEW: LinkPreviewResponse = {
     faviconUrl: null,
   },
   duplicate: null,
+  fetched: true,
 };
 
 function fakeApi(preview: () => Observable<LinkPreviewResponse> = () => of(PREVIEW)) {

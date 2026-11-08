@@ -1,5 +1,5 @@
 import type { Type } from '@nestjs/common';
-
+import type { ProviderOverride } from './provider-override.interface';
 import type { RateLimitPreset } from '../../src/common/rate-limit/models/rate-limit-preset.interface';
 
 export interface AuthTestAppOptions {
@@ -15,4 +15,6 @@ export interface AuthTestAppOptions {
   providers?: boolean;
   /** Extra modules next to `AppModule` (test fixtures such as the isolation notes). */
   imports?: readonly Type<unknown>[];
+  /** Providers replaced with test doubles (for example the page fetcher of the link preview). */
+  overrides?: readonly ProviderOverride[];
 }

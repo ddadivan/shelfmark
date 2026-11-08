@@ -151,10 +151,20 @@ export const AuthStore = signalStore(
           links.reset();
           folders.reset();
           tags.reset();
-          patchState(store, { user: null, loaded: true, failed: false });
+          patchState(store, { user: null, loaded: true, pending: null, failed: false });
           await router.navigate([AUTH_ROUTE.SignIn], {
             queryParams: { [SIGN_IN_QUERY.Reason]: SIGN_IN_REASON.DemoExpired },
           });
+        },
+        /**
+         * The server no longer knows this session (401): forget the user and the cached library
+         * without calling the API. Navigation is the caller's job.
+         */
+        expireSession(): void {
+          links.reset();
+          folders.reset();
+          tags.reset();
+          patchState(store, { user: null, loaded: true, pending: null, failed: false });
         },
         /** Sets the onboarding flag of the signed-in user; no-op for a guest. */
         setOnboardingCompletedAt(onboardingCompletedAt: string | null): void {

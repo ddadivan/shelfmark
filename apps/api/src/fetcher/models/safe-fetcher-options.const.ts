@@ -1,0 +1,1 @@
+export const SAFE_FETCHER_OPTIONS = Symbol('SAFE_FETCHER_OPTIONS');

@@ -21,6 +21,9 @@ export type { RecentLinksResponse } from './links/recent-links-response.interfac
 export type { OpenLinkResponse } from './links/open-link-response.type';
 export type { GetLinkResponse } from './links/get-link-response.type';
 export type { LinkSortField } from './links/link-sort-field.type';
+export { isHttpUrl } from './links/is-http-url';
+export { normalizeUrl } from './links/normalize-url';
+export { LINK_ERROR_MESSAGE } from './links/link-error-message.const';
 export { LINK_LIMIT } from './links/link-limit.const';
 export { LINK_SORT_FIELD } from './links/link-sort-field.const';
 
@@ -33,6 +36,7 @@ export type { UpdateFolderRequest } from './folders/update-folder-request.interf
 export type { DeleteFolderQuery } from './folders/delete-folder-query.interface';
 export type { FolderDeleteMode } from './folders/folder-delete-mode.type';
 export { FOLDER_DELETE_MODE } from './folders/folder-delete-mode.const';
+export { FOLDER_ERROR_MESSAGE } from './folders/folder-error-message.const';
 export { FOLDER_LIMIT } from './folders/folder-limit.const';
 
 export type { TagResponse } from './tags/tag-response.interface';
@@ -42,6 +46,7 @@ export type { UpdateTagRequest } from './tags/update-tag-request.interface';
 export type { MergeTagRequest } from './tags/merge-tag-request.interface';
 export type { MergeTagResponse } from './tags/merge-tag-response.type';
 export type { GetTagResponse } from './tags/get-tag-response.type';
+export { TAG_ERROR_MESSAGE } from './tags/tag-error-message.const';
 export { TAG_LIMIT } from './tags/tag-limit.const';
 export { normalizeTagName } from './tags/normalize-tag-name';
 

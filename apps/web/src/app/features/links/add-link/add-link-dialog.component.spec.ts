@@ -1,6 +1,11 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
-import type { LinkPreviewResponse, LinkResponse } from '@shelfmark/contracts';
+import {
+  LINK_ERROR_MESSAGE,
+  type LinkPreviewResponse,
+  type LinkResponse,
+} from '@shelfmark/contracts';
 import { MOCK_ID, MOCK_LINK_PREVIEW_DUPLICATE, MOCK_LINKS } from '@shelfmark/contracts/testing';
 import axe from 'axe-core';
 import { delay, of, tap, throwError, type Observable } from 'rxjs';
@@ -26,6 +31,7 @@ const PLAIN: LinkPreviewResponse = {
     faviconUrl: null,
   },
   duplicate: null,
+  fetched: true,
 };
 
 const EDITED: LinkResponse = {
@@ -284,6 +290,7 @@ describe('AddLinkDialogComponent', () => {
     expect(api.create).toHaveBeenCalledWith({
       url: 'https://intranet.example/doc/42',
       title: 'intranet.example/doc/42',
+      idempotencyKey: expect.any(String),
     });
     expect(outcome?.action).toBe(ADD_LINK_ACTION.Saved);
   });
@@ -313,6 +320,7 @@ describe('AddLinkDialogComponent', () => {
       note: 'Read on the weekend',
       folderId: MOCK_ID.FolderAngular,
       tags: ['docs'],
+      idempotencyKey: expect.any(String),
     });
     expect(outcome?.action).toBe(ADD_LINK_ACTION.Saved);
   });
@@ -384,6 +392,237 @@ describe('AddLinkDialogComponent', () => {
       expect(dialog().textContent).toContain("Couldn't save the link");
     });
     expect(button('Save link').disabled).toBe(false);
+  });
+
+  describe('idempotency key', () => {
+    function keyOf(api: FakeApi, call: number): string | undefined {
+      return api.create.mock.calls[call]?.[0].idempotencyKey;
+    }
+
+    async function save(): Promise<void> {
+      button('Save link').click();
+      await until(() => {
+        expect(button('Save link').disabled).toBe(false);
+      });
+    }
+
+    it('sends the same key on every attempt with the same payload', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      api.create.mockReturnValue(throwError(() => new Error('boom')));
+      await setup(api);
+
+      await type('Link', 'https://example.org/post');
+      await until(() => {
+        expect(input('Title').value).toBe('A fine post');
+      });
+      await save();
+      await save();
+
+      expect(api.create).toHaveBeenCalledTimes(2);
+      expect(keyOf(api, 0)).toMatch(/^[0-9a-f-]{36}$/);
+      expect(keyOf(api, 1)).toBe(keyOf(api, 0));
+    });
+
+    it('sends a new key once the payload changed since the last attempt', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      api.create.mockReturnValue(throwError(() => new Error('boom')));
+      await setup(api);
+
+      await type('Link', 'https://example.org/post');
+      await until(() => {
+        expect(input('Title').value).toBe('A fine post');
+      });
+      await save();
+      await type('Note', 'now with a note');
+      await save();
+      await save();
+
+      expect(keyOf(api, 1)).not.toBe(keyOf(api, 0));
+      expect(keyOf(api, 2)).toBe(keyOf(api, 1));
+    });
+
+    it('keeps the key when a late preview autofills the title and the hints', async () => {
+      const api = fakeApi(() =>
+        of({
+          ...PLAIN,
+          preview: { ...PLAIN.preview, faviconUrl: 'https://example.org/f.ico' },
+        }).pipe(delay(300)),
+      );
+      api.create.mockReturnValue(throwError(() => new Error('boom')));
+      await setup(api);
+
+      await type('Link', 'https://example.org/post');
+      await save();
+      await until(() => {
+        expect(input('Title').value).toBe('A fine post');
+      });
+      await save();
+
+      expect(api.create.mock.calls[0]?.[0].faviconUrl).toBeUndefined();
+      expect(api.create.mock.calls[1]?.[0].faviconUrl).toBe('https://example.org/f.ico');
+      expect(keyOf(api, 1)).toBe(keyOf(api, 0));
+    });
+
+    it.each(['Title', 'Tags'])('sends a new key after the user edited %s', async (field) => {
+      const api = fakeApi(() => of(PLAIN));
+      api.create.mockReturnValue(throwError(() => new Error('boom')));
+      await setup(api);
+
+      await type('Link', 'https://example.org/post');
+      await until(() => {
+        expect(input('Title').value).toBe('A fine post');
+      });
+      await save();
+      if (field === 'Title') {
+        await type('Title', 'My own title');
+      } else {
+        const tags = dialog().querySelector<HTMLInputElement>('ui-tag-input input');
+        if (!tags) {
+          throw new Error('no tag input');
+        }
+        tags.value = 'docs';
+        tags.dispatchEvent(new Event('input'));
+        tags.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      }
+      await save();
+
+      expect(keyOf(api, 1)).not.toBe(keyOf(api, 0));
+    });
+
+    it('starts every new dialog with a new key', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      const { result } = await setup(api);
+      await type('Link', 'https://example.org/post');
+      await until(() => {
+        expect(input('Title').value).toBe('A fine post');
+      });
+      button('Save link').click();
+      await result;
+
+      const next = TestBed.inject(AddLinkDialogService).open();
+      await until(() => {
+        expect(root()).not.toBeNull();
+      });
+      await type('Link', 'https://example.org/post');
+      await until(() => {
+        expect(input('Title').value).toBe('A fine post');
+      });
+      button('Save link').click();
+      await next;
+
+      expect(api.create).toHaveBeenCalledTimes(2);
+      expect(keyOf(api, 1)).not.toBe(keyOf(api, 0));
+    });
+
+    it('sends no key when editing', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      const { result } = await setup(api, { link: EDITED });
+
+      await type('Title', 'Changed');
+      button('Save changes').click();
+      await result;
+
+      expect(api.create).not.toHaveBeenCalled();
+      expect(api.update).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('preview that could not be fetched', () => {
+    const UNFETCHED: LinkPreviewResponse = {
+      preview: { ...PLAIN.preview, title: 'https://example.org/post' },
+      duplicate: MOCK_LINK_PREVIEW_DUPLICATE.duplicate,
+      fetched: false,
+    };
+
+    it('shows "no preview", keeps the duplicate notice and does not fill the title', async () => {
+      const api = fakeApi(() => of(UNFETCHED));
+      await setup(api);
+
+      await type('Link', 'https://example.org/post');
+      await until(() => {
+        expect(dialog().textContent).toContain('No preview is available');
+      });
+
+      expect(dialog().textContent).toContain('You already saved this link');
+      expect(dialog().querySelector('.add-link__preview')).toBeNull();
+      expect(input('Title').value).toBe('');
+    });
+
+    it('omits the title and the image hints on create', async () => {
+      const api = fakeApi(() =>
+        of({
+          ...UNFETCHED,
+          preview: { ...UNFETCHED.preview, faviconUrl: 'https://example.org/f.ico' },
+        }),
+      );
+      const { result } = await setup(api);
+
+      await type('Link', 'https://example.org/post');
+      await until(() => {
+        expect(dialog().textContent).toContain('No preview is available');
+      });
+      button('Save anyway').click();
+      await result;
+
+      expect(api.create).toHaveBeenCalledWith({
+        url: 'https://example.org/post',
+        idempotencyKey: expect.any(String),
+      });
+    });
+
+    it('sends favicon and image only when the page was fetched', async () => {
+      const api = fakeApi(() =>
+        of({
+          ...PLAIN,
+          preview: {
+            ...PLAIN.preview,
+            faviconUrl: 'https://example.org/f.ico',
+            imageUrl: 'https://example.org/i.png',
+          },
+        }),
+      );
+      const { result } = await setup(api);
+
+      await type('Link', 'https://example.org/post');
+      await until(() => {
+        expect(input('Title').value).toBe('A fine post');
+      });
+      button('Save link').click();
+      await result;
+
+      expect(api.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          faviconUrl: 'https://example.org/f.ico',
+          imageUrl: 'https://example.org/i.png',
+        }),
+      );
+    });
+  });
+
+  describe('save errors', () => {
+    function failing(status: number, message: string): HttpErrorResponse {
+      return new HttpErrorResponse({
+        status,
+        error: { statusCode: status, error: 'Error', message, requestId: 'r1' },
+      });
+    }
+
+    it.each([
+      [409, LINK_ERROR_MESSAGE.LimitReached, 'reached the limit of 10000 saved links'],
+      [429, 'Too Many Requests', 'Too many requests'],
+      [400, 'Bad Request', 'some details are invalid'],
+    ])('explains a %i', async (status, message, copy) => {
+      const api = fakeApi(() => of(PLAIN));
+      api.create.mockReturnValue(throwError(() => failing(status, message)));
+      await setup(api);
+
+      await type('Link', 'https://example.org/post');
+      button('Save link').click();
+
+      await until(() => {
+        expect(dialog().textContent).toContain(copy);
+      });
+    });
   });
 
   it('closes without a result on Cancel', async () => {

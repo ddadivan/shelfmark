@@ -5,29 +5,26 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { normalizeTagName, TAG_LIMIT } from '@shelfmark/contracts';
+import { normalizeTagName, TAG_ERROR_MESSAGE, TAG_LIMIT } from '@shelfmark/contracts';
 import type { ListTagsResponse, TagResponse } from '@shelfmark/contracts';
+import { escapeLike } from '../common/util/escape-like';
+import { hasPrismaCode } from '../common/prisma/has-prisma-code';
+import { PRISMA_ERROR_CODE } from '../common/prisma/prisma-error-code.const';
 import { PrismaService } from '../prisma/prisma.service';
-import { TAG_ERROR_MESSAGE } from './models/tag-error-message.const';
 import { TAG_LOCK_PREFIX } from './models/tag-advisory-lock.const';
 import type { TagDbClient } from './models/tag-db-client.type';
 import type { TagWithCount } from './models/tag-with-count.interface';
 
-const UNIQUE_VIOLATION = 'P2002';
-const FOREIGN_KEY_VIOLATION = 'P2003';
-const RECORD_NOT_FOUND = 'P2025';
-
-function hasCode(error: unknown, code: string): boolean {
-  return typeof error === 'object' && error !== null && Reflect.get(error, 'code') === code;
-}
-
 function isUniqueViolation(error: unknown): boolean {
-  return hasCode(error, UNIQUE_VIOLATION);
+  return hasPrismaCode(error, PRISMA_ERROR_CODE.UniqueViolation);
 }
 
 /** A tag deleted by a concurrent request: a foreign key failure or a missing record. */
 function isVanishedRecord(error: unknown): boolean {
-  return hasCode(error, FOREIGN_KEY_VIOLATION) || hasCode(error, RECORD_NOT_FOUND);
+  return (
+    hasPrismaCode(error, PRISMA_ERROR_CODE.ForeignKeyViolation) ||
+    hasPrismaCode(error, PRISMA_ERROR_CODE.RecordNotFound)
+  );
 }
 
 function toResponse(tag: TagWithCount): TagResponse {
@@ -194,7 +191,7 @@ export class TagsService {
     name: string,
   ): Promise<string | undefined> {
     const tag = await db.tag.findFirst({
-      where: { userId, name: { equals: name, mode: 'insensitive' } },
+      where: { userId, name: { equals: escapeLike(name), mode: 'insensitive' } },
       select: { id: true },
     });
     return tag?.id;
@@ -204,7 +201,7 @@ export class TagsService {
    * Serializes tag creation per user until the transaction ends, so the count-then-insert cap
    * check cannot be raced. The key is namespaced, so it never blocks the folders lock.
    */
-  private async lockUserTags(db: TagDbClient, userId: string): Promise<void> {
+  async lockUserTags(db: TagDbClient, userId: string): Promise<void> {
     await db.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${TAG_LOCK_PREFIX + userId}, 0))`;
   }
 

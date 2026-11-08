@@ -21,7 +21,12 @@ export class AddLinkDialogService {
   private readonly dialogs = inject(DialogService);
 
   open(data: AddLinkData = {}): Promise<AddLinkResult | undefined> {
-    const session: AddLinkSession = { saving: null };
+    // One key per dialog session (create mode only); a new dialog always starts with a new key.
+    const session: AddLinkSession = {
+      saving: null,
+      idempotencyKey: data.link === undefined ? globalThis.crypto.randomUUID() : null,
+      sentFingerprint: null,
+    };
     return this.dialogs
       .open<AddLinkDialogComponent, AddLinkResult, AddLinkDialogData>(AddLinkDialogComponent, {
         size: DIALOG_SIZE.Md,
