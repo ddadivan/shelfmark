@@ -1,0 +1,15 @@
+<div class="ui-drawer" [class.ui-drawer--enter]="!leaving()" [class.ui-drawer--leave]="leaving()">
+  <div class="ui-drawer__head">
+    <div class="ui-drawer__head-slot"><ng-content select="[slot=head]" /></div>
+    <ui-button
+      variant="ghost"
+      [size]="BUTTON_SIZE.Lg"
+      iconOnly
+      iconLeft="close"
+      [ariaLabel]="closeLabel()"
+      (click)="requestClose()"
+    />
+  </div>
+  <div class="ui-drawer__body"><ng-content /></div>
+  <div class="ui-drawer__foot"><ng-content select="[slot=foot]" /></div>
+</div>

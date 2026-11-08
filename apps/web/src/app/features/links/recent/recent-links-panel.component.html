@@ -1,9 +1,12 @@
 <section
   class="recent"
-  [attr.aria-labelledby]="'recent-title'"
+  [attr.aria-labelledby]="showTitle() ? 'recent-title' : null"
+  [attr.aria-label]="showTitle() ? null : ('links.recent.title' | transloco)"
   [attr.aria-busy]="!store.recentLoaded()"
 >
-  <h2 id="recent-title" class="recent__title">{{ 'links.recent.title' | transloco }}</h2>
+  @if (showTitle()) {
+    <h2 id="recent-title" class="recent__title">{{ 'links.recent.title' | transloco }}</h2>
+  }
   @if (!store.recentLoaded()) {
     <div class="recent__list">
       <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="SKELETON_COUNT" />

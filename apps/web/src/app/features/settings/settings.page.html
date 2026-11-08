@@ -19,7 +19,12 @@
         <div class="settings__name">{{ user.name }}</div>
         <div class="settings__email">{{ user.email }}</div>
       </div>
-      <ui-button class="settings__sign-out" (click)="signOut()">
+      <ui-button
+        class="settings__sign-out"
+        [block]="viewport.phone()"
+        [size]="signOutSize()"
+        (click)="signOut()"
+      >
         {{ 'auth.signOut' | transloco }}
       </ui-button>
     </div>

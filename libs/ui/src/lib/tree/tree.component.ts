@@ -11,6 +11,8 @@ import {
 } from '@angular/core';
 import { ButtonComponent } from '../button/button.component';
 import { IconComponent } from '../icon/icon.component';
+import { LongPressDirective } from '../long-press/long-press.directive';
+import type { UiLongPressEvent } from '../long-press/models/long-press-event.interface';
 import { RippleDirective } from '../ripple/ripple.directive';
 import { UI_TREE_CONTEXT_MENU_TRIGGER } from './models/tree-context-menu-trigger.const';
 import type { UiTreeContextMenuEvent } from './models/tree-context-menu-event.interface';
@@ -38,6 +40,7 @@ const KEYBOARD_ECHO_RELEASE_MS = 100;
   imports: [
     ButtonComponent,
     IconComponent,
+    LongPressDirective,
     NgTemplateOutlet,
     RippleDirective,
     Tree,
@@ -143,6 +146,16 @@ export class TreeComponent {
         position: null,
       });
     }
+  }
+
+  /** Touch route to the folder menu: iOS Safari fires no `contextmenu`, so a long press opens it. */
+  protected onLongPress(event: UiLongPressEvent, node: UiTreeNode, row: HTMLElement): void {
+    this.contextMenu.emit({
+      node,
+      trigger: UI_TREE_CONTEXT_MENU_TRIGGER.Pointer,
+      anchor: row,
+      position: { x: event.x, y: event.y },
+    });
   }
 
   protected onContextMenu(event: MouseEvent, node: UiTreeNode, row: HTMLElement): void {

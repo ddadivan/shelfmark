@@ -59,7 +59,7 @@
   // `ui-button` has no full-width mode yet, so the buttons stack centred at their own width.
   .onboarding__foot {
     flex-direction: column-reverse;
-    align-items: center;
+    align-items: stretch;
   }
 
   .onboarding__skip {
