@@ -57,3 +57,23 @@
 .settings__sign-out {
   flex: none;
 }
+
+// Phone: the account row wraps and Sign out takes the whole row (a thumb-sized target).
+@include phone {
+  .settings__account {
+    flex-wrap: wrap;
+  }
+
+  .settings__sign-out {
+    flex: 1 1 100%;
+  }
+}
+
+.settings__export {
+  display: flex;
+  gap: var(--space-2);
+
+  > * {
+    flex: 1;
+  }
+}

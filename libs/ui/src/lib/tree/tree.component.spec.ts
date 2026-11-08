@@ -11,6 +11,7 @@ import { TREE_STORY_NAME } from './stories/tree-story-name.const';
 import { TREE_STORY_NESTED } from './stories/tree-story-nested.const';
 import { TreeComponent } from './tree.component';
 import { KEYBOARD_KEY } from '../keyboard';
+import { LONG_PRESS_DURATION_MS } from '../long-press';
 
 @Component({
   imports: [TreeComponent],
@@ -506,6 +507,47 @@ describe('TreeComponent', () => {
         new PointerEvent('pointerdown', { bubbles: true, button: 0, clientX: 5, clientY: 5 }),
       );
       expect(row(TREE_STORY_NAME.Work).querySelector(':scope > .ui-ripple')).toBeNull();
+    });
+
+    describe('long press', () => {
+      const touch = (type: string): PointerEvent =>
+        new PointerEvent(type, {
+          bubbles: true,
+          cancelable: true,
+          isPrimary: true,
+          pointerType: 'touch',
+          clientX: 40,
+          clientY: 60,
+        });
+
+      afterEach(() => {
+        vi.useRealTimers();
+      });
+
+      it('emits contextMenu at the touch point for a folder row', async () => {
+        const { row, host } = await setup();
+        vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+        const work = row(TREE_STORY_NAME.Work);
+        work.dispatchEvent(touch('pointerdown'));
+        vi.advanceTimersByTime(LONG_PRESS_DURATION_MS);
+        expect(host.menus).toHaveLength(1);
+        expect(host.menus[0]).toMatchObject({
+          trigger: UI_TREE_CONTEXT_MENU_TRIGGER.Pointer,
+          position: { x: 40, y: 60 },
+          anchor: work,
+        });
+        expect(host.menus[0].node.id).toBe(TREE_STORY_ID.Work);
+      });
+
+      it('does nothing on a fixed row or before the hold has passed', async () => {
+        const { row, host } = await setup();
+        vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+        row(TREE_STORY_NAME.All).dispatchEvent(touch('pointerdown'));
+        vi.advanceTimersByTime(LONG_PRESS_DURATION_MS);
+        row(TREE_STORY_NAME.Work).dispatchEvent(touch('pointerdown'));
+        vi.advanceTimersByTime(LONG_PRESS_DURATION_MS - 1);
+        expect(host.menus).toHaveLength(0);
+      });
     });
 
     it('has no menu on fixed rows and none without menuLabel', async () => {
