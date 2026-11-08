@@ -179,6 +179,70 @@ describe('DialogService', () => {
       expect(document.activeElement).toBe(trigger);
     });
 
+    describe('restoreFocus resolver', () => {
+      let target: HTMLButtonElement;
+
+      beforeEach(() => {
+        target = document.createElement('button');
+        document.body.appendChild(target);
+      });
+
+      afterEach(() => {
+        target.remove();
+      });
+
+      async function openAndClose(resolver: () => HTMLElement | null): Promise<void> {
+        const ref = service.open(EditDialogComponent, {
+          data: { name: 'x' },
+          restoreFocus: resolver,
+        });
+        settle();
+        await vi.waitFor(() => {
+          settle();
+          expect(container().contains(document.activeElement)).toBe(true);
+        });
+        ref.close();
+        await closed();
+      }
+
+      it('focuses the resolved element when the opener is gone at close time', async () => {
+        const resolver = vi.fn(() => target);
+        const ref = service.open(EditDialogComponent, {
+          data: { name: 'x' },
+          restoreFocus: resolver,
+        });
+        settle();
+        await vi.waitFor(() => {
+          settle();
+          expect(container().contains(document.activeElement)).toBe(true);
+        });
+        trigger.remove();
+        ref.close();
+        await closed();
+        expect(resolver).toHaveBeenCalledTimes(1);
+        expect(document.activeElement).toBe(target);
+      });
+
+      it('is not used while the opener still exists', async () => {
+        const resolver = vi.fn(() => target);
+        await openAndClose(resolver);
+        expect(resolver).not.toHaveBeenCalled();
+        expect(document.activeElement).toBe(trigger);
+      });
+
+      it('tolerates a resolver that finds nothing', async () => {
+        const ref = service.open(EditDialogComponent, {
+          data: { name: 'x' },
+          restoreFocus: () => null,
+        });
+        settle();
+        trigger.remove();
+        ref.close();
+        await closed();
+        expect(document.activeElement).toBe(document.body);
+      });
+    });
+
     it('closes with a result through the injected ref', async () => {
       const ref = service.open<EditDialogComponent, string, EditData>(EditDialogComponent, {
         data: { name: 'x' },

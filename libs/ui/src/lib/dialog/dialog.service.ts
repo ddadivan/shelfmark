@@ -50,6 +50,7 @@ export class DialogService {
       autoFocus: config.autoFocus ?? 'first-tabbable',
       dismissible,
       scrimClose: config.scrimClose ?? true,
+      restoreFocus: config.restoreFocus,
       positionStrategy: this.overlay.position().global(),
       providers: (uiRef) => {
         const context: UiDialogContext = {
