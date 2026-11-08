@@ -81,3 +81,20 @@
     }
   }
 }
+
+// Size of the hero chat phone, shared by the chat and by the placeholder that stands in for it
+// while it loads: the feed window plus the rest of the phone (bar, hint and buttons), so both
+// have the same height at every breakpoint and the swap shifts nothing.
+@mixin chat-size {
+  --landing-chat-height: #{rem(300px)};
+  --landing-chat-chrome: #{rem(147px)};
+
+  @include tablet-up {
+    --landing-chat-height: #{rem(478px)};
+    --landing-chat-chrome: #{rem(119px)};
+  }
+
+  @include desktop {
+    --landing-chat-chrome: #{rem(147px)};
+  }
+}

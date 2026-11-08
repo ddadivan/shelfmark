@@ -15,6 +15,15 @@
   min-height: 100dvh;
 }
 
+// Lower bounds for the other deferred blocks (the real ones are taller), same idea as above.
+.landing__placeholder--about {
+  min-height: 60dvh;
+}
+
+.landing__placeholder--finale {
+  min-height: 40dvh;
+}
+
 .landing__about {
   @include landing.wrap;
 

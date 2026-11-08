@@ -1,8 +1,12 @@
 import {
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
+  input,
+  output,
   signal,
   viewChild,
 } from '@angular/core';
@@ -10,6 +14,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
+  BUTTON_SIZE,
   ButtonComponent,
   MenuComponent,
   MenuItemComponent,
@@ -20,6 +25,7 @@ import {
   type UiTreeNode,
 } from '@shelfmark/ui';
 import { combineLatest, filter, map } from 'rxjs';
+import { ViewportService } from '../../core/layout/viewport.service';
 import { FolderActionsService } from '../../features/folders/folder-actions.service';
 import { SidebarTagsComponent } from '../../features/tags/sidebar-tags/sidebar-tags.component';
 import { LINKS_SCOPE } from '../../features/links/models/links-scope.const';
@@ -27,6 +33,10 @@ import { APP_PATH } from '../../models/app-path.const';
 import type { FolderNode } from '../../stores/models/folder-node.interface';
 import { FoldersStore } from '../../stores/folders.store';
 import { sidebarActiveId } from './sidebar-active-id';
+import { SidebarTreeFocusService } from './sidebar-tree-focus.service';
+
+/** Id of the "Recently opened" row (phone drawer); it opens a sheet instead of a route. */
+const RECENT_ROW_ID = 'recent';
 
 /** The fixed rows and their routes. */
 const FIXED_ROUTES: Readonly<Record<string, string>> = {
@@ -58,10 +68,22 @@ const FIXED_ROUTES: Readonly<Record<string, string>> = {
 })
 export class SidebarComponent {
   protected readonly folders = inject(FoldersStore);
+  /** Adds the "Recently opened" row below the views (the phone drawer; the desktop has a panel). */
+  readonly showRecent = input(false, { transform: booleanAttribute });
+  /** The "Recently opened" row was chosen. */
+  readonly recentRequested = output<void>();
+
   private readonly actions = inject(FolderActionsService);
+  private readonly viewport = inject(ViewportService);
+  /** Text buttons reach the 44px touch target on a phone. */
+  protected readonly buttonSize = computed(() =>
+    this.viewport.phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm,
+  );
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
   private readonly menu = viewChild.required(MenuComponent);
+  private readonly tree = viewChild.required(TreeComponent);
+  private readonly treeFocus = inject(SidebarTreeFocusService);
 
   private readonly url = toSignal(
     this.router.events.pipe(
@@ -78,7 +100,16 @@ export class SidebarComponent {
       this.transloco.selectTranslate('library.scope.unsorted'),
       this.transloco.selectTranslate('library.scope.favorites'),
       this.transloco.selectTranslate('shell.sidebar.folderActions', { name: '{name}' }),
-    ]).pipe(map(([all, unsorted, favorites, actions]) => ({ all, unsorted, favorites, actions }))),
+      this.transloco.selectTranslate('links.recent.title'),
+    ]).pipe(
+      map(([all, unsorted, favorites, actions, recent]) => ({
+        all,
+        unsorted,
+        favorites,
+        actions,
+        recent,
+      })),
+    ),
   );
   /** The "..." button name with its `{name}` placeholder; `ui-tree` fills in the folder. */
   protected readonly menuLabel = computed(() => this.labels()?.actions);
@@ -95,6 +126,9 @@ export class SidebarComponent {
       return [];
     }
     const counts = this.folders.loaded() ? this.folders.counts() : null;
+    const recent: UiTreeNode[] = this.showRecent()
+      ? [{ id: RECENT_ROW_ID, name: labels.recent, icon: 'clock' }]
+      : [];
     return [
       { id: LINKS_SCOPE.All, name: labels.all, icon: 'bookmark', ...count(counts?.all) },
       {
@@ -109,6 +143,7 @@ export class SidebarComponent {
         icon: 'star',
         ...count(counts?.favorites),
       },
+      ...recent,
     ];
   });
 
@@ -135,6 +170,7 @@ export class SidebarComponent {
 
   constructor() {
     void this.folders.load();
+    effect((onCleanup) => onCleanup(this.treeFocus.register(this.tree())));
   }
 
   protected retry(): void {
@@ -142,6 +178,10 @@ export class SidebarComponent {
   }
 
   protected async select(node: UiTreeNode): Promise<void> {
+    if (node.id === RECENT_ROW_ID) {
+      this.recentRequested.emit();
+      return;
+    }
     const fixed = FIXED_ROUTES[node.id];
     await this.router.navigate(fixed ? [`/${fixed}`] : [`/${APP_PATH.Folders}`, node.id]);
   }

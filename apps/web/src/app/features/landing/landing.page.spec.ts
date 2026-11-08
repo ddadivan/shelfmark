@@ -14,6 +14,7 @@ async function createLoaded() {
 
 describe('LandingPage', () => {
   afterEach(() => {
+    Reflect.deleteProperty(HTMLElement.prototype, 'scrollIntoView');
     history.replaceState(null, '', '/');
     vi.restoreAllMocks();
   });
@@ -28,6 +29,35 @@ describe('LandingPage', () => {
     const target = (fixture.nativeElement as HTMLElement).querySelector('#how');
     expect(target).not.toBeNull();
     expect(focus.mock.contexts).toContain(target);
+  });
+
+  it('opened with #how, loads every deferred block and scrolls once, after the section above exists', async () => {
+    history.replaceState(null, '', '/#how');
+    const seen: boolean[] = [];
+    const scrollIntoView = vi.fn(function (this: HTMLElement) {
+      seen.push(
+        document.body.contains(this) &&
+          this.closest('app-landing-page')?.querySelector('app-landing-before-after') !== null,
+      );
+    });
+    Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
+      configurable: true,
+      value: scrollIntoView,
+    });
+
+    const fixture = await createTranslated(LandingPage);
+    const root = fixture.nativeElement as HTMLElement;
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(root.querySelector('app-landing-before-after')).not.toBeNull();
+      expect(root.querySelector('app-landing-why')).not.toBeNull();
+      expect(root.querySelector('app-landing-finale')).not.toBeNull();
+      expect(root.querySelector('footer')).not.toBeNull();
+    });
+
+    expect(scrollIntoView).toHaveBeenCalledTimes(1);
+    expect(seen).toEqual([true]);
+    expect(root.querySelector('.landing__placeholder')).toBeNull();
   });
 
   it('composes the sections under landmarks with one h1', async () => {
