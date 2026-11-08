@@ -14,6 +14,7 @@ const USER: AuthUser = {
   image: null,
   isDemo: false,
   demoExpiresAt: null,
+  onboardingCompletedAt: '2020-01-01T00:00:00.000Z',
 };
 
 @Component({ selector: 'app-landing-stub', template: 'landing' })

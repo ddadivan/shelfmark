@@ -8,6 +8,7 @@ const user = {
   image: null,
   isDemo: false,
   demoExpiresAt: null,
+  onboardingCompletedAt: null,
 };
 
 describe('toAuthSessionResponse', () => {

@@ -6,11 +6,13 @@ import { DemoSignInError } from './demo-sign-in-error';
 import { DEMO_ERROR } from './models/demo-error.const';
 import { MOCK_DEMO_FAILURE_STORAGE_KEY } from './models/mock-demo-failure-storage-key.const';
 import { AuthApi } from './models/auth-api.interface';
+import { LEGACY_ONBOARDING_COMPLETED_AT } from './models/legacy-onboarding-completed-at.const';
+import { StoredUser } from './models/stored-user.interface';
 import { MOCK_DEMO_USER } from './models/mock-demo-user.const';
 import { MOCK_USERS } from './models/mock-users.const';
 import { MOCK_SESSION_STORAGE_KEY } from './models/mock-session-storage-key.const';
 
-function isAuthUser(value: unknown): value is AuthUser {
+function isStoredUser(value: unknown): value is StoredUser {
   if (typeof value !== 'object' || value === null) {
     return false;
   }
@@ -21,7 +23,10 @@ function isAuthUser(value: unknown): value is AuthUser {
     typeof candidate.email === 'string' &&
     (candidate.image === null || typeof candidate.image === 'string') &&
     typeof candidate.isDemo === 'boolean' &&
-    (candidate.demoExpiresAt === null || typeof candidate.demoExpiresAt === 'string')
+    (candidate.demoExpiresAt === null || typeof candidate.demoExpiresAt === 'string') &&
+    (candidate.onboardingCompletedAt === undefined ||
+      candidate.onboardingCompletedAt === null ||
+      typeof candidate.onboardingCompletedAt === 'string')
   );
 }
 
@@ -66,7 +71,16 @@ export class MockAuthApi implements AuthApi {
     }
     try {
       const parsed: unknown = JSON.parse(raw);
-      return isAuthUser(parsed) ? parsed : null;
+      if (!isStoredUser(parsed)) {
+        return null;
+      }
+      return {
+        ...parsed,
+        onboardingCompletedAt:
+          parsed.onboardingCompletedAt === undefined
+            ? LEGACY_ONBOARDING_COMPLETED_AT
+            : parsed.onboardingCompletedAt,
+      };
     } catch {
       return null;
     }

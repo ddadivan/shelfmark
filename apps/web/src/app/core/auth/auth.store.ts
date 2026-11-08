@@ -156,6 +156,13 @@ export const AuthStore = signalStore(
             queryParams: { [SIGN_IN_QUERY.Reason]: SIGN_IN_REASON.DemoExpired },
           });
         },
+        /** Sets the onboarding flag of the signed-in user; no-op for a guest. */
+        setOnboardingCompletedAt(onboardingCompletedAt: string | null): void {
+          const user = store.user();
+          if (user) {
+            patchState(store, { user: { ...user, onboardingCompletedAt } });
+          }
+        },
         /**
          * Signs out, then goes to the sign-in screen, with `?reason=` when given (not when
          * sign-out failed).

@@ -9,6 +9,7 @@ export const MOCK_USERS: Record<AuthProvider, AuthUser> = {
     image: null,
     isDemo: false,
     demoExpiresAt: null,
+    onboardingCompletedAt: null,
   },
   [AUTH_PROVIDER.GitHub]: {
     id: 'mock-github',
@@ -17,5 +18,6 @@ export const MOCK_USERS: Record<AuthProvider, AuthUser> = {
     image: null,
     isDemo: false,
     demoExpiresAt: null,
+    onboardingCompletedAt: null,
   },
 };

@@ -39,7 +39,90 @@ test.describe('landing', () => {
     const section = page.getByRole('region', { name: "How it's built" });
     await expect(section).toBeInViewport();
     await expect(section).toBeFocused();
+
+    // Settled: every deferred block (the footer comes last) is in, and the target did not move.
+    await expect(page.getByRole('contentinfo')).toBeAttached();
+    await expect(section).toBeInViewport();
+    await expect(section).toBeFocused();
   });
+
+  for (const width of [360, 800, 1280]) {
+    test(`the header has its final height from the first frame at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.addInitScript(`
+        window.__heights = [];
+        const sample = () => {
+          const header = document.querySelector('header');
+          if (header) window.__heights.push(header.getBoundingClientRect().height);
+          if (window.__heights.length < 120) requestAnimationFrame(sample);
+        };
+        requestAnimationFrame(sample);
+      `);
+
+      await gotoLandingLoaded(page);
+
+      const heights = await page.evaluate<number[]>('window.__heights');
+      expect(heights.length).toBeGreaterThan(0);
+      expect(new Set(heights).size, JSON.stringify(heights)).toBe(1);
+    });
+  }
+
+  test('the hero headline has its text in the first frame it is rendered', async ({ page }) => {
+    // Plain script (as elsewhere in this suite): the e2e project has no DOM typings.
+    await page.addInitScript(`
+      window.__firstHero = null;
+      const sample = () => {
+        const title = document.querySelector('.landing-hero__title');
+        if (title) {
+          window.__firstHero = (title.textContent || '').trim();
+        } else {
+          requestAnimationFrame(sample);
+        }
+      };
+      requestAnimationFrame(sample);
+    `);
+
+    await gotoLandingLoaded(page);
+
+    const firstHero = await page.evaluate<string | null>('window.__firstHero');
+    expect(firstHero, 'the headline never rendered').not.toBeNull();
+    expect(firstHero).toBe(LANDING_HEADLINE);
+  });
+
+  for (const width of [360, 800, 1280]) {
+    test(`the deferred chat and sections shift nothing at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      // Plain scripts (as elsewhere in this suite): the e2e project has no DOM typings.
+      await page.addInitScript(`
+        window.__shifts = [];
+        new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            if (entry.hadRecentInput) continue;
+            const where = (s) => s.node ? s.node.nodeName + '.' + (s.node.className || s.node.parentElement?.className || '') : '?';
+            window.__shifts.push({
+              at: Math.round(entry.startTime),
+              value: entry.value,
+              sources: entry.sources.map((s) => ({
+                node: where(s),
+                from: s.previousRect.y + '+' + s.previousRect.height,
+                to: s.currentRect.y + '+' + s.currentRect.height,
+              })),
+            });
+          }
+        }).observe({ type: 'layout-shift', buffered: true });
+      `);
+
+      await gotoLandingLoaded(page);
+      // The chat swaps in on idle, after the headline: wait for it, then for the page to settle.
+      await expect(page.getByRole('button', { name: 'Put them on the shelf' })).toBeVisible();
+      await page.waitForTimeout(500);
+
+      // The sources go into the failure message, so a CI failure says what moved.
+      const shifts = await page.evaluate<{ at: number; value: number }[]>('window.__shifts');
+      const total = shifts.reduce((sum, shift) => sum + shift.value, 0);
+      expect(total, JSON.stringify(shifts)).toBeLessThan(0.001);
+    });
+  }
 
   test('"Put them on the shelf" swaps the chat for the shelf and back', async ({ page }) => {
     await page.goto('/');

@@ -149,6 +149,14 @@ describe('AddLinkDialogComponent', () => {
     expect(api.preview).not.toHaveBeenCalled();
   });
 
+  it('puts focus on the link field when it opens', async () => {
+    await setup(fakeApi(() => of(PLAIN)));
+
+    await until(() => {
+      expect(document.activeElement).toBe(input('Link'));
+    });
+  });
+
   it('shows the required message when saving an empty form and does not save', async () => {
     const api = fakeApi(() => of(PLAIN));
     await setup(api);

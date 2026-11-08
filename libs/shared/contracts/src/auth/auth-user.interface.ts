@@ -7,4 +7,6 @@ export interface AuthUser {
   isDemo: boolean;
   /** ISO time the demo sandbox ends; `null` for a regular user. */
   demoExpiresAt: string | null;
+  /** ISO time the onboarding was completed or skipped; `null` while it is still due. */
+  onboardingCompletedAt: string | null;
 }

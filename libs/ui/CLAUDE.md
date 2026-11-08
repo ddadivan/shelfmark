@@ -231,7 +231,7 @@ Angular keeps the element until the leave animation ends and a second toggle mid
 
 ## Fonts
 
-Onest (variable) is self-hosted through `@fontsource-variable/onest` (SIL OFL 1.1, credit Onest by Sergey Shabanov / Onest Project Authors) and loaded by the app styles and `.storybook/preview.ts`; no Google Fonts requests. The mono token falls back to `ui-monospace` until JetBrains Mono is added.
+Onest (variable) is self-hosted through `@fontsource-variable/onest` (SIL OFL 1.1, credit Onest by Sergey Shabanov / Onest Project Authors) and loaded by the app styles and `.storybook/preview.ts`; no Google Fonts requests. `--font-sans` lists `'Onest Fallback'` right after the web font: an `@font-face` in `global.scss` over local Arial / Helvetica / Liberation Sans with `size-adjust` and ascent / descent overrides computed from Onest's metrics (numbers are in the comment there), so the font swap does not shift the layout. Re-derive them if the font or its version changes. The mono token falls back to `ui-monospace` until JetBrains Mono is added.
 
 ## Storybook
 

@@ -4,9 +4,11 @@
   "installCommand": "npm ci --include=dev",
   "buildCommand": "npx nx run-many -t build middleware-shell -p web api --output-style=static && npx nx run api:migrate-deploy",
   "outputDirectory": "dist/apps/web/browser",
+  "ignoreCommand": "node scripts/vercel-ignore-build.mjs",
   "regions": ["fra1"],
   "git": {
     "deploymentEnabled": {
+      "*/**": false,
       "dependabot/**": false,
       "docs/**": false
     }

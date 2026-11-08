@@ -40,6 +40,7 @@ describe('SessionAuthGuard with a real session', () => {
       image: expect.any(String),
       isDemo: false,
       demoExpiresAt: null,
+      onboardingCompletedAt: null,
     });
     expect(Object.keys(res.body as object).sort()).toEqual([
       'demoExpiresAt',
@@ -48,6 +49,7 @@ describe('SessionAuthGuard with a real session', () => {
       'image',
       'isDemo',
       'name',
+      'onboardingCompletedAt',
     ]);
   });
 

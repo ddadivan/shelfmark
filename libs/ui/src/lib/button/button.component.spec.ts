@@ -24,6 +24,7 @@ import { BUTTON_HASPOPUP } from './models/button-haspopup.const';
       [iconLeft]="iconLeft()"
       [iconRight]="iconRight()"
       [iconOnly]="iconOnly()"
+      [fab]="fab()"
       [ariaLabel]="ariaLabel()"
       [disabled]="disabled()"
       [href]="href()"
@@ -47,6 +48,7 @@ class HostComponent {
   readonly iconLeft = signal<IconName | undefined>(undefined);
   readonly iconRight = signal<IconName | undefined>(undefined);
   readonly iconOnly = signal(false);
+  readonly fab = signal(false);
   readonly ariaLabel = signal<string | undefined>(undefined);
   readonly disabled = signal(false);
   readonly clicks = signal(0);
@@ -97,6 +99,21 @@ describe('ButtonComponent', () => {
     expect(button().type).toBe('button');
     expect(button().classList.contains('ui-button--secondary')).toBe(true);
     expect(button().className).not.toMatch(/--(sm|lg|icon)/);
+  });
+
+  it('adds the fab class and 24px icon only for a fab', async () => {
+    const { host, root, button, settle } = await setup();
+    host.iconOnly.set(true);
+    host.iconLeft.set('add');
+    host.ariaLabel.set('Add link');
+    await settle();
+    expect(button().classList.contains('ui-button--fab')).toBe(false);
+    expect(root.querySelector('ui-icon.ui-icon--24')).toBeNull();
+
+    host.fab.set(true);
+    await settle();
+    expect(button().classList.contains('ui-button--fab')).toBe(true);
+    expect(root.querySelector('ui-icon.ui-icon--24')).not.toBeNull();
   });
 
   it.each(Object.values(BUTTON_VARIANT))('applies the %s variant class', async (variant) => {

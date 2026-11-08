@@ -55,7 +55,28 @@ describe('MockAuthApi', () => {
     };
     localStorage.setItem(MOCK_SESSION_STORAGE_KEY, JSON.stringify(seeded));
 
-    expect(await create().getSession()).toEqual(seeded);
+    // A seed from before the onboarding flag counts as an existing user (no welcome dialog).
+    const session = await create().getSession();
+    expect(session).toEqual({ ...seeded, onboardingCompletedAt: expect.any(String) });
+    expect(session?.onboardingCompletedAt).not.toBeNull();
+  });
+
+  it('keeps a stored null onboarding flag (the welcome is still due)', async () => {
+    const seeded = {
+      id: 'e2e',
+      name: 'E2E',
+      email: 'e2e@example.com',
+      image: null,
+      isDemo: false,
+      onboardingCompletedAt: null,
+    };
+    localStorage.setItem(MOCK_SESSION_STORAGE_KEY, JSON.stringify(seeded));
+
+    expect((await create().getSession())?.onboardingCompletedAt).toBeNull();
+  });
+
+  it('signs a new user in with the welcome still due', async () => {
+    expect((await create().signIn(AUTH_PROVIDER.Google)).onboardingCompletedAt).toBeNull();
   });
 
   it.each(['not json', '{"id":1}', 'null', '[]'])('treats %s as signed out', async (raw) => {

@@ -14,6 +14,7 @@ const USER: AuthUser = {
   image: null,
   isDemo: false,
   demoExpiresAt: null,
+  onboardingCompletedAt: null,
 };
 const GOOGLE_URL = 'https://accounts.google.com/o/oauth2/v2/auth?client_id=x';
 const FAILURE = { status: 500, statusText: 'Server Error' };
