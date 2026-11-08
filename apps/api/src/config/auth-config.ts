@@ -75,7 +75,8 @@ function readProvider(
  *   `VERCEL_BRANCH_URL`, then `VERCEL_URL` (every preview has its own origin, ADR 0026), and both
  *   hostnames are trusted origins. Production never falls back.
  * - `TEST` must not be set in production (it disables Better Auth's CSRF and origin checks).
- * - Provider variables come in pairs; a missing pair means the provider is not registered.
+ * - Provider variables come in pairs. Outside production a missing pair means the provider is not
+ *   registered; production (not previews) requires both providers (ADR 0026).
  */
 export function readAuthConfig(env: NodeJS.ProcessEnv = process.env): AuthConfig {
   const { isProduction } = readAppConfig(env);
@@ -133,14 +134,28 @@ export function readAuthConfig(env: NodeJS.ProcessEnv = process.env): AuthConfig
     }
   }
 
+  const providers = {
+    google: readProvider(env, AUTH_ENV.GoogleClientId, AUTH_ENV.GoogleClientSecret),
+    github: readProvider(env, AUTH_ENV.GitHubClientId, AUTH_ENV.GitHubClientSecret),
+  };
+  // ADR 0026: production must not silently lose a sign-in method. Previews run demo-only.
+  if (isProduction && !isPreview) {
+    if (!providers.google) {
+      throw new Error(
+        `Invalid configuration: ${AUTH_ENV.GoogleClientId} and ${AUTH_ENV.GoogleClientSecret} are required in production`,
+      );
+    }
+    if (!providers.github) {
+      throw new Error(
+        `Invalid configuration: ${AUTH_ENV.GitHubClientId} and ${AUTH_ENV.GitHubClientSecret} are required in production`,
+      );
+    }
+  }
   return {
     secret,
     baseUrl,
     trustedOrigins: [...trustedOrigins],
-    providers: {
-      google: readProvider(env, AUTH_ENV.GoogleClientId, AUTH_ENV.GoogleClientSecret),
-      github: readProvider(env, AUTH_ENV.GitHubClientId, AUTH_ENV.GitHubClientSecret),
-    },
+    providers,
     isProduction,
   };
 }

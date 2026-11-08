@@ -143,7 +143,7 @@ npx nx serve api    # http://localhost:3000, behind the web dev proxy on :4200
 npx nx serve web    # sign in at http://localhost:4200
 ```
 
-A provider whose pair is missing is simply disabled (the API logs which variable names to set); half a pair stops the boot. `BETTER_AUTH_SECRET` is required in every environment.
+Locally and on previews a provider whose pair is missing is simply disabled (the API logs which variable names to set). In production (not previews) both providers are required and a missing pair stops the boot (ADR 0026); half a pair stops the boot everywhere. `BETTER_AUTH_SECRET` is required in every environment.
 
 ## 5. Vercel
 
