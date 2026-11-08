@@ -18,6 +18,7 @@ import {
   StepsComponent,
   UiDialogRef,
 } from '@shelfmark/ui';
+import { ViewportService } from '../../core/layout/viewport.service';
 import { ONBOARDING_RESULT } from './models/onboarding-result.const';
 import type { OnboardingResult } from './models/onboarding-result.type';
 import { ONBOARDING_STEPS } from './models/onboarding-steps.const';
@@ -43,6 +44,8 @@ export class OnboardingDialogComponent {
   protected readonly count = ONBOARDING_STEPS.length;
 
   private readonly ref = inject<UiDialogRef<OnboardingResult>>(UiDialogRef);
+  /** Phone: the footer buttons span the sheet (MobileWelcome). */
+  protected readonly phone = inject(ViewportService).phone;
   private readonly injector = inject(Injector);
   private readonly nextButton = viewChild.required<ButtonComponent>('nextButton');
 
