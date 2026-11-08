@@ -41,7 +41,19 @@ async function expectSingleToast(page: Page, api: { failed: () => number }, text
   const toast = page.getByText(text);
   await expect(toast).toHaveCount(1);
   await expect.poll(api.failed).toBeGreaterThan(1);
-  await page.waitForLoadState('networkidle');
+  // Wait until no more requests fail (two equal samples 500 ms apart), then check again.
+  let previous = -1;
+  await expect
+    .poll(
+      () => {
+        const current = api.failed();
+        const settled = current === previous;
+        previous = current;
+        return settled;
+      },
+      { intervals: [500] },
+    )
+    .toBe(true);
   await expect(toast).toHaveCount(1);
 }
 
