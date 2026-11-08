@@ -120,28 +120,40 @@ model Folder {
 }
 
 model Link {
-  id            String    @id @default(uuid(7)) @db.Uuid
-  userId        String    @map("user_id") @db.Uuid
-  folderId      String?   @map("folder_id") @db.Uuid
-  url           String    @db.VarChar(2048)
-  normalizedUrl String    @map("normalized_url") @db.VarChar(2048)
-  title         String    @db.VarChar(300)
-  note          String?
-  faviconUrl    String?   @map("favicon_url") @db.VarChar(2048)
-  imageUrl      String?   @map("image_url") @db.VarChar(2048)
-  isFavorite    Boolean   @default(false) @map("is_favorite")
-  lastOpenedAt  DateTime? @map("last_opened_at") @db.Timestamptz(3)
-  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  folder        Folder?   @relation(fields: [folderId], references: [id], onDelete: SetNull)
-  tags          LinkTag[]
+  id               String    @id @default(uuid(7)) @db.Uuid
+  userId           String    @map("user_id") @db.Uuid
+  folderId         String?   @map("folder_id") @db.Uuid
+  url              String    @db.VarChar(2048)
+  normalizedUrl    String    @map("normalized_url") @db.VarChar(2048)
+  title            String    @db.VarChar(300)
+  // lower(title), kept in sync by the service: the keyset cursor sorts on it (ADR 0033).
+  titleSortKey     String    @map("title_sort_key")
+  note             String?
+  faviconUrl       String?   @map("favicon_url") @db.VarChar(2048)
+  imageUrl         String?   @map("image_url") @db.VarChar(2048)
+  // Source URLs as sent by the client or found in the preview; never fetched here. faviconUrl and
+  // imageUrl stay null until the image capture of #149 (ADR 0027).
+  faviconSourceUrl String?   @map("favicon_source_url") @db.VarChar(2048)
+  imageSourceUrl   String?   @map("image_source_url") @db.VarChar(2048)
+  // Client-generated UUID that makes a retried create return the first link (ADR 0033).
+  idempotencyKey   String?   @map("idempotency_key") @db.Uuid
+  isFavorite       Boolean   @default(false) @map("is_favorite")
+  lastOpenedAt     DateTime? @map("last_opened_at") @db.Timestamptz(3)
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  folder           Folder?   @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  tags             LinkTag[]
 
-  @@index([userId, createdAt])
+  @@unique([userId, idempotencyKey])
+  @@index([userId, createdAt, id])
   @@index([userId, normalizedUrl])
   @@index([userId, lastOpenedAt])
+  @@index([userId, titleSortKey, id])
   @@index([folderId])
   @@index([title(ops: raw("gin_trgm_ops"))], type: Gin, map: "links_title_trgm_idx")
+  @@index([note(ops: raw("gin_trgm_ops"))], type: Gin, map: "links_note_trgm_idx")
+  @@index([url(ops: raw("gin_trgm_ops"))], type: Gin, map: "links_url_trgm_idx")
   @@map("links")
 }
 

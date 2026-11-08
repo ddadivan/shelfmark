@@ -55,6 +55,7 @@ describe('GET /api/export', () => {
           url: data.url,
           normalizedUrl: data.url,
           title: data.title,
+          titleSortKey: data.title.toLowerCase(),
           note: data.note,
           isFavorite: data.isFavorite ?? false,
           folderId: data.folderId,
@@ -140,6 +141,7 @@ describe('GET /api/export', () => {
           url,
           normalizedUrl: url,
           title,
+          titleSortKey: title.toLowerCase(),
           note,
           folderId: folder.id,
           tags: { create: [{ tagId: tag.id }] },
@@ -167,6 +169,7 @@ describe('GET /api/export', () => {
         url: 'https://comma.example/',
         normalizedUrl: 'https://comma.example/',
         title: 'Comma',
+        titleSortKey: 'comma',
         tags: { create: [{ tagId: tag.id }] },
       },
     });
@@ -234,6 +237,7 @@ describe('GET /api/export', () => {
         url: `https://bulk.example/${i}`,
         normalizedUrl: `https://bulk.example/${i}`,
         title: `Bulk ${i}`,
+        titleSortKey: `bulk ${i}`,
       })),
     });
     const doc = (await owner().get('/api/export?format=json').expect(200)).body as ExportDocument;
@@ -254,6 +258,7 @@ describe('GET /api/export', () => {
         url: `https://mixed.example/${i}`,
         normalizedUrl: `https://mixed.example/${i}`,
         title: `Mixed ${i}`,
+        titleSortKey: `mixed ${i}`,
         folderId: homes[i % 3],
       })),
     });
@@ -306,6 +311,7 @@ describe('GET /api/export', () => {
         url: 'https://mine.example/',
         normalizedUrl: 'https://mine.example/',
         title: 'Mine',
+        titleSortKey: 'mine',
         tags: { create: [{ tagId: tag.id }] },
       },
     });

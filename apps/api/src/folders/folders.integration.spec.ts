@@ -54,6 +54,7 @@ describe('folders API', () => {
         url: `https://example.com/${n}`,
         normalizedUrl: `https://example.com/${n}`,
         title: n,
+        titleSortKey: n,
         folderId: data.folderId ?? null,
         isFavorite: data.isFavorite ?? false,
       },

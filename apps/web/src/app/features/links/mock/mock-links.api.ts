@@ -67,6 +67,7 @@ export class MockLinksApi implements LinksApi {
         faviconUrl: null,
       },
       duplicate: null,
+      fetched: true,
     };
     return of(response).pipe(delay(MOCK_LATENCY_MS.Preview));
   }

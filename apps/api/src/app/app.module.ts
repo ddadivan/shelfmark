@@ -14,6 +14,7 @@ import { readAuthConfig } from '../config/auth-config';
 import { ExportModule } from '../export/export.module';
 import { FoldersModule } from '../folders/folders.module';
 import { HealthModule } from '../health/health.module';
+import { LinksModule } from '../links/links.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { TagsModule } from '../tags/tags.module';
 import { UsersModule } from '../users/users.module';
@@ -23,10 +24,11 @@ import { UsersModule } from '../users/users.module';
     PrismaModule,
     AuthModule,
     HealthModule,
-    ExportModule,
-    UsersModule,
-    FoldersModule,
     TagsModule,
+    FoldersModule,
+    LinksModule,
+    UsersModule,
+    ExportModule,
     // Async so the environment is read at DI time, not at import time.
     ThrottlerModule.forRootAsync({
       useFactory: () => createRateLimitOptions(shouldTrustProxyHeaders()),

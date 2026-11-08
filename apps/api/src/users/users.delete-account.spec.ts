@@ -22,6 +22,7 @@ async function seedLibrary(t: AuthTestApp, userId: string, label: string): Promi
       url: `https://example.com/${label}`,
       normalizedUrl: `example.com/${label}`,
       title: label,
+      titleSortKey: label.toLowerCase(),
     },
   });
   const tag = await prisma.tag.create({ data: { userId, name: `${label}-tag` } });

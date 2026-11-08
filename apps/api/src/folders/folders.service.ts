@@ -14,13 +14,14 @@ import {
   type UpdateFolderRequest,
 } from '@shelfmark/contracts';
 import { Prisma } from '../generated/prisma/client';
+import { hasPrismaCode } from '../common/prisma/has-prisma-code';
+import { PRISMA_ERROR_CODE } from '../common/prisma/prisma-error-code.const';
 import { PrismaService } from '../prisma/prisma.service';
 import type { FolderDbClient } from './models/folder-db-client.type';
 import { FOLDER_LOCK_PREFIX } from './models/folder-advisory-lock.const';
 import { toFolderResponse } from './to-folder-response';
 import { wouldCreateCycle } from './would-create-cycle';
 
-const FOREIGN_KEY_VIOLATION = 'P2003';
 const NOT_FOUND = 'Folder not found';
 
 @Injectable()
@@ -57,7 +58,7 @@ export class FoldersService {
   async create(userId: string, request: CreateFolderRequest): Promise<FolderResponse> {
     try {
       return await this.prisma.$transaction(async (tx) => {
-        await this.lockUserTree(tx, userId);
+        await this.lockTree(tx, userId);
         if (request.parentId !== undefined) await this.requireOwned(tx, userId, request.parentId);
         const total = await tx.folder.count({ where: { userId } });
         if (total >= FOLDER_LIMIT.PerUserMax) {
@@ -76,7 +77,7 @@ export class FoldersService {
   async update(userId: string, id: string, request: UpdateFolderRequest): Promise<FolderResponse> {
     try {
       return await this.prisma.$transaction(async (tx) => {
-        await this.lockUserTree(tx, userId);
+        await this.lockTree(tx, userId);
         const current = await tx.folder.findFirst({ where: { id, userId } });
         if (!current) throw new NotFoundException(NOT_FOUND);
 
@@ -108,7 +109,7 @@ export class FoldersService {
 
   async remove(userId: string, id: string, mode: FolderDeleteMode): Promise<void> {
     await this.prisma.$transaction(async (tx) => {
-      await this.lockUserTree(tx, userId);
+      await this.lockTree(tx, userId);
       const current = await tx.folder.findFirst({ where: { id, userId }, select: { id: true } });
       if (!current) throw new NotFoundException(NOT_FOUND);
 
@@ -136,7 +137,7 @@ export class FoldersService {
    * folders (import, demo seed, ...) must take this same lock with the same `folders:` key
    * convention (`FOLDER_LOCK_PREFIX` + userId), or the cycle check and the cap can be raced.
    */
-  private async lockUserTree(tx: Prisma.TransactionClient, userId: string): Promise<void> {
+  async lockTree(tx: Prisma.TransactionClient, userId: string): Promise<void> {
     await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${FOLDER_LOCK_PREFIX + userId}, 0))`;
   }
 
@@ -163,10 +164,7 @@ export class FoldersService {
   }
 
   private mapForeignKey(error: unknown): unknown {
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === FOREIGN_KEY_VIOLATION
-    ) {
+    if (hasPrismaCode(error, PRISMA_ERROR_CODE.ForeignKeyViolation)) {
       return new NotFoundException(NOT_FOUND);
     }
     return error;

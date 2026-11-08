@@ -21,7 +21,7 @@ export default defineConfig({
     name: 'api',
     globals: true,
     environment: 'node',
-    include: ['src/**/*.spec.ts', 'scripts/**/*.spec.ts'],
+    include: ['src/**/*.spec.ts', 'scripts/**/*.spec.ts', 'test-utils/**/*.spec.ts'],
     setupFiles: ['./vitest.setup.ts'],
     // Each DB spec boots its own PGlite; parallel files make the first hook slow on small machines.
     hookTimeout: 30_000,
