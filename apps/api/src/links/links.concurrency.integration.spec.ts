@@ -13,13 +13,9 @@ import { SafeFetcherService } from '../fetcher/safe-fetcher.service';
 const BASE = '/api/links';
 const ROUNDS = 8;
 
-// Test-level retries (2) exist for one harness artifact only: PGlite's socket server multiplexes
-// parallel connections onto a single instance and now and then answers "unnamed prepared statement
-// does not exist" (P2039) to the session lookup. The unified error format hides the cause, so the
-// failure cannot be matched per request; retrying a mutating request is also unsafe. A retry re-runs
-// the whole test on a clean database. This is not a Postgres behaviour: on a real server the
-// invariants asserted here are deterministic.
-describe('links API: concurrency', { retry: 2 }, () => {
+// Parallel requests overlap in the app; the test database (`ExchangeSocketServer`) serializes them per
+// exchange / transaction on its single PGlite session, so the invariants asserted here hold.
+describe('links API: concurrency', () => {
   const fetch = vi.fn<SafeFetcherService['fetch']>();
   let t: AuthTestApp;
   let users: IsolationUsers;
