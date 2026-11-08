@@ -6,9 +6,10 @@ import { ExportModule } from '../export/export.module';
 import { FoldersModule } from '../folders/folders.module';
 import { HealthModule } from '../health/health.module';
 import { PrismaModule } from '../prisma/prisma.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, HealthModule, FoldersModule, ExportModule],
+  imports: [PrismaModule, AuthModule, HealthModule, FoldersModule, ExportModule, UsersModule],
   providers: [
     // Guards run in registration order, and the order is security-relevant: the rate-limit guard
     // (`@nestjs/throttler`, #123) must be registered BEFORE this one, so a flood is rejected before
