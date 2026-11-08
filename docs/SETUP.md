@@ -24,7 +24,7 @@ Conventions:
 
 Port notes: keep the API on **3000** (`PORT`); the web dev proxy targets it. If 4200 is busy, run e2e with `E2E_PORT=4210 npx nx e2e web-e2e`. `nx serve api` sets `NODE_ENV=development` for you.
 
-Stage 2 adds a local PostgreSQL in Docker (`docker-compose.yml`), so install Docker Desktop (or OrbStack) before stage 2. How local secrets are loaded (the API never reads `.env` files today) is decided in stage 2; `.env*` stays git-ignored either way.
+The local database is PGlite (embedded PostgreSQL, ADR 0025): no Docker and nothing to install; `npx nx serve api` starts it. The first `prisma` command downloads its schema engine, so it needs network access. How local secrets are loaded (the API never reads `.env` files today) is decided in stage 2; `.env*` stays git-ignored either way.
 
 ## 2. GitHub
 
@@ -61,7 +61,7 @@ The database is used from **stage 2**; stage 0 only creates the project (PROJECT
 | --- | --- | --- |
 | production | `production` (the default branch) | created with the project |
 | preview (one per PR) | child branch of `production`, created per preview deployment | Neon ↔ Vercel integration (section 5.4) |
-| local | none — PostgreSQL in Docker | stage 2 |
+| local | none — PGlite (embedded, no Docker) | stage 2 |
 
 Preview branches are copies of `production` at creation time; once production has real users, previews would contain their data. Decide in stage 2 whether previews branch from `production` or from a seeded, data-free branch. Free-plan branch count is limited: enable automatic deletion of preview branches in the integration settings.
 
@@ -74,10 +74,10 @@ Variable names that the app reads are decided in stage 2. The Neon ↔ Vercel in
 
 | String | Production | Preview | Development | GitHub Actions |
 | --- | --- | --- | --- | --- |
-| pooled | Vercel, set by the integration (branch `production`) | Vercel, set per deployment by the integration | not used (local Docker) | not needed |
-| direct | Vercel, only if migrations run in the Vercel build | same, for the preview branch | not used | only if migrations run in CI (section 2) |
+| pooled | Vercel, set by the integration (branch `production`) | Vercel, set per deployment by the integration | not used (local PGlite) | not needed |
+| direct | Vercel, used by the build for migrations (`DATABASE_URL_UNPOOLED`) | same, for the preview branch | not used | not needed (CI uses a Postgres service) |
 
-Where `prisma migrate deploy` runs on merge to `main` (PROJECT.md 9.5) is decided in stage 2.
+`prisma migrate deploy` runs in the Vercel build (`nx run api:migrate-deploy`, only when `VERCEL=1`, ADR 0025), so each deployment migrates its own Neon branch. It reads `DATABASE_URL_UNPOOLED`: enable that variable for the Production and Preview environments (and for the build, not only runtime). The Preview value of `DATABASE_URL_UNPOOLED` must come from the Neon integration, per preview branch; never set a shared or production value for Preview (the migration script only checks `VERCEL_ENV`, it cannot tell which database a URL points to). Production migrates only for builds of `main`. CI needs no Neon secret: it checks migrations against a `postgres:17-alpine` service.
 
 ## 4. OAuth apps
 
@@ -230,8 +230,8 @@ Prevention layers: gitleaks in the pre-commit hook (locally) and in CI (CI task)
 | 11 | Google project, consent screen, local + production clients | Google Cloud console | author | stage 2 |
 | 12 | GitHub OAuth apps, local + production | GitHub Developer settings | author | stage 2 |
 | 13 | Better Auth secret per environment; OAuth + DB variables in Vercel | Vercel env | author | stage 2 |
-| 14 | Docker Desktop for local PostgreSQL | local machine | author | stage 2 |
-| 15 | Migration secret in a GitHub `production` environment (only if CI migrates) | GitHub Environments | author | stage 2 |
+| 14 | ~~Docker Desktop for local PostgreSQL~~ not needed (PGlite, ADR 0025) | local machine | - | dropped |
+| 15 | ~~Migration secret in a GitHub `production` environment~~ not needed (Vercel build migrates, ADR 0025) | GitHub Environments | - | dropped |
 | 16 | Privacy policy URL, publish the Google app | Google Auth Platform | author | stage 7 |
 
 The showcase builds only from `main`: `ignoreCommand` in `libs/ui/vercel.json` skips every other branch (issue #50), so PRs create no `shelfmark-ui` deployments and the Hobby deployment limit is spent on the app project. Storybook on PRs is checked by CI (`nx test-storybook ui`).

@@ -10,9 +10,24 @@
  * Workspace libraries (`@shelfmark/*`, TypeScript path aliases) are always bundled: they do
  * not exist in node_modules at runtime.
  *
+ * Prisma's query compiler is loaded with a dynamic `import("@prisma/client/runtime/query_compiler_...")`.
+ * Webpack would turn that into numbered async chunks (`2.js`, `3.js`) that Vercel's tracer does not
+ * copy, so those requests (and its `node:buffer` import) stay real dynamic imports from node_modules (`includeFiles` in
+ * vercel.json ships the files).
+ *
  * Must be listed after `NxAppWebpackPlugin`, so it replaces the externals Nx sets.
  */
 const BUNDLED_PREFIX = '@shelfmark/';
+const PRISMA_QUERY_COMPILER_PREFIX = '@prisma/client/runtime/query_compiler';
+/** Prisma's runtime only loads this built-in with `await import(...)`; a chunk for it is useless. */
+const DYNAMIC_BUILTINS = new Set(['node:buffer']);
+
+function isDynamicImport(request) {
+  return (
+    typeof request === 'string' &&
+    (request.startsWith(PRISMA_QUERY_COMPILER_PREFIX) || DYNAMIC_BUILTINS.has(request))
+  );
+}
 
 /** A bare package specifier: not relative, not absolute, not a webpack-internal request. */
 function isExternalPackage(request) {
@@ -34,6 +49,10 @@ class EsmExternalsPlugin {
     compiler.options.externalsType = 'module';
     compiler.options.externals = [
       ({ request }, callback) => {
+        if (isDynamicImport(request)) {
+          callback(null, `import ${request}`);
+          return;
+        }
         if (isExternalPackage(request)) {
           callback(null, `module ${request}`);
           return;
