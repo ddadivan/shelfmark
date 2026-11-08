@@ -11,5 +11,7 @@ process.env['BETTER_AUTH_SECRET'] ??= randomBytes(32).toString('hex');
 // Better Auth's origin and CSRF checks on under NODE_ENV=test or a truthy TEST (its default would
 // skip them). Specs still run as `development` without `TEST` so nothing in Better Auth takes a
 // test-only shortcut; `vitest-setup.spec.ts` pins this. Non-production for our own config too.
+// Specs send forwarded headers to simulate distinct clients: opt in explicitly (never implied by NODE_ENV).
+process.env['TRUST_PROXY_HEADERS'] = '1';
 process.env['NODE_ENV'] = NODE_ENV.Development;
 delete process.env['TEST'];

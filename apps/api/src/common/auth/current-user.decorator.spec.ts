@@ -14,6 +14,7 @@ describe('currentUserFactory', () => {
       image: null,
       isDemo: false,
       demoExpiresAt: null,
+      onboardingCompletedAt: null,
     };
     expect(
       currentUserFactory(undefined, contextWith({ auth: { user, session: { expiresAt: 'x' } } })),

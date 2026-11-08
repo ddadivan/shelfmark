@@ -6,6 +6,7 @@ import LandingPage from './features/landing/landing.page';
 
 const libraryPage = () => import('./features/library/library.page');
 const settingsPage = () => import('./features/settings/settings.page');
+const sharePage = () => import('./features/share/share.page');
 
 /** The real pages. `app.routes.ts` serves them as they are; the e2e build adds a test page. */
 export const pageRoutes: Routes = [
@@ -43,12 +44,16 @@ export const pageRoutes: Routes = [
   },
   // Starts a demo session (or goes to the library when already signed in).
   { path: APP_PATH.Demo, loadComponent: () => import('./features/auth/demo-start.page') },
+  // Web Share Target (Android): outside the shell, a quick save sheet. Signed-in only.
+  { path: APP_PATH.Share, canMatch: [authOnly], loadComponent: sharePage },
   // A guest on a protected URL: to sign-in, then back.
   { path: APP_PATH.Links, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Unsorted, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Favorites, canActivate: [redirectToSignIn], children: [] },
   { path: `${APP_PATH.Folders}/:folderId`, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Settings, canActivate: [redirectToSignIn], children: [] },
+  // `state.url` keeps the whole query, so the shared data survives the sign-in.
+  { path: APP_PATH.Share, canActivate: [redirectToSignIn], children: [] },
   {
     path: APP_PATH.SignIn,
     canMatch: [guestOnly],

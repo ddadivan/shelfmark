@@ -428,7 +428,9 @@ Stage 1 runs for free on **Vercel (Hobby) + Neon** and is available at a public 
 
 - **Vercel Cron** (free on Hobby): daily cleanup of expired demo sandboxes;
 - **Sentry** (free tier): frontend and backend errors with `requestId`, without personal data or link contents;
-- **PWA**: a hand-written manifest (`apps/web/public/manifest.webmanifest`, icons from the logo, `share_target` to come) and `apps/web/ngsw-config.json` for the Angular service worker (`@angular/service-worker`, app shell and static assets only, never `/api`); no `@angular/pwa` schematic. The CSP is unchanged: `worker-src` falls back to `script-src 'self'`, `manifest-src` to `default-src 'self'`.
+- **PWA**: a hand-written manifest (`apps/web/public/manifest.webmanifest`, icons from the logo, `share_target`: `GET /share` with `url`, `text`, `title`) and `apps/web/ngsw-config.json` for the Angular service worker (`@angular/service-worker`, app shell and static assets only, never `/api`); no `@angular/pwa` schematic. The CSP is unchanged: `worker-src` falls back to `script-src 'self'`, `manifest-src` to `default-src 'self'`.
+  - **Android "Share" target:** `/share` (`features/share`, signed-in only; a guest returns to the full `/share?…` URL after sign-in). The query is untrusted: `extractSharedLink` keeps the first `http(s)` URL of `url`, then of `text`, and drops every other scheme, addresses with credentials and anything over the contract length; `title` is only an initial title hint. Everything is shown as text. No usable URL shows an error and saves nothing. The service worker serves `/share` from the shell (it matches the path without the query).
+  - **iPhone:** iOS has no Web Share Target for web apps, so there is no entry in the iOS "Share" menu. On iPhone Shelfmark is installed with Safari "Share → Add to Home Screen" and links are saved by pasting them in the app.
 
 **Environments:**
 
@@ -538,7 +540,7 @@ All routes except `/api/auth/*` require a session and work only with the current
 | POST | `/api/folders` | Create: `name`, `parentId?`; 409 at the per-user cap (500 folders) |
 | PATCH | `/api/folders/:id` | Rename / move; moving into itself or its own subfolder is forbidden |
 | DELETE | `/api/folders/:id?mode=` | Delete a folder with all subfolders; `mode=delete-links` also deletes the links, `mode=move-to-unsorted` moves them to "Unsorted" |
-| GET, POST, PATCH /:id, DELETE /:id, POST /:id/merge | `/api/tags` | The user's tags with link counts, sorted by link count descending, then name; create an empty tag (409 if the name is taken or at the per-user cap of 1000), rename (409 if the name is taken; changing only the case of its own name is allowed), delete (links remain), merge with another tag (merging into itself is a 400). Names are normalized with `normalizeTagName` (trim, whitespace runs become one hyphen) on create and rename |
+| GET, POST, GET /:id, PATCH /:id, DELETE /:id, POST /:id/merge | `/api/tags` | The user's tags with link counts, sorted by link count descending, then name; read one tag with its count (404 if unknown or foreign); create an empty tag (409 if the name is taken or at the per-user cap of 1000), rename (409 if the name is taken; changing only the case of its own name is allowed), delete (links remain), merge with another tag (merging into itself is a 400). Names are normalized with `normalizeTagName` (trim, whitespace runs become one hyphen) on create and rename |
 
 **General API rules:**
 

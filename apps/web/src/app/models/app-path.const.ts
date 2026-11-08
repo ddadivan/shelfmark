@@ -7,4 +7,6 @@ export const APP_PATH = {
   Settings: 'settings',
   SignIn: 'sign-in',
   Demo: 'demo',
+  /** Target of the Android Web Share Target (`share_target.action` in the manifest). */
+  Share: 'share',
 } as const;
