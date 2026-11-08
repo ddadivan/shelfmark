@@ -28,6 +28,7 @@ import { SignedInPreloadingStrategy } from './core/routing/signed-in-preloading.
 import { provideLinksApi } from './features/links/provide-links-api';
 import { provideMonitoring } from './core/monitoring/provide-monitoring';
 import { provideOnboardingApi } from './features/onboarding/provide-onboarding-api';
+import { provideRatingApi } from './features/rating/provide-rating-api';
 import { ThemeService } from './core/theme/theme.service';
 
 export const appConfig: ApplicationConfig = {
@@ -53,6 +54,7 @@ export const appConfig: ApplicationConfig = {
     provideAuthApi(),
     ...provideLinksApi(),
     provideOnboardingApi(),
+    provideRatingApi(),
     // SwUpdate is not wired: a new version is applied on the next navigation, with no prompt.
     // App shell and static assets only; the worker never touches /api (apps/web/ngsw-config.json).
     provideServiceWorker('ngsw-worker.js', {

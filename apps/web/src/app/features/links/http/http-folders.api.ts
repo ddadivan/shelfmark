@@ -10,6 +10,7 @@ import type {
 } from '@shelfmark/contracts';
 import type { Observable } from 'rxjs';
 import { API_BASE_URL } from '../../../core/api/api-base-url';
+import { skipErrorToast } from '../../../core/api/skip-error-toast';
 import type { FoldersApi } from '../models/folders-api.interface';
 
 /**
@@ -26,17 +27,18 @@ export class HttpFoldersApi implements FoldersApi {
   }
 
   create(request: CreateFolderRequest): Observable<FolderResponse> {
-    return this.http.post<FolderResponse>(this.url(), request);
+    return this.http.post<FolderResponse>(this.url(), request, { context: skipErrorToast() });
   }
 
   update(id: string, request: UpdateFolderRequest): Observable<FolderResponse> {
-    return this.http.patch<FolderResponse>(this.url(id), request);
+    return this.http.patch<FolderResponse>(this.url(id), request, { context: skipErrorToast() });
   }
 
   remove(id: string, mode: FolderDeleteMode): Observable<void> {
     const query: DeleteFolderQuery = { mode };
     return this.http.delete<void>(this.url(id), {
       params: new HttpParams({ fromObject: { ...query } }),
+      context: skipErrorToast(),
     });
   }
 

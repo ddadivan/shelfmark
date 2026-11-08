@@ -1,0 +1,47 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.rating__step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  animation: rating-in var(--duration-slow) var(--ease-out) both;
+}
+
+.rating__text {
+  @include type(body);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.rating__foot {
+  display: flex;
+  flex: 1;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+// Phone: stacked buttons, the main action on top (the DOM order stays secondary, primary).
+@include phone {
+  .rating__foot {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+}
+
+@keyframes rating-in {
+  from {
+    opacity: 0;
+    transform: translateX(#{rem(24px)});
+  }
+}
+
+@include reduced-motion {
+  .rating__step {
+    animation: none;
+  }
+}
