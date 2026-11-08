@@ -1,5 +1,5 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import type { AuthUser, DeleteAccountRequest } from '@shelfmark/contracts';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import type { AuthUser, DeleteAccountRequest, OnboardingResponse } from '@shelfmark/contracts';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -28,5 +28,30 @@ export class UsersService {
     ]);
     // The user id is an opaque uuid, not personal data; never log the email or name.
     this.logger.log(`Account deleted: ${user.id}`);
+  }
+
+  /**
+   * Marks the onboarding as done for the session user. Idempotent: the first call stamps `now()`,
+   * later calls keep that timestamp and return it. The owner comes from the session only.
+   */
+  async completeOnboarding(user: AuthUser): Promise<OnboardingResponse> {
+    await this.prisma.user.updateMany({
+      where: { id: user.id, onboardingCompletedAt: null },
+      data: { onboardingCompletedAt: new Date() },
+    });
+    const row = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      select: { onboardingCompletedAt: true },
+    });
+    if (!row?.onboardingCompletedAt) throw new NotFoundException();
+    return { onboardingCompletedAt: row.onboardingCompletedAt.toISOString() };
+  }
+
+  /** Clears the flag so the onboarding shows again. Idempotent. */
+  async resetOnboarding(user: AuthUser): Promise<void> {
+    await this.prisma.user.updateMany({
+      where: { id: user.id },
+      data: { onboardingCompletedAt: null },
+    });
   }
 }
