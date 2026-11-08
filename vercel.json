@@ -8,6 +8,7 @@
   "regions": ["fra1"],
   "git": {
     "deploymentEnabled": {
+      "*/**": false,
       "dependabot/**": false,
       "docs/**": false
     }
