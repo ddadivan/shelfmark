@@ -6,6 +6,7 @@ import type {
 import { DomPortal, type ComponentPortal } from '@angular/cdk/portal';
 import { afterNextRender, DestroyRef, type ComponentRef, type Injector } from '@angular/core';
 import { Subscription, type Observable } from 'rxjs';
+import { raiseOverlayLayers } from './overlay-stacking';
 import { connectedSide, setOverlayOrigin } from './overlay-origin';
 import type { OverlaySide } from './models/overlay-side.type';
 
@@ -56,6 +57,11 @@ export class ConnectedOverlay {
   /** The CDK host (bounding box): the stacking context that carries the layer class. */
   get host(): HTMLElement {
     return this.overlayRef.hostElement;
+  }
+
+  /** Moves the pane in front of everything below its layer, tooltips staying above (see `raiseOverlayLayers`). */
+  raise(): void {
+    raiseOverlayLayers(this.host, true);
   }
 
   get isAttached(): boolean {

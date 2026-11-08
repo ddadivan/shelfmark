@@ -11,6 +11,7 @@ const USER: AuthUser = {
   email: 'a@example.com',
   image: null,
   isDemo: false,
+  onboardingCompletedAt: null,
 };
 const GOOGLE_URL = 'https://accounts.google.com/o/oauth2/v2/auth?client_id=x';
 const FAILURE = { status: 500, statusText: 'Server Error' };

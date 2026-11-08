@@ -10,8 +10,11 @@ import { AVATAR_SIZE } from './models/avatar-size.const';
  * user icon when there is no name either. The box has a fixed size, so switching between the
  * image and the fallback never shifts the layout. The image is sent with
  * `referrerpolicy="no-referrer"`.
- * Without `label` the avatar is decorative (`aria-hidden`), for use inside a labelled control;
- * with `label` it is `role="img"` with that name.
+ *
+ * The initials are drawn by CSS from `data-initials` (no text node), so a labelled control
+ * that contains the avatar passes WCAG 2.5.3. Without `label` the avatar is decorative
+ * (`aria-hidden`), for use inside a labelled control; with `label` it is `role="img"` with
+ * that name.
  */
 @Component({
   selector: 'ui-avatar',
