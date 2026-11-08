@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  DEMO_LIMIT,
   LINK_LIMIT,
   normalizeTagName,
   normalizeUrl,
@@ -54,7 +55,12 @@ export class LinksWriteService {
     private readonly previews: LinkPreviewService,
   ) {}
 
-  async create(userId: string, request: CreateLinkRequest): Promise<CreateLinkResult> {
+  /** `isDemo` comes from the session (never the request): demo sandboxes have a lower link cap. */
+  async create(
+    userId: string,
+    request: CreateLinkRequest,
+    isDemo = false,
+  ): Promise<CreateLinkResult> {
     const normalizedUrl = this.normalize(request.url);
     this.assertTagNames(request.tags);
     const key = request.idempotencyKey;
@@ -70,7 +76,7 @@ export class LinksWriteService {
     if (title === undefined) {
       // Cheap unlocked checks first, so a request that must fail anyway never costs a page fetch
       // (up to 6 s). The locked checks in the transaction stay authoritative.
-      await this.precheck(userId, request.folderId);
+      await this.precheck(userId, request.folderId, isDemo);
       const { preview, fetched } = await this.previews.load(request.url);
       title = titleOrUrl(preview.title, request.url);
       if (fetched) {
@@ -92,7 +98,7 @@ export class LinksWriteService {
         if (request.folderId !== undefined) {
           await this.requireFolder(tx, userId, request.folderId);
         }
-        await this.assertUnderLimit(tx, userId);
+        await this.assertUnderLimit(tx, userId, isDemo);
         const tagIds = await this.tags.resolveNames(userId, request.tags ?? [], tx);
         const row = await tx.link.create({
           data: {
@@ -205,15 +211,23 @@ export class LinksWriteService {
   }
 
   /** Unlocked early rejection for a create that is about to fetch a page. */
-  private async precheck(userId: string, folderId: string | undefined): Promise<void> {
+  private async precheck(
+    userId: string,
+    folderId: string | undefined,
+    isDemo: boolean,
+  ): Promise<void> {
     if (folderId !== undefined) await this.requireFolder(this.prisma, userId, folderId);
-    await this.assertUnderLimit(this.prisma, userId);
+    await this.assertUnderLimit(this.prisma, userId, isDemo);
   }
 
-  private async assertUnderLimit(db: LinkDbClient, userId: string): Promise<void> {
+  private async assertUnderLimit(db: LinkDbClient, userId: string, isDemo: boolean): Promise<void> {
+    // Demo sandboxes are capped far lower (PROJECT.md 5.8).
+    const max = isDemo ? DEMO_LIMIT.MaxLinks : LINK_LIMIT.PerUserMax;
     const total = await db.link.count({ where: { userId } });
-    if (total >= LINK_LIMIT.PerUserMax) {
-      throw new ConflictException(LINK_ERROR_MESSAGE.LimitReached);
+    if (total >= max) {
+      throw new ConflictException(
+        isDemo ? LINK_ERROR_MESSAGE.DemoLimitReached : LINK_ERROR_MESSAGE.LimitReached,
+      );
     }
   }
 

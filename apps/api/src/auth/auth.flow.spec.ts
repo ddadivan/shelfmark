@@ -129,6 +129,7 @@ describe('Better Auth sign-in flow', () => {
       expect(body).not.toBeNull();
       expect(Object.keys(body ?? {}).sort()).toEqual(['session', 'user']);
       expect(Object.keys(body?.user ?? {}).sort()).toEqual([
+        'demoExpiresAt',
         'email',
         'id',
         'image',

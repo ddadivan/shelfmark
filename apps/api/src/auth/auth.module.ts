@@ -3,6 +3,7 @@ import { AuthModule as BetterAuthModule } from '@thallesp/nestjs-better-auth';
 import { readAuthConfig } from '../config/auth-config';
 import { PrismaModule } from '../prisma/prisma.module';
 import { PrismaService } from '../prisma/prisma.service';
+import { DemoSessionService } from './demo-session.service';
 import { createAuth } from './create-auth';
 import { warnMissingProviders } from './warn-missing-providers';
 import { SessionCookieService } from './session-cookie.service';
@@ -20,8 +21,8 @@ import { SessionCookieService } from './session-cookie.service';
  * `{ code, message }` shape.
  */
 @Module({
-  providers: [SessionCookieService],
-  exports: [SessionCookieService],
+  providers: [SessionCookieService, DemoSessionService],
+  exports: [SessionCookieService, DemoSessionService],
   imports: [
     BetterAuthModule.forRootAsync({
       imports: [PrismaModule],
