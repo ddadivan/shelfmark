@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { toastShortcutLabel } from './toast-shortcut-label';
 import { ToastStore } from './toast-store';
 import { ToastComponent } from './toast.component';
 
@@ -17,4 +18,5 @@ import { ToastComponent } from './toast.component';
 })
 export class ToastRegionComponent {
   protected readonly store = inject(ToastStore);
+  protected readonly shortcut = toastShortcutLabel();
 }

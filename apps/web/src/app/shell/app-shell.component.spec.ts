@@ -3,6 +3,7 @@ import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
+import { ToastService } from '@shelfmark/ui';
 import { AUTH_API } from '../core/auth/auth-api.token';
 import { ONBOARDING_API } from '../features/onboarding/models/onboarding-api.const';
 import { AuthStore } from '../core/auth/auth.store';
@@ -135,6 +136,37 @@ describe('AppShellComponent', () => {
 
     expect(search.open).toHaveBeenCalledTimes(1);
     expect(search.handleShortcut).toHaveBeenCalledTimes(1);
+  });
+
+  it('hands the toast shortcut to the toasts and leaves the search alone', async () => {
+    const api: AuthApi = {
+      getSession: () => Promise.resolve(USER),
+      signIn: vi.fn(),
+      signInDemo: vi.fn(),
+      signOut: vi.fn(() => Promise.resolve()),
+    };
+    const search = { open: vi.fn(), handleShortcut: vi.fn() };
+    const toasts = { handleShortcut: vi.fn(() => true) };
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([{ path: '', component: AppShellComponent }]),
+        provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
+        { provide: AUTH_API, useValue: api },
+        { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
+        { provide: SearchDialogService, useValue: search },
+        { provide: ToastService, useValue: toasts },
+      ],
+    });
+    await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
+    await TestBed.inject(AuthStore).ensureLoaded();
+    await RouterTestingHarness.create('/');
+
+    document.dispatchEvent(
+      new KeyboardEvent('keydown', { code: 'KeyT', altKey: true, shiftKey: true }),
+    );
+
+    expect(toasts.handleShortcut).toHaveBeenCalledTimes(1);
+    expect(search.handleShortcut).not.toHaveBeenCalled();
   });
 
   describe('layout by width', () => {

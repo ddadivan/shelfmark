@@ -20,6 +20,7 @@ import {
   MenuItemComponent,
   MenuSeparatorComponent,
   MenuTriggerDirective,
+  ToastService,
 } from '@shelfmark/ui';
 import { EXPORT_FORMAT, type ExportFormat } from '@shelfmark/contracts';
 import { ExportActionsService } from '../features/export/export-actions.service';
@@ -65,6 +66,7 @@ export default class AppShellComponent {
   protected readonly viewport = inject(ViewportService);
   protected readonly nav = inject(MobileNavService);
   private readonly transloco = inject(TranslocoService);
+  private readonly toasts = inject(ToastService);
 
   private readonly recentLabels = toSignal(
     combineLatest([
@@ -115,7 +117,9 @@ export default class AppShellComponent {
   }
 
   protected onKeydown(event: KeyboardEvent): void {
-    this.search.handleShortcut(event);
+    if (!this.toasts.handleShortcut(event)) {
+      this.search.handleShortcut(event);
+    }
   }
 
   protected toggleRecent(): void {
