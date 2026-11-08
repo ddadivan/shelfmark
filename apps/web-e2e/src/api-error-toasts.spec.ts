@@ -1,4 +1,5 @@
-import { expect, Page, test } from '@playwright/test';
+import { type Page } from '@playwright/test';
+import { expect, test } from './support/test';
 import { MOCK_USER } from './support/mock-session';
 
 // Same value as REAL_AUTH_API_STORAGE_KEY in apps/web/src/app/core/auth/models/real-auth-api-storage-key.const.ts.
@@ -15,7 +16,10 @@ async function failApi(page: Page, status: number): Promise<void> {
     route.fulfill({ contentType: 'application/json', body: JSON.stringify(SESSION) }),
   );
   await page.route(
-    (url) => url.pathname.startsWith('/api/') && !url.pathname.startsWith('/api/auth/'),
+    (url) =>
+      url.pathname.startsWith('/api/') &&
+      !url.pathname.startsWith('/api/auth/') &&
+      !url.pathname.startsWith('/api/monitoring/'),
     (route) => route.fulfill({ status, contentType: 'application/json', body: '{}' }),
   );
 }

@@ -96,6 +96,15 @@ describe('errorInterceptor toasts', () => {
     expect(show).not.toHaveBeenCalled();
   });
 
+  it('does not toast a failed Sentry tunnel request', () => {
+    const { http, controller, show } = setup();
+
+    http.post('/api/monitoring/tunnel', '').subscribe({ error: () => undefined });
+    fail(controller, '/api/monitoring/tunnel', 503);
+
+    expect(show).not.toHaveBeenCalled();
+  });
+
   it('does not toast when the caller opted out, and still rethrows', () => {
     const { http, controller, show } = setup();
     let status = 0;

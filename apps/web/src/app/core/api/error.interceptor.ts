@@ -1,6 +1,7 @@
 import { HttpErrorResponse, HttpInterceptorFn, HttpStatusCode } from '@angular/common/http';
 import { inject, Injector } from '@angular/core';
 import { Router } from '@angular/router';
+import { MONITORING_TUNNEL_ROUTE } from '@shelfmark/contracts';
 import { catchError, throwError } from 'rxjs';
 import { AuthStore } from '../auth/auth.store';
 import { AUTH_ROUTE } from '../auth/models/auth-routes.const';
@@ -32,6 +33,11 @@ function isGuardedApiRequest(url: string, base: string): boolean {
   );
 }
 
+/** True for the Sentry tunnel (`/api/monitoring/tunnel`). */
+function isTunnelRequest(url: string, base: string): boolean {
+  return new URL(url, globalThis.location.origin).pathname === `${base}${MONITORING_TUNNEL_ROUTE}`;
+}
+
 /**
  * Global error handling (PROJECT.md 5.1), after the base interceptor. A 401 from `/api/**`
  * (not `/api/auth/**`) means the session is gone: the user is cleared and sent to the sign-in
@@ -46,7 +52,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const guarded = isGuardedApiRequest(req.url, base);
   return next(req).pipe(
     catchError((error: unknown) => {
-      if (guarded && error instanceof HttpErrorResponse && !req.context.get(SKIP_ERROR_TOAST)) {
+      // The Sentry tunnel is a background request: a failure there must never reach the user.
+      const toasts =
+        guarded && !req.context.get(SKIP_ERROR_TOAST) && !isTunnelRequest(req.url, base);
+      if (toasts && error instanceof HttpErrorResponse) {
         if (error.status === HttpStatusCode.TooManyRequests) {
           injector.get(ApiErrorToastService).show('errors.rateLimited');
         } else if (error.status >= HttpStatusCode.InternalServerError && error.status < 600) {
