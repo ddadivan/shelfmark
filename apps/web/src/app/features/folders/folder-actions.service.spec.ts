@@ -187,6 +187,9 @@ describe('FolderActionsService', () => {
       const done = actions.rename(store.entityMap()[MOCK_ID.FolderAngular]);
       await opened();
       expect(nameField().value).toBe(MOCK_NAME.FolderAngular);
+      await until(() => {
+        expect(document.activeElement).toBe(nameField());
+      });
       type('NG');
       button('Rename').click();
       await closed();
