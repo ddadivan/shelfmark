@@ -309,15 +309,29 @@
       },
       "reason": {
         "sessionExpired": "Your session has expired. Sign in again.",
-        "demoExpired": "The demo has ended. Open a new one or sign in."
+        "demoExpired": "The demo has ended. Open a new one or sign in.",
+        "demoLimit": "Too many demos were opened from your network. Try again in an hour, or sign in.",
+        "demoUnavailable": "The demo is full right now. Try again later, or sign in.",
+        "demoFailed": "We could not open the demo. Try again, or sign in."
       },
       "eyebrow": "Sign in to Shelfmark",
       "privacy": "By continuing you agree to the Privacy policy. We only use your name, email and avatar."
+    },
+    "demo": {
+      "starting": "Opening the demo…"
     },
     "signOut": "Sign out",
     "signOutFailed": "We could not sign you out. Try again."
   },
   "shell": {
+    "demoBanner": {
+      "title": "You're in a demo.",
+      "remaining": {
+        "one": "Play with everything — this sandbox resets in {{ hours }} hour.",
+        "other": "Play with everything — this sandbox resets in {{ hours }} hours."
+      },
+      "signIn": "Sign in with your own account"
+    },
     "accountMenu": "Account menu",
     "settings": "Settings",
     "addLink": "Add link",

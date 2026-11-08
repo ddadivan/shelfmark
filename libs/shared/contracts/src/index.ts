@@ -69,11 +69,11 @@ export type { SocialSignInResponse } from './auth/social-sign-in-response.interf
 export type { SignOutResponse } from './auth/sign-out-response.interface';
 export { AUTH_PROVIDER } from './auth/auth-provider.const';
 export { AUTH_ENDPOINT } from './auth/auth-endpoint.const';
-
 export type { DemoSessionResponse } from './demo/demo-session-response.type';
 export { DEMO_ENDPOINT } from './demo/demo-endpoint.const';
-export { CRON_ENDPOINT } from './demo/cron-endpoint.const';
 export { DEMO_LIMIT } from './demo/demo-limit.const';
+
+export { CRON_ENDPOINT } from './demo/cron-endpoint.const';
 export type { FeedbackMilestone } from './feedback/feedback-milestone.type';
 export type { FeedbackScore } from './feedback/feedback-score.type';
 export type { FeedbackPromptResponse } from './feedback/feedback-prompt-response.interface';

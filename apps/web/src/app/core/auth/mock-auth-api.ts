@@ -1,6 +1,10 @@
 import { DOCUMENT } from '@angular/common';
 import { Service, inject } from '@angular/core';
-import type { AuthProvider, AuthUser } from '@shelfmark/contracts';
+import { DEMO_LIMIT, type AuthProvider, type AuthUser } from '@shelfmark/contracts';
+import { MS_PER_HOUR } from '../models/ms-per-hour.const';
+import { DemoSignInError } from './demo-sign-in-error';
+import { DEMO_ERROR } from './models/demo-error.const';
+import { MOCK_DEMO_FAILURE_STORAGE_KEY } from './models/mock-demo-failure-storage-key.const';
 import { AuthApi } from './models/auth-api.interface';
 import { LEGACY_ONBOARDING_COMPLETED_AT } from './models/legacy-onboarding-completed-at.const';
 import { StoredUser } from './models/stored-user.interface';
@@ -19,6 +23,9 @@ function isStoredUser(value: unknown): value is StoredUser {
     typeof candidate.email === 'string' &&
     (candidate.image === null || typeof candidate.image === 'string') &&
     typeof candidate.isDemo === 'boolean' &&
+    (candidate.demoExpiresAt === undefined ||
+      candidate.demoExpiresAt === null ||
+      typeof candidate.demoExpiresAt === 'string') &&
     (candidate.onboardingCompletedAt === undefined ||
       candidate.onboardingCompletedAt === null ||
       typeof candidate.onboardingCompletedAt === 'string')
@@ -42,7 +49,16 @@ export class MockAuthApi implements AuthApi {
   }
 
   signInDemo(): Promise<AuthUser> {
-    return Promise.resolve(this.persist(MOCK_DEMO_USER));
+    const failure = this.storage?.getItem(MOCK_DEMO_FAILURE_STORAGE_KEY);
+    if (failure === DEMO_ERROR.RateLimited || failure === DEMO_ERROR.Unavailable) {
+      return Promise.reject(new DemoSignInError(failure));
+    }
+    return Promise.resolve(
+      this.persist({
+        ...MOCK_DEMO_USER,
+        demoExpiresAt: new Date(Date.now() + DEMO_LIMIT.SessionHours * MS_PER_HOUR).toISOString(),
+      }),
+    );
   }
 
   signOut(): Promise<void> {
@@ -62,6 +78,7 @@ export class MockAuthApi implements AuthApi {
       }
       return {
         ...parsed,
+        demoExpiresAt: parsed.demoExpiresAt ?? null,
         onboardingCompletedAt:
           parsed.onboardingCompletedAt === undefined
             ? LEGACY_ONBOARDING_COMPLETED_AT

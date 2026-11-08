@@ -2,6 +2,7 @@ import { expect, Page } from '@playwright/test';
 
 // Same value as MOCK_SESSION_STORAGE_KEY in apps/web/src/app/core/auth/models/mock-session-storage-key.const.ts.
 const MOCK_SESSION_KEY = 'sm-mock-session';
+const MS_PER_HOUR = 3_600_000;
 const SEEDED_FLAG = 'seeded';
 
 export const MOCK_USER = {
@@ -10,9 +11,21 @@ export const MOCK_USER = {
   email: 'e2e@example.com',
   image: null,
   isDemo: false,
+  demoExpiresAt: null,
 };
 
-/** Signs the mock auth API in before the app starts. */
+/** A demo user whose sandbox ends `hours` from now. */
+export function demoUser(hours: number) {
+  return {
+    ...MOCK_USER,
+    id: 'e2e-demo',
+    name: 'Demo user',
+    isDemo: true,
+    demoExpiresAt: new Date(Date.now() + hours * MS_PER_HOUR).toISOString(),
+  };
+}
+
+/** Signs the mock auth API in before the app starts (as `user`, a regular user by default). */
 export async function seedSession(
   page: Page,
   user: Record<string, unknown> = MOCK_USER,

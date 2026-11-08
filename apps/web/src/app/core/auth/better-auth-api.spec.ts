@@ -1,8 +1,10 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { AUTH_ENDPOINT, AUTH_PROVIDER, type AuthUser } from '@shelfmark/contracts';
+import { AUTH_ENDPOINT, AUTH_PROVIDER, DEMO_ENDPOINT, type AuthUser } from '@shelfmark/contracts';
 import { BetterAuthApi } from './better-auth-api';
+import { DemoSignInError } from './demo-sign-in-error';
+import { DEMO_ERROR } from './models/demo-error.const';
 import { NAVIGATE } from './navigate.token';
 
 const USER: AuthUser = {
@@ -142,8 +144,60 @@ describe('BetterAuthApi', () => {
   });
 
   describe('signInDemo', () => {
-    it('rejects until the demo endpoint exists', async () => {
-      await expect(setup().api.signInDemo()).rejects.toThrow();
+    const DEMO_USER: AuthUser = {
+      ...USER,
+      id: 'demo1',
+      isDemo: true,
+      demoExpiresAt: '2030-01-02T00:00:00.000Z',
+    };
+
+    it('posts an empty JSON body to the demo endpoint and returns the demo user (201)', async () => {
+      const { api, http } = setup();
+
+      const result = api.signInDemo();
+      const req = http.expectOne(DEMO_ENDPOINT.Create);
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual({});
+      req.flush(
+        { user: DEMO_USER, session: { expiresAt: '2030-01-02T00:00:00.000Z' } },
+        { status: 201, statusText: 'Created' },
+      );
+
+      expect(await result).toEqual(DEMO_USER);
+    });
+
+    it.each([
+      [429, DEMO_ERROR.RateLimited],
+      [503, DEMO_ERROR.Unavailable],
+    ])('maps %i to a typed error', async (status, kind) => {
+      const { api, http } = setup();
+
+      const result = api.signInDemo();
+      http.expectOne(DEMO_ENDPOINT.Create).flush(null, { status, statusText: 'No' });
+
+      const error: unknown = await result.catch((e: unknown) => e);
+      expect(error).toBeInstanceOf(DemoSignInError);
+      expect((error as DemoSignInError).kind).toBe(kind);
+    });
+
+    it('rejects with the plain error for other failures', async () => {
+      const { api, http } = setup();
+
+      const result = api.signInDemo();
+      http.expectOne(DEMO_ENDPOINT.Create).flush(null, FAILURE);
+
+      const error: unknown = await result.catch((e: unknown) => e);
+      expect(error).not.toBeInstanceOf(DemoSignInError);
+      expect(error).toBeDefined();
+    });
+
+    it('rejects when the response has no demo user', async () => {
+      const { api, http } = setup();
+
+      const result = api.signInDemo();
+      http.expectOne(DEMO_ENDPOINT.Create).flush({ user: USER, session: null });
+
+      await expect(result).rejects.toThrow();
     });
   });
 
