@@ -1,0 +1,31 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.score-scale__buttons {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: var(--space-1);
+}
+
+.score-scale__button {
+  min-width: 0;
+}
+
+.score-scale__edges {
+  @include type(caption);
+
+  display: flex;
+  justify-content: space-between;
+  margin-block-start: var(--space-2);
+  color: var(--text-muted);
+}
+
+@include phone {
+  .score-scale__buttons {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+}

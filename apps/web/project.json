@@ -55,6 +55,10 @@
             {
               "replace": "apps/web/src/app/features/onboarding/provide-onboarding-api.ts",
               "with": "apps/web/src/app/features/onboarding/mock/provide-onboarding-api.e2e.ts"
+            },
+            {
+              "replace": "apps/web/src/app/features/rating/provide-rating-api.ts",
+              "with": "apps/web/src/app/features/rating/mock/provide-rating-api.e2e.ts"
             }
           ],
           "optimization": false,
@@ -85,6 +89,10 @@
             {
               "replace": "apps/web/src/app/features/onboarding/provide-onboarding-api.ts",
               "with": "apps/web/src/app/features/onboarding/mock/provide-onboarding-api.e2e.ts"
+            },
+            {
+              "replace": "apps/web/src/app/features/rating/provide-rating-api.ts",
+              "with": "apps/web/src/app/features/rating/mock/provide-rating-api.e2e.ts"
             }
           ]
         }
