@@ -191,4 +191,9 @@ test.describe('vercel.json deployment config', () => {
   test('dependabot branches are not deployed', () => {
     expect(config.git.deploymentEnabled['dependabot/**']).toBe(false);
   });
+
+  test('only main deploys: every prefixed branch (feat/, fix/, chore/, …) is off', () => {
+    expect(config.git.deploymentEnabled['*/**']).toBe(false);
+    expect(config.git.deploymentEnabled['main']).toBeUndefined();
+  });
 });

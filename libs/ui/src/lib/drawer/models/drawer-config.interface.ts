@@ -4,4 +4,6 @@ export interface UiDrawerConfig<D = undefined> {
   readonly ariaLabel: string;
   /** Read in the drawer content with `injectDialogData<D>()`. */
   readonly data?: D;
+  /** Focus target when the opener is gone at close time, see `UiDialogConfig.restoreFocus`. */
+  readonly restoreFocus?: () => HTMLElement | null;
 }

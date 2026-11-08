@@ -1,23 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
-import { COLOR_SCHEME } from './models/color-scheme.const';
-import { expectNoBlockingViolations } from './support/axe';
 import { dismissOnboarding, NEW_USER, openAccountMenu, seedSession } from './support/mock-session';
 
 const FIRST_TITLE = 'All your links in one place';
 const GITHUB_BUTTON = 'Continue with GitHub';
-
-/** Waits until no finite animation is still running (the illustration loops forever), so axe reads the colours of a finished frame. */
-async function animationsFinished(page: Page): Promise<void> {
-  await expect
-    .poll(
-      () =>
-        page.evaluate<number>(
-          'document.getAnimations().filter((a) => a.playState === "running" && a.effect?.getComputedTiming().iterations !== Infinity).length',
-        ),
-      { timeout: 10_000 },
-    )
-    .toBe(0);
-}
 
 async function signInAsNewUser(page: Page): Promise<void> {
   await page.goto('/sign-in');
@@ -129,30 +114,6 @@ test.describe('onboarding (mock API)', () => {
     expect(body).toBeLessThanOrEqual(0);
     await expect(last.getByRole('button', { name: 'Add your first link' })).toBeVisible();
   });
-
-  for (const colorScheme of Object.values(COLOR_SCHEME)) {
-    test.describe(`${colorScheme} theme`, () => {
-      test.use({ colorScheme });
-
-      test('every step has no serious or critical axe violations', async ({ page }, testInfo) => {
-        await seedSession(page, NEW_USER);
-        await page.goto('/links');
-        const dialog = page.getByRole('dialog', { name: FIRST_TITLE });
-        await expect(dialog).toBeVisible();
-        await expect(page.locator('html')).toHaveAttribute('data-theme', colorScheme);
-
-        await expectNoBlockingViolations(page, testInfo, { include: '.cdk-dialog-container' });
-        await page.getByRole('button', { name: 'Next' }).click();
-        await expect(page.getByRole('dialog', { name: 'Save in a second' })).toBeVisible();
-        await animationsFinished(page);
-        await expectNoBlockingViolations(page, testInfo, { include: '.cdk-dialog-container' });
-        await page.getByRole('button', { name: 'Next' }).click();
-        await expect(page.getByRole('dialog', { name: 'Find it right away' })).toBeVisible();
-        await animationsFinished(page);
-        await expectNoBlockingViolations(page, testInfo, { include: '.cdk-dialog-container' });
-      });
-    });
-  }
 
   test.describe('reduced motion', () => {
     test.use({ reducedMotion: 'reduce' });

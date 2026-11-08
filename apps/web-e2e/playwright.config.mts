@@ -13,6 +13,10 @@ export default defineConfig({
   ...nxE2EPreset(import.meta.dirname, { testDir: './src' }),
   forbidOnly: isCI,
   retries: isCI ? 2 : 0,
+  // The Nx preset runs one worker on CI, so ~350 tests (desktop + phone) ran one by one for about
+  // 10 minutes. GitHub's ubuntu-latest runner has 4 vCPUs; the specs are `fullyParallel` and keep
+  // no shared state (the static server only serves files), so they run in parallel there too.
+  workers: isCI ? 4 : undefined,
   use: {
     baseURL,
     trace: 'on-first-retry',

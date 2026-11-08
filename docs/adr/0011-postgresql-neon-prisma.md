@@ -1,6 +1,6 @@
 # 0011. PostgreSQL on Neon with Prisma
 
-- Status: Accepted
+- Status: Accepted; local development and migration timing amended by [0025](0025-database-tooling-prisma-7-pglite.md) (PGlite instead of Docker)
 - Date: 2026-11-05
 - Source: `docs/PROJECT.md` 5.3, 5.7, 5.8, 6.1, 9.1, 9.5
 
@@ -16,7 +16,7 @@ Data is relational (users → folders → links ↔ tags, PROJECT.md 6.1), folde
   - duplicates — non-unique index on user + normalized URL.
 - **Prisma** as ORM, **Prisma Migrate** for schema migrations. Only parameterised queries; `$queryRawUnsafe` is forbidden (5.8).
 - **Neon (Free tier)** as cloud database. Environments: preview deploys use a separate Neon branch, production uses the main branch; preview never touches production data (5.7, 5.8).
-- **Local development**: PostgreSQL in Docker, `.env` only locally.
+- **Local development**: ~~PostgreSQL in Docker~~ PGlite, no Docker (amended by [0025](0025-database-tooling-prisma-7-pglite.md)); `.env` only locally.
 - **Timing**: stage 0 creates only the Neon project; Prisma, `docker-compose.yml` and migrations in CI come in stage 2 together with the Better Auth schema (9.1). On merge to `main`, Prisma migrations are applied to the production Neon database (9.5).
 - **No Redis cache** in stage 1.
 

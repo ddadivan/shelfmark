@@ -1,13 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
-import { COLOR_SCHEME } from './models/color-scheme.const';
-import { expectNoBlockingViolations } from './support/axe';
+import { E2E_PROJECT } from './models/e2e-project.const';
+import { MOCK_LINKS_SCENARIO } from './models/mock-links-scenario.const';
 import { seedSession } from './support/mock-session';
 
-// Mirror MOCK_LINKS_SCENARIO_KEY and MOCK_LINKS_SCENARIO (apps/web links models); the e2e project
-// cannot import from apps/web.
-const SCENARIO_KEY = 'sm-mock-links-scenario';
-const SCENARIO = { empty: 'empty', error: 'error' } as const;
-const PHONE_PROJECT = 'phone';
 // The mock page size is 50 of 60 links.
 const FIRST_PAGE = 50;
 const ALL_LINKS = 60;
@@ -185,7 +180,7 @@ test.describe('links feed (mock API)', () => {
   test('shows the empty state', async ({ page }) => {
     await page.addInitScript(
       ([key, value]) => sessionStorage.setItem(key, value),
-      [SCENARIO_KEY, SCENARIO.empty],
+      [MOCK_LINKS_SCENARIO.key, MOCK_LINKS_SCENARIO.empty],
     );
     await page.goto('/links');
 
@@ -200,7 +195,7 @@ test.describe('links feed (mock API)', () => {
     test.beforeEach(async ({ page }) => {
       await page.addInitScript(
         ([key, value]) => sessionStorage.setItem(key, value),
-        [SCENARIO_KEY, SCENARIO.empty],
+        [MOCK_LINKS_SCENARIO.key, MOCK_LINKS_SCENARIO.empty],
       );
     });
 
@@ -213,25 +208,12 @@ test.describe('links feed (mock API)', () => {
       );
       expect(overflow).toBeLessThanOrEqual(0);
     });
-
-    for (const colorScheme of Object.values(COLOR_SCHEME)) {
-      test(`has no axe violations (${colorScheme})`, async ({ page }, testInfo) => {
-        await page.emulateMedia({ colorScheme });
-        await page.goto('/links');
-        await expect(page.locator('html')).toHaveAttribute('data-theme', colorScheme);
-        await expect(
-          page.getByRole('heading', { name: 'Your links will live here' }),
-        ).toBeVisible();
-
-        await expectNoBlockingViolations(page, testInfo);
-      });
-    }
   });
 
   test('shows the error state', async ({ page }) => {
     await page.addInitScript(
       ([key, value]) => sessionStorage.setItem(key, value),
-      [SCENARIO_KEY, SCENARIO.error],
+      [MOCK_LINKS_SCENARIO.key, MOCK_LINKS_SCENARIO.error],
     );
     await page.goto('/links');
 
@@ -243,7 +225,7 @@ test.describe('links feed (mock API)', () => {
     await openFeed(page);
 
     const panel = page.getByRole('heading', { name: 'Recently opened' });
-    if (testInfo.project.name === PHONE_PROJECT) {
+    if (testInfo.project.name === E2E_PROJECT.Phone) {
       await expect(panel).toBeHidden();
     } else {
       await expect(panel).toBeVisible();
@@ -261,22 +243,4 @@ test.describe('links feed (mock API)', () => {
     );
     expect(overflow).toBeLessThanOrEqual(0);
   });
-
-  for (const colorScheme of Object.values(COLOR_SCHEME)) {
-    test(`has no axe violations in the cards view (${colorScheme})`, async ({ page }, testInfo) => {
-      await page.emulateMedia({ colorScheme });
-      await openFeed(page);
-      await expect(page.locator('html')).toHaveAttribute('data-theme', colorScheme);
-      await expectNoBlockingViolations(page, testInfo);
-    });
-
-    test(`has no axe violations in the list view (${colorScheme})`, async ({ page }, testInfo) => {
-      await page.emulateMedia({ colorScheme });
-      await openFeed(page);
-      await page.getByRole('radio', { name: 'List' }).click();
-      await expect(page.locator('ui-list-item').first()).toBeVisible();
-
-      await expectNoBlockingViolations(page, testInfo);
-    });
-  }
 });

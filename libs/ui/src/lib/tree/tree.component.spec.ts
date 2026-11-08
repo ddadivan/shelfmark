@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { axeViolations } from '../../testing/axe';
 import { UI_TREE_CONTEXT_MENU_TRIGGER } from './models/tree-context-menu-trigger.const';
 import type { UiTreeContextMenuEvent } from './models/tree-context-menu-event.interface';
@@ -83,6 +84,102 @@ async function setup() {
 describe('TreeComponent', () => {
   afterEach(() => {
     document.body.replaceChildren();
+  });
+
+  describe('focus fallback', () => {
+    const without = (id: string): readonly UiTreeNode[] =>
+      TREE_STORY_NESTED.map((node) => ({
+        ...node,
+        children: node.children?.filter((child) => child.id !== id),
+      })).filter((node) => node.id !== id);
+
+    async function focusSetup() {
+      const ctx = await setup();
+      const tree = ctx.fixture.debugElement.query(By.directive(TreeComponent))
+        .componentInstance as TreeComponent;
+      return { ...ctx, component: tree };
+    }
+
+    it('focusRow focuses a visible row and refuses hidden and unknown rows', async () => {
+      const { component, item } = await focusSetup();
+      expect(component.focusRow(TREE_STORY_ID.Courses)).toBe(true);
+      expect(document.activeElement).toBe(item(TREE_STORY_NAME.Courses));
+      // Shoes sits in the collapsed Clothes folder.
+      expect(component.focusRow(TREE_STORY_ID.Shoes)).toBe(false);
+      expect(component.focusRow('nope')).toBe(false);
+      expect(document.activeElement).toBe(item(TREE_STORY_NAME.Courses));
+    });
+
+    it('restoreFocusNear takes the nearest visible ancestor of a row hidden by a collapsed folder', async () => {
+      const { component, host, fixture, item } = await focusSetup();
+      const moved = TREE_STORY_NESTED[0].children?.[0] as UiTreeNode;
+      host.nodes.set([
+        { ...TREE_STORY_NESTED[0], children: [TREE_STORY_NESTED[0].children?.[1] as UiTreeNode] },
+        { ...TREE_STORY_NESTED[1], children: [moved, ...(TREE_STORY_NESTED[1].children ?? [])] },
+        TREE_STORY_NESTED[2],
+      ]);
+      await settle(fixture);
+      expect(component.restoreFocusNear(TREE_STORY_ID.Angular)).toBe(TREE_STORY_ID.Clothes);
+      expect(document.activeElement).toBe(item(TREE_STORY_NAME.Clothes));
+    });
+
+    it('focusRow makes the row the active one, so the arrow keys act from it', async () => {
+      const { component, item, key } = await focusSetup();
+      // Clothes is a collapsed folder; a plain DOM focus would leave Aria's active row on All links.
+      expect(component.focusRow(TREE_STORY_ID.Clothes)).toBe(true);
+      await key(item(TREE_STORY_NAME.Clothes), KEYBOARD_KEY.ArrowRight);
+      expect(item(TREE_STORY_NAME.Clothes).getAttribute('aria-expanded')).toBe('true');
+      expect(item(TREE_STORY_NAME.Clothes).getAttribute('tabindex')).toBe('0');
+    });
+
+    it('restoreFocusNear prefers the row itself when it is visible', async () => {
+      const { component, item } = await focusSetup();
+      expect(component.restoreFocusNear(TREE_STORY_ID.Courses)).toBe(TREE_STORY_ID.Courses);
+      expect(document.activeElement).toBe(item(TREE_STORY_NAME.Courses));
+    });
+
+    it('moves focus to the parent when the focused row is removed', async () => {
+      const { host, fixture, item } = await focusSetup();
+      item(TREE_STORY_NAME.Courses).focus();
+      host.nodes.set(without(TREE_STORY_ID.Courses));
+      await settle(fixture);
+      expect(document.activeElement).toBe(item(TREE_STORY_NAME.Work));
+    });
+
+    it('falls back to the previous sibling for a top-level row', async () => {
+      const { host, fixture, item } = await focusSetup();
+      item(TREE_STORY_NAME.Recipes).focus();
+      host.nodes.set(without(TREE_STORY_ID.Recipes));
+      await settle(fixture);
+      expect(document.activeElement).toBe(item(TREE_STORY_NAME.Clothes));
+    });
+
+    it('falls back to the first row when the first folder is removed', async () => {
+      const { host, fixture, item } = await focusSetup();
+      item(TREE_STORY_NAME.Work).focus();
+      host.nodes.set(without(TREE_STORY_ID.Work));
+      await settle(fixture);
+      expect(document.activeElement).toBe(item(TREE_STORY_NAME.All));
+    });
+
+    it('leaves focus alone when it is not on the removed row', async () => {
+      const { host, fixture, item } = await focusSetup();
+      const outside = document.createElement('button');
+      document.body.appendChild(outside);
+      item(TREE_STORY_NAME.Courses).focus();
+      outside.focus();
+      host.nodes.set(without(TREE_STORY_ID.Courses));
+      await settle(fixture);
+      expect(document.activeElement).toBe(outside);
+    });
+
+    it('returns null when the tree has no row', async () => {
+      const { host, fixture, component } = await focusSetup();
+      host.nodes.set([]);
+      host.fixed.set([]);
+      await settle(fixture);
+      expect(component.restoreFocusNear('gone')).toBeNull();
+    });
   });
 
   describe('structure and ARIA', () => {
