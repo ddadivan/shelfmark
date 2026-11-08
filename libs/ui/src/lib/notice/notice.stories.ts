@@ -1,4 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/angular-vite';
+import { moduleMetadata, type Meta, type StoryObj } from '@storybook/angular-vite';
+import { ButtonComponent } from '../button/button.component';
 import { ICON_NAMES } from '../icon/models/icon-names.const';
 import { NoticeComponent } from './notice.component';
 import { THEME, THEME_ATTRIBUTE } from '../theme';
@@ -8,6 +9,7 @@ const meta: Meta<NoticeComponent> = {
   title: 'Components/Notice',
   component: NoticeComponent,
   tags: ['autodocs'],
+  decorators: [moduleMetadata({ imports: [ButtonComponent] })],
   args: { kind: NOTICE_KIND.Warning },
   argTypes: {
     kind: { control: 'inline-radio', options: Object.values(NOTICE_KIND) },
@@ -41,6 +43,29 @@ export const WithLink: Story = {
   }),
 };
 
+/** Accent tint, polite `role="status"`. */
+export const Info: Story = {
+  args: { kind: NOTICE_KIND.Info },
+  render: (args) => ({
+    props: args,
+    template: `<ui-notice [kind]="kind" [icon]="icon">Links are saved to your library.</ui-notice>`,
+  }),
+};
+
+/** Full-width centred strip with a trailing action, as the demo banner. */
+export const Banner: Story = {
+  parameters: { layout: 'fullscreen' },
+  args: { kind: NOTICE_KIND.Info },
+  render: (args) => ({
+    props: args,
+    template: `
+      <ui-notice [kind]="kind" [banner]="true">
+        <strong>You're in a demo.</strong> Play with everything, this sandbox resets in 23 h.
+        <ui-button uiNoticeAction size="sm" href="#sign-in">Sign in to keep your links</ui-button>
+      </ui-notice>`,
+  }),
+};
+
 export const CustomIcon: Story = { args: { icon: 'info' } };
 
 /** Both kinds, with and without a link, in both themes. */
@@ -57,6 +82,11 @@ export const AllVariants: Story = {
               <ui-notice kind="warning">You already saved this link. <a href="#open">Open it</a></ui-notice>
               <ui-notice kind="danger">We could not load a preview for this link.</ui-notice>
               <ui-notice kind="danger">The address looks wrong. <a href="#help">Learn more</a></ui-notice>
+              <ui-notice kind="info">Links are saved to your library.</ui-notice>
+              <ui-notice kind="info" [banner]="true">
+                <strong>You're in a demo.</strong> This sandbox resets in 23 h.
+                <ui-button uiNoticeAction size="sm" href="#sign-in">Sign in to keep your links</ui-button>
+              </ui-notice>
             </div>
           </div>
         }

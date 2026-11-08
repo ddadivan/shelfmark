@@ -1,2 +1,5 @@
-<ui-icon class="ui-notice__icon" [name]="iconName()" [size]="20" />
+@if (showIcon()) {
+  <ui-icon class="ui-notice__icon" [name]="iconName()" [size]="20" />
+}
 <div class="ui-notice__body"><ng-content /></div>
+<div class="ui-notice__action"><ng-content select="[uiNoticeAction]" /></div>

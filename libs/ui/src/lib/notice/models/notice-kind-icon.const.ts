@@ -6,4 +6,5 @@ import type { NoticeKind } from './notice-kind.type';
 export const NOTICE_KIND_ICON = {
   [NOTICE_KIND.Warning]: 'warning',
   [NOTICE_KIND.Danger]: 'error',
+  [NOTICE_KIND.Info]: 'info',
 } as const satisfies Record<NoticeKind, IconName>;
