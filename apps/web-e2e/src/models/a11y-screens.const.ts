@@ -17,10 +17,6 @@ import { MOCK_FIXTURE } from './mock-fixture.const';
 import { TITLED_DIALOG_SELECTOR } from './titled-dialog-selector.const';
 
 const DUPLICATE_URL = 'https://angular.dev/overview';
-// TODO(#166): remove this disable (and `disabledRules` here) once the avatar initials are drawn
-// from CSS; until then axe counts them as visible text of the "Account menu" trigger (WCAG 2.5.3).
-// It is the only `label-content-name-mismatch` disable of the e2e suite.
-const PAGE = { disabledRules: ['label-content-name-mismatch'] } as const;
 // Dialogs and menus are laid out alike on a phone, so one project is enough for them; the ones
 // that become a bottom sheet or have long content run on both.
 const OVERLAY = { include: DIALOG_SELECTOR, only: E2E_PROJECT.Desktop } as const;
@@ -45,7 +41,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     },
   },
-  { name: 'feed, cards', open: (page) => openFeed(page), ...PAGE },
+  { name: 'feed, cards', open: (page) => openFeed(page) },
   {
     name: 'feed, list',
     open: async (page) => {
@@ -53,7 +49,6 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
       await page.getByRole('radio', { name: 'List' }).click();
       await expect(page.locator('ui-list-item').first()).toBeVisible();
     },
-    ...PAGE,
   },
   {
     name: 'folder view',
@@ -63,7 +58,6 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
         page.getByRole('heading', { level: 1, name: MOCK_FIXTURE.readingName }),
       ).toBeVisible();
     },
-    ...PAGE,
   },
   {
     name: 'folder not found',
@@ -71,7 +65,6 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
       await openSignedIn(page, '/folders/does-not-exist');
       await expect(page.getByRole('heading', { name: 'Folder not found' })).toBeVisible();
     },
-    ...PAGE,
   },
   {
     name: 'empty folder',
@@ -84,16 +77,14 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
       await dialog.getByRole('button', { name: 'Create folder' }).click();
       await expect(page.getByRole('heading', { name: 'This folder is empty' })).toBeVisible();
     },
-    ...PAGE,
   },
-  { name: 'empty feed', open: (page) => openEmptyFeed(page), ...PAGE },
+  { name: 'empty feed', open: (page) => openEmptyFeed(page) },
   {
     name: 'tag filter',
     open: async (page) => {
       await openFeed(page, `/links?tag=${MOCK_FIXTURE.tagDocs}`);
       await expect(page.getByRole('group', { name: 'Active filters' })).toBeVisible();
     },
-    ...PAGE,
   },
   {
     name: 'search, nothing found',
@@ -101,7 +92,6 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
       await openSignedIn(page, '/links?q=zzzzqq');
       await expect(page.getByRole('heading', { name: 'Nothing found for “zzzzqq”' })).toBeVisible();
     },
-    ...PAGE,
   },
   {
     name: 'search dialog',
@@ -123,7 +113,6 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
       await expect(page.getByRole('heading', { level: 1, name: 'Settings' })).toBeVisible();
       await expect(page.getByText('Export your data')).toBeVisible();
     },
-    ...PAGE,
   },
   {
     name: 'export menu',
@@ -132,7 +121,6 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
       await page.getByRole('button', { name: 'Export' }).click();
       await expect(page.getByRole('menuitem', { name: 'Everything as JSON' })).toBeVisible();
     },
-    ...PAGE,
     only: E2E_PROJECT.Desktop,
   },
   {
