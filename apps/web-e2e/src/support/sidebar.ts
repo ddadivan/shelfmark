@@ -33,13 +33,13 @@ export async function gotoWithSidebar(page: Page, path: string): Promise<void> {
 }
 
 /**
- * Closes the phone drawer with its button (focus may be lost after a dialog, so Esc is not reliable), for steps on the page itself: while it is open the CDK hides
+ * Closes the phone drawer with Esc, for steps on the page itself: while it is open the CDK hides
  * the page from assistive technology, so role queries find nothing there. No-op off the phone.
  */
 export async function closeSidebar(page: Page): Promise<void> {
   const drawer = page.getByRole('dialog', { name: 'Menu' });
   if ((await drawer.count()) > 0) {
-    await drawer.getByRole('button', { name: 'Close menu' }).click();
+    await page.keyboard.press('Escape');
     await expect(drawer).toHaveCount(0);
   }
 }

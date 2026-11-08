@@ -135,6 +135,42 @@ test.describe('mobile layout (mock API)', () => {
     expect(await overflow(page)).toBeLessThanOrEqual(0);
   });
 
+  test('Esc closes the drawer after a nested dialog and focus returns to the menu button', async ({
+    page,
+  }) => {
+    await page.goto('/links');
+    await openDrawer(page);
+
+    await library(page)
+      .getByRole('treeitem', { name: new RegExp(`^${READING.name}\\b`) })
+      .click({ button: 'right' });
+    await page.getByRole('menuitem', { name: 'Rename' }).click();
+    const dialog = page.getByRole('dialog', { name: 'Rename folder' });
+    await dialog.getByRole('button', { name: 'Cancel' }).click();
+    await expect(dialog).toHaveCount(0);
+    await expect(drawer(page)).toBeVisible();
+
+    await page.keyboard.press('Escape');
+
+    await expect(drawer(page)).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Open menu' })).toBeFocused();
+  });
+
+  test('a toast is visible and clickable above the open drawer', async ({ page }) => {
+    await page.goto('/links');
+    await openDrawer(page);
+    await library(page).getByRole('button', { name: DOCS, exact: true }).click({ button: 'right' });
+    await page.getByRole('menuitem', { name: 'Delete tag' }).click();
+    await page.getByRole('alertdialog').getByRole('button', { name: 'Delete tag' }).click();
+
+    const undo = page.getByRole('button', { name: 'Undo' });
+    await expect(undo).toBeVisible();
+    await undo.click();
+
+    await expect(library(page).getByRole('button', { name: DOCS, exact: true })).toBeVisible();
+    await expect(drawer(page)).toBeVisible();
+  });
+
   test('a long press on a folder opens its menu', async ({ page }) => {
     await page.goto('/links');
     await openDrawer(page);

@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { COLOR_SCHEME } from './models/color-scheme.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { seedSession } from './support/mock-session';
-import { closeSidebar, gotoWithSidebar, openSidebar } from './support/sidebar';
+import { gotoWithSidebar, openSidebar } from './support/sidebar';
 
 // Mirror MOCK_NAME.TagDocs / TagRecipes and MOCK_TAG_NAME (apps/web and libs/shared/contracts);
 // the e2e project cannot import from them.
@@ -195,10 +195,8 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
         await dialog.getByRole('button', { name: 'Delete tag' }).click();
 
         await expect(chip(page, DOCS)).toHaveCount(0);
-        // On a phone the open drawer covers the toast and hides the page.
-        await closeSidebar(page);
+        // The toast stays above the open drawer on a phone.
         await page.getByRole('button', { name: 'Undo' }).click();
-        await openSidebar(page);
         await expect(chip(page, DOCS)).toBeVisible();
       });
 

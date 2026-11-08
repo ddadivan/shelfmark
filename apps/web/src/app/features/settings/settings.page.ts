@@ -2,10 +2,16 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { AvatarComponent, ButtonComponent, SegmentedControlComponent } from '@shelfmark/ui';
+import {
+  AvatarComponent,
+  BUTTON_SIZE,
+  ButtonComponent,
+  SegmentedControlComponent,
+} from '@shelfmark/ui';
 import type { SegmentedOption } from '@shelfmark/ui';
 import { combineLatest, map } from 'rxjs';
 import { AuthStore } from '../../core/auth/auth.store';
+import { ViewportService } from '../../core/layout/viewport.service';
 import { THEME_PREFERENCE } from '../../core/theme/models/theme-preference.const';
 import { isThemePreference } from '../../core/theme/is-theme-preference';
 import { ThemeService } from '../../core/theme/theme.service';
@@ -31,6 +37,8 @@ import { SettingsSectionComponent } from './settings-section.component';
 })
 export default class SettingsPage {
   protected readonly auth = inject(AuthStore);
+  protected readonly viewport = inject(ViewportService);
+  protected readonly BUTTON_SIZE = BUTTON_SIZE;
   protected readonly theme = inject(ThemeService);
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
