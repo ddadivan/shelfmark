@@ -123,6 +123,15 @@ describe('TreeComponent', () => {
       expect(document.activeElement).toBe(item(TREE_STORY_NAME.Clothes));
     });
 
+    it('focusRow makes the row the active one, so the arrow keys act from it', async () => {
+      const { component, item, key } = await focusSetup();
+      // Clothes is a collapsed folder; a plain DOM focus would leave Aria's active row on All links.
+      expect(component.focusRow(TREE_STORY_ID.Clothes)).toBe(true);
+      await key(item(TREE_STORY_NAME.Clothes), KEYBOARD_KEY.ArrowRight);
+      expect(item(TREE_STORY_NAME.Clothes).getAttribute('aria-expanded')).toBe('true');
+      expect(item(TREE_STORY_NAME.Clothes).getAttribute('tabindex')).toBe('0');
+    });
+
     it('restoreFocusNear prefers the row itself when it is visible', async () => {
       const { component, item } = await focusSetup();
       expect(component.restoreFocusNear(TREE_STORY_ID.Courses)).toBe(TREE_STORY_ID.Courses);
