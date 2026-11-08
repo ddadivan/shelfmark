@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   type ArgumentsHost,
+  BadGatewayException,
   HttpException,
   Logger,
   NotFoundException,
@@ -9,9 +10,14 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import request from 'supertest';
 import { createApp } from '../../app/create-app';
 import { REQUEST_ID_HEADER } from '../request-id/request-id.middleware';
+import { TunnelUpstreamException } from '../../monitoring/tunnel-upstream.exception';
 import { AllExceptionsFilter } from './all-exceptions.filter';
 
-function callFilter(exception: unknown, headersSent = false) {
+function callFilter(
+  exception: unknown,
+  headersSent = false,
+  report: (exception: unknown, requestId: string) => Promise<void> = () => Promise.resolve(),
+) {
   const json = vi.fn();
   const status = vi.fn(() => ({ json }));
   const host = {
@@ -20,8 +26,8 @@ function callFilter(exception: unknown, headersSent = false) {
       getResponse: () => ({ locals: { requestId: 'rid-1' }, headersSent, status }),
     }),
   } as unknown as ArgumentsHost;
-  new AllExceptionsFilter().catch(exception, host);
-  return { status, json };
+  const done = new AllExceptionsFilter(report).catch(exception, host);
+  return { status, json, done };
 }
 
 describe('AllExceptionsFilter', () => {
@@ -121,6 +127,27 @@ describe('AllExceptionsFilter', () => {
     expect(errorLog).toHaveBeenCalledWith('GET /x 500 rid-1', failure.stack);
     expect(JSON.stringify(json.mock.calls)).not.toContain('secret detail');
     expect(JSON.stringify(json.mock.calls)).not.toContain('at ');
+  });
+
+  it('reports 5xx after the response was sent, but not 4xx or the tunnel upstream failure', async () => {
+    vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
+    const report = vi.fn().mockResolvedValue(undefined);
+    const failure = new Error('boom');
+    const first = callFilter(failure, false, report);
+    expect(first.json.mock.invocationCallOrder[0]).toBeLessThan(
+      report.mock.invocationCallOrder[0] ?? 0,
+    );
+    await first.done;
+    expect(report).toHaveBeenCalledWith(failure, 'rid-1');
+
+    report.mockClear();
+    await callFilter(new NotFoundException(), false, report).done;
+    await callFilter(new TunnelUpstreamException(), false, report).done;
+    expect(report).not.toHaveBeenCalled();
+
+    // Any other 502 is a real server fault.
+    await callFilter(new BadGatewayException(), false, report).done;
+    expect(report).toHaveBeenCalledTimes(1);
   });
 
   it('logs a stringified non-Error cause', () => {

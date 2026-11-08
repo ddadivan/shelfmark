@@ -5,6 +5,7 @@ import {
   UnsupportedMediaTypeException,
 } from '@nestjs/common';
 import type { Request } from 'express';
+import { CSRF_CONTENT_TYPE_EXEMPT_ROUTE } from './models/csrf-content-type-exempt-route.const';
 
 const SAFE_METHODS: readonly string[] = ['GET', 'HEAD', 'OPTIONS'];
 const CROSS_SITE = 'cross-site';
@@ -31,6 +32,7 @@ function isJson(req: Request): boolean {
  * not a trusted origin is a 403; a request with a body that is not `application/json` is a 415.
  * A present `Sec-Fetch-Site: cross-site` is a 403. Without an `Origin`, only `same-origin`, `none`
  * or no `Sec-Fetch-Site` is accepted (`same-site` is not), so non-browser clients still pass.
+ * `POST /api/monitoring/tunnel` alone is exempt from the content-type rule (Sentry sends text/plain).
  * There is no state-changing `GET`.
  */
 export class CsrfGuard implements CanActivate {
@@ -52,7 +54,11 @@ export class CsrfGuard implements CanActivate {
     if (fetchSite === CROSS_SITE || (origin === undefined && !isSameOriginFetch(fetchSite))) {
       throw new ForbiddenException('Cross-site request is not allowed');
     }
-    if (hasBody(req) && !isJson(req)) {
+    // Narrow exemption from the content-type rule only (see the constant): exact method and path.
+    const exempt =
+      req.method === CSRF_CONTENT_TYPE_EXEMPT_ROUTE.method &&
+      req.path === CSRF_CONTENT_TYPE_EXEMPT_ROUTE.path;
+    if (!exempt && hasBody(req) && !isJson(req)) {
       throw new UnsupportedMediaTypeException('Content-Type must be application/json');
     }
     return true;

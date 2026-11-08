@@ -1,4 +1,5 @@
-import { expect, test, type Page } from '@playwright/test';
+import { type Page } from '@playwright/test';
+import { expect, test } from './support/test';
 import { E2E_PROJECT } from './models/e2e-project.const';
 import { MOCK_LINKS_SCENARIO } from './models/mock-links-scenario.const';
 import { seedSession } from './support/mock-session';

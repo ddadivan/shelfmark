@@ -52,6 +52,9 @@ export { TAG_ERROR_MESSAGE } from './tags/tag-error-message.const';
 export { TAG_LIMIT } from './tags/tag-limit.const';
 export { normalizeTagName } from './tags/normalize-tag-name';
 
+export type { MonitoringConfig } from './monitoring/monitoring-config.interface';
+export { MONITORING_TUNNEL_ROUTE } from './monitoring/monitoring-tunnel-route.const';
+export { MONITORING_CONFIG_ROUTE } from './monitoring/monitoring-config-route.const';
 export type { OnboardingResponse } from './users/onboarding-response.interface';
 export type { ExportFormat } from './export/export-format.type';
 export type { ExportQuery } from './export/export-query.interface';

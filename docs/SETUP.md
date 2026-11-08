@@ -16,11 +16,20 @@ Conventions:
 - [ ] **Playwright browser**: `npx playwright install chromium` (only Chromium in stage 0, ADR 0008).
 - [ ] **Run**:
 
-| What | Command | URL |
-| --- | --- | --- |
-| Web | `npx nx serve web` | http://localhost:4200 (proxies `/api` to port 3000) |
-| API | `npx nx serve api` | http://localhost:3000/api, Swagger at `/api/docs` |
-| E2E | `npx nx e2e web-e2e` | starts or reuses the web server on 4200 |
+| What | Command (npm alias) | Same as | URL |
+| --- | --- | --- | --- |
+| Web | `npm start` | `npx nx serve web` | http://localhost:4200 (proxies `/api` to port 3000) |
+| API | `npm run start:api` | `npx nx serve api` | http://localhost:3000/api, Swagger at `/api/docs` |
+| Web + API | `npm run start:all` | `npx nx run-many -t serve -p web api` | both of the above |
+| E2E | `npm run e2e` | `npx nx e2e web-e2e` | starts or reuses the web server on 4200 |
+| Storybook | `npm run storybook` | `npx nx storybook ui` | the URL it prints |
+
+**Mock or real data.** `npm start` alone runs the web app on in-browser mocks: sign-in, links, folders and tags work without the API or any keys, and data lives in `localStorage`. To use the real API locally:
+
+1. Export `BETTER_AUTH_SECRET` in the shell (any random value of 32+ characters, for example `openssl rand -base64 32`; it is required even locally, see 4.3). The OAuth variables are optional locally.
+2. `npm run start:all`.
+3. In the browser console on http://localhost:4200: `localStorage.setItem('sm-real-auth-api', '1')`, then reload. `localStorage.removeItem('sm-real-auth-api')` goes back to the mocks.
+4. Sign in with **Try demo** (no OAuth keys needed), or with Google / GitHub once their local client variables are exported (section 4).
 
 Port notes: keep the API on **3000** (`PORT`); the web dev proxy targets it. If 4200 is busy, run e2e with `E2E_PORT=4210 npx nx e2e web-e2e`. `nx serve api` sets `NODE_ENV=development` for you.
 
@@ -172,7 +181,7 @@ Settings → **Environment Variables**. Each variable is set per environment: **
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | production client | not set until ADR 0026 is decided | Both or neither; mark Sensitive |
 | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | production app | not set until ADR 0026 is decided | Both or neither; mark Sensitive |
 | `CRON_SECRET` | own value, at least 32 characters | not set | Mark Sensitive. Vercel sends it as `Authorization: Bearer …` to the daily demo cleanup (`vercel.json` `crons`, ADR 0034); see 5.8. Cron jobs run on Production deployments only |
-| Sentry DSN | | | Stage 7 |
+| `SENTRY_DSN`, `SENTRY_WEB_DSN` | DSN of the API / web Sentry project | optional, empty by default | Issue #109, ADR 0032. Create two Sentry projects (Node.js for the API, Browser JavaScript for the web), copy each DSN (a public client key, not a secret). Empty = monitoring off. Vercel supplies `VERCEL_ENV` (environment) and `VERCEL_GIT_COMMIT_SHA` (release) itself. Redeploy after setting. |
 
 Mark every secret as **Sensitive** (value cannot be read back in the dashboard). Do not set `PORT` on Vercel. An env change applies only to **new** deployments: redeploy after editing.
 

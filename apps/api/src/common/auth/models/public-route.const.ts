@@ -1,4 +1,9 @@
-import { CRON_ENDPOINT, DEMO_ENDPOINT } from '@shelfmark/contracts';
+import {
+  CRON_ENDPOINT,
+  DEMO_ENDPOINT,
+  MONITORING_CONFIG_ROUTE,
+  MONITORING_TUNNEL_ROUTE,
+} from '@shelfmark/contracts';
 import { HTTP_METHOD } from './http-method.const';
 import type { PublicRoute } from './public-route.interface';
 
@@ -12,6 +17,17 @@ export const PUBLIC_ROUTES: readonly PublicRoute[] = [
     method: HTTP_METHOD.Get,
     path: '/api/health',
     reason: 'uptime probes and the deploy smoke check',
+  },
+  {
+    method: HTTP_METHOD.Get,
+    path: `/api${MONITORING_CONFIG_ROUTE}`,
+    reason: 'the web app reads the public Sentry DSN before any sign-in (ADR 0032)',
+  },
+  {
+    method: HTTP_METHOD.Post,
+    path: `/api${MONITORING_TUNNEL_ROUTE}`,
+    reason:
+      'browser errors can happen without a session; envelopes for our own DSN only (ADR 0032)',
   },
   {
     method: HTTP_METHOD.Post,
