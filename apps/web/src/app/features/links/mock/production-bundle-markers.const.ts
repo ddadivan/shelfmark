@@ -38,4 +38,5 @@ export const PRODUCTION_BUNDLE_MARKERS = [
   'Mock: export failed',
   'sm-mock-export',
   'mock-fail',
+  'sm-mock-account-deletion',
 ] as const;

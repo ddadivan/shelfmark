@@ -1,0 +1,34 @@
+<form [formRoot]="form">
+  <ui-dialog
+    [title]="'settings.delete.dialog.title' | transloco"
+    [closeLabel]="'settings.delete.dialog.close' | transloco"
+  >
+    <div class="delete-account__body">
+      <p class="delete-account__text">{{ 'settings.delete.dialog.text' | transloco }}</p>
+
+      <ui-input
+        [label]="'settings.delete.dialog.label' | transloco"
+        [hint]="'settings.delete.dialog.hint' | transloco: { email: data.email }"
+        [formField]="form.email"
+      />
+
+      @if (errorKey(); as key) {
+        <ui-notice [kind]="NOTICE_KIND.Danger">{{ key | transloco }}</ui-notice>
+      }
+    </div>
+
+    <ui-button slot="footer" [disabled]="deleting()" (click)="cancel()">{{
+      'settings.delete.dialog.cancel' | transloco
+    }}</ui-button>
+    <ui-button
+      slot="footer"
+      [type]="BUTTON_TYPE.Submit"
+      [variant]="BUTTON_VARIANT.Danger"
+      [disabled]="!matches()"
+      [loading]="deleting()"
+      >{{
+        (deleting() ? 'settings.delete.dialog.deleting' : 'settings.delete.action') | transloco
+      }}</ui-button
+    >
+  </ui-dialog>
+</form>

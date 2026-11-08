@@ -5,6 +5,7 @@ import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import axe from 'axe-core';
 import { firstValueFrom } from 'rxjs';
 import { AUTH_API } from '../../core/auth/auth-api.token';
+import { ACCOUNT_DELETION_API } from '../account-deletion/models/account-deletion-api.const';
 import { ONBOARDING_API } from '../onboarding/models/onboarding-api.const';
 import { AuthStore } from '../../core/auth/auth.store';
 import { AuthApi } from '../../core/auth/models/auth-api.interface';
@@ -27,11 +28,11 @@ const USER: AuthUser = {
   onboardingCompletedAt: '2020-01-01T00:00:00.000Z',
 };
 
-async function setup() {
+async function setup(user: AuthUser = USER) {
   localStorage.removeItem(THEME_STORAGE_KEY);
   const onboardingApi = { complete: vi.fn(), reset: vi.fn(() => Promise.resolve()) };
   const api: AuthApi = {
-    getSession: () => Promise.resolve(USER),
+    getSession: () => Promise.resolve(user),
     signIn: vi.fn(),
     signInDemo: vi.fn(),
     signOut: vi.fn(() => Promise.resolve()),
@@ -46,6 +47,7 @@ async function setup() {
       provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
       { provide: AUTH_API, useValue: api },
       { provide: ONBOARDING_API, useValue: onboardingApi },
+      { provide: ACCOUNT_DELETION_API, useValue: { delete: vi.fn() } },
     ],
   });
   await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
@@ -127,6 +129,28 @@ describe('SettingsPage', () => {
     expect(onboardingApi.reset).toHaveBeenCalledTimes(1);
     expect(store.user()?.onboardingCompletedAt).toBeNull();
     expect(button?.disabled).toBe(false);
+  });
+
+  it('offers "Delete account" in a danger section and opens the confirmation', async () => {
+    const { root, harness } = await setup();
+    const button = Array.from(root.querySelectorAll('button')).find((b) =>
+      b.textContent?.includes('Delete account'),
+    );
+
+    expect(root.querySelector('.settings-section--danger')).not.toBeNull();
+    button?.click();
+    await harness.fixture.whenStable();
+
+    await vi.waitFor(() => {
+      expect(document.querySelector('[role="alertdialog"]')).not.toBeNull();
+    });
+    document.querySelectorAll('.cdk-overlay-container').forEach((e) => e.replaceChildren());
+  });
+
+  it('hides "Delete account" for a demo user (the sandbox expires by itself)', async () => {
+    const { root } = await setup({ ...USER, isDemo: true });
+
+    expect(root.textContent).not.toContain('Delete account');
   });
 
   it('goes back to the links', async () => {

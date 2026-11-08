@@ -74,4 +74,17 @@
       </ui-button>
     </app-settings-row>
   </app-settings-section>
+
+  @if (auth.user(); as user) { @if (!user.isDemo) {
+  <app-settings-section [heading]="'settings.delete.title' | transloco" danger>
+    <app-settings-row
+      [label]="'settings.delete.title' | transloco"
+      [hint]="'settings.delete.hint' | transloco"
+    >
+      <ui-button variant="danger" (click)="deleteAccount()">
+        {{ 'settings.delete.action' | transloco }}
+      </ui-button>
+    </app-settings-row>
+  </app-settings-section>
+  } }
 </div>
