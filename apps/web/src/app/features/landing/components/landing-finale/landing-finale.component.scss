@@ -1,0 +1,33 @@
+@use 'ui' as *;
+@use '../../landing' as landing;
+
+:host {
+  display: block;
+  border-top: 1px solid var(--border);
+}
+
+.landing-finale {
+  @include landing.wrap;
+  @include landing.reveal;
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  align-items: center;
+  justify-content: space-between;
+  padding-block: rem(40px);
+
+  @include tablet-up {
+    padding-block: rem(56px);
+  }
+}
+
+.landing-finale__title {
+  @include landing.section-title;
+}
+
+.landing-finale__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(10px);
+}

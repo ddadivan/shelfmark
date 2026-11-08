@@ -1,0 +1,20 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.sidebar {
+  padding: var(--space-3);
+}
+
+.sidebar__error {
+  @include type(caption);
+
+  margin: var(--space-3) 0 0;
+  color: var(--text-muted);
+}
+
+.sidebar__new {
+  margin-top: var(--space-3);
+}

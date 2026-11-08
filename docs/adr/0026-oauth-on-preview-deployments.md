@@ -83,3 +83,9 @@ Adopt **Option 3**. Previews sign in only through the demo flow. Google and GitH
 ## Question for the author
 
 Do you accept Option 3 (demo only on previews)? Or do you want OAuth on previews now, which means Option 4 with its extra setup?
+
+## Update: preview base URL (issue #64)
+
+Decision by the author: on Vercel **preview** deployments only (`VERCEL_ENV=preview`), an unset `BETTER_AUTH_URL` falls back to `https://${VERCEL_BRANCH_URL}`, then `https://${VERCEL_URL}`. Both hostnames are added to the trusted origins, so the deployment URL and the branch alias both work. Production still requires an explicit https `BETTER_AUTH_URL`, and an explicit value always wins. The hostnames are parsed as https origins; a path, credentials or an invalid host stops the boot.
+
+Why it is safe: previews sit behind Vercel Authentication (only the author can open them), they register no OAuth providers (so no redirect URI depends on the origin), and the values come from the Vercel platform, not from a request. Preview then needs only its own `BETTER_AUTH_SECRET`.

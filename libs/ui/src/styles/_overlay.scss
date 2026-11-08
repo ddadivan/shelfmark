@@ -41,9 +41,10 @@ $overlay-layers: (
 }
 
 // Panes of global overlays (toasts) span the viewport edge; the content takes pointer events
-// itself, so the empty strip never blocks clicks on the page below.
+// itself, so the empty strip never blocks clicks on the page below. The selector also names
+// `.cdk-overlay-pane` so it beats the CDK `pointer-events: auto` (its runtime style comes later).
 @mixin overlay-passthrough {
-  .ui-overlay-pane--passthrough {
+  .cdk-overlay-pane.ui-overlay-pane--passthrough {
     pointer-events: none;
   }
 }

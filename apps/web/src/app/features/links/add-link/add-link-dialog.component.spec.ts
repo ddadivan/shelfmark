@@ -3,7 +3,7 @@ import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import type { LinkPreviewResponse, LinkResponse } from '@shelfmark/contracts';
 import { MOCK_ID, MOCK_LINK_PREVIEW_DUPLICATE, MOCK_LINKS } from '@shelfmark/contracts/testing';
 import axe from 'axe-core';
-import { delay, of, throwError, type Observable } from 'rxjs';
+import { delay, of, tap, throwError, type Observable } from 'rxjs';
 import { APP_LANG } from '../../../core/i18n/models/app-lang.const';
 import { AppTranslocoLoader } from '../../../core/i18n/app-transloco.loader';
 import { translocoConfig } from '../../../core/i18n/transloco.config';
@@ -28,9 +28,21 @@ const PLAIN: LinkPreviewResponse = {
   duplicate: null,
 };
 
-interface FakeApi extends LinksApi {
+const EDITED: LinkResponse = {
+  ...MOCK_LINKS[0],
+  url: 'https://example.org/saved',
+  title: 'Saved title',
+  note: 'A note',
+  folderId: MOCK_ID.FolderAngular,
+  tags: ['docs'],
+  createdAt: '2026-10-17T12:00:00Z',
+  lastOpenedAt: '2026-11-06T12:00:00Z',
+};
+
+interface FakeApi extends Pick<LinksApi, 'preview' | 'create' | 'update'> {
   preview: ReturnType<typeof vi.fn<LinksApi['preview']>>;
   create: ReturnType<typeof vi.fn<LinksApi['create']>>;
+  update: ReturnType<typeof vi.fn<LinksApi['update']>>;
 }
 
 function fakeApi(preview: () => Observable<LinkPreviewResponse>): FakeApi {
@@ -38,6 +50,9 @@ function fakeApi(preview: () => Observable<LinkPreviewResponse>): FakeApi {
     preview: vi.fn<LinksApi['preview']>(preview),
     create: vi.fn<LinksApi['create']>((request) =>
       of<LinkResponse>({ ...MOCK_LINKS[0], url: request.url, title: request.title ?? request.url }),
+    ),
+    update: vi.fn<LinksApi['update']>((id, request) =>
+      of<LinkResponse>({ ...EDITED, id, ...request }),
     ),
   };
 }
@@ -132,6 +147,14 @@ describe('AddLinkDialogComponent', () => {
     expect(dialog().textContent).toContain('Paste a link');
     expect(dialog().querySelector('.add-link__preview')).toBeNull();
     expect(api.preview).not.toHaveBeenCalled();
+  });
+
+  it('puts focus on the link field when it opens', async () => {
+    await setup(fakeApi(() => of(PLAIN)));
+
+    await until(() => {
+      expect(document.activeElement).toBe(input('Link'));
+    });
   });
 
   it('shows the required message when saving an empty form and does not save', async () => {
@@ -294,6 +317,62 @@ describe('AddLinkDialogComponent', () => {
     expect(outcome?.action).toBe(ADD_LINK_ACTION.Saved);
   });
 
+  describe('tags', () => {
+    function addTag(text: string): void {
+      const tags = dialog().querySelector<HTMLInputElement>('ui-tag-input input');
+      if (!tags) {
+        throw new Error('no tag input');
+      }
+      tags.value = text;
+      tags.dispatchEvent(new Event('input'));
+      tags.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    }
+
+    it('turns spaces in a new tag into hyphens in the chip and in the saved link', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      const { result } = await setup(api);
+
+      await type('Link', 'https://example.org/post');
+      addTag('winter  sale');
+      addTag('Winter-Sale');
+      await until(() => {
+        expect(dialog().querySelector('ui-tag-input')?.textContent).toContain('winter-sale');
+        expect(input('Title').value).toBe('A fine post');
+      });
+      button('Save link').click();
+      await result;
+
+      expect(api.create).toHaveBeenCalledWith(expect.objectContaining({ tags: ['winter-sale'] }));
+    });
+
+    it('suggests the existing tags of the store with their link counts', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      await setup(api);
+      const tags = dialog().querySelector<HTMLInputElement>('ui-tag-input input');
+      if (!tags) {
+        throw new Error('no tag input');
+      }
+
+      tags.focus();
+      tags.value = 'doc';
+      tags.dispatchEvent(new Event('input'));
+
+      await until(() => {
+        const options = [...document.querySelectorAll('[role="option"]')].map(
+          (option) => option.textContent ?? '',
+        );
+        expect(options.some((text) => /docs.*\d+ links?/.test(text))).toBe(true);
+      });
+    });
+
+    it('prefills the tags of an edited link in their stored spelling', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      await setup(api, { link: { ...EDITED, tags: ['winter-sale'] } });
+
+      expect(dialog().querySelector('ui-tag-input')?.textContent).toContain('winter-sale');
+    });
+  });
+
   it('shows an error and stays open when saving fails', async () => {
     const api = fakeApi(() => of(PLAIN));
     api.create.mockReturnValue(throwError(() => new Error('boom')));
@@ -409,6 +488,136 @@ describe('AddLinkDialogComponent', () => {
 
     const outcome = await result;
     expect(outcome?.action).toBe(ADD_LINK_ACTION.Saved);
+  });
+
+  describe('edit mode', () => {
+    it('is prefilled, titled "Edit link" and shows when it was saved and opened', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      await setup(api, { link: EDITED });
+
+      expect(dialog().textContent).toContain('Edit link');
+      expect(input('Link').value).toBe('https://example.org/saved');
+      expect(input('Title').value).toBe('Saved title');
+      expect(input('Note').value).toBe('A note');
+      expect(dialog().textContent).toMatch(/Saved .* ago, last opened /);
+      expect(dialog().querySelector('.add-link__preview')).toBeNull();
+      button('Save changes');
+      button('Delete');
+      expect(api.preview).not.toHaveBeenCalled();
+    });
+
+    it('says "never opened" for a link that was not opened', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      await setup(api, { link: { ...EDITED, lastOpenedAt: null } });
+
+      expect(dialog().textContent).toContain('never opened');
+    });
+
+    it('sends only the changed fields and resolves with the updated link', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      const { result } = await setup(api, { link: EDITED });
+
+      await type('Title', ' New title ');
+      await type('Note', '');
+      button('Save changes').click();
+
+      const outcome = await result;
+      expect(api.update).toHaveBeenCalledWith(EDITED.id, { title: 'New title', note: null });
+      expect(api.create).not.toHaveBeenCalled();
+      expect(outcome?.action).toBe(ADD_LINK_ACTION.Saved);
+    });
+
+    it('closes without a request when nothing changed', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      const { result } = await setup(api, { link: EDITED });
+
+      button('Save changes').click();
+
+      expect(await result).toBeUndefined();
+      expect(api.update).not.toHaveBeenCalled();
+    });
+
+    it('does not autofill the title from the preview of a changed URL', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      await setup(api, { link: EDITED });
+
+      await type('Link', 'https://example.org/post');
+      await until(() => {
+        expect(api.preview).toHaveBeenCalledTimes(1);
+      });
+      expect(input('Title').value).toBe('Saved title');
+      expect(dialog().querySelector('.add-link__preview')).toBeNull();
+    });
+
+    it('does not treat the link itself as a duplicate', async () => {
+      let answered!: () => void;
+      const previewAnswered = new Promise<void>((resolve) => {
+        answered = resolve;
+      });
+      const api = fakeApi(() => of(MOCK_LINK_PREVIEW_DUPLICATE).pipe(tap({ complete: answered })));
+      await setup(api, { link: { ...EDITED, id: MOCK_ID.LinkAngular } });
+      await type('Link', MOCK_LINK_PREVIEW_DUPLICATE.preview.url);
+      await previewAnswered;
+      // Let the resource publish the answer and the view render it.
+      await Promise.resolve();
+      TestBed.tick();
+      expect(dialog().querySelector('ui-notice')).toBeNull();
+    });
+
+    it('warns about a duplicate of another link and offers no "Open saved"', async () => {
+      const api = fakeApi(() => of(MOCK_LINK_PREVIEW_DUPLICATE));
+      await setup(api, { link: { ...EDITED, id: 'another-id' } });
+
+      await type('Link', MOCK_LINK_PREVIEW_DUPLICATE.preview.url);
+      await until(() => {
+        expect(dialog().querySelector('ui-notice')?.textContent).toContain('already saved');
+      });
+      expect(() => button('Open saved')).toThrow();
+      button('Save changes');
+    });
+
+    it('requires a title and does not save without one', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      await setup(api, { link: EDITED });
+
+      await type('Title', '  ');
+      button('Save changes').click();
+      await until(() => {
+        expect(dialog().textContent).toContain('Enter a title');
+      });
+      expect(api.update).not.toHaveBeenCalled();
+    });
+
+    it('hands the link back to the caller on Delete', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      const { result } = await setup(api, { link: EDITED });
+
+      button('Delete').click();
+
+      expect(await result).toEqual({ action: ADD_LINK_ACTION.Delete, link: EDITED });
+      expect(api.update).not.toHaveBeenCalled();
+    });
+
+    it('shows an error and stays open when the update fails', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      api.update.mockReturnValue(throwError(() => new Error('boom')));
+      await setup(api, { link: EDITED });
+
+      await type('Title', 'Changed');
+      button('Save changes').click();
+      await until(() => {
+        expect(dialog().textContent).toContain("Couldn't save the link");
+      });
+      expect(button('Save changes').disabled).toBe(false);
+    });
+
+    it('has no axe violations', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      await setup(api, { link: EDITED });
+
+      const results = await axe.run(dialog(), { rules: { 'color-contrast': { enabled: false } } });
+      expect(results.violations.map((v) => `${v.id}: ${v.help}`)).toEqual([]);
+    });
   });
 
   it('has no axe violations', async () => {

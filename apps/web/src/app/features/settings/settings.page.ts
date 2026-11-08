@@ -2,10 +2,19 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { AvatarComponent, ButtonComponent, SegmentedControlComponent } from '@shelfmark/ui';
+import {
+  AvatarComponent,
+  BUTTON_SIZE,
+  ButtonComponent,
+  SegmentedControlComponent,
+} from '@shelfmark/ui';
 import type { SegmentedOption } from '@shelfmark/ui';
 import { combineLatest, map } from 'rxjs';
+import { EXPORT_FORMAT, type ExportFormat } from '@shelfmark/contracts';
+import { ExportActionsService } from '../export/export-actions.service';
 import { AuthStore } from '../../core/auth/auth.store';
+import { ViewportService } from '../../core/layout/viewport.service';
+import { OnboardingStore } from '../onboarding/onboarding.store';
 import { THEME_PREFERENCE } from '../../core/theme/models/theme-preference.const';
 import { isThemePreference } from '../../core/theme/is-theme-preference';
 import { ThemeService } from '../../core/theme/theme.service';
@@ -31,7 +40,14 @@ import { SettingsSectionComponent } from './settings-section.component';
 })
 export default class SettingsPage {
   protected readonly auth = inject(AuthStore);
+  protected readonly viewport = inject(ViewportService);
+  protected readonly signOutSize = computed(() =>
+    this.viewport.phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Md,
+  );
   protected readonly theme = inject(ThemeService);
+  protected readonly onboarding = inject(OnboardingStore);
+  private readonly exporter = inject(ExportActionsService);
+  protected readonly EXPORT_FORMAT = EXPORT_FORMAT;
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
 
@@ -61,6 +77,10 @@ export default class SettingsPage {
   protected async back(event: MouseEvent): Promise<void> {
     event.preventDefault();
     await this.router.navigateByUrl(this.linksHref);
+  }
+
+  protected async exportAll(format: ExportFormat): Promise<void> {
+    await this.exporter.download(format);
   }
 
   protected async signOut(): Promise<void> {

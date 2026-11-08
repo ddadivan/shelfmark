@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { MOCK_USER, openAccountMenu, seedSession } from './support/mock-session';
+import { dismissOnboarding, MOCK_USER, openAccountMenu, seedSession } from './support/mock-session';
 
 const GITHUB_BUTTON = 'Continue with GitHub';
 
@@ -16,6 +16,7 @@ test.describe('sign-in flow (mock auth)', () => {
 
     await page.getByRole('button', { name: GITHUB_BUTTON }).click();
 
+    await dismissOnboarding(page);
     await expect(page).toHaveURL(/\/links$/);
     await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
   });
