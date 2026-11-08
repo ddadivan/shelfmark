@@ -7,6 +7,7 @@ import { createIsolationUsers } from '../../test-utils/isolation/create-isolatio
 import { asUser } from '../../test-utils/isolation/test-agent';
 import type { AuthTestApp } from '../../test-utils/models/auth-test-app.interface';
 import type { IsolationUsers } from '../../test-utils/models/isolation-users.interface';
+import { resetRateLimits } from '../../test-utils/reset-rate-limits';
 import { setCookiesOf } from '../../test-utils/sign-in-as';
 
 const ME = '/api/me';
@@ -27,6 +28,19 @@ async function seedLibrary(t: AuthTestApp, userId: string, label: string): Promi
   });
   const tag = await prisma.tag.create({ data: { userId, name: `${label}-tag` } });
   await prisma.linkTag.create({ data: { linkId: link.id, tagId: tag.id } });
+  await prisma.feedback.create({ data: { userId, milestone: 'day3', score: 8 } });
+  await prisma.linkImage.create({
+    data: {
+      userId,
+      linkId: link.id,
+      kind: 'favicon',
+      contentType: 'image/webp',
+      bytes: Buffer.from('webp'),
+      width: 16,
+      height: 16,
+      sha256: label.padEnd(64, '0'),
+    },
+  });
 }
 
 async function countsFor(t: AuthTestApp, userId: string, email: string) {
@@ -42,6 +56,8 @@ async function countsFor(t: AuthTestApp, userId: string, email: string) {
     linkTags: await prisma.linkTag.count({
       where: { linkId: { in: links.map((l) => l.id) } },
     }),
+    feedback: await prisma.feedback.count({ where: { userId } }),
+    linkImages: await prisma.linkImage.count({ where: { userId } }),
     verifications: await prisma.verification.count({ where: { identifier: email } }),
   };
 }
@@ -55,6 +71,7 @@ describe('DELETE /api/me', () => {
   });
 
   beforeEach(async () => {
+    resetRateLimits(t.app);
     users = await createIsolationUsers(t);
     await seedLibrary(t, users.owner.userId, 'owner');
     await seedLibrary(t, users.intruder.userId, 'intruder');
@@ -86,6 +103,8 @@ describe('DELETE /api/me', () => {
       links: 1,
       tags: 1,
       linkTags: 1,
+      feedback: 1,
+      linkImages: 1,
       verifications: 1,
     });
     expect(await t.db.prisma.verification.count()).toBe(3);
@@ -104,6 +123,8 @@ describe('DELETE /api/me', () => {
       links: 0,
       tags: 0,
       linkTags: 0,
+      feedback: 0,
+      linkImages: 0,
       verifications: 0,
     });
     // Both the exact and the differently cased rows of the user are gone; the intruder's survives.
@@ -123,6 +144,8 @@ describe('DELETE /api/me', () => {
       links: 1,
       tags: 1,
       linkTags: 1,
+      feedback: 1,
+      linkImages: 1,
       verifications: 1,
     });
     await asUser(t.app, users.intruder).get(AUTH_ENDPOINT.GetSession).expect(200);
@@ -226,6 +249,8 @@ describe('DELETE /api/me', () => {
       links: 0,
       tags: 0,
       linkTags: 0,
+      feedback: 0,
+      linkImages: 0,
       verifications: 0,
     });
     expect(
@@ -233,6 +258,16 @@ describe('DELETE /api/me', () => {
         where: { identifier: { equals: 'owner@example.com', mode: 'insensitive' } },
       }),
     ).toBe(0);
+  });
+
+  it('answers 429 after 5 attempts in a minute and deletes nothing more', async () => {
+    const agent = asUser(t.app, users.owner);
+    for (let i = 0; i < 5; i++) {
+      await agent.delete(ME).send({ email: 'wrong@example.com' }).expect(400);
+    }
+    const res = await agent.delete(ME).send({ email: 'owner@example.com' }).expect(429);
+    expect(res.body).toMatchObject({ statusCode: 429 });
+    expect(await t.db.prisma.user.count({ where: { id: users.owner.userId } })).toBe(1);
   });
 
   it('propagates a failing transaction as a generic 500 and deletes nothing', async () => {

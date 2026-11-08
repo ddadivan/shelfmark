@@ -22,6 +22,8 @@ import type { Request, Response } from 'express';
 import { SET_COOKIE_HEADER } from '../auth/models/auth-session-cookie.const';
 import { SessionCookieService } from '../auth/session-cookie.service';
 import { CurrentUser } from '../common/auth/current-user.decorator';
+import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
+import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
 import { ApiErrorResponseDto } from '../common/errors/dto/api-error-response.dto';
 import { DeleteAccountRequestDto } from './dto/delete-account-request.dto';
 import { OnboardingResponseDto } from './dto/onboarding-response.dto';
@@ -37,6 +39,8 @@ export class UsersController {
     private readonly sessionCookies: SessionCookieService,
   ) {}
 
+  // Irreversible and guessable by a stolen session: stricter than the global default (5.8).
+  @RateLimit(RATE_LIMIT.DeleteAccount)
   @Delete()
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete the account and all data' })
