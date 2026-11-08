@@ -131,6 +131,7 @@ test.describe('folders (mock API)', () => {
       await dialog.getByLabel('Name').fill('Library');
       await dialog.getByRole('button', { name: 'Rename' }).click();
 
+      await expect(dialog).toHaveCount(0);
       await closeSidebar(page);
       await expect(page.getByRole('heading', { level: 1, name: 'Library' })).toBeVisible();
       await openSidebar(page);
