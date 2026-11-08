@@ -3,6 +3,7 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import {
   FEEDBACK_LIMIT,
@@ -46,11 +47,13 @@ export class FeedbackService {
 
   /** Saves a rating, feedback or a skip. The first write creates the row; a repeat appends the comment. */
   async record(userId: string, request: RecordFeedbackRequest): Promise<void> {
+    // These checks run outside the transaction on purpose: isDemo never turns back on for a user and
+    // onboarding completion is one-way, so a concurrent change cannot invalidate them.
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { createdAt: true, isDemo: true, onboardingCompletedAt: true },
     });
-    if (!user) throw new ForbiddenException();
+    if (!user) throw new UnauthorizedException();
     if (user.isDemo) throw new ForbiddenException(FEEDBACK_ERROR_MESSAGE.DemoUser);
     if (user.onboardingCompletedAt === null) {
       throw new ConflictException(FEEDBACK_ERROR_MESSAGE.OnboardingPending);
@@ -81,11 +84,12 @@ export class FeedbackService {
       if (existing.score !== request.score) {
         throw new ConflictException(FEEDBACK_ERROR_MESSAGE.ScoreMismatch);
       }
-      if (request.comment === undefined) return;
+      if (request.comment == null) return;
       const combined =
         existing.comment === null
           ? request.comment
           : existing.comment + FEEDBACK_COMMENT_SEPARATOR + request.comment;
+      // UTF-16 length, stricter than the database char_length (code points) by design.
       if (combined.length > FEEDBACK_LIMIT.CommentMax) {
         throw new BadRequestException(FEEDBACK_ERROR_MESSAGE.CommentTooLong);
       }

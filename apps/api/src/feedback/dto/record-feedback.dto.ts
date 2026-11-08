@@ -7,7 +7,7 @@ import {
   type RecordFeedbackRequest,
 } from '@shelfmark/contracts';
 import { Transform } from 'class-transformer';
-import { IsIn, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsIn, IsString, MaxLength, ValidateIf } from 'class-validator';
 import { NoControlChars } from '../../common/validation/no-control-chars.decorator';
 import { IsFeedbackScore } from './feedback-score.decorator';
 import { NoCommentWithoutScore } from './no-comment-without-score.decorator';
@@ -40,7 +40,8 @@ export class RecordFeedbackDto implements RecordFeedbackRequest {
     description:
       'Needs a score. A repeat for the same milestone (same score) appends it after a blank line; all comments together stay within the limit',
   })
-  @IsOptional()
+  // Absent is fine; null is not (IsOptional would let it through), so IsString reports it.
+  @ValidateIf((_object, value: unknown) => value !== undefined)
   @TrimToAbsent()
   @IsString()
   @NoControlChars(true)

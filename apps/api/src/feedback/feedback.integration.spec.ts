@@ -19,8 +19,7 @@ const RECORD = FEEDBACK_ENDPOINT.Record;
 const DAY = 86_400_000;
 const NOW = new Date();
 
-// Test-level retries (2): same PGlite socket-server artifact as the links concurrency spec.
-describe('feedback API', { retry: 2 }, () => {
+describe('feedback API', () => {
   let t: AuthTestApp;
   let users: IsolationUsers;
   let a: TestAgent;
@@ -108,6 +107,13 @@ describe('feedback API', { retry: 2 }, () => {
       expect(await promptOf(a)).toBeNull();
     });
 
+    it('turns from null to day3 when the clock passes 3 days', async () => {
+      await signUpAgo(users.owner.userId, 3 * DAY - 1);
+      expect(await promptOf(a)).toBeNull();
+      vi.setSystemTime(new Date(NOW.getTime() + 1));
+      expect(await promptOf(a)).toBe('day3');
+    });
+
     it('is never cached', async () => {
       const res = await a.get(PROMPT).expect(200);
       expect(res.headers['cache-control']).toBe('no-store');
@@ -158,6 +164,8 @@ describe('feedback API', { retry: 2 }, () => {
         ['a string score', { milestone: 'day3', score: '5' }],
         ['a comment with a null score', { milestone: 'day3', score: null, comment: 'hi' }],
         ['a non-string comment', { milestone: 'day3', score: 5, comment: 12 }],
+        ['a null comment', { milestone: 'day3', score: 5, comment: null }],
+        ['a null comment with a null score', { milestone: 'day3', score: null, comment: null }],
         ['a comment over the limit', { milestone: 'day3', score: 5, comment: 'x'.repeat(2001) }],
         ['NUL in the comment', { milestone: 'day3', score: 5, comment: 'a\u0000b' }],
         ['ESC in the comment', { milestone: 'day3', score: 5, comment: 'a\u001bb' }],
@@ -228,6 +236,12 @@ describe('feedback API', { retry: 2 }, () => {
         ]);
       });
 
+      it('400 for a null comment on a repeat, the stored comment stays', async () => {
+        await send(a, { milestone: 'day3', score: 4, comment: 'kept' }).expect(204);
+        await send(a, { milestone: 'day3', score: 4, comment: null }).expect(400);
+        expect(await rows(users.owner.userId)).toMatchObject([{ comment: 'kept' }]);
+      });
+
       it('changes nothing without a comment', async () => {
         await send(a, { milestone: 'day3', score: 4, comment: 'kept' }).expect(204);
         await send(a, { milestone: 'day3', score: 4 }).expect(204);
@@ -252,21 +266,33 @@ describe('feedback API', { retry: 2 }, () => {
         expect((await rows(users.owner.userId))[0]?.comment).toHaveLength(1500);
       });
 
-      it('two parallel first writes make one row and keep both comments', async () => {
-        for (const milestone of ['day3', 'week1'] as const) {
-          const [first, second] = await Promise.all([
-            send(a, { milestone, score: 5, comment: 'one' }),
-            send(a, { milestone, score: 5, comment: 'two' }),
-          ]);
-          expect([first.status, second.status]).toEqual([204, 204]);
-        }
-        const saved = await rows(users.owner.userId);
-        expect(saved).toHaveLength(2);
-        for (const row of saved) {
-          expect(['one\n\ntwo', 'two\n\none']).toContain(row.comment);
-        }
-      });
+      // Retries (2) only here: the PGlite socket server now and then fails a parallel session lookup
+      // (same artifact as the links concurrency spec). A retry cannot hide a duplicate row: the unique
+      // index would reject it and the test asserts the row count on a clean database.
+      it(
+        'two parallel first writes make one row and keep both comments',
+        { retry: 2 },
+        async () => {
+          for (const milestone of ['day3', 'week1'] as const) {
+            const [first, second] = await Promise.all([
+              send(a, { milestone, score: 5, comment: 'one' }),
+              send(a, { milestone, score: 5, comment: 'two' }),
+            ]);
+            expect([first.status, second.status]).toEqual([204, 204]);
+          }
+          const saved = await rows(users.owner.userId);
+          expect(saved).toHaveLength(2);
+          for (const row of saved) {
+            expect(['one\n\ntwo', 'two\n\none']).toContain(row.comment);
+          }
+        },
+      );
     });
+  });
+
+  it('answers 401 when the session user no longer exists', async () => {
+    await t.db.prisma.user.delete({ where: { id: users.owner.userId } });
+    await send(a, { milestone: 'day3', score: 5 }).expect(401);
   });
 
   describe('data isolation', () => {
