@@ -17,6 +17,7 @@ import { HealthModule } from '../health/health.module';
 import { LinksModule } from '../links/links.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { TagsModule } from '../tags/tags.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { TagsModule } from '../tags/tags.module';
     TagsModule,
     FoldersModule,
     LinksModule,
+    UsersModule,
     ExportModule,
     // Async so the environment is read at DI time, not at import time.
     ThrottlerModule.forRootAsync({
