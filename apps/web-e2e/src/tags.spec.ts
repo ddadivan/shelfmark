@@ -222,9 +222,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
         await filter.getByRole('button', { name: `Remove tag filter ${RECIPES}` }).click();
         await expect(page).toHaveURL(/\/links\?tag=docs$/);
 
-        await expectNoBlockingViolations(page, info, {
-          disabledRules: ['label-content-name-mismatch'],
-        });
+        await expectNoBlockingViolations(page, info);
       });
 
       test('shows an empty state when no link has all the tags', async ({ page }) => {

@@ -55,9 +55,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
           page.getByRole('heading', { name: 'Nothing found for “zzzzqq”' }),
         ).toBeVisible();
         await settled(page);
-        await expectNoBlockingViolations(page, testInfo, {
-          disabledRules: ['label-content-name-mismatch'],
-        });
+        await expectNoBlockingViolations(page, testInfo);
 
         await page.getByRole('button', { name: 'Clear search' }).click();
         await expect(page).toHaveURL(/\/links$/);
@@ -87,9 +85,7 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
         await expect(page.getByRole('option', { name: new RegExp(ANGULAR_TITLE) })).toBeVisible();
         await expect(page.getByRole('listbox')).not.toHaveAttribute('aria-busy', 'true');
         await settled(page);
-        await expectNoBlockingViolations(page, testInfo, {
-          disabledRules: ['label-content-name-mismatch'],
-        });
+        await expectNoBlockingViolations(page, testInfo);
 
         await searchField(page).press('Escape');
         await expect(searchField(page)).toHaveCount(0);
