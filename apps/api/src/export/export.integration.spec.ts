@@ -6,6 +6,7 @@ import { expectIsolated } from '../../test-utils/isolation/expect-isolated';
 import type { AuthTestApp } from '../../test-utils/models/auth-test-app.interface';
 import type { IsolationUsers } from '../../test-utils/models/isolation-users.interface';
 import { anonymous, asUser } from '../../test-utils/isolation/test-agent';
+import { resetRateLimits } from '../../test-utils/reset-rate-limits';
 
 const SCRIPT = '<script>alert(1)</script>';
 
@@ -27,9 +28,15 @@ describe('GET /api/export', () => {
     await prisma.link.deleteMany();
     await prisma.folder.deleteMany();
     await prisma.tag.deleteMany();
+    resetRateLimits(t.app);
   });
 
-  const owner = () => asUser(t.app, users.owner);
+  // Most specs export several times; the strict export limit (5/min) is tested on its own below,
+  // so these helpers start each request with fresh counters.
+  const owner = () => {
+    resetRateLimits(t.app);
+    return asUser(t.app, users.owner);
+  };
   const intruder = () => asUser(t.app, users.intruder);
 
   async function seed(userId: string) {
@@ -342,5 +349,13 @@ describe('GET /api/export', () => {
         reference: 'the folder id is the read filter itself, covered by read',
       },
     });
+  });
+  it('429 after 5 exports in a minute', async () => {
+    const agent = asUser(t.app, users.owner);
+    for (let i = 0; i < 5; i++) {
+      await agent.get('/api/export?format=json').expect(200);
+    }
+    const res = await agent.get('/api/export?format=json').expect(429);
+    expect(res.body).toMatchObject({ statusCode: 429 });
   });
 });
