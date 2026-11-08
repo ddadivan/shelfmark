@@ -11,6 +11,13 @@
     "node": ">=26 <27"
   },
   "scripts": {
+    "start": "nx serve web",
+    "start:api": "nx serve api",
+    "start:all": "nx run-many -t serve -p web api",
+    "build": "nx run-many -t build -p web api",
+    "test": "nx run-many -t test",
+    "e2e": "nx e2e web-e2e",
+    "storybook": "nx storybook ui",
     "prepare": "node scripts/prepare.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
