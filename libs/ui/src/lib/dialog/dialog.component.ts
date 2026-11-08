@@ -14,7 +14,7 @@ import {
 import { ButtonComponent } from '../button/button.component';
 import { nextDialogId } from './dialog-id';
 import { UiDialogRef } from './dialog-ref';
-import { DIALOG_PHONE_QUERY } from './models/dialog-phone-query.const';
+import { PHONE_MEDIA_QUERY } from '../media';
 import type { DialogSize } from './models/dialog-size.type';
 import { UI_DIALOG_CONTEXT } from './models/ui-dialog-context.const';
 import type { DragState } from './models/drag-state.interface';
@@ -85,7 +85,7 @@ export class DialogComponent {
   constructor() {
     const destroyRef = inject(DestroyRef);
     afterNextRender(() => {
-      const query = globalThis.matchMedia?.(DIALOG_PHONE_QUERY);
+      const query = globalThis.matchMedia?.(PHONE_MEDIA_QUERY);
       if (query) {
         this.phone.set(query.matches);
         const onChange = (event: MediaQueryListEvent): void => {

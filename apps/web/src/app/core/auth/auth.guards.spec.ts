@@ -5,7 +5,7 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { AUTH_API } from './auth-api.token';
 import { authOnly, guestOnly, redirectToSignIn } from './auth.guards';
 import { AuthApi } from './models/auth-api.interface';
-import { AuthUser } from './models/auth-user.interface';
+import type { AuthUser } from '@shelfmark/contracts';
 
 const USER: AuthUser = {
   id: 'u1',
@@ -13,6 +13,7 @@ const USER: AuthUser = {
   email: 'a@example.com',
   image: null,
   isDemo: false,
+  onboardingCompletedAt: '2020-01-01T00:00:00.000Z',
 };
 
 @Component({ selector: 'app-landing-stub', template: 'landing' })

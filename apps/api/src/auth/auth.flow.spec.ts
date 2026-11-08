@@ -135,6 +135,7 @@ describe('Better Auth sign-in flow', () => {
         'image',
         'isDemo',
         'name',
+        'onboardingCompletedAt',
       ]);
       expect(Object.keys(body?.session ?? {})).toEqual(['expiresAt']);
       expect(body?.user).toMatchObject({ id: userId, email, name: 'Ada', isDemo: false });

@@ -277,6 +277,13 @@
   border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
+.fd-demo__box--drawer {
+  place-self: stretch start;
+  width: rem(48px);
+  height: 100%;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
 .fd-demo__box--spinner {
   width: rem(24px);
   height: rem(24px);
@@ -295,7 +302,7 @@
   @include loop(spin);
 }
 
-@each $name in pop, toast, sheet, fade, spinner {
+@each $name in pop, toast, sheet, drawer, fade, spinner {
   .fd-enter--#{$name} {
     @include enter($name);
   }

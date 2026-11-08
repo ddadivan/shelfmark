@@ -1,6 +1,5 @@
 import type { Type } from '@nestjs/common';
 import type { ProviderOverride } from './provider-override.interface';
-
 import type { RateLimitPreset } from '../../src/common/rate-limit/models/rate-limit-preset.interface';
 
 export interface AuthTestAppOptions {

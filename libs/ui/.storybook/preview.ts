@@ -5,6 +5,7 @@ import './card-stories.scss';
 import './command-list-stories.scss';
 import './display-stories.scss';
 import './dialog-stories.scss';
+import './drawer-stories.scss';
 import './foundations.scss';
 import './field-stories.scss';
 import './illustration-stories.scss';
