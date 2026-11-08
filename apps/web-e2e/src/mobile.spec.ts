@@ -104,7 +104,8 @@ test.describe('mobile layout (mock API)', () => {
 
   test('the menu button reports aria-expanded while the drawer is open', async ({ page }) => {
     await page.goto('/links');
-    const opener = page.getByRole('button', { name: 'Open menu' });
+    // A CSS locator: while the drawer is open the CDK hides the page from role queries.
+    const opener = page.locator('button[aria-label="Open menu"]');
     await expect(opener).toHaveAttribute('aria-expanded', 'false');
 
     await openDrawer(page);
