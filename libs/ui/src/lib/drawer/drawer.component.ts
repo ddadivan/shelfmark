@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { ButtonComponent } from '../button/button.component';
 import { BUTTON_SIZE } from '../button/models/button-size.const';
 import { UiDialogRef } from '../dialog/dialog-ref';
@@ -23,16 +23,12 @@ export class DrawerComponent {
   /** Accessible name of the close button, for example "Close menu". */
   readonly closeLabel = input.required<string>();
 
-  /** The close button was used. The drawer also closes itself when opened by `DrawerService`. */
-  readonly closeRequested = output<void>();
-
   private readonly ref = inject<UiDialogRef<unknown>>(UiDialogRef, { optional: true });
 
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
   protected readonly leaving = computed(() => this.ref?.leaving() ?? false);
 
   protected requestClose(): void {
-    this.closeRequested.emit();
     this.ref?.close();
   }
 }

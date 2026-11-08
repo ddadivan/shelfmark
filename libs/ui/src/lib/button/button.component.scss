@@ -189,7 +189,7 @@ a.ui-button {
   width: rem(56px);
   height: rem(56px);
   padding: 0;
-  border-radius: rem(18px);
+  border-radius: var(--radius-fab);
   box-shadow: var(--shadow-popover);
 }
 

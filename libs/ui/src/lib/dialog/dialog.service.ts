@@ -42,31 +42,27 @@ export class DialogService {
     const dismissible = config.dismissible ?? true;
     const titleId = nextDialogId('ui-dialog-title');
 
-    return openModalOverlay<C, R, D>(
-      { dialog: this.dialog, overlay: this.overlay, injector: this.injector },
-      component,
-      {
-        role: config.role ?? DIALOG_ROLE.Dialog,
-        ariaLabelledBy: titleId,
-        ariaDescribedBy: config.describedBy ?? null,
-        data: config.data,
-        autoFocus: config.autoFocus ?? 'first-tabbable',
-        dismissible,
-        scrimClose: config.scrimClose ?? true,
-        positionStrategy: this.overlay.position().global(),
-        providers: (uiRef) => {
-          const context: UiDialogContext = {
-            titleId,
-            size: config.size ?? DIALOG_SIZE.Sm,
-            leaving: uiRef.leaving,
-          };
-          return [
-            { provide: UI_DIALOG_CONTEXT, useValue: context },
-            { provide: UI_DIALOG_DATA, useValue: config.data },
-          ];
-        },
+    return openModalOverlay<C, R, D>({ dialog: this.dialog, injector: this.injector }, component, {
+      role: config.role ?? DIALOG_ROLE.Dialog,
+      ariaLabelledBy: titleId,
+      ariaDescribedBy: config.describedBy ?? null,
+      data: config.data,
+      autoFocus: config.autoFocus ?? 'first-tabbable',
+      dismissible,
+      scrimClose: config.scrimClose ?? true,
+      positionStrategy: this.overlay.position().global(),
+      providers: (uiRef) => {
+        const context: UiDialogContext = {
+          titleId,
+          size: config.size ?? DIALOG_SIZE.Sm,
+          leaving: uiRef.leaving,
+        };
+        return [
+          { provide: UI_DIALOG_CONTEXT, useValue: context },
+          { provide: UI_DIALOG_DATA, useValue: config.data },
+        ];
       },
-    );
+    });
   }
 
   /**

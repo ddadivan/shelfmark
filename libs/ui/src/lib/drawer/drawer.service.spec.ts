@@ -11,7 +11,7 @@ import { DrawerService } from './drawer.service';
 @Component({
   imports: [DrawerComponent, ButtonComponent],
   template: `
-    <ui-drawer closeLabel="Close menu" (closeRequested)="requested = requested + 1">
+    <ui-drawer closeLabel="Close menu">
       <span slot="head">Shelfmark</span>
       <a id="first" href="#all">All links</a>
       <a id="last" href="#work">Work</a>
@@ -22,7 +22,6 @@ import { DrawerService } from './drawer.service';
 class MenuComponent {
   protected readonly ref = inject<UiDialogRef<string>>(UiDialogRef);
   protected readonly data = injectDialogData<{ readonly id: number } | undefined>();
-  protected requested = 0;
 }
 
 function settle(): void {
@@ -184,17 +183,5 @@ describe('DrawerComponent', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.ui-drawer--leave')).not.toBeNull();
     expect(fixture.nativeElement.querySelector('.ui-drawer--enter')).toBeNull();
-  });
-
-  it('emits closeRequested from the close button', () => {
-    const fixture = TestBed.createComponent(DrawerComponent);
-    fixture.componentRef.setInput('closeLabel', 'Close menu');
-    fixture.detectChanges();
-    let count = 0;
-    fixture.componentInstance.closeRequested.subscribe(() => {
-      count += 1;
-    });
-    fixture.nativeElement.querySelector('button').click();
-    expect(count).toBe(1);
   });
 });

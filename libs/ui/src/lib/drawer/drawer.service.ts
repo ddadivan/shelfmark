@@ -28,19 +28,15 @@ export class DrawerService {
     component: ComponentType<C>,
     config: UiDrawerConfig<D>,
   ): UiDialogRef<R, C> {
-    return openModalOverlay<C, R, D>(
-      { dialog: this.dialog, overlay: this.overlay, injector: this.injector },
-      component,
-      {
-        role: DIALOG_ROLE.Dialog,
-        ariaLabel: config.ariaLabel,
-        data: config.data,
-        autoFocus: 'first-tabbable',
-        dismissible: true,
-        scrimClose: true,
-        positionStrategy: this.overlay.position().global().top('0').start('0'),
-        providers: () => [{ provide: UI_DIALOG_DATA, useValue: config.data }],
-      },
-    );
+    return openModalOverlay<C, R, D>({ dialog: this.dialog, injector: this.injector }, component, {
+      role: DIALOG_ROLE.Dialog,
+      ariaLabel: config.ariaLabel,
+      data: config.data,
+      autoFocus: 'first-tabbable',
+      dismissible: true,
+      scrimClose: true,
+      positionStrategy: this.overlay.position().global().top('0').start('0'),
+      providers: () => [{ provide: UI_DIALOG_DATA, useValue: config.data }],
+    });
   }
 }

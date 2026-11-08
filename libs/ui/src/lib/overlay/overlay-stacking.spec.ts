@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { OVERLAY_LAYER_ORDER } from './models/overlay-layer-order.const';
 import { OVERLAY_LAYER } from './models/overlay-layer.const';
 import type { OverlayLayer } from './models/overlay-layer.type';
 import { overlayLayerClass } from './overlay-layer';
@@ -23,6 +24,7 @@ function host(layer: OverlayLayer, open = true): Popover {
 
 describe('raiseOverlayLayers', () => {
   afterEach(() => {
+    vi.restoreAllMocks();
     container.replaceChildren();
   });
 
@@ -69,6 +71,41 @@ describe('raiseOverlayLayers', () => {
     raiseOverlayLayers(toast, true);
 
     expect(order).toEqual(['hide toast', 'show toast', 'hide tooltip', 'show tooltip']);
+  });
+
+  it('leaves a host that holds focus alone, so focus is not dropped', () => {
+    const toast = host(OVERLAY_LAYER.Toast);
+    const dialog = host(OVERLAY_LAYER.Dialog);
+    const action = document.createElement('button');
+    toast.appendChild(action);
+    vi.spyOn(document, 'activeElement', 'get').mockReturnValue(action);
+    toast.hidePopover = vi.fn();
+    toast.showPopover = vi.fn();
+
+    raiseOverlayLayers(dialog);
+    raiseOverlayLayers(toast, true);
+
+    expect(toast.hidePopover).not.toHaveBeenCalled();
+    expect(toast.showPopover).not.toHaveBeenCalled();
+  });
+
+  it('leaves a host with a leaving pane alone', () => {
+    const menu = host(OVERLAY_LAYER.Menu);
+    const dialog = host(OVERLAY_LAYER.Dialog);
+    const leaving = document.createElement('div');
+    leaving.className = 'ui-menu--leave';
+    menu.appendChild(leaving);
+    menu.hidePopover = vi.fn();
+    menu.showPopover = vi.fn();
+
+    raiseOverlayLayers(dialog);
+
+    expect(menu.hidePopover).not.toHaveBeenCalled();
+  });
+
+  it('ranks layers by the explicit order, covering every layer', () => {
+    expect([...OVERLAY_LAYER_ORDER]).toEqual(['dialog', 'menu', 'toast', 'tooltip']);
+    expect([...OVERLAY_LAYER_ORDER].sort()).toEqual(Object.values(OVERLAY_LAYER).sort());
   });
 
   it('does nothing without the Popover API', () => {

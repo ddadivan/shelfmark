@@ -24,6 +24,7 @@ import { IconComponent } from '../icon/icon.component';
 import type { IconName } from '../icon/models/icon-name.type';
 import { RippleDirective } from '../ripple/ripple.directive';
 import { SpinnerComponent } from '../spinner/spinner.component';
+import { BUTTON_FAB_ICON_SIZE, BUTTON_ICON_SIZE } from './models/button-icon-size.const';
 import { BUTTON_HIT_AREA } from './models/button-hit-area.const';
 import type { ButtonHitArea } from './models/button-hit-area.type';
 import type { ButtonHaspopup } from './models/button-haspopup.type';
@@ -138,7 +139,7 @@ export class ButtonComponent implements UiFocusTarget {
   });
 
   protected readonly iconSize = computed(() =>
-    this.fab() ? 24 : this.size() === BUTTON_SIZE.Lg ? 20 : 16,
+    this.fab() ? BUTTON_FAB_ICON_SIZE : BUTTON_ICON_SIZE[this.size()],
   );
   protected readonly singleIcon = computed(() => this.iconLeft() ?? this.iconRight());
 
