@@ -486,11 +486,33 @@
       "search": "Search: {{query}} · {{app}}"
     }
   },
+  "export": {
+    "menu": "Export",
+    "failed": "Couldn't export your links. Try again.",
+    "retry": "Try again",
+    "view": {
+      "json": "This view as JSON",
+      "html": "This view as Bookmarks HTML"
+    },
+    "all": {
+      "json": "Everything as JSON",
+      "html": "Everything as Bookmarks HTML"
+    }
+  },
   "settings": {
     "title": "Settings",
     "back": "Back to links",
     "account": {
       "title": "Account"
+    },
+    "data": {
+      "title": "Your data",
+      "export": {
+        "label": "Export your data",
+        "hint": "All your folders, tags and links in one file",
+        "json": "JSON",
+        "html": "Bookmarks HTML"
+      }
     },
     "appearance": {
       "title": "Appearance",
