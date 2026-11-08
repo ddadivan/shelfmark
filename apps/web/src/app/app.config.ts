@@ -2,6 +2,7 @@ import { firstValueFrom } from 'rxjs';
 import {
   ApplicationConfig,
   inject,
+  isDevMode,
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
@@ -14,6 +15,7 @@ import {
   withPreloading,
   withRouterConfig,
 } from '@angular/router';
+import { provideServiceWorker } from '@angular/service-worker';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { apiBaseInterceptor } from './core/api/api-base.interceptor';
 import { provideAuthApi } from './core/auth/provide-auth-api';
@@ -48,6 +50,12 @@ export const appConfig: ApplicationConfig = {
     provideAuthApi(),
     ...provideLinksApi(),
     provideOnboardingApi(),
+    // SwUpdate is not wired: a new version is applied on the next navigation, with no prompt.
+    // App shell and static assets only; the worker never touches /api (apps/web/ngsw-config.json).
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
     provideAppInitializer(() => inject(ThemeService).init()),
   ],
 };
