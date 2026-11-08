@@ -4,10 +4,15 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  afterNextRender,
   DestroyRef,
+  effect,
   inject,
+  Injector,
   input,
   output,
+  viewChild,
+  viewChildren,
 } from '@angular/core';
 import { ButtonComponent } from '../button/button.component';
 import { IconComponent } from '../icon/icon.component';
@@ -19,6 +24,7 @@ import type { UiTreeContextMenuEvent } from './models/tree-context-menu-event.in
 import type { UiTreeNode } from './models/tree-node.interface';
 import type { UiTreeToggleEvent } from './models/tree-toggle-event.interface';
 import { KEYBOARD_KEY } from '../keyboard';
+import type { TreeRowPlace } from './models/tree-row-place.interface';
 
 /** Safety net: a pending keyboard echo is dropped after this long (a held key refreshes it). */
 const KEYBOARD_ECHO_TIMEOUT_MS = 1000;
@@ -48,6 +54,10 @@ const KEYBOARD_ECHO_RELEASE_MS = 100;
     TreeItemGroup,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(focusin)': 'onFocusin($event)',
+    '(focusout)': 'onFocusout($event)',
+  },
   templateUrl: './tree.component.html',
   styleUrl: './tree.component.scss',
 })
@@ -56,8 +66,107 @@ export class TreeComponent {
   private keyboardEcho = false;
   private echoTimer: ReturnType<typeof setTimeout> | undefined;
 
+  private readonly injector = inject(Injector);
+  private readonly tree = viewChild.required(Tree);
+  private readonly items = viewChildren(TreeItem);
+  /** Where every row has been seen (kept for removed rows, so focus can find a neighbour). */
+  private readonly lastKnown = new Map<string, TreeRowPlace>();
+  /** The row that held focus last; cleared when focus moves to another element. */
+  private focused: { readonly id: string; readonly element: HTMLElement } | null = null;
+
   constructor() {
     inject(DestroyRef).onDestroy(() => clearTimeout(this.echoTimer));
+    effect(() => {
+      this.remember();
+      // The rows are re-rendered after this effect: look at them then.
+      if (this.focused) {
+        afterNextRender(() => this.restoreIfDropped(), { injector: this.injector });
+      }
+    });
+  }
+
+  /**
+   * Moves focus to the row `id`. Returns `false` (and moves nothing) when there is no such row
+   * or it is hidden inside a collapsed folder.
+   */
+  focusRow(id: string): boolean {
+    const item = this.items().find((candidate) => candidate.value() === id);
+    if (!item?.visible()) {
+      return false;
+    }
+    // Make it the Aria tree's active row first: with roving focus the arrow keys move from the
+    // active row, so a plain DOM focus would leave Up / Down / Right / Left acting elsewhere.
+    this.tree()._pattern.activeItem.set(item._pattern);
+    item.element.focus();
+    return true;
+  }
+
+  /**
+   * Gives focus back to the row nearest to `id` after that row went away (removed, or moved under
+   * a collapsed folder): the row itself when it is still visible, else its nearest visible
+   * ancestor, else (a removed row) the parent it had, its previous sibling, and last the first
+   * row. Returns the id of the row that took focus, or `null` when the tree has no row.
+   */
+  restoreFocusNear(id: string): string | null {
+    const first = this.items()
+      .find((item) => item.visible())
+      ?.value();
+    const known = this.lastKnown.get(id);
+    const candidates = [id, ...this.ancestors(id), known?.parent, known?.previous, first];
+    for (const candidate of candidates) {
+      if (candidate != null && this.focusRow(candidate)) {
+        return candidate;
+      }
+    }
+    return null;
+  }
+
+  protected onFocusin(event: FocusEvent): void {
+    const target = event.target;
+    const item = this.items().find((candidate) => candidate.element === target);
+    if (item) {
+      this.focused = { id: item.value(), element: item.element };
+    }
+  }
+
+  protected onFocusout(event: FocusEvent): void {
+    // `relatedTarget` is `null` while the row is removed (or the window loses focus): keep it.
+    if (event.relatedTarget !== null) {
+      this.focused = null;
+    }
+  }
+
+  /** The row that held focus left the page and focus fell to <body>: move it to a neighbour. */
+  private restoreIfDropped(): void {
+    const focused = this.focused;
+    const active = document.activeElement;
+    if (focused && !focused.element.isConnected && (!active || active === document.body)) {
+      this.focused = null;
+      this.restoreFocusNear(focused.id);
+    }
+  }
+
+  /** Ids of the parents of `id` now, nearest first. */
+  private ancestors(id: string): string[] {
+    const chain: string[] = [];
+    let parent = this.lastKnown.get(id)?.parent;
+    while (parent && !chain.includes(parent)) {
+      chain.push(parent);
+      parent = this.lastKnown.get(parent)?.parent;
+    }
+    return chain;
+  }
+
+  /** Records the place of every current row. */
+  private remember(): void {
+    const walk = (list: readonly UiTreeNode[], parent: string | null): void => {
+      list.forEach((node, index) => {
+        this.lastKnown.set(node.id, { parent, previous: list[index - 1]?.id ?? null });
+        walk(node.children ?? [], node.id);
+      });
+    };
+    walk(this.fixedNodes(), null);
+    walk(this.nodes(), null);
   }
 
   /** Folder tree, shown after the heading. Rows nest by `children`. */

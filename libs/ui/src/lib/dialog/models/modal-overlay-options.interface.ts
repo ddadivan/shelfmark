@@ -15,6 +15,8 @@ export interface ModalOverlayOptions<R, C, D> {
   readonly autoFocus: string | boolean;
   readonly dismissible: boolean;
   readonly scrimClose: boolean;
+  /** Fallback focus target, see `UiDialogConfig.restoreFocus`. */
+  readonly restoreFocus?: () => HTMLElement | null;
   readonly positionStrategy: PositionStrategy;
   /** Providers for the content component, next to `UiDialogRef`. */
   readonly providers: (ref: UiDialogRef<R, C>) => StaticProvider[];

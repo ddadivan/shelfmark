@@ -2,11 +2,13 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "installCommand": "npm ci --include=dev",
-  "buildCommand": "npx nx run-many -t build middleware-shell -p web api --output-style=static",
+  "buildCommand": "npx nx run-many -t build middleware-shell -p web api --output-style=static && npx nx run api:migrate-deploy",
   "outputDirectory": "dist/apps/web/browser",
+  "ignoreCommand": "node scripts/vercel-ignore-build.mjs",
   "regions": ["fra1"],
   "git": {
     "deploymentEnabled": {
+      "*/**": false,
       "dependabot/**": false,
       "docs/**": false
     }
@@ -14,7 +16,7 @@
   "functions": {
     "api/index.mjs": {
       "maxDuration": 10,
-      "includeFiles": "node_modules/swagger-ui-dist/**"
+      "includeFiles": "{node_modules/swagger-ui-dist/**,node_modules/@prisma/client/runtime/query_compiler_fast_bg.postgresql.*}"
     }
   },
   "rewrites": [

@@ -27,14 +27,16 @@ Updated as work goes on — every session resumes from here.
   - After every production deploy: `BASE_URL=https://shelfmark-app.vercel.app npx nx e2e web-e2e` (the missing-file 404 relies on undocumented Vercel behaviour)
   - Next: stage 1 issues from 9.1 (the author decides when); CSP nonce middleware (#9) before the first `libs/ui` component renders in `apps/web`
   - Verification of protected previews by agents: `vercel curl` and `vercel logs` (CLI login, no bypass token)
-- [ ] Stages 1–7 in progress (status Nov 7, 2026, end of the cloud session; work continues locally)
-  - Merged on Nov 7: #82 (libs/ui a11y audit, #62), #86 (sign-in on a mock AuthApi, part of #66), #87 (agent limit docs), #88 (no Vercel previews for `docs/**`, #84)
-  - Ready to merge, required checks green or running: #120 (Lighthouse CI job, #111; ADR 0028 Proposed) → #112 (README, #102) → #126 (this status). Each needs "Update branch" after the previous merge (the `main` ruleset requires an up-to-date branch)
-  - Reviewed, base `main`, waiting for the author: #113 (#91 provider icons), #116 (#92 input loading), #90 (#73 add-link dialog; mockup deviations), #114 (#103 landing; mockup deviations), #115 (#101 privacy page; legal wording), #124 (#94 settings; mockup deviations, axe `label-content-name-mismatch` question)
-  - Reviewed, need a Vercel preview check: #85 `chore/63-prisma-pglite` (#63) → #118 `feat/64-better-auth` (#64, base #85) → #125 `feat/65-auth-guard` (#65, base #118; ADR 0029 Proposed); #117 `feat/93-pwa` (#93); #79 `feat/70-safe-fetcher` (part of #70). Vercel previews hit the Hobby daily limit on Nov 7
-  - Stacked (retarget to `main` after the base merges, then merge `origin/main` in): #89 (#71 models, base #85); #118 and #125 (above); #121 (#104 chat loop) and #122 (#105 scenes) on #114
-  - Next unblocked after merges: #119 (web Better Auth binding, after #118), #123 (throttler, interceptors, CSRF check; after #125), #72 links API (after #123, #79, #89), #109 Sentry (after the lockfile-touching PRs merge); fold #121's motion logic into #122's `LandingMotionService` when the landing stack is retargeted
-  - Author decisions: ADR #80 and #81; duplicate ADR number 0027 (#80 vs #118); #118 decisions A–F; #65 decisions A–E; #89 LinkTag same-user enforcement; #115 legal wording, controller, contact; pause controls on the landing (#121, #122); mockup deviations in #90, #114, #124
+- [ ] Stages 1–7 in progress (status Nov 8, 2026, afternoon)
+  - Merged by Nov 8: feed, add-link and edit, folders and tags (web), libs/ui (checkbox, long press, chip menu, highlight, command list), landing with animations and performance, search / sort / breadcrumbs / ⌘K (#144), export menu (#153), empty states (#154), onboarding web (#157), mobile layout and phone drawer (#160), avatar initials (#167)
+  - Draft, retargeted to `main` after #160: #168 (#98 app-wide axe matrix and keyboard flows), #169 (#164 toast shortcut to reach Undo; needs a manual browser and screen-reader check), #170 (#165 focus restore when a dialog opener disappears)
+  - Neon free plan allows 10 branches per project, and the Vercel integration creates one per preview deployment, also for branches that need no database. When the limit is hit, the preview build fails with `DATABASE_URL_UNPOOLED is not set for this build`. Fix: the author deletes unused `preview/*` branches in Neon (merged ones first); the integration then recreates the missing branch and redeploys on its own
+  - Auth stack, draft, waiting for merges and Vercel preview checks: #85 → #89 → #118 → #125 (#118 preview is Ready since Nov 8 after the Neon cleanup; the step 4 checks in its PR body are still open); on #125: #132 (rate limit, CSRF), #137 (tags API), #138 (folders API), #145 (account deletion), #146 (export API), #148 (web Better Auth), #151 (onboarding API, on #145), #152 (links API, #72)
+  - Stacked on #152, draft, reviewed: #156 (#155 web wiring of the real APIs), #159 (#100 rating API), #161 (#67 demo API, cron, ADR 0034). Stacked on #148: #162 (#67 demo web, `ui-notice` info kind and banner). Stacked on #117: #158 (#95 Share target)
+  - Also draft, waiting for the author: #79 fetcher, #117 PWA, #139 Sentry (preview and DSNs), #115 privacy (legal text)
+  - Test harness: `apps/api/test-utils/exchange-socket-server.ts` (on #152) serialises PGlite protocol exchanges; it fixes the random `links.concurrency` failures (P2039)
+  - Next: #100 rating web (needs a design decision: no mockup for the rating dialogs), #110 release security check (last)
+  - Author decisions: listed in the PRs and issue plans: #155 (`ApiError` code, 429/5xx toasts), #99 (PROJECT.md 6 onboarding endpoint, demo users and onboarding), #158 (folder chips, bare hosts), #159 / #100 (comment append, design for the dialogs, export), #161 / #67 (path `/api/demo`, rate-limit store, cap, CAPTCHA follow-up, `CRON_SECRET` in Vercel), #162 (banner copy vs PROJECT.md 4.21), #169 (toast shortcut, Toast spec update)
 - [ ] Motion in code — stage 6; promo video — after the stage 1 release
 
 ## 1. Problem and idea
@@ -382,7 +384,7 @@ NestJS choice: ADR 0010; API build and tests: ADR 0006; API security baseline: A
 | Search by title, note and URL | Built-in PostgreSQL search (`pg_trgm` / full-text search) |
 | Duplicate links | Index on the "user + URL" pair |
 | Schema migrations | Prisma Migrate |
-| Local development | PostgreSQL in Docker |
+| Local development and tests | PGlite (embedded PostgreSQL, no Docker), see [ADR 0025](adr/0025-database-tooling-prisma-7-pglite.md) |
 | Cloud database | Neon, free tier (see 5.7) |
 
 **A cache (Redis)** is not needed in stage 1.
@@ -430,7 +432,7 @@ Stage 1 runs for free on **Vercel (Hobby) + Neon** and is available at a public 
 
 **Environments:**
 
-- **local**: PostgreSQL in Docker, `.env` only locally;
+- **local**: PGlite (no Docker), `.env` only locally;
 - **preview**: Vercel preview deployment + a separate Neon database branch (not production);
 - **production**: `main` → Vercel + the Neon `production` branch.
 
@@ -829,7 +831,7 @@ Stage 1 is 8 stages (GitHub milestones), roughly 8–9 weeks at \~3 hours a day;
 | 6 | Polish | Mobile version, dark theme, empty states, accessibility | \~1 week |
 | 7 | Release | 5.8 check, account deletion, privacy policy, README, Storybook online | 3–4 days |
 
-**Stage 0 clarification:** stage 0 creates only the Neon project; Prisma, `docker-compose.yml` with local PostgreSQL and migrations in CI move to stage 2 together with the Better Auth schema.
+**Stage 0 clarification:** stage 0 creates only the Neon project; Prisma, local PGlite (instead of Docker, ADR 0025) and migrations in CI move to stage 2 together with the Better Auth schema.
 
 The estimate assumes the bottleneck is PR review and fixes, not writing code. Hitting Claude subscription limits (see 9.6) can stretch the timeline.
 
@@ -870,7 +872,7 @@ Stage 0 E2E: Chromium only, see ADR 0008.
 ### 9.5 CI/CD
 
 - **On every PR** (GitHub Actions, only affected projects via `nx affected`): lint, typecheck, unit tests with a coverage threshold, build, `npm audit`, CodeQL; Vercel creates a preview version.
-- **Merge to `main`** → automatic deployment to Vercel production; Prisma migrations are applied to the production Neon database.
+- **Merge to `main`** → automatic deployment to Vercel production; Prisma migrations are applied to the production Neon database by the Vercel build (`prisma migrate deploy`, ADR 0025); every PR checks the migrations against a Postgres service (`scripts/db-check.mjs`; `nx run api:db-check` is the local PGlite equivalent).
 
 ### 9.6 Claude subscription
 
