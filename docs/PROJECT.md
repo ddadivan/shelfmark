@@ -27,18 +27,13 @@ Updated as work goes on — every session resumes from here.
   - After every production deploy: `BASE_URL=https://shelfmark-app.vercel.app npx nx e2e web-e2e` (the missing-file 404 relies on undocumented Vercel behaviour)
   - Next: stage 1 issues from 9.1 (the author decides when); CSP nonce middleware (#9) before the first `libs/ui` component renders in `apps/web`
   - Verification of protected previews by agents: `vercel curl` and `vercel logs` (CLI login, no bypass token)
-- [ ] Stages 1–7 in progress (status Nov 9, 2026, 02:30)
-  - All PRs that were open on Nov 8 are merged except #178 (jsdom 31 major: libs/ui unit tests fail, needs its own work) and #115 (privacy page, closed until the author's legal text; branch `feat/101-privacy` kept, issue #101 open)
-  - Merged Nov 8–9: auth stack (#85, #89, #118 with production OAuth fail-fast, #125 guard and isolation harness, #148 web Better Auth), #132 rate limit / CSRF / interceptors, APIs: #137 tags, #138 folders, #152 links, #146 export, #145 account deletion, #151 onboarding, #159 feedback, #161 demo; web: #156 real APIs, #162 demo, #191 rating dialogs, #158 share target, #117 PWA, #187 429/5xx toasts; #139 Sentry (tunnel with an exact-route CSRF content-type exemption, ADR 0031 / 0032), #181 service worker vs routed e2e, #184 npm script aliases, #188 landing layout shift, #190 faster Storybook a11y (6.7 min instead of 11.3, `--parallel=1` in CI), #192 export rate limit
-  - Merged after midnight Nov 9: #193 link images and favicons (check after the first Vercel deploy that sharp loads: save a link with an image and open `/api/links/<id>/image`), #194 release check doc, #196 jsdom 31, #197 delete account from Settings (#106; central `SessionScope` clears rating and onboarding state on session end), #199 image re-capture after a URL change via `POST /api/links/:id/images/capture` and the dead image columns dropped (#189)
-  - Open: #198 draft (landing Lighthouse ≥ 0.9, #195): rendering below-the-fold sections on viewport broke 62 landing e2e tests; next try IntersectionObserver in the reveal directive instead
-  - Issues ready to close (acceptance criteria verified against main): #70, #73, #75, #76, #77, #99, #67, #106 (after #197); author confirms visual details on #73 and sets `CRON_SECRET` for #67
-  - Release security check (#110): `docs/security/release-check.md` — 13 of 17 rows done on main, export limit fixed since; open: #101 privacy, Neon preview isolation, production scan, CodeQL / secret-scanning counts (author)
-  - Follow-ups filed: #185 done (#188), #186 done (#190), #189 (drop dead image columns, re-capture on URL change); Lighthouse performance is 0.88–0.89 against the 0.9 gate (not required)
-  - Author steps: `CRON_SECRET` in Vercel Production (demo cleanup), optional Sentry DSNs (`SENTRY_DSN`, `SENTRY_WEB_DSN`), production scan `BASE_URL=https://shelfmark-app.vercel.app npx nx e2e web-e2e` after deploy, privacy text for #101, close the issues whose acceptance criteria are met (list with evidence in the session hand-off)
-  - Author decisions still open: #191 (rating dialog design without a mockup; digits pick vs move focus), #156 (keep message-constant error matching — decided: keep), #162 (banner copy vs PROJECT.md 4.21)
-  - Local run: `npm start` (mocks) or `npm run start:all` with `BETTER_AUTH_SECRET` exported and `localStorage['sm-real-auth-api']='1'`, then Try demo (`docs/SETUP.md` 1)
-- [ ] Motion in code — stage 6; promo video — after the stage 1 release
+- [x] Stage 1, stages 1–7 of 9.1: code done and in production, Nov 9, 2026
+  - All stage-1 milestones have no open issues. Release security check closed (#110, `docs/security/release-check.md`); production checks done with the author (API boot fix #204, `CRON_SECRET`, Google OAuth app published, privacy page #202).
+  - Author review of production fixed in #212 (#211): landing, sign-in, app shell scroll areas, view switch without layout shift, link card, menus, dialogs, overlays, search, tooltips, toasts (bottom centre by the author's decision), settings, favicon, 24px icons; icon sprite built from single SVG files (#210).
+  - Left before stage 1 is formally complete (10.1): landing Lighthouse stable at ≥ 0.9 (#195, moved into stage 2), and the author's two weeks of daily use.
+- [ ] Stage 2: scope chosen by the author on Nov 9, 2026 (see "Roadmap after stage 1" below). Not started: the author says when.
+  - Before stage 2 work merges: turn off Vercel → Settings → Environments → Production → "Auto-assign Custom Production Domains", so merges to `main` no longer replace production while the author uses it; production is updated by hand with Promote.
+- [x] Motion in code (landing and app); promo video moved to stage 2
 
 ## 1. Problem and idea
 
@@ -119,7 +114,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 - **PWA**: install on phone and desktop; on Android, Shelfmark appears in the "Share" menu (Web Share Target), so a link is saved in one tap from any app, including Telegram;
 - **data export**: JSON and an HTML bookmarks file (opens in any browser).
 
-**Not in stage 1:** "read / unread" status, archive, import from Telegram, browser extension, sharing, AI features, subscriptions. Everything postponed is in the "Backlog: after stage 1" section.
+**Not in stage 1:** "read / unread" status, archive, import from Telegram, browser extension, sharing, AI features, subscriptions. Everything postponed is in the "Roadmap after stage 1" section.
 
 ## 4. User stories and requirements
 
@@ -411,7 +406,7 @@ Stage 1: manual adding in the web interface only (a form with a URL field). A br
 
 ### 5.6 AI features
 
-Not part of stage 1. Auto-tags, short descriptions and smart search are discussed after stage 1 (see "Backlog").
+Not part of stage 1. Auto-tags, short descriptions and smart search are planned for stage 3 (see "Roadmap after stage 1").
 
 ### 5.7 Infrastructure and deployment
 
@@ -895,22 +890,41 @@ Source: [Using Claude Code with your Pro or Max plan](https://support.claude.com
 
 Discussed after stage 1 (roadmap, stage 5): pricing tiers, free plan limits, payment provider. Stage 1 only lays the groundwork: all data has an owner (`userId`), so per-tier limits can be introduced without reworking the model.
 
-## Backlog: after stage 1
+## Roadmap after stage 1
 
-Ideas that are deliberately not part of stage 1. Source for the roadmap (section 10).
+Chosen by the author on Nov 9, 2026. Stages 2 and 3 are planned; everything else stays in the backlog. Order inside a stage is decided when the stage starts.
+
+### Stage 2 (planned)
+
+- [ ] Email and password sign-in: email verification, password reset, an email sending service
+- [ ] Reminders: come back to a saved link later
+- [ ] Sharing: open a collection (folder) to other people
+- [ ] Custom themes: choice of accent colour and palette in settings (by replacing the values of the token CSS variables from 7.1)
+- [ ] Feedback and suggestions at any time: a "Send feedback" item in the account menu → a form (type: idea, bug, other; text; optional screenshot), a feedback list for the author and statuses ("accepted", "done"); on the same `Feedback` table as the app rating (story 24). **Design is needed before development** in Claude Design: the form (desktop and phone), "sending / sent / error" states, screenshot attachment, the list with statuses and the account menu item
+- [ ] Drag & drop links into folders
+- [ ] Selection and bulk actions: checkboxes on cards and rows; delete and move to a folder. Proposed extras, to be decided when the work starts: add or remove a tag, favorite / unfavorite, open all in new tabs, copy links, export the selection (JSON / HTML), select all / clear, Shift-click range, keyboard (Space, ⌘A, Esc), an undo toast for bulk delete
+- [ ] "Move to folder" in the ⋯ menu of a card and a row, alongside drag & drop
+- [ ] Sync between browser tabs: a change in one tab shows in the others (links, folders, tags, favorites, theme, sign-out), for example via `BroadcastChannel`
+- [ ] Interface languages and a language switcher in settings. All text already goes through Transloco keys; **which languages is to be decided, not Ukrainian for now**
+- [ ] "How it works" guided tour: a button at the bottom of the sidebar; an animated cursor shows adding a link, folders and tags, search and export with captions. It runs on an in-browser sandbox (never the user's data), steps call the same store actions as real clicks, with Pause / Stop / chapters / Esc, a reduced-motion path and screen-reader text; the 3-step welcome tour (#99) offers it at the end
+- [ ] The landing page reachable for signed-in users (for example "About" in the account menu or `/about`); today `/` shows the app to them
+- [ ] Landing Lighthouse performance stable at ≥ 0.9 on 3 of 3 CI runs (#195, carried over from stage 1)
+- [ ] The two dev-only Dependabot alerts, minimatch and deepmerge (#205)
+- [ ] Promo video
+
+### Stage 3 (planned)
 
 - [ ] Browser extension for saving links in one click
-- [ ] Import of old links from Telegram "Saved Messages" (via Telegram Desktop export)
-- [ ] Sharing: the ability to open a collection to other people
-- [ ] Custom themes: choice of accent colour and palette in settings (implemented by replacing the values of the token CSS variables from 7.1)
-- [ ] Own authentication implementation (NestJS + Passport + JWT: access token + refresh token in an httpOnly cookie) instead of Better Auth. **Learning format:** Claude Code does not write the code for me but explains step by step and reviews what I write
-- [ ] Email and password sign-in (email verification, password reset, an email sending service)
-- [ ] "Killer features" for product uniqueness (AI, reminders, etc.): discuss after stage 1
-- [ ] Subscriptions and monetisation: discuss after stage 1
-- [ ] Feedback and suggestions at any time: a "Send feedback" item in the account menu → a form (type: idea, bug, other; text; optional screenshot), a feedback list for the author and suggestion statuses ("accepted", "done"); built on the same `Feedback` table as the app rating (story 24). **Design is needed before development** in Claude Design: feedback form (desktop and phone), "sending / sent / error" states, screenshot attachment, feedback list with statuses and the account menu item, in the style of the current design system.
+- [ ] AI: automatic tags and short descriptions of links
+- [ ] Smart search (AI)
+- [ ] Carrying data over from the demo sandbox into a real account on sign-in
 
-* [ ] Dragging links into folders (drag & drop) and bulk actions: select several → move, add tag, delete
-* [ ] Carrying data over from the demo sandbox into a real account on sign-in
+### Backlog
+
+- [ ] Import of old links from Telegram "Saved Messages" (via Telegram Desktop export)
+- [ ] Own authentication implementation (NestJS + Passport + JWT: access token + refresh token in an httpOnly cookie) instead of Better Auth. **Learning format:** Claude Code does not write the code but explains step by step and reviews what the author writes
+- [ ] Subscriptions and monetisation (pricing tiers, free plan limits, payment provider)
+- [ ] Move to paid hosting
 
 ## 10. Success metrics and roadmap after stage 1
 
@@ -933,14 +947,13 @@ Vercel Analytics (no personal data): number of registered users; share of users 
 
 ### 10.3 Roadmap
 
-The order of stages after 1 is tentative and decided based on the results of stage 1. Source: "Backlog: after stage 1".
+Decided by the author on Nov 9, 2026; the full lists are in "Roadmap after stage 1" above.
 
 | Stage | Goal | Contents |
 | --- | --- | --- |
-| 2 | Save faster | Browser extension; import from Telegram "Saved Messages" |
-| 3 | Learning and independence | Own authentication (learning format); email and password sign-in |
-| 4 | Smarter | Uniqueness "killer features": AI tags and descriptions, reminders, etc., after discussion |
-| 5 | Product | Collection sharing; subscriptions and monetisation; move to paid hosting |
+| 2 | Daily use and polish | Email and password sign-in, reminders, sharing, custom themes, feedback form, drag & drop, selection and bulk actions, "Move to folder", sync between tabs, interface languages (not Ukrainian for now), "How it works" tour, landing for signed-in users, Lighthouse ≥ 0.9, dev Dependabot alerts, promo video |
+| 3 | Save faster, smarter | Browser extension, AI tags and descriptions, smart search, demo data carried into a real account |
+| Backlog | Later | Import from Telegram, own authentication (learning format), subscriptions and monetisation, paid hosting |
 
 ## 11. Presentation in the CV and portfolio
 
