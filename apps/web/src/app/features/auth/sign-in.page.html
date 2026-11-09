@@ -48,7 +48,11 @@
       </ui-button>
     </div>
 
-    <!-- Plain text until the /privacy page exists; then "Privacy policy" becomes a link. -->
-    <p class="sign-in__privacy">{{ 'auth.signIn.privacy' | transloco }}</p>
+    <p class="sign-in__privacy">
+      {{ 'auth.signIn.privacyBefore' | transloco }}
+      <a class="sign-in__privacy-link" routerLink="/privacy"
+        >{{ 'auth.signIn.privacyLink' | transloco }}</a
+      >{{ 'auth.signIn.privacyAfter' | transloco }}
+    </p>
   </div>
 </main>

@@ -83,6 +83,18 @@ describe('SignInPage', () => {
     expect(root.querySelector('ui-notice')).toBeNull();
   });
 
+  it('links the privacy line to /privacy', async () => {
+    const { harness } = await setup();
+    await harness.navigateByUrl('/sign-in');
+    const root = harness.routeNativeElement as HTMLElement;
+    const line = root.querySelector('.sign-in__privacy');
+
+    expect(line?.querySelector('a')?.getAttribute('href')).toBe('/privacy');
+    expect(line?.textContent?.replace(/\s+/g, ' ').trim()).toBe(
+      'By continuing you agree to the Privacy policy. We only use your name, email and avatar.',
+    );
+  });
+
   it('has no axe violations', async () => {
     const { harness } = await setup();
     await harness.navigateByUrl('/sign-in?reason=session-expired');

@@ -42,6 +42,8 @@ export const pageRoutes: Routes = [
       { path: APP_PATH.Settings, loadComponent: settingsPage },
     ],
   },
+  // Public on purpose (no guard): guests, signed-in users and the OAuth consent screen reach it.
+  { path: APP_PATH.Privacy, loadComponent: () => import('./features/privacy/privacy.page') },
   // Starts a demo session (or goes to the library when already signed in).
   { path: APP_PATH.Demo, loadComponent: () => import('./features/auth/demo-start.page') },
   // Web Share Target (Android): outside the shell, a quick save sheet. Signed-in only.

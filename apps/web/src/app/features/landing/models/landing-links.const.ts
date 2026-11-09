@@ -5,6 +5,7 @@ export const LANDING_LINKS = {
   // TODO(#66): switch to router navigation once the `/sign-in` route lands (PR #86).
   SignIn: '/sign-in',
   Demo: `/${APP_PATH.Demo}`,
+  Privacy: `/${APP_PATH.Privacy}`,
   Repository: 'https://github.com/ddadivan/shelfmark',
   DecisionLog: 'https://github.com/ddadivan/shelfmark/tree/main/docs/adr',
   HowItsBuilt: '#how',

@@ -1,3 +1,5 @@
+import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { DeferBlockState } from '@angular/core/testing';
 import { axeViolations } from '../../../testing/axe';
 import { createTranslated } from '../../../testing/create-translated';
@@ -13,6 +15,8 @@ async function createLoaded() {
 }
 
 describe('LandingPage', () => {
+  beforeEach(() => TestBed.configureTestingModule({ providers: [provideRouter([])] }));
+
   afterEach(() => {
     Reflect.deleteProperty(HTMLElement.prototype, 'scrollIntoView');
     history.replaceState(null, '', '/');
