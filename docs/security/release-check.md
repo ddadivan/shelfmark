@@ -4,6 +4,26 @@ Judged against `origin/main` @ 803937d (2026-11-08). Read-only: no repo files ch
 
 > **Update after the night of Nov 8–9, 2026.** Gap 1 (export rate limit) is fixed by #192 (`@RateLimit(RATE_LIMIT.Export)`, 429 test). The red `e2e` on main is fixed by #188 (landing layout shift). #149 (link images, PR #193) got its own code and security review (PASS); its rows are noted below. Still open: privacy page (#101), Neon preview isolation (author check), production scan (author, from a networked machine), CodeQL / secret-scanning alert counts (author, repository settings).
 
+> **Final update, Nov 9, 2026 (author checks done with the author).** All four gaps are closed or accepted:
+> - **(1) Export rate limit:** fixed by #192.
+> - **(2) Privacy page:** live at `/privacy` (#202). The URL is set as the privacy policy link on the Google OAuth consent screen, and `shelfmark-app.vercel.app` is an authorized domain.
+> - **(3) Neon preview isolation:** verified. The Preview environment in Vercel has no shared `DATABASE_URL`. The only Preview database variables are branch-scoped ones that the Neon integration created for `feat/67-demo-web` and `feat/76-tags-api`, each on its own child branch. Branch deployments stay off on purpose (`git.deploymentEnabled`, Hobby deployment cap).
+> - **(4) Production scan:** run, see "Production checks" below.
+>
+> Also confirmed on production:
+> - **API boot:** the API failed to boot on Vercel (`ERR_REQUIRE_ESM` from `@nestjs/throttler`) from #132 until #204. It is fixed, and a test now loads the built entry the way Vercel does.
+> - **Health and cron:** `/api/health` answers 200. `/api/cron/demo-cleanup` answers 401 without the secret. `CRON_SECRET` is set in Production; the first scheduled run is checked in the Vercel cron logs.
+> - **Link images:** a new link gets its preview image through `sharp` on Vercel.
+>
+> Security tab:
+> - **Code scanning:** 0 open alerts (2 closed).
+> - **Secret scanning:** 0 open, 0 closed.
+> - **Dependabot:** 2 open, both in transitive dev dependencies:
+>   - minimatch (moderate), through `eslint`;
+>   - deepmerge (low), through `@nx/webpack`.
+>
+>   `npm audit --omit=dev` reports 0. The author accepted them as a known risk for stage 1; follow-up in #205.
+
 ## Summary
 
 - 5.8 rows and related measures checked: 17. **Done: 13. Gap: 4.**
@@ -49,10 +69,32 @@ Judged against `origin/main` @ 803937d (2026-11-08). Read-only: no repo files ch
 - **#186 CI (ci/186-storybook-a11y-speed):** `.github/workflows/ci.yml` (3 lines), Storybook a11y config. The diff has no change to permissions, secrets, audit or gitleaks lines; no 5.8 impact.
 - **#178** (Dependabot jsdom 31, dev dependency) and **#101** (privacy page, closes gap 11b).
 
-## Production checks not done
+## Production checks
 
-- `BASE_URL=https://shelfmark-app.vercel.app npx nx e2e web-e2e` and a header scan were **not run**. `curl https://shelfmark-app.vercel.app/` from this sandbox returned no response (HTTP 000, `vercel.app` is not reachable through the sandbox proxy), so no production claim is made. The code, `vercel.json` and e2e specs above describe the intended headers; `post-deploy-smoke.yml` already checks the production CSP after each deploy (its latest result was not read).
-- Neon preview branch setup, GitHub secret scanning / push protection, Vercel environment variables, CodeQL open alerts: author-side settings, not verifiable here.
+Run by the author from a networked machine against `https://shelfmark-app.vercel.app` on Nov 9, 2026, after #204:
+
+```bash
+BASE_URL=https://shelfmark-app.vercel.app npx nx e2e web-e2e
+```
+
+**Results:**
+- **Headers:** every deployed-URL check in `csp.spec.ts` passed except the nonce comparison:
+  - a different nonce per request;
+  - `nosniff` and HSTS on the document;
+  - the static CSP on hashed assets;
+  - helmet CSP without a nonce on `/api/health`.
+- **The nonce comparison** failed only because production serves the attribute as lower-case `ngcspnonce`, while its value matched the header nonce. The spec was too strict and is fixed in #208.
+- **Public pages, desktop:** smoke, privacy, PWA and landing (including the axe scans in light and dark) passed.
+- **Public pages, phone:** they ran after the desktop project and got `403` or empty pages, including a second run with `--workers=1`. Vercel's system **DDoS Mitigation** rule challenged the author's IP for ten minutes at a time (Firewall: 122 challenged requests, in two windows). That is the platform protecting production, not an app failure; the same specs pass on phone in CI against the production build.
+- **Specs not meant for production** (`*mock auth*`, `sign-in-real-api`, `settings`, and anything that routes `/api` or needs the mock data layer) cannot pass against a deployed site: there is no mock sign-in there, and the PWA service worker answers before `page.route`.
+
+**How to scan production next time:** run only the public, deployed-URL specs, in one worker and one project at a time, with a pause between projects so the DDoS rule does not engage:
+
+```bash
+BASE_URL=https://shelfmark-app.vercel.app npx playwright test -c apps/web-e2e/playwright.config.mts --project=desktop --workers=1 csp.spec.ts smoke.spec.ts privacy.spec.ts pwa.spec.ts landing.spec.ts
+```
+
+`post-deploy-smoke.yml` keeps checking the production CSP, nonce, 404 and `/api/health` after every deploy.
 
 ## Gaps as proposed issues
 
