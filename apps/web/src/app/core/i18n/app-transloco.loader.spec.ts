@@ -13,7 +13,7 @@ describe('AppTranslocoLoader', () => {
         finale: { title: 'Empty your Saved Messages.' },
       },
     });
-    for (const scope of ['landing', 'auth', 'shell', 'library']) {
+    for (const scope of ['landing', 'auth', 'shell', 'library', 'privacy']) {
       expect(translation).toHaveProperty(scope);
     }
   });

@@ -42,6 +42,16 @@
   color: var(--text-muted);
 }
 
+// Underlined: the link sits inside a sentence, so colour alone must not carry it.
+.sign-in__privacy-link {
+  color: inherit;
+  text-decoration: underline;
+
+  &:hover {
+    color: var(--text);
+  }
+}
+
 .sign-in__title {
   @include type(display);
 

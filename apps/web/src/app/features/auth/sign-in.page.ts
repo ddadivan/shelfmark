@@ -6,7 +6,7 @@ import {
   inject,
   input,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { AUTH_PROVIDER, type AuthProvider } from '@shelfmark/contracts';
 import { ButtonComponent, LogoComponent, NoticeComponent, NOTICE_KIND } from '@shelfmark/ui';
@@ -25,7 +25,7 @@ import { SIGN_IN_REASON_KEY } from './models/sign-in-reason-key.const';
 /** Sign in with Google or GitHub, or open the demo. Guest-only (`guestOnly` on the route). */
 @Component({
   selector: 'app-sign-in-page',
-  imports: [TranslocoPipe, ButtonComponent, LogoComponent, NoticeComponent],
+  imports: [RouterLink, TranslocoPipe, ButtonComponent, LogoComponent, NoticeComponent],
   templateUrl: './sign-in.page.html',
   styleUrl: './sign-in.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

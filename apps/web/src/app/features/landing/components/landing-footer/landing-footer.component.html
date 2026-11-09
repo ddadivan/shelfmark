@@ -1,11 +1,16 @@
 <footer class="landing-footer">
   <span>{{ 'landing.footer.copyright' | transloco }}</span>
-  <a
-    class="landing-footer__link"
-    [attr.href]="LANDING_LINKS.Repository"
-    target="_blank"
-    rel="noopener noreferrer"
-    >{{ 'landing.footer.github' | transloco
-    }}<span class="landing-footer__hint"> ({{ 'landing.newTab' | transloco }})</span></a
-  >
+  <span class="landing-footer__links">
+    <a class="landing-footer__link" [routerLink]="LANDING_LINKS.Privacy">{{
+      'landing.footer.privacy' | transloco
+    }}</a>
+    <a
+      class="landing-footer__link"
+      [attr.href]="LANDING_LINKS.Repository"
+      target="_blank"
+      rel="noopener noreferrer"
+      >{{ 'landing.footer.github' | transloco
+      }}<span class="landing-footer__hint"> ({{ 'landing.newTab' | transloco }})</span></a
+    >
+  </span>
 </footer>
