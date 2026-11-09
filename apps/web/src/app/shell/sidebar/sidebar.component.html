@@ -9,7 +9,19 @@
     [menuNodeId]="menuNodeId()"
     (selected)="select($event)"
     (contextMenu)="openMenu($event)"
-  />
+  >
+    <ui-button
+      uiTreeHeadingAction
+      variant="ghost"
+      size="sm"
+      iconOnly
+      iconLeft="folder-plus"
+      [iconSize]="24"
+      [ariaLabel]="'shell.sidebar.newFolder' | transloco"
+      [uiTooltip]="'shell.sidebar.newFolder' | transloco"
+      (click)="createTopLevel()"
+    />
+  </ui-tree>
 
   @if (folders.error()) {
     <p class="sidebar__error">
@@ -19,16 +31,6 @@
       }}</ui-button>
     </p>
   }
-
-  <ui-button
-    class="sidebar__new"
-    variant="ghost"
-    [size]="buttonSize()"
-    iconLeft="folder-plus"
-    (click)="createTopLevel()"
-  >
-    {{ 'shell.sidebar.newFolder' | transloco }}
-  </ui-button>
 
   <app-sidebar-tags />
 

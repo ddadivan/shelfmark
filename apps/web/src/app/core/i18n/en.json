@@ -435,7 +435,7 @@
       "nav": "Library",
       "tree": "Views and folders",
       "folders": "Folders",
-      "newFolder": "New folder",
+      "newFolder": "Create a folder",
       "folderActions": "Actions for {{name}}",
       "folderMenu": "Folder actions",
       "loadFailed": "Couldn't load your folders.",

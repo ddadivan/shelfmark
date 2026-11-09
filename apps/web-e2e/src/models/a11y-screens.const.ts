@@ -71,7 +71,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     open: async (page) => {
       await openFeed(page);
       await openSidebar(page);
-      await page.getByRole('button', { name: 'New folder' }).click();
+      await page.getByRole('button', { name: 'Create a folder' }).click();
       const dialog = page.getByRole('dialog', { name: 'New folder' });
       await dialog.getByLabel('Name').fill('Projects');
       await dialog.getByRole('button', { name: 'Create folder' }).click();
@@ -171,7 +171,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     open: async (page) => {
       await openFeed(page);
       await openSidebar(page);
-      await page.getByRole('button', { name: 'New folder' }).click();
+      await page.getByRole('button', { name: 'Create a folder' }).click();
       await expect(page.getByRole('dialog', { name: 'New folder' })).toBeVisible();
     },
     ...OVERLAY,

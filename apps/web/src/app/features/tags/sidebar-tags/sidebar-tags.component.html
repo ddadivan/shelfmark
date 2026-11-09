@@ -9,8 +9,10 @@
       size="sm"
       iconOnly
       iconLeft="add"
+      [iconSize]="24"
       [ariaLabel]="'tags.sidebar.add' | transloco"
-      (click)="startAdd()"
+      [uiTooltip]="'tags.sidebar.add' | transloco"
+      (click)="toggleAdd()"
     />
   </div>
 
@@ -90,7 +92,12 @@
 </section>
 
 <ng-template #editor>
-  <form class="tags__editor" [formRoot]="form" (keydown.escape)="cancel()">
+  <form
+    class="tags__editor"
+    [formRoot]="form"
+    (keydown.escape)="cancel()"
+    (focusout)="editorFocusOut($event)"
+  >
     <ui-input
       [label]="(renamingId() === null ? 'tags.add.label' : 'tags.rename.label') | transloco"
       [placeholder]="'tags.add.placeholder' | transloco"

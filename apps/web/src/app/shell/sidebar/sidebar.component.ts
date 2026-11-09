@@ -19,6 +19,7 @@ import {
   MenuComponent,
   MenuItemComponent,
   MenuSeparatorComponent,
+  TooltipDirective,
   TreeComponent,
   UI_TREE_CONTEXT_MENU_TRIGGER,
   type UiTreeContextMenuEvent,
@@ -47,7 +48,7 @@ const FIXED_ROUTES: Readonly<Record<string, string>> = {
 
 /**
  * The library sidebar: "All links", "Unsorted", "Favorites", then the folder tree with link
- * counts (`ui-tree`) and a "New folder" button. Choosing a row navigates; the active row follows
+ * counts (`ui-tree`); the "Folders" heading has a "Create a folder" icon button. Choosing a row navigates; the active row follows
  * the URL. A folder has a menu (right click, "..." button, Shift+F10): new subfolder, add link
  * here, rename, move, delete.
  */
@@ -59,6 +60,7 @@ const FIXED_ROUTES: Readonly<Record<string, string>> = {
     MenuItemComponent,
     MenuSeparatorComponent,
     SidebarTagsComponent,
+    TooltipDirective,
     TranslocoPipe,
     TreeComponent,
   ],

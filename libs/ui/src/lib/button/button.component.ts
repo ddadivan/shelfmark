@@ -24,6 +24,7 @@ import { IconComponent } from '../icon/icon.component';
 import type { IconName } from '../icon/models/icon-name.type';
 import { RippleDirective } from '../ripple/ripple.directive';
 import { SpinnerComponent } from '../spinner/spinner.component';
+import type { IconSize } from '../icon/models/icon-size.type';
 import { BUTTON_FAB_ICON_SIZE } from './models/button-fab-icon-size.const';
 import { BUTTON_ICON_SIZE } from './models/button-icon-size.const';
 import { BUTTON_HIT_AREA } from './models/button-hit-area.const';
@@ -82,6 +83,8 @@ export class ButtonComponent implements UiFocusTarget {
    * card). The overlay has no ripple (the ripple host clips).
    */
   readonly hitArea = input<ButtonHitArea>(BUTTON_HIT_AREA.Grow);
+  /** Icon size in px instead of the one of the button size (navigation controls use 24). */
+  readonly iconSize = input<IconSize | undefined>(undefined);
   /** Full-width button: the host and the inner element take 100% of the inline size. */
   readonly block = input(false, { transform: booleanAttribute });
   /** Floating action button: 3.5rem square with the popover shadow; use with `iconOnly`. */
@@ -139,8 +142,8 @@ export class ButtonComponent implements UiFocusTarget {
     return classes.join(' ');
   });
 
-  protected readonly iconSize = computed(() =>
-    this.fab() ? BUTTON_FAB_ICON_SIZE : BUTTON_ICON_SIZE[this.size()],
+  protected readonly iconSizePx = computed(
+    () => this.iconSize() ?? (this.fab() ? BUTTON_FAB_ICON_SIZE : BUTTON_ICON_SIZE[this.size()]),
   );
   protected readonly singleIcon = computed(() => this.iconLeft() ?? this.iconRight());
 

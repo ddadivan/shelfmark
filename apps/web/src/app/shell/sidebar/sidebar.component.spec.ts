@@ -63,7 +63,7 @@ describe('SidebarComponent', () => {
       .slice(0, 3)
       .map((item) => Number(item.querySelector('.ui-tree__count')?.textContent));
     expect(counts.every((count) => count > 0)).toBe(true);
-    expect(element.querySelector('.ui-tree__section')?.textContent).toBe('Folders');
+    expect(element.querySelector('.ui-tree__section')?.textContent?.trim()).toBe('Folders');
   });
 
   it('marks the row of the current URL', async () => {
@@ -114,10 +114,13 @@ describe('SidebarComponent', () => {
     ]);
   });
 
-  it('has a New folder button', async () => {
+  it('has a "Create a folder" icon button in the Folders heading row, and no "New folder" row', async () => {
     const { element } = await setup();
 
-    expect(element.textContent).toContain('New folder');
+    const button = element.querySelector<HTMLElement>('.ui-tree__action button');
+    expect(button?.getAttribute('aria-label')).toBe('Create a folder');
+    expect(button?.textContent?.trim()).toBe('');
+    expect(element.textContent).not.toContain('New folder');
   });
 
   it('has no axe violations', async () => {

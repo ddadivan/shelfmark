@@ -9,18 +9,18 @@
   @if (iconOnly()) {
     @if (singleIcon(); as icon) {
       @if (!loading()) {
-        <ui-icon [name]="icon" [size]="iconSize()" />
+        <ui-icon [name]="icon" [size]="iconSizePx()" />
       }
     }
   } @else {
     @if (iconLeft(); as icon) {
       @if (!loading()) {
-        <ui-icon [name]="icon" [size]="iconSize()" />
+        <ui-icon [name]="icon" [size]="iconSizePx()" />
       }
     }
     <ng-content />
     @if (iconRight(); as icon) {
-      <ui-icon [name]="icon" [size]="iconSize()" />
+      <ui-icon [name]="icon" [size]="iconSizePx()" />
     }
   }
 </ng-template>

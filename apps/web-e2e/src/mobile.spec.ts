@@ -322,7 +322,7 @@ test.describe('mobile layout (mock API)', () => {
     }
 
     await openDrawer(page);
-    for (const name of ['Close menu', 'New folder', 'New tag']) {
+    for (const name of ['Close menu', 'Create a folder', 'New tag']) {
       const box = await drawer(page).getByRole('button', { name }).boundingBox();
       expect(box?.height, name).toBeGreaterThanOrEqual(44);
     }
@@ -360,7 +360,7 @@ test.describe('mobile layout (mock API)', () => {
       await expect(page.getByRole('dialog')).toHaveCount(0);
 
       await openSidebar(page);
-      await page.getByRole('button', { name: 'New folder' }).click();
+      await page.getByRole('button', { name: 'Create a folder' }).click();
       await expect(page.getByRole('dialog', { name: 'New folder' })).toBeVisible();
       await settled(page);
       expect(await overflow(page)).toBeLessThanOrEqual(0);

@@ -28,7 +28,11 @@ import { LONG_PRESS_DURATION_MS } from '../long-press';
       (selected)="selected.push($event)"
       (toggled)="toggled.push($event)"
       (contextMenu)="menus.push($event)"
-    />
+    >
+      <button type="button" uiTreeHeadingAction aria-label="Create a folder" (click)="created += 1">
+        +
+      </button>
+    </ui-tree>
   `,
 })
 class HostComponent {
@@ -37,6 +41,7 @@ class HostComponent {
   readonly activeId = signal<string | null>(TREE_STORY_ID.Angular);
   readonly menuLabel = signal<string | undefined>('Actions for {name}');
   readonly menuNodeId = signal<string | null>(null);
+  created = 0;
   readonly selected: UiTreeNode[] = [];
   readonly toggled: UiTreeToggleEvent[] = [];
   readonly menus: UiTreeContextMenuEvent[] = [];
@@ -186,7 +191,7 @@ describe('TreeComponent', () => {
     it('renders a labelled navigation tree with fixed rows, the heading and the folders', async () => {
       const { root, tree } = await setup();
       expect(tree.getAttribute('aria-label')).toBe('Library');
-      expect(root.querySelector('.ui-tree__section')?.textContent).toBe('Folders');
+      expect(root.querySelector('.ui-tree__section')?.textContent?.trim()).toBe('Folders');
       const names = Array.from(root.querySelectorAll('.ui-tree__name')).map((el) => el.textContent);
       expect(names.slice(0, 5)).toEqual([
         TREE_STORY_NAME.All,
@@ -243,13 +248,26 @@ describe('TreeComponent', () => {
       ).not.toContain('is-open');
     });
 
-    it('omits the heading without folders and the active state without activeId', async () => {
+    it('keeps the heading and its action without folders, and has no active state without activeId', async () => {
       const { root, host, item, fixture } = await setup();
       host.activeId.set(null);
       host.nodes.set([]);
       await settle(fixture);
-      expect(root.querySelector('.ui-tree__section')).toBeNull();
+      expect(root.querySelector('.ui-tree__section')?.textContent?.trim()).toBe('Folders');
+      expect(root.querySelector('.ui-tree__action button')).not.toBeNull();
       expect(item(TREE_STORY_NAME.All).hasAttribute('aria-current')).toBe(false);
+    });
+
+    it('the heading action is projected, works and does not choose a row', async () => {
+      const { root, host, click, key, tree } = await setup();
+      const button = root.querySelector<HTMLElement>('.ui-tree__action button');
+      expect(button).not.toBeNull();
+      await click(button as HTMLElement);
+      await key(button as HTMLElement, KEYBOARD_KEY.Enter);
+      expect(host.created).toBe(1);
+      expect(host.selected).toEqual([]);
+      // Not inside the tree element: a button is not an allowed child of role="tree".
+      expect(tree.contains(button)).toBe(false);
     });
 
     it('has no axe violations', async () => {

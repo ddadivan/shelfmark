@@ -2,6 +2,7 @@ import { Component, Directive, inject, signal, viewChildren } from '@angular/cor
 import { TestBed } from '@angular/core/testing';
 import { axeViolations } from '../../testing/axe';
 import { UI_FOCUS_TARGET } from '../focus-target/models/ui-focus-target.const';
+import type { IconSize } from '../icon/models/icon-size.type';
 import type { IconName } from '../icon/models/icon-name.type';
 import { ButtonComponent } from './button.component';
 import type { ButtonHaspopup } from './models/button-haspopup.type';
@@ -25,6 +26,7 @@ import { BUTTON_HASPOPUP } from './models/button-haspopup.const';
       [iconRight]="iconRight()"
       [iconOnly]="iconOnly()"
       [fab]="fab()"
+      [iconSize]="iconSize()"
       [ariaLabel]="ariaLabel()"
       [disabled]="disabled()"
       [href]="href()"
@@ -48,6 +50,7 @@ class HostComponent {
   readonly iconLeft = signal<IconName | undefined>(undefined);
   readonly iconRight = signal<IconName | undefined>(undefined);
   readonly iconOnly = signal(false);
+  readonly iconSize = signal<IconSize | undefined>(undefined);
   readonly fab = signal(false);
   readonly ariaLabel = signal<string | undefined>(undefined);
   readonly disabled = signal(false);
@@ -114,6 +117,20 @@ describe('ButtonComponent', () => {
     await settle();
     expect(button().classList.contains('ui-button--fab')).toBe(true);
     expect(root.querySelector('ui-icon.ui-icon--24')).not.toBeNull();
+  });
+
+  it('draws the icon at `iconSize` instead of the size of the button', async () => {
+    const { host, root, settle } = await setup();
+    host.iconOnly.set(true);
+    host.iconLeft.set('add');
+    host.ariaLabel.set('Add link');
+    await settle();
+    expect(root.querySelector('ui-icon.ui-icon--16')).not.toBeNull();
+
+    host.iconSize.set(24);
+    await settle();
+    expect(root.querySelector('ui-icon.ui-icon--24')).not.toBeNull();
+    expect(root.querySelector('ui-icon.ui-icon--16')).toBeNull();
   });
 
   it.each(Object.values(BUTTON_VARIANT))('applies the %s variant class', async (variant) => {

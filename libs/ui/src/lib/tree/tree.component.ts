@@ -5,6 +5,9 @@ import {
   Component,
   computed,
   afterNextRender,
+  afterRenderEffect,
+  ElementRef,
+  signal,
   DestroyRef,
   effect,
   inject,
@@ -36,6 +39,9 @@ const KEYBOARD_ECHO_RELEASE_MS = 100;
  * the Angular Aria tree in navigation mode (roving focus; Up / Down, Home / End, Right / Left
  * to open, close or step to the child / parent, typing to jump, Enter or a click to choose;
  * `aria-expanded`, `aria-level`, `aria-current` on the active row).
+ *
+ * A button with the `uiTreeHeadingAction` attribute is shown at the end of the heading row (for
+ * example "Create a folder"); it is outside the tree element, which only allows rows.
  *
  * Presentational: it emits `selected`, `toggled` and `contextMenu`; the feature routes and opens
  * its `ui-menu` (`openAt(position)` for a right click, `openFrom(anchor)` for the "..." button
@@ -69,6 +75,10 @@ export class TreeComponent {
   private readonly injector = inject(Injector);
   private readonly tree = viewChild.required(Tree);
   private readonly items = viewChildren(TreeItem);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+  private readonly section = viewChild<ElementRef<HTMLElement>>('section');
+  /** Top of the heading row inside the host; the action button is placed there. */
+  protected readonly actionTop = signal(0);
   /** Where every row has been seen (kept for removed rows, so focus can find a neighbour). */
   private readonly lastKnown = new Map<string, TreeRowPlace>();
   /** The row that held focus last; cleared when focus moves to another element. */
@@ -76,6 +86,16 @@ export class TreeComponent {
 
   constructor() {
     inject(DestroyRef).onDestroy(() => clearTimeout(this.echoTimer));
+    afterRenderEffect(() => {
+      this.heading();
+      this.fixedNodes();
+      this.measureHeading();
+    });
+    if (typeof ResizeObserver !== 'undefined') {
+      const observer = new ResizeObserver(() => this.measureHeading());
+      observer.observe(this.host);
+      inject(DestroyRef).onDestroy(() => observer.disconnect());
+    }
     effect(() => {
       this.remember();
       // The rows are re-rendered after this effect: look at them then.
@@ -83,6 +103,14 @@ export class TreeComponent {
         afterNextRender(() => this.restoreIfDropped(), { injector: this.injector });
       }
     });
+  }
+
+  /** Reads where the heading row is (it moves with the fixed rows above it and their size). */
+  private measureHeading(): void {
+    const section = this.section()?.nativeElement;
+    if (section) {
+      this.actionTop.set(section.offsetTop + parseFloat(getComputedStyle(section).paddingTop));
+    }
   }
 
   /**
