@@ -76,11 +76,9 @@ test.describe('mobile polish (mock API)', () => {
       await page.getByRole('button', { name: 'Open menu' }).click();
       const drawer = page.getByRole('dialog', { name: 'Menu' });
       await expect(drawer).toBeVisible();
-      const top = await page.evaluate<string, [number, number]>(
-        ([x, y]) =>
-          document.elementFromPoint(x, y)?.closest('[role="dialog"]')?.getAttribute('aria-label') ??
-          'none',
-        [40, 40] as [number, number],
+      // String script: this project has no DOM lib. The header sits under the drawer's scrim.
+      const top = await page.evaluate<string>(
+        `document.elementFromPoint(40, 40)?.closest('[role="dialog"]')?.getAttribute('aria-label') ?? 'none'`,
       );
       expect(top).toBe('Menu');
     });
