@@ -14,8 +14,8 @@
       <h1 class="library__title">{{ folder()?.name ?? (titleKey() | transloco) }}</h1>
       <!-- Always there (empty while the list loads) so the title block keeps its height. -->
       <p class="library__count">
-        @if (showLinks()) { {{ (store.hasMore() ? 'library.countMore' : 'library.count') |
-        transloco: { count: store.count() } }} }
+        @if (showLinks()) { {{ pluralKey(shownHasMore() ? 'library.countMore' : 'library.count',
+        shownCount()) | transloco: { count: shownCount() } }} }
       </p>
     </div>
     <div class="library__tools">
@@ -26,6 +26,7 @@
           variant="ghost"
           size="sm"
           iconRight="chevron-down"
+          [iconSize]="ICON_SIZE.Sm"
           [ariaLabel]="'library.sort.label' | transloco: { sort: SORT_OPTION_KEYS[feedSort()] | transloco }"
         >
           {{ SORT_OPTION_KEYS[feedSort()] | transloco }}
@@ -138,6 +139,14 @@
     <div class="library__grid">
       <ui-skeleton [shape]="SKELETON_SHAPE.Card" [count]="SKELETON_COUNT" />
     </div>
+    } } @else if (stale() && staleSkeleton()) { @if (ui.view() === UI_VIEW.List) {
+    <div class="library__rows">
+      <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="SKELETON_COUNT" />
+    </div>
+    } @else {
+    <div class="library__grid">
+      <ui-skeleton [shape]="SKELETON_SHAPE.Card" [count]="SKELETON_COUNT" />
+    </div>
     } } @else if (empty() && searching()) {
     <ui-empty-state
       illustration="not-found"
@@ -181,9 +190,16 @@
       </ui-button>
       }
     </ui-empty-state>
-    } @else if (showLinks()) { @if (ui.view() === UI_VIEW.List) {
-    <ul class="library__rows" [attr.aria-label]="'library.list.label' | transloco">
-      @for (link of store.entities(); track link.id) {
+    } @else if (showLinks()) { @for (batch of batches(); track batch) { @if (ui.view() ===
+    UI_VIEW.List) {
+    <ul
+      class="library__rows library__list"
+      [class.library__list--stale]="stale()"
+      [attr.aria-busy]="stale() ? 'true' : null"
+      [attr.inert]="stale() ? '' : null"
+      [attr.aria-label]="'library.list.label' | transloco"
+    >
+      @for (link of shownLinks(); track link.id) {
       <li>
         <app-link-row
           [link]="link"
@@ -196,8 +212,14 @@
       }
     </ul>
     } @else {
-    <ul class="library__grid" [attr.aria-label]="'library.list.label' | transloco">
-      @for (link of store.entities(); track link.id) {
+    <ul
+      class="library__grid library__list"
+      [class.library__list--stale]="stale()"
+      [attr.aria-busy]="stale() ? 'true' : null"
+      [attr.inert]="stale() ? '' : null"
+      [attr.aria-label]="'library.list.label' | transloco"
+    >
+      @for (link of shownLinks(); track link.id) {
       <li>
         <app-link-card
           [link]="link"
@@ -209,10 +231,10 @@
       </li>
       }
     </ul>
-    }
+    } }
 
     <ui-load-more [loading]="store.loadingMore()" [text]="'library.loadingMore' | transloco" />
-    @if (store.hasMore()) {
+    @if (store.hasMore() && !stale()) {
     <div
       class="library__more"
       appInView

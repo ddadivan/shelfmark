@@ -21,7 +21,8 @@
     @if (linkCount() > 0) {
       <ui-command-group
         [heading]="
-          (state().more ? 'library.countMore' : 'library.count') | transloco: { count: linkCount() }
+          pluralKey(state().more ? 'library.countMore' : 'library.count', linkCount())
+            | transloco: { count: linkCount() }
         "
       >
         @for (link of state().links; track link.id) {

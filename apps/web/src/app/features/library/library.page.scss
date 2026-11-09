@@ -11,6 +11,11 @@
 .library {
   position: relative;
   display: flex;
+
+  // Room for the breadcrumb trail above the title: the same in every view (with or without a
+  // trail), so the title never moves between them. 20px = the 12px gap under the 24px trail
+  // line plus the 8px the trail keeps from the top edge of the main column.
+  padding-block-start: calc(var(--space-3) + var(--space-2));
   flex: 1;
   flex-direction: column;
   min-height: 0;
@@ -65,6 +70,7 @@
   flex-shrink: 0;
   gap: var(--space-2);
   align-items: center;
+  max-width: 100%;
 }
 
 .library__title {
@@ -100,6 +106,38 @@
     display: flex;
     flex-direction: column;
   }
+}
+
+.library__list {
+  // A new first page fades in with a slight rise; no motion under reduced motion. A CSS
+  // crossfade, not router view transitions: the page is reused between views and the data
+  // arrives after the navigation has finished, so a view transition would end too early.
+  animation: library-arrive var(--duration-base) var(--ease-out) both;
+  transition: opacity var(--duration-base) var(--ease-out);
+
+  @include reduced-motion {
+    animation: none;
+    transition: none;
+  }
+}
+
+@keyframes library-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(rem(4px));
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// The previous view's cards while the next one loads (stale-while-loading). The dimming is a
+// deliberate exception to "opacity only for disabled": the list is inert and about to be replaced.
+.library__list--stale {
+  pointer-events: none;
+  opacity: 0.6;
 }
 
 .library__rows {
@@ -143,10 +181,10 @@
 }
 
 .library__crumbs {
-  // Over the top padding of the main column (24px, the height of the trail), so a folder page's
-  // trail takes no room and switching to or from a folder moves nothing.
+  // Over the top padding of the main column (24px) and the room above the title: 8px from the
+  // top edge, a 24px line, then the 12px gap above the title. The same space in every view.
   position: absolute;
-  inset-block-start: calc(var(--space-6) * -1);
+  inset-block-start: calc(var(--space-2) - var(--space-6));
   inset-inline: 0;
   display: block;
 }

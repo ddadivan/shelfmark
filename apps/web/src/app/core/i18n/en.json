@@ -543,8 +543,14 @@
       "action": "Add link",
       "unsorted": "Open Unsorted"
     },
-    "count": "{{count}} links",
-    "countMore": "{{count}}+ links",
+    "count": {
+      "one": "{{count}} link",
+      "other": "{{count}} links"
+    },
+    "countMore": {
+      "one": "{{count}}+ link",
+      "other": "{{count}}+ links"
+    },
     "view": {
       "label": "View",
       "cards": "Cards",
