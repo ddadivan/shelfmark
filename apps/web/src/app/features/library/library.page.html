@@ -143,14 +143,12 @@
     [heading]="'library.emptySearch.title' | transloco: { query: query() }"
     [text]="'library.emptySearch.text' | transloco"
   >
-    <div class="library__empty-actions">
-      <ui-button (click)="clearSearch()">{{ 'library.emptySearch.clear' | transloco }}</ui-button>
-      @if (scope() !== LINKS_SCOPE.All) {
-      <ui-button (click)="searchEverywhere()">
-        {{ 'library.emptySearch.all' | transloco }}
-      </ui-button>
-      }
-    </div>
+    <ui-button (click)="clearSearch()">{{ 'library.emptySearch.clear' | transloco }}</ui-button>
+    @if (scope() !== LINKS_SCOPE.All) {
+    <ui-button (click)="searchEverywhere()">
+      {{ 'library.emptySearch.all' | transloco }}
+    </ui-button>
+    }
   </ui-empty-state>
   } @else if (empty() && filtered()) {
   <ui-empty-state
@@ -168,21 +166,17 @@
     [heading]="emptyKey() + '.title' | transloco"
     [text]="emptyKey() + '.text' | transloco"
   >
-    <div class="library__empty-actions">
-      @if (isFolder()) {
-      <ui-button (click)="openUnsorted()"
-        >{{ 'library.emptyFolder.unsorted' | transloco }}</ui-button
-      >
-      } @if (canAddLink()) {
-      <ui-button variant="primary" iconLeft="add" (click)="actions.addLink(addLinkData())">
-        {{ emptyKey() + '.action' | transloco }}
-      </ui-button>
-      } @else {
-      <ui-button variant="primary" (click)="showAll()">
-        {{ emptyKey() + '.action' | transloco }}
-      </ui-button>
-      }
-    </div>
+    @if (isFolder()) {
+    <ui-button (click)="openUnsorted()">{{ 'library.emptyFolder.unsorted' | transloco }}</ui-button>
+    } @if (canAddLink()) {
+    <ui-button variant="primary" iconLeft="add" (click)="actions.addLink(addLinkData())">
+      {{ emptyKey() + '.action' | transloco }}
+    </ui-button>
+    } @else {
+    <ui-button variant="primary" (click)="showAll()">
+      {{ emptyKey() + '.action' | transloco }}
+    </ui-button>
+    }
   </ui-empty-state>
   } @else if (showLinks()) { @if (ui.view() === UI_VIEW.List) {
   <ul class="library__rows" [attr.aria-label]="'library.list.label' | transloco">
