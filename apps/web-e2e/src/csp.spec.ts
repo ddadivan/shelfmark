@@ -163,7 +163,10 @@ test.describe('Content-Security-Policy', () => {
       const nonce = nonceFromCsp(csp);
       expect(nonce).toMatch(noncePattern);
       expect(csp).toBe(buildCsp(nonce));
-      expect(await response.text()).toContain(`ngCspNonce="${nonce}"`);
+      // Attribute names are case-insensitive, and production serves the shell with `ngcspnonce`.
+      // The value (base64, case-sensitive) must still equal the header nonce exactly.
+      const documentNonce = /ngCspNonce="([^"]*)"/i.exec(await response.text())?.[1];
+      expect(documentNonce).toBe(nonce);
       expect(response.headers()['cache-control']).toContain('no-store');
     });
 
