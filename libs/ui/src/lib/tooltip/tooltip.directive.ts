@@ -52,7 +52,7 @@ function textTransform(value: string | null | undefined): string {
 export class TooltipDirective {
   /** The tooltip text. Empty or missing: no tooltip. */
   readonly text = input('', { alias: 'uiTooltip', transform: textTransform });
-  readonly position = input<TooltipPosition>(OVERLAY_SIDE.Top);
+  readonly position = input<TooltipPosition>(OVERLAY_SIDE.Bottom);
   /** Milliseconds before the tooltip opens on hover or focus. */
   readonly delay = input(400, { transform: numberAttribute });
   /** Shortcut shown as `kbd` after the text, for example `⌘K`. */
@@ -82,7 +82,7 @@ export class TooltipDirective {
   private dismissed = false;
   private visible = false;
   private escapeArmed = false;
-  private side: TooltipPosition = OVERLAY_SIDE.Top;
+  private side: TooltipPosition = OVERLAY_SIDE.Bottom;
 
   constructor() {
     effect((onCleanup) => {

@@ -41,6 +41,7 @@
     iconLeft="more"
     [uiMenuTrigger]="menu"
     [ariaLabel]="'links.item.actions' | transloco: { title: link().title }"
+    [uiTooltip]="'links.item.moreActions' | transloco"
   />
   @if (link().note; as note) {
     <p class="link-card__note">{{ note }}</p>

@@ -85,9 +85,9 @@ export default class AppShellComponent {
     return labels ? (this.ui.recentVisible() ? labels.hide : labels.show) : null;
   });
   private readonly router = inject(Router);
-  /** Phone: the 44px touch size and no chevron next to the avatar. */
+  /** Phone: the 44px touch size and no chevron next to the avatar; desktop: 36px, so the 32px avatar is never clipped. */
   protected readonly accountButtonSize = computed(() =>
-    this.viewport.phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm,
+    this.viewport.phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Md,
   );
   protected readonly accountIconRight = computed<IconName | undefined>(() =>
     this.viewport.phone() ? undefined : 'chevron-down',

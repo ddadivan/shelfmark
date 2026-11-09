@@ -29,7 +29,7 @@ const meta: Meta<TooltipArgs> = {
   },
   args: {
     uiTooltip: 'Switch theme',
-    position: OVERLAY_SIDE.Top,
+    position: OVERLAY_SIDE.Bottom,
     delay: 400,
     uiTooltipShortcut: '',
   },

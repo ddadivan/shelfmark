@@ -18,7 +18,7 @@ export class TooltipPanelComponent {
   readonly text = input('');
   readonly shortcut = input('');
   /** The side the tooltip really sits on (after a flip); decides which edge keeps the gap. */
-  readonly side = input<TooltipPosition>(OVERLAY_SIDE.Top);
+  readonly side = input<TooltipPosition>(OVERLAY_SIDE.Bottom);
   readonly open = input(true);
   /** The pointer entered or left the tooltip (WCAG 1.4.13: it stays open while hovered). */
   readonly hovered = output<boolean>();

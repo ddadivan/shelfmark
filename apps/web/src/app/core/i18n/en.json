@@ -270,6 +270,7 @@
       "addFavorite": "Add to favorites",
       "removeFavorite": "Remove from favorites",
       "actions": "Actions for {{title}}",
+      "moreActions": "More actions",
       "delete": "Delete",
       "opensInNewTab": "Opens in a new tab",
       "open": "Open ↗",
