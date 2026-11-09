@@ -29,6 +29,7 @@ import { CurrentUser } from '../common/auth/current-user.decorator';
 import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
 import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
 import { CreateLinkDto } from './dto/create-link.dto';
+import { LinkImageRecaptureService } from './images/link-image-recapture.service';
 import { LinkImagesService } from './images/link-images.service';
 import { sendLinkImage } from './images/send-link-image';
 import { LinkPreviewRequestDto } from './dto/link-preview-request.dto';
@@ -49,6 +50,7 @@ export class LinksController {
     private readonly links: LinksService,
     private readonly writes: LinksWriteService,
     private readonly images: LinkImagesService,
+    private readonly recapture: LinkImageRecaptureService,
   ) {}
 
   @Post('preview')
@@ -125,6 +127,28 @@ export class LinksController {
     @Res() res: Response,
   ): Promise<void> {
     sendLinkImage(res, await this.images.find(user.id, id, LINK_IMAGE_KIND.Preview));
+  }
+
+  // Same budget as create: both fetch a page and up to two images from a third party.
+  @Post(':id/images/capture')
+  @HttpCode(HttpStatus.OK)
+  @RateLimit(RATE_LIMIT.AddLink)
+  @ApiOkResponse({
+    type: LinkResponseDto,
+    description:
+      'The link after the call. Always 200: a call that did not claim the capture (cooldown, a concurrent request runs it) or found no image answers with the link as it is',
+  })
+  @ApiNotFoundResponse({ description: 'Unknown or foreign link' })
+  @ApiOperation({
+    summary: 'Re-capture the favicon and preview image of a link whose URL changed',
+    description:
+      'Claims the capture atomically (pending link, or past the one-hour cooldown), loads the page when no source hints are stored, and stores both images within the request budget.',
+  })
+  captureImages(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<LinkResponseDto> {
+    return this.recapture.recapture(user.id, id);
   }
 
   @Post()

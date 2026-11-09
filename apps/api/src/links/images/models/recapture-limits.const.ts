@@ -9,5 +9,8 @@ export const RECAPTURE_COOLDOWN_MS = 60 * MINUTE_MS;
 /** Page fetch budget when the link has no stored source hints (the preview needs a page load). */
 export const RECAPTURE_PAGE_FETCH_MS = 3_000;
 
-/** Time of the request kept free for the response after the capture. */
-export const RECAPTURE_RESPONSE_MARGIN_MS = 1_000;
+/**
+ * Time of the request kept free for loading and mapping the link and sending the response after
+ * the capture (the capture itself already races its own deadline).
+ */
+export const RECAPTURE_RESPONSE_MARGIN_MS = 1_500;

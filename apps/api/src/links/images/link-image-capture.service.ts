@@ -14,7 +14,8 @@ import type { CaptureSources } from './models/capture-sources.interface';
  * Best-effort capture of a link's favicon and preview image (ADR 0027): fetch through the
  * SSRF-safe fetcher, re-encode, store. Never throws and never logs URLs; a failed image simply
  * leaves the link without one. Never call it inside a database transaction.
- * The outbound fetches are bounded by the AddLink rate limit of `POST /links` (the only caller).
+ * The outbound fetches are bounded by the AddLink rate limit of its two callers: `POST /links`
+ * (create) and `POST /links/:id/images/capture` (`LinkImageRecaptureService`).
  */
 @Injectable()
 export class LinkImageCaptureService {

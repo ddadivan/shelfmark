@@ -503,7 +503,7 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 | `faviconUrl` | string, null | API only (no column): same-origin path `/api/links/{id}/favicon?v=…` of the captured site icon; `v=pending` while a re-capture is pending; `null` if none (ADR 0027) |
 | `imageUrl` | string, null | API only (no column): same-origin path `/api/links/{id}/image?v=…` of the captured preview image; `v=pending` while a re-capture is pending; `null` if none (ADR 0027) |
 | `faviconSourceUrl`, `imageSourceUrl` | string (≤ 2048), null | Server only, never returned: remote http(s) URLs the capture fetches (from the client hint or the preview) |
-| `captureAttemptedAt` | timestamp, null | Server only: time of the last image capture attempt, defaults to the insert time; `null` = pending (the URL changed), claimed atomically by the lazy re-capture, which is also its cooldown (ADR 0027 note, #189) |
+| `captureAttemptedAt` | timestamp, null | Server only: time of the last image capture attempt, defaults to the insert time; `null` = pending (the URL changed), claimed atomically by `POST /api/links/{id}/images/capture`, which is also its cooldown (ADR 0027 note, #189) |
 | `isFavorite` | boolean | Defaults to `false` |
 | `lastOpenedAt` | timestamp, null | For the "Recently opened" panel |
 
@@ -537,6 +537,7 @@ All routes except `/api/auth/*` require a session and work only with the current
 | POST | `/api/links` | Create: `url`, `title?`, `note?`, `folderId?`, `tags?` (names; new tags are created automatically) |
 | PATCH | `/api/links/:id` | Change any fields, including `isFavorite` and `folderId` |
 | POST | `/api/links/:id/open` | Record an open (updates `lastOpenedAt`) |
+| POST | `/api/links/:id/images/capture` | Re-capture favicon and preview image of a link whose URL changed (pending marker `?v=pending`); claims atomically with a 1 h cooldown, always 200 with the link, 404 for a foreign or missing one |
 | DELETE | `/api/links/:id` | Delete |
 | GET | `/api/folders` | All folders as a flat list ordered by name (`parentId` + direct link count) plus `counts` (`all`, `unsorted`, `favorites`) for the fixed sidebar rows; the frontend builds the tree |
 | GET | `/api/folders/:id` | Read one folder (`GetFolderResponse` = `FolderResponse`, with its direct link count); 404 if unknown or foreign |
