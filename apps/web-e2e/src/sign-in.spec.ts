@@ -54,4 +54,26 @@ test.describe('sign-in flow (mock auth)', () => {
     );
     expect(overflow).toBeLessThanOrEqual(0);
   });
+
+  test('on a desktop the form is centred on the middle axis of the mosaic', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/sign-in');
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+
+    const centre = async (selector: string): Promise<number> => {
+      const box = await page.locator(selector).first().boundingBox();
+      if (!box) {
+        throw new Error(`${selector} has no box`);
+      }
+      return box.y + box.height / 2;
+    };
+    const panel = await centre('.sign-in__panel');
+    const art = await centre('.sign-in__art');
+    expect(Math.abs(panel - art)).toBeLessThanOrEqual(2);
+    // Logo stays at the top of the column and the copyright at the bottom.
+    const logo = await page.locator('.sign-in__header').boundingBox();
+    const footer = await page.locator('.sign-in__footer').boundingBox();
+    expect(logo?.y).toBeLessThan(80);
+    expect((footer?.y ?? 0) + (footer?.height ?? 0)).toBeGreaterThan(900 - 80);
+  });
 });
