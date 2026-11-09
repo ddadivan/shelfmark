@@ -23,8 +23,9 @@ describe('LandingBeforeSceneComponent', () => {
     expect(await axeViolations(fixture.nativeElement)).toEqual([]);
   });
 
-  describe('loops', () => {
-    const LIVE = 'landing-before__before--live';
+  describe('entrance', () => {
+    const ARMED = 'landing-before__before--armed';
+    const ENTERED = 'landing-before__before--entered';
 
     beforeEach(() => {
       MockIntersectionObserver.install();
@@ -48,37 +49,57 @@ describe('LandingBeforeSceneComponent', () => {
       };
     }
 
-    it('is a static frame until it is in the viewport', async () => {
+    it('waits out of sight until it is in the viewport', async () => {
       const { el } = await board();
 
-      expect(el.classList.contains(LIVE)).toBe(false);
+      expect(el.classList.contains(ARMED)).toBe(true);
+      expect(el.classList.contains(ENTERED)).toBe(false);
     });
 
-    it('drifts and pings while visible, and stops when it leaves or the tab hides', async () => {
+    it('plays the entrance once when it comes into view and never again', async () => {
       const { fixture, el } = await board();
 
       MockIntersectionObserver.triggerAll(true);
       fixture.detectChanges();
-      expect(el.classList.contains(LIVE)).toBe(true);
+      expect(el.classList.contains(ENTERED)).toBe(true);
+      expect(el.classList.contains(ARMED)).toBe(false);
 
-      setTabState(false);
-      fixture.detectChanges();
-      expect(el.classList.contains(LIVE)).toBe(false);
-
-      setTabState(true);
       MockIntersectionObserver.triggerAll(false);
       fixture.detectChanges();
-      expect(el.classList.contains(LIVE)).toBe(false);
+      MockIntersectionObserver.triggerAll(true);
+      fixture.detectChanges();
+      expect(el.classList.contains(ENTERED)).toBe(true);
+      expect(el.classList.contains(ARMED)).toBe(false);
     });
 
-    it('stays static under reduced motion', async () => {
+    it('does not start in a hidden tab', async () => {
+      setTabState(false);
+      const { fixture, el } = await board();
+
+      MockIntersectionObserver.triggerAll(true);
+      fixture.detectChanges();
+      expect(el.classList.contains(ENTERED)).toBe(false);
+
+      setTabState(true);
+      fixture.detectChanges();
+      expect(el.classList.contains(ENTERED)).toBe(true);
+    });
+
+    it('stays the static frame under reduced motion', async () => {
       stubReducedMotion(true);
       const { fixture, el } = await board();
 
+      expect(el.classList.contains(ARMED)).toBe(false);
       MockIntersectionObserver.triggerAll(true);
       fixture.detectChanges();
 
-      expect(el.classList.contains(LIVE)).toBe(false);
+      expect(el.classList.contains(ARMED)).toBe(false);
+    });
+
+    it('has no hover or ping behaviour left: no live class and no input to pause it', async () => {
+      const { el } = await board();
+
+      expect(el.className).not.toContain('--live');
     });
 
     it('disconnects its observer on destroy', async () => {

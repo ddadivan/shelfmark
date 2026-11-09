@@ -7,9 +7,8 @@ import {
   signal,
 } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { ButtonComponent, ChipComponent, FaviconComponent } from '@shelfmark/ui';
+import { ChipComponent, FaviconComponent } from '@shelfmark/ui';
 import { LandingBeforeSceneComponent } from '../landing-before-scene/landing-before-scene.component';
-import { LandingMotionService } from '../../landing-motion.service';
 import { LandingLoopGateDirective } from '../../directives/landing-loop-gate.directive';
 import { LANDING_FOLDER } from '../../models/landing-folder.const';
 import type { LandingFolder } from '../../models/landing-folder.type';
@@ -22,15 +21,16 @@ import { LandingRevealDirective } from '../../directives/landing-reveal.directiv
 /**
  * "The same links, before and after": the scattered mess next to the shelf. `activeFolder` is the
  * folder the shelf shows; while the block is on screen in a visible tab (and motion is allowed)
- * it steps through `LANDING_FOLDER_CYCLE` over `LANDING_LOOP.ShelfCycleMs`. Otherwise the
- * static frame (Clothes) stays.
+ * it steps through `LANDING_FOLDER_CYCLE` once over `LANDING_LOOP.ShelfCycleMs`, ends back on the
+ * first folder (Clothes) and stays there. It is finite, so it needs no pause control (WCAG 2.2.2
+ * only asks for one for moving content that goes on for more than five seconds without end).
+ * Otherwise the static frame (Clothes) stays.
  */
 @Component({
   selector: 'app-landing-before-after',
   imports: [
     LandingRevealDirective,
     TranslocoPipe,
-    ButtonComponent,
     ChipComponent,
     FaviconComponent,
     LandingBeforeSceneComponent,
@@ -47,42 +47,24 @@ export class LandingBeforeAfterComponent {
   /** Id of the folder whose links are listed (`LANDING_TREE_ROWS`). */
   protected readonly activeFolder = signal<LandingFolder>(LANDING_FOLDER.Clothes);
 
-  protected readonly motion = inject(LandingMotionService);
-
-  /** WCAG 2.2.2: the user can pause the loops; hover and focus inside the scenes pause them too. */
-  protected readonly paused = signal(false);
-  private readonly engaged = signal(false);
-  protected readonly stopped = computed(() => this.paused() || this.engaged());
+  /** Folder changes played so far; the cycle runs once and stops after `LANDING_FOLDER_CYCLE.length`. */
+  private readonly played = signal(0);
+  /** A computed boolean: the effect below reruns only when the cycle ends, not on every step. */
+  private readonly finished = computed(() => this.played() >= LANDING_FOLDER_CYCLE.length);
 
   constructor() {
     const gate = inject(LandingLoopGateDirective);
     const stepMs = LANDING_LOOP.ShelfCycleMs / LANDING_FOLDER_CYCLE.length;
     effect((onCleanup) => {
-      if (!gate.active() || this.stopped()) {
+      if (!gate.active() || this.finished()) {
         return;
       }
-      const timer = setInterval(() => this.activeFolder.update(nextFolder), stepMs);
+      const timer = setInterval(() => {
+        this.activeFolder.update(nextFolder);
+        this.played.update((value) => value + 1);
+      }, stepMs);
       onCleanup(() => clearInterval(timer));
     });
-  }
-
-  protected togglePaused(): void {
-    this.paused.update((value) => !value);
-  }
-
-  protected engage(engaged: boolean): void {
-    this.engaged.set(engaged);
-  }
-
-  protected leaveFocus(event: FocusEvent): void {
-    const area = event.currentTarget;
-    if (
-      !(area instanceof Node) ||
-      !(event.relatedTarget instanceof Node) ||
-      !area.contains(event.relatedTarget)
-    ) {
-      this.engaged.set(false);
-    }
   }
 }
 

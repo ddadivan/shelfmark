@@ -1,6 +1,7 @@
 <div
   class="landing-before__before"
-  [class.landing-before__before--live]="live()"
+  [class.landing-before__before--armed]="armed() && !entered()"
+  [class.landing-before__before--entered]="entered()"
   role="img"
   [attr.aria-label]="'landing.before.summary' | transloco"
 >

@@ -1,12 +1,4 @@
-<div
-  class="landing-chat__phone"
-  role="group"
-  aria-labelledby="landing-chat-title"
-  (pointerenter)="hovered.set(true)"
-  (pointerleave)="hovered.set(false)"
-  (focusin)="focused.set(true)"
-  (focusout)="focused.set(false)"
->
+<div class="landing-chat__phone" role="group" aria-labelledby="landing-chat-title">
   <div class="landing-chat__bar">
     @if (sorted()) {
       <ui-logo class="landing-chat__mark" variant="mark" />
@@ -45,7 +37,6 @@
         [class.landing-chat__track--snap]="snapping()"
         [class.landing-chat__track--running]="running()"
         [style.--landing-chat-step]="step()"
-        (transitionend)="onRiseEnd($event)"
       >
         @for (message of feed(); track $index) {
           <li class="landing-chat__slot">
@@ -70,16 +61,6 @@
     {{ (sorted() ? 'landing.chat.hintShelf' : 'landing.chat.hintChat') | transloco }}
   </p>
   <div class="landing-chat__actions">
-    @if (animated() && !sorted()) {
-      <ui-button
-        [variant]="BUTTON_VARIANT.Ghost"
-        ariaControls="landing-chat-body"
-        [ariaPressed]="userPaused()"
-        (click)="togglePause()"
-      >
-        {{ 'landing.chat.pause' | transloco }}
-      </ui-button>
-    }
     <ui-button
       [variant]="sorted() ? BUTTON_VARIANT.Ghost : BUTTON_VARIANT.Primary"
       ariaControls="landing-chat-body"

@@ -103,7 +103,7 @@ describe('LandingChatComponent', () => {
   describe('reduced motion', () => {
     beforeEach(() => create({ reduced: true }));
 
-    it('has no pause button, since nothing moves', () => {
+    it('has only the shelf button, since nothing moves', () => {
       expect(root.querySelectorAll('button')).toHaveLength(1);
     });
 
@@ -143,14 +143,16 @@ describe('LandingChatComponent', () => {
     });
   });
 
-  describe('endless feed', () => {
+  describe('feed that plays once', () => {
     beforeEach(() => create({ reduced: false }));
 
-    it('renders the feed twice, hidden from assistive technology', () => {
+    it('renders the feed twice, hidden from assistive technology, with no pause button', () => {
       expect(slots()).toBe(16);
       expect(track().getAttribute('aria-hidden')).toBe('true');
       expect(root.querySelector('.landing-chat__sr')).toBeNull();
       expect(shelfButton()?.textContent?.trim()).toBe('Put them on the shelf');
+      expect(root.querySelectorAll('button')).toHaveLength(1);
+      expect(root.textContent).not.toContain('Pause');
     });
 
     it('waits for the block to enter the viewport', () => {
@@ -179,30 +181,31 @@ describe('LandingChatComponent', () => {
       );
     });
 
-    it('wraps seamlessly after a lap: snap back without a transition, then rise again', () => {
+    it('plays one lap, ends on the full chat and starts nothing afterwards', () => {
       observer().emit(true);
       settle();
+
       advance(8 * LANDING_CHAT_TIMING.MessageIntervalMs);
       expect(step()).toBe('8');
-      expect(track().classList).not.toContain('landing-chat__track--snap');
+      expect(vi.getTimerCount()).toBe(0);
 
-      track().dispatchEvent(new Event('transitionend'));
-      settle();
-      expect(step()).toBe('0');
-      expect(track().classList).toContain('landing-chat__track--snap');
-
-      advance(LANDING_CHAT_TIMING.MessageIntervalMs);
-      expect(step()).toBe('1');
+      advance(20 * LANDING_CHAT_TIMING.MessageIntervalMs);
+      expect(step()).toBe('8');
       expect(track().classList).not.toContain('landing-chat__track--snap');
+      expect(vi.getTimerCount()).toBe(0);
     });
 
-    it('recovers when the transition end was missed', () => {
+    it('does not wait for a transition end and has no hover or focus pause', () => {
       observer().emit(true);
       settle();
-      advance(9 * LANDING_CHAT_TIMING.MessageIntervalMs);
+      const phone = root.querySelector('.landing-chat__phone') as HTMLElement;
+      phone.dispatchEvent(new Event('pointerenter'));
+      phone.dispatchEvent(new Event('focusin'));
+      settle();
 
-      expect(step()).toBe('0');
-      expect(track().classList).toContain('landing-chat__track--snap');
+      advance(LANDING_CHAT_TIMING.MessageIntervalMs);
+
+      expect(step()).toBe('1');
     });
 
     it('pauses when the block leaves the viewport and resumes when it returns', () => {
@@ -239,84 +242,7 @@ describe('LandingChatComponent', () => {
       expect(step()).toBe('1');
     });
 
-    describe('pause paths (WCAG 2.2.2)', () => {
-      const pauseButton = (): HTMLButtonElement =>
-        Array.from(root.querySelectorAll('button')).find((button) =>
-          button.textContent?.includes('Pause the feed'),
-        ) as HTMLButtonElement;
-
-      const phone = (): HTMLElement => root.querySelector('.landing-chat__phone') as HTMLElement;
-
-      beforeEach(() => {
-        observer().emit(true);
-        settle();
-      });
-
-      it('resumes when unpausing with focus on the pause button', () => {
-        // Focus and pointer on the button are outside the phone, so they never hold the feed.
-        pauseButton().dispatchEvent(new Event('focusin', { bubbles: true }));
-        pauseButton().dispatchEvent(new Event('pointerenter', { bubbles: true }));
-        pauseButton().click();
-        settle();
-        expect(vi.getTimerCount()).toBe(0);
-
-        pauseButton().click();
-        settle();
-        advance(LANDING_CHAT_TIMING.MessageIntervalMs);
-        expect(step()).toBe('1');
-      });
-
-      it('stops and restarts the feed with the pause button, announced by aria-pressed', () => {
-        expect(pauseButton().getAttribute('aria-pressed')).toBe('false');
-
-        pauseButton().click();
-        settle();
-        expect(pauseButton().getAttribute('aria-pressed')).toBe('true');
-        expect(vi.getTimerCount()).toBe(0);
-        advance(5 * LANDING_CHAT_TIMING.MessageIntervalMs);
-        expect(step()).toBe('0');
-
-        pauseButton().click();
-        settle();
-        advance(LANDING_CHAT_TIMING.MessageIntervalMs);
-        expect(step()).toBe('1');
-      });
-
-      it('pauses while the pointer is over the chat and resumes when it leaves', () => {
-        phone().dispatchEvent(new Event('pointerenter'));
-        settle();
-        expect(vi.getTimerCount()).toBe(0);
-        advance(5 * LANDING_CHAT_TIMING.MessageIntervalMs);
-        expect(step()).toBe('0');
-
-        phone().dispatchEvent(new Event('pointerleave'));
-        settle();
-        advance(LANDING_CHAT_TIMING.MessageIntervalMs);
-        expect(step()).toBe('1');
-      });
-
-      it('pauses while focus is inside the chat and resumes on focusout', () => {
-        phone().dispatchEvent(new Event('focusin'));
-        settle();
-        expect(vi.getTimerCount()).toBe(0);
-        advance(5 * LANDING_CHAT_TIMING.MessageIntervalMs);
-        expect(step()).toBe('0');
-
-        phone().dispatchEvent(new Event('focusout'));
-        settle();
-        advance(LANDING_CHAT_TIMING.MessageIntervalMs);
-        expect(step()).toBe('1');
-      });
-
-      it('hides the pause button on the shelf', () => {
-        click();
-        advance(LANDING_CHAT_TIMING.ClearMs);
-
-        expect(pauseButton()).toBeUndefined();
-      });
-    });
-
-    it('starts from the first frame when the chat comes back', () => {
+    it('shows the finished chat, without playing again, when the chat comes back', () => {
       observer().emit(true);
       settle();
       advance(3 * LANDING_CHAT_TIMING.MessageIntervalMs);
@@ -326,7 +252,11 @@ describe('LandingChatComponent', () => {
 
       click();
 
-      expect(step()).toBe('0');
+      expect(step()).toBe('8');
+      expect(track().classList).toContain('landing-chat__track--snap');
+      advance(5 * LANDING_CHAT_TIMING.MessageIntervalMs);
+      expect(step()).toBe('8');
+      expect(vi.getTimerCount()).toBe(0);
     });
 
     it('shows the shelf at once when reduced motion turns on while the messages clear', () => {
@@ -379,7 +309,7 @@ describe('LandingChatComponent', () => {
       expect(vi.getTimerCount()).toBe(0);
     });
 
-    it('stops the feed while the messages clear and resumes in the chat', () => {
+    it('stops the feed while the messages clear and shows the finished chat when back', () => {
       observer().emit(true);
       settle();
 
@@ -391,8 +321,7 @@ describe('LandingChatComponent', () => {
       expect(root.querySelector('.landing-chat__track')).not.toBeNull();
       advance(LANDING_CHAT_TIMING.ClearMs * 2);
       expect(root.querySelector('app-landing-chat-shelf')).toBeNull();
-      advance(LANDING_CHAT_TIMING.MessageIntervalMs);
-      expect(step()).toBe('1');
+      expect(step()).toBe('8');
     });
 
     it('returns from the shelf to the live chat', () => {

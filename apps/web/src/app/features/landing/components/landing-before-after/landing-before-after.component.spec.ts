@@ -141,87 +141,37 @@ describe('LandingBeforeAfterComponent', () => {
       expect(MockIntersectionObserver.instances.every((o) => o.disconnected)).toBe(true);
     });
 
-    describe('pause control (WCAG 2.2.2)', () => {
-      it('pauses the cycle on press and resumes on the next press', async () => {
-        const { fixture, activeRow, show } = await start();
-        fixture.detectChanges();
-        show(true);
-        const button = (fixture.nativeElement as HTMLElement).querySelector(
-          '.landing-ba__pause button',
-        ) as HTMLButtonElement;
-        expect(button.getAttribute('aria-pressed')).toBe('false');
+    it('plays the cycle once, ends on Clothes and starts no timer afterwards', async () => {
+      const { fixture, activeRow, show } = await start();
+      fixture.detectChanges();
+      show(true);
 
-        button.click();
-        fixture.detectChanges();
-        expect(button.getAttribute('aria-pressed')).toBe('true');
-        await vi.advanceTimersByTimeAsync(STEP_MS * 3);
-        expect(activeRow()).toBe('Clothes');
-        expect(vi.getTimerCount()).toBe(0);
+      await vi.advanceTimersByTimeAsync(STEP_MS * 3);
+      fixture.detectChanges();
+      expect(activeRow()).toBe('Clothes');
+      expect(vi.getTimerCount()).toBe(0);
 
-        button.click();
-        fixture.detectChanges();
-        await vi.advanceTimersByTimeAsync(STEP_MS);
-        fixture.detectChanges();
-        expect(activeRow()).toBe('Angular');
-      });
+      await vi.advanceTimersByTimeAsync(STEP_MS * 6);
+      fixture.detectChanges();
+      expect(activeRow()).toBe('Clothes');
+      expect(vi.getTimerCount()).toBe(0);
+    });
 
-      it('pauses while the pointer or focus is inside the scenes', async () => {
-        const { fixture, activeRow, show } = await start();
-        fixture.detectChanges();
-        show(true);
-        const scenes = (fixture.nativeElement as HTMLElement).querySelector(
-          '.landing-ba__scenes',
-        ) as HTMLElement;
+    it('has no pause control and ignores the pointer and focus', async () => {
+      const { fixture, activeRow, show } = await start();
+      fixture.detectChanges();
+      show(true);
+      const root = fixture.nativeElement as HTMLElement;
+      const scenes = root.querySelector('.landing-ba__scenes') as HTMLElement;
 
-        scenes.dispatchEvent(new Event('pointerenter'));
-        fixture.detectChanges();
-        await vi.advanceTimersByTimeAsync(STEP_MS * 2);
-        expect(activeRow()).toBe('Clothes');
+      expect(root.querySelector('button')).toBeNull();
+      expect(root.textContent).not.toContain('Pause');
+      scenes.dispatchEvent(new Event('pointerenter'));
+      scenes.dispatchEvent(new Event('focusin'));
+      await vi.advanceTimersByTimeAsync(STEP_MS);
+      fixture.detectChanges();
 
-        scenes.dispatchEvent(new Event('pointerleave'));
-        scenes.dispatchEvent(new Event('focusin'));
-        fixture.detectChanges();
-        await vi.advanceTimersByTimeAsync(STEP_MS * 2);
-        expect(activeRow()).toBe('Clothes');
-
-        scenes.dispatchEvent(new Event('focusout'));
-        fixture.detectChanges();
-        await vi.advanceTimersByTimeAsync(STEP_MS);
-        fixture.detectChanges();
-        expect(activeRow()).toBe('Angular');
-      });
-
-      it('keeps the cycle paused while focus moves inside the scenes, resumes when it leaves', async () => {
-        const { fixture, activeRow, show } = await start();
-        fixture.detectChanges();
-        show(true);
-        const scenes = (fixture.nativeElement as HTMLElement).querySelector(
-          '.landing-ba__scenes',
-        ) as HTMLElement;
-        const inside = scenes.querySelector('h3') as HTMLElement;
-
-        scenes.dispatchEvent(new Event('focusin'));
-        scenes.dispatchEvent(new FocusEvent('focusout', { relatedTarget: inside }));
-        fixture.detectChanges();
-        await vi.advanceTimersByTimeAsync(STEP_MS * 2);
-        expect(activeRow()).toBe('Clothes');
-
-        scenes.dispatchEvent(new FocusEvent('focusout', { relatedTarget: document.body }));
-        fixture.detectChanges();
-        await vi.advanceTimersByTimeAsync(STEP_MS);
-        fixture.detectChanges();
-        expect(activeRow()).toBe('Angular');
-      });
-
-      it('is hidden under reduced motion', async () => {
-        stubReducedMotion(true);
-        const { fixture } = await start();
-        fixture.detectChanges();
-
-        expect(
-          (fixture.nativeElement as HTMLElement).querySelector('.landing-ba__pause'),
-        ).toBeNull();
-      });
+      expect(activeRow()).toBe('Angular');
     });
   });
 });
