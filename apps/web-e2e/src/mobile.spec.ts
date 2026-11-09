@@ -84,11 +84,19 @@ test.describe('mobile layout (mock API)', () => {
     await drawer(page).getByRole('button', { name: 'Close menu' }).click();
     await expect(drawer(page)).toHaveCount(0);
 
+    // Up to 600px the drawer fills the screen, so there is no scrim strip to tap.
     await openDrawer(page);
-    // The strip right of the drawer is the scrim.
+    const full = await drawer(page).boundingBox();
+    expect(full?.width).toBe(page.viewportSize()?.width);
+    await drawer(page).getByRole('button', { name: 'Close menu' }).click();
+
+    // From 601px to the tablet breakpoint the drawer is narrower and the strip beside it is the scrim.
+    await page.setViewportSize({ width: 620, height: page.viewportSize()?.height ?? 780 });
+    await openDrawer(page);
     const panel = await drawer(page).boundingBox();
     const view = page.viewportSize();
     const edge = (panel?.x ?? 0) + (panel?.width ?? 0);
+    expect(edge).toBeLessThan(view?.width ?? 0);
     await page.mouse.click(edge + ((view?.width ?? 0) - edge) / 2, (view?.height ?? 0) / 2);
     await expect(drawer(page)).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Open menu' })).toBeFocused();
@@ -128,11 +136,12 @@ test.describe('mobile layout (mock API)', () => {
     await expect(drawer(page)).toHaveCount(0);
     await expect(page).toHaveURL('/links');
 
-    await page.goto('/settings');
     await openDrawer(page);
-    await drawer(page).getByRole('button', { name: 'Settings' }).click();
+    await library(page)
+      .getByRole('treeitem', { name: /^Favorites/ })
+      .click();
     await expect(drawer(page)).toHaveCount(0);
-    await expect(page).toHaveURL('/settings');
+    await expect(page).toHaveURL('/favorites');
   });
 
   test('navigates to a folder and closes on navigation', async ({ page }) => {
@@ -239,18 +248,16 @@ test.describe('mobile layout (mock API)', () => {
     await expect(page.getByRole('button', { name: 'Open menu' })).toBeFocused();
   });
 
-  test('the drawer footer switches the theme and opens settings', async ({ page }) => {
+  test('the drawer has no footer; settings open from the header account menu', async ({ page }) => {
     await page.goto('/links');
     await openDrawer(page);
-    const html = page.locator('html');
-    const before = await html.getAttribute('data-theme');
+    await expect(drawer(page).getByRole('button', { name: 'Switch theme' })).toHaveCount(0);
+    await expect(drawer(page).getByRole('button', { name: 'Settings' })).toHaveCount(0);
+    await page.keyboard.press('Escape');
 
-    await drawer(page).getByRole('button', { name: 'Switch theme' }).click();
-    await expect(html).not.toHaveAttribute('data-theme', before ?? '');
-
-    await drawer(page).getByRole('button', { name: 'Settings' }).click();
+    await page.getByRole('button', { name: 'Account menu' }).click();
+    await page.getByRole('menuitem', { name: 'Settings' }).click();
     await expect(page).toHaveURL('/settings');
-    await expect(drawer(page)).toHaveCount(0);
   });
 
   test('the header is menu, logo, search, account in that order and the account has no chevron', async ({

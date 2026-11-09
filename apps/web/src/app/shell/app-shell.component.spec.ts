@@ -13,7 +13,6 @@ import type { AuthUser } from '@shelfmark/contracts';
 import { APP_LANG } from '../core/i18n/models/app-lang.const';
 import { AppTranslocoLoader } from '../core/i18n/app-transloco.loader';
 import { translocoConfig } from '../core/i18n/transloco.config';
-import { ThemeService } from '../core/theme/theme.service';
 import { RecentLinksSheetService } from '../features/links/recent/recent-links-sheet.service';
 import { SearchDialogService } from '../features/search/search-dialog.service';
 import AppShellComponent from './app-shell.component';
@@ -312,23 +311,13 @@ describe('AppShellComponent', () => {
       expect(drawer()).toBeNull();
     });
 
-    it('has the user, a theme toggle and settings in the footer', async () => {
+    it('has no footer: settings live in the header account menu', async () => {
       const { harness, root } = await setup(true);
       await openDrawer(harness, root);
-      const theme = TestBed.inject(ThemeService);
 
-      expect(drawer()?.textContent).toContain('Ada Lovelace');
-      byLabel(document, 'Switch theme')?.click();
-      await harness.fixture.whenStable();
-      expect(theme.preference()).toBe('dark');
-
-      byLabel(document, 'Switch theme')?.click();
-      expect(theme.preference()).toBe('light');
-
-      byLabel(document, 'Settings')?.click();
-      await harness.fixture.whenStable();
-      expect(TestBed.inject(Router).url).toBe('/settings');
-      expect(drawer()).toBeNull();
+      expect(byLabel(document, 'Switch theme')).toBeNull();
+      expect(drawer()?.querySelector('ui-avatar')).toBeNull();
+      expect(drawer()?.querySelector('[slot="foot"]')).toBeNull();
     });
   });
 });

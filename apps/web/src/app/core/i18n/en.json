@@ -432,8 +432,7 @@
     "menu": "Open menu",
     "drawer": {
       "label": "Menu",
-      "close": "Close menu",
-      "theme": "Switch theme"
+      "close": "Close menu"
     },
     "sidebar": {
       "nav": "Library",
