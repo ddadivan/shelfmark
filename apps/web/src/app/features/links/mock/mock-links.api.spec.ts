@@ -136,6 +136,24 @@ describe('MockLinksApi', () => {
       expect(rest.items.some((link) => link.id === target.id)).toBe(false);
     });
 
+    it('marks the first link pending in the pending-images scenario until it is captured', async () => {
+      globalThis.sessionStorage.setItem(MOCK_LINKS_SCENARIO_KEY, MOCK_LINKS_SCENARIO.PendingImages);
+      try {
+        const feed = createApi();
+        const [first, second] = (await firstValueFrom(feed.list({ limit: 2 }))).items;
+        expect(first.imageUrl).toBe(`/api/links/${first.id}/image?v=pending`);
+        expect(second.imageUrl ?? '').not.toContain('pending');
+
+        const captured = await firstValueFrom(feed.captureImages(first.id));
+        expect(captured.imageUrl).toBe(`/api/links/${first.id}/image?v=0123456789abcdef`);
+        const [again] = (await firstValueFrom(feed.list({ limit: 1 }))).items;
+        expect(again.imageUrl).toBe(captured.imageUrl);
+        await expect(firstValueFrom(feed.captureImages('missing'))).rejects.toThrow();
+      } finally {
+        globalThis.sessionStorage.removeItem(MOCK_LINKS_SCENARIO_KEY);
+      }
+    });
+
     it('gets one link by id and fails for an unknown id', async () => {
       const feed = createApi();
       const [target] = (await firstValueFrom(feed.list({ limit: 1 }))).items;

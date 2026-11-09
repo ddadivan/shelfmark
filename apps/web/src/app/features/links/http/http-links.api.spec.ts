@@ -131,6 +131,12 @@ describe('HttpLinksApi', () => {
     expect(open.request.method).toBe('POST');
     open.flush(MOCK_LINKS[0]);
 
+    api.captureImages(id).subscribe();
+    const capture = http.expectOne(`${encoded}/images/capture`);
+    expect(capture.request.method).toBe('POST');
+    expect(capture.request.body).toEqual({});
+    capture.flush(MOCK_LINKS[0]);
+
     api.remove(id).subscribe();
     const remove = http.expectOne(encoded);
     expect(remove.request.method).toBe('DELETE');

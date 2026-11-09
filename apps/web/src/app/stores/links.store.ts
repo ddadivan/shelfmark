@@ -22,6 +22,7 @@ import type { FolderDeleteMode, LinkResponse } from '@shelfmark/contracts';
 import { FOLDER_DELETE_MODE, LINK_SORT_FIELD, SORT_ORDER } from '@shelfmark/contracts';
 import { catchError, EMPTY, firstValueFrom, pipe, switchMap, tap } from 'rxjs';
 import { inFilter, linksQuery, sameFilter } from '../features/links/links-filter';
+import { hasPendingImages } from '../features/links/link-view';
 import { LINKS_API } from '../features/links/models/links-api.const';
 import type { LinksFilter } from '../features/links/models/links-filter.type';
 import { LINKS_SCOPE } from '../features/links/models/links-scope.const';
@@ -100,6 +101,8 @@ export const LinksStore = signalStore(
     const api = () => injector.get(LINKS_API);
     const pending = new Map<string, PendingRemoval>();
     const favoriteBusy = new Set<string>();
+    // Links whose image capture was requested this session: one request per link.
+    const captureRequested = new Set<string>();
     // Bumped when the filter changes or the store resets: late responses are dropped.
     let generation = 0;
     // Bumped only by `reset()`: a response that started before it belongs to the previous user.
@@ -107,6 +110,33 @@ export const LinksStore = signalStore(
 
     function mapRecent(id: string, changes: Partial<LinkResponse>): LinkResponse[] {
       return store.recent().map((link) => (link.id === id ? { ...link, ...changes } : link));
+    }
+
+    /**
+     * Asks the server to re-capture the images of loaded links that carry the pending marker (their
+     * page changed), once per link and session. A failure is silent: the card keeps the letter.
+     */
+    function noteLinks(links: readonly LinkResponse[]): void {
+      for (const link of links) {
+        if (hasPendingImages(link) && !captureRequested.has(link.id)) {
+          captureRequested.add(link.id);
+          void captureImages(link.id);
+        }
+      }
+    }
+
+    async function captureImages(id: string): Promise<void> {
+      const started = epoch;
+      try {
+        const saved = await firstValueFrom(api().captureImages(id));
+        if (started !== epoch || pending.has(id)) {
+          return;
+        }
+        const changes = { faviconUrl: saved.faviconUrl, imageUrl: saved.imageUrl };
+        patchState(store, updateEntity({ id, changes }), { recent: mapRecent(id, changes) });
+      } catch {
+        // No toast: the capture is a courtesy, the card falls back to the site letter.
+      }
     }
 
     function restore(id: string): void {
@@ -163,6 +193,7 @@ export const LinksStore = signalStore(
                     setAllEntities(page.items.filter((link) => !pending.has(link.id))),
                     { nextCursor: page.nextCursor, loaded: true, loading: false },
                   );
+                  noteLinks(page.items);
                 }
               }),
               catchError(() => {
@@ -197,6 +228,7 @@ export const LinksStore = signalStore(
             nextCursor: page.nextCursor,
             loadingMore: false,
           });
+          noteLinks(page.items);
         } catch {
           if (started === generation) {
             patchState(store, { loadingMore: false, loadMoreFailed: true });
@@ -241,6 +273,7 @@ export const LinksStore = signalStore(
           );
         }
         patchState(store, { recent: mapRecent(link.id, link) });
+        noteLinks([link]);
       },
 
       /** Shows a link that was just saved at the top, when it belongs to the current scope. */
@@ -378,6 +411,7 @@ export const LinksStore = signalStore(
               recent: items.filter((link) => !pending.has(link.id)),
               recentLoaded: true,
             });
+            noteLinks(items);
           }
         } catch {
           if (started === epoch) {
@@ -394,6 +428,7 @@ export const LinksStore = signalStore(
       reset(): void {
         pending.clear();
         favoriteBusy.clear();
+        captureRequested.clear();
         generation++;
         epoch++;
         patchState(store, initialState, removeAllEntities());

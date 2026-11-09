@@ -1,17 +1,19 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
-import type {
-  CreateLinkRequest,
-  GetLinkResponse,
-  LinkPreviewRequest,
-  LinkPreviewResponse,
-  LinkResponse,
-  ListLinksQuery,
-  ListLinksResponse,
-  OpenLinkResponse,
-  RecentLinksQuery,
-  RecentLinksResponse,
-  UpdateLinkRequest,
+import {
+  LINK_IMAGES_ENDPOINT,
+  type CaptureLinkImagesResponse,
+  type CreateLinkRequest,
+  type GetLinkResponse,
+  type LinkPreviewRequest,
+  type LinkPreviewResponse,
+  type LinkResponse,
+  type ListLinksQuery,
+  type ListLinksResponse,
+  type OpenLinkResponse,
+  type RecentLinksQuery,
+  type RecentLinksResponse,
+  type UpdateLinkRequest,
 } from '@shelfmark/contracts';
 import type { Observable } from 'rxjs';
 import { API_BASE_URL } from '../../../core/api/api-base-url';
@@ -63,6 +65,14 @@ export class HttpLinksApi implements LinksApi {
   open(id: string): Observable<OpenLinkResponse> {
     return this.http.post<OpenLinkResponse>(
       `${this.url(id)}/open`,
+      {},
+      { context: skipErrorToast() },
+    );
+  }
+
+  captureImages(id: string): Observable<CaptureLinkImagesResponse> {
+    return this.http.post<CaptureLinkImagesResponse>(
+      LINK_IMAGES_ENDPOINT.Capture.replace(':id', encodeURIComponent(id)),
       {},
       { context: skipErrorToast() },
     );

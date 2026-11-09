@@ -4,4 +4,6 @@ export const MOCK_LINKS_SCENARIO = {
   Empty: 'empty',
   /** Listing fails. */
   Error: 'error',
+  /** The first link of the feed has a pending image capture until `captureImages` runs. */
+  PendingImages: 'pending-images',
 } as const;

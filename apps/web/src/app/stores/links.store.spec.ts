@@ -30,6 +30,14 @@ function setup({ items = [link(1), link(2), link(3)] }: { items?: LinkResponse[]
     open: vi.fn<LinksApi['open']>((id) =>
       of(link(Number(id.slice(3)), { lastOpenedAt: '2026-11-07T10:00:00.000Z' })),
     ),
+    captureImages: vi.fn<LinksApi['captureImages']>((id) =>
+      of(
+        link(Number(id.slice(3)), {
+          faviconUrl: `/api/links/${id}/favicon?v=0123456789abcdef`,
+          imageUrl: `/api/links/${id}/image?v=0123456789abcdef`,
+        }),
+      ),
+    ),
     preview: vi.fn(),
     create: vi.fn(),
   };
@@ -321,6 +329,90 @@ describe('LinksStore', () => {
 
       await expect(store.recordOpen('id-1')).resolves.toBeUndefined();
       expect(store.recent()).toEqual([]);
+    });
+  });
+
+  describe('pending image capture (ADR 0027 note)', () => {
+    const pendingLink = (n: number): LinkResponse =>
+      link(n, {
+        faviconUrl: `/api/links/id-${n}/favicon?v=pending`,
+        imageUrl: `/api/links/id-${n}/image?v=pending`,
+      });
+
+    it('requests the capture of a pending link once and patches the images on success', async () => {
+      const { api, store } = setup({ items: [pendingLink(1), link(2)] });
+
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      await vi.waitFor(() =>
+        expect(store.entityMap()['id-1']?.imageUrl).toBe(
+          '/api/links/id-1/image?v=0123456789abcdef',
+        ),
+      );
+
+      expect(api.captureImages).toHaveBeenCalledTimes(1);
+      expect(api.captureImages).toHaveBeenCalledWith('id-1');
+      expect(store.entityMap()['id-1']?.faviconUrl).toBe(
+        '/api/links/id-1/favicon?v=0123456789abcdef',
+      );
+      expect(store.entityMap()['id-2']?.imageUrl).toBe(MOCK_LINKS[0].imageUrl);
+    });
+
+    it('asks once per link and session, even when the link loads again', async () => {
+      const { api, store } = setup({ items: [pendingLink(1)] });
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      await vi.waitFor(() => expect(api.captureImages).toHaveBeenCalledTimes(1));
+
+      api.list.mockReturnValue(of(page([pendingLink(1)])));
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      await store.loadRecent();
+      store.applyEdit(pendingLink(1));
+
+      expect(api.captureImages).toHaveBeenCalledTimes(1);
+    });
+
+    it('asks again after the store was reset (next session)', async () => {
+      const { api, store } = setup({ items: [pendingLink(1)] });
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      await vi.waitFor(() => expect(api.captureImages).toHaveBeenCalledTimes(1));
+
+      store.reset();
+      store.setFilter({ scope: LINKS_SCOPE.All });
+
+      await vi.waitFor(() => expect(api.captureImages).toHaveBeenCalledTimes(2));
+    });
+
+    it('fails silently and keeps the link as it is', async () => {
+      const { api, store } = setup({ items: [pendingLink(1)] });
+      api.captureImages.mockReturnValue(throwError(() => new Error('boom')));
+
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      await vi.waitFor(() => expect(api.captureImages).toHaveBeenCalled());
+      await Promise.resolve();
+
+      expect(store.entityMap()['id-1']?.imageUrl).toBe('/api/links/id-1/image?v=pending');
+      expect(store.error()).toBe(false);
+    });
+
+    it('does not ask for links without the marker or with a hash', async () => {
+      const { api, store } = setup({
+        items: [
+          link(1, { imageUrl: '/api/links/id-1/image?v=0123456789abcdef', faviconUrl: null }),
+        ],
+      });
+
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      await store.loadRecent();
+
+      expect(api.captureImages).not.toHaveBeenCalled();
+    });
+
+    it('asks for a link that became pending through an edit', async () => {
+      const { api, store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.All });
+
+      store.applyEdit(pendingLink(2));
+
+      await vi.waitFor(() => expect(api.captureImages).toHaveBeenCalledWith('id-2'));
     });
   });
 
