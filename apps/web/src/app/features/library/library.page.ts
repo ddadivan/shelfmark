@@ -64,6 +64,7 @@ import { UI_VIEW } from '../../stores/models/ui-view.const';
 import { isUiView } from '../../stores/is-ui-view';
 import { UiStore } from '../../stores/ui.store';
 import { EMPTY_KEYS } from './models/empty-keys.const';
+import { FolderTileComponent } from './folder-tile/folder-tile.component';
 import { scrollFeedForKey } from './feed-keyboard-scroll';
 import { SORT_OPTION_KEYS } from './models/sort-option-keys.const';
 import { SORT_OPTIONS } from './models/sort-options.const';
@@ -90,6 +91,7 @@ interface LastShown {
     ButtonComponent,
     ChipComponent,
     EmptyStateComponent,
+    FolderTileComponent,
     InViewDirective,
     LinkCardComponent,
     LinkRowComponent,
@@ -252,6 +254,24 @@ export default class LibraryPage {
   private readonly scopeLabel = toSignal(
     toObservable(this.titleKey).pipe(switchMap((key) => this.transloco.selectTranslate(key))),
   );
+  /**
+   * The direct subfolders of the folder of the page, by name, with the number of folders inside
+   * each. Hidden while a search or tag filter is on (they do not filter) and for a missing folder.
+   */
+  protected readonly subfolders = computed(() => {
+    const id = this.folderId();
+    if (!this.isFolder() || id === undefined || this.folderMissing() || this.filtered()) {
+      return [];
+    }
+    const all = this.folders.entities();
+    return all
+      .filter((folder) => folder.parentId === id)
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((folder) => ({
+        folder,
+        childCount: all.filter((child) => child.parentId === folder.id).length,
+      }));
+  });
   /** The heading of the page; `undefined` until translated. */
   private readonly heading = computed(() => this.folder()?.name ?? this.scopeLabel());
   /** The trail of a folder page: "All links", the ancestors (links) and the folder itself. */
