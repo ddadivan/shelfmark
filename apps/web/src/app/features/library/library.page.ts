@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  afterNextRender,
   computed,
   DestroyRef,
   effect,
@@ -61,6 +60,7 @@ import { UI_VIEW } from '../../stores/models/ui-view.const';
 import { isUiView } from '../../stores/is-ui-view';
 import { UiStore } from '../../stores/ui.store';
 import { EMPTY_KEYS } from './models/empty-keys.const';
+import { scrollFeedForKey } from './feed-keyboard-scroll';
 import { SORT_OPTION_KEYS } from './models/sort-option-keys.const';
 import { SORT_OPTIONS } from './models/sort-options.const';
 import { VIEW_OPTION_KEYS } from './models/view-option-keys.const';
@@ -97,6 +97,7 @@ const SKELETON_COUNT = 8;
   templateUrl: './library.page.html',
   styleUrl: './library.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '(document:keydown)': 'onKeydown($event)' },
 })
 export default class LibraryPage {
   protected readonly store = inject(LinksStore);
@@ -253,17 +254,6 @@ export default class LibraryPage {
   private readonly scroller = viewChild<ElementRef<HTMLElement>>('scroller');
 
   constructor() {
-    // The page no longer scrolls, so with focus on <body> the keys (Space, Page Down, End) would
-    // scroll nothing: the list area takes focus once, as the page itself used to take the keys.
-    afterNextRender(() => {
-      const area = this.scroller()?.nativeElement;
-      const doc = area?.ownerDocument;
-      if (area && doc && (!doc.activeElement || doc.activeElement === doc.body)) {
-        if (getComputedStyle(area).overflowY === 'auto') {
-          area.focus({ preventScroll: true });
-        }
-      }
-    });
     // A new view, sort or filter starts at the top of its list (the page scroll is reset by the
     // router; this area is not the page).
     effect(() => {
@@ -285,6 +275,14 @@ export default class LibraryPage {
     // The sidebar loads the folders too (the phone has none yet); the call is shared.
     void this.folders.load();
     this.store.setFilter(this.filter);
+  }
+
+  /** Page keys with nothing focused scroll the feed area (the page itself does not scroll). */
+  protected onKeydown(event: KeyboardEvent): void {
+    const area = this.scroller()?.nativeElement;
+    if (area) {
+      scrollFeedForKey(area, event);
+    }
   }
 
   protected async openUnsorted(): Promise<void> {
