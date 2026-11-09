@@ -1,4 +1,5 @@
 import {
+  booleanAttribute,
   afterNextRender,
   ChangeDetectionStrategy,
   Component,
@@ -58,6 +59,12 @@ export class DialogComponent {
   readonly size = input<DialogSize>();
   /** Accessible name of the close button in the header. Without it there is no close button. */
   readonly closeLabel = input<string>();
+  /**
+   * Below 40em the panel fills the whole screen instead of being a bottom sheet: no grip, no
+   * rounded corners, no drag to close (the close button and Esc still close it). For full-screen
+   * tasks such as search, where the keyboard takes half the screen.
+   */
+  readonly phoneFullscreen = input(false, { transform: booleanAttribute });
 
   /** The close button was used or the sheet was dragged shut. */
   readonly closeRequested = output<void>();
@@ -118,6 +125,7 @@ export class DialogComponent {
     const target = event.target;
     if (
       !this.phone() ||
+      this.phoneFullscreen() ||
       this.leaving() ||
       this.drag ||
       (event.pointerType === 'mouse' && event.button !== 0) ||

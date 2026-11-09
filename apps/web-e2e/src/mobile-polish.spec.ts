@@ -98,6 +98,20 @@ test.describe('mobile polish (mock API)', () => {
       expect(box?.height).toBeLessThanOrEqual(1);
     });
 
+    test('the search dialog fills the whole screen', async ({ page }) => {
+      await page.goto('/links');
+      await page.getByRole('button', { name: 'Search', exact: true }).click();
+      const panel = page.getByRole('dialog', { name: 'Search' }).locator('.ui-dialog');
+      await expect(panel).toBeVisible();
+      await settled(page);
+
+      const box = await panel.boundingBox();
+      const view = page.viewportSize();
+      expect(box?.y).toBeLessThanOrEqual(1);
+      expect(Math.round(box?.height ?? 0)).toBe(view?.height);
+      expect(Math.round(box?.width ?? 0)).toBe(view?.width);
+    });
+
     test('the add link dialog stacks its actions, the main action on top', async ({ page }) => {
       await page.goto('/links');
       await page.getByRole('button', { name: 'Add link' }).click();

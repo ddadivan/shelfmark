@@ -35,6 +35,16 @@
     transform: translateY(var(--ui-sheet-drag, 0));
   }
 
+  // Full screen on a phone (search): the whole viewport, square corners, safe areas padded.
+  &--phone-full {
+    @include phone {
+      height: 100dvh;
+      max-height: 100dvh;
+      padding-top: calc(var(--space-4) + env(safe-area-inset-top));
+      border-radius: 0;
+    }
+  }
+
   // The drag moves the sheet one to one: no transition while the finger is down.
   &--snapping {
     @include phone {
@@ -74,6 +84,12 @@
   }
 }
 
+.ui-dialog--phone-full .ui-dialog__grip {
+  @include phone {
+    display: none;
+  }
+}
+
 .ui-dialog__grip {
   display: none;
   align-self: center;
@@ -105,6 +121,16 @@
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
+}
+
+// Full screen on a phone: the body takes the height left under the header, so content such as
+// the search list can grow into it (the content decides how to fill it).
+.ui-dialog--phone-full .ui-dialog__body {
+  @include phone {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
 }
 
 .ui-dialog__foot {

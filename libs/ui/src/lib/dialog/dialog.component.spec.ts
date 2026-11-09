@@ -12,6 +12,7 @@ import { DIALOG_SIZE } from './models/dialog-size.const';
     <ui-dialog
       title="Add link"
       [size]="size()"
+      [phoneFullscreen]="phoneFullscreen()"
       [closeLabel]="closeLabel()"
       (closeRequested)="closes.set(closes() + 1)"
     >
@@ -23,6 +24,7 @@ import { DIALOG_SIZE } from './models/dialog-size.const';
 })
 class HostComponent {
   readonly size = signal<DialogSize | undefined>(undefined);
+  readonly phoneFullscreen = signal(false);
   readonly closeLabel = signal<string | undefined>('Close');
   readonly closes = signal(0);
 }
@@ -191,6 +193,22 @@ describe('DialogComponent', () => {
       expect(panel.classList.contains('ui-dialog--dragging')).toBe(false);
       // The leave animation starts from where the finger left it.
       expect(panel.style.getPropertyValue('--ui-sheet-drag')).toBe('150px');
+    });
+
+    it('is full screen with phoneFullscreen: no drag to close, the class set', async () => {
+      stubMatchMedia(true);
+      const { fixture, root } = await setup();
+      fixture.componentInstance.phoneFullscreen.set(true);
+      fixture.detectChanges();
+      const { grip, panel } = drag(root, 400);
+      expect(panel.classList.contains('ui-dialog--phone-full')).toBe(true);
+      pointer(grip, 'pointerdown', 100, 0);
+      pointer(grip, 'pointermove', 250, 100);
+      pointer(grip, 'pointerup', 250, 200);
+      fixture.detectChanges();
+      expect(panel.classList.contains('ui-dialog--dragging')).toBe(false);
+      expect(panel.style.getPropertyValue('--ui-sheet-drag')).toBe('');
+      expect(fixture.componentInstance.closes()).toBe(0);
     });
 
     it('closes on a fast flick', async () => {

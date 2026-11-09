@@ -10,6 +10,12 @@ ui-command-list {
   display: flex;
   flex-direction: column;
   max-height: calc(100dvh - #{rem(200px)} - env(safe-area-inset-bottom));
+
+  // Full-screen dialog on a phone: the list takes all the height left under the field.
+  @include phone {
+    flex: 1;
+    max-height: none;
+  }
 }
 
 .search-dialog__empty {
