@@ -74,7 +74,8 @@ ul {
 a {
   color: var(--accent);
 
-  &:hover {
+  &:hover,
+  &:active {
     color: var(--text);
   }
 }

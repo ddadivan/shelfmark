@@ -107,6 +107,10 @@ $xwide-min: 120em;
   @include hover {
     color: var(--text);
   }
+
+  &:active {
+    color: var(--text);
+  }
 }
 
 // Scroll reveal for the direct children of an element carrying `appLandingReveal`: fade + 1rem
