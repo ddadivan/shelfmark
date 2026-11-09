@@ -32,7 +32,7 @@ Updated as work goes on — every session resumes from here.
   - Author review of production fixed in #212 (#211): landing, sign-in, app shell scroll areas, view switch without layout shift, link card, menus, dialogs, overlays, search, tooltips, toasts (bottom centre by the author's decision), settings, favicon, 24px icons; icon sprite built from single SVG files (#210).
   - Left before stage 1 is formally complete (10.1): landing Lighthouse stable at ≥ 0.9 (#195, moved into stage 2), and the author's two weeks of daily use.
 - [ ] Stage 2: scope chosen by the author on Nov 9, 2026 (see "Roadmap after stage 1" below). Not started: the author says when.
-  - Before stage 2 work merges: turn off Vercel → Settings → Environments → Production → "Auto-assign Custom Production Domains", so merges to `main` no longer replace production while the author uses it; production is updated by hand with Promote.
+  - First task of stage 2: switch to the release flow decided on Nov 9, 2026 (9.3 and 9.5): `develop` as staging, feature branches from `develop`, production changes only through a release PR at the end of a stage. Until then nothing from stage 2 is merged into `main`, so production stays as the author uses it.
 - [x] Motion in code (landing and app); promo video moved to stage 2
 
 ## 1. Problem and idea
@@ -860,6 +860,16 @@ The estimate assumes the bottleneck is PR review and fixes, not writing code. Hi
 
 ### 9.3 Git and branches
 
+**From stage 2 on (decided by the author on Nov 9, 2026; set up as the first task of stage 2, recorded in an ADR):**
+
+- `main` is **production**. It changes only through a **release PR** `develop → main` at the end of a stage (for example "Release: stage 2"), merged with a merge commit so the release keeps its history and issue links. No feature PRs go into `main`.
+- `develop` is **staging**: integration branch with its own permanent Vercel URL and its own Neon branch. It has the same protection and required checks as `main`.
+- Feature branches start **from `develop`** (`feat/<issue>-short`, `fix/…`) and their PRs target `develop` (squash). Branching from `main` and merging into `develop` is avoided on purpose: the branch would not see what is already in staging, and tests would run on code that differs from what lands there.
+- **Hotfix** for production: a branch from `main`, a PR into `main`, then `main` is merged back into `develop`.
+- Setup checklist: rulesets for `develop` and the merge-commit release PR into `main`; Vercel staging URL, Preview env vars and OAuth callback URLs (ADR 0026); Neon branch for staging; CI on PRs into both branches; `CLAUDE.md`, the `github-workflow` skill and the agents' instructions say "branch from `develop`".
+
+**Stage 1 (until the switch):**
+
 - `main` is protected: changes only via PR, green CI checks are required. Required approvals: 0, because PRs are created from the author's account, and GitHub does not allow approving your own PR, so the author's approval is the merge. Squash merge only.
 - One branch per task: `feat/<issue-number>-short`, `fix/…`; the PR closes the issue (`Closes #N`).
 - Commits follow Conventional Commits (`feat:`, `fix:`, `test:`, `chore:`).
@@ -878,7 +888,8 @@ Stage 0 E2E: Chromium only, see ADR 0008.
 ### 9.5 CI/CD
 
 - **On every PR** (GitHub Actions, only affected projects via `nx affected`): lint, typecheck, unit tests with a coverage threshold, build, `npm audit`, CodeQL; Vercel creates a preview version.
-- **Merge to `main`** → automatic deployment to Vercel production; Prisma migrations are applied to the production Neon database by the Vercel build (`prisma migrate deploy`, ADR 0025); every PR checks the migrations against a Postgres service (`scripts/db-check.mjs`; `nx run api:db-check` is the local PGlite equivalent).
+- **Merge to `develop`** (from stage 2) → automatic deployment to the staging URL; migrations go to the staging Neon branch.
+- **Merge to `main`** (a release, from stage 2; every merge in stage 1) → automatic deployment to Vercel production; Prisma migrations are applied to the production Neon database by the Vercel build (`prisma migrate deploy`, ADR 0025); every PR checks the migrations against a Postgres service (`scripts/db-check.mjs`; `nx run api:db-check` is the local PGlite equivalent).
 
 ### 9.6 Claude subscription
 
@@ -896,6 +907,7 @@ Chosen by the author on Nov 9, 2026. Stages 2 and 3 are planned; everything else
 
 ### Stage 2 (planned)
 
+- [ ] **First:** release flow with `develop` as staging (9.3): ADR, rulesets, Vercel staging and Neon branch, CI, agent instructions
 - [ ] Email and password sign-in: email verification, password reset, an email sending service
 - [ ] Reminders: come back to a saved link later
 - [ ] Sharing: open a collection (folder) to other people
