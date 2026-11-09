@@ -65,3 +65,23 @@ export const Helpers: Story = {
       </div>`,
   }),
 };
+
+/** Global thin scrollbars: rounded muted thumb, transparent track, stronger thumb on hover. */
+export const Scrollbars: Story = {
+  render: () => ({
+    template: `
+      <div class="fd-page">
+        <p class="fd-lead">Every scroll area gets a thin scrollbar from the base styles; scroll or hover the thumb.</p>
+        <div
+          tabindex="0"
+          role="region"
+          aria-label="Scrollable sample"
+          style="height: 10rem; max-width: 24rem; overflow: auto; padding: 0.5rem 1rem; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); color: var(--text)"
+        >
+          <p>Saved links, one per line. Keep scrolling.</p>
+          <p>Line 2</p><p>Line 3</p><p>Line 4</p><p>Line 5</p><p>Line 6</p><p>Line 7</p>
+          <p>Line 8</p><p>Line 9</p><p>Line 10</p><p>Line 11</p><p>Line 12</p>
+        </div>
+      </div>`,
+  }),
+};

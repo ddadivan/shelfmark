@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  max-width: rem(680px);
+  max-width: rem(768px);
   margin-inline: auto;
 
   @include tablet-up {
@@ -75,5 +75,33 @@
 
   > * {
     flex: 1;
+  }
+}
+
+.settings__language {
+  @include type(body);
+
+  color: var(--text-muted);
+}
+
+.settings__footer {
+  @include type(caption);
+
+  display: flex;
+  gap: var(--space-4);
+  margin: 0;
+  color: var(--text-muted);
+
+  @include phone {
+    justify-content: center;
+  }
+}
+
+.settings__privacy {
+  color: inherit;
+  text-decoration: underline;
+
+  &:hover {
+    color: var(--text);
   }
 }

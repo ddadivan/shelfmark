@@ -80,6 +80,14 @@ describe('DrawerService', () => {
     ref.close();
   });
 
+  it('pins the panel to the inline-end edge with side end', () => {
+    const ref = service.open(MenuComponent, { ariaLabel: 'Library menu', side: 'end' });
+    settle();
+    const wrapper = container().closest<HTMLElement>('.cdk-global-overlay-wrapper');
+    expect(wrapper?.style.justifyContent).toBe('flex-end');
+    ref.close();
+  });
+
   it('moves focus inside, wraps Tab and returns focus to the trigger', async () => {
     const ref = service.open(MenuComponent, { ariaLabel: 'Library menu' });
     settle();

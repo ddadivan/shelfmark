@@ -5,6 +5,7 @@
     variant="ghost"
     iconOnly
     iconLeft="menu"
+    [iconSize]="ICON_SIZE.Lg"
     [ariaLabel]="'shell.menu' | transloco"
     [ariaExpanded]="nav.isOpen()"
     (click)="nav.open()"
@@ -27,19 +28,23 @@
     size="sm"
     iconOnly
     iconLeft="search"
+    [iconSize]="ICON_SIZE.Lg"
     [ariaLabel]="'shell.search' | transloco"
     (click)="search.open()"
   />
   @if (auth.user(); as user) {
     <div class="shell__user">
-      @if (recentToggleLabel(); as label) {
+      <!-- Wherever the inline column is hidden (tablet) the toggle opens it as a side panel. -->
+      @if (!viewport.phone() && recentToggleLabel(); as label) {
         <ui-button
           class="shell__recent-toggle"
           variant="ghost"
           size="sm"
           iconOnly
           iconLeft="panel-right"
-          [ariaPressed]="ui.recentVisible()"
+          [iconSize]="ICON_SIZE.Lg"
+          [ariaPressed]="viewport.desktop() ? recentOpen() : undefined"
+          [ariaExpanded]="viewport.desktop() ? undefined : recentOpen()"
           [ariaLabel]="label"
           (click)="toggleRecent()"
         />
@@ -50,9 +55,10 @@
         variant="ghost"
         [size]="accountButtonSize()"
         [iconRight]="accountIconRight()"
+        [iconSize]="ICON_SIZE.Lg"
         [ariaLabel]="'shell.accountMenu' | transloco"
       >
-        <ui-avatar [name]="user.name" [src]="user.image ?? undefined" size="sm" />
+        <ui-avatar [name]="user.name" [src]="user.image ?? undefined" />
       </ui-button>
       <ui-menu #accountMenu align="end" [ariaLabel]="'shell.accountMenu' | transloco">
         <ui-menu-item icon="settings" (activated)="openSettings()">
@@ -61,7 +67,7 @@
         <ui-menu-item icon="download" (activated)="exportAll(EXPORT_FORMAT.Json)">
           {{ 'export.all.json' | transloco }}
         </ui-menu-item>
-        <ui-menu-item icon="download" (activated)="exportAll(EXPORT_FORMAT.Html)">
+        <ui-menu-item icon="bookmark" (activated)="exportAll(EXPORT_FORMAT.Html)">
           {{ 'export.all.html' | transloco }}
         </ui-menu-item>
         <ui-menu-separator />

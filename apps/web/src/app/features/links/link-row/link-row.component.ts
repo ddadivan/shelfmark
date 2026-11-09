@@ -9,6 +9,7 @@ import {
   MenuComponent,
   MenuItemComponent,
   MenuTriggerDirective,
+  TooltipDirective,
 } from '@shelfmark/ui';
 import { linkHost, ownImageUrl, safeHref, siteLetter } from '../link-view';
 
@@ -26,6 +27,7 @@ const MAX_TAGS = 2;
     MenuComponent,
     MenuItemComponent,
     MenuTriggerDirective,
+    TooltipDirective,
   ],
   templateUrl: './link-row.component.html',
   styleUrl: './link-row.component.scss',

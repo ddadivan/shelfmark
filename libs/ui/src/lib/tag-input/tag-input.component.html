@@ -80,7 +80,11 @@
             [label]="row.label"
             [attr.aria-label]="row.countLabel ? row.label + ', ' + row.countLabel : null"
           >
-            <ui-icon class="ui-tag-input__option-icon" [name]="rowIcon(row)" [size]="16" />
+            <ui-icon
+              class="ui-tag-input__option-icon"
+              [name]="rowIcon(row)"
+              [size]="ICON_SIZE.Md"
+            />
             <span class="ui-tag-input__option-label">{{ row.label }}</span>
             @if (row.countLabel) {
               <span class="ui-tag-input__count">{{ row.countLabel }}</span>

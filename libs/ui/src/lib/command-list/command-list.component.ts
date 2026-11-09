@@ -23,6 +23,7 @@ import { scrollIntoList } from './scroll-into-list';
 import { CommandItemComponent } from './command-item.component';
 import type { CommandSection } from './models/command-section.interface';
 import type { CommandSelection } from './models/command-selection.interface';
+import { ICON_SIZE } from '../icon/models/icon-size.const';
 
 /**
  * A search-and-choose list for a command palette (the search dialog). The text input is an
@@ -65,6 +66,7 @@ import type { CommandSelection } from './models/command-selection.interface';
   styleUrl: './command-list.component.scss',
 })
 export class CommandListComponent {
+  protected readonly ICON_SIZE = ICON_SIZE;
   /** The search text. */
   readonly query = model('');
   /** Accessible name of the search input (required, for example "Search links, folders and tags"). */

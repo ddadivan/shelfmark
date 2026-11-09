@@ -24,11 +24,11 @@
     (keydown)="onTriggerKeydown($event)"
     (blur)="onTriggerBlur($event)"
   >
-    <ui-icon class="ui-select__icon" [name]="triggerIcon()" [size]="16" />
+    <ui-icon class="ui-select__icon" [name]="triggerIcon()" [size]="ICON_SIZE.Md" />
     <span class="ui-select__value" [class.ui-select__value--placeholder]="!chosen()">{{
       triggerText()
     }}</span>
-    <ui-icon class="ui-select__chevron" name="chevron-down" [size]="16" />
+    <ui-icon class="ui-select__chevron" name="chevron-down" [size]="ICON_SIZE.Md" />
   </button>
 </ui-field-shell>
 
@@ -45,7 +45,7 @@
       @if (searchable()) {
         <div class="ui-select__search">
           <div class="ui-select__search-box">
-            <ui-icon class="ui-select__search-icon" name="search" [size]="16" />
+            <ui-icon class="ui-select__search-icon" name="search" [size]="ICON_SIZE.Md" />
             <input
               #search
               class="ui-select__search-input"
@@ -92,10 +92,14 @@
             [attr.aria-label]="row.level > 0 ? row.path : null"
             [style.--ui-select-level]="row.level"
           >
-            <ui-icon class="ui-select__option-icon" [name]="rowIcon(row.id)" [size]="16" />
+            <ui-icon
+              class="ui-select__option-icon"
+              [name]="rowIcon(row.id)"
+              [size]="ICON_SIZE.Md"
+            />
             <span class="ui-select__option-label">{{ row.name }}</span>
             @if (row.id === value()) {
-              <ui-icon class="ui-select__check" name="check" [size]="16" />
+              <ui-icon class="ui-select__check" name="check" [size]="ICON_SIZE.Md" />
             }
           </div>
         }

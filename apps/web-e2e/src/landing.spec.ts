@@ -47,6 +47,35 @@ test.describe('landing', () => {
     await expect(section).toBeFocused();
   });
 
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 1920, height: 1080 },
+  ]) {
+    test(`the first screen fills a ${viewport.width}x${viewport.height} window`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(viewport);
+      await page.goto('/');
+      await expect(page.getByRole('heading', { level: 1, name: LANDING_HEADLINE })).toBeVisible();
+      await expect(page.getByTestId('landing-chat-track')).toBeAttached();
+
+      const hero = await page.locator('.landing-hero').boundingBox();
+      const header = await page.locator('.landing-header').boundingBox();
+      if (!hero || !header) {
+        throw new Error('The header or the hero has no box');
+      }
+      // Header + hero are the window tall (never shorter); the content is bigger than the old column.
+      expect(header.y + header.height + hero.height).toBeGreaterThanOrEqual(viewport.height - 1);
+      expect(hero.y + hero.height).toBeLessThanOrEqual(viewport.height * 1.1);
+      const title = await page.locator('.landing-hero__title').boundingBox();
+      expect(title?.width).toBeGreaterThan(viewport.width * 0.3);
+      const overflow = await page.evaluate<number>(
+        '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
+      );
+      expect(overflow).toBeLessThanOrEqual(0);
+    });
+  }
+
   for (const width of [360, 800, 1280]) {
     test(`the header has its final height from the first frame at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
@@ -201,31 +230,80 @@ test.describe('landing scenes and reveals', () => {
 
     await expect(finale.getByRole('link', { name: 'Open the demo' })).toBeVisible();
     await expect(finale.locator('h2')).toHaveCSS('opacity', '1');
+    // The sections are tall now: the one above the finale is not on screen yet on a phone.
+    await page.getByRole('region', { name: 'Why this exists' }).scrollIntoViewIfNeeded();
     await expect(page.getByRole('region', { name: 'Why this exists' }).locator('h2')).toHaveCSS(
       'opacity',
       '1',
     );
   });
 
-  test('the shelf cycles folders and the pause control stops it', async ({ page }) => {
+  test('the shelf keeps cycling past one full pass, with no pause control', async ({ page }) => {
+    test.setTimeout(60_000);
     await page.goto('/');
     const shelf = page.getByRole('region', { name: 'The same links, before and after' });
     await shelf.scrollIntoViewIfNeeded();
-    const pause = shelf.getByRole('button', { name: 'Pause animations' });
-
-    await expect(shelf.getByText('Signal Forms', { exact: false }).first()).toBeVisible({
-      timeout: 15_000,
-    });
-    await pause.click();
-    await expect(pause).toHaveAttribute('aria-pressed', 'true');
-
-    // Pointer away from the scene, so only the button can be holding the cycle. The folders
-    // advance every 3 s: a longer wait on the same active row proves the cycle stopped.
     await page.mouse.move(0, 0);
     const activeRow = shelf.getByTestId('landing-ba-active-row');
-    const frozen = await activeRow.textContent();
-    await page.waitForTimeout(3500);
-    await expect(activeRow).toHaveText(frozen ?? '');
+
+    // Clothes, Angular, Recipes, Clothes again and on to Angular (3 s each).
+    await expect(activeRow).toHaveText('Angular', { timeout: 15_000 });
+    await expect(activeRow).toHaveText('Recipes', { timeout: 6000 });
+    await expect(activeRow).toHaveText('Clothes', { timeout: 6000 });
+    await expect(activeRow).toHaveText('Angular', { timeout: 6000 });
+    await expect(shelf.getByRole('button')).toHaveCount(0);
+  });
+
+  test('the shelf pauses while the pointer is over the section and resumes after', async ({
+    page,
+  }) => {
+    test.setTimeout(60_000);
+    await page.goto('/');
+    const shelf = page.getByRole('region', { name: 'The same links, before and after' });
+    await shelf.scrollIntoViewIfNeeded();
+    const activeRow = shelf.getByTestId('landing-ba-active-row');
+    await expect(activeRow).toHaveText('Angular', { timeout: 15_000 });
+
+    await shelf.locator('.landing-ba__scenes').hover();
+    const held = await activeRow.textContent();
+    await page.waitForTimeout(4000);
+    await expect(activeRow).toHaveText(held ?? '');
+
+    await page.mouse.move(0, 0);
+    await expect(activeRow).not.toHaveText(held ?? '', { timeout: 6000 });
+  });
+
+  test('the scattered board comes in, then floats on and holds still under the pointer', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    const shelf = page.getByRole('region', { name: 'The same links, before and after' });
+    await shelf.scrollIntoViewIfNeeded();
+    await page.mouse.move(0, 0);
+    const board = shelf.getByRole('img', { name: /scattered across Saved Messages/ });
+    const states = (): Promise<string[]> =>
+      board.evaluate((el) =>
+        el
+          .getAnimations({ subtree: true })
+          .map((animation: { playState: string }) => animation.playState),
+      );
+
+    await expect(board.getByText('Bookmarks bar (91)')).toHaveCSS('opacity', '1');
+    // The entrance is over, the endless float keeps running.
+    await expect
+      .poll(async () => (await states()).filter((state) => state === 'running').length, {
+        timeout: 5000,
+      })
+      .toBeGreaterThanOrEqual(5);
+
+    await shelf.locator('.landing-ba__scenes').hover();
+    await expect
+      .poll(async () => (await states()).filter((state) => state === 'running').length)
+      .toBe(0);
+    await page.mouse.move(0, 0);
+    await expect
+      .poll(async () => (await states()).filter((state) => state === 'running').length)
+      .toBeGreaterThan(0);
   });
 
   test.describe('reduced motion', () => {
@@ -244,8 +322,11 @@ test.describe('landing scenes and reveals', () => {
         page.getByRole('region', { name: 'Empty your Saved Messages.' }).locator('h2'),
       ).toHaveCSS('opacity', '1');
 
+      await shelf.scrollIntoViewIfNeeded();
       await page.waitForTimeout(3500);
       await expect(shelf.getByTestId('landing-ba-active-row')).toHaveText('Clothes');
+      const board = shelf.getByRole('img', { name: /scattered across Saved Messages/ });
+      expect(await board.evaluate((el) => el.getAnimations({ subtree: true }).length)).toBe(0);
     });
   });
 });
@@ -265,23 +346,21 @@ test.describe('landing chat motion', () => {
     await expect.poll(() => readStep(feed), { timeout: 8000 }).not.toBe('0');
   });
 
-  test('the pause button stops the feed and a second press resumes it', async ({ page }) => {
+  test('the feed plays its messages once, stops on the full chat and has no pause button', async ({
+    page,
+  }) => {
+    // 8 messages, one every 1.8 s.
+    test.setTimeout(60_000);
     await page.goto('/');
     const feed = track(page);
-    const pause = page.getByRole('button', { name: 'Pause the feed' });
     await expect.poll(() => readStep(feed), { timeout: 8000 }).not.toBe('0');
 
-    await pause.click();
-    await expect(pause).toHaveAttribute('aria-pressed', 'true');
-    // Move the pointer away from the phone so only the button can be holding the feed.
+    await expect.poll(() => readStep(feed), { timeout: 30_000 }).toBe('8');
     await page.mouse.move(0, 0);
-    const frozen = await readStep(feed);
     await page.waitForTimeout(4000);
-    expect(await readStep(feed)).toBe(frozen);
-
-    await pause.click();
-    await expect(pause).toHaveAttribute('aria-pressed', 'false');
-    await expect.poll(() => readStep(feed), { timeout: 8000 }).not.toBe(frozen);
+    expect(await readStep(feed)).toBe('8');
+    await expect(page.getByRole('button', { name: 'Pause the feed' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Put them on the shelf' })).toBeVisible();
   });
 
   test('"Put them on the shelf" clears the messages and lands the links', async ({ page }) => {
@@ -395,23 +474,44 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
         await expect(
           page.getByRole('region', { name: 'Empty your Saved Messages.' }).locator('h2'),
         ).toHaveCSS('opacity', '1');
+        // Motion is on: the before board loops forever and is held mid-frame once it leaves the
+        // screen, so scrolling past it can leave it half way through its entrance. Bring it back,
+        // wait for the entrance to finish, then hold the loop (pointer over the section) before
+        // the scan, so axe reads fully opaque scraps.
+        expect(await page.evaluate("matchMedia('(prefers-reduced-motion: reduce)').matches")).toBe(
+          false,
+        );
+        const board = page.getByRole('region', { name: 'The same links, before and after' });
+        await board.scrollIntoViewIfNeeded();
+        const before = board.locator('.landing-before__before');
+        await expect(before).toHaveClass(/landing-before__before--entered/);
+        for (const scrap of await board
+          .locator('.landing-before__scrap, .landing-before__ping')
+          .all()) {
+          await expect(scrap).toHaveCSS('opacity', '1');
+        }
+        await board.locator('.landing-ba__scenes').hover();
+        await expect(before).toHaveClass(/landing-before__before--holding/);
+        await page.evaluate('scrollTo(0, document.documentElement.scrollHeight)');
         await settleReveals(page);
         await page.evaluate('document.fonts.ready.then(() => undefined)');
 
         await expectNoBlockingViolations(page, testInfo);
       });
 
-      test('shelf with the pause button pressed has no serious or critical axe violations', async ({
+      test('shelf and board on a settled frame (reduced motion) have no serious or critical axe violations', async ({
         page,
       }, testInfo) => {
+        // The loops never end, so the scan runs on the static frame they leave under reduced motion.
+        await page.emulateMedia({ reducedMotion: 'reduce' });
         await gotoLandingLoaded(page);
-        // Every section reveals when it is seen; then come back to the shelf and pause it.
         await scrollThrough(page);
         const shelf = page.getByRole('region', { name: 'The same links, before and after' });
         await shelf.scrollIntoViewIfNeeded();
-        await shelf.getByRole('button', { name: 'Pause animations' }).click();
         await settleReveals(page);
-        await expect(page.locator('.landing-ba__item--enter')).toHaveCount(0, { timeout: 10_000 });
+        await expect
+          .poll(() => shelf.evaluate((el) => el.getAnimations({ subtree: true }).length))
+          .toBe(0);
         await page.evaluate('document.fonts.ready.then(() => undefined)');
 
         await expectNoBlockingViolations(page, testInfo);

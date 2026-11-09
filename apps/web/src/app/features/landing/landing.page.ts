@@ -6,6 +6,7 @@ import {
   ElementRef,
   inject,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 import { LandingMotionService } from './landing-motion.service';
@@ -40,6 +41,7 @@ export default class LandingPage {
   /** Set when the visitor jumps to a deferred section before the browser went idle. */
   protected readonly sectionsRequested = signal(false);
   private readonly scrollPending = signal(false);
+  private readonly motion = inject(LandingMotionService);
   private readonly built = viewChild('built', { read: ElementRef });
   /** The section above "How it's built": the scroll waits for it, or the page would jump. */
   private readonly beforeAfter = viewChild('beforeAfter', { read: ElementRef });
@@ -56,7 +58,9 @@ export default class LandingPage {
         const target = (built.nativeElement as HTMLElement).querySelector<HTMLElement>('#how');
         // Guarded: not every environment implements it (jsdom does not).
         if (typeof target?.scrollIntoView === 'function') {
-          target.scrollIntoView();
+          // Smooth unless the visitor asked for reduced motion (read untracked: not a trigger).
+          const reduced = untracked(() => this.motion.reducedMotion());
+          target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
         }
         target?.focus({ preventScroll: true });
       }

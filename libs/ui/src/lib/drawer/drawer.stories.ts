@@ -5,6 +5,7 @@ import { UiDialogRef } from '../dialog/dialog-ref';
 import { THEME, THEME_ATTRIBUTE } from '../theme';
 import type { Theme } from '../theme';
 import { DrawerComponent } from './drawer.component';
+import { DRAWER_SIDE } from './models/drawer-side.const';
 import { DrawerService } from './drawer.service';
 
 /** Content of the live story: a short menu with a footer, closed through the injected ref. */
@@ -27,6 +28,39 @@ import { DrawerService } from './drawer.service';
 })
 class StoryMenuComponent {
   protected readonly ref = inject<UiDialogRef<string>>(UiDialogRef);
+}
+
+/** Content of the end-side story: a panel that slides in from the inline-end edge. */
+@Component({
+  selector: 'ui-drawer-story-end',
+  imports: [DrawerComponent],
+  template: `
+    <ui-drawer closeLabel="Close panel" [side]="DRAWER_SIDE.End">
+      <span slot="head" class="drs-title">Recently opened</span>
+      <p class="drs-paragraph">Angular docs</p>
+      <p class="drs-paragraph">Recipe: focaccia</p>
+    </ui-drawer>
+  `,
+})
+class StoryEndComponent {
+  protected readonly DRAWER_SIDE = DRAWER_SIDE;
+}
+
+@Component({
+  selector: 'ui-drawer-story-end-demo',
+  imports: [ButtonComponent],
+  template: `
+    <div class="drs-panel">
+      <ui-button variant="primary" (click)="open()">Open side panel</ui-button>
+    </div>
+  `,
+})
+class StoryEndDemoComponent {
+  private readonly drawers = inject(DrawerService);
+
+  protected open(): void {
+    this.drawers.open(StoryEndComponent, { ariaLabel: 'Recently opened', side: DRAWER_SIDE.End });
+  }
 }
 
 /** Content that overflows: the body scrolls, header and footer stay. */
@@ -114,6 +148,14 @@ export const Default: Story = {
   render: () => ({
     moduleMetadata: { imports: [StoryDemoComponent] },
     template: `<ui-drawer-story-demo />`,
+  }),
+};
+
+/** Pinned to the inline-end edge: it slides in from the right (from the left in rtl). */
+export const EndSide: Story = {
+  render: () => ({
+    moduleMetadata: { imports: [StoryEndDemoComponent] },
+    template: `<ui-drawer-story-end-demo />`,
   }),
 };
 

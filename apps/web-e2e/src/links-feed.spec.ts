@@ -24,6 +24,55 @@ test.describe('links feed (mock API)', () => {
     return page.locator('ui-card').first().getByRole('heading').innerText();
   }
 
+  test('hovering a card slides up the open bar with the address', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name === E2E_PROJECT.Phone, 'touch has no hover');
+    await openFeed(page);
+    const card = page.locator('ui-card').first();
+    const bar = card.locator('.ui-card__overlay');
+
+    await expect(bar).toContainText('Open');
+    await expect(bar).toContainText('↗');
+    await card.hover();
+
+    await expect(bar).toHaveCSS('opacity', '1');
+    await expect(bar).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  test('the open arrow moves only while the pointer is over the bar, and a click opens', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name === E2E_PROJECT.Phone, 'touch has no hover');
+    await page.context().route('https://**/*', (route) => route.abort());
+    await openFeed(page);
+    const card = page.locator('ui-card').first();
+    const arrow = card.locator('.link-card__open-arrow');
+
+    await card.hover({ position: { x: 20, y: 20 } });
+    await expect(card.locator('.ui-card__overlay')).toHaveCSS('opacity', '1');
+    await expect(arrow).toHaveCSS('transform', 'none');
+
+    await card.locator('.link-card__open').hover();
+    await expect(arrow).not.toHaveCSS('transform', 'none');
+
+    await card.hover({ position: { x: 20, y: 20 } });
+    await expect(arrow).toHaveCSS('transform', 'none');
+
+    const popup = page.waitForEvent('popup');
+    await card.locator('.link-card__open').click();
+    await (await popup).close();
+  });
+
+  test('keyboard focus on a card shows the open bar', async ({ page }) => {
+    await openFeed(page);
+    const card = page.locator('ui-card').first();
+
+    await card.getByRole('link').focus();
+    await page.keyboard.press('Shift+Tab');
+    await page.keyboard.press('Tab');
+
+    await expect(card.locator('.ui-card__overlay')).toHaveCSS('opacity', '1');
+  });
+
   test('shows the cards, the count and "load more" on the first page', async ({ page }) => {
     await openFeed(page);
 
@@ -190,6 +239,44 @@ test.describe('links feed (mock API)', () => {
 
     await page.getByRole('main').getByRole('button', { name: 'Add link' }).click();
     await expect(page.getByRole('dialog')).toBeVisible();
+  });
+
+  test('the shell fills the viewport and the empty state sits in the middle of the free space', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.addInitScript(
+      ([key, value]) => sessionStorage.setItem(key, value),
+      [MOCK_LINKS_SCENARIO.key, MOCK_LINKS_SCENARIO.empty],
+    );
+    await page.goto('/links');
+    const title = page.getByRole('heading', { name: 'Your links will live here' });
+    await expect(title).toBeVisible();
+
+    const box = async (selector: string) => {
+      const found = await page.locator(selector).first().boundingBox();
+      if (!found) {
+        throw new Error(`${selector} has no box`);
+      }
+      return found;
+    };
+    const sidebar = await box('.shell__sidebar');
+    const main = await box('.shell__main');
+    const recent = await box('app-recent-links-panel');
+    // Sidebar surface, main column and the recent panel all run to the bottom of the window.
+    for (const column of [sidebar, main, recent]) {
+      expect(column.y + column.height).toBeGreaterThanOrEqual(900 - 1);
+    }
+    expect(await page.evaluate('document.documentElement.scrollHeight')).toBeLessThanOrEqual(900);
+
+    const state = await box('ui-empty-state');
+    const toolbar = await box('.library__toolbar');
+    const freeTop = toolbar.y + toolbar.height;
+    const freeBottom = main.y + main.height;
+    const gapAbove = state.y - freeTop;
+    const gapBelow = freeBottom - (state.y + state.height);
+    expect(Math.abs(gapAbove - gapBelow)).toBeLessThanOrEqual(40);
+    expect(gapAbove).toBeGreaterThan(40);
   });
 
   test.describe('new-account feed', () => {

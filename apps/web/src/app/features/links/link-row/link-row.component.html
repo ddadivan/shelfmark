@@ -26,6 +26,9 @@
       [iconLeft]="link().isFavorite ? 'star-filled' : 'star'"
       [ariaPressed]="link().isFavorite"
       [ariaLabel]="'links.item.favorite' | transloco: { title: link().title }"
+      [uiTooltip]="
+        (link().isFavorite ? 'links.item.removeFavorite' : 'links.item.addFavorite') | transloco
+      "
       (click)="favoriteToggled.emit()"
     />
     <ui-button
@@ -35,6 +38,7 @@
       iconLeft="more"
       [uiMenuTrigger]="menu"
       [ariaLabel]="'links.item.actions' | transloco: { title: link().title }"
+      [uiTooltip]="'links.item.moreActions' | transloco"
     />
     <ui-menu
       #menu

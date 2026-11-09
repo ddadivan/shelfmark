@@ -77,6 +77,23 @@ describe('LibraryPage', () => {
     expect(element.querySelector('ui-skeleton')).toBeNull();
   });
 
+  it.each([
+    [0, ''],
+    [1, '1 link'],
+    [2, '2 links'],
+  ])('counts %i links with the right plural form', async (count, expected) => {
+    const items = Array.from({ length: count }, (_, i) => link(i + 1));
+    const { element } = await setup(of(page(items)));
+
+    const counter = element.querySelector('.library__count')?.textContent?.trim() ?? '';
+    expect(counter).toBe(expected);
+  });
+
+  it('says "1+ link" and "50+ links" when more pages follow', async () => {
+    const one = await setup(of(page([link(1)], 'c1')));
+    expect(one.element.querySelector('.library__count')?.textContent?.trim()).toBe('1+ link');
+  });
+
   it('names the heading after the scope', async () => {
     const { fixture, element } = await setup();
 
@@ -233,6 +250,61 @@ describe('LibraryPage', () => {
 
     expect(element.querySelector('ui-notice')).toBeNull();
     expect(element.querySelectorAll('app-link-card')).toHaveLength(3);
+  });
+
+  describe('switching views', () => {
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('never shows the skeleton or dims the cards when the next view answers at once', async () => {
+      const { api, element, fixture } = await setup();
+      api.list.mockReturnValue(of(page([link(7)])));
+
+      fixture.componentRef.setInput('scope', LINKS_SCOPE.Favorites);
+      await fixture.whenStable();
+
+      expect(element.querySelector('ui-skeleton')).toBeNull();
+      expect(element.querySelector('.library__list--stale')).toBeNull();
+      expect(element.querySelectorAll('app-link-card')).toHaveLength(1);
+    });
+
+    it('keeps the old cards dimmed, then the skeleton after 300 ms, then the new cards', async () => {
+      const { api, element, fixture } = await setup();
+      await fixture.whenStable();
+      vi.useFakeTimers();
+      const next = new Subject<ListLinksResponse>();
+      api.list.mockReturnValue(next);
+      const settle = (): void => {
+        fixture.detectChanges();
+        TestBed.tick();
+        fixture.detectChanges();
+      };
+
+      fixture.componentRef.setInput('scope', LINKS_SCOPE.Favorites);
+      settle();
+
+      const stale = element.querySelector('.library__list--stale');
+      expect(stale?.getAttribute('aria-busy')).toBe('true');
+      expect(stale?.hasAttribute('inert')).toBe(true);
+      expect(element.querySelectorAll('app-link-card')).toHaveLength(2);
+      expect(element.querySelector('ui-skeleton')).toBeNull();
+      expect(element.querySelector('.library__count')?.textContent).toContain('2+ links');
+
+      vi.advanceTimersByTime(300);
+      settle();
+      expect(element.querySelector('ui-skeleton')).not.toBeNull();
+      expect(element.querySelector('app-link-card')).toBeNull();
+
+      next.next(page([link(8), link(9), link(10)]));
+      next.complete();
+      settle();
+      vi.advanceTimersByTime(500);
+      settle();
+      expect(element.querySelector('.library__list--stale')).toBeNull();
+      expect(element.querySelectorAll('app-link-card')).toHaveLength(3);
+      expect(element.querySelector('ui-skeleton')).toBeNull();
+    });
   });
 
   it('toggles a favorite from a card', async () => {

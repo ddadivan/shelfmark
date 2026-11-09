@@ -4,12 +4,15 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  ElementRef,
+  inject,
   input,
   linkedSignal,
   output,
 } from '@angular/core';
 import type { HeadingLevel } from '../heading';
 import { IconComponent } from '../icon/icon.component';
+import { ICON_SIZE } from '../icon/models/icon-size.const';
 
 let nextId = 0;
 
@@ -57,6 +60,7 @@ let nextId = 0;
   styleUrl: './card.component.scss',
 })
 export class CardComponent {
+  protected readonly ICON_SIZE = ICON_SIZE;
   /** Id of the visually hidden description that the link points to. */
   protected readonly descriptionId = `ui-card-description-${nextId++}`;
 
@@ -88,6 +92,26 @@ export class CardComponent {
     source: this.image,
     computation: () => false,
   });
+
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+
+  /**
+   * The bar sits above the stretched link so a feature can style it on hover; a click on it
+   * activates the title link instead (modifier keys kept, so a Ctrl-click still opens a tab).
+   */
+  protected forwardOverlayClick(event: MouseEvent): void {
+    this.host.querySelector<HTMLElement>('.ui-card__link')?.dispatchEvent(
+      new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        button: event.button,
+        ctrlKey: event.ctrlKey,
+        metaKey: event.metaKey,
+        shiftKey: event.shiftKey,
+        altKey: event.altKey,
+      }),
+    );
+  }
 
   protected readonly imageSrc = computed(() => (this.failed() ? null : this.image() || null));
 }

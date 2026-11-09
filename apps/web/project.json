@@ -18,26 +18,46 @@
         "polyfills": [],
         "inlineStyleLanguage": "scss",
         "assets": [
-          { "glob": "**/*", "input": "apps/web/public" },
-          { "glob": "**/*", "input": "libs/ui/src/assets", "output": "assets/ui" }
+          {
+            "glob": "**/*",
+            "input": "apps/web/public"
+          },
+          {
+            "glob": "**/*",
+            "input": "libs/ui/src/assets",
+            "output": "assets/ui"
+          }
         ],
         "styles": [
           "node_modules/@fontsource-variable/onest/wght.css",
           "libs/ui/src/styles/global.scss",
           "apps/web/src/styles.scss"
         ],
-        "stylePreprocessorOptions": { "includePaths": ["libs/ui/src/styles"] },
+        "stylePreprocessorOptions": {
+          "includePaths": ["libs/ui/src/styles"]
+        },
         "optimization": {
           "scripts": true,
-          "styles": { "minify": true, "inlineCritical": false },
+          "styles": {
+            "minify": true,
+            "inlineCritical": false
+          },
           "fonts": false
         }
       },
       "configurations": {
         "production": {
           "budgets": [
-            { "type": "initial", "maximumWarning": "500kb", "maximumError": "1mb" },
-            { "type": "anyComponentStyle", "maximumWarning": "4kb", "maximumError": "8kb" }
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "4kb",
+              "maximumError": "8kb"
+            }
           ],
           "outputHashing": "all",
           "serviceWorker": "apps/web/ngsw-config.json"
@@ -71,8 +91,16 @@
         },
         "e2e": {
           "budgets": [
-            { "type": "initial", "maximumWarning": "500kb", "maximumError": "1mb" },
-            { "type": "anyComponentStyle", "maximumWarning": "4kb", "maximumError": "8kb" }
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "4kb",
+              "maximumError": "8kb"
+            }
           ],
           "outputHashing": "all",
           "serviceWorker": "apps/web/ngsw-config.json",
@@ -104,7 +132,8 @@
             }
           ]
         }
-      }
+      },
+      "dependsOn": ["^build", "ui:icons"]
     },
     "middleware-shell": {
       "executor": "nx:run-commands",
@@ -139,9 +168,14 @@
         "proxyConfig": "apps/web/proxy.conf.json"
       },
       "configurations": {
-        "production": { "buildTarget": "web:build:production" },
-        "development": { "buildTarget": "web:build:development" }
-      }
+        "production": {
+          "buildTarget": "web:build:production"
+        },
+        "development": {
+          "buildTarget": "web:build:development"
+        }
+      },
+      "dependsOn": ["ui:icons"]
     },
     "serve-static": {
       "continuous": true,
@@ -168,8 +202,11 @@
         "watch": false
       },
       "configurations": {
-        "coverage": { "coverage": true }
-      }
+        "coverage": {
+          "coverage": true
+        }
+      },
+      "dependsOn": ["ui:icons"]
     },
     "typecheck": {
       "executor": "nx:run-commands",

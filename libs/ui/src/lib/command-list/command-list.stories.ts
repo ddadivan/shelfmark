@@ -6,6 +6,7 @@ import { DialogService } from '../dialog/dialog.service';
 import { UiDialogRef } from '../dialog/dialog-ref';
 import { DIALOG_SIZE } from '../dialog/models/dialog-size.const';
 import { HighlightComponent } from '../highlight/highlight.component';
+import { IconComponent } from '../icon/icon.component';
 import { THEME, THEME_ATTRIBUTE } from '../theme';
 import { CommandGroupComponent } from './command-group.component';
 import { CommandItemComponent } from './command-item.component';
@@ -44,7 +45,13 @@ const TEXTS = {
 /** Matching links, a folder and a tag for the query; filtering is the feature's job, here it is local. */
 @Component({
   selector: 'ui-command-list-story-results',
-  imports: [CommandListComponent, CommandGroupComponent, CommandItemComponent, HighlightComponent],
+  imports: [
+    CommandListComponent,
+    CommandGroupComponent,
+    CommandItemComponent,
+    HighlightComponent,
+    IconComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <ui-command-list
@@ -62,7 +69,7 @@ const TEXTS = {
             <ui-command-item [value]="link.id">
               <ui-highlight [text]="link.title" [query]="query()" />
               <span slot="meta">{{ link.meta }}</span>
-              <kbd slot="trailing">↵</kbd>
+              <kbd slot="trailing"><ui-icon name="key-enter" [size]="16" /></kbd>
             </ui-command-item>
           }
         </ui-command-group>
@@ -81,8 +88,23 @@ const TEXTS = {
       }
       <p slot="empty">Nothing found for “{{ query() }}”</p>
       <span slot="footer"><kbd>↑</kbd> <kbd>↓</kbd> move</span>
-      <span slot="footer"><kbd>↵</kbd> open</span>
-      <span slot="footer"><kbd>⌘</kbd> <kbd>↵</kbd> open in background</span>
+      <span slot="footer"
+        ><kbd><span aria-hidden="true">↑</span><span class="ui-command-list__sr">Up</span></kbd
+        ><kbd><span aria-hidden="true">↓</span><span class="ui-command-list__sr">Down</span></kbd>
+        move</span
+      >
+      <span slot="footer"
+        ><kbd
+          ><ui-icon name="key-enter" [size]="16" /><span class="ui-command-list__sr"
+            >Enter</span
+          ></kbd
+        >
+        open</span
+      >
+      <span slot="footer"
+        ><kbd><ui-icon name="key-command" [size]="16" /></kbd>
+        <kbd><ui-icon name="key-enter" [size]="16" /></kbd> open in background</span
+      >
     </ui-command-list>
   `,
 })
@@ -101,7 +123,13 @@ class StoryResultsComponent {
 /** The list inside a `ui-dialog`: live through `DialogService`, so focus lands in the input. */
 @Component({
   selector: 'ui-command-list-story-dialog',
-  imports: [DialogComponent, CommandListComponent, CommandGroupComponent, CommandItemComponent],
+  imports: [
+    DialogComponent,
+    CommandListComponent,
+    CommandGroupComponent,
+    CommandItemComponent,
+    IconComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <ui-dialog title="Search" closeLabel="Close" size="md">
@@ -119,7 +147,9 @@ class StoryResultsComponent {
             </ui-command-item>
           }
         </ui-command-group>
-        <span slot="footer"><kbd>↵</kbd> open</span>
+        <span slot="footer"
+          ><kbd><ui-icon name="key-enter" [size]="16" /></kbd> open</span
+        >
       </ui-command-list>
     </ui-dialog>
   `,
@@ -191,6 +221,7 @@ const imports = [
   CommandGroupComponent,
   CommandItemComponent,
   HighlightComponent,
+  IconComponent,
 ];
 
 /** Type to filter; the matching part is marked. Enter or a click chooses, the demo ignores it. */
@@ -280,7 +311,7 @@ export const AllVariants: Story = {
                   <ui-command-item value="a">
                     <ui-highlight text="Angular 22: Signal Forms in 20 minutes" query="signal" />
                     <span slot="meta">youtube.com, in Work / Angular</span>
-                    <kbd slot="trailing">↵</kbd>
+                    <kbd slot="trailing"><ui-icon name="key-enter" [size]="16" /></kbd>
                   </ui-command-item>
                   <ui-command-item value="b">
                     <ui-highlight text="Signals vs RxJS" query="signal" />
@@ -295,7 +326,7 @@ export const AllVariants: Story = {
                   <ui-command-item value="d" disabled>Disabled row</ui-command-item>
                 </ui-command-group>
                 <span slot="footer"><kbd>↑</kbd> <kbd>↓</kbd> move</span>
-                <span slot="footer"><kbd>↵</kbd> open</span>
+                <span slot="footer"><kbd><ui-icon name="key-enter" [size]="16" /></kbd> open</span>
               </ui-command-list>
             </div>
             <div class="cls-box">

@@ -12,7 +12,7 @@
   <h1 class="settings__title">{{ 'settings.title' | transloco }}</h1>
 
   @if (auth.user(); as user) {
-  <app-settings-section [heading]="'settings.account.title' | transloco">
+  <app-settings-section [heading]="'settings.account.title' | transloco" headingHidden>
     <div class="settings__account">
       <ui-avatar [name]="user.name" [src]="user.image ?? undefined" size="lg" />
       <div class="settings__identity">
@@ -40,7 +40,7 @@
         <ui-button iconLeft="download" (click)="exportAll(EXPORT_FORMAT.Json)">
           {{ 'settings.data.export.json' | transloco }}
         </ui-button>
-        <ui-button iconLeft="download" (click)="exportAll(EXPORT_FORMAT.Html)">
+        <ui-button iconLeft="bookmark" (click)="exportAll(EXPORT_FORMAT.Html)">
           {{ 'settings.data.export.html' | transloco }}
         </ui-button>
       </div>
@@ -62,29 +62,49 @@
       />
       }
     </app-settings-row>
+    <app-settings-row
+      [label]="'settings.appearance.language.label' | transloco"
+      [hint]="'settings.appearance.language.hint' | transloco"
+    >
+      <span class="settings__language">{{ 'settings.appearance.language.value' | transloco }}</span>
+    </app-settings-row>
   </app-settings-section>
 
-  <app-settings-section [heading]="'settings.welcome.title' | transloco">
-    <app-settings-row
-      [label]="'settings.welcome.title' | transloco"
-      [hint]="'settings.welcome.hint' | transloco"
+  <app-settings-section
+    [heading]="'settings.welcome.title' | transloco"
+    [hint]="'settings.welcome.hint' | transloco"
+  >
+    <ui-button
+      slot="action"
+      [block]="viewport.phone()"
+      [disabled]="onboarding.resetting()"
+      (click)="onboarding.reset()"
     >
-      <ui-button [disabled]="onboarding.resetting()" (click)="onboarding.reset()">
-        {{ 'settings.welcome.action' | transloco }}
-      </ui-button>
-    </app-settings-row>
+      {{ 'settings.welcome.action' | transloco }}
+    </ui-button>
   </app-settings-section>
 
   @if (canDeleteAccount()) {
-  <app-settings-section [heading]="'settings.delete.title' | transloco" danger>
-    <app-settings-row
-      [label]="'settings.delete.title' | transloco"
-      [hint]="'settings.delete.hint' | transloco"
+  <app-settings-section
+    [heading]="'settings.delete.title' | transloco"
+    [hint]="'settings.delete.hint' | transloco"
+    danger
+  >
+    <ui-button
+      slot="action"
+      [block]="viewport.phone()"
+      [variant]="BUTTON_VARIANT.Danger"
+      (click)="deleteAccount()"
     >
-      <ui-button [variant]="BUTTON_VARIANT.Danger" (click)="deleteAccount()">
-        {{ 'settings.delete.action' | transloco }}
-      </ui-button>
-    </app-settings-row>
+      {{ 'settings.delete.action' | transloco }}
+    </ui-button>
   </app-settings-section>
   }
+
+  <p class="settings__footer">
+    <a class="settings__privacy" [routerLink]="privacyHref"
+      >{{ 'settings.footer.privacy' | transloco }}</a
+    >
+    <span>{{ 'settings.footer.version' | transloco }}</span>
+  </p>
 </div>

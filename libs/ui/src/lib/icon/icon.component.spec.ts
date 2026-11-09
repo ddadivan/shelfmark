@@ -62,8 +62,8 @@ describe('IconComponent', () => {
     expect(host.classList.contains(cssClass)).toBe(true);
   });
 
-  it('defaults to 16px', () => {
-    expect(render({ name: 'tag' }).classList.contains('ui-icon--16')).toBe(true);
+  it('defaults to 24px', () => {
+    expect(render({ name: 'tag' }).classList.contains('ui-icon--24')).toBe(true);
   });
 
   it('uses the injected sprite URL', () => {

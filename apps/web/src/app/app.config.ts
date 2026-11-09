@@ -10,6 +10,7 @@ import {
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import {
   provideRouter,
+  RouteReuseStrategy,
   withComponentInputBinding,
   withInMemoryScrolling,
   withPreloading,
@@ -24,6 +25,7 @@ import { appRoutes } from './app.routes';
 import { translocoConfig } from './core/i18n/transloco.config';
 import { APP_LANG } from './core/i18n/models/app-lang.const';
 import { AppTranslocoLoader } from './core/i18n/app-transloco.loader';
+import { LibraryRouteReuseStrategy } from './core/routing/library-route-reuse.strategy';
 import { SignedInPreloadingStrategy } from './core/routing/signed-in-preloading.strategy';
 import { provideLinksApi } from './features/links/provide-links-api';
 import { provideMonitoring } from './core/monitoring/provide-monitoring';
@@ -45,6 +47,7 @@ export const appConfig: ApplicationConfig = {
       withRouterConfig({ paramsInheritanceStrategy: 'always' }),
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
     ),
+    { provide: RouteReuseStrategy, useClass: LibraryRouteReuseStrategy },
     // Order matters (PROJECT.md 5.1): apiBase, requestId, retry, loading, error, devLogging.
     // Only apiBase and error exist so far; requestId, retry and loading go between them, devLogging last.
     provideHttpClient(withFetch(), withInterceptors([apiBaseInterceptor, errorInterceptor])),

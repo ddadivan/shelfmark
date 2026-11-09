@@ -8,6 +8,9 @@ describe('LandingFinaleComponent', () => {
     const root = fixture.nativeElement as HTMLElement;
 
     expect(root.querySelector('h2')?.textContent?.trim()).toBe('Empty your Saved Messages.');
+    expect(root.querySelector('.landing-finale__lead')?.textContent).toContain(
+      'Everything you save from now on lands on one shelf',
+    );
     expect(root.querySelector('a[href="/sign-in"]')).not.toBeNull();
     const labels = Array.from(root.querySelectorAll('a')).map((a) => a.textContent?.trim());
     expect(labels).toEqual(['Open the demo', 'Sign in']);

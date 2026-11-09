@@ -21,7 +21,8 @@
     @if (linkCount() > 0) {
       <ui-command-group
         [heading]="
-          (state().more ? 'library.countMore' : 'library.count') | transloco: { count: linkCount() }
+          pluralKey(state().more ? 'library.countMore' : 'library.count', linkCount())
+            | transloco: { count: linkCount() }
         "
       >
         @for (link of state().links; track link.id) {
@@ -46,7 +47,7 @@
         }
         @if (state().more) {
           <ui-command-item [value]="SEARCH_RESULT_KIND.All">
-            <ui-icon slot="leading" name="search" [size]="16" />
+            <ui-icon slot="leading" name="search" />
             {{ 'search.showAll' | transloco: { query: state().query } }}
           </ui-command-item>
         }
@@ -57,7 +58,7 @@
       <ui-command-group [heading]="'search.foldersAndTags' | transloco">
         @for (match of folderMatches(); track match.folder.id) {
           <ui-command-item [value]="SEARCH_RESULT_KIND.Folder + ':' + match.folder.id">
-            <ui-icon slot="leading" name="folder" [size]="16" />
+            <ui-icon slot="leading" name="folder" />
             <ui-highlight [text]="match.path" [query]="parsed()" />
             <span slot="trailing">{{
               pluralKey('search.linkCount', match.folder.linkCount)
@@ -67,7 +68,7 @@
         }
         @for (tag of tagMatches(); track tag.id) {
           <ui-command-item [value]="SEARCH_RESULT_KIND.Tag + ':' + tag.name">
-            <ui-icon slot="leading" name="tag" [size]="16" />
+            <ui-icon slot="leading" name="tag" />
             <ui-highlight [text]="tag.name" [query]="parsed()" />
             <span slot="meta">{{
               pluralKey('search.tagMeta', tag.linkCount) | transloco: { count: tag.linkCount }
@@ -89,17 +90,40 @@
       }
     </p>
 
-    <span slot="footer"><kbd>↑</kbd> <kbd>↓</kbd> {{ 'search.hints.move' | transloco }}</span>
-    <span slot="footer"><kbd>↵</kbd> {{ 'search.hints.open' | transloco }}</span>
+    <span slot="footer"
+      ><kbd
+        ><span aria-hidden="true">↑</span
+        ><span class="ui-command-list__sr">{{ 'search.hints.up' | transloco }}</span></kbd
+      ><kbd
+        ><span aria-hidden="true">↓</span
+        ><span class="ui-command-list__sr">{{ 'search.hints.down' | transloco }}</span></kbd
+      >
+      {{ 'search.hints.move' | transloco }}</span
+    >
+    <span slot="footer"
+      ><kbd
+        ><ui-icon name="key-enter" [size]="16" /><span class="ui-command-list__sr">{{
+          'search.hints.enter' | transloco
+        }}</span></kbd
+      >
+      {{ 'search.hints.open' | transloco }}</span
+    >
     <span slot="footer"
       ><kbd>
         @if (mac) {
-          ⌘
+          <ui-icon name="key-command" [size]="16" /><span class="ui-command-list__sr">{{
+            'search.hints.command' | transloco
+          }}</span>
         } @else {
           {{ 'search.hints.ctrl' | transloco }}
         }
       </kbd>
-      <kbd>↵</kbd> {{ 'search.hints.background' | transloco }}</span
+      <kbd
+        ><ui-icon name="key-enter" [size]="16" /><span class="ui-command-list__sr">{{
+          'search.hints.enter' | transloco
+        }}</span></kbd
+      >
+      {{ 'search.hints.background' | transloco }}</span
     >
   </ui-command-list>
 </ui-dialog>

@@ -11,6 +11,7 @@ import {
 import { IconComponent } from '../icon/icon.component';
 import { UI_RIPPLE_IGNORE } from '../ripple/models/ui-ripple-ignore.const';
 import { RippleDirective } from '../ripple/ripple.directive';
+import { ICON_SIZE } from '../icon/models/icon-size.const';
 
 let nextId = 0;
 
@@ -51,6 +52,7 @@ let nextId = 0;
   styleUrl: './list-item.component.scss',
 })
 export class ListItemComponent {
+  protected readonly ICON_SIZE = ICON_SIZE;
   /** Id of the visually hidden description that the link points to. */
   protected readonly descriptionId = `ui-list-item-description-${nextId++}`;
 

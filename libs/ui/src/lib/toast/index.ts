@@ -7,5 +7,6 @@ export type { ToastOptions } from './models/toast-options.interface';
 export type { ToastRef } from './models/toast-ref.interface';
 export { TOAST_SHORTCUT } from './models/toast-shortcut.const';
 export { ToastComponent } from './toast.component';
-export { toastShortcutLabel } from './toast-shortcut-label';
+export { toastShortcutKeys, toastShortcutLabel } from './toast-shortcut-label';
+export type { ToastShortcutKey } from './models/toast-shortcut-key.interface';
 export { ToastService } from './toast.service';

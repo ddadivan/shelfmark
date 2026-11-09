@@ -11,6 +11,17 @@ export function linkHost(url: string): string {
   return displayHost(url);
 }
 
+/** The address shown on the card's open bar: host and path, without scheme, `www.` or a lone `/`. */
+export function linkAddress(url: string): string {
+  try {
+    const { host, pathname, search } = new URL(url);
+    const path = pathname === '/' ? '' : pathname;
+    return `${host.replace(/^www\./, '')}${path}${search}`;
+  } catch {
+    return url;
+  }
+}
+
 /** Letter of the site, for the favicon and card fallbacks. */
 export function siteLetter(url: string): string {
   return displayHost(url).charAt(0).toUpperCase();

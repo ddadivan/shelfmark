@@ -44,3 +44,62 @@
 ui-card {
   flex: 1;
 }
+
+// The open bar content (the bar itself, its slide and darkening live in `ui-card`).
+.link-card__open {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.link-card__address {
+  @include line-clamp(1);
+
+  min-width: 0;
+}
+
+.link-card__open-label {
+  display: inline-flex;
+  flex: none;
+  gap: rem(4px);
+  font-weight: 600;
+}
+
+// "Open" and the arrow sit together at rest. Only while the pointer is over the bar itself (the
+// bar is above the card's link and forwards its click to it), or the card has keyboard focus,
+// "Open" brightens and the arrow nudges up and to the right. The bar is decorative
+// (`aria-hidden`); no movement under reduced motion.
+.link-card__open-text {
+  color: color-mix(in srgb, var(--text) 78%, var(--surface));
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+.link-card__open-arrow {
+  display: inline-block;
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+ui-card:has(.ui-card__link:focus-visible) .link-card__open-text {
+  color: var(--text);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  ui-card:has(.ui-card__link:focus-visible) .link-card__open-arrow {
+    transform: translate(#{rem(2px)}, #{rem(-2px)});
+  }
+}
+
+.link-card__open {
+  @include hover {
+    .link-card__open-text {
+      color: var(--text);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .link-card__open-arrow {
+        transform: translate(#{rem(2px)}, #{rem(-2px)});
+      }
+    }
+  }
+}

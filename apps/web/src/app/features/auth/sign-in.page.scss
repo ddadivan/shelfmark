@@ -47,8 +47,12 @@
 
   @include desktop {
     flex: 1 1 rem(420px);
+
+    // Logo / form / footer on three rows: the two outer rows are equal (1fr), so the form sits on
+    // the vertical middle of the column, on the same axis as the mosaic.
+    display: grid;
     gap: rem(40px);
-    justify-content: space-between;
+    grid-template-rows: 1fr auto 1fr;
     padding-block: rem(40px);
   }
 }
@@ -71,6 +75,11 @@
   @include tablet-up {
     margin-inline: auto;
   }
+
+  @include desktop {
+    // The grid row is the form's own height; the form stays as wide as its max-width.
+    justify-self: center;
+  }
 }
 
 .sign-in__footer {
@@ -78,6 +87,10 @@
 
   margin-block-start: auto;
   color: var(--text-muted);
+
+  @include desktop {
+    align-self: end;
+  }
 }
 
 .sign-in__intro {

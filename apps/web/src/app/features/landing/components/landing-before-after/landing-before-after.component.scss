@@ -10,15 +10,14 @@
 .landing-ba__inner {
   @include landing.wrap;
   @include landing.reveal;
+  @include landing.section-pad;
 
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
-  padding-block: rem(40px);
 
   @include tablet-up {
     gap: var(--space-8);
-    padding-block: rem(64px);
   }
 }
 
@@ -28,17 +27,25 @@
   max-width: rem(640px);
 }
 
-.landing-ba__pause {
-  align-self: flex-start;
-}
-
 .landing-ba__scenes {
+  @include landing.card-pad;
+
+  // The two panels are the same height (the scene reads it too).
+  --landing-panel-height: #{rem(320px)};
+
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-6);
 
   @include tablet-up {
+    --landing-panel-height: #{rem(344px)};
+
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  // Taller on desktop, where the scraps of the before board are bigger.
+  @include desktop {
+    --landing-panel-height: #{rem(400px)};
   }
 }
 
@@ -61,8 +68,8 @@
 .landing-ba__after {
   display: flex;
   gap: var(--space-4);
-  height: rem(300px);
-  padding: var(--space-4);
+  height: var(--landing-panel-height);
+  padding: var(--landing-card-pad);
   overflow: hidden;
   background: var(--bg);
   border: 1px solid var(--border);
@@ -76,7 +83,11 @@
   gap: rem(2px);
   width: rem(110px);
 
-  @include tablet-up {
+  @include tablet {
+    width: rem(130px);
+  }
+
+  @include desktop {
     width: rem(150px);
   }
 }
@@ -156,6 +167,63 @@
   color: var(--text-muted);
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+// On desktop the after panel matches the bigger before board: larger text, rows and spacing.
+// `ui-chip` and `ui-favicon` have fixed sizes in `libs/ui`, so they scale with `zoom`.
+@include desktop {
+  .landing-ba__after {
+    gap: var(--space-6);
+  }
+
+  .landing-ba__tree {
+    gap: rem(4px);
+    width: rem(190px);
+  }
+
+  .landing-ba__row {
+    padding: rem(8px) var(--space-3);
+    font-size: rem(16px);
+    line-height: rem(22px);
+  }
+
+  .landing-ba__row--nested {
+    padding-inline-start: var(--space-8);
+  }
+
+  .landing-ba__section {
+    padding: var(--space-4) var(--space-3) var(--space-2);
+    font-size: rem(14px);
+    line-height: rem(20px);
+  }
+
+  .landing-ba__tags {
+    padding: 0 var(--space-3);
+    zoom: 1.2;
+  }
+
+  .landing-ba__list {
+    gap: rem(4px);
+  }
+
+  .landing-ba__item {
+    gap: var(--space-4);
+    padding: var(--space-3);
+
+    ui-favicon {
+      zoom: 1.25;
+    }
+  }
+
+  .landing-ba__item-title {
+    font-size: rem(16px);
+    line-height: rem(22px);
+  }
+
+  .landing-ba__item-note {
+    font-size: rem(14px);
+    line-height: rem(20px);
+  }
 }
 
 // A new folder's links fade in and rise a little; the first frame has no entrance

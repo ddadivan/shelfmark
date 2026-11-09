@@ -23,7 +23,9 @@ import type { UiFocusTarget } from '../focus-target/models/ui-focus-target.inter
 import { IconComponent } from '../icon/icon.component';
 import type { IconName } from '../icon/models/icon-name.type';
 import { RippleDirective } from '../ripple/ripple.directive';
+import { TooltipDirective } from '../tooltip/tooltip.directive';
 import { SpinnerComponent } from '../spinner/spinner.component';
+import type { IconSize } from '../icon/models/icon-size.type';
 import { BUTTON_FAB_ICON_SIZE } from './models/button-fab-icon-size.const';
 import { BUTTON_ICON_SIZE } from './models/button-icon-size.const';
 import { BUTTON_HIT_AREA } from './models/button-hit-area.const';
@@ -41,7 +43,8 @@ import { BUTTON_TYPE } from './models/button-type.const';
  * Triggers an action. Wraps a native `<button>`, so keyboard, focus and form behaviour are
  * the browser's; with `href` it wraps an `<a>` instead (same look, `linkClick` output for
  * routing). Content is the label text. `iconOnly` shows just an icon and requires
- * `ariaLabel`; in dev mode a missing one throws.
+ * `ariaLabel`; in dev mode a missing one throws. An icon-only button also shows a tooltip with
+ * that label (hover and keyboard focus; an explicit `uiTooltip` on the host replaces it).
  *
  * Trigger API: the ARIA inputs land on the inner element, `focus()` / `element` expose it and
  * `UI_FOCUS_TARGET` lets directives on `<ui-button>` (tooltip, menu trigger) reach it.
@@ -54,7 +57,7 @@ import { BUTTON_TYPE } from './models/button-type.const';
  */
 @Component({
   selector: 'ui-button',
-  imports: [IconComponent, NgTemplateOutlet, RippleDirective, SpinnerComponent],
+  imports: [IconComponent, NgTemplateOutlet, RippleDirective, SpinnerComponent, TooltipDirective],
   providers: [{ provide: UI_FOCUS_TARGET, useExisting: ButtonComponent }],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '[class.ui-button-host--block]': 'block()' },
@@ -82,6 +85,8 @@ export class ButtonComponent implements UiFocusTarget {
    * card). The overlay has no ripple (the ripple host clips).
    */
   readonly hitArea = input<ButtonHitArea>(BUTTON_HIT_AREA.Grow);
+  /** Icon size in px instead of the one of the button size (navigation controls use 24). */
+  readonly iconSize = input<IconSize | undefined>(undefined);
   /** Full-width button: the host and the inner element take 100% of the inline size. */
   readonly block = input(false, { transform: booleanAttribute });
   /** Floating action button: 3.5rem square with the popover shadow; use with `iconOnly`. */
@@ -139,12 +144,23 @@ export class ButtonComponent implements UiFocusTarget {
     return classes.join(' ');
   });
 
-  protected readonly iconSize = computed(() =>
-    this.fab() ? BUTTON_FAB_ICON_SIZE : BUTTON_ICON_SIZE[this.size()],
+  protected readonly iconSizePx = computed(
+    () => this.iconSize() ?? (this.fab() ? BUTTON_FAB_ICON_SIZE : BUTTON_ICON_SIZE[this.size()]),
+  );
+  /**
+   * An icon-only button names itself with a tooltip: the text is the accessible name, so the two
+   * never drift. A `uiTooltip` set on `<ui-button>` wins (no second tooltip).
+   */
+  protected readonly autoTooltip = computed(() =>
+    this.iconOnly() && !this.explicitTooltip() ? (this.ariaLabel() ?? '') : '',
   );
   protected readonly singleIcon = computed(() => this.iconLeft() ?? this.iconRight());
 
   private readonly injector = inject(Injector);
+  /** Resolved lazily: `TooltipDirective` itself injects this button, so eager `inject` would loop. */
+  private readonly explicitTooltip = computed(() =>
+    this.injector.get(TooltipDirective, null, { self: true }),
+  );
   private readonly hostElement = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly resizeObserver =
     typeof ResizeObserver === 'undefined'

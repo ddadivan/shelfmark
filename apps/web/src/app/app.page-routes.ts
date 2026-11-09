@@ -2,9 +2,10 @@ import { Routes } from '@angular/router';
 import { LINKS_SCOPE } from './features/links/models/links-scope.const';
 import { APP_PATH } from './models/app-path.const';
 import { authOnly, guestOnly, redirectToSignIn } from './core/auth/auth.guards';
+import { loadLibraryPage } from './features/library/load-library-page';
 import LandingPage from './features/landing/landing.page';
 
-const libraryPage = () => import('./features/library/library.page');
+const libraryPage = loadLibraryPage;
 const settingsPage = () => import('./features/settings/settings.page');
 const sharePage = () => import('./features/share/share.page');
 

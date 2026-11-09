@@ -60,6 +60,8 @@ describe('LandingPage', () => {
     });
 
     expect(scrollIntoView).toHaveBeenCalledTimes(1);
+    // Smooth by default; jsdom has no matchMedia, so reduced motion reads as off.
+    expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
     expect(seen).toEqual([true]);
     expect(root.querySelector('.landing__placeholder')).toBeNull();
   });

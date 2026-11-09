@@ -25,6 +25,24 @@ async function setup(link: LinkResponse = LINK) {
 }
 
 describe('LinkCardComponent', () => {
+  it('has a decorative open bar with the address and "Open", and no extra tab stop', async () => {
+    const { element } = await setup();
+
+    const bar = element.querySelector('.ui-card__overlay');
+    expect(bar?.getAttribute('aria-hidden')).toBe('true');
+    expect(bar?.textContent).toContain('angular.dev/overview');
+    expect(bar?.textContent).toContain('Open');
+    expect(bar?.querySelector('.link-card__open-arrow')?.textContent).toBe('↗');
+    expect(bar?.querySelector('a, button')).toBeNull();
+    expect(element.querySelectorAll('a[href]')).toHaveLength(1);
+  });
+
+  it('has no open bar for a link that cannot be opened', async () => {
+    const { element } = await setup({ ...LINK, url: 'javascript:alert(1)' });
+
+    expect(element.querySelector('.link-card__open')).toBeNull();
+  });
+
   it('shows the captured same-origin image and icon', async () => {
     const { element } = await setup({
       ...LINK,

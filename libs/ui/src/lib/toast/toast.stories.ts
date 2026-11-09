@@ -4,7 +4,7 @@ import { ButtonComponent } from '../button/button.component';
 import type { ToastKind } from './models/toast-kind.type';
 import { ToastComponent } from './toast.component';
 import { ToastService } from './toast.service';
-import { toastShortcutLabel } from './toast-shortcut-label';
+import { toastShortcutKeys, toastShortcutLabel } from './toast-shortcut-label';
 import { THEME, THEME_ATTRIBUTE } from '../theme';
 import { TOAST_KIND } from './models/toast-kind.const';
 
@@ -93,6 +93,7 @@ const meta: Meta<ToastComponent> = {
         component:
           '`ToastService.show({ text, kind, action?, duration? })` renders a `ui-toast` in the toast overlay layer. ' +
           'One toast at a time, the newest replaces the older. It is announced by one persistent polite live region and never takes focus by itself; the timer pauses on hover and focus. ' +
+          "The toast sits at the bottom centre of the viewport on every screen (the author's decision, overriding the spec's bottom-left on desktop). " +
           '`handleShortcut(event)` (Alt+Shift+T, Option+Shift+T on macOS) focuses the action of the toast on screen and focus returns to where it was when the toast closes; `actionHint` is a visually hidden text announced with the toast. ' +
           '`show()` returns `{ dismiss(), closed }`: `closed` is a promise that resolves once with the close reason (`TOAST_CLOSE_REASON`: `action`, `timeout`, `dismissed`, `replaced`).',
       },
@@ -125,12 +126,17 @@ export const Kinds: Story = {
       <ui-toast kind="error" text="Couldn't save. Check your connection." actionLabel="Retry" />`),
 };
 
-/** With the Undo action after a delete. */
+/** With the Undo action after a delete; the key caps show from the tablet breakpoint up. */
 export const WithUndo: Story = {
-  render: () =>
-    staticView(
-      `<ui-toast text="Link deleted" actionLabel="Undo" actionHint="Press Alt+Shift+T to reach Undo" shortcut="Alt+Shift+T" />`,
-    ),
+  render: () => ({
+    moduleMetadata: { imports: [ToastComponent] },
+    props: { keys: toastShortcutKeys(false), macKeys: toastShortcutKeys(true) },
+    template: `
+      <div class="tt-panel tt-static">
+        <ui-toast text="Link deleted" actionLabel="Undo" actionHint="Press Alt+Shift+T to reach Undo" [shortcut]="keys" />
+        <ui-toast text="Link deleted" actionLabel="Undo" actionHint="Press Option+Shift+T to reach Undo" [shortcut]="macKeys" />
+      </div>`,
+  }),
 };
 
 /** Long text wraps; the action stays on the right. */
@@ -147,14 +153,19 @@ export const LongText: Story = {
 export const AllVariants: Story = {
   render: () => ({
     moduleMetadata: { imports: [ToastComponent] },
-    props: { themes: Object.values(THEME) },
+    props: {
+      themes: Object.values(THEME),
+      keys: toastShortcutKeys(false),
+      macKeys: toastShortcutKeys(true),
+    },
     template: `
       <div class="tt-themes">
         @for (theme of themes; track theme) {
           <div [attr.${THEME_ATTRIBUTE}]="theme" class="tt-panel tt-static">
             <ui-toast kind="info" text="Link moved" />
             <ui-toast kind="success" text="Link saved to Work / Angular" actionLabel="View" />
-            <ui-toast kind="info" text="Link deleted" actionLabel="Undo" actionHint="Press Alt+Shift+T to reach Undo" shortcut="Alt+Shift+T" />
+            <ui-toast kind="info" text="Link deleted" actionLabel="Undo" actionHint="Press Alt+Shift+T to reach Undo" [shortcut]="keys" />
+            <ui-toast kind="info" text="Link deleted" actionLabel="Undo" actionHint="Press Option+Shift+T to reach Undo" [shortcut]="macKeys" />
             <ui-toast kind="error" text="Couldn't save. Check your connection." actionLabel="Retry" />
           </div>
         }

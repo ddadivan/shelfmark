@@ -6,6 +6,23 @@
   min-height: 100dvh;
   background: var(--bg);
   color: var(--text);
+
+  // Height of the header, shared with the hero: the first screen (header + hero) is exactly one
+  // viewport tall, so the hero takes `100svh` minus this. A fixed block size (not content-sized)
+  // keeps it exact from the first frame.
+  --landing-header-height: #{rem(72px)};
+
+  @include tablet-up {
+    --landing-header-height: #{rem(96px)};
+  }
+
+  @include landing.wide {
+    --landing-header-height: #{rem(96px)};
+  }
+
+  @include landing.xwide {
+    --landing-header-height: #{rem(108px)};
+  }
 }
 
 // Reserves space for the deferred sections, so nothing below the hero jumps when they arrive.
@@ -26,16 +43,15 @@
 
 .landing__about {
   @include landing.wrap;
+  @include landing.section-pad;
 
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-8);
   align-items: start;
-  padding-block: rem(40px);
 
   @include desktop {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: rem(64px);
-    padding-block: rem(88px);
   }
 }

@@ -54,6 +54,49 @@ test.describe('tags (mock API)', () => {
       await expect(sidebar(page).getByRole('button', { name: 'New tag' })).toBeFocused();
     });
 
+    test('an outside click closes the new tag field without saving and focuses "+"', async ({
+      page,
+    }) => {
+      await gotoWithSidebar(page, '/links');
+      const add = sidebar(page).getByRole('button', { name: 'New tag' });
+      const field = sidebar(page).getByRole('textbox', { name: 'New tag' });
+
+      await add.click();
+      await field.fill('unsaved-draft');
+      await sidebar(page).getByRole('heading', { name: 'Tags' }).click();
+
+      await expect(field).toHaveCount(0);
+      await expect(chip(page, 'unsaved-draft')).toHaveCount(0);
+      await expect(add).toBeFocused();
+    });
+
+    test('clicking "+" again closes the open field once and it opens again on the next click', async ({
+      page,
+    }) => {
+      await gotoWithSidebar(page, '/links');
+      const add = sidebar(page).getByRole('button', { name: 'New tag' });
+      const field = sidebar(page).getByRole('textbox', { name: 'New tag' });
+
+      await add.click();
+      await expect(field).toBeVisible();
+      await add.click();
+      await expect(field).toHaveCount(0);
+      await add.click();
+      await expect(field).toBeVisible();
+    });
+
+    test('an outside click closes an in-place rename without saving', async ({ page }) => {
+      await gotoWithSidebar(page, '/links');
+      await pickTagMenuItem(page, DOCS, 'Rename');
+      const field = sidebar(page).getByRole('textbox', { name: 'Tag name' });
+      await field.fill('draft-name');
+      await sidebar(page).getByRole('heading', { name: 'Tags' }).click();
+
+      await expect(field).toHaveCount(0);
+      await expect(chip(page, DOCS)).toBeVisible();
+      await expect(chip(page, 'draft-name')).toHaveCount(0);
+    });
+
     test('shows an error when creating fails', async ({ page }) => {
       await gotoWithSidebar(page, '/links');
 

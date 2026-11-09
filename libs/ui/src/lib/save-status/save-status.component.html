@@ -16,6 +16,7 @@
       @case (SAVE_STATUS_STATE.Saved) {
         <ui-icon
           name="check"
+          [size]="ICON_SIZE.Md"
           class="ui-save-status__icon"
           animate.leave="ui-save-status__icon--leave"
         />
@@ -23,6 +24,7 @@
       @case (SAVE_STATUS_STATE.Error) {
         <ui-icon
           name="error"
+          [size]="ICON_SIZE.Md"
           class="ui-save-status__icon"
           animate.leave="ui-save-status__icon--leave"
         />

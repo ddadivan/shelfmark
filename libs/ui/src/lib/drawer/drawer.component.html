@@ -1,4 +1,9 @@
-<div class="ui-drawer" [class.ui-drawer--enter]="!leaving()" [class.ui-drawer--leave]="leaving()">
+<div
+  class="ui-drawer"
+  [class.ui-drawer--end]="side() === DRAWER_SIDE.End"
+  [class.ui-drawer--enter]="!leaving()"
+  [class.ui-drawer--leave]="leaving()"
+>
   <div class="ui-drawer__head">
     <div class="ui-drawer__head-slot"><ng-content select="[slot=head]" /></div>
     <ui-button

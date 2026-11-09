@@ -18,7 +18,7 @@
     @if (indeterminate()) {
       <span class="ui-checkbox__dash"></span>
     } @else {
-      <ui-icon class="ui-checkbox__check" name="check" />
+      <ui-icon class="ui-checkbox__check" name="check" [size]="ICON_SIZE.Sm" />
     }
   </span>
   <span class="ui-checkbox__text">{{ label() }}</span>

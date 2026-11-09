@@ -9,21 +9,36 @@
 .landing-finale {
   @include landing.wrap;
   @include landing.reveal;
+  @include landing.section-pad;
 
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-6);
   align-items: center;
   justify-content: space-between;
-  padding-block: rem(40px);
+}
 
-  @include tablet-up {
-    padding-block: rem(56px);
-  }
+.landing-finale__copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: rem(640px);
 }
 
 .landing-finale__title {
   @include landing.section-title;
+}
+
+.landing-finale__lead {
+  margin: 0;
+  font-size: rem(16px);
+  line-height: rem(24px);
+  color: var(--text-muted);
+
+  @include tablet-up {
+    font-size: rem(18px);
+    line-height: rem(28px);
+  }
 }
 
 .landing-finale__actions {

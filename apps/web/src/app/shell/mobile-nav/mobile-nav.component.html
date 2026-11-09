@@ -1,24 +1,4 @@
 <ui-drawer [closeLabel]="'shell.drawer.close' | transloco">
   <ui-logo slot="head" />
   <app-sidebar showRecent (recentRequested)="openRecent()" />
-  <div slot="foot" class="mobile-nav__foot">
-    @if (auth.user(); as user) {
-      <ui-avatar [name]="user.name" [src]="user.image ?? undefined" size="sm" />
-      <span class="mobile-nav__name">{{ user.name }}</span>
-      <ui-button
-        variant="ghost"
-        iconOnly
-        [iconLeft]="themeIcon()"
-        [ariaLabel]="'shell.drawer.theme' | transloco"
-        (click)="toggleTheme()"
-      />
-      <ui-button
-        variant="ghost"
-        iconOnly
-        iconLeft="settings"
-        [ariaLabel]="'shell.settings' | transloco"
-        (click)="openSettings()"
-      />
-    }
-  </div>
 </ui-drawer>

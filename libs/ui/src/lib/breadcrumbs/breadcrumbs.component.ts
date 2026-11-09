@@ -19,6 +19,7 @@ import { BREADCRUMB_ENTRY_KIND } from './models/breadcrumb-entry-kind.const';
 import { BREADCRUMB_COARSE_QUERY } from './models/breadcrumb-coarse-query.const';
 import type { BreadcrumbClick } from './models/breadcrumb-click.interface';
 import type { BreadcrumbItem } from './models/breadcrumb-item.interface';
+import { ICON_SIZE } from '../icon/models/icon-size.const';
 
 /**
  * Where the current folder sits, with a jump to any level above. A `nav` (named by `ariaLabel`)
@@ -55,6 +56,7 @@ import type { BreadcrumbItem } from './models/breadcrumb-item.interface';
   styleUrl: './breadcrumbs.component.scss',
 })
 export class BreadcrumbsComponent {
+  protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly BREADCRUMB_ENTRY_KIND = BREADCRUMB_ENTRY_KIND;
 
   /** The trail from the root to the current level (last). */

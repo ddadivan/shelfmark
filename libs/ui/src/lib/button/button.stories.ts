@@ -94,6 +94,19 @@ export const IconOnly: Story = {
   },
 };
 
+/** An icon-only button shows a tooltip with its label on hover and keyboard focus (Esc closes it). */
+export const IconOnlyTooltip: Story = {
+  render: () => ({
+    moduleMetadata: { imports: [ButtonComponent] },
+    template: `
+      <div style="display: flex; gap: 1rem; padding: 3rem 1rem 1rem">
+        <ui-button variant="ghost" iconOnly iconLeft="search" ariaLabel="Search" />
+        <ui-button variant="ghost" iconOnly iconLeft="star" ariaLabel="Add to favorites" />
+        <ui-button variant="secondary" size="sm" iconOnly iconLeft="more" ariaLabel="More actions" />
+      </div>`,
+  }),
+};
+
 /** Floating action button (phone "Add link"): 3.5rem, popover shadow, 24px icon. */
 export const Fab: Story = {
   args: {

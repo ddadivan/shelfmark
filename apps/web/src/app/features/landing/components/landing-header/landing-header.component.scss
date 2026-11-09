@@ -12,18 +12,22 @@
   gap: var(--space-4);
   align-items: center;
   justify-content: space-between;
-  padding-block: var(--space-4);
-
-  @include tablet-up {
-    padding-block: var(--space-6);
-  }
+  block-size: var(--landing-header-height, #{rem(72px)});
 }
 
 .landing-header__logo {
   --ui-logo-size: #{rem(24px)};
 
   @include tablet-up {
-    --ui-logo-size: #{rem(28px)};
+    --ui-logo-size: #{rem(32px)};
+  }
+
+  @include landing.wide {
+    --ui-logo-size: #{rem(34px)};
+  }
+
+  @include landing.xwide {
+    --ui-logo-size: #{rem(40px)};
   }
 }
 
@@ -35,11 +39,23 @@
   min-block-size: rem(36px);
   gap: var(--space-6);
   align-items: center;
+
+  // The sign-in button is a `ui-button`: it grows with the wide breakpoints like the hero buttons.
+  @include landing.zoom(1.1, 1.2);
+
+  @include landing.wide {
+    gap: var(--space-8);
+  }
 }
 
 .landing-header__link {
   @include type(label);
   @include landing.text-link;
+
+  @include tablet-up {
+    font-size: rem(15px);
+    line-height: rem(22px);
+  }
 
   // Anchors and GitHub are secondary on a phone; sign-in stays.
   @include phone {

@@ -28,6 +28,27 @@ test.describe('settings (mock auth)', () => {
     await expect(main.getByText(MOCK_USER.email)).toBeVisible();
   });
 
+  test('the sections are grouped with their own padding, "Welcome tour" shows once', async ({
+    page,
+  }) => {
+    await seedSession(page);
+    await page.goto('/settings');
+    const main = page.getByRole('main');
+
+    await expect(
+      main.getByRole('heading', { level: 2, name: /^(Appearance|Your data|Welcome tour)$/ }),
+    ).toHaveCount(3);
+    await expect(main.getByText('Welcome tour', { exact: true })).toHaveCount(1);
+    await expect(main.getByText('More languages are coming')).toBeVisible();
+    await expect(main.getByRole('link', { name: 'Privacy policy' })).toHaveAttribute(
+      'href',
+      '/privacy',
+    );
+    await expect(main.getByText('Shelfmark v1.0')).toBeVisible();
+    const section = main.locator('app-settings-section').filter({ hasText: 'Appearance' });
+    await expect(section).not.toHaveCSS('padding-left', '0px');
+  });
+
   test('the theme choice applies at once and survives a reload', async ({ page }) => {
     await seedSession(page);
     await page.goto('/settings');

@@ -10,7 +10,11 @@
   border-radius: var(--radius-lg);
 
   @include tablet-up {
-    padding: var(--space-5);
+    padding: var(--space-6);
+  }
+
+  @include desktop {
+    padding: rem(24px) rem(32px);
   }
 }
 
@@ -22,8 +26,49 @@
   color: var(--danger);
 }
 
+// Title (and hint) at the start, an optional action at the end; the action wraps under the text
+// on narrow widths.
+.settings-section__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-4);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.settings-section__text {
+  flex: 1 1 rem(240px);
+  min-width: 0;
+}
+
 .settings-section__title {
   @include type(heading);
 
   margin: 0;
+
+  &--hidden {
+    @include visually-hidden;
+  }
+}
+
+.settings-section__hint {
+  @include type(caption);
+
+  margin: var(--space-1) 0 0;
+  color: var(--text-muted);
+}
+
+.settings-section__action {
+  display: flex;
+
+  &:empty {
+    display: none;
+  }
+}
+
+// Phone: the action takes the whole row (a thumb-sized target, MobileSettings).
+@include phone {
+  .settings-section__action {
+    flex: 1 1 100%;
+  }
 }

@@ -11,6 +11,7 @@ import type { IconName } from '../icon/models/icon-name.type';
 import type { NoticeKind } from './models/notice-kind.type';
 import { NOTICE_KIND } from './models/notice-kind.const';
 import { NOTICE_KIND_ICON } from './models/notice-kind-icon.const';
+import { ICON_SIZE } from '../icon/models/icon-size.const';
 
 /**
  * Inline message in a form or page (duplicate-link warning, preview errors). Always an icon
@@ -39,6 +40,7 @@ import { NOTICE_KIND_ICON } from './models/notice-kind-icon.const';
   styleUrl: './notice.component.scss',
 })
 export class NoticeComponent {
+  protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly NOTICE_KIND = NOTICE_KIND;
 
   /** `warning`, `danger` or `info`. */

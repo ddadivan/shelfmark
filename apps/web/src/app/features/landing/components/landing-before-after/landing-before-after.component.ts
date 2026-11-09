@@ -7,9 +7,8 @@ import {
   signal,
 } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { ButtonComponent, ChipComponent, FaviconComponent } from '@shelfmark/ui';
+import { ChipComponent, FaviconComponent } from '@shelfmark/ui';
 import { LandingBeforeSceneComponent } from '../landing-before-scene/landing-before-scene.component';
-import { LandingMotionService } from '../../landing-motion.service';
 import { LandingLoopGateDirective } from '../../directives/landing-loop-gate.directive';
 import { LANDING_FOLDER } from '../../models/landing-folder.const';
 import type { LandingFolder } from '../../models/landing-folder.type';
@@ -22,15 +21,15 @@ import { LandingRevealDirective } from '../../directives/landing-reveal.directiv
 /**
  * "The same links, before and after": the scattered mess next to the shelf. `activeFolder` is the
  * folder the shelf shows; while the block is on screen in a visible tab (and motion is allowed)
- * it steps through `LANDING_FOLDER_CYCLE` over `LANDING_LOOP.ShelfCycleMs`. Otherwise the
- * static frame (Clothes) stays.
+ * and the pointer or focus is not inside it, it steps through `LANDING_FOLDER_CYCLE` forever,
+ * one folder per `LANDING_LOOP.ShelfCycleMs / cycle length`. Otherwise it holds its frame, and
+ * under reduced motion the static frame (Clothes) stays.
  */
 @Component({
   selector: 'app-landing-before-after',
   imports: [
     LandingRevealDirective,
     TranslocoPipe,
-    ButtonComponent,
     ChipComponent,
     FaviconComponent,
     LandingBeforeSceneComponent,
@@ -47,18 +46,20 @@ export class LandingBeforeAfterComponent {
   /** Id of the folder whose links are listed (`LANDING_TREE_ROWS`). */
   protected readonly activeFolder = signal<LandingFolder>(LANDING_FOLDER.Clothes);
 
-  protected readonly motion = inject(LandingMotionService);
-
-  /** WCAG 2.2.2: the user can pause the loops; hover and focus inside the scenes pause them too. */
-  protected readonly paused = signal(false);
-  private readonly engaged = signal(false);
-  protected readonly stopped = computed(() => this.paused() || this.engaged());
+  private readonly hovered = signal(false);
+  private readonly focused = signal(false);
+  /** The pointer is over the section or focus is inside it: both loops hold their frame. */
+  protected readonly paused = computed(() => this.hovered() || this.focused());
 
   constructor() {
     const gate = inject(LandingLoopGateDirective);
     const stepMs = LANDING_LOOP.ShelfCycleMs / LANDING_FOLDER_CYCLE.length;
+    // DELIBERATE DECISION BY THE AUTHOR: this loop goes on forever and has no pause button
+    // (WCAG 2.2.2 pause control intentionally omitted). The mitigations are: it stays static
+    // under reduced motion, it runs only while on screen in a visible tab, and it pauses while
+    // the pointer is over the section or focus is inside it.
     effect((onCleanup) => {
-      if (!gate.active() || this.stopped()) {
+      if (!gate.active() || this.paused()) {
         return;
       }
       const timer = setInterval(() => this.activeFolder.update(nextFolder), stepMs);
@@ -66,23 +67,17 @@ export class LandingBeforeAfterComponent {
     });
   }
 
-  protected togglePaused(): void {
-    this.paused.update((value) => !value);
+  protected setHovered(value: boolean): void {
+    this.hovered.set(value);
   }
 
-  protected engage(engaged: boolean): void {
-    this.engaged.set(engaged);
+  protected onFocusIn(): void {
+    this.focused.set(true);
   }
 
-  protected leaveFocus(event: FocusEvent): void {
-    const area = event.currentTarget;
-    if (
-      !(area instanceof Node) ||
-      !(event.relatedTarget instanceof Node) ||
-      !area.contains(event.relatedTarget)
-    ) {
-      this.engaged.set(false);
-    }
+  protected onFocusOut(event: FocusEvent, container: HTMLElement): void {
+    const next = event.relatedTarget;
+    this.focused.set(next instanceof Node && container.contains(next));
   }
 }
 

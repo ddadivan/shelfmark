@@ -1,5 +1,17 @@
 @use 'ui' as *;
 
+// The list is the only part that scrolls: the command list is a flex column with a height cap
+// (the viewport minus the dialog's own margin, padding and title), so the field and the hint
+// footer stay put and the list takes the rest (`ui-command-list__list`: `flex: 1`-like shrink,
+// `min-height: 0`, `overflow-y: auto`, `overscroll-behavior: contain`). Without the cap the list
+// never overflowed: the dialog body scrolled the whole command list, and the wheel over the list
+// reached nothing because the non-overflowing list contained the scroll chain.
+ui-command-list {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - #{rem(200px)} - env(safe-area-inset-bottom));
+}
+
 .search-dialog__empty {
   @include type(body);
 

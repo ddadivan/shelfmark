@@ -1,5 +1,5 @@
 @if (showIcon()) {
-  <ui-icon class="ui-notice__icon" [name]="iconName()" [size]="20" />
+  <ui-icon class="ui-notice__icon" [name]="iconName()" [size]="ICON_SIZE.Md" />
 }
 <div class="ui-notice__body"><ng-content /></div>
 <div class="ui-notice__action"><ng-content select="[uiNoticeAction]" /></div>

@@ -26,11 +26,11 @@ import { LandingChatShelfComponent } from './landing-chat-shelf/landing-chat-she
  * The hero demo: a phone with the "Saved Messages" chat and a button that moves its links onto
  * the shelf.
  *
- * Motion (story 20): the chat is an endless feed. Every `MessageIntervalMs` the track rises by one
- * slot (`transform` only); the list is the feed twice, so after one lap the track snaps back
- * unseen. The loop runs only while the block is in the viewport and the tab is visible. Hover
- * and focus pause it only over the phone itself: the buttons below sit outside that area, so
- * pressing "Pause" and pressing it again always resumes the feed (WCAG 2.2.2). With
+ * Motion (story 20): the chat plays its messages once. Every `MessageIntervalMs` the track rises
+ * by one slot (`transform` only); the list is the feed twice, so after one lap the track shows the
+ * same full chat as at the start and stops there. The feed runs only while the block is in the
+ * viewport and the tab is visible. It is finite, so no pause control is needed (WCAG 2.2.2 asks
+ * for one only for moving content that lasts more than five seconds and has no end). With
  * `prefers-reduced-motion` nothing moves: the chat shows its five links as a static frame and
  * the swap to the shelf is instant.
  */
@@ -76,10 +76,6 @@ export class LandingChatComponent {
   private readonly rendered = signal<number>(LANDING_CHAT_TIMING.BatchSize);
   private readonly phase = signal<LandingChatPhase>(LANDING_CHAT_PHASE.Chat);
   private readonly inView = signal(false);
-  protected readonly hovered = signal(false);
-  protected readonly focused = signal(false);
-  /** The visitor stopped the feed with the pause button (WCAG 2.2.2). */
-  protected readonly userPaused = signal(false);
   private clearTimer: ReturnType<typeof setTimeout> | undefined;
 
   /** True once the links are on the shelf instead of in the chat. */
@@ -89,17 +85,18 @@ export class LandingChatComponent {
   /** The endless feed is rendered; otherwise the static final frame. */
   protected readonly animated = computed(() => !this.motion.reducedMotion());
 
-  /** How many messages the track has risen; `0..feedSize`. */
+  /** How many messages the track has risen; `0..feedSize`, where it stays. */
   protected readonly step = signal(0);
-  /** The track jumps back to the start without a transition. */
+  /** The track jumps to its final frame without a transition (coming back from the shelf). */
   protected readonly snapping = signal(false);
+
+  /** The feed has played all its messages and stays still. */
+  protected readonly finished = computed(() => this.step() >= this.feedSize);
 
   protected readonly running = computed(
     () =>
       this.animated() &&
-      !this.userPaused() &&
-      !this.hovered() &&
-      !this.focused() &&
+      !this.finished() &&
       this.inView() &&
       this.rendered() >= this.feedSize * 2 &&
       this.motion.tabVisible() &&
@@ -120,7 +117,7 @@ export class LandingChatComponent {
     });
     this.destroyRef.onDestroy(() => clearTimeout(this.clearTimer));
 
-    // One timer while the feed may run; the cleanup stops it on pause and on destroy.
+    // One timer while the feed may run; the cleanup stops it when it leaves the screen, ends or is destroyed.
     effect((onCleanup) => {
       if (!this.running()) {
         return;
@@ -138,9 +135,9 @@ export class LandingChatComponent {
   protected toggle(): void {
     clearTimeout(this.clearTimer);
     if (this.phase() !== LANDING_CHAT_PHASE.Chat) {
-      // Back in the chat the feed starts from its first frame, so it never waits on a stale lap.
-      this.step.set(0);
-      this.snapping.set(false);
+      // Back in the chat the feed is shown complete and still: it does not play a second time.
+      this.snapping.set(true);
+      this.step.set(this.feedSize);
       this.phase.set(LANDING_CHAT_PHASE.Chat);
     } else if (this.animated()) {
       this.phase.set(LANDING_CHAT_PHASE.Clearing);
@@ -153,28 +150,9 @@ export class LandingChatComponent {
     }
   }
 
-  protected togglePause(): void {
-    this.userPaused.update((value) => !value);
-  }
-
-  /** After the last rise of a lap the track is back at the start: jump there, nobody sees it. */
-  protected onRiseEnd(event: TransitionEvent): void {
-    if (event.target === event.currentTarget && this.step() >= this.feedSize) {
-      this.snapping.set(true);
-      this.step.set(0);
-    }
-  }
-
   private advance(): void {
-    if (this.step() >= this.feedSize) {
-      // `transitionend` did not arrive (the tab was throttled): recover instead of running out
-      // of messages.
-      this.snapping.set(true);
-      this.step.set(0);
-      return;
-    }
     this.snapping.set(false);
-    this.step.update((value) => value + 1);
+    this.step.update((value) => Math.min(value + 1, this.feedSize));
   }
 
   private fillFeed(): void {

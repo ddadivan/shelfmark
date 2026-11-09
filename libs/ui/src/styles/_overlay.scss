@@ -48,10 +48,3 @@ $overlay-layers: (
     pointer-events: none;
   }
 }
-
-// The hidden element `uiTooltip` points `aria-describedby` at; it lives in `<body>`.
-@mixin tooltip-description {
-  .ui-tooltip-description {
-    @include visually-hidden;
-  }
-}

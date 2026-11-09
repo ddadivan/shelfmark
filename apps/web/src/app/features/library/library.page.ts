@@ -4,8 +4,12 @@ import {
   computed,
   DestroyRef,
   effect,
+  ElementRef,
   inject,
   input,
+  signal,
+  untracked,
+  viewChild,
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
@@ -16,6 +20,7 @@ import {
   ButtonComponent,
   ChipComponent,
   EmptyStateComponent,
+  ICON_SIZE,
   LoadMoreComponent,
   MenuComponent,
   MenuItemComponent,
@@ -23,6 +28,7 @@ import {
   MenuTriggerDirective,
   NoticeComponent,
   ProgressBarComponent,
+  loaderVisible,
   SegmentedControlComponent,
   SKELETON_SHAPE,
   SkeletonComponent,
@@ -30,8 +36,9 @@ import {
   type BreadcrumbItem,
   type SegmentedOption,
 } from '@shelfmark/ui';
-import { EXPORT_FORMAT, type ExportFormat } from '@shelfmark/contracts';
+import { EXPORT_FORMAT, type ExportFormat, type LinkResponse } from '@shelfmark/contracts';
 import { Router } from '@angular/router';
+import { pluralKey } from '../../core/i18n/plural-key';
 import { ExportActionsService } from '../export/export-actions.service';
 import { exportScopeOf } from '../export/export-url';
 import { TAG_QUERY_PARAM } from '../tags/models/tag-query-param.const';
@@ -57,12 +64,18 @@ import { UI_VIEW } from '../../stores/models/ui-view.const';
 import { isUiView } from '../../stores/is-ui-view';
 import { UiStore } from '../../stores/ui.store';
 import { EMPTY_KEYS } from './models/empty-keys.const';
+import { scrollFeedForKey } from './feed-keyboard-scroll';
 import { SORT_OPTION_KEYS } from './models/sort-option-keys.const';
 import { SORT_OPTIONS } from './models/sort-options.const';
 import { VIEW_OPTION_KEYS } from './models/view-option-keys.const';
 
 /** Number of placeholders shown while the first page loads. */
 const SKELETON_COUNT = 8;
+
+interface LastShown {
+  items: readonly LinkResponse[];
+  hasMore: boolean;
+}
 
 /**
  * The links feed of one scope (all, unsorted, favorites; the route data sets `scope`): a toolbar
@@ -93,6 +106,7 @@ const SKELETON_COUNT = 8;
   templateUrl: './library.page.html',
   styleUrl: './library.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '(document:keydown)': 'onKeydown($event)' },
 })
 export default class LibraryPage {
   protected readonly store = inject(LinksStore);
@@ -119,6 +133,8 @@ export default class LibraryPage {
   protected readonly EXPORT_FORMAT = EXPORT_FORMAT;
   protected readonly LINKS_SCOPE = LINKS_SCOPE;
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
+  protected readonly ICON_SIZE = ICON_SIZE;
+  protected readonly pluralKey = pluralKey;
   protected readonly SKELETON_COUNT = SKELETON_COUNT;
   protected readonly SORT_OPTIONS = SORT_OPTIONS;
   protected readonly SORT_OPTION_KEYS = SORT_OPTION_KEYS;
@@ -175,15 +191,43 @@ export default class LibraryPage {
   });
   /** What "This view" exports; `undefined` when the view has no export equivalent. */
   protected readonly viewScope = computed(() => exportScopeOf(this.filter()));
+  /** The last list that was fully loaded; it stays on screen while the next view loads. */
+  private readonly lastShown = signal<LastShown>({ items: [], hasMore: false });
+  /**
+   * The view changed and its first page is on the way: the store has no links yet, the cards of
+   * the previous view stay (dimmed, inert) instead of a skeleton.
+   */
+  protected readonly stale = computed(
+    () =>
+      this.store.loading() &&
+      !this.store.loaded() &&
+      !this.store.error() &&
+      this.store.count() === 0 &&
+      this.lastShown().items.length > 0,
+  );
+  /** The skeleton replaces stale cards only when the load takes longer than the loader delay. */
+  protected readonly staleSkeleton = loaderVisible(this.stale);
+  /** Bumped when a new first page arrives; the list is rendered again and fades in. */
+  protected readonly batch = signal(0);
+  protected readonly batches = computed(() => [this.batch()]);
+  protected readonly shownLinks = computed(() =>
+    this.stale() ? this.lastShown().items : this.store.entities(),
+  );
+  protected readonly shownCount = computed(() => this.shownLinks().length);
+  protected readonly shownHasMore = computed(() =>
+    this.stale() ? this.lastShown().hasMore : this.store.hasMore(),
+  );
   protected readonly firstLoad = computed(
-    () => !this.store.loaded() && !this.store.error() && this.store.count() === 0,
+    () => !this.store.loaded() && !this.store.error() && this.store.count() === 0 && !this.stale(),
   );
   protected readonly failed = computed(() => this.store.error() && this.store.count() === 0);
   protected readonly empty = computed(
     () => this.store.loaded() && !this.store.loading() && this.store.count() === 0,
   );
   protected readonly refetching = computed(() => this.store.loading() && this.store.loaded());
-  protected readonly showLinks = computed(() => this.store.count() > 0);
+  protected readonly showLinks = computed(() => this.store.count() > 0 || this.stale());
+  /** Sort and view switch: with links, and while the first page loads (so the toolbar keeps its size). */
+  protected readonly showControls = computed(() => this.showLinks() || this.firstLoad());
 
   private readonly labels = toSignal(
     combineLatest([
@@ -243,7 +287,39 @@ export default class LibraryPage {
       ),
     ),
   );
+  /** The scroll area of the feed (the page itself scrolls on a phone). */
+  private readonly scroller = viewChild<ElementRef<HTMLElement>>('scroller');
+
   constructor() {
+    // Remember the last settled list (for stale-while-loading), and start a fade-in batch when a
+    // new first page replaces the old one.
+    let wasLoading = false;
+    effect(() => {
+      const settled = this.store.loaded() && !this.store.loading();
+      const items = this.store.entities();
+      const hasMore = this.store.hasMore();
+      const loading = this.store.loading();
+      untracked(() => {
+        if (settled) {
+          this.lastShown.set({ items, hasMore });
+        }
+        if (wasLoading && !loading) {
+          this.batch.update((value) => value + 1);
+        }
+        wasLoading = loading;
+      });
+    });
+    // A new view, sort or filter starts at the top of its list (the page scroll is reset by the
+    // router; this area is not the page).
+    effect(() => {
+      this.filter();
+      untracked(() => {
+        const area = this.scroller()?.nativeElement;
+        if (area) {
+          area.scrollTop = 0;
+        }
+      });
+    });
     effect(() => {
       const text = this.pageTitle();
       if (text !== undefined && this.heading() !== undefined) {
@@ -254,6 +330,14 @@ export default class LibraryPage {
     // The sidebar loads the folders too (the phone has none yet); the call is shared.
     void this.folders.load();
     this.store.setFilter(this.filter);
+  }
+
+  /** Page keys with nothing focused scroll the feed area (the page itself does not scroll). */
+  protected onKeydown(event: KeyboardEvent): void {
+    const area = this.scroller()?.nativeElement;
+    if (area) {
+      scrollFeedForKey(area, event);
+    }
   }
 
   protected async openUnsorted(): Promise<void> {

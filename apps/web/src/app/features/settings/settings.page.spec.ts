@@ -87,6 +87,25 @@ describe('SettingsPage', () => {
     expect(root.querySelector('input[type="text"], input[type="email"]')).toBeNull();
   });
 
+  it('groups the page as designed: sections, language, tour once, privacy and version', async () => {
+    const { root } = await setup();
+    const headings = Array.from(root.querySelectorAll('h2')).map((h) => h.textContent?.trim());
+
+    expect(headings).toEqual([
+      'Account',
+      'Your data',
+      'Appearance',
+      'Welcome tour',
+      'Delete account',
+    ]);
+    expect(root.textContent?.match(/Welcome tour/g)).toHaveLength(1);
+    expect(root.textContent).toContain('Export your data');
+    expect(root.textContent).toContain('More languages are coming');
+    expect(root.textContent).toContain('English');
+    expect(root.querySelector('a[href="/privacy"]')?.textContent).toContain('Privacy policy');
+    expect(root.textContent).toContain('Shelfmark v1.0');
+  });
+
   it('applies and persists the theme choice, and shows the current one', async () => {
     const { root, theme, harness } = await setup();
 

@@ -35,6 +35,7 @@ import { selectedRow, selectRows } from './select-rows';
 import { KEYBOARD_KEY } from '../keyboard';
 import { OVERLAY_LAYER } from '../overlay/models/overlay-layer.const';
 import { MENU_ALIGN } from '../menu/models/menu-align.const';
+import { ICON_SIZE } from '../icon/models/icon-size.const';
 
 /**
  * Picks one value from a nested list (the folder of a link). The trigger is an Angular Aria
@@ -71,6 +72,7 @@ import { MENU_ALIGN } from '../menu/models/menu-align.const';
   styleUrl: './select.component.scss',
 })
 export class SelectComponent extends UiFieldControl implements FormValueControl<string | null> {
+  protected readonly ICON_SIZE = ICON_SIZE;
   /** Id of the chosen option, or `null` for the empty option or no choice. */
   readonly value = model<string | null>(null);
   /** The option tree. */

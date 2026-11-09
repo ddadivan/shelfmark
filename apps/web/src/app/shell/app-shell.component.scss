@@ -1,8 +1,18 @@
 @use 'ui' as *;
 
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
   min-height: 100dvh;
+
+  // From the tablet width the shell is exactly the viewport (banner and header included) and the
+  // page itself never scrolls: the sidebar, the main column and the recent panel scroll on their
+  // own. A phone keeps the natural page scroll (drawer layout).
+  @include tablet-up {
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
 }
 
 .shell__header {
@@ -73,24 +83,28 @@
   width: rem(248px);
   background: var(--surface);
   border-inline-end: 1px solid var(--border);
-}
 
-// The recent panel needs room: it exists from the desktop breakpoint up.
-.shell__recent-toggle {
-  display: none;
-
-  @include desktop {
-    display: inline-flex;
+  @include tablet-up {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
   }
 }
 
+// The body takes the height left under the header, so the sidebar surface, the main column and the
+// recent panel run to the bottom of the viewport whatever the content height.
 .shell__body {
   display: flex;
-  align-items: flex-start;
+  flex: 1;
+  align-items: stretch;
+  min-height: 0;
 }
 
 .shell__main {
+  display: flex;
   flex: 1;
+  flex-direction: column;
   min-width: 0;
   padding: var(--space-6) var(--space-4);
 
@@ -100,7 +114,13 @@
   }
 
   @include tablet-up {
+    min-height: 0;
     padding-inline: var(--space-6);
+
+    // Pages that are taller than the column (settings, privacy) scroll here; the library fits
+    // and scrolls only its list.
+    overflow-y: auto;
+    scrollbar-gutter: stable;
   }
 }
 
@@ -111,6 +131,10 @@
     display: block;
     flex: none;
     width: rem(280px);
+    min-height: 0;
     padding: var(--space-6) var(--space-6) var(--space-6) 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
   }
 }

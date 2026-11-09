@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, linkedSignal } from '@angular/core';
 import { IconComponent } from '../icon/icon.component';
+import { ICON_SIZE } from '../icon/models/icon-size.const';
 
 /**
  * The site's small icon, 16 px in a `radius-sm` square. Shows `src` when it loads; without
@@ -24,6 +25,7 @@ import { IconComponent } from '../icon/icon.component';
   styleUrl: './favicon.component.scss',
 })
 export class FaviconComponent {
+  protected readonly ICON_SIZE = ICON_SIZE;
   /** Image URL of the site's icon. */
   readonly src = input<string>();
   /** Fallback letter; only the first character is shown. Without it the link icon is shown. */

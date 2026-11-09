@@ -1,7 +1,8 @@
 @use '../../styles/ui' as *;
 
-// Bottom-centre on phones, bottom-left from the tablet breakpoint up. The overlay pane spans the
-// viewport edge and lets pointer events through; the toast itself takes them.
+// Bottom centre on every screen. This is the author's decision and overrides the Toast README
+// (bottom-left on desktop). The overlay pane spans the viewport edge and lets pointer events
+// through; the toast itself takes them.
 :host {
   box-sizing: border-box;
   display: flex;
@@ -9,12 +10,15 @@
   gap: var(--space-2);
   align-items: center;
   width: 100%;
-  padding: var(--space-4) var(--space-4) max(var(--space-4), env(safe-area-inset-bottom));
+
+  // `--ui-toast-offset` lets the app lift the toast above its own floating control (the phone
+  // add button); the default is the plain edge gap.
+  padding: var(--space-4) var(--space-4)
+    max(var(--ui-toast-offset, var(--space-4)), env(safe-area-inset-bottom));
   pointer-events: none;
 
   @include tablet-up {
-    align-items: flex-start;
-    padding: var(--space-6);
+    padding-block-end: max(var(--space-6), env(safe-area-inset-bottom));
   }
 }
 

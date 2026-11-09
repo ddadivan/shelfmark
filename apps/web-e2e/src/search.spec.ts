@@ -1,4 +1,4 @@
-import { type Page } from '@playwright/test';
+import { type Locator, type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
 
@@ -93,6 +93,39 @@ test.describe('search (mock API)', () => {
       const popup = await opened;
       await popup.waitForURL(/example\.com\/recipes\/pasta/);
       await expect(searchField(page)).toHaveCount(0);
+    });
+
+    test('the wheel over the results scrolls only the list, not the field, title or footer', async ({
+      page,
+    }) => {
+      // Low enough that the results overflow the dialog.
+      await page.setViewportSize({ width: page.viewportSize()?.width ?? 1280, height: 480 });
+      await page.goto('/links');
+      await expect(searchButton(page)).toBeVisible();
+      await searchButton(page).click();
+      await searchField(page).fill('article');
+      const list = page.getByRole('listbox', { name: 'Search results' });
+      await expect(list.getByRole('option').first()).toBeVisible();
+      expect(await list.evaluate((el) => el.scrollHeight > el.clientHeight)).toBe(true);
+
+      const dialog = page.getByRole('dialog', { name: 'Search' });
+      const topOf = async (locator: Locator) => (await locator.boundingBox())?.y;
+      const title = dialog.getByRole('heading', { name: 'Search' });
+      const before = {
+        field: await topOf(searchField(page)),
+        title: await topOf(title),
+        list: await topOf(list),
+      };
+      const box = await list.boundingBox();
+      await page.mouse.move((box?.x ?? 0) + (box?.width ?? 0) / 2, (box?.y ?? 0) + 40);
+      await page.mouse.wheel(0, 200);
+
+      await expect.poll(() => list.evaluate((el) => el.scrollTop)).toBeGreaterThan(0);
+      expect(await topOf(searchField(page))).toBe(before.field);
+      expect(await topOf(title)).toBe(before.title);
+      expect(await topOf(list)).toBe(before.list);
+      // The body of the dialog itself does not scroll (the whole dialog used to).
+      expect(await dialog.locator('.ui-dialog__body').evaluate((el) => el.scrollTop)).toBe(0);
     });
 
     test('sends a modified click to a new-tab anchor with Ctrl+Enter and keeps the dialog open', async ({

@@ -14,7 +14,10 @@ class HostComponent {
 class FakeObserver {
   static instances: FakeObserver[] = [];
   disconnected = false;
-  constructor(readonly callback: (entries: Array<{ isIntersecting: boolean }>) => void) {
+  constructor(
+    readonly callback: (entries: Array<{ isIntersecting: boolean }>) => void,
+    readonly options?: IntersectionObserverInit,
+  ) {
     FakeObserver.instances.push(this);
   }
   observed = 0;
@@ -57,6 +60,26 @@ describe('InViewDirective', () => {
     await fixture.whenStable();
 
     expect(observer.observed).toBe(2);
+  });
+
+  it('uses the page as root without a scrolling ancestor and the scroll area when there is one', async () => {
+    const plain = TestBed.createComponent(HostComponent);
+    await plain.whenStable();
+    expect(FakeObserver.instances[0].options?.root).toBeNull();
+    plain.destroy();
+
+    const scroller = document.createElement('div');
+    scroller.style.overflowY = 'auto';
+    document.body.append(scroller);
+    const fixture = TestBed.createComponent(HostComponent);
+    scroller.append(fixture.nativeElement);
+    fixture.componentInstance.token.set(1);
+    await fixture.whenStable();
+
+    const observer = FakeObserver.instances.at(-1);
+    expect(observer?.options?.root).toBe(scroller);
+    fixture.destroy();
+    scroller.remove();
   });
 
   it('disconnects on destroy', async () => {

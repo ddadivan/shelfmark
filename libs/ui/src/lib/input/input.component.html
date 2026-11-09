@@ -54,6 +54,7 @@
       type="button"
       class="ui-input__clear"
       [attr.aria-label]="clearLabel()"
+      [uiTooltip]="clearLabel()"
       (mousedown)="$event.preventDefault()"
       (click)="clear()"
     >

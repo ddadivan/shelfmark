@@ -13,6 +13,7 @@ import {
 import type { FormValueControl } from '@angular/forms/signals';
 import { UiFieldControl } from '../field/field-control.directive';
 import { FieldShellComponent } from '../field/field-shell.component';
+import { TooltipDirective } from '../tooltip/tooltip.directive';
 import { IconComponent } from '../icon/icon.component';
 import type { IconName } from '../icon/models/icon-name.type';
 import { SpinnerComponent } from '../spinner/spinner.component';
@@ -33,7 +34,7 @@ import { INPUT_TYPE } from './models/input-type.const';
  */
 @Component({
   selector: 'ui-input',
-  imports: [FieldShellComponent, IconComponent, SpinnerComponent],
+  imports: [TooltipDirective, FieldShellComponent, IconComponent, SpinnerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'ui-input' },
   templateUrl: './input.component.html',

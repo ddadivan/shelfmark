@@ -23,6 +23,7 @@ export * from './lib/loader-timing';
 export * from './lib/logo';
 export * from './lib/media';
 export * from './lib/long-press';
+export * from './lib/pointer-shadow';
 export * from './lib/menu';
 export * from './lib/meter';
 export * from './lib/notice';

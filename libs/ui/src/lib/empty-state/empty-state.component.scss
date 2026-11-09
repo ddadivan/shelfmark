@@ -41,3 +41,18 @@
   margin: 0;
   color: var(--text-muted);
 }
+
+// Action buttons: one width (the longest label fits), 12px apart, wrapping on a phone.
+.ui-empty-state__actions {
+  --ui-button-min-width: #{rem(160px)};
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: center;
+  margin-top: var(--space-3);
+
+  &:empty {
+    display: none;
+  }
+}

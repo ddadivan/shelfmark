@@ -12,7 +12,7 @@
       "line1": "Paste a link.",
       "line2": "Find it again.",
       "line3": "Even in a year.",
-      "lead": "Telegram is where links go to be forgotten. Shelfmark keeps them in folders, with a note on why you saved each one, and finds any of them in two keystrokes.",
+      "lead": "Chats and bookmark bars are where links go to be forgotten. Shelfmark keeps them in folders, with a note on why you saved each one, and finds any of them in two keystrokes.",
       "demo": "Open the demo",
       "signIn": "Sign in"
     },
@@ -25,7 +25,6 @@
       "hintShelf": "Notes come from your own messages.",
       "putOnShelf": "Put them on the shelf",
       "showChat": "Show the chat again",
-      "pause": "Pause the feed",
       "messages": {
         "watch": {
           "text": "watch later!!",
@@ -164,7 +163,7 @@
     },
     "why": {
       "title": "Why this exists",
-      "quote": "“My Saved Messages in Telegram had hundreds of links: courses, a coat I wanted, a ramen recipe, that one article about zoneless Angular. I could never find any of them again. So I built the shelf I wanted.”",
+      "quote": "“My saved messages had hundreds of links: courses, a coat I wanted, a ramen recipe, that one article about zoneless Angular. I could never find any of them again. So I built the shelf I wanted.”",
       "author": "Dmytro",
       "authorName": "Dmytro Dadivan",
       "role": "Frontend developer"
@@ -178,6 +177,7 @@
     },
     "finale": {
       "title": "Empty your Saved Messages.",
+      "lead": "Paste a link, give it a folder and a note. Everything you save from now on lands on one shelf, and any of it is two keystrokes away.",
       "demo": "Open the demo",
       "signIn": "Sign in"
     },
@@ -267,9 +267,13 @@
       "edited": "Changes saved",
       "openFailed": "Couldn't open the link.",
       "favorite": "Favorite: {{title}}",
+      "addFavorite": "Add to favorites",
+      "removeFavorite": "Remove from favorites",
       "actions": "Actions for {{title}}",
+      "moreActions": "More actions",
       "delete": "Delete",
       "opensInNewTab": "Opens in a new tab",
+      "open": "Open",
       "favoriteFailed": "Couldn't update the favorite.",
       "retry": "Retry",
       "deleted": "Link deleted",
@@ -428,14 +432,13 @@
     "menu": "Open menu",
     "drawer": {
       "label": "Menu",
-      "close": "Close menu",
-      "theme": "Switch theme"
+      "close": "Close menu"
     },
     "sidebar": {
       "nav": "Library",
       "tree": "Views and folders",
       "folders": "Folders",
-      "newFolder": "New folder",
+      "newFolder": "Create a folder",
       "folderActions": "Actions for {{name}}",
       "folderMenu": "Folder actions",
       "loadFailed": "Couldn't load your folders.",
@@ -539,8 +542,14 @@
       "action": "Add link",
       "unsorted": "Open Unsorted"
     },
-    "count": "{{count}} links",
-    "countMore": "{{count}}+ links",
+    "count": {
+      "one": "{{count}} link",
+      "other": "{{count}} links"
+    },
+    "countMore": {
+      "one": "{{count}}+ link",
+      "other": "{{count}}+ links"
+    },
     "view": {
       "label": "View",
       "cards": "Cards",
@@ -646,7 +655,16 @@
         "system": "System",
         "light": "Light",
         "dark": "Dark"
+      },
+      "language": {
+        "label": "Language",
+        "hint": "More languages are coming",
+        "value": "English"
       }
+    },
+    "footer": {
+      "privacy": "Privacy policy",
+      "version": "Shelfmark v1.0"
     },
     "welcome": {
       "title": "Welcome tour",
@@ -777,6 +795,10 @@
     "failed": "Couldn't search. Try again.",
     "hints": {
       "ctrl": "Ctrl",
+      "command": "Command",
+      "up": "Up",
+      "down": "Down",
+      "enter": "Enter",
       "move": "move",
       "open": "open",
       "background": "open in background"

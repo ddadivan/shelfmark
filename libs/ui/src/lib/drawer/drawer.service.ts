@@ -6,6 +6,7 @@ import { DIALOG_ROLE } from '../dialog/models/dialog-role.const';
 import { UI_DIALOG_DATA } from '../dialog/models/ui-dialog-data.const';
 import { openModalOverlay } from '../dialog/modal-overlay';
 import type { UiDialogRef } from '../dialog/dialog-ref';
+import { DRAWER_SIDE } from './models/drawer-side.const';
 import type { UiDrawerConfig } from './models/drawer-config.interface';
 
 /**
@@ -21,7 +22,7 @@ export class DrawerService {
   private readonly injector = inject(Injector);
 
   /**
-   * Opens `component` in a drawer pinned to the inline-start edge. `R` is the type of the
+   * Opens `component` in a drawer pinned to the inline-start edge (`side: 'end'`: inline-end). `R` is the type of the
    * result, `D` of `config.data`. Focus returns to the element that had it when it closes.
    */
   open<C, R = undefined, D = undefined>(
@@ -36,7 +37,10 @@ export class DrawerService {
       dismissible: true,
       scrimClose: true,
       restoreFocus: config.restoreFocus,
-      positionStrategy: this.overlay.position().global().top('0').start('0'),
+      positionStrategy:
+        config.side === DRAWER_SIDE.End
+          ? this.overlay.position().global().top('0').end('0')
+          : this.overlay.position().global().top('0').start('0'),
       providers: () => [{ provide: UI_DIALOG_DATA, useValue: config.data }],
     });
   }

@@ -15,6 +15,8 @@ import { RippleDirective } from '../ripple/ripple.directive';
 import type { ChipVariant } from './models/chip-variant.type';
 import { KEYBOARD_KEY } from '../keyboard';
 import { CHIP_VARIANT } from './models/chip-variant.const';
+import { TooltipDirective } from '../tooltip/tooltip.directive';
+import { ICON_SIZE } from '../icon/models/icon-size.const';
 
 /**
  * Tag or state chip. `variant="tag"` is sage (`accent-bg` / `accent-text`), `neutral` is for
@@ -26,7 +28,7 @@ import { CHIP_VARIANT } from './models/chip-variant.const';
  */
 @Component({
   selector: 'ui-chip',
-  imports: [NgTemplateOutlet, IconComponent, RippleDirective],
+  imports: [TooltipDirective, NgTemplateOutlet, IconComponent, RippleDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-chip',
@@ -42,6 +44,7 @@ import { CHIP_VARIANT } from './models/chip-variant.const';
   styleUrl: './chip.component.scss',
 })
 export class ChipComponent {
+  protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly CHIP_VARIANT = CHIP_VARIANT;
 
   /** `tag` (sage) or `neutral`. */

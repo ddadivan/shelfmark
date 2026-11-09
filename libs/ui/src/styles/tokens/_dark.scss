@@ -30,6 +30,7 @@
   --shadow-card-spread:
     0 0 0 1px rgb(237 237 239 / 4%), 0 16px 44px -14px rgb(237 237 239 / 13%),
     0 4px 14px -6px rgb(237 237 239 / 6%);
+  --shadow-card-pointer: rgb(237 237 239 / 7%);
   --shadow-card-press: 0 0 0 1px rgb(237 237 239 / 4%), 0 5px 14px -6px rgb(237 237 239 / 8%);
   --card-hover-bg: color-mix(in srgb, var(--surface) 92%, var(--text));
   --card-hover-border: color-mix(in srgb, var(--text) 24%, var(--border));

@@ -9,8 +9,10 @@ import {
   MenuComponent,
   MenuItemComponent,
   MenuTriggerDirective,
+  PointerShadowDirective,
+  TooltipDirective,
 } from '@shelfmark/ui';
-import { linkHost, ownImageUrl, safeHref, siteLetter } from '../link-view';
+import { linkAddress, linkHost, ownImageUrl, safeHref, siteLetter } from '../link-view';
 
 const MAX_TAGS = 3;
 
@@ -29,6 +31,8 @@ const MAX_TAGS = 3;
     MenuComponent,
     MenuItemComponent,
     MenuTriggerDirective,
+    PointerShadowDirective,
+    TooltipDirective,
   ],
   templateUrl: './link-card.component.html',
   styleUrl: './link-card.component.scss',
@@ -46,6 +50,7 @@ export class LinkCardComponent {
 
   protected readonly href = computed(() => safeHref(this.link().url));
   protected readonly host = computed(() => linkHost(this.link().url));
+  protected readonly address = computed(() => linkAddress(this.link().url));
   protected readonly letter = computed(() => siteLetter(this.link().url));
   protected readonly favicon = computed(() => ownImageUrl(this.link().faviconUrl));
   protected readonly image = computed(() => ownImageUrl(this.link().imageUrl));

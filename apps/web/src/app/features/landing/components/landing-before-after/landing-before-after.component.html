@@ -3,21 +3,17 @@
     <h2 id="landing-ba-title" class="landing-ba__title">
       {{ 'landing.beforeAfter.title' | transloco }}
     </h2>
-    @if (!motion.reducedMotion()) {
-      <ui-button class="landing-ba__pause" [ariaPressed]="paused()" (click)="togglePaused()">{{
-        'landing.beforeAfter.pauseMotion' | transloco
-      }}</ui-button>
-    }
     <div
+      #scenes
       class="landing-ba__scenes"
-      (pointerenter)="engage(true)"
-      (pointerleave)="engage(false)"
-      (focusin)="engage(true)"
-      (focusout)="leaveFocus($event)"
+      (pointerenter)="setHovered(true)"
+      (pointerleave)="setHovered(false)"
+      (focusin)="onFocusIn()"
+      (focusout)="onFocusOut($event, scenes)"
     >
       <div class="landing-ba__scene">
         <h3 class="landing-ba__label">{{ 'landing.beforeAfter.before' | transloco }}</h3>
-        <app-landing-before-scene [paused]="stopped()" />
+        <app-landing-before-scene [paused]="paused()" />
       </div>
 
       <div class="landing-ba__scene">

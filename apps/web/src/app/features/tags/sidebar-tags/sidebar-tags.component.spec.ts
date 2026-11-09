@@ -174,6 +174,95 @@ describe('SidebarTagsComponent', () => {
     element.remove();
   });
 
+  it('closes the field without saving on a press outside, and focus returns to "+"', async () => {
+    const { element, fixture, store } = await setup();
+    document.body.append(element);
+    const before = store.entities().length;
+
+    addButton(element).click();
+    await fixture.whenStable();
+    type(element, 'draft');
+    document.body.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }));
+    await fixture.whenStable();
+
+    expect(field(element)).toBeNull();
+    expect(store.entities()).toHaveLength(before);
+    await until(() => {
+      expect(document.activeElement).toBe(addButton(element));
+    });
+    element.remove();
+  });
+
+  it('keeps the field open on a press inside it', async () => {
+    const { element, fixture } = await setup();
+    document.body.append(element);
+
+    addButton(element).click();
+    await fixture.whenStable();
+    element
+      .querySelector('.tags__hint')
+      ?.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }));
+    await fixture.whenStable();
+
+    expect(field(element)).not.toBeNull();
+    element.remove();
+  });
+
+  it('closes the field when focus moves to another control, which keeps the focus', async () => {
+    const { element, fixture } = await setup();
+    document.body.append(element);
+    const other = document.createElement('button');
+    document.body.append(other);
+
+    addButton(element).click();
+    await fixture.whenStable();
+    other.focus();
+    await fixture.whenStable();
+
+    expect(field(element)).toBeNull();
+    expect(document.activeElement).toBe(other);
+    other.remove();
+    element.remove();
+  });
+
+  it('"+" closes the open field with one click: it does not close and reopen', async () => {
+    const { element, fixture } = await setup();
+    document.body.append(element);
+
+    addButton(element).click();
+    await fixture.whenStable();
+    expect(field(element)).not.toBeNull();
+
+    // A real press: pointerdown (ignored by the outside check), focus change, then click.
+    addButton(element).dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }));
+    addButton(element).focus();
+    addButton(element).click();
+    await fixture.whenStable();
+    expect(field(element)).toBeNull();
+
+    addButton(element).click();
+    await fixture.whenStable();
+    expect(field(element)).not.toBeNull();
+    element.remove();
+  });
+
+  it('closes an in-place rename without saving on a press outside', async () => {
+    const { element, fixture, store } = await setup();
+    document.body.append(element);
+    const name = store.entities()[0].name;
+
+    await openMenu(element, name, 'Rename');
+    await fixture.whenStable();
+    expect(field(element)).not.toBeNull();
+    type(element, 'renamed-draft');
+    document.body.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }));
+    await fixture.whenStable();
+
+    expect(field(element)).toBeNull();
+    expect(store.entities().map((t) => t.name)).toContain(name);
+    element.remove();
+  });
+
   it('creates a tag with the normalized name and closes the field', async () => {
     const { element, store, fixture } = await setup();
 

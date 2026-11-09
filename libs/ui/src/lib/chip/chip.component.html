@@ -1,6 +1,6 @@
 <ng-template #content>
   @if (icon(); as name) {
-    <ui-icon class="ui-chip__icon" [name]="name" />
+    <ui-icon class="ui-chip__icon" [name]="name" [size]="ICON_SIZE.Md" />
   }
   <ng-content />
 </ng-template>
@@ -26,10 +26,11 @@
     class="ui-chip__menu"
     [disabled]="disabled()"
     [attr.aria-label]="label"
+    [uiTooltip]="label"
     aria-haspopup="menu"
     (click)="onMenuClick($event, menu)"
   >
-    <ui-icon name="more" />
+    <ui-icon name="more" [size]="ICON_SIZE.Md" />
   </button>
 }
 @if (removable()) {
@@ -38,8 +39,9 @@
     class="ui-chip__remove"
     [disabled]="disabled()"
     [attr.aria-label]="removeLabel() || null"
+    [uiTooltip]="removeLabel()"
     (click)="removed.emit()"
   >
-    <ui-icon name="close" />
+    <ui-icon name="close" [size]="ICON_SIZE.Md" />
   </button>
 }

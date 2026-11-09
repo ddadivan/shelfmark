@@ -1,2 +1,13 @@
+@use 'ui' as *;
+
 // App-level styles. Tokens, themes, base rules and fonts come from libs/ui (global.scss),
 // loaded before this file through the `styles` list in project.json.
+
+// Phone: toasts are bottom centre like everywhere, but sit above the floating add button of the
+// shell (`.shell__fab`: 24px from the edge, 56px high, plus a gap), so they never cover it.
+// `ui-toast-region` reads `--ui-toast-offset` for its bottom inset.
+@include phone {
+  :root {
+    --ui-toast-offset: calc(var(--space-6) + #{rem(56px)} + var(--space-3));
+  }
+}

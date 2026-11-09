@@ -34,12 +34,12 @@
             (click)="onTwist($event, item.expanded)"
           >
             @if (node.children?.length) {
-              <ui-icon name="chevron-right" [size]="16" />
+              <ui-icon name="chevron-right" [size]="ICON_SIZE.Lg" />
             }
           </span>
         }
         @if (node.icon ?? (folder ? 'folder' : undefined); as icon) {
-          <ui-icon class="ui-tree__icon" [name]="icon" [size]="16" />
+          <ui-icon class="ui-tree__icon" [name]="icon" [size]="ICON_SIZE.Lg" />
         }
         <span class="ui-tree__name" [id]="item.id() + '-name'">{{ node.name }}</span>
         @if (countId(item.id(), node); as count) {
@@ -102,8 +102,10 @@
       context: { $implicit: fixedNodes(), parent: tree, level: 1, folder: false }
     "
   />
-  @if (heading() && nodes().length) {
-    <li class="ui-tree__section" role="presentation" aria-hidden="true">{{ heading() }}</li>
+  @if (heading()) {
+    <li #section class="ui-tree__section" role="presentation" aria-hidden="true">
+      {{ heading() }}
+    </li>
   }
   <ng-container
     *ngTemplateOutlet="
@@ -112,3 +114,13 @@
     "
   />
 </ul>
+
+<!--
+  The heading action sits outside the tree (a button is not an allowed child of role="tree") and
+  is laid over the heading row, whose place is measured.
+-->
+@if (heading()) {
+  <div class="ui-tree__action" [style.top.px]="actionTop()">
+    <ng-content select="[uiTreeHeadingAction]" />
+  </div>
+}

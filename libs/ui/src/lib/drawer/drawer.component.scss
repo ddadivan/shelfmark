@@ -10,6 +10,11 @@
   flex-direction: column;
   width: min(19.5rem, calc(100vw - #{rem(48px)}));
 
+  // Up to 600px wide the drawer takes the whole screen: a narrow strip of page beside it is noise.
+  @media (width <= 37.5em) {
+    width: 100vw;
+  }
+
   // `--ui-drawer-height` is only for static docs panels; the real drawer is the full viewport.
   height: var(--ui-drawer-height, 100dvh);
   padding-block: env(safe-area-inset-top) env(safe-area-inset-bottom);
@@ -20,6 +25,14 @@
 
   &:dir(rtl) {
     --ui-inline-sign: 1;
+  }
+}
+
+.ui-drawer--end {
+  --ui-inline-sign: 1;
+
+  &:dir(rtl) {
+    --ui-inline-sign: -1;
   }
 }
 
