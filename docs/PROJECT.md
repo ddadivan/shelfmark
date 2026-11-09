@@ -918,11 +918,11 @@ Chosen by the author on Nov 9, 2026. Stages 2 and 3 are planned; everything else
 - [ ] "Move to folder" in the ⋯ menu of a card and a row, alongside drag & drop
 - [ ] Sync between browser tabs: a change in one tab shows in the others (links, folders, tags, favorites, theme, sign-out), for example via `BroadcastChannel`
 - [ ] Interface languages and a language switcher in settings. All text already goes through Transloco keys; **which languages is to be decided, not Ukrainian for now**
-- [ ] "How it works" guided tour: a button at the bottom of the sidebar; an animated cursor shows adding a link, folders and tags, search and export with captions. It runs on an in-browser sandbox (never the user's data), steps call the same store actions as real clicks, with Pause / Stop / chapters / Esc, a reduced-motion path and screen-reader text; the 3-step welcome tour (#99) offers it at the end
 - [ ] The landing page reachable for signed-in users (for example "About" in the account menu or `/about`); today `/` shows the app to them
 - [ ] Landing Lighthouse performance stable at ≥ 0.9 on 3 of 3 CI runs (#195, carried over from stage 1)
 - [ ] The two dev-only Dependabot alerts, minimatch and deepmerge (#205)
-- [ ] Promo video
+- [ ] Promo video: a scripted Playwright run on the demo (landing → Open the demo → paste a link → preview → folder → tag → find it with ⌘K), recorded as video in light and dark themes, desktop and phone, and re-recorded with one command when the UI changes; light editing (captions, sped-up waits). Used in the README, on the landing page and in the portfolio
+- [ ] "How it works" button in the app that opens the promo video in a dialog (the video is served from our own domain, so the CSP is unchanged). Replaces the interactive guided tour, which moved to the backlog (decided Nov 9, 2026: same result for far less work)
 
 ### Stage 3 (planned)
 
@@ -937,6 +937,7 @@ Chosen by the author on Nov 9, 2026. Stages 2 and 3 are planned; everything else
 - [ ] Own authentication implementation (NestJS + Passport + JWT: access token + refresh token in an httpOnly cookie) instead of Better Auth. **Learning format:** Claude Code does not write the code but explains step by step and reviews what the author writes
 - [ ] Subscriptions and monetisation (pricing tiers, free plan limits, payment provider)
 - [ ] Move to paid hosting
+- [ ] Interactive "How it works" guided tour (moved from stage 2; the promo video covers it for now): an animated cursor shows adding a link, folders and tags, search and export with captions, on an in-browser sandbox (never the user's data), steps calling the same store actions as real clicks, with Pause / Stop / chapters / Esc, a reduced-motion path and screen-reader text. Worth it only with many self-onboarding users who need a guided, localised walkthrough
 
 ## 10. Success metrics and roadmap after stage 1
 
@@ -963,9 +964,9 @@ Decided by the author on Nov 9, 2026; the full lists are in "Roadmap after stage
 
 | Stage | Goal | Contents |
 | --- | --- | --- |
-| 2 | Daily use and polish | Email and password sign-in, reminders, sharing, custom themes, feedback form, drag & drop, selection and bulk actions, "Move to folder", sync between tabs, interface languages (not Ukrainian for now), "How it works" tour, landing for signed-in users, Lighthouse ≥ 0.9, dev Dependabot alerts, promo video |
+| 2 | Daily use and polish | Email and password sign-in, reminders, sharing, custom themes, feedback form, drag & drop, selection and bulk actions, "Move to folder", sync between tabs, interface languages (not Ukrainian for now), landing for signed-in users, Lighthouse ≥ 0.9, dev Dependabot alerts, promo video with a "How it works" button that plays it |
 | 3 | Save faster, smarter | Browser extension, AI tags and descriptions, smart search, demo data carried into a real account |
-| Backlog | Later | Import from Telegram, own authentication (learning format), subscriptions and monetisation, paid hosting |
+| Backlog | Later | Import from Telegram, own authentication (learning format), subscriptions and monetisation, paid hosting, interactive guided tour |
 
 ## 11. Presentation in the CV and portfolio
 
