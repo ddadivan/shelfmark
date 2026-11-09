@@ -12,7 +12,7 @@
       "line1": "Paste a link.",
       "line2": "Find it again.",
       "line3": "Even in a year.",
-      "lead": "Telegram is where links go to be forgotten. Shelfmark keeps them in folders, with a note on why you saved each one, and finds any of them in two keystrokes.",
+      "lead": "Chats and bookmark bars are where links go to be forgotten. Shelfmark keeps them in folders, with a note on why you saved each one, and finds any of them in two keystrokes.",
       "demo": "Open the demo",
       "signIn": "Sign in"
     },
@@ -25,7 +25,6 @@
       "hintShelf": "Notes come from your own messages.",
       "putOnShelf": "Put them on the shelf",
       "showChat": "Show the chat again",
-      "pause": "Pause the feed",
       "messages": {
         "watch": {
           "text": "watch later!!",
@@ -164,7 +163,7 @@
     },
     "why": {
       "title": "Why this exists",
-      "quote": "“My Saved Messages in Telegram had hundreds of links: courses, a coat I wanted, a ramen recipe, that one article about zoneless Angular. I could never find any of them again. So I built the shelf I wanted.”",
+      "quote": "“My saved messages had hundreds of links: courses, a coat I wanted, a ramen recipe, that one article about zoneless Angular. I could never find any of them again. So I built the shelf I wanted.”",
       "author": "Dmytro",
       "authorName": "Dmytro Dadivan",
       "role": "Frontend developer"
