@@ -43,6 +43,14 @@ describe('EsmExternalsPlugin', () => {
     expect(externalFor(request)).toBeUndefined();
   });
 
+  // Vercel's loader rejects their require() of the ESM-only @nestjs/common (ERR_REQUIRE_ESM).
+  it.each(['@nestjs/throttler', '@nestjs/throttler/dist/index.js'])(
+    'bundles the CommonJS package %s',
+    (request) => {
+      expect(externalFor(request)).toBeUndefined();
+    },
+  );
+
   it('requires the externals set by NxAppWebpackPlugin', () => {
     expect(() => new EsmExternalsPlugin().apply({ options: {} })).toThrow(
       /after NxAppWebpackPlugin/,

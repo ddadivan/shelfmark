@@ -8,7 +8,8 @@
  * file tracer copy the packages into the function.
  *
  * Workspace libraries (`@shelfmark/*`, TypeScript path aliases) are always bundled: they do
- * not exist in node_modules at runtime.
+ * not exist in node_modules at runtime. So are the CommonJS packages in `BUNDLED_CJS_PACKAGES`
+ * (see there).
  *
  * Prisma's query compiler is loaded with a dynamic `import("@prisma/client/runtime/query_compiler_...")`.
  * Webpack would turn that into numbered async chunks (`2.js`, `3.js`) that Vercel's tracer does not
@@ -18,6 +19,16 @@
  * Must be listed after `NxAppWebpackPlugin`, so it replaces the externals Nx sets.
  */
 const BUNDLED_PREFIX = '@shelfmark/';
+/**
+ * CommonJS packages that `require()` an ESM-only NestJS package. Kept external, Vercel loads them
+ * with its own CommonJS loader and fails with `ERR_REQUIRE_ESM`. Bundled, webpack turns that
+ * `require('@nestjs/common')` into the same static ESM import as everywhere else.
+ */
+const BUNDLED_CJS_PACKAGES = ['@nestjs/throttler'];
+
+function isBundledCjs(request) {
+  return BUNDLED_CJS_PACKAGES.some((name) => request === name || request.startsWith(`${name}/`));
+}
 const PRISMA_QUERY_COMPILER_PREFIX = '@prisma/client/runtime/query_compiler';
 /** Prisma's runtime only loads this built-in with `await import(...)`; a chunk for it is useless. */
 const DYNAMIC_BUILTINS = new Set(['node:buffer']);
@@ -37,7 +48,8 @@ function isExternalPackage(request) {
     !request.startsWith('.') &&
     !request.startsWith('/') &&
     !request.includes('!') &&
-    !request.startsWith(BUNDLED_PREFIX)
+    !request.startsWith(BUNDLED_PREFIX) &&
+    !isBundledCjs(request)
   );
 }
 
@@ -63,4 +75,4 @@ class EsmExternalsPlugin {
   }
 }
 
-module.exports = { EsmExternalsPlugin };
+module.exports = { EsmExternalsPlugin, BUNDLED_CJS_PACKAGES };

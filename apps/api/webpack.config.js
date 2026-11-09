@@ -18,6 +18,14 @@ module.exports = {
     },
   },
   externalsType: 'module',
+  // Bundled CommonJS packages (`BUNDLED_CJS_PACKAGES`) ship source maps that point at sources they
+  // do not publish; the warning is noise, the bundle is unaffected.
+  ignoreWarnings: [
+    {
+      module: /node_modules[\\/]@nestjs[\\/]throttler[\\/]/,
+      message: /Failed to parse source map/,
+    },
+  ],
   plugins: [
     new NxAppWebpackPlugin({
       target: 'node',
