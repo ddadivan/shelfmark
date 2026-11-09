@@ -4,6 +4,8 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  ElementRef,
+  inject,
   input,
   linkedSignal,
   output,
@@ -90,6 +92,26 @@ export class CardComponent {
     source: this.image,
     computation: () => false,
   });
+
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+
+  /**
+   * The bar sits above the stretched link so a feature can style it on hover; a click on it
+   * activates the title link instead (modifier keys kept, so a Ctrl-click still opens a tab).
+   */
+  protected forwardOverlayClick(event: MouseEvent): void {
+    this.host.querySelector<HTMLElement>('.ui-card__link')?.dispatchEvent(
+      new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        button: event.button,
+        ctrlKey: event.ctrlKey,
+        metaKey: event.metaKey,
+        shiftKey: event.shiftKey,
+        altKey: event.altKey,
+      }),
+    );
+  }
 
   protected readonly imageSrc = computed(() => (this.failed() ? null : this.image() || null));
 }

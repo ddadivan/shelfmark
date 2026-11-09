@@ -92,6 +92,15 @@ describe('CardComponent', () => {
     expect(card.querySelector('.ui-card__overlay')?.getAttribute('aria-hidden')).toBe('true');
   });
 
+  it('forwards a click on the open bar to the title link, keeping modifier keys', () => {
+    const { card, instance } = setup();
+    card
+      .querySelector('.ui-card__overlay')
+      ?.dispatchEvent(new MouseEvent('click', { bubbles: true, ctrlKey: true }));
+    expect(instance.activated).toHaveLength(1);
+    expect(instance.activated[0].ctrlKey).toBe(true);
+  });
+
   it('is a button without href and a link with href', () => {
     const { card, update } = setup();
     const main = () => card.querySelector('.ui-card__link') as HTMLElement;

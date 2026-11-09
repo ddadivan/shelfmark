@@ -82,6 +82,10 @@ test.describe('Library items skip off-screen work (mock API)', () => {
     await page.goto('/links');
     const item = page.locator('.library__list > li').first();
     await expect(item).toBeVisible();
-    expect(await item.evaluate((el) => getComputedStyle(el).contentVisibility)).toBe('auto');
+    expect(
+      await page.evaluate<string>(
+        "getComputedStyle(document.querySelector('.library__list > li')).contentVisibility",
+      ),
+    ).toBe('auto');
   });
 });

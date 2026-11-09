@@ -38,6 +38,30 @@ test.describe('links feed (mock API)', () => {
     await expect(bar).toHaveAttribute('aria-hidden', 'true');
   });
 
+  test('the open arrow moves only while the pointer is over the bar, and a click opens', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name === E2E_PROJECT.Phone, 'touch has no hover');
+    await page.context().route('https://**/*', (route) => route.abort());
+    await openFeed(page);
+    const card = page.locator('ui-card').first();
+    const arrow = card.locator('.link-card__open-arrow');
+
+    await card.hover({ position: { x: 20, y: 20 } });
+    await expect(card.locator('.ui-card__overlay')).toHaveCSS('opacity', '1');
+    await expect(arrow).toHaveCSS('transform', 'none');
+
+    await card.locator('.link-card__open').hover();
+    await expect(arrow).not.toHaveCSS('transform', 'none');
+
+    await card.hover({ position: { x: 20, y: 20 } });
+    await expect(arrow).toHaveCSS('transform', 'none');
+
+    const popup = page.waitForEvent('popup');
+    await card.locator('.link-card__open').click();
+    await (await popup).close();
+  });
+
   test('keyboard focus on a card shows the open bar', async ({ page }) => {
     await openFeed(page);
     const card = page.locator('ui-card').first();
