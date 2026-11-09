@@ -101,6 +101,17 @@
   overflow: hidden;
   background: var(--surface-hover);
   mask-image: linear-gradient(to bottom, transparent 0, #000 #{rem(56px)});
+
+  // Covers the spacing step under the last message, so the next one never peeks in.
+  &::after {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 1;
+    block-size: var(--space-4);
+    content: '';
+    background: inherit;
+  }
 }
 
 .landing-chat__track {
