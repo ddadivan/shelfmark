@@ -1,0 +1,47 @@
+@use 'functions' as *;
+
+// Thin scrollbars with a rounded, muted thumb and a transparent track, in both themes (the
+// thumb colour comes from `--text-muted`). Nothing is hidden: `scrollbar-gutter`, wheel, touch
+// and keyboard scrolling are untouched.
+// Chromium 121+ ignores `::-webkit-scrollbar*` as soon as `scrollbar-width` / `scrollbar-color`
+// are set, and the standard properties have no hover state. So the standard properties are for
+// engines without `::-webkit-scrollbar` (Firefox), and Chromium and Safari get the pseudo-elements
+// (thin thumb, slightly stronger on hover).
+@mixin scrollbars {
+  :root {
+    --scrollbar-thumb: color-mix(in srgb, var(--text-muted) 45%, transparent);
+    --scrollbar-thumb-hover: color-mix(in srgb, var(--text-muted) 75%, transparent);
+  }
+
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-color: var(--scrollbar-thumb) transparent;
+      scrollbar-width: thin;
+    }
+  }
+
+  @supports selector(::-webkit-scrollbar) {
+    ::-webkit-scrollbar {
+      width: rem(12px);
+      height: rem(12px);
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-track,
+    ::-webkit-scrollbar-corner {
+      background: transparent;
+    }
+
+    // A transparent border around the thumb makes it thinner than the bar (6px of 12px).
+    ::-webkit-scrollbar-thumb {
+      background-color: var(--scrollbar-thumb);
+      background-clip: padding-box;
+      border: rem(3px) solid transparent;
+      border-radius: var(--radius-full);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: var(--scrollbar-thumb-hover);
+    }
+  }
+}
