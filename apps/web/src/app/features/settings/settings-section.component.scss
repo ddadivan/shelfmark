@@ -12,6 +12,10 @@
   @include tablet-up {
     padding: var(--space-6);
   }
+
+  @include desktop {
+    padding: rem(24px) rem(32px);
+  }
 }
 
 :host(.settings-section--danger) {

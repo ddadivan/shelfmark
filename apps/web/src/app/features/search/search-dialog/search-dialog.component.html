@@ -102,23 +102,26 @@
     >
     <span slot="footer"
       ><kbd
-        ><span aria-hidden="true">↵</span
-        ><span class="ui-command-list__sr">{{ 'search.hints.enter' | transloco }}</span></kbd
+        ><ui-icon name="key-enter" [size]="16" /><span class="ui-command-list__sr">{{
+          'search.hints.enter' | transloco
+        }}</span></kbd
       >
       {{ 'search.hints.open' | transloco }}</span
     >
     <span slot="footer"
       ><kbd>
         @if (mac) {
-          <span aria-hidden="true">⌘</span
-          ><span class="ui-command-list__sr">{{ 'search.hints.command' | transloco }}</span>
+          <ui-icon name="key-command" [size]="16" /><span class="ui-command-list__sr">{{
+            'search.hints.command' | transloco
+          }}</span>
         } @else {
           {{ 'search.hints.ctrl' | transloco }}
         }
       </kbd>
       <kbd
-        ><span aria-hidden="true">↵</span
-        ><span class="ui-command-list__sr">{{ 'search.hints.enter' | transloco }}</span></kbd
+        ><ui-icon name="key-enter" [size]="16" /><span class="ui-command-list__sr">{{
+          'search.hints.enter' | transloco
+        }}</span></kbd
       >
       {{ 'search.hints.background' | transloco }}</span
     >
