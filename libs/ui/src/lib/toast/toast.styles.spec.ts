@@ -10,6 +10,10 @@ describe('toast styles', () => {
     expect(mediaBlocks(region, /min-width/).join('')).not.toContain('align-items');
   });
 
+  it('lets the app lift the region above its own floating control', () => {
+    expect(region).toContain('var(--ui-toast-offset, var(--space-4))');
+  });
+
   it('uses the popover surface, a wrapping text and the 18rem to 28rem size range', () => {
     expect(toast).toContain('box-shadow: var(--shadow-popover)');
     expect(toast).toContain('border-radius: var(--radius-md)');
