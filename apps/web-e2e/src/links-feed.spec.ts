@@ -192,6 +192,44 @@ test.describe('links feed (mock API)', () => {
     await expect(page.getByRole('dialog')).toBeVisible();
   });
 
+  test('the shell fills the viewport and the empty state sits in the middle of the free space', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.addInitScript(
+      ([key, value]) => sessionStorage.setItem(key, value),
+      [MOCK_LINKS_SCENARIO.key, MOCK_LINKS_SCENARIO.empty],
+    );
+    await page.goto('/links');
+    const title = page.getByRole('heading', { name: 'Your links will live here' });
+    await expect(title).toBeVisible();
+
+    const box = async (selector: string) => {
+      const found = await page.locator(selector).first().boundingBox();
+      if (!found) {
+        throw new Error(`${selector} has no box`);
+      }
+      return found;
+    };
+    const sidebar = await box('.shell__sidebar');
+    const main = await box('.shell__main');
+    const recent = await box('app-recent-links-panel');
+    // Sidebar surface, main column and the recent panel all run to the bottom of the window.
+    for (const column of [sidebar, main, recent]) {
+      expect(column.y + column.height).toBeGreaterThanOrEqual(900 - 1);
+    }
+    expect(await page.evaluate('document.documentElement.scrollHeight')).toBeLessThanOrEqual(900);
+
+    const state = await box('ui-empty-state');
+    const toolbar = await box('.library__toolbar');
+    const freeTop = toolbar.y + toolbar.height;
+    const freeBottom = main.y + main.height;
+    const gapAbove = state.y - freeTop;
+    const gapBelow = freeBottom - (state.y + state.height);
+    expect(Math.abs(gapAbove - gapBelow)).toBeLessThanOrEqual(40);
+    expect(gapAbove).toBeGreaterThan(40);
+  });
+
   test.describe('new-account feed', () => {
     test.beforeEach(async ({ page }) => {
       await page.addInitScript(

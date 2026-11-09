@@ -1,5 +1,23 @@
 @use 'ui' as *;
 
+// Fills the main column so an empty state can sit in the middle of the free space.
+:host {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.library {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+// Empty and error states: centred in the space under the toolbar. With links the feed flows as usual.
+.library > ui-empty-state {
+  margin-block: auto;
+}
+
 .library__toolbar {
   display: flex;
   flex-wrap: wrap;

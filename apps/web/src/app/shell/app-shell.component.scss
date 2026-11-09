@@ -1,7 +1,8 @@
 @use 'ui' as *;
 
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
   min-height: 100dvh;
 }
 
@@ -84,13 +85,18 @@
   }
 }
 
+// The body takes the height left under the header, so the sidebar surface, the main column and the
+// recent panel run to the bottom of the viewport whatever the content height.
 .shell__body {
   display: flex;
-  align-items: flex-start;
+  flex: 1;
+  align-items: stretch;
 }
 
 .shell__main {
+  display: flex;
   flex: 1;
+  flex-direction: column;
   min-width: 0;
   padding: var(--space-6) var(--space-4);
 
