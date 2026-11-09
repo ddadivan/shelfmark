@@ -27,10 +27,14 @@ describe('LandingRevealDirective', () => {
     vi.unstubAllGlobals();
   });
 
-  async function create() {
+  async function create(firstReport: [boolean, number?, number?] | null = [false]) {
     const fixture = TestBed.createComponent(HostComponent);
     await fixture.whenStable();
     const section = (fixture.nativeElement as HTMLElement).querySelector('section') as HTMLElement;
+    if (firstReport !== null) {
+      MockIntersectionObserver.instances[0].trigger(...firstReport);
+      await fixture.whenStable();
+    }
     return { fixture, section };
   }
 
@@ -65,39 +69,24 @@ describe('LandingRevealDirective', () => {
     expect(observer.disconnected).toBe(true);
   });
 
-  it('does not hide a section that is already at least 20% on screen', async () => {
-    const fixture = TestBed.createComponent(HostComponent);
-    const section = (fixture.nativeElement as HTMLElement).querySelector('section') as HTMLElement;
-    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
-      top: 100,
-      bottom: 500,
-      height: 400,
-    } as DOMRect);
-
-    await fixture.whenStable();
+  it('does not hide a section that is already at least 20% on screen at load', async () => {
+    const { section } = await create([true, 40, 100]);
 
     expect(section.className).not.toContain('landing-reveal');
-    expect(MockIntersectionObserver.instances).toHaveLength(0);
-    vi.restoreAllMocks();
-  });
-
-  it('forces the section visible after 1 s if the observer never reports', async () => {
-    const { fixture, section } = await create();
-    expect(section.classList.contains('landing-reveal--pending')).toBe(true);
-
-    await new Promise((resolve) => setTimeout(resolve, 1050));
-    await fixture.whenStable();
-
-    expect(section.classList.contains('landing-reveal--shown')).toBe(true);
     expect(MockIntersectionObserver.instances[0].disconnected).toBe(true);
   });
 
-  it('keeps an off-screen section hidden past the safety timeout once the observer has reported', async () => {
-    const { fixture, section } = await create();
+  it('reads no layout synchronously and keeps content visible until the first report', async () => {
+    const rect = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect');
+    const { section } = await create(null);
 
-    MockIntersectionObserver.instances[0].trigger(false);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    await fixture.whenStable();
+    expect(rect).not.toHaveBeenCalled();
+    expect(section.className).not.toContain('landing-reveal');
+    vi.restoreAllMocks();
+  });
+
+  it('keeps an off-screen section hidden until it scrolls in', async () => {
+    const { section } = await create();
 
     expect(section.classList.contains('landing-reveal--pending')).toBe(true);
     expect(section.classList.contains('landing-reveal--shown')).toBe(false);
@@ -133,7 +122,7 @@ describe('LandingRevealDirective', () => {
   it('never hides content under reduced motion', async () => {
     stubReducedMotion(true);
 
-    const { section } = await create();
+    const { section } = await create(null);
 
     expect(section.className).not.toContain('landing-reveal');
     expect(MockIntersectionObserver.instances).toHaveLength(0);
@@ -142,7 +131,7 @@ describe('LandingRevealDirective', () => {
   it('never hides content when scroll observation is unavailable', async () => {
     vi.stubGlobal('IntersectionObserver', undefined);
 
-    const { section } = await create();
+    const { section } = await create(null);
 
     expect(section.className).not.toContain('landing-reveal');
   });
