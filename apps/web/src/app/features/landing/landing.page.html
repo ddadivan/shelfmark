@@ -10,13 +10,13 @@
     the placeholder is gone otherwise, and what follows jumps up and back. So what is below the
     fold only grows towards its real height.
   -->
-  @defer (on idle; when sectionsRequested()) {
+  @defer (on viewport; prefetch on idle; when sectionsRequested()) {
   <app-landing-before-after #beforeAfter />
   } @placeholder {
   <div class="landing__placeholder"></div>
   } @loading {
   <div class="landing__placeholder"></div>
-  } @defer (on timer(150ms); when sectionsRequested()) {
+  } @defer (on viewport; prefetch on idle; when sectionsRequested()) {
   <div class="landing__about">
     <app-landing-why />
     <app-landing-built #built />
@@ -25,7 +25,7 @@
   <div class="landing__placeholder landing__placeholder--about"></div>
   } @loading {
   <div class="landing__placeholder landing__placeholder--about"></div>
-  } @defer (on timer(300ms); when sectionsRequested()) {
+  } @defer (on viewport; prefetch on idle; when sectionsRequested()) {
   <app-landing-finale />
   } @placeholder {
   <div class="landing__placeholder landing__placeholder--finale"></div>
