@@ -24,6 +24,30 @@ test.describe('links feed (mock API)', () => {
     return page.locator('ui-card').first().getByRole('heading').innerText();
   }
 
+  test('hovering a card slides up the open bar with the address', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name === E2E_PROJECT.Phone, 'touch has no hover');
+    await openFeed(page);
+    const card = page.locator('ui-card').first();
+    const bar = card.locator('.ui-card__overlay');
+
+    await expect(bar).toContainText('Open ↗');
+    await card.hover();
+
+    await expect(bar).toHaveCSS('opacity', '1');
+    await expect(bar).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  test('keyboard focus on a card shows the open bar', async ({ page }) => {
+    await openFeed(page);
+    const card = page.locator('ui-card').first();
+
+    await card.getByRole('link').focus();
+    await page.keyboard.press('Shift+Tab');
+    await page.keyboard.press('Tab');
+
+    await expect(card.locator('.ui-card__overlay')).toHaveCSS('opacity', '1');
+  });
+
   test('shows the cards, the count and "load more" on the first page', async ({ page }) => {
     await openFeed(page);
 

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   AvatarComponent,
@@ -32,6 +32,7 @@ import { SettingsSectionComponent } from './settings-section.component';
     TranslocoPipe,
     AvatarComponent,
     ButtonComponent,
+    RouterLink,
     SegmentedControlComponent,
     SettingsRowComponent,
     SettingsSectionComponent,
@@ -61,6 +62,7 @@ export default class SettingsPage {
   private readonly transloco = inject(TranslocoService);
 
   protected readonly linksHref = `/${APP_PATH.Links}`;
+  protected readonly privacyHref = `/${APP_PATH.Privacy}`;
 
   /** Labels by preference; `undefined` until the translations are loaded. */
   private readonly labels = toSignal(

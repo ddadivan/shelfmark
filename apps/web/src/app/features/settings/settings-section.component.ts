@@ -14,6 +14,10 @@ import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@an
 export class SettingsSectionComponent {
   /** Already translated heading. */
   readonly heading = input.required<string>();
+  /** Optional description under the heading. */
+  readonly hint = input<string>();
+  /** Keeps the heading for screen readers only (a section the design shows without a title). */
+  readonly headingHidden = input(false, { transform: booleanAttribute });
   /** Irreversible actions: a danger-coloured border and heading (Settings design). */
   readonly danger = input(false, { transform: booleanAttribute });
 }

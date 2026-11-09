@@ -10,7 +10,7 @@ import {
   MenuItemComponent,
   MenuTriggerDirective,
 } from '@shelfmark/ui';
-import { linkHost, ownImageUrl, safeHref, siteLetter } from '../link-view';
+import { linkAddress, linkHost, ownImageUrl, safeHref, siteLetter } from '../link-view';
 
 const MAX_TAGS = 3;
 
@@ -46,6 +46,7 @@ export class LinkCardComponent {
 
   protected readonly href = computed(() => safeHref(this.link().url));
   protected readonly host = computed(() => linkHost(this.link().url));
+  protected readonly address = computed(() => linkAddress(this.link().url));
   protected readonly letter = computed(() => siteLetter(this.link().url));
   protected readonly favicon = computed(() => ownImageUrl(this.link().faviconUrl));
   protected readonly image = computed(() => ownImageUrl(this.link().imageUrl));

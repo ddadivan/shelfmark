@@ -8,6 +8,12 @@
   (activated)="open()"
 >
   <span slot="fallback" class="link-card__letter" aria-hidden="true">{{ letter() }}</span>
+  @if (href()) {
+    <span slot="overlay" class="link-card__open">
+      <span class="link-card__address">{{ address() }}</span>
+      <span class="link-card__open-label">{{ 'links.item.open' | transloco }}</span>
+    </span>
+  }
   <span slot="title">{{ link().title }}</span>
   <span slot="meta" class="link-card__site">
     <ui-favicon [src]="favicon()" [letter]="letter()" />
