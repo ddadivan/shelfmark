@@ -113,6 +113,16 @@
   gap: var(--space-4);
   justify-content: flex-end;
 
+  // Phone: the actions stack at full width. The DOM order is "secondary first, primary last" (the
+  // order of a desktop row, right-aligned), so `column-reverse` puts the primary action on top,
+  // then Cancel; a separate destructive action (Delete in the edit dialog, first in the DOM)
+  // lands at the bottom. The width of the slotted children is set in the global `dialog-layout`
+  // (they belong to the feature's view, not to this one).
+  @include phone {
+    flex-flow: column-reverse nowrap;
+    align-items: stretch;
+  }
+
   &:empty {
     display: none;
   }
