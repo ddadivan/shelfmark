@@ -50,6 +50,13 @@
   &:has(.ui-command-list__input:focus-visible) {
     @include focus-ring(-2px);
   }
+
+  // Phone: the `Esc` cap in the input end slot is noise (no keyboard shortcuts on a phone).
+  @include phone {
+    > kbd {
+      display: none;
+    }
+  }
 }
 
 .ui-command-list__icon {
@@ -216,5 +223,11 @@
 
   &:empty {
     display: none;
+  }
+
+  // Phone: the key hints (arrows, Enter, command-Enter) are not shown, but their text stays in the
+  // accessibility tree for a screen reader with an attached keyboard: visually hidden, not removed.
+  @include phone {
+    @include visually-hidden;
   }
 }
