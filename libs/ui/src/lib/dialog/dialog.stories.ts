@@ -1,6 +1,8 @@
 import { Component, inject, input, signal } from '@angular/core';
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { ButtonComponent } from '../button/button.component';
+import { ChipComponent } from '../chip/chip.component';
+import { SelectComponent } from '../select/select.component';
 import { DialogComponent } from './dialog.component';
 import { UiDialogRef } from './dialog-ref';
 import { DialogService } from './dialog.service';
@@ -293,6 +295,29 @@ const frame = (theme: Theme) => `
       </ui-dialog>
     </div>
   </div>`;
+
+const controlsFrame = (theme: Theme) => `
+  <div ${THEME_ATTRIBUTE}="${theme}" class="dst-gallery">
+    <p class="dst-hint">${theme} theme: 24px icons in the close button, select, chip and Delete button</p>
+    <div class="dst-scrim">
+      <ui-dialog title="Edit link" size="md" closeLabel="Close">
+        <ui-select label="Folder" [options]="folders" emptyLabel="Unsorted" searchLabel="Search folders" noResultsLabel="No folders" />
+        <ui-chip removable removeLabel="Remove tag angular">angular</ui-chip>
+        <ui-button slot="footer" variant="danger" iconLeft="trash">Delete</ui-button>
+        <ui-button slot="footer">Cancel</ui-button>
+        <ui-button slot="footer" variant="primary">Save changes</ui-button>
+      </ui-dialog>
+    </div>
+  </div>`;
+
+/** Icons are 24px inside a dialog and the footer buttons are 16px apart (Delete group included). */
+export const DialogControls: Story = {
+  render: () => ({
+    props: { folders: [{ id: 'work', name: 'Work' }] },
+    moduleMetadata: { imports: [DialogComponent, ButtonComponent, SelectComponent, ChipComponent] },
+    template: Object.values(THEME).map(controlsFrame).join(''),
+  }),
+};
 
 /** Both themes: destructive and plain confirmations and a medium dialog. */
 export const AllVariants: Story = {

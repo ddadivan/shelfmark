@@ -12,11 +12,15 @@
 .ui-button {
   @include type(label);
 
+  // Inside a dialog every icon is 24px (`--ui-dialog-icon-size` from `ui-dialog`).
+  --ui-icon-size: var(--ui-dialog-icon-size);
+
   display: inline-flex;
   gap: var(--space-2);
   align-items: center;
   justify-content: center;
   height: rem(36px);
+  min-width: var(--ui-button-min-width, 0);
   padding: 0 rem(14px);
   color: var(--text);
   white-space: nowrap;
@@ -97,6 +101,21 @@ a.ui-button {
   @include hover {
     filter: brightness(0.92);
   }
+}
+
+// A button that opens a menu (or any popup) stays pressed while it is open: one rule for every
+// menu trigger (`uiMenuTrigger` writes `aria-expanded` on the inner element).
+.ui-button--secondary[aria-expanded='true'],
+.ui-button--ghost[aria-expanded='true'] {
+  background: var(--surface-pressed);
+}
+
+.ui-button--primary[aria-expanded='true'] {
+  background: var(--primary-hover);
+}
+
+.ui-button--danger[aria-expanded='true'] {
+  filter: brightness(0.85);
 }
 
 // Loading: the spinner grows in while the label makes room (`spinner-grow`) and shrinks back

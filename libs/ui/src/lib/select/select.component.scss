@@ -38,6 +38,9 @@
 
 .ui-select__icon,
 .ui-select__chevron {
+  // 24px inside a dialog (`--icon-size-lg` from `ui-dialog`), 16px elsewhere.
+  --ui-icon-size: var(--ui-dialog-icon-size);
+
   flex: none;
   color: var(--text-muted);
 }
