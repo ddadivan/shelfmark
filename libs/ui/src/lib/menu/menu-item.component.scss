@@ -8,10 +8,12 @@
   @include type(body);
 
   display: flex;
-  gap: rem(10px);
+  gap: var(--space-3);
   align-items: center;
+  justify-content: flex-start;
   width: 100%;
   padding: rem(7px) rem(10px);
+  text-align: start;
   color: var(--text);
   cursor: pointer;
   user-select: none;
@@ -66,6 +68,7 @@
     flex: 1 1 auto;
     min-width: 0;
     overflow: hidden;
+    text-align: start;
     text-overflow: ellipsis;
     white-space: nowrap;
   }

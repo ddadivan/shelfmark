@@ -1,22 +1,23 @@
 @use '../../styles/ui' as *;
 
+// `--ui-icon-size` lets a context (a dialog) set one size for the icons of its controls.
 :host {
   display: inline-flex;
   flex: none;
-  width: rem(16px);
-  height: rem(16px);
+  width: var(--ui-icon-size, var(--icon-size-sm));
+  height: var(--ui-icon-size, var(--icon-size-sm));
   color: inherit;
   line-height: 0;
 }
 
 :host(.ui-icon--20) {
-  width: rem(20px);
-  height: rem(20px);
+  width: var(--ui-icon-size, var(--icon-size-md));
+  height: var(--ui-icon-size, var(--icon-size-md));
 }
 
 :host(.ui-icon--24) {
-  width: rem(24px);
-  height: rem(24px);
+  width: var(--ui-icon-size, var(--icon-size-lg));
+  height: var(--ui-icon-size, var(--icon-size-lg));
 }
 
 .ui-icon__svg {

@@ -10,7 +10,7 @@
   uiRipple
 >
   @if (icon(); as name) {
-    <ui-icon class="ui-menu-item__icon" [name]="name" [size]="16" />
+    <ui-icon class="ui-menu-item__icon" [name]="name" [size]="ICON_SIZE.Lg" />
   }
   <span #label class="ui-menu-item__label"><ng-content /></span>
   @if (shortcut(); as hint) {
