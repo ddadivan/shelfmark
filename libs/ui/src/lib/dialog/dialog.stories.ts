@@ -300,7 +300,7 @@ const controlsFrame = (theme: Theme) => `
   <div ${THEME_ATTRIBUTE}="${theme}" class="dst-gallery">
     <p class="dst-hint">${theme} theme: 24px icons in the close button, select, chip and Delete button</p>
     <div class="dst-scrim">
-      <ui-dialog title="Edit link" size="md" closeLabel="Close">
+      <ui-dialog title="Edit link (${theme})" size="md" closeLabel="Close">
         <ui-select label="Folder" [options]="folders" emptyLabel="Unsorted" searchLabel="Search folders" noResultsLabel="No folders" />
         <ui-chip removable removeLabel="Remove tag angular">angular</ui-chip>
         <ui-button slot="footer" variant="danger" iconLeft="trash">Delete</ui-button>
