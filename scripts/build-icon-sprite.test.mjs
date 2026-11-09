@@ -61,3 +61,15 @@ test('every source file builds and the committed output is fresh', () => {
   const sprite = readFileSync(join(ROOT, 'libs/ui/src/assets/icons/sprite.svg'), 'utf8');
   assert.equal(sprite.match(/<symbol /g)?.length, sources.length);
 });
+
+test('strips nested comment markers to a fixed point and refuses leftovers', () => {
+  // One pass over `<!<!---->--` leaves `<!--`; the loop removes what it can, the rest is refused.
+  assert.equal(
+    optimizeIcon('add', wrap('<!<!-- x -->-- y --><path d="M0 0h1"/>')),
+    '<path d="M0 0h1"/>',
+  );
+  assert.throws(
+    () => optimizeIcon('add', wrap('<!<!-- x --><path d="M0 0h1"/>')),
+    /must be removable/,
+  );
+});

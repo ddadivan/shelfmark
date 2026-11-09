@@ -68,7 +68,17 @@ function parseAttributes(source, where) {
  */
 export function optimizeIcon(name, svg) {
   const where = `${name}.svg`;
-  const text = svg.replace(DROPPED, '').trim();
+  // Strip repeatedly until nothing changes: a single pass can leave a new `<!--` behind when
+  // markers nest (`<!<!---->--`). Anything markup-like that survives is then refused outright.
+  let text = svg;
+  for (let previous = ''; previous !== text;) {
+    previous = text;
+    text = text.replace(DROPPED, '');
+  }
+  text = text.trim();
+  if (/<!|<\?/.test(text)) {
+    throw new Error(`${where}: comments, doctypes and processing instructions must be removable`);
+  }
   const root = text.match(/^<svg\b([^>]*)>([\s\S]*)<\/svg>$/);
   if (!root) {
     throw new Error(`${where}: not a single <svg> element`);
