@@ -144,7 +144,8 @@ export class SidebarTagsComponent {
         // "+" button (or the renamed chip) takes it; a control that took focus keeps it.
         setTimeout(() => {
           const active = doc.activeElement;
-          if (!active || active === doc.body) {
+          // Nowhere, or on a container around the sidebar (the drawer panel): nothing took it.
+          if (!active || active === doc.body || active.contains(this.host)) {
             this.restoreFocus(renamedId);
           }
         });

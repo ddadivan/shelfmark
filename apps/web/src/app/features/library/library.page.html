@@ -104,7 +104,7 @@
     </ui-button>
   </div>
   } }
-  <div #scroller class="library__scroll">
+  <div #scroller class="library__scroll" tabindex="-1">
     @if (store.error() && store.count() > 0 && !folderMissing()) {
     <ui-notice kind="danger" class="library__notice">
       {{ 'library.refetchFailed' | transloco }}

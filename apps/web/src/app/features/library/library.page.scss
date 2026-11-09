@@ -32,6 +32,12 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-gutter: stable;
+
+    // Focusable by script and by a click (so the keys scroll it), but not a tab stop; the cards
+    // inside are the focus targets, so no ring on the area itself.
+    &:focus {
+      outline: none;
+    }
   }
 }
 

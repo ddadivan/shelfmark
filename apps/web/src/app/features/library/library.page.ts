@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  afterNextRender,
   computed,
   DestroyRef,
   effect,
@@ -252,6 +253,17 @@ export default class LibraryPage {
   private readonly scroller = viewChild<ElementRef<HTMLElement>>('scroller');
 
   constructor() {
+    // The page no longer scrolls, so with focus on <body> the keys (Space, Page Down, End) would
+    // scroll nothing: the list area takes focus once, as the page itself used to take the keys.
+    afterNextRender(() => {
+      const area = this.scroller()?.nativeElement;
+      const doc = area?.ownerDocument;
+      if (area && doc && (!doc.activeElement || doc.activeElement === doc.body)) {
+        if (getComputedStyle(area).overflowY === 'auto') {
+          area.focus({ preventScroll: true });
+        }
+      }
+    });
     // A new view, sort or filter starts at the top of its list (the page scroll is reset by the
     // router; this area is not the page).
     effect(() => {

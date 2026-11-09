@@ -63,7 +63,7 @@ test.describe('tags (mock API)', () => {
 
       await add.click();
       await field.fill('unsaved-draft');
-      await page.getByRole('heading', { level: 1 }).click();
+      await sidebar(page).getByRole('heading', { name: 'Tags' }).click();
 
       await expect(field).toHaveCount(0);
       await expect(chip(page, 'unsaved-draft')).toHaveCount(0);
@@ -90,7 +90,7 @@ test.describe('tags (mock API)', () => {
       await pickTagMenuItem(page, DOCS, 'Rename');
       const field = sidebar(page).getByRole('textbox', { name: 'Tag name' });
       await field.fill('draft-name');
-      await page.getByRole('heading', { level: 1 }).click();
+      await sidebar(page).getByRole('heading', { name: 'Tags' }).click();
 
       await expect(field).toHaveCount(0);
       await expect(chip(page, DOCS)).toBeVisible();
