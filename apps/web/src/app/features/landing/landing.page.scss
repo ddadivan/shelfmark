@@ -17,11 +17,11 @@
   }
 
   @include landing.wide {
-    --landing-header-height: #{rem(112px)};
+    --landing-header-height: #{rem(96px)};
   }
 
   @include landing.xwide {
-    --landing-header-height: #{rem(136px)};
+    --landing-header-height: #{rem(108px)};
   }
 }
 

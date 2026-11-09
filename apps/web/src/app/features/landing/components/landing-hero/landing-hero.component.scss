@@ -52,13 +52,13 @@
   @include landing.eyebrow;
 
   @include landing.wide {
-    font-size: rem(16px);
-    line-height: rem(24px);
+    font-size: rem(15px);
+    line-height: rem(22px);
   }
 
   @include landing.xwide {
-    font-size: rem(20px);
-    line-height: rem(30px);
+    font-size: rem(17px);
+    line-height: rem(26px);
   }
 }
 
@@ -80,13 +80,13 @@
   }
 
   @include landing.wide {
-    font-size: rem(108px);
-    line-height: rem(100px);
+    font-size: rem(96px);
+    line-height: rem(88px);
   }
 
   @include landing.xwide {
-    font-size: rem(132px);
-    line-height: rem(122px);
+    font-size: rem(112px);
+    line-height: rem(104px);
   }
 }
 
@@ -111,15 +111,15 @@
   }
 
   @include landing.wide {
-    max-width: rem(620px);
-    font-size: rem(22px);
-    line-height: rem(34px);
+    max-width: rem(580px);
+    font-size: rem(20px);
+    line-height: rem(30px);
   }
 
   @include landing.xwide {
-    max-width: rem(760px);
-    font-size: rem(28px);
-    line-height: rem(42px);
+    max-width: rem(660px);
+    font-size: rem(23px);
+    line-height: rem(35px);
   }
 }
 
@@ -129,7 +129,7 @@
   gap: rem(10px);
 
   // `ui-button` has three fixed sizes in the library; the buttons grow with the screen instead.
-  @include landing.zoom(1.3, 1.65);
+  @include landing.zoom(1.2, 1.45);
 }
 
 // Stands in for the chat phone while it loads (same height from the shared size mixin), so the

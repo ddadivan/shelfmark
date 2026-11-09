@@ -23,11 +23,11 @@
   }
 
   @include landing.wide {
-    --ui-logo-size: #{rem(40px)};
+    --ui-logo-size: #{rem(34px)};
   }
 
   @include landing.xwide {
-    --ui-logo-size: #{rem(52px)};
+    --ui-logo-size: #{rem(40px)};
   }
 }
 
@@ -41,7 +41,7 @@
   align-items: center;
 
   // The sign-in button is a `ui-button`: it grows with the wide breakpoints like the hero buttons.
-  @include landing.zoom(1.25, 1.6);
+  @include landing.zoom(1.1, 1.2);
 
   @include landing.wide {
     gap: var(--space-8);
@@ -53,8 +53,8 @@
   @include landing.text-link;
 
   @include tablet-up {
-    font-size: rem(16px);
-    line-height: rem(24px);
+    font-size: rem(15px);
+    line-height: rem(22px);
   }
 
   // Anchors and GitHub are secondary on a phone; sign-in stays.
