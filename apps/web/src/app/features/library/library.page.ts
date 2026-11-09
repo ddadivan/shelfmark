@@ -4,8 +4,11 @@ import {
   computed,
   DestroyRef,
   effect,
+  ElementRef,
   inject,
   input,
+  untracked,
+  viewChild,
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
@@ -184,6 +187,8 @@ export default class LibraryPage {
   );
   protected readonly refetching = computed(() => this.store.loading() && this.store.loaded());
   protected readonly showLinks = computed(() => this.store.count() > 0);
+  /** Sort and view switch: with links, and while the first page loads (so the toolbar keeps its size). */
+  protected readonly showControls = computed(() => this.showLinks() || this.firstLoad());
 
   private readonly labels = toSignal(
     combineLatest([
@@ -243,7 +248,21 @@ export default class LibraryPage {
       ),
     ),
   );
+  /** The scroll area of the feed (the page itself scrolls on a phone). */
+  private readonly scroller = viewChild<ElementRef<HTMLElement>>('scroller');
+
   constructor() {
+    // A new view, sort or filter starts at the top of its list (the page scroll is reset by the
+    // router; this area is not the page).
+    effect(() => {
+      this.filter();
+      untracked(() => {
+        const area = this.scroller()?.nativeElement;
+        if (area) {
+          area.scrollTop = 0;
+        }
+      });
+    });
     effect(() => {
       const text = this.pageTitle();
       if (text !== undefined && this.heading() !== undefined) {
