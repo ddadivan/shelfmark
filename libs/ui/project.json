@@ -20,6 +20,23 @@
         "development": {
           "tsConfig": "libs/ui/tsconfig.lib.json"
         }
+      },
+      "dependsOn": ["^build", "icons"]
+    },
+    "icons": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        "{workspaceRoot}/libs/ui/src/icons/**",
+        "{workspaceRoot}/scripts/build-icon-sprite.mjs"
+      ],
+      "outputs": [
+        "{workspaceRoot}/libs/ui/src/assets/icons/sprite.svg",
+        "{workspaceRoot}/libs/ui/src/lib/icon/models/icon-names.const.ts"
+      ],
+      "options": {
+        "command": "node scripts/build-icon-sprite.mjs",
+        "cwd": "{workspaceRoot}"
       }
     },
     "test": {
@@ -30,16 +47,28 @@
         "runner": "vitest",
         "watch": false,
         "coverage": true,
-        "coverageThresholds": { "statements": 80, "branches": 80, "functions": 80, "lines": 80 },
+        "coverageThresholds": {
+          "statements": 80,
+          "branches": 80,
+          "functions": 80,
+          "lines": 80
+        },
         "coverageExclude": ["**/*.stories.ts", "**/index.ts", "**/models/**", "**/testing/**"]
-      }
+      },
+      "dependsOn": ["icons"]
+    },
+    "storybook": {
+      "dependsOn": ["icons"]
     },
     "build-storybook": {
+      "dependsOn": ["icons"],
       "inputs": [
         "default",
         "^production",
         "{workspaceRoot}/package.json",
-        { "externalDependencies": ["storybook"] }
+        {
+          "externalDependencies": ["storybook"]
+        }
       ]
     },
     "test-storybook": {
@@ -50,8 +79,13 @@
         "default",
         "^production",
         "{workspaceRoot}/package.json",
-        { "dependentTasksOutputFiles": "**/*", "transitive": false },
-        { "externalDependencies": ["@playwright/test", "axe-core"] }
+        {
+          "dependentTasksOutputFiles": "**/*",
+          "transitive": false
+        },
+        {
+          "externalDependencies": ["@playwright/test", "axe-core"]
+        }
       ],
       "options": {
         "command": "playwright test -c libs/ui/a11y/playwright.storybook.config.mts",

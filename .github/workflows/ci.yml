@@ -70,6 +70,9 @@ jobs:
           }
       - run: node --test .claude/hooks/
       - run: node --test scripts/
+      # Nx regenerates the sprite before build and test, so drift would be hidden there.
+      - name: Check the icon sprite and ICON_NAMES are up to date
+        run: node scripts/build-icon-sprite.mjs --check
       - run: npx nx affected -t lint typecheck test build --output-style=static
       # Applies every migration to the Postgres service and fails when the result differs from
       # schema.prisma (a schema change without a migration). Only when `api` is affected.
