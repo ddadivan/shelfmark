@@ -115,6 +115,8 @@
     <ul
       class="library__folders"
       [class.library__folders--rows]="ui.view() === UI_VIEW.List"
+      [class.library__folders--stale]="stale()"
+      [attr.inert]="stale() ? '' : null"
       [attr.aria-label]="'library.subfolders.label' | transloco"
     >
       @for (item of subfolders(); track item.folder.id) {

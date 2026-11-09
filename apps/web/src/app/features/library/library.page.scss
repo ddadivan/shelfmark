@@ -179,6 +179,12 @@
   }
 }
 
+// The same dimming as the stale cards (`library__list--stale`) while the next view loads.
+.library__folders--stale {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
 .library__more {
   display: flex;
   flex-direction: column;
