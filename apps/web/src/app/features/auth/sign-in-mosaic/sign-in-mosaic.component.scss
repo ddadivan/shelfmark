@@ -1,0 +1,349 @@
+@use 'sass:list';
+@use 'ui' as *;
+
+// Depth of each tile for the pointer parallax, and the step at which its ring pulses.
+$depths: 0.6, 1.1, 0.8, 1.2, 0.5, 0.9, 0.7, 1;
+$ring-steps: 2, 5, 0, 7, 3, 6, 1, 4;
+$gap: rem(16px);
+
+:host {
+  display: block;
+  width: 100%;
+  pointer-events: none;
+
+  @include desktop {
+    max-width: rem(560px);
+    pointer-events: auto;
+  }
+}
+
+.mz {
+  --px: 0;
+  --py: 0;
+
+  position: relative;
+  width: 100%;
+}
+
+// Below 64em: a static band of tiles that bleeds off both edges (MobileSignIn.dc.html).
+.mz-grid {
+  --col-a: 130fr;
+  --col-b: 130fr;
+  --col-c: 160fr;
+
+  display: grid;
+  grid-template-columns: var(--col-a) var(--col-b) var(--col-c);
+  grid-template-rows: rem(110px) rem(90px) rem(110px);
+  gap: $gap;
+  width: calc(100% + #{rem(60px)});
+  margin: rem(-20px) 0 0 rem(-30px);
+}
+
+.mz-tile {
+  position: relative;
+  perspective: #{rem(900px)};
+  animation: mz-in 600ms var(--ease-out) backwards;
+  animation-delay: calc(var(--i, 0) * 70ms + 150ms);
+
+  @include reduced-motion {
+    animation: none;
+    transition: none;
+  }
+}
+
+@for $i from 0 to 8 {
+  .mz-tile--#{$i} {
+    --i: #{$i};
+    --d: #{list.nth($depths, $i + 1)};
+  }
+
+  .mz-tile--#{$i} .mz-ring {
+    --n: #{list.nth($ring-steps, $i + 1)};
+  }
+}
+
+.mz-tile--4 {
+  grid-column: 2 / span 2;
+}
+
+.mz-px {
+  height: 100%;
+}
+
+.mz-inner {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-lg);
+  transform-style: preserve-3d;
+}
+
+.mz-face {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4);
+  text-align: left;
+  backface-visibility: hidden;
+  border-radius: var(--radius-lg);
+}
+
+.mz-front--accent-soft {
+  background: var(--accent-bg);
+}
+
+.mz-front--accent {
+  background: var(--accent);
+}
+
+.mz-front--primary {
+  background: var(--primary);
+}
+
+.mz-front--muted {
+  background: var(--text-muted);
+}
+
+.mz-front {
+  justify-content: flex-end;
+}
+
+.mz-front--square {
+  justify-content: flex-start;
+}
+
+.mz-pill {
+  display: block;
+  height: rem(16px);
+  background: var(--accent);
+  border-radius: rem(8px);
+}
+
+.mz-pill--sm {
+  width: rem(48px);
+}
+
+.mz-pill--md {
+  width: rem(56px);
+}
+
+.mz-pill--lg {
+  width: rem(64px);
+}
+
+.mz-pills {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.mz-sq {
+  display: block;
+  width: rem(16px);
+  height: rem(16px);
+  background: var(--bg);
+  border-radius: rem(4px);
+}
+
+.mz-back {
+  gap: rem(6px);
+  justify-content: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 0 0 1px var(--border);
+  transform: rotateY(180deg);
+
+  // Hidden until the tile is flipped (the flip takes 520ms, so it shows halfway): the text is not
+  // there for assistive technology or contrast checks while its face is turned away.
+  visibility: hidden;
+  transition: visibility 0s linear 260ms;
+}
+
+.is-flipped .mz-back {
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.mz-meta {
+  @include type(caption);
+
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  color: var(--text-muted);
+}
+
+.mz-title {
+  @include type(label);
+  @include line-clamp(2);
+
+  color: var(--text);
+}
+
+.mz-note {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+.mz-ring {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: var(--radius-lg);
+  box-shadow: inset 0 0 0 3px var(--accent);
+  opacity: 0;
+  animation: mz-ring 24s var(--ease-out) infinite;
+  animation-delay: calc(var(--n, 0) * 3s + 1.6s);
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+// Desktop: eight absolute slots that tiles trade, parallax, hover lift and flip on click.
+@include desktop {
+  .mz-grid {
+    position: relative;
+    display: block;
+    width: auto;
+    height: rem(372px);
+    margin: 0;
+
+    --cw: calc((100% - #{rem(32px)}) / 3);
+  }
+
+  .mz-tile {
+    position: absolute;
+    transition:
+      left 800ms var(--ease-in-out),
+      top 800ms var(--ease-in-out),
+      width 800ms var(--ease-in-out),
+      height 800ms var(--ease-in-out);
+  }
+
+  .mz-slot--a {
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    width: var(--cw);
+    height: rem(120px);
+  }
+
+  .mz-slot--b {
+    inset-block-start: 0;
+    inset-inline-start: calc(var(--cw) + #{$gap});
+    width: var(--cw);
+    height: rem(120px);
+  }
+
+  .mz-slot--c {
+    inset-block-start: 0;
+    inset-inline-start: calc(var(--cw) * 2 + #{rem(32px)});
+    width: var(--cw);
+    height: rem(120px);
+  }
+
+  .mz-slot--d {
+    inset-block-start: rem(136px);
+    inset-inline-start: 0;
+    width: var(--cw);
+    height: rem(100px);
+  }
+
+  .mz-slot--e {
+    inset-block-start: rem(136px);
+    inset-inline-start: calc(var(--cw) + #{$gap});
+    width: calc(var(--cw) * 2 + #{$gap});
+    height: rem(100px);
+  }
+
+  .mz-slot--f {
+    inset-block-start: rem(252px);
+    inset-inline-start: 0;
+    width: var(--cw);
+    height: rem(120px);
+  }
+
+  .mz-slot--g {
+    inset-block-start: rem(252px);
+    inset-inline-start: calc(var(--cw) + #{$gap});
+    width: var(--cw);
+    height: rem(120px);
+  }
+
+  .mz-slot--h {
+    inset-block-start: rem(252px);
+    inset-inline-start: calc(var(--cw) * 2 + #{rem(32px)});
+    width: var(--cw);
+    height: rem(120px);
+  }
+
+  .mz-tile--4 {
+    grid-column: auto;
+  }
+
+  .mz-px {
+    transform: translate(
+      calc(var(--px) * var(--d) * #{rem(14px)}),
+      calc(var(--py) * var(--d) * #{rem(12px)})
+    );
+    transition: transform 500ms var(--ease-out);
+
+    @include reduced-motion {
+      transform: none;
+      transition: none;
+    }
+  }
+
+  .mz-inner {
+    transition:
+      transform 520ms var(--ease-out),
+      box-shadow 320ms var(--ease-out);
+
+    @include reduced-motion {
+      transition: none;
+    }
+
+    &.is-flipped {
+      transform: rotateY(180deg);
+    }
+
+    @include hover {
+      box-shadow: 0 22px 40px -22px color-mix(in srgb, var(--text) 45%, transparent);
+      transform: translateY(#{rem(-6px)}) rotateX(4deg);
+
+      &.is-flipped {
+        transform: rotateY(180deg) translateY(#{rem(-6px)});
+      }
+    }
+  }
+
+  .mz-inner {
+    cursor: pointer;
+  }
+}
+
+@keyframes mz-in {
+  from {
+    opacity: 0;
+    transform: translateY(#{rem(18px)}) scale(0.92);
+  }
+}
+
+@keyframes mz-ring {
+  0%,
+  2% {
+    opacity: 0;
+  }
+
+  3.5% {
+    opacity: 1;
+  }
+
+  9%,
+  100% {
+    opacity: 0;
+  }
+}
