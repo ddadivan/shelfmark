@@ -66,6 +66,28 @@ export const WithButtonTrigger: Story = {
   }),
 };
 
+/** The menu is open: the trigger stays pressed (`aria-expanded`), items are 24px icons, text at the start. */
+export const OpenMenu: Story = {
+  render: (args) => ({
+    props: args,
+    moduleMetadata: { imports },
+    template: `
+      <div class="ms-panel">
+        <div class="ms-row">
+          <ui-button [uiMenuTrigger]="menu" variant="secondary" iconRight="chevron-down">Newest first</ui-button>
+        </div>
+        <ui-menu #menu [align]="align" ariaLabel="Sort links">
+          <ui-menu-item icon="clock" type="radio" [selected]="true">Newest first</ui-menu-item>
+          <ui-menu-item icon="clock" type="radio">Oldest first</ui-menu-item>
+          <ui-menu-item icon="edit" type="radio">Title A to Z</ui-menu-item>
+        </ui-menu>
+      </div>`,
+  }),
+  play: async ({ canvasElement }) => {
+    canvasElement.querySelector('button')?.click();
+  },
+};
+
 /** An icon-only trigger at the end of a row: the menu lines up with its right edge. */
 export const IconOnlyTrigger: Story = {
   args: { align: MENU_ALIGN.End },

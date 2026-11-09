@@ -13,6 +13,7 @@ import {
 } from '@angular/core';
 import { IconComponent } from '../icon/icon.component';
 import type { IconName } from '../icon/models/icon-name.type';
+import { ICON_SIZE } from '../icon/models/icon-size.const';
 import { RippleDirective } from '../ripple/ripple.directive';
 import type { MenuItemType } from './models/menu-item-type.type';
 import { MENU_ITEM_TYPE } from './models/menu-item-type.const';
@@ -66,6 +67,7 @@ export class MenuItemComponent {
 
   /** Whether this is the item the menu pattern has under the cursor or focus. */
   protected readonly MENU_ITEM_TYPE = MENU_ITEM_TYPE;
+  protected readonly ICON_SIZE = ICON_SIZE;
 
   readonly isActive = computed(() => this.aria().active());
 

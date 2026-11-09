@@ -81,7 +81,15 @@ const TEXTS = {
       }
       <p slot="empty">Nothing found for “{{ query() }}”</p>
       <span slot="footer"><kbd>↑</kbd> <kbd>↓</kbd> move</span>
-      <span slot="footer"><kbd>↵</kbd> open</span>
+      <span slot="footer"
+        ><kbd><span aria-hidden="true">↑</span><span class="ui-command-list__sr">Up</span></kbd
+        ><kbd><span aria-hidden="true">↓</span><span class="ui-command-list__sr">Down</span></kbd>
+        move</span
+      >
+      <span slot="footer"
+        ><kbd><span aria-hidden="true">↵</span><span class="ui-command-list__sr">Enter</span></kbd>
+        open</span
+      >
       <span slot="footer"><kbd>⌘</kbd> <kbd>↵</kbd> open in background</span>
     </ui-command-list>
   `,

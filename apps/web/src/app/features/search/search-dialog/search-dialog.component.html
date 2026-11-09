@@ -89,17 +89,37 @@
       }
     </p>
 
-    <span slot="footer"><kbd>↑</kbd> <kbd>↓</kbd> {{ 'search.hints.move' | transloco }}</span>
-    <span slot="footer"><kbd>↵</kbd> {{ 'search.hints.open' | transloco }}</span>
+    <span slot="footer"
+      ><kbd
+        ><span aria-hidden="true">↑</span
+        ><span class="ui-command-list__sr">{{ 'search.hints.up' | transloco }}</span></kbd
+      ><kbd
+        ><span aria-hidden="true">↓</span
+        ><span class="ui-command-list__sr">{{ 'search.hints.down' | transloco }}</span></kbd
+      >
+      {{ 'search.hints.move' | transloco }}</span
+    >
+    <span slot="footer"
+      ><kbd
+        ><span aria-hidden="true">↵</span
+        ><span class="ui-command-list__sr">{{ 'search.hints.enter' | transloco }}</span></kbd
+      >
+      {{ 'search.hints.open' | transloco }}</span
+    >
     <span slot="footer"
       ><kbd>
         @if (mac) {
-          ⌘
+          <span aria-hidden="true">⌘</span
+          ><span class="ui-command-list__sr">{{ 'search.hints.command' | transloco }}</span>
         } @else {
           {{ 'search.hints.ctrl' | transloco }}
         }
       </kbd>
-      <kbd>↵</kbd> {{ 'search.hints.background' | transloco }}</span
+      <kbd
+        ><span aria-hidden="true">↵</span
+        ><span class="ui-command-list__sr">{{ 'search.hints.enter' | transloco }}</span></kbd
+      >
+      {{ 'search.hints.background' | transloco }}</span
     >
   </ui-command-list>
 </ui-dialog>

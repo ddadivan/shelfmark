@@ -11,17 +11,30 @@
   background: var(--surface);
 
   // Keyboard hint (`Esc`, an arrow, the Enter symbol): input end slot, footer and item trailing.
+  // 24px tall cap, symbols and labels 14px; `--text-muted` on `--bg` is AA in both themes.
   kbd {
     @include type(caption);
 
+    display: inline-flex;
     flex: none;
-    padding: 0 rem(5px);
+    align-items: center;
+    justify-content: center;
+    min-width: rem(24px);
+    height: rem(24px);
+    padding: 0 rem(8px);
     font-family: var(--font-mono);
+    font-size: rem(14px);
+    line-height: 1;
     color: var(--text-muted);
     background: var(--bg);
     border: 1px solid var(--border);
-    border-radius: rem(5px);
+    border-radius: rem(6px);
   }
+}
+
+// Spoken name of a key symbol (`<kbd><span aria-hidden>↑</span><span class="ui-command-list__sr">Up</span></kbd>`).
+.ui-command-list__sr {
+  @include visually-hidden;
 }
 
 .ui-command-list__field {
@@ -183,9 +196,19 @@
 
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-4);
+  gap: var(--space-2) var(--space-6);
   align-items: center;
-  padding: rem(10px) var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  font-size: rem(14px);
+  line-height: rem(20px);
+
+  // One hint: the caps, then the label.
+  > [slot='footer'] {
+    display: inline-flex;
+    gap: var(--space-2);
+    align-items: center;
+  }
+
   color: var(--text-muted);
   border-top: 1px solid var(--border);
 

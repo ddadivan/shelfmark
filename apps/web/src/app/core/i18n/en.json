@@ -787,6 +787,10 @@
     "failed": "Couldn't search. Try again.",
     "hints": {
       "ctrl": "Ctrl",
+      "command": "Command",
+      "up": "Up",
+      "down": "Down",
+      "enter": "Enter",
       "move": "move",
       "open": "open",
       "background": "open in background"
