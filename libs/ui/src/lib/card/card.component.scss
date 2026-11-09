@@ -35,7 +35,12 @@
   @include hover {
     background: var(--card-hover-bg);
     border-color: var(--card-hover-border);
-    box-shadow: var(--shadow-card-spread);
+
+    // `--shadow-x` / `--shadow-y` come from `uiPointerShadow` (a few px, away from the
+    // pointer); without the directive they are 0 and the extra layer just deepens the spread.
+    box-shadow:
+      var(--shadow-card-spread),
+      var(--shadow-x, 0) var(--shadow-y, 0) 24px -10px var(--shadow-card-pointer);
 
     .ui-card__overlay {
       opacity: 1;
