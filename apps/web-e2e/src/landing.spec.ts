@@ -271,7 +271,7 @@ test.describe('landing scenes and reveals', () => {
         (el) =>
           el
             .getAnimations({ subtree: true })
-            .filter((animation) => animation.playState === 'running').length,
+            .filter((animation: { playState: string }) => animation.playState === 'running').length,
       );
 
     await expect(board.getByText('Bookmarks bar (91)')).toHaveCSS('opacity', '1');
@@ -476,7 +476,8 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
                 (el) =>
                   el
                     .getAnimations({ subtree: true })
-                    .filter((animation) => animation.playState === 'running').length,
+                    .filter((animation: { playState: string }) => animation.playState === 'running')
+                    .length,
               ),
             {
               timeout: 10_000,
