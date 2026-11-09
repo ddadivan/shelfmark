@@ -4,6 +4,4 @@ export const LANDING_REVEAL = {
   Threshold: 0.2,
   /** Delay between two children of a revealed section. */
   StaggerMs: 60,
-  /** A hidden section is forced visible this long after hiding, should the observer never fire. */
-  SafetyMs: 1000,
 } as const;

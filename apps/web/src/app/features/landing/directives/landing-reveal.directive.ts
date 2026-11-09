@@ -39,35 +39,41 @@ export class LandingRevealDirective {
     if (this.motion.reducedMotion() || typeof IntersectionObserver === 'undefined') {
       return;
     }
-    if (this.isVisibleEnough(this.visiblePixels(), this.host.getBoundingClientRect().height)) {
-      return;
-    }
-    Array.from(this.host.children).forEach((child, index) => {
-      if (child instanceof HTMLElement) {
-        child.style.setProperty(DELAY_PROPERTY, `${index * LANDING_REVEAL.StaggerMs}ms`);
-      }
-    });
-    this.state.set(LANDING_REVEAL_STATE.Pending);
-
+    // Nothing is read synchronously (no layout flush at startup): the observer's first report,
+    // which the browser delivers after layout anyway, decides whether the section starts hidden.
+    // Until then the content stays visible, so a section that never gets a report is never hidden.
+    let pendingSet = false;
     const reveal = (): void => {
       this.state.set(LANDING_REVEAL_STATE.Shown);
       this.showNow = undefined;
       observer.disconnect();
-      clearTimeout(safety);
     };
-    this.showNow = reveal;
     const observer = new IntersectionObserver(
       (entries) => {
-        // The observer reports, so the safety net is no longer needed: an off-screen section
-        // stays hidden until it scrolls in, however long that takes.
-        clearTimeout(safety);
-        if (
-          entries.some(
-            (entry) =>
-              entry.isIntersecting &&
-              this.isVisibleEnough(entry.intersectionRect.height, entry.boundingClientRect.height),
-          )
-        ) {
+        const visible = entries.some(
+          (entry) =>
+            entry.isIntersecting &&
+            this.isVisibleEnough(
+              entry.intersectionRect.height,
+              entry.boundingClientRect.height,
+              entry.rootBounds?.height ?? this.viewportHeight(),
+            ),
+        );
+        if (!pendingSet) {
+          if (visible) {
+            // Already on screen at load: never hidden, nothing more to watch.
+            observer.disconnect();
+            return;
+          }
+          pendingSet = true;
+          Array.from(this.host.children).forEach((child, index) => {
+            if (child instanceof HTMLElement) {
+              child.style.setProperty(DELAY_PROPERTY, `${index * LANDING_REVEAL.StaggerMs}ms`);
+            }
+          });
+          this.showNow = reveal;
+          this.state.set(LANDING_REVEAL_STATE.Pending);
+        } else if (visible) {
           reveal();
         }
       },
@@ -75,14 +81,8 @@ export class LandingRevealDirective {
       // 20% visible) is still seen; the Threshold fires for the usual case.
       { threshold: [0, LANDING_REVEAL.Threshold] },
     );
-    // Never leave content hidden if the observer does not report at all; the first report
-    // clears this timer.
-    const safety = setTimeout(reveal, LANDING_REVEAL.SafetyMs);
     observer.observe(this.host);
-    this.destroyRef.onDestroy(() => {
-      observer.disconnect();
-      clearTimeout(safety);
-    });
+    this.destroyRef.onDestroy(() => observer.disconnect());
   }
 
   /** Keyboard focus inside a hidden section must never land on invisible content. */
@@ -94,21 +94,18 @@ export class LandingRevealDirective {
    * Enough is visible when it is at least the threshold share of the section, or of the
    * viewport: a section taller than `1 / Threshold` viewports can never reach the first.
    */
-  private isVisibleEnough(visiblePixels: number, sectionHeight: number): boolean {
+  private isVisibleEnough(
+    visiblePixels: number,
+    sectionHeight: number,
+    viewportHeight: number,
+  ): boolean {
     if (sectionHeight <= 0 || visiblePixels <= 0) {
       return false;
     }
     const threshold = LANDING_REVEAL.Threshold;
     return (
-      visiblePixels >= sectionHeight * threshold ||
-      visiblePixels >= this.viewportHeight() * threshold
+      visiblePixels >= sectionHeight * threshold || visiblePixels >= viewportHeight * threshold
     );
-  }
-
-  /** Height of the host already inside the viewport (0 when it has no size yet). */
-  private visiblePixels(): number {
-    const { top, bottom } = this.host.getBoundingClientRect();
-    return Math.min(bottom, this.viewportHeight()) - Math.max(top, 0);
   }
 
   private viewportHeight(): number {
