@@ -21,10 +21,9 @@ import { LandingRevealDirective } from '../../directives/landing-reveal.directiv
 /**
  * "The same links, before and after": the scattered mess next to the shelf. `activeFolder` is the
  * folder the shelf shows; while the block is on screen in a visible tab (and motion is allowed)
- * it steps through `LANDING_FOLDER_CYCLE` once over `LANDING_LOOP.ShelfCycleMs`, ends back on the
- * first folder (Clothes) and stays there. It is finite, so it needs no pause control (WCAG 2.2.2
- * only asks for one for moving content that goes on for more than five seconds without end).
- * Otherwise the static frame (Clothes) stays.
+ * and the pointer or focus is not inside it, it steps through `LANDING_FOLDER_CYCLE` forever,
+ * one folder per `LANDING_LOOP.ShelfCycleMs / cycle length`. Otherwise it holds its frame, and
+ * under reduced motion the static frame (Clothes) stays.
  */
 @Component({
   selector: 'app-landing-before-after',
@@ -47,24 +46,38 @@ export class LandingBeforeAfterComponent {
   /** Id of the folder whose links are listed (`LANDING_TREE_ROWS`). */
   protected readonly activeFolder = signal<LandingFolder>(LANDING_FOLDER.Clothes);
 
-  /** Folder changes played so far; the cycle runs once and stops after `LANDING_FOLDER_CYCLE.length`. */
-  private readonly played = signal(0);
-  /** A computed boolean: the effect below reruns only when the cycle ends, not on every step. */
-  private readonly finished = computed(() => this.played() >= LANDING_FOLDER_CYCLE.length);
+  private readonly hovered = signal(false);
+  private readonly focused = signal(false);
+  /** The pointer is over the section or focus is inside it: both loops hold their frame. */
+  protected readonly paused = computed(() => this.hovered() || this.focused());
 
   constructor() {
     const gate = inject(LandingLoopGateDirective);
     const stepMs = LANDING_LOOP.ShelfCycleMs / LANDING_FOLDER_CYCLE.length;
+    // DELIBERATE DECISION BY THE AUTHOR: this loop goes on forever and has no pause button
+    // (WCAG 2.2.2 pause control intentionally omitted). The mitigations are: it stays static
+    // under reduced motion, it runs only while on screen in a visible tab, and it pauses while
+    // the pointer is over the section or focus is inside it.
     effect((onCleanup) => {
-      if (!gate.active() || this.finished()) {
+      if (!gate.active() || this.paused()) {
         return;
       }
-      const timer = setInterval(() => {
-        this.activeFolder.update(nextFolder);
-        this.played.update((value) => value + 1);
-      }, stepMs);
+      const timer = setInterval(() => this.activeFolder.update(nextFolder), stepMs);
       onCleanup(() => clearInterval(timer));
     });
+  }
+
+  protected setHovered(value: boolean): void {
+    this.hovered.set(value);
+  }
+
+  protected onFocusIn(): void {
+    this.focused.set(true);
+  }
+
+  protected onFocusOut(event: FocusEvent, container: HTMLElement): void {
+    const next = event.relatedTarget;
+    this.focused.set(next instanceof Node && container.contains(next));
   }
 }
 

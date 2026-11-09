@@ -3,10 +3,17 @@
     <h2 id="landing-ba-title" class="landing-ba__title">
       {{ 'landing.beforeAfter.title' | transloco }}
     </h2>
-    <div class="landing-ba__scenes">
+    <div
+      #scenes
+      class="landing-ba__scenes"
+      (pointerenter)="setHovered(true)"
+      (pointerleave)="setHovered(false)"
+      (focusin)="onFocusIn()"
+      (focusout)="onFocusOut($event, scenes)"
+    >
       <div class="landing-ba__scene">
         <h3 class="landing-ba__label">{{ 'landing.beforeAfter.before' | transloco }}</h3>
-        <app-landing-before-scene />
+        <app-landing-before-scene [paused]="paused()" />
       </div>
 
       <div class="landing-ba__scene">

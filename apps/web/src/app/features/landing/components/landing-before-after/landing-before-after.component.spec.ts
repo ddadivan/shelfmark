@@ -141,37 +141,100 @@ describe('LandingBeforeAfterComponent', () => {
       expect(MockIntersectionObserver.instances.every((o) => o.disconnected)).toBe(true);
     });
 
-    it('plays the cycle once, ends on Clothes and starts no timer afterwards', async () => {
+    it('keeps advancing past one full cycle and never ends', async () => {
       const { fixture, activeRow, show } = await start();
       fixture.detectChanges();
       show(true);
 
-      await vi.advanceTimersByTimeAsync(STEP_MS * 3);
-      fixture.detectChanges();
-      expect(activeRow()).toBe('Clothes');
-      expect(vi.getTimerCount()).toBe(0);
+      const seen: (string | undefined)[] = [];
+      for (let step = 0; step < 7; step++) {
+        await vi.advanceTimersByTimeAsync(STEP_MS);
+        fixture.detectChanges();
+        seen.push(activeRow());
+      }
 
-      await vi.advanceTimersByTimeAsync(STEP_MS * 6);
-      fixture.detectChanges();
-      expect(activeRow()).toBe('Clothes');
-      expect(vi.getTimerCount()).toBe(0);
+      expect(seen).toEqual([
+        'Angular',
+        'Recipes',
+        'Clothes',
+        'Angular',
+        'Recipes',
+        'Clothes',
+        'Angular',
+      ]);
+      expect(vi.getTimerCount()).toBe(1);
     });
 
-    it('has no pause control and ignores the pointer and focus', async () => {
-      const { fixture, activeRow, show } = await start();
+    it('has no pause control', async () => {
+      const { fixture, show } = await start();
       fixture.detectChanges();
       show(true);
       const root = fixture.nativeElement as HTMLElement;
-      const scenes = root.querySelector('.landing-ba__scenes') as HTMLElement;
 
       expect(root.querySelector('button')).toBeNull();
       expect(root.textContent).not.toContain('Pause');
+    });
+
+    it('pauses while the pointer is over the section and resumes after', async () => {
+      const { fixture, activeRow, show } = await start();
+      fixture.detectChanges();
+      show(true);
+      const scenes = (fixture.nativeElement as HTMLElement).querySelector(
+        '.landing-ba__scenes',
+      ) as HTMLElement;
+
       scenes.dispatchEvent(new Event('pointerenter'));
-      scenes.dispatchEvent(new Event('focusin'));
+      fixture.detectChanges();
+      await vi.advanceTimersByTimeAsync(STEP_MS * 4);
+      fixture.detectChanges();
+      expect(activeRow()).toBe('Clothes');
+      expect(vi.getTimerCount()).toBe(0);
+
+      scenes.dispatchEvent(new Event('pointerleave'));
+      fixture.detectChanges();
       await vi.advanceTimersByTimeAsync(STEP_MS);
       fixture.detectChanges();
-
       expect(activeRow()).toBe('Angular');
+    });
+
+    it('pauses while focus is inside the section and resumes after', async () => {
+      const { fixture, activeRow, show } = await start();
+      fixture.detectChanges();
+      show(true);
+      const scenes = (fixture.nativeElement as HTMLElement).querySelector(
+        '.landing-ba__scenes',
+      ) as HTMLElement;
+
+      scenes.dispatchEvent(new Event('focusin'));
+      fixture.detectChanges();
+      await vi.advanceTimersByTimeAsync(STEP_MS * 4);
+      fixture.detectChanges();
+      expect(activeRow()).toBe('Clothes');
+      expect(vi.getTimerCount()).toBe(0);
+
+      scenes.dispatchEvent(new FocusEvent('focusout', { relatedTarget: null }));
+      fixture.detectChanges();
+      await vi.advanceTimersByTimeAsync(STEP_MS);
+      fixture.detectChanges();
+      expect(activeRow()).toBe('Angular');
+    });
+
+    it('stays paused while the pointer is out but focus is still inside', async () => {
+      const { fixture, activeRow, show } = await start();
+      fixture.detectChanges();
+      show(true);
+      const scenes = (fixture.nativeElement as HTMLElement).querySelector(
+        '.landing-ba__scenes',
+      ) as HTMLElement;
+
+      scenes.dispatchEvent(new Event('focusin'));
+      scenes.dispatchEvent(new Event('pointerenter'));
+      scenes.dispatchEvent(new Event('pointerleave'));
+      fixture.detectChanges();
+      await vi.advanceTimersByTimeAsync(STEP_MS * 2);
+      fixture.detectChanges();
+
+      expect(activeRow()).toBe('Clothes');
     });
   });
 });

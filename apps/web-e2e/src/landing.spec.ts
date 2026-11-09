@@ -238,7 +238,23 @@ test.describe('landing scenes and reveals', () => {
     );
   });
 
-  test('the shelf plays through the folders once and then stays still, with no pause control', async ({
+  test('the shelf keeps cycling past one full pass, with no pause control', async ({ page }) => {
+    test.setTimeout(60_000);
+    await page.goto('/');
+    const shelf = page.getByRole('region', { name: 'The same links, before and after' });
+    await shelf.scrollIntoViewIfNeeded();
+    await page.mouse.move(0, 0);
+    const activeRow = shelf.getByTestId('landing-ba-active-row');
+
+    // Clothes, Angular, Recipes, Clothes again and on to Angular (3 s each).
+    await expect(activeRow).toHaveText('Angular', { timeout: 15_000 });
+    await expect(activeRow).toHaveText('Recipes', { timeout: 6000 });
+    await expect(activeRow).toHaveText('Clothes', { timeout: 6000 });
+    await expect(activeRow).toHaveText('Angular', { timeout: 6000 });
+    await expect(shelf.getByRole('button')).toHaveCount(0);
+  });
+
+  test('the shelf pauses while the pointer is over the section and resumes after', async ({
     page,
   }) => {
     test.setTimeout(60_000);
@@ -246,42 +262,48 @@ test.describe('landing scenes and reveals', () => {
     const shelf = page.getByRole('region', { name: 'The same links, before and after' });
     await shelf.scrollIntoViewIfNeeded();
     const activeRow = shelf.getByTestId('landing-ba-active-row');
-
-    // One pass: Clothes, Angular, Recipes, back to Clothes (3 s each).
     await expect(activeRow).toHaveText('Angular', { timeout: 15_000 });
-    await expect(activeRow).toHaveText('Recipes', { timeout: 6000 });
-    await expect(activeRow).toHaveText('Clothes', { timeout: 6000 });
 
-    // Over: a longer wait than a step on the same row proves it stopped, and nothing offers a pause.
+    await shelf.locator('.landing-ba__scenes').hover();
+    const held = await activeRow.textContent();
+    await page.waitForTimeout(4000);
+    await expect(activeRow).toHaveText(held ?? '');
+
     await page.mouse.move(0, 0);
-    await page.waitForTimeout(3500);
-    await expect(activeRow).toHaveText('Clothes');
-    await expect(shelf.getByRole('button')).toHaveCount(0);
+    await expect(activeRow).not.toHaveText(held ?? '', { timeout: 6000 });
   });
 
-  test('the scattered board comes in once, then stays still and does not react to the pointer', async ({
+  test('the scattered board comes in, then floats on and holds still under the pointer', async ({
     page,
   }) => {
     await page.goto('/');
     const shelf = page.getByRole('region', { name: 'The same links, before and after' });
     await shelf.scrollIntoViewIfNeeded();
+    await page.mouse.move(0, 0);
     const board = shelf.getByRole('img', { name: /scattered across Saved Messages/ });
-    const running = (): Promise<number> =>
-      board.evaluate(
-        (el) =>
-          el
-            .getAnimations({ subtree: true })
-            .filter((animation: { playState: string }) => animation.playState === 'running').length,
+    const states = (): Promise<string[]> =>
+      board.evaluate((el) =>
+        el
+          .getAnimations({ subtree: true })
+          .map((animation: { playState: string }) => animation.playState),
       );
 
     await expect(board.getByText('Bookmarks bar (91)')).toHaveCSS('opacity', '1');
-    // The staggered entrance is over (5 scraps, 160 ms apart, 320 ms each).
-    await expect.poll(running, { timeout: 5000 }).toBe(0);
+    // The entrance is over, the endless float keeps running.
+    await expect
+      .poll(async () => (await states()).filter((state) => state === 'running').length, {
+        timeout: 5000,
+      })
+      .toBeGreaterThanOrEqual(5);
 
-    await board.hover();
-    await page.waitForTimeout(1500);
-    expect(await running()).toBe(0);
-    await expect(board.getByText('Bookmarks bar (91)')).toHaveCSS('opacity', '1');
+    await shelf.locator('.landing-ba__scenes').hover();
+    await expect
+      .poll(async () => (await states()).filter((state) => state === 'running').length)
+      .toBe(0);
+    await page.mouse.move(0, 0);
+    await expect
+      .poll(async () => (await states()).filter((state) => state === 'running').length)
+      .toBeGreaterThan(0);
   });
 
   test.describe('reduced motion', () => {
@@ -300,8 +322,11 @@ test.describe('landing scenes and reveals', () => {
         page.getByRole('region', { name: 'Empty your Saved Messages.' }).locator('h2'),
       ).toHaveCSS('opacity', '1');
 
+      await shelf.scrollIntoViewIfNeeded();
       await page.waitForTimeout(3500);
       await expect(shelf.getByTestId('landing-ba-active-row')).toHaveText('Clothes');
+      const board = shelf.getByRole('img', { name: /scattered across Saved Messages/ });
+      expect(await board.evaluate((el) => el.getAnimations({ subtree: true }).length)).toBe(0);
     });
   });
 });
@@ -443,6 +468,9 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
       test('page scrolled to the end has no serious or critical axe violations', async ({
         page,
       }, testInfo) => {
+        // The before board loops forever (held mid-frame once it is off screen), so axe scans a
+        // settled frame: reduced motion, where the loops never start.
+        await page.emulateMedia({ reducedMotion: 'reduce' });
         await gotoLandingLoaded(page);
         // Scroll through the page: each section reveals when it comes into view.
         await scrollThrough(page);
@@ -455,34 +483,18 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
         await expectNoBlockingViolations(page, testInfo);
       });
 
-      test('shelf and board after every animation has ended have no serious or critical axe violations', async ({
+      test('shelf and board on a settled frame (reduced motion) have no serious or critical axe violations', async ({
         page,
       }, testInfo) => {
-        test.setTimeout(60_000);
+        // The loops never end, so the scan runs on the static frame they leave under reduced motion.
+        await page.emulateMedia({ reducedMotion: 'reduce' });
         await gotoLandingLoaded(page);
-        // Every section reveals when it is seen; then come back to the shelf and let it play out.
         await scrollThrough(page);
         const shelf = page.getByRole('region', { name: 'The same links, before and after' });
         await shelf.scrollIntoViewIfNeeded();
-        const activeRow = shelf.getByTestId('landing-ba-active-row');
-        await expect(activeRow).toHaveText('Recipes', { timeout: 15_000 });
-        await expect(activeRow).toHaveText('Clothes', { timeout: 6000 });
         await settleReveals(page);
-        await expect(page.locator('.landing-ba__item--enter')).toHaveCount(0, { timeout: 10_000 });
         await expect
-          .poll(
-            () =>
-              shelf.evaluate(
-                (el) =>
-                  el
-                    .getAnimations({ subtree: true })
-                    .filter((animation: { playState: string }) => animation.playState === 'running')
-                    .length,
-              ),
-            {
-              timeout: 10_000,
-            },
-          )
+          .poll(() => shelf.evaluate((el) => el.getAnimations({ subtree: true }).length))
           .toBe(0);
         await page.evaluate('document.fonts.ready.then(() => undefined)');
 

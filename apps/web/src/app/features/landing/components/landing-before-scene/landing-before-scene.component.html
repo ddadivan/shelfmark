@@ -2,6 +2,7 @@
   class="landing-before__before"
   [class.landing-before__before--armed]="armed() && !entered()"
   [class.landing-before__before--entered]="entered()"
+  [class.landing-before__before--holding]="holding()"
   role="img"
   [attr.aria-label]="'landing.before.summary' | transloco"
 >

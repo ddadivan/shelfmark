@@ -96,10 +96,48 @@ describe('LandingBeforeSceneComponent', () => {
       expect(el.classList.contains(ARMED)).toBe(false);
     });
 
-    it('has no hover or ping behaviour left: no live class and no input to pause it', async () => {
+    it('holds the loop off screen and plays it while in view', async () => {
+      const { fixture, el } = await board();
+      const HOLDING = 'landing-before__before--holding';
+      expect(el.classList.contains(HOLDING)).toBe(true);
+
+      MockIntersectionObserver.triggerAll(true);
+      fixture.detectChanges();
+      expect(el.classList.contains(HOLDING)).toBe(false);
+
+      MockIntersectionObserver.triggerAll(false);
+      fixture.detectChanges();
+      expect(el.classList.contains(HOLDING)).toBe(true);
+      expect(el.classList.contains(ENTERED)).toBe(true);
+    });
+
+    it('holds the loop in a hidden tab', async () => {
+      const { fixture, el } = await board();
+      MockIntersectionObserver.triggerAll(true);
+      setTabState(false);
+      fixture.detectChanges();
+
+      expect(el.classList.contains('landing-before__before--holding')).toBe(true);
+    });
+
+    it('holds the loop while the section is paused and resumes after', async () => {
+      const { fixture, el } = await board();
+      MockIntersectionObserver.triggerAll(true);
+      fixture.detectChanges();
+
+      fixture.componentRef.setInput('paused', true);
+      fixture.detectChanges();
+      expect(el.classList.contains('landing-before__before--holding')).toBe(true);
+
+      fixture.componentRef.setInput('paused', false);
+      fixture.detectChanges();
+      expect(el.classList.contains('landing-before__before--holding')).toBe(false);
+    });
+
+    it('has no hover behaviour on the scraps', async () => {
       const { el } = await board();
 
-      expect(el.className).not.toContain('--live');
+      expect(el.className).not.toContain('hover');
     });
 
     it('disconnects its observer on destroy', async () => {
