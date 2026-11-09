@@ -26,6 +26,39 @@
   @include tablet-up {
     padding-inline: var(--space-6);
   }
+
+  // Phone: the page scrolls naturally, so the header sticks to the top. It has the page
+  // background (content must not show through), sits above the page content (cards, stretched
+  // links) and below the top progress bar (900) and every overlay layer (dialog, drawer 1000+).
+  // The demo banner above it scrolls away, so it does not eat the small screen. Sticky leaves
+  // the layout untouched (no layout shift). From the tablet width the shell has its own scroll
+  // areas and the header never moves.
+  @include phone {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 800;
+    background: var(--bg);
+  }
+
+  // The shadow fades in over the first 3rem of scroll, driven by the scroll position (CSS only,
+  // no JS). Browsers without scroll-driven animations keep the border alone.
+  @supports (animation-timeline: scroll()) {
+    @include phone {
+      animation: shell-header-shadow linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 rem(48px);
+    }
+  }
+}
+
+@keyframes shell-header-shadow {
+  from {
+    box-shadow: none;
+  }
+
+  to {
+    box-shadow: var(--shadow-card-hover);
+  }
 }
 
 .shell__user {
