@@ -1,5 +1,6 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { builtinModules } from 'node:module';
+import { spawnSync } from 'node:child_process';
+import { builtinModules, createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
 
 // Guards issue #11: Vercel's file tracer only copies packages that `api/index.mjs`
@@ -15,6 +16,11 @@ const GENERATED_DIR = 'generated';
 
 /** Workspace libraries are bundled by webpack, not loaded from node_modules. */
 const BUNDLED_PREFIX = '@shelfmark/';
+
+/** CommonJS packages webpack bundles because Vercel rejects their require() of ESM-only Nest. */
+const { BUNDLED_CJS_PACKAGES } = createRequire(import.meta.url)('../esm-externals.plugin.js') as {
+  BUNDLED_CJS_PACKAGES: string[];
+};
 
 function sourceFiles(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -51,7 +57,8 @@ function isExternalPackage(specifier: string): boolean {
     !specifier.startsWith('.') &&
     !specifier.startsWith('node:') &&
     !builtinModules.includes(specifier) &&
-    !specifier.startsWith(BUNDLED_PREFIX)
+    !specifier.startsWith(BUNDLED_PREFIX) &&
+    !BUNDLED_CJS_PACKAGES.includes(packageName(specifier))
   );
 }
 
@@ -71,6 +78,11 @@ describe('Vercel function entry (api/index.mjs)', () => {
     expect(missing).toEqual([]);
   });
 
+  it('never imports a bundled CommonJS package (Vercel would load it with require)', () => {
+    const entry = runtimeImports(readFileSync(entryFile, 'utf8')).map(packageName);
+    expect(entry.filter((name) => BUNDLED_CJS_PACKAGES.includes(name))).toEqual([]);
+  });
+
   it('statically imports the packages Nest loads by name', () => {
     const missing = RUNTIME_LOADED.filter((name) => !entryImports.has(name));
     expect(missing).toEqual([]);
@@ -86,6 +98,25 @@ describe('Vercel function entry (api/index.mjs)', () => {
       expect(code).not.toContain('createRequire');
       // Workspace libraries must be bundled; they are not in node_modules at runtime.
       expect(code).not.toMatch(/from "@shelfmark\//);
+    },
+  );
+
+  // Vercel's runtime has no require(esm); with the flag Node 26 behaves the same (ERR_REQUIRE_ESM).
+  it.skipIf(!existsSync(bundle))(
+    'loads the function entry without require(esm), like the Vercel runtime',
+    () => {
+      const result = spawnSync(
+        process.execPath,
+        [
+          '--no-experimental-require-module',
+          '--input-type=module',
+          '-e',
+          `await import(${JSON.stringify(entryFile)});`,
+        ],
+        { encoding: 'utf8', timeout: 30_000 },
+      );
+      expect(result.stderr).not.toContain('ERR_REQUIRE_ESM');
+      expect(result.status).toBe(0);
     },
   );
 
