@@ -47,6 +47,35 @@ test.describe('landing', () => {
     await expect(section).toBeFocused();
   });
 
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 1920, height: 1080 },
+  ]) {
+    test(`the first screen fills a ${viewport.width}x${viewport.height} window`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(viewport);
+      await page.goto('/');
+      await expect(page.getByRole('heading', { level: 1, name: LANDING_HEADLINE })).toBeVisible();
+      await expect(page.getByTestId('landing-chat-track')).toBeAttached();
+
+      const hero = await page.locator('.landing-hero').boundingBox();
+      const header = await page.locator('.landing-header').boundingBox();
+      if (!hero || !header) {
+        throw new Error('The header or the hero has no box');
+      }
+      // Header + hero are the window tall (never shorter); the content is bigger than the old column.
+      expect(header.y + header.height + hero.height).toBeGreaterThanOrEqual(viewport.height - 1);
+      expect(hero.y + hero.height).toBeLessThanOrEqual(viewport.height * 1.1);
+      const title = await page.locator('.landing-hero__title').boundingBox();
+      expect(title?.width).toBeGreaterThan(viewport.width * 0.3);
+      const overflow = await page.evaluate<number>(
+        '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
+      );
+      expect(overflow).toBeLessThanOrEqual(0);
+    });
+  }
+
   for (const width of [360, 800, 1280]) {
     test(`the header has its final height from the first frame at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
@@ -201,6 +230,8 @@ test.describe('landing scenes and reveals', () => {
 
     await expect(finale.getByRole('link', { name: 'Open the demo' })).toBeVisible();
     await expect(finale.locator('h2')).toHaveCSS('opacity', '1');
+    // The sections are tall now: the one above the finale is not on screen yet on a phone.
+    await page.getByRole('region', { name: 'Why this exists' }).scrollIntoViewIfNeeded();
     await expect(page.getByRole('region', { name: 'Why this exists' }).locator('h2')).toHaveCSS(
       'opacity',
       '1',
@@ -236,7 +267,12 @@ test.describe('landing scenes and reveals', () => {
     await shelf.scrollIntoViewIfNeeded();
     const board = shelf.getByRole('img', { name: /scattered across Saved Messages/ });
     const running = (): Promise<number> =>
-      board.evaluate((el) => el.getAnimations({ subtree: true }).length);
+      board.evaluate(
+        (el) =>
+          el
+            .getAnimations({ subtree: true })
+            .filter((animation) => animation.playState === 'running').length,
+      );
 
     await expect(board.getByText('Bookmarks bar (91)')).toHaveCSS('opacity', '1');
     // The staggered entrance is over (5 scraps, 160 ms apart, 320 ms each).
@@ -434,9 +470,18 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
         await settleReveals(page);
         await expect(page.locator('.landing-ba__item--enter')).toHaveCount(0, { timeout: 10_000 });
         await expect
-          .poll(() => shelf.evaluate((el) => el.getAnimations({ subtree: true }).length), {
-            timeout: 10_000,
-          })
+          .poll(
+            () =>
+              shelf.evaluate(
+                (el) =>
+                  el
+                    .getAnimations({ subtree: true })
+                    .filter((animation) => animation.playState === 'running').length,
+              ),
+            {
+              timeout: 10_000,
+            },
+          )
           .toBe(0);
         await page.evaluate('document.fonts.ready.then(() => undefined)');
 

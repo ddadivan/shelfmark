@@ -1,4 +1,5 @@
 @use 'ui' as *;
+@use '../../landing' as landing;
 
 :host {
   display: block;
@@ -6,8 +7,10 @@
 
 // Before: scraps pinned at fixed spots of a dashed board.
 .landing-before__before {
+  @include landing.card-pad;
+
   position: relative;
-  height: rem(300px);
+  height: var(--landing-panel-height, #{rem(320px)});
   overflow: hidden;
   background: var(--bg);
   border: 1px dashed var(--border-control);
@@ -45,8 +48,8 @@
 }
 
 .landing-before__scrap--bubble {
-  top: rem(24px);
-  left: rem(24px);
+  top: var(--landing-card-pad);
+  left: var(--landing-card-pad);
   width: rem(200px);
   padding: rem(10px) var(--space-3);
   font-size: rem(13px);
@@ -56,8 +59,8 @@
 }
 
 .landing-before__scrap--tabs {
-  top: rem(40px);
-  right: rem(22px);
+  top: calc(var(--landing-card-pad) + var(--space-3));
+  right: var(--landing-card-pad);
   display: flex;
   gap: rem(2px);
   background: none;
@@ -78,8 +81,8 @@
 }
 
 .landing-before__scrap--sticky {
-  bottom: rem(36px);
-  left: rem(40px);
+  bottom: var(--landing-card-pad);
+  left: var(--landing-card-pad);
   width: rem(200px);
   padding: var(--space-3);
   font-size: rem(13px);
@@ -92,8 +95,8 @@
 }
 
 .landing-before__scrap--bookmarks {
-  right: rem(24px);
-  bottom: rem(56px);
+  right: var(--landing-card-pad);
+  bottom: calc(var(--landing-card-pad) + var(--space-8));
   padding: var(--space-2) var(--space-3);
   color: var(--text-muted);
   border-radius: rem(10px);
@@ -104,100 +107,86 @@
 @include phone {
   .landing-before__ping {
     top: rem(144px);
-    left: var(--space-4);
+    left: var(--landing-card-pad);
     width: rem(150px);
     margin-left: 0;
   }
 
   .landing-before__scrap--bubble {
-    top: var(--space-4);
-    left: var(--space-4);
     width: rem(170px);
   }
 
   .landing-before__scrap--tabs {
     top: rem(112px);
-    right: var(--space-4);
   }
 
   .landing-before__scrap--sticky {
-    bottom: rem(12px);
-    left: var(--space-4);
     width: rem(170px);
   }
 
   .landing-before__scrap--bookmarks {
-    right: var(--space-4);
-    bottom: rem(60px);
+    bottom: calc(var(--landing-card-pad) + var(--space-8));
   }
 }
 
-// Loops: only under `--live` (in view, tab visible, motion allowed), so the default is the
-// static frame. Drift moves the scraps with `translate` (it composes with their `rotate`);
-// the ping fades and pops with `scale`. transform / opacity only, nothing changes layout.
-// These timings (and the per-scrap durations and delays below) are intentionally CSS-only: they
-// are ambient decoration with no logic behind them, so no TS constant mirrors them.
-$drift-duration: 14s;
-$ping-duration: 6s;
+// Entrance, once: the scraps come in one after another when the board first scrolls into view
+// (`--armed` hides them until then, `--entered` plays it) and then stay where they are. Duration
+// and easing are the landing reveal's (`duration-slow`, `ease-out`); the 160 ms step between
+// scraps is the same as the shelf's folder stagger. transform / opacity only (`translate` and
+// `scale` compose with the scraps' `rotate`), so nothing changes layout. These timings are
+// CSS-only on purpose: ambient decoration with no logic behind them.
+$entrance-step: 160ms;
 
-.landing-before__before--live {
-  .landing-before__scrap {
-    animation: landing-before-drift $drift-duration var(--ease-in-out) infinite alternate;
+.landing-before__before--armed {
+  .landing-before__scrap,
+  .landing-before__ping {
+    opacity: 0;
+  }
+}
+
+.landing-before__before--entered {
+  .landing-before__scrap,
+  .landing-before__ping {
+    animation: landing-before-in var(--duration-slow) var(--ease-out) both;
+  }
+
+  .landing-before__scrap--bubble {
+    animation-delay: 0ms;
   }
 
   .landing-before__scrap--tabs {
-    animation-delay: -4s;
-    animation-duration: 11s;
+    animation-delay: $entrance-step;
   }
 
   .landing-before__scrap--sticky {
-    animation-delay: -7s;
-    animation-duration: 16s;
+    animation-delay: calc(2 * #{$entrance-step});
   }
 
   .landing-before__scrap--bookmarks {
-    animation-delay: -2s;
-    animation-duration: 13s;
+    animation-delay: calc(3 * #{$entrance-step});
   }
 
   .landing-before__ping {
-    animation: landing-before-ping $ping-duration var(--ease-spring) infinite;
+    animation-delay: calc(4 * #{$entrance-step});
   }
 }
 
-@keyframes landing-before-drift {
+@keyframes landing-before-in {
   from {
-    translate: 0 0;
-  }
-
-  to {
-    translate: rem(6px) rem(-8px);
-  }
-}
-
-@keyframes landing-before-ping {
-  0%,
-  8% {
     opacity: 0;
-    scale: 0.85;
-  }
-
-  16%,
-  62% {
-    opacity: 1;
-    scale: 1;
-  }
-
-  72%,
-  100% {
-    opacity: 0;
-    scale: 0.95;
+    translate: 0 rem(16px);
+    scale: 0.96;
   }
 }
 
 @include reduced-motion {
-  .landing-before__before--live .landing-before__scrap,
-  .landing-before__before--live .landing-before__ping {
+  .landing-before__before--armed .landing-before__scrap,
+  .landing-before__before--armed .landing-before__ping {
+    opacity: 1;
+  }
+
+  .landing-before__before--entered .landing-before__scrap,
+  .landing-before__before--entered .landing-before__ping {
     animation: none;
   }
 }

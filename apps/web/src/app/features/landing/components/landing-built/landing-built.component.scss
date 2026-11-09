@@ -8,19 +8,16 @@
 
 .landing-built {
   @include landing.reveal;
+  @include landing.card-pad;
 
   scroll-margin-top: var(--space-4);
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  padding: var(--space-4);
+  padding: var(--landing-card-pad);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: rem(22px);
-
-  @include tablet-up {
-    padding: var(--space-6);
-  }
 }
 
 .landing-built__title {

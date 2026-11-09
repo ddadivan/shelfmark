@@ -1,14 +1,77 @@
 @use 'ui' as *;
 
-// Centred content column shared by every section.
+// Wide screens (landing only, in `em` like the layout breakpoints): 1440px and 1920px.
+$wide-min: 90em;
+$xwide-min: 120em;
+
+@mixin wide {
+  @media (width >= #{$wide-min}) {
+    @content;
+  }
+}
+
+@mixin xwide {
+  @media (width >= #{$xwide-min}) {
+    @content;
+  }
+}
+
+// Scales an element and everything in it from the wide breakpoints up. `zoom` (not `transform`)
+// changes the layout size too, and `ui-button` / the chat phone are sized in fixed rem inside
+// `libs/ui`, so this is how the landing makes them bigger without touching the library. Equal
+// `zoom` on a component and on its placeholder keeps their boxes equal, so nothing shifts.
+@mixin zoom($wide, $xwide: $wide) {
+  @include wide {
+    zoom: $wide;
+  }
+
+  @include xwide {
+    zoom: $xwide;
+  }
+}
+
+// Centred content column shared by every section: wider on big screens.
 @mixin wrap {
   width: 100%;
-  max-width: rem(1180px);
+  max-width: rem(1200px);
   padding-inline: var(--space-4);
   margin-inline: auto;
 
   @include tablet-up {
     padding-inline: var(--space-6);
+  }
+
+  @include wide {
+    max-width: rem(1440px);
+    padding-inline: var(--space-8);
+  }
+
+  @include xwide {
+    max-width: rem(1760px);
+    padding-inline: calc(var(--space-8) * 2);
+  }
+}
+
+// One vertical padding for the top and the bottom of every landing section (spacing tokens).
+@mixin section-pad {
+  padding-block: calc(var(--space-8) * 2);
+
+  @include tablet-up {
+    padding-block: calc(var(--space-8) * 3);
+  }
+
+  @include wide {
+    padding-block: calc(var(--space-8) * 4);
+  }
+}
+
+// The inner padding of the cards (before, after, "How it's built"): one value, slightly bigger
+// than the old 16px / 24px. Sets the custom property so absolutely placed content can use it too.
+@mixin card-pad {
+  --landing-card-pad: calc(var(--space-4) * 1.25);
+
+  @include tablet-up {
+    --landing-card-pad: calc(var(--space-6) * 1.25);
   }
 }
 

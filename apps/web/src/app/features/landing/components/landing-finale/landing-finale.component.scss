@@ -9,17 +9,13 @@
 .landing-finale {
   @include landing.wrap;
   @include landing.reveal;
+  @include landing.section-pad;
 
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-6);
   align-items: center;
   justify-content: space-between;
-  padding-block: rem(40px);
-
-  @include tablet-up {
-    padding-block: rem(56px);
-  }
 }
 
 .landing-finale__title {

@@ -14,10 +14,23 @@
   align-items: center;
   padding-block: var(--space-4) var(--space-8);
 
+  // The first screen is header + hero: the hero fills what the header leaves of one viewport
+  // (`svh`, the small viewport, so a phone's collapsing address bar does not resize it), and
+  // centres its content in it. On a short window it never gets smaller than its content.
+  min-block-size: max(rem(560px), calc(100svh - var(--landing-header-height, #{rem(72px)})));
+
   @include desktop {
     grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
     gap: rem(64px);
-    padding-block: rem(40px) rem(88px);
+    padding-block: var(--space-6) calc(var(--space-8) * 2);
+  }
+
+  @include landing.wide {
+    gap: calc(var(--space-8) * 3);
+  }
+
+  @include landing.xwide {
+    gap: calc(var(--space-8) * 4);
   }
 }
 
@@ -29,10 +42,24 @@
   @include desktop {
     gap: rem(28px);
   }
+
+  @include landing.wide {
+    gap: var(--space-8);
+  }
 }
 
 .landing-hero__eyebrow {
   @include landing.eyebrow;
+
+  @include landing.wide {
+    font-size: rem(16px);
+    line-height: rem(24px);
+  }
+
+  @include landing.xwide {
+    font-size: rem(20px);
+    line-height: rem(30px);
+  }
 }
 
 .landing-hero__title {
@@ -50,6 +77,16 @@
   @include desktop {
     font-size: rem(84px);
     line-height: rem(78px);
+  }
+
+  @include landing.wide {
+    font-size: rem(108px);
+    line-height: rem(100px);
+  }
+
+  @include landing.xwide {
+    font-size: rem(132px);
+    line-height: rem(122px);
   }
 }
 
@@ -72,12 +109,27 @@
     font-size: rem(18px);
     line-height: rem(28px);
   }
+
+  @include landing.wide {
+    max-width: rem(620px);
+    font-size: rem(22px);
+    line-height: rem(34px);
+  }
+
+  @include landing.xwide {
+    max-width: rem(760px);
+    font-size: rem(28px);
+    line-height: rem(42px);
+  }
 }
 
 .landing-hero__actions {
   display: flex;
   flex-wrap: wrap;
   gap: rem(10px);
+
+  // `ui-button` has three fixed sizes in the library; the buttons grow with the screen instead.
+  @include landing.zoom(1.3, 1.65);
 }
 
 // Stands in for the chat phone while it loads (same height from the shared size mixin), so the
@@ -88,6 +140,14 @@
   min-height: calc(
     var(--landing-chat-height) + var(--landing-chat-chrome) + var(--landing-chat-touch)
   );
+
+  // The same zoom as the chat itself (below), so the swap shifts nothing.
+  @include landing.zoom(1.15, 1.4);
+}
+
+.landing-hero__demo {
+  // Smaller steps than the buttons: the phone is the tallest part of the first screen.
+  @include landing.zoom(1.15, 1.4);
 }
 
 .landing-hero__sr {
