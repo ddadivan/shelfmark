@@ -11,6 +11,7 @@ import {
 import { IconComponent } from '../icon/icon.component';
 import type { IconName } from '../icon/models/icon-name.type';
 import type { ToastKind } from './models/toast-kind.type';
+import type { ToastShortcutKey } from './models/toast-shortcut-key.interface';
 import { TOAST_KIND } from './models/toast-kind.const';
 import { TOAST_KIND_ICON } from './models/toast-kind-icon.const';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
@@ -26,6 +27,7 @@ import { ICON_SIZE } from '../icon/models/icon-size.const';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-toast',
+    '[class]': 'kindClass()',
     '(pointerenter)': 'setHover(true)',
     '(pointerleave)': 'setHover(false)',
     '(focusin)': 'setFocus(true)',
@@ -42,12 +44,13 @@ export class ToastComponent {
   readonly actionLabel = input<string>();
   /** Visually hidden text read with the toast, e.g. how to reach the action by keyboard. */
   readonly actionHint = input<string>();
-  /** Shortcut shown as a small `kbd` next to the action (not on phones); needs an action. */
-  readonly shortcut = input<string>();
+  /** Shortcut shown as small key caps before the action (not on phones); needs an action. */
+  readonly shortcut = input<readonly ToastShortcutKey[]>([]);
   readonly action = output<void>();
   /** True while the pointer is over the toast or focus is inside it. */
   readonly pausedChange = output<boolean>();
 
+  protected readonly kindClass = computed(() => `ui-toast--${this.kind()}`);
   protected readonly icon = computed<IconName>(() => TOAST_KIND_ICON[this.kind()]);
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;

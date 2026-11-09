@@ -1,11 +1,21 @@
-<ui-icon [name]="icon()" [size]="ICON_SIZE.Md" />
+<ui-icon class="ui-toast__icon" [name]="icon()" [size]="ICON_SIZE.Md" />
 <span class="ui-toast__text">{{ text() }}</span>
 @if (actionHint(); as hint) {
   <span class="ui-toast__hint">{{ hint }}</span>
 }
 @if (actionLabel(); as label) {
-  @if (shortcut(); as keys) {
-    <kbd class="ui-toast__kbd" aria-hidden="true">{{ keys }}</kbd>
+  @if (shortcut().length > 0) {
+    <span class="ui-toast__keys" aria-hidden="true">
+      @for (key of shortcut(); track key.label) {
+        <kbd class="ui-toast__kbd">
+          @if (key.icon; as icon) {
+            <ui-icon [name]="icon" [size]="ICON_SIZE.Sm" />
+          } @else {
+            {{ key.label }}
+          }
+        </kbd>
+      }
+    </span>
   }
   <button type="button" class="ui-toast__action" (click)="action.emit()">{{ label }}</button>
 }

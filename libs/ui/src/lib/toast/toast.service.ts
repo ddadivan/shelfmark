@@ -13,7 +13,7 @@ import { ToastStore } from './toast-store';
 
 /**
  * Short confirmations and undo. `show()` renders a `ui-toast` in the `toast` overlay layer
- * (bottom-centre on phones, bottom-left from the tablet breakpoint up). One toast at a time:
+ * (bottom centre on every screen, the author's decision over the spec's bottom-left). One toast at a time:
  * a new one replaces the older. It lasts 4 s (8 s with an action) and waits while hovered or
  * focused; it never takes focus. The live region is created once, with the service, and stays
  * in the page. Inject the service early (a field initialiser is fine) so the region has been

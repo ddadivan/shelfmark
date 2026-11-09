@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../../testing/axe';
 import { ToastService } from './toast.service';
-import { toastShortcutLabel } from './toast-shortcut-label';
+import { toastShortcutKeys, toastShortcutLabel } from './toast-shortcut-label';
 import { OVERLAY_LAYER } from '../overlay/models/overlay-layer.const';
 import { overlayLayerClass } from '../overlay/overlay-layer';
 import { TOAST_KIND } from './models/toast-kind.const';
@@ -461,7 +461,37 @@ describe('ToastService', () => {
     expect(toasts()[0].querySelector('kbd')).toBeNull();
     service.show({ text: 'Hinted', actionHint: 'Hint', action: { label: 'Undo', run: vi.fn() } });
     render();
-    expect(toasts().at(-1)?.querySelector('kbd')?.textContent).toBe(toastShortcutLabel());
+    const caps = [...(toasts().at(-1)?.querySelectorAll('kbd') ?? [])];
+    expect(
+      caps.map((cap) => cap.textContent?.trim() || cap.querySelector('ui-icon')?.localName),
+    ).toEqual(toastShortcutKeys().map((key) => (key.icon ? 'ui-icon' : key.label)));
+    expect(toasts().at(-1)?.querySelector('.ui-toast__keys')?.getAttribute('aria-hidden')).toBe(
+      'true',
+    );
+  });
+
+  it('draws the shortcut as key caps: icons for the macOS signs, words elsewhere', () => {
+    expect(toastShortcutKeys(true)).toEqual([
+      { label: 'Option', icon: 'key-option' },
+      { label: 'Shift', icon: 'key-shift' },
+      { label: 'T' },
+    ]);
+    expect(toastShortcutKeys(false)).toEqual([
+      { label: 'Alt' },
+      { label: 'Shift' },
+      { label: 'T' },
+    ]);
+    expect(toastShortcutKeys().map((key) => key.label)).toHaveLength(3);
+  });
+
+  it('marks the toast with its kind so the icon takes the kind colour', () => {
+    const service = setup();
+    service.show({ text: 'Saved', kind: 'success' });
+    render();
+    expect(toasts()[0].classList).toContain('ui-toast--success');
+    service.show({ text: 'Failed', kind: 'error' });
+    render();
+    expect(toasts().at(-1)?.classList).toContain('ui-toast--error');
   });
 
   it('announces the hint only for a toast with an action', () => {
