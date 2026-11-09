@@ -13,6 +13,7 @@ import type { IconName } from '../icon/models/icon-name.type';
 import type { ToastKind } from './models/toast-kind.type';
 import { TOAST_KIND } from './models/toast-kind.const';
 import { TOAST_KIND_ICON } from './models/toast-kind-icon.const';
+import { ICON_SIZE } from '../icon/models/icon-size.const';
 
 /**
  * The toast view: icon, text and an optional action. It carries no live region and no timer;
@@ -34,6 +35,7 @@ import { TOAST_KIND_ICON } from './models/toast-kind-icon.const';
   styleUrl: './toast.component.scss',
 })
 export class ToastComponent {
+  protected readonly ICON_SIZE = ICON_SIZE;
   readonly kind = input<ToastKind>(TOAST_KIND.Info);
   readonly text = input.required<string>();
   /** Action button text; no button without it. */
