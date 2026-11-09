@@ -27,8 +27,8 @@ export class IconComponent {
 
   /** Icon name, the sprite id without the `sm-` prefix. */
   readonly name = input.required<IconName>();
-  /** Size in design pixels; 16 in controls, 20 in navigation. */
-  readonly size = input<IconSize>(16);
+  /** Size in design pixels. The set is drawn on a 24px grid, so 24 is the default (crisp strokes). */
+  readonly size = input<IconSize>(24);
   /** Accessible name. Omit for decorative icons next to a visible label. */
   readonly label = input<string>();
 

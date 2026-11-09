@@ -4,8 +4,8 @@
 :host {
   display: inline-flex;
   flex: none;
-  width: var(--ui-icon-size, var(--icon-size-sm));
-  height: var(--ui-icon-size, var(--icon-size-sm));
+  width: var(--ui-icon-size, var(--icon-size-lg));
+  height: var(--ui-icon-size, var(--icon-size-lg));
   color: inherit;
   line-height: 0;
 }
@@ -15,9 +15,9 @@
   height: var(--ui-icon-size, var(--icon-size-md));
 }
 
-:host(.ui-icon--24) {
-  width: var(--ui-icon-size, var(--icon-size-lg));
-  height: var(--ui-icon-size, var(--icon-size-lg));
+:host(.ui-icon--16) {
+  width: var(--ui-icon-size, var(--icon-size-sm));
+  height: var(--ui-icon-size, var(--icon-size-sm));
 }
 
 .ui-icon__svg {

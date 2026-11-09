@@ -34,12 +34,12 @@
             (click)="onTwist($event, item.expanded)"
           >
             @if (node.children?.length) {
-              <ui-icon name="chevron-right" [size]="24" />
+              <ui-icon name="chevron-right" [size]="ICON_SIZE.Lg" />
             }
           </span>
         }
         @if (node.icon ?? (folder ? 'folder' : undefined); as icon) {
-          <ui-icon class="ui-tree__icon" [name]="icon" [size]="24" />
+          <ui-icon class="ui-tree__icon" [name]="icon" [size]="ICON_SIZE.Lg" />
         }
         <span class="ui-tree__name" [id]="item.id() + '-name'">{{ node.name }}</span>
         @if (countId(item.id(), node); as count) {

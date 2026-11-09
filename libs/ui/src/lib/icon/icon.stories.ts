@@ -17,6 +17,7 @@ const meta: Meta<IconComponent> = {
 export default meta;
 type Story = StoryObj<IconComponent>;
 
+/** 24px is the default: the set is drawn on a 24 by 24 grid, so strokes stay crisp. */
 export const Default: Story = {};
 
 export const Sizes: Story = {

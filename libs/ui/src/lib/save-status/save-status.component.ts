@@ -3,6 +3,7 @@ import { IconComponent } from '../icon/icon.component';
 import { SpinnerComponent } from '../spinner/spinner.component';
 import type { SaveStatusState } from './models/save-status-state.type';
 import { SAVE_STATUS_STATE } from './models/save-status-state.const';
+import { ICON_SIZE } from '../icon/models/icon-size.const';
 
 /**
  * Autosave status, for example in the edit dialog: icon plus words, never colour alone.
@@ -19,6 +20,7 @@ import { SAVE_STATUS_STATE } from './models/save-status-state.const';
   styleUrl: './save-status.component.scss',
 })
 export class SaveStatusComponent {
+  protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly SAVE_STATUS_STATE = SAVE_STATUS_STATE;
 
   readonly state = input.required<SaveStatusState>();

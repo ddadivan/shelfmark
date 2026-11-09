@@ -10,6 +10,7 @@ import type { FormCheckboxControl } from '@angular/forms/signals';
 import { UiFieldControl } from '../field/field-control.directive';
 import { fieldErrorId, fieldHintId } from '../field/field-ids';
 import { IconComponent } from '../icon/icon.component';
+import { ICON_SIZE } from '../icon/models/icon-size.const';
 
 /**
  * A native `<input type="checkbox">` with a visible label, an optional hint and an error
@@ -33,6 +34,7 @@ import { IconComponent } from '../icon/icon.component';
   styleUrl: './checkbox.component.scss',
 })
 export class CheckboxComponent extends UiFieldControl implements FormCheckboxControl {
+  protected readonly ICON_SIZE = ICON_SIZE;
   readonly checked = model(false);
   /** Mixed state; shown as a dash. */
   readonly indeterminate = model(false);

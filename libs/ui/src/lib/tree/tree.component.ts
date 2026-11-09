@@ -28,6 +28,7 @@ import type { UiTreeNode } from './models/tree-node.interface';
 import type { UiTreeToggleEvent } from './models/tree-toggle-event.interface';
 import { KEYBOARD_KEY } from '../keyboard';
 import type { TreeRowPlace } from './models/tree-row-place.interface';
+import { ICON_SIZE } from '../icon/models/icon-size.const';
 
 /** Safety net: a pending keyboard echo is dropped after this long (a held key refreshes it). */
 const KEYBOARD_ECHO_TIMEOUT_MS = 1000;
@@ -68,6 +69,7 @@ const KEYBOARD_ECHO_RELEASE_MS = 100;
   styleUrl: './tree.component.scss',
 })
 export class TreeComponent {
+  protected readonly ICON_SIZE = ICON_SIZE;
   /** A keyboard menu request is pending; the browser's echoed `contextmenu` consumes it. */
   private keyboardEcho = false;
   private echoTimer: ReturnType<typeof setTimeout> | undefined;

@@ -17,6 +17,7 @@ import { IconComponent } from '../icon/icon.component';
 import { RippleDirective } from '../ripple/ripple.directive';
 import { TooltipDirective } from '../tooltip/tooltip.directive';
 import type { SegmentedOption } from './models/segmented-option.interface';
+import { ICON_SIZE } from '../icon/models/icon-size.const';
 
 const MIN_OPTIONS = 2;
 const MAX_OPTIONS = 4;
@@ -55,6 +56,7 @@ const MAX_OPTIONS = 4;
   styleUrl: './segmented-control.component.scss',
 })
 export class SegmentedControlComponent implements FormValueControl<string> {
+  protected readonly ICON_SIZE = ICON_SIZE;
   private readonly host: HTMLElement = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
   /** Value of the selected option; empty when none is selected. */

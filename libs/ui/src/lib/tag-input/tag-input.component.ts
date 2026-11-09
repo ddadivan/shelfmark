@@ -39,6 +39,7 @@ import { TAG_MAX_LENGTH } from './models/tag-max-length.const';
 import { TAG_SEPARATOR } from './models/tag-separator.const';
 import type { TagSuggestion } from './models/tag-suggestion.interface';
 import { fillName, includesTag, normalizeTag, tagRows } from './tag-input-rows';
+import { ICON_SIZE } from '../icon/models/icon-size.const';
 
 /**
  * Adds several tags to a link. Tags are removable `ui-chip`s inside the field box; the text input
@@ -79,6 +80,7 @@ import { fillName, includesTag, normalizeTag, tagRows } from './tag-input-rows';
   styleUrl: './tag-input.component.scss',
 })
 export class TagInputComponent extends UiFieldControl implements FormValueControl<string[]> {
+  protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly TAG_INPUT_ICON = TAG_INPUT_ICON;
 
   /** The tags, in the order they were added. */
