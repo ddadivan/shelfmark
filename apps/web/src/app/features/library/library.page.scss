@@ -5,16 +5,38 @@
   display: flex;
   flex: 1;
   flex-direction: column;
+  min-height: 0;
 }
 
 .library {
+  position: relative;
   display: flex;
   flex: 1;
   flex-direction: column;
+  min-height: 0;
+}
+
+// The feed (or the empty state) under the fixed title, count and toolbar. From the tablet width
+// it is the one scroll area of the page; a phone scrolls the page itself.
+.library__scroll {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  @include tablet-up {
+    min-height: 0;
+
+    // Room for the focus ring and a lifted card, which the clip of the scroll area would cut.
+    padding: var(--space-1);
+    margin: calc(var(--space-1) * -1);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
 }
 
 // Empty and error states: centred in the space under the toolbar. With links the feed flows as usual.
-.library > ui-empty-state {
+.library__scroll > ui-empty-state {
   margin-block: auto;
 }
 
@@ -49,6 +71,8 @@
 .library__count {
   @include type(caption);
 
+  // One line high even when empty (while the list loads).
+  min-height: 1lh;
   margin: var(--space-1) 0 0;
   color: var(--text-muted);
 }
@@ -113,8 +137,12 @@
 }
 
 .library__crumbs {
+  // Over the top padding of the main column (24px, the height of the trail), so a folder page's
+  // trail takes no room and switching to or from a folder moves nothing.
+  position: absolute;
+  inset-block-start: calc(var(--space-6) * -1);
+  inset-inline: 0;
   display: block;
-  margin-bottom: var(--space-3);
 }
 
 .library__empty-actions {

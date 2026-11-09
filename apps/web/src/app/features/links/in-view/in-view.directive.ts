@@ -25,19 +25,39 @@ export class InViewDirective {
       return;
     }
     const element = inject<ElementRef<Element>>(ElementRef).nativeElement;
-    const observer = new observerType(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          this.entered.emit();
-        }
-      },
-      { rootMargin: ROOT_MARGIN },
-    );
+    let observer: IntersectionObserver | undefined;
+    let observerRoot: Element | null = null;
     effect(() => {
       this.recheck();
+      // The scroll area the host sits in (the library list on a tablet or desktop), else the
+      // viewport (the page scroll of a phone). Looked up on each check: the layout can change.
+      const root = scrollParent(element);
+      if (!observer || root !== observerRoot) {
+        observer?.disconnect();
+        observer = new observerType(
+          (entries) => {
+            if (entries.some((entry) => entry.isIntersecting)) {
+              this.entered.emit();
+            }
+          },
+          { root, rootMargin: ROOT_MARGIN },
+        );
+        observerRoot = root;
+      }
       observer.unobserve(element);
       observer.observe(element);
     });
-    inject(DestroyRef).onDestroy(() => observer.disconnect());
+    inject(DestroyRef).onDestroy(() => observer?.disconnect());
   }
+}
+
+/** The nearest ancestor that scrolls vertically, or `null` when the page itself scrolls. */
+function scrollParent(element: Element): Element | null {
+  for (let parent = element.parentElement; parent; parent = parent.parentElement) {
+    const { overflowY } = getComputedStyle(parent);
+    if (overflowY === 'auto' || overflowY === 'scroll') {
+      return parent;
+    }
+  }
+  return null;
 }
