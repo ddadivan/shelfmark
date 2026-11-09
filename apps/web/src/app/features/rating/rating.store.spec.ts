@@ -162,6 +162,33 @@ describe('RatingStore', () => {
     expect(api.prompt).not.toHaveBeenCalled();
   });
 
+  it('looks again for the same user after the session ended (clear)', async () => {
+    const { store, api } = await setup();
+    store.watch();
+    store.watch();
+    store.clear();
+    store.watch();
+    await advance(RATING_DELAY.Show);
+
+    expect(api.prompt).toHaveBeenCalledTimes(1);
+    store.clear();
+    store.watch();
+    await advance(RATING_DELAY.Show);
+    expect(api.prompt).toHaveBeenCalledTimes(2);
+  });
+
+  it('is cleared when the session ends', async () => {
+    const { store, auth, closed } = await setup();
+    store.watch();
+    await advance(RATING_DELAY.Show);
+    expect(store.open()).toBe(true);
+
+    auth.expireSession();
+
+    expect(store.open()).toBe(false);
+    closed.resolve(undefined);
+  });
+
   it('stays silent when the prompt fails', async () => {
     const { store, api, dialogs } = await setup();
     api.prompt.mockRejectedValueOnce(new Error('offline'));

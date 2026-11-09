@@ -14,6 +14,14 @@
   }
 }
 
+:host(.settings-section--danger) {
+  border-color: var(--danger);
+}
+
+:host(.settings-section--danger) .settings-section__title {
+  color: var(--danger);
+}
+
 .settings-section__title {
   @include type(heading);
 

@@ -3,6 +3,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { DIALOG_SIZE, DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { AuthStore } from '../../core/auth/auth.store';
+import { SessionScope } from '../../core/auth/session-scope.service';
 import { LinkActionsService } from '../links/link-actions.service';
 import { OnboardingDialogComponent } from './onboarding-dialog.component';
 import { ONBOARDING_API } from './models/onboarding-api.const';
@@ -33,7 +34,13 @@ export const OnboardingStore = signalStore(
       actions = inject(LinkActionsService),
       toasts = inject(ToastService),
       transloco = inject(TranslocoService),
+      scope = inject(SessionScope),
     ) => {
+      function clear(): void {
+        patchState(store, initialState);
+      }
+      scope.onEnd(clear);
+
       async function complete(userId: string): Promise<void> {
         auth.setOnboardingCompletedAt(new Date().toISOString());
         try {
@@ -72,6 +79,8 @@ export const OnboardingStore = signalStore(
       }
 
       return {
+        /** Session end: forgets the in-memory state (an open dialog closes itself). */
+        clear,
         /** Opens the dialog when it is due and not open yet; the shell calls it from an effect. */
         openIfDue(): void {
           const user = auth.user();

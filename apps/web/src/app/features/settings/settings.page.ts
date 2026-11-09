@@ -5,12 +5,14 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   AvatarComponent,
   BUTTON_SIZE,
+  BUTTON_VARIANT,
   ButtonComponent,
   SegmentedControlComponent,
 } from '@shelfmark/ui';
 import type { SegmentedOption } from '@shelfmark/ui';
 import { combineLatest, map } from 'rxjs';
 import { EXPORT_FORMAT, type ExportFormat } from '@shelfmark/contracts';
+import { AccountDeletionService } from '../account-deletion/account-deletion.service';
 import { ExportActionsService } from '../export/export-actions.service';
 import { AuthStore } from '../../core/auth/auth.store';
 import { ViewportService } from '../../core/layout/viewport.service';
@@ -44,10 +46,17 @@ export default class SettingsPage {
   protected readonly signOutSize = computed(() =>
     this.viewport.phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Md,
   );
+  protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   protected readonly theme = inject(ThemeService);
+  /** Demo sandboxes expire by themselves, so only real accounts can be deleted. */
+  protected readonly canDeleteAccount = computed(() => {
+    const user = this.auth.user();
+    return user !== null && !user.isDemo;
+  });
   protected readonly onboarding = inject(OnboardingStore);
   private readonly exporter = inject(ExportActionsService);
   protected readonly EXPORT_FORMAT = EXPORT_FORMAT;
+  private readonly accountDeletion = inject(AccountDeletionService);
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
 
@@ -81,6 +90,10 @@ export default class SettingsPage {
 
   protected async exportAll(format: ExportFormat): Promise<void> {
     await this.exporter.download(format);
+  }
+
+  protected async deleteAccount(): Promise<void> {
+    await this.accountDeletion.open();
   }
 
   protected async signOut(): Promise<void> {

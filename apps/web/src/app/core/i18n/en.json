@@ -563,6 +563,26 @@
       "hint": "See the 3-step introduction again",
       "action": "Show welcome again",
       "error": "Couldn't reset the welcome tour. Try again."
+    },
+    "delete": {
+      "title": "Delete account",
+      "hint": "Removes your account and all your links, folders and tags for good. This can't be undone.",
+      "action": "Delete account",
+      "done": "Your account and all your data were deleted.",
+      "dialog": {
+        "title": "Delete your account?",
+        "text": "All your links, folders and tags will be deleted for good. This can't be undone.",
+        "label": "Type your email to confirm",
+        "hint": "Enter {{email}} to confirm.",
+        "cancel": "Cancel",
+        "close": "Close",
+        "deleting": "Deleting…"
+      },
+      "error": {
+        "mismatch": "That email does not match your account. Check it and try again.",
+        "rateLimited": "Too many attempts. Try again in a minute.",
+        "failed": "We could not delete your account. Nothing was deleted. Try again."
+      }
     }
   },
   "tags": {
