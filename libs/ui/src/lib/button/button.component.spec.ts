@@ -104,14 +104,14 @@ describe('ButtonComponent', () => {
     expect(button().className).not.toMatch(/--(sm|lg|icon)/);
   });
 
-  it('adds the fab class and 24px icon only for a fab', async () => {
+  it('adds the fab class only for a fab', async () => {
     const { host, root, button, settle } = await setup();
     host.iconOnly.set(true);
     host.iconLeft.set('add');
     host.ariaLabel.set('Add link');
     await settle();
     expect(button().classList.contains('ui-button--fab')).toBe(false);
-    expect(root.querySelector('ui-icon.ui-icon--24')).toBeNull();
+    expect(root.querySelector('ui-icon.ui-icon--24')).not.toBeNull();
 
     host.fab.set(true);
     await settle();
@@ -125,12 +125,12 @@ describe('ButtonComponent', () => {
     host.iconLeft.set('add');
     host.ariaLabel.set('Add link');
     await settle();
-    expect(root.querySelector('ui-icon.ui-icon--16')).not.toBeNull();
-
-    host.iconSize.set(24);
-    await settle();
     expect(root.querySelector('ui-icon.ui-icon--24')).not.toBeNull();
-    expect(root.querySelector('ui-icon.ui-icon--16')).toBeNull();
+
+    host.iconSize.set(16);
+    await settle();
+    expect(root.querySelector('ui-icon.ui-icon--16')).not.toBeNull();
+    expect(root.querySelector('ui-icon.ui-icon--24')).toBeNull();
   });
 
   it.each(Object.values(BUTTON_VARIANT))('applies the %s variant class', async (variant) => {
@@ -170,10 +170,19 @@ describe('ButtonComponent', () => {
     ]);
   });
 
-  it('uses 20px icons in large buttons', async () => {
+  it('uses 24px icons in large buttons', async () => {
     const { host, root, settle } = await setup();
     host.iconLeft.set('add');
     host.size.set(BUTTON_SIZE.Lg);
+    await settle();
+
+    expect(root.querySelector('ui-icon')?.classList.contains('ui-icon--24')).toBe(true);
+  });
+
+  it('uses 20px icons in small buttons', async () => {
+    const { host, root, settle } = await setup();
+    host.iconLeft.set('add');
+    host.size.set(BUTTON_SIZE.Sm);
     await settle();
 
     expect(root.querySelector('ui-icon')?.classList.contains('ui-icon--20')).toBe(true);

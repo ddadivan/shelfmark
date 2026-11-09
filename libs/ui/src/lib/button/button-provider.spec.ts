@@ -33,7 +33,7 @@ describe('ui-button provider buttons', () => {
     }
   });
 
-  it('references the provider symbols in the sprite, 20px in the large button', async () => {
+  it('references the provider symbols in the sprite, 24px in the large button', async () => {
     const host = await setup();
     const uses = [...host.querySelectorAll('use')].map((u) => u.getAttribute('href'));
 
@@ -41,7 +41,7 @@ describe('ui-button provider buttons', () => {
       'assets/ui/icons/sprite.svg#sm-google',
       'assets/ui/icons/sprite.svg#sm-github',
     ]);
-    expect(host.querySelector('ui-icon')?.classList.contains('ui-icon--20')).toBe(true);
+    expect(host.querySelector('ui-icon')?.classList.contains('ui-icon--24')).toBe(true);
   });
 
   it('has no axe violations', async () => {

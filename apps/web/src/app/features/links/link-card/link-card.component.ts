@@ -9,6 +9,7 @@ import {
   MenuComponent,
   MenuItemComponent,
   MenuTriggerDirective,
+  TooltipDirective,
 } from '@shelfmark/ui';
 import { linkAddress, linkHost, ownImageUrl, safeHref, siteLetter } from '../link-view';
 
@@ -29,6 +30,7 @@ const MAX_TAGS = 3;
     MenuComponent,
     MenuItemComponent,
     MenuTriggerDirective,
+    TooltipDirective,
   ],
   templateUrl: './link-card.component.html',
   styleUrl: './link-card.component.scss',

@@ -267,6 +267,8 @@
       "edited": "Changes saved",
       "openFailed": "Couldn't open the link.",
       "favorite": "Favorite: {{title}}",
+      "addFavorite": "Add to favorites",
+      "removeFavorite": "Remove from favorites",
       "actions": "Actions for {{title}}",
       "delete": "Delete",
       "opensInNewTab": "Opens in a new tab",

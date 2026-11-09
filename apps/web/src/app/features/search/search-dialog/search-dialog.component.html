@@ -46,7 +46,7 @@
         }
         @if (state().more) {
           <ui-command-item [value]="SEARCH_RESULT_KIND.All">
-            <ui-icon slot="leading" name="search" [size]="16" />
+            <ui-icon slot="leading" name="search" />
             {{ 'search.showAll' | transloco: { query: state().query } }}
           </ui-command-item>
         }
@@ -57,7 +57,7 @@
       <ui-command-group [heading]="'search.foldersAndTags' | transloco">
         @for (match of folderMatches(); track match.folder.id) {
           <ui-command-item [value]="SEARCH_RESULT_KIND.Folder + ':' + match.folder.id">
-            <ui-icon slot="leading" name="folder" [size]="16" />
+            <ui-icon slot="leading" name="folder" />
             <ui-highlight [text]="match.path" [query]="parsed()" />
             <span slot="trailing">{{
               pluralKey('search.linkCount', match.folder.linkCount)
@@ -67,7 +67,7 @@
         }
         @for (tag of tagMatches(); track tag.id) {
           <ui-command-item [value]="SEARCH_RESULT_KIND.Tag + ':' + tag.name">
-            <ui-icon slot="leading" name="tag" [size]="16" />
+            <ui-icon slot="leading" name="tag" />
             <ui-highlight [text]="tag.name" [query]="parsed()" />
             <span slot="meta">{{
               pluralKey('search.tagMeta', tag.linkCount) | transloco: { count: tag.linkCount }

@@ -28,6 +28,7 @@
 @if (isLink()) {
   <a
     #control
+    [uiTooltip]="autoTooltip()"
     [class]="classes()"
     [uiRipple]="rippleActive()"
     [attr.href]="inert() ? null : href()"
@@ -49,6 +50,7 @@
 } @else {
   <button
     #control
+    [uiTooltip]="autoTooltip()"
     [class]="classes()"
     [uiRipple]="rippleActive()"
     [attr.type]="type()"
