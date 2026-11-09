@@ -154,6 +154,16 @@ $gap: rem(16px);
   border: 1px solid var(--border);
   box-shadow: 0 0 0 1px var(--border);
   transform: rotateY(180deg);
+
+  // Hidden until the tile is flipped (the flip takes 520ms, so it shows halfway): the text is not
+  // there for assistive technology or contrast checks while its face is turned away.
+  visibility: hidden;
+  transition: visibility 0s linear 260ms;
+}
+
+.is-flipped .mz-back {
+  visibility: visible;
+  transition-delay: 0s;
 }
 
 .mz-meta {
