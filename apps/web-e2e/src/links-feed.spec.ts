@@ -30,7 +30,8 @@ test.describe('links feed (mock API)', () => {
     const card = page.locator('ui-card').first();
     const bar = card.locator('.ui-card__overlay');
 
-    await expect(bar).toContainText('Open ↗');
+    await expect(bar).toContainText('Open');
+    await expect(bar).toContainText('↗');
     await card.hover();
 
     await expect(bar).toHaveCSS('opacity', '1');

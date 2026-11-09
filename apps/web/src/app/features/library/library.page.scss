@@ -106,6 +106,23 @@
     display: flex;
     flex-direction: column;
   }
+
+  // 1000+ loaded cards: off-screen ones skip layout and paint (`content-visibility: auto`; the
+  // browser remembers the real height once a card has been shown, so the scroll does not jump).
+  // That implies paint containment, which would clip the hover shadow and the focus ring at the
+  // item's edge, so the clip is widened with `overflow-clip-margin` (no extra box, no overflow).
+  > li {
+    overflow-clip-margin: #{rem(48px)};
+    content-visibility: auto;
+    contain-intrinsic-size: auto 0 auto #{rem(320px)};
+  }
+}
+
+// Rows: the same, with a small bleed for the focus ring.
+.library__rows > li {
+  overflow-clip-margin: #{rem(4px)};
+  content-visibility: auto;
+  contain-intrinsic-size: auto 0 auto #{rem(60px)};
 }
 
 .library__list {
