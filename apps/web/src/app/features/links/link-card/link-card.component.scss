@@ -60,6 +60,47 @@ ui-card {
 }
 
 .link-card__open-label {
+  display: inline-flex;
   flex: none;
+  gap: rem(4px);
   font-weight: 600;
+}
+
+// "Open" is a little dimmer at rest and brightens with the card's hover or keyboard focus; the
+// arrow nudges up and to the right. The bar is decorative (`aria-hidden`); no movement under
+// reduced motion.
+.link-card__open-text {
+  color: color-mix(in srgb, var(--text) 78%, var(--surface));
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+.link-card__open-arrow {
+  display: inline-block;
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+ui-card:has(.ui-card__link:focus-visible) {
+  .link-card__open-text {
+    color: var(--text);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .link-card__open-arrow {
+      transform: translate(#{rem(2px)}, #{rem(-2px)});
+    }
+  }
+}
+
+ui-card {
+  @include hover {
+    .link-card__open-text {
+      color: var(--text);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .link-card__open-arrow {
+        transform: translate(#{rem(2px)}, #{rem(-2px)});
+      }
+    }
+  }
 }

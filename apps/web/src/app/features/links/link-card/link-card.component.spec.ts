@@ -31,7 +31,8 @@ describe('LinkCardComponent', () => {
     const bar = element.querySelector('.ui-card__overlay');
     expect(bar?.getAttribute('aria-hidden')).toBe('true');
     expect(bar?.textContent).toContain('angular.dev/overview');
-    expect(bar?.textContent).toContain('Open ↗');
+    expect(bar?.textContent).toContain('Open');
+    expect(bar?.querySelector('.link-card__open-arrow')?.textContent).toBe('↗');
     expect(bar?.querySelector('a, button')).toBeNull();
     expect(element.querySelectorAll('a[href]')).toHaveLength(1);
   });

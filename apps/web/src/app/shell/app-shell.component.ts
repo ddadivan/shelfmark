@@ -30,6 +30,7 @@ import { LinkActionsService } from '../features/links/link-actions.service';
 import { OnboardingStore } from '../features/onboarding/onboarding.store';
 import { RatingStore } from '../features/rating/rating.store';
 import { SearchDialogService } from '../features/search/search-dialog.service';
+import { RecentLinksDrawerService } from '../features/links/recent/recent-links-drawer.service';
 import { RecentLinksPanelComponent } from '../features/links/recent/recent-links-panel.component';
 import { ViewportService } from '../core/layout/viewport.service';
 import { UiStore } from '../stores/ui.store';
@@ -72,6 +73,7 @@ export default class AppShellComponent {
   protected readonly nav = inject(MobileNavService);
   private readonly transloco = inject(TranslocoService);
   private readonly toasts = inject(ToastService);
+  private readonly recentDrawer = inject(RecentLinksDrawerService);
 
   private readonly recentLabels = toSignal(
     combineLatest([
@@ -82,8 +84,12 @@ export default class AppShellComponent {
   /** Name of the recent-panel toggle; `null` until the translations are loaded (an icon-only button needs one). */
   protected readonly recentToggleLabel = computed(() => {
     const labels = this.recentLabels();
-    return labels ? (this.ui.recentVisible() ? labels.hide : labels.show) : null;
+    return labels ? (this.recentOpen() ? labels.hide : labels.show) : null;
   });
+  /** The recent links are on screen: the inline column (desktop) or the side panel (tablet). */
+  protected readonly recentOpen = computed(() =>
+    this.viewport.desktop() ? this.ui.recentVisible() : this.recentDrawer.isOpen(),
+  );
   private readonly router = inject(Router);
   /** Phone: the 44px touch size and no chevron next to the avatar; desktop: 36px, so the 32px avatar is never clipped. */
   protected readonly accountButtonSize = computed(() =>
@@ -98,6 +104,13 @@ export default class AppShellComponent {
     effect(() => {
       if (!this.viewport.phone()) {
         void this.nav.close();
+      }
+    });
+    // Growing to the desktop shows the inline column, and the phone has its own sheet: the
+    // tablet side panel has to go.
+    effect(() => {
+      if (this.viewport.desktop() || this.viewport.phone()) {
+        void this.recentDrawer.close();
       }
     });
   }
@@ -144,7 +157,13 @@ export default class AppShellComponent {
   }
 
   protected toggleRecent(): void {
-    this.ui.setRecentVisible(!this.ui.recentVisible());
+    if (this.viewport.desktop()) {
+      this.ui.setRecentVisible(!this.ui.recentVisible());
+    } else if (this.recentDrawer.isOpen()) {
+      void this.recentDrawer.close();
+    } else {
+      this.recentDrawer.open();
+    }
   }
 
   protected async signOut(): Promise<void> {

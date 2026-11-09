@@ -92,15 +92,6 @@
   }
 }
 
-// The recent panel needs room: it exists from the desktop breakpoint up.
-.shell__recent-toggle {
-  display: none;
-
-  @include desktop {
-    display: inline-flex;
-  }
-}
-
 // The body takes the height left under the header, so the sidebar surface, the main column and the
 // recent panel run to the bottom of the viewport whatever the content height.
 .shell__body {

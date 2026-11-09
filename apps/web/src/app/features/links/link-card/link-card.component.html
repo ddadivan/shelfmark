@@ -12,7 +12,10 @@
   @if (href()) {
     <span slot="overlay" class="link-card__open">
       <span class="link-card__address">{{ address() }}</span>
-      <span class="link-card__open-label">{{ 'links.item.open' | transloco }}</span>
+      <span class="link-card__open-label">
+        <span class="link-card__open-text">{{ 'links.item.open' | transloco }}</span>
+        <span class="link-card__open-arrow">↗</span>
+      </span>
     </span>
   }
   <span slot="title">{{ link().title }}</span>
