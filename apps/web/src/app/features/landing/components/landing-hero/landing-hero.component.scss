@@ -100,6 +100,7 @@
 
 .landing-hero__lead {
   max-width: rem(500px);
+  padding-block-end: rem(48px);
   margin: 0;
   font-size: rem(15px);
   line-height: rem(22px);
@@ -146,6 +147,11 @@
 }
 
 .landing-hero__demo {
+  // The chat and its footer are spaced by the gap, not by a margin on the footer.
+  display: flex;
+  flex-direction: column;
+  gap: rem(32px);
+
   // Smaller steps than the buttons: the phone is the tallest part of the first screen.
   @include landing.zoom(1.15, 1.4);
 }

@@ -103,6 +103,37 @@
   rotate: -4deg;
 }
 
+// On desktop the board is wide: the scraps grow so they read at a glance.
+@include desktop {
+  .landing-before__ping,
+  .landing-before__scrap {
+    font-size: rem(15px);
+    line-height: rem(20px);
+  }
+
+  .landing-before__ping {
+    width: rem(184px);
+    padding: rem(10px) rem(14px);
+    margin-left: rem(-92px);
+  }
+
+  .landing-before__scrap--bubble,
+  .landing-before__scrap--sticky {
+    width: rem(260px);
+    padding: var(--space-4);
+    font-size: rem(16px);
+    line-height: rem(22px);
+  }
+
+  .landing-before__tab {
+    padding: rem(8px) rem(14px);
+  }
+
+  .landing-before__scrap--bookmarks {
+    padding: rem(10px) var(--space-4);
+  }
+}
+
 // On a phone the board is narrow: pin the scraps to separate bands so they do not overlap.
 @include phone {
   .landing-before__ping {

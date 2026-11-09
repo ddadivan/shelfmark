@@ -42,6 +42,11 @@
 
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  // Taller on desktop, where the scraps of the before board are bigger.
+  @include desktop {
+    --landing-panel-height: #{rem(400px)};
+  }
 }
 
 .landing-ba__scene {
