@@ -11,20 +11,22 @@
   background: var(--surface);
 
   // Keyboard hint (`Esc`, an arrow, the Enter symbol): input end slot, footer and item trailing.
-  // 24px tall cap, symbols and labels 14px; `--text-muted` on `--bg` is AA in both themes.
+  // A 2rem square cap with a 1.1rem glyph, centred on both axes in a grid (a flex row keeps the
+  // glyph's line box and puts wide symbols such as the command sign off-centre);
+  // `--text-muted` on `--bg` is AA in both themes.
   kbd {
     @include type(caption);
 
-    display: inline-flex;
+    display: inline-grid;
     flex: none;
-    align-items: center;
-    justify-content: center;
-    min-width: rem(24px);
-    height: rem(24px);
+    place-items: center;
+    min-width: 2rem;
+    height: 2rem;
     padding: 0 rem(8px);
     font-family: var(--font-mono);
-    font-size: rem(14px);
+    font-size: 1.1rem;
     line-height: 1;
+    text-align: center;
     color: var(--text-muted);
     background: var(--bg);
     border: 1px solid var(--border);
