@@ -269,13 +269,6 @@ describe('overlay mixins', () => {
       /\.cdk-overlay-pane\.ui-overlay-pane--passthrough\s*\{\s*pointer-events:\s*none/,
     );
   });
-
-  it('hides the tooltip description visually but not from assistive technology', () => {
-    const output = css('@include tooltip-description;');
-    expect(output).toContain('.ui-tooltip-description');
-    expect(output).toContain('clip-path: inset(50%)');
-    expect(output).not.toContain('display: none');
-  });
 });
 
 /** Reads a hex custom property from the `@mixin light` / `@mixin dark` output. */

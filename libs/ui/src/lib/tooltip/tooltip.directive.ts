@@ -27,7 +27,7 @@ import { OVERLAY_SIDE } from '../overlay/models/overlay-side.const';
 
 /** Time the pointer or focus may leave before the tooltip closes (lets it reach the panel). */
 const HIDE_GRACE_MS = 100;
-let nextId = 0;
+const DESCRIPTION_ATTRIBUTE = 'aria-description';
 
 function textTransform(value: string | null | undefined): string {
   return value ?? '';
@@ -40,10 +40,9 @@ function textTransform(value: string | null | undefined): string {
  * It never opens on devices without hover (`(hover: none)`).
  *
  * On `<ui-button>` the directive reaches the inner native element through `UI_FOCUS_TARGET`
- * (listeners, anchor, `aria-describedby`); on any other host it uses the host element. The
- * description is a visually hidden element in `<body>` that `aria-describedby` points at (the
- * tooltip itself is `aria-hidden`). `aria-describedby` is merged with an existing value; do not
- * also bind `ariaDescribedby` on a `ui-button` that has a tooltip.
+ * (listeners, anchor, `aria-description`); on any other host it uses the host element. The
+ * description is the `aria-description` attribute (no DOM nodes outside the host; the tooltip
+ * itself is `aria-hidden` and exists only while shown, destroyed on hide and on destroy).
  */
 @Directive({
   selector: '[uiTooltip]',
@@ -70,8 +69,8 @@ export class TooltipDirective {
     this.focusTarget ? this.focusTarget.element() : this.host,
   );
 
-  private readonly descriptionId = `ui-tooltip-${nextId++}`;
-  private description: HTMLElement | null = null;
+  /** The `aria-description` value this directive set (null when none). */
+  private described: string | null = null;
   private overlay: ConnectedOverlay | null = null;
   private panel: ComponentRef<TooltipPanelComponent> | null = null;
   private showTimer: ReturnType<typeof setTimeout> | undefined;
@@ -120,7 +119,7 @@ export class TooltipDirective {
       this.syncDescription();
       if (target) {
         onCleanup(() => {
-          this.removeDescribedBy(target);
+          this.removeDescription(target);
         });
       }
     });
@@ -153,7 +152,6 @@ export class TooltipDirective {
       this.clearTimers();
       this.disarmEscape();
       this.resetOverlay();
-      this.removeDescription();
     });
   }
 
@@ -346,9 +344,10 @@ export class TooltipDirective {
   }
 
   /**
-   * Keeps the hidden description and `aria-describedby` in line with text, shortcut and the
-   * target's accessible name. Runs in an effect and again when the tooltip opens, so a later
-   * `aria-label` change is picked up too.
+   * Keeps `aria-description` on the target in line with text and shortcut. It is skipped when
+   * the text is the target's accessible name (an icon-only button): describing it again is
+   * announced twice. Runs in an effect and again when the tooltip opens, so a later
+   * `aria-label` change is picked up too. No node is created anywhere.
    */
   private syncDescription(): void {
     const target = this.target();
@@ -357,14 +356,13 @@ export class TooltipDirective {
     if (!target) {
       return;
     }
-    // An icon-only button already has this name: describing it again is announced twice.
     if (!text || (!shortcut && target.getAttribute('aria-label')?.trim() === text.trim())) {
-      this.removeDescribedBy(target);
-      this.removeDescription();
+      this.removeDescription(target);
       return;
     }
-    this.ensureDescription().textContent = shortcut ? `${text} (${shortcut})` : text;
-    this.addDescribedBy(target);
+    const value = shortcut ? `${text} (${shortcut})` : text;
+    target.setAttribute(DESCRIPTION_ATTRIBUTE, value);
+    this.described = value;
   }
 
   /** Measure again once the panel has rendered its new content (not inside the CDK emit). */
@@ -379,39 +377,11 @@ export class TooltipDirective {
     );
   }
 
-  private removeDescription(): void {
-    this.description?.remove();
-    this.description = null;
-  }
-
-  private ensureDescription(): HTMLElement {
-    if (!this.description) {
-      const element = this.document.createElement('span');
-      element.id = this.descriptionId;
-      element.className = 'ui-tooltip-description';
-      this.document.body.append(element);
-      this.description = element;
+  /** Removes the description only if it is still ours (an author's own value stays). */
+  private removeDescription(target: HTMLElement): void {
+    if (this.described !== null && target.getAttribute(DESCRIPTION_ATTRIBUTE) === this.described) {
+      target.removeAttribute(DESCRIPTION_ATTRIBUTE);
     }
-    return this.description;
-  }
-
-  private addDescribedBy(target: HTMLElement): void {
-    const ids = this.describedByIds(target);
-    if (!ids.includes(this.descriptionId)) {
-      target.setAttribute('aria-describedby', [...ids, this.descriptionId].join(' '));
-    }
-  }
-
-  private removeDescribedBy(target: HTMLElement): void {
-    const ids = this.describedByIds(target).filter((id) => id !== this.descriptionId);
-    if (ids.length > 0) {
-      target.setAttribute('aria-describedby', ids.join(' '));
-    } else {
-      target.removeAttribute('aria-describedby');
-    }
-  }
-
-  private describedByIds(target: HTMLElement): string[] {
-    return (target.getAttribute('aria-describedby') ?? '').split(/\s+/).filter(Boolean);
+    this.described = null;
   }
 }

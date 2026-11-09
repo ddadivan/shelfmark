@@ -198,15 +198,15 @@ describe('BreadcrumbsComponent', () => {
     Object.defineProperty(link, 'clientWidth', { value: 100, configurable: true });
     link.dispatchEvent(new Event('pointerenter'));
     fixture.detectChanges();
-    expect(link.getAttribute('aria-describedby')).toBeTruthy();
+    expect(link.getAttribute('aria-description')).toBeTruthy();
     Object.defineProperty(link, 'scrollWidth', { value: 50, configurable: true });
     link.dispatchEvent(new Event('focus'));
     fixture.detectChanges();
-    expect(link.getAttribute('aria-describedby')).toBeNull();
+    expect(link.getAttribute('aria-description')).toBeNull();
     const current = root.querySelector('.ui-crumbs__current') as HTMLElement;
     current.dispatchEvent(new Event('pointerenter'));
     fixture.detectChanges();
-    expect(current.getAttribute('aria-describedby')).toBeNull();
+    expect(current.getAttribute('aria-description')).toBeNull();
   });
 
   it('renders a level without href as a focusable button that emits linkClick', () => {
@@ -235,7 +235,7 @@ describe('BreadcrumbsComponent', () => {
     Object.defineProperty(button, 'clientWidth', { value: 100, configurable: true });
     button.dispatchEvent(new Event('focus'));
     fixture.detectChanges();
-    expect(button.getAttribute('aria-describedby')).toBeTruthy();
+    expect(button.getAttribute('aria-description')).toBeTruthy();
   });
 
   it('uses a large "…" button on a coarse pointer', () => {

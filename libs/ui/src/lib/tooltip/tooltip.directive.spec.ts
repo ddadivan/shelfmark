@@ -87,30 +87,33 @@ describe('TooltipDirective', () => {
     });
   });
 
-  it('sets aria-describedby on the inner button of ui-button, not on the host', async () => {
+  it('sets aria-description on the inner button of ui-button, not on the host', async () => {
     const { host, inner, settle } = await setup();
     settle();
-    const id = inner.getAttribute('aria-describedby');
-    expect(id).toMatch(/^ui-tooltip-\d+$/);
-    expect(host.hasAttribute('aria-describedby')).toBe(false);
-    expect(document.getElementById(id as string)?.textContent).toBe('Search');
+    expect(inner.getAttribute('aria-description')).toBe('Search');
+    expect(host.hasAttribute('aria-description')).toBe(false);
   });
 
-  it('uses the host element on other hosts and merges an existing aria-describedby', async () => {
+  it('uses the host element on other hosts and leaves an existing aria-describedby alone', async () => {
     const { plain, native, settle } = await setup();
     settle();
-    expect(plain.getAttribute('aria-describedby')).toMatch(/^ui-tooltip-\d+$/);
-    const tokens = (native.getAttribute('aria-describedby') as string).split(' ');
-    expect(tokens[0]).toBe('other');
-    expect(tokens).toHaveLength(2);
+    expect(plain.getAttribute('aria-description')).toBe('Plain host');
+    expect(native.getAttribute('aria-describedby')).toBe('other');
+    expect(native.getAttribute('aria-description')).toBe('Native');
   });
 
   it('includes the shortcut in the description', async () => {
     const { fixture, inner, settle } = await setup();
     fixture.componentInstance.shortcut.set('⌘K');
     settle();
-    const id = inner.getAttribute('aria-describedby') as string;
-    expect(document.getElementById(id)?.textContent).toBe('Search (⌘K)');
+    expect(inner.getAttribute('aria-description')).toBe('Search (⌘K)');
+  });
+
+  it('creates no node in the body for the description', async () => {
+    const { settle } = await setup();
+    settle();
+    expect(document.querySelector('.ui-tooltip-description')).toBeNull();
+    expect(document.querySelector('[id^="ui-tooltip-"]')).toBeNull();
   });
 
   it('shows after 400 ms on hover and hides after the pointer leaves', async () => {
@@ -237,10 +240,10 @@ describe('TooltipDirective', () => {
     settle();
     // the ui-button has aria-label "Open search": no double announcement
     expect(inner.getAttribute('aria-label')).toBe('Open search');
-    expect(inner.hasAttribute('aria-describedby')).toBe(false);
+    expect(inner.hasAttribute('aria-description')).toBe(false);
     fixture.componentInstance.text.set('Find links');
     settle();
-    expect(inner.hasAttribute('aria-describedby')).toBe(true);
+    expect(inner.hasAttribute('aria-description')).toBe(true);
   });
 
   it('keeps the description with a shortcut even if the name matches', async () => {
@@ -248,18 +251,17 @@ describe('TooltipDirective', () => {
     fixture.componentInstance.text.set('Open search');
     fixture.componentInstance.shortcut.set('⌘K');
     settle();
-    expect(inner.hasAttribute('aria-describedby')).toBe(true);
+    expect(inner.hasAttribute('aria-description')).toBe(true);
   });
 
-  it('removes the body description when the text becomes empty', async () => {
+  it('removes the description when the text becomes empty', async () => {
     const { fixture, inner, settle } = await setup();
     fixture.componentInstance.text.set('Find links');
     settle();
-    const id = inner.getAttribute('aria-describedby') as string;
-    expect(document.getElementById(id)).not.toBeNull();
+    expect(inner.getAttribute('aria-description')).toBe('Find links');
     fixture.componentInstance.text.set('');
     settle();
-    expect(document.getElementById(id)).toBeNull();
+    expect(inner.hasAttribute('aria-description')).toBe(false);
   });
 
   it('keeps working when the position changes while open', async () => {
@@ -321,12 +323,12 @@ describe('TooltipDirective', () => {
 
   it('re-checks the accessible name when the tooltip opens', async () => {
     const { inner, settle } = await setup();
-    expect(inner.hasAttribute('aria-describedby')).toBe(true);
+    expect(inner.hasAttribute('aria-description')).toBe(true);
     inner.setAttribute('aria-label', 'Search');
     enter(inner);
     await vi.advanceTimersByTimeAsync(400);
     settle();
-    expect(inner.hasAttribute('aria-describedby')).toBe(false);
+    expect(inner.hasAttribute('aria-description')).toBe(false);
   });
 
   it('ignores other keys', async () => {
@@ -386,7 +388,7 @@ describe('TooltipDirective', () => {
     const { fixture, inner, settle, panelEl } = await setup();
     fixture.componentInstance.text.set('');
     settle();
-    expect(inner.hasAttribute('aria-describedby')).toBe(false);
+    expect(inner.hasAttribute('aria-description')).toBe(false);
     enter(inner);
     await vi.advanceTimersByTimeAsync(500);
     settle();
@@ -441,14 +443,40 @@ describe('TooltipDirective', () => {
 
   it('removes the overlay, description and listeners on destroy', async () => {
     const { fixture, inner, settle } = await setup();
-    const id = inner.getAttribute('aria-describedby') as string;
     enter(inner);
     await vi.advanceTimersByTimeAsync(400);
     settle();
     expect(document.querySelectorAll('.cdk-overlay-pane')).toHaveLength(1);
     fixture.destroy();
     expect(document.querySelectorAll('.cdk-overlay-pane')).toHaveLength(0);
-    expect(document.getElementById(id)).toBeNull();
+  });
+
+  it('leaves no tooltip node in the body after 50 hosts are shown and destroyed', async () => {
+    const refs = Array.from({ length: 50 }, () => {
+      const ref = TestBed.createComponent(HostComponent);
+      ref.detectChanges();
+      return ref;
+    });
+    TestBed.tick();
+    const nodes = (): number =>
+      document.body.querySelectorAll(
+        '.ui-tooltip-description, [id^="ui-tooltip-"], ui-tooltip-panel, .ui-tooltip',
+      ).length;
+    expect(nodes()).toBe(0);
+    const inner = refs[0].nativeElement.querySelector('#btn button') as HTMLElement;
+    enter(inner);
+    await vi.advanceTimersByTimeAsync(400);
+    refs.forEach((ref) => {
+      ref.detectChanges();
+    });
+    TestBed.tick();
+    expect(nodes()).toBeGreaterThan(0);
+    refs.forEach((ref) => {
+      ref.destroy();
+    });
+    await vi.advanceTimersByTimeAsync(500);
+    expect(nodes()).toBe(0);
+    expect(document.querySelectorAll('.cdk-overlay-pane')).toHaveLength(0);
   });
 
   it('has no axe violations while open', async () => {
