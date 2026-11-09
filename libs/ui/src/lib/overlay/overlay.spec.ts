@@ -287,6 +287,28 @@ describe('UiOverlay', () => {
     parent.remove();
   });
 
+  it('hides a moved element in the same task it is put back, and shows it again on re-attach', () => {
+    const service = TestBed.inject(UiOverlay);
+    overlay = service.connect({
+      origin,
+      positions: sidePositions(OVERLAY_SIDE.Bottom),
+      layer: OVERLAY_LAYER.Menu,
+    });
+    const parent = document.createElement('div');
+    const element = document.createElement('div');
+    parent.append(element);
+    document.body.append(parent);
+    overlay.attachElement(element);
+    expect(element.style.display).toBe('');
+    overlay.detach();
+    // Back in the page, still carrying the owner's "shown" class: it must not take up room.
+    expect(parent.contains(element)).toBe(true);
+    expect(element.style.display).toBe('none');
+    overlay.attachElement(element);
+    expect(element.style.display).toBe('');
+    parent.remove();
+  });
+
   it('anchors to a viewport point', () => {
     const service = TestBed.inject(UiOverlay);
     overlay = service.connect({

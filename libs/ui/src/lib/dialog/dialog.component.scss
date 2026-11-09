@@ -9,6 +9,9 @@
 .ui-dialog {
   --ui-dialog-width: #{rem(440px)};
 
+  // Read by the icons of `ui-button`, `ui-select` and `ui-chip` inside the dialog.
+  --ui-dialog-icon-size: var(--icon-size-lg);
+
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
@@ -106,7 +109,8 @@
 
 .ui-dialog__foot {
   display: flex;
-  gap: var(--space-2);
+  flex-wrap: wrap;
+  gap: var(--space-4);
   justify-content: flex-end;
 
   &:empty {

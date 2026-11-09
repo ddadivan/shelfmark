@@ -104,6 +104,9 @@ button.ui-chip__body {
 }
 
 .ui-chip__remove {
+  // 24px inside a dialog (`--ui-dialog-icon-size` from `ui-dialog`), 16px elsewhere.
+  --ui-icon-size: var(--ui-dialog-icon-size);
+
   display: inline-flex;
   align-items: center;
   justify-content: center;

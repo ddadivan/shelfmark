@@ -1,2 +1,14 @@
-<h2 class="settings-section__title">{{ heading() }}</h2>
+@if (headingHidden()) {
+  <h2 class="settings-section__title settings-section__title--hidden">{{ heading() }}</h2>
+} @else {
+  <div class="settings-section__head">
+    <div class="settings-section__text">
+      <h2 class="settings-section__title">{{ heading() }}</h2>
+      @if (hint(); as text) {
+        <p class="settings-section__hint">{{ text }}</p>
+      }
+    </div>
+    <div class="settings-section__action"><ng-content select="[slot=action]" /></div>
+  </div>
+}
 <ng-content />

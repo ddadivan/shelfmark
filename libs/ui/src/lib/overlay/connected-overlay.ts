@@ -24,6 +24,8 @@ export class ConnectedOverlay {
   private leaveTimer: ReturnType<typeof setTimeout> | undefined;
   private lastSide: OverlaySide | undefined;
   private disposed = false;
+  /** The element last moved into the pane by `attachElement()`. */
+  private movedElement: HTMLElement | undefined;
   private readonly unregisterDestroy: () => void;
 
   constructor(
@@ -43,6 +45,15 @@ export class ConnectedOverlay {
         }),
       );
     }
+    // The CDK puts a moved element back at its old place on detach, still carrying the owner's
+    // "shown" class until the owner's next change detection. For that moment the element would
+    // be a visible block in the middle of the page (a menu in the header row, a select popup in
+    // a form), a layout jump the user sees when the overlay closes. Hide it in the same task.
+    this.subscription.add(
+      overlayRef.detachments().subscribe(() => {
+        this.movedElement?.style.setProperty('display', 'none');
+      }),
+    );
     // Always release, even if the owner forgets `dispose()`.
     this.unregisterDestroy = this.injector.get(DestroyRef).onDestroy(() => {
       this.dispose();
@@ -85,6 +96,8 @@ export class ConnectedOverlay {
    */
   attachElement(element: HTMLElement): void {
     this.cancelRelease();
+    element.style.removeProperty('display');
+    this.movedElement = element;
     this.overlayRef.attach(new DomPortal(element));
   }
 
@@ -156,6 +169,9 @@ export class ConnectedOverlay {
     this.unregisterDestroy();
     this.cancelRelease();
     this.subscription.unsubscribe();
+    if (this.overlayRef.hasAttached()) {
+      this.movedElement?.style.setProperty('display', 'none');
+    }
     this.overlayRef.dispose();
   }
 }

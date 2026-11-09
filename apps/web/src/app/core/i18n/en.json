@@ -270,6 +270,7 @@
       "actions": "Actions for {{title}}",
       "delete": "Delete",
       "opensInNewTab": "Opens in a new tab",
+      "open": "Open ↗",
       "favoriteFailed": "Couldn't update the favorite.",
       "retry": "Retry",
       "deleted": "Link deleted",
@@ -646,7 +647,16 @@
         "system": "System",
         "light": "Light",
         "dark": "Dark"
+      },
+      "language": {
+        "label": "Language",
+        "hint": "More languages are coming",
+        "value": "English"
       }
+    },
+    "footer": {
+      "privacy": "Privacy policy",
+      "version": "Shelfmark v1.0"
     },
     "welcome": {
       "title": "Welcome tour",
@@ -777,6 +787,10 @@
     "failed": "Couldn't search. Try again.",
     "hints": {
       "ctrl": "Ctrl",
+      "command": "Command",
+      "up": "Up",
+      "down": "Down",
+      "enter": "Enter",
       "move": "move",
       "open": "open",
       "background": "open in background"

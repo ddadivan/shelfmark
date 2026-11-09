@@ -16,6 +16,7 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   BUTTON_SIZE,
   ButtonComponent,
+  ICON_SIZE,
   MenuComponent,
   MenuItemComponent,
   MenuSeparatorComponent,
@@ -70,6 +71,7 @@ const FIXED_ROUTES: Readonly<Record<string, string>> = {
 })
 export class SidebarComponent {
   protected readonly folders = inject(FoldersStore);
+  protected readonly ICON_SIZE = ICON_SIZE;
   /** Adds the "Recently opened" row below the views (the phone drawer; the desktop has a panel). */
   readonly showRecent = input(false, { transform: booleanAttribute });
   /** The "Recently opened" row was chosen. */

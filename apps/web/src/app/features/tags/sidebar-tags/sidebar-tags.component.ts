@@ -20,6 +20,7 @@ import {
   BUTTON_SIZE,
   BUTTON_VARIANT,
   ButtonComponent,
+  ICON_SIZE,
   ChipComponent,
   InputComponent,
   KEYBOARD_KEY,
@@ -66,6 +67,7 @@ import { splitTags } from '../tag-split';
 })
 export class SidebarTagsComponent {
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
+  protected readonly ICON_SIZE = ICON_SIZE;
 
   protected readonly tags = inject(TagsStore);
   private readonly viewport = inject(ViewportService);

@@ -468,15 +468,31 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
       test('page scrolled to the end has no serious or critical axe violations', async ({
         page,
       }, testInfo) => {
-        // The before board loops forever (held mid-frame once it is off screen), so axe scans a
-        // settled frame: reduced motion, where the loops never start.
-        await page.emulateMedia({ reducedMotion: 'reduce' });
         await gotoLandingLoaded(page);
         // Scroll through the page: each section reveals when it comes into view.
         await scrollThrough(page);
         await expect(
           page.getByRole('region', { name: 'Empty your Saved Messages.' }).locator('h2'),
         ).toHaveCSS('opacity', '1');
+        // Motion is on: the before board loops forever and is held mid-frame once it leaves the
+        // screen, so scrolling past it can leave it half way through its entrance. Bring it back,
+        // wait for the entrance to finish, then hold the loop (pointer over the section) before
+        // the scan, so axe reads fully opaque scraps.
+        expect(await page.evaluate("matchMedia('(prefers-reduced-motion: reduce)').matches")).toBe(
+          false,
+        );
+        const board = page.getByRole('region', { name: 'The same links, before and after' });
+        await board.scrollIntoViewIfNeeded();
+        const before = board.locator('.landing-before__before');
+        await expect(before).toHaveClass(/landing-before__before--entered/);
+        for (const scrap of await board
+          .locator('.landing-before__scrap, .landing-before__ping')
+          .all()) {
+          await expect(scrap).toHaveCSS('opacity', '1');
+        }
+        await board.locator('.landing-ba__scenes').hover();
+        await expect(before).toHaveClass(/landing-before__before--holding/);
+        await page.evaluate('scrollTo(0, document.documentElement.scrollHeight)');
         await settleReveals(page);
         await page.evaluate('document.fonts.ready.then(() => undefined)');
 

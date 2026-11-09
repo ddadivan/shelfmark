@@ -63,6 +63,24 @@ export const NothingFound: Story = {
   },
 };
 
+/** Two actions: equal width (160px minimum), 12px apart, wrapping with the same gap on a phone. */
+export const TwoActions: Story = {
+  args: {
+    heading: 'This folder is empty',
+    text: 'Add a link here, or move links from Unsorted.',
+    illustration: 'empty-folder',
+  },
+  render: (args) => ({
+    props: args,
+    moduleMetadata: { imports: [ButtonComponent] },
+    template: `
+      <ui-empty-state [heading]="heading" [text]="text" [illustration]="illustration">
+        <ui-button>Open Unsorted</ui-button>
+        <ui-button variant="primary" iconLeft="add">Add link</ui-button>
+      </ui-empty-state>`,
+  }),
+};
+
 /** With an icon tile instead of a scene. */
 export const WithIcon: Story = {
   args: { illustration: undefined, icon: 'bookmark' },

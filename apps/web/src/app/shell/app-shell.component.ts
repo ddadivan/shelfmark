@@ -15,6 +15,7 @@ import {
   BUTTON_SIZE,
   type IconName,
   ButtonComponent,
+  ICON_SIZE,
   LogoComponent,
   MenuComponent,
   MenuItemComponent,
@@ -65,6 +66,7 @@ export default class AppShellComponent {
   protected readonly actions = inject(LinkActionsService);
   private readonly exporter = inject(ExportActionsService);
   protected readonly EXPORT_FORMAT = EXPORT_FORMAT;
+  protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly search = inject(SearchDialogService);
   protected readonly viewport = inject(ViewportService);
   protected readonly nav = inject(MobileNavService);

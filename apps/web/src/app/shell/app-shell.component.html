@@ -5,6 +5,7 @@
     variant="ghost"
     iconOnly
     iconLeft="menu"
+    [iconSize]="ICON_SIZE.Lg"
     [ariaLabel]="'shell.menu' | transloco"
     [ariaExpanded]="nav.isOpen()"
     (click)="nav.open()"
@@ -27,6 +28,7 @@
     size="sm"
     iconOnly
     iconLeft="search"
+    [iconSize]="ICON_SIZE.Lg"
     [ariaLabel]="'shell.search' | transloco"
     (click)="search.open()"
   />
@@ -39,6 +41,7 @@
           size="sm"
           iconOnly
           iconLeft="panel-right"
+          [iconSize]="ICON_SIZE.Lg"
           [ariaPressed]="ui.recentVisible()"
           [ariaLabel]="label"
           (click)="toggleRecent()"
@@ -50,9 +53,10 @@
         variant="ghost"
         [size]="accountButtonSize()"
         [iconRight]="accountIconRight()"
+        [iconSize]="ICON_SIZE.Lg"
         [ariaLabel]="'shell.accountMenu' | transloco"
       >
-        <ui-avatar [name]="user.name" [src]="user.image ?? undefined" size="sm" />
+        <ui-avatar [name]="user.name" [src]="user.image ?? undefined" />
       </ui-button>
       <ui-menu #accountMenu align="end" [ariaLabel]="'shell.accountMenu' | transloco">
         <ui-menu-item icon="settings" (activated)="openSettings()">
