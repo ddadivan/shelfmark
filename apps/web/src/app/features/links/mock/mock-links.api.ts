@@ -201,7 +201,7 @@ export class MockLinksApi implements LinksApi {
     return defer(() => {
       const current = this.links.find((link) => link.id === id);
       if (!current) {
-        return throwError(() => new Error('Mock: get failed'));
+        return throwError(() => new Error('Mock: capture failed'));
       }
       this.captured.add(id);
       return of(this.withImages(current, false));

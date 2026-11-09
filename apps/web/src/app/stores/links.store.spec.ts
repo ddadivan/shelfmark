@@ -357,15 +357,29 @@ describe('LinksStore', () => {
       expect(store.entityMap()['id-2']?.imageUrl).toBe(MOCK_LINKS[0].imageUrl);
     });
 
-    it('asks once per link and session, even when the link loads again', async () => {
+    it('asks once per link while a request runs, even when the link loads again', async () => {
+      const running = new Subject<LinkResponse>();
       const { api, store } = setup({ items: [pendingLink(1)] });
+      api.captureImages.mockReturnValue(running);
       store.setFilter({ scope: LINKS_SCOPE.All });
       await vi.waitFor(() => expect(api.captureImages).toHaveBeenCalledTimes(1));
 
-      api.list.mockReturnValue(of(page([pendingLink(1)])));
       store.setFilter({ scope: LINKS_SCOPE.All });
       await store.loadRecent();
       store.applyEdit(pendingLink(1));
+
+      expect(api.captureImages).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not ask again for a captured link that loads without the marker', async () => {
+      const { api, store } = setup({ items: [pendingLink(1)] });
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      await vi.waitFor(() =>
+        expect(store.entityMap()['id-1']?.imageUrl).toContain('v=0123456789abcdef'),
+      );
+
+      api.list.mockReturnValue(of(page([store.entityMap()['id-1'] as LinkResponse])));
+      store.setFilter({ scope: LINKS_SCOPE.All });
 
       expect(api.captureImages).toHaveBeenCalledTimes(1);
     });
@@ -404,6 +418,63 @@ describe('LinksStore', () => {
       await store.loadRecent();
 
       expect(api.captureImages).not.toHaveBeenCalled();
+    });
+
+    it('asks again when a captured link is edited to a new page (pending again)', async () => {
+      const { api, store } = setup({ items: [pendingLink(1)] });
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      await vi.waitFor(() =>
+        expect(store.entityMap()['id-1']?.imageUrl).toContain('v=0123456789abcdef'),
+      );
+
+      store.applyEdit({ ...pendingLink(1), updatedAt: 'edited' });
+
+      await vi.waitFor(() => expect(api.captureImages).toHaveBeenCalledTimes(2));
+    });
+
+    it('drops a response for a version the user edited meanwhile and asks for the new one', async () => {
+      const first = new Subject<LinkResponse>();
+      const { api, store } = setup({ items: [pendingLink(1)] });
+      api.captureImages.mockReturnValueOnce(first);
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      await vi.waitFor(() => expect(api.captureImages).toHaveBeenCalledTimes(1));
+
+      store.applyEdit({ ...pendingLink(1), updatedAt: 'edited' });
+      first.next(
+        link(1, {
+          faviconUrl: '/api/links/id-1/favicon?v=aaaaaaaaaaaaaaaa',
+          imageUrl: '/api/links/id-1/image?v=aaaaaaaaaaaaaaaa',
+        }),
+      );
+      first.complete();
+
+      // The stale answer is not applied; the edited version is asked about itself.
+      await vi.waitFor(() => expect(api.captureImages).toHaveBeenCalledTimes(2));
+      await vi.waitFor(() =>
+        expect(store.entityMap()['id-1']?.imageUrl).toBe(
+          '/api/links/id-1/image?v=0123456789abcdef',
+        ),
+      );
+      expect(store.entityMap()['id-1']?.updatedAt).toBe('edited');
+    });
+
+    it('runs at most three captures at a time', async () => {
+      const calls: Subject<LinkResponse>[] = [];
+      const { api, store } = setup({ items: [1, 2, 3, 4, 5].map(pendingLink) });
+      api.captureImages.mockImplementation(() => {
+        const call = new Subject<LinkResponse>();
+        calls.push(call);
+        return call;
+      });
+
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      await vi.waitFor(() => expect(api.captureImages).toHaveBeenCalledTimes(3));
+      expect(calls).toHaveLength(3);
+
+      calls[0].next(link(1));
+      calls[0].complete();
+      await vi.waitFor(() => expect(api.captureImages).toHaveBeenCalledTimes(4));
+      expect(calls).toHaveLength(4);
     });
 
     it('asks for a link that became pending through an edit', async () => {

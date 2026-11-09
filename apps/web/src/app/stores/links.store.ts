@@ -30,6 +30,9 @@ import type { PendingRemoval } from '../features/links/models/pending-removal.in
 import { RECENT_LINKS_LIMIT } from '../features/links/models/recent-links-limit.const';
 import type { LinksState } from './models/links-state.interface';
 
+/** Image capture requests in flight at once (the endpoint shares the AddLink rate limit). */
+const CAPTURE_CONCURRENCY = 3;
+
 const initialState: LinksState = {
   filter: { scope: LINKS_SCOPE.All },
   nextCursor: null,
@@ -103,6 +106,8 @@ export const LinksStore = signalStore(
     const favoriteBusy = new Set<string>();
     // Links whose image capture was requested this session: one request per link.
     const captureRequested = new Set<string>();
+    const captureQueue: LinkResponse[] = [];
+    let captureInFlight = 0;
     // Bumped when the filter changes or the store resets: late responses are dropped.
     let generation = 0;
     // Bumped only by `reset()`: a response that started before it belongs to the previous user.
@@ -114,26 +119,58 @@ export const LinksStore = signalStore(
 
     /**
      * Asks the server to re-capture the images of loaded links that carry the pending marker (their
-     * page changed), once per link and session. A failure is silent: the card keeps the letter.
+     * page changed), once per link and session, at most `CAPTURE_CONCURRENCY` at a time so a page
+     * of pending links does not burst the AddLink rate limit. A failure is silent: the card keeps
+     * the letter.
      */
     function noteLinks(links: readonly LinkResponse[]): void {
       for (const link of links) {
         if (hasPendingImages(link) && !captureRequested.has(link.id)) {
           captureRequested.add(link.id);
-          void captureImages(link.id);
+          captureQueue.push(link);
         }
+      }
+      pumpCaptures();
+    }
+
+    function pumpCaptures(): void {
+      while (captureInFlight < CAPTURE_CONCURRENCY) {
+        const next = captureQueue.shift();
+        if (next === undefined) {
+          return;
+        }
+        captureInFlight++;
+        void captureImages(next).finally(() => {
+          captureInFlight--;
+          pumpCaptures();
+        });
       }
     }
 
-    async function captureImages(id: string): Promise<void> {
+    function loaded(id: string): LinkResponse | undefined {
+      return store.entityMap()[id] ?? store.recent().find((link) => link.id === id);
+    }
+
+    /** The response is applied only while the link is still the version that was asked about. */
+    async function captureImages(asked: LinkResponse): Promise<void> {
+      const { id } = asked;
       const started = epoch;
       try {
         const saved = await firstValueFrom(api().captureImages(id));
         if (started !== epoch || pending.has(id)) {
           return;
         }
-        const changes = { faviconUrl: saved.faviconUrl, imageUrl: saved.imageUrl };
-        patchState(store, updateEntity({ id, changes }), { recent: mapRecent(id, changes) });
+        const current = loaded(id);
+        if (current?.updatedAt === asked.updatedAt && hasPendingImages(current)) {
+          const changes = { faviconUrl: saved.faviconUrl, imageUrl: saved.imageUrl };
+          patchState(store, updateEntity({ id, changes }), { recent: mapRecent(id, changes) });
+        } else if (current !== undefined && hasPendingImages(current)) {
+          // Edited to another page while the request ran: that version is pending in its own right.
+          captureRequested.delete(id);
+          noteLinks([current]);
+        }
+        // Done (or superseded): a later edit that makes the link pending again may ask again.
+        captureRequested.delete(id);
       } catch {
         // No toast: the capture is a courtesy, the card falls back to the site letter.
       }
@@ -429,6 +466,7 @@ export const LinksStore = signalStore(
         pending.clear();
         favoriteBusy.clear();
         captureRequested.clear();
+        captureQueue.length = 0;
         generation++;
         epoch++;
         patchState(store, initialState, removeAllEntities());

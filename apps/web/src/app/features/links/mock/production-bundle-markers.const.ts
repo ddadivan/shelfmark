@@ -13,6 +13,7 @@ export const PRODUCTION_BUNDLE_MARKERS = [
   'delete-fails.example',
   'Mock: update failed',
   'Mock: get failed',
+  'Mock: capture failed',
   'Mock: delete failed',
   'Mock: list failed',
   'sm-mock-links-scenario',
