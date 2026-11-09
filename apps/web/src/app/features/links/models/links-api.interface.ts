@@ -1,5 +1,6 @@
 import type { Observable } from 'rxjs';
 import type {
+  CaptureLinkImagesResponse,
   CreateLinkRequest,
   GetLinkResponse,
   LinkPreviewResponse,
@@ -33,4 +34,9 @@ export interface LinksApi {
   remove(id: string): Observable<void>;
   /** `POST /api/links/:id/open`: the link with `lastOpenedAt` updated. */
   open(id: string): Observable<OpenLinkResponse>;
+  /**
+   * `POST /api/links/:id/images/capture`: re-captures the images of a link whose page changed
+   * (its image paths carry the pending marker). Answers with the link as it is afterwards.
+   */
+  captureImages(id: string): Observable<CaptureLinkImagesResponse>;
 }

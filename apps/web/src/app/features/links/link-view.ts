@@ -1,4 +1,4 @@
-import { isHttpUrl } from '@shelfmark/contracts';
+import { isHttpUrl, LINK_IMAGE_PENDING_VERSION, type LinkResponse } from '@shelfmark/contracts';
 import { displayHost } from './add-link/http-url';
 
 /** The URL when it is safe to put in an `href` (http or https only), else `undefined`. */
@@ -25,4 +25,14 @@ const OWN_IMAGE_PATH = /^\/api\/links\/[0-9a-f-]{36}\/(favicon|image)\?v=[0-9a-f
  */
 export function ownImageUrl(url: string | null): string | undefined {
   return url !== null && OWN_IMAGE_PATH.test(url) ? url : undefined;
+}
+
+/** An image path of our own API whose capture is pending (`?v=pending`): it is never bound. */
+function isPendingImagePath(url: string | null): boolean {
+  return url !== null && url.endsWith(`?v=${LINK_IMAGE_PENDING_VERSION}`);
+}
+
+/** Whether the server marked the images of this link as pending a re-capture (ADR 0027 note). */
+export function hasPendingImages(link: LinkResponse): boolean {
+  return isPendingImagePath(link.faviconUrl) || isPendingImagePath(link.imageUrl);
 }

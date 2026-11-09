@@ -1,4 +1,5 @@
-import { linkHost, ownImageUrl, safeHref, siteLetter } from './link-view';
+import { MOCK_LINKS } from '@shelfmark/contracts/testing';
+import { hasPendingImages, linkHost, ownImageUrl, safeHref, siteLetter } from './link-view';
 
 describe('link view helpers', () => {
   it('allows only http(s) hrefs', () => {
@@ -20,8 +21,21 @@ describe('link view helpers', () => {
     expect(ownImageUrl(null)).toBeUndefined();
     expect(ownImageUrl(`${own}&x=1`)).toBeUndefined();
     expect(ownImageUrl('/api/links/x/image?v=abcdef0123456789')).toBeUndefined();
+    expect(
+      ownImageUrl('/api/links/0123456789abcdef0123456789abcdef0123/image?v=pending'),
+    ).toBeUndefined();
     expect(ownImageUrl('https://evil.test/a.png')).toBeUndefined();
     expect(ownImageUrl('//evil.test/a.png')).toBeUndefined();
     expect(ownImageUrl('data:image/png;base64,AAAA')).toBeUndefined();
+  });
+
+  it('detects the pending marker of either image path', () => {
+    const base = { ...MOCK_LINKS[0], faviconUrl: null, imageUrl: null };
+    expect(hasPendingImages(base)).toBe(false);
+    expect(hasPendingImages({ ...base, imageUrl: '/api/links/x/image?v=pending' })).toBe(true);
+    expect(hasPendingImages({ ...base, faviconUrl: '/api/links/x/favicon?v=pending' })).toBe(true);
+    expect(hasPendingImages({ ...base, imageUrl: '/api/links/x/image?v=0123456789abcdef' })).toBe(
+      false,
+    );
   });
 });

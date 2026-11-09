@@ -1,9 +1,11 @@
 import { inject, Service } from '@angular/core';
 import {
+  LINK_IMAGE_PENDING_VERSION,
   LINK_SORT_FIELD,
   normalizeUrl,
   PAGE_LIMIT,
   SORT_ORDER,
+  type CaptureLinkImagesResponse,
   type CreateLinkRequest,
   type LinkPreviewResponse,
   type LinkResponse,
@@ -37,6 +39,8 @@ export class MockLinksApi implements LinksApi {
   private readonly data = inject(MockLibraryData);
   /** Links created per `idempotencyKey`: the same key answers the same link, like the server. */
   private readonly created = new Map<string, LinkResponse>();
+  /** Ids whose images were "captured" by `captureImages`. */
+  private readonly captured = new Set<string>();
 
   private get links(): LinkResponse[] {
     return this.data.links;
@@ -115,7 +119,15 @@ export class MockLinksApi implements LinksApi {
       const sorted = sort(matching, query);
       const limit = query.limit ?? PAGE_LIMIT.Default;
       const offset = decodeCursor(query.cursor);
-      const items = sorted.slice(offset, offset + limit).map((link) => ({ ...link }));
+      const first = sorted[0]?.id;
+      const items = sorted
+        .slice(offset, offset + limit)
+        .map((link) =>
+          this.withImages(
+            link,
+            scenario === MOCK_LINKS_SCENARIO.PendingImages && link.id === first,
+          ),
+        );
       const next = offset + limit;
       return of<ListLinksResponse>({
         items,
@@ -183,6 +195,35 @@ export class MockLinksApi implements LinksApi {
       this.links = this.links.map((link) => (link.id === id ? opened : link));
       return of({ ...opened });
     }).pipe(delay(MOCK_LATENCY_MS.List));
+  }
+
+  captureImages(id: string): Observable<CaptureLinkImagesResponse> {
+    return defer(() => {
+      const current = this.links.find((link) => link.id === id);
+      if (!current) {
+        return throwError(() => new Error('Mock: capture failed'));
+      }
+      this.captured.add(id);
+      return of(this.withImages(current, false));
+    }).pipe(delay(MOCK_LATENCY_MS.Create));
+  }
+
+  /** A copy of the link with the mock capture state applied: captured, pending or untouched. */
+  private withImages(link: LinkResponse, pending: boolean): LinkResponse {
+    if (this.captured.has(link.id)) {
+      return {
+        ...link,
+        faviconUrl: `/api/links/${link.id}/favicon?v=0123456789abcdef`,
+        imageUrl: `/api/links/${link.id}/image?v=0123456789abcdef`,
+      };
+    }
+    return pending
+      ? {
+          ...link,
+          faviconUrl: `/api/links/${link.id}/favicon?v=${LINK_IMAGE_PENDING_VERSION}`,
+          imageUrl: `/api/links/${link.id}/image?v=${LINK_IMAGE_PENDING_VERSION}`,
+        }
+      : { ...link };
   }
 
   private filter(query: ListLinksQuery): LinkResponse[] {

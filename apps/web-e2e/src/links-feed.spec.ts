@@ -222,6 +222,34 @@ test.describe('links feed (mock API)', () => {
     await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();
   });
 
+  test.describe('pending image capture', () => {
+    // The service worker would answer the image requests before `page.route` sees them.
+    test.use({ serviceWorkers: 'block' });
+
+    test('re-captures the images of a pending link and shows the new ones', async ({ page }) => {
+      const png = Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/iZk9HQAAAABJRU5ErkJggg==',
+        'base64',
+      );
+      const requested: string[] = [];
+      await page.route(/\/api\/links\/[^/]+\/(image|favicon)\?v=/, async (route) => {
+        requested.push(route.request().url());
+        await route.fulfill({ contentType: 'image/png', body: png });
+      });
+      await page.addInitScript(
+        ([key, value]) => sessionStorage.setItem(key, value),
+        [MOCK_LINKS_SCENARIO.key, MOCK_LINKS_SCENARIO.pendingImages],
+      );
+      await page.goto('/links');
+
+      const image = page.locator('ui-card').first().locator('img[src*="/image?v="]');
+      await expect(image).toHaveAttribute('src', /\/image\?v=0123456789abcdef$/);
+      // The pending marker itself is never bound as an image source.
+      expect(requested.some((url) => url.endsWith('v=pending'))).toBe(false);
+      expect(requested.some((url) => url.endsWith('/image?v=0123456789abcdef'))).toBe(true);
+    });
+  });
+
   test('the recent panel exists on a wide screen only', async ({ page }, testInfo) => {
     await openFeed(page);
 

@@ -153,12 +153,12 @@ describe('Library schema (links, folders, tags)', () => {
     ).rejects.toMatchObject(tooLong);
     await expect(
       database.prisma.link.create({
-        data: linkData(user.id, { faviconUrl: `https://e.test/${'f'.repeat(2040)}` }),
+        data: linkData(user.id, { faviconSourceUrl: `https://e.test/${'f'.repeat(2040)}` }),
       }),
     ).rejects.toMatchObject(tooLong);
     await expect(
       database.prisma.link.create({
-        data: linkData(user.id, { imageUrl: `https://e.test/${'i'.repeat(2040)}` }),
+        data: linkData(user.id, { imageSourceUrl: `https://e.test/${'i'.repeat(2040)}` }),
       }),
     ).rejects.toMatchObject(tooLong);
     await expect(
@@ -175,22 +175,26 @@ describe('Library schema (links, folders, tags)', () => {
     });
   });
 
-  it('only accepts http(s) urls for url, faviconUrl and imageUrl', async () => {
+  it('only accepts http(s) urls for url, faviconSourceUrl and imageSourceUrl', async () => {
     const user = await createUser();
     await expect(
       database.prisma.link.create({ data: linkData(user.id, { url: 'javascript:alert(1)' }) }),
     ).rejects.toThrow(/links_url_scheme_check/);
     await expect(
-      database.prisma.link.create({ data: linkData(user.id, { faviconUrl: 'data:image/png;x' }) }),
-    ).rejects.toThrow(/links_favicon_url_scheme_check/);
+      database.prisma.link.create({
+        data: linkData(user.id, { faviconSourceUrl: 'data:image/png;x' }),
+      }),
+    ).rejects.toThrow(/links_favicon_source_url_scheme_check/);
     await expect(
-      database.prisma.link.create({ data: linkData(user.id, { imageUrl: 'ftp://e.test/i.png' }) }),
-    ).rejects.toThrow(/links_image_url_scheme_check/);
+      database.prisma.link.create({
+        data: linkData(user.id, { imageSourceUrl: 'ftp://e.test/i.png' }),
+      }),
+    ).rejects.toThrow(/links_image_source_url_scheme_check/);
     const ok = await database.prisma.link.create({
       data: linkData(user.id, {
         url: 'HTTPS://Example.test/a',
-        faviconUrl: 'http://example.test/f.ico',
-        imageUrl: 'https://example.test/i.png',
+        faviconSourceUrl: 'http://example.test/f.ico',
+        imageSourceUrl: 'https://example.test/i.png',
       }),
     });
     expect(ok.url).toBe('HTTPS://Example.test/a');

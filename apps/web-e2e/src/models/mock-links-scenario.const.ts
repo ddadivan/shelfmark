@@ -4,4 +4,5 @@ export const MOCK_LINKS_SCENARIO = {
   key: 'sm-mock-links-scenario',
   empty: 'empty',
   error: 'error',
+  pendingImages: 'pending-images',
 } as const;

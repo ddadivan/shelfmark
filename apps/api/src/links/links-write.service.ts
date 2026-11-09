@@ -182,6 +182,8 @@ export class LinksWriteService {
           await tx.linkImage.deleteMany({ where: { linkId: id, userId } });
           data.faviconSourceUrl = null;
           data.imageSourceUrl = null;
+          // Pending: the first image request for the new page re-captures lazily (ADR 0027 note).
+          data.captureAttemptedAt = null;
         }
 
         if (request.tags !== undefined) {

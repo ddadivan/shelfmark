@@ -105,7 +105,7 @@ model Verification {
 //   404 tests (never 403);
 // - no folder cycles on move (walk the ancestors of the new parent);
 // - title truncated to LINK_LIMIT.TitleMax when the preview fails and the URL is used as title;
-// - faviconUrl and imageUrl set server-side only (from the preview), never from client input.
+// - the image source URLs and captureAttemptedAt are set server-side only, never from client input.
 
 model Folder {
   id        String   @id @default(uuid(7)) @db.Uuid
@@ -126,32 +126,33 @@ model Folder {
 }
 
 model Link {
-  id               String    @id @default(uuid(7)) @db.Uuid
-  userId           String    @map("user_id") @db.Uuid
-  folderId         String?   @map("folder_id") @db.Uuid
-  url              String    @db.VarChar(2048)
-  normalizedUrl    String    @map("normalized_url") @db.VarChar(2048)
-  title            String    @db.VarChar(300)
+  id                 String      @id @default(uuid(7)) @db.Uuid
+  userId             String      @map("user_id") @db.Uuid
+  folderId           String?     @map("folder_id") @db.Uuid
+  url                String      @db.VarChar(2048)
+  normalizedUrl      String      @map("normalized_url") @db.VarChar(2048)
+  title              String      @db.VarChar(300)
   // lower(title), kept in sync by the service: the keyset cursor sorts on it (ADR 0033).
-  titleSortKey     String    @map("title_sort_key")
-  note             String?
-  faviconUrl       String?   @map("favicon_url") @db.VarChar(2048)
-  imageUrl         String?   @map("image_url") @db.VarChar(2048)
+  titleSortKey       String      @map("title_sort_key")
+  note               String?
   // Remote source URLs as sent by the client or found in the preview; the capture fetches them
-  // server-side (ADR 0027). faviconUrl and imageUrl above are dead columns, always null: the
-  // response derives its same-origin image paths from link_images (follow-up: drop them).
-  faviconSourceUrl String?   @map("favicon_source_url") @db.VarChar(2048)
-  imageSourceUrl   String?   @map("image_source_url") @db.VarChar(2048)
+  // server-side (ADR 0027). The response derives its same-origin image paths from link_images.
+  faviconSourceUrl   String?     @map("favicon_source_url") @db.VarChar(2048)
+  imageSourceUrl     String?     @map("image_source_url") @db.VarChar(2048)
+  // When the last image capture was attempted (create, or the lazy re-capture of ADR 0027). Defaults
+  // to the insert time; a PATCH that changes the page sets it to NULL = "capture pending". The
+  // lazy path claims it atomically, which is also its cooldown.
+  captureAttemptedAt DateTime?   @default(now()) @map("capture_attempted_at") @db.Timestamptz(3)
   // Client-generated UUID that makes a retried create return the first link (ADR 0033).
-  idempotencyKey   String?   @map("idempotency_key") @db.Uuid
-  isFavorite       Boolean   @default(false) @map("is_favorite")
-  lastOpenedAt     DateTime? @map("last_opened_at") @db.Timestamptz(3)
-  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
-  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  folder           Folder?   @relation(fields: [folderId], references: [id], onDelete: SetNull)
-  tags             LinkTag[]
-  images           LinkImage[]
+  idempotencyKey     String?     @map("idempotency_key") @db.Uuid
+  isFavorite         Boolean     @default(false) @map("is_favorite")
+  lastOpenedAt       DateTime?   @map("last_opened_at") @db.Timestamptz(3)
+  createdAt          DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user               User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  folder             Folder?     @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  tags               LinkTag[]
+  images             LinkImage[]
 
   @@unique([userId, idempotencyKey])
   @@index([userId, createdAt, id])
