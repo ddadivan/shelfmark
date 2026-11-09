@@ -28,6 +28,14 @@
   }
 }
 
+.ui-drawer--end {
+  --ui-inline-sign: 1;
+
+  &:dir(rtl) {
+    --ui-inline-sign: -1;
+  }
+}
+
 .ui-drawer--enter {
   @include enter(drawer);
 }

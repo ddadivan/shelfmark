@@ -1,4 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { DRAWER_SIDE } from './models/drawer-side.const';
+import type { DrawerSide } from './models/drawer-side.type';
 import { ButtonComponent } from '../button/button.component';
 import { BUTTON_SIZE } from '../button/models/button-size.const';
 import { UiDialogRef } from '../dialog/dialog-ref';
@@ -23,8 +25,12 @@ export class DrawerComponent {
   /** Accessible name of the close button, for example "Close menu". */
   readonly closeLabel = input.required<string>();
 
+  /** The edge the drawer is pinned to: decides where it slides in from. */
+  readonly side = input<DrawerSide>(DRAWER_SIDE.Start);
+
   private readonly ref = inject<UiDialogRef<unknown>>(UiDialogRef, { optional: true });
 
+  protected readonly DRAWER_SIDE = DRAWER_SIDE;
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
   protected readonly leaving = computed(() => this.ref?.leaving() ?? false);
 
