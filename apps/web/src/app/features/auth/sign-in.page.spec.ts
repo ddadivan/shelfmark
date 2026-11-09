@@ -95,6 +95,15 @@ describe('SignInPage', () => {
     );
   });
 
+  it('shows the copyright footer', async () => {
+    const { harness } = await setup();
+    await harness.navigateByUrl('/sign-in');
+
+    expect(
+      (harness.routeNativeElement as HTMLElement).querySelector('footer')?.textContent?.trim(),
+    ).toBe('© 2026 Shelfmark');
+  });
+
   it('has no axe violations', async () => {
     const { harness } = await setup();
     await harness.navigateByUrl('/sign-in?reason=session-expired');

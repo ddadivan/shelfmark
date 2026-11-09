@@ -17,6 +17,7 @@ import { AUTH_ROUTE } from '../../core/auth/models/auth-routes.const';
 import { isSignInError } from '../../core/auth/is-sign-in-error';
 import { isSignInReason } from '../../core/auth/is-sign-in-reason';
 import { safeReturnUrl } from '../../core/auth/safe-return-url';
+import { SignInMosaicComponent } from './sign-in-mosaic/sign-in-mosaic.component';
 import { SIGN_IN_ERROR_GENERIC_KEY } from './models/sign-in-error-generic-key.const';
 import { SIGN_IN_ERROR_KEY } from './models/sign-in-error-key.const';
 import { DEMO_ERROR_REASON } from './models/demo-error-reason.const';
@@ -25,7 +26,14 @@ import { SIGN_IN_REASON_KEY } from './models/sign-in-reason-key.const';
 /** Sign in with Google or GitHub, or open the demo. Guest-only (`guestOnly` on the route). */
 @Component({
   selector: 'app-sign-in-page',
-  imports: [RouterLink, TranslocoPipe, ButtonComponent, LogoComponent, NoticeComponent],
+  imports: [
+    RouterLink,
+    TranslocoPipe,
+    ButtonComponent,
+    LogoComponent,
+    NoticeComponent,
+    SignInMosaicComponent,
+  ],
   templateUrl: './sign-in.page.html',
   styleUrl: './sign-in.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
