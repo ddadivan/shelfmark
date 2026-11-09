@@ -528,7 +528,7 @@ All routes except `/api/auth/*` require a session and work only with the current
 | Method | Path | Purpose |
 | --- | --- | --- |
 | `*` | `/api/auth/*` | Sign-in / sign-out with Google and GitHub (Better Auth) |
-| GET | `/api/me` | Current user |
+| GET | `/api/auth/get-session` | Current user and session (Better Auth); `null` when signed out |
 | DELETE | `/api/me` | Delete the account and all data |
 | POST | `/api/links/preview` | For a URL, return title, icon, image + the existing link if it is a duplicate (for form autofill) |
 | GET | `/api/links` | List with filters: `folderId`, `unsorted`, `favorite`, `tag` (repeated, `?tag=a&tag=b`: AND, case-insensitive, max 5, more is a 400; empty or absent = no filter), `q` (search in title, note and URL; every word must match, at most 5 words), `sort` (`createdAt` / `title`), `order`, `cursor`, `limit` |
@@ -554,7 +554,7 @@ All routes except `/api/auth/*` require a session and work only with the current
 - one error format: `{ statusCode, error, message, requestId }` (as in 5.2);
 - someone else's or a non-existent object → `404` (not `403`, so as not to reveal that it exists).
 
-**Additionally:** `PATCH /api/me` with `{ onboardingCompleted: true | false }` marks onboarding as completed or resets it ("Show onboarding again"); `GET /api/me` returns `onboardingCompletedAt`.
+**Additionally:** `POST /api/me/onboarding` marks onboarding as completed and `DELETE /api/me/onboarding` resets it ("Show welcome again" in Settings); the user from `GET /api/auth/get-session` carries `onboardingCompletedAt` (#151).
 
 **Demo, export, PWA:** `POST /api/demo` creates a demo sandbox and session (strict per-IP rate limit); `GET /api/export?format=json|html` (+ optional `folderId`, `tag` (repeated, same AND semantics as the list), `q`, the same filters as the list) downloads the current folder (with its subfolders) or all data; `q` searches title, note and URL; the HTML file omits links whose URL is not http(s); receiving a link from the "Share" menu (Web Share Target) needs no separate endpoint: the manifest opens the `/share?url=…` route (GET), and the page saves via `POST /api/links`.
 
