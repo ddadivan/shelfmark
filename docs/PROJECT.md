@@ -155,6 +155,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 
 6. **Open.** A click opens the link in a new tab and updates "Recently opened".
 7. **Edit.** URL, title, note, tags and folder can be changed.
+   - **Move to folder** (stage 2, #261): "Move to folder…" in the ⋯ menu of a card and a row opens a folder picker with search (Unsorted is the empty value; a sheet on phones). The move shows at once, a `moved` toast offers Undo, and a failed request puts the link back with an error toast.
 8. **Delete.** Deletion requires confirmation.
 9. **Favorites.** As a user, I want to mark important links.
    - Add to favorites or remove from them in one click.
