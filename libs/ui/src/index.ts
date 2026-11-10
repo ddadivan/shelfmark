@@ -38,6 +38,7 @@ export * from './lib/select';
 export * from './lib/skeleton';
 export * from './lib/spinner';
 export * from './lib/steps';
+export * from './lib/switch';
 export * from './lib/tag-input';
 export * from './lib/textarea';
 export * from './lib/theme';
