@@ -9,6 +9,8 @@ import {
 import type { AuthUser } from '@shelfmark/contracts';
 import { CurrentUser } from '../common/auth/current-user.decorator';
 import { ApiErrorResponseDto } from '../common/errors/dto/api-error-response.dto';
+import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
+import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
 import { ListTrashResponseDto } from './dto/list-trash-response.dto';
 import { TrashActionResponseDto } from './dto/trash-action-response.dto';
 import { TrashItemsRequestDto } from './dto/trash-items-request.dto';
@@ -43,6 +45,7 @@ export class TrashController {
 
   @Post('delete')
   @HttpCode(HttpStatus.OK)
+  @RateLimit(RATE_LIMIT.TrashDelete)
   @ApiOperation({
     summary: 'Delete entries for good; missing or foreign entries are skipped (count = handled)',
   })
@@ -56,6 +59,7 @@ export class TrashController {
   }
 
   @Delete()
+  @RateLimit(RATE_LIMIT.TrashDelete)
   @ApiOperation({ summary: 'Empty Trash: delete every entry for good' })
   @ApiOkResponse({ type: TrashActionResponseDto })
   empty(@CurrentUser() user: AuthUser): Promise<TrashActionResponseDto> {

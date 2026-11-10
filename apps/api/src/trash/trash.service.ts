@@ -11,6 +11,7 @@ import {
   type TrashItemRef,
   type TrashRetentionDays,
 } from '@shelfmark/contracts';
+import { REQUEST_TIMEOUT_MS } from '../common/interceptors/models/request-timeout.const';
 import { FoldersService } from '../folders/folders.service';
 import type { Prisma } from '../generated/prisma/client';
 import { imagePath } from '../links/to-link-response';
@@ -18,6 +19,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import type { TrashDbClient } from './models/trash-db-client.type';
 import type { TrashEntryRow } from './models/trash-entry-row.interface';
 
+/** How long a Trash write may wait for a connection. */
+const TRASH_TX_MAX_WAIT_MS = 2_000;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 /** The one value of `TRASH_RETENTION_DAYS` a stored number is, else the default (the CHECK forbids others). */
@@ -78,7 +81,7 @@ export class TrashService {
           url: true,
           captureAttemptedAt: true,
           images: { select: { kind: true, sha256: true } },
-          folder: { select: { name: true } },
+          folderId: true,
         },
       }),
       this.prisma.folder.findMany({
@@ -87,6 +90,20 @@ export class TrashService {
       }),
       this.linkCounts(userId, folderIds),
     ]);
+    // Folder names come from a query scoped to the user, never through the link's relation: a link
+    // whose folder_id points at someone else's folder must not reveal its name.
+    const nameIds = [
+      ...new Set(links.flatMap((row) => (row.folderId === null ? [] : [row.folderId]))),
+    ];
+    const names = new Map(
+      (nameIds.length === 0
+        ? []
+        : await this.prisma.folder.findMany({
+            where: { id: { in: nameIds }, userId },
+            select: { id: true, name: true },
+          })
+      ).map((row) => [row.id, row.name]),
+    );
     const linkById = new Map(links.map((row) => [row.id, row]));
     const folderById = new Map(folders.map((row) => [row.id, row]));
 
@@ -107,7 +124,7 @@ export class TrashService {
           url: row.url,
           faviconUrl: imagePath(row, LINK_IMAGE_KIND.Favicon),
           imageUrl: imagePath(row, LINK_IMAGE_KIND.Preview),
-          fromFolderName: row.folder?.name ?? null,
+          fromFolderName: row.folderId === null ? null : (names.get(row.folderId) ?? null),
           linkCount: null,
           ...common,
         });
@@ -187,10 +204,15 @@ export class TrashService {
     userId: string,
     work: (tx: Prisma.TransactionClient) => Promise<T>,
   ): Promise<T> {
-    return this.prisma.$transaction(async (tx) => {
-      await this.folders.lockTree(tx, userId);
-      return work(tx);
-    });
+    // A batch is at most TRASH_LIMIT.BatchMax entries of a few statements each; the explicit timeout
+    // keeps the transaction (and its locks) bounded by the request budget.
+    return this.prisma.$transaction(
+      async (tx) => {
+        await this.folders.lockTree(tx, userId);
+        return work(tx);
+      },
+      { timeout: REQUEST_TIMEOUT_MS, maxWait: TRASH_TX_MAX_WAIT_MS },
+    );
   }
 
   /** A link comes back; its folder is kept only when that folder is live, else Unsorted. */
@@ -253,7 +275,13 @@ export class TrashService {
     await tx.link.deleteMany({
       where: { userId, deletedAt: root.deletedAt, folderId: { in: ids } },
     });
-    await tx.folder.deleteMany({ where: { id, userId } });
+    // Subfolders trashed on their own earlier are their own entries: detach them (top level) so the
+    // cascade only takes the shared subtree.
+    await tx.$executeRaw`
+      UPDATE folders SET parent_id = NULL
+      WHERE user_id = ${userId}::uuid AND parent_id = ANY(${ids}::uuid[])
+        AND NOT (id = ANY(${ids}::uuid[]))`;
+    await tx.folder.deleteMany({ where: { userId, id: { in: ids } } });
     return true;
   }
 
