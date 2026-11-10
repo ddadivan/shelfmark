@@ -1,19 +1,21 @@
 <section class="landing-finale" appLandingReveal aria-labelledby="landing-finale-title">
-  <div class="landing-finale__copy">
-    <h2 id="landing-finale-title" class="landing-finale__title">
-      {{ 'landing.finale.title' | transloco }}
-    </h2>
-    <p class="landing-finale__lead">{{ 'landing.finale.lead' | transloco }}</p>
-  </div>
-  <div class="landing-finale__actions">
-    <ui-button
-      [variant]="BUTTON_VARIANT.Primary"
-      [size]="BUTTON_SIZE.Lg"
-      [href]="LANDING_LINKS.Demo"
-      >{{ 'landing.finale.demo' | transloco }}</ui-button
-    >
-    <ui-button [size]="BUTTON_SIZE.Lg" [href]="LANDING_LINKS.SignIn">{{
-      'landing.finale.signIn' | transloco
-    }}</ui-button>
+  <div class="landing-finale__card">
+    <div class="landing-finale__copy">
+      <h2 id="landing-finale-title" class="landing-finale__title">
+        {{ 'landing.finale.title' | transloco }}
+      </h2>
+      <p class="landing-finale__lead">{{ 'landing.finale.lead' | transloco }}</p>
+    </div>
+    <div class="landing-finale__actions">
+      <ui-button
+        [variant]="BUTTON_VARIANT.Primary"
+        [size]="BUTTON_SIZE.Lg"
+        [href]="LANDING_LINKS.Demo"
+        >{{ 'landing.finale.demo' | transloco }}</ui-button
+      >
+      <ui-button [size]="BUTTON_SIZE.Lg" [href]="LANDING_LINKS.SignIn">{{
+        'landing.finale.signIn' | transloco
+      }}</ui-button>
+    </div>
   </div>
 </section>

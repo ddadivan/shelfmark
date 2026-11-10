@@ -14,7 +14,7 @@
   overflow: hidden;
   background: var(--bg);
   border: 1px dashed var(--border-control);
-  border-radius: rem(18px);
+  border-radius: var(--radius-xl);
 }
 
 .landing-before__ping,
