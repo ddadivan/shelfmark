@@ -73,7 +73,7 @@ Stage 1 is a personal responsive web service: the user adds links manually and f
 - search by title, note and URL;
 - a common feed of all links.
 
-**"Recently opened" panel.** On the right, a feed of the most recently opened links. The panel is optional: it can be hidden.
+**"Recently opened" page.** The links opened in the last 30 days, grouped by day (a sheet on a phone). A link can be removed from the history, or the whole history cleared; the links stay saved.
 
 **Access.** All links are strictly private, no sharing.
 
@@ -107,7 +107,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 - search by title, note and URL;
 - a common feed of all links;
 - view toggle: cards with previews / list;
-- a right-hand "Recently opened" panel that can be hidden.
+- a "Recently opened" page (`/recent`, a sheet on a phone).
 
 **For the portfolio and convenience (also stage 1):**
 
@@ -153,7 +153,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 
 ### Working with a link
 
-6. **Open.** A click opens the link in a new tab and updates the "Recently opened" panel.
+6. **Open.** A click opens the link in a new tab and updates "Recently opened".
 7. **Edit.** URL, title, note, tags and folder can be changed.
 8. **Delete.** Deletion requires confirmation.
 9. **Favorites.** As a user, I want to mark important links.
@@ -181,7 +181,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 15. **Search.** Search by title, note and URL finds links in all folders (every word of the query must match, at most 5 words).
 16. **Sorting.** By date added (newest first, the default) and by title.
 17. **View.** A "cards / list" toggle; the choice is remembered.
-18. **Recently opened.** A panel of recently opened links on the right; it can be hidden, and the state is remembered.
+18. **Recently opened.** A page (`/recent`, opened from the sidebar; a sheet on a phone) with the links opened in the last 30 days, in day groups (Today, Yesterday, Earlier this week, then by date), each with its folder and the time of the open. A link can be removed from the history, and "Clear history" (after a confirmation) empties it; the saved links are not touched.
 
 ### Demo, install, export
 
@@ -258,7 +258,7 @@ See ADR 0004.
   - `LinksStore`: links, filters, sorting (`withEntities`);
   - `FoldersStore`: folder tree;
   - `TagsStore`: tags;
-  - `UiStore`: "cards / list" view, visibility of the "Recently opened" panel; persisted in `localStorage`.
+  - `UiStore`: "cards / list" view; persisted in `localStorage`.
 - **Classic NgRx Store is not used**: it is overkill for this app.
 - **UI:** own component library `libs/ui` on SCSS and design tokens, behaviour from Angular Aria / CDK; Tailwind and Angular Material are not used (section 7).
 - **Rules for Claude Code:** the official Angular AI config (`ng generate ai-config --tool=claude`), the official Angular Agent Skills and Angular MCP + our own v22 rules; details in section 8.
@@ -281,7 +281,7 @@ CSR without SSR, zoneless, Transloco, strict-CSP build: ADR 0005; state: ADR 000
 | `/privacy` | Privacy policy | everyone | `features/legal` |
 | `**` | 404 with an illustration | everyone | `features/not-found` |
 
-**Tree structure.** Two empty-path routes are told apart by `canMatch`: for a guest `/` shows the landing, for a signed-in user `AppShell` (header, sidebar, "Recently opened" panel) with child routes. No flickering redirects.
+**Tree structure.** Two empty-path routes are told apart by `canMatch`: for a guest `/` shows the landing, for a signed-in user `AppShell` (header, sidebar) with child routes. No flickering redirects.
 
 ```ts
 export const routes: Routes = [
@@ -310,7 +310,7 @@ const libraryPage = () => import('./features/library/library.page');
 
 (In the real code `redirectToSignIn` sits on every protected URL (`links`, `unsorted`, `favorites`, `folders/:id`, `settings`, `share`) and leads to `/sign-in?returnUrl=<original URL>`, so `/share?url=…` is not lost.)
 
-**State in the URL.** Everything that can be shared or must survive "Back" lives in the query: `?tag=angular&tag=video` (several tags, AND logic), `?sort=newest|oldest|title`, `?q=` (full result list; the search itself is the ⌘K overlay, "Show all" leads to `/links?q=…`). The "cards / list" view and the "Recently opened" panel are personal settings in `UiStore` + `localStorage`, not in the URL.
+**State in the URL.** Everything that can be shared or must survive "Back" lives in the query: `?tag=angular&tag=video` (several tags, AND logic), `?sort=newest|oldest|title`, `?q=` (full result list; the search itself is the ⌘K overlay, "Show all" leads to `/links?q=…`). The "cards / list" view is a personal setting in `UiStore` + `localStorage`, not in the URL.
 
 **One page, four scopes.** `/links`, `/unsorted`, `/favorites` and `/folders/:folderId` are rendered by one `LibraryPage`: `scope` comes from `data`, `folderId`, `tag`, `sort`, `q` via `input()`. `LinksStore` reacts to these signals and loads the list; the old list stays visible while loading (bar at the top). There are no resolvers for lists, so navigation is instant.
 
@@ -331,7 +331,7 @@ const libraryPage = () => import('./features/library/library.page');
 
 **Navigation shortcuts:** `G` then `A` for all links, `G` `U` for no folder, `G` `F` for favorites, `G` `S` for settings, ⌘K for search from anywhere (full list in the "Tooltips and keyboard shortcuts" section).
 
-**Frontend structure:** `apps/web/src/app/` → `app.routes.ts`, `app.config.ts`, `shell/` (AppShell, Header, Sidebar, RecentPanel), `core/` (guards, interceptors, `AuthStore`, `TitleStrategy`, `DialogService`), `features/{landing,auth,library,settings,share,legal,not-found}/`, `stores/` (Links, Folders, Tags, Ui).
+**Frontend structure:** `apps/web/src/app/` → `app.routes.ts`, `app.config.ts`, `shell/` (AppShell, Header, Sidebar), `core/` (guards, interceptors, `AuthStore`, `TitleStrategy`, `DialogService`), `features/{landing,auth,library,settings,share,legal,not-found}/`, `stores/` (Links, Folders, Tags, Ui).
 
 **Icons: Shelfmark's own set, SVG sprite.** 44 icons are drawn for the product (24 px grid, 1.75 px stroke, corner radii like the cards, the bookmark motif from the logo) and live in the design system (Assets › Icons) as separate files and one `sprite.svg` (`<symbol id="sm-…">`). The sprite goes into `libs/ui/assets/icons/`; the `ui-icon` component renders `<svg><use href="…/sprite.svg#sm-name"/></svg>`, colour via `currentColor`, size via the `size` input, `name` is typed as a union of the 44 names. No third-party icon sets. Illustrations (8 scenes) are also files in the design system (Assets › Illustrations), colours via CSS variables, embedded inline through `ui-illustration`.
 
@@ -504,7 +504,7 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 | `faviconSourceUrl`, `imageSourceUrl` | string (≤ 2048), null | Server only, never returned: remote http(s) URLs the capture fetches (from the client hint or the preview) |
 | `captureAttemptedAt` | timestamp, null | Server only: time of the last image capture attempt, defaults to the insert time; `null` = pending (the URL changed), claimed atomically by `POST /api/links/{id}/images/capture`, which is also its cooldown (ADR 0027 note, #189) |
 | `isFavorite` | boolean | Defaults to `false` |
-| `lastOpenedAt` | timestamp, null | For the "Recently opened" panel |
+| `lastOpenedAt` | timestamp, null | For the "Recently opened" page |
 
 **LinkImage** (ADR 0027): re-encoded copy of a link's favicon or preview image: `id`, `userId`, `linkId` (cascade), `kind` (`favicon` | `preview`), `contentType` (always `image/webp`), `bytes` (≤ 64 KB), `width`, `height`, `sha256`; unique per `linkId + kind`.
 
@@ -569,7 +569,7 @@ A minimalist, recognisable interface with light and dark themes on the own UI li
 
 - Minimalism, high-quality UI/UX, beginner-friendly; its own character, but grounded in the practices of Linear, Notion, Raindrop.
 - Light and dark theme in stage 1: system default, plus a manual toggle.
-- Responsive interface in stage 1: desktop, tablet and phone (from 360 px). On phone the sidebar is a slide-out panel opened by a header button, search is an icon, "Recently opened" is a separate menu section, the feed is one column.
+- Responsive interface in stage 1: desktop, tablet and phone (from 360 px). On phone the sidebar is a slide-out panel opened by a header button, search is an icon, "Recently opened" is a row of the menu (a page, later a sheet), the feed is one column.
 - Uniqueness comes not from bright colour but from micro-interactions, typography, empty-state illustrations and the logo.
 
 **The interface language is English.** Mockups, copy, onboarding and empty states are written in English. Translations (uk) come at the end of stage 1 or after it (see 5.1).
@@ -635,9 +635,9 @@ In CI: `@axe-core/playwright` on the key screens in both themes; the build fails
 - **Header:** logo on the left · global search in the centre (Ctrl/⌘+K) · on the right the "Add link" button, theme toggle, avatar menu (settings, sign out).
 - **Left sidebar:** All links · Unsorted · Favorites · folder tree · tags.
 - **Content:** breadcrumbs ("All links › Work › Angular", every level clickable) · toolbar (sorting, "cards / list" toggle) · feed.
-- **Right panel:** "Recently opened", can be hidden.
+- **Recently opened:** its own page (`/recent`) reached from the sidebar row; on a phone a sheet from the Library tab (tab bar, #243).
 
-**Tooltips** (`uiTooltip`, appear after 400 ms on hover or keyboard focus, not shown on touch screens): on every icon button (theme, avatar, new folder, hide panel, view toggle, card actions, star), on titles truncated with "…" (full title), on relative dates ("2 days ago" → exact date). The tooltip shows the keyboard shortcut if there is one. A tooltip is never the only place where information is available.
+**Tooltips** (`uiTooltip`, appear after 400 ms on hover or keyboard focus, not shown on touch screens): on every icon button (theme, avatar, new folder, view toggle, card actions, star), on titles truncated with "…" (full title), on relative dates ("2 days ago" → exact date). The tooltip shows the keyboard shortcut if there is one. A tooltip is never the only place where information is available.
 
 **Keyboard shortcuts:** ⌘K / Ctrl+K for search; N to add a link; on a selected link E to edit, F to favorite, Delete to delete; V C / V L for the "cards" / "list" view; G A / G U / G F / G S to go to all links, no folder, favorites, settings; Esc to close a window. The list is in the avatar menu and under the "?" key.
 
