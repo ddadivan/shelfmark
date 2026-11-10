@@ -3,6 +3,7 @@ import {
   LINK_SORT_FIELD,
   normalizeUrl,
   PAGE_LIMIT,
+  RECENT_LINKS_WINDOW_DAYS,
   SORT_ORDER,
   type GetLinkResponse,
   LINK_ERROR_MESSAGE,
@@ -85,8 +86,9 @@ export class LinksService {
   }
 
   async recent(userId: string, query: RecentLinksQuery): Promise<RecentLinksResponse> {
+    const since = new Date(Date.now() - RECENT_LINKS_WINDOW_DAYS * 24 * 60 * 60 * 1000);
     const rows = await this.prisma.link.findMany({
-      where: { userId, lastOpenedAt: { not: null } },
+      where: { userId, lastOpenedAt: { gte: since } },
       include: LINK_INCLUDE,
       orderBy: [{ lastOpenedAt: 'desc' }, { id: 'desc' }],
       take: query.limit ?? PAGE_LIMIT.Default,

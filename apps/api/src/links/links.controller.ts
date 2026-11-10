@@ -84,12 +84,33 @@ export class LinksController {
   // Declared before `:id`, so "recent" is never read as an id.
   @Get('recent')
   @ApiOkResponse({ type: RecentLinksResponseDto })
-  @ApiOperation({ summary: 'Recently opened links, newest open first' })
+  @ApiOperation({ summary: 'Recently opened links of the last 30 days, newest open first' })
   recent(
     @CurrentUser() user: AuthUser,
     @Query() query: RecentLinksQueryDto,
   ): Promise<RecentLinksResponseDto> {
     return this.links.recent(user.id, query);
+  }
+
+  @Delete('recent')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiNoContentResponse({ description: 'History cleared (the links stay)' })
+  @ApiOperation({ summary: 'Clear the whole Recently opened history' })
+  async clearRecent(@CurrentUser() user: AuthUser): Promise<void> {
+    await this.writes.clearHistory(user.id);
+  }
+
+  @Delete('recent/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiNoContentResponse({ description: 'Removed from the history (the link stays); idempotent' })
+  @ApiBadRequestResponse({ description: 'The id is not a UUID' })
+  @ApiNotFoundResponse({ description: 'Unknown or foreign link' })
+  @ApiOperation({ summary: 'Remove one link from the Recently opened history' })
+  async removeRecent(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<void> {
+    await this.writes.removeFromHistory(user.id, id);
   }
 
   @Get(':id')
