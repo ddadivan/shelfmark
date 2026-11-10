@@ -15,17 +15,13 @@
   }
 }
 
+// Tablet and desktop: the top bar sits in the content column, above the page and the recent
+// panel, with no rule under it (the sidebar card and the page carry the layout).
 .shell__header {
   display: flex;
-  gap: var(--space-4);
+  gap: var(--space-3);
   align-items: center;
-  justify-content: space-between;
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--border);
-
-  @include tablet-up {
-    padding-inline: var(--space-6);
-  }
+  padding: var(--space-1) var(--space-6) 0;
 
   // Phone: the page scrolls naturally, so the header sticks to the top. It has the page
   // background (content must not show through), sits above the page content (cards, stretched
@@ -37,7 +33,10 @@
     position: sticky;
     inset-block-start: 0;
     z-index: 800;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-4);
     background: var(--bg);
+    border-bottom: 1px solid var(--border);
   }
 
   // The shadow fades in over the first 3rem of scroll, driven by the scroll position (CSS only,
@@ -68,21 +67,14 @@
   min-width: 0;
 }
 
-.shell__name {
-  @include type(label);
-
-  overflow: hidden;
-  color: var(--text-muted);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-
-  @include phone {
-    display: none;
-  }
+// The search pill takes the room the other controls leave, up to 40rem (Main spec).
+.shell__pill {
+  flex: 1 1 rem(192px);
+  max-width: rem(640px);
 }
 
-.shell__add {
-  margin-inline: var(--space-4) auto;
+.shell__spacer {
+  flex: 1 1 0;
 }
 
 // Phone header (mobile design): menu, logo, then search and account on the right.
@@ -109,29 +101,65 @@
   inset-inline-end: calc(var(--space-4) + env(safe-area-inset-right));
 }
 
+// The sidebar is an inset card (Main spec): `surface`, `shadow-card`, `radius-lg`, set in from the
+// window edges by the body padding. It scrolls on its own.
 .shell__sidebar {
   display: block;
   flex: none;
   align-self: stretch;
   width: rem(248px);
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   background: var(--surface);
-  border-inline-end: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
 
-  @include tablet-up {
-    min-height: 0;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    scrollbar-gutter: stable;
+  @include desktop {
+    width: rem(272px);
   }
 }
 
-// The body takes the height left under the header, so the sidebar surface, the main column and the
-// recent panel run to the bottom of the viewport whatever the content height.
+// The body takes the height left under the banner. Tablet and up: the sidebar card and the content
+// column side by side, 12px from the window edges and from each other. Phone: the header and the
+// page in a column (the content wrappers vanish), the page scrolls naturally.
 .shell__body {
   display: flex;
   flex: 1;
+  flex-direction: column;
   align-items: stretch;
   min-height: 0;
+
+  @include tablet-up {
+    flex-direction: row;
+    gap: var(--space-3);
+    padding: var(--space-3);
+  }
+}
+
+.shell__content,
+.shell__row {
+  display: contents;
+
+  @include tablet-up {
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+  }
+}
+
+.shell__content {
+  @include tablet-up {
+    flex: 1;
+    flex-direction: column;
+  }
+}
+
+.shell__row {
+  @include tablet-up {
+    flex: 1;
+    align-items: stretch;
+  }
 }
 
 .shell__main {
@@ -148,7 +176,7 @@
 
   @include tablet-up {
     min-height: 0;
-    padding-inline: var(--space-6);
+    padding: var(--space-4) var(--space-6) var(--space-6);
 
     // Pages that are taller than the column (settings, privacy) scroll here; the library fits
     // and scrolls only its list.
@@ -165,7 +193,7 @@
     flex: none;
     width: rem(280px);
     min-height: 0;
-    padding: var(--space-6) var(--space-6) var(--space-6) 0;
+    padding: var(--space-4) var(--space-6) var(--space-6) 0;
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-gutter: stable;

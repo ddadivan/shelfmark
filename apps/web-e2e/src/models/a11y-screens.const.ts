@@ -9,6 +9,7 @@ import {
   pickTagMenuItem,
 } from '../support/a11y-flows';
 import { NEW_USER, seedSession } from '../support/mock-session';
+import { SEARCH_BUTTON } from '../support/search-button';
 import { openSidebar } from '../support/sidebar';
 import type { A11yScreen } from './a11y-screen.interface';
 import { DIALOG_SELECTOR } from './dialog-selector.const';
@@ -97,7 +98,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     name: 'search dialog',
     open: async (page) => {
       await openFeed(page);
-      await page.getByRole('button', { name: 'Search', exact: true }).click();
+      await page.getByRole('button', { name: SEARCH_BUTTON }).click();
       await page
         .getByRole('combobox', { name: 'Search links, folders and tags' })
         .fill(MOCK_FIXTURE.searchWord);

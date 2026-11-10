@@ -13,6 +13,8 @@ import type { AuthUser } from '@shelfmark/contracts';
 import { APP_LANG } from '../core/i18n/models/app-lang.const';
 import { AppTranslocoLoader } from '../core/i18n/app-transloco.loader';
 import { translocoConfig } from '../core/i18n/transloco.config';
+import { THEME_PREFERENCE } from '../core/theme/models/theme-preference.const';
+import { ThemeService } from '../core/theme/theme.service';
 import { RecentLinksSheetService } from '../features/links/recent/recent-links-sheet.service';
 import { SearchDialogService } from '../features/search/search-dialog.service';
 import AppShellComponent from './app-shell.component';
@@ -68,7 +70,9 @@ describe('AppShellComponent', () => {
     const harness = await RouterTestingHarness.create('/');
     const root = harness.routeNativeElement as HTMLElement;
 
-    expect(root.textContent).toContain('Ada Lovelace');
+    // The account button is the avatar; the name is no longer printed in the bar.
+    expect(root.querySelector('button[aria-label="Account menu"] ui-avatar')).not.toBeNull();
+    expect(root.querySelector('.shell__header')?.textContent).not.toContain('Ada Lovelace');
     await openAccountMenu(harness.fixture, root);
     menuItem('Sign out')?.click();
     await harness.fixture.whenStable();
@@ -108,7 +112,7 @@ describe('AppShellComponent', () => {
     expect(TestBed.inject(Router).url).toBe('/settings');
   });
 
-  it('opens the search from the header button and from Cmd+K', async () => {
+  it('opens the search from the header pill and from Cmd+K', async () => {
     const api: AuthApi = {
       getSession: () => Promise.resolve(USER),
       signIn: vi.fn(),
@@ -134,7 +138,7 @@ describe('AppShellComponent', () => {
     const harness = await RouterTestingHarness.create('/');
 
     (harness.routeNativeElement as HTMLElement)
-      .querySelector<HTMLButtonElement>('button[aria-label="Search"]')
+      .querySelector<HTMLButtonElement>('ui-search-trigger button')
       ?.click();
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', code: 'KeyK', metaKey: true }));
 
@@ -233,6 +237,43 @@ describe('AppShellComponent', () => {
       expect(root.querySelector('.shell__sidebar app-sidebar')).not.toBeNull();
       expect(root.querySelector('.shell__add')).not.toBeNull();
       expect(root.querySelector('.shell__fab')).toBeNull();
+    });
+
+    it('puts the logo in the sidebar card and the pill, theme switch and Add link in the top bar', async () => {
+      const { root } = await setup(false);
+
+      expect(root.querySelector('.shell__sidebar .sidebar__logo ui-logo')).not.toBeNull();
+      expect(root.querySelector('.shell__header ui-logo')).toBeNull();
+      const pill = root.querySelector('.shell__header ui-search-trigger button');
+      expect(pill?.textContent).toContain('Search your links');
+      expect(byLabel(root, 'Search')).toBeNull();
+      expect(
+        byLabel(root, 'Switch to dark theme') ?? byLabel(root, 'Switch to light theme'),
+      ).not.toBeNull();
+      // "Add link" is the only primary button of the bar.
+      expect(root.querySelectorAll('.shell__header .ui-button--primary')).toHaveLength(1);
+    });
+
+    it('switches the theme from the top bar', async () => {
+      const { harness, root } = await setup(false);
+      const theme = TestBed.inject(ThemeService);
+      theme.setPreference(THEME_PREFERENCE.Light);
+      await harness.fixture.whenStable();
+
+      byLabel(root, 'Switch to dark theme')?.click();
+      await harness.fixture.whenStable();
+
+      expect(theme.preference()).toBe(THEME_PREFERENCE.Dark);
+      expect(byLabel(root, 'Switch to light theme')).not.toBeNull();
+    });
+
+    it('on a phone keeps the header with the menu button, logo and search icon', async () => {
+      const { root } = await setup(true);
+
+      expect(root.querySelector('.shell__header ui-search-trigger')).toBeNull();
+      expect(root.querySelector('.shell__header ui-logo')).not.toBeNull();
+      expect(byLabel(root, 'Open menu')).not.toBeNull();
+      expect(byLabel(root, 'Search')).not.toBeNull();
     });
 
     it('on a phone has the add FAB and no inline sidebar or header add button', async () => {

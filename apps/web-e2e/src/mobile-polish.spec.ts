@@ -1,6 +1,7 @@
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
 import { settled } from './support/settled';
+import { SEARCH_BUTTON } from './support/search-button';
 
 // Mirror MOCK_ID.FolderReading / FolderAngular and their names (libs/shared/contracts); the e2e
 // project cannot import from them.
@@ -85,7 +86,7 @@ test.describe('mobile polish (mock API)', () => {
 
     test('the search dialog has no keyboard hints', async ({ page }) => {
       await page.goto('/links');
-      await page.getByRole('button', { name: 'Search', exact: true }).click();
+      await page.getByRole('button', { name: SEARCH_BUTTON }).click();
       const dialog = page.getByRole('dialog', { name: 'Search' });
       await expect(dialog).toBeVisible();
       await settled(page);
@@ -100,7 +101,7 @@ test.describe('mobile polish (mock API)', () => {
 
     test('the search dialog fills the whole screen', async ({ page }) => {
       await page.goto('/links');
-      await page.getByRole('button', { name: 'Search', exact: true }).click();
+      await page.getByRole('button', { name: SEARCH_BUTTON }).click();
       const panel = page.getByRole('dialog', { name: 'Search' }).locator('.ui-dialog');
       await expect(panel).toBeVisible();
       await settled(page);
@@ -142,7 +143,7 @@ test.describe('mobile polish (mock API)', () => {
 
     test('the search dialog keeps the keyboard hints', async ({ page }) => {
       await page.goto('/links');
-      await page.getByRole('button', { name: 'Search', exact: true }).click();
+      await page.getByRole('button', { name: SEARCH_BUTTON }).click();
       const dialog = page.getByRole('dialog', { name: 'Search' });
       await expect(dialog).toBeVisible();
 

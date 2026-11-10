@@ -263,9 +263,11 @@ test.describe('links feed (mock API)', () => {
     const sidebar = await box('.shell__sidebar');
     const main = await box('.shell__main');
     const recent = await box('app-recent-links-panel');
-    // Sidebar surface, main column and the recent panel all run to the bottom of the window.
+    // Sidebar card, main column and the recent panel all run to the bottom of the window; the
+    // card and the content are inset by the 12px body padding.
+    const INSET = 12;
     for (const column of [sidebar, main, recent]) {
-      expect(column.y + column.height).toBeGreaterThanOrEqual(900 - 1);
+      expect(column.y + column.height).toBeGreaterThanOrEqual(900 - INSET - 1);
     }
     expect(await page.evaluate('document.documentElement.scrollHeight')).toBeLessThanOrEqual(900);
 

@@ -3,6 +3,7 @@ import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
 import { settled } from './support/settled';
 import { openSidebar } from './support/sidebar';
+import { SEARCH_BUTTON } from './support/search-button';
 
 // Mirror MOCK_ID.FolderReading and its name, and the mock tag (apps/web and libs/shared/contracts);
 // the e2e project cannot import from them.
@@ -171,7 +172,7 @@ test.describe('mobile layout (mock API)', () => {
   test('opens the search as a sheet over the full width', async ({ page }) => {
     await page.goto('/links');
 
-    await page.getByRole('button', { name: 'Search', exact: true }).click();
+    await page.getByRole('button', { name: SEARCH_BUTTON }).click();
 
     const dialog = page.getByRole('dialog');
     await expect(
@@ -359,7 +360,7 @@ test.describe('mobile layout (mock API)', () => {
       await page.keyboard.press('Escape');
       await expect(page.getByRole('dialog')).toHaveCount(0);
 
-      await page.getByRole('button', { name: 'Search', exact: true }).click();
+      await page.getByRole('button', { name: SEARCH_BUTTON }).click();
       await expect(page.getByRole('dialog')).toBeVisible();
       await settled(page);
       expect(await overflow(page)).toBeLessThanOrEqual(0);

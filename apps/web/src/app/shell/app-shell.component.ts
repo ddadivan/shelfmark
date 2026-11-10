@@ -14,6 +14,8 @@ import {
   AvatarComponent,
   BUTTON_SIZE,
   type IconName,
+  SearchTriggerComponent,
+  THEME,
   ButtonComponent,
   ICON_SIZE,
   LogoComponent,
@@ -32,6 +34,9 @@ import { RatingStore } from '../features/rating/rating.store';
 import { SearchDialogService } from '../features/search/search-dialog.service';
 import { RecentLinksDrawerService } from '../features/links/recent/recent-links-drawer.service';
 import { RecentLinksPanelComponent } from '../features/links/recent/recent-links-panel.component';
+import { THEME_PREFERENCE } from '../core/theme/models/theme-preference.const';
+import { ThemeService } from '../core/theme/theme.service';
+import { isMacPlatform } from '../features/search/is-mac-platform';
 import { ViewportService } from '../core/layout/viewport.service';
 import { UiStore } from '../stores/ui.store';
 import { APP_PATH } from '../models/app-path.const';
@@ -39,7 +44,11 @@ import { DemoBannerComponent } from './demo-banner/demo-banner.component';
 import { MobileNavService } from './mobile-nav/mobile-nav.service';
 import { SidebarComponent } from './sidebar/sidebar.component';
 
-/** Layout around the signed-in pages: header with the account menu (settings, sign out), then the page. */
+/**
+ * Layout around the signed-in pages. Desktop and tablet: the sidebar card on the left, the top bar
+ * (search pill, theme, "Add link", account menu) and the page on the right. Phone: the header
+ * with the menu button and the drawer.
+ */
 @Component({
   selector: 'app-shell',
   imports: [
@@ -54,6 +63,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     MenuSeparatorComponent,
     MenuTriggerDirective,
     RecentLinksPanelComponent,
+    SearchTriggerComponent,
     SidebarComponent,
   ],
   host: { '(document:keydown)': 'onKeydown($event)' },
@@ -91,13 +101,16 @@ export default class AppShellComponent {
     this.viewport.desktop() ? this.ui.recentVisible() : this.recentDrawer.isOpen(),
   );
   private readonly router = inject(Router);
-  /** Phone: the 44px touch size and no chevron next to the avatar; desktop: 36px, so the 32px avatar is never clipped. */
-  protected readonly accountButtonSize = computed(() =>
-    this.viewport.phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Md,
+  /** The avatar button is 44px: the 32px avatar is never clipped and it is a touch target. */
+  protected readonly accountButtonSize = BUTTON_SIZE.Lg;
+  protected readonly THEME = THEME;
+  protected readonly theme = inject(ThemeService);
+  /** The icon shows what a press switches to. */
+  protected readonly themeIcon = computed<IconName>(() =>
+    this.theme.resolved() === THEME.Dark ? 'sun' : 'moon',
   );
-  protected readonly accountIconRight = computed<IconName | undefined>(() =>
-    this.viewport.phone() ? undefined : 'chevron-down',
-  );
+  /** Shortcut caps of the search pill (the key is Cmd on Apple devices, else Ctrl). */
+  protected readonly searchShortcut = isMacPlatform() ? '⌘K' : 'Ctrl K';
 
   constructor() {
     // Growing past the phone breakpoint shows the sidebar inline: the drawer has to go.
@@ -141,6 +154,12 @@ export default class AppShellComponent {
       }
     });
   });
+
+  protected toggleTheme(): void {
+    this.theme.setPreference(
+      this.theme.resolved() === THEME.Dark ? THEME_PREFERENCE.Light : THEME_PREFERENCE.Dark,
+    );
+  }
 
   protected async openSettings(): Promise<void> {
     await this.router.navigateByUrl(`/${APP_PATH.Settings}`);

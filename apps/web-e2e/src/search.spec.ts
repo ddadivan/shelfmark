@@ -1,6 +1,7 @@
 import { type Locator, type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
+import { SEARCH_BUTTON } from './support/search-button';
 
 // Mirror the contract mock links (libs/shared/contracts/src/testing); the e2e project cannot
 // import from them.
@@ -20,7 +21,7 @@ test.describe('search (mock API)', () => {
     );
   });
 
-  const searchButton = (page: Page) => page.getByRole('button', { name: 'Search', exact: true });
+  const searchButton = (page: Page) => page.getByRole('button', { name: SEARCH_BUTTON });
   const searchField = (page: Page) =>
     page.getByRole('combobox', { name: 'Search links, folders and tags' });
 

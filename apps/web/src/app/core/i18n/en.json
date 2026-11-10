@@ -454,7 +454,12 @@
         "delete": "Delete folder…"
       }
     },
-    "search": "Search"
+    "search": "Search",
+    "searchHint": "Search your links",
+    "theme": {
+      "toLight": "Switch to light theme",
+      "toDark": "Switch to dark theme"
+    }
   },
   "folders": {
     "dialog": {
