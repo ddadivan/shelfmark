@@ -15,12 +15,9 @@
   align-items: center;
   align-self: stretch;
   min-width: 0;
+  min-height: rem(42px);
   padding: rem(7px) 0;
   cursor: text;
-
-  @include phone {
-    min-height: rem(42px);
-  }
 }
 
 .ui-tag-input__input {
