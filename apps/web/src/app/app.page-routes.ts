@@ -4,9 +4,11 @@ import { APP_PATH } from './models/app-path.const';
 import { authOnly, guestOnly, redirectToSignIn } from './core/auth/auth.guards';
 import { loadLibraryPage } from './features/library/load-library-page';
 import LandingPage from './features/landing/landing.page';
+import { adminOnly } from './features/admin/admin.guard';
 
 const libraryPage = loadLibraryPage;
 const settingsRoutes = () => import('./features/settings/settings.routes');
+const adminRoutes = () => import('./features/admin/admin.routes');
 const recentPage = () => import('./features/links/recent/recent.page');
 const phoneLibraryPage = () => import('./features/library/phone-library/phone-library.page');
 const tagsPage = () => import('./features/tags/tags-page/tags.page');
@@ -47,6 +49,7 @@ export const pageRoutes: Routes = [
       },
       { path: APP_PATH.Recent, loadComponent: recentPage },
       { path: APP_PATH.Settings, loadChildren: settingsRoutes },
+      { path: APP_PATH.Admin, canActivate: [adminOnly], loadChildren: adminRoutes },
     ],
   },
   // Public on purpose (no guard): guests, signed-in users and the OAuth consent screen reach it.
@@ -66,6 +69,11 @@ export const pageRoutes: Routes = [
   // The sections are children (`/settings/account`): any depth leads to sign-in and back.
   {
     path: APP_PATH.Settings,
+    canActivate: [redirectToSignIn],
+    children: [{ path: '**', children: [] }],
+  },
+  {
+    path: APP_PATH.Admin,
     canActivate: [redirectToSignIn],
     children: [{ path: '**', children: [] }],
   },

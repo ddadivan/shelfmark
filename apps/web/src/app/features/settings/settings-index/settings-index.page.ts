@@ -8,6 +8,9 @@ import {
   ICON_SIZE,
   IconComponent,
 } from '@shelfmark/ui';
+import { AdminStore } from '../../admin/admin.store';
+import { ADMIN_PATH } from '../../admin/models/admin-path.const';
+import { FeedbackDialogService } from '../../feedback/feedback-dialog.service';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { ViewportService } from '../../../core/layout/viewport.service';
 import { ThemeService } from '../../../core/theme/theme.service';
@@ -29,6 +32,8 @@ import { THEME_OPTION_KEYS } from '../models/theme-option-keys.const';
 })
 export default class SettingsIndexPage {
   protected readonly auth = inject(AuthStore);
+  protected readonly admin = inject(AdminStore);
+  protected readonly feedback = inject(FeedbackDialogService);
   private readonly theme = inject(ThemeService);
   private readonly viewport = inject(ViewportService);
   private readonly router = inject(Router);
@@ -37,6 +42,7 @@ export default class SettingsIndexPage {
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
   protected readonly SETTINGS_PATH = SETTINGS_PATH;
   protected readonly settingsPath = `/${APP_PATH.Settings}`;
+  protected readonly adminFeedbackPath = ['/', APP_PATH.Admin, ADMIN_PATH.Feedback];
   protected readonly privacyHref = `/${APP_PATH.Privacy}`;
   protected readonly rows = SETTINGS_NAV_ENTRIES.filter((entry) => entry.phone);
   /** The current theme, shown at the end of the Appearance row. */

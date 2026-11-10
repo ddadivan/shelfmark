@@ -1,0 +1,47 @@
+<app-settings-page-header
+  [title]="'admin.feedback.title' | transloco"
+  [description]="'admin.feedback.description' | transloco"
+/>
+
+<div class="admin-feedback__filter">
+  <ui-select
+    [label]="'admin.feedback.filter' | transloco"
+    [options]="filterOptions()"
+    [emptyLabel]="'admin.feedback.filterAll' | transloco"
+    [value]="store.filter()"
+    (valueChange)="setFilter($event)"
+  />
+</div>
+
+<ui-panel>
+  <div [attr.aria-busy]="store.phase() === LOAD.Loading">
+    @switch (store.phase()) { @case (LOAD.Failed) {
+    <ui-notice [kind]="NOTICE_KIND.Danger">
+      {{ 'admin.feedback.error' | transloco }}
+      <ui-button uiNoticeAction size="sm" (click)="retry()">
+        {{ 'feedback.page.list.retry' | transloco }}
+      </ui-button>
+    </ui-notice>
+    } @case (LOAD.Loaded) { @if (store.empty()) {
+    <ui-empty-state
+      icon="inbox"
+      [heading]="'admin.feedback.empty.title' | transloco"
+      [text]="'admin.feedback.empty.text' | transloco"
+    />
+    } @else {
+    <ul class="admin-feedback__list">
+      @for (message of store.items(); track message.id) {
+      <li><app-admin-feedback-item [message]="message" /></li>
+      }
+    </ul>
+    } } @default {
+    <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="3" />
+    } }
+  </div>
+  <ui-load-more [loading]="store.loadingMore()" [text]="'admin.feedback.loadingMore' | transloco" />
+  @if (store.nextCursor() !== null && !store.loadingMore()) {
+  <ui-button class="admin-feedback__more" (click)="more()">
+    {{ 'admin.feedback.loadMore' | transloco }}
+  </ui-button>
+  }
+</ui-panel>

@@ -80,6 +80,14 @@
               <ui-menu-item icon="bookmark" (activated)="exportAll(EXPORT_FORMAT.Html)">
                 {{ 'export.all.html' | transloco }}
               </ui-menu-item>
+              <ui-menu-item icon="edit" (activated)="feedback.open()">
+                {{ 'shell.sendFeedback' | transloco }}
+              </ui-menu-item>
+              @if (admin.isAdmin()) {
+                <ui-menu-item icon="inbox" (activated)="openFeedbackInbox()">
+                  {{ 'shell.feedbackInbox' | transloco }}
+                </ui-menu-item>
+              }
               <ui-menu-separator />
               <ui-menu-item icon="logout" (activated)="signOut()">
                 {{ 'auth.signOut' | transloco }}
