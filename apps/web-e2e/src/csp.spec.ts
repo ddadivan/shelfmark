@@ -110,13 +110,13 @@ test.describe('Content-Security-Policy', () => {
       await expect(button).toBeVisible();
       // A coarse pointer (the phone project has touch) raises every ui-button to the 2.75rem touch target.
       const coarse = test.info().project.use.hasTouch === true;
-      await expect(button).toHaveCSS('height', coarse ? '44px' : '36px');
+      await expect(button).toHaveCSS('height', coarse ? '44px' : '40px');
       await expect(page.getByRole('img', { name: 'Star' })).toBeVisible();
 
       await button.click();
       const panel = page.getByRole('dialog', { name: 'CSP test overlay' });
       await expect(panel).toBeVisible();
-      await expect(panel).toHaveCSS('border-top-left-radius', '10px');
+      await expect(panel).toHaveCSS('border-top-left-radius', '14px');
 
       expect(await readViolations(page)).toEqual([]);
     });
