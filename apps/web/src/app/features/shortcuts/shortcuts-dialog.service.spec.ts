@@ -1,6 +1,7 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { TestBed } from '@angular/core/testing';
 import { DialogService } from '@shelfmark/ui';
+import { UiStore } from '../../stores/ui.store';
 import { ShortcutsDialogService } from './shortcuts-dialog.service';
 import { ShortcutsDialogComponent } from './shortcuts-dialog/shortcuts-dialog.component';
 
@@ -11,6 +12,9 @@ function keydown(init: KeyboardEventInit, target?: Element): KeyboardEvent {
 }
 
 describe('ShortcutsDialogService', () => {
+  beforeEach(() => localStorage.clear());
+  afterAll(() => localStorage.clear());
+
   function setup(openDialogs: unknown[] = []) {
     const dialogs = { open: vi.fn() };
     TestBed.configureTestingModule({
@@ -76,5 +80,28 @@ describe('ShortcutsDialogService', () => {
     expect(service.handleShortcut(keydown({ key: '?' }))).toBe(true);
 
     expect(dialogs.open).not.toHaveBeenCalled();
+  });
+
+  it('ignores "?" once single-key shortcuts are off, but the button path still opens the list', () => {
+    const { dialogs, service } = setup();
+    TestBed.inject(UiStore).setSingleKeyShortcuts(false);
+    const event = keydown({ key: '?', shiftKey: true });
+
+    expect(service.handleShortcut(event)).toBe(false);
+    expect(event.defaultPrevented).toBe(false);
+    expect(dialogs.open).not.toHaveBeenCalled();
+
+    service.open();
+    expect(dialogs.open).toHaveBeenCalledOnce();
+  });
+
+  it('handles "?" again as soon as the preference is turned back on', () => {
+    const { dialogs, service } = setup();
+    const ui = TestBed.inject(UiStore);
+    ui.setSingleKeyShortcuts(false);
+    ui.setSingleKeyShortcuts(true);
+
+    expect(service.handleShortcut(keydown({ key: '?', shiftKey: true }))).toBe(true);
+    expect(dialogs.open).toHaveBeenCalledOnce();
   });
 });

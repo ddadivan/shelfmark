@@ -817,7 +817,11 @@
     "hint": "Press ? anywhere except in a text field.",
     "page": {
       "label": "All shortcuts",
-      "action": "Open list"
+      "action": "Open list",
+      "singleKey": {
+        "label": "Use single-key shortcuts",
+        "hint": "The ? key opens the list on its own, never while you type in a field. Turn off to use only the top bar button."
+      }
     },
     "groups": {
       "everywhere": "Everywhere",

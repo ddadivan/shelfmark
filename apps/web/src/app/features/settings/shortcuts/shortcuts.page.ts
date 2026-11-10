@@ -1,6 +1,12 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { ButtonComponent, SettingsRowComponent, SettingsSectionComponent } from '@shelfmark/ui';
+import {
+  ButtonComponent,
+  SettingsRowComponent,
+  SettingsSectionComponent,
+  SwitchComponent,
+} from '@shelfmark/ui';
+import { UiStore } from '../../../stores/ui.store';
 import { SHORTCUT_GROUPS } from '../../shortcuts/models/shortcut-groups.const';
 import { ShortcutsDialogService } from '../../shortcuts/shortcuts-dialog.service';
 import { ShortcutListComponent } from '../../shortcuts/shortcut-list/shortcut-list.component';
@@ -16,6 +22,7 @@ import { SettingsPageHeaderComponent } from '../settings-page-header/settings-pa
     SettingsRowComponent,
     SettingsSectionComponent,
     ShortcutListComponent,
+    SwitchComponent,
   ],
   templateUrl: './shortcuts.page.html',
   styleUrl: './shortcuts.page.scss',
@@ -23,5 +30,6 @@ import { SettingsPageHeaderComponent } from '../settings-page-header/settings-pa
 })
 export default class ShortcutsPage {
   protected readonly shortcuts = inject(ShortcutsDialogService);
+  protected readonly ui = inject(UiStore);
   protected readonly groups = SHORTCUT_GROUPS;
 }

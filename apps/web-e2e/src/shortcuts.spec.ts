@@ -56,6 +56,54 @@ test.describe('keyboard shortcuts (mock API)', () => {
     await expect(page.getByRole('dialog')).toHaveCount(0);
   });
 
+  test('the single-key switch turns "?" off at once, keeps the button and survives a reload', async ({
+    page,
+  }) => {
+    test.skip(isPhone(page), 'the shortcuts page is part of the tablet and desktop settings');
+    await page.goto('/settings/shortcuts');
+    const main = page.getByRole('main');
+    const toggle = main.getByRole('switch', { name: 'Use single-key shortcuts' });
+    await expect(toggle).toBeChecked();
+
+    await toggle.click();
+    await expect(toggle).not.toBeChecked();
+
+    // Applies at once: the very next "?" is ignored (focus is not in a field).
+    await page.locator('body').click({ position: { x: 1, y: 1 } });
+    await page.keyboard.press('?');
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+
+    // The top bar button keeps working.
+    const button = page.getByRole('banner').getByRole('button', { name: DIALOG });
+    await button.click();
+    await expect(page.getByRole('dialog', { name: DIALOG })).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+
+    // Kept on this device.
+    await page.reload();
+    await expect(main.getByRole('switch', { name: 'Use single-key shortcuts' })).not.toBeChecked();
+    await page.keyboard.press('?');
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+
+    await main.getByRole('switch', { name: 'Use single-key shortcuts' }).click();
+    await page.locator('body').click({ position: { x: 1, y: 1 } });
+    await page.keyboard.press('?');
+    await expect(page.getByRole('dialog', { name: DIALOG })).toBeVisible();
+  });
+
+  test('with single-key shortcuts off from the start "?" does nothing', async ({ page }) => {
+    await page.evaluate(() =>
+      localStorage.setItem('sm-ui', JSON.stringify({ view: 'cards', singleKeyShortcuts: false })),
+    );
+    await page.reload();
+    await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
+
+    await page.keyboard.press('?');
+
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+  });
+
   test('the settings page lists the shortcuts and opens the dialog from its row', async ({
     page,
   }) => {

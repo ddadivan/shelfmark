@@ -40,4 +40,30 @@ describe('UiStore', () => {
 
     expect(create().view()).toBe(UI_VIEW.Cards);
   });
+
+  it('has single-key shortcuts on by default', () => {
+    expect(create().singleKeyShortcuts()).toBe(true);
+  });
+
+  it('persists turning single-key shortcuts off, next to the view', () => {
+    const store = create();
+    store.setView(UI_VIEW.List);
+    store.setSingleKeyShortcuts(false);
+
+    const restored = create();
+
+    expect(restored.singleKeyShortcuts()).toBe(false);
+    expect(restored.view()).toBe(UI_VIEW.List);
+    restored.setSingleKeyShortcuts(true);
+    expect(create().singleKeyShortcuts()).toBe(true);
+  });
+
+  it('keeps single-key shortcuts on when the stored value is not a boolean', () => {
+    localStorage.setItem(
+      UI_STORAGE_KEY,
+      JSON.stringify({ view: 'list', singleKeyShortcuts: 'no' }),
+    );
+
+    expect(create().singleKeyShortcuts()).toBe(true);
+  });
 });

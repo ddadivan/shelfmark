@@ -5,6 +5,16 @@
 
 <ui-settings-section [title]="'settings.nav.shortcuts' | transloco">
   <ui-settings-row
+    [title]="'shortcuts.page.singleKey.label' | transloco"
+    [description]="'shortcuts.page.singleKey.hint' | transloco"
+  >
+    <ui-switch
+      [label]="'shortcuts.page.singleKey.label' | transloco"
+      [checked]="ui.singleKeyShortcuts()"
+      (checkedChange)="ui.setSingleKeyShortcuts($event)"
+    />
+  </ui-settings-row>
+  <ui-settings-row
     [title]="'shortcuts.page.label' | transloco"
     [description]="'shortcuts.hint' | transloco"
   >
