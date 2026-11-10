@@ -1,6 +1,9 @@
-/** What the toast reports; each kind has its own icon (never colour alone). */
+/** What the toast reports; each kind has its own lead (never colour alone). */
 export const TOAST_KIND = {
-  Info: 'info',
+  Saved: 'saved',
+  Moved: 'moved',
   Success: 'success',
-  Error: 'error',
+  Danger: 'danger',
+  Warn: 'warn',
+  Info: 'info',
 } as const;

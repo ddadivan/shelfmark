@@ -1,12 +1,13 @@
 import { Component, inject } from '@angular/core';
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { ButtonComponent } from '../button/button.component';
-import type { ToastKind } from './models/toast-kind.type';
+import { FOLDER_COLOUR } from '../folder-icon/models/folder-colour.const';
+import { THEME, THEME_ATTRIBUTE } from '../theme';
+import { TOAST_DURATION_MS } from './models/toast-duration.const';
+import { TOAST_KIND } from './models/toast-kind.const';
 import { ToastComponent } from './toast.component';
 import { ToastService } from './toast.service';
 import { toastShortcutKeys, toastShortcutLabel } from './toast-shortcut-label';
-import { THEME, THEME_ATTRIBUTE } from '../theme';
-import { TOAST_KIND } from './models/toast-kind.const';
 
 /** Story helper: buttons that call `ToastService`. Not part of the library. */
 @Component({
@@ -16,67 +17,110 @@ import { TOAST_KIND } from './models/toast-kind.const';
   host: { '(document:keydown)': 'toasts.handleShortcut($event)' },
   template: `
     <div class="tt-row">
-      @for (kind of kinds; track kind) {
-        <ui-button variant="secondary" (click)="show(kind)">Show {{ kind }}</ui-button>
-      }
-      <ui-button variant="secondary" (click)="undo()">Delete with Undo</ui-button>
-      <ui-button variant="secondary" (click)="retry()">Error with Retry</ui-button>
-      <ui-button variant="secondary" (click)="many()">Show five in a row</ui-button>
+      <ui-button variant="secondary" (click)="saved()">Saved</ui-button>
+      <ui-button variant="secondary" (click)="moved()">Moved with Undo</ui-button>
+      <ui-button variant="secondary" (click)="deleted()">Deleted with Undo</ui-button>
+      <ui-button variant="secondary" (click)="success()">Quick confirmation</ui-button>
+      <ui-button variant="secondary" (click)="info()">Status</ui-button>
+      <ui-button variant="secondary" (click)="warn()">Reminder</ui-button>
+      <ui-button variant="secondary" (click)="danger()">Error with Retry</ui-button>
+      <ui-button variant="secondary" (click)="many()">Stack of four</ui-button>
       <ui-button variant="secondary" (click)="long()">Long text</ui-button>
     </div>
     <p class="tt-hint">
-      Bottom-left from 640px, bottom-centre on phones. 4 s, 8 s with an action; hover or focus the
-      toast to hold the timer. {{ shortcut }} moves focus to the action of the toast on screen;
-      focus goes back where it was when the toast closes. Last result: {{ last || 'none' }}
+      Bottom centre, 24px up. 3 s quick, 4 to 5 s save or status, 8 s with Undo (countdown line);
+      errors and reminders stay until handled. Hover or focus holds the timer. Up to three stack,
+      the newest in front; hover or focus fans them out. Ctrl or Cmd+Z undoes an Undo toast, Esc
+      dismisses the newest, {{ shortcut }} moves focus to its action. Last result:
+      {{ last || 'none' }}
     </p>
   `,
 })
 class ToastDemoComponent {
   protected readonly toasts = inject(ToastService);
-  protected readonly kinds: readonly ToastKind[] = Object.values(TOAST_KIND);
   protected readonly shortcut = toastShortcutLabel();
   protected last = '';
 
-  protected show(kind: ToastKind): void {
-    const text = { info: 'Link moved', success: 'Link saved', error: "Couldn't save" }[kind];
-    this.toasts.show({ kind, text });
-  }
-
-  protected undo(): void {
+  protected saved(): void {
     this.toasts.show({
-      text: 'Link deleted',
-      actionHint: `Press ${toastShortcutLabel()} to reach Undo`,
-      action: {
-        label: 'Undo',
-        run: () => {
-          this.last = 'Undo';
-        },
-      },
+      kind: TOAST_KIND.Saved,
+      title: 'Saved to Work / Angular',
+      detail: 'Signal Forms in 20 minutes · youtube.com',
+      action: { label: 'View', run: () => (this.last = 'View') },
     });
   }
 
-  protected retry(): void {
+  protected moved(): void {
     this.toasts.show({
-      kind: TOAST_KIND.Error,
-      text: "Couldn't save. Check your connection.",
-      action: {
-        label: 'Retry',
-        run: () => {
-          this.last = 'Retry';
-        },
-      },
+      kind: TOAST_KIND.Moved,
+      title: 'Moved to Clothes',
+      detail: 'Wool coat, straight cut',
+      folder: { colour: FOLDER_COLOUR.Clay },
+      duration: TOAST_DURATION_MS.Undo,
+      actionHint: `Press ${this.shortcut} to reach Undo`,
+      action: { label: 'Undo', run: () => (this.last = 'Undo move') },
+    });
+  }
+
+  protected deleted(): void {
+    this.toasts.show({
+      kind: TOAST_KIND.Danger,
+      title: 'Link moved to Trash',
+      detail: 'Restore it from Trash within 30 days',
+      duration: TOAST_DURATION_MS.Undo,
+      action: { label: 'Undo', run: () => (this.last = 'Undo delete') },
+    });
+  }
+
+  protected success(): void {
+    this.toasts.show({ kind: TOAST_KIND.Success, title: 'Link copied' });
+  }
+
+  protected info(): void {
+    this.toasts.show({
+      kind: TOAST_KIND.Info,
+      title: 'Back online',
+      detail: '4 changes synced',
+    });
+  }
+
+  protected warn(): void {
+    this.toasts.show({
+      kind: TOAST_KIND.Warn,
+      title: 'Reminder: Wool coat, straight cut',
+      detail: 'cos.com · you asked for today',
+      action: { label: 'Open', run: () => (this.last = 'Open') },
+      secondary: { label: 'Later', run: () => (this.last = 'Later') },
+    });
+  }
+
+  protected danger(): void {
+    this.toasts.show({
+      kind: TOAST_KIND.Danger,
+      title: 'Couldn’t save the link',
+      detail: 'Check your connection. We kept it in the box.',
+      action: { label: 'Retry', run: () => (this.last = 'Retry') },
     });
   }
 
   protected many(): void {
-    for (let i = 1; i <= 5; i++) {
-      this.toasts.show({ kind: TOAST_KIND.Success, text: `Link ${i} saved` });
+    for (let i = 1; i <= 4; i++) {
+      this.toasts.show({
+        kind: TOAST_KIND.Saved,
+        title: 'Saved to Recipes',
+        detail: `Recipe number ${i}`,
+        duration: TOAST_DURATION_MS.Sticky,
+      });
     }
   }
 
   protected long(): void {
     this.toasts.show({
-      text: 'This link was moved to Work / Angular / Signals, and its tags were updated to match the new folder.',
+      kind: TOAST_KIND.Moved,
+      title: 'This link was moved to Work / Angular / Signals and its tags were updated',
+      detail:
+        'A very long second line that does not wrap but is cut with an ellipsis when it runs out of room',
+      duration: TOAST_DURATION_MS.Undo,
       action: { label: 'Undo', run: () => undefined },
     });
   }
@@ -91,11 +135,13 @@ const meta: Meta<ToastComponent> = {
     docs: {
       description: {
         component:
-          '`ToastService.show({ text, kind, action?, duration? })` renders a `ui-toast` in the toast overlay layer. ' +
-          'One toast at a time, the newest replaces the older. It is announced by one persistent polite live region and never takes focus by itself; the timer pauses on hover and focus. ' +
-          "The toast sits at the bottom centre of the viewport on every screen (the author's decision, overriding the spec's bottom-left on desktop). " +
-          '`handleShortcut(event)` (Alt+Shift+T, Option+Shift+T on macOS) focuses the action of the toast on screen and focus returns to where it was when the toast closes; `actionHint` is a visually hidden text announced with the toast. ' +
-          '`show()` returns `{ dismiss(), closed }`: `closed` is a promise that resolves once with the close reason (`TOAST_CLOSE_REASON`: `action`, `timeout`, `dismissed`, `replaced`).',
+          '`ToastService.show({ title, detail?, kind, thumb?, folder?, action?, secondary?, duration? })` renders a `ui-toast` in the toast overlay layer: glass, a lead typed by kind (`saved` link thumbnail with a check, `moved` folder tile, tinted icon for `success`, `danger`, `warn`, `info`), a title with a truncating second line, the action and a close button. ' +
+          'Durations by kind: 3 s success, 4 s info and moved, 5 s saved, 8 s with Undo (a countdown line runs down the bottom and pauses with the timer), `danger` and `warn` stay until handled; hover, focus or touch pauses. ' +
+          'Up to three stack with the newest in front (hover or focus fans them out); a fourth pushes out the oldest (`replaced`). ' +
+          'Normal toasts are announced by one persistent polite `role="status"` region and `danger` toasts by a persistent `role="alert"` region; a toast never takes focus by itself. ' +
+          'While an Undo toast is visible Ctrl or Cmd+Z undoes it and Esc dismisses the newest (not in text fields or dialogs); `handleShortcut(event)` (Alt+Shift+T, Option+Shift+T on macOS) focuses the action. ' +
+          'Bottom centre on every screen, 24px up; the app lifts it above a bottom bar with `--ui-toast-offset`. ' +
+          '`show()` returns `{ dismiss(), closed }`: `closed` resolves once with the close reason (`TOAST_CLOSE_REASON`: `action`, `timeout`, `dismissed`, `replaced`).',
       },
     },
   },
@@ -112,39 +158,51 @@ export const Playground: Story = {
   }),
 };
 
+const kindsMarkup = `
+  <ui-toast kind="saved" title="Saved to Work / Angular" detail="Signal Forms in 20 minutes · youtube.com" actionLabel="View" />
+  <ui-toast kind="moved" title="Moved to Clothes" detail="Wool coat, straight cut" actionLabel="Undo" [countdown]="8000" [folder]="{ colour: 'clay' }" />
+  <ui-toast kind="danger" title="Link moved to Trash" detail="Restore it from Trash within 30 days" actionLabel="Undo" [countdown]="8000" />
+  <ui-toast kind="warn" title="Reminder: Wool coat, straight cut" detail="cos.com · you asked for today" actionLabel="Open" secondaryLabel="Later" />
+  <ui-toast kind="danger" title="Couldn’t save the link" detail="Check your connection. We kept it in the box." actionLabel="Retry" />
+  <ui-toast kind="success" title="Link copied" />
+  <ui-toast kind="info" title="Back online" detail="4 changes synced" />`;
+
 const staticView = (inner: string) => ({
   moduleMetadata: { imports: [ToastComponent] },
   template: `<div class="tt-panel tt-static">${inner}</div>`,
 });
 
 /** The view of each kind, static (the service renders the same component). */
-export const Kinds: Story = {
+export const Kinds: Story = { render: () => staticView(kindsMarkup) };
+
+/** The Undo countdown line, running down over 8 s (paused while hovered or focused; not drawn under reduced motion). */
+export const UndoCountdown: Story = {
   render: () =>
     staticView(`
-      <ui-toast kind="info" text="Link moved" />
-      <ui-toast kind="success" text="Link saved to Work / Angular" actionLabel="View" />
-      <ui-toast kind="error" text="Couldn't save. Check your connection." actionLabel="Retry" />`),
+      <ui-toast kind="moved" title="Moved to Recipes" detail="Miso glazed salmon" actionLabel="Undo" [countdown]="8000" [folder]="{ colour: 'sage' }" />`),
 };
 
-/** With the Undo action after a delete; the key caps show from the tablet breakpoint up. */
-export const WithUndo: Story = {
+/** With the keyboard shortcut caps (from the tablet breakpoint up). */
+export const WithShortcut: Story = {
   render: () => ({
     moduleMetadata: { imports: [ToastComponent] },
     props: { keys: toastShortcutKeys(false), macKeys: toastShortcutKeys(true) },
     template: `
       <div class="tt-panel tt-static">
-        <ui-toast text="Link deleted" actionLabel="Undo" actionHint="Press Alt+Shift+T to reach Undo" [shortcut]="keys" />
-        <ui-toast text="Link deleted" actionLabel="Undo" actionHint="Press Option+Shift+T to reach Undo" [shortcut]="macKeys" />
+        <ui-toast kind="danger" title="Link deleted" actionLabel="Undo" actionHint="Press Alt+Shift+T to reach Undo" [shortcut]="keys" />
+        <ui-toast kind="danger" title="Link deleted" actionLabel="Undo" actionHint="Press Option+Shift+T to reach Undo" [shortcut]="macKeys" />
       </div>`,
   }),
 };
 
-/** Long text wraps; the action stays on the right. */
+/** Long text: the title wraps, the second line is cut with an ellipsis; width stops at 540px. */
 export const LongText: Story = {
   render: () =>
     staticView(`
       <ui-toast
-        text="This link was moved to Work / Angular / Signals, and its tags were updated to match the new folder."
+        kind="moved"
+        title="This link was moved to Work / Angular / Signals and its tags were updated"
+        detail="A very long second line that does not wrap but is cut with an ellipsis when it runs out of room, however wide the toast gets"
         actionLabel="Undo"
       />`),
 };
@@ -153,21 +211,11 @@ export const LongText: Story = {
 export const AllVariants: Story = {
   render: () => ({
     moduleMetadata: { imports: [ToastComponent] },
-    props: {
-      themes: Object.values(THEME),
-      keys: toastShortcutKeys(false),
-      macKeys: toastShortcutKeys(true),
-    },
+    props: { themes: Object.values(THEME) },
     template: `
       <div class="tt-themes">
         @for (theme of themes; track theme) {
-          <div [attr.${THEME_ATTRIBUTE}]="theme" class="tt-panel tt-static">
-            <ui-toast kind="info" text="Link moved" />
-            <ui-toast kind="success" text="Link saved to Work / Angular" actionLabel="View" />
-            <ui-toast kind="info" text="Link deleted" actionLabel="Undo" actionHint="Press Alt+Shift+T to reach Undo" [shortcut]="keys" />
-            <ui-toast kind="info" text="Link deleted" actionLabel="Undo" actionHint="Press Option+Shift+T to reach Undo" [shortcut]="macKeys" />
-            <ui-toast kind="error" text="Couldn't save. Check your connection." actionLabel="Retry" />
-          </div>
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="tt-panel tt-static">${kindsMarkup}</div>
         }
       </div>`,
   }),

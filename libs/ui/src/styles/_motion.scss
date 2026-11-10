@@ -34,11 +34,13 @@ $enter-presets: (
     'duration': 'base',
     'ease': 'out',
   ),
+  // Rises 18px with a light spring; `slow` (320 ms) is the longest duration token, the Toast spec's
+  // 420 ms is not one (Motion: nothing runs longer than 320 ms).
   'toast': (
-    'keyframes': 'ui-slide-up',
-    'duration': 'slow',
-    'ease': 'out',
-  ),
+      'keyframes': 'ui-toast-in',
+      'duration': 'slow',
+      'ease': 'spring',
+    ),
   'sheet': (
     'keyframes': 'ui-sheet-in',
     'duration': 'slow',
@@ -243,10 +245,10 @@ $leave-presets: (
     }
   }
 
-  @keyframes ui-slide-up {
+  @keyframes ui-toast-in {
     from {
       opacity: 0;
-      transform: translateY(#{rem(12px)});
+      transform: translateY(#{rem(18px)}) scale(0.96);
     }
 
     to {
@@ -259,6 +261,17 @@ $leave-presets: (
     to {
       opacity: 0;
       transform: translateY(#{rem(8px)});
+    }
+  }
+
+  // The Undo countdown line of a toast (`.ui-toast__timer`): it empties over `--ui-toast-duration`.
+  @keyframes ui-toast-count {
+    from {
+      transform: scaleX(1);
+    }
+
+    to {
+      transform: scaleX(0);
     }
   }
 

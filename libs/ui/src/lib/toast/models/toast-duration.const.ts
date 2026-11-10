@@ -1,2 +1,12 @@
-/** How long a toast stays (ms): the default, and the longer time when it offers an action. */
-export const TOAST_DURATION_MS = { default: 4000, withAction: 8000 } as const;
+/**
+ * How long a toast stays (ms). `Quick` is a plain confirmation, `Status` a status line, `Saved` a
+ * saved link, `Undo` anything with an Undo (the countdown line runs for it), `Sticky` (0) stays
+ * until it is handled. Hover, focus or touch pauses all of them.
+ */
+export const TOAST_DURATION_MS = {
+  Quick: 3000,
+  Status: 4000,
+  Saved: 5000,
+  Undo: 8000,
+  Sticky: 0,
+} as const;

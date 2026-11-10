@@ -10,3 +10,8 @@ export { ToastComponent } from './toast.component';
 export { toastShortcutKeys, toastShortcutLabel } from './toast-shortcut-label';
 export type { ToastShortcutKey } from './models/toast-shortcut-key.interface';
 export { ToastService } from './toast.service';
+export type { ToastFolder } from './models/toast-folder.interface';
+export { TOAST_DURATION_MS } from './models/toast-duration.const';
+export { TOAST_STACK_MAX } from './models/toast-stack-max.const';
+export { TOAST_DISMISS_LABEL } from './models/toast-dismiss-label.token';
+export { toastDefaultDuration } from './toast-default-duration';
