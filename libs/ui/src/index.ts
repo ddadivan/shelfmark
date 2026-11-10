@@ -36,6 +36,7 @@ export * from './lib/ripple';
 export * from './lib/save-status';
 export * from './lib/segmented-control';
 export * from './lib/settings-row';
+export * from './lib/sheet';
 export * from './lib/select';
 export * from './lib/skeleton';
 export * from './lib/spinner';

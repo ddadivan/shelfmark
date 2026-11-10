@@ -45,6 +45,37 @@
     }
   }
 
+  // Sheet (`ui-sheet`): 28px top corners, never closer than 150px to the top of the page; `tall`
+  // fills that height. Larger screens keep the dialog.
+  .ui-dialog--sheet {
+    @include phone {
+      max-height: calc(100dvh - #{rem(150px)});
+      padding-inline: rem(20px);
+      padding-bottom: calc(#{rem(28px)} + env(safe-area-inset-bottom));
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    }
+  }
+
+  .ui-dialog--sheet-tall {
+    @include phone {
+      height: calc(100dvh - #{rem(150px)});
+    }
+  }
+
+  .ui-dialog--sheet .ui-dialog__grip {
+    @include phone {
+      width: rem(40px);
+      height: rem(5px);
+      border-radius: rem(3px);
+    }
+  }
+
+  .ui-dialog--sheet-tall .ui-dialog__body {
+    @include phone {
+      flex: 1;
+    }
+  }
+
   // The drag moves the sheet one to one: no transition while the finger is down.
   &--snapping {
     @include phone {
@@ -108,6 +139,14 @@
   gap: var(--space-3);
   align-items: flex-start;
   justify-content: space-between;
+}
+
+.ui-dialog__head-end {
+  display: flex;
+  flex: none;
+  gap: var(--space-1);
+  align-items: center;
+  margin-inline-start: auto;
 }
 
 .ui-dialog__title {

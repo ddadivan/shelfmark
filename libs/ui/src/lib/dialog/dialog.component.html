@@ -3,6 +3,8 @@
   class="ui-dialog"
   [class.ui-dialog--md]="effectiveSize() === DIALOG_SIZE.Md"
   [class.ui-dialog--phone-full]="phoneFullscreen()"
+  [class.ui-dialog--sheet]="sheetHeight() !== undefined"
+  [class.ui-dialog--sheet-tall]="sheetHeight() === SHEET_HEIGHT.Tall"
   [class.ui-dialog--enter]="!leaving()"
   [class.ui-dialog--leave]="leaving()"
   [class.ui-dialog--dragging]="dragging()"
@@ -18,16 +20,19 @@
     <div class="ui-dialog__grip" aria-hidden="true"></div>
     <div class="ui-dialog__head">
       <h2 class="ui-dialog__title" [id]="titleId">{{ title() }}</h2>
-      @if (closeLabel(); as label) {
-        <ui-button
-          variant="ghost"
-          [size]="phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm"
-          iconOnly
-          iconLeft="close"
-          [ariaLabel]="label"
-          (click)="requestClose()"
-        />
-      }
+      <div class="ui-dialog__head-end">
+        <ng-content select="[slot=actions]" />
+        @if (closeLabel(); as label) {
+          <ui-button
+            variant="ghost"
+            [size]="phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm"
+            iconOnly
+            iconLeft="close"
+            [ariaLabel]="label"
+            (click)="requestClose()"
+          />
+        }
+      </div>
     </div>
   </div>
   <div

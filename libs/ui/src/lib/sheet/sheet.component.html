@@ -1,0 +1,4 @@
+<ui-dialog [title]="title()" [closeLabel]="closeLabel()" [sheetHeight]="height()">
+  <ng-content select="[slot=actions]" ngProjectAs="[slot=actions]" />
+  <ng-content />
+</ui-dialog>

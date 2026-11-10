@@ -130,6 +130,12 @@ Angular keeps the element until the leave animation ends and a second toggle mid
 - Confirm focus: confirm button, or Cancel when destructive (`confirm` sets this itself). **`autoFocus` defaults to `first-tabbable`, which is the header close button**, so every form dialog must pass `autoFocus: '<selector>'` (for example `'input'`) to land on its first field; the form story does. `_recaptureFocus` (scrim click on a non-closing dialog) is internal CDK API, checked against 22.2.x.
 - Sheet release speed: the last 3 pointer samples; a pause of 100 ms or more before the release counts as speed 0 (no flick). The phone sheet width stays `100vw` (the pane is shrink-to-fit, so `100%` would collapse to the content width).
 
+## Sheet (issue #237)
+
+- `ui-sheet` (`title`, `height` `SHEET_HEIGHT` `auto | tall`, `closeLabel`; slots `slot="actions"` = header buttons left of the close button, default = body) is the content component of a bottom sheet, opened with `DialogService.open(Component, { size })`. It renders a `ui-dialog` with the new `sheetHeight` input, so there is no second overlay or drag system: scrim, focus trap and restore, Esc, scrim click, grip drag and flick (`shouldCloseSheet`), `enter(sheet)` / `leave(sheet)` and the reduced-motion fade are the dialog's. `ui-dialog` also gained a `slot="actions"` in its header (`.ui-dialog__head-end`), usable on plain dialogs.
+- Below 40em: 28px top corners (`--radius-xl`), 40 x 5 grip, `max-height: calc(100dvh - 9.375rem)` (at least 150px of the page stay visible), `tall` sets that as `height` and lets the body fill it (it scrolls). From 40em it stays the centred dialog (`size` of the open options, `md` suits lists).
+- Inside the sheet, features project the list as the body; the "Clear" style action is a ghost `sm` button in `slot="actions"`. The `ui-dialog--sheet*` classes are only set through `ui-sheet`.
+
 ## Loading (issue #23)
 
 - Pick the indicator by what loads (Loading spec): `ui-button [loading]` for an action the user started, `ui-progress-bar` for navigation and background requests, `ui-meter` for known progress, `ui-load-more` under a list, `ui-save-status` for autosave, skeletons for first loads.

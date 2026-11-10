@@ -17,6 +17,8 @@ import { nextDialogId } from './dialog-id';
 import { UiDialogRef } from './dialog-ref';
 import { PHONE_MEDIA_QUERY } from '../media';
 import type { DialogSize } from './models/dialog-size.type';
+import { SHEET_HEIGHT } from '../sheet/models/sheet-height.const';
+import type { SheetHeight } from '../sheet/models/sheet-height.type';
 import { UI_DIALOG_CONTEXT } from './models/ui-dialog-context.const';
 import type { DragState } from './models/drag-state.interface';
 import { SHEET_SAMPLES } from './models/sheet-samples.const';
@@ -66,6 +68,13 @@ export class DialogComponent {
    */
   readonly phoneFullscreen = input(false, { transform: booleanAttribute });
 
+  /**
+   * Set by `ui-sheet`: the content is a sheet. Below 40em it gets the 28px top corners, the
+   * 150px strip of the page above it and, with `tall`, the full height under that strip; on
+   * larger screens it stays a centred dialog. Unset: a plain dialog.
+   */
+  readonly sheetHeight = input<SheetHeight>();
+
   /** The close button was used or the sheet was dragged shut. */
   readonly closeRequested = output<void>();
 
@@ -77,6 +86,7 @@ export class DialogComponent {
   protected readonly titleId = this.context?.titleId ?? nextDialogId('ui-dialog-title');
   protected readonly DIALOG_SIZE = DIALOG_SIZE;
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
+  protected readonly SHEET_HEIGHT = SHEET_HEIGHT;
   protected readonly effectiveSize = computed(
     () => this.size() ?? this.context?.size ?? DIALOG_SIZE.Sm,
   );
