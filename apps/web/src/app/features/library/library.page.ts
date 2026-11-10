@@ -23,6 +23,7 @@ import {
   ChipComponent,
   EmptyStateComponent,
   ICON_SIZE,
+  loaderVisible,
   LoadMoreComponent,
   MenuComponent,
   MenuItemComponent,
@@ -40,6 +41,7 @@ import {
 import { EXPORT_FORMAT, type ExportFormat, type LinkResponse } from '@shelfmark/contracts';
 import { Router } from '@angular/router';
 import { pluralKey } from '../../core/i18n/plural-key';
+import { ViewportService } from '../../core/layout/viewport.service';
 import { ExportActionsService } from '../export/export-actions.service';
 import { exportScopeOf } from '../export/export-url';
 import { TAG_QUERY_PARAM } from '../tags/models/tag-query-param.const';
@@ -118,6 +120,7 @@ export default class LibraryPage {
   protected readonly store = inject(LinksStore);
   protected readonly ui = inject(UiStore);
   protected readonly actions = inject(LinkActionsService);
+  protected readonly phone = inject(ViewportService).phone;
   private readonly exporter = inject(ExportActionsService);
   private readonly folders = inject(FoldersStore);
   private readonly router = inject(Router);
@@ -250,6 +253,11 @@ export default class LibraryPage {
   protected readonly firstLoad = computed(
     () => !this.ownLoaded() && !this.ownError() && this.ownCount() === 0 && !this.stale(),
   );
+  /**
+   * The skeleton of the first load: nothing shows before 300 ms (a fast response never flashes
+   * it) and, once shown, it stays at least 400 ms (Loading spec).
+   */
+  protected readonly skeletonVisible = loaderVisible(this.firstLoad);
   protected readonly failed = computed(() => this.ownError() && this.ownCount() === 0);
   protected readonly empty = computed(
     () => this.ownLoaded() && !this.store.loading() && this.ownCount() === 0,
@@ -356,7 +364,7 @@ export default class LibraryPage {
       const items = this.store.entities();
       const hasMore = this.store.hasMore();
       const loading = this.store.loading();
-      if (this.firstLoad()) {
+      if (this.skeletonVisible()) {
         sawSkeleton = true;
       }
       // Tracked: the folder list changes (rename, create). The folder of the page is read

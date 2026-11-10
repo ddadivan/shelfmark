@@ -595,6 +595,7 @@
       "one": "{{count}} link",
       "other": "{{count}} links"
     },
+    "countWithFolders": "{{links}}, {{folders}}",
     "countMore": {
       "one": "{{count}}+ link",
       "other": "{{count}}+ links"

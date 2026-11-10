@@ -53,16 +53,27 @@
   }
 }
 
-// Empty and error states: centred in the space under the toolbar. With links the feed flows as usual.
-.library__scroll > ui-empty-state {
+// Empty and error states (EmptyStates.dc.html): a surface card with the state centred in it, in
+// in the middle of the space under the toolbar. With links the feed flows as usual.
+.library__empty {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-6);
   margin-block: auto;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+
+  @include phone {
+    padding: var(--space-4);
+  }
 }
 
 .library__toolbar {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-4);
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   margin-bottom: var(--space-4);
 }
@@ -81,7 +92,8 @@
 }
 
 .library__title {
-  @include type(title);
+  // Main.dc.html: 40 / 44, 600, -0.03em (the display style).
+  @include type(display);
 
   margin: 0;
   overflow-wrap: anywhere;
@@ -100,8 +112,13 @@
 
   // One line high even when empty (while the list loads).
   min-height: 1lh;
-  margin: var(--space-1) 0 0;
+  margin: calc(var(--space-1) + var(--space-1) / 2) 0 0;
   color: var(--text-muted);
+
+  @include phone {
+    margin-block-start: var(--space-1);
+    font-size: rem(13px);
+  }
 }
 
 .library__grid,
@@ -183,7 +200,7 @@
   padding: 0;
   margin: 0 0 var(--space-6);
   list-style: none;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, rem(224px)), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, rem(220px)), 1fr));
 
   // List view: one full-width row after the other, like the link rows.
   &--rows {

@@ -54,6 +54,12 @@ async function setup(first: Observable<ListLinksResponse> | null = null) {
   return { api, fixture, element: fixture.nativeElement as HTMLElement };
 }
 
+/** Waits past the 300 ms before any loader shows (Loading spec). */
+async function afterLoaderDelay(fixture: ComponentFixture<LibraryPage>): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, 340));
+  await fixture.whenStable();
+}
+
 const text = (fixture: ComponentFixture<LibraryPage>) =>
   (fixture.nativeElement as HTMLElement).textContent ?? '';
 
@@ -61,10 +67,15 @@ describe('LibraryPage', () => {
   beforeEach(() => localStorage.removeItem(UI_STORAGE_KEY));
   afterAll(() => localStorage.removeItem(UI_STORAGE_KEY));
 
-  it('shows a skeleton and no cards while the first page loads', async () => {
-    const { element } = await setup(new Subject<ListLinksResponse>());
+  it('shows a skeleton and no cards while the first page loads, but only after 300 ms', async () => {
+    const { element, fixture } = await setup(new Subject<ListLinksResponse>());
 
     expect(element.querySelector('section')?.getAttribute('aria-busy')).toBe('true');
+    expect(element.querySelector('ui-skeleton')).toBeNull();
+    expect(element.querySelector('app-link-card')).toBeNull();
+
+    await afterLoaderDelay(fixture);
+
     expect(element.querySelector('ui-skeleton')).not.toBeNull();
     expect(element.querySelector('app-link-card')).toBeNull();
   });
@@ -276,6 +287,9 @@ describe('LibraryPage', () => {
 
     expect(element.textContent).not.toContain('From Favorites');
     expect(element.querySelector('app-link-card')).toBeNull();
+
+    await afterLoaderDelay(fixture);
+
     expect(element.querySelector('ui-skeleton')).not.toBeNull();
   });
 
