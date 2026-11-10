@@ -64,7 +64,7 @@ Also restyled through tokens only, no separate issue unless screenshots show a g
 
 | What | Files | Risk | Size |
 |---|---|---|---|
-| **Desktop sidebar** as an inset card that only navigates: All links, Unsorted, Favorites, Recently opened; Folders (subfolders first, FolderIcon tiles, "New folder" button in the section header); no Tags section. Recently opened becomes its own page `/recent` (a list of HistoryRows grouped by day) and replaces the collapsible right panel. Pinned and Trash come with their features (see Decisions) | `shell/sidebar`, `shell/app-shell.*`, `features/links/recent` → page, `app.routes.ts`, `UiStore` (drop the panel visibility flag), e2e for the recent panel | high: changes story 18 and 5.1 / 7.2 in PROJECT.md, needs a doc update and e2e rewrites | L |
+| **Desktop sidebar** as an inset card that only navigates: All links, Unsorted, Favorites, Recently opened; Folders (subfolders first, FolderIcon tiles, "New folder" button in the section header); Tags section as in `Tags`. Recently opened becomes its own page `/recent` (a list of HistoryRows grouped by day) and replaces the collapsible right panel. Pinned and Trash come with their features (see Decisions) | `shell/sidebar`, `shell/app-shell.*`, `features/links/recent` → page, `app.routes.ts`, `UiStore` (drop the panel visibility flag), e2e for the recent panel | high: changes story 18 and 5.1 / 7.2 in PROJECT.md, needs a doc update and e2e rewrites | L |
 | **Top bar:** pill search with ⌘K (opens the existing search dialog), keyboard shortcuts button, theme, "Add link" (the one primary), avatar | `shell/app-shell.*`, `features/search` | medium | M |
 | **Phone:** floating glass TabBar (Library, Search, Add, Tags, You) replaces the hamburger. Library: tiles for All links, Unsorted, Favorites, Recently opened (opens a Sheet), then folders. Search tab = the existing full-screen search. Tags tab = tag list page. You = settings list | `shell/mobile-nav` (removed), new phone library page, tags page, `settings` page, routes, phone e2e | high: phone navigation e2e rewritten | L |
 | Toast placement: bottom centre, 24px up, above the tab bar with a 12px gap | `toast`, shell | low | S (with Toast) |
@@ -79,7 +79,7 @@ Also restyled through tokens only, no separate issue unless screenshots show a g
 | Edit link | `EditLink` | New form layout | low | S |
 | Search ⌘K | `Search`, `MobileSearch` | New overlay look; phone search as the Search tab | medium | M |
 | Menus and folder dialogs | `Menus`, `DeleteFolder` | Card / row / folder / account menus, new folder, rename, move, delete folder | low | M |
-| Tags | `Tags` | Tag menu on chips, rename in place, delete dialog, new tag in the link form; tags page for the phone Tags tab; no sidebar section | medium | M |
+| Tags | `Tags` | Tag menu on chips, rename in place, delete dialog, new tag in the link form and from "+" in the sidebar Tags section; tags page for the phone Tags tab | medium | M |
 | Settings | `MobileSettings`; desktop sections only for what exists (Appearance with Light / Dark / System, export, privacy and data, delete account, show onboarding again) | Settings built from Panel and SettingsRow; desktop has a page per section with a settings nav | medium | M |
 | Welcome (onboarding) | `Welcome`, `MobileWelcome` | New dialog look | low | S |
 | Toasts, offline, confirmations | `Toasts`, `Feedback` | All existing toasts moved to the new kinds; confirmation dialogs | medium | M |
@@ -118,7 +118,7 @@ Also restyled through tokens only, no separate issue unless screenshots show a g
 - Everything follows the design: the new layout and screens replace the old ones wherever they differ.
 - Trash, pinned folders, folder colours and icons, saved views and "Paste several links" are new features. They are added to stage 2 in `PROJECT.md` and built, on the new design, only after this migration is finished and the author has reviewed it; no stage 2 feature starts before that. Until then the sidebar has no Trash row or Pinned section, folder tiles are graphite and there are no saved-view chips.
 - Settings on desktop: a page per section with a settings nav, as in the mockups, for the sections that exist today.
-- No Tags section in the desktop sidebar, as in `Main` (the sidebar block in `Tags` is not built). On desktop tags filter from chips on cards and rows and are managed from the tag menu; the phone gets the Tags tab.
+- The desktop sidebar keeps a Tags section below Folders, as in `Tags` ("+", the 8 most used tags, "+ N more"); `Main` only shows the top of the sidebar. The phone gets the Tags tab.
 - Recently opened page: "Remove from history" and "Clear history" are built now, with two API endpoints.
 - Story 18 becomes a Recently opened page and a phone sheet; `PROJECT.md` (story 18, 5.1 `UiStore`, 7.2, 7.3) is updated in the layout issue.
 - From the design archive only `docs/design` (design system and screens) is taken; its `PROJECT.md` is not.
