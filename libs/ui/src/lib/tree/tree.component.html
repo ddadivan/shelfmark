@@ -124,7 +124,7 @@
   is laid over the heading row, whose place is measured.
 -->
 @if (heading()) {
-  <div class="ui-tree__action" [style.top.px]="actionTop()">
+  <div class="ui-tree__action" [style.top.px]="actionTop()" [style.height.px]="actionHeight()">
     <ng-content select="[uiTreeHeadingAction]" />
   </div>
 }

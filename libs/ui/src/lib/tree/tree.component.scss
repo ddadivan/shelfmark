@@ -144,6 +144,9 @@ $more-column: rem(30px);
   position: absolute;
   inset-inline-end: 0;
   display: inline-flex;
+
+  // The box is as tall as the heading text; the button is centred on it and may overhang.
+  align-items: center;
 }
 
 // Active row: the one place sage appears in navigation.

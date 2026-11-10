@@ -49,7 +49,7 @@ const FIXED_ROUTES: Readonly<Record<string, string>> = {
 /**
  * The library sidebar, an inset card that only navigates: the logo, "All links", "Unsorted",
  * "Favorites", "Recently opened" (a page), then the folder tree with link counts and graphite
- * folder tiles (`ui-tree`; the "Folders" heading has a "Create a folder" icon button) and the tags.
+ * folder tiles (`ui-tree`; the "Folders" heading has a "New folder" icon button) and the tags.
  * Choosing a row navigates; the active row follows the URL. A folder has a menu (right click, "..." button, Shift+F10): new subfolder, add link
  * here, rename, move, delete.
  */

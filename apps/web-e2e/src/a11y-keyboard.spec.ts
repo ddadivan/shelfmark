@@ -126,7 +126,7 @@ test.describe('keyboard-only flows (mock API)', () => {
   test('creates a folder and moves another into it', async ({ page }) => {
     await openFeed(page);
 
-    await activate(page, library(page).getByRole('button', { name: 'Create a folder' }));
+    await activate(page, library(page).getByRole('button', { name: 'New folder' }));
     const create = page.getByRole('dialog', { name: 'New folder' });
     await expect(create.getByLabel('Name')).toBeFocused();
     await page.keyboard.type(ARCHIVE);

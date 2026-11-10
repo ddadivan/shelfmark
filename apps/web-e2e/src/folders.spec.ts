@@ -21,7 +21,7 @@ test.describe('folders (mock API)', () => {
     page.getByRole('treeitem', { name: new RegExp(`^${name}\\b`) });
 
   async function createFolder(page: Page, name: string) {
-    await page.getByRole('button', { name: 'Create a folder' }).click();
+    await page.getByRole('button', { name: 'New folder' }).click();
     const dialog = page.getByRole('dialog', { name: 'New folder' });
     await dialog.getByLabel('Name').fill(name);
     await dialog.getByRole('button', { name: 'Create folder' }).click();

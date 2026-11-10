@@ -143,11 +143,11 @@ describe('SidebarComponent', () => {
     ]);
   });
 
-  it('has a "Create a folder" icon button in the Folders heading row, and no "New folder" row', async () => {
+  it('has a "New folder" "+" icon button in the Folders heading row, and no such row', async () => {
     const { element } = await setup();
 
     const button = element.querySelector<HTMLElement>('.ui-tree__action button');
-    expect(button?.getAttribute('aria-label')).toBe('Create a folder');
+    expect(button?.getAttribute('aria-label')).toBe('New folder');
     expect(button?.textContent?.trim()).toBe('');
     expect(element.textContent).not.toContain('New folder');
   });

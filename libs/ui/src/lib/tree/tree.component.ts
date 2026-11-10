@@ -93,6 +93,8 @@ export class TreeComponent {
   private readonly section = viewChild<ElementRef<HTMLElement>>('section');
   /** Top of the heading row inside the host; the action button is placed there. */
   protected readonly actionTop = signal(0);
+  /** Height of the text area of the heading row: the action is centred on it, not on the padding. */
+  protected readonly actionHeight = signal(0);
   /** Where every row has been seen (kept for removed rows, so focus can find a neighbour). */
   private readonly lastKnown = new Map<string, TreeRowPlace>();
   /** The row that held focus last; cleared when focus moves to another element. */
@@ -123,7 +125,10 @@ export class TreeComponent {
   private measureHeading(): void {
     const section = this.section()?.nativeElement;
     if (section) {
-      this.actionTop.set(section.offsetTop + parseFloat(getComputedStyle(section).paddingTop));
+      const style = getComputedStyle(section);
+      const paddingTop = parseFloat(style.paddingTop);
+      this.actionTop.set(section.offsetTop + paddingTop);
+      this.actionHeight.set(section.clientHeight - paddingTop - parseFloat(style.paddingBottom));
     }
   }
 

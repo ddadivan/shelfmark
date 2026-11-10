@@ -361,7 +361,7 @@ test.describe('mobile layout (mock API)', () => {
     }
 
     await openSidebar(page);
-    const create = await page.getByRole('button', { name: 'Create a folder' }).boundingBox();
+    const create = await page.getByRole('button', { name: 'New folder' }).boundingBox();
     expect(create?.height).toBeGreaterThanOrEqual(44);
     await openTags(page);
     const newTag = await page.getByRole('button', { name: 'New tag' }).boundingBox();
@@ -413,7 +413,7 @@ test.describe('mobile layout (mock API)', () => {
       await expect(page.getByRole('dialog')).toHaveCount(0);
 
       await openSidebar(page);
-      await page.getByRole('button', { name: 'Create a folder' }).click();
+      await page.getByRole('button', { name: 'New folder' }).click();
       await expect(page.getByRole('dialog', { name: 'New folder' })).toBeVisible();
       await settled(page);
       expect(await overflow(page)).toBeLessThanOrEqual(0);
