@@ -35,6 +35,7 @@ export * from './lib/progress-bar';
 export * from './lib/radio-group';
 export * from './lib/ripple';
 export * from './lib/save-status';
+export * from './lib/search-trigger';
 export * from './lib/segmented-control';
 export * from './lib/settings-row';
 export * from './lib/sheet';
