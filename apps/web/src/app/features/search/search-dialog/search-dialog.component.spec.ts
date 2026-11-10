@@ -176,6 +176,9 @@ describe('SearchDialogComponent', () => {
     expect(options.some((text) => text?.includes('Signals club'))).toBe(true);
     expect(options.some((text) => text?.includes('signals'))).toBe(true);
     expect(element.querySelectorAll('mark').length).toBeGreaterThan(0);
+    expect(element.querySelectorAll('.ui-command-item__leading ui-favicon').length).toBeGreaterThan(
+      0,
+    );
     expect(element.querySelector('[role="status"]')?.textContent).toContain('4 results');
   });
 

@@ -863,7 +863,7 @@
       "one": "{{count}} result",
       "other": "{{count}} results"
     },
-    "hint": "Results show up as you type: titles, notes, tags and sites.",
+    "hint": "Results show up as you type: titles, notes, tags and sites. Recently opened links live in Library.",
     "emptyText": "Try another word. Search looks through titles, notes, tags and sites.",
     "searching": "Searching…",
     "failed": "Couldn't search. Try again.",

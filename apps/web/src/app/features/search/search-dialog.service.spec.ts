@@ -36,6 +36,7 @@ describe('SearchDialogService shortcut', () => {
     expect(service.handleShortcut(ctrl)).toBe(true);
 
     expect(dialogs.open).toHaveBeenCalledTimes(2);
+    expect(dialogs.open.mock.calls[0][1]).toMatchObject({ variant: 'command' });
     expect(meta.defaultPrevented).toBe(true);
     expect(ctrl.defaultPrevented).toBe(true);
   });

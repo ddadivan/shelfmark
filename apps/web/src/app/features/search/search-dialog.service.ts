@@ -1,6 +1,6 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { inject, Service } from '@angular/core';
-import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
+import { DIALOG_VARIANT, DialogService } from '@shelfmark/ui';
 import { SEARCH_SHORTCUT_CODE } from './models/search-shortcut-code.const';
 import { SEARCH_SHORTCUT_KEY } from './models/search-shortcut-key.const';
 import { SearchDialogComponent } from './search-dialog/search-dialog.component';
@@ -19,7 +19,10 @@ export class SearchDialogService {
     if (this.cdk.openDialogs.length > 0) {
       return;
     }
-    this.dialogs.open(SearchDialogComponent, { size: DIALOG_SIZE.Md, autoFocus: SEARCH_FIELD });
+    this.dialogs.open(SearchDialogComponent, {
+      variant: DIALOG_VARIANT.Command,
+      autoFocus: SEARCH_FIELD,
+    });
   }
 
   /**
