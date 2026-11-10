@@ -101,7 +101,8 @@
   color: inherit;
   text-decoration: underline;
 
-  &:hover {
+  &:hover,
+  &:active {
     color: var(--text);
   }
 }

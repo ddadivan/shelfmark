@@ -2,6 +2,7 @@
   #panel
   class="ui-dialog"
   [class.ui-dialog--md]="effectiveSize() === DIALOG_SIZE.Md"
+  [class.ui-dialog--phone-full]="phoneFullscreen()"
   [class.ui-dialog--enter]="!leaving()"
   [class.ui-dialog--leave]="leaving()"
   [class.ui-dialog--dragging]="dragging()"

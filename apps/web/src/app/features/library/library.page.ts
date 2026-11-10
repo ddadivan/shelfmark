@@ -64,7 +64,9 @@ import { UI_VIEW } from '../../stores/models/ui-view.const';
 import { isUiView } from '../../stores/is-ui-view';
 import { UiStore } from '../../stores/ui.store';
 import { EMPTY_KEYS } from './models/empty-keys.const';
+import { FolderTileComponent } from './folder-tile/folder-tile.component';
 import { scrollFeedForKey } from './feed-keyboard-scroll';
+import type { SubfolderItem } from './models/subfolder-item.interface';
 import { SORT_OPTION_KEYS } from './models/sort-option-keys.const';
 import { SORT_OPTIONS } from './models/sort-options.const';
 import { VIEW_OPTION_KEYS } from './models/view-option-keys.const';
@@ -90,6 +92,7 @@ interface LastShown {
     ButtonComponent,
     ChipComponent,
     EmptyStateComponent,
+    FolderTileComponent,
     InViewDirective,
     LinkCardComponent,
     LinkRowComponent,
@@ -252,6 +255,29 @@ export default class LibraryPage {
   private readonly scopeLabel = toSignal(
     toObservable(this.titleKey).pipe(switchMap((key) => this.transloco.selectTranslate(key))),
   );
+  /**
+   * The direct subfolders of the folder of the page, by name, with the number of folders inside
+   * each. Hidden while a search or tag filter is on (they do not filter) and for a missing folder.
+   */
+  private readonly currentSubfolders = computed<readonly SubfolderItem[]>(() => {
+    const id = this.folderId();
+    if (!this.isFolder() || id === undefined || this.folderMissing() || this.filtered()) {
+      return [];
+    }
+    const all = this.folders.entities();
+    return all
+      .filter((folder) => folder.parentId === id)
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((folder) => ({
+        folder,
+        childCount: all.filter((child) => child.parentId === folder.id).length,
+      }));
+  });
+  /** The subfolders of the last settled view; they stay (dimmed) with its cards while the next view loads. */
+  private readonly lastSubfolders = signal<readonly SubfolderItem[]>([]);
+  protected readonly subfolders = computed(() =>
+    this.stale() ? this.lastSubfolders() : this.currentSubfolders(),
+  );
   /** The heading of the page; `undefined` until translated. */
   private readonly heading = computed(() => this.folder()?.name ?? this.scopeLabel());
   /** The trail of a folder page: "All links", the ancestors (links) and the folder itself. */
@@ -299,9 +325,14 @@ export default class LibraryPage {
       const items = this.store.entities();
       const hasMore = this.store.hasMore();
       const loading = this.store.loading();
+      // Tracked: the folder list changes (rename, create). The folder of the page is read
+      // untracked: it changes before the next view starts loading, while `settled` is still true,
+      // and the previous view must not take over the subfolders of the next one.
+      this.folders.entities();
       untracked(() => {
         if (settled) {
           this.lastShown.set({ items, hasMore });
+          this.lastSubfolders.set(this.currentSubfolders());
         }
         if (wasLoading && !loading) {
           this.batch.update((value) => value + 1);

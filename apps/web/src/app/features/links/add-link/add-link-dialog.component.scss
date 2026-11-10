@@ -71,19 +71,10 @@
   color: var(--text-muted);
 }
 
-// Phone: the main action is as wide as the sheet (mobile mockup).
-.add-link__action {
-  @include phone {
-    flex: 1;
-  }
-}
-
-// Edit mode: Delete sits at the start of the footer, away from the confirming actions.
+// Edit mode: Delete sits at the start of the footer, away from the confirming actions. On the
+// phone the footer is a reversed column (`ui-dialog`): Save on top, Delete last (bottom).
 .add-link__delete {
-  margin-inline-end: auto;
-
-  @include phone {
-    order: 1;
-    margin-inline-end: 0;
+  @include tablet-up {
+    margin-inline-end: auto;
   }
 }

@@ -32,6 +32,11 @@
   @include hover {
     border-color: var(--border-control);
   }
+
+  // Pressed feedback on touch (there is no tap highlight).
+  &:active {
+    background: var(--surface-pressed);
+  }
 }
 
 .ui-radio--checked {

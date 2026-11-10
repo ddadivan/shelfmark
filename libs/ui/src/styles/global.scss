@@ -37,6 +37,10 @@
 
 html {
   font-size: 100%;
+
+  // No default tap flash on touch devices (iOS Safari, Android Chrome). Every interactive
+  // component has its own `:active` / pressed state, and `:focus-visible` is not affected.
+  -webkit-tap-highlight-color: transparent;
 }
 
 *,

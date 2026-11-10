@@ -47,6 +47,11 @@
   }
 }
 
+// Pressed feedback on touch (there is no tap highlight).
+.ui-checkbox__label:active .ui-checkbox__box {
+  border-color: var(--accent);
+}
+
 .ui-checkbox__check {
   width: rem(16px);
   height: rem(16px);

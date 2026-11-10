@@ -550,6 +550,21 @@
       "one": "{{count}}+ link",
       "other": "{{count}}+ links"
     },
+    "subfolders": {
+      "label": "Subfolders",
+      "links": {
+        "one": "{{count}} link",
+        "other": "{{count}} links"
+      },
+      "folders": {
+        "one": "{{count}} subfolder",
+        "other": "{{count}} subfolders"
+      },
+      "meta": "{{links}}",
+      "metaWithFolders": "{{links}}, {{folders}}",
+      "aria": "Open folder {{name}}, {{links}}",
+      "ariaWithFolders": "Open folder {{name}}, {{links}}, {{folders}}"
+    },
     "view": {
       "label": "View",
       "cards": "Cards",

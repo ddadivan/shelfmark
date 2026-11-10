@@ -163,6 +163,28 @@
   gap: var(--space-1);
 }
 
+.library__folders {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0;
+  margin: 0 0 var(--space-6);
+  list-style: none;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, rem(224px)), 1fr));
+
+  // List view: one full-width row after the other, like the link rows.
+  &--rows {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+}
+
+// The same dimming as the stale cards (`library__list--stale`) while the next view loads.
+.library__folders--stale {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
 .library__more {
   display: flex;
   flex-direction: column;

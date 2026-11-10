@@ -28,4 +28,25 @@
       align-items: flex-end;
     }
   }
+
+  // Phone footer (container rules: `.ui-dialog__foot` in `dialog.component.scss`): every slotted
+  // action, a `ui-button` or a wrapper, fills the sheet width. The slotted elements belong to
+  // the feature's view, so only a global rule reaches them.
+  .ui-dialog__foot {
+    @include phone {
+      > * {
+        inline-size: 100%;
+        margin-inline: 0;
+      }
+
+      > ui-button {
+        display: flex;
+
+        .ui-button {
+          flex: 1 1 auto;
+          inline-size: 100%;
+        }
+      }
+    }
+  }
 }

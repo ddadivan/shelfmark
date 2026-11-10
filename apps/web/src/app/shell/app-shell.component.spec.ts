@@ -321,3 +321,55 @@ describe('AppShellComponent', () => {
     });
   });
 });
+
+describe('AppShellComponent header styles', () => {
+  /** The shell's component stylesheet as the browser got it (jsdom keeps the media text). */
+  async function shellStyles(): Promise<string> {
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([{ path: '', component: AppShellComponent }]),
+        provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
+        {
+          provide: AUTH_API,
+          useValue: {
+            getSession: () => Promise.resolve(USER),
+            signIn: vi.fn(),
+            signInDemo: vi.fn(),
+            signOut: vi.fn(),
+          },
+        },
+        { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
+        { provide: RATING_API, useValue: { prompt: vi.fn(), record: vi.fn() } },
+      ],
+    });
+    await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
+    await TestBed.inject(AuthStore).ensureLoaded();
+    const harness = await RouterTestingHarness.create('/');
+    await harness.fixture.whenStable();
+    return Array.from(document.querySelectorAll('style'))
+      .map((style) => style.textContent ?? '')
+      .filter((css) => css.includes('shell__header'))
+      .join('\n');
+  }
+
+  it('sticks the header to the top on a phone only, between the page and the overlays', async () => {
+    const css = await shellStyles();
+
+    expect(css).toMatch(/\(width\s*<\s*40em\)/);
+    const phone = css.slice(css.search(/@media[^{]*width\s*<\s*40em[^{]*\{[^}]*shell__header/));
+    expect(phone).toMatch(/position:\s*sticky/);
+    expect(phone).toMatch(/(inset-block-start|top):\s*0/);
+    expect(phone).toMatch(/background:\s*var\(--bg\)/);
+    const z = Number(/z-index:\s*(\d+)/.exec(phone)?.[1]);
+    expect(z).toBeGreaterThan(2);
+    expect(z).toBeLessThan(900);
+    expect(css.split('position: sticky').length - 1).toBe(1);
+  });
+
+  it('fades a shadow in with the scroll position, CSS only', async () => {
+    const css = await shellStyles();
+
+    expect(css).toContain('animation-timeline: scroll(root block)');
+    expect(css).toContain('shell-header-shadow');
+  });
+});

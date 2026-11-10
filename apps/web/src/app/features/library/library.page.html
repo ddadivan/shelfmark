@@ -111,6 +111,24 @@
       {{ 'library.refetchFailed' | transloco }}
       <ui-button size="sm" (click)="retry()">{{ 'library.error.retry' | transloco }}</ui-button>
     </ui-notice>
+    } @if (subfolders().length > 0) {
+    <ul
+      class="library__folders"
+      [class.library__folders--rows]="ui.view() === UI_VIEW.List"
+      [class.library__folders--stale]="stale()"
+      [attr.inert]="stale() ? '' : null"
+      [attr.aria-label]="'library.subfolders.label' | transloco"
+    >
+      @for (item of subfolders(); track item.folder.id) {
+      <li>
+        <app-folder-tile
+          [folder]="item.folder"
+          [childCount]="item.childCount"
+          [row]="ui.view() === UI_VIEW.List"
+        />
+      </li>
+      }
+    </ul>
     } @if (folderMissing()) {
     <ui-empty-state
       illustration="not-found"
