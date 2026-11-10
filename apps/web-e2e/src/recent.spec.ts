@@ -1,78 +1,96 @@
-import { settled } from './support/settled';
 import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
+import { openSidebar } from './support/sidebar';
 
-const TABLET = { width: 800, height: 900 };
-const DESKTOP = { width: 1280, height: 900 };
-
-test.describe('Recently opened below 1024px (mock API)', () => {
+test.describe('Recently opened page (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
-  test.skip(({ isMobile }) => isMobile, 'the phone has its own sheet in the menu drawer');
 
   test.beforeEach(async ({ page }) => {
     await seedSession(page);
   });
 
-  const toggle = (page: Page) => page.getByRole('button', { name: 'Show recently opened' });
-  const panel = (page: Page) => page.getByRole('dialog', { name: 'Recently opened' });
+  const rows = (page: Page) => page.locator('app-link-history-row');
 
-  test('opens as a side panel at 800px, closes with Esc and returns focus', async ({ page }) => {
-    await page.setViewportSize(TABLET);
+  async function openRecent(page: Page) {
     await page.goto('/links');
-    await expect(page.locator('app-recent-links-panel.shell__recent')).toHaveCount(0);
+    await openSidebar(page);
+    await page.getByRole('treeitem', { name: 'Recently opened' }).click();
+    await expect(page).toHaveURL('/recent');
+    await expect(page.getByRole('heading', { level: 1, name: 'Recently opened' })).toBeVisible();
+    await expect(rows(page).first()).toBeVisible();
+  }
 
-    await toggle(page).focus();
-    await page.keyboard.press('Enter');
-    await expect(panel(page)).toBeVisible();
-    await expect(panel(page).getByRole('listitem').first()).toBeVisible();
-    await expect(page.locator('.ui-dialog-scrim')).toBeVisible();
+  test('opens from the sidebar row, in day groups, with no side panel or toggle', async ({
+    page,
+  }) => {
+    await openRecent(page);
 
-    // Pinned to the inline-end edge, measured once the slide-in has finished.
-    await settled(page);
-    const box = await panel(page).locator('.ui-drawer').boundingBox();
-    expect(box).not.toBeNull();
-    expect((box?.x ?? 0) + (box?.width ?? 0)).toBeCloseTo(TABLET.width, 0);
-
-    // A tooltip on the focused close button swallows the first Esc (it closes only itself).
-    await expect(async () => {
-      await page.keyboard.press('Escape');
-      await expect(panel(page)).toHaveCount(0, { timeout: 1000 });
-    }).toPass();
-    await expect(toggle(page)).toBeFocused();
+    await expect(page.getByRole('group', { name: 'Today' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 2 }).first()).toBeVisible();
+    await expect(rows(page).first().locator('time')).toBeVisible();
+    await expect(page.getByRole('button', { name: /recently opened/i })).toHaveCount(0);
+    await expect(page.locator('app-recent-links-panel')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Clear history' })).toBeVisible();
+    // The shell has no inline column: the page content is the one main area.
+    await expect(page.getByRole('main')).toBeVisible();
   });
 
-  test('closes with the close button and with the scrim', async ({ page }) => {
-    await page.setViewportSize(TABLET);
-    await page.goto('/links');
+  test('fits the viewport without horizontal scroll', async ({ page }) => {
+    await openRecent(page);
 
-    await toggle(page).click();
-    await panel(page).getByRole('button', { name: 'Close' }).click();
-    await expect(panel(page)).toHaveCount(0);
-
-    await toggle(page).click();
-    await expect(panel(page)).toBeVisible();
-    await page.mouse.click(20, 400);
-    await expect(panel(page)).toHaveCount(0);
+    const overflow = await page.evaluate<number>(
+      '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
+    );
+    expect(overflow).toBeLessThanOrEqual(0);
   });
 
-  test('from 1024px the column is inline and the toggle hides it', async ({ page }) => {
-    await page.setViewportSize(DESKTOP);
-    await page.goto('/links');
-    await expect(page.locator('app-recent-links-panel.shell__recent')).toBeVisible();
-    await page.getByRole('button', { name: 'Hide recently opened' }).click();
-    await expect(page.locator('app-recent-links-panel.shell__recent')).toHaveCount(0);
-    await expect(page.getByRole('dialog')).toHaveCount(0);
+  test('opening a row in a new tab moves it to the top of the history', async ({
+    page,
+    context,
+  }) => {
+    await openRecent(page);
+    const second = rows(page).nth(1);
+    const title = (await second.locator('.ui-history-row__title').innerText()).trim();
+
+    const popup = context.waitForEvent('page');
+    await second.getByRole('link', { name: new RegExp(title) }).click();
+    await (await popup).close();
+
+    await expect(rows(page).first().locator('.ui-history-row__title')).toHaveText(title);
   });
 
-  test('growing past 1024px closes the side panel', async ({ page }) => {
-    await page.setViewportSize(TABLET);
-    await page.goto('/links');
-    await toggle(page).click();
-    await expect(panel(page)).toBeVisible();
-    await page.setViewportSize(DESKTOP);
-    await expect(panel(page)).toHaveCount(0);
-    await expect(page.locator('app-recent-links-panel.shell__recent')).toBeVisible();
+  test('removes one link from the history with a toast', async ({ page }) => {
+    await openRecent(page);
+    const before = await rows(page).count();
+    const first = rows(page).first();
+    const title = (await first.locator('.ui-history-row__title').innerText()).trim();
+
+    await first.getByRole('button', { name: /^Remove .* from history$/ }).click();
+
+    await expect(rows(page)).toHaveCount(before - 1);
+    await expect(page.getByRole('status').getByText('Removed from history')).toBeVisible();
+    await expect(rows(page).first().locator('.ui-history-row__title')).not.toHaveText(title);
+  });
+
+  test('clearing the history asks first; Cancel keeps it, Clear empties it', async ({ page }) => {
+    await openRecent(page);
+    const before = await rows(page).count();
+
+    await page.getByRole('button', { name: 'Clear history' }).click();
+    const dialog = page.getByRole('alertdialog').or(page.getByRole('dialog'));
+    await expect(dialog.getByText('Clear history?')).toBeVisible();
+    await dialog.getByRole('button', { name: 'Cancel' }).click();
+    await expect(dialog).toHaveCount(0);
+    await expect(rows(page)).toHaveCount(before);
+
+    await page.getByRole('button', { name: 'Clear history' }).click();
+    await dialog.getByRole('button', { name: 'Clear history' }).click();
+
+    await expect(page.getByRole('heading', { name: 'Nothing opened yet' })).toBeVisible();
+    await expect(rows(page)).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Clear history' })).toHaveCount(0);
+    await expect(page.getByRole('status').getByText('History cleared')).toBeVisible();
   });
 });
 

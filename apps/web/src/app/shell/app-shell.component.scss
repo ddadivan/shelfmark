@@ -6,7 +6,7 @@
   min-height: 100dvh;
 
   // From the tablet width the shell is exactly the viewport (banner and header included) and the
-  // page itself never scrolls: the sidebar, the main column and the recent panel scroll on their
+  // page itself never scrolls: the sidebar and the main column scroll on their
   // own. A phone keeps the natural page scroll (drawer layout).
   @include tablet-up {
     height: 100dvh;
@@ -15,8 +15,8 @@
   }
 }
 
-// Tablet and desktop: the top bar sits in the content column, above the page and the recent
-// panel, with no rule under it (the sidebar card and the page carry the layout).
+// Tablet and desktop: the top bar sits in the content column, above the page, with no rule under
+// it (the sidebar card and the page carry the layout).
 .shell__header {
   display: flex;
   gap: var(--space-3);
@@ -181,21 +181,6 @@
     // Pages that are taller than the column (settings, privacy) scroll here; the library fits
     // and scrolls only its list.
     overflow-y: auto;
-    scrollbar-gutter: stable;
-  }
-}
-
-.shell__recent {
-  display: none;
-
-  @include desktop {
-    display: block;
-    flex: none;
-    width: rem(280px);
-    min-height: 0;
-    padding: var(--space-4) var(--space-6) var(--space-6) 0;
-    overflow-y: auto;
-    overscroll-behavior: contain;
     scrollbar-gutter: stable;
   }
 }

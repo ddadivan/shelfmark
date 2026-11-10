@@ -1,4 +1,45 @@
-<div class="recent-page">
-  <h1 class="recent-page__title">{{ 'links.recent.title' | transloco }}</h1>
-  <app-recent-links-panel [showTitle]="false" />
+<div class="recent-page" [attr.aria-busy]="!store.recentLoaded()">
+  <header class="recent-page__head">
+    <div class="recent-page__heading">
+      <h1 class="recent-page__title">{{ 'links.recent.title' | transloco }}</h1>
+      <p class="recent-page__count">
+        @if (store.recentLoaded()) { {{ (hasHistory() ? pluralKey('links.recent.count',
+        store.recent().length) : 'links.recent.nothingYet' ) | transloco: { count:
+        store.recent().length, days: windowDays } }} }
+      </p>
+    </div>
+    @if (hasHistory()) {
+    <ui-button variant="secondary" (click)="clear()">
+      {{ 'links.recent.clear' | transloco }}
+    </ui-button>
+    }
+  </header>
+
+  @if (!store.recentLoaded()) {
+  <div class="recent-page__skeleton">
+    <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="SKELETON_COUNT" />
+  </div>
+  } @else if (!hasHistory()) {
+  <ui-empty-state
+    class="recent-page__empty"
+    illustration="empty-feed"
+    [heading]="'links.recent.empty.title' | transloco"
+    [text]="'links.recent.empty.text' | transloco: { days: windowDays }"
+  />
+  } @else { @for (day of days(); track day.key) {
+  <ui-history-group [title]="dayTitle(day)" [headingLevel]="HISTORY_HEADING_LEVEL.Two">
+    @for (link of day.links; track link.id) {
+    <app-link-history-row
+      [link]="link"
+      [folderName]="folderName(link)"
+      [time]="timeOf(link)"
+      [dateTime]="link.lastOpenedAt ?? ''"
+      (opened)="actions.open(link)"
+      (removeRequested)="remove(link)"
+    />
+    }
+  </ui-history-group>
+  }
+  <p class="recent-page__note">{{ 'links.recent.note' | transloco }}</p>
+  }
 </div>

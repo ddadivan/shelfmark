@@ -293,11 +293,36 @@
     },
     "recent": {
       "title": "Recently opened",
-      "empty": "Links you open appear here.",
-      "hide": "Hide recently opened",
-      "show": "Show recently opened",
-      "loading": "Loading recently opened links",
-      "close": "Close"
+      "count": {
+        "one": "{{count}} link in the last {{days}} days",
+        "other": "{{count}} links in the last {{days}} days"
+      },
+      "nothingYet": "Nothing yet",
+      "clear": "Clear history",
+      "unsorted": "Unsorted",
+      "remove": "Remove {{title}} from history",
+      "removeTooltip": "Remove from history",
+      "removed": "Removed from history",
+      "removeFailed": "Couldn't remove it from history",
+      "cleared": "History cleared",
+      "clearFailed": "Couldn't clear the history",
+      "note": "Kept for 30 days, only on your account. Removing from history doesn't delete the link.",
+      "empty": {
+        "title": "Nothing opened yet",
+        "text": "Links you open appear here for {{days}} days."
+      },
+      "day": {
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "week": "Earlier this week"
+      },
+      "confirm": {
+        "title": "Clear history?",
+        "message": "Every link leaves Recently opened. Your saved links stay where they are.",
+        "confirm": "Clear history",
+        "cancel": "Cancel",
+        "close": "Close"
+      }
     }
   },
   "privacy": {
@@ -320,7 +345,7 @@
       "title": "Cookies and browser storage",
       "necessary": "We use strictly necessary cookies only. A session cookie keeps you signed in, in the demo as well. A short-lived cookie protects the Google and GitHub sign-in flow. They are httpOnly and SameSite=Lax, and Secure on the live site. Signing out removes the session cookie.",
       "none": "There are no advertising, analytics or tracking cookies, and no analytics scripts.",
-      "storage": "Your browser's local storage holds interface preferences only: the theme, the cards or list view and whether the Recently opened panel is shown. They stay in your browser. The installed app (PWA) caches Shelfmark's own files for fast start-up, not your links."
+      "storage": "Your browser's local storage holds interface preferences only: the theme and the cards or list view. They stay in your browser. The installed app (PWA) caches Shelfmark's own files for fast start-up, not your links."
     },
     "dont": {
       "title": "What we don't do",

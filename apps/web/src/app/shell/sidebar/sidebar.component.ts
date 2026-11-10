@@ -6,7 +6,6 @@ import {
   effect,
   inject,
   input,
-  output,
   signal,
   viewChild,
 } from '@angular/core';
@@ -74,12 +73,8 @@ const FIXED_ROUTES: Readonly<Record<string, string>> = {
 export class SidebarComponent {
   protected readonly folders = inject(FoldersStore);
   protected readonly ICON_SIZE = ICON_SIZE;
-  /** The "Recently opened" row opens a sheet (the phone drawer) instead of the `/recent` page. */
-  readonly recentAsSheet = input(false, { transform: booleanAttribute });
   /** The logo heads the card (the desktop shell); the phone drawer has its own header. */
   readonly showLogo = input(false, { transform: booleanAttribute });
-  /** The "Recently opened" row was chosen while `recentAsSheet` is on. */
-  readonly recentRequested = output<void>();
 
   private readonly actions = inject(FolderActionsService);
   private readonly viewport = inject(ViewportService);
@@ -183,10 +178,6 @@ export class SidebarComponent {
   }
 
   protected async select(node: UiTreeNode): Promise<void> {
-    if (node.id === SIDEBAR_RECENT_ID && this.recentAsSheet()) {
-      this.recentRequested.emit();
-      return;
-    }
     const fixed = FIXED_ROUTES[node.id];
     await this.router.navigate(fixed ? [`/${fixed}`] : [`/${APP_PATH.Folders}`, node.id]);
   }

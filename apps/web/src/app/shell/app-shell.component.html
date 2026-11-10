@@ -55,20 +55,6 @@
       }
       @if (auth.user(); as user) {
         <div class="shell__user">
-          <!-- Wherever the inline column is hidden (tablet) the toggle opens it as a side panel. -->
-          @if (!viewport.phone() && recentToggleLabel(); as label) {
-            <ui-button
-              class="shell__recent-toggle"
-              variant="ghost"
-              iconOnly
-              iconLeft="panel-right"
-              [iconSize]="ICON_SIZE.Lg"
-              [ariaPressed]="viewport.desktop() ? recentOpen() : undefined"
-              [ariaExpanded]="viewport.desktop() ? undefined : recentOpen()"
-              [ariaLabel]="label"
-              (click)="toggleRecent()"
-            />
-          }
           <ui-button
             [uiMenuTrigger]="accountMenu"
             variant="ghost"
@@ -99,9 +85,6 @@
       <main class="shell__main">
         <router-outlet />
       </main>
-      @if (ui.recentVisible() && viewport.desktop()) {
-        <app-recent-links-panel class="shell__recent" />
-      }
     </div>
   </div>
 </div>

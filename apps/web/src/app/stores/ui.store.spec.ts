@@ -12,31 +12,27 @@ describe('UiStore', () => {
   beforeEach(() => localStorage.removeItem(UI_STORAGE_KEY));
   afterAll(() => localStorage.removeItem(UI_STORAGE_KEY));
 
-  it('starts with cards and the recent panel visible', () => {
+  it('starts with cards', () => {
     const store = create();
 
     expect(store.view()).toBe(UI_VIEW.Cards);
-    expect(store.recentVisible()).toBe(true);
   });
 
-  it('persists the view and the panel and restores them', () => {
+  it('persists the view and restores it', () => {
     const store = create();
     store.setView(UI_VIEW.List);
-    store.setRecentVisible(false);
 
     const restored = create();
 
     expect(restored.view()).toBe(UI_VIEW.List);
-    expect(restored.recentVisible()).toBe(false);
   });
 
-  it('falls back to the defaults for unexpected stored values', () => {
-    localStorage.setItem(UI_STORAGE_KEY, JSON.stringify({ view: 'grid', recentVisible: 'yes' }));
+  it('falls back to the default for an unexpected view and ignores the old panel flag', () => {
+    localStorage.setItem(UI_STORAGE_KEY, JSON.stringify({ view: 'grid', recentVisible: true }));
 
     const store = create();
 
     expect(store.view()).toBe(UI_VIEW.Cards);
-    expect(store.recentVisible()).toBe(true);
   });
 
   it('survives corrupt storage', () => {

@@ -15,7 +15,6 @@ import { AppTranslocoLoader } from '../core/i18n/app-transloco.loader';
 import { translocoConfig } from '../core/i18n/transloco.config';
 import { THEME_PREFERENCE } from '../core/theme/models/theme-preference.const';
 import { ThemeService } from '../core/theme/theme.service';
-import { RecentLinksSheetService } from '../features/links/recent/recent-links-sheet.service';
 import { SearchDialogService } from '../features/search/search-dialog.service';
 import AppShellComponent from './app-shell.component';
 
@@ -181,7 +180,6 @@ describe('AppShellComponent', () => {
   describe('layout by width', () => {
     const PHONE_QUERY = '(width < 40em)';
     const listeners = new Map<string, (event: MediaQueryListEvent) => void>();
-    const recentSheet = { open: vi.fn() };
 
     async function setup(phone: boolean) {
       listeners.clear();
@@ -201,13 +199,13 @@ describe('AppShellComponent', () => {
         providers: [
           provideRouter([
             { path: 'settings', children: [] },
+            { path: 'recent', children: [] },
             { path: '', component: AppShellComponent },
           ]),
           provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
           { provide: AUTH_API, useValue: api },
           { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
           { provide: RATING_API, useValue: { prompt: vi.fn(), record: vi.fn() } },
-          { provide: RecentLinksSheetService, useValue: recentSheet },
         ],
       });
       await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
@@ -219,7 +217,6 @@ describe('AppShellComponent', () => {
 
     afterEach(() => {
       vi.unstubAllGlobals();
-      recentSheet.open.mockClear();
     });
 
     const drawer = () => document.querySelector('app-mobile-nav');
@@ -338,7 +335,7 @@ describe('AppShellComponent', () => {
       expect(drawer()).toBeNull();
     });
 
-    it('opens the recent links sheet from the "Recently opened" row', async () => {
+    it('opens the Recently opened page from its drawer row and closes the drawer', async () => {
       const { harness, root } = await setup(true);
       await openDrawer(harness, root);
       const row = Array.from(
@@ -348,7 +345,7 @@ describe('AppShellComponent', () => {
       row?.click();
       await harness.fixture.whenStable();
 
-      expect(recentSheet.open).toHaveBeenCalledTimes(1);
+      expect(TestBed.inject(Router).url).toBe('/recent');
       expect(drawer()).toBeNull();
     });
 

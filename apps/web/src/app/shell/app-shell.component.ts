@@ -6,10 +6,8 @@ import {
   inject,
   untracked,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterOutlet } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { combineLatest, map } from 'rxjs';
 import {
   AvatarComponent,
   BUTTON_SIZE,
@@ -32,13 +30,10 @@ import { LinkActionsService } from '../features/links/link-actions.service';
 import { OnboardingStore } from '../features/onboarding/onboarding.store';
 import { RatingStore } from '../features/rating/rating.store';
 import { SearchDialogService } from '../features/search/search-dialog.service';
-import { RecentLinksDrawerService } from '../features/links/recent/recent-links-drawer.service';
-import { RecentLinksPanelComponent } from '../features/links/recent/recent-links-panel.component';
 import { THEME_PREFERENCE } from '../core/theme/models/theme-preference.const';
 import { ThemeService } from '../core/theme/theme.service';
 import { isMacPlatform } from '../features/search/is-mac-platform';
 import { ViewportService } from '../core/layout/viewport.service';
-import { UiStore } from '../stores/ui.store';
 import { APP_PATH } from '../models/app-path.const';
 import { DemoBannerComponent } from './demo-banner/demo-banner.component';
 import { MobileNavService } from './mobile-nav/mobile-nav.service';
@@ -62,7 +57,6 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     MenuItemComponent,
     MenuSeparatorComponent,
     MenuTriggerDirective,
-    RecentLinksPanelComponent,
     SearchTriggerComponent,
     SidebarComponent,
   ],
@@ -73,7 +67,6 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 })
 export default class AppShellComponent {
   protected readonly auth = inject(AuthStore);
-  protected readonly ui = inject(UiStore);
   protected readonly actions = inject(LinkActionsService);
   private readonly exporter = inject(ExportActionsService);
   protected readonly EXPORT_FORMAT = EXPORT_FORMAT;
@@ -83,23 +76,7 @@ export default class AppShellComponent {
   protected readonly nav = inject(MobileNavService);
   private readonly transloco = inject(TranslocoService);
   private readonly toasts = inject(ToastService);
-  private readonly recentDrawer = inject(RecentLinksDrawerService);
 
-  private readonly recentLabels = toSignal(
-    combineLatest([
-      this.transloco.selectTranslate('links.recent.hide'),
-      this.transloco.selectTranslate('links.recent.show'),
-    ]).pipe(map(([hide, show]) => ({ hide, show }))),
-  );
-  /** Name of the recent-panel toggle; `null` until the translations are loaded (an icon-only button needs one). */
-  protected readonly recentToggleLabel = computed(() => {
-    const labels = this.recentLabels();
-    return labels ? (this.recentOpen() ? labels.hide : labels.show) : null;
-  });
-  /** The recent links are on screen: the inline column (desktop) or the side panel (tablet). */
-  protected readonly recentOpen = computed(() =>
-    this.viewport.desktop() ? this.ui.recentVisible() : this.recentDrawer.isOpen(),
-  );
   private readonly router = inject(Router);
   /** The avatar button is 44px: the 32px avatar is never clipped and it is a touch target. */
   protected readonly accountButtonSize = BUTTON_SIZE.Lg;
@@ -117,13 +94,6 @@ export default class AppShellComponent {
     effect(() => {
       if (!this.viewport.phone()) {
         void this.nav.close();
-      }
-    });
-    // Growing to the desktop shows the inline column, and the phone has its own sheet: the
-    // tablet side panel has to go.
-    effect(() => {
-      if (this.viewport.desktop() || this.viewport.phone()) {
-        void this.recentDrawer.close();
       }
     });
   }
@@ -172,16 +142,6 @@ export default class AppShellComponent {
   protected onKeydown(event: KeyboardEvent): void {
     if (!this.toasts.handleShortcut(event)) {
       this.search.handleShortcut(event);
-    }
-  }
-
-  protected toggleRecent(): void {
-    if (this.viewport.desktop()) {
-      this.ui.setRecentVisible(!this.ui.recentVisible());
-    } else if (this.recentDrawer.isOpen()) {
-      void this.recentDrawer.close();
-    } else {
-      this.recentDrawer.open();
     }
   }
 

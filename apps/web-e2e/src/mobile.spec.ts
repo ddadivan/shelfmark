@@ -231,22 +231,17 @@ test.describe('mobile layout (mock API)', () => {
     await expect(page).toHaveURL('/links');
   });
 
-  test('the "Recently opened" row opens a sheet and focus ends on the menu button', async ({
-    page,
-  }) => {
+  test('the "Recently opened" row opens the page and closes the drawer', async ({ page }) => {
     await page.goto('/links');
     await openDrawer(page);
 
     await library(page).getByRole('treeitem', { name: 'Recently opened' }).click();
 
     await expect(drawer(page)).toHaveCount(0);
-    const sheet = page.getByRole('dialog', { name: 'Recently opened' });
-    await expect(sheet).toBeVisible();
-    expect((await sheet.boundingBox())?.width).toBe(page.viewportSize()?.width);
+    await expect(page).toHaveURL('/recent');
+    await expect(page.getByRole('heading', { level: 1, name: 'Recently opened' })).toBeVisible();
+    await expect(page.getByRole('dialog')).toHaveCount(0);
     expect(await overflow(page)).toBeLessThanOrEqual(0);
-    await page.keyboard.press('Escape');
-    await expect(sheet).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Open menu' })).toBeFocused();
   });
 
   test('the drawer has no footer; settings open from the header account menu', async ({ page }) => {

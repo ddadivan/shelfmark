@@ -52,6 +52,13 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     },
   },
   {
+    name: 'recently opened',
+    open: async (page) => {
+      await openSignedIn(page, '/recent');
+      await expect(page.locator('app-link-history-row').first()).toBeVisible();
+    },
+  },
+  {
     name: 'folder view',
     open: async (page) => {
       await openFeed(page, `/folders/${MOCK_FIXTURE.readingId}`);
