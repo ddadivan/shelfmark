@@ -32,7 +32,8 @@ Updated as work goes on — every session resumes from here.
   - Author review of production fixed in #212 (#211): landing, sign-in, app shell scroll areas, view switch without layout shift, link card, menus, dialogs, overlays, search, tooltips, toasts (bottom centre by the author's decision), settings, favicon, 24px icons; icon sprite built from single SVG files (#210).
   - Left before stage 1 is formally complete (10.1): landing Lighthouse stable at ≥ 0.9 (#195, moved into stage 2), and the author's two weeks of daily use.
 - [ ] Stage 2: scope chosen by the author on Nov 9, 2026 (see "Roadmap after stage 1" below). Not started: the author says when.
-  - First task of stage 2: switch to the release flow decided on Nov 9–10, 2026 (9.3 and 9.5): a `stage` integration branch without a staging environment, feature branches from `stage`, a To release column on the board, production changes only through a release PR at the end of a stage. Until then nothing from stage 2 is merged into `main`, so production stays as the author uses it.
+  - First task of stage 2: switch to the release flow decided on Nov 9–10, 2026 (9.3 and 9.5): a `stage` integration branch without a staging environment, feature branches from `stage`, a To release column on the board, production changes only through a release PR at the end of a stage.
+  - Then the redesign (an updated design with more convenient blocks, from the author's new mockups, which already cover the stage 2 screens), and only then the stage 2 features. Until then nothing from stage 2 is merged into `main`, so production stays as the author uses it.
 - [x] Motion in code (landing and app); promo video moved to stage 2
 
 ## 1. Problem and idea
@@ -911,6 +912,7 @@ Chosen by the author on Nov 9, 2026. Stages 2 and 3 are planned; everything else
 ### Stage 2 (planned)
 
 - [ ] **First:** release flow with the `stage` integration branch (9.3): ADR, `stage` branch and ruleset, CI, To release column and board workflows, agent instructions; no staging environment for now
+- [ ] **Second: redesign** (before the features below). An updated design rather than a new one: more convenient blocks and layouts on the existing design system. The author provides the new mockups in Claude Design, and they already include the screens of the stage 2 features, so those are built on the new design. Steps: update `docs/design` (screens, components, tokens if they change), then bring `libs/ui` and the existing screens up to it, keeping a11y, both themes, the phone and the e2e and Storybook suites green
 - [ ] Email and password sign-in: email verification, password reset, an email sending service
 - [ ] Reminders: come back to a saved link later
 - [ ] Sharing: open a collection (folder) to other people
