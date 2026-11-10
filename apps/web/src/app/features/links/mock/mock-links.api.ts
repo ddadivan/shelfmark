@@ -4,6 +4,7 @@ import {
   LINK_SORT_FIELD,
   normalizeUrl,
   PAGE_LIMIT,
+  RECENT_LINKS_WINDOW_DAYS,
   SORT_ORDER,
   type CaptureLinkImagesResponse,
   type CreateLinkRequest,
@@ -27,11 +28,13 @@ import type { LinksApi } from '../models/links-api.interface';
 import { MockLibraryData } from './mock-library-data';
 import { matchesQuery } from '../search-query';
 
+const DAY_MS = 86_400_000;
+
 /**
  * `LinksApi` over generated data with simulated latency, until the real API (#72). State is
  * in memory, so create / update / remove show up in later lists. `angular.dev/overview` answers
  * with the duplicate fixture, `unreachable.example` fails the preview, `save-fails.example` the
- * save, `patch-fails.example` an update and `delete-fails.example` a delete; the
+ * save, `patch-fails.example` an update and `delete-fails.example` a delete or a remove from history; the
  * `sessionStorage` key `sm-mock-links-scenario` (`empty` | `error`) changes what the feed lists.
  */
 @Service()
@@ -138,13 +141,39 @@ export class MockLinksApi implements LinksApi {
 
   recent(query: RecentLinksQuery = {}): Observable<RecentLinksResponse> {
     return defer(() => {
+      const since = Date.now() - RECENT_LINKS_WINDOW_DAYS * DAY_MS;
       const opened = this.links
-        .filter((link) => link.lastOpenedAt !== null)
+        .filter((link) => link.lastOpenedAt !== null && Date.parse(link.lastOpenedAt) >= since)
         .sort((a, b) => (b.lastOpenedAt ?? '').localeCompare(a.lastOpenedAt ?? ''))
         .slice(0, query.limit ?? PAGE_LIMIT.Default)
         .map((link) => ({ ...link }));
       return of<RecentLinksResponse>({ items: opened });
     }).pipe(delay(MOCK_LATENCY_MS.List));
+  }
+
+  removeRecent(id: string): Observable<void> {
+    return defer(() => {
+      const current = this.links.find((link) => link.id === id && link.lastOpenedAt !== null);
+      if (!current) {
+        return throwError(() => new Error('Mock: not found'));
+      }
+      if (displayHost(current.url) === MOCK_HOST.DeleteFails) {
+        return throwError(() => new Error('Mock: remove from history failed'));
+      }
+      this.links = this.links.map((link) =>
+        link.id === id ? { ...link, lastOpenedAt: null } : link,
+      );
+      return of(undefined);
+    }).pipe(delay(MOCK_LATENCY_MS.Create));
+  }
+
+  clearRecent(): Observable<void> {
+    return defer(() => {
+      this.links = this.links.map((link) =>
+        link.lastOpenedAt === null ? link : { ...link, lastOpenedAt: null },
+      );
+      return of(undefined);
+    }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
 
   get(id: string): Observable<LinkResponse> {

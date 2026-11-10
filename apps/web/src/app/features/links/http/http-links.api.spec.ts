@@ -75,6 +75,20 @@ describe('HttpLinksApi', () => {
     http.expectOne('/api/links/recent').flush({ items: [] });
   });
 
+  it('removes one link from the history and clears it with DELETE', () => {
+    const { api, http } = setup();
+
+    api.removeRecent('a/b').subscribe();
+    const one = http.expectOne('/api/links/recent/a%2Fb');
+    expect(one.request.method).toBe('DELETE');
+    one.flush(null, { status: 204, statusText: 'No Content' });
+
+    api.clearRecent().subscribe();
+    const all = http.expectOne('/api/links/recent');
+    expect(all.request.method).toBe('DELETE');
+    all.flush(null, { status: 204, statusText: 'No Content' });
+  });
+
   it('posts the URL to preview', () => {
     const { api, http } = setup();
 

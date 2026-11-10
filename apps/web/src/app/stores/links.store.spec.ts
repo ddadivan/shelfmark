@@ -9,6 +9,7 @@ import { NEVER, of, Subject, throwError } from 'rxjs';
 import { LINKS_API } from '../features/links/models/links-api.const';
 import type { LinksApi } from '../features/links/models/links-api.interface';
 import { LINKS_SCOPE } from '../features/links/models/links-scope.const';
+import { RECENT_LINKS_LIMIT } from '../features/links/models/recent-links-limit.const';
 import { LinksStore } from './links.store';
 
 function link(n: number, changes: Partial<LinkResponse> = {}): LinkResponse {
@@ -27,6 +28,8 @@ function setup({ items = [link(1), link(2), link(3)] }: { items?: LinkResponse[]
       of(link(Number(id.slice(3)), { ...request, updatedAt: 'later' })),
     ),
     remove: vi.fn<LinksApi['remove']>(() => of(undefined)),
+    removeRecent: vi.fn<LinksApi['removeRecent']>(() => of(undefined)),
+    clearRecent: vi.fn<LinksApi['clearRecent']>(() => of(undefined)),
     open: vi.fn<LinksApi['open']>((id) =>
       of(link(Number(id.slice(3)), { lastOpenedAt: '2026-11-07T10:00:00.000Z' })),
     ),
@@ -307,7 +310,7 @@ describe('LinksStore', () => {
 
       await store.loadRecent();
 
-      expect(api.recent).toHaveBeenCalledWith({ limit: 8 });
+      expect(api.recent).toHaveBeenCalledWith({ limit: RECENT_LINKS_LIMIT });
       expect(store.recentLoaded()).toBe(true);
     });
 
@@ -321,6 +324,71 @@ describe('LinksStore', () => {
       expect(api.open).toHaveBeenCalledWith('id-1');
       expect(store.recent().map((item) => item.id)).toEqual(['id-1', 'id-2']);
       expect(store.entityMap()['id-1']?.lastOpenedAt).toBe('2026-11-07T10:00:00.000Z');
+    });
+
+    describe('history', () => {
+      const opened = (n: number) => link(n, { lastOpenedAt: '2026-11-07T10:00:00.000Z' });
+
+      it('removes one link from the history, keeping it in the feed', async () => {
+        const { api, store } = setup({ items: [opened(1), opened(2)] });
+        api.recent.mockReturnValue(of({ items: [opened(1), opened(2)] }));
+        store.setFilter({ scope: LINKS_SCOPE.All });
+        await store.loadRecent();
+
+        await expect(store.removeFromHistory('id-1')).resolves.toBe(true);
+
+        expect(api.removeRecent).toHaveBeenCalledWith('id-1');
+        expect(store.recent().map((item) => item.id)).toEqual(['id-2']);
+        expect(store.entityMap()['id-1']?.lastOpenedAt).toBeNull();
+        expect(store.entityMap()['id-1']).toBeDefined();
+      });
+
+      it('puts the link back in place when removing fails', async () => {
+        const { api, store } = setup({ items: [opened(1), opened(2), opened(3)] });
+        api.recent.mockReturnValue(of({ items: [opened(1), opened(2), opened(3)] }));
+        api.removeRecent.mockReturnValueOnce(throwError(() => new Error('boom')));
+        store.setFilter({ scope: LINKS_SCOPE.All });
+        await store.loadRecent();
+
+        await expect(store.removeFromHistory('id-2')).resolves.toBe(false);
+
+        expect(store.recent().map((item) => item.id)).toEqual(['id-1', 'id-2', 'id-3']);
+        expect(store.entityMap()['id-2']?.lastOpenedAt).toBe('2026-11-07T10:00:00.000Z');
+      });
+
+      it('does not call the API for a link that is not in the history', async () => {
+        const { api, store } = setup();
+        await store.loadRecent();
+
+        await expect(store.removeFromHistory('nope')).resolves.toBe(true);
+        expect(api.removeRecent).not.toHaveBeenCalled();
+      });
+
+      it('clears the history and the opened time of loaded links', async () => {
+        const { api, store } = setup({ items: [opened(1), opened(2)] });
+        api.recent.mockReturnValue(of({ items: [opened(1), opened(2)] }));
+        store.setFilter({ scope: LINKS_SCOPE.All });
+        await store.loadRecent();
+
+        await expect(store.clearHistory()).resolves.toBe(true);
+
+        expect(api.clearRecent).toHaveBeenCalledTimes(1);
+        expect(store.recent()).toEqual([]);
+        expect(store.entities().every((item) => item.lastOpenedAt === null)).toBe(true);
+      });
+
+      it('brings the history back when clearing fails', async () => {
+        const { api, store } = setup({ items: [opened(1), opened(2)] });
+        api.recent.mockReturnValue(of({ items: [opened(1), opened(2)] }));
+        api.clearRecent.mockReturnValueOnce(throwError(() => new Error('boom')));
+        store.setFilter({ scope: LINKS_SCOPE.All });
+        await store.loadRecent();
+
+        await expect(store.clearHistory()).resolves.toBe(false);
+
+        expect(store.recent().map((item) => item.id)).toEqual(['id-1', 'id-2']);
+        expect(store.entityMap()['id-1']?.lastOpenedAt).toBe('2026-11-07T10:00:00.000Z');
+      });
     });
 
     it('ignores a failed open', async () => {

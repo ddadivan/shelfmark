@@ -84,8 +84,8 @@ function insertAt<T>(list: readonly T[], index: number, item: T): T[] {
 }
 
 /**
- * The links feed and the "Recently opened" list, cached for the whole app. Favorite and delete
- * are optimistic: the change shows at once and rolls back when the request fails. A delete is
+ * The links feed and the "Recently opened" list, cached for the whole app. Favorite, delete and
+ * remove from history are optimistic: the change shows at once and rolls back when the request fails. A delete is
  * deferred: `remove()` hides the link, `undoRemove()` brings it back, `commitRemove()` (or
  * `flushPending()`, on `pagehide` and `reset()`) sends the request.
  */
@@ -436,6 +436,84 @@ export const LinksStore = signalStore(
           });
         } catch {
           // The link already opened; the panel catches up on the next load.
+        }
+      },
+
+      /**
+       * Takes a link out of the history at once (the link stays saved); resolves false (and puts it
+       * back) when the request fails.
+       */
+      async removeFromHistory(id: string): Promise<boolean> {
+        const recentIndex = store.recent().findIndex((link) => link.id === id);
+        const link = store.recent()[recentIndex];
+        if (!link) {
+          return true;
+        }
+        const started = epoch;
+        patchState(store, {
+          recent: store.recent().filter((item) => item.id !== id),
+        });
+        if (store.entityMap()[id]) {
+          patchState(store, updateEntity({ id, changes: { lastOpenedAt: null } }));
+        }
+        try {
+          await firstValueFrom(api().removeRecent(id));
+          return true;
+        } catch {
+          if (started === epoch) {
+            if (!store.recent().some((item) => item.id === id)) {
+              patchState(store, { recent: insertAt(store.recent(), recentIndex, link) });
+            }
+            if (store.entityMap()[id]) {
+              patchState(store, updateEntity({ id, changes: { lastOpenedAt: link.lastOpenedAt } }));
+            }
+          }
+          return false;
+        }
+      },
+
+      /** Clears the history at once; resolves false (and brings it back) when the request fails. */
+      async clearHistory(): Promise<boolean> {
+        const started = epoch;
+        const previous = store.recent();
+        const opened = new Map(
+          store
+            .entities()
+            .filter((link) => link.lastOpenedAt !== null)
+            .map((link) => [link.id, link.lastOpenedAt] as const),
+        );
+        patchState(
+          store,
+          { recent: [] },
+          setAllEntities(
+            store
+              .entities()
+              .map((link) => (opened.has(link.id) ? { ...link, lastOpenedAt: null } : link)),
+          ),
+        );
+        try {
+          await firstValueFrom(api().clearRecent());
+          return true;
+        } catch {
+          if (started === epoch) {
+            const newer = store.recent().map((link) => link.id);
+            patchState(
+              store,
+              {
+                recent: [...store.recent(), ...previous.filter((link) => !newer.includes(link.id))],
+              },
+              setAllEntities(
+                store
+                  .entities()
+                  .map((link) =>
+                    opened.has(link.id)
+                      ? { ...link, lastOpenedAt: link.lastOpenedAt ?? opened.get(link.id) ?? null }
+                      : link,
+                  ),
+              ),
+            );
+          }
+          return false;
         }
       },
 
