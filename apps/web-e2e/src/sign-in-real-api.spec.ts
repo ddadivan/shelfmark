@@ -85,7 +85,7 @@ test.describe('sign-in flow (real auth client, routed API)', () => {
     await page.goto('/links');
     await signOutFromUi(page);
 
-    await expect(page.getByText('We could not sign you out. Try again.')).toBeVisible();
+    await expect(page.getByText("Couldn't sign you out")).toBeVisible();
     // A phone signs out from the You tab, which is Settings.
     await expect(page).toHaveURL(isPhone(page) ? /\/settings$/ : /\/links$/);
   });
