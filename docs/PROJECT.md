@@ -155,7 +155,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 
 6. **Open.** A click opens the link in a new tab and updates "Recently opened".
 7. **Edit.** URL, title, note, tags and folder can be changed.
-8. **Delete.** Deletion requires confirmation.
+8. **Delete.** Deletion requires confirmation and moves the link to Trash (story 19); it is not gone until the retention period passes. Undo for 8 s after the confirmation, then the toast says "Moved to Trash".
 9. **Favorites.** As a user, I want to mark important links.
    - Add to favorites or remove from them in one click.
    - The "Favorites" section shows all marked links.
@@ -165,7 +165,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 10. **Nested folders.** As a user, I want to organise links into folders of any depth.
     - Create, rename, move a folder (including into another folder).
     - A folder cannot be moved into itself or into its own subfolder.
-11. **Deleting a folder.** When deleting a folder that contains links, the user chooses: delete everything together or move the links to "Unsorted".
+11. **Deleting a folder.** When deleting a folder that contains links, the user chooses: delete everything together or move the links to "Unsorted". The folder (with its subfolders and, if chosen, its links) goes to Trash as one entry (story 19).
 12. **Links without a folder.** A folder is optional: links without a folder go to the "Unsorted" section and to the common feed.
 13. **Tags.** As a user, I want to tag links and filter by tags.
     - Several tags per link; autocomplete from existing tags.
@@ -182,6 +182,14 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 16. **Sorting.** By date added (newest first, the default) and by title.
 17. **View.** A "cards / list" toggle; the choice is remembered.
 18. **Recently opened.** A page (`/recent`, opened from the sidebar; the same list in a sheet from the Library tab on a phone) with the links opened in the last 30 days, in day groups (Today, Yesterday, Earlier this week, then by date), each with its folder and the time of the open. A link can be removed from the history, and "Clear history" (after a confirmation) empties it; the saved links are not touched.
+19. **Trash.** As a user, I want to get back what I deleted by mistake (ADR 0036, screens `TrashView`, `MobileTrash`).
+    - Every deleted link and folder waits in Trash for the period set in Settings › Library (7, 30 or 90 days, 30 by default); then it is removed for good. A folder is one entry that says how many links went with it.
+    - The page `/trash` (a row at the very bottom of the sidebar under a divider, with the count; a tile on the phone Library page) shows the entries as "Recently deleted" rows: preview, title, where it came from ("From Clothes", "From Unsorted"), when it was deleted and a days-left badge (warning at 3 days or fewer). Chips All / Links / Folders with counts filter them.
+    - Restore puts a link back in its folder, or in Unsorted if the folder is gone; a folder comes back with its subfolders and links, at the top level if its parent is gone. If the library is full the answer is "Couldn't restore".
+    - "Delete forever" (a confirmation) removes one entry; "Empty trash" (a confirmation that counts the items and the links inside folders) removes all.
+    - Selection: checkboxes on desktop, a long press on a phone, "Select all", and a bar with Restore and Delete forever. On a phone a row swipes left to Restore / Delete; both buttons are also reachable without the swipe (keyboard, screen reader).
+    - Settings › Library has "Keep deleted items for" (saved at once; a shorter value asks first when items in Trash are older than it, because the nightly cleanup deletes them) and a "Trash" row with the item count and "Open Trash".
+    - Empty state "Trash is empty". Entries are removed for good at the nightly cleanup (the API job); account deletion and the demo cleanup delete for good.
 
 ### Demo, install, export
 
@@ -258,6 +266,7 @@ See ADR 0004.
   - `LinksStore`: links, filters, sorting (`withEntities`);
   - `FoldersStore`: folder tree;
   - `TagsStore`: tags;
+  - `TrashStore`: what is in Trash (optimistic restore / delete forever / empty); `UserSettingsStore`: account preferences (the Trash retention);
   - `UiStore`: "cards / list" view; persisted in `localStorage`.
 - **Classic NgRx Store is not used**: it is overkill for this app.
 - **UI:** own component library `libs/ui` on SCSS and design tokens, behaviour from Angular Aria / CDK; Tailwind and Angular Material are not used (section 7).
@@ -274,7 +283,8 @@ CSR without SSR, zoneless, Transloco, strict-CSP build: ADR 0005; state: ADR 000
 | `/unsorted` | No folder | signed in | `features/library` |
 | `/favorites` | Favorites | signed in | `features/library` |
 | `/folders/:folderId` | Folder; nesting is shown in breadcrumbs, not in the URL | signed in | `features/library` |
-| `/settings` | Settings, one page per section: `/settings/account` (profile, sign out, welcome tour, deletion), `/appearance` (theme, language), `/shortcuts` (the keyboard shortcut list), `/import-export` (export only), `/privacy`; on tablet and desktop `/settings` goes to the first section, on a phone it is the You list | signed in | `features/settings` |
+| `/settings` | Settings, one page per section: `/settings/account` (profile, sign out, welcome tour, deletion), `/appearance` (theme, language), `/shortcuts` (the keyboard shortcut list), `/import-export` (export only), `/library` (Trash retention and the Trash row), `/privacy`; on tablet and desktop `/settings` goes to the first section, on a phone it is the You list | signed in | `features/settings` |
+| `/trash` | Trash: deleted links and folders, restore, delete forever, empty (the phone reaches it from the Library tab) | signed in | `features/trash` |
 | `/share?url=&title=&text=` | Quick save from "Share" | signed in; guest goes to sign-in and back | `features/share` |
 | `/sign-in?returnUrl=&reason=` | Sign in with Google / GitHub | guest only | `features/auth` |
 | `/demo` | Creates a demo sandbox and goes to `/links` | everyone | `features/auth` |
@@ -649,8 +659,9 @@ In CI: `@axe-core/playwright` on the key screens in both themes; the build fails
 5. Editing a link
 6. Deleting a folder (choice: delete links / move to "Unsorted")
 7. Empty states (no links, empty folder, nothing found)
-8. Settings, a page per section (account with deletion and "Show onboarding again", appearance, export, privacy and data); the settings nav replaces the sidebar on tablet and desktop, the You list opens the pages on a phone
+8. Settings, a page per section (account with deletion and "Show onboarding again", appearance, library with the Trash retention, export, privacy and data); the settings nav replaces the sidebar on tablet and desktop, the You list opens the pages on a phone
 9. Privacy policy
+10. Trash (desktop and phone, with the empty state, selection and the "Empty trash" confirmation)
 
 Every screen in light and dark themes, in desktop and phone layouts, with loading and error states.
 

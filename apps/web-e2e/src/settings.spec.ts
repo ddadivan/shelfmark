@@ -95,6 +95,7 @@ test.describe('settings (mock auth)', () => {
       'Back to links',
       'Account',
       'Appearance',
+      'Library',
       'Keyboard shortcuts',
       'Export',
       'Privacy and data',
