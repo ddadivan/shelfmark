@@ -920,6 +920,7 @@ Chosen by the author on Nov 9, 2026. Stages 2 and 3 are planned; everything else
 - [ ] Folder colours and icons, pinned folders (screen `FolderStyle`). Added Nov 10, 2026, built after the redesign and the author's review of it
 - [ ] Saved views: chips above the feed with saved filters (All, Videos, Articles, To read, "Save this view"). Added Nov 10, 2026, built after the redesign and the author's review of it
 - [ ] Paste several links at once (screen `PasteMany`). Added Nov 10, 2026, built after the redesign and the author's review of it
+- [ ] Recently opened extras from the 2027 design (screen `RecentView`): "Pause history" (a setting that stops recording opens, needs an API field), filter chips and a search inside the history page, swipe actions on phone history rows. Added Nov 10, 2026 by the author's decision: large items go to stage 2
 - [ ] Email and password sign-in: email verification, password reset, an email sending service
 - [ ] Reminders: come back to a saved link later
 - [ ] Sharing: open a collection (folder) to other people
