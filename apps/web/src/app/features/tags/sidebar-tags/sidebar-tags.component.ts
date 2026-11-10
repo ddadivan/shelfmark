@@ -23,6 +23,7 @@ import {
   BUTTON_VARIANT,
   ButtonComponent,
   ICON_SIZE,
+  CHIP_VARIANT,
   ChipComponent,
   InputComponent,
   KEYBOARD_KEY,
@@ -70,6 +71,7 @@ import { splitTags } from '../tag-split';
 })
 export class SidebarTagsComponent {
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
+  protected readonly CHIP_VARIANT = CHIP_VARIANT;
   protected readonly ICON_SIZE = ICON_SIZE;
 
   /** The Tags tab of the phone: the heading is the page title (an `h1`, large) and chips are bigger. */
@@ -94,6 +96,7 @@ export class SidebarTagsComponent {
   private readonly i18n = toSignal(this.transloco.events$, { initialValue: undefined });
 
   protected readonly expanded = signal(false);
+  private readonly moreChip = viewChild('moreChip', { read: ElementRef });
   protected readonly split = computed(() => splitTags(this.tags.entities(), this.expanded()));
 
   /** The "+" field is open. */
@@ -149,6 +152,13 @@ export class SidebarTagsComponent {
 
   constructor() {
     void this.tags.load();
+    // `ui-chip` has no `aria-expanded` input: the fold chip is a disclosure button, so its inner
+    // button carries the state (the chip is only in the DOM while there is something to fold).
+    afterRenderEffect(() => {
+      this.moreChip()
+        ?.nativeElement.querySelector('.ui-chip__body')
+        ?.setAttribute('aria-expanded', String(this.expanded()));
+    });
     // A press outside the open field closes it without saving, like Esc. The "+" button is left
     // out: its own click toggles the field, so a press on it must not also close it here.
     effect((onCleanup) => {

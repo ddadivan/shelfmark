@@ -39,7 +39,7 @@ function tag(name: string, linkCount: number): TagResponse {
 }
 
 function chips(element: HTMLElement): string[] {
-  return [...element.querySelectorAll('ui-chip .ui-chip__body')].map(
+  return [...element.querySelectorAll('ui-chip[data-tag-id] .ui-chip__body')].map(
     (body) => body.textContent?.trim() ?? '',
   );
 }
@@ -138,6 +138,7 @@ describe('SidebarTagsComponent', () => {
     const more = [...element.querySelectorAll('button')].find((b) =>
       /\+ 3 more/.test(b.textContent ?? ''),
     );
+    expect(more?.closest('ui-chip')?.classList.contains('ui-chip--neutral')).toBe(true);
     expect(more?.getAttribute('aria-expanded')).toBe('false');
 
     more?.click();

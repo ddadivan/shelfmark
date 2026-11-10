@@ -66,18 +66,14 @@
     }
     @if (split().foldable) {
       <li class="tags__item">
-        <ui-button
-          [size]="buttonSize()"
-          variant="ghost"
-          [ariaExpanded]="expanded()"
-          (click)="toggleExpanded()"
-        >
+        <!-- A neutral chip (Tags.dc "+ 7 more"); `aria-expanded` is set on its button in the TS. -->
+        <ui-chip #moreChip clickable [variant]="CHIP_VARIANT.Neutral" (clicked)="toggleExpanded()">
           @if (expanded()) {
             {{ 'tags.sidebar.showLess' | transloco }}
           } @else {
             {{ 'tags.sidebar.more' | transloco: { count: split().hidden } }}
           }
-        </ui-button>
+        </ui-chip>
       </li>
     }
   </ul>
