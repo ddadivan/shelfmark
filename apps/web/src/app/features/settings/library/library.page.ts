@@ -1,9 +1,18 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  Injector,
+  viewChild,
+  afterNextRender,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { TRASH_RETENTION_DAYS, type TrashRetentionDays } from '@shelfmark/contracts';
 import {
   BUTTON_SIZE,
+  DialogService,
   ButtonComponent,
   NOTICE_KIND,
   NoticeComponent,
@@ -14,6 +23,7 @@ import {
   ToastService,
   type SegmentedOption,
 } from '@shelfmark/ui';
+import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
 import { pluralKey } from '../../../core/i18n/plural-key';
 import { APP_PATH } from '../../../models/app-path.const';
 import { TrashStore } from '../../../stores/trash.store';
@@ -46,6 +56,9 @@ export default class LibrarySettingsPage {
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
   private readonly router = inject(Router);
+  private readonly dialogs = inject(DialogService);
+  private readonly injector = inject(Injector);
+  private readonly control = viewChild(SegmentedControlComponent);
 
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
   protected readonly NOTICE_KIND = NOTICE_KIND;
@@ -76,6 +89,14 @@ export default class LibrarySettingsPage {
       return;
     }
     const previous: TrashRetentionDays = this.settings.retentionDays();
+    if (days < previous && !(await this.confirmShorter(days))) {
+      // The control already shows the click. Put it back after the next render: set right away,
+      // the old value would be the one the control last drew and nothing would be redrawn.
+      afterNextRender(() => this.control()?.value.set(String(previous)), {
+        injector: this.injector,
+      });
+      return;
+    }
     if (!(await this.settings.setTrashRetention(days))) {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
@@ -85,6 +106,30 @@ export default class LibrarySettingsPage {
         }),
       });
     }
+  }
+
+  /**
+   * A shorter retention applies to what is in Trash already: the nightly cleanup deletes every
+   * entry older than the new value. Asks first when some entries would go; true when it may save.
+   */
+  private async confirmShorter(days: TrashRetentionDays): Promise<boolean> {
+    const limit = Date.now() - days * MS_PER_DAY;
+    const count = this.trash.items().filter((item) => Date.parse(item.deletedAt) < limit).length;
+    if (count === 0) {
+      return true;
+    }
+    const params = { count, days: String(days) };
+    return this.dialogs.confirm({
+      title: this.transloco.translate('settings.library.trash.shorten.title'),
+      message: this.transloco.translate(
+        pluralKey('settings.library.trash.shorten.message', count),
+        params,
+      ),
+      confirmLabel: this.transloco.translate('settings.library.trash.shorten.confirm', params),
+      cancelLabel: this.transloco.translate('settings.library.trash.shorten.cancel'),
+      closeLabel: this.transloco.translate('settings.library.trash.shorten.close'),
+      destructive: true,
+    });
   }
 
   protected async openTrash(event: MouseEvent): Promise<void> {

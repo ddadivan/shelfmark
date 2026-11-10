@@ -873,6 +873,16 @@
           },
           "none": "Nothing in Trash",
           "action": "Open Trash"
+        },
+        "shorten": {
+          "title": "Shorten how long Trash keeps items?",
+          "message": {
+            "one": "{{count}} item in Trash is older than {{days}} days and will be deleted for good tonight.",
+            "other": "{{count}} items in Trash are older than {{days}} days and will be deleted for good tonight."
+          },
+          "confirm": "Keep for {{days}} days",
+          "cancel": "Cancel",
+          "close": "Close"
         }
       }
     }

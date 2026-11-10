@@ -1,6 +1,7 @@
 <ng-template #entry>
   <ui-history-row
     previewSlot
+    [attr.role]="viewport.phone() ? 'presentation' : 'listitem'"
     [class.trash-row__row--selected]="selected()"
     [preview]="preview()"
     [description]="(swipeable() ? 'trash.row.actionsHint' : 'trash.row.selectHint') | transloco"
@@ -80,7 +81,8 @@
 </ng-template>
 
 @if (viewport.phone()) {
-  <div class="trash-row__swipe">
+  <!-- Phone: the swipe frame is the list item (it holds the buttons too); the row inside is not. -->
+  <div class="trash-row__swipe" role="listitem">
     <div
       #actions
       class="trash-row__actions"
