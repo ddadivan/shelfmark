@@ -1,3 +1,4 @@
+import { settled } from './support/settled';
 import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
@@ -27,7 +28,8 @@ test.describe('Recently opened below 1024px (mock API)', () => {
     await expect(panel(page).getByRole('listitem').first()).toBeVisible();
     await expect(page.locator('.ui-dialog-scrim')).toBeVisible();
 
-    // Pinned to the inline-end edge.
+    // Pinned to the inline-end edge, measured once the slide-in has finished.
+    await settled(page);
     const box = await panel(page).locator('.ui-drawer').boundingBox();
     expect(box).not.toBeNull();
     expect((box?.x ?? 0) + (box?.width ?? 0)).toBeCloseTo(TABLET.width, 0);

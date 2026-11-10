@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test';
 import { COLOR_SCHEME } from './models/color-scheme.const';
+import { settled } from './support/settled';
 import { expectNoBlockingViolations } from './support/axe';
 import { demoUser, MOCK_USER, NEW_USER, seedSession } from './support/mock-session';
 import { expect, test } from './support/test';
@@ -256,16 +257,19 @@ test.describe('app rating (mock API)', () => {
         const dialog = await openRating(page);
         await expect(page.locator('html')).toHaveAttribute('data-theme', colorScheme);
         await page.clock.runFor(500);
+        await settled(page);
         await expectNoBlockingViolations(page, testInfo, { include: '.cdk-dialog-container' });
 
         await dialog.getByRole('button', { name: '3 out of 10' }).click();
         await expect(page.getByRole('dialog', { name: FEEDBACK_TITLE })).toBeVisible();
         await page.clock.runFor(500);
+        await settled(page);
         await expectNoBlockingViolations(page, testInfo, { include: '.cdk-dialog-container' });
 
         await page.getByRole('textbox', { name: 'Your feedback' }).fill('Fine');
         await page.getByRole('button', { name: 'Send' }).click();
         await expect(page.getByRole('dialog', { name: 'Thank you' })).toBeVisible();
+        await settled(page);
         await expectNoBlockingViolations(page, testInfo, { include: '.cdk-dialog-container' });
       });
     });
