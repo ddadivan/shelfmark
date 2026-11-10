@@ -105,7 +105,7 @@ Also restyled through tokens only, no separate issue unless screenshots show a g
 | `Bulk`, `MobileBulk` | Selection and bulk actions | 2 |
 | `SyncDemo` (tab sync part) | Sync between tabs | 2 |
 | `SyncDemo` (demo transfer part) | Carrying demo data into a real account | 3 |
-| `Languages`, `SetLanguage` | Interface languages (mockups contain Ukrainian samples; Ukrainian itself is not planned yet) | 2 |
+| `Languages`, `SetLanguage` | Interface languages (the long-string samples in the mockups are French; which languages ship is still open) | 2 |
 | `HowItWorks` | Promo video and About for signed-in users | 2 |
 | `Extension` | Browser extension | 3 |
 | `Import`, `SetImport` (import part) | Import (Telegram import is in the backlog) | backlog |
