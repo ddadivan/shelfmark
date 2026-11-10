@@ -156,7 +156,7 @@ describe('SettingsPage', () => {
       b.textContent?.includes('Delete account'),
     );
 
-    expect(root.querySelector('.settings-section--danger')).not.toBeNull();
+    expect(root.querySelector('ui-settings-section .ui-button--danger')).not.toBeNull();
     button?.click();
     await harness.fixture.whenStable();
 

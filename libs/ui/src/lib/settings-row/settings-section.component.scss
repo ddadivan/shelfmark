@@ -1,0 +1,17 @@
+@use '../../styles/ui' as *;
+
+:host {
+  display: block;
+}
+
+// The rows carry their own padding and separators, so the panel gap is off.
+.ui-settings-section__panel {
+  gap: 0;
+}
+
+.ui-settings-section__title {
+  @include type(heading);
+
+  margin: 0 0 var(--space-2);
+  color: var(--text);
+}

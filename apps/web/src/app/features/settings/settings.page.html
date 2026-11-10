@@ -12,7 +12,10 @@
   <h1 class="settings__title">{{ 'settings.title' | transloco }}</h1>
 
   @if (auth.user(); as user) {
-  <app-settings-section [heading]="'settings.account.title' | transloco" headingHidden>
+  <ui-panel role="group" aria-labelledby="settings-account-title">
+    <h2 id="settings-account-title" class="settings__sr-only">
+      {{ 'settings.account.title' | transloco }}
+    </h2>
     <div class="settings__account">
       <ui-avatar [name]="user.name" [src]="user.image ?? undefined" size="lg" />
       <div class="settings__identity">
@@ -28,13 +31,13 @@
         {{ 'auth.signOut' | transloco }}
       </ui-button>
     </div>
-  </app-settings-section>
+  </ui-panel>
   }
 
-  <app-settings-section [heading]="'settings.data.title' | transloco">
-    <app-settings-row
-      [label]="'settings.data.export.label' | transloco"
-      [hint]="'settings.data.export.hint' | transloco"
+  <ui-settings-section [title]="'settings.data.title' | transloco">
+    <ui-settings-row
+      [title]="'settings.data.export.label' | transloco"
+      [description]="'settings.data.export.hint' | transloco"
     >
       <div class="settings__export">
         <ui-button iconLeft="download" (click)="exportAll(EXPORT_FORMAT.Json)">
@@ -44,61 +47,48 @@
           {{ 'settings.data.export.html' | transloco }}
         </ui-button>
       </div>
-    </app-settings-row>
-  </app-settings-section>
+    </ui-settings-row>
+  </ui-settings-section>
 
-  <app-settings-section [heading]="'settings.appearance.title' | transloco">
-    <app-settings-row
+  <ui-settings-section [title]="'settings.appearance.title' | transloco">
+    <ui-settings-row
       #row
-      [label]="'settings.appearance.theme.label' | transloco"
-      [hint]="'settings.appearance.theme.hint' | transloco"
+      [title]="'settings.appearance.theme.label' | transloco"
+      [description]="'settings.appearance.theme.hint' | transloco"
     >
       @if (themeOptions(); as options) {
       <ui-segmented-control
-        [ariaLabelledby]="row.labelId"
+        [ariaLabelledby]="row.titleId"
         [options]="options"
         [value]="theme.preference()"
         (valueChange)="setTheme($event)"
       />
       }
-    </app-settings-row>
-    <app-settings-row
-      [label]="'settings.appearance.language.label' | transloco"
-      [hint]="'settings.appearance.language.hint' | transloco"
+    </ui-settings-row>
+    <ui-settings-row
+      [title]="'settings.appearance.language.label' | transloco"
+      [description]="'settings.appearance.language.hint' | transloco"
     >
       <span class="settings__language">{{ 'settings.appearance.language.value' | transloco }}</span>
-    </app-settings-row>
-  </app-settings-section>
+    </ui-settings-row>
+  </ui-settings-section>
 
-  <app-settings-section
-    [heading]="'settings.welcome.title' | transloco"
-    [hint]="'settings.welcome.hint' | transloco"
-  >
-    <ui-button
-      slot="action"
-      [block]="viewport.phone()"
-      [disabled]="onboarding.resetting()"
-      (click)="onboarding.reset()"
-    >
-      {{ 'settings.welcome.action' | transloco }}
-    </ui-button>
-  </app-settings-section>
+  <ui-settings-section [title]="'settings.welcome.title' | transloco">
+    <ui-settings-row [title]="'settings.welcome.hint' | transloco">
+      <ui-button [disabled]="onboarding.resetting()" (click)="onboarding.reset()">
+        {{ 'settings.welcome.action' | transloco }}
+      </ui-button>
+    </ui-settings-row>
+  </ui-settings-section>
 
   @if (canDeleteAccount()) {
-  <app-settings-section
-    [heading]="'settings.delete.title' | transloco"
-    [hint]="'settings.delete.hint' | transloco"
-    danger
-  >
-    <ui-button
-      slot="action"
-      [block]="viewport.phone()"
-      [variant]="BUTTON_VARIANT.Danger"
-      (click)="deleteAccount()"
-    >
-      {{ 'settings.delete.action' | transloco }}
-    </ui-button>
-  </app-settings-section>
+  <ui-settings-section [title]="'settings.delete.title' | transloco">
+    <ui-settings-row [title]="'settings.delete.hint' | transloco">
+      <ui-button [variant]="BUTTON_VARIANT.Danger" (click)="deleteAccount()">
+        {{ 'settings.delete.action' | transloco }}
+      </ui-button>
+    </ui-settings-row>
+  </ui-settings-section>
   }
 
   <p class="settings__footer">

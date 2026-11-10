@@ -216,6 +216,7 @@ Angular keeps the element until the leave animation ends and a second toggle mid
 ## Folder icon, settings and tab bar (issues #236, #235, #238)
 
 - **`ui-folder-icon`** (`icon` from `ICON_NAMES`, default `folder`; `colour` `FOLDER_COLOUR`: `graphite | sage | ocean | plum | clay | amber | rose | teal`, default graphite; `size` `FOLDER_ICON_SIZE`: `sm` 22 | `md` 28 | `lg` 40 | `xl` 56 px; `label`): tile `folder-<colour>-bg`, glyph `folder-<colour>`, radii 7 / 9 / 12 / 16 px. Decorative (`aria-hidden`) unless `label` is set (`role="img"` + `aria-label`). Glyph sizes are the allowed `ui-icon` sizes nearest to the design (14 / 16 / 20 / 26): sm and md 16, lg 20, xl 24.
+- **`ui-settings-section`** (`title`, required) wraps a `ui-panel` (gap 0) with the `h2` title and is a `role="group"` named by it; **`ui-settings-row`** (`title` required, `description`, `icon` as a 36px tile with a 20px glyph, `align` `SETTINGS_ROW_ALIGN`: `center | top`) puts the control in the default slot. Rows are separated by a `border` line (`:host(:first-of-type)` has none); the text block (`flex: 1 1 12.5rem`) and the control share a line while they fit, then the control wraps under the text; description max 23.75rem. `titleId` is public: bind it to the control's `aria-labelledby` (`#row`), or give the control its own `label` (`ui-switch`). There is no danger or action variant: a destructive row is a row with a `danger` button.
 
 ## Checkbox, long press and chip menu (issues #74, #76)
 

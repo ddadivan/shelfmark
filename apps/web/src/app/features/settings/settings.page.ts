@@ -7,7 +7,10 @@ import {
   BUTTON_SIZE,
   BUTTON_VARIANT,
   ButtonComponent,
+  PanelComponent,
   SegmentedControlComponent,
+  SettingsRowComponent,
+  SettingsSectionComponent,
 } from '@shelfmark/ui';
 import type { SegmentedOption } from '@shelfmark/ui';
 import { combineLatest, map } from 'rxjs';
@@ -22,8 +25,6 @@ import { isThemePreference } from '../../core/theme/is-theme-preference';
 import { ThemeService } from '../../core/theme/theme.service';
 import { APP_PATH } from '../../models/app-path.const';
 import { THEME_OPTION_KEYS } from './models/theme-option-keys.const';
-import { SettingsRowComponent } from './settings-row.component';
-import { SettingsSectionComponent } from './settings-section.component';
 
 /** `/settings`: the account (read-only, sign out) and the appearance (theme). */
 @Component({
@@ -33,6 +34,7 @@ import { SettingsSectionComponent } from './settings-section.component';
     AvatarComponent,
     ButtonComponent,
     RouterLink,
+    PanelComponent,
     SegmentedControlComponent,
     SettingsRowComponent,
     SettingsSectionComponent,
