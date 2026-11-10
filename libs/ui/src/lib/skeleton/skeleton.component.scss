@@ -163,8 +163,8 @@
   display: flex;
   gap: rem(8px);
   align-items: center;
-  min-height: rem(32px);
-  padding-inline: rem(8px);
+  min-height: rem(36px);
+  padding-inline: rem(10px);
 
   @include phone {
     min-height: rem(44px);
