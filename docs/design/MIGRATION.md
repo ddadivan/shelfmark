@@ -55,18 +55,16 @@ Also restyled through tokens only, no separate issue unless screenshots show a g
 | Switch | Settings toggles (today checkboxes or buttons) | new `switch` (Angular Aria `role=switch`) | low | S |
 | Checkbox | New 22px look; selection mode comes with bulk actions (stage 2) | `checkbox` (exists, restyle) | low | S |
 | SettingsRow | Settings page rows; move the app's `settings-row` / `settings-section` into `libs/ui` | new `settings-row`; remove the feature copies | low | S |
-| FolderIcon | Folder tiles in the sidebar, subfolder tiles, toasts. Graphite only until folder colours are built | new `folder-icon` | low | S |
-| Badge | Small status label. No stage 1 screen needs it yet: see open question 4 | new `badge` | low | S |
+| FolderIcon | Folder tiles in the sidebar, subfolder tiles, toasts. All eight colours in the component; the app uses graphite until folder colours are built | new `folder-icon` | low | S |
 | Sheet | Phone: Recently opened sheet, dialogs as sheets | `drawer` → `sheet` (CDK Dialog, bottom position, swipe to close) | medium | M |
 | TabBar | Phone navigation instead of the hamburger | new `tab-bar` | medium | M |
 | HistoryRow | Recently opened page and sheet, grouped by day | new `history-group` + app `link-history-row` | low | M |
-| SavedView | Chips above the feed. Saved views are a new feature: see open question 2 | new `saved-views` | low | S |
 
 ## 4. Layout (shell)
 
 | What | Files | Risk | Size |
 |---|---|---|---|
-| **Desktop sidebar** as an inset card that only navigates: All links, Unsorted, Favorites, Recently opened; Folders (subfolders first, FolderIcon tiles, "New folder" button in the section header). Recently opened becomes its own page `/recent` (a list of HistoryRows grouped by day) and replaces the collapsible right panel. Pinned and Trash only if their features are in scope (open question 1) | `shell/sidebar`, `shell/app-shell.*`, `features/links/recent` → page, `app.routes.ts`, `UiStore` (drop the panel visibility flag), e2e for the recent panel | high: changes story 18 and 5.1 / 7.2 in PROJECT.md, needs a doc update and e2e rewrites | L |
+| **Desktop sidebar** as an inset card that only navigates: All links, Unsorted, Favorites, Recently opened; Folders (subfolders first, FolderIcon tiles, "New folder" button in the section header). Recently opened becomes its own page `/recent` (a list of HistoryRows grouped by day) and replaces the collapsible right panel. Pinned and Trash come with their features (see Decisions) | `shell/sidebar`, `shell/app-shell.*`, `features/links/recent` → page, `app.routes.ts`, `UiStore` (drop the panel visibility flag), e2e for the recent panel | high: changes story 18 and 5.1 / 7.2 in PROJECT.md, needs a doc update and e2e rewrites | L |
 | **Top bar:** pill search with ⌘K (opens the existing search dialog), keyboard shortcuts button, theme, "Add link" (the one primary), avatar | `shell/app-shell.*`, `features/search` | medium | M |
 | **Phone:** floating glass TabBar (Library, Search, Add, Tags, You) replaces the hamburger. Library: tiles for All links, Unsorted, Favorites, Recently opened (opens a Sheet), then folders. Search tab = the existing full-screen search. Tags tab = tag list page. You = settings list | `shell/mobile-nav` (removed), new phone library page, tags page, `settings` page, routes, phone e2e | high: phone navigation e2e rewritten | L |
 | Toast placement: bottom centre, 24px up, above the tab bar with a 12px gap | `toast`, shell | low | S (with Toast) |
@@ -76,13 +74,13 @@ Also restyled through tokens only, no separate issue unless screenshots show a g
 | Screen | Mockups | Main changes | Risk | Size |
 |---|---|---|---|---|
 | Library (feed) | `Main`, `MobileHome`, `FolderStyle` (subfolder tiles only), `EmptyStates`, `LoadingStates`, `MobileLoading` | Header with breadcrumbs and title, subfolders as tiles before links, sort and view controls, empty and loading states | medium | M |
-| Recently opened page | `RecentView`, `MobileRecent` | Day groups with HistoryRow; "Remove from history" and "Clear history" only if there is an API for them (open question 5) | medium | M |
+| Recently opened page | `RecentView`, `MobileRecent` | Day groups with HistoryRow; "Remove from history" and "Clear history" with two new API endpoints | medium | M |
 | Add link | `AddLink`, `AddLinkStates`, `MobileAddLink` | New dialog / sheet, duplicate notice, loading and error states; signature "landed" animation kept | medium | M |
 | Edit link | `EditLink` | New form layout | low | S |
 | Search ⌘K | `Search`, `MobileSearch` | New overlay look; phone search as the Search tab | medium | M |
 | Menus and folder dialogs | `Menus`, `DeleteFolder` | Card / row / folder / account menus, new folder, rename, move, delete folder | low | M |
-| Tags | `Tags` | Create, rename, merge, delete dialogs; tags page for the phone Tags tab | medium | M |
-| Settings | `MobileSettings`; desktop sections only for what exists (Appearance with Light / Dark / System, export, privacy and data, delete account, show onboarding again) | Settings built from Panel and SettingsRow; desktop as one page or a page per section (open question 3) | medium | M |
+| Tags | `Tags` | Tags section in the sidebar with "+", tag menu, rename in place, delete dialog; tags page for the phone Tags tab | medium | M |
+| Settings | `MobileSettings`; desktop sections only for what exists (Appearance with Light / Dark / System, export, privacy and data, delete account, show onboarding again) | Settings built from Panel and SettingsRow; desktop has a page per section with a settings nav | medium | M |
 | Welcome (onboarding) | `Welcome`, `MobileWelcome` | New dialog look | low | S |
 | Toasts, offline, confirmations | `Toasts`, `Feedback` | All existing toasts moved to the new kinds; confirmation dialogs | medium | M |
 | Rating dialog | `Rating` | New look of the existing story 24 dialog | low | S |
@@ -109,17 +107,18 @@ Also restyled through tokens only, no separate issue unless screenshots show a g
 | `HowItWorks` | Promo video and About for signed-in users | 2 |
 | `Extension` | Browser extension | 3 |
 | `Import`, `SetImport` (import part) | Import (Telegram import is in the backlog) | backlog |
-| `TrashView`, `MobileTrash` | Trash | not in any stage (open question 1) |
-| `FolderStyle` (colours, icons, pinning) | Folder colours, icons, pinned folders | not in any stage (open question 1) |
-| `PasteMany` | Paste several links | not in any stage |
+| `TrashView`, `MobileTrash` (and Badge) | Trash | 2, right after the migration |
+| `FolderStyle` (colours, icons, pinning) | Folder colours, icons, pinned folders | 2, right after the migration |
+| `Main` (saved-view chips, SavedView) | Saved views | 2, right after the migration |
+| `PasteMany` | Paste several links | 2, right after the migration |
 | `SetAccount`, `SetLibrary`, `SetShortcuts`, `SetPrivacy` | Settings pages beyond what exists | partly stage 1 (see 5), the rest with their features |
 
-## Open questions (for the author)
+## Decisions (author, Nov 10, 2026)
 
-1. **Trash, pinned folders, folder colours and icons** are in the mockups but in no stage of `PROJECT.md`. Proposal: leave them out of the sidebar now (no Trash row, no Pinned section, graphite folder tiles) and add them to the roadmap as decided.
-2. **Saved views** (All, Videos, Articles, To read, "Save this view") need saved queries, a new feature. Proposal: no saved-view chips now; the component waits for the feature.
-3. **Settings on desktop:** one page with panels (as now) or a page per section with a settings nav, as in the mockups, only for existing sections?
-4. **Tags on desktop:** the new sidebar has no tag list, and the phone gets a Tags tab. Where do tags live on desktop: a Tags page reached from the sidebar, or keep the tag list in the sidebar?
-5. **Recently opened page:** the mockups have "Remove from history" and "Clear history". Today the API has only `GET /api/links/recent`. Add those two endpoints now, or show the list without them?
-6. **Story 18** ("a panel on the right that can be hidden") becomes "a Recently opened page and a phone sheet". The `PROJECT.md` update (story 18, 5.1 `UiStore`, 7.2, 7.3) is done in the layout issue. OK?
-7. The archive's `PROJECT.md` was an old draft in Russian from before stage 0, so it was not applied. Design rules from it, if any, would need to come separately.
+- Everything follows the design: the new layout and screens replace the old ones wherever they differ.
+- Trash, pinned folders, folder colours and icons, saved views and "Paste several links" are new features. They are added to stage 2 in `PROJECT.md` and built right after this migration, on the new design. Until then the sidebar has no Trash row or Pinned section, folder tiles are graphite and there are no saved-view chips.
+- Settings on desktop: a page per section with a settings nav, as in the mockups, for the sections that exist today.
+- Tags on desktop stay in the sidebar under a Tags section with "+" (screen `Tags`); the phone gets the Tags tab.
+- Recently opened page: "Remove from history" and "Clear history" are built now, with two API endpoints.
+- Story 18 becomes a Recently opened page and a phone sheet; `PROJECT.md` (story 18, 5.1 `UiStore`, 7.2, 7.3) is updated in the layout issue.
+- From the design archive only `docs/design` (design system and screens) is taken; its `PROJECT.md` is not.
