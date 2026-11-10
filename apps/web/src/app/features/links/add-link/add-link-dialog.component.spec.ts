@@ -325,6 +325,24 @@ describe('AddLinkDialogComponent', () => {
     expect(outcome?.action).toBe(ADD_LINK_ACTION.Saved);
   });
 
+  it('saves with Ctrl + Enter from a field and shows the shortcut in the footer', async () => {
+    const api = fakeApi(() => of(PLAIN));
+    const { result } = await setup(api);
+    expect(dialog().querySelector('.add-link__shortcut')?.textContent).toContain('to save');
+
+    await type('Link', 'https://example.org/post');
+    await until(() => {
+      expect(input('Title').value).toBe('A fine post');
+    });
+    input('Note').dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Enter', ctrlKey: true, bubbles: true }),
+    );
+
+    const outcome: AddLinkResult | undefined = await result;
+    expect(api.create).toHaveBeenCalledTimes(1);
+    expect(outcome?.action).toBe(ADD_LINK_ACTION.Saved);
+  });
+
   describe('tags', () => {
     function addTag(text: string): void {
       const tags = dialog().querySelector<HTMLInputElement>('ui-tag-input input');

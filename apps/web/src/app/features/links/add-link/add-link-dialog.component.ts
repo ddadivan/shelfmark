@@ -32,6 +32,7 @@ import {
   DialogComponent,
   FaviconComponent,
   injectDialogData,
+  KEYBOARD_KEY,
   InputComponent,
   NoticeComponent,
   NOTICE_KIND,
@@ -50,6 +51,7 @@ import { firstValueFrom, switchMap, tap, timer, type Observable } from 'rxjs';
 import { FoldersStore } from '../../../stores/folders.store';
 import { TagsStore } from '../../../stores/tags.store';
 import { pluralKey } from '../../../core/i18n/plural-key';
+import { isMacPlatform } from '../../search/is-mac-platform';
 import { normalizeTagNames } from '../../tags/normalize-tag-names';
 import { ADD_LINK_ACTION } from '../models/add-link-action.const';
 import type { AddLinkDialogData } from '../models/add-link-dialog-data.interface';
@@ -109,6 +111,8 @@ export class AddLinkDialogComponent {
   protected readonly PREVIEW_STATE = PREVIEW_STATE;
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly LINK_LIMIT = LINK_LIMIT;
+  /** Cmd (macOS) or Ctrl: the key of the "save" shortcut shown in the footer. */
+  protected readonly mac = isMacPlatform();
 
   private readonly linksApi = inject(LINKS_API);
   private readonly folders = inject(FoldersStore);
@@ -304,6 +308,14 @@ export class AddLinkDialogComponent {
     const existing = this.duplicate();
     if (existing) {
       this.ref.close({ action: ADD_LINK_ACTION.OpenExisting, existing });
+    }
+  }
+
+  /** Cmd / Ctrl + Enter saves from any field (Enter alone in a text field submits as before). */
+  protected onKeydown(event: KeyboardEvent): void {
+    if (event.key === KEYBOARD_KEY.Enter && (event.metaKey || event.ctrlKey) && !this.saving()) {
+      event.preventDefault();
+      (event.currentTarget as HTMLFormElement).requestSubmit();
     }
   }
 

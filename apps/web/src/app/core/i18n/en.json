@@ -200,6 +200,12 @@
         "invalid": "Enter an address that starts with http:// or https://",
         "tooLong": "The link is too long (at most {{max}} characters)"
       },
+      "shortcut": {
+        "cmd": "⌘",
+        "ctrl": "Ctrl",
+        "enter": "Enter",
+        "save": "to save"
+      },
       "preview": {
         "loading": "Loading preview",
         "loadingHint": "You can keep typing a note and choosing a folder while it loads.",
