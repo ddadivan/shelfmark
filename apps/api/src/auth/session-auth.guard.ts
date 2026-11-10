@@ -2,6 +2,7 @@ import {
   type CanActivate,
   type ExecutionContext,
   Injectable,
+  NotFoundException,
   ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -17,6 +18,16 @@ import { toAuthSessionResponse } from './to-auth-session-response';
 /** Better Auth statuses that mean "no valid session". */
 const NO_SESSION_STATUSES: readonly number[] = [400, 401, 403];
 const TOO_MANY_REQUESTS = 429;
+/** Below this prefix a missing session is a 404, so the admin routes do not reveal themselves. */
+const ADMIN_PATH_PREFIX = '/api/admin';
+
+function noSession(request: AuthenticatedRequest): Error {
+  const path: unknown = request.path;
+  const isAdminPath =
+    typeof path === 'string' &&
+    (path === ADMIN_PATH_PREFIX || path.startsWith(`${ADMIN_PATH_PREFIX}/`));
+  return isAdminPath ? new NotFoundException() : new UnauthorizedException();
+}
 
 function statusOf(error: unknown): number | undefined {
   const status = isRecord(error) ? error['statusCode'] : undefined;
@@ -60,14 +71,14 @@ export class SessionAuthGuard implements CanActivate {
     } catch (error) {
       const status = statusOf(error);
       if (status !== undefined && NO_SESSION_STATUSES.includes(status)) {
-        throw new UnauthorizedException();
+        throw noSession(request);
       }
       if (status === TOO_MANY_REQUESTS) throw new ServiceUnavailableException();
       throw error;
     }
     // Expired demo sandboxes are a 401 even while the cookie and the database session are still valid.
     const auth = enforceDemoExpiry(toAuthSessionResponse(raw));
-    if (!auth) throw new UnauthorizedException();
+    if (!auth) throw noSession(request);
     request.auth = auth;
     return true;
   }
