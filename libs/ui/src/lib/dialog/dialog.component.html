@@ -3,6 +3,7 @@
   class="ui-dialog"
   [class.ui-dialog--md]="effectiveSize() === DIALOG_SIZE.Md"
   [class.ui-dialog--command]="command()"
+  [class.ui-dialog--untitled]="hideTitle()"
   [class.ui-dialog--phone-full]="phoneFullscreen()"
   [class.ui-dialog--sheet]="sheetHeight() !== undefined"
   [class.ui-dialog--sheet-tall]="sheetHeight() === SHEET_HEIGHT.Tall"

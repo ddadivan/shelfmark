@@ -59,6 +59,11 @@ const NO_DRAG_TARGETS = 'button, a, input, select, textarea, [contenteditable]';
 export class DialogComponent {
   /** Heading of the dialog; it names it for assistive technology. */
   readonly title = input.required<string>();
+  /**
+   * The content shows its own visible heading (the welcome steps put it under an illustration):
+   * the title stays in the DOM as the accessible name, visually hidden. The sheet grip stays.
+   */
+  readonly hideTitle = input(false, { transform: booleanAttribute });
   /** `sm` (440px) or `md` (560px); default from the open options, else `sm`. */
   readonly size = input<DialogSize>();
   /** Accessible name of the close button in the header. Without it there is no close button. */

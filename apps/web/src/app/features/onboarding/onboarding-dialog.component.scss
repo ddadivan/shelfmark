@@ -7,34 +7,55 @@
 .onboarding {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  align-items: center;
-  text-align: center;
+  gap: rem(20px);
 
   // The sliding step must not make the dialog body scroll sideways while it moves in.
   overflow-x: clip;
 }
 
+// The illustration sits on the page background in a rounded box (Welcome spec).
+.onboarding__scene {
+  overflow: hidden;
+  background: var(--bg);
+  border-radius: var(--radius-md);
+  animation: onboarding-next var(--duration-slow) var(--ease-out) both;
+}
+
+.onboarding__art {
+  --ui-illustration-width: 100%;
+}
+
+// Step dots, then the title and text of the step.
+.onboarding__copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+
+  // The text does not move the buttons when a step has one line less.
+  min-height: rem(104px);
+}
+
 .onboarding__step {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  align-items: center;
+  gap: var(--space-2);
   animation: onboarding-next var(--duration-slow) var(--ease-out) both;
-
-  &--back {
-    animation-name: onboarding-prev;
-  }
 }
 
-.onboarding__scene {
-  --ui-illustration-width: #{rem(280px)};
+.onboarding__step--back {
+  animation-name: onboarding-prev;
+}
+
+.onboarding__title {
+  @include type(title);
+
+  margin: var(--space-1) 0 0;
+  color: var(--text);
 }
 
 .onboarding__text {
   @include type(body);
 
-  max-width: rem(420px);
   margin: 0;
   color: var(--text-muted);
 }
@@ -82,6 +103,7 @@
 }
 
 @include reduced-motion {
+  .onboarding__scene,
   .onboarding__step {
     animation: none;
   }

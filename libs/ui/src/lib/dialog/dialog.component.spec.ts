@@ -36,6 +36,12 @@ class HostComponent {
 })
 class SheetComponent {}
 
+@Component({
+  imports: [DialogComponent],
+  template: `<ui-dialog title="Untitled" hideTitle><p>Body</p></ui-dialog>`,
+})
+class UntitledComponent {}
+
 function stubMatchMedia(phone: boolean): { change: (matches: boolean) => void } {
   const listeners = new Set<(event: MediaQueryListEvent) => void>();
   vi.stubGlobal('matchMedia', (query: string) => ({
@@ -120,6 +126,14 @@ describe('DialogComponent', () => {
     fixture.componentInstance.closeLabel.set(undefined);
     fixture.detectChanges();
     expect(root.querySelector('.ui-dialog__head button')).toBeNull();
+  });
+
+  it('hideTitle keeps the heading as the accessible name and hides it visually', async () => {
+    const fixture = TestBed.createComponent(UntitledComponent);
+    fixture.detectChanges();
+    const panel = fixture.nativeElement.querySelector('.ui-dialog');
+    expect(panel.classList).toContain('ui-dialog--untitled');
+    expect(fixture.nativeElement.querySelector('h2')?.textContent).toBe('Untitled');
   });
 
   it('has no axe violations', async () => {
@@ -338,6 +352,10 @@ describe('DialogComponent command variant styles', () => {
     const wide = mediaBlocks(css, /min-width|width\s*>=/u).join('\n');
     expect(wide).toContain('.ui-dialog--command .ui-dialog__drag');
     expect(wide).toContain('clip');
+  });
+
+  it('hides the head of an untitled dialog visually at every width', () => {
+    expect(css).toMatch(/\.ui-dialog--untitled \.ui-dialog__head\s*{[^}]*clip/);
   });
 
   it('keeps the enter and leave animations', () => {

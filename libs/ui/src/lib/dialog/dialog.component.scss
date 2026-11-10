@@ -192,6 +192,10 @@
   }
 }
 
+.ui-dialog--untitled .ui-dialog__head {
+  @include visually-hidden;
+}
+
 .ui-dialog__head {
   display: flex;
   gap: var(--space-3);
