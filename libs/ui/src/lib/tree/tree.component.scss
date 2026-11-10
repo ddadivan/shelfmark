@@ -1,6 +1,6 @@
 @use '../../styles/ui' as *;
 
-// Sidebar navigation (Tree spec). Icons are 24px. Rows are 36px (44px on a phone), each level indents 16px
+// Sidebar navigation (Tree spec). Icons are 24px; folder rows have a 22px `ui-folder-icon` tile. Rows are 36px (44px on a phone), each level indents 16px
 // through `--ui-tree-level`, the active row is `accent-bg`, children open by `grid-template-rows`.
 
 :host {

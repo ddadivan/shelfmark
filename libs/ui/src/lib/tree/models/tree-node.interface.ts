@@ -6,7 +6,7 @@ export interface UiTreeNode {
   readonly id: string;
   /** Visible name; a long one is cut with an ellipsis. */
   readonly name: string;
-  /** Icon before the name. Folder rows default to `folder`; fixed rows show none. */
+  /** Icon before the name. Fixed rows show none; folder rows draw it in a graphite `ui-folder-icon` tile (default `folder`). */
   readonly icon?: IconName;
   /** Number shown on the right. */
   readonly count?: number;
