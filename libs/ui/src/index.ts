@@ -27,6 +27,7 @@ export * from './lib/pointer-shadow';
 export * from './lib/menu';
 export * from './lib/meter';
 export * from './lib/notice';
+export * from './lib/panel';
 export * from './lib/overlay';
 export * from './lib/progress-bar';
 export * from './lib/radio-group';
