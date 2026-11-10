@@ -132,6 +132,32 @@ describe('admin API', () => {
       await admin.get(ADMIN_ENDPOINT.Status).expect(404);
     });
 
+    it('is 404 when the listed email is not verified', async () => {
+      await t.db.prisma.user.update({
+        where: { id: users.owner.userId },
+        data: { emailVerified: false },
+      });
+      await admin.get(ADMIN_ENDPOINT.Status).expect(404);
+      await admin.get(FEEDBACK).expect(404);
+    });
+
+    it('is 404 for a look-alike non-ASCII address and ignores non-ASCII list entries', async () => {
+      process.env['ADMIN_EMAILS'] = '\uff4fwner@example.com,owner@example.com\u212a';
+      await admin.get(ADMIN_ENDPOINT.Status).expect(404);
+      process.env['ADMIN_EMAILS'] = '\uff4fwner@example.com, owner@example.com';
+      await admin.get(ADMIN_ENDPOINT.Status).expect(200);
+    });
+
+    it('is 404 for a guest on a differently cased path', async () => {
+      await anonymous(t.app).get('/api/Admin/status').expect(404);
+      await anonymous(t.app).get('/api/ADMIN/feedback').expect(404);
+    });
+
+    it('is not listed in Swagger', async () => {
+      const res = await anonymous(t.app).get('/api/docs-json').expect(200);
+      expect(JSON.stringify(res.body)).not.toContain('/api/admin');
+    });
+
     it('keeps 401 outside /api/admin for guests', async () => {
       await anonymous(t.app).get(FEEDBACK_ENDPOINT.Messages).expect(401);
     });
@@ -254,6 +280,7 @@ describe('admin API', () => {
 
     it.each([
       ['a bad status', { status: 'finished' }],
+      ['a null status', { status: null }],
       ['a reply over the limit', { reply: 'x'.repeat(ADMIN_FEEDBACK_LIMIT.ReplyMax + 1) }],
       ['a non-string reply', { reply: 5 }],
       ['a control character', { reply: 'a\u0000b' }],
@@ -321,6 +348,7 @@ describe('admin API', () => {
       expect(res.headers['x-content-type-options']).toBe('nosniff');
       expect(res.headers['content-disposition']).toBe('inline');
       expect(res.headers['cache-control']).toBe('private, no-store');
+      expect(res.headers['content-security-policy']).toBe("sandbox; default-src 'none'");
     });
 
     it('is 404 without a screenshot, for a rating row and for a non-admin', async () => {

@@ -11,6 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
+  ApiExcludeController,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -36,6 +37,7 @@ import { UpdateAdminFeedbackDto } from './dto/update-admin-feedback.dto';
  * `AdminGuard` then answers 404 unless the email is in `ADMIN_EMAILS`. The session guard also
  * answers 404 instead of 401 below `/api/admin`, so the routes do not reveal themselves.
  */
+@ApiExcludeController()
 @ApiTags('admin')
 @UseGuards(AdminGuard)
 @Controller('admin')

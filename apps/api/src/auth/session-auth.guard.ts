@@ -22,7 +22,7 @@ const TOO_MANY_REQUESTS = 429;
 const ADMIN_PATH_PREFIX = '/api/admin';
 
 function noSession(request: AuthenticatedRequest): Error {
-  const path: unknown = request.path;
+  const path: unknown = typeof request.path === 'string' ? request.path.toLowerCase() : undefined;
   const isAdminPath =
     typeof path === 'string' &&
     (path === ADMIN_PATH_PREFIX || path.startsWith(`${ADMIN_PATH_PREFIX}/`));

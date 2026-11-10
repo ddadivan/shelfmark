@@ -6,12 +6,13 @@ import {
   type UpdateAdminFeedbackRequest,
 } from '@shelfmark/contracts';
 import { Transform } from 'class-transformer';
-import { IsIn, IsOptional, IsString, MaxLength, ValidateIf } from 'class-validator';
+import { IsIn, IsString, MaxLength, ValidateIf } from 'class-validator';
 import { NoControlChars } from '../../common/validation/no-control-chars.decorator';
 
 export class UpdateAdminFeedbackDto implements UpdateAdminFeedbackRequest {
   @ApiPropertyOptional({ enum: Object.values(FEEDBACK_STATUS) })
-  @IsOptional()
+  // Absent is fine; null is not (IsOptional would let it through), so IsIn reports it.
+  @ValidateIf((_object, value: unknown) => value !== undefined)
   @IsIn(Object.values(FEEDBACK_STATUS))
   status?: FeedbackStatus;
 

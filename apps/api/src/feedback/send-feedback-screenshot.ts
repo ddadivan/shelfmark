@@ -12,6 +12,7 @@ export function sendFeedbackScreenshot(res: Response, screenshot: StoredFeedback
     .setHeader('X-Content-Type-Options', 'nosniff')
     .setHeader('Cross-Origin-Resource-Policy', 'same-origin')
     .setHeader('Content-Disposition', 'inline')
+    .setHeader('Content-Security-Policy', "sandbox; default-src 'none'")
     .setHeader('Cache-Control', 'private, no-store')
     .setHeader('Vary', 'Cookie')
     .send(Buffer.from(screenshot.bytes));

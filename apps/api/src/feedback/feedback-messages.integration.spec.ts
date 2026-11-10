@@ -196,6 +196,40 @@ describe('feedback messages API', () => {
         await send(a, { ...valid, screenshot: upload('image/png', big) }).expect(201);
       });
 
+      it('answers 401 before parsing for a guest, even with a malformed or large body', async () => {
+        const malformed = await anonymous(t.app)
+          .post(MESSAGES)
+          .set('Content-Type', 'application/json')
+          .send('{"kind": ');
+        expect(malformed.status).toBe(401);
+        expect(malformed.body).toMatchObject({ statusCode: 401, error: 'Unauthorized' });
+        expect(malformed.body).toHaveProperty('requestId');
+        await send(anonymous(t.app), { ...valid, text: 'x'.repeat(2_000_000) }).expect(401);
+        // A cookie of another name is no session cookie.
+        await anonymous(t.app)
+          .post(MESSAGES)
+          .set('Cookie', 'other=1')
+          .set('Content-Type', 'application/json')
+          .send('{"kind": ')
+          .expect(401);
+      });
+
+      it('answers 413 from Content-Length alone, without reading the body', async () => {
+        const res = await anonymous(t.app)
+          .post(MESSAGES)
+          .set('Content-Type', 'application/json')
+          .set('Content-Length', String(4 * 1024 * 1024))
+          .send('{}');
+        expect(res.status).toBe(413);
+      });
+
+      it('throttles per IP before parsing', async () => {
+        for (let i = 0; i < 10; i++) await send(a, { kind: 'nope', text: 'x' }).expect(400);
+        const res = await send(a, valid).expect(429);
+        expect(res.headers['retry-after']).toBeDefined();
+        expect(res.body).toMatchObject({ statusCode: 429 });
+      });
+
       it('answers 413 above 3mb on this route', async () => {
         await send(a, { ...valid, text: 'x'.repeat(3 * 1024 * 1024 + 10) }).expect(413);
       });
@@ -338,7 +372,7 @@ describe('feedback messages API', () => {
       expect(res.headers['content-disposition']).toBe('inline');
       expect(res.headers['cache-control']).toBe('private, no-store');
       expect(res.headers['cross-origin-resource-policy']).toBe('same-origin');
-      expect(res.headers['content-security-policy']).toContain("img-src 'self'");
+      expect(res.headers['content-security-policy']).toBe("sandbox; default-src 'none'");
       expect((res.body as Buffer).equals(bytes)).toBe(true);
     });
 
