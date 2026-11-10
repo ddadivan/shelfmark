@@ -9,6 +9,7 @@ import { injectDialogData } from './inject-dialog-data';
 import type { ConfirmDialogConfig } from './models/confirm-config.interface';
 import { KEYBOARD_KEY } from '../keyboard';
 import { DIALOG_SIZE } from './models/dialog-size.const';
+import { DIALOG_VARIANT } from './models/dialog-variant.const';
 import { OVERLAY_LAYER } from '../overlay/models/overlay-layer.const';
 import { overlayLayerClass } from '../overlay/overlay-layer';
 
@@ -148,6 +149,54 @@ describe('DialogService', () => {
       settle();
       expect(container().querySelector('.ui-dialog--md')).not.toBeNull();
       ref.close();
+    });
+
+    describe('command variant', () => {
+      @Component({
+        imports: [DialogComponent],
+        template: `<ui-dialog title="Search" closeLabel="Close" phoneFullscreen
+          ><input aria-label="Find"
+        /></ui-dialog>`,
+      })
+      class CommandComponent {}
+
+      it('draws the glass command panel and keeps the title as the accessible name', async () => {
+        const ref = service.open(CommandComponent, {
+          variant: DIALOG_VARIANT.Command,
+          autoFocus: 'input',
+        });
+        settle();
+        const root = container();
+        const panel = root.querySelector('.ui-dialog');
+        expect(panel?.classList.contains('ui-dialog--command')).toBe(true);
+        // The enter animation is the plain dialog's.
+        expect(panel?.classList.contains('ui-dialog--enter')).toBe(true);
+        const title = root.querySelector('h2');
+        expect(title?.textContent).toBe('Search');
+        expect(root.getAttribute('aria-labelledby')).toBe(title?.id);
+        expect(await axeViolations(root)).toEqual([]);
+        ref.close();
+        settle();
+        await closed();
+      });
+
+      it('places the pane at the top, not in the centre', () => {
+        const ref = service.open(CommandComponent, { variant: DIALOG_VARIANT.Command });
+        settle();
+        const wrapper = document.querySelector<HTMLElement>('.cdk-global-overlay-wrapper');
+        expect(wrapper?.style.alignItems).toBe('flex-start');
+        ref.close();
+      });
+
+      it('leaves plain dialogs unchanged', () => {
+        const ref = service.open(CommandComponent);
+        settle();
+        expect(container().querySelector('.ui-dialog--command')).toBeNull();
+        expect(
+          document.querySelector<HTMLElement>('.cdk-global-overlay-wrapper')?.style.alignItems,
+        ).not.toBe('flex-start');
+        ref.close();
+      });
     });
 
     it('locks page scroll while open', () => {

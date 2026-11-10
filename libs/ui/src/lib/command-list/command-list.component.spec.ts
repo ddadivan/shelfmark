@@ -361,6 +361,15 @@ describe('CommandListComponent', () => {
     expect(document.activeElement).toBe(input());
   });
 
+  it('renders a decorative Enter cap in every row', () => {
+    const caps = el.querySelectorAll('[role="option"] > .ui-command-list__enter');
+    expect(caps.length).toBe(el.querySelectorAll('[role="option"]').length);
+    expect(caps.length).toBeGreaterThan(0);
+    caps.forEach((cap) => {
+      expect(cap.getAttribute('aria-hidden')).toBe('true');
+    });
+  });
+
   it('has no axe violations with results, busy and in the empty state', async () => {
     expect(await axeViolations(el)).toEqual([]);
     host.busy.set(true);
@@ -371,6 +380,17 @@ describe('CommandListComponent', () => {
 
 describe('CommandListComponent styles', () => {
   const css = compileScss('lib/command-list/command-list.component.scss');
+
+  it('draws a 40px leading tile, 12px rows and an Enter cap on the active row only', () => {
+    expect(css).toMatch(/\.ui-command-item__leading\s*{[^}]*width:\s*2\.5rem/);
+    expect(css).toMatch(/\.ui-command-list__option\s*{[^}]*border-radius:\s*0\.75rem/);
+    expect(css).toMatch(
+      /\.ui-command-list__option\[data-active=(?:'true'|"true"|true)\]\s*{[^}]*var\(--accent-bg\)/,
+    );
+    expect(css).toMatch(
+      /\.ui-command-list__option\[data-active=(?:'true'|"true"|true)\] > \.ui-command-list__enter/,
+    );
+  });
 
   it('uses 44px targets on coarse pointers', () => {
     const touch = mediaBlocks(css, /pointer:\s*coarse/).join('\n');

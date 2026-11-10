@@ -88,6 +88,64 @@
   }
 }
 
+// Command dialog (`variant: command`, the search overlay): a glass layer (the Glass spec allows
+// floating layers; the search overlay is one) 680px wide, 96px below the top edge (the global
+// position strategy puts the pane at the top), the 28px corners of every dialog. The title stays
+// in the DOM for the accessible name but is visually hidden, and so is the close button's row:
+// from 40em Esc and the scrim close it. The body is the command list, which scrolls itself.
+// Enter and leave animations are the plain dialog's (`ui-dialog--enter` / `--leave`).
+.ui-dialog--command {
+  --ui-dialog-width: #{rem(680px)};
+
+  // Divider colour read by `ui-command-list`.
+  --ui-command-divider: var(--glass-line);
+
+  @include glass;
+
+  gap: 0;
+  padding: 0;
+  margin-block-start: rem(96px);
+  overflow: hidden;
+  max-height: calc(100dvh - #{rem(96px + 48px)});
+
+  .ui-dialog__body {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .ui-dialog__drag {
+    @include tablet-up {
+      @include visually-hidden;
+    }
+  }
+
+  // A phone shows it as a page (the mockup): the page background, the title and the close
+  // button on top, no glass.
+  @include phone {
+    margin-block-start: 0;
+    background: var(--bg);
+    backdrop-filter: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: calc(var(--space-4) + env(safe-area-inset-top)) rem(16px) env(safe-area-inset-bottom);
+    max-height: 100dvh;
+
+    .ui-dialog__drag {
+      gap: 0;
+      padding-block-end: var(--space-3);
+    }
+
+    .ui-dialog__title {
+      @include type(display);
+
+      font-size: rem(34px);
+      line-height: rem(38px);
+    }
+  }
+}
+
 // Dialog: fade and scale from the centre. Sheet: slides up from below the screen.
 .ui-dialog--enter {
   @include enter(pop);

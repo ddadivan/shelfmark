@@ -1,5 +1,5 @@
 <div class="ui-command-list__field">
-  <ui-icon class="ui-command-list__icon" name="search" [size]="ICON_SIZE.Lg" />
+  <ui-icon class="ui-command-list__icon" name="search" [size]="ICON_SIZE.Md" />
   <input
     #field
     ngCombobox
@@ -55,6 +55,9 @@
         (click)="onOptionClick(item, $event)"
       >
         <ng-container [ngTemplateOutlet]="item.body()" />
+        <kbd class="ui-command-list__enter" aria-hidden="true"
+          ><ui-icon name="key-enter" [size]="ICON_SIZE.Sm"
+        /></kbd>
       </div>
     </ng-template>
 

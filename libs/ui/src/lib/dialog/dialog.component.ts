@@ -24,6 +24,8 @@ import type { DragState } from './models/drag-state.interface';
 import { SHEET_SAMPLES } from './models/sheet-samples.const';
 import { shouldCloseSheet, sheetVelocity } from './sheet-drag';
 import { DIALOG_SIZE } from './models/dialog-size.const';
+import { DIALOG_VARIANT } from './models/dialog-variant.const';
+import type { DialogVariant } from './models/dialog-variant.type';
 import { BUTTON_SIZE } from '../button/models/button-size.const';
 
 const DRAG_PROPERTY = '--ui-sheet-drag';
@@ -75,6 +77,13 @@ export class DialogComponent {
    */
   readonly sheetHeight = input<SheetHeight>();
 
+  /**
+   * `command` draws the top-placed glass panel of the search overlay (see `UiDialogConfig.variant`);
+   * set here it wins over the open options, which is how docs render a static panel. The placement
+   * itself (96px from the top) belongs to the service, so a static panel only gets the look.
+   */
+  readonly variant = input<DialogVariant>();
+
   /** The close button was used or the sheet was dragged shut. */
   readonly closeRequested = output<void>();
 
@@ -89,6 +98,9 @@ export class DialogComponent {
   protected readonly SHEET_HEIGHT = SHEET_HEIGHT;
   protected readonly effectiveSize = computed(
     () => this.size() ?? this.context?.size ?? DIALOG_SIZE.Sm,
+  );
+  protected readonly command = computed(
+    () => (this.variant() ?? this.context?.variant) === DIALOG_VARIANT.Command,
   );
   protected readonly leaving = computed(() => this.context?.leaving() ?? false);
   protected readonly phone = signal(false);
