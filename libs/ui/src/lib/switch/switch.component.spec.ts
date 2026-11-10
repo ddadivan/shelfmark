@@ -104,6 +104,13 @@ describe('SwitchComponent', () => {
     expect(css).toMatch(/@media \(pointer: coarse\)/);
   });
 
+  it('darkens only the off track on hover, so an on switch keeps its accent', () => {
+    const css = compileScss('lib/switch/switch.component.scss');
+    expect(css).toMatch(
+      /@media \(hover: hover\)\s*\{[^}]*:hover:not\(:disabled, \[aria-checked=["']?true["']?\]\)/,
+    );
+  });
+
   it('has no axe violations', async () => {
     const { host } = setup();
     expect(await axeViolations(host)).toEqual([]);

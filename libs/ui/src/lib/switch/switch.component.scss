@@ -39,8 +39,9 @@ $knob-inset: rem(3px);
   // 26px is above the 24px minimum; touch grows the target to 44px without changing the look.
   @include hit-area(0, -9px 0);
 
+  // Only the off track darkens on hover; an on switch keeps its accent.
   @include hover {
-    &:not(:disabled) {
+    &:not(:disabled, [aria-checked='true']) {
       background: var(--text-muted);
     }
   }
