@@ -25,6 +25,7 @@ import {
   MenuSeparatorComponent,
   MenuTriggerDirective,
   ToastService,
+  TooltipDirective,
 } from '@shelfmark/ui';
 import { EXPORT_FORMAT, type ExportFormat } from '@shelfmark/contracts';
 import { combineLatest, filter, map } from 'rxjs';
@@ -34,6 +35,7 @@ import { LinkActionsService } from '../features/links/link-actions.service';
 import { OnboardingStore } from '../features/onboarding/onboarding.store';
 import { RatingStore } from '../features/rating/rating.store';
 import { SearchDialogService } from '../features/search/search-dialog.service';
+import { ShortcutsDialogService } from '../features/shortcuts/shortcuts-dialog.service';
 import { THEME_PREFERENCE } from '../core/theme/models/theme-preference.const';
 import { ThemeService } from '../core/theme/theme.service';
 import { isMacPlatform } from '../features/search/is-mac-platform';
@@ -68,6 +70,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     SettingsNavComponent,
     SidebarComponent,
     TabBarComponent,
+    TooltipDirective,
   ],
   host: { '(document:keydown)': 'onKeydown($event)' },
   templateUrl: './app-shell.component.html',
@@ -81,6 +84,7 @@ export default class AppShellComponent {
   protected readonly EXPORT_FORMAT = EXPORT_FORMAT;
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly search = inject(SearchDialogService);
+  protected readonly shortcuts = inject(ShortcutsDialogService);
   protected readonly viewport = inject(ViewportService);
   private readonly transloco = inject(TranslocoService);
   private readonly toasts = inject(ToastService);
@@ -181,8 +185,8 @@ export default class AppShellComponent {
   }
 
   protected onKeydown(event: KeyboardEvent): void {
-    if (!this.toasts.handleShortcut(event)) {
-      this.search.handleShortcut(event);
+    if (!this.toasts.handleShortcut(event) && !this.search.handleShortcut(event)) {
+      this.shortcuts.handleShortcut(event);
     }
   }
 

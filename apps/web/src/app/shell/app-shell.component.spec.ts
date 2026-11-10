@@ -17,6 +17,7 @@ import { THEME_PREFERENCE } from '../core/theme/models/theme-preference.const';
 import { ThemeService } from '../core/theme/theme.service';
 import { LinkActionsService } from '../features/links/link-actions.service';
 import { SearchDialogService } from '../features/search/search-dialog.service';
+import { ShortcutsDialogService } from '../features/shortcuts/shortcuts-dialog.service';
 import AppShellComponent from './app-shell.component';
 
 const USER: AuthUser = {
@@ -144,6 +145,39 @@ describe('AppShellComponent', () => {
 
     expect(search.open).toHaveBeenCalledTimes(1);
     expect(search.handleShortcut).toHaveBeenCalledTimes(1);
+  });
+
+  it('opens the shortcuts from the top bar button and from the ? key', async () => {
+    const api: AuthApi = {
+      getSession: () => Promise.resolve(USER),
+      signIn: vi.fn(),
+      signInDemo: vi.fn(),
+      signOut: vi.fn(() => Promise.resolve()),
+    };
+    const shortcuts = { open: vi.fn(), handleShortcut: vi.fn() };
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([{ path: '', component: AppShellComponent }]),
+        provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
+        { provide: AUTH_API, useValue: api },
+        { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
+        { provide: RATING_API, useValue: { prompt: vi.fn(), record: vi.fn() } },
+        { provide: ShortcutsDialogService, useValue: shortcuts },
+      ],
+    });
+    await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
+    await TestBed.inject(AuthStore).ensureLoaded();
+    const harness = await RouterTestingHarness.create('/');
+    const button = (harness.routeNativeElement as HTMLElement).querySelector<HTMLButtonElement>(
+      'button[aria-label="Keyboard shortcuts"]',
+    );
+
+    button?.click();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: '?', shiftKey: true }));
+
+    expect(button?.getAttribute('aria-haspopup')).toBe('dialog');
+    expect(shortcuts.open).toHaveBeenCalledTimes(1);
+    expect(shortcuts.handleShortcut).toHaveBeenCalledTimes(1);
   });
 
   it('hands the toast shortcut to the toasts and leaves the search alone', async () => {

@@ -723,13 +723,15 @@
       "account": "Account",
       "appearance": "Appearance",
       "export": "Export",
-      "privacy": "Privacy and data"
+      "privacy": "Privacy and data",
+      "shortcuts": "Keyboard shortcuts"
     },
     "description": {
       "account": "Your profile and your account.",
       "appearance": "How Shelfmark looks.",
       "export": "Take everything you saved with you.",
-      "privacy": "What we keep, and how to take it with you."
+      "privacy": "What we keep, and how to take it with you.",
+      "shortcuts": "Work without the mouse."
     },
     "account": {
       "profile": "Profile",
@@ -814,6 +816,49 @@
         "rateLimited": "Too many attempts. Try again in a minute.",
         "failed": "We could not delete your account. Nothing was deleted. Try again."
       }
+    }
+  },
+  "shortcuts": {
+    "title": "Keyboard shortcuts",
+    "open": "Keyboard shortcuts",
+    "close": "Close",
+    "hint": "Press ? anywhere except in a text field.",
+    "page": {
+      "label": "All shortcuts",
+      "action": "Open list"
+    },
+    "groups": {
+      "everywhere": "Everywhere",
+      "links": "Saving and finding",
+      "folders": "In the folder list"
+    },
+    "items": {
+      "search": "Search",
+      "list": "This list",
+      "close": "Close a dialog, menu or toast",
+      "undo": "Undo the last action",
+      "toastAction": "Go to the button of a toast",
+      "save": "Save the link",
+      "results": "Move through search results",
+      "openResult": "Open the result",
+      "openBackground": "Open it in a background tab",
+      "moveFolder": "Move between folders",
+      "toggleFolder": "Close or open a folder",
+      "folderMenu": "Open the folder menu"
+    },
+    "keys": {
+      "command": "Command",
+      "ctrl": "Ctrl",
+      "option": "Option",
+      "alt": "Alt",
+      "shift": "Shift",
+      "enter": "Enter",
+      "escape": "Esc",
+      "up": "Up",
+      "down": "Down",
+      "left": "Left",
+      "right": "Right",
+      "question": "Question mark"
     }
   },
   "tags": {

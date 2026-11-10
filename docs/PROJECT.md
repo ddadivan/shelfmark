@@ -274,7 +274,7 @@ CSR without SSR, zoneless, Transloco, strict-CSP build: ADR 0005; state: ADR 000
 | `/unsorted` | No folder | signed in | `features/library` |
 | `/favorites` | Favorites | signed in | `features/library` |
 | `/folders/:folderId` | Folder; nesting is shown in breadcrumbs, not in the URL | signed in | `features/library` |
-| `/settings` | Settings, one page per section: `/settings/account` (profile, sign out, welcome tour, deletion), `/appearance` (theme, language), `/import-export` (export only), `/privacy`; on tablet and desktop `/settings` goes to the first section, on a phone it is the You list | signed in | `features/settings` |
+| `/settings` | Settings, one page per section: `/settings/account` (profile, sign out, welcome tour, deletion), `/appearance` (theme, language), `/shortcuts` (the keyboard shortcut list), `/import-export` (export only), `/privacy`; on tablet and desktop `/settings` goes to the first section, on a phone it is the You list | signed in | `features/settings` |
 | `/share?url=&title=&text=` | Quick save from "Share" | signed in; guest goes to sign-in and back | `features/share` |
 | `/sign-in?returnUrl=&reason=` | Sign in with Google / GitHub | guest only | `features/auth` |
 | `/demo` | Creates a demo sandbox and goes to `/links` | everyone | `features/auth` |
@@ -638,7 +638,7 @@ In CI: `@axe-core/playwright` on the key screens in both themes; the build fails
 
 **Tooltips** (`uiTooltip`, appear after 400 ms on hover or keyboard focus, not shown on touch screens): on every icon button (theme, avatar, new folder, view toggle, card actions, star), on titles truncated with "…" (full title), on relative dates ("2 days ago" → exact date). The tooltip shows the keyboard shortcut if there is one. A tooltip is never the only place where information is available.
 
-**Keyboard shortcuts:** ⌘K / Ctrl+K for search; N to add a link; on a selected link E to edit, F to favorite, Delete to delete; V C / V L for the "cards" / "list" view; G A / G U / G F / G S to go to all links, no folder, favorites, settings; Esc to close a window. The list is in the avatar menu and under the "?" key.
+**Keyboard shortcuts:** ⌘K / Ctrl+K for search; N to add a link; on a selected link E to edit, F to favorite, Delete to delete; V C / V L for the "cards" / "list" view; G A / G U / G F / G S to go to all links, no folder, favorites, settings; Esc to close a window. The list of the shortcuts that exist is a dialog from the keyboard icon in the top bar and under the "?" key, and a page in settings.
 
 ### 7.3 Stage 1 screens
 

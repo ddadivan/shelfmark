@@ -19,6 +19,10 @@ export default [
     loadComponent: () => import('./appearance/appearance.page'),
   },
   {
+    path: SETTINGS_PATH.Shortcuts,
+    loadComponent: () => import('./shortcuts/shortcuts.page'),
+  },
+  {
     path: SETTINGS_PATH.ImportExport,
     loadComponent: () => import('./import-export/import-export.page'),
   },

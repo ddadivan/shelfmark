@@ -95,6 +95,7 @@ test.describe('settings (mock auth)', () => {
       'Back to links',
       'Account',
       'Appearance',
+      'Keyboard shortcuts',
       'Export',
       'Privacy and data',
     ]);
@@ -104,10 +105,13 @@ test.describe('settings (mock auth)', () => {
     );
     await expect(nav.getByText('Shelfmark v1.0')).toBeVisible();
 
-    await nav.getByRole('link', { name: 'Export' }).click();
+    await nav.getByRole('link', { name: 'Keyboard shortcuts' }).click();
 
-    await expect(page).toHaveURL(/\/settings\/import-export$/);
-    await expect(nav.getByRole('link', { name: 'Export' })).toHaveAttribute('aria-current', 'page');
+    await expect(page).toHaveURL(/\/settings\/shortcuts$/);
+    await expect(nav.getByRole('link', { name: 'Keyboard shortcuts' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
     await expect(nav.getByRole('link', { name: 'Account' })).not.toHaveAttribute(
       'aria-current',
       'page',
@@ -130,6 +134,7 @@ test.describe('settings (mock auth)', () => {
     await expect(page).toHaveURL(/\/settings$/);
     await expect(page.getByRole('heading', { level: 1, name: 'You' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Appearance' })).toContainText('System');
+    await expect(page.getByRole('link', { name: 'Keyboard shortcuts' })).toHaveCount(0);
 
     await page.getByRole('link', { name: 'Appearance' }).click();
 
@@ -182,6 +187,7 @@ test.describe('settings (mock auth)', () => {
 const SECTION_PATHS = [
   '/settings/account',
   '/settings/appearance',
+  '/settings/shortcuts',
   '/settings/import-export',
   '/settings/privacy',
 ];

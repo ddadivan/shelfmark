@@ -5,4 +5,5 @@ export const SETTINGS_PATH = {
   /** Only export exists today; the path is the one an import would join. */
   ImportExport: 'import-export',
   Privacy: 'privacy',
+  Shortcuts: 'shortcuts',
 } as const;

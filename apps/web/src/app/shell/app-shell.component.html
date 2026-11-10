@@ -27,6 +27,17 @@
         <ui-button
           variant="ghost"
           iconOnly
+          iconLeft="keyboard"
+          ariaHaspopup="dialog"
+          [iconSize]="ICON_SIZE.Lg"
+          [ariaLabel]="'shortcuts.open' | transloco"
+          [uiTooltip]="'shortcuts.open' | transloco"
+          uiTooltipShortcut="?"
+          (click)="shortcuts.open()"
+        />
+        <ui-button
+          variant="ghost"
+          iconOnly
           [iconLeft]="themeIcon()"
           [iconSize]="ICON_SIZE.Lg"
           [ariaLabel]="

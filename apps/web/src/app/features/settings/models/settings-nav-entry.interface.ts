@@ -8,7 +8,8 @@ export interface SettingsNavEntry {
   /** Translation key of the line under the page title. */
   descriptionKey: string;
   /**
-   * Listed in the You tab. The account is the card on top of that list.
+   * Listed in the You tab. The account is the card on top of that list, and the keyboard
+   * shortcuts are of no use on a touch screen.
    */
   phone: boolean;
 }

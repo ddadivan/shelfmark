@@ -1,0 +1,21 @@
+<app-settings-page-header
+  [title]="'settings.nav.shortcuts' | transloco"
+  [description]="'settings.description.shortcuts' | transloco"
+/>
+
+<ui-settings-section [title]="'settings.nav.shortcuts' | transloco">
+  <ui-settings-row
+    [title]="'shortcuts.page.label' | transloco"
+    [description]="'shortcuts.hint' | transloco"
+  >
+    <ui-button (click)="shortcuts.open()">{{ 'shortcuts.page.action' | transloco }}</ui-button>
+  </ui-settings-row>
+</ui-settings-section>
+
+<div class="shortcuts__groups">
+  @for (group of groups; track group.id) {
+  <ui-settings-section [title]="group.titleKey | transloco">
+    <app-shortcut-list [group]="group" />
+  </ui-settings-section>
+  }
+</div>

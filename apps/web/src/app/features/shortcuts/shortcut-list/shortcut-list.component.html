@@ -1,0 +1,24 @@
+<ul class="shortcut-list" [attr.aria-labelledby]="ariaLabelledby() || null">
+  @for (row of rows(); track row.labelKey) {
+    <li class="shortcut-list__row">
+      <span class="shortcut-list__label">{{ row.labelKey | transloco }}</span>
+      <span class="shortcut-list__keys">
+        @for (cap of row.caps; track $index) {
+          <kbd class="shortcut-list__cap">
+            @if (cap.icon; as icon) {
+              <ui-icon [name]="icon" [size]="ICON_SIZE.Sm" />
+            }
+            @if (cap.text !== null) {
+              <span [attr.aria-hidden]="cap.nameKey ? 'true' : null">{{ cap.text }}</span>
+            }
+            @if (cap.nameKey; as nameKey) {
+              <span [class.shortcut-list__sr]="cap.icon !== null || cap.text !== null">{{
+                nameKey | transloco
+              }}</span>
+            }
+          </kbd>
+        }
+      </span>
+    </li>
+  }
+</ul>

@@ -152,6 +152,24 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     },
   },
   {
+    name: 'settings keyboard shortcuts',
+    open: async (page) => {
+      await openSignedIn(page, '/settings/shortcuts');
+      await expect(
+        page.getByRole('heading', { level: 1, name: 'Keyboard shortcuts' }),
+      ).toBeVisible();
+    },
+  },
+  {
+    name: 'keyboard shortcuts dialog',
+    open: async (page) => {
+      await openFeed(page);
+      await page.keyboard.press('?');
+      await expect(page.getByRole('dialog', { name: 'Keyboard shortcuts' })).toBeVisible();
+    },
+    ...SHEET,
+  },
+  {
     name: 'export menu',
     open: async (page) => {
       await openFeed(page);
