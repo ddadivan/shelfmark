@@ -1,4 +1,5 @@
 export * from './lib/avatar';
+export * from './lib/badge';
 export * from './lib/breadcrumbs';
 export * from './lib/button';
 export * from './lib/card';

@@ -1,0 +1,35 @@
+@use '../../styles/ui' as *;
+
+:host {
+  @include type(caption);
+
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+  height: rem(22px);
+  padding: 0 rem(8px);
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  background: var(--surface-hover);
+  border-radius: var(--radius-full);
+}
+
+:host(.ui-badge--accent) {
+  color: var(--accent-text);
+  background: var(--accent-bg);
+}
+
+:host(.ui-badge--warning) {
+  color: var(--warning);
+  background: var(--warning-bg);
+}
+
+:host(.ui-badge--danger) {
+  color: var(--danger);
+  background: var(--danger-bg);
+}
+
+.ui-badge__icon {
+  flex: none;
+}
