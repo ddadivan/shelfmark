@@ -19,15 +19,15 @@
   gap: var(--space-2);
   align-items: center;
   justify-content: center;
-  height: rem(36px);
+  height: rem(40px);
   min-width: var(--ui-button-min-width, 0);
-  padding: 0 rem(14px);
+  padding: 0 rem(18px);
   color: var(--text);
   white-space: nowrap;
   cursor: pointer;
   background: transparent;
   border: 1px solid transparent;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-full);
   transition:
     background-color var(--duration-fast) var(--ease-out),
     border-color var(--duration-fast) var(--ease-out),
@@ -149,15 +149,14 @@ a.ui-button {
 
 // sm inherits the `label` line-height; only font-size shrinks (spec: 12px text, 16px icons).
 .ui-button--sm {
-  height: rem(30px);
-  padding: 0 rem(10px);
+  height: rem(32px);
+  padding: 0 rem(12px);
   font-size: rem(12px);
-  border-radius: var(--radius-sm);
 }
 
 .ui-button--lg {
-  height: rem(44px);
-  padding: 0 rem(18px);
+  height: rem(48px);
+  padding: 0 rem(22px);
   font-size: rem(15px);
 }
 
@@ -167,15 +166,15 @@ a.ui-button {
 }
 
 .ui-button--icon {
-  width: rem(36px);
+  width: rem(40px);
   padding: 0;
 
   &.ui-button--sm {
-    width: rem(30px);
+    width: rem(32px);
   }
 
   &.ui-button--lg {
-    width: rem(44px);
+    width: rem(48px);
   }
 
   // Touch: the button itself grows to 44px; `hitArea="overlay"` keeps its size instead.
