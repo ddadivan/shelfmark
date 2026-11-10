@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Rating dialogs</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a a-board" style="background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));">
+
+<section class="a-state" style="flex: 0 1 656px; max-width: 656px;">
+<h2 class="a-cap">1 · Rating · 3 days, 1 week, 1 month, 1 year after sign-up</h2>
+<div class="sm-dialog" role="dialog" aria-labelledby="rt-h" style="max-width: none; gap: 18px;">
+<div class="sm-dialog__head"><h3 id="rt-h" style="margin: 0; font-size: 26px; line-height: 32px; font-weight: 600;">How do you like Shelfmark so far?</h3><button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Not now"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+<div role="radiogroup" aria-label="Score from 1 to 10" class="sm-rating">
+<button class="sm-rating__item" role="radio" aria-checked="false">1</button><button class="sm-rating__item" role="radio" aria-checked="false">2</button><button class="sm-rating__item" role="radio" aria-checked="false">3</button><button class="sm-rating__item" role="radio" aria-checked="false">4</button><button class="sm-rating__item" role="radio" aria-checked="false">5</button><button class="sm-rating__item" role="radio" aria-checked="false">6</button><button class="sm-rating__item" role="radio" aria-checked="false">7</button><button class="sm-rating__item" role="radio" aria-checked="false">8</button><button class="sm-rating__item" role="radio" aria-checked="false">9</button><button class="sm-rating__item" role="radio" aria-checked="false">10</button>
+</div>
+<div class="sm-rating__ends" style="margin-top: -6px;"><span>Not really</span><span>Love it</span></div>
+<div class="sm-dialog__foot"><button class="sm-btn sm-btn--ghost">Not now</button></div>
+</div>
+</section>
+
+<section class="a-state" style="flex: 0 1 656px; max-width: 656px;">
+<h2 class="a-cap">2 · Score 1–7 → what would make it better</h2>
+<div class="sm-dialog" role="dialog" aria-labelledby="rt2-h" style="max-width: none; gap: 16px;">
+<div class="sm-rating" aria-label="Your score: 6" role="img"><span class="sm-rating__item">1</span><span class="sm-rating__item">2</span><span class="sm-rating__item">3</span><span class="sm-rating__item">4</span><span class="sm-rating__item">5</span><span class="sm-rating__item is-on">6</span><span class="sm-rating__item">7</span><span class="sm-rating__item">8</span><span class="sm-rating__item">9</span><span class="sm-rating__item">10</span></div>
+<h3 id="rt2-h" style="margin: 0; font-size: 26px; line-height: 32px; font-weight: 600;">What would make it better?</h3>
+<div class="sm-field"><div class="sm-field__control sm-field__control--textarea is-focus"><textarea aria-labelledby="rt2-h" rows="4" placeholder="One thing we should change or add"></textarea></div><div class="sm-field__hint"><span>Optional. Your score is saved either way.</span><span>0 / 2000</span></div></div>
+<div class="sm-dialog__foot"><button class="sm-btn sm-btn--secondary">Skip</button><button class="sm-btn sm-btn--primary">Send</button></div>
+</div>
+</section>
+
+<section class="a-state">
+<h2 class="a-cap">3 · Thanks · closes by itself in 4 s</h2>
+<div class="sm-dialog" role="dialog" aria-labelledby="rt3-h" style="max-width: none; gap: 12px; align-items: center; text-align: center; padding: 40px 28px;">
+<span style="width: 64px; height: 64px; border-radius: 22px; background: var(--accent-bg); color: var(--accent-text); display: grid; place-items: center;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+<h3 id="rt3-h" style="margin: 0; font-size: 24px; font-weight: 600;">Thank you</h3>
+<p style="margin: 0; font-size: 15px; color: var(--text-muted);">We read every message.</p>
+<button class="sm-btn sm-btn--secondary" style="margin-top: 6px;">Close</button>
+</div>
+<p class="a-note">Steps change inside the same window with the welcome-style slide. Square 1–10 buttons, at least 48 px, so they are easy to hit; on phones they wrap into two rows of five. Keyboard: arrows or digits 1–9, 0 for 10. Never shown over another dialog or an unsaved form.</p>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

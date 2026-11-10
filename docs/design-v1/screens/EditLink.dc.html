@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Edit link</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/shelfmark/tokens.css">
+<link rel="stylesheet" href="ds/shelfmark/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root" style="min-height: 900px; position: relative; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif;">
+<div aria-hidden="true" style="position: absolute; inset: 0; display: flex; flex-direction: column;">
+<div style="height: 60px; border-bottom: 1px solid var(--border); background: var(--surface);"></div>
+<div style="flex: 1; display: flex;"><div style="width: 248px; border-right: 1px solid var(--border); background: var(--surface);"></div><div style="flex: 1;"></div></div>
+</div>
+<div class="sm-scrim" style="position: absolute; inset: 0;">
+<form class="sm-dialog sm-dialog--md sm-pop-in" role="dialog" aria-modal="true" aria-labelledby="e-title" style="gap: 18px;">
+<div class="sm-dialog__head"><h2 id="e-title" style="margin: 0; font-size: 20px; line-height: 28px; font-weight: 600;">Edit link</h2><button type="button" class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+
+<div class="sm-field"><label class="sm-field__label" for="e-url">Link</label><div class="sm-field__control sm-field__control--url"><input id="e-url" value="https://www.cos.com/en/wool-coat-graphite"></div></div>
+<div class="sm-field"><label class="sm-field__label" for="e-t">Title</label><div class="sm-field__control is-focus"><input id="e-t" value="Wool coat, straight cut, graphite"></div></div>
+
+<div style="display: flex; flex-direction: column; gap: 18px;">
+<div class="sm-field"><label class="sm-field__label">Folder</label><div class="sm-field__control"><span class="sm-select__value">Clothes</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div></div>
+<div class="sm-field"><label class="sm-field__label">Tags</label><div class="sm-field__control sm-taginput"><span class="sm-chip">clothes<button type="button" class="sm-chip__remove" aria-label="Remove tag clothes"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></span><span class="sm-chip">winter<button type="button" class="sm-chip__remove" aria-label="Remove tag winter"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></span><input aria-label="Add tag" placeholder="Add tag"></div></div>
+</div>
+
+<div class="sm-field"><label class="sm-field__label" for="e-n">Note</label><div class="sm-field__control sm-field__control--textarea"><textarea id="e-n" rows="2">Wait for the sale, size M</textarea></div></div>
+
+<label style="display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer;"><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: var(--accent);">Add to favorites</label>
+
+<div class="sm-dialog__foot" style="justify-content: space-between;">
+<button type="button" class="sm-btn sm-btn--ghost" style="color: var(--danger);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>Delete</button>
+<div style="display: flex; gap: 8px;"><button type="button" class="sm-btn sm-btn--secondary">Cancel</button><button type="submit" class="sm-btn sm-btn--primary">Save changes</button></div>
+</div>
+<p style="margin: 0; font-size: 12px; color: var(--text-muted);">Saved 3 weeks ago, last opened yesterday</p>
+</form>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

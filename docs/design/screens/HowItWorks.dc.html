@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · How it works video and About</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a a-board" style="background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));">
+
+<section class="a-state" style="grid-column: span 2;">
+<h2 class="a-cap">1 · “How it works” dialog with the promo video</h2>
+<div class="sm-dialog" role="dialog" aria-labelledby="hw-h" style="max-width: 860px; gap: 18px;">
+<div class="sm-dialog__head"><h3 id="hw-h" style="margin: 0; font-size: 22px; line-height: 28px; font-weight: 600;">Shelfmark in 60 seconds</h3><button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+<div style="position: relative; aspect-ratio: 16 / 9; border-radius: 20px; overflow: hidden; background: var(--surface-hover);">
+<div aria-hidden="true" style="position: absolute; inset: 24px; display: flex; gap: 12px;"><div style="width: 22%; background: var(--surface); border-radius: 16px;"></div><div style="flex: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-content: start; padding-top: 48px;"><div style="height: 130px; background: var(--surface); border-radius: 14px;"></div><div style="height: 130px; background: var(--surface); border-radius: 14px;"></div><div style="height: 130px; background: var(--accent-bg); border-radius: 14px;"></div></div></div>
+<button class="sm-btn sm-btn--primary" aria-label="Play video" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 72px; height: 72px; border-radius: 50%; padding: 0;"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg></button>
+<div class="sm-glass" style="position: absolute; left: 14px; right: 14px; bottom: 14px; border-radius: 14px; padding: 8px 12px; display: flex; align-items: center; gap: 12px; font-size: 12px;"><span>0:00 / 1:02</span><span style="flex: 1; height: 4px; border-radius: 2px; background: var(--surface-pressed);"></span><button class="sm-btn sm-btn--ghost sm-btn--sm" style="height: 28px;">CC</button><button class="sm-btn sm-btn--ghost sm-btn--sm" style="height: 28px;">Full screen</button></div>
+</div>
+<div role="list" aria-label="Chapters" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;">
+<button role="listitem" class="sm-view" style="height: auto; padding: 10px 14px; border-radius: 14px; justify-content: space-between;">Save a link<b>0:00</b></button>
+<button role="listitem" class="sm-view" style="height: auto; padding: 10px 14px; border-radius: 14px; justify-content: space-between;">Folders and tags<b>0:18</b></button>
+<button role="listitem" class="sm-view" style="height: auto; padding: 10px 14px; border-radius: 14px; justify-content: space-between;">Find it again<b>0:41</b></button>
+</div>
+<p class="a-note">The video records the real interface. Captions are on by default when the sound is off; with reduced motion it doesn't autoplay.</p>
+</div>
+</section>
+
+<section class="a-state">
+<h2 class="a-cap">2 · Where to find it</h2>
+<div class="sm-panel" style="gap: 12px;">
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 16px; background: var(--bg);"><span style="width: 44px; height: 30px; border-radius: 8px; background: var(--accent-bg); display: grid; place-items: center; color: var(--accent-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg></span><span style="flex: 1; font-size: 13px; line-height: 18px;"><b style="font-weight: 600;">New here? Watch how it works</b><br><span style="color: var(--text-muted);">1 minute</span></span><button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Hide"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+<p class="a-note">Bottom of the sidebar for the first two weeks, until watched or hidden. Always in the account menu as “How it works”, and as a link in the empty library.</p>
+</div>
+</section>
+
+<section class="a-state">
+<h2 class="a-cap">3 · About page for signed-in people</h2>
+<div class="sm-panel" style="padding: 0; overflow: hidden;">
+<div style="display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border);"><svg width="22" height="22" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="7" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><span style="font-size: 15px; font-weight: 600;">Shelfmark</span><span style="flex: 1;"></span><a href="#" class="sm-btn sm-btn--primary sm-btn--sm" style="text-decoration: none;">Back to my shelf</a><span class="sm-avatar sm-avatar--sm">DD</span></div>
+<div style="padding: 28px 24px; display: flex; flex-direction: column; gap: 12px;"><span style="font-size: 32px; line-height: 34px; font-weight: 600; letter-spacing: -0.03em;">Paste a link.<br>Find it again.</span><p style="margin: 0; font-size: 14px; color: var(--text-muted);">The same page as the public landing, at /about. Sign-in buttons become “Back to my shelf”, the demo button hides, and a “What's new” block lists recent updates.</p></div>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

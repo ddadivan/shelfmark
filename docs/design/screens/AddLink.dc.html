@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Add link</title>
+<title>A · Add link</title>
 <script src="./support.js"></script>
-<link rel="stylesheet" href="ds/shelfmark/tokens.css">
-<link rel="stylesheet" href="ds/shelfmark/components/bundle.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
 </head>
 <body>
 <x-dc>
@@ -16,53 +17,46 @@ body{margin:0}
 a{color:inherit}a:hover{color:inherit}
 </style>
 </helmet>
-<div data-theme="{{theme}}" class="sm-root" style="min-height: 900px; position: relative; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif;">
-
-<div aria-hidden="true" style="position: absolute; inset: 0; display: flex; flex-direction: column;">
-<div style="height: 60px; border-bottom: 1px solid var(--border); background: var(--surface);"></div>
-<div style="flex: 1; display: flex;"><div style="width: 248px; border-right: 1px solid var(--border); background: var(--surface);"></div><div style="flex: 1;"></div></div>
+<div data-theme="{{theme}}" class="sm-root dir-a" style="min-height: 900px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; position: relative;">
+<div aria-hidden="true" style="position: absolute; inset: 0; display: flex; gap: 12px; padding: 12px;">
+<div style="width: 272px; background: var(--surface); border-radius: 22px;"></div>
+<div style="flex: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; padding: 140px 16px 0; align-content: start;">
+<div style="height: 280px; background: var(--surface); border-radius: 22px;"></div><div style="height: 280px; background: var(--surface); border-radius: 22px;"></div><div style="height: 280px; background: var(--surface); border-radius: 22px;"></div>
 </div>
-
+</div>
 <div class="sm-scrim" style="position: absolute; inset: 0;">
-<form class="sm-dialog sm-dialog--md sm-pop-in" role="dialog" aria-modal="true" aria-labelledby="a-title" style="gap: 18px;">
-<div class="sm-dialog__head"><h2 id="a-title" style="margin: 0; font-size: 20px; line-height: 28px; font-weight: 600;">Add link</h2><button type="button" class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+<form class="sm-dialog sm-dialog--md" role="dialog" aria-modal="true" aria-labelledby="add-title" style="gap: 20px;">
+<div class="sm-dialog__head"><h2 id="add-title" style="margin: 0; font-size: 24px; line-height: 30px; font-weight: 600; letter-spacing: -0.02em;">Add link</h2><button type="button" class="sm-btn sm-btn--ghost sm-btn--icon" aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
 
-<div class="sm-field"><label class="sm-field__label" for="a-url">Link</label>
-<div class="sm-field__control sm-field__control--url is-focus"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 15l6-6M11 6l.46-.54a5 5 0 0 1 7.07 7.07L18 13M13 18l-.4.54a5.07 5.07 0 0 1-7.12 0 4.97 4.97 0 0 1 0-7.07L6 11"/></svg><input id="a-url" value="https://youtube.com/watch?v=ng22-signal-forms"></div>
-</div>
+<div class="sm-field"><label class="sm-field__label" for="aa-url">Link</label><div class="sm-field__control sm-field__control--url" style="min-height: 52px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true" style="color: var(--text-muted);"><path d="M9.5 14.5l5-5M8 12l-1.8 1.8a3.2 3.2 0 0 0 4.5 4.5l1.8-1.8M16 12l1.8-1.8a3.2 3.2 0 0 0-4.5-4.5L11.5 7.5"/></svg><input id="aa-url" value="https://youtube.com/watch?v=ng22-signal-forms" style="font-family: var(--font-mono); font-size: 13px;"></div></div>
 
-<sc-if value="{{dup}}" hint-placeholder-val="{{true}}">
-<div class="sm-notice sm-notice--warning" role="status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px;"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>You already saved this link in <a href="#">Work / Angular</a> 2 days ago. Open it, or save it again.</span></div>
-</sc-if>
-
-<div style="display: flex; gap: 14px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg);">
-<div style="width: 128px; flex: none; aspect-ratio: 16 / 9; border-radius: var(--radius-sm); background: var(--accent-bg);"></div>
+<div style="display: flex; gap: 14px; align-items: center; padding: 8px; border-radius: 20px; background: var(--bg);">
+<div style="width: 148px; aspect-ratio: 16 / 10; border-radius: 14px; background: var(--accent-bg); flex: none;"></div>
 <div style="min-width: 0; display: flex; flex-direction: column; gap: 4px;">
-<div class="sm-card__meta"><span class="sm-favicon">Y</span>youtube.com</div>
-<div style="font-size: 14px; line-height: 20px; font-weight: 600;">Angular 22: everything about Signal Forms in 20 minutes</div>
-<div style="font-size: 12px; color: var(--text-muted);">Filled in from the page. You can edit the title.</div>
+<span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted);"><span class="sm-favicon">Y</span>youtube.com</span>
+<span style="font-size: 16px; line-height: 22px; font-weight: 600;">Angular 22: everything about Signal Forms in 20 minutes</span>
+<span style="font-size: 12px; color: var(--text-muted);">Filled in from the page. You can edit the title.</span>
 </div>
 </div>
 
-<div class="sm-field"><label class="sm-field__label" for="a-title-in">Title</label><div class="sm-field__control"><input id="a-title-in" value="Angular 22: everything about Signal Forms in 20 minutes"></div></div>
+<div class="sm-field"><label class="sm-field__label" for="aa-folder">Folder</label><div class="sm-field__control" id="aa-folder"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--text-muted);"><path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></svg><span class="sm-select__value" style="flex: 1;">Work / Angular</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div></div>
 
-<div style="display: flex; flex-direction: column; gap: 18px;">
-<div class="sm-field"><label class="sm-field__label">Folder</label><div class="sm-field__control"><span class="sm-select__value"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true" style="color: var(--text-muted)"><path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2"/></svg>Work / Angular</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div></div>
-<div class="sm-field"><label class="sm-field__label">Tags</label><div class="sm-field__control sm-taginput"><span class="sm-chip">angular<button type="button" class="sm-chip__remove" aria-label="Remove tag angular"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></span><input aria-label="Add tag" placeholder="Add tag"></div></div>
+<div class="sm-field"><label class="sm-field__label" for="aa-tags">Tags</label>
+<div class="sm-field__control sm-taginput"><span class="sm-chip">angular<button type="button" class="sm-chip__remove" aria-label="Remove tag angular"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></span><input id="aa-tags" placeholder="Add tag"></div>
+<div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 12px; color: var(--text-muted);">Suggested from your other youtube.com links:<button type="button" class="sm-chip sm-chip--neutral sm-chip--clickable">+ video</button><button type="button" class="sm-chip sm-chip--neutral sm-chip--clickable">+ watch-later</button></div>
 </div>
 
-<div class="sm-field"><label class="sm-field__label" for="a-note">Note</label><div class="sm-field__control sm-field__control--textarea"><textarea id="a-note" rows="2" placeholder="Why are you saving this?">Watch on the weekend</textarea></div><div class="sm-field__hint"><span>Helps you find it later</span><span>20 / 2000</span></div></div>
+<div class="sm-field"><label class="sm-field__label" for="aa-note">Note</label><div class="sm-field__control sm-field__control--textarea"><textarea id="aa-note" rows="2" placeholder="Why are you saving this?">Watch on the weekend</textarea></div></div>
 
-<div class="sm-dialog__foot"><button type="button" class="sm-btn sm-btn--secondary">Cancel</button><sc-if value="{{dup}}" hint-placeholder-val="{{true}}"><button type="button" class="sm-btn sm-btn--secondary">Open saved</button></sc-if><button type="submit" class="sm-btn sm-btn--primary">{{saveLabel}}</button></div>
+<div class="sm-dialog__foot" style="align-items: center;"><span style="margin-right: auto; font-size: 12px; color: var(--text-muted);"><span class="sm-kbd">⌘</span> <span class="sm-kbd">Enter</span> to save</span><button type="button" class="sm-btn sm-btn--secondary">Cancel</button><button type="submit" class="sm-btn sm-btn--primary">Save link</button></div>
 </form>
 </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"duplicate":{"editor":"boolean","default":true},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":900}}'>
 class Component extends DCLogic {
   renderVals() {
-    const dup = this.props.duplicate ?? true;
-    return { theme: (this.props.dark ?? false) ? 'dark' : 'light', dup, saveLabel: dup ? 'Save anyway' : 'Save link' };
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
   }
 }
 </script>

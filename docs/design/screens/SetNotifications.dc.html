@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Settings › Notifications and reminders</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a" style="min-height: 1200px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; display: flex; flex-wrap: wrap; gap: 12px; padding: 12px; box-sizing: border-box; align-items: flex-start;">
+
+<nav aria-label="Settings" style="flex: 1 1 220px; max-width: 248px; background: var(--surface); border-radius: 22px; box-shadow: var(--shadow-card); padding: 14px 10px; display: flex; flex-direction: column; gap: 2px;">
+<a href="#" class="sm-btn sm-btn--ghost sm-btn--sm" style="text-decoration: none; align-self: flex-start; margin-bottom: 8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M14 6l-6 6 6 6"/></svg>Back to links</a>
+<div class="sm-tree__section" style="padding-top: 4px;">Settings</div>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Account</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Appearance</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Library</a>
+<a href="#" class="sm-tree__row is-active" aria-current="page" style="text-decoration: none;">Notifications and reminders</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Language</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Keyboard shortcuts</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Import and export</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Privacy and data</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Your feedback</a>
+</nav>
+
+<main style="flex: 999 1 560px; min-width: 0; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; padding: 8px 16px 40px;">
+<div style="flex: 1 1 520px; max-width: 720px; display: flex; flex-direction: column; gap: 18px;">
+<div><h1 style="margin: 0; font-size: 34px; line-height: 40px; font-weight: 600;">Notifications and reminders</h1><p style="margin: 4px 0 0; font-size: 14px; color: var(--text-muted);">Where reminders reach you, and which emails you get.</p></div>
+<div class="sm-notice sm-notice--warning" role="status" style="align-items: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none;"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/></svg><span style="flex: 1;">Browser notifications are blocked for Shelfmark. Allow them in the site settings to get reminders when the tab is closed.</span><button class="sm-btn sm-btn--secondary sm-btn--sm">How to allow</button></div>
+<section class="sm-panel sm-settings" aria-labelledby="n1">
+<h2 id="n1" class="sm-settings__title">Reminders</h2>
+<div class="sm-setting"><div><div class="sm-setting__title">In the app</div><div class="sm-setting__desc">A toast while Shelfmark is open</div></div><button class="sm-switch" role="switch" aria-checked="true" aria-label="In the app"></button></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Browser notifications</div><div class="sm-setting__desc">When Shelfmark is closed. Needs your permission.</div></div><button class="sm-switch" role="switch" aria-checked="false" aria-label="Browser notifications"></button></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Email</div><div class="sm-setting__desc">If neither of the above reaches you within 15 minutes</div></div><button class="sm-switch" role="switch" aria-checked="true" aria-label="Email"></button></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Default time</div><div class="sm-setting__desc">Used by “Tomorrow”, “This weekend” and “Next week”</div></div><div class="sm-field__control" style="min-width: 140px;" role="button" aria-haspopup="listbox" aria-label="Default time: 9:00"><span class="sm-select__value" style="flex: 1;">9:00</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Quiet hours</div><div class="sm-setting__desc">No push or email between these times</div></div><div style="display: flex; gap: 8px; align-items: center;"><div class="sm-field__control" style="min-width: 110px;" role="button" aria-haspopup="listbox" aria-label="From: 22:00"><span class="sm-select__value" style="flex: 1;">22:00</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div><span style="color: var(--text-muted);">–</span><div class="sm-field__control" style="min-width: 110px;" role="button" aria-haspopup="listbox" aria-label="To: 8:00"><span class="sm-select__value" style="flex: 1;">8:00</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div></div></div>
+
+</section>
+<section class="sm-panel sm-settings" aria-labelledby="n2">
+<h2 id="n2" class="sm-settings__title">Email</h2>
+<div class="sm-setting"><div><div class="sm-setting__title">Weekly digest</div><div class="sm-setting__desc">Links you saved and didn’t open, every Monday</div></div><button class="sm-switch" role="switch" aria-checked="false" aria-label="Weekly digest"></button></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Shared folders</div><div class="sm-setting__desc">When someone adds links to a folder you share</div></div><button class="sm-switch" role="switch" aria-checked="true" aria-label="Shared folders"></button></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Product news</div><div class="sm-setting__desc">A short note when something new ships, about once a month</div></div><button class="sm-switch" role="switch" aria-checked="false" aria-label="Product news"></button></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Account and security</div><div class="sm-setting__desc">Sign-ins from new devices, password changes</div></div><span style="font-size: 13px; color: var(--text-muted);">Always on</span></div>
+
+</section>
+
+</div>
+<aside style="flex: 1 1 300px; max-width: 360px; padding-top: 64px;"><p class="a-note" style="font-size: 13px; line-height: 20px;">Every email has a one-click unsubscribe that turns off just that type here. Security emails can’t be turned off.</p></aside>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1200}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Share a folder</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a a-board" style="background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));">
+
+<section class="a-state" style="flex: 0 1 600px; max-width: 600px;">
+<h2 class="a-cap">1 · Folder menu → Share, and the share dialog</h2>
+<div class="sm-dialog sm-dialog--md" role="dialog" aria-labelledby="sh-h" style="gap: 20px; max-width: none;">
+<div class="sm-dialog__head"><div><h3 id="sh-h" style="margin: 0; font-size: 22px; line-height: 28px; font-weight: 600;">Share “Recipes”</h3><p style="margin: 4px 0 0; font-size: 13px; color: var(--text-muted);">15 links, subfolders included</p></div><button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+
+<div style="display: flex; align-items: center; gap: 14px; padding: 14px; border-radius: 18px; background: var(--bg);">
+<span style="width: 40px; height: 40px; border-radius: 12px; background: var(--accent-bg); color: var(--accent-text); display: grid; place-items: center; flex: none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.7 3.5 5.5 3.5 8.5s-1 5.8-3.5 8.5c-2.5-2.7-3.5-5.5-3.5-8.5s1-5.8 3.5-8.5z"/></svg></span>
+<span style="flex: 1; min-width: 0;"><span style="display: block; font-size: 15px; font-weight: 500;">Public link</span><span style="display: block; font-size: 13px; color: var(--text-muted);">Anyone with the link can view. No account needed.</span></span>
+<button class="sm-switch" role="switch" aria-checked="true" aria-label="Public link"></button>
+</div>
+
+<div style="display: flex; gap: 8px;"><div class="sm-field__control" style="flex: 1; background: var(--bg);"><input aria-label="Public link" value="shelfmark.app/s/dmytro/recipes-k3f9" readonly style="font-family: var(--font-mono); font-size: 13px;"></div><button class="sm-btn sm-btn--primary">Copy link</button></div>
+
+<div style="display: flex; flex-direction: column; gap: 10px;">
+<div style="display: flex; gap: 8px;"><div class="sm-field__control" style="flex: 1;"><input aria-label="Invite by email" placeholder="Invite by email"></div><div class="sm-field__control" style="width: 132px;"><span class="sm-select__value" style="flex: 1;">Can view</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div><button class="sm-btn sm-btn--secondary">Invite</button></div>
+<div style="display: flex; flex-direction: column;">
+<div class="sm-row" style="cursor: default;"><span class="sm-avatar">DD</span><span class="sm-row__main"><span class="sm-row__title">Dmytro (you)</span><span class="sm-row__meta">dmytro@example.com</span></span><span style="font-size: 13px; color: var(--text-muted);">Owner</span></div>
+<div class="sm-row" style="cursor: default;"><span class="sm-avatar" style="background: var(--surface-hover); color: var(--text);">AK</span><span class="sm-row__main"><span class="sm-row__title">Anna K.</span><span class="sm-row__meta">anna@example.com</span></span><button class="sm-btn sm-btn--ghost sm-btn--sm">Can add links<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></div>
+<div class="sm-row" style="cursor: default;"><span class="sm-avatar" style="background: var(--surface-hover); color: var(--text);">M</span><span class="sm-row__main"><span class="sm-row__title">max@example.com</span><span class="sm-row__meta">Invite sent, not accepted yet</span></span><button class="sm-btn sm-btn--ghost sm-btn--sm">Can view<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></div>
+</div>
+</div>
+<div class="sm-dialog__foot" style="justify-content: space-between; align-items: center;"><span style="font-size: 12px; color: var(--text-muted);">Notes stay private unless you turn them on.</span><button class="sm-btn sm-btn--ghost sm-btn--sm">Link settings</button></div>
+</div>
+</section>
+
+<section class="a-state">
+<h2 class="a-cap">2 · Link settings and roles</h2>
+<div class="sm-panel">
+<h3 style="margin: 0; font-size: 18px; font-weight: 600;">Link settings</h3>
+<div style="display: flex; align-items: center; gap: 12px;"><span style="flex: 1;"><span style="display: block; font-size: 14px; font-weight: 500;">Show my notes</span><span style="display: block; font-size: 13px; color: var(--text-muted);">Guests see why you saved each link</span></span><button class="sm-switch" role="switch" aria-checked="false" aria-label="Show my notes"></button></div>
+<div style="display: flex; align-items: center; gap: 12px;"><span style="flex: 1;"><span style="display: block; font-size: 14px; font-weight: 500;">Allow copying to their shelf</span><span style="display: block; font-size: 13px; color: var(--text-muted);">Signed-in guests can save the whole collection</span></span><button class="sm-switch" role="switch" aria-checked="true" aria-label="Allow copying"></button></div>
+<div style="display: flex; align-items: center; gap: 12px;"><span style="flex: 1;"><span style="display: block; font-size: 14px; font-weight: 500;">Reset link</span><span style="display: block; font-size: 13px; color: var(--text-muted);">The old link stops working at once</span></span><button class="sm-btn sm-btn--secondary sm-btn--sm">Reset</button></div>
+</div>
+<div class="sm-panel" style="gap: 10px;">
+<h3 style="margin: 0; font-size: 18px; font-weight: 600;">Roles</h3>
+<p style="margin: 0; font-size: 14px; line-height: 21px;"><b style="font-weight: 600;">Can view</b> — opens links, can't change anything.<br><b style="font-weight: 600;">Can add links</b> — adds and edits their own links, can't delete others'.<br><b style="font-weight: 600;">Owner</b> — everything, including sharing and deleting the folder.</p>
+</div>
+<div class="sm-panel" style="gap: 10px;">
+<h3 style="margin: 0; font-size: 18px; font-weight: 600;">In the sidebar</h3>
+<div style="display: flex; flex-direction: column; gap: 2px;">
+<span class="sm-tree__row">Recipes<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-label="Shared" role="img" style="color: var(--text-muted);"><circle cx="9" cy="8" r="3"/><path d="M3 19a6 6 0 0 1 12 0M16 5a3 3 0 0 1 0 6M18 19a6 6 0 0 0-2.5-4.9"/></svg><span class="sm-tree__count">15</span></span>
+<div class="sm-tree__section">Shared with me</div>
+<span class="sm-tree__row">Weekend trips<span style="font-size: 12px; color: var(--text-muted);">from Anna</span><span class="sm-tree__count">9</span></span>
+</div>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

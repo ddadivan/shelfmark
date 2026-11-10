@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Settings › Keyboard shortcuts</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a" style="min-height: 1000px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; display: flex; flex-wrap: wrap; gap: 12px; padding: 12px; box-sizing: border-box; align-items: flex-start;">
+
+<nav aria-label="Settings" style="flex: 1 1 220px; max-width: 248px; background: var(--surface); border-radius: 22px; box-shadow: var(--shadow-card); padding: 14px 10px; display: flex; flex-direction: column; gap: 2px;">
+<a href="#" class="sm-btn sm-btn--ghost sm-btn--sm" style="text-decoration: none; align-self: flex-start; margin-bottom: 8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M14 6l-6 6 6 6"/></svg>Back to links</a>
+<div class="sm-tree__section" style="padding-top: 4px;">Settings</div>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Account</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Appearance</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Library</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Notifications and reminders</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Language</a>
+<a href="#" class="sm-tree__row is-active" aria-current="page" style="text-decoration: none;">Keyboard shortcuts</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Import and export</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Privacy and data</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Your feedback</a>
+</nav>
+
+<main style="flex: 999 1 560px; min-width: 0; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; padding: 8px 16px 40px;">
+<div style="flex: 1 1 520px; max-width: 720px; display: flex; flex-direction: column; gap: 18px;">
+<div><h1 style="margin: 0; font-size: 34px; line-height: 40px; font-weight: 600;">Keyboard shortcuts</h1><p style="margin: 4px 0 0; font-size: 14px; color: var(--text-muted);">Work without the mouse.</p></div>
+<section class="sm-panel sm-settings" aria-labelledby="k1">
+<h2 id="k1" class="sm-settings__title">Shortcuts</h2>
+<div class="sm-setting"><div><div class="sm-setting__title">Use keyboard shortcuts</div><div class="sm-setting__desc">Single-key shortcuts never fire while you type in a field</div></div><button class="sm-switch" role="switch" aria-checked="true" aria-label="Use keyboard shortcuts"></button></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Show shortcuts in tooltips</div></div><button class="sm-switch" role="switch" aria-checked="true" aria-label="Show shortcuts in tooltips"></button></div>
+<div class="sm-setting"><div><div class="sm-setting__title">All shortcuts</div><div class="sm-setting__desc">Press ? anywhere to see them</div></div><button class="sm-btn sm-btn--secondary sm-btn--sm">Open list</button></div>
+
+</section>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px;"><section class="sm-panel sm-settings" aria-labelledby="k2">
+<h2 id="k2" class="sm-settings__title">Everywhere</h2>
+<div class="sm-setting" style="padding: 10px 0;"><div class="sm-setting__title" style="font-weight: 400;">Search</div><span><span class="sm-kbd">⌘</span> <span class="sm-kbd">K</span></span></div>
+<div class="sm-setting" style="padding: 10px 0;"><div class="sm-setting__title" style="font-weight: 400;">Add link</div><span><span class="sm-kbd">N</span></span></div>
+<div class="sm-setting" style="padding: 10px 0;"><div class="sm-setting__title" style="font-weight: 400;">All links</div><span><span class="sm-kbd">G</span> <span class="sm-kbd">A</span></span></div>
+<div class="sm-setting" style="padding: 10px 0;"><div class="sm-setting__title" style="font-weight: 400;">Unsorted</div><span><span class="sm-kbd">G</span> <span class="sm-kbd">U</span></span></div>
+<div class="sm-setting" style="padding: 10px 0;"><div class="sm-setting__title" style="font-weight: 400;">Favorites</div><span><span class="sm-kbd">G</span> <span class="sm-kbd">F</span></span></div>
+<div class="sm-setting" style="padding: 10px 0;"><div class="sm-setting__title" style="font-weight: 400;">Recently opened</div><span><span class="sm-kbd">G</span> <span class="sm-kbd">R</span></span></div>
+<div class="sm-setting" style="padding: 10px 0;"><div class="sm-setting__title" style="font-weight: 400;">Settings</div><span><span class="sm-kbd">G</span> <span class="sm-kbd">S</span></span></div>
+<div class="sm-setting" style="padding: 10px 0;"><div class="sm-setting__title" style="font-weight: 400;">This list</div><span><span class="sm-kbd">?</span></span></div>
+
+</section>
+<section class="sm-panel sm-settings" aria-labelledby="k3">
+<h2 id="k3" class="sm-settings__title">On a link</h2>
+<div class="sm-setting" style="padding: 10px 0;"><div class="sm-setting__title" style="font-weight: 400;">Open</div><span><span class="sm-kbd">↵</span></span></div>
+<div class="sm-setting" style="padding: 10px 0;"><div class="sm-setting__title" style="font-weight: 400;">Edit</div><span><span class="sm-kbd">E</span></span></div>
+<div class="sm-setting" style="padding: 10px 0;"><div class="sm-setting__title" style="font-weight: 400;">Favorite</div><span><span class="sm-kbd">F</span></span></div>
+<div class="sm-setting" style="padding: 10px 0;"><div class="sm-setting__title" style="font-weight: 400;">Pin to top</div><span><span class="sm-kbd">P</span></span></div>
+<div class="sm-setting" style="padding: 10px 0;"><div class="sm-setting__title" style="font-weight: 400;">Remind me</div><span><span class="sm-kbd">R</span></span></div>
+<div class="sm-setting" style="padding: 10px 0;"><div class="sm-setting__title" style="font-weight: 400;">Move to folder</div><span><span class="sm-kbd">M</span></span></div>
+<div class="sm-setting" style="padding: 10px 0;"><div class="sm-setting__title" style="font-weight: 400;">Select</div><span><span class="sm-kbd">X</span></span></div>
+<div class="sm-setting" style="padding: 10px 0;"><div class="sm-setting__title" style="font-weight: 400;">Delete</div><span><span class="sm-kbd">⌫</span></span></div>
+
+</section>
+</div>
+</div>
+<aside style="flex: 1 1 300px; max-width: 360px; padding-top: 64px;"><p class="a-note" style="font-size: 13px; line-height: 20px;">On Windows and Linux ⌘ shows as Ctrl. Turning shortcuts off keeps ⌘K and Esc, which every app has.</p></aside>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

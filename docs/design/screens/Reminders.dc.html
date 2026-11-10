@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Reminders</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a a-board" style="background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif;">
+
+<section class="a-state">
+<h2 class="a-cap">1 · Card “⋯” menu → Remind me</h2>
+<div style="position: relative; height: 420px;">
+<article class="sm-card" style="width: 250px;"><div class="sm-card__media" style="background: var(--accent-bg);"></div><div class="sm-card__body"><div class="sm-card__meta"><span class="sm-favicon">C</span>cos.com</div><h3 class="sm-card__title" style="margin: 0;">Wool coat, straight cut, graphite</h3></div></article>
+<div class="sm-menu" role="menu" aria-label="Link actions" style="position: absolute; left: 150px; top: 40px; width: 220px;">
+<button class="sm-menu__item" role="menuitem">Open<span class="sm-menu__hint sm-kbd">↵</span></button>
+<button class="sm-menu__item" role="menuitem">Edit<span class="sm-menu__hint sm-kbd">E</span></button>
+<button class="sm-menu__item is-hover" role="menuitem" aria-haspopup="menu" aria-expanded="true" style="background: var(--surface-hover);">Remind me<span class="sm-menu__hint sm-kbd">R</span></button>
+<button class="sm-menu__item" role="menuitem">Move to folder…</button>
+<div class="sm-menu__sep" role="separator"></div>
+<button class="sm-menu__item sm-menu__item--danger" role="menuitem">Delete</button>
+</div>
+<div class="sm-menu" role="menu" aria-label="Remind me" style="position: absolute; left: 378px; top: 100px; width: 230px;">
+<button class="sm-menu__item" role="menuitem">Later today<span class="sm-menu__hint" style="color: var(--text-muted);">18:00</span></button>
+<button class="sm-menu__item" role="menuitem">Tomorrow<span class="sm-menu__hint" style="color: var(--text-muted);">Wed 9:00</span></button>
+<button class="sm-menu__item" role="menuitem">This weekend<span class="sm-menu__hint" style="color: var(--text-muted);">Sat 10:00</span></button>
+<button class="sm-menu__item" role="menuitem">Next week<span class="sm-menu__hint" style="color: var(--text-muted);">Mon 9:00</span></button>
+<div class="sm-menu__sep" role="separator"></div>
+<button class="sm-menu__item" role="menuitem">Pick date and time…</button>
+</div>
+</div>
+</section>
+
+<section class="a-state">
+<h2 class="a-cap">2 · Pick date and time</h2>
+<div class="sm-dialog" role="dialog" aria-labelledby="rp-h" style="max-width: 380px; gap: 16px;">
+<div class="sm-dialog__head"><h3 id="rp-h" style="margin: 0; font-size: 20px; font-weight: 600;">Remind me</h3><button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+<div style="display: flex; align-items: center; justify-content: space-between;"><button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Previous month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M14 6l-6 6 6 6"/></svg></button><span style="font-weight: 600;">November 2026</span><button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Next month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M10 6l6 6-6 6"/></svg></button></div>
+<div class="sm-cal" role="grid" aria-label="November 2026">
+<span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
+<button class="is-muted">26</button><button class="is-muted">27</button><button class="is-muted">28</button><button class="is-muted">29</button><button class="is-muted">30</button><button class="is-muted">31</button><button>1</button>
+<button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button>
+<button class="is-today" aria-current="date">9</button><button>10</button><button>11</button><button>12</button><button>13</button><button class="is-on" aria-pressed="true">14</button><button>15</button>
+<button>16</button><button>17</button><button>18</button><button>19</button><button>20</button><button>21</button><button>22</button>
+<button>23</button><button>24</button><button>25</button><button>26</button><button>27</button><button>28</button><button>29</button>
+</div>
+<div style="display: flex; gap: 10px;">
+<div class="sm-field" style="flex: 1;"><label class="sm-field__label" for="rp-t">Time</label><div class="sm-field__control"><input id="rp-t" value="10:00"></div></div>
+<div class="sm-field" style="flex: 1;"><label class="sm-field__label" for="rp-r">Repeat</label><div class="sm-field__control" id="rp-r"><span class="sm-select__value" style="flex: 1;">Never</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div></div>
+</div>
+<div class="sm-dialog__foot"><button class="sm-btn sm-btn--secondary">Cancel</button><button class="sm-btn sm-btn--primary">Remind me Sat, 14 Nov</button></div>
+</div>
+</section>
+
+<section class="a-state">
+<h2 class="a-cap">3 · On the card</h2>
+<div style="display: flex; gap: 16px; flex-wrap: wrap;">
+<article class="sm-card" style="width: 230px;"><div class="sm-card__media" style="background: var(--accent-bg);"></div><div class="sm-card__body"><div class="sm-card__meta"><span class="sm-favicon">C</span>cos.com</div><h3 class="sm-card__title" style="margin: 0;">Wool coat, straight cut</h3><span class="sm-badge sm-badge--accent" style="align-self: flex-start;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>Sat, 10:00</span></div></article>
+<article class="sm-card" style="width: 230px;"><div class="sm-card__media" style="background: var(--surface-hover);"></div><div class="sm-card__body"><div class="sm-card__meta"><span class="sm-favicon">S</span>stepik.org</div><h3 class="sm-card__title" style="margin: 0;">NestJS for frontend developers</h3><span class="sm-badge sm-badge--warn" style="align-self: flex-start;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>Overdue, yesterday</span></div></article>
+</div>
+<p class="a-note">The badge shows the next reminder; overdue ones turn amber until opened or snoozed.</p>
+</section>
+
+<section class="a-state" style="flex: 0 1 580px; max-width: 580px;">
+<h2 class="a-cap">4 · When it's time</h2>
+<div class="sm-toast sm-toast--warn" role="status"><span class="sm-toast__icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></span><span class="sm-toast__text">Reminder: Wool coat, straight cut<small>cos.com · Wait for the sale, size M</small></span><button class="sm-toast__action">Open</button><button class="sm-toast__action sm-toast__action--ghost">Snooze</button><button class="sm-toast__close" aria-label="Dismiss"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+<div class="sm-panel" style="padding: 14px 16px; gap: 10px; max-width: 440px;">
+<div style="display: flex; align-items: center; gap: 10px;"><svg width="22" height="22" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="7" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><span style="font-size: 13px; font-weight: 600;">Shelfmark</span><span style="margin-left: auto; font-size: 12px; color: var(--text-muted);">now</span></div>
+<div style="font-size: 14px; line-height: 20px;"><b style="font-weight: 600;">Wool coat, straight cut, graphite</b><br><span style="color: var(--text-muted);">Wait for the sale, size M</span></div>
+</div>
+<p class="a-note">In the open app: a toast. Closed app: a browser or phone notification, if allowed; otherwise an email.</p>
+</section>
+
+<section class="a-state" style="grid-column: 1 / -1;">
+<h2 class="a-cap">5 · Reminders in the sidebar → list</h2>
+<div class="sm-panel" style="padding: 20px;">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;"><h3 style="margin: 0; font-size: 28px; line-height: 32px; font-weight: 600; letter-spacing: -0.02em;">Reminders</h3><div class="sm-seg" role="radiogroup" aria-label="Show"><button class="sm-seg__item is-active" role="radio" aria-checked="true">Upcoming 3</button><button class="sm-seg__item" role="radio" aria-checked="false">Overdue 1</button><button class="sm-seg__item" role="radio" aria-checked="false">Done</button></div></div>
+<div style="display: flex; flex-direction: column;">
+<div class="a-cap" style="padding: 6px 12px;">This week</div>
+<div class="sm-row" style="cursor: default;"><span class="sm-row__thumb" style="background: var(--accent-bg);"></span><span class="sm-row__main"><span class="sm-row__title">Wool coat, straight cut, graphite</span><span class="sm-row__meta">cos.com, in Clothes</span></span><span class="sm-badge">Sat, 10:00</span><button class="sm-btn sm-btn--ghost sm-btn--sm">Change</button><button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Remove reminder"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+<div class="sm-row" style="cursor: default;"><span class="sm-row__thumb" style="background: var(--surface-hover);"></span><span class="sm-row__main"><span class="sm-row__title">Angular 22: everything about Signal Forms</span><span class="sm-row__meta">youtube.com, in Work / Angular</span></span><span class="sm-badge">Sun, 18:00</span><button class="sm-btn sm-btn--ghost sm-btn--sm">Change</button><button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Remove reminder"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+<div class="a-cap" style="padding: 12px 12px 6px;">Later</div>
+<div class="sm-row" style="cursor: default;"><span class="sm-row__thumb" style="background: var(--surface-pressed);"></span><span class="sm-row__main"><span class="sm-row__title">Lisbon in three days</span><span class="sm-row__meta">cntraveler.com, in Travel</span></span><span class="sm-badge">1 Dec, 9:00, every year</span><button class="sm-btn sm-btn--ghost sm-btn--sm">Change</button><button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Remove reminder"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+</div>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1250}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

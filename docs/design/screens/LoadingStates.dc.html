@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Loading states</title>
+<title>A · Loading states</title>
 <script src="./support.js"></script>
-<link rel="stylesheet" href="ds/shelfmark/tokens.css">
-<link rel="stylesheet" href="ds/shelfmark/components/bundle.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
 </head>
 <body>
 <x-dc>
@@ -19,7 +20,7 @@ a{color:inherit}
 .panel{position:relative;border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--surface);overflow:hidden}
 </style>
 </helmet>
-<div data-theme="{{theme}}" class="sm-root" style="min-height: 1400px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; padding: 40px 48px 48px; box-sizing: border-box; display: flex; flex-direction: column; gap: 28px;">
+<div data-theme="{{theme}}" class="sm-root dir-a" style="min-height: 1400px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; padding: 40px 48px 48px; box-sizing: border-box; display: flex; flex-direction: column; gap: 28px;">
 
 <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
 <div>
@@ -37,16 +38,16 @@ a{color:inherit}
 </div>
 
 <div class="panel" style="height: 640px; display: flex; flex-direction: column; background: var(--bg);">
-<header style="height: 56px; flex: none; display: flex; align-items: center; gap: 16px; padding: 0 20px; border-bottom: 1px solid var(--border); background: var(--surface);">
+<header style="height: 56px; flex: none; display: flex; align-items: center; gap: 16px; padding: 0 20px; background: transparent;">
 <span style="display: flex; align-items: center; gap: 8px; min-width: 196px;"><svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="6" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><span style="font-size: 16px; font-weight: 600;">Shelfmark</span></span>
-<label class="sm-field__control" style="flex: 1; max-width: 480px; margin: 0 auto; min-height: 36px; background: var(--bg);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input aria-label="Search links" placeholder="Search links, notes and tags"><span class="sm-kbd">⌘K</span></label>
+<label class="sm-field__control" style="flex: 1; max-width: 480px; margin: 0 auto; min-height: 42px; background: var(--surface); border-radius: 999px; border-color: transparent; box-shadow: var(--shadow-card);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input aria-label="Search links" placeholder="Search links, notes and tags"><span class="sm-kbd">⌘K</span></label>
 <button class="sm-btn sm-btn--primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add link</button>
 <span class="sm-avatar">DD</span>
 </header>
 <div style="flex: 1; min-height: 0; display: flex; position: relative;">
 <sc-if value="{{isNav}}" hint-placeholder-val="{{false}}"><div class="sm-progress" role="progressbar" aria-label="Loading folder"></div></sc-if>
 
-<nav aria-label="Library" aria-busy="{{treeBusy}}" style="flex: 0 0 236px; padding: 16px 12px; border-right: 1px solid var(--border); background: var(--surface); display: flex; flex-direction: column; gap: 2px;">
+<nav aria-label="Library" aria-busy="{{treeBusy}}" style="flex: 0 0 236px; padding: 16px 12px; margin: 0 0 12px 12px; border-radius: 22px; box-shadow: var(--shadow-card); background: var(--surface); display: flex; flex-direction: column; gap: 2px;">
 <sc-if value="{{isFirst}}" hint-placeholder-val="{{true}}">
 <div style="display: flex; flex-direction: column; gap: 14px; padding: 8px;" aria-hidden="true">
 <sc-for list="{{treeSkel}}" as="t" hint-placeholder-count="8">

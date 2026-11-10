@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Public collection</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a" style="min-height: 1100px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif;">
+<div style="max-width: 1160px; margin: 0 auto; padding: 0 24px 48px; display: flex; flex-direction: column; gap: 32px;">
+<header style="display: flex; align-items: center; gap: 12px; padding: 18px 0; flex-wrap: wrap;">
+<a href="#" style="display: flex; align-items: center; gap: 10px; text-decoration: none;"><svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="7" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><span style="font-size: 17px; font-weight: 600; letter-spacing: -0.02em;">Shelfmark</span></a>
+<span style="flex: 1;"></span>
+<a href="#" class="sm-btn sm-btn--ghost" style="text-decoration: none;">Sign in</a>
+<a href="#" class="sm-btn sm-btn--primary" style="text-decoration: none;">Save to my shelf</a>
+</header>
+
+<section style="display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap;">
+<div style="display: flex; flex-direction: column; gap: 10px;">
+<span style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text-muted);"><span class="sm-avatar sm-avatar--sm">DD</span>Shared by Dmytro</span>
+<h1 style="margin: 0; font-size: 48px; line-height: 52px; font-weight: 600;">Recipes</h1>
+<p style="margin: 0; font-size: 15px; color: var(--text-muted);">15 links, updated 2 days ago</p>
+</div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap;">
+<label class="sm-field__control" style="border-radius: 999px; min-width: 260px; background: var(--surface); border-color: transparent; box-shadow: var(--shadow-card);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true" style="color: var(--text-muted);"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg><input aria-label="Search in this collection" placeholder="Search in Recipes"></label>
+<button class="sm-btn sm-btn--secondary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h11v11"/><path d="M19 4L8 15"/><rect x="4" y="9" width="11" height="11" rx="3"/></svg>Copy link</button>
+</div>
+</section>
+
+<div role="toolbar" aria-label="Subfolders" style="display: flex; gap: 8px; flex-wrap: wrap;"><button class="sm-view is-on" aria-pressed="true">All <b>15</b></button><button class="sm-view" aria-pressed="false">Weeknight <b>6</b></button><button class="sm-view" aria-pressed="false">Baking <b>5</b></button><button class="sm-view" aria-pressed="false">Guests <b>4</b></button></div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+<sc-for list="{{links}}" as="l" hint-placeholder-count="6">
+<a href="#" class="sm-card" style="text-decoration: none;"><div class="sm-card__media" style="background: {{l.bg}};"></div><div class="sm-card__body"><div class="sm-card__meta"><span class="sm-favicon">{{l.f}}</span>{{l.site}}</div><h2 class="sm-card__title" style="margin: 0;">{{l.title}}</h2></div></a>
+</sc-for>
+</div>
+
+<section class="sm-panel" style="flex-direction: row; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 28px 32px;">
+<div><h2 style="margin: 0; font-size: 24px; line-height: 30px; font-weight: 600; letter-spacing: -0.02em;">Keep your own links like this</h2><p style="margin: 6px 0 0; font-size: 14px; color: var(--text-muted);">Shelfmark saves videos, articles, things to buy and courses on one calm shelf.</p></div>
+<a href="#" class="sm-btn sm-btn--primary sm-btn--lg" style="text-decoration: none;">Start your shelf</a>
+</section>
+<footer style="font-size: 12px; color: var(--text-muted); display: flex; gap: 16px;"><span>Made with Shelfmark</span><a href="#">Report this collection</a></footer>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const t = 'var(--accent-bg)', h = 'var(--surface-hover)', p = 'var(--surface-pressed)';
+    return {
+      theme: (this.props.dark ?? false) ? 'dark' : 'light',
+      links: [
+        { f: 'R', site: 'seriouseats.com', title: 'The best weeknight ramen', bg: t },
+        { f: 'B', site: 'bonappetit.com', title: 'One-pan lemon chicken', bg: h },
+        { f: 'N', site: 'cooking.nytimes.com', title: 'Simple sourdough for beginners', bg: p },
+        { f: 'J', site: 'justonecookbook.com', title: 'Miso soup in 10 minutes', bg: h },
+        { f: 'S', site: 'smittenkitchen.com', title: 'Big crumb coffee cake', bg: t },
+        { f: 'K', site: 'kingarthurbaking.com', title: 'Classic focaccia', bg: p }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

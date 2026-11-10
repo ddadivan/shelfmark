@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Loading on a phone</title>
+<title>A · Loading · phone</title>
 <script src="./support.js"></script>
-<link rel="stylesheet" href="ds/shelfmark/tokens.css">
-<link rel="stylesheet" href="ds/shelfmark/components/bundle.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
 </head>
 <body>
 <x-dc>
@@ -15,43 +16,46 @@
 body{margin:0}
 </style>
 </helmet>
-<div data-theme="{{theme}}" class="sm-root" style="width: 390px; height: 844px; overflow: hidden; position: relative; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; display: flex; flex-direction: column;">
-
-<header style="height: 56px; flex: none; display: flex; align-items: center; gap: 4px; padding: 0 8px; border-bottom: 1px solid var(--border); background: var(--surface); position: relative;">
-<button class="sm-btn sm-btn--ghost sm-btn--icon" aria-label="Open menu" style="width: 44px; height: 44px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
-<span style="display: flex; align-items: center; gap: 8px; flex: 1;"><svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="6" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><span style="font-size: 16px; font-weight: 600;">Shelfmark</span></span>
-<button class="sm-btn sm-btn--ghost sm-btn--icon" aria-label="Search" style="width: 44px; height: 44px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
-<span class="sm-avatar sm-avatar--sm" style="margin: 0 10px;">DD</span>
-</header>
+<div data-theme="{{theme}}" class="sm-root dir-a" style="width: 390px; height: 844px; overflow: hidden; position: relative; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; display: flex; flex-direction: column;">
 
 <sc-if value="{{isPull}}" hint-placeholder-val="{{false}}">
-<div style="position: absolute; top: 72px; left: 0; right: 0; display: flex; justify-content: center; z-index: 5;"><div class="sm-ptr" role="status" aria-label="Refreshing"><span class="sm-spinner"></span></div></div>
+<div style="position: absolute; top: 16px; left: 0; right: 0; display: flex; justify-content: center; z-index: 5;"><div class="sm-ptr" role="status" aria-label="Refreshing"><span class="sm-spinner"></span></div></div>
 </sc-if>
 
-<div aria-busy="{{busy}}" style="flex: 1; overflow: hidden; padding: 16px; display: flex; flex-direction: column; gap: 14px; transform: translateY({{shift}}); transition: transform var(--duration-base) var(--ease-out);">
-<h1 style="margin: 0; font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -0.02em;">All links</h1>
+<div aria-busy="{{busy}}" style="flex: 1; overflow: hidden; padding: 20px 16px 110px; display: flex; flex-direction: column; gap: 14px; transform: translateY({{shift}}); transition: transform var(--duration-base) var(--ease-out);">
+<div>
+<h1 style="margin: 0; font-size: 34px; line-height: 38px; font-weight: 600;">All links</h1>
+<sc-if value="{{isFirst}}" hint-placeholder-val="{{true}}"><div class="sm-skel sm-skel--line" style="width: 90px; margin-top: 10px;" aria-hidden="true"></div></sc-if>
+<sc-if value="{{notFirst}}" hint-placeholder-val="{{false}}"><p style="margin: 4px 0 0; font-size: 13px; color: var(--text-muted);">248 links</p></sc-if>
+</div>
 
 <sc-if value="{{isFirst}}" hint-placeholder-val="{{true}}">
-<div style="display: flex; flex-direction: column; gap: 4px; margin-top: -6px;" aria-hidden="true">
-<div class="sm-skel sm-skel--line" style="width: 90px; margin-bottom: 8px;"></div>
-<sc-for list="{{rowSkel}}" as="r" hint-placeholder-count="9">
-<div style="display: flex; gap: 12px; align-items: center; padding: 12px 4px;"><div class="sm-skel" style="width: 56px; height: 40px; flex: none;"></div><div style="flex: 1; display: flex; flex-direction: column; gap: 7px;"><div class="sm-skel sm-skel--title" style="width: {{r.w1}};"></div><div class="sm-skel sm-skel--line" style="width: {{r.w2}};"></div></div></div>
+<div style="display: flex; gap: 8px;" aria-hidden="true"><div class="sm-skel" style="width: 64px; height: 34px; border-radius: 999px;"></div><div class="sm-skel" style="width: 84px; height: 34px; border-radius: 999px;"></div><div class="sm-skel" style="width: 84px; height: 34px; border-radius: 999px;"></div></div>
+<div style="display: flex; flex-direction: column; gap: 14px;" aria-hidden="true">
+<sc-for list="{{cardSkel}}" as="c" hint-placeholder-count="2">
+<div style="background: var(--surface); box-shadow: var(--shadow-card); border-radius: 22px; padding: 6px;"><div class="sm-skel" style="aspect-ratio: 16 / 9; border-radius: 16px;"></div><div style="padding: 12px 10px 10px; display: flex; flex-direction: column; gap: 9px;"><div class="sm-skel sm-skel--line" style="width: 35%;"></div><div class="sm-skel sm-skel--title" style="width: {{c.w1}};"></div><div class="sm-skel sm-skel--title" style="width: {{c.w2}};"></div></div></div>
 </sc-for>
 </div>
 </sc-if>
 
 <sc-if value="{{notFirst}}" hint-placeholder-val="{{false}}">
-<div style="display: flex; flex-direction: column; gap: 2px; margin-top: -6px;">
-<p style="margin: 0 0 8px; font-size: 13px; color: var(--text-muted);">248 links</p>
-<sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
-<div class="sm-row" style="cursor: default; padding: 10px 4px;"><span class="sm-row__thumb" style="background: {{r.bg}};"></span><span class="sm-row__main"><span class="sm-row__title">{{r.title}}</span><span class="sm-row__meta">{{r.site}}</span></span></div>
+<div role="toolbar" aria-label="Saved views" style="display: flex; gap: 8px;"><button class="sm-view is-on" aria-pressed="true">All <b>248</b></button><button class="sm-view" aria-pressed="false">Videos <b>61</b></button><button class="sm-view" aria-pressed="false">To read <b>18</b></button></div>
+<div style="background: var(--surface); box-shadow: var(--shadow-card); border-radius: 22px; padding: 6px; display: flex; flex-direction: column;">
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+<div class="sm-row" style="cursor: default; min-height: 60px;"><span class="sm-row__thumb" style="width: 48px; height: 48px; background: {{r.bg}};"></span><span class="sm-row__main"><span class="sm-row__title">{{r.title}}</span><span class="sm-row__meta">{{r.site}}</span></span></div>
 </sc-for>
 <sc-if value="{{isMore}}" hint-placeholder-val="{{false}}"><div class="sm-loadmore" role="status"><span class="sm-spinner sm-spinner--sm"></span>Loading more links</div></sc-if>
 </div>
 </sc-if>
 </div>
 
-<button class="sm-btn sm-btn--primary" aria-label="Add link" style="position: absolute; right: 20px; bottom: 28px; width: 56px; height: 56px; border-radius: 18px; box-shadow: var(--shadow-popover);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+<nav aria-label="Main" class="sm-glass" style="position: absolute; left: 16px; right: 16px; bottom: 20px; height: 68px; border-radius: 26px; display: flex; align-items: center; justify-content: space-between; padding: 0 8px;">
+<a href="#" class="sm-tab is-on" aria-current="page"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="3"/><path d="M14 5v7l2-1.6 2 1.6V5"/></svg>Library</a>
+<a href="#" class="sm-tab"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>Search</a>
+<button class="sm-btn sm-btn--primary" aria-label="Add link" style="width: 56px; height: 56px; padding: 0; border-radius: 20px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+<a href="#" class="sm-tab"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h5.6a2 2 0 0 1 1.4.6l7.4 7.4a2 2 0 0 1 0 2.8l-5 5a2 2 0 0 1-2.8 0L4.6 12.4A2 2 0 0 1 4 11z"/><circle cx="8.5" cy="8.5" r="1.25" fill="currentColor" stroke="none"/></svg>Tags</a>
+<a href="#" class="sm-tab"><span class="sm-avatar sm-avatar--sm">DD</span>You</a>
+</nav>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"state":{"editor":"enum","options":["first load","pull to refresh","loading more"],"default":"first load"},"$preview":{"width":390,"height":844}}'>
@@ -64,20 +68,15 @@ class Component extends DCLogic {
       theme: (this.props.dark ?? false) ? 'dark' : 'light',
       isFirst, notFirst: !isFirst, isPull, isMore,
       busy: isFirst || isPull || isMore ? 'true' : 'false',
-      shift: isPull ? '56px' : '0px',
-      rowSkel: [
-        { w1: '85%', w2: '35%' }, { w1: '70%', w2: '30%' }, { w1: '90%', w2: '40%' }, { w1: '60%', w2: '28%' }, { w1: '78%', w2: '36%' },
-        { w1: '66%', w2: '30%' }, { w1: '88%', w2: '42%' }, { w1: '72%', w2: '32%' }, { w1: '80%', w2: '38%' }
-      ],
+      shift: isPull ? '64px' : '0px',
+      cardSkel: [{ w1: '90%', w2: '60%' }, { w1: '80%', w2: '45%' }],
       rows: [
         { title: 'Wool coat, straight cut, graphite', site: 'cos.com', bg: t },
         { title: 'Angular 22: Signal Forms in 20 minutes', site: 'youtube.com', bg: h },
         { title: 'NestJS for frontend developers', site: 'stepik.org', bg: p },
         { title: 'The best weeknight ramen', site: 'seriouseats.com', bg: t },
         { title: 'NgRx SignalStore: patterns for real apps', site: 'dev.to', bg: h },
-        { title: 'Zoneless change detection, explained', site: 'angular.dev', bg: p },
-        { title: 'Lisbon in three days', site: 'cntraveler.com', bg: t },
-        { title: 'Signals vs RxJS: when to use which', site: 'medium.com', bg: h }
+        { title: 'Zoneless change detection, explained', site: 'angular.dev', bg: p }
       ]
     };
   }

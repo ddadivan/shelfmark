@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Empty states</title>
+<title>A · Empty states</title>
 <script src="./support.js"></script>
-<link rel="stylesheet" href="ds/shelfmark/tokens.css">
-<link rel="stylesheet" href="ds/shelfmark/components/bundle.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
 </head>
 <body>
 <x-dc>
@@ -21,9 +22,9 @@ body{margin:0}
 @media (prefers-reduced-motion:reduce){.ea{animation:none!important}}
 </style>
 </helmet>
-<div data-theme="{{theme}}" class="sm-root" style="min-height: 900px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 24px; padding: 48px; box-sizing: border-box; align-content: start;">
+<div data-theme="{{theme}}" class="sm-root dir-a" style="min-height: 900px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 24px; padding: 48px; box-sizing: border-box; align-content: start;">
 
-<section style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px;">
+<section style="background: var(--surface); box-shadow: var(--shadow-card); border-radius: var(--radius-lg); padding: 24px;">
 <div class="sm-empty">
 <svg viewBox="0 0 240 150" width="220" role="img" aria-label="An empty feed"><rect x="62" y="28" width="116" height="94" rx="12" fill="none" style="stroke: var(--border-control)" stroke-width="1.5" stroke-dasharray="5 5"/><g class="ea" style="animation-name: ebob; animation-duration: 3s"><rect x="98" y="64" width="44" height="22" rx="11" style="fill: var(--accent)"/><rect x="118" y="69" width="4" height="12" rx="2" style="fill: var(--surface)"/><rect x="114" y="73" width="12" height="4" rx="2" style="fill: var(--surface)"/></g></svg>
 <h2 style="margin: 0; font-size: 22px; line-height: 28px; font-weight: 600;">Your links will live here</h2>
@@ -32,7 +33,7 @@ body{margin:0}
 </div>
 </section>
 
-<section style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px;">
+<section style="background: var(--surface); box-shadow: var(--shadow-card); border-radius: var(--radius-lg); padding: 24px;">
 <div class="sm-empty">
 <svg viewBox="0 0 240 150" width="220" role="img" aria-label="An empty folder"><path d="M64 40h34l10 10h68a8 8 0 0 1 8 8v56a8 8 0 0 1-8 8H64a8 8 0 0 1-8-8V48a8 8 0 0 1 8-8z" style="fill: var(--accent-bg)"/><g class="ea" style="animation-name: ebob; animation-duration: 3.4s"><rect x="92" y="74" width="56" height="34" rx="6" style="fill: var(--surface); stroke: var(--border)"/><rect x="98" y="80" width="30" height="5" rx="2.5" style="fill: var(--surface-pressed)"/><rect x="98" y="90" width="20" height="5" rx="2.5" style="fill: var(--surface-pressed)"/></g></svg>
 <h2 style="margin: 0; font-size: 22px; line-height: 28px; font-weight: 600;">This folder is empty</h2>
@@ -41,7 +42,7 @@ body{margin:0}
 </div>
 </section>
 
-<section style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px;">
+<section style="background: var(--surface); box-shadow: var(--shadow-card); border-radius: var(--radius-lg); padding: 24px;">
 <div class="sm-empty">
 <svg viewBox="0 0 240 150" width="220" role="img" aria-label="Nothing found"><rect x="36" y="40" width="70" height="56" rx="10" fill="none" style="stroke: var(--border-control)" stroke-width="1.5" stroke-dasharray="5 5"/><rect x="134" y="40" width="70" height="56" rx="10" fill="none" style="stroke: var(--border-control)" stroke-width="1.5" stroke-dasharray="5 5"/><g class="ea" style="animation-name: escan; animation-duration: 3.6s"><circle cx="120" cy="66" r="20" style="fill: var(--surface); stroke: var(--primary)" stroke-width="5"/><rect x="132" y="84" width="26" height="9" rx="4.5" transform="rotate(45 132 84)" style="fill: var(--accent)"/></g></svg>
 <h2 style="margin: 0; font-size: 22px; line-height: 28px; font-weight: 600;">Nothing found for “signal store”</h2>
@@ -50,7 +51,7 @@ body{margin:0}
 </div>
 </section>
 
-<section style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px;">
+<section style="background: var(--surface); box-shadow: var(--shadow-card); border-radius: var(--radius-lg); padding: 24px;">
 <div class="sm-empty">
 <svg viewBox="0 0 240 150" width="220" role="img" aria-label="No connection"><g class="ea" style="animation-name: eapart; animation-duration: 2.4s"><rect x="46" y="62" width="70" height="26" rx="13" style="fill: var(--primary)"/></g><g class="ea" style="animation-name: eapart2; animation-duration: 2.4s"><rect x="124" y="62" width="70" height="26" rx="13" style="fill: var(--accent)"/></g></svg>
 <h2 style="margin: 0; font-size: 22px; line-height: 28px; font-weight: 600;">You're offline</h2>
@@ -59,7 +60,7 @@ body{margin:0}
 </div>
 </section>
 
-<section style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px;">
+<section style="background: var(--surface); box-shadow: var(--shadow-card); border-radius: var(--radius-lg); padding: 24px;">
 <div class="sm-empty">
 <svg viewBox="0 0 240 150" width="220" role="img" aria-label="Page not found"><rect x="70" y="30" width="100" height="90" rx="12" style="fill: var(--surface); stroke: var(--border)"/><path d="M146 30h14v34l-7-5.5-7 5.5z" style="fill: var(--accent)"/><rect x="84" y="78" width="72" height="8" rx="4" style="fill: var(--surface-pressed)"/><rect x="84" y="94" width="44" height="8" rx="4" style="fill: var(--surface-pressed)"/></svg>
 <h2 style="margin: 0; font-size: 22px; line-height: 28px; font-weight: 600;">This page doesn't exist</h2>
@@ -68,7 +69,7 @@ body{margin:0}
 </div>
 </section>
 
-<section style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; display: flex; flex-direction: column; gap: 12px;">
+<section style="background: var(--surface); box-shadow: var(--shadow-card); border-radius: var(--radius-lg); padding: 24px; display: flex; flex-direction: column; gap: 12px;">
 <h2 style="margin: 0; font-size: 14px; font-weight: 600;">Loading</h2>
 <div class="sm-card" style="cursor: default;"><div class="sm-skel" style="aspect-ratio: 16 / 7; border-radius: 0;"></div><div class="sm-card__body"><div class="sm-skel" style="height: 12px; width: 45%;"></div><div class="sm-skel" style="height: 16px; width: 90%;"></div><div class="sm-skel" style="height: 16px; width: 65%;"></div></div></div>
 </section>
