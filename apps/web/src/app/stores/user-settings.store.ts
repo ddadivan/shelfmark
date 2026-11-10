@@ -73,9 +73,13 @@ export const UserSettingsStore = signalStore(
         return firstLoad;
       },
 
-      /** The Trash list knows the retention too: it keeps the store current between settings reads. */
+      /**
+       * The Trash list knows the retention too, and it is what is known first. It is only used
+       * while the settings have not told: a list that was asked for before the user changed the
+       * setting would otherwise put the old value back when it arrives.
+       */
       noteRetention(days: TrashRetentionDays): void {
-        if (store.trashRetentionDays() !== days) {
+        if (store.trashRetentionDays() === null) {
           patchState(store, { trashRetentionDays: days });
         }
       },

@@ -257,7 +257,7 @@ test.describe('folders (mock API)', () => {
       await expect(dialog.getByRole('radio', { name: /Move links to Unsorted/ })).toBeChecked();
       await dialog.getByRole('button', { name: 'Delete folder', exact: true }).click();
 
-      await expect(page.getByText('Folder deleted')).toBeVisible();
+      await expect(page.getByText('Folder moved to Trash')).toBeVisible();
       // Deleting the folder on screen leaves for All links; the phone is on the Library page.
       await expect(page).toHaveURL(isPhone(page) ? '/library' : '/links');
       await openSidebar(page);
@@ -277,7 +277,7 @@ test.describe('folders (mock API)', () => {
       ).toBeVisible();
       await dialog.getByRole('button', { name: /^Delete folder and \d+ links$/ }).click();
 
-      await expect(page.getByText('Folder deleted')).toBeVisible();
+      await expect(page.getByText('Folder moved to Trash')).toBeVisible();
       await openSidebar(page);
       await expect(row(page, READING.name)).toHaveCount(0);
     });

@@ -12,7 +12,13 @@ import {
 } from '@shelfmark/contracts';
 import { MOCK_FOLDERS, MOCK_TAGS } from '@shelfmark/contracts/testing';
 import type { MockTrashEntry } from '../../trash/mock/models/mock-trash-entry.interface';
+import { MOCK_TRASH_SCENARIO } from '../../trash/mock/models/mock-trash-scenario.const';
+import { MOCK_TRASH_SCENARIO_KEY } from '../../trash/mock/models/mock-trash-scenario-key.const';
+import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
 import { generateMockLinks } from './generate-mock-links';
+
+const SEEDED_OLD_LINKS = 2;
+const SEEDED_OLD_DAYS = 20;
 
 /**
  * The one in-memory library behind the mock links, folders and tags APIs, so a folder deleted
@@ -31,7 +37,7 @@ export class MockLibraryData {
   ];
 
   /** The mock Trash, newest first. */
-  trash: MockTrashEntry[] = [];
+  trash: MockTrashEntry[] = this.seedTrash();
   /** The mock account setting "Keep deleted items for". */
   trashRetentionDays: TrashRetentionDays = TRASH_RETENTION_DEFAULT;
 
@@ -104,6 +110,29 @@ export class MockLibraryData {
       }
       return { ...link, tags };
     });
+  }
+
+  /** The `old-items` scenario: two links deleted 20 days ago; otherwise an empty Trash. */
+  private seedTrash(): MockTrashEntry[] {
+    let scenario: string | null = null;
+    try {
+      scenario = globalThis.sessionStorage.getItem(MOCK_TRASH_SCENARIO_KEY);
+    } catch {
+      // No sessionStorage (a spec without a DOM): an empty Trash.
+    }
+    if (scenario !== MOCK_TRASH_SCENARIO.OldItems) {
+      return [];
+    }
+    const old = this.links.splice(0, SEEDED_OLD_LINKS);
+    return old.map((link, index) => ({
+      kind: TRASH_ITEM_KIND.Link,
+      id: link.id,
+      deletedAt: new Date(Date.now() - SEEDED_OLD_DAYS * MS_PER_DAY - index * 1000).toISOString(),
+      fromFolderName: null,
+      link: { ...link, folderId: null },
+      folders: [],
+      links: [],
+    }));
   }
 
   /** Moves a link to Trash. */

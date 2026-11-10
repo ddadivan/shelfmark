@@ -168,11 +168,11 @@ test.describe('links feed (mock API)', () => {
       .click();
     await page.getByRole('menuitem', { name: 'Delete' }).click();
     const confirm = page.getByRole('alertdialog');
-    await expect(confirm).toContainText('will be removed');
+    await expect(confirm).toContainText('moves to Trash');
     await confirm.getByRole('button', { name: 'Delete' }).click();
 
     await expect(page.getByRole('heading', { name: title, exact: true })).toHaveCount(0);
-    await expect(page.getByText('Link deleted')).toBeVisible();
+    await expect(page.getByText('Moved to Trash')).toBeVisible();
 
     await page.getByRole('button', { name: 'Undo' }).click();
     await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
@@ -189,7 +189,7 @@ test.describe('links feed (mock API)', () => {
       .click();
     await page.getByRole('menuitem', { name: 'Delete' }).click();
     await page.getByRole('alertdialog').getByRole('button', { name: 'Delete' }).press('Enter');
-    await expect(page.getByText('Link deleted')).toBeVisible();
+    await expect(page.getByText('Moved to Trash')).toBeVisible();
     // The hint is part of the polite live region, so it is announced with the toast.
     await expect(page.locator('ui-toast-region')).toContainText('Press Alt+Shift+T to reach Undo');
 

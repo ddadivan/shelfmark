@@ -66,6 +66,15 @@ describe('UserSettingsStore', () => {
     expect(store.retentionDays()).toBe(90);
   });
 
+  it('does not let a late Trash list undo what the settings said or the user chose', async () => {
+    const { store } = setup();
+    await store.load();
+
+    store.noteRetention(90);
+
+    expect(store.retentionDays()).toBe(7);
+  });
+
   describe('setTrashRetention', () => {
     it('applies the choice at once, saves it and reloads Trash for the new days left', async () => {
       const gate = new Subject<{ trashRetentionDays: 90 }>();

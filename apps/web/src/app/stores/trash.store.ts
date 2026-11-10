@@ -205,6 +205,9 @@ export const TrashStore = signalStore(
        */
       async open(): Promise<void> {
         await injector.get(LinksStore).flushPending();
+        // A delete that was just sent changed the folder counts (`LinkActionsService` refreshes
+        // them only for the deletes it commits itself).
+        void injector.get(FoldersStore).refresh();
         await (store.loaded() ? fetchAll() : load());
       },
 
