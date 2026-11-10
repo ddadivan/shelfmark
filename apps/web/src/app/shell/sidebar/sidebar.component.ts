@@ -11,12 +11,13 @@ import {
   viewChild,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   BUTTON_SIZE,
   ButtonComponent,
   ICON_SIZE,
+  LogoComponent,
   MenuComponent,
   MenuItemComponent,
   MenuSeparatorComponent,
@@ -34,23 +35,23 @@ import { LINKS_SCOPE } from '../../features/links/models/links-scope.const';
 import { APP_PATH } from '../../models/app-path.const';
 import type { FolderNode } from '../../stores/models/folder-node.interface';
 import { FoldersStore } from '../../stores/folders.store';
+import { SIDEBAR_RECENT_ID } from './models/sidebar-recent-id.const';
 import { sidebarActiveId } from './sidebar-active-id';
 import { SidebarTreeFocusService } from './sidebar-tree-focus.service';
-
-/** Id of the "Recently opened" row (phone drawer); it opens a sheet instead of a route. */
-const RECENT_ROW_ID = 'recent';
 
 /** The fixed rows and their routes. */
 const FIXED_ROUTES: Readonly<Record<string, string>> = {
   [LINKS_SCOPE.All]: APP_PATH.Links,
   [LINKS_SCOPE.Unsorted]: APP_PATH.Unsorted,
   [LINKS_SCOPE.Favorites]: APP_PATH.Favorites,
+  [SIDEBAR_RECENT_ID]: APP_PATH.Recent,
 };
 
 /**
- * The library sidebar: "All links", "Unsorted", "Favorites", then the folder tree with link
- * counts (`ui-tree`); the "Folders" heading has a "Create a folder" icon button. Choosing a row navigates; the active row follows
- * the URL. A folder has a menu (right click, "..." button, Shift+F10): new subfolder, add link
+ * The library sidebar, an inset card that only navigates: the logo, "All links", "Unsorted",
+ * "Favorites", "Recently opened" (a page), then the folder tree with link counts and graphite
+ * folder tiles (`ui-tree`; the "Folders" heading has a "Create a folder" icon button) and the tags.
+ * Choosing a row navigates; the active row follows the URL. A folder has a menu (right click, "..." button, Shift+F10): new subfolder, add link
  * here, rename, move, delete.
  */
 @Component({
@@ -60,6 +61,7 @@ const FIXED_ROUTES: Readonly<Record<string, string>> = {
     MenuComponent,
     MenuItemComponent,
     MenuSeparatorComponent,
+    LogoComponent,
     SidebarTagsComponent,
     TooltipDirective,
     TranslocoPipe,
@@ -72,9 +74,11 @@ const FIXED_ROUTES: Readonly<Record<string, string>> = {
 export class SidebarComponent {
   protected readonly folders = inject(FoldersStore);
   protected readonly ICON_SIZE = ICON_SIZE;
-  /** Adds the "Recently opened" row below the views (the phone drawer; the desktop has a panel). */
-  readonly showRecent = input(false, { transform: booleanAttribute });
-  /** The "Recently opened" row was chosen. */
+  /** The "Recently opened" row opens a sheet (the phone drawer) instead of the `/recent` page. */
+  readonly recentAsSheet = input(false, { transform: booleanAttribute });
+  /** The logo heads the card (the desktop shell); the phone drawer has its own header. */
+  readonly showLogo = input(false, { transform: booleanAttribute });
+  /** The "Recently opened" row was chosen while `recentAsSheet` is on. */
   readonly recentRequested = output<void>();
 
   private readonly actions = inject(FolderActionsService);
@@ -130,9 +134,6 @@ export class SidebarComponent {
       return [];
     }
     const counts = this.folders.loaded() ? this.folders.counts() : null;
-    const recent: UiTreeNode[] = this.showRecent()
-      ? [{ id: RECENT_ROW_ID, name: labels.recent, icon: 'clock' }]
-      : [];
     return [
       { id: LINKS_SCOPE.All, name: labels.all, icon: 'bookmark', ...count(counts?.all) },
       {
@@ -147,7 +148,7 @@ export class SidebarComponent {
         icon: 'star',
         ...count(counts?.favorites),
       },
-      ...recent,
+      { id: SIDEBAR_RECENT_ID, name: labels.recent, icon: 'clock' },
     ];
   });
 
@@ -182,7 +183,7 @@ export class SidebarComponent {
   }
 
   protected async select(node: UiTreeNode): Promise<void> {
-    if (node.id === RECENT_ROW_ID) {
+    if (node.id === SIDEBAR_RECENT_ID && this.recentAsSheet()) {
       this.recentRequested.emit();
       return;
     }

@@ -1,4 +1,7 @@
 <nav class="sidebar" [attr.aria-label]="'shell.sidebar.nav' | transloco">
+  @if (showLogo()) {
+    <a class="sidebar__logo" routerLink="/links"><ui-logo /></a>
+  }
   <ui-tree
     [fixedNodes]="fixedNodes()"
     [nodes]="nodes()"

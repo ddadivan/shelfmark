@@ -5,20 +5,27 @@
 }
 
 .tags {
-  margin-top: var(--space-4);
+  margin-top: var(--space-2);
 }
 
+// Same section heading as "Folders" in the tree (Tags spec): caption, muted, the "+" at the end.
 .tags__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  min-height: calc(#{rem(30px)} + #{rem(12px)});
+  padding: rem(18px) 0 rem(6px) rem(10px);
+
+  @include coarse {
+    min-height: calc(#{rem(44px)} + #{rem(12px)});
+  }
 }
 
 .tags__heading {
   @include type(caption);
 
   margin: 0;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-muted);
 }
 
@@ -34,9 +41,9 @@
 .tags__list {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
-  padding: 0;
-  margin: var(--space-2) 0 0;
+  gap: rem(6px);
+  padding: var(--space-1) var(--space-2);
+  margin: 0;
   list-style: none;
 }
 

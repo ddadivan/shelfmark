@@ -4,6 +4,8 @@ export const APP_PATH = {
   Unsorted: 'unsorted',
   Favorites: 'favorites',
   Folders: 'folders',
+  /** Recently opened: a plain page for now (the full history page is issue #241). */
+  Recent: 'recent',
   Settings: 'settings',
   SignIn: 'sign-in',
   Demo: 'demo',

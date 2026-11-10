@@ -1,4 +1,4 @@
 <ui-drawer [closeLabel]="'shell.drawer.close' | transloco">
   <ui-logo slot="head" />
-  <app-sidebar showRecent (recentRequested)="openRecent()" />
+  <app-sidebar recentAsSheet (recentRequested)="openRecent()" />
 </ui-drawer>

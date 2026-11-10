@@ -7,6 +7,7 @@ import LandingPage from './features/landing/landing.page';
 
 const libraryPage = loadLibraryPage;
 const settingsPage = () => import('./features/settings/settings.page');
+const recentPage = () => import('./features/links/recent/recent.page');
 const sharePage = () => import('./features/share/share.page');
 
 /** The real pages. `app.routes.ts` serves them as they are; the e2e build adds a test page. */
@@ -40,6 +41,7 @@ export const pageRoutes: Routes = [
         loadComponent: libraryPage,
         data: { scope: LINKS_SCOPE.Folder },
       },
+      { path: APP_PATH.Recent, loadComponent: recentPage },
       { path: APP_PATH.Settings, loadComponent: settingsPage },
     ],
   },
@@ -54,6 +56,7 @@ export const pageRoutes: Routes = [
   { path: APP_PATH.Unsorted, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Favorites, canActivate: [redirectToSignIn], children: [] },
   { path: `${APP_PATH.Folders}/:folderId`, canActivate: [redirectToSignIn], children: [] },
+  { path: APP_PATH.Recent, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Settings, canActivate: [redirectToSignIn], children: [] },
   // `state.url` keeps the whole query, so the shared data survives the sign-in.
   { path: APP_PATH.Share, canActivate: [redirectToSignIn], children: [] },

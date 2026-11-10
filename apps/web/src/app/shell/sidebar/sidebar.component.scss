@@ -5,7 +5,21 @@
 }
 
 .sidebar {
-  padding: var(--space-3);
+  padding: var(--space-3) var(--space-2);
+}
+
+// Logo row heading the card on the desktop (Main spec): 26px mark, wordmark, 4 / 10 / 14 padding.
+.sidebar__logo {
+  display: flex;
+  align-items: center;
+  padding: var(--space-1) rem(10px) rem(14px);
+  color: var(--text);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+
+  &:focus-visible {
+    @include focus-ring;
+  }
 }
 
 .sidebar__error {
