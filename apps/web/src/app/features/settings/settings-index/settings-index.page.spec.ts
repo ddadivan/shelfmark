@@ -3,6 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { axeViolations } from '../../../../testing/axe';
+import { ADMIN_API } from '../../admin/models/admin-api.const';
+import { adminApiStub } from '../../../../testing/admin-api-stub';
 import { AUTH_API } from '../../../core/auth/auth-api.token';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { ViewportService } from '../../../core/layout/viewport.service';
@@ -32,6 +34,7 @@ async function setup(phone: boolean) {
       provideTranslocoForTest(),
       { provide: AUTH_API, useValue: api },
       { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
+      { provide: ADMIN_API, useValue: adminApiStub() },
       { provide: ACCOUNT_DELETION_API, useValue: { delete: vi.fn() } },
       { provide: ViewportService, useValue: { phone: phoneSignal } },
     ],
@@ -58,6 +61,7 @@ describe('the You list (/settings)', () => {
       '/settings/appearance',
       '/settings/import-export',
       '/settings/privacy',
+      '/settings/feedback',
     ]);
     expect(root.querySelector('nav a[href="/settings/appearance"]')?.textContent).toContain(
       'System',
