@@ -1,15 +1,20 @@
 @use 'ui' as *;
 
-// Below 64em: the mosaic is a band on top, the form under it. From 64em: two columns.
+// Phone and tablet (below 64em): the mosaic is a band on top, the form under it. From 64em: a
+// centred glass card on `bg` with saved-link cards drifting around it (SignIn.dc.html).
 .sign-in {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-  background: var(--bg);
+  overflow: hidden;
   color: var(--text);
+  background: var(--bg);
 
   @include desktop {
-    flex-flow: row wrap;
+    display: grid;
+    padding: var(--space-6);
+    place-items: center;
   }
 }
 
@@ -22,116 +27,61 @@
   overflow: hidden;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-
-  @include desktop {
-    flex: 1 1 rem(520px);
-    height: auto;
-    min-height: rem(420px);
-    padding: rem(40px);
-    border-bottom: 0;
-    border-left: 1px solid var(--border);
-    order: 1;
-  }
-}
-
-.sign-in__side {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: var(--space-6);
-  padding: rem(28px) var(--space-6) var(--space-6);
-
-  @include tablet-up {
-    padding-inline: rem(48px);
-  }
-
-  @include desktop {
-    flex: 1 1 rem(420px);
-
-    // Logo / form / footer on three rows: the two outer rows are equal (1fr), so the form sits on
-    // the vertical middle of the column, on the same axis as the mosaic.
-    display: grid;
-    gap: rem(40px);
-    grid-template-rows: 1fr auto 1fr;
-    padding-block: rem(40px);
-  }
-}
-
-.sign-in__header {
-  --ui-logo-size: #{rem(24px)};
-
-  @include desktop {
-    --ui-logo-size: #{rem(28px)};
-  }
 }
 
 .sign-in__panel {
+  position: relative;
   display: flex;
+  flex: 1;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--space-4);
   width: 100%;
-  max-width: rem(400px);
+  padding: rem(28px) var(--space-6) var(--space-6);
 
   @include tablet-up {
+    max-width: rem(480px);
     margin-inline: auto;
   }
 
   @include desktop {
-    // The grid row is the form's own height; the form stays as wide as its max-width.
-    justify-self: center;
+    // The glass card (Glass: the sign-in card is one of its places).
+    @include glass;
+
+    flex: none;
+    gap: rem(22px);
+    max-width: rem(420px);
+    padding: rem(36px) rem(32px) rem(28px);
+    margin-inline: 0;
+    background: var(--glass);
+    border-radius: rem(32px);
   }
 }
 
-.sign-in__footer {
-  @include type(caption);
-
-  margin-block-start: auto;
-  color: var(--text-muted);
+.sign-in__logo {
+  --ui-logo-size: #{rem(24px)};
 
   @include desktop {
-    align-self: end;
+    --ui-logo-size: #{rem(30px)};
   }
 }
 
 .sign-in__intro {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-}
+  gap: rem(6px);
 
-.sign-in__eyebrow {
-  @include type(label);
-
-  margin: 0;
-  color: var(--text-muted);
-}
-
-.sign-in__privacy {
-  @include type(caption);
-
-  margin: 0;
-  color: var(--text-muted);
-}
-
-// Underlined: the link sits inside a sentence, so colour alone must not carry it.
-.sign-in__privacy-link {
-  color: inherit;
-  text-decoration: underline;
-
-  &:hover,
-  &:active {
-    color: var(--text);
+  @include desktop {
+    gap: rem(10px);
   }
 }
 
 .sign-in__title {
-  @include type(display);
+  @include type(title);
 
   margin: 0;
 
-  @include phone {
-    // Phone: the `title` type style; the 32px display size wraps to three lines at 360px.
-    @include type(title);
+  @include desktop {
+    @include type(display);
   }
 }
 
@@ -152,4 +102,52 @@
 .sign-in__button {
   display: flex;
   flex-direction: column;
+}
+
+// "or" between the providers and the demo, with a line on each side (desktop card only).
+.sign-in__or {
+  @include type(caption);
+
+  display: none;
+  gap: var(--space-3);
+  align-items: center;
+  margin: 0;
+  color: var(--text-muted);
+
+  &::before,
+  &::after {
+    flex: 1;
+    content: '';
+    border-block-start: 1px solid var(--border);
+  }
+
+  @include desktop {
+    display: flex;
+  }
+}
+
+.sign-in__demo {
+  align-self: center;
+}
+
+.sign-in__privacy {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+
+  @include desktop {
+    text-align: center;
+  }
+}
+
+// Underlined: the link sits inside a sentence, so colour alone must not carry it.
+.sign-in__privacy-link {
+  color: inherit;
+  text-decoration: underline;
+
+  &:hover,
+  &:active {
+    color: var(--text);
+  }
 }

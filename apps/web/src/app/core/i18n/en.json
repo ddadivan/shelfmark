@@ -419,7 +419,7 @@
   "auth": {
     "signIn": {
       "title": "All your links on one shelf",
-      "subtitle": "Save videos, articles, things to buy and courses in one place — and actually find them again.",
+      "subtitle": "Save anything once, find it again in seconds.",
       "google": "Continue with Google",
       "github": "Continue with GitHub",
       "demo": "Open the demo",
@@ -438,20 +438,12 @@
         "demoUnavailable": "The demo is full right now. Try again later, or sign in.",
         "demoFailed": "We could not open the demo. Try again, or sign in."
       },
-      "eyebrow": "Sign in to Shelfmark",
-      "copyright": "© 2026 Shelfmark",
+      "or": "or",
       "tiles": {
-        "signalForms": { "title": "Signal Forms in 20 minutes", "note": "Watch on the weekend" },
-        "woolCoat": { "title": "Wool coat, straight cut, graphite", "note": "Wait for the sale" },
-        "nestjs": { "title": "NestJS for frontend developers", "note": "For the side project" },
-        "ramen": { "title": "The best weeknight ramen", "note": "Friday dinner" },
-        "zoneless": {
-          "title": "Zoneless change detection, explained",
-          "note": "Read before stage 0"
-        },
-        "lisbon": { "title": "Lisbon in three days", "note": "Maybe in May" },
-        "icons": { "title": "Icons for the side project", "note": "Compare with our own set" },
-        "reacts": { "title": "The two Reacts", "note": "Read this one day" }
+        "signalForms": { "title": "Signal Forms in 20 minutes" },
+        "woolCoat": { "title": "Wool coat, straight cut" },
+        "nestjs": { "title": "NestJS for frontend developers" },
+        "ramen": { "title": "The best weeknight ramen" }
       },
       "privacyBefore": "By continuing you agree to the",
       "privacyLink": "Privacy policy",

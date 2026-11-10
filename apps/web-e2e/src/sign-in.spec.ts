@@ -61,25 +61,54 @@ test.describe('sign-in flow (mock auth)', () => {
     expect(overflow).toBeLessThanOrEqual(0);
   });
 
-  test('on a desktop the form is centred on the middle axis of the mosaic', async ({ page }) => {
+  test('on a desktop the glass card is centred and the cards drift around it', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/sign-in');
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 
-    const centre = async (selector: string): Promise<number> => {
-      const box = await page.locator(selector).first().boundingBox();
-      if (!box) {
-        throw new Error(`${selector} has no box`);
-      }
-      return box.y + box.height / 2;
-    };
-    const panel = await centre('.sign-in__panel');
-    const art = await centre('.sign-in__art');
-    expect(Math.abs(panel - art)).toBeLessThanOrEqual(2);
-    // Logo stays at the top of the column and the copyright at the bottom.
-    const logo = await page.locator('.sign-in__header').boundingBox();
-    const footer = await page.locator('.sign-in__footer').boundingBox();
-    expect(logo?.y).toBeLessThan(80);
-    expect((footer?.y ?? 0) + (footer?.height ?? 0)).toBeGreaterThan(900 - 80);
+    const card = await page.locator('.sign-in__panel').boundingBox();
+    if (!card) {
+      throw new Error('the sign-in card has no box');
+    }
+    expect(Math.abs(card.x + card.width / 2 - 1440 / 2)).toBeLessThanOrEqual(2);
+    expect(Math.abs(card.y + card.height / 2 - 900 / 2)).toBeLessThanOrEqual(2);
+    // The mosaic band is a phone layout.
+    await expect(page.locator('.sign-in__art')).toHaveCount(0);
+
+    // The four cards float and take turns to land (ring), each on its own loop.
+    await expect(page.locator('.sd-card')).toHaveCount(4);
+    const running = await page.evaluate(() =>
+      document
+        .getAnimations()
+        .filter((a) => a instanceof CSSAnimation && a.playState === 'running')
+        .map((a) => (a as CSSAnimation).animationName)
+        .filter((name) => name.endsWith('sd-float') || name.endsWith('sd-ring')),
+    );
+    expect(running.filter((n) => n.endsWith('sd-float'))).toHaveLength(4);
+    expect(running.filter((n) => n.endsWith('sd-ring'))).toHaveLength(4);
+  });
+
+  test('with reduced motion the drifting cards stay still', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/sign-in');
+    await expect(page.locator('.sd-card')).toHaveCount(4);
+
+    const animations = await page.evaluate(
+      () => document.getAnimations().filter((a) => a instanceof CSSAnimation).length,
+    );
+    expect(animations).toBe(0);
+  });
+
+  test('on a phone the mosaic sits above the form', async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 780 });
+    await page.goto('/sign-in');
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+
+    const art = await page.locator('.sign-in__art').boundingBox();
+    const panel = await page.locator('.sign-in__panel').boundingBox();
+    expect(art).not.toBeNull();
+    expect((art?.y ?? 0) + (art?.height ?? 0)).toBeLessThanOrEqual((panel?.y ?? 0) + 1);
+    await expect(page.locator('.sd-card')).toHaveCount(0);
   });
 });

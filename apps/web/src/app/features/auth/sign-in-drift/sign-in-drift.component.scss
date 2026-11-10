@@ -1,0 +1,170 @@
+@use 'ui' as *;
+
+:host {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+// Position (left / right, top / bottom), width, tilt (`--r`), sideways drift (`--dx`), the loop
+// length (`--t`) and its offset (`--d`) per card, from the mockup. `--n` is the ring step.
+.sd-card {
+  position: absolute;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  transform: rotate(var(--r));
+  animation:
+    sd-in 600ms var(--ease-out) backwards,
+    sd-float var(--t) ease-in-out infinite;
+  animation-delay: calc(var(--i) * 120ms + 150ms), var(--d);
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+.sd-card--0 {
+  --i: 0;
+  --n: 2;
+  --r: -6deg;
+  --dx: #{rem(4px)};
+  --t: 7s;
+  --d: -1s;
+
+  inset-block-start: 12%;
+  inset-inline-start: 8%;
+  width: rem(220px);
+}
+
+.sd-card--1 {
+  --i: 1;
+  --n: 5;
+  --r: 4deg;
+  --dx: #{rem(-5px)};
+  --t: 8.5s;
+  --d: -3s;
+
+  inset-block-end: 10%;
+  inset-inline-start: 14%;
+  width: rem(200px);
+}
+
+.sd-card--2 {
+  --i: 2;
+  --n: 0;
+  --r: 5deg;
+  --dx: #{rem(-4px)};
+  --t: 7.8s;
+  --d: -5s;
+
+  inset-block-start: 16%;
+  inset-inline-end: 9%;
+  width: rem(210px);
+}
+
+.sd-card--3 {
+  --i: 3;
+  --n: 7;
+  --r: -3deg;
+  --dx: #{rem(5px)};
+  --t: 9s;
+  --d: -2s;
+
+  inset-block-end: 12%;
+  inset-inline-end: 13%;
+  width: rem(230px);
+}
+
+.sd-media {
+  aspect-ratio: 16 / 10;
+  margin: rem(6px);
+  border-radius: rem(16px);
+}
+
+.sd-media--accent-soft {
+  background: var(--accent-bg);
+}
+
+.sd-media--pressed {
+  background: var(--surface-pressed);
+}
+
+.sd-media--hover {
+  background: var(--surface-hover);
+}
+
+.sd-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-4) var(--space-4);
+}
+
+.sd-meta {
+  @include type(caption);
+
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  color: var(--text-muted);
+}
+
+.sd-title {
+  @include type(label);
+  @include line-clamp(2);
+
+  color: var(--text);
+}
+
+// "Lands": an accent ring that pulses on one card at a time, a 24 s loop.
+.sd-ring {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: var(--radius-lg);
+  box-shadow: inset 0 0 0 3px var(--accent);
+  opacity: 0;
+  animation: sd-ring 24s var(--ease-out) infinite;
+  animation-delay: calc(var(--n) * 3s + 1.6s);
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+@keyframes sd-in {
+  from {
+    opacity: 0;
+    translate: 0 #{rem(18px)};
+    scale: 0.92;
+  }
+}
+
+@keyframes sd-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(var(--r));
+  }
+
+  50% {
+    transform: translate3d(var(--dx), #{rem(-12px)}, 0) rotate(calc(var(--r) + 1.5deg));
+  }
+}
+
+@keyframes sd-ring {
+  0%,
+  2% {
+    opacity: 0;
+  }
+
+  3.5% {
+    opacity: 1;
+  }
+
+  9%,
+  100% {
+    opacity: 0;
+  }
+}
