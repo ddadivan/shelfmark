@@ -303,6 +303,15 @@
       "unsorted": "Unsorted",
       "remove": "Remove {{title}} from history",
       "removeTooltip": "Remove from history",
+      "more": "More for {{title}}",
+      "menu": {
+        "openInNewTab": "Open in new tab",
+        "showInFolder": "Show in folder",
+        "copyLink": "Copy link",
+        "remove": "Remove from history"
+      },
+      "linkCopied": "Link copied",
+      "copyFailed": "Couldn't copy the link",
       "removed": "Removed from history",
       "removeFailed": "Couldn't remove it from history",
       "cleared": "History cleared",

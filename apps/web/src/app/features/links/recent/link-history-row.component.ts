@@ -5,6 +5,10 @@ import {
   ButtonComponent,
   FolderIconComponent,
   HistoryRowComponent,
+  MenuComponent,
+  MenuItemComponent,
+  MenuSeparatorComponent,
+  MenuTriggerDirective,
   TooltipDirective,
 } from '@shelfmark/ui';
 import { ownImageUrl, safeHref } from '../link-view';
@@ -20,6 +24,10 @@ import { ownImageUrl, safeHref } from '../link-view';
     ButtonComponent,
     FolderIconComponent,
     HistoryRowComponent,
+    MenuComponent,
+    MenuItemComponent,
+    MenuSeparatorComponent,
+    MenuTriggerDirective,
     TooltipDirective,
   ],
   templateUrl: './link-history-row.component.html',
@@ -37,6 +45,11 @@ export class LinkHistoryRowComponent {
 
   /** The row was opened (the browser opens the link itself). */
   readonly opened = output<void>();
+  /** Menu: open the link in a new tab (only for a link the browser may open). */
+  readonly openInNewTab = output<void>();
+  /** Menu: go to the folder of the link, or to Unsorted. */
+  readonly showInFolder = output<void>();
+  readonly copyLink = output<void>();
   readonly removeRequested = output<void>();
 
   protected readonly href = computed(() => safeHref(this.link().url));

@@ -237,8 +237,9 @@ test.describe('mobile layout (mock API)', () => {
 
     await rows
       .first()
-      .getByRole('button', { name: /^Remove / })
+      .getByRole('button', { name: /^More for / })
       .click();
+    await page.getByRole('menuitem', { name: 'Remove from history' }).click();
     await expect(rows).toHaveCount(before - 1);
 
     await sheet(page).getByRole('button', { name: 'Clear history' }).click();

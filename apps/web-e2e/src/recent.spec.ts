@@ -70,11 +70,32 @@ test.describe('Recently opened page (mock API)', () => {
     const first = rows(page).first();
     const title = (await first.locator('.ui-history-row__title').innerText()).trim();
 
-    await first.getByRole('button', { name: /^Remove .* from history$/ }).click();
+    await first.getByRole('button', { name: /^More for / }).click();
+    await page.getByRole('menuitem', { name: 'Remove from history' }).click();
 
     await expect(rows(page)).toHaveCount(before - 1);
     await expect(page.getByRole('status').getByText('Removed from history')).toBeVisible();
     await expect(rows(page).first().locator('.ui-history-row__title')).not.toHaveText(title);
+  });
+
+  test('the row menu lists its items with Remove after a separator, and Show in folder navigates', async ({
+    page,
+  }) => {
+    await openRecent(page);
+    const first = rows(page).first();
+
+    await first.getByRole('button', { name: /^More for / }).click();
+    const menu = page.getByRole('menu');
+    await expect(menu.getByRole('menuitem')).toHaveText([
+      'Open in new tab',
+      'Show in folder',
+      'Copy link',
+      'Remove from history',
+    ]);
+    await expect(menu.getByRole('separator')).toHaveCount(1);
+
+    await menu.getByRole('menuitem', { name: 'Show in folder' }).click();
+    await expect(page).toHaveURL(/\/(folders\/[\w-]+|unsorted)$/);
   });
 
   test('clearing the history asks first; Cancel keeps it, Clear empties it', async ({ page }) => {

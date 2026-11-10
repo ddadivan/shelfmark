@@ -20,6 +20,9 @@
             [time]="timeOf(link)"
             [dateTime]="link.lastOpenedAt ?? ''"
             (opened)="actions.open(link)"
+            (openInNewTab)="openInNewTab(link)"
+            (showInFolder)="showInFolder(link)"
+            (copyLink)="copyLink(link)"
             (removeRequested)="remove(link)"
           />
         }

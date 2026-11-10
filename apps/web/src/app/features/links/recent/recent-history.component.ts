@@ -1,4 +1,6 @@
+import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { RECENT_LINKS_WINDOW_DAYS, type LinkResponse } from '@shelfmark/contracts';
 import {
@@ -12,10 +14,12 @@ import {
   TOAST_KIND,
   ToastService,
 } from '@shelfmark/ui';
+import { APP_PATH } from '../../../models/app-path.const';
 import { pluralKey } from '../../../core/i18n/plural-key';
 import { FoldersStore } from '../../../stores/folders.store';
 import { LinksStore } from '../../../stores/links.store';
 import { LinkActionsService } from '../link-actions.service';
+import { safeHref } from '../link-view';
 import { groupByDay } from './history-days';
 import { LinkHistoryRowComponent } from './link-history-row.component';
 import { HISTORY_DAY_KIND } from './models/history-day-kind.const';
@@ -49,6 +53,8 @@ export class RecentHistoryComponent {
   private readonly dialogs = inject(DialogService);
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
+  private readonly router = inject(Router);
+  private readonly doc = inject(DOCUMENT);
 
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly SKELETON_COUNT = SKELETON_COUNT;
@@ -112,6 +118,37 @@ export class RecentHistoryComponent {
 
   protected timeOf(link: LinkResponse): string {
     return this.times().get(link.id) ?? '';
+  }
+
+  /** Opens the link in a new tab and records the open (as a click on the row does). */
+  protected openInNewTab(link: LinkResponse): void {
+    const href = safeHref(link.url);
+    if (href) {
+      this.doc.defaultView?.open(href, '_blank', 'noopener,noreferrer');
+      this.actions.open(link);
+    }
+  }
+
+  /** Goes to the folder of the link, or to Unsorted for a link outside any folder. */
+  protected async showInFolder(link: LinkResponse): Promise<void> {
+    await this.router.navigateByUrl(
+      link.folderId === null ? `/${APP_PATH.Unsorted}` : `/${APP_PATH.Folders}/${link.folderId}`,
+    );
+  }
+
+  /** Copies the address; a toast says it worked, or that the browser did not allow it. */
+  protected async copyLink(link: LinkResponse): Promise<void> {
+    try {
+      const clipboard = this.doc.defaultView?.navigator.clipboard;
+      if (!clipboard) {
+        throw new Error('Clipboard API unavailable');
+      }
+      await clipboard.writeText(link.url);
+      this.toasts.show({ kind: TOAST_KIND.Success, title: this.t('links.recent.linkCopied') });
+    } catch {
+      // No Clipboard API (insecure context, old browser) or the permission was refused.
+      this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('links.recent.copyFailed') });
+    }
   }
 
   protected async remove(link: LinkResponse): Promise<void> {

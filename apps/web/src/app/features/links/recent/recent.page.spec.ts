@@ -1,4 +1,5 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, type ComponentFixture } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import type { FolderResponse, LinkResponse } from '@shelfmark/contracts';
 import { MOCK_FOLDERS, MOCK_LIBRARY_COUNTS, MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
@@ -60,6 +61,23 @@ async function setup(
   await fixture.whenStable();
   const element = fixture.nativeElement as HTMLElement;
   return { api, toast, actions, confirm, fixture, element };
+}
+
+/** Opens the "More for <title>" menu of a row and presses one of its items. */
+async function pressMenuItem(
+  fixture: ComponentFixture<unknown>,
+  title: string,
+  label: string,
+): Promise<void> {
+  const element = fixture.nativeElement as HTMLElement;
+  element.querySelector<HTMLButtonElement>(`button[aria-label="More for ${title}"]`)?.click();
+  await fixture.whenStable();
+  const item = [...document.querySelectorAll<HTMLElement>('[role="menuitem"]')].find((candidate) =>
+    candidate.textContent?.includes(label),
+  );
+  expect(item, `menu item "${label}"`).toBeDefined();
+  item?.click();
+  await fixture.whenStable();
 }
 
 const titles = (element: HTMLElement) =>
@@ -132,8 +150,7 @@ describe('RecentPage', () => {
   it('removes one link at once and confirms with a toast', async () => {
     const { element, api, toast, fixture } = await setup([opened(1, 0), opened(2, 0)]);
 
-    element.querySelector<HTMLButtonElement>('button[aria-label^="Remove Link 1"]')?.click();
-    await fixture.whenStable();
+    await pressMenuItem(fixture, 'Link 1', 'Remove from history');
 
     expect(api.removeRecent).toHaveBeenCalledWith('id-1');
     expect(element.querySelectorAll('app-link-history-row')).toHaveLength(1);
@@ -142,12 +159,102 @@ describe('RecentPage', () => {
     );
   });
 
+  it('lists the menu of a row in the order of the design, with a separator before Remove', async () => {
+    const { element, fixture } = await setup([opened(1, 0)]);
+
+    element.querySelector<HTMLButtonElement>('button[aria-label="More for Link 1"]')?.click();
+    await fixture.whenStable();
+
+    const menu = document.querySelector('[role="menu"]');
+    expect(menu?.getAttribute('aria-label')).toBe('More for Link 1');
+    expect(
+      [...document.querySelectorAll('[role="menuitem"]')].map((item) => item.textContent?.trim()),
+    ).toEqual(['Open in new tab', 'Show in folder', 'Copy link', 'Remove from history']);
+    expect(menu?.querySelector('[role="separator"]')).not.toBeNull();
+  });
+
+  it('opens the link in a new tab from the menu and records the open', async () => {
+    const { actions, fixture } = await setup([opened(1, 0)]);
+    const open = vi.spyOn(window, 'open').mockReturnValue(null);
+
+    await pressMenuItem(fixture, 'Link 1', 'Open in new tab');
+
+    expect(open).toHaveBeenCalledWith(
+      'https://site1.example.com/a',
+      '_blank',
+      'noopener,noreferrer',
+    );
+    expect(actions.open).toHaveBeenCalledWith(expect.objectContaining({ id: 'id-1' }));
+    open.mockRestore();
+  });
+
+  it('has no "Open in new tab" item for a link the browser must not open', async () => {
+    const { element, fixture } = await setup([opened(1, 0, { url: 'javascript:alert(1)' })]);
+
+    element.querySelector<HTMLButtonElement>('button[aria-label="More for Link 1"]')?.click();
+    await fixture.whenStable();
+
+    expect(document.body.textContent).not.toContain('Open in new tab');
+  });
+
+  it.each([
+    ['a link in a folder', { folderId: 'f-1' }, '/folders/f-1'],
+    ['an unsorted link', { folderId: null }, '/unsorted'],
+  ])('shows %s in its folder', async (_name, changes, url) => {
+    const { fixture } = await setup([opened(1, 0, changes)]);
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+
+    await pressMenuItem(fixture, 'Link 1', 'Show in folder');
+
+    expect(navigate).toHaveBeenCalledWith(url);
+  });
+
+  describe('copy link', () => {
+    afterEach(() => {
+      // @ts-expect-error restoring the property the test replaced on the jsdom navigator
+      delete navigator.clipboard;
+    });
+
+    it('writes the address to the clipboard and confirms with a toast', async () => {
+      const { fixture, toast } = await setup([opened(1, 0)]);
+      const writeText = vi.fn(() => Promise.resolve());
+      Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
+
+      await pressMenuItem(fixture, 'Link 1', 'Copy link');
+
+      expect(writeText).toHaveBeenCalledWith('https://site1.example.com/a');
+      expect(toast.show).toHaveBeenCalledWith(
+        expect.objectContaining({ kind: TOAST_KIND.Success, title: 'Link copied' }),
+      );
+    });
+
+    it('shows an error toast when the Clipboard API is unavailable', async () => {
+      const { fixture, toast } = await setup([opened(1, 0)]);
+      Object.defineProperty(navigator, 'clipboard', { value: undefined, configurable: true });
+
+      await pressMenuItem(fixture, 'Link 1', 'Copy link');
+
+      expect(toast.show).toHaveBeenCalledWith(
+        expect.objectContaining({ kind: TOAST_KIND.Danger, title: "Couldn't copy the link" }),
+      );
+    });
+
+    it('shows an error toast when the browser refuses to write', async () => {
+      const { fixture, toast } = await setup([opened(1, 0)]);
+      const writeText = vi.fn(() => Promise.reject(new Error('denied')));
+      Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
+
+      await pressMenuItem(fixture, 'Link 1', 'Copy link');
+
+      expect(toast.show).toHaveBeenCalledWith(expect.objectContaining({ kind: TOAST_KIND.Danger }));
+    });
+  });
+
   it('puts the link back and shows an error toast when removing fails', async () => {
     const { element, api, toast, fixture } = await setup([opened(1, 0), opened(2, 0)]);
     api.removeRecent.mockReturnValueOnce(throwError(() => new Error('boom')));
 
-    element.querySelector<HTMLButtonElement>('button[aria-label^="Remove Link 1"]')?.click();
-    await fixture.whenStable();
+    await pressMenuItem(fixture, 'Link 1', 'Remove from history');
 
     expect(element.querySelectorAll('app-link-history-row')).toHaveLength(2);
     expect(toast.show).toHaveBeenCalledWith(expect.objectContaining({ kind: TOAST_KIND.Danger }));
