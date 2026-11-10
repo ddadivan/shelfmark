@@ -79,17 +79,20 @@
       </ui-command-group>
     }
 
-    <p slot="empty" class="search-dialog__empty">
+    <div slot="empty" class="search-dialog__empty">
       @if (parsed() === '') {
-        {{ 'search.hint' | transloco }}
+        <span class="search-dialog__empty-text">{{ 'search.hint' | transloco }}</span>
       } @else if (busy()) {
-        {{ 'search.searching' | transloco }}
+        <span class="search-dialog__empty-text">{{ 'search.searching' | transloco }}</span>
       } @else if (state().failed) {
-        {{ 'search.failed' | transloco }}
+        <span class="search-dialog__empty-title">{{ 'search.failed' | transloco }}</span>
       } @else {
-        {{ 'library.emptySearch.title' | transloco: { query: parsed() } }}
+        <span class="search-dialog__empty-title">{{
+          'library.emptySearch.title' | transloco: { query: parsed() }
+        }}</span>
+        <span class="search-dialog__empty-text">{{ 'search.emptyText' | transloco }}</span>
       }
-    </p>
+    </div>
 
     <span slot="footer"
       ><kbd

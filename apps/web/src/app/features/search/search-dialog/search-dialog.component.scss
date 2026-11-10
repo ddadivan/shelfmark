@@ -18,11 +18,23 @@ ui-command-list {
   }
 }
 
+// The empty state sits in the status region of the command list, which already pads it.
 .search-dialog__empty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.search-dialog__empty-title {
+  @include type(heading);
+
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.search-dialog__empty-text {
   @include type(body);
 
-  padding: var(--space-6) var(--space-4);
-  margin: 0;
   color: var(--text-muted);
-  text-align: center;
 }

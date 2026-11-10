@@ -863,7 +863,8 @@
       "one": "{{count}} result",
       "other": "{{count}} results"
     },
-    "hint": "Type to search your links, folders and tags.",
+    "hint": "Results show up as you type: titles, notes, tags and sites.",
+    "emptyText": "Try another word. Search looks through titles, notes, tags and sites.",
     "searching": "Searching…",
     "failed": "Couldn't search. Try again.",
     "hints": {
