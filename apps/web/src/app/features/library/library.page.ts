@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -6,6 +7,7 @@ import {
   effect,
   ElementRef,
   inject,
+  Injector,
   input,
   signal,
   untracked,
@@ -65,6 +67,7 @@ import { isUiView } from '../../stores/is-ui-view';
 import { UiStore } from '../../stores/ui.store';
 import { EMPTY_KEYS } from './models/empty-keys.const';
 import { FolderTileComponent } from './folder-tile/folder-tile.component';
+import { runViewTransition } from './view-transition';
 import { scrollFeedForKey } from './feed-keyboard-scroll';
 import type { SubfolderItem } from './models/subfolder-item.interface';
 import { SORT_OPTION_KEYS } from './models/sort-option-keys.const';
@@ -120,6 +123,8 @@ export default class LibraryPage {
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
   private readonly title = inject(Title);
+  private readonly doc = inject(DOCUMENT);
+  private readonly injector = inject(Injector);
 
   /** From the route data. */
   readonly scope = input<LinksScope>(LINKS_SCOPE.All);
@@ -438,7 +443,7 @@ export default class LibraryPage {
 
   protected setView(view: string): void {
     if (isUiView(view)) {
-      this.ui.setView(view);
+      runViewTransition(this.doc, this.injector, () => this.ui.setView(view));
     }
   }
 

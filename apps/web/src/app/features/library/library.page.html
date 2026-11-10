@@ -218,7 +218,7 @@
       [attr.aria-label]="'library.list.label' | transloco"
     >
       @for (link of shownLinks(); track link.id) {
-      <li>
+      <li [style.view-transition-name]="'link-' + link.id">
         <app-link-row
           [link]="link"
           (opened)="actions.open(link)"
@@ -238,7 +238,7 @@
       [attr.aria-label]="'library.list.label' | transloco"
     >
       @for (link of shownLinks(); track link.id) {
-      <li>
+      <li [style.view-transition-name]="'link-' + link.id">
         <app-link-card
           [link]="link"
           (opened)="actions.open(link)"

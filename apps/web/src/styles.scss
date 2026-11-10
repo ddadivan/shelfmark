@@ -11,3 +11,11 @@
     --ui-toast-offset: calc(var(--space-6) + #{rem(56px)} + var(--space-3));
   }
 }
+
+// Cards <-> list morph (View Transitions, started by the library page): every link has a
+// `view-transition-name`, so each card glides into its row. The pseudo-elements live on the
+// document, so these rules must stay global. Reduced motion never starts a transition.
+::view-transition-group(*) {
+  animation-duration: var(--duration-slow);
+  animation-timing-function: var(--ease-in-out);
+}
