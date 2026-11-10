@@ -17,7 +17,7 @@ function link(n: number, changes: Partial<LinkResponse> = {}): LinkResponse {
 }
 
 function page(items: LinkResponse[], nextCursor: string | null = null): ListLinksResponse {
-  return { items, nextCursor };
+  return { items, nextCursor, pinned: [] };
 }
 
 function setup({ items = [link(1), link(2), link(3)] }: { items?: LinkResponse[] } = {}) {

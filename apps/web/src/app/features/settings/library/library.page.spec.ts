@@ -18,12 +18,12 @@ async function setup(
     get: vi.fn<UserSettingsApi['get']>(() =>
       options.failGet
         ? throwError(() => new Error('down'))
-        : of({ trashRetentionDays: 30 as const }),
+        : of({ trashRetentionDays: 30 as const, folderColours: true }),
     ),
     update: vi.fn<UserSettingsApi['update']>((request) =>
       options.failUpdate
         ? timer(10).pipe(switchMap(() => throwError(() => new Error('boom'))))
-        : of({ trashRetentionDays: request.trashRetentionDays ?? 30 }),
+        : of({ trashRetentionDays: request.trashRetentionDays ?? 30, folderColours: true }),
     ),
   };
   const total = options.total ?? 0;

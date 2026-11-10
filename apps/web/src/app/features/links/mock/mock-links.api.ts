@@ -98,6 +98,8 @@ export class MockLinksApi implements LinksApi {
         faviconUrl: null,
         imageUrl: null,
         isFavorite: false,
+        pinnedInFolderAt: null,
+        pinned: false,
         lastOpenedAt: null,
         tags: request.tags ?? [],
         createdAt: now,
@@ -135,6 +137,7 @@ export class MockLinksApi implements LinksApi {
       return of<ListLinksResponse>({
         items,
         nextCursor: next < sorted.length ? encodeCursor(next) : null,
+        pinned: [],
       });
     }).pipe(delay(MOCK_LATENCY_MS.List));
   }

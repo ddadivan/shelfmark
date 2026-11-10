@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { TRASH_RETENTION_DEFAULT } from '@shelfmark/contracts';
+import { TRASH_RETENTION_DEFAULT, type UserSettingsResponse } from '@shelfmark/contracts';
 import { of, Subject, throwError } from 'rxjs';
 import { SessionScope } from '../core/auth/session-scope.service';
 import { USER_SETTINGS_API } from '../features/settings/models/user-settings-api.const';
@@ -10,9 +10,11 @@ import { UserSettingsStore } from './user-settings.store';
 
 function setup() {
   const api = {
-    get: vi.fn<UserSettingsApi['get']>(() => of({ trashRetentionDays: 7 as const })),
+    get: vi.fn<UserSettingsApi['get']>(() =>
+      of({ trashRetentionDays: 7 as const, folderColours: true }),
+    ),
     update: vi.fn<UserSettingsApi['update']>((request) =>
-      of({ trashRetentionDays: request.trashRetentionDays ?? 30 }),
+      of({ trashRetentionDays: request.trashRetentionDays ?? 30, folderColours: true }),
     ),
   };
   TestBed.configureTestingModule({
@@ -77,7 +79,7 @@ describe('UserSettingsStore', () => {
 
   describe('setTrashRetention', () => {
     it('applies the choice at once, saves it and reloads Trash for the new days left', async () => {
-      const gate = new Subject<{ trashRetentionDays: 90 }>();
+      const gate = new Subject<UserSettingsResponse>();
       const { store, api } = setup();
       await store.load();
       const refresh = vi.spyOn(TestBed.inject(TrashStore), 'refresh');
@@ -87,7 +89,7 @@ describe('UserSettingsStore', () => {
 
       expect(store.retentionDays()).toBe(90);
       expect(api.update).toHaveBeenCalledWith({ trashRetentionDays: 90 });
-      gate.next({ trashRetentionDays: 90 });
+      gate.next({ trashRetentionDays: 90, folderColours: true });
       gate.complete();
       expect(await done).toBe(true);
       expect(refresh).toHaveBeenCalledTimes(1);
@@ -111,7 +113,7 @@ describe('UserSettingsStore', () => {
     });
 
     it('keeps a newer choice when an older request fails late', async () => {
-      const first = new Subject<{ trashRetentionDays: 90 }>();
+      const first = new Subject<UserSettingsResponse>();
       const { store, api } = setup();
       await store.load();
       api.update.mockImplementationOnce(() => first);

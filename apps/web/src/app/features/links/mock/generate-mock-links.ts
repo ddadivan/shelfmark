@@ -26,6 +26,8 @@ export function generateMockLinks(): LinkResponse[] {
       faviconUrl: null,
       imageUrl: null,
       isFavorite: i % 5 === 0,
+      pinnedInFolderAt: null,
+      pinned: false,
       lastOpenedAt: i % 4 === 0 ? new Date(Date.now() - i * OPEN_STEP_MS).toISOString() : null,
       tags: [TAGS[i % TAGS.length]],
       createdAt: created,

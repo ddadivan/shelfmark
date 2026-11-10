@@ -27,6 +27,6 @@ export class MockUserSettingsApi implements UserSettingsApi {
   }
 
   private current(): UserSettingsResponse {
-    return { trashRetentionDays: this.data.trashRetentionDays };
+    return { trashRetentionDays: this.data.trashRetentionDays, folderColours: true };
   }
 }

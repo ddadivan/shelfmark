@@ -1,5 +1,7 @@
 import { inject, Service } from '@angular/core';
 import {
+  FOLDER_DEFAULT_COLOUR,
+  FOLDER_DEFAULT_ICON,
   FOLDER_LIMIT,
   type CreateFolderRequest,
   type FolderDeleteMode,
@@ -43,6 +45,9 @@ export class MockFoldersApi implements FoldersApi {
         id: globalThis.crypto.randomUUID(),
         parentId,
         name: request.name,
+        colour: FOLDER_DEFAULT_COLOUR,
+        icon: FOLDER_DEFAULT_ICON,
+        pinned: false,
         linkCount: 0,
         createdAt: now,
         updatedAt: now,
