@@ -17,6 +17,10 @@
         }}<span class="landing-header__hint"> ({{ 'landing.newTab' | transloco }})</span></a
       >
     }
-    <ui-button [href]="LANDING_LINKS.SignIn">{{ 'landing.header.signIn' | transloco }}</ui-button>
+    @if (signedIn()) {
+      <ui-button [href]="LANDING_LINKS.Shelf">{{ 'landing.backToShelf' | transloco }}</ui-button>
+    } @else {
+      <ui-button [href]="LANDING_LINKS.SignIn">{{ 'landing.header.signIn' | transloco }}</ui-button>
+    }
   </nav>
 </header>

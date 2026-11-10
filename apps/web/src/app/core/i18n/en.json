@@ -217,7 +217,29 @@
       "privacy": "Privacy",
       "github": "GitHub"
     },
-    "newTab": "opens in a new tab"
+    "newTab": "opens in a new tab",
+    "backToShelf": "Back to my shelf",
+    "whatsNew": {
+      "title": "What's new",
+      "items": {
+        "trash": {
+          "title": "Trash",
+          "text": "Deleted links and folders wait in Trash, so nothing is gone by accident. Choose how long they stay in Settings."
+        },
+        "tabs": {
+          "title": "Your tabs stay in step",
+          "text": "Save, edit or delete a link in one tab and every other open tab shows it."
+        },
+        "move": {
+          "title": "Move to folder and drag and drop",
+          "text": "Move a link from its menu, or drag it onto a folder in the sidebar."
+        },
+        "refresh": {
+          "title": "A fresh look",
+          "text": "Softer corners, a floating tab bar on phones and toasts that say what happened."
+        }
+      }
+    }
   },
   "links": {
     "add": {
@@ -531,7 +553,8 @@
     "theme": {
       "toLight": "Switch to light theme",
       "toDark": "Switch to dark theme"
-    }
+    },
+    "about": "About Shelfmark"
   },
   "folders": {
     "dialog": {
@@ -839,7 +862,8 @@
         "rateLimited": "Too many attempts. Try again in a minute.",
         "failed": "We could not delete your account. Nothing was deleted. Try again."
       }
-    }
+    },
+    "help": "Help"
   },
   "shortcuts": {
     "title": "Keyboard shortcuts",
@@ -1078,5 +1102,25 @@
   "toast": {
     "actionHint": "Press {{shortcut}} to reach {{action}}",
     "dismiss": "Dismiss"
+  },
+  "howItWorks": {
+    "menu": "How it works",
+    "title": "Shelfmark in 60 seconds",
+    "close": "Close",
+    "captions": "English",
+    "chaptersLabel": "Chapters",
+    "soon": "The video is on its way. Until then, the chapters show what it covers.",
+    "chapters": {
+      "save": "Save a link",
+      "organise": "Folders and tags",
+      "find": "Find it again"
+    },
+    "emptyLink": "Watch how it works",
+    "card": {
+      "label": "How it works",
+      "title": "New here? Watch how it works",
+      "length": "1 minute",
+      "hide": "Hide"
+    }
   }
 }

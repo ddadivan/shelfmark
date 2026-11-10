@@ -209,7 +209,11 @@
         <ui-button variant="primary" iconLeft="add" (click)="actions.addLink(addLinkData())">
           {{ emptyKey() + '.action' | transloco }}
         </ui-button>
-        } @else {
+        @if (scope() === LINKS_SCOPE.All) {
+        <ui-button variant="ghost" iconLeft="play" (click)="howItWorks.open()">
+          {{ 'howItWorks.emptyLink' | transloco }}
+        </ui-button>
+        } } @else {
         <ui-button variant="primary" (click)="showAll()">
           {{ emptyKey() + '.action' | transloco }}
         </ui-button>

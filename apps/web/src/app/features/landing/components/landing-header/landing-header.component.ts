@@ -3,6 +3,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { LogoComponent, ButtonComponent } from '@shelfmark/ui';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { LANDING_LINKS } from '../../models/landing-links.const';
+import { injectSignedIn } from '../../inject-signed-in';
 
 /** Top bar of the landing page: logo, anchor to "How it's built", GitHub and sign-in. */
 @Component({
@@ -14,6 +15,7 @@ import { LANDING_LINKS } from '../../models/landing-links.const';
 })
 export class LandingHeaderComponent {
   protected readonly LANDING_LINKS = LANDING_LINKS;
+  protected readonly signedIn = injectSignedIn();
 
   /** The anchors and GitHub are secondary on a phone (not rendered there); sign-in stays. */
   protected readonly phone = inject(ViewportService).phone;

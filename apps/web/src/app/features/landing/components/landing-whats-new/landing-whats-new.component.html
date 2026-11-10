@@ -1,0 +1,18 @@
+<section class="landing-whats-new" appLandingReveal aria-labelledby="landing-whats-new-title">
+  <h2 id="landing-whats-new-title" class="landing-whats-new__title">
+    {{ 'landing.whatsNew.title' | transloco }}
+  </h2>
+  <ul class="landing-whats-new__list">
+    @for (entry of entries; track entry.id) {
+      <li class="landing-whats-new__item">
+        <div class="landing-whats-new__text">
+          <h3 class="landing-whats-new__name">{{ entry.titleKey | transloco }}</h3>
+          <p class="landing-whats-new__lead">{{ entry.textKey | transloco }}</p>
+        </div>
+        <time class="landing-whats-new__date" [attr.datetime]="entry.date">{{
+          entry.date | date: 'd MMM y'
+        }}</time>
+      </li>
+    }
+  </ul>
+</section>

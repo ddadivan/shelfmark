@@ -55,6 +55,7 @@ import { sameFilter } from '../links/links-filter';
 import { parseSearchQuery } from '../links/search-query';
 import { InViewDirective } from '../links/in-view/in-view.directive';
 import { LinkActionsService } from '../links/link-actions.service';
+import { HowItWorksService } from '../how-it-works/how-it-works.service';
 import { LinkCardComponent } from '../links/link-card/link-card.component';
 import { LinkRowComponent } from '../links/link-row/link-row.component';
 import type { AddLinkData } from '../links/models/add-link-data.interface';
@@ -120,6 +121,7 @@ export default class LibraryPage {
   protected readonly store = inject(LinksStore);
   protected readonly ui = inject(UiStore);
   protected readonly actions = inject(LinkActionsService);
+  protected readonly howItWorks = inject(HowItWorksService);
   protected readonly phone = inject(ViewportService).phone;
   private readonly exporter = inject(ExportActionsService);
   private readonly folders = inject(FoldersStore);
