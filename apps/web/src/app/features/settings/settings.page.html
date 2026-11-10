@@ -82,7 +82,7 @@
   </ui-settings-section>
 
   @if (canDeleteAccount()) {
-  <ui-settings-section [title]="'settings.delete.title' | transloco">
+  <ui-settings-section danger [title]="'settings.delete.title' | transloco">
     <ui-settings-row [title]="'settings.delete.hint' | transloco">
       <ui-button [variant]="BUTTON_VARIANT.Danger" (click)="deleteAccount()">
         {{ 'settings.delete.action' | transloco }}

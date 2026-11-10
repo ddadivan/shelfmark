@@ -12,7 +12,7 @@ import { SettingsSectionComponent } from './settings-section.component';
 @Component({
   imports: [SettingsSectionComponent, SettingsRowComponent, SwitchComponent],
   template: `
-    <ui-settings-section title="Saving">
+    <ui-settings-section title="Saving" [danger]="danger()">
       <ui-settings-row
         title="Warn about duplicates"
         description="Shows where you already saved the same link"
@@ -28,6 +28,7 @@ import { SettingsSectionComponent } from './settings-section.component';
 })
 class HostComponent {
   readonly align = signal<SettingsRowAlign>(SETTINGS_ROW_ALIGN.Center);
+  readonly danger = signal(false);
 }
 
 function render() {
@@ -87,6 +88,22 @@ describe('SettingsSectionComponent and SettingsRowComponent', () => {
     expect(css).toContain('flex-wrap: wrap');
     expect(css).toContain('max-inline-size: 23.75rem');
     expect(css).toContain('inline-size: 2.25rem');
+  });
+
+  it('marks the destructive group with danger: class, red ring and red title', () => {
+    const { fixture, root } = render();
+    const section = root.querySelector('ui-settings-section');
+    expect(section?.classList).not.toContain('ui-settings-section--danger');
+    fixture.componentInstance.danger.set(true);
+    fixture.detectChanges();
+    expect(section?.classList).toContain('ui-settings-section--danger');
+    const css = compileScss('lib/settings-row/settings-section.component.scss');
+    expect(css).toMatch(
+      /ui-settings-section--danger[^{]*\.ui-settings-section__panel\s*\{[^}]*var\(--danger-bg\)/,
+    );
+    expect(css).toMatch(
+      /ui-settings-section--danger[^{]*\.ui-settings-section__title\s*\{[^}]*color: var\(--danger\)/,
+    );
   });
 
   it('has no axe violations', async () => {

@@ -15,3 +15,16 @@
   margin: 0 0 var(--space-2);
   color: var(--text);
 }
+
+// Destructive group (SetAccount.dc.html): a danger-bg ring over the card shadow, red title.
+:host(.ui-settings-section--danger) {
+  .ui-settings-section__panel {
+    box-shadow:
+      0 0 0 1px var(--danger-bg),
+      var(--shadow-card);
+  }
+
+  .ui-settings-section__title {
+    color: var(--danger);
+  }
+}
