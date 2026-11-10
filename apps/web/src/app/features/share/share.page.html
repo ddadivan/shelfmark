@@ -1,7 +1,9 @@
 <main class="share">
   @switch (state()) { @case (SHARE_STATE.Form) {
   <form class="share__sheet" [formRoot]="form" aria-labelledby="share-title">
+    @if (phone()) {
     <div class="share__grip" aria-hidden="true"></div>
+    }
     <header class="share__header">
       <ui-logo class="share__logo" [variant]="LOGO_VARIANT.Mark" />
       <div class="share__heading">
@@ -83,7 +85,9 @@
   </form>
   } @case (SHARE_STATE.Invalid) {
   <section class="share__sheet" aria-labelledby="share-title">
+    @if (phone()) {
     <div class="share__grip" aria-hidden="true"></div>
+    }
     <header class="share__header">
       <ui-logo class="share__logo" [variant]="LOGO_VARIANT.Mark" />
       <div class="share__heading">

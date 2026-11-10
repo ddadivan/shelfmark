@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import type { LinkResponse } from '@shelfmark/contracts';
 import {
@@ -12,6 +12,7 @@ import {
   MenuTriggerDirective,
   TooltipDirective,
 } from '@shelfmark/ui';
+import { ViewportService } from '../../../core/layout/viewport.service';
 import { linkHost, ownImageUrl, safeHref, siteLetter } from '../link-view';
 
 const MAX_TAGS = 2;
@@ -36,6 +37,9 @@ const MAX_TAGS = 2;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LinkRowComponent {
+  /** The tags are left out on a phone: the row has no room for them. */
+  protected readonly phone = inject(ViewportService).phone;
+
   readonly link = input.required<LinkResponse>();
   /** Plays the fade-in of rows that replace the skeleton. */
   readonly reveal = input(false);

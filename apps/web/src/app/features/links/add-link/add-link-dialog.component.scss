@@ -121,26 +121,15 @@
   }
 }
 
-// The phone add sheet has no Cancel (edit keeps it; its close button, Esc and swipe-down dismiss it), as in the mockup.
-.add-link__cancel {
-  @include phone {
-    display: none;
-  }
-}
-
 // The "save" shortcut at the start of the footer; a phone has no keyboard to press it.
 .add-link__shortcut {
   @include type(caption);
 
-  display: none;
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
   margin-inline-end: auto;
   color: var(--text-muted);
-
-  @include tablet-up {
-    display: inline-flex;
-    gap: var(--space-1);
-    align-items: center;
-  }
 
   kbd {
     @include type(caption);

@@ -9,7 +9,7 @@
   <span slot="title">{{ link().title }}</span>
   <span slot="meta">{{ host() }}</span>
   <div slot="trailing" class="link-row__trailing">
-    @if (tags().length > 0) {
+    @if (tags().length > 0 && !phone()) {
       <ul class="link-row__tags">
         @for (tag of tags(); track tag) {
           <li>

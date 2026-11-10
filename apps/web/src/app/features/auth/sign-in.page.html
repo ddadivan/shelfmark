@@ -51,7 +51,9 @@
       </ui-button>
     </div>
 
+    @if (isDesktop()) {
     <p class="sign-in__or">{{ 'auth.signIn.or' | transloco }}</p>
+    }
 
     <ui-button
       class="sign-in__demo"

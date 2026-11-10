@@ -1,7 +1,9 @@
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import type { LinkResponse } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import axe from 'axe-core';
+import { ViewportService } from '../../../core/layout/viewport.service';
 import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
 import { LinkRowComponent } from './link-row.component';
 
@@ -13,8 +15,13 @@ const LINK: LinkResponse = {
   isFavorite: true,
 };
 
-async function setup(link: LinkResponse = LINK) {
-  TestBed.configureTestingModule({ providers: [provideTranslocoForTest()] });
+async function setup(link: LinkResponse = LINK, phone = false) {
+  TestBed.configureTestingModule({
+    providers: [
+      provideTranslocoForTest(),
+      { provide: ViewportService, useValue: { phone: signal(phone) } },
+    ],
+  });
   await loadEnglish();
   const fixture = TestBed.createComponent(LinkRowComponent);
   fixture.componentRef.setInput('link', link);
@@ -34,6 +41,15 @@ function menuItem(label: string): HTMLElement {
 }
 
 describe('LinkRowComponent', () => {
+  it('renders the tags on a desktop and leaves them out of the DOM on a phone', async () => {
+    const desktop = await setup();
+    expect(desktop.element.querySelector('.link-row__tags')).not.toBeNull();
+    TestBed.resetTestingModule();
+
+    const phone = await setup(LINK, true);
+    expect(phone.element.querySelector('.link-row__tags')).toBeNull();
+  });
+
   it('shows the captured same-origin icon', async () => {
     const { element } = await setup({
       ...LINK,

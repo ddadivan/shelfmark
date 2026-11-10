@@ -1,8 +1,22 @@
+import { signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { ViewportService } from '../../../../core/layout/viewport.service';
 import { axeViolations } from '../../../../../testing/axe';
 import { createTranslated } from '../../../../../testing/create-translated';
 import { LandingHeaderComponent } from './landing-header.component';
 
 describe('LandingHeaderComponent', () => {
+  it('leaves the anchor and GitHub links out of the DOM on a phone; sign-in stays', async () => {
+    TestBed.configureTestingModule({
+      providers: [{ provide: ViewportService, useValue: { phone: signal(true) } }],
+    });
+    const fixture = await createTranslated(LandingHeaderComponent);
+    const root = fixture.nativeElement as HTMLElement;
+
+    expect(root.querySelectorAll('.landing-header__link')).toHaveLength(0);
+    expect(root.querySelector('a[href="/sign-in"]')).not.toBeNull();
+  });
+
   it('links to the anchor, the repository and sign-in', async () => {
     const fixture = await createTranslated(LandingHeaderComponent);
     const root = fixture.nativeElement as HTMLElement;

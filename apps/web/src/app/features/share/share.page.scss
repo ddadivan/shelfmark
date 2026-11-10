@@ -45,10 +45,6 @@
   height: rem(5px);
   background: var(--border-control);
   border-radius: rem(3px);
-
-  @include tablet-up {
-    display: none;
-  }
 }
 
 .share__header {

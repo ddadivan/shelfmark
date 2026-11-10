@@ -140,21 +140,18 @@
       >
     }
 
-    @if (!editing) {
+    @if (!editing && !phone()) {
       <span slot="footer" class="add-link__shortcut">
         <kbd>{{ (mac ? 'links.add.shortcut.cmd' : 'links.add.shortcut.ctrl') | transloco }}</kbd>
         <kbd>{{ 'links.add.shortcut.enter' | transloco }}</kbd>
         {{ 'links.add.shortcut.save' | transloco }}
       </span>
     }
-    <ui-button
-      slot="footer"
-      class="add-link__action"
-      [class.add-link__cancel]="!editing"
-      [disabled]="saving()"
-      (click)="cancel()"
-      >{{ 'links.add.actions.cancel' | transloco }}</ui-button
-    >
+    @if (editing || !phone()) {
+      <ui-button slot="footer" class="add-link__action" [disabled]="saving()" (click)="cancel()">{{
+        'links.add.actions.cancel' | transloco
+      }}</ui-button>
+    }
     @if (duplicate() && !editing) {
       <ui-button slot="footer" class="add-link__action" (click)="openExisting()">{{
         'links.add.actions.openSaved' | transloco

@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, output } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { LogoComponent, ButtonComponent } from '@shelfmark/ui';
+import { ViewportService } from '../../../../core/layout/viewport.service';
 import { LANDING_LINKS } from '../../models/landing-links.const';
 
 /** Top bar of the landing page: logo, anchor to "How it's built", GitHub and sign-in. */
@@ -13,6 +14,9 @@ import { LANDING_LINKS } from '../../models/landing-links.const';
 })
 export class LandingHeaderComponent {
   protected readonly LANDING_LINKS = LANDING_LINKS;
+
+  /** The anchors and GitHub are secondary on a phone (not rendered there); sign-in stays. */
+  protected readonly phone = inject(ViewportService).phone;
 
   /** The visitor asked for "How it's built"; the page loads the deferred sections and scrolls. */
   readonly howItsBuiltRequested = output<void>();

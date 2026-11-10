@@ -51,6 +51,7 @@ import {
 import { firstValueFrom, switchMap, tap, timer, type Observable } from 'rxjs';
 import { FoldersStore } from '../../../stores/folders.store';
 import { TagsStore } from '../../../stores/tags.store';
+import { ViewportService } from '../../../core/layout/viewport.service';
 import { pluralKey } from '../../../core/i18n/plural-key';
 import { isMacPlatform } from '../../search/is-mac-platform';
 import { normalizeTagNames } from '../../tags/normalize-tag-names';
@@ -116,6 +117,8 @@ export class AddLinkDialogComponent {
   /** Cmd (macOS) or Ctrl: the key of the "save" shortcut shown in the footer. */
   protected readonly mac = isMacPlatform();
 
+  /** The phone sheet has no Cancel in add mode and no shortcut hint: not rendered there. */
+  protected readonly phone = inject(ViewportService).phone;
   private readonly linksApi = inject(LINKS_API);
   private readonly folders = inject(FoldersStore);
   private readonly tagStore = inject(TagsStore);

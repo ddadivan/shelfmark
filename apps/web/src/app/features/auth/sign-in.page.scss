@@ -108,7 +108,7 @@
 .sign-in__or {
   @include type(caption);
 
-  display: none;
+  display: flex;
   gap: var(--space-3);
   align-items: center;
   margin: 0;
@@ -119,10 +119,6 @@
     flex: 1;
     content: '';
     border-block-start: 1px solid var(--border);
-  }
-
-  @include desktop {
-    display: flex;
   }
 }
 

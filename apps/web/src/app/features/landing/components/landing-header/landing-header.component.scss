@@ -56,11 +56,6 @@
     font-size: rem(15px);
     line-height: rem(22px);
   }
-
-  // Anchors and GitHub are secondary on a phone; sign-in stays.
-  @include phone {
-    display: none;
-  }
 }
 
 .landing-header__hint {

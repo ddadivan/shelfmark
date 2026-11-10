@@ -119,6 +119,17 @@ describe('SignInPage', () => {
 
     expect(root.querySelector('.sign-in__art')?.getAttribute('aria-hidden')).toBe('true');
     expect(root.querySelector('app-sign-in-drift')).toBeNull();
+    // The "or" divider is a desktop card detail: not rendered on a phone.
+    expect(root.querySelector('.sign-in__or')).toBeNull();
+  });
+
+  it('renders the "or" divider on a desktop', async () => {
+    const { harness } = await setup();
+    await harness.navigateByUrl('/sign-in');
+
+    expect(
+      (harness.routeNativeElement as HTMLElement).querySelector('.sign-in__or'),
+    ).not.toBeNull();
   });
 
   it('has no axe violations', async () => {
