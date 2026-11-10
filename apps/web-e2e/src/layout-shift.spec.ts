@@ -80,4 +80,30 @@ test.describe('library view switch (mock API)', () => {
     const moved = (await takeShifts(page)).filter((shift) => shift.inPage);
     expect(moved).toEqual([]);
   });
+
+  test('keeps a gap under the top bar and the title in place with or without breadcrumbs', async ({
+    page,
+  }) => {
+    test.skip(
+      (page.viewportSize()?.width ?? 0) < 640,
+      'the phone has no top bar; its pages carry their own title',
+    );
+    const top = (selector: string) =>
+      page.locator(selector).evaluate((element) => element.getBoundingClientRect());
+
+    await page.goto('/links');
+    await expect(page.locator('app-link-card').first()).toBeVisible();
+    const pill = await top('.shell__pill');
+    const titleAll = await top('.library__title');
+    await expect(page.locator('.library__crumbs')).toHaveCount(0);
+
+    await openSidebar(page);
+    await page.getByRole('treeitem', { name: new RegExp(`^${READING}\\b`) }).click();
+    await expect(page.getByRole('heading', { level: 1, name: READING })).toBeVisible();
+    const crumbs = await top('.library__crumbs');
+    const titleFolder = await top('.library__title');
+
+    expect(crumbs.top - pill.bottom).toBeGreaterThanOrEqual(16);
+    expect(titleFolder.top).toBeCloseTo(titleAll.top, 0);
+  });
 });
