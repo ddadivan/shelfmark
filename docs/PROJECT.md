@@ -208,6 +208,13 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
     - Score 1–7 → dialog 2, feedback: "What would make it better?", a text field (up to 2000 characters), "Send" and "Skip" buttons; the score is saved even on "Skip". After sending: the thank-you dialog.
     - Dialog 3, thank you: "Thank you" + one line (for feedback: "We read every message"), closed by a button or automatically after 4 s. The steps change inside one window with a smooth transition, as in onboarding.
     - "Not now" or Esc closes it until the next milestone (recorded as "skipped"). On phone: a bottom sheet.
+25. **Send feedback (#272).** As a user, I want to tell the author an idea or a problem at any time and see what became of it; as the author, I want to read and answer every message.
+    - Where: "Send feedback" in the account menu (desktop), in the You list (phone) and on Settings › Your feedback. It opens one dialog (a bottom sheet on a phone).
+    - The form: a type control (Idea, Problem, Other), a message field (1–2000 characters, counter, a different question and placeholder per type), an optional screenshot, "Attach browser and app version" (on by default), Cancel and Send.
+    - Screenshot: a drop area and a "choose a file" button (the button is the keyboard and screen-reader route; dropping is only a shortcut). PNG, JPEG or WebP up to 2 MB; type and size are checked in the browser before anything is sent, with clear messages; the preview is a `data:` URL thumbnail (the CSP allows `data:`, not `blob:`); sent as base64 per the contract.
+    - States: Sending… (button loading); "Thank you" with "Done"; a failed send keeps the text and says "Couldn't send. Your text is kept — try again in a moment."; a 429 has its own message.
+    - Settings › Your feedback (`/settings/feedback`): a "Send feedback" button and the user's messages, newest first: type, text, sent date ("Sent today", "Sent 3 Nov"), the author's reply ("Reply: …") when there is one, and a status badge (Received, Planned, In progress, Done, Not planned). Loading, empty and error states. The "Ratings" block of the mockup is not part of this story.
+    - The author's inbox (`/admin/feedback`, only for the author; everyone else is sent to `/links` and the API answers 404): a "Feedback inbox" item in the account menu and the You list, shown only when `GET /api/admin/status` says so; every message with sender name and email, date, status badge and screenshot link; a status filter; per message a status select and a reply field with Save. Saving is optimistic: it rolls back with an error toast when the API refuses.
 
 ### Navigation (left sidebar)
 
@@ -274,7 +281,8 @@ CSR without SSR, zoneless, Transloco, strict-CSP build: ADR 0005; state: ADR 000
 | `/unsorted` | No folder | signed in | `features/library` |
 | `/favorites` | Favorites | signed in | `features/library` |
 | `/folders/:folderId` | Folder; nesting is shown in breadcrumbs, not in the URL | signed in | `features/library` |
-| `/settings` | Settings, one page per section: `/settings/account` (profile, sign out, welcome tour, deletion), `/appearance` (theme, language), `/shortcuts` (the keyboard shortcut list), `/import-export` (export only), `/privacy`; on tablet and desktop `/settings` goes to the first section, on a phone it is the You list | signed in | `features/settings` |
+| `/settings` | Settings, one page per section: `/settings/account` (profile, sign out, welcome tour, deletion), `/appearance` (theme, language), `/feedback` (Your feedback: send form and the user's messages), `/shortcuts` (the keyboard shortcut list), `/import-export` (export only), `/privacy`; on tablet and desktop `/settings` goes to the first section, on a phone it is the You list | signed in | `features/settings` |
+| `/admin/feedback` | The author's feedback inbox: all messages, status filter, status and reply per message; `adminOnly` asks `GET /api/admin/status`, a non-admin is sent to `/links` | signed in, author only | `features/admin` |
 | `/share?url=&title=&text=` | Quick save from "Share" | signed in; guest goes to sign-in and back | `features/share` |
 | `/sign-in?returnUrl=&reason=` | Sign in with Google / GitHub | guest only | `features/auth` |
 | `/demo` | Creates a demo sandbox and goes to `/links` | everyone | `features/auth` |
@@ -294,6 +302,7 @@ export const routes: Routes = [
     { path: 'favorites', loadComponent: libraryPage, data: { scope: 'favorites' }, title: 'Favorites' },
     { path: 'folders/:folderId', loadComponent: libraryPage, data: { scope: 'folder' }, title: folderTitle },
     { path: 'settings', loadChildren: () => import('./features/settings/settings.routes') },
+    { path: 'admin', canActivate: [adminOnly], loadChildren: () => import('./features/admin/admin.routes') },
     { path: 'share', loadComponent: () => import('./features/share/share.page'), title: 'Save to Shelfmark' },
   ]},
   { path: 'links', canActivate: [redirectToSignIn], children: [] },   // guest on a protected URL
@@ -662,6 +671,7 @@ In CI: `@axe-core/playwright` on the key screens in both themes; the build fails
 7. Empty states (no links, empty folder, nothing found)
 8. Settings, a page per section (account with deletion and "Show onboarding again", appearance, export, privacy and data); the settings nav replaces the sidebar on tablet and desktop, the You list opens the pages on a phone
 9. Privacy policy
+10. Send feedback dialog (form, sending, thank you, error) and Settings › Your feedback (SendFeedback, SetFeedback); the author's feedback inbox is built from the same parts and has no mockup
 
 Every screen in light and dark themes, in desktop and phone layouts, with loading and error states.
 
