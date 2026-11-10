@@ -23,7 +23,7 @@ describe('searchTerms', () => {
 
 describe('buildLinkWhere', () => {
   it('always filters by the user', () => {
-    expect(buildLinkWhere(USER, {})).toEqual({ userId: USER, AND: [] });
+    expect(buildLinkWhere(USER, {})).toEqual({ userId: USER, deletedAt: null, AND: [] });
   });
 
   it('filters by folder, unsorted and favorite', () => {

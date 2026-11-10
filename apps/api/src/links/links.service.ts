@@ -37,9 +37,14 @@ export class LinksService {
     const { preview, fetched } = await this.previews.load(url);
     const normalized = [...new Set([normalizeUrl(url), normalizeUrl(preview.url)])];
     const existing = await this.prisma.link.findFirst({
-      where: { userId, normalizedUrl: { in: normalized } },
+      where: { userId, deletedAt: null, normalizedUrl: { in: normalized } },
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
-      select: { id: true, title: true, folderId: true, folder: { select: { name: true } } },
+      select: {
+        id: true,
+        title: true,
+        folderId: true,
+        folder: { select: { name: true } },
+      },
     });
     const duplicate: LinkDuplicate | null = existing && {
       id: existing.id,
@@ -88,7 +93,7 @@ export class LinksService {
   async recent(userId: string, query: RecentLinksQuery): Promise<RecentLinksResponse> {
     const since = new Date(Date.now() - RECENT_LINKS_WINDOW_DAYS * 24 * 60 * 60 * 1000);
     const rows = await this.prisma.link.findMany({
-      where: { userId, lastOpenedAt: { gte: since } },
+      where: { userId, deletedAt: null, lastOpenedAt: { gte: since } },
       include: LINK_INCLUDE,
       orderBy: [{ lastOpenedAt: 'desc' }, { id: 'desc' }],
       take: query.limit ?? PAGE_LIMIT.Default,
@@ -97,7 +102,10 @@ export class LinksService {
   }
 
   async get(userId: string, id: string): Promise<GetLinkResponse> {
-    const row = await this.prisma.link.findFirst({ where: { id, userId }, include: LINK_INCLUDE });
+    const row = await this.prisma.link.findFirst({
+      where: { id, userId, deletedAt: null },
+      include: LINK_INCLUDE,
+    });
     if (!row) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
     return toLinkResponse(row);
   }
