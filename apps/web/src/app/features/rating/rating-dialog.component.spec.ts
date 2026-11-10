@@ -82,7 +82,7 @@ describe('RatingDialogComponent', () => {
     await setup();
 
     expect(title()).toBe('How do you like Shelfmark so far?');
-    expect(container()?.querySelectorAll('app-score-scale button')).toHaveLength(10);
+    expect(container()?.querySelectorAll('ui-rating-scale button')).toHaveLength(10);
     expect(container()?.textContent).toContain('Not really');
     expect(container()?.textContent).toContain('Love it');
     expect(buttonByText('Not now')).toBeDefined();
@@ -127,7 +127,7 @@ describe('RatingDialogComponent', () => {
     await setup();
     press('4');
 
-    const stops = Array.from(container()?.querySelectorAll('app-score-scale button') ?? []).filter(
+    const stops = Array.from(container()?.querySelectorAll('ui-rating-scale button') ?? []).filter(
       (button) => button.getAttribute('tabindex') === '0',
     );
     expect(stops.map((button) => button.textContent?.trim())).toEqual(['4']);

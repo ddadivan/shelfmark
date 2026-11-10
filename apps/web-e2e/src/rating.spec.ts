@@ -94,6 +94,7 @@ test.describe('app rating (mock API)', () => {
     await dialog.getByRole('button', { name: '4 out of 10' }).click();
     const feedback = page.getByRole('dialog', { name: FEEDBACK_TITLE });
     await expect(feedback).toBeVisible();
+    await expect(feedback.getByRole('img', { name: 'Your score: 4' })).toBeVisible();
     await expect(feedback.getByRole('button', { name: 'Send' })).toBeDisabled();
 
     await feedback.getByRole('textbox', { name: 'Your feedback' }).fill('More folder options');

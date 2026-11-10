@@ -939,6 +939,7 @@
     "notNow": "Not now",
     "feedback": {
       "title": "What would make it better?",
+      "yourScore": "Your score: {{score}}",
       "label": "Your feedback",
       "placeholder": "Tell us what is missing or annoying",
       "counter": "characters",

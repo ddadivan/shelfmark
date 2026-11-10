@@ -1,0 +1,84 @@
+@use '../../styles/ui' as *;
+
+:host {
+  display: block;
+}
+
+.ui-rating-scale__items {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: var(--space-1);
+
+  // Two rows of five on a phone, where a button is wide enough to be square.
+  @media (width < 32.5em) {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+}
+
+.ui-rating-scale__item {
+  @include type(heading);
+
+  display: grid;
+  place-items: center;
+  height: rem(48px);
+  padding: 0;
+  margin: 0;
+  font-size: rem(18px);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--text);
+  background: var(--surface-hover);
+  border: 0;
+  border-radius: var(--radius-md);
+
+  @media (width < 32.5em) {
+    height: auto;
+    min-height: rem(48px);
+    aspect-ratio: 1;
+  }
+}
+
+button.ui-rating-scale__item {
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    transform var(--duration-instant) var(--ease-out);
+
+  @include hover {
+    background: var(--surface-pressed);
+  }
+
+  &:active {
+    transform: scale(0.94);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.ui-rating-scale__item.is-on,
+.ui-rating-scale__item.is-on:hover {
+  color: var(--on-primary);
+  background: var(--primary);
+}
+
+.ui-rating-scale__ends {
+  @include type(caption);
+
+  display: flex;
+  justify-content: space-between;
+  margin-block-start: var(--space-2);
+  color: var(--text-muted);
+}
+
+@include reduced-motion {
+  button.ui-rating-scale__item {
+    transition: none;
+
+    &:active {
+      transform: none;
+    }
+  }
+}

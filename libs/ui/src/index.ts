@@ -33,6 +33,7 @@ export * from './lib/panel';
 export * from './lib/overlay';
 export * from './lib/progress-bar';
 export * from './lib/radio-group';
+export * from './lib/rating-scale';
 export * from './lib/ripple';
 export * from './lib/save-status';
 export * from './lib/search-trigger';
