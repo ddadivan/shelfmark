@@ -77,12 +77,9 @@ test.describe('sign-in flow (mock auth)', () => {
 
     // The four cards float and take turns to land (ring), each on its own loop.
     await expect(page.locator('.sd-card')).toHaveCount(4);
-    const running = await page.evaluate(() =>
-      document
-        .getAnimations()
-        .filter((a) => a instanceof CSSAnimation && a.playState === 'running')
-        .map((a) => (a as CSSAnimation).animationName)
-        .filter((name) => name.endsWith('sd-float') || name.endsWith('sd-ring')),
+    // String scripts: this project has no DOM lib, and the code runs in the browser anyway.
+    const running = await page.evaluate<string[]>(
+      "document.getAnimations().filter((a) => a instanceof CSSAnimation && a.playState === 'running').map((a) => a.animationName).filter((name) => name.endsWith('sd-float') || name.endsWith('sd-ring'))",
     );
     expect(running.filter((n) => n.endsWith('sd-float'))).toHaveLength(4);
     expect(running.filter((n) => n.endsWith('sd-ring'))).toHaveLength(4);
@@ -94,8 +91,8 @@ test.describe('sign-in flow (mock auth)', () => {
     await page.goto('/sign-in');
     await expect(page.locator('.sd-card')).toHaveCount(4);
 
-    const animations = await page.evaluate(
-      () => document.getAnimations().filter((a) => a instanceof CSSAnimation).length,
+    const animations = await page.evaluate<number>(
+      'document.getAnimations().filter((a) => a instanceof CSSAnimation).length',
     );
     expect(animations).toBe(0);
   });
@@ -113,11 +110,8 @@ test.describe('sign-in flow (mock auth)', () => {
     await expect.poll(() => tilt.evaluate((el) => el.style.getPropertyValue('--tx'))).not.toBe('');
     const tx = Number(await tilt.evaluate((el) => el.style.getPropertyValue('--tx')));
     expect(tx).toBeGreaterThan(0.5);
-    const running = await page.evaluate(
-      () =>
-        document
-          .getAnimations()
-          .filter((a) => a instanceof CSSAnimation && a.animationName.endsWith('sd-float')).length,
+    const running = await page.evaluate<number>(
+      "document.getAnimations().filter((a) => a instanceof CSSAnimation && a.animationName.endsWith('sd-float')).length",
     );
     expect(running).toBe(4);
   });
