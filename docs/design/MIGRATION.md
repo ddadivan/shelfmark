@@ -107,18 +107,63 @@ Also restyled through tokens only, no separate issue unless screenshots show a g
 | `HowItWorks` | Promo video and About for signed-in users | 2 |
 | `Extension` | Browser extension | 3 |
 | `Import`, `SetImport` (import part) | Import (Telegram import is in the backlog) | backlog |
-| `TrashView`, `MobileTrash` (and Badge) | Trash | 2, right after the migration |
-| `FolderStyle` (colours, icons, pinning) | Folder colours, icons, pinned folders | 2, right after the migration |
-| `Main` (saved-view chips, SavedView) | Saved views | 2, right after the migration |
-| `PasteMany` | Paste several links | 2, right after the migration |
+| `TrashView`, `MobileTrash` (and Badge) | Trash | 2, after the migration and the author's review |
+| `FolderStyle` (colours, icons, pinning) | Folder colours, icons, pinned folders | 2, after the migration and the author's review |
+| `Main` (saved-view chips, SavedView) | Saved views | 2, after the migration and the author's review |
+| `PasteMany` | Paste several links | 2, after the migration and the author's review |
 | `SetAccount`, `SetLibrary`, `SetShortcuts`, `SetPrivacy` | Settings pages beyond what exists | partly stage 1 (see 5), the rest with their features |
 
 ## Decisions (author, Nov 10, 2026)
 
 - Everything follows the design: the new layout and screens replace the old ones wherever they differ.
-- Trash, pinned folders, folder colours and icons, saved views and "Paste several links" are new features. They are added to stage 2 in `PROJECT.md` and built right after this migration, on the new design. Until then the sidebar has no Trash row or Pinned section, folder tiles are graphite and there are no saved-view chips.
+- Trash, pinned folders, folder colours and icons, saved views and "Paste several links" are new features. They are added to stage 2 in `PROJECT.md` and built, on the new design, only after this migration is finished and the author has reviewed it; no stage 2 feature starts before that. Until then the sidebar has no Trash row or Pinned section, folder tiles are graphite and there are no saved-view chips.
 - Settings on desktop: a page per section with a settings nav, as in the mockups, for the sections that exist today.
 - Tags on desktop stay in the sidebar under a Tags section with "+" (screen `Tags`); the phone gets the Tags tab.
 - Recently opened page: "Remove from history" and "Clear history" are built now, with two API endpoints.
 - Story 18 becomes a Recently opened page and a phone sheet; `PROJECT.md` (story 18, 5.1 `UiStore`, 7.2, 7.3) is updated in the layout issue.
 - From the design archive only `docs/design` (design system and screens) is taken; its `PROJECT.md` is not.
+
+## Issues
+
+Milestone `Stage 2 · Redesign`, all in Todo on the board. Suggested order: #219, #220, then the new base components (#231 Glass first), the existing components, the layout, the screens.
+
+- #219 ci: run CI on pull requests into stage
+- #220 feat(ui): 2027 Refresh design tokens
+- #221 feat(ui): pill buttons in the 2027 style (Button)
+- #222 feat(ui): text fields in the 2027 style (Input)
+- #223 feat(ui): link card in the 2027 style (LinkCard)
+- #224 feat(ui): link row in the 2027 style (LinkRow)
+- #225 feat(ui): sidebar tree in the 2027 style (Tree)
+- #226 feat(ui): glass menus in the 2027 style (Menu)
+- #227 feat(ui): dialog in the 2027 style (Dialog)
+- #228 feat(ui): rich toasts in the 2027 style (Toast)
+- #229 feat(ui): sliding segmented control in the 2027 style (SegmentedControl)
+- #230 feat(ui): tag chips in the 2027 style (Chip)
+- #231 feat(ui): glass surface component (Glass)
+- #232 feat(ui): panel component (Panel)
+- #233 feat(ui): switch component (Switch)
+- #234 feat(ui): checkbox component (Checkbox)
+- #235 feat(ui): settings section and row component (SettingsRow)
+- #236 feat(ui): folder icon tile component (FolderIcon)
+- #237 feat(ui): bottom sheet component (Sheet)
+- #238 feat(ui): phone tab bar component (TabBar)
+- #239 feat(ui): history group and row component (HistoryRow)
+- #240 feat(web): desktop sidebar in the 2027 layout
+- #241 feat(web,api): Recently opened page with remove and clear history
+- #242 feat(web): top bar with pill search and shortcuts
+- #243 feat(web): phone tab bar navigation replaces the hamburger menu
+- #244 feat(web): library feed in the 2027 design
+- #245 feat(web): add link dialog in the 2027 design
+- #246 feat(web): edit link dialog in the 2027 design
+- #247 feat(web): search overlay in the 2027 design
+- #248 feat(web): menus and folder dialogs in the 2027 design
+- #249 feat(web): tags management in the 2027 design
+- #250 feat(web): settings with a page per section in the 2027 design
+- #251 feat(web): welcome dialog in the 2027 design
+- #252 feat(web): toasts, offline and confirmations in the 2027 design
+- #253 feat(web): rating dialog in the 2027 design
+- #254 feat(web): sign-in page in the 2027 design
+- #255 feat(web): landing page in the 2027 design
+- #256 feat(web): share target quick form in the 2027 design
+- #257 feat(web): privacy page in the 2027 design
+- #258 feat(web): keyboard shortcuts dialog in the 2027 design

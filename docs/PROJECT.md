@@ -34,7 +34,7 @@ Updated as work goes on — every session resumes from here.
 - [ ] Stage 2: scope chosen by the author on Nov 9, 2026 (see "Roadmap after stage 1" below). Started Nov 10, 2026 with the redesign.
   - Nov 10, 2026: the `stage` branch exists; the 2027 Refresh design is in `docs/design` (the stage 1 design in `docs/design-v1`), the migration plan in `docs/design/MIGRATION.md`; the work runs on `design/2027-refresh` from `stage`, one issue at a time, then one PR into `stage`.
   - First task of stage 2: switch to the release flow decided on Nov 9–10, 2026 (9.3 and 9.5): a `stage` integration branch without a staging environment, feature branches from `stage`, a To release column on the board, production changes only through a release PR at the end of a stage.
-  - Then the redesign (an updated design with more convenient blocks, from the author's new mockups, which already cover the stage 2 screens), and only then the stage 2 features. Until then nothing from stage 2 is merged into `main`, so production stays as the author uses it.
+  - Then the redesign (an updated design with more convenient blocks, from the author's new mockups, which already cover the stage 2 screens), then the author reviews the redesigned app, and only then the stage 2 features start. Until then nothing from stage 2 is merged into `main`, so production stays as the author uses it.
 - [x] Motion in code (landing and app); promo video moved to stage 2
 
 ## 1. Problem and idea
@@ -914,10 +914,10 @@ Chosen by the author on Nov 9, 2026. Stages 2 and 3 are planned; everything else
 
 - [ ] **First:** release flow with the `stage` integration branch (9.3): ADR, `stage` branch and ruleset, CI, To release column and board workflows, agent instructions; no staging environment for now
 - [ ] **Second: redesign** (before the features below). An updated design rather than a new one: more convenient blocks and layouts on the existing design system. The author provides the new mockups in Claude Design, and they already include the screens of the stage 2 features, so those are built on the new design. Steps: update `docs/design` (screens, components, tokens if they change), then bring `libs/ui` and the existing screens up to it, keeping a11y, both themes, the phone and the e2e and Storybook suites green. Started Nov 10, 2026 with the "Shelfmark 2027 Refresh" design; plan and decisions in `docs/design/MIGRATION.md`
-- [ ] Trash: deleted links and folders go to Trash and are kept for a period set in settings; restore and delete forever (screens `TrashView`, `MobileTrash`). Added by the author on Nov 10, 2026 with the redesign, built right after it
-- [ ] Folder colours and icons, pinned folders (screen `FolderStyle`). Added Nov 10, 2026, built right after the redesign
-- [ ] Saved views: chips above the feed with saved filters (All, Videos, Articles, To read, "Save this view"). Added Nov 10, 2026, built right after the redesign
-- [ ] Paste several links at once (screen `PasteMany`). Added Nov 10, 2026, built right after the redesign
+- [ ] Trash: deleted links and folders go to Trash and are kept for a period set in settings; restore and delete forever (screens `TrashView`, `MobileTrash`). Added by the author on Nov 10, 2026 with the redesign, built after the redesign and the author's review of it
+- [ ] Folder colours and icons, pinned folders (screen `FolderStyle`). Added Nov 10, 2026, built after the redesign and the author's review of it
+- [ ] Saved views: chips above the feed with saved filters (All, Videos, Articles, To read, "Save this view"). Added Nov 10, 2026, built after the redesign and the author's review of it
+- [ ] Paste several links at once (screen `PasteMany`). Added Nov 10, 2026, built after the redesign and the author's review of it
 - [ ] Email and password sign-in: email verification, password reset, an email sending service
 - [ ] Reminders: come back to a saved link later
 - [ ] Sharing: open a collection (folder) to other people
