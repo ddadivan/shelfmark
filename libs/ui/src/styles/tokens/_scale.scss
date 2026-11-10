@@ -13,9 +13,10 @@
   --icon-size-sm: #{rem(16px)};
   --icon-size-md: #{rem(20px)};
   --icon-size-lg: #{rem(24px)};
-  --radius-sm: #{rem(6px)};
-  --radius-md: #{rem(10px)};
-  --radius-lg: #{rem(14px)};
+  --radius-sm: #{rem(8px)};
+  --radius-md: #{rem(14px)};
+  --radius-lg: #{rem(22px)};
+  --radius-xl: #{rem(28px)};
 
   // Floating action button (mockup: 56px square, 18px radius); no other component uses it.
   --radius-fab: #{rem(18px)};

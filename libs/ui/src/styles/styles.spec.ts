@@ -297,7 +297,7 @@ function contrast(a: string, b: string): number {
 
 describe('text-muted contrast (WCAG AA 4.5:1)', () => {
   it.each(['light', 'dark'] as const)('holds on every surface in %s', (theme) => {
-    expect(tokenHex(theme, 'text-muted')).toBe(theme === 'light' ? '#67676c' : '#9a9aa0');
+    expect(tokenHex(theme, 'text-muted')).toBe(theme === 'light' ? '#636368' : '#9a9aa0');
     for (const surface of ['bg', 'surface', 'surface-hover', 'surface-pressed', 'accent-bg']) {
       const ratio = contrast(tokenHex(theme, 'text-muted'), tokenHex(theme, surface));
       expect(ratio, `${theme} ${surface}`).toBeGreaterThanOrEqual(4.5);
