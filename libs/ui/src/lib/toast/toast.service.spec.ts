@@ -85,6 +85,21 @@ describe('ToastService', () => {
     expect(region().querySelector('[role="alert"]')).toBe(assertive);
   });
 
+  it('announces a red Undo toast after a delete politely, not as an alert', () => {
+    const service = setup();
+    service.show({
+      kind: TOAST_KIND.Danger,
+      title: 'Link deleted',
+      action: { label: 'Undo', run: () => undefined },
+      duration: TOAST_DURATION_MS.Undo,
+    });
+    render();
+    const polite = region().querySelector('[role="status"]') as HTMLElement;
+    const assertive = region().querySelector('[role="alert"]') as HTMLElement;
+    expect(polite.textContent).toContain('Link deleted');
+    expect(assertive.querySelectorAll('ui-toast')).toHaveLength(0);
+  });
+
   it('shows text with the default kind and an icon, and keeps the same region', () => {
     const service = setup();
     const live = region();
