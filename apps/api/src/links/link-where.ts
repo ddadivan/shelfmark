@@ -22,7 +22,7 @@ function termCondition(term: string): Prisma.LinkWhereInput {
 
 /**
  * The `where` of a link query. `userId` always comes first and is never optional: every caller
- * passes the session user. All parts are combined with AND.
+ * passes the session user. Trashed links are never matched (ADR 0036). All parts are combined with AND.
  */
 export function buildLinkWhere(userId: string, filter: LinkFilter): Prisma.LinkWhereInput {
   const and: Prisma.LinkWhereInput[] = [];
@@ -35,5 +35,5 @@ export function buildLinkWhere(userId: string, filter: LinkFilter): Prisma.LinkW
     });
   }
   for (const term of searchTerms(filter.q)) and.push(termCondition(term));
-  return { userId, AND: and };
+  return { userId, deletedAt: null, AND: and };
 }

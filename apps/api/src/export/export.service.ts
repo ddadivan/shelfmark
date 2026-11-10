@@ -59,7 +59,7 @@ export class ExportService {
    */
   async prepare(userId: string, query: ExportQuery, now = new Date()): Promise<ExportFile> {
     const allFolders = await this.prisma.folder.findMany({
-      where: { userId },
+      where: { userId, deletedAt: null },
       select: { id: true, parentId: true, name: true, createdAt: true, updatedAt: true },
       orderBy: [{ name: 'asc' }, { id: 'asc' }],
     });
@@ -140,6 +140,7 @@ export class ExportService {
     }
     return {
       userId,
+      deletedAt: null,
       ...(scopeIds === null ? {} : { folderId: { in: [...scopeIds] } }),
       ...(and.length > 0 ? { AND: and } : {}),
     };
