@@ -50,7 +50,7 @@ export class TrashCleanupService {
       DELETE FROM links WHERE id IN (
         SELECT l.id FROM links l JOIN users u ON u.id = l.user_id
         WHERE l.deleted_at IS NOT NULL
-          AND l.deleted_at < ${now} - make_interval(days => u.trash_retention_days::int)
+          AND l.deleted_at < ${now}::timestamptz - make_interval(days => u.trash_retention_days::int)
         ORDER BY l.deleted_at
         LIMIT ${batchSize})`;
   }
@@ -60,7 +60,7 @@ export class TrashCleanupService {
       DELETE FROM folders WHERE id IN (
         SELECT f.id FROM folders f JOIN users u ON u.id = f.user_id
         WHERE f.deleted_at IS NOT NULL
-          AND f.deleted_at < ${now} - make_interval(days => u.trash_retention_days::int)
+          AND f.deleted_at < ${now}::timestamptz - make_interval(days => u.trash_retention_days::int)
         ORDER BY f.deleted_at
         LIMIT ${batchSize})`;
   }
@@ -71,11 +71,11 @@ export class TrashCleanupService {
         EXISTS (
           SELECT 1 FROM links l JOIN users u ON u.id = l.user_id
           WHERE l.deleted_at IS NOT NULL
-            AND l.deleted_at < ${now} - make_interval(days => u.trash_retention_days::int))
+            AND l.deleted_at < ${now}::timestamptz - make_interval(days => u.trash_retention_days::int))
         OR EXISTS (
           SELECT 1 FROM folders f JOIN users u ON u.id = f.user_id
           WHERE f.deleted_at IS NOT NULL
-            AND f.deleted_at < ${now} - make_interval(days => u.trash_retention_days::int))
+            AND f.deleted_at < ${now}::timestamptz - make_interval(days => u.trash_retention_days::int))
       ) AS found`;
     return rows[0]?.found === true;
   }
