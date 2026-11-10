@@ -21,7 +21,7 @@ const meta: Meta<PanelComponent> = {
   render: () => ({
     template: `
       <ui-panel>
-        <h3>Appearance</h3>
+        <h2>Appearance</h2>
         <p>Choose how Shelfmark looks on this device.</p>
       </ui-panel>`,
   }),
@@ -41,7 +41,7 @@ export const AllVariants: Story = {
         @for (theme of themes; track theme) {
           <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane">
             <ui-panel>
-              <h3>Appearance</h3>
+              <h2>Appearance</h2>
               <p>Choose how Shelfmark looks on this device.</p>
             </ui-panel>
           </div>

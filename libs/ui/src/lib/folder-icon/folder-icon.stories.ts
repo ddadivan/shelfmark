@@ -48,7 +48,7 @@ export const AllVariants: Story = {
         @for (theme of themes; track theme) {
           <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane" style="display: grid; gap: 1rem">
             @for (size of sizes; track size) {
-              <div style="display: flex; gap: 0.75rem; align-items: center">
+              <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center">
                 @for (colour of colours; track colour) {
                   <ui-folder-icon [colour]="colour" [size]="size" icon="folder" />
                 }

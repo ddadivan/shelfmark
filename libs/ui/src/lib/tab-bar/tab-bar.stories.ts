@@ -56,7 +56,7 @@ export const AllVariants: Story = {
         @for (theme of themes; track theme) {
           <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane" style="display: grid; gap: 1rem; max-width: 24rem">
             @for (item of items; track item.id) {
-              <ui-tab-bar [items]="items" [active]="item.id" ariaLabel="Main" addLabel="Add link" [fixed]="false" />
+              <ui-tab-bar [items]="items" [active]="item.id" [ariaLabel]="'Main, ' + theme + ', ' + item.label + ' active'" addLabel="Add link" [fixed]="false" />
             }
           </div>
         }
