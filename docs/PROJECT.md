@@ -181,7 +181,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 15. **Search.** Search by title, note and URL finds links in all folders (every word of the query must match, at most 5 words).
 16. **Sorting.** By date added (newest first, the default) and by title.
 17. **View.** A "cards / list" toggle; the choice is remembered.
-18. **Recently opened.** A page (`/recent`, opened from the sidebar; a sheet on a phone) with the links opened in the last 30 days, in day groups (Today, Yesterday, Earlier this week, then by date), each with its folder and the time of the open. A link can be removed from the history, and "Clear history" (after a confirmation) empties it; the saved links are not touched.
+18. **Recently opened.** A page (`/recent`, opened from the sidebar; the same list in a sheet from the Library tab on a phone) with the links opened in the last 30 days, in day groups (Today, Yesterday, Earlier this week, then by date), each with its folder and the time of the open. A link can be removed from the history, and "Clear history" (after a confirmation) empties it; the saved links are not touched.
 
 ### Demo, install, export
 
@@ -569,7 +569,7 @@ A minimalist, recognisable interface with light and dark themes on the own UI li
 
 - Minimalism, high-quality UI/UX, beginner-friendly; its own character, but grounded in the practices of Linear, Notion, Raindrop.
 - Light and dark theme in stage 1: system default, plus a manual toggle.
-- Responsive interface in stage 1: desktop, tablet and phone (from 360 px). On phone the sidebar is a slide-out panel opened by a header button, search is an icon, "Recently opened" is a row of the menu (a page, later a sheet), the feed is one column.
+- Responsive interface in stage 1: desktop, tablet and phone (from 360 px). On phone a floating tab bar (Library, Search, Add, Tags, You) replaces the sidebar: Library holds tiles (All links, Unsorted, Favorites, Recently opened as a bottom sheet) and the folders, Tags lists the tags, You holds the settings; the feed is one column.
 - Uniqueness comes not from bright colour but from micro-interactions, typography, empty-state illustrations and the logo.
 
 **The interface language is English.** Mockups, copy, onboarding and empty states are written in English. Translations (uk) come at the end of stage 1 or after it (see 5.1).
