@@ -6,17 +6,20 @@ import {
   inject,
   untracked,
 } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   AvatarComponent,
   BUTTON_SIZE,
   type IconName,
   SearchTriggerComponent,
+  TabBarComponent,
+  type TabBarItem,
+  type TabBarSelection,
   THEME,
   ButtonComponent,
   ICON_SIZE,
-  LogoComponent,
   MenuComponent,
   MenuItemComponent,
   MenuSeparatorComponent,
@@ -24,6 +27,7 @@ import {
   ToastService,
 } from '@shelfmark/ui';
 import { EXPORT_FORMAT, type ExportFormat } from '@shelfmark/contracts';
+import { combineLatest, filter, map } from 'rxjs';
 import { ExportActionsService } from '../features/export/export-actions.service';
 import { AuthStore } from '../core/auth/auth.store';
 import { LinkActionsService } from '../features/links/link-actions.service';
@@ -36,13 +40,14 @@ import { isMacPlatform } from '../features/search/is-mac-platform';
 import { ViewportService } from '../core/layout/viewport.service';
 import { APP_PATH } from '../models/app-path.const';
 import { DemoBannerComponent } from './demo-banner/demo-banner.component';
-import { MobileNavService } from './mobile-nav/mobile-nav.service';
+import { PHONE_TAB } from './models/phone-tab.const';
+import { phoneTabForUrl } from './phone-tab-for-url';
 import { SidebarComponent } from './sidebar/sidebar.component';
 
 /**
  * Layout around the signed-in pages. Desktop and tablet: the sidebar card on the left, the top bar
- * (search pill, theme, "Add link", account menu) and the page on the right. Phone: the header
- * with the menu button and the drawer.
+ * (search pill, theme, "Add link", account menu) and the page on the right. Phone: the page alone
+ * under the floating tab bar (Library, Search, Add, Tags, You); each page carries its own title.
  */
 @Component({
   selector: 'app-shell',
@@ -52,13 +57,13 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     AvatarComponent,
     DemoBannerComponent,
     ButtonComponent,
-    LogoComponent,
     MenuComponent,
     MenuItemComponent,
     MenuSeparatorComponent,
     MenuTriggerDirective,
     SearchTriggerComponent,
     SidebarComponent,
+    TabBarComponent,
   ],
   host: { '(document:keydown)': 'onKeydown($event)' },
   templateUrl: './app-shell.component.html',
@@ -73,11 +78,37 @@ export default class AppShellComponent {
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly search = inject(SearchDialogService);
   protected readonly viewport = inject(ViewportService);
-  protected readonly nav = inject(MobileNavService);
   private readonly transloco = inject(TranslocoService);
   private readonly toasts = inject(ToastService);
 
   private readonly router = inject(Router);
+  private readonly url = toSignal(
+    this.router.events.pipe(
+      filter((event) => event instanceof NavigationEnd),
+      map(() => this.router.url),
+    ),
+    { initialValue: this.router.url },
+  );
+  /** The tab of the current page (the tab bar marks it with `aria-current`). */
+  protected readonly activeTab = computed(() => phoneTabForUrl(this.url()));
+  private readonly tabLabels = toSignal(
+    combineLatest([
+      this.transloco.selectTranslate('shell.tabs.library'),
+      this.transloco.selectTranslate('shell.tabs.search'),
+      this.transloco.selectTranslate('shell.tabs.tags'),
+      this.transloco.selectTranslate('shell.tabs.you'),
+    ]),
+    { initialValue: ['', '', '', ''] },
+  );
+  protected readonly tabs = computed<TabBarItem[]>(() => {
+    const [library, search, tags, you] = this.tabLabels();
+    return [
+      { id: PHONE_TAB.Library, label: library, icon: 'bookmark', href: `/${APP_PATH.Library}` },
+      { id: PHONE_TAB.Search, label: search, icon: 'search' },
+      { id: PHONE_TAB.Tags, label: tags, icon: 'tag', href: `/${APP_PATH.Tags}` },
+      { id: PHONE_TAB.You, label: you, icon: 'user', href: `/${APP_PATH.Settings}` },
+    ];
+  });
   /** The avatar button is 44px: the 32px avatar is never clipped and it is a touch target. */
   protected readonly accountButtonSize = BUTTON_SIZE.Lg;
   protected readonly THEME = THEME;
@@ -88,15 +119,6 @@ export default class AppShellComponent {
   );
   /** Shortcut caps of the search pill (the key is Cmd on Apple devices, else Ctrl). */
   protected readonly searchShortcut = isMacPlatform() ? '⌘K' : 'Ctrl K';
-
-  constructor() {
-    // Growing past the phone breakpoint shows the sidebar inline: the drawer has to go.
-    effect(() => {
-      if (!this.viewport.phone()) {
-        void this.nav.close();
-      }
-    });
-  }
 
   private readonly onboarding = inject(OnboardingStore);
 
@@ -129,6 +151,19 @@ export default class AppShellComponent {
     this.theme.setPreference(
       this.theme.resolved() === THEME.Dark ? THEME_PREFERENCE.Light : THEME_PREFERENCE.Dark,
     );
+  }
+
+  /** A tab was chosen: the pages route (the links are real `href`s), Search opens over the page. */
+  protected async selectTab({ id, event }: TabBarSelection): Promise<void> {
+    if (id === PHONE_TAB.Search) {
+      this.search.open();
+      return;
+    }
+    event.preventDefault();
+    const href = this.tabs().find((tab) => tab.id === id)?.href;
+    if (href) {
+      await this.router.navigateByUrl(href);
+    }
   }
 
   protected async openSettings(): Promise<void> {

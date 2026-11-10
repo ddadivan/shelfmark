@@ -1,7 +1,7 @@
 import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
-import { openSidebar } from './support/sidebar';
+import { openSidebar, viewEntry } from './support/sidebar';
 
 // Mirrors MOCK_NAME.FolderReading (apps/web and libs/shared/contracts); the e2e project cannot
 // import from them.
@@ -65,7 +65,11 @@ test.describe('library view switch (mock API)', () => {
     ];
     for (const [row, title] of views) {
       await openSidebar(page);
-      await page.getByRole('treeitem', { name: new RegExp(`^${row}\\b`) }).click();
+      await (
+        row === READING
+          ? page.getByRole('treeitem', { name: new RegExp(`^${row}\\b`) })
+          : viewEntry(page, row)
+      ).click();
       await expect(page.getByRole('heading', { level: 1, name: title })).toBeVisible();
       await expect(page.locator('ui-skeleton')).toHaveCount(0);
       await expect(page.locator('app-link-card').first()).toBeVisible();

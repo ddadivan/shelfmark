@@ -2,7 +2,7 @@ import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { pickFolderMenuItem } from './support/a11y-flows';
 import { seedSession } from './support/mock-session';
-import { closeSidebar, gotoWithSidebar, openSidebar } from './support/sidebar';
+import { gotoWithSidebar, isPhone, openSidebar, tabBar, viewEntry } from './support/sidebar';
 
 // Mirror MOCK_ID.FolderReading, MOCK_NAME.FolderReading / FolderAngular and MOCK_FOLDER_NAME
 // (apps/web and libs/shared/contracts); the e2e project cannot import from them.
@@ -32,26 +32,40 @@ test.describe('folders (mock API)', () => {
     test('lists the fixed rows and the folder tree, and opens a folder', async ({ page }) => {
       await gotoWithSidebar(page, '/links');
 
-      await expect(row(page, 'All links')).toBeVisible();
-      await expect(row(page, 'Unsorted')).toBeVisible();
-      await expect(row(page, 'Favorites')).toBeVisible();
+      await expect(viewEntry(page, 'All links')).toBeVisible();
+      await expect(viewEntry(page, 'Unsorted')).toBeVisible();
+      await expect(viewEntry(page, 'Favorites')).toBeVisible();
       await expect(row(page, READING.name)).toBeVisible();
 
       await row(page, READING.name).click();
 
       await expect(page).toHaveURL(`/folders/${READING.id}`);
       await expect(page.getByRole('heading', { level: 1, name: READING.name })).toBeVisible();
-      await openSidebar(page);
-      await expect(row(page, READING.name)).toHaveAttribute('aria-current', 'page');
+      if (isPhone(page)) {
+        // The folder is not on screen: the Library tab is the current place.
+        await expect(tabBar(page).getByRole('link', { name: 'Library' })).toHaveAttribute(
+          'aria-current',
+          'page',
+        );
+      } else {
+        await expect(row(page, READING.name)).toHaveAttribute('aria-current', 'page');
+      }
       await expect(page.locator('ui-card').first()).toBeVisible();
     });
 
     test('is keyboard accessible: arrows move, Enter opens', async ({ page }) => {
       await gotoWithSidebar(page, '/links');
 
-      await row(page, 'All links').focus();
-      await page.keyboard.press('ArrowDown');
-      await expect(row(page, 'Unsorted')).toBeFocused();
+      if (isPhone(page)) {
+        // The tiles are links: Tab reaches each one and Enter opens it.
+        await viewEntry(page, 'All links').focus();
+        await page.keyboard.press('Tab');
+        await expect(viewEntry(page, 'Unsorted')).toBeFocused();
+      } else {
+        await row(page, 'All links').focus();
+        await page.keyboard.press('ArrowDown');
+        await expect(row(page, 'Unsorted')).toBeFocused();
+      }
       await page.keyboard.press('Enter');
 
       await expect(page).toHaveURL('/unsorted');
@@ -59,8 +73,18 @@ test.describe('folders (mock API)', () => {
     });
 
     test('opens the folders above a deep link', async ({ page }) => {
-      await gotoWithSidebar(page, `/folders/${ANGULAR.id}`);
+      await page.goto(`/folders/${ANGULAR.id}`);
 
+      if (isPhone(page)) {
+        // The tree is on the Library page, which does not follow the folder: the page itself
+        // and the Library tab show where you are.
+        await expect(page.getByRole('heading', { level: 1, name: ANGULAR.name })).toBeVisible();
+        await expect(tabBar(page).getByRole('link', { name: 'Library' })).toHaveAttribute(
+          'aria-current',
+          'page',
+        );
+        return;
+      }
       await expect(row(page, ANGULAR.name)).toBeVisible();
       await expect(row(page, ANGULAR.name)).toHaveAttribute('aria-current', 'page');
     });
@@ -88,6 +112,10 @@ test.describe('folders (mock API)', () => {
 
       await expect(page.getByRole('heading', { level: 1, name: 'Essays' })).toBeVisible();
       await openSidebar(page);
+      if (isPhone(page)) {
+        // The Library page does not follow the open folder: expand the parent to see the child.
+        await row(page, READING.name).locator('.ui-tree__twist').first().click();
+      }
       await expect(row(page, 'Essays')).toBeVisible();
     });
 
@@ -115,20 +143,28 @@ test.describe('folders (mock API)', () => {
       await pickFolderMenuItem(page, READING.name, 'Rename');
       const dialog = page.getByRole('dialog', { name: 'Rename folder' });
       await expect(dialog.getByLabel('Name')).toHaveValue(READING.name);
-      await dialog.getByLabel('Name').fill('Library');
+      await dialog.getByLabel('Name').fill('Renamed shelf');
       await dialog.getByRole('button', { name: 'Rename' }).click();
 
       await expect(dialog).toHaveCount(0);
-      await closeSidebar(page);
-      await expect(page.getByRole('heading', { level: 1, name: 'Library' })).toBeVisible();
+      await expect(row(page, 'Renamed shelf')).toBeVisible();
+      if (isPhone(page)) {
+        // The tree is on the Library page: open the renamed folder to see its title.
+        await row(page, 'Renamed shelf').click();
+      }
+      await expect(page.getByRole('heading', { level: 1, name: 'Renamed shelf' })).toBeVisible();
       await openSidebar(page);
-      await expect(row(page, 'Library')).toBeVisible();
+      await expect(row(page, 'Renamed shelf')).toBeVisible();
     });
 
     test('moves a folder and never offers its own subtree', async ({ page }) => {
       await gotoWithSidebar(page, '/links');
       await createFolder(page, 'Archive');
       await expect(page.getByRole('heading', { level: 1, name: 'Archive' })).toBeVisible();
+      // On a phone the toast of the new folder sits over the bottom sheet's fields until it ends.
+      // (The pointer rests where the last click was, which pauses the toast: move it away.)
+      await page.mouse.move(0, 0);
+      await expect(page.locator('ui-toast')).toHaveCount(0);
       await openSidebar(page);
 
       await pickFolderMenuItem(page, READING.name, 'Move to…');
@@ -144,7 +180,7 @@ test.describe('folders (mock API)', () => {
       await expect(dialog).toBeHidden();
       await openSidebar(page);
       // Expand "Archive" with its twisty, which toggles without choosing the row. Clicking the row
-      // also chooses it, and on a phone that closes the drawer, so the check below raced it.
+      // also chooses it and navigates away, so the check below raced it.
       await row(page, 'Archive').locator('.ui-tree__twist').first().click();
       await expect(row(page, 'Archive')).toHaveAttribute('aria-expanded', 'true');
       await expect(row(page, READING.name)).toBeVisible();
@@ -156,6 +192,10 @@ test.describe('folders (mock API)', () => {
       await gotoWithSidebar(page, '/links');
       await createFolder(page, 'Archive');
       await expect(page.getByRole('heading', { level: 1, name: 'Archive' })).toBeVisible();
+      // On a phone the toast of the new folder sits over the bottom sheet's fields until it ends.
+      // (The pointer rests where the last click was, which pauses the toast: move it away.)
+      await page.mouse.move(0, 0);
+      await expect(page.locator('ui-toast')).toHaveCount(0);
       await openSidebar(page);
       await expect(row(page, READING.name)).toBeVisible();
 
@@ -187,7 +227,8 @@ test.describe('folders (mock API)', () => {
       await dialog.getByRole('button', { name: 'Delete folder', exact: true }).click();
 
       await expect(page.getByText('Folder deleted')).toBeVisible();
-      await expect(page).toHaveURL('/links');
+      // Deleting the folder on screen leaves for All links; the phone is on the Library page.
+      await expect(page).toHaveURL(isPhone(page) ? '/library' : '/links');
       await openSidebar(page);
       await expect(row(page, READING.name)).toHaveCount(0);
     });

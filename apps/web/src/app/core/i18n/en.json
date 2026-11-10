@@ -299,6 +299,7 @@
       },
       "nothingYet": "Nothing yet",
       "clear": "Clear history",
+      "clearShort": "Clear",
       "unsorted": "Unsorted",
       "remove": "Remove {{title}} from history",
       "removeTooltip": "Remove from history",
@@ -457,13 +458,16 @@
     "accountMenu": "Account menu",
     "settings": "Settings",
     "addLink": "Add link",
-    "menu": "Open menu",
-    "drawer": {
-      "label": "Menu",
-      "close": "Close menu"
+    "tabs": {
+      "label": "Main",
+      "library": "Library",
+      "search": "Search",
+      "tags": "Tags",
+      "you": "You"
     },
     "sidebar": {
       "nav": "Library",
+      "foldersNav": "Folders",
       "tree": "Views and folders",
       "folders": "Folders",
       "newFolder": "Create a folder",
@@ -479,7 +483,6 @@
         "delete": "Delete folder…"
       }
     },
-    "search": "Search",
     "searchHint": "Search your links",
     "theme": {
       "toLight": "Switch to light theme",
@@ -558,6 +561,10 @@
   },
   "library": {
     "title": "All links",
+    "phone": {
+      "title": "Library",
+      "openedToday": "{{count}} today"
+    },
     "scope": {
       "all": "All links",
       "unsorted": "Unsorted",
@@ -682,6 +689,7 @@
   },
   "settings": {
     "title": "Settings",
+    "phoneTitle": "You",
     "back": "Back to links",
     "account": {
       "title": "Account"

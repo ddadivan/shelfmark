@@ -1,7 +1,7 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 import { MOCK_LINKS_SCENARIO } from '../models/mock-links-scenario.const';
 import { seedSession } from './mock-session';
-import { openSidebar } from './sidebar';
+import { openSidebar, openTags } from './sidebar';
 
 /** Signed-in user on a screen that lists links. */
 export async function openSignedIn(page: Page, path: string): Promise<void> {
@@ -23,7 +23,7 @@ export async function openEmptyFeed(page: Page): Promise<void> {
   await expect(page.getByRole('heading', { name: 'Your links will live here' })).toBeVisible();
 }
 
-/** Opens the context menu of a folder row and picks an item (the drawer opens first on a phone). */
+/** Opens the context menu of a folder row and picks an item (the Library tab opens first on a phone). */
 export async function pickFolderMenuItem(page: Page, folder: string, item: string): Promise<void> {
   await openSidebar(page);
   await page
@@ -32,11 +32,11 @@ export async function pickFolderMenuItem(page: Page, folder: string, item: strin
   await page.getByRole('menuitem', { name: item }).click();
 }
 
-/** Opens the context menu of a tag chip. */
+/** Opens the context menu of a tag chip (the Tags tab opens first on a phone). */
 export async function openTagMenu(page: Page, tag: string): Promise<void> {
-  await openSidebar(page);
+  await openTags(page);
   await page
-    .getByRole('navigation', { name: 'Library' })
+    .locator('app-sidebar-tags')
     .getByRole('button', { name: tag, exact: true })
     .click({ button: 'right' });
 }

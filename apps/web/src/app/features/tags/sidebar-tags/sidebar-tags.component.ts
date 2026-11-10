@@ -1,6 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
 import {
   afterNextRender,
+  booleanAttribute,
   afterRenderEffect,
   ChangeDetectionStrategy,
   Component,
@@ -9,6 +10,7 @@ import {
   ElementRef,
   inject,
   Injector,
+  input,
   signal,
   viewChild,
 } from '@angular/core';
@@ -68,6 +70,9 @@ import { splitTags } from '../tag-split';
 export class SidebarTagsComponent {
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   protected readonly ICON_SIZE = ICON_SIZE;
+
+  /** The Tags tab of the phone: the heading is the page title (an `h1`, large) and chips are bigger. */
+  readonly asPage = input(false, { transform: booleanAttribute });
 
   protected readonly tags = inject(TagsStore);
   private readonly viewport = inject(ViewportService);

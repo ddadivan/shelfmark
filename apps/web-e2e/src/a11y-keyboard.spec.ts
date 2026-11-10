@@ -12,8 +12,13 @@ const PHONE_WIDTH = 360;
 const PHONE_HEIGHT = 780;
 
 /** Focuses the control with Tab, checks the indicator, then activates it with `key`. */
-async function activate(page: Page, target: Locator, key = 'Enter') {
-  await pressUntilFocused(page, target);
+async function activate(
+  page: Page,
+  target: Locator,
+  key = 'Enter',
+  reach: 'Tab' | 'Shift+Tab' = 'Tab',
+) {
+  await pressUntilFocused(page, target, reach);
   await expectVisibleFocus(page);
   await page.keyboard.press(key);
 }
@@ -207,22 +212,30 @@ test.describe('keyboard-only flows (mock API)', () => {
   });
 });
 
-test.describe('keyboard-only drawer (mock API)', () => {
+test.describe('keyboard-only tab bar and sheet (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
   test.skip(({ isMobile }) => isMobile, 'a phone has no keyboard; the desktop project covers it');
   test.use({ viewport: { width: PHONE_WIDTH, height: PHONE_HEIGHT } });
 
-  test('reaches the drawer opener with Tab and returns focus on close', async ({ page }) => {
+  test('reaches the Library tab with Tab, opens the sheet and returns focus on close', async ({
+    page,
+  }) => {
     await openFeed(page);
-    const opener = page.getByRole('button', { name: 'Open menu' });
+    const tab = page
+      .getByRole('navigation', { name: 'Main' })
+      .getByRole('link', { name: 'Library' });
 
-    await activate(page, opener);
-    const drawer = page.getByRole('dialog', { name: 'Menu' });
-    await expect(drawer).toBeVisible();
+    // The bar is the last stop of the page (after the whole feed): Shift+Tab from the top gets there.
+    await activate(page, tab, 'Enter', 'Shift+Tab');
+    await expect(page).toHaveURL('/library');
+    const tile = page.getByRole('link', { name: /^Recently opened/ });
+    await activate(page, tile);
+    const sheet = page.getByRole('dialog', { name: 'Recently opened' });
+    await expect(sheet).toBeVisible();
     await page.keyboard.press('Escape');
 
-    await expect(drawer).toHaveCount(0);
-    await expect(opener).toBeFocused();
+    await expect(sheet).toHaveCount(0);
+    await expect(tile).toBeFocused();
     await expectVisibleFocus(page);
   });
 });

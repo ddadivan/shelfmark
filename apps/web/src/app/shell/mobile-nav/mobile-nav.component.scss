@@ -1,7 +1,0 @@
-@use 'ui' as *;
-
-// The drawer body pads the sidebar already; the sidebar brings its own padding.
-app-sidebar {
-  display: block;
-  margin: calc(var(--space-3) * -1);
-}

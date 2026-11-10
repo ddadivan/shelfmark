@@ -1,8 +1,14 @@
-<section class="tags" aria-labelledby="sidebar-tags-heading">
+<section class="tags" [class.tags--page]="asPage()" aria-labelledby="sidebar-tags-heading">
   <div class="tags__header">
-    <h2 id="sidebar-tags-heading" class="tags__heading">
-      {{ 'tags.sidebar.heading' | transloco }}
-    </h2>
+    @if (asPage()) {
+      <h1 id="sidebar-tags-heading" class="tags__heading">
+        {{ 'tags.sidebar.heading' | transloco }}
+      </h1>
+    } @else {
+      <h2 id="sidebar-tags-heading" class="tags__heading">
+        {{ 'tags.sidebar.heading' | transloco }}
+      </h2>
+    }
     <ui-button
       #addButton
       variant="ghost"

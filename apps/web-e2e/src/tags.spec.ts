@@ -2,7 +2,7 @@ import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { pickTagMenuItem } from './support/a11y-flows';
 import { seedSession } from './support/mock-session';
-import { gotoWithSidebar } from './support/sidebar';
+import { gotoWithTags } from './support/sidebar';
 
 // Mirror MOCK_NAME.TagDocs / TagRecipes and MOCK_TAG_NAME (apps/web and libs/shared/contracts);
 // the e2e project cannot import from them.
@@ -19,7 +19,8 @@ test.describe('tags (mock API)', () => {
     await seedSession(page);
   });
 
-  const sidebar = (page: Page) => page.getByRole('navigation', { name: 'Library' });
+  // The tags section: in the sidebar, or the page of the Tags tab on a phone.
+  const sidebar = (page: Page) => page.locator('app-sidebar-tags');
   const chip = (page: Page, name: string) =>
     sidebar(page).getByRole('button', { name, exact: true });
 
@@ -32,7 +33,7 @@ test.describe('tags (mock API)', () => {
 
   test.describe('sidebar', () => {
     test('lists the tags below the folders', async ({ page }) => {
-      await gotoWithSidebar(page, '/links');
+      await gotoWithTags(page, '/links');
 
       await expect(sidebar(page).getByRole('heading', { name: 'Tags' })).toBeVisible();
       await expect(chip(page, DOCS)).toBeVisible();
@@ -42,7 +43,7 @@ test.describe('tags (mock API)', () => {
     test('adds a tag with Enter, refuses a duplicate ignoring case and cancels with Esc', async ({
       page,
     }) => {
-      await gotoWithSidebar(page, '/links');
+      await gotoWithTags(page, '/links');
 
       await addTag(page, 'winter sale');
       await expect(chip(page, 'winter-sale')).toBeVisible();
@@ -57,7 +58,7 @@ test.describe('tags (mock API)', () => {
     test('an outside click closes the new tag field without saving and focuses "+"', async ({
       page,
     }) => {
-      await gotoWithSidebar(page, '/links');
+      await gotoWithTags(page, '/links');
       const add = sidebar(page).getByRole('button', { name: 'New tag' });
       const field = sidebar(page).getByRole('textbox', { name: 'New tag' });
 
@@ -73,7 +74,7 @@ test.describe('tags (mock API)', () => {
     test('clicking "+" again closes the open field once and it opens again on the next click', async ({
       page,
     }) => {
-      await gotoWithSidebar(page, '/links');
+      await gotoWithTags(page, '/links');
       const add = sidebar(page).getByRole('button', { name: 'New tag' });
       const field = sidebar(page).getByRole('textbox', { name: 'New tag' });
 
@@ -86,7 +87,7 @@ test.describe('tags (mock API)', () => {
     });
 
     test('an outside click closes an in-place rename without saving', async ({ page }) => {
-      await gotoWithSidebar(page, '/links');
+      await gotoWithTags(page, '/links');
       await pickTagMenuItem(page, DOCS, 'Rename');
       const field = sidebar(page).getByRole('textbox', { name: 'Tag name' });
       await field.fill('draft-name');
@@ -98,7 +99,7 @@ test.describe('tags (mock API)', () => {
     });
 
     test('shows an error when creating fails', async ({ page }) => {
-      await gotoWithSidebar(page, '/links');
+      await gotoWithTags(page, '/links');
 
       await addTag(page, CREATE_FAILS);
 
@@ -106,7 +107,7 @@ test.describe('tags (mock API)', () => {
     });
 
     test('shows the 8 most used tags and folds the rest behind "+ N more"', async ({ page }) => {
-      await gotoWithSidebar(page, '/links');
+      await gotoWithTags(page, '/links');
       const visible = sidebar(page).getByRole('list', { name: 'Tags' }).getByRole('button');
       // Make sure there are more than the top count.
       for (let n = 0; n < TAG_TOP_COUNT; n++) {
@@ -129,7 +130,7 @@ test.describe('tags (mock API)', () => {
     test('a click on a tag opens the links with that tag, and the filter can be cleared', async ({
       page,
     }) => {
-      await gotoWithSidebar(page, '/links');
+      await gotoWithTags(page, '/links');
 
       await chip(page, DOCS).click();
 
@@ -142,7 +143,7 @@ test.describe('tags (mock API)', () => {
     });
 
     test('the menu offers show, rename, merge and delete from a right click', async ({ page }) => {
-      await gotoWithSidebar(page, '/links');
+      await gotoWithTags(page, '/links');
 
       await chip(page, DOCS).click({ button: 'right' });
 
@@ -153,7 +154,7 @@ test.describe('tags (mock API)', () => {
     });
 
     test('the "…" button opens the same menu', async ({ page }) => {
-      await gotoWithSidebar(page, '/links');
+      await gotoWithTags(page, '/links');
 
       // The button is clipped away until the chip is hovered.
       await chip(page, DOCS).hover();
@@ -163,7 +164,7 @@ test.describe('tags (mock API)', () => {
     });
 
     test('renames a tag in place', async ({ page }) => {
-      await gotoWithSidebar(page, '/links');
+      await gotoWithTags(page, '/links');
 
       await pickTagMenuItem(page, DOCS, 'Rename');
       const field = sidebar(page).getByRole('textbox', { name: 'Tag name' });
@@ -175,7 +176,7 @@ test.describe('tags (mock API)', () => {
     });
 
     test('a rename into an existing name offers to merge instead', async ({ page }) => {
-      await gotoWithSidebar(page, '/links');
+      await gotoWithTags(page, '/links');
 
       await pickTagMenuItem(page, DOCS, 'Rename');
       const field = sidebar(page).getByRole('textbox', { name: 'Tag name' });
@@ -192,7 +193,7 @@ test.describe('tags (mock API)', () => {
     });
 
     test('merges through the dialog', async ({ page }) => {
-      await gotoWithSidebar(page, '/links');
+      await gotoWithTags(page, '/links');
 
       await pickTagMenuItem(page, DOCS, 'Merge into another tag…');
       const dialog = page.getByRole('dialog', { name: /Merge/ });
@@ -207,7 +208,7 @@ test.describe('tags (mock API)', () => {
     });
 
     test('deletes after a confirmation, and Undo brings the tag back', async ({ page }) => {
-      await gotoWithSidebar(page, '/links');
+      await gotoWithTags(page, '/links');
 
       await pickTagMenuItem(page, DOCS, 'Delete tag');
       const dialog = page.getByRole('alertdialog');

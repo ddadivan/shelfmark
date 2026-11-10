@@ -31,20 +31,3 @@
   margin: var(--space-1) 0 0;
   color: var(--text-muted);
 }
-
-.recent-page__skeleton {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.recent-page__empty {
-  margin-block: var(--space-8);
-}
-
-.recent-page__note {
-  @include type(caption);
-
-  margin: 0;
-  color: var(--text-muted);
-}

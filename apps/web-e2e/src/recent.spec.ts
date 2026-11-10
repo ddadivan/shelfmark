@@ -1,7 +1,7 @@
 import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
-import { openSidebar } from './support/sidebar';
+import { isPhone } from './support/sidebar';
 
 test.describe('Recently opened page (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
@@ -13,9 +13,13 @@ test.describe('Recently opened page (mock API)', () => {
   const rows = (page: Page) => page.locator('app-link-history-row');
 
   async function openRecent(page: Page) {
-    await page.goto('/links');
-    await openSidebar(page);
-    await page.getByRole('treeitem', { name: 'Recently opened' }).click();
+    if (isPhone(page)) {
+      // The Library tile opens a sheet on a phone (see mobile.spec); the page stays at its URL.
+      await page.goto('/recent');
+    } else {
+      await page.goto('/links');
+      await page.getByRole('treeitem', { name: 'Recently opened' }).click();
+    }
     await expect(page).toHaveURL('/recent');
     await expect(page.getByRole('heading', { level: 1, name: 'Recently opened' })).toBeVisible();
     await expect(rows(page).first()).toBeVisible();

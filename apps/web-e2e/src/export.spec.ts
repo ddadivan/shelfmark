@@ -1,7 +1,8 @@
 import { readFile } from 'node:fs/promises';
 import { type Download } from '@playwright/test';
 import { expect, test } from './support/test';
-import { openAccountMenu, seedSession } from './support/mock-session';
+import { openAccountMenu, openSettingsPage, seedSession } from './support/mock-session';
+import { isPhone } from './support/sidebar';
 
 // Mirrors EXPORT_MOCK_MARKER (apps/web); this project cannot import it.
 const MOCK_MARKER = 'sm-mock-export';
@@ -95,12 +96,16 @@ test.describe('export (mock API)', () => {
     expect(overflow).toBeLessThanOrEqual(0);
   });
 
-  test('the account menu exports everything', async ({ page }) => {
+  test('the account menu (the You tab on a phone) exports everything', async ({ page }) => {
     await page.goto('/links');
-    await openAccountMenu(page);
-
     const download = page.waitForEvent('download');
-    await page.getByRole('menuitem', { name: 'Everything as JSON' }).click();
+    if (isPhone(page)) {
+      await openSettingsPage(page);
+      await page.getByRole('button', { name: 'JSON' }).click();
+    } else {
+      await openAccountMenu(page);
+      await page.getByRole('menuitem', { name: 'Everything as JSON' }).click();
+    }
 
     expect(await requestedUrl(await download)).toBe('/api/export?format=json');
   });

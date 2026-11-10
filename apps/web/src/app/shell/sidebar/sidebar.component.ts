@@ -75,6 +75,11 @@ export class SidebarComponent {
   protected readonly ICON_SIZE = ICON_SIZE;
   /** The logo heads the card (the desktop shell); the phone drawer has its own header. */
   readonly showLogo = input(false, { transform: booleanAttribute });
+  /**
+   * Only the folder tree: no fixed rows and no tags. The phone Library page shows it under its
+   * own tiles (and the Tags tab has the tags), with the same menus and actions.
+   */
+  readonly foldersOnly = input(false, { transform: booleanAttribute });
 
   private readonly actions = inject(FolderActionsService);
   private readonly viewport = inject(ViewportService);
@@ -96,6 +101,9 @@ export class SidebarComponent {
     { initialValue: this.router.url },
   );
   protected readonly activeId = computed(() => sidebarActiveId(this.url()));
+  protected readonly navLabelKey = computed(() =>
+    this.foldersOnly() ? 'shell.sidebar.foldersNav' : 'shell.sidebar.nav',
+  );
 
   private readonly labels = toSignal(
     combineLatest([
@@ -125,7 +133,7 @@ export class SidebarComponent {
   /** Counts show once the list has loaded; before that the rows have none. */
   protected readonly fixedNodes = computed<UiTreeNode[]>(() => {
     const labels = this.labels();
-    if (!labels) {
+    if (!labels || this.foldersOnly()) {
       return [];
     }
     const counts = this.folders.loaded() ? this.folders.counts() : null;

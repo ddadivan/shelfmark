@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { DEMO_LIMIT } from '@shelfmark/contracts';
 import { COLOR_SCHEME } from './models/color-scheme.const';
 import { expectNoBlockingViolations } from './support/axe';
-import { demoUser, openAccountMenu, seedSession } from './support/mock-session';
+import { demoUser, seedSession, signOutFromUi } from './support/mock-session';
 
 const BANNER_TITLE = "You're in a demo.";
 const BANNER_ACTION = 'Sign in with your own account';
@@ -90,8 +90,7 @@ test.describe('demo sign-in (mock auth)', () => {
   test('the demo user can sign out from the account menu', async ({ page }) => {
     await seedSession(page, demoUser(5));
     await page.goto('/links');
-    await openAccountMenu(page);
-    await page.getByRole('menuitem', { name: 'Sign out' }).click();
+    await signOutFromUi(page);
 
     await expect(page).toHaveURL(/\/sign-in$/);
   });

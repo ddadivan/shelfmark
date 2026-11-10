@@ -20,6 +20,15 @@
   @include type(title);
 
   margin: 0;
+
+  // Phone: the title of the You tab is large (MobileSettings: 34 / 38).
+  @include phone {
+    @include type(display);
+
+    padding-block-start: var(--space-2);
+    font-size: rem(34px);
+    line-height: rem(38px);
+  }
 }
 
 .settings__sr-only {

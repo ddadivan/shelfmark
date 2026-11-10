@@ -63,3 +63,28 @@
 .tags__editor ui-input {
   align-self: stretch;
 }
+
+// The Tags tab: the heading is the page title like "Library" and "You", the list sits on a card.
+.tags--page {
+  margin-top: 0;
+
+  .tags__header {
+    padding: var(--space-5) 0 var(--space-2);
+  }
+
+  .tags__heading {
+    @include type(display);
+
+    // MobileHome title: 34 / 38.
+    font-size: rem(34px);
+    line-height: rem(38px);
+    color: var(--text);
+  }
+
+  .tags__list {
+    padding: var(--space-4);
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+  }
+}

@@ -4,6 +4,7 @@ import { SEARCH_BUTTON } from './support/search-button';
 
 test.describe('header account trigger (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
+  test.skip(({ isMobile }) => isMobile, 'a phone has no header: the You tab holds the account');
 
   for (const scheme of ['light', 'dark'] as const) {
     test(`the avatar sits fully inside the trigger and stays centred (${scheme})`, async ({

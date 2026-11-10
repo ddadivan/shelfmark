@@ -80,7 +80,7 @@ test.describe('delete account (mock API)', () => {
     await seedSession(page, demoUser(5));
     await page.goto('/settings');
 
-    await expect(page.getByRole('heading', { level: 1, name: 'Settings' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: /^(Settings|You)$/ })).toBeVisible();
     await expect(page.getByRole('button', { name: ROW_BUTTON })).toHaveCount(0);
   });
 

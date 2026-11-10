@@ -15,6 +15,7 @@ import { AppTranslocoLoader } from '../core/i18n/app-transloco.loader';
 import { translocoConfig } from '../core/i18n/transloco.config';
 import { THEME_PREFERENCE } from '../core/theme/models/theme-preference.const';
 import { ThemeService } from '../core/theme/theme.service';
+import { LinkActionsService } from '../features/links/link-actions.service';
 import { SearchDialogService } from '../features/search/search-dialog.service';
 import AppShellComponent from './app-shell.component';
 
@@ -198,9 +199,15 @@ describe('AppShellComponent', () => {
       TestBed.configureTestingModule({
         providers: [
           provideRouter([
-            { path: 'settings', children: [] },
-            { path: 'recent', children: [] },
-            { path: '', component: AppShellComponent },
+            {
+              path: '',
+              component: AppShellComponent,
+              children: [
+                { path: 'settings', children: [] },
+                { path: 'recent', children: [] },
+                { path: 'tags', children: [] },
+              ],
+            },
           ]),
           provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
           { provide: AUTH_API, useValue: api },
@@ -219,14 +226,8 @@ describe('AppShellComponent', () => {
       vi.unstubAllGlobals();
     });
 
-    const drawer = () => document.querySelector('app-mobile-nav');
     const byLabel = (root: ParentNode, label: string) =>
       root.querySelector<HTMLButtonElement>(`button[aria-label="${label}"]`);
-
-    async function openDrawer(harness: { fixture: ComponentFixture<unknown> }, root: HTMLElement) {
-      byLabel(root, 'Open menu')?.click();
-      await harness.fixture.whenStable();
-    }
 
     it('shows the sidebar inline and the header add button from the tablet width', async () => {
       const { root } = await setup(false);
@@ -264,103 +265,81 @@ describe('AppShellComponent', () => {
       expect(byLabel(root, 'Switch to light theme')).not.toBeNull();
     });
 
-    it('on a phone keeps the header with the menu button, logo and search icon', async () => {
+    const bar = (root: ParentNode) => root.querySelector('ui-tab-bar');
+    const tab = (root: ParentNode, name: string) =>
+      Array.from(root.querySelectorAll<HTMLElement>('ui-tab-bar a, ui-tab-bar button')).find(
+        (item) => item.textContent?.trim() === name,
+      );
+
+    it('on a phone has the tab bar and no header, sidebar, menu button or FAB', async () => {
       const { root } = await setup(true);
 
-      expect(root.querySelector('.shell__header ui-search-trigger')).toBeNull();
-      expect(root.querySelector('.shell__header ui-logo')).not.toBeNull();
-      expect(byLabel(root, 'Open menu')).not.toBeNull();
-      expect(byLabel(root, 'Search')).not.toBeNull();
-    });
-
-    it('on a phone has the add FAB and no inline sidebar or header add button', async () => {
-      const { root } = await setup(true);
-
+      expect(bar(root)?.querySelector('nav[aria-label="Main"]')).not.toBeNull();
+      expect(root.querySelector('.shell__header')).toBeNull();
       expect(root.querySelector('.shell__sidebar')).toBeNull();
-      expect(root.querySelector('.shell__add')).toBeNull();
-      expect(root.querySelector('.shell__fab')).not.toBeNull();
+      expect(byLabel(root, 'Open menu')).toBeNull();
+      expect(root.querySelector('.shell__fab')).toBeNull();
+      expect(
+        Array.from(root.querySelectorAll('ui-tab-bar li')).map((item) => item.textContent?.trim()),
+      ).toEqual(['Library', 'Search', '', 'Tags', 'You']);
       expect(byLabel(root, 'Add link')).not.toBeNull();
     });
 
-    it('opens the drawer from the menu button and holds the one sidebar', async () => {
-      const { harness, root } = await setup(true);
+    it('has no tab bar from the tablet width', async () => {
+      const { root } = await setup(false);
 
-      await openDrawer(harness, root);
-
-      expect(drawer()?.closest('[role="dialog"]')?.getAttribute('aria-modal')).toBe('true');
-      expect(drawer()?.querySelectorAll('nav[aria-label="Library"]').length).toBe(1);
-      expect(document.querySelectorAll('nav[aria-label="Library"]').length).toBe(1);
-      expect(byLabel(root, 'Open menu')?.getAttribute('aria-expanded')).toBe('true');
+      expect(bar(root)).toBeNull();
     });
 
-    it('closes when a navigation ends', async () => {
+    it('marks the tab of the current route with aria-current', async () => {
       const { harness, root } = await setup(true);
-      await openDrawer(harness, root);
-      expect(drawer()).not.toBeNull();
+      expect(tab(root, 'Library')?.getAttribute('aria-current')).toBe('page');
 
       await TestBed.inject(Router).navigateByUrl('/settings');
       await harness.fixture.whenStable();
 
-      expect(drawer()).toBeNull();
+      expect(tab(root, 'You')?.getAttribute('aria-current')).toBe('page');
+      expect(tab(root, 'Library')?.hasAttribute('aria-current')).toBe(false);
     });
 
-    it('closes when the current route is tapped again (navigation skipped)', async () => {
+    it('routes the Tags and You tabs and keeps real hrefs', async () => {
       const { harness, root } = await setup(true);
-      await openDrawer(harness, root);
 
-      await TestBed.inject(Router).navigateByUrl('/');
+      expect(tab(root, 'Tags')?.getAttribute('href')).toBe('/tags');
+      tab(root, 'Tags')?.click();
+      await harness.fixture.whenStable();
+      expect(TestBed.inject(Router).url).toBe('/tags');
+
+      tab(root, 'You')?.click();
+      await harness.fixture.whenStable();
+      expect(TestBed.inject(Router).url).toBe('/settings');
+    });
+
+    it('opens the search from the Search tab without leaving the page', async () => {
+      const { harness, root } = await setup(true);
+      const open = vi
+        .spyOn(TestBed.inject(SearchDialogService), 'open')
+        .mockImplementation(() => undefined);
+
+      tab(root, 'Search')?.click();
       await harness.fixture.whenStable();
 
-      expect(drawer()).toBeNull();
+      expect(open).toHaveBeenCalled();
+      expect(TestBed.inject(Router).url).toBe('/');
     });
 
-    it('closes when the viewport grows past the phone width', async () => {
-      const { harness, root } = await setup(true);
-      await openDrawer(harness, root);
+    it('opens the add-link flow from the middle button', async () => {
+      const { root } = await setup(true);
+      const add = vi.spyOn(TestBed.inject(LinkActionsService), 'addLink').mockResolvedValue();
 
-      listeners.get(PHONE_QUERY)?.({ matches: false } as MediaQueryListEvent);
-      await harness.fixture.whenStable();
+      byLabel(root, 'Add link')?.click();
 
-      expect(drawer()).toBeNull();
-      expect(root.querySelector('.shell__sidebar app-sidebar')).not.toBeNull();
-    });
-
-    it('closes with the close button', async () => {
-      const { harness, root } = await setup(true);
-      await openDrawer(harness, root);
-
-      byLabel(document, 'Close menu')?.click();
-      await harness.fixture.whenStable();
-
-      expect(drawer()).toBeNull();
-    });
-
-    it('opens the Recently opened page from its drawer row and closes the drawer', async () => {
-      const { harness, root } = await setup(true);
-      await openDrawer(harness, root);
-      const row = Array.from(
-        drawer()?.querySelectorAll<HTMLElement>('[role="treeitem"], a, button') ?? [],
-      ).find((item) => item.textContent?.includes('Recently opened'));
-
-      row?.click();
-      await harness.fixture.whenStable();
-
-      expect(TestBed.inject(Router).url).toBe('/recent');
-      expect(drawer()).toBeNull();
-    });
-
-    it('has no footer: settings live in the header account menu', async () => {
-      const { harness, root } = await setup(true);
-      await openDrawer(harness, root);
-
-      expect(byLabel(document, 'Switch theme')).toBeNull();
-      expect(drawer()?.querySelector('ui-avatar')).toBeNull();
-      expect(drawer()?.querySelector('[slot="foot"]')).toBeNull();
+      expect(add).toHaveBeenCalled();
     });
   });
 });
 
-describe('AppShellComponent header styles', () => {
+describe('AppShellComponent styles', () => {
   /** The shell's component stylesheet as the browser got it (jsdom keeps the media text). */
   async function shellStyles(): Promise<string> {
     TestBed.configureTestingModule({
@@ -386,28 +365,16 @@ describe('AppShellComponent header styles', () => {
     await harness.fixture.whenStable();
     return Array.from(document.querySelectorAll('style'))
       .map((style) => style.textContent ?? '')
-      .filter((css) => css.includes('shell__header'))
+      .filter((css) => css.includes('shell__main'))
       .join('\n');
   }
 
-  it('sticks the header to the top on a phone only, between the page and the overlays', async () => {
+  it('leaves 110px under the page on a phone for the floating tab bar', async () => {
     const css = await shellStyles();
 
-    expect(css).toMatch(/\(width\s*<\s*40em\)/);
-    const phone = css.slice(css.search(/@media[^{]*width\s*<\s*40em[^{]*\{[^}]*shell__header/));
-    expect(phone).toMatch(/position:\s*sticky/);
-    expect(phone).toMatch(/(inset-block-start|top):\s*0/);
-    expect(phone).toMatch(/background:\s*var\(--bg\)/);
-    const z = Number(/z-index:\s*(\d+)/.exec(phone)?.[1]);
-    expect(z).toBeGreaterThan(2);
-    expect(z).toBeLessThan(900);
-    expect(css.split('position: sticky').length - 1).toBe(1);
-  });
-
-  it('fades a shadow in with the scroll position, CSS only', async () => {
-    const css = await shellStyles();
-
-    expect(css).toContain('animation-timeline: scroll(root block)');
-    expect(css).toContain('shell-header-shadow');
+    expect(css).toMatch(
+      /\(width\s*<\s*40em\)[^{]*\{[^}]*shell__main[^}]*padding-block-end:\s*calc\(6\.875rem/,
+    );
+    expect(css).not.toContain('position: sticky');
   });
 });

@@ -1,0 +1,71 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
+import { Router } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
+import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
+import { ViewportService } from '../../../core/layout/viewport.service';
+import { APP_PATH } from '../../../models/app-path.const';
+import { SidebarComponent } from '../../../shell/sidebar/sidebar.component';
+import { FoldersStore } from '../../../stores/folders.store';
+import { LinksStore } from '../../../stores/links.store';
+import { groupByDay } from '../../links/recent/history-days';
+import { HISTORY_DAY_KIND } from '../../links/recent/models/history-day-kind.const';
+import { RecentSheetComponent } from '../../links/recent/recent-sheet.component';
+import { LibraryTileComponent } from './library-tile.component';
+
+/**
+ * The Library tab of the phone (MobileMenu): tiles for All links, Unsorted, Favorites and
+ * Recently opened (a bottom sheet with the same list as `/recent`), then the folder tree with its
+ * menus. From the tablet width the sidebar does this job, so the page leaves for All links.
+ */
+@Component({
+  selector: 'app-phone-library-page',
+  imports: [LibraryTileComponent, SidebarComponent, TranslocoPipe],
+  templateUrl: './phone-library.page.html',
+  styleUrl: './phone-library.page.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export default class PhoneLibraryPage {
+  protected readonly folders = inject(FoldersStore);
+  private readonly links = inject(LinksStore);
+  private readonly dialogs = inject(DialogService);
+  private readonly router = inject(Router);
+  private readonly viewport = inject(ViewportService);
+
+  protected readonly APP_PATH = APP_PATH;
+  protected readonly counts = computed(() =>
+    this.folders.loaded() ? this.folders.counts() : null,
+  );
+
+  private readonly now = signal(new Date());
+  /** Links opened today, once the history has loaded. */
+  protected readonly openedToday = computed(() => {
+    if (!this.links.recentLoaded()) {
+      return undefined;
+    }
+    const today = groupByDay(this.links.recent(), this.now()).find(
+      (day) => day.kind === HISTORY_DAY_KIND.Today,
+    );
+    return today?.links.length ?? 0;
+  });
+
+  constructor() {
+    void this.folders.load();
+    void this.links.loadRecent();
+    effect(() => {
+      if (!this.viewport.phone()) {
+        void this.router.navigateByUrl(`/${APP_PATH.Links}`, { replaceUrl: true });
+      }
+    });
+  }
+
+  protected openRecent(): void {
+    void this.dialogs.open(RecentSheetComponent, { size: DIALOG_SIZE.Md });
+  }
+}

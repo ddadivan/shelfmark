@@ -1,5 +1,10 @@
 import { expect, test } from './support/test';
-import { dismissOnboarding, MOCK_USER, openAccountMenu, seedSession } from './support/mock-session';
+import {
+  dismissOnboarding,
+  MOCK_USER,
+  openSettingsPage,
+  seedSession,
+} from './support/mock-session';
 
 test.describe('settings (mock auth)', () => {
   test('a guest on /settings lands on sign-in and returns after signing in', async ({ page }) => {
@@ -10,7 +15,7 @@ test.describe('settings (mock auth)', () => {
 
     await dismissOnboarding(page);
     await expect(page).toHaveURL(/\/settings$/);
-    await expect(page.getByRole('heading', { level: 1, name: 'Settings' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: /^(Settings|You)$/ })).toBeVisible();
   });
 
   test('a signed-in user opens settings from the account menu and sees the account', async ({
@@ -19,8 +24,7 @@ test.describe('settings (mock auth)', () => {
     await seedSession(page);
     await page.goto('/links');
 
-    await openAccountMenu(page);
-    await page.getByRole('menuitem', { name: 'Settings' }).click();
+    await openSettingsPage(page);
 
     await expect(page).toHaveURL(/\/settings$/);
     const main = page.getByRole('main');
@@ -74,7 +78,7 @@ test.describe('settings (mock auth)', () => {
     await page.setViewportSize({ width: 360, height: 780 });
     await page.goto('/settings');
 
-    await expect(page.getByRole('heading', { level: 1, name: 'Settings' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: /^(Settings|You)$/ })).toBeVisible();
     const overflow = await page.evaluate<number>(
       '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
     );

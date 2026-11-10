@@ -78,6 +78,14 @@
 
   margin: 0;
   overflow-wrap: anywhere;
+
+  // Phone: the title of the view is large (MobileHome: 34 / 38).
+  @include phone {
+    @include type(display);
+
+    font-size: rem(34px);
+    line-height: rem(38px);
+  }
 }
 
 .library__count {

@@ -1,5 +1,6 @@
 import { expect, test } from './support/test';
-import { dismissOnboarding, MOCK_USER, openAccountMenu, seedSession } from './support/mock-session';
+import { isPhone, tabBar } from './support/sidebar';
+import { dismissOnboarding, MOCK_USER, seedSession, signOutFromUi } from './support/mock-session';
 
 const GITHUB_BUTTON = 'Continue with GitHub';
 
@@ -26,11 +27,16 @@ test.describe('sign-in flow (mock auth)', () => {
     await page.goto('/');
 
     await expect(page).toHaveURL(/\/links$/);
-    // The name is hidden on a phone (the avatar stays), so only check that it is rendered.
-    await expect(page.getByText(MOCK_USER.name)).toHaveCount(1);
+    if (isPhone(page)) {
+      // The account is on the You tab, where the name is printed.
+      await tabBar(page).getByRole('link', { name: 'You' }).click();
+      await expect(page.getByText(MOCK_USER.name)).toHaveCount(1);
+    } else {
+      // The top bar shows the avatar only, not the name.
+      await expect(page.getByRole('button', { name: 'Account menu' })).toBeVisible();
+    }
 
-    await openAccountMenu(page);
-    await page.getByRole('menuitem', { name: 'Sign out' }).click();
+    await signOutFromUi(page);
     await expect(page).toHaveURL(/\/sign-in$/);
 
     await page.goto('/links');

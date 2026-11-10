@@ -58,7 +58,8 @@ test.describe('overlays do not move content when an outside click closes them (m
     await expect(page.locator('ui-card').first()).toBeVisible();
   });
 
-  test('account menu: the header stays put', async ({ page }) => {
+  test('account menu: the header stays put', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'a phone has no header: the You tab holds the account');
     const header = page.getByRole('banner');
     const trigger = header.getByRole('button', { name: 'Account menu' });
     const watched = [trigger, trigger.locator('ui-avatar'), header.getByRole('button').first()];

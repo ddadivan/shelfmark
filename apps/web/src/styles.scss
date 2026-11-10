@@ -3,12 +3,13 @@
 // App-level styles. Tokens, themes, base rules and fonts come from libs/ui (global.scss),
 // loaded before this file through the `styles` list in project.json.
 
-// Phone: toasts are bottom centre like everywhere, but sit above the floating add button of the
-// shell (`.shell__fab`: 24px from the edge, 56px high, plus a gap), so they never cover it.
-// `ui-toast-region` reads `--ui-toast-offset` for its bottom inset.
+// Phone: toasts are bottom centre like everywhere, but in the app shell they sit 12px above the
+// floating tab bar (`ui-tab-bar`: 20px from the edge and the home indicator, 68px high). The
+// landing, sign-in and share pages have no bar. `ui-toast-region` reads `--ui-toast-offset`
+// for its bottom inset.
 @include phone {
-  :root {
-    --ui-toast-offset: calc(var(--space-6) + #{rem(56px)} + var(--space-3));
+  :root:has(app-shell) {
+    --ui-toast-offset: calc(#{rem(20px + 68px + 12px)} + env(safe-area-inset-bottom, 0rem));
   }
 }
 

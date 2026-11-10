@@ -9,37 +9,11 @@
       </p>
     </div>
     @if (hasHistory()) {
-    <ui-button variant="secondary" (click)="clear()">
+    <ui-button variant="secondary" (click)="history().clear()">
       {{ 'links.recent.clear' | transloco }}
     </ui-button>
     }
   </header>
 
-  @if (!store.recentLoaded()) {
-  <div class="recent-page__skeleton">
-    <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="SKELETON_COUNT" />
-  </div>
-  } @else if (!hasHistory()) {
-  <ui-empty-state
-    class="recent-page__empty"
-    illustration="empty-feed"
-    [heading]="'links.recent.empty.title' | transloco"
-    [text]="'links.recent.empty.text' | transloco: { days: windowDays }"
-  />
-  } @else { @for (day of days(); track day.key) {
-  <ui-history-group [title]="dayTitle(day)" [headingLevel]="HISTORY_HEADING_LEVEL.Two">
-    @for (link of day.links; track link.id) {
-    <app-link-history-row
-      [link]="link"
-      [folderName]="folderName(link)"
-      [time]="timeOf(link)"
-      [dateTime]="link.lastOpenedAt ?? ''"
-      (opened)="actions.open(link)"
-      (removeRequested)="remove(link)"
-    />
-    }
-  </ui-history-group>
-  }
-  <p class="recent-page__note">{{ 'links.recent.note' | transloco }}</p>
-  }
+  <app-recent-history />
 </div>

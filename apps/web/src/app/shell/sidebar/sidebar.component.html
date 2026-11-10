@@ -1,4 +1,8 @@
-<nav class="sidebar" [attr.aria-label]="'shell.sidebar.nav' | transloco">
+<nav
+  class="sidebar"
+  [class.sidebar--folders]="foldersOnly()"
+  [attr.aria-label]="navLabelKey() | transloco"
+>
   @if (showLogo()) {
     <a class="sidebar__logo" routerLink="/links"><ui-logo /></a>
   }
@@ -35,7 +39,9 @@
     </p>
   }
 
-  <app-sidebar-tags />
+  @if (!foldersOnly()) {
+    <app-sidebar-tags />
+  }
 
   <ui-menu [ariaLabel]="'shell.sidebar.folderMenu' | transloco" (closed)="menuClosed()">
     <ui-menu-item icon="folder-plus" (activated)="createSubfolder()">

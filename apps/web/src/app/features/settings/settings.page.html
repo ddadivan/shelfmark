@@ -1,4 +1,6 @@
 <div class="settings">
+  <!-- Phone: this is the You tab (the tab bar is the way back), titled like the tab. -->
+  @if (!viewport.phone()) {
   <ui-button
     class="settings__back"
     variant="ghost"
@@ -9,7 +11,10 @@
   >
     {{ 'settings.back' | transloco }}
   </ui-button>
-  <h1 class="settings__title">{{ 'settings.title' | transloco }}</h1>
+  }
+  <h1 class="settings__title">
+    {{ (viewport.phone() ? 'settings.phoneTitle' : 'settings.title') | transloco }}
+  </h1>
 
   @if (auth.user(); as user) {
   <ui-panel role="group" aria-labelledby="settings-account-title">
