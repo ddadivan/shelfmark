@@ -26,6 +26,8 @@ export type { LinkImageKind } from './links/link-image-kind.type';
 export { LINK_IMAGE_KIND } from './links/link-image-kind.const';
 export { LINK_IMAGE_PENDING_VERSION } from './links/link-image-pending-version.const';
 export { LINK_IMAGES_ENDPOINT } from './links/link-images-endpoint.const';
+export { RECENT_LINKS_ENDPOINT } from './links/recent-links-endpoint.const';
+export { RECENT_LINKS_WINDOW_DAYS } from './links/recent-links-window.const';
 export { isHttpUrl } from './links/is-http-url';
 export { normalizeUrl } from './links/normalize-url';
 export { LINK_ERROR_MESSAGE } from './links/link-error-message.const';
