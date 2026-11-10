@@ -209,6 +209,11 @@ describe('TreeComponent', () => {
       expect(recipes.classList).toContain('ui-tree__row--drop');
       expect(recipes.querySelector('.ui-tree__drop-badge')?.textContent?.trim()).toBe('Move here');
       expect(recipes.querySelector('.ui-tree__count')).toBeNull();
+      const named = (recipes.getAttribute('aria-labelledby') ?? '')
+        .split(' ')
+        .map((id) => document.getElementById(id)?.textContent?.trim())
+        .join(' ');
+      expect(named).toBe('Recipes Move here');
       expect(item(TREE_STORY_NAME.Work).classList).not.toContain('ui-tree__row--drop');
 
       host.dropTargetId.set(null);

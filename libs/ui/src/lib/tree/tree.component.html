@@ -47,7 +47,9 @@
         }
         <span class="ui-tree__name" [id]="item.id() + '-name'">{{ node.name }}</span>
         @if (dropTargetId() === node.id && dropLabel()) {
-          <span class="ui-tree__drop-badge" aria-hidden="true">{{ dropLabel() }}</span>
+          <span class="ui-tree__drop-badge" [id]="item.id() + '-drop'"
+            >&ngsp;{{ dropLabel() }}</span
+          >
         } @else if (countId(item.id(), node); as count) {
           <span class="ui-tree__count" [id]="count">&ngsp;{{ node.count }}</span>
         }

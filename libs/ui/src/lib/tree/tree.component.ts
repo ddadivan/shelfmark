@@ -294,8 +294,12 @@ export class TreeComponent {
     return node.count === undefined ? null : `${itemId}-count`;
   }
 
-  /** The row is named by its name, then its count (never by its children). */
+  /** The row is named by its name, then its count or drop badge (never by its children). */
   protected labelledBy(itemId: string, node: UiTreeNode): string {
+    // The drop target's badge replaces the count, in the name too ("Recipes Move here").
+    if (this.dropTargetId() === node.id && this.dropLabel()) {
+      return `${itemId}-name ${itemId}-drop`;
+    }
     const count = this.countId(itemId, node);
     return count ? `${itemId}-name ${count}` : `${itemId}-name`;
   }
