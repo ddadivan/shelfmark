@@ -11,9 +11,6 @@
 // length (`--t`) and its offset (`--d`) per card, from the mockup. `--n` is the ring step.
 .sd-card {
   position: absolute;
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
   transform: rotate(var(--r));
   animation:
     sd-in 600ms var(--ease-out) backwards,
@@ -75,6 +72,27 @@
   inset-block-end: 12%;
   inset-inline-end: 13%;
   width: rem(230px);
+}
+
+// The pointer tilt lives here, on the inner element, so it composes with the card's float
+// (`--tx` / `--ty` are set from the component, -1 to 1: the pointer's side of this card).
+.sd-tilt {
+  --tx: 0;
+  --ty: 0;
+
+  position: relative;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  transform: perspective(rem(700px)) rotateX(calc(var(--ty) * -7deg))
+    rotateY(calc(var(--tx) * 9deg))
+    translate(calc(var(--tx) * #{rem(4px)}), calc(var(--ty) * #{rem(4px)}));
+  transition: transform 450ms var(--ease-out);
+
+  @include reduced-motion {
+    transform: none;
+    transition: none;
+  }
 }
 
 .sd-media {

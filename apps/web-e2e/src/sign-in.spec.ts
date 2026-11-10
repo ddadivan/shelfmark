@@ -100,6 +100,43 @@ test.describe('sign-in flow (mock auth)', () => {
     expect(animations).toBe(0);
   });
 
+  test('with a mouse the cards lean toward the pointer while they keep drifting', async ({
+    page,
+  }) => {
+    test.skip(isPhone(page), 'the phone project is touch: no hover, no tilt');
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/sign-in');
+    const tilt = page.locator('.sd-tilt').first();
+    await expect(tilt).toBeVisible();
+
+    await page.mouse.move(1400, 880);
+    await expect.poll(() => tilt.evaluate((el) => el.style.getPropertyValue('--tx'))).not.toBe('');
+    const tx = Number(await tilt.evaluate((el) => el.style.getPropertyValue('--tx')));
+    expect(tx).toBeGreaterThan(0.5);
+    const running = await page.evaluate(
+      () =>
+        document
+          .getAnimations()
+          .filter((a) => a instanceof CSSAnimation && a.animationName.endsWith('sd-float')).length,
+    );
+    expect(running).toBe(4);
+  });
+
+  test('with reduced motion the cards do not lean', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/sign-in');
+    await expect(page.locator('.sd-tilt')).toHaveCount(4);
+
+    await page.mouse.move(1400, 880);
+    await page.waitForTimeout(150);
+    const tx = await page
+      .locator('.sd-tilt')
+      .first()
+      .evaluate((el) => el.style.getPropertyValue('--tx'));
+    expect(tx).toBe('');
+  });
+
   test('on a phone the mosaic sits above the form', async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 780 });
     await page.goto('/sign-in');

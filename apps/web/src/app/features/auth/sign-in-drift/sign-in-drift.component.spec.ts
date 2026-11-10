@@ -43,3 +43,64 @@ describe('SignInDriftComponent', () => {
     expect(results.violations.map((v) => v.id)).toEqual([]);
   });
 });
+
+describe('SignInDriftComponent pointer tilt', () => {
+  const realMatchMedia = window.matchMedia;
+
+  function stubMedia(matching: (query: string) => boolean) {
+    const listeners: (() => void)[] = [];
+    window.matchMedia = ((query: string) => ({
+      matches: matching(query),
+      media: query,
+      addEventListener: (_: string, fn: () => void) => listeners.push(fn),
+      removeEventListener: () => undefined,
+    })) as unknown as typeof window.matchMedia;
+    return listeners;
+  }
+
+  afterEach(() => {
+    window.matchMedia = realMatchMedia;
+    vi.restoreAllMocks();
+  });
+
+  async function pointerSetup(matching: (query: string) => boolean) {
+    stubMedia(matching);
+    const add = vi.spyOn(document, 'addEventListener');
+    const root = await setup();
+    await new Promise((resolve) => setTimeout(resolve));
+    return { root, add };
+  }
+
+  const hasMove = (add: { mock: { calls: unknown[][] } }) =>
+    add.mock.calls.some(([type]) => type === 'pointermove');
+
+  it('leans the cards toward the pointer with a mouse, once per frame', async () => {
+    const { root, add } = await pointerSetup((q) => q.includes('hover'));
+
+    expect(hasMove(add)).toBe(true);
+    document.dispatchEvent(new PointerEvent('pointermove', { clientX: 5000, clientY: 0 }));
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+    const tilt = root.querySelector<HTMLElement>('.sd-tilt');
+
+    expect(tilt?.style.getPropertyValue('--tx')).toBe('1.000');
+  });
+
+  it('adds no listener on touch or under reduced motion', async () => {
+    const touch = await pointerSetup(() => false);
+    expect(hasMove(touch.add)).toBe(false);
+    TestBed.resetTestingModule();
+
+    const reduced = await pointerSetup(() => true);
+    expect(hasMove(reduced.add)).toBe(false);
+  });
+
+  it('removes the listener on destroy', async () => {
+    stubMedia((q) => q.includes('hover'));
+    const remove = vi.spyOn(document, 'removeEventListener');
+    await setup();
+    await new Promise((resolve) => setTimeout(resolve));
+    TestBed.resetTestingModule();
+
+    expect(remove.mock.calls.some(([type]) => type === 'pointermove')).toBe(true);
+  });
+});
