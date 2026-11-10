@@ -21,6 +21,7 @@ import {
 } from '@angular/core';
 import { ButtonComponent } from '../button/button.component';
 import { FolderIconComponent } from '../folder-icon/folder-icon.component';
+import { FOLDER_COLOUR } from '../folder-icon/models/folder-colour.const';
 import { FOLDER_ICON_SIZE } from '../folder-icon/models/folder-icon-size.const';
 import { IconComponent } from '../icon/icon.component';
 import { LongPressDirective } from '../long-press/long-press.directive';
@@ -77,6 +78,7 @@ const KEYBOARD_ECHO_RELEASE_MS = 100;
 export class TreeComponent {
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly FOLDER_ICON_SIZE = FOLDER_ICON_SIZE;
+  protected readonly FOLDER_COLOUR = FOLDER_COLOUR;
   /**
    * The row's "…" tooltip opens to the right, towards the content: below the row it would cover
    * the next row or the section header ("+" of Tags) and keep a resting pointer trapped on it.
