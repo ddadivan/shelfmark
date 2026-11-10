@@ -121,6 +121,13 @@
   }
 }
 
+// The phone sheet has no Cancel (its close button, Esc and swipe-down dismiss it), as in the mockup.
+.add-link__cancel {
+  @include phone {
+    display: none;
+  }
+}
+
 // The "save" shortcut at the start of the footer; a phone has no keyboard to press it.
 .add-link__shortcut {
   @include type(caption);

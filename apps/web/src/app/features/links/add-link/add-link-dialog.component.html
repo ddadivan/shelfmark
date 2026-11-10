@@ -147,9 +147,13 @@
         {{ 'links.add.shortcut.save' | transloco }}
       </span>
     }
-    <ui-button slot="footer" class="add-link__action" [disabled]="saving()" (click)="cancel()">{{
-      'links.add.actions.cancel' | transloco
-    }}</ui-button>
+    <ui-button
+      slot="footer"
+      class="add-link__action add-link__cancel"
+      [disabled]="saving()"
+      (click)="cancel()"
+      >{{ 'links.add.actions.cancel' | transloco }}</ui-button
+    >
     @if (duplicate() && !editing) {
       <ui-button slot="footer" class="add-link__action" (click)="openExisting()">{{
         'links.add.actions.openSaved' | transloco

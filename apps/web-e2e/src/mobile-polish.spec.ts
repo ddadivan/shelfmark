@@ -122,19 +122,25 @@ test.describe('mobile polish (mock API)', () => {
       expect(Math.round(box?.width ?? 0)).toBe(view?.width);
     });
 
-    test('the add link dialog stacks its actions, the main action on top', async ({ page }) => {
+    test('the add link sheet has no Cancel, the close button and Esc still dismiss it', async ({
+      page,
+    }) => {
       await page.goto('/links');
       await page.getByRole('button', { name: 'Add link' }).click();
       const dialog = page.getByRole('dialog', { name: 'Add link' });
       await expect(dialog).toBeVisible();
       await settled(page);
 
-      const save = await dialog.getByRole('button', { name: 'Save link' }).boundingBox();
-      const cancel = await dialog.getByRole('button', { name: 'Cancel' }).boundingBox();
-      expect(save && cancel).toBeTruthy();
-      expect(save?.y).toBeLessThan(cancel?.y ?? 0);
-      expect(save?.width).toBeCloseTo(cancel?.width ?? 0, 0);
-      expect(save?.x).toBeCloseTo(cancel?.x ?? 0, 0);
+      await expect(dialog.getByRole('button', { name: 'Save link' })).toBeVisible();
+      await expect(dialog.getByRole('button', { name: 'Cancel' })).toBeHidden();
+
+      await dialog.getByRole('button', { name: 'Close' }).click();
+      await expect(dialog).toBeHidden();
+
+      await page.getByRole('button', { name: 'Add link' }).click();
+      await expect(dialog).toBeVisible();
+      await page.keyboard.press('Escape');
+      await expect(dialog).toBeHidden();
     });
 
     test('the tap highlight is off', async ({ page }) => {
