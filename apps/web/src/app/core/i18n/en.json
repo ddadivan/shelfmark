@@ -284,16 +284,17 @@
       "delete": "Delete",
       "opensInNewTab": "Opens in a new tab",
       "open": "Open",
-      "favoriteFailed": "Couldn't update the favorite.",
+      "favoriteFailed": "Couldn't update the favorite",
       "retry": "Retry",
       "deleted": "Link deleted",
       "undo": "Undo",
-      "deleteFailed": "Couldn't delete the link. It is back in your list.",
-      "saved": "Link saved",
+      "deleteFailed": "Couldn't delete the link",
+      "deleteFailedDetail": "It is back in your list",
+      "savedTo": "Saved to {{folder}}",
       "confirm": {
         "title": "Delete this link?",
-        "message": "“{{title}}” will be deleted.",
-        "confirm": "Delete",
+        "message": "“{{title}}” will be removed. You can undo right after.",
+        "confirm": "Delete link",
         "cancel": "Cancel",
         "close": "Close"
       }
@@ -460,7 +461,8 @@
       "starting": "Opening the demo…"
     },
     "signOut": "Sign out",
-    "signOutFailed": "We could not sign you out. Try again."
+    "signOutFailed": "Couldn't sign you out",
+    "signOutFailedDetail": "Try again"
   },
   "shell": {
     "demoBanner": {
@@ -470,6 +472,9 @@
         "other": "Play with everything — this sandbox resets in {{ hours }} hours."
       },
       "signIn": "Sign in with your own account"
+    },
+    "offlineBanner": {
+      "text": "You're offline. You can browse what's loaded; saving and editing come back when you reconnect."
     },
     "accountMenu": "Account menu",
     "settings": "Settings",
@@ -524,13 +529,15 @@
       "saving": "Creating…",
       "failed": "Couldn't create the folder. Try again.",
       "done": "Folder created",
-      "limit": "You have reached the limit of {{max}} folders."
+      "limit": "Folder limit reached",
+      "limitDetail": "You can have up to {{max}} folders"
     },
     "rename": {
       "title": "Rename folder",
       "action": "Rename",
       "saving": "Renaming…",
-      "failed": "Couldn't rename the folder. The old name is back."
+      "failed": "Couldn't rename the folder",
+      "failedDetail": "The old name is back"
     },
     "move": {
       "title": "Move “{{name}}”",
@@ -539,7 +546,8 @@
       "searchLabel": "Search folders",
       "noResults": "No folders found",
       "action": "Move",
-      "failed": "Couldn't move the folder. It is back where it was."
+      "failed": "Couldn't move the folder",
+      "failedDetail": "It is back where it was"
     },
     "delete": {
       "title": "Delete folder “{{name}}”?",
@@ -694,7 +702,8 @@
   },
   "export": {
     "menu": "Export",
-    "failed": "Couldn't export your links. Try again.",
+    "failed": "Couldn't export your links",
+    "failedDetail": "Check your connection, then try again",
     "retry": "Try again",
     "view": {
       "json": "This view as JSON",
@@ -744,13 +753,15 @@
       "title": "Welcome tour",
       "hint": "See the 3-step introduction again",
       "action": "Show welcome again",
-      "error": "Couldn't reset the welcome tour. Try again."
+      "error": "Couldn't reset the welcome tour",
+      "errorDetail": "Try again"
     },
     "delete": {
       "title": "Delete account",
       "hint": "Removes your account and all your links, folders and tags for good. This can't be undone.",
       "action": "Delete account",
-      "done": "Your account and all your data were deleted.",
+      "done": "Account deleted",
+      "doneDetail": "All your data was deleted",
       "dialog": {
         "title": "Delete your account?",
         "text": "All your links, folders and tags will be deleted for good. This can't be undone.",
@@ -819,6 +830,8 @@
       "action": "Merge",
       "required": "Choose a tag to merge into",
       "failed": "Couldn't merge the tags. Try again.",
+      "failedTitle": "Couldn't merge the tags",
+      "failedDetail": "Try again",
       "done": "Merged “{{name}}” into “{{target}}”"
     },
     "delete": {
@@ -830,7 +843,8 @@
       "confirm": "Delete tag",
       "undo": "Undo",
       "done": "Tag “{{name}}” deleted",
-      "failed": "Couldn't delete the tag “{{name}}”. It is back."
+      "failed": "Couldn't delete the tag “{{name}}”",
+      "failedDetail": "It is back"
     },
     "filter": {
       "label": "Filtered by tags",
@@ -941,8 +955,14 @@
     }
   },
   "errors": {
-    "rateLimited": "Too many requests. Try again in a moment.",
-    "server": "Something went wrong on our side. Try again."
+    "rateLimited": {
+      "title": "Too many requests",
+      "detail": "Try again in a moment"
+    },
+    "server": {
+      "title": "Something went wrong on our side",
+      "detail": "Try again"
+    }
   },
   "toast": {
     "actionHint": "Press {{shortcut}} to reach {{action}}",

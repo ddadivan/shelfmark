@@ -103,6 +103,7 @@ export const OnboardingStore = signalStore(
             toasts.show({
               kind: TOAST_KIND.Danger,
               title: transloco.translate('settings.welcome.error'),
+              detail: transloco.translate('settings.welcome.errorDetail'),
             });
           } finally {
             patchState(store, { resetting: false });

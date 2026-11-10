@@ -335,7 +335,7 @@ test.describe('mobile layout (mock API)', () => {
     await dialog.getByRole('button', { name: /Save/ }).click();
 
     await expect(dialog).toBeHidden();
-    await expect(page.getByText('Link saved')).toBeVisible();
+    await expect(page.getByText(/Saved to /)).toBeVisible();
   });
 
   test('the bottom-most control stays clickable while a toast is visible', async ({ page }) => {
@@ -345,7 +345,7 @@ test.describe('mobile layout (mock API)', () => {
     const dialog = page.getByRole('dialog', { name: 'Add link' });
     await dialog.getByLabel('Link', { exact: true }).fill('https://mobile.example/toast');
     await dialog.getByRole('button', { name: /Save/ }).click();
-    await expect(page.getByText('Link saved')).toBeVisible();
+    await expect(page.getByText(/Saved to /)).toBeVisible();
 
     // The toast sits above the bar; its pane must not swallow clicks on the bar.
     await add.click();

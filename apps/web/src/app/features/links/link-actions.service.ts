@@ -99,7 +99,7 @@ export class LinkActionsService {
     void this.tags.noteLinkSaved();
     this.toasts.show({
       kind: TOAST_KIND.Saved,
-      title: this.t('links.item.saved'),
+      title: this.t('links.item.savedTo', { folder: this.folderLabel(link.folderId) }),
       detail: link.title,
       thumb: ownImageUrl(link.imageUrl),
     });
@@ -121,6 +121,14 @@ export class LinkActionsService {
     }
   }
 
+  /** "Work / Angular" for a link in a folder, "Unsorted" for one outside any folder. */
+  private folderLabel(folderId: string | null): string {
+    const path = folderId === null ? [] : this.folders.pathTo(folderId);
+    return path.length > 0
+      ? path.map((folder) => folder.name).join(' / ')
+      : this.t('links.add.folder.unsorted');
+  }
+
   private async openSaved(id: string): Promise<void> {
     try {
       const link =
@@ -136,7 +144,11 @@ export class LinkActionsService {
       void this.folders.refresh();
       void this.tags.noteLinkSaved();
     } else {
-      this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('links.item.deleteFailed') });
+      this.toasts.show({
+        kind: TOAST_KIND.Danger,
+        title: this.t('links.item.deleteFailed'),
+        detail: this.t('links.item.deleteFailedDetail'),
+      });
     }
   }
 

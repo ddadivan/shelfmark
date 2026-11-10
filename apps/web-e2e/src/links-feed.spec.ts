@@ -130,7 +130,7 @@ test.describe('links feed (mock API)', () => {
     await expect(favorite).toHaveAttribute('aria-pressed', 'false');
     await favorite.click();
 
-    await expect(page.getByText("Couldn't update the favorite.")).toBeVisible();
+    await expect(page.getByText("Couldn't update the favorite")).toBeVisible();
     await expect(page.getByRole('button', { name: 'Retry' })).toBeVisible();
     await expect(favorite).toHaveAttribute('aria-pressed', 'false');
   });
@@ -168,7 +168,7 @@ test.describe('links feed (mock API)', () => {
       .click();
     await page.getByRole('menuitem', { name: 'Delete' }).click();
     const confirm = page.getByRole('alertdialog');
-    await expect(confirm).toContainText('will be deleted');
+    await expect(confirm).toContainText('will be removed');
     await confirm.getByRole('button', { name: 'Delete' }).click();
 
     await expect(page.getByRole('heading', { name: title, exact: true })).toHaveCount(0);
@@ -227,7 +227,7 @@ test.describe('links feed (mock API)', () => {
     await expect(dialog.getByLabel('Title', { exact: true })).toHaveValue('Page on example.org');
     await dialog.getByRole('button', { name: 'Save link' }).click();
 
-    await expect(page.getByText('Link saved')).toBeVisible();
+    await expect(page.getByText(/Saved to /)).toBeVisible();
     await expect(page.locator('ui-card').first()).toContainText('Page on example.org');
   });
 

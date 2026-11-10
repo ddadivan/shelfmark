@@ -40,6 +40,7 @@ import { isMacPlatform } from '../features/search/is-mac-platform';
 import { ViewportService } from '../core/layout/viewport.service';
 import { APP_PATH } from '../models/app-path.const';
 import { DemoBannerComponent } from './demo-banner/demo-banner.component';
+import { OfflineBannerComponent } from './offline-banner/offline-banner.component';
 import { PHONE_TAB } from './models/phone-tab.const';
 import { phoneTabForUrl } from './phone-tab-for-url';
 import { SidebarComponent } from './sidebar/sidebar.component';
@@ -56,6 +57,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     TranslocoPipe,
     AvatarComponent,
     DemoBannerComponent,
+    OfflineBannerComponent,
     ButtonComponent,
     MenuComponent,
     MenuItemComponent,

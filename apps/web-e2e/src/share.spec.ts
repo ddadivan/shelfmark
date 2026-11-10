@@ -25,7 +25,7 @@ test.describe('share target (mock API)', () => {
     await page.getByRole('button', { name: 'Save', exact: true }).click();
 
     await expect(page).toHaveURL(/\/links$/);
-    await expect(page.getByText('Link saved')).toBeVisible();
+    await expect(page.getByText(/Saved to /)).toBeVisible();
     await expect(page.getByRole('heading', { name: SAVED_TITLE }).first()).toBeVisible();
   });
 

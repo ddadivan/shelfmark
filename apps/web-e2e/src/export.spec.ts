@@ -76,13 +76,13 @@ test.describe('export (mock API)', () => {
     await page.getByRole('button', { name: 'Export' }).click();
     await page.getByRole('menuitem', { name: 'This view as JSON' }).click();
 
-    await expect(page.getByText("Couldn't export your links. Try again.")).toBeVisible();
+    await expect(page.getByText("Couldn't export your links")).toBeVisible();
 
     const download = page.waitForEvent('download');
     await page.getByRole('button', { name: 'Try again' }).click();
 
     expect(await requestedUrl(await download)).toBe(`/api/export?format=json&tag=${FAILS_TAG}`);
-    await expect(page.getByText("Couldn't export your links. Try again.")).toBeHidden();
+    await expect(page.getByText("Couldn't export your links")).toBeHidden();
   });
 
   test('the toolbar does not scroll the page sideways at 360px', async ({ page }) => {

@@ -38,7 +38,8 @@ export class FolderActionsService {
     if (this.folders.atLimit()) {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
-        title: this.t('folders.create.limit', { max: String(FOLDER_LIMIT.PerUserMax) }),
+        title: this.t('folders.create.limit'),
+        detail: this.t('folders.create.limitDetail', { max: String(FOLDER_LIMIT.PerUserMax) }),
       });
       return;
     }
@@ -86,6 +87,7 @@ export class FolderActionsService {
                   this.toasts.show({
                     kind: TOAST_KIND.Danger,
                     title: this.t('folders.rename.failed'),
+                    detail: this.t('folders.rename.failedDetail'),
                   });
                 }
               });
@@ -112,7 +114,11 @@ export class FolderActionsService {
           submit: (parentId) => {
             void this.folders.move(folder.id, parentId).then((moved) => {
               if (!moved) {
-                this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('folders.move.failed') });
+                this.toasts.show({
+                  kind: TOAST_KIND.Danger,
+                  title: this.t('folders.move.failed'),
+                  detail: this.t('folders.move.failedDetail'),
+                });
               }
             });
           },

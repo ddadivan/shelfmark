@@ -54,7 +54,8 @@ describe('ExportActionsService', () => {
 
     expect(show).toHaveBeenCalledOnce();
     const options = show.mock.calls[0][0];
-    expect(options.title).toBe("Couldn't export your links. Try again.");
+    expect(options.title).toBe("Couldn't export your links");
+    expect(options.detail).toBe('Check your connection, then try again');
     options.action?.run();
     expect(download).toHaveBeenCalledTimes(2);
   });

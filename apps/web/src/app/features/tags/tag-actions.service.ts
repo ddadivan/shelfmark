@@ -63,7 +63,11 @@ export class TagActionsService {
       this.mergedInto(tag, result.tag ?? target);
       return true;
     }
-    this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('tags.merge.failed') });
+    this.toasts.show({
+      kind: TOAST_KIND.Danger,
+      title: this.t('tags.merge.failedTitle'),
+      detail: this.t('tags.merge.failedDetail'),
+    });
     return false;
   }
 
@@ -102,6 +106,7 @@ export class TagActionsService {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
         title: this.t('tags.delete.failed', { name: tag.name }),
+        detail: this.t('tags.delete.failedDetail'),
       });
     }
   }

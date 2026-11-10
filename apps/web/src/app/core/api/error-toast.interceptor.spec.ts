@@ -55,7 +55,8 @@ describe('errorInterceptor toasts', () => {
 
     expect(show).toHaveBeenCalledWith({
       kind: TOAST_KIND.Danger,
-      title: 't:errors.rateLimited',
+      title: 't:errors.rateLimited.title',
+      detail: 't:errors.rateLimited.detail',
     });
     expect(status).toBe(429);
   });
@@ -67,7 +68,11 @@ describe('errorInterceptor toasts', () => {
     http.get('/api/links').subscribe({ error: (e: { status: number }) => (status = e.status) });
     fail(controller, '/api/links', code);
 
-    expect(show).toHaveBeenCalledWith({ kind: TOAST_KIND.Danger, title: 't:errors.server' });
+    expect(show).toHaveBeenCalledWith({
+      kind: TOAST_KIND.Danger,
+      title: 't:errors.server.title',
+      detail: 't:errors.server.detail',
+    });
     expect(status).toBe(code);
   });
 

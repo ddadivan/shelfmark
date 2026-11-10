@@ -97,7 +97,10 @@ describe('LinkActionsService', () => {
       await actions.delete(link(1));
 
       expect(confirm).toHaveBeenCalledWith(
-        expect.objectContaining({ destructive: true, message: '“Link 1” will be deleted.' }),
+        expect.objectContaining({
+          destructive: true,
+          message: '“Link 1” will be removed. You can undo right after.',
+        }),
       );
       expect(ids(store)).toEqual(['id-1', 'id-2']);
       expect(toasts).toEqual([]);
@@ -143,7 +146,8 @@ describe('LinkActionsService', () => {
 
       expect(ids(store)).toEqual(['id-1', 'id-2']);
       expect(toasts[1]).toMatchObject({ kind: TOAST_KIND.Danger });
-      expect(toasts[1].title).toContain('back in your list');
+      expect(toasts[1].title).toBe("Couldn't delete the link");
+      expect(toasts[1].detail).toContain('back in your list');
     });
   });
 
@@ -276,7 +280,7 @@ describe('LinkActionsService', () => {
       expect(ids(store)[0]).toBe('id-9');
       expect(toasts[0]).toMatchObject({
         kind: TOAST_KIND.Saved,
-        title: 'Link saved',
+        title: 'Saved to Unsorted',
         detail: link(9).title,
       });
     });

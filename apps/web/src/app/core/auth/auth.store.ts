@@ -120,6 +120,7 @@ export const AuthStore = signalStore(
           injector.get(ToastService).show({
             kind: TOAST_KIND.Danger,
             title: injector.get(TranslocoService).translate('auth.signOutFailed'),
+            detail: injector.get(TranslocoService).translate('auth.signOutFailedDetail'),
           });
           return false;
         }

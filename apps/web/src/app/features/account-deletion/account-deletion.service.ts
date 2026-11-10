@@ -60,6 +60,7 @@ export class AccountDeletionService {
       this.toasts.show({
         kind: TOAST_KIND.Success,
         title: this.transloco.translate('settings.delete.done'),
+        detail: this.transloco.translate('settings.delete.doneDetail'),
       });
     }
   }

@@ -37,7 +37,7 @@ test.describe('delete account (mock API)', () => {
 
     await expect(page).toHaveURL(/\/$/);
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-    await expect(page.getByText('Your account and all your data were deleted.')).toBeVisible();
+    await expect(page.getByText('All your data was deleted')).toBeVisible();
     expect(await page.evaluate((key) => localStorage.getItem(key), SESSION_KEY)).toBeNull();
 
     // The session is gone: a protected page sends the guest to sign-in.

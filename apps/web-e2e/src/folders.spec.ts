@@ -138,6 +138,18 @@ test.describe('folders (mock API)', () => {
       await expect(page.getByRole('link', { name: READING.name })).toBeVisible();
     });
 
+    test('Add link here saves into the folder and the toast names its path', async ({ page }) => {
+      await gotoWithSidebar(page, '/links');
+
+      await pickFolderMenuItem(page, READING.name, 'Add link here');
+      const dialog = page.getByRole('dialog', { name: 'Add link' });
+      await dialog.getByLabel('Link', { exact: true }).fill('https://example.org/in-reading');
+      await expect(dialog.getByLabel('Title', { exact: true })).toHaveValue('Page on example.org');
+      await dialog.getByRole('button', { name: 'Save link' }).click();
+
+      await expect(page.getByText(`Saved to ${READING.name}`, { exact: true })).toBeVisible();
+    });
+
     test('asks for a name', async ({ page }) => {
       await gotoWithSidebar(page, '/links');
 
