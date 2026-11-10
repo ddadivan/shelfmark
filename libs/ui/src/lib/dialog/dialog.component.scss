@@ -17,11 +17,11 @@
   gap: var(--space-4);
   width: min(var(--ui-dialog-width), calc(100vw - #{rem(48px)}));
   max-height: calc(100dvh - #{rem(48px)});
-  padding: var(--space-6);
+  padding: rem(28px);
   color: var(--text);
   background: var(--surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-popover);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-float);
 
   &--md {
     --ui-dialog-width: #{rem(560px)};
@@ -30,8 +30,8 @@
   @include phone {
     width: 100vw;
     max-height: calc(100dvh - #{rem(48px)});
-    padding: var(--space-3) rem(20px) calc(var(--space-6) + env(safe-area-inset-bottom));
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: var(--space-3) rem(20px) calc(#{rem(28px)} + env(safe-area-inset-bottom));
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
     transform: translateY(var(--ui-sheet-drag, 0));
   }
 
