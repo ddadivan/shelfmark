@@ -211,6 +211,46 @@ describe('LinksStore', () => {
     });
   });
 
+  describe('tab sync', () => {
+    it('drops a link another tab deleted from the feed and the recent list', async () => {
+      const { store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      await store.loadRecent();
+
+      store.applyRemoval('id-2');
+
+      expect(ids(store)).toEqual(['id-1', 'id-3']);
+      expect(store.recent()).toEqual([]);
+    });
+
+    it('keeps a link whose own delete is waiting for Undo', () => {
+      const { store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      store.remove('id-2');
+
+      store.applyRemoval('id-2');
+      store.undoRemove('id-2');
+
+      expect(ids(store)).toEqual(['id-1', 'id-2', 'id-3']);
+    });
+
+    it('reloads the open feed and the recent list, and nothing before the first load', async () => {
+      const { api, store } = setup();
+      store.refresh();
+      expect(api.list).not.toHaveBeenCalled();
+      expect(api.recent).not.toHaveBeenCalled();
+
+      store.setFilter({ scope: LINKS_SCOPE.Favorites });
+      await store.loadRecent();
+      store.refresh();
+      await Promise.resolve();
+
+      expect(api.list).toHaveBeenCalledTimes(2);
+      expect(api.list).toHaveBeenLastCalledWith({ favorite: true });
+      expect(api.recent).toHaveBeenCalledTimes(2);
+    });
+  });
+
   describe('delete with Undo', () => {
     it('hides the link and sends the request only on commit', async () => {
       const { api, store } = setup();

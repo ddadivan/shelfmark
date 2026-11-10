@@ -1078,5 +1078,12 @@
   "toast": {
     "actionHint": "Press {{shortcut}} to reach {{action}}",
     "dismiss": "Dismiss"
+  },
+  "tabSync": {
+    "signedOut": {
+      "title": "You signed out in another tab",
+      "text": "To keep your links private, this tab is locked too.",
+      "signIn": "Sign in again"
+    }
   }
 }

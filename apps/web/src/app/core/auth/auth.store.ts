@@ -24,6 +24,8 @@ import { SIGN_IN_REASON } from './models/sign-in-reason.const';
 import type { SignInReason } from './models/sign-in-reason.type';
 import { AUTH_DEMO } from './models/auth-pending.const';
 import { AuthState } from './models/auth-state.interface';
+import { TAB_SYNC_KIND } from '../sync/models/tab-sync-kind.const';
+import { TabSyncService } from '../sync/tab-sync.service';
 
 const initialState: AuthState = {
   user: null,
@@ -60,6 +62,13 @@ export const AuthStore = signalStore(
        * Forgets everything cached for the user: the library, and whatever else registered with
        * `SessionScope` (onboarding and rating, which depend on this store).
        */
+      /** Tells the other tabs a user is signed in here (they reload when locked or signed out). */
+      function announceSignedIn(user: AuthUser | null): void {
+        if (user) {
+          injector.get(TabSyncService).post({ kind: TAB_SYNC_KIND.SignedIn }, user.id);
+        }
+      }
+
       function clearUserState(): void {
         links.reset();
         folders.reset();
@@ -83,6 +92,7 @@ export const AuthStore = signalStore(
             return;
           }
           patchState(store, { user, loaded: true, pending: null });
+          announceSignedIn(user);
         } catch (error) {
           patchState(store, {
             pending: null,
@@ -124,8 +134,13 @@ export const AuthStore = signalStore(
           });
           return false;
         }
+        const userId = store.user()?.id;
         clearUserState();
         patchState(store, { user: null, loaded: true, failed: false });
+        // The other tabs lock too (tab sync, #268).
+        if (userId) {
+          injector.get(TabSyncService).post({ kind: TAB_SYNC_KIND.SignedOut }, userId);
+        }
         return true;
       }
 
@@ -140,7 +155,10 @@ export const AuthStore = signalStore(
           loading ??= api
             .getSession()
             .then(
-              (user) => patchState(store, { user, loaded: true }),
+              (user) => {
+                patchState(store, { user, loaded: true });
+                announceSignedIn(user);
+              },
               () => undefined,
             )
             .finally(() => (loading = null));

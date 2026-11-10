@@ -260,6 +260,7 @@ See ADR 0004.
   - `TagsStore`: tags;
   - `UiStore`: "cards / list" view; persisted in `localStorage`.
 - **Classic NgRx Store is not used**: it is overkill for this app.
+- **Tab sync** (stage 2, #268): the tabs of one browser share a `BroadcastChannel` (`TabSyncService`). The API seams post successful writes; other tabs of the same user apply them silently (a saved link lands with its animation; edits, moves and deletes show; folder and tag changes reload the sidebar and the feed). Signing out locks the other tabs with "You signed out in another tab" and clears their library; a sign-in anywhere reloads locked and signed-out tabs. The theme follows through the `storage` event.
 - **UI:** own component library `libs/ui` on SCSS and design tokens, behaviour from Angular Aria / CDK; Tailwind and Angular Material are not used (section 7).
 - **Rules for Claude Code:** the official Angular AI config (`ng generate ai-config --tool=claude`), the official Angular Agent Skills and Angular MCP + our own v22 rules; details in section 8.
 
