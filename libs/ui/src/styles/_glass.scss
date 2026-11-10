@@ -1,0 +1,29 @@
+@use 'functions' as *;
+
+// Glass (docs/design/components/Glass): the frosted surface of layers that float above content
+// for a moment or stay pinned over it. Only for menus and listboxes, toasts, the phone tab bar,
+// the bulk-action bar and the sign-in card; never cards, panels or dialog content.
+// `glass` is opaque enough that text keeps 4.5:1 without the blur, so the blur is an
+// enhancement: only where `backdrop-filter` is supported, and dropped under reduced motion.
+$glass-blur: rem(24px);
+
+@mixin glass {
+  background: var(--glass);
+  border: 1px solid var(--glass-line);
+  box-shadow: var(--shadow-float);
+
+  @supports (backdrop-filter: blur(1px)) {
+    backdrop-filter: blur($glass-blur) saturate(1.5);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    backdrop-filter: none;
+  }
+}
+
+// Global `.ui-glass` utility for app layouts (bulk bar, sign-in card); components use the mixin.
+@mixin glass-utility {
+  .ui-glass {
+    @include glass;
+  }
+}

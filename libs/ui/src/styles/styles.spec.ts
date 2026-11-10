@@ -295,6 +295,36 @@ function contrast(a: string, b: string): number {
   return (hi + 0.05) / (lo + 0.05);
 }
 
+describe('glass mixin', () => {
+  it('uses the glass tokens and shadow-float, blur only where supported, none under reduced motion', () => {
+    const out = css('.g { @include glass; }');
+    expect(out).toContain('background: var(--glass)');
+    expect(out).toContain('border: 1px solid var(--glass-line)');
+    expect(out).toContain('box-shadow: var(--shadow-float)');
+    expect(out).toMatch(/@supports \(backdrop-filter: blur\(1px\)\)/);
+    expect(out).toContain('backdrop-filter: blur(1.5rem) saturate(1.5)');
+    expect(reducedMotionBlock(out)).toContain('backdrop-filter: none');
+  });
+
+  it('glass-utility defines the global .ui-glass class', () => {
+    expect(css('@include glass-utility;')).toMatch(/\.ui-glass \{[^}]*var\(--glass\)/);
+  });
+});
+
+const FOLDER_COLOURS = ['graphite', 'sage', 'ocean', 'plum', 'clay', 'amber', 'rose', 'teal'];
+
+describe('folder colour contrast (WCAG AA 4.5:1)', () => {
+  it.each(['light', 'dark'] as const)('every glyph holds on its tile in %s', (theme) => {
+    for (const colour of FOLDER_COLOURS) {
+      const ratio = contrast(
+        tokenHex(theme, `folder-${colour}`),
+        tokenHex(theme, `folder-${colour}-bg`),
+      );
+      expect(ratio, `${theme} ${colour}`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+});
+
 describe('text-muted contrast (WCAG AA 4.5:1)', () => {
   it.each(['light', 'dark'] as const)('holds on every surface in %s', (theme) => {
     expect(tokenHex(theme, 'text-muted')).toBe(theme === 'light' ? '#636368' : '#9a9aa0');
