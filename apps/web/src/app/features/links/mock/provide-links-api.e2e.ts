@@ -7,6 +7,10 @@ import { HttpUserSettingsApi } from '../../settings/http/http-user-settings.api'
 import { MockUserSettingsApi } from '../../settings/mock/mock-user-settings.api';
 import { USER_SETTINGS_API } from '../../settings/models/user-settings-api.const';
 import type { UserSettingsApi } from '../../settings/models/user-settings-api.interface';
+import { HttpPinsApi } from '../../pins/http/http-pins.api';
+import { MockPinsApi } from '../../pins/mock/mock-pins.api';
+import { PINS_API } from '../../pins/models/pins-api.const';
+import type { PinsApi } from '../../pins/models/pins-api.interface';
 import { HttpTrashApi } from '../../trash/http/http-trash.api';
 import { MockTrashApi } from '../../trash/mock/mock-trash.api';
 import { TRASH_API } from '../../trash/models/trash-api.const';
@@ -53,6 +57,10 @@ export function provideLinksApi(): Provider[] {
     {
       provide: TRASH_API,
       useFactory: (): TrashApi => (useRealApi() ? inject(HttpTrashApi) : inject(MockTrashApi)),
+    },
+    {
+      provide: PINS_API,
+      useFactory: (): PinsApi => (useRealApi() ? inject(HttpPinsApi) : inject(MockPinsApi)),
     },
     {
       provide: USER_SETTINGS_API,

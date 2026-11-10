@@ -41,6 +41,8 @@ import { ThemeService } from '../core/theme/theme.service';
 import { isMacPlatform } from '../features/search/is-mac-platform';
 import { ViewportService } from '../core/layout/viewport.service';
 import { APP_PATH } from '../models/app-path.const';
+import { PinsStore } from '../stores/pins.store';
+import { UserSettingsStore } from '../stores/user-settings.store';
 import { DemoBannerComponent } from './demo-banner/demo-banner.component';
 import { OfflineBannerComponent } from './offline-banner/offline-banner.component';
 import { PHONE_TAB } from './models/phone-tab.const';
@@ -142,6 +144,14 @@ export default class AppShellComponent {
   });
 
   private readonly rating = inject(RatingStore);
+  // Pins and "Folder colours" are needed by every page that draws a folder tile or a link menu.
+  private readonly pins = inject(PinsStore);
+  private readonly userSettings = inject(UserSettingsStore);
+
+  constructor() {
+    void this.pins.load();
+    void this.userSettings.load();
+  }
 
   /** The rating look starts for an eligible user (not demo, onboarding done) and stops otherwise. */
   private readonly ratingWatch = effect(() => {

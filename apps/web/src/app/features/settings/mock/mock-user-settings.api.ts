@@ -22,11 +22,17 @@ export class MockUserSettingsApi implements UserSettingsApi {
       if (request.trashRetentionDays !== undefined) {
         this.data.trashRetentionDays = request.trashRetentionDays;
       }
+      if (request.folderColours !== undefined) {
+        this.data.folderColours = request.folderColours;
+      }
       return of(this.current());
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
 
   private current(): UserSettingsResponse {
-    return { trashRetentionDays: this.data.trashRetentionDays, folderColours: true };
+    return {
+      trashRetentionDays: this.data.trashRetentionDays,
+      folderColours: this.data.folderColours,
+    };
   }
 }

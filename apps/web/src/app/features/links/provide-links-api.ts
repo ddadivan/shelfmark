@@ -3,6 +3,8 @@ import { HttpExportApi } from '../export/http/http-export.api';
 import { EXPORT_API } from '../export/models/export-api.const';
 import { HttpUserSettingsApi } from '../settings/http/http-user-settings.api';
 import { USER_SETTINGS_API } from '../settings/models/user-settings-api.const';
+import { HttpPinsApi } from '../pins/http/http-pins.api';
+import { PINS_API } from '../pins/models/pins-api.const';
 import { HttpTrashApi } from '../trash/http/http-trash.api';
 import { TRASH_API } from '../trash/models/trash-api.const';
 import { HttpFoldersApi } from './http/http-folders.api';
@@ -25,6 +27,7 @@ export function provideLinksApi(): Provider[] {
     { provide: FOLDERS_API, useExisting: HttpFoldersApi },
     { provide: TAGS_API, useExisting: HttpTagsApi },
     { provide: EXPORT_API, useExisting: HttpExportApi },
+    { provide: PINS_API, useExisting: HttpPinsApi },
     { provide: TRASH_API, useExisting: HttpTrashApi },
     { provide: USER_SETTINGS_API, useExisting: HttpUserSettingsApi },
   ];

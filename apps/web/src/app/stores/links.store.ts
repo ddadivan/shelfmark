@@ -29,6 +29,7 @@ import { LINKS_SCOPE } from '../features/links/models/links-scope.const';
 import type { PendingRemoval } from '../features/links/models/pending-removal.interface';
 import { RECENT_LINKS_LIMIT } from '../features/links/models/recent-links-limit.const';
 import type { LinksState } from './models/links-state.interface';
+import { PinsStore } from './pins.store';
 
 /** Image capture requests in flight at once (the endpoint shares the AddLink rate limit). */
 const CAPTURE_CONCURRENCY = 3;
@@ -227,7 +228,10 @@ export const LinksStore = signalStore(
                 if (started === epoch) {
                   patchState(
                     store,
-                    setAllEntities(page.items.filter((link) => !pending.has(link.id))),
+                    // The pinned links of a folder come first; the rest follow in the sort order.
+                    setAllEntities(
+                      [...page.pinned, ...page.items].filter((link) => !pending.has(link.id)),
+                    ),
                     { nextCursor: page.nextCursor, loaded: true, loading: false },
                   );
                   noteLinks(page.items);
@@ -252,6 +256,43 @@ export const LinksStore = signalStore(
       refresh(): void {
         if (store.loaded()) {
           setFilter(store.filter());
+        }
+      },
+
+      /**
+       * Pins a link to the top of its folder (or takes it off) at once; resolves false (and puts
+       * the old state back) when the request fails. After an unpin the page is loaded again, so
+       * the link finds its place in the sort order.
+       */
+      async setPinnedInFolder(id: string, pinned: boolean): Promise<boolean> {
+        const link = store.entityMap()[id];
+        if (!link || (link.pinnedInFolderAt !== null) === pinned) {
+          return true;
+        }
+        const previous = link.pinnedInFolderAt;
+        const optimistic = pinned ? new Date().toISOString() : null;
+        const started = epoch;
+        patchState(store, updateEntity({ id, changes: { pinnedInFolderAt: optimistic } }));
+        try {
+          const saved = await firstValueFrom(api().update(id, { pinnedInFolder: pinned }));
+          if (started === epoch) {
+            patchState(
+              store,
+              updateEntity({
+                id,
+                changes: { pinnedInFolderAt: saved.pinnedInFolderAt, updatedAt: saved.updatedAt },
+              }),
+            );
+            if (!pinned && store.loaded()) {
+              setFilter(store.filter());
+            }
+          }
+          return true;
+        } catch {
+          if (started === epoch && store.entityMap()[id]?.pinnedInFolderAt === optimistic) {
+            patchState(store, updateEntity({ id, changes: { pinnedInFolderAt: previous } }));
+          }
+          return false;
         }
       },
 
@@ -408,14 +449,18 @@ export const LinksStore = signalStore(
         }
         const recentIndex = store.recent().findIndex((item) => item.id === id);
         pending.set(id, { link, index, recentIndex, committing: false });
+        injector.get(PinsStore).dropLink(id);
         patchState(store, removeEntity(id), {
           recent: store.recent().filter((item) => item.id !== id),
         });
         return true;
       },
 
-      /** Brings a hidden link back where it was. */
-      undoRemove: restore,
+      /** Brings a hidden link back where it was (the server still has its sidebar pin). */
+      undoRemove(id: string): void {
+        restore(id);
+        void injector.get(PinsStore).refresh();
+      },
 
       /** Sends the delete; resolves false (and brings the link back) when it fails. */
       commitRemove,

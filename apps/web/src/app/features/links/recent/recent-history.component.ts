@@ -2,7 +2,14 @@ import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { RECENT_LINKS_WINDOW_DAYS, type LinkResponse } from '@shelfmark/contracts';
+import {
+  FOLDER_DEFAULT_COLOUR,
+  FOLDER_DEFAULT_ICON,
+  RECENT_LINKS_WINDOW_DAYS,
+  type FolderColour,
+  type FolderIcon,
+  type LinkResponse,
+} from '@shelfmark/contracts';
 import {
   DialogService,
   EmptyStateComponent,
@@ -18,6 +25,7 @@ import { APP_PATH } from '../../../models/app-path.const';
 import { pluralKey } from '../../../core/i18n/plural-key';
 import { FoldersStore } from '../../../stores/folders.store';
 import { LinksStore } from '../../../stores/links.store';
+import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { LinkActionsService } from '../link-actions.service';
 import { safeHref } from '../link-view';
 import { groupByDay } from './history-days';
@@ -55,6 +63,7 @@ export class RecentHistoryComponent {
   private readonly transloco = inject(TranslocoService);
   private readonly router = inject(Router);
   private readonly doc = inject(DOCUMENT);
+  private readonly settings = inject(UserSettingsStore);
 
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly SKELETON_COUNT = SKELETON_COUNT;
@@ -93,6 +102,16 @@ export class RecentHistoryComponent {
           year: day.date.getFullYear() === this.now().getFullYear() ? undefined : 'numeric',
         }).format(day.date);
     }
+  }
+
+  protected folderColour(link: LinkResponse): FolderColour {
+    const folder = link.folderId === null ? undefined : this.folders.entityMap()[link.folderId];
+    return this.settings.shownColour(folder?.colour ?? FOLDER_DEFAULT_COLOUR);
+  }
+
+  protected folderIcon(link: LinkResponse): FolderIcon {
+    const folder = link.folderId === null ? undefined : this.folders.entityMap()[link.folderId];
+    return folder?.icon ?? FOLDER_DEFAULT_ICON;
   }
 
   /** Name of the folder a link is in; `null` while folders load or for an unsorted link. */

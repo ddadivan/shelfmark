@@ -34,3 +34,18 @@
   animation-duration: var(--duration-fast);
   animation-timing-function: var(--ease-out);
 }
+
+// The row held while it is dragged in the sidebar's Pinned section. The CDK puts the preview in
+// <body>, outside the component, so the rules must stay global. It floats, so it is raised.
+.pinned-drag-preview {
+  display: flex;
+  align-items: center;
+  color: var(--text);
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-float);
+
+  .pinned__more {
+    display: none;
+  }
+}

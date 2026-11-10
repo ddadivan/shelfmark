@@ -7,7 +7,12 @@
 >
   <ui-favicon slot="leading" [src]="favicon()" [letter]="letter()" />
   <span slot="title">{{ link().title }}</span>
-  <span slot="meta">{{ host() }}</span>
+  <span slot="meta" class="link-row__meta">
+    {{ host() }}
+    @if (pinnedToTop()) {
+      <ui-badge icon="bookmark">{{ 'links.item.pinned' | transloco }}</ui-badge>
+    }
+  </span>
   <div slot="trailing" class="link-row__trailing">
     @if (tags().length > 0 && !phone()) {
       <ul class="link-row__tags">
@@ -59,6 +64,17 @@
       >
         {{
           (link().isFavorite ? 'links.item.removeFavorite' : 'links.item.addFavorite') | transloco
+        }}
+      </ui-menu-item>
+      @if (pinnable()) {
+        <ui-menu-item icon="bookmark" (activated)="pinToTopToggled.emit()">
+          {{ (pinnedToTop() ? 'links.item.unpinFromTop' : 'links.item.pinToTop') | transloco }}
+        </ui-menu-item>
+      }
+      <ui-menu-item icon="bookmark" (activated)="pinToSidebarToggled.emit()">
+        {{
+          (pinnedToSidebar() ? 'links.item.unpinFromSidebar' : 'links.item.pinToSidebar')
+            | transloco
         }}
       </ui-menu-item>
       <ui-menu-separator />

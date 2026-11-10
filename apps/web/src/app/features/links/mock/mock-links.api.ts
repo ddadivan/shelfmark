@@ -6,6 +6,7 @@ import {
   PAGE_LIMIT,
   RECENT_LINKS_WINDOW_DAYS,
   SORT_ORDER,
+  LINK_LIMIT,
   type CaptureLinkImagesResponse,
   type CreateLinkRequest,
   type LinkPreviewResponse,
@@ -18,6 +19,7 @@ import {
   type UpdateLinkRequest,
 } from '@shelfmark/contracts';
 import { MOCK_LINK_PREVIEW_DUPLICATE } from '@shelfmark/contracts/testing';
+import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { defer, delay, type Observable, of, throwError } from 'rxjs';
 import { displayHost } from '../add-link/http-url';
 import { MOCK_HOST } from '../models/mock-host.const';
@@ -121,7 +123,15 @@ export class MockLinksApi implements LinksApi {
         return throwError(() => new Error('Mock: list failed'));
       }
       const matching = scenario === MOCK_LINKS_SCENARIO.Empty ? [] : this.filter(query);
-      const sorted = sort(matching, query);
+      const inFolder = query.folderId !== undefined;
+      // Like the API: in a folder the pinned links come first in `pinned` (page one only).
+      const pinnedLinks = inFolder
+        ? matching
+            .filter((link) => link.pinnedInFolderAt !== null)
+            .sort((a, b) => (a.pinnedInFolderAt ?? '').localeCompare(b.pinnedInFolderAt ?? ''))
+        : [];
+      const rest = inFolder ? matching.filter((link) => link.pinnedInFolderAt === null) : matching;
+      const sorted = sort(rest, query);
       const limit = query.limit ?? PAGE_LIMIT.Default;
       const offset = decodeCursor(query.cursor);
       const first = sorted[0]?.id;
@@ -137,7 +147,8 @@ export class MockLinksApi implements LinksApi {
       return of<ListLinksResponse>({
         items,
         nextCursor: next < sorted.length ? encodeCursor(next) : null,
-        pinned: [],
+        pinned:
+          query.cursor === undefined ? pinnedLinks.map((link) => this.withImages(link, false)) : [],
       });
     }).pipe(delay(MOCK_LATENCY_MS.List));
   }
@@ -149,7 +160,7 @@ export class MockLinksApi implements LinksApi {
         .filter((link) => link.lastOpenedAt !== null && Date.parse(link.lastOpenedAt) >= since)
         .sort((a, b) => (b.lastOpenedAt ?? '').localeCompare(a.lastOpenedAt ?? ''))
         .slice(0, query.limit ?? PAGE_LIMIT.Default)
-        .map((link) => ({ ...link }));
+        .map((link) => this.data.linkView(link));
       return of<RecentLinksResponse>({ items: opened });
     }).pipe(delay(MOCK_LATENCY_MS.List));
   }
@@ -182,7 +193,9 @@ export class MockLinksApi implements LinksApi {
   get(id: string): Observable<LinkResponse> {
     return defer(() => {
       const current = this.links.find((link) => link.id === id);
-      return current ? of({ ...current }) : throwError(() => new Error('Mock: get failed'));
+      return current
+        ? of(this.data.linkView(current))
+        : throwError(() => new Error('Mock: get failed'));
     }).pipe(delay(MOCK_LATENCY_MS.List));
   }
 
@@ -195,14 +208,36 @@ export class MockLinksApi implements LinksApi {
       if (displayHost(current.url) === MOCK_HOST.PatchFails) {
         return throwError(() => new Error('Mock: update failed'));
       }
+      const { pinnedInFolder, ...fields } = request;
+      const now = new Date().toISOString();
+      const folderId = fields.folderId === undefined ? current.folderId : fields.folderId;
+      let pinnedInFolderAt = folderId === current.folderId ? current.pinnedInFolderAt : null;
+      if (pinnedInFolder === false) {
+        pinnedInFolderAt = null;
+      } else if (pinnedInFolder === true) {
+        if (folderId === null) {
+          return throwError(() => badRequest());
+        }
+        const taken = this.links.filter(
+          (link) => link.folderId === folderId && link.pinnedInFolderAt !== null,
+        ).length;
+        if (current.pinnedInFolderAt === null && taken >= LINK_LIMIT.PinnedInFolderMax) {
+          return throwError(
+            () =>
+              new HttpErrorResponse({ status: HttpStatusCode.Conflict, statusText: 'Conflict' }),
+          );
+        }
+        pinnedInFolderAt = current.pinnedInFolderAt ?? now;
+      }
       const updated: LinkResponse = {
         ...current,
-        ...request,
-        updatedAt: new Date().toISOString(),
+        ...fields,
+        pinnedInFolderAt,
+        updatedAt: now,
       };
       this.links = this.links.map((link) => (link.id === id ? updated : link));
       this.data.ensureTags(updated.tags);
-      return of({ ...updated });
+      return of(this.data.linkView(updated));
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
 
@@ -227,7 +262,7 @@ export class MockLinksApi implements LinksApi {
       }
       const opened: LinkResponse = { ...current, lastOpenedAt: new Date().toISOString() };
       this.links = this.links.map((link) => (link.id === id ? opened : link));
-      return of({ ...opened });
+      return of(this.data.linkView(opened));
     }).pipe(delay(MOCK_LATENCY_MS.List));
   }
 
@@ -243,7 +278,8 @@ export class MockLinksApi implements LinksApi {
   }
 
   /** A copy of the link with the mock capture state applied: captured, pending or untouched. */
-  private withImages(link: LinkResponse, pending: boolean): LinkResponse {
+  private withImages(source: LinkResponse, pending: boolean): LinkResponse {
+    const link = this.data.linkView(source);
     if (this.captured.has(link.id)) {
       return {
         ...link,
@@ -271,6 +307,10 @@ export class MockLinksApi implements LinksApi {
         (query.q === undefined || matchesQuery(link, query.q)),
     );
   }
+}
+
+function badRequest(): HttpErrorResponse {
+  return new HttpErrorResponse({ status: HttpStatusCode.BadRequest, statusText: 'Bad Request' });
 }
 
 function sort(links: LinkResponse[], query: ListLinksQuery): LinkResponse[] {

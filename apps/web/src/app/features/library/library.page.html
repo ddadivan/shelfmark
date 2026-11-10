@@ -230,6 +230,10 @@
       <li [style.view-transition-name]="morphing() ? 'link-' + link.id : null">
         <app-link-row
           [link]="link"
+          [pinnable]="isFolder()"
+          [pinnedToSidebar]="pins.has(PIN_KIND.Link, link.id)"
+          (pinToTopToggled)="actions.togglePinInFolder(link)"
+          (pinToSidebarToggled)="actions.togglePinToSidebar(link)"
           (opened)="actions.open(link)"
           (openRequested)="actions.openInNewTab(link)"
           (favoriteToggled)="actions.toggleFavorite(link)"
@@ -252,6 +256,10 @@
       <li [style.view-transition-name]="morphing() ? 'link-' + link.id : null">
         <app-link-card
           [link]="link"
+          [pinnable]="isFolder()"
+          [pinnedToSidebar]="pins.has(PIN_KIND.Link, link.id)"
+          (pinToTopToggled)="actions.togglePinInFolder(link)"
+          (pinToSidebarToggled)="actions.togglePinToSidebar(link)"
           (opened)="actions.open(link)"
           (openRequested)="actions.openInNewTab(link)"
           (favoriteToggled)="actions.toggleFavorite(link)"

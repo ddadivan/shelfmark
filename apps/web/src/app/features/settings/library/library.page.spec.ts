@@ -83,7 +83,10 @@ describe('LibrarySettingsPage', () => {
     const { root } = await setup();
 
     expect(root.querySelector('h1')?.textContent).toContain('Library');
-    expect(root.querySelector('h2')?.textContent).toContain('Trash');
+    expect([...root.querySelectorAll('h2')].map((h) => h.textContent?.trim())).toEqual([
+      'Folders',
+      'Trash',
+    ]);
     expect(root.textContent).toContain('Keep deleted items for');
     expect(
       Array.from(root.querySelectorAll('input[type="radio"]')).map((input) =>

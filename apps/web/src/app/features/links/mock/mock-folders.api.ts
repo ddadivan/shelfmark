@@ -73,6 +73,8 @@ export class MockFoldersApi implements FoldersApi {
         ...current,
         name: request.name ?? current.name,
         parentId,
+        colour: request.colour ?? current.colour,
+        icon: request.icon ?? current.icon,
         updatedAt: new Date().toISOString(),
       };
       this.data.setFolders(
