@@ -10,6 +10,7 @@ export * from './lib/drawer';
 export * from './lib/empty-state';
 export * from './lib/favicon';
 export * from './lib/field';
+export * from './lib/folder-icon';
 export * from './lib/heading';
 export * from './lib/highlight';
 export * from './lib/focus-target';
