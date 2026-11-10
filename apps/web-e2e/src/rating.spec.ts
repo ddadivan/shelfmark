@@ -227,10 +227,9 @@ test.describe('app rating (mock API)', () => {
     const dialog = await openRating(page);
     const box = async (name: string) =>
       (await dialog.getByRole('button', { name }).boundingBox())?.y ?? 0;
-    // The sheet slides in; compare the rows once it has settled.
-    await expect
-      .poll(async () => Math.abs((await box('10 out of 10')) - (await box('6 out of 10'))) < 2)
-      .toBe(true);
+    // The sheet slides in and every button moves with it, so equal rows prove nothing while it
+    // runs: wait for the enter animation to finish before measuring.
+    await settled(page);
     const first = await box('1 out of 10');
     const sixth = await box('6 out of 10');
     const tenth = await box('10 out of 10');
