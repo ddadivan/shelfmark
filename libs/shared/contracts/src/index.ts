@@ -107,3 +107,11 @@ export type { FeedbackClientInfo } from './feedback/feedback-client-info.interfa
 export type { SendFeedbackRequest } from './feedback/send-feedback-request.interface';
 export type { FeedbackMessage } from './feedback/feedback-message.interface';
 export type { ListFeedbackMessagesResponse } from './feedback/list-feedback-messages-response.interface';
+export { ADMIN_ENDPOINT } from './admin/admin-endpoint.const';
+export { ADMIN_FEEDBACK_LIMIT } from './admin/admin-feedback-limit.const';
+export type { AdminStatusResponse } from './admin/admin-status-response.interface';
+export type { AdminFeedbackUser } from './admin/admin-feedback-user.interface';
+export type { AdminFeedbackItem } from './admin/admin-feedback-item.interface';
+export type { ListAdminFeedbackQuery } from './admin/list-admin-feedback-query.interface';
+export type { ListAdminFeedbackResponse } from './admin/list-admin-feedback-response.interface';
+export type { UpdateAdminFeedbackRequest } from './admin/update-admin-feedback-request.interface';

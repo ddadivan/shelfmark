@@ -456,6 +456,8 @@ Security is a mandatory requirement, not a wish: a task is not done until the it
 | **Secret leaks** | Secrets only in Vercel environment variables; `.env` in `.gitignore`; GitHub secret scanning + push protection; secrets and tokens are never written to logs |
 | **Vulnerable dependencies** | Dependabot; `npm audit` in CI; CodeQL (free for public repositories) |
 | **Privacy** | Account deletion with all data; a privacy policy page (required for the Google sign-in screen) |
+| **Admin routes** | `/api/admin/*` is for the author only: `AdminGuard` checks the session email against `ADMIN_EMAILS` (case-insensitive, unset or empty = nobody, demo users never); everyone else, guests included, gets 404 so the routes do not reveal themselves. Admin queries are the only ones not filtered by the session `userId`; they touch message rows only |
+| **Uploads** | Feedback screenshots: PNG/JPEG/WebP only, at most 2 MB, base64 canonical and magic bytes checked against the declared type, stored in Postgres, served with the stored type, `nosniff`, `inline`, `private, no-store` and the strict CSP; the larger body limit applies to that one route; per-user hourly message limit in Postgres |
 | **Test data** | Preview deployments run on a separate Neon database branch, not on production |
 
 **Security when working with Claude Code** (details in section 8): reading and editing `.env` is denied in the permission settings; a hook blocks committing secrets; the **security-reviewer** subagent checks every PR against this table.
@@ -513,6 +515,8 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 
 **Feedback**: ratings and feedback: `id`, `userId`, `milestone` (`day3` | `week1` | `month1` | `year1`), `score` (1–10, `null` = skipped), `comment` (≤ 2000, optional), `createdAt`, `updatedAt`; unique on `userId + milestone`; DB CHECKs: milestone in the set, score null or 1–10, comment ≤ 2000 characters, no comment without a score. The presence of a row means the milestone is answered; the frontend does not read the table but asks `GET /api/feedback/prompt`.
 
+**Feedback messages (#272)** live in the same `feedback` table; a row is either a rating or a message (CHECK). A message row has `kind` (`idea` | `problem` | `other`; `null` on a rating row), `comment` (the text, 1–2000 characters, `milestone` and `score` are `null`), `status` (`received` default | `planned` | `in-progress` | `done` | `not-planned`), `reply` (≤ 2000, set by the author), an optional screenshot (`screenshot` bytea ≤ 2 MB, `screenshot_type` `image/png` | `image/jpeg` | `image/webp`, both or neither) and `client_app_version` / `client_user_agent` (≤ 300, optional). `milestone` is nullable, so the unique index on `userId + milestone` only constrains ratings. Indexes: `(user_id, created_at)` for the user's list, `(created_at desc, id desc)` for the admin list. Reads never select the `screenshot` bytes except in the two screenshot routes. Rating reads filter `kind IS NULL`, message reads `kind IS NOT NULL`.
+
 **URL normalisation** (for duplicates): lowercase host, no `#fragment`, no `utm_*` params and no trailing `/`. Duplicates are allowed (the user can "save anyway"), so the index is non-unique.
 
 **Indexes:** `Link(userId, createdAt)`, `Link(userId, normalizedUrl)`, `Link(userId, lastOpenedAt)`, `Link.title`, `Link.note` and `Link.url` (`pg_trgm` GIN for search), `Folder(userId, parentId)`.
@@ -547,6 +551,13 @@ All routes except `/api/auth/*` require a session and work only with the current
 | GET, POST, GET /:id, PATCH /:id, DELETE /:id, POST /:id/merge | `/api/tags` | The user's tags with link counts, sorted by link count descending, then name; read one tag with its count (404 if unknown or foreign); create an empty tag (409 if the name is taken or at the per-user cap of 1000), rename (409 if the name is taken; changing only the case of its own name is allowed), delete (links remain), merge with another tag (merging into itself is a 400). Names are normalized with `normalizeTagName` (trim, whitespace runs become one hyphen) on create and rename |
 | GET | `/api/feedback/prompt` | Which rating dialog to show now: `{ milestone }`, the latest reached milestone without a row, `null` for demo users and before onboarding (no-store) |
 | POST | `/api/feedback` | Save a rating, feedback or a skip `{ milestone, score \| null, comment? }` (204; 403 demo, 409 onboarding pending / milestone not reached / different score stored; same score appends the comment) |
+| POST | `/api/feedback/messages` | Send a feedback message `{ kind, text, screenshot?: { type, data (base64) }, client?: { appVersion, userAgent } }` (201 `FeedbackMessage`; 400 invalid body, wrong magic bytes or over 2 MB; 429 with `Retry-After` after 10 messages in a rolling hour, counted in Postgres, demo users included). The JSON body limit of this route alone is 3 MB (100 kB elsewhere) |
+| GET | `/api/feedback/messages` | The user's own messages, newest first, at most 100, with `status` and `reply` (no-store) |
+| GET | `/api/feedback/messages/:id/screenshot` | The screenshot bytes of an own message (404 if foreign, missing or none); stored type, `nosniff`, `inline`, `Cache-Control: private, no-store` |
+| GET | `/api/admin/status` | `{ admin: true }` for a user whose email is in `ADMIN_EMAILS`; 404 for everyone else, guests and demo users included |
+| GET | `/api/admin/feedback` | All users' feedback messages with `user: { name, email }`, newest first, keyset `cursor` / `limit` (≤ 100), optional `status` filter; `{ items, nextCursor }` |
+| PATCH | `/api/admin/feedback/:id` | `{ status?, reply? }` (reply ≤ 2000, `null` or blank clears; at least one key); answers the updated item; rate-limited, CSRF-guarded |
+| GET | `/api/admin/feedback/:id/screenshot` | Screenshot of any message, same safe headers |
 
 **General API rules:**
 
