@@ -136,6 +136,12 @@ Angular keeps the element until the leave animation ends and a second toggle mid
 - Below 40em: 28px top corners (`--radius-xl`), 40 x 5 grip, `max-height: calc(100dvh - 9.375rem)` (at least 150px of the page stay visible), `tall` sets that as `height` and lets the body fill it (it scrolls). From 40em it stays the centred dialog (`size` of the open options, `md` suits lists).
 - Inside the sheet, features project the list as the body; the "Clear" style action is a ghost `sm` button in `slot="actions"`. The `ui-dialog--sheet*` classes are only set through `ui-sheet`.
 
+## History group and row (issue #239)
+
+- `ui-history-group` (`title`, already translated; `headingLevel` `HISTORY_HEADING_LEVEL` `2 | 3`, 3 inside a sheet whose title is the h2): `role="group"` named by its title, the card (`surface`, `shadow-card`, `radius-lg`, 6px padding, 2px gap) is `role="list"` and the rows are `role="listitem"`.
+- `ui-history-row` (`href`, `newTab`, `preview`, `description`; output `activated`; slots `title`, `meta`, `time`, `actions`) is its own component, not a `ui-list-item`: the list item's 56 x 40 thumb, favicon slot and compact padding do not fit, and it has no `time` slot between the link and the controls. It copies the stretched-link pattern (title and meta in one `<a href>` / `<button>`, `::after` over the row at z-index 1, `actions` at z-index 2, `UI_RIPPLE_IGNORE` = `.ui-history-row__actions`, ring on the host via `:has(:focus-visible)`), so a row is one tab stop. The line between rows is a `::before` on every row but the last.
+- Preview: 72 x 48 (`radius-md`, `surface-hover`, inset 1px border), 48 x 48 under `phone`; `preview` image with the picture icon as fallback (CSP, issue #57). The folder (`ui-folder-icon size="sm"` plus name) goes in `meta`, a time text or a badge in `time`, buttons in `actions`. Swipe actions on phones are the app's (issue #241).
+
 ## Loading (issue #23)
 
 - Pick the indicator by what loads (Loading spec): `ui-button [loading]` for an action the user started, `ui-progress-bar` for navigation and background requests, `ui-meter` for known progress, `ui-load-more` under a list, `ui-save-status` for autosave, skeletons for first loads.

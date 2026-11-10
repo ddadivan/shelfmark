@@ -1,0 +1,27 @@
+@use '../../styles/ui' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.ui-history-group__title {
+  @include type(label);
+
+  margin: 0;
+  padding-inline-start: var(--space-1);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+// The card: rows sit on it with a 2px gap and a line between them.
+.ui-history-group__list {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+  padding: rem(6px);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}

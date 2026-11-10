@@ -14,6 +14,7 @@ export * from './lib/folder-icon';
 export * from './lib/heading';
 export * from './lib/highlight';
 export * from './lib/focus-target';
+export * from './lib/history-row';
 export * from './lib/icon';
 export * from './lib/illustration';
 export * from './lib/input';
