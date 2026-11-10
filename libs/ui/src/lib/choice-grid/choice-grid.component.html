@@ -1,0 +1,27 @@
+@for (option of options(); track option.value) {
+  <label
+    class="ui-choice"
+    [class]="'ui-choice ui-choice--' + tone(option)"
+    [class.ui-choice--checked]="value() === option.value"
+  >
+    <input
+      type="radio"
+      class="ui-choice__input"
+      [name]="name() || groupId"
+      [value]="option.value"
+      [checked]="value() === option.value"
+      [disabled]="disabled()"
+      [attr.aria-label]="option.label"
+      (change)="select(option)"
+    />
+    @if (kind() === CHOICE_GRID_KIND.Swatch) {
+      <span class="ui-choice__swatch" aria-hidden="true"></span>
+    } @else {
+      <span class="ui-choice__tile" aria-hidden="true">
+        @if (option.icon; as icon) {
+          <ui-icon [name]="icon" [size]="ICON_SIZE.Lg" />
+        }
+      </span>
+    }
+  </label>
+}
