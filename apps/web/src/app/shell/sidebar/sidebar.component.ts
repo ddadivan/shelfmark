@@ -61,6 +61,7 @@ const FIXED_ROUTES: Readonly<Record<string, string>> = {
     MenuItemComponent,
     MenuSeparatorComponent,
     LogoComponent,
+    RouterLink,
     SidebarTagsComponent,
     TooltipDirective,
     TranslocoPipe,

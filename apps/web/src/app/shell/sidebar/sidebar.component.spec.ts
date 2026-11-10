@@ -95,6 +95,22 @@ describe('SidebarComponent', () => {
     expect(element.querySelector('.sidebar__logo ui-logo')).not.toBeNull();
   });
 
+  it('sends the logo to All links through the router, with no page reload', async () => {
+    const { fixture, router, element } = await setup('/unsorted');
+    fixture.componentRef.setInput('showLogo', true);
+    await fixture.whenStable();
+    const logo = element.querySelector<HTMLAnchorElement>('a.sidebar__logo');
+
+    // A router link renders a real href and handles the click itself.
+    expect(logo?.getAttribute('href')).toBe('/links');
+    const click = new MouseEvent('click', { bubbles: true, cancelable: true, button: 0 });
+    logo?.dispatchEvent(click);
+    await fixture.whenStable();
+
+    expect(click.defaultPrevented).toBe(true);
+    expect(router.url).toBe('/links');
+  });
+
   it('marks the row of the current URL', async () => {
     const { element } = await setup('/unsorted');
 
