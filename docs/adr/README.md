@@ -58,3 +58,4 @@ Routine features, bug fixes and choices already fully covered by an existing ADR
 | [0032](0032-sentry-error-monitoring.md) | Sentry error monitoring: same-origin tunnel, runtime config, minimal SDKs | Accepted | 2026-11-07 |
 | [0033](0033-links-search-cursor-idempotency.md) | Links API: escaped multi-word search, keyset cursor, idempotent create, global lock order (folders before tags) | Proposed | 2026-11-07 |
 | [0034](0034-demo-session-and-cleanup-cron.md) | Demo sign-in: server-only session plugin, 24h expiry in four places, Postgres quota and cap, cron GET exception | Proposed | 2026-11-08 |
+| [0036](0036-trash-soft-delete.md) | Trash: soft delete with a shared timestamp per delete, per-account retention (7 / 30 / 90 days), daily purge cron, `/api/me/settings` | Accepted | 2026-11-10 |
