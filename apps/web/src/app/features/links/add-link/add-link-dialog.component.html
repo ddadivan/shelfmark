@@ -9,7 +9,7 @@
         [type]="INPUT_TYPE.Url"
         [label]="'links.add.url.label' | transloco"
         [placeholder]="'links.add.url.placeholder' | transloco"
-        [hint]="'links.add.url.hint' | transloco"
+        [hint]="editing ? '' : ('links.add.url.hint' | transloco)"
         [loading]="shownState() === PREVIEW_STATE.Loading"
         [formField]="form.url"
       />
@@ -113,6 +113,10 @@
         [formField]="form.note"
       />
 
+      @if (editing) {
+        <ui-checkbox [label]="'links.edit.favorite' | transloco" [formField]="form.isFavorite" />
+      }
+
       @if (saveError(); as key) {
         <ui-notice [kind]="NOTICE_KIND.Danger">{{
           key | transloco: { max: LINK_LIMIT.PerUserMax }
@@ -128,7 +132,7 @@
       <ui-button
         slot="footer"
         class="add-link__delete"
-        [variant]="BUTTON_VARIANT.Danger"
+        [variant]="BUTTON_VARIANT.Ghost"
         iconLeft="trash"
         [disabled]="saving()"
         (click)="requestDelete()"

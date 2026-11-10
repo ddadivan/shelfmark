@@ -6,4 +6,6 @@ export interface AddLinkFormModel {
   folderId: string | null;
   tags: string[];
   note: string;
+  /** Edit mode only: "Add to favorites". */
+  isFavorite: boolean;
 }

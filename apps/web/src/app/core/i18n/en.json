@@ -261,6 +261,7 @@
     },
     "edit": {
       "title": "Edit link",
+      "favorite": "Add to favorites",
       "meta": "Saved {{created}}, last opened {{opened}}",
       "metaNever": "Saved {{created}}, never opened",
       "actions": {

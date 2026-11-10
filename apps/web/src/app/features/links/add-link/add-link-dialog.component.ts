@@ -29,6 +29,7 @@ import {
 } from '@shelfmark/contracts';
 import {
   ButtonComponent,
+  CheckboxComponent,
   DialogComponent,
   FaviconComponent,
   injectDialogData,
@@ -87,6 +88,7 @@ const PREVIEW_DEBOUNCE_MS = 350;
   selector: 'app-add-link-dialog',
   imports: [
     ButtonComponent,
+    CheckboxComponent,
     DialogComponent,
     FaviconComponent,
     FormField,
@@ -134,6 +136,7 @@ export class AddLinkDialogComponent {
     folderId: this.original ? this.original.folderId : (this.data.folderId ?? null),
     tags: [...normalizeTagNames(this.original?.tags ?? [])],
     note: this.original?.note ?? '',
+    isFavorite: this.original?.isFavorite ?? false,
   });
 
   protected readonly form = form(
@@ -443,6 +446,9 @@ export class AddLinkDialogComponent {
     }
     if (value.folderId !== link.folderId) {
       changes.folderId = value.folderId;
+    }
+    if (value.isFavorite !== link.isFavorite) {
+      changes.isFavorite = value.isFavorite;
     }
     if (tags.length !== link.tags.length || tags.some((tag, index) => tag !== link.tags[index])) {
       changes.tags = tags;
