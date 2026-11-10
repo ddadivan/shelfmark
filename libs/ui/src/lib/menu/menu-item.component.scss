@@ -12,12 +12,12 @@
   align-items: center;
   justify-content: flex-start;
   width: 100%;
-  padding: rem(7px) rem(10px);
+  padding: rem(9px) rem(12px);
   text-align: start;
   color: var(--text);
   cursor: pointer;
   user-select: none;
-  border-radius: var(--radius-sm);
+  border-radius: rem(12px);
   transition: background-color var(--duration-fast) var(--ease-out);
 
   @include coarse {
