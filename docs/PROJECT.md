@@ -32,7 +32,7 @@ Updated as work goes on — every session resumes from here.
   - Author review of production fixed in #212 (#211): landing, sign-in, app shell scroll areas, view switch without layout shift, link card, menus, dialogs, overlays, search, tooltips, toasts (bottom centre by the author's decision), settings, favicon, 24px icons; icon sprite built from single SVG files (#210).
   - Left before stage 1 is formally complete (10.1): landing Lighthouse stable at ≥ 0.9 (#195, moved into stage 2), and the author's two weeks of daily use.
 - [ ] Stage 2: scope chosen by the author on Nov 9, 2026 (see "Roadmap after stage 1" below). Not started: the author says when.
-  - First task of stage 2: switch to the release flow decided on Nov 9, 2026 (9.3 and 9.5): `develop` as staging, feature branches from `develop`, production changes only through a release PR at the end of a stage. Until then nothing from stage 2 is merged into `main`, so production stays as the author uses it.
+  - First task of stage 2: switch to the release flow decided on Nov 9–10, 2026 (9.3 and 9.5): a `stage` integration branch without a staging environment, feature branches from `stage`, a To release column on the board, production changes only through a release PR at the end of a stage. Until then nothing from stage 2 is merged into `main`, so production stays as the author uses it.
 - [x] Motion in code (landing and app); promo video moved to stage 2
 
 ## 1. Problem and idea
@@ -860,13 +860,16 @@ The estimate assumes the bottleneck is PR review and fixes, not writing code. Hi
 
 ### 9.3 Git and branches
 
-**From stage 2 on (decided by the author on Nov 9, 2026; set up as the first task of stage 2, recorded in an ADR):**
+**From stage 2 on (decided by the author on Nov 9–10, 2026; set up as the first task of stage 2, recorded in an ADR):**
 
-- `main` is **production**. It changes only through a **release PR** `develop → main` at the end of a stage (for example "Release: stage 2"), merged with a merge commit so the release keeps its history and issue links. No feature PRs go into `main`.
-- `develop` is **staging**: integration branch with its own permanent Vercel URL and its own Neon branch. It has the same protection and required checks as `main`.
-- Feature branches start **from `develop`** (`feat/<issue>-short`, `fix/…`) and their PRs target `develop` (squash). Branching from `main` and merging into `develop` is avoided on purpose: the branch would not see what is already in staging, and tests would run on code that differs from what lands there.
-- **Hotfix** for production: a branch from `main`, a PR into `main`, then `main` is merged back into `develop`.
-- Setup checklist: rulesets for `develop` and the merge-commit release PR into `main`; Vercel staging URL, Preview env vars and OAuth callback URLs (ADR 0026); Neon branch for staging; CI on PRs into both branches; `CLAUDE.md`, the `github-workflow` skill and the agents' instructions say "branch from `develop`".
+- `main` is **production**. It changes only through a **release PR** `stage → main` at the end of a stage (for example "Release: stage 2"), merged with a merge commit so the release keeps its history. The release PR lists `Closes #…` for every issue of the stage. No feature PRs go into `main`.
+- `stage` is the **integration branch** of the current stage. It has the same protection and required checks as `main`. Feature branches start **from `stage`** (`feat/<issue>-short`, `fix/…`) and their PRs target `stage` (squash). Branching from `main` and merging into `stage` is avoided on purpose: the branch would not see what is already in `stage`, and tests would run on code that differs from what lands there.
+- **No staging environment for now** (the author's choice): the stage is checked locally (`npm start`; on a real phone, `npm start -- --host 0.0.0.0` and the Mac's address on the same Wi-Fi). Nothing changes in Vercel or Neon: branch deployments stay off in `vercel.json`, production builds only from `main`, so production and its database migrations change only with a release. A staging URL can be switched on later with one line in `vercel.json` (allow the `stage` branch); the Neon integration then creates its database branch, and OAuth on that URL needs the callback set-up from ADR 0026 (the demo works without it). Worth it to test on a real phone without the local network, to share a stage by link, or to try database migrations in the cloud before a release.
+- **Board:** a **To release** column between In review and Done. `Closes #N` only acts on merges into the default branch, so an issue stays open when its PR merges into `stage`: the board workflow "Pull request merged" moves the card to To release. The release PR closes the issues, and "Item closed" moves them to Done.
+- **Hotfix** for production: a branch from `main`, a PR into `main`, then `main` is merged back into `stage`.
+- **Setup checklist:**
+  - the author: the `stage` ruleset (required checks, PR only); allow a merge commit for the release PR into `main`; the To release column and the board workflows;
+  - the agents: create `stage` from `main`; CI on PRs into `stage`; `CLAUDE.md`, the `github-workflow` skill and the agents' instructions say "branch from `stage`, PR into `stage`".
 
 **Stage 1 (until the switch):**
 
@@ -888,7 +891,7 @@ Stage 0 E2E: Chromium only, see ADR 0008.
 ### 9.5 CI/CD
 
 - **On every PR** (GitHub Actions, only affected projects via `nx affected`): lint, typecheck, unit tests with a coverage threshold, build, `npm audit`, CodeQL; Vercel creates a preview version.
-- **Merge to `develop`** (from stage 2) → automatic deployment to the staging URL; migrations go to the staging Neon branch.
+- **Merge to `stage`** (from stage 2) → CI only; no deployment while there is no staging environment (9.3).
 - **Merge to `main`** (a release, from stage 2; every merge in stage 1) → automatic deployment to Vercel production; Prisma migrations are applied to the production Neon database by the Vercel build (`prisma migrate deploy`, ADR 0025); every PR checks the migrations against a Postgres service (`scripts/db-check.mjs`; `nx run api:db-check` is the local PGlite equivalent).
 
 ### 9.6 Claude subscription
@@ -907,7 +910,7 @@ Chosen by the author on Nov 9, 2026. Stages 2 and 3 are planned; everything else
 
 ### Stage 2 (planned)
 
-- [ ] **First:** release flow with `develop` as staging (9.3): ADR, rulesets, Vercel staging and Neon branch, CI, agent instructions
+- [ ] **First:** release flow with the `stage` integration branch (9.3): ADR, `stage` branch and ruleset, CI, To release column and board workflows, agent instructions; no staging environment for now
 - [ ] Email and password sign-in: email verification, password reset, an email sending service
 - [ ] Reminders: come back to a saved link later
 - [ ] Sharing: open a collection (folder) to other people
