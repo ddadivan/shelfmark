@@ -90,6 +90,37 @@
         }
       }
     },
+    "bento": {
+      "title": "Save once, find in seconds",
+      "preview": {
+        "title": "The preview fills in by itself",
+        "text": "Paste a link: the title and the site arrive on their own. Add a note so you remember why you saved it.",
+        "url": "youtube.com/watch?v=ng22",
+        "domain": "youtube.com",
+        "cardTitle": "Signal Forms in 20 minutes"
+      },
+      "folders": {
+        "title": "Folders inside folders",
+        "text": "Keep links in folders and put folders in folders, as deep as your own system needs.",
+        "work": "Work",
+        "angular": "Angular",
+        "courses": "Courses"
+      },
+      "search": {
+        "title": "Find it by any word",
+        "text": "Search the title, note or address of every link, from anywhere with ⌘K.",
+        "word": "coat",
+        "tag": "clothes"
+      },
+      "phone": {
+        "title": "Save from your phone",
+        "text": "Install Shelfmark and it shows up in the Share menu on Android. Share a page and it lands on your shelf."
+      },
+      "own": {
+        "title": "Your links stay yours",
+        "text": "Export everything as JSON or as a browser bookmarks file whenever you like."
+      }
+    },
     "beforeAfter": {
       "title": "The same links, before and after",
       "before": "Before: scattered",

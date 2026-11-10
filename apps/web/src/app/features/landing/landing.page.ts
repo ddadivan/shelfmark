@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { LandingMotionService } from './landing-motion.service';
 import { LANDING_LINKS } from './models/landing-links.const';
+import { LandingBentoComponent } from './components/landing-bento/landing-bento.component';
 import { LandingBeforeAfterComponent } from './components/landing-before-after/landing-before-after.component';
 import { LandingBuiltComponent } from './components/landing-built/landing-built.component';
 import { LandingFinaleComponent } from './components/landing-finale/landing-finale.component';
@@ -25,6 +26,7 @@ import { LandingWhyComponent } from './components/landing-why/landing-why.compon
   imports: [
     LandingHeaderComponent,
     LandingHeroComponent,
+    LandingBentoComponent,
     LandingBeforeAfterComponent,
     LandingWhyComponent,
     LandingBuiltComponent,
@@ -41,26 +43,34 @@ export default class LandingPage {
   /** Set when the visitor jumps to a deferred section before the browser went idle. */
   protected readonly sectionsRequested = signal(false);
   private readonly scrollPending = signal(false);
+  private readonly document = inject(DOCUMENT);
   private readonly motion = inject(LandingMotionService);
   private readonly built = viewChild('built', { read: ElementRef });
-  /** The section above "How it's built": the scroll waits for it, or the page would jump. */
+  /** A section above "How it's built": the scroll waits for it, or the page would jump. */
   private readonly beforeAfter = viewChild('beforeAfter', { read: ElementRef });
+  /** The bento is above it too: same wait. */
+  private readonly bento = viewChild('bento', { read: ElementRef });
 
   constructor() {
     // Opened as `/#how` (new tab, shared link): load the sections and scroll once they exist.
-    if (inject(DOCUMENT).defaultView?.location.hash === LANDING_LINKS.HowItsBuilt) {
+    if (this.document.defaultView?.location.hash === LANDING_LINKS.HowItsBuilt) {
       this.showHowItsBuilt();
     }
     effect(() => {
       const built = this.built();
-      if (built && this.beforeAfter() && this.scrollPending()) {
+      if (built && this.bento() && this.beforeAfter() && this.scrollPending()) {
         this.scrollPending.set(false);
         const target = (built.nativeElement as HTMLElement).querySelector<HTMLElement>('#how');
         // Guarded: not every environment implements it (jsdom does not).
         if (typeof target?.scrollIntoView === 'function') {
           // Smooth unless the visitor asked for reduced motion (read untracked: not a trigger).
           const reduced = untracked(() => this.motion.reducedMotion());
-          target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+          // The web font swaps in after the sections: the text wraps differently and the page
+          // grows, so a smooth scroll that started before would end short of the target.
+          const fonts = this.document.fonts as FontFaceSet | undefined;
+          void (fonts?.ready ?? Promise.resolve()).then(() =>
+            target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' }),
+          );
         }
         target?.focus({ preventScroll: true });
       }

@@ -11,6 +11,12 @@
     fold only grows towards its real height.
   -->
   @defer (on idle; when sectionsRequested()) {
+  <app-landing-bento #bento />
+  } @placeholder {
+  <div class="landing__placeholder landing__placeholder--bento"></div>
+  } @loading {
+  <div class="landing__placeholder landing__placeholder--bento"></div>
+  } @defer (on idle; when sectionsRequested()) {
   <app-landing-before-after #beforeAfter />
   } @placeholder {
   <div class="landing__placeholder"></div>

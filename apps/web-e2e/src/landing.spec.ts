@@ -13,6 +13,7 @@ test.describe('landing', () => {
     await expect(page.getByRole('main')).toBeVisible();
     // Auto-waits: the sections below the hero are deferred (on idle).
     await expect(page.getByRole('heading', { level: 2 })).toHaveText([
+      'Save once, find in seconds',
       'The same links, before and after',
       'Why this exists',
       "How it's built",
@@ -222,6 +223,49 @@ test.describe('landing', () => {
 });
 
 test.describe('landing scenes and reveals', () => {
+  test('the bento "Save once, find in seconds" shows five tiles and fits the width', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    const bento = page.getByRole('region', { name: 'Save once, find in seconds' });
+
+    await bento.scrollIntoViewIfNeeded();
+
+    await expect(bento.getByRole('heading', { level: 2 })).toBeVisible();
+    await expect(bento.getByRole('heading', { level: 3 })).toHaveText([
+      'The preview fills in by itself',
+      'Folders inside folders',
+      'Find it by any word',
+      'Save from your phone',
+      'Your links stay yours',
+    ]);
+    // The tiles fade in once scrolled to and end fully visible.
+    await expect(bento.locator('.landing-bento__tile').first()).toHaveCSS('opacity', '1');
+    await expect(bento.locator('.landing-bento__tile').last()).toHaveCSS('opacity', '1');
+    const overflow = await page.evaluate<number>(
+      '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
+    );
+    expect(overflow).toBeLessThanOrEqual(0);
+  });
+
+  test('the bento sits between the hero and the before and after, no overflow at 360px', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 360, height: 780 });
+    await gotoLandingLoaded(page);
+    const bento = page.getByRole('region', { name: 'Save once, find in seconds' });
+    const before = page.getByRole('region', { name: 'The same links, before and after' });
+    await bento.scrollIntoViewIfNeeded();
+
+    const [b, a] = await Promise.all([bento.boundingBox(), before.boundingBox()]);
+    expect(b?.y ?? 0).toBeLessThan(a?.y ?? 0);
+    expect(b?.width ?? 999).toBeLessThanOrEqual(360);
+    const overflow = await page.evaluate<number>(
+      '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
+    );
+    expect(overflow).toBeLessThanOrEqual(0);
+  });
+
   test('sections below the first screen are visible after scrolling to them', async ({ page }) => {
     await page.goto('/');
     const finale = page.getByRole('region', { name: 'Empty your Saved Messages.' });
