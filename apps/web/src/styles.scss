@@ -20,3 +20,17 @@
   animation-duration: var(--duration-slow);
   animation-timing-function: var(--ease-in-out);
 }
+
+// Page cross-fade (router `withViewTransitions`): the root snapshot fades old into new. Short, so
+// navigation never feels slower; reduced motion skips the transition in code. Declared after the
+// `(*)` rule above, and `(root)` is more specific, so the cards <-> list morph keeps its timing.
+::view-transition-group(root) {
+  animation-duration: var(--duration-fast);
+  animation-timing-function: var(--ease-out);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--duration-fast);
+  animation-timing-function: var(--ease-out);
+}

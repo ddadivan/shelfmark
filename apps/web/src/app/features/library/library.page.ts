@@ -30,7 +30,6 @@ import {
   MenuTriggerDirective,
   NoticeComponent,
   ProgressBarComponent,
-  loaderVisible,
   SegmentedControlComponent,
   SKELETON_SHAPE,
   SkeletonComponent,
@@ -50,6 +49,7 @@ import { FEED_SORT } from '../links/models/feed-sort.const';
 import type { FeedSort } from '../links/models/feed-sort.type';
 import { SEARCH_QUERY_PARAM } from '../links/models/search-query-param.const';
 import { SORT_QUERY_PARAM } from '../links/models/sort-query-param.const';
+import { sameFilter } from '../links/links-filter';
 import { parseSearchQuery } from '../links/search-query';
 import { InViewDirective } from '../links/in-view/in-view.directive';
 import { LinkActionsService } from '../links/link-actions.service';
@@ -67,7 +67,7 @@ import { isUiView } from '../../stores/is-ui-view';
 import { UiStore } from '../../stores/ui.store';
 import { EMPTY_KEYS } from './models/empty-keys.const';
 import { FolderTileComponent } from './folder-tile/folder-tile.component';
-import { runViewTransition } from './view-transition';
+import { runViewTransition, type ViewTransitionNames } from './view-transition';
 import { scrollFeedForKey } from './feed-keyboard-scroll';
 import type { SubfolderItem } from './models/subfolder-item.interface';
 import { SORT_OPTION_KEYS } from './models/sort-option-keys.const';
@@ -199,41 +199,66 @@ export default class LibraryPage {
   });
   /** What "This view" exports; `undefined` when the view has no export equivalent. */
   protected readonly viewScope = computed(() => exportScopeOf(this.filter()));
+  /**
+   * The store is app-wide: when the page opens (back from another page) it can still hold the
+   * links of another view for a moment. Those never show, and never become the "previous view".
+   */
+  private readonly synced = computed(() => sameFilter(this.store.filter(), this.filter()));
+  private readonly ownCount = computed(() => (this.synced() ? this.store.count() : 0));
+  private readonly ownError = computed(() => this.synced() && this.store.error());
+  private readonly ownLoaded = computed(() => this.synced() && this.store.loaded());
+  private readonly ownLinks = computed(() => (this.synced() ? this.store.entities() : []));
   /** The last list that was fully loaded; it stays on screen while the next view loads. */
   private readonly lastShown = signal<LastShown>({ items: [], hasMore: false });
   /**
    * The view changed and its first page is on the way: the store has no links yet, the cards of
-   * the previous view stay (dimmed, inert) instead of a skeleton.
+   * the previous view stay (inert, no skeleton, no dimming) under the progress bar.
    */
   protected readonly stale = computed(
     () =>
-      this.store.loading() &&
-      !this.store.loaded() &&
-      !this.store.error() &&
-      this.store.count() === 0 &&
+      // Not synced: the route changed, the store has not been told yet (the next effect run).
+      (this.store.loading() || !this.synced()) &&
+      !this.ownLoaded() &&
+      !this.ownError() &&
+      this.ownCount() === 0 &&
       this.lastShown().items.length > 0,
   );
-  /** The skeleton replaces stale cards only when the load takes longer than the loader delay. */
-  protected readonly staleSkeleton = loaderVisible(this.stale);
-  /** Bumped when a new first page arrives; the list is rendered again and fades in. */
+  /**
+   * Bumped when a new first page arrives: the list is built again (fresh elements, so cards that
+   * survive a view switch do not hop to a new place) instead of being patched in place.
+   */
   protected readonly batch = signal(0);
   protected readonly batches = computed(() => [this.batch()]);
+  /** The new list fades in only when it replaces a skeleton; on a view switch it just swaps. */
+  protected readonly reveal = signal(false);
+  /**
+   * The cards <-> list switch is running: the links carry their `view-transition-name`. Only then,
+   * so the names never take part in the router's page transition (cards would fly between pages).
+   */
+  protected readonly morphing = signal(false);
+  protected readonly morphNames: ViewTransitionNames = {
+    on: () => this.morphing.set(true),
+    off: () => this.morphing.set(false),
+  };
   protected readonly shownLinks = computed(() =>
-    this.stale() ? this.lastShown().items : this.store.entities(),
+    this.stale() ? this.lastShown().items : this.ownLinks(),
   );
   protected readonly shownCount = computed(() => this.shownLinks().length);
   protected readonly shownHasMore = computed(() =>
     this.stale() ? this.lastShown().hasMore : this.store.hasMore(),
   );
   protected readonly firstLoad = computed(
-    () => !this.store.loaded() && !this.store.error() && this.store.count() === 0 && !this.stale(),
+    () => !this.ownLoaded() && !this.ownError() && this.ownCount() === 0 && !this.stale(),
   );
-  protected readonly failed = computed(() => this.store.error() && this.store.count() === 0);
+  protected readonly failed = computed(() => this.ownError() && this.ownCount() === 0);
   protected readonly empty = computed(
-    () => this.store.loaded() && !this.store.loading() && this.store.count() === 0,
+    () => this.ownLoaded() && !this.store.loading() && this.ownCount() === 0,
   );
-  protected readonly refetching = computed(() => this.store.loading() && this.store.loaded());
-  protected readonly showLinks = computed(() => this.store.count() > 0 || this.stale());
+  /** The 2px bar: a refetch and a view switch (the old content stays on screen meanwhile). */
+  protected readonly refetching = computed(
+    () => this.store.loading() && (this.ownLoaded() || this.stale()),
+  );
+  protected readonly showLinks = computed(() => this.ownCount() > 0 || this.stale());
   /** Sort and view switch: with links, and while the first page loads (so the toolbar keeps its size). */
   protected readonly showControls = computed(() => this.showLinks() || this.firstLoad());
 
@@ -278,7 +303,7 @@ export default class LibraryPage {
         childCount: all.filter((child) => child.parentId === folder.id).length,
       }));
   });
-  /** The subfolders of the last settled view; they stay (dimmed) with its cards while the next view loads. */
+  /** The subfolders of the last settled view; they stay with its cards while the next view loads. */
   private readonly lastSubfolders = signal<readonly SubfolderItem[]>([]);
   protected readonly subfolders = computed(() =>
     this.stale() ? this.lastSubfolders() : this.currentSubfolders(),
@@ -322,14 +347,18 @@ export default class LibraryPage {
   private readonly scroller = viewChild<ElementRef<HTMLElement>>('scroller');
 
   constructor() {
-    // Remember the last settled list (for stale-while-loading), and start a fade-in batch when a
+    // Remember the last settled list (for stale-while-loading), and build the list again when a
     // new first page replaces the old one.
     let wasLoading = false;
+    let sawSkeleton = false;
     effect(() => {
-      const settled = this.store.loaded() && !this.store.loading();
+      const settled = this.ownLoaded() && !this.store.loading();
       const items = this.store.entities();
       const hasMore = this.store.hasMore();
       const loading = this.store.loading();
+      if (this.firstLoad()) {
+        sawSkeleton = true;
+      }
       // Tracked: the folder list changes (rename, create). The folder of the page is read
       // untracked: it changes before the next view starts loading, while `settled` is still true,
       // and the previous view must not take over the subfolders of the next one.
@@ -340,9 +369,14 @@ export default class LibraryPage {
           this.lastSubfolders.set(this.currentSubfolders());
         }
         if (wasLoading && !loading) {
+          this.reveal.set(sawSkeleton);
+          sawSkeleton = false;
           this.batch.update((value) => value + 1);
         }
         wasLoading = loading;
+        if (settled) {
+          sawSkeleton = false;
+        }
       });
     });
     // A new view, sort or filter starts at the top of its list (the page scroll is reset by the
@@ -443,7 +477,9 @@ export default class LibraryPage {
 
   protected setView(view: string): void {
     if (isUiView(view)) {
-      runViewTransition(this.doc, this.injector, () => this.ui.setView(view));
+      // The new list is the same links: no fade-in on top of the morph.
+      this.reveal.set(false);
+      runViewTransition(this.doc, this.injector, () => this.ui.setView(view), this.morphNames);
     }
   }
 

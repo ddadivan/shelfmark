@@ -15,6 +15,7 @@ import {
   withInMemoryScrolling,
   withPreloading,
   withRouterConfig,
+  withViewTransitions,
 } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
@@ -26,6 +27,7 @@ import { translocoConfig } from './core/i18n/transloco.config';
 import { APP_LANG } from './core/i18n/models/app-lang.const';
 import { AppTranslocoLoader } from './core/i18n/app-transloco.loader';
 import { LibraryRouteReuseStrategy } from './core/routing/library-route-reuse.strategy';
+import { skipViewTransitionOnReducedMotion } from './core/routing/skip-view-transition-on-reduced-motion';
 import { SignedInPreloadingStrategy } from './core/routing/signed-in-preloading.strategy';
 import { provideLinksApi } from './features/links/provide-links-api';
 import { provideMonitoring } from './core/monitoring/provide-monitoring';
@@ -47,6 +49,12 @@ export const appConfig: ApplicationConfig = {
       withPreloading(SignedInPreloadingStrategy),
       withRouterConfig({ paramsInheritanceStrategy: 'always' }),
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
+      // A short root cross-fade between pages (styles.scss); skipped with reduced motion. The old
+      // page stays on screen until the new one is rendered, so no empty frame shows in between.
+      withViewTransitions({
+        skipInitialTransition: true,
+        onViewTransitionCreated: skipViewTransitionOnReducedMotion,
+      }),
     ),
     { provide: RouteReuseStrategy, useClass: LibraryRouteReuseStrategy },
     // Order matters (PROJECT.md 5.1): apiBase, requestId, retry, loading, error, devLogging.

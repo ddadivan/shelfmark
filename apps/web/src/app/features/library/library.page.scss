@@ -134,15 +134,15 @@
 }
 
 .library__list {
-  // A new first page fades in with a slight rise; no motion under reduced motion. A CSS
-  // crossfade, not router view transitions: the page is reused between views and the data
-  // arrives after the navigation has finished, so a view transition would end too early.
-  animation: library-arrive var(--duration-base) var(--ease-out) both;
-  transition: opacity var(--duration-base) var(--ease-out);
+  // `--reveal`: the list replaces a skeleton, so it fades in with a slight rise. A view switch
+  // builds the list again without it: the old list stays fully visible until the swap, so nothing
+  // disappears and comes back. No motion under reduced motion.
+  &--reveal {
+    animation: library-arrive var(--duration-base) var(--ease-out) both;
 
-  @include reduced-motion {
-    animation: none;
-    transition: none;
+    @include reduced-motion {
+      animation: none;
+    }
   }
 }
 
@@ -158,11 +158,10 @@
   }
 }
 
-// The previous view's cards while the next one loads (stale-while-loading). The dimming is a
-// deliberate exception to "opacity only for disabled": the list is inert and about to be replaced.
+// The previous view's cards while the next one loads (stale-while-loading): fully visible (the
+// Loading spec keeps old content as it is, under the progress bar), only not clickable.
 .library__list--stale {
   pointer-events: none;
-  opacity: 0.6;
 }
 
 .library__rows {
@@ -187,10 +186,9 @@
   }
 }
 
-// The same dimming as the stale cards (`library__list--stale`) while the next view loads.
+// The same as the stale cards (`library__list--stale`) while the next view loads.
 .library__folders--stale {
   pointer-events: none;
-  opacity: 0.6;
 }
 
 .library__more {

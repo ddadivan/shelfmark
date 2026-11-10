@@ -14,6 +14,7 @@ import type { LinksApi } from '../links/models/links-api.interface';
 import { LINKS_SCOPE } from '../links/models/links-scope.const';
 import { UI_STORAGE_KEY } from '../../stores/models/ui-storage-key.const';
 import { UI_VIEW } from '../../stores/models/ui-view.const';
+import { LinksStore } from '../../stores/links.store';
 import { UiStore } from '../../stores/ui.store';
 import { loadEnglish, provideTranslocoForTest } from '../../testing/transloco-testing';
 import LibraryPage from './library.page';
@@ -252,12 +253,38 @@ describe('LibraryPage', () => {
     expect(element.querySelectorAll('app-link-card')).toHaveLength(3);
   });
 
+  it('does not show the links another view left in the store when it opens', async () => {
+    const api = {
+      list: vi.fn<LinksApi['list']>(() => of(page([link(9, { title: 'From Favorites' })]))),
+      recent: vi.fn<LinksApi['recent']>(() => of({ items: [] })),
+    };
+    TestBed.configureTestingModule({
+      providers: [
+        provideTranslocoForTest(),
+        { provide: LINKS_API, useValue: api },
+        { provide: DialogService, useValue: { confirm: vi.fn(() => Promise.resolve(false)) } },
+      ],
+    });
+    await loadEnglish();
+    TestBed.inject(LinksStore).setFilter({ scope: LINKS_SCOPE.Favorites });
+    api.list.mockReturnValue(new Subject<ListLinksResponse>());
+
+    const fixture = TestBed.createComponent(LibraryPage);
+    fixture.componentRef.setInput('scope', LINKS_SCOPE.All);
+    await fixture.whenStable();
+    const element = fixture.nativeElement as HTMLElement;
+
+    expect(element.textContent).not.toContain('From Favorites');
+    expect(element.querySelector('app-link-card')).toBeNull();
+    expect(element.querySelector('ui-skeleton')).not.toBeNull();
+  });
+
   describe('switching views', () => {
     afterEach(() => {
       vi.useRealTimers();
     });
 
-    it('never shows the skeleton or dims the cards when the next view answers at once', async () => {
+    it('never shows the skeleton when the next view answers at once', async () => {
       const { api, element, fixture } = await setup();
       api.list.mockReturnValue(of(page([link(7)])));
 
@@ -269,7 +296,7 @@ describe('LibraryPage', () => {
       expect(element.querySelectorAll('app-link-card')).toHaveLength(1);
     });
 
-    it('keeps the old cards dimmed, then the skeleton after 300 ms, then the new cards', async () => {
+    it('keeps the old cards and shows the bar (no skeleton, no dimming) until the new cards arrive', async () => {
       const { api, element, fixture } = await setup();
       await fixture.whenStable();
       vi.useFakeTimers();
@@ -288,13 +315,13 @@ describe('LibraryPage', () => {
       expect(stale?.getAttribute('aria-busy')).toBe('true');
       expect(stale?.hasAttribute('inert')).toBe(true);
       expect(element.querySelectorAll('app-link-card')).toHaveLength(2);
-      expect(element.querySelector('ui-skeleton')).toBeNull();
       expect(element.querySelector('.library__count')?.textContent).toContain('2+ links');
 
       vi.advanceTimersByTime(300);
       settle();
-      expect(element.querySelector('ui-skeleton')).not.toBeNull();
-      expect(element.querySelector('app-link-card')).toBeNull();
+      expect(element.querySelector('ui-skeleton')).toBeNull();
+      expect(element.querySelectorAll('app-link-card')).toHaveLength(2);
+      expect(element.querySelector('ui-progress-bar [role="progressbar"]')).not.toBeNull();
 
       next.next(page([link(8), link(9), link(10)]));
       next.complete();
@@ -303,6 +330,8 @@ describe('LibraryPage', () => {
       settle();
       expect(element.querySelector('.library__list--stale')).toBeNull();
       expect(element.querySelectorAll('app-link-card')).toHaveLength(3);
+      // A view switch swaps the list without the fade-in (that is for the first load).
+      expect(element.querySelector('.library__list--reveal')).toBeNull();
       expect(element.querySelector('ui-skeleton')).toBeNull();
     });
   });
