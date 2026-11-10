@@ -2,6 +2,7 @@
   class="ui-field"
   [class.ui-field--error]="invalid() || !!error()"
   [class.ui-field--disabled]="disabled()"
+  [class.ui-field--compact]="compact()"
 >
   <label class="ui-field__label" [attr.for]="controlId()">{{ label() }}</label>
   <div

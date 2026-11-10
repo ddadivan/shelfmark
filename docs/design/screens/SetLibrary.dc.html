@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Settings › Library</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a" style="min-height: 1400px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; display: flex; flex-wrap: wrap; gap: 12px; padding: 12px; box-sizing: border-box; align-items: flex-start;">
+
+<nav aria-label="Settings" style="flex: 1 1 220px; max-width: 248px; background: var(--surface); border-radius: 22px; box-shadow: var(--shadow-card); padding: 14px 10px; display: flex; flex-direction: column; gap: 2px;">
+<a href="#" class="sm-btn sm-btn--ghost sm-btn--sm" style="text-decoration: none; align-self: flex-start; margin-bottom: 8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M14 6l-6 6 6 6"/></svg>Back to links</a>
+<div class="sm-tree__section" style="padding-top: 4px;">Settings</div>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Account</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Appearance</a>
+<a href="#" class="sm-tree__row is-active" aria-current="page" style="text-decoration: none;">Library</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Notifications and reminders</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Language</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Keyboard shortcuts</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Import and export</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Privacy and data</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Your feedback</a>
+</nav>
+
+<main style="flex: 999 1 560px; min-width: 0; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; padding: 8px 16px 40px;">
+<div style="flex: 1 1 520px; max-width: 720px; display: flex; flex-direction: column; gap: 18px;">
+<div><h1 style="margin: 0; font-size: 34px; line-height: 40px; font-weight: 600;">Library</h1><p style="margin: 4px 0 0; font-size: 14px; color: var(--text-muted);">How links are shown, saved and kept.</p></div>
+<section class="sm-panel sm-settings" aria-labelledby="l1">
+<h2 id="l1" class="sm-settings__title">Viewing</h2>
+<div class="sm-setting"><div><div class="sm-setting__title">Default view</div><div class="sm-setting__desc">How folders open the first time</div></div><div class="sm-seg" role="radiogroup" aria-label="Default view"><button class="sm-seg__item is-active" role="radio" aria-checked="true" style="padding: 0 14px;">Cards</button><button class="sm-seg__item" role="radio" aria-checked="false" style="padding: 0 14px;">List</button></div></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Sort links by</div><div class="sm-setting__desc">Each folder remembers its own choice after you change it</div></div><div class="sm-field__control" style="min-width: 200px;" role="button" aria-haspopup="listbox" aria-label="Sort: Newest first"><span class="sm-select__value" style="flex: 1;">Newest first</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Open links in</div></div><div class="sm-seg" role="radiogroup" aria-label="Open links in"><button class="sm-seg__item is-active" role="radio" aria-checked="true" style="padding: 0 14px;">New tab</button><button class="sm-seg__item" role="radio" aria-checked="false" style="padding: 0 14px;">Same tab</button></div></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Show folder counts</div><div class="sm-setting__desc">Numbers next to folders in the sidebar</div></div><button class="sm-switch" role="switch" aria-checked="true" aria-label="Show folder counts"></button></div>
+
+</section>
+<section class="sm-panel sm-settings" aria-labelledby="l2">
+<h2 id="l2" class="sm-settings__title">Saving</h2>
+<div class="sm-setting"><div><div class="sm-setting__title">New links go to</div><div class="sm-setting__desc">When you paste a link without picking a folder</div></div><div class="sm-field__control" style="min-width: 200px;" role="button" aria-haspopup="listbox" aria-label="New links go to: Unsorted"><span class="sm-select__value" style="flex: 1;">Unsorted</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Warn about duplicates</div><div class="sm-setting__desc">Shows where you already saved the same link</div></div><button class="sm-switch" role="switch" aria-checked="true" aria-label="Warn about duplicates"></button></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Fetch titles and previews</div><div class="sm-setting__desc">Turn off to save only the address</div></div><button class="sm-switch" role="switch" aria-checked="true" aria-label="Fetch titles and previews"></button></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Keep the query part of links</div><div class="sm-setting__desc">Removes tracking like ?utm_source when off</div></div><button class="sm-switch" role="switch" aria-checked="false" aria-label="Keep query part"></button></div>
+
+</section>
+<section class="sm-panel sm-settings" aria-labelledby="l3">
+<h2 id="l3" class="sm-settings__title">Tags and folders</h2>
+<div class="sm-setting"><div><div class="sm-setting__title">Tags</div><div class="sm-setting__desc">14 tags · rename, merge or delete them</div></div><button class="sm-btn sm-btn--secondary sm-btn--sm">Manage tags</button></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Folder colours</div><div class="sm-setting__desc">Coloured folder icons in the sidebar and tiles</div></div><button class="sm-switch" role="switch" aria-checked="true" aria-label="Folder colours"></button></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Pinned at the top</div><div class="sm-setting__desc">Up to 7 folders and links</div></div><button class="sm-btn sm-btn--secondary sm-btn--sm">Edit pinned</button></div>
+
+</section>
+<section class="sm-panel sm-settings" aria-labelledby="l4">
+<h2 id="l4" class="sm-settings__title">Trash</h2>
+<div class="sm-setting"><div><div class="sm-setting__title">Keep deleted items for</div><div class="sm-setting__desc">Then they’re removed for good</div></div><div class="sm-seg" role="radiogroup" aria-label="Keep deleted items"><button class="sm-seg__item" role="radio" aria-checked="false" style="padding: 0 14px;">7 days</button><button class="sm-seg__item is-active" role="radio" aria-checked="true" style="padding: 0 14px;">30 days</button><button class="sm-seg__item" role="radio" aria-checked="false" style="padding: 0 14px;">90 days</button></div></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Trash</div><div class="sm-setting__desc">5 items</div></div><button class="sm-btn sm-btn--secondary sm-btn--sm">Open Trash</button></div>
+
+</section>
+
+</div>
+<aside style="flex: 1 1 300px; max-width: 360px; padding-top: 64px;"><p class="a-note" style="font-size: 13px; line-height: 20px;">Subfolders are always shown first in a folder; it isn’t a setting. Changes apply at once and sync to your other devices.</p></aside>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1400}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

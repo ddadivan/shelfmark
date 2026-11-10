@@ -14,6 +14,7 @@ import { UI_DIALOG_DATA } from './models/ui-dialog-data.const';
 import { openModalOverlay } from './modal-overlay';
 import { DIALOG_ROLE } from './models/dialog-role.const';
 import { DIALOG_SIZE } from './models/dialog-size.const';
+import { DIALOG_VARIANT } from './models/dialog-variant.const';
 
 /**
  * Opens dialogs on the CDK `Dialog`: focus trap, focus restore, `aria-modal`, page scroll
@@ -41,6 +42,7 @@ export class DialogService {
   ): UiDialogRef<R, C> {
     const dismissible = config.dismissible ?? true;
     const titleId = nextDialogId('ui-dialog-title');
+    const variant = config.variant ?? DIALOG_VARIANT.Default;
 
     return openModalOverlay<C, R, D>({ dialog: this.dialog, injector: this.injector }, component, {
       role: config.role ?? DIALOG_ROLE.Dialog,
@@ -51,11 +53,16 @@ export class DialogService {
       dismissible,
       scrimClose: config.scrimClose ?? true,
       restoreFocus: config.restoreFocus,
-      positionStrategy: this.overlay.position().global(),
+      // The command dialog sits at the top (its panel keeps the 96px gap); others are centred.
+      positionStrategy:
+        variant === DIALOG_VARIANT.Command
+          ? this.overlay.position().global().top('0').centerHorizontally()
+          : this.overlay.position().global(),
       providers: (uiRef) => {
         const context: UiDialogContext = {
           titleId,
           size: config.size ?? DIALOG_SIZE.Sm,
+          variant,
           leaving: uiRef.leaving,
         };
         return [

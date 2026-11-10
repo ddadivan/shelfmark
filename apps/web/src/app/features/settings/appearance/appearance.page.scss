@@ -1,0 +1,9 @@
+@use 'ui' as *;
+@use '../settings-page' as *;
+@include settings-page;
+
+.appearance__language {
+  @include type(body);
+
+  color: var(--text-muted);
+}

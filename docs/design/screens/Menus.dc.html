@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Menus and folder dialogs</title>
+<title>A · Menus and folder dialogs</title>
 <script src="./support.js"></script>
-<link rel="stylesheet" href="ds/shelfmark/tokens.css">
-<link rel="stylesheet" href="ds/shelfmark/components/bundle.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
 </head>
 <body>
 <x-dc>
@@ -15,7 +16,7 @@
 body{margin:0}
 </style>
 </helmet>
-<div data-theme="{{theme}}" class="sm-root" style="min-height: 900px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; padding: 48px; box-sizing: border-box; display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 32px; align-content: start;">
+<div data-theme="{{theme}}" class="sm-root dir-a" style="min-height: 900px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; padding: 48px; box-sizing: border-box; display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 32px; align-content: start;">
 
 <section style="display: flex; flex-direction: column; gap: 12px;">
 <h2 style="margin: 0; font-size: 13px; font-weight: 600; color: var(--text-muted);">Link card · “…” menu</h2>
@@ -40,7 +41,7 @@ body{margin:0}
 <section style="display: flex; flex-direction: column; gap: 12px;">
 <h2 style="margin: 0; font-size: 13px; font-weight: 600; color: var(--text-muted);">Folder · context menu (right click or “…”)</h2>
 <div style="position: relative; height: 330px;">
-<div class="sm-tree" style="width: 248px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 8px;">
+<div class="sm-tree" style="width: 248px; background: var(--surface); box-shadow: var(--shadow-card); border-radius: var(--radius-lg); padding: 8px;">
 <div class="sm-tree__row"><span class="sm-tree__twist is-open">›</span>Work<span class="sm-tree__count">34</span></div>
 <div class="sm-tree__row is-hover" style="padding-left: 32px;">Angular<span class="sm-tree__count">12</span></div>
 <div class="sm-tree__row" style="padding-left: 32px;">Courses<span class="sm-tree__count">8</span></div>
@@ -86,7 +87,7 @@ body{margin:0}
 
 <section style="display: flex; flex-direction: column; gap: 12px;">
 <h2 style="margin: 0; font-size: 13px; font-weight: 600; color: var(--text-muted);">Rename in place (sidebar)</h2>
-<div class="sm-tree" style="width: 248px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 8px;">
+<div class="sm-tree" style="width: 248px; background: var(--surface); box-shadow: var(--shadow-card); border-radius: var(--radius-lg); padding: 8px;">
 <div class="sm-tree__row"><span class="sm-tree__twist is-open">›</span>Work<span class="sm-tree__count">34</span></div>
 <div style="padding: 2px 4px 2px 28px;"><div class="sm-field__control is-focus" style="min-height: 30px; padding: 0 8px;"><input aria-label="Folder name" value="Angular 22" style="padding: 4px 0; font-size: 14px;"></div></div>
 <div class="sm-tree__row" style="padding-left: 32px;">Courses<span class="sm-tree__count">8</span></div>
@@ -96,7 +97,7 @@ body{margin:0}
 
 <section style="display: flex; flex-direction: column; gap: 12px; grid-column: 1 / -1;">
 <h2 style="margin: 0; font-size: 13px; font-weight: 600; color: var(--text-muted);">Tooltips · after 400 ms on hover or keyboard focus · not on touch</h2>
-<div style="display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);">
+<div style="display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start; padding: 16px; background: var(--surface); box-shadow: var(--shadow-card); border-radius: var(--radius-lg);">
 <div style="display: flex; flex-direction: column; align-items: center; gap: 6px;"><span class="sm-tooltip" role="tooltip">Dark theme</span><button class="sm-btn sm-btn--ghost sm-btn--icon is-focus" aria-label="Switch theme"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg></button></div>
 <div style="display: flex; flex-direction: column; align-items: center; gap: 6px;"><span class="sm-tooltip" role="tooltip">Cards view <span style="opacity: .7;">V C</span></span><div class="sm-seg"><button class="sm-seg__item is-active" aria-label="Cards"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg></button><button class="sm-seg__item" aria-label="List"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M5 6v.01M5 12v.01M5 18v.01"/></svg></button></div></div>
 <div style="display: flex; flex-direction: column; align-items: center; gap: 6px;"><span class="sm-tooltip" role="tooltip">Add to favorites <span style="opacity: .7;">F</span></span><span class="sm-star"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M12 17.75l-6.17 3.24 1.18-6.87-5-4.86 6.9-1 3.09-6.26 3.09 6.26 6.9 1-5 4.86 1.18 6.87z"/></svg></span></div>

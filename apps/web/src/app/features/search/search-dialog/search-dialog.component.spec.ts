@@ -116,7 +116,7 @@ describe('SearchDialogComponent', () => {
   it('shows the hint and asks nothing for an empty query', async () => {
     const { api, element } = await setup();
 
-    expect(element.textContent).toContain('Type to search your links');
+    expect(element.textContent).toContain('Results show up as you type');
     expect(api.list).not.toHaveBeenCalled();
   });
 
@@ -176,6 +176,9 @@ describe('SearchDialogComponent', () => {
     expect(options.some((text) => text?.includes('Signals club'))).toBe(true);
     expect(options.some((text) => text?.includes('signals'))).toBe(true);
     expect(element.querySelectorAll('mark').length).toBeGreaterThan(0);
+    expect(element.querySelectorAll('.ui-command-item__leading ui-favicon').length).toBeGreaterThan(
+      0,
+    );
     expect(element.querySelector('[role="status"]')?.textContent).toContain('4 results');
   });
 
@@ -275,6 +278,7 @@ describe('SearchDialogComponent', () => {
     await advance(fixture, SEARCH_DEBOUNCE_MS + 60);
 
     expect(element.textContent).toContain('Nothing found for “zzzz”');
+    expect(element.textContent).toContain('Try another word');
   });
 
   it('says so when the search fails', async () => {

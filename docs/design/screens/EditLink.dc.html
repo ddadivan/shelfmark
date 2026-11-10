@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Edit link</title>
+<title>A · Edit link</title>
 <script src="./support.js"></script>
-<link rel="stylesheet" href="ds/shelfmark/tokens.css">
-<link rel="stylesheet" href="ds/shelfmark/components/bundle.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
 </head>
 <body>
 <x-dc>
@@ -15,10 +16,10 @@
 body{margin:0}
 </style>
 </helmet>
-<div data-theme="{{theme}}" class="sm-root" style="min-height: 900px; position: relative; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif;">
-<div aria-hidden="true" style="position: absolute; inset: 0; display: flex; flex-direction: column;">
-<div style="height: 60px; border-bottom: 1px solid var(--border); background: var(--surface);"></div>
-<div style="flex: 1; display: flex;"><div style="width: 248px; border-right: 1px solid var(--border); background: var(--surface);"></div><div style="flex: 1;"></div></div>
+<div data-theme="{{theme}}" class="sm-root dir-a" style="min-height: 900px; position: relative; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif;">
+<div aria-hidden="true" style="position: absolute; inset: 0; display: flex; gap: 12px; padding: 12px;">
+<div style="width: 272px; flex: none; background: var(--surface); border-radius: 22px; box-shadow: var(--shadow-card);"></div>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 24px; padding: 6px 16px;"><div style="height: 48px; max-width: 640px; border-radius: 999px; background: var(--surface); box-shadow: var(--shadow-card);"></div><div style="height: 44px; width: 220px; border-radius: 12px; background: var(--surface-hover);"></div><div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px;"><div style="height: 300px; border-radius: 22px; background: var(--surface); box-shadow: var(--shadow-card);"></div><div style="height: 300px; border-radius: 22px; background: var(--surface); box-shadow: var(--shadow-card);"></div><div style="height: 300px; border-radius: 22px; background: var(--surface); box-shadow: var(--shadow-card);"></div></div></div>
 </div>
 <div class="sm-scrim" style="position: absolute; inset: 0;">
 <form class="sm-dialog sm-dialog--md sm-pop-in" role="dialog" aria-modal="true" aria-labelledby="e-title" style="gap: 18px;">

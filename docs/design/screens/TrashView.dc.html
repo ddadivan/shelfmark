@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Trash · desktop</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a" style="min-height: 900px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; display: flex; flex-wrap: wrap; gap: 12px; padding: 12px; box-sizing: border-box; align-items: stretch; position: relative;">
+
+<aside aria-label="Library" style="flex: 1 1 248px; max-width: 272px; background: var(--surface); border-radius: 22px; box-shadow: var(--shadow-card); padding: 14px 10px; display: flex; flex-direction: column; gap: 2px;">
+<a href="#" style="display: flex; align-items: center; gap: 10px; padding: 4px 10px 14px; text-decoration: none;">
+<svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="7" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg>
+<span style="font-size: 17px; font-weight: 600; letter-spacing: -0.02em;">Shelfmark</span>
+</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 14.5l5-5M8 12l-1.8 1.8a3.2 3.2 0 0 0 4.5 4.5l1.8-1.8M16 12l1.8-1.8a3.2 3.2 0 0 0-4.5-4.5L11.5 7.5"/></svg>All links<span class="sm-tree__count">248</span></a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="3"/><path d="M3.5 13h4.5l1.5 2.5h5l1.5-2.5h4.5"/></svg>Unsorted<span class="sm-tree__count">17</span></a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.8l2.45 5 5.5.8-4 3.9.95 5.5L12 16.4 7.1 19l.95-5.5-4-3.9 5.5-.8z"/></svg>Favorites<span class="sm-tree__count">9</span></a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>Recently opened</a>
+
+<div class="sm-tree__section">Pinned</div>
+<a href="#" class="sm-tree__row" style="text-decoration: none;"><span class="sm-fic sm-fic--sm fc-clay"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 8l-4 4 4 4M15 8l4 4-4 4M13 6l-2 12"/></svg></span>Angular<span class="sm-tree__count">12</span></a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;"><span class="sm-favicon">N</span><span style="flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Neon free plan limits</span><span class="sm-pin" role="img" aria-label="Pinned"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4l5 5-2.5.5-3.5 3.5-.8 4.5-6.2-6.2 4.5-.8 3.5-3.5z"/><path d="M8.5 15.5L4 20"/></svg></span></a>
+<div class="sm-tree__section" style="display: flex; align-items: center; justify-content: space-between;">Folders<button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="New folder" style="width: 28px; height: 28px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>
+<a href="#" class="sm-tree__row" style="text-decoration: none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="color: var(--text-muted);"><path d="M6 10l6 6 6-6"/></svg><span class="sm-fic sm-fic--sm fc-ocean"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="7" width="17" height="12" rx="2.5"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7M3.5 12h17"/></svg></span>Work<span class="sm-tree__count">34</span></a>
+<a href="#" class="sm-tree__row" style="text-decoration: none; padding-left: 34px;"><span class="sm-fic sm-fic--sm fc-clay"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 8l-4 4 4 4M15 8l4 4-4 4M13 6l-2 12"/></svg></span>Angular<span class="sm-tree__count">12</span></a>
+<a href="#" class="sm-tree__row" style="text-decoration: none; padding-left: 34px;"><span class="sm-fic sm-fic--sm fc-plum"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 9.5L12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5V16c1.5 1.5 3.5 2 5.5 2s4-.5 5.5-2v-4.5"/></svg></span>Courses<span class="sm-tree__count">8</span></a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="color: var(--text-muted);"><path d="M10 6l6 6-6 6"/></svg><span class="sm-fic sm-fic--sm fc-rose"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4l3 2 3-2 5 3-2 4-2-1v10H8V10l-2 1-2-4z"/></svg></span>Clothes<span class="sm-tree__count">21</span></a>
+<a href="#" class="sm-tree__row" style="text-decoration: none; padding-left: 32px;"><span class="sm-fic sm-fic--sm fc-amber"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h16v5a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M2.5 10h19M9.5 7c0-1 .5-1.5 1-2.5M13.5 7c0-1 .5-1.5 1-2.5"/></svg></span>Recipes<span class="sm-tree__count">15</span></a>
+
+<div style="margin-top: auto; padding-top: 8px; border-top: 1px solid var(--border);"><a href="#" class="sm-tree__row is-active" aria-current="page" style="text-decoration: none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15M9.5 7V5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2M6.5 7l1 12a1.5 1.5 0 0 0 1.5 1.4h6a1.5 1.5 0 0 0 1.5-1.4l1-12"/></svg>Trash<sc-if value="{{notEmpty}}" hint-placeholder-val="{{true}}"><span class="sm-tree__count">5</span></sc-if></a></div>
+</aside>
+
+<main style="flex: 999 1 560px; min-width: 0; padding: 6px 16px 32px; display: flex; flex-direction: column; gap: 22px;">
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+<label class="sm-field__control" style="flex: 1 1 320px; max-width: 640px; border-radius: 999px; min-height: 48px; padding: 0 10px 0 18px; background: var(--surface); border-color: transparent; box-shadow: var(--shadow-card);">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true" style="color: var(--text-muted);"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>
+<input aria-label="Search links" placeholder="Search, or describe it: coat from last week" style="font-size: 15px;">
+<span class="sm-kbd">⌘K</span>
+</label>
+<span style="flex: 1 1 0;"></span>
+<button class="sm-btn sm-btn--ghost sm-btn--icon" aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)" aria-haspopup="dialog"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="3"/><path d="M7 10h1M11 10h1M15 10h2M8 14h8"/></svg></button>
+<button class="sm-btn sm-btn--ghost sm-btn--icon" aria-label="Switch theme"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 14.5A8 8 0 1 1 9.5 4.5a6.5 6.5 0 0 0 10 10z"/></svg></button>
+<button class="sm-btn sm-btn--primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add link</button>
+<button class="sm-btn sm-btn--ghost sm-btn--icon" aria-label="Account menu" aria-haspopup="menu" style="width: 44px; height: 44px; padding: 0;"><span class="sm-avatar">DD</span></button>
+</div>
+
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+<div><h1 style="margin: 0; font-size: 40px; line-height: 44px; font-weight: 600;">Trash</h1>
+<p style="margin: 6px 0 0; font-size: 14px; color: var(--text-muted);">{{countText}}</p></div>
+<sc-if value="{{notEmpty}}" hint-placeholder-val="{{true}}"><button class="sm-btn sm-btn--secondary" style="color: var(--danger);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15M9.5 7V5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2M6.5 7l1 12a1.5 1.5 0 0 0 1.5 1.4h6a1.5 1.5 0 0 0 1.5-1.4l1-12"/></svg>Empty trash</button></sc-if>
+</div>
+<sc-if value="{{notEmpty}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+<label style="display: flex; align-items: center; gap: 10px; font-size: 14px; padding-left: 14px;"><input type="checkbox" class="sm-check" aria-label="Select all">Select all</label>
+<span style="flex: 1;"></span>
+<div class="sm-seg" role="radiogroup" aria-label="Show"><button class="sm-seg__item is-active" role="radio" aria-checked="true">All 5</button><button class="sm-seg__item" role="radio" aria-checked="false">Links 4</button><button class="sm-seg__item" role="radio" aria-checked="false">Folders 1</button></div>
+<button class="sm-btn sm-btn--ghost sm-btn--sm">Recently deleted<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+</div>
+<div class="sm-history__list">
+<sc-for list="{{items}}" as="i" hint-placeholder-count="5">
+<div class="sm-row {{i.cls}}" style="cursor: default; padding: 12px 14px; gap: 14px;">
+<sc-if value="{{i.on}}" hint-placeholder-val="{{false}}"><input type="checkbox" class="sm-check" checked aria-label="Select {{i.title}}"></sc-if><sc-if value="{{i.off}}" hint-placeholder-val="{{true}}"><input type="checkbox" class="sm-check" aria-label="Select {{i.title}}"></sc-if>
+<span class="sm-row__preview" style="background: {{i.bg}};"><sc-if value="{{i.isFolder}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></svg></sc-if></span>
+<span class="sm-row__main"><span class="sm-row__title" style="font-size: 15px;">{{i.title}}</span><span class="sm-row__meta" style="font-size: 13px;">{{i.meta}}</span></span>
+<span class="sm-badge {{i.badge}}">{{i.left}}</span>
+<button class="sm-btn sm-btn--secondary sm-btn--sm"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4.5V9h4.5"/></svg>Restore</button>
+<button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Delete {{i.title}} forever" title="Delete forever" style="color: var(--text-muted);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15M9.5 7V5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2M6.5 7l1 12a1.5 1.5 0 0 0 1.5 1.4h6a1.5 1.5 0 0 0 1.5-1.4l1-12"/></svg></button>
+</div>
+</sc-for>
+</div>
+<p style="margin: 0; font-size: 13px; line-height: 19px; color: var(--text-muted);">Items are deleted for good after 30 days. Restore puts a link back in its folder, or in Unsorted if the folder is gone.</p>
+</sc-if>
+<sc-if value="{{isEmpty}}" hint-placeholder-val="{{false}}"><div style="flex: 1; display: grid; place-items: center; padding: 60px 0;"><div style="display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; max-width: 360px;">
+<span style="width: 72px; height: 72px; border-radius: 22px; background: var(--surface); box-shadow: var(--shadow-card); color: var(--text-muted); display: grid; place-items: center;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15M9.5 7V5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2M6.5 7l1 12a1.5 1.5 0 0 0 1.5 1.4h6a1.5 1.5 0 0 0 1.5-1.4l1-12"/></svg></span>
+<h2 style="margin: 4px 0 0; font-size: 22px; font-weight: 600;">Trash is empty</h2>
+<p style="margin: 0; font-size: 15px; line-height: 22px; color: var(--text-muted);">Deleted links and folders wait here for 30 days, so nothing is gone by accident.</p>
+</div></div></sc-if>
+</main>
+
+<sc-if value="{{showBulk}}" hint-placeholder-val="{{false}}"><div role="toolbar" aria-label="Actions for 2 selected items" class="sm-glass" style="position: absolute; left: calc(50% + 142px); bottom: 28px; transform: translateX(-50%); display: flex; align-items: center; gap: 4px; padding: 8px; border-radius: 22px;"><span style="font-size: 14px; font-weight: 600; padding: 0 12px; white-space: nowrap;">2 selected</span><button class="sm-btn sm-btn--ghost"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4.5V9h4.5"/></svg>Restore</button><span style="width: 1px; height: 24px; background: var(--border); margin: 0 4px;"></span><button class="sm-btn sm-btn--ghost" style="color: var(--danger);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15M9.5 7V5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2M6.5 7l1 12a1.5 1.5 0 0 0 1.5 1.4h6a1.5 1.5 0 0 0 1.5-1.4l1-12"/></svg>Delete forever</button><button class="sm-btn sm-btn--ghost sm-btn--icon" aria-label="Clear selection"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div></sc-if>
+<sc-if value="{{showConfirm}}" hint-placeholder-val="{{false}}"><div class="sm-scrim" style="position: absolute; inset: 0; display: grid; place-items: center; z-index: 5;"><div class="sm-dialog" role="alertdialog" aria-labelledby="et-h" aria-describedby="et-t" style="max-width: 420px; gap: 14px;"><h3 id="et-h" style="margin: 0; font-size: 20px; font-weight: 600;">Empty trash?</h3><p id="et-t" style="margin: 0; font-size: 14px; line-height: 21px; color: var(--text-muted);">5 items will be deleted for good, including the folder “Old courses” and its 9 links. This can’t be undone.</p><div class="sm-dialog__foot"><button class="sm-btn sm-btn--secondary">Cancel</button><button class="sm-btn sm-btn--danger">Delete 5 items</button></div></div></div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"empty":{"editor":"boolean","default":false},"selecting":{"editor":"boolean","default":false},"confirmEmpty":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const empty = this.props.empty ?? false;
+    const sel = !empty && (this.props.selecting ?? false);
+    const items = [
+      { id: 1, title: 'Merino crew-neck jumper, oatmeal', meta: 'From Clothes · deleted today', left: '30 days left', bg: 'var(--accent-bg)', glyph: '' },
+      { id: 2, title: 'Folder “Old courses” · 9 links inside', meta: 'From Work · deleted 3 days ago', left: '27 days left', bg: 'var(--surface-hover)', glyph: 'F' },
+      { id: 3, title: 'The best weeknight ramen', meta: 'From Recipes · deleted 9 days ago', left: '21 days left', bg: 'var(--surface-pressed)', glyph: '' },
+      { id: 4, title: 'Neon free plan limits', meta: 'From Unsorted · deleted 2 weeks ago', left: '16 days left', bg: 'var(--accent-bg)', glyph: '' },
+      { id: 5, title: 'How to center a div in 2026', meta: 'From Unsorted · deleted 26 days ago', left: '4 days left', bg: 'var(--surface-pressed)', glyph: '', soon: true }
+    ].map((it, i) => ({
+      ...it,
+      on: sel && i < 2, off: !(sel && i < 2), isFolder: !!it.glyph,
+      cls: sel && i < 2 ? 'is-selected' : '',
+      badge: it.soon ? 'sm-badge--warn' : ''
+    }));
+    return {
+      theme: (this.props.dark ?? false) ? 'dark' : 'light',
+      items, isEmpty: empty, notEmpty: !empty, allOn: false,
+      countText: empty ? 'Nothing here' : '5 items · kept for 30 days',
+      showBulk: sel, showConfirm: !empty && (this.props.confirmEmpty ?? false)
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<section class="phone-library">
+  <h1 class="phone-library__title">{{ 'library.phone.title' | transloco }}</h1>
+
+  <div class="phone-library__tiles">
+    <app-library-tile
+      [href]="'/' + APP_PATH.Links"
+      icon="link"
+      [label]="'library.scope.all' | transloco"
+      [meta]="counts()?.all?.toString()"
+    />
+    <app-library-tile
+      [href]="'/' + APP_PATH.Unsorted"
+      icon="inbox"
+      [label]="'library.scope.unsorted' | transloco"
+      [meta]="counts()?.unsorted?.toString()"
+    />
+    <app-library-tile
+      [href]="'/' + APP_PATH.Favorites"
+      icon="star"
+      accent
+      [label]="'library.scope.favorites' | transloco"
+      [meta]="counts()?.favorites?.toString()"
+    />
+    <app-library-tile
+      [href]="'/' + APP_PATH.Recent"
+      icon="clock"
+      popup
+      [label]="'links.recent.title' | transloco"
+      [meta]="openedToday() ? ('library.phone.openedToday' | transloco: { count: openedToday() }) : undefined"
+      (activated)="openRecent()"
+    />
+  </div>
+
+  <app-sidebar foldersOnly />
+</section>

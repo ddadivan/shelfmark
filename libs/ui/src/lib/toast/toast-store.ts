@@ -1,14 +1,25 @@
-import { DestroyRef, ErrorHandler, inject, Service, signal } from '@angular/core';
+import { computed, DestroyRef, ErrorHandler, inject, Service, signal } from '@angular/core';
 import { TOAST_CLOSE_REASON } from './models/toast-close-reason.const';
 import type { ToastCloseReason } from './models/toast-close-reason.type';
+import type { ToastAction } from './models/toast-action.interface';
 import { TOAST_DURATION_MS } from './models/toast-duration.const';
 import type { ToastItem } from './models/toast-item.interface';
+import { TOAST_STACK_MAX } from './models/toast-stack-max.const';
 import type { ToastOptions } from './models/toast-options.interface';
-import { TOAST_KIND } from './models/toast-kind.const';
+import type { ToastStackEntry } from './models/toast-stack-entry.interface';
+import { toastDefaultDuration } from './toast-default-duration';
+
+/** The clock of one toast: it runs, or it waits with the time that is left. */
+interface ToastClock {
+  timer: ReturnType<typeof setTimeout> | undefined;
+  remaining: number;
+  startedAt: number;
+}
 
 /**
- * State and timer of the toast on screen (internal; features use `ToastService`). One toast at
- * a time: a newer one replaces the older. The timer pauses while the toast is hovered or
+ * State and timers of the toasts on screen (internal; features use `ToastService`). Up to
+ * `TOAST_STACK_MAX` stack, the oldest first; a newer one beyond that pushes the oldest out
+ * (`replaced`). Each toast has its own timer, which pauses while that toast is hovered or
  * focused and resumes with the time that was left.
  */
 @Service()
@@ -16,19 +27,24 @@ export class ToastStore {
   private readonly current = signal<readonly ToastItem[]>([]);
   private readonly errorHandler = inject(ErrorHandler);
   private readonly resolvers = new Map<number, (reason: ToastCloseReason) => void>();
+  private readonly clocks = new Map<number, ToastClock>();
   private nextId = 1;
-  private timer: ReturnType<typeof setTimeout> | undefined;
-  private remaining = 0;
-  private startedAt = 0;
 
-  /** What to render: zero or one item. */
+  /** What to render, oldest first. */
   readonly items = this.current.asReadonly();
+  /** The same with each toast's place in the stack (0 is the newest, in front). */
+  readonly stack = computed<readonly ToastStackEntry[]>(() => {
+    const items = this.current();
+    return items.map((item, index) => ({ item, index, depth: items.length - 1 - index }));
+  });
 
   constructor() {
     // `closed` must never stay pending: settle what is left when the injector goes away.
     inject(DestroyRef).onDestroy(() => {
-      clearTimeout(this.timer);
-      this.timer = undefined;
+      for (const clock of this.clocks.values()) {
+        clearTimeout(clock.timer);
+      }
+      this.clocks.clear();
       for (const id of [...this.resolvers.keys()]) {
         this.resolve(id, TOAST_CLOSE_REASON.Dismissed);
       }
@@ -38,55 +54,60 @@ export class ToastStore {
   push(options: ToastOptions): ToastItem {
     const id = this.nextId++;
     const closed = new Promise<ToastCloseReason>((resolve) => this.resolvers.set(id, resolve));
-    // The previous toast is settled as `replaced` before `current.set` swaps it out.
-    const previous = this.current()[0];
-    if (previous) {
-      this.resolve(previous.id, TOAST_CLOSE_REASON.Replaced);
+    // A fourth toast pushes the oldest out; it is settled as `replaced` before the swap.
+    const kept = this.current().slice(-(TOAST_STACK_MAX - 1));
+    for (const dropped of this.current().slice(0, this.current().length - kept.length)) {
+      this.stopClock(dropped.id);
+      this.resolve(dropped.id, TOAST_CLOSE_REASON.Replaced);
     }
+    const duration = Math.max(
+      0,
+      options.duration ?? toastDefaultDuration(options.kind, !!options.action),
+    );
     const item: ToastItem = {
       id,
-      kind: options.kind ?? TOAST_KIND.Info,
-      text: options.text,
+      kind: options.kind,
+      title: options.title,
+      detail: options.detail,
+      thumb: options.thumb,
+      folder: options.folder,
       action: options.action,
+      secondary: options.secondary,
+      duration,
+      undo: !!options.action && duration === TOAST_DURATION_MS.Undo,
       actionHint: options.action ? options.actionHint : undefined,
-      duration: Math.max(
-        0,
-        options.duration ??
-          (options.action ? TOAST_DURATION_MS.withAction : TOAST_DURATION_MS.default),
-      ),
       closed,
     };
-    this.current.set([item]);
-    this.remaining = item.duration;
-    clearTimeout(this.timer);
-    this.timer = undefined;
+    this.current.set([...kept, item]);
+    this.clocks.set(id, { timer: undefined, remaining: duration, startedAt: 0 });
     this.start(item);
     return item;
   }
 
   dismiss(id: number, reason: ToastCloseReason = TOAST_CLOSE_REASON.Dismissed): void {
-    if (this.current()[0]?.id !== id) {
+    if (!this.current().some((item) => item.id === id)) {
       return;
     }
-    clearTimeout(this.timer);
-    this.timer = undefined;
-    this.current.set([]);
+    this.stopClock(id);
+    this.current.update((items) => items.filter((item) => item.id !== id));
     this.resolve(id, reason);
   }
 
-  /** Hover or focus on the toast stops the clock; leaving restarts it with what remained. */
+  /** Hover or focus on a toast stops its clock; leaving restarts it with what remained. */
   setPaused(id: number, paused: boolean): void {
-    if (this.current()[0]?.id !== id) {
+    const item = this.current().find((candidate) => candidate.id === id);
+    const clock = this.clocks.get(id);
+    if (!item || !clock) {
       return;
     }
     if (paused) {
-      if (this.timer !== undefined) {
-        clearTimeout(this.timer);
-        this.timer = undefined;
-        this.remaining = Math.max(0, this.remaining - (Date.now() - this.startedAt));
+      if (clock.timer !== undefined) {
+        clearTimeout(clock.timer);
+        clock.timer = undefined;
+        clock.remaining = Math.max(0, clock.remaining - (Date.now() - clock.startedAt));
       }
-    } else if (this.timer === undefined) {
-      this.start(this.current()[0]);
+    } else if (clock.timer === undefined) {
+      this.start(item);
     }
   }
 
@@ -94,10 +115,10 @@ export class ToastStore {
    * Dismisses with `action` first, then runs the action (if any): an action that shows another
    * toast must not turn this one into `replaced`. An error goes to the `ErrorHandler`.
    */
-  runAction(item: ToastItem): void {
+  runAction(item: ToastItem, action: ToastAction | undefined = item.action): void {
     this.dismiss(item.id, TOAST_CLOSE_REASON.Action);
     try {
-      item.action?.run();
+      action?.run();
     } catch (error) {
       this.errorHandler.handleError(error);
     }
@@ -105,16 +126,25 @@ export class ToastStore {
 
   /** Duration 0 means no timer: the toast stays until it is dismissed. */
   private start(item: ToastItem): void {
-    clearTimeout(this.timer);
-    this.timer = undefined;
+    const clock = this.clocks.get(item.id);
+    if (!clock) {
+      return;
+    }
+    clearTimeout(clock.timer);
+    clock.timer = undefined;
     if (item.duration === 0) {
       return;
     }
-    this.startedAt = Date.now();
-    this.timer = setTimeout(() => {
-      this.timer = undefined;
+    clock.startedAt = Date.now();
+    clock.timer = setTimeout(() => {
+      clock.timer = undefined;
       this.dismiss(item.id, TOAST_CLOSE_REASON.Timeout);
-    }, this.remaining);
+    }, clock.remaining);
+  }
+
+  private stopClock(id: number): void {
+    clearTimeout(this.clocks.get(id)?.timer);
+    this.clocks.delete(id);
   }
 
   /** Settles the `closed` promise of a toast once; later calls do nothing. */

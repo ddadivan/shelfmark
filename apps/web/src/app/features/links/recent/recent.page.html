@@ -1,0 +1,19 @@
+<div class="recent-page" [attr.aria-busy]="!store.recentLoaded()">
+  <header class="recent-page__head">
+    <div class="recent-page__heading">
+      <h1 class="recent-page__title">{{ 'links.recent.title' | transloco }}</h1>
+      <p class="recent-page__count">
+        @if (store.recentLoaded()) { {{ (hasHistory() ? pluralKey('links.recent.count',
+        store.recent().length) : 'links.recent.nothingYet' ) | transloco: { count:
+        store.recent().length, days: windowDays } }} }
+      </p>
+    </div>
+    @if (hasHistory()) {
+    <ui-button variant="secondary" (click)="history().clear()">
+      {{ 'links.recent.clear' | transloco }}
+    </ui-button>
+    }
+  </header>
+
+  <app-recent-history />
+</div>

@@ -1,0 +1,8 @@
+@if (headingLevel() === HISTORY_HEADING_LEVEL.Three) {
+  <h3 class="ui-history-group__title" [id]="titleId">{{ title() }}</h3>
+} @else {
+  <h2 class="ui-history-group__title" [id]="titleId">{{ title() }}</h2>
+}
+<div class="ui-history-group__list" role="list">
+  <ng-content />
+</div>

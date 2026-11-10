@@ -1,9 +1,11 @@
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router, withComponentInputBinding } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import axe from 'axe-core';
 import { firstValueFrom } from 'rxjs';
+import { ViewportService } from '../../core/layout/viewport.service';
 import { AUTH_API } from '../../core/auth/auth-api.token';
 import { AuthApi } from '../../core/auth/models/auth-api.interface';
 import type { AuthUser } from '@shelfmark/contracts';
@@ -27,6 +29,7 @@ const USER: AuthUser = {
 async function setup(
   signIn: AuthApi['signIn'] = () => Promise.resolve(USER),
   signInDemo?: AuthApi['signInDemo'],
+  desktop = true,
 ) {
   const api: AuthApi = {
     getSession: () => Promise.resolve(null),
@@ -49,6 +52,7 @@ async function setup(
       ),
       provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
       { provide: AUTH_API, useValue: api },
+      { provide: ViewportService, useValue: { desktop: signal(desktop) } },
     ],
   });
   await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
@@ -75,6 +79,7 @@ describe('SignInPage', () => {
     const root = harness.routeNativeElement as HTMLElement;
 
     expect(root.querySelector('h1')?.textContent).toBe('All your links on one shelf');
+    // The email form is stage 2: only the providers and the demo.
     expect(buttons(root).map((b) => b.textContent?.trim())).toEqual([
       'Continue with Google',
       'Continue with GitHub',
@@ -95,13 +100,36 @@ describe('SignInPage', () => {
     );
   });
 
-  it('shows the copyright footer', async () => {
+  it('shows four decorative drifting cards on a desktop and no mosaic band', async () => {
+    const { harness } = await setup();
+    await harness.navigateByUrl('/sign-in');
+    const root = harness.routeNativeElement as HTMLElement;
+    const drift = root.querySelector('app-sign-in-drift');
+
+    expect(drift?.getAttribute('aria-hidden')).toBe('true');
+    expect(drift?.querySelectorAll('.sd-card')).toHaveLength(4);
+    expect(drift?.textContent).toContain('Signal Forms in 20 minutes');
+    expect(root.querySelector('.sign-in__art')).toBeNull();
+  });
+
+  it('shows the mosaic band instead of the drifting cards below 64em', async () => {
+    const { harness } = await setup(undefined, undefined, false);
+    await harness.navigateByUrl('/sign-in');
+    const root = harness.routeNativeElement as HTMLElement;
+
+    expect(root.querySelector('.sign-in__art')?.getAttribute('aria-hidden')).toBe('true');
+    expect(root.querySelector('app-sign-in-drift')).toBeNull();
+    // The "or" divider is a desktop card detail: not rendered on a phone.
+    expect(root.querySelector('.sign-in__or')).toBeNull();
+  });
+
+  it('renders the "or" divider on a desktop', async () => {
     const { harness } = await setup();
     await harness.navigateByUrl('/sign-in');
 
     expect(
-      (harness.routeNativeElement as HTMLElement).querySelector('footer')?.textContent?.trim(),
-    ).toBe('© 2026 Shelfmark');
+      (harness.routeNativeElement as HTMLElement).querySelector('.sign-in__or'),
+    ).not.toBeNull();
   });
 
   it('has no axe violations', async () => {

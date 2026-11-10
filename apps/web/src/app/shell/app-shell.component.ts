@@ -7,39 +7,52 @@ import {
   untracked,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Router, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { combineLatest, map } from 'rxjs';
 import {
   AvatarComponent,
   BUTTON_SIZE,
   type IconName,
+  SearchTriggerComponent,
+  TabBarComponent,
+  type TabBarItem,
+  type TabBarSelection,
+  THEME,
   ButtonComponent,
   ICON_SIZE,
-  LogoComponent,
   MenuComponent,
   MenuItemComponent,
   MenuSeparatorComponent,
   MenuTriggerDirective,
   ToastService,
+  TooltipDirective,
 } from '@shelfmark/ui';
 import { EXPORT_FORMAT, type ExportFormat } from '@shelfmark/contracts';
+import { combineLatest, filter, map } from 'rxjs';
 import { ExportActionsService } from '../features/export/export-actions.service';
 import { AuthStore } from '../core/auth/auth.store';
 import { LinkActionsService } from '../features/links/link-actions.service';
 import { OnboardingStore } from '../features/onboarding/onboarding.store';
 import { RatingStore } from '../features/rating/rating.store';
 import { SearchDialogService } from '../features/search/search-dialog.service';
-import { RecentLinksDrawerService } from '../features/links/recent/recent-links-drawer.service';
-import { RecentLinksPanelComponent } from '../features/links/recent/recent-links-panel.component';
+import { ShortcutsDialogService } from '../features/shortcuts/shortcuts-dialog.service';
+import { THEME_PREFERENCE } from '../core/theme/models/theme-preference.const';
+import { ThemeService } from '../core/theme/theme.service';
+import { isMacPlatform } from '../features/search/is-mac-platform';
 import { ViewportService } from '../core/layout/viewport.service';
-import { UiStore } from '../stores/ui.store';
 import { APP_PATH } from '../models/app-path.const';
 import { DemoBannerComponent } from './demo-banner/demo-banner.component';
-import { MobileNavService } from './mobile-nav/mobile-nav.service';
+import { OfflineBannerComponent } from './offline-banner/offline-banner.component';
+import { PHONE_TAB } from './models/phone-tab.const';
+import { phoneTabForUrl } from './phone-tab-for-url';
+import { SettingsNavComponent } from '../features/settings/settings-nav/settings-nav.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 
-/** Layout around the signed-in pages: header with the account menu (settings, sign out), then the page. */
+/**
+ * Layout around the signed-in pages. Desktop and tablet: the sidebar card on the left, the top bar
+ * (search pill, theme, "Add link", account menu) and the page on the right. Phone: the page alone
+ * under the floating tab bar (Library, Search, Add, Tags, You); each page carries its own title.
+ */
 @Component({
   selector: 'app-shell',
   imports: [
@@ -47,14 +60,17 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     TranslocoPipe,
     AvatarComponent,
     DemoBannerComponent,
+    OfflineBannerComponent,
     ButtonComponent,
-    LogoComponent,
     MenuComponent,
     MenuItemComponent,
     MenuSeparatorComponent,
     MenuTriggerDirective,
-    RecentLinksPanelComponent,
+    SearchTriggerComponent,
+    SettingsNavComponent,
     SidebarComponent,
+    TabBarComponent,
+    TooltipDirective,
   ],
   host: { '(document:keydown)': 'onKeydown($event)' },
   templateUrl: './app-shell.component.html',
@@ -63,59 +79,58 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 })
 export default class AppShellComponent {
   protected readonly auth = inject(AuthStore);
-  protected readonly ui = inject(UiStore);
   protected readonly actions = inject(LinkActionsService);
   private readonly exporter = inject(ExportActionsService);
   protected readonly EXPORT_FORMAT = EXPORT_FORMAT;
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly search = inject(SearchDialogService);
+  protected readonly shortcuts = inject(ShortcutsDialogService);
   protected readonly viewport = inject(ViewportService);
-  protected readonly nav = inject(MobileNavService);
   private readonly transloco = inject(TranslocoService);
   private readonly toasts = inject(ToastService);
-  private readonly recentDrawer = inject(RecentLinksDrawerService);
 
-  private readonly recentLabels = toSignal(
-    combineLatest([
-      this.transloco.selectTranslate('links.recent.hide'),
-      this.transloco.selectTranslate('links.recent.show'),
-    ]).pipe(map(([hide, show]) => ({ hide, show }))),
-  );
-  /** Name of the recent-panel toggle; `null` until the translations are loaded (an icon-only button needs one). */
-  protected readonly recentToggleLabel = computed(() => {
-    const labels = this.recentLabels();
-    return labels ? (this.recentOpen() ? labels.hide : labels.show) : null;
-  });
-  /** The recent links are on screen: the inline column (desktop) or the side panel (tablet). */
-  protected readonly recentOpen = computed(() =>
-    this.viewport.desktop() ? this.ui.recentVisible() : this.recentDrawer.isOpen(),
-  );
   private readonly router = inject(Router);
-  /** Phone: the 44px touch size and no chevron next to the avatar; desktop: 36px, so the 32px avatar is never clipped. */
-  protected readonly accountButtonSize = computed(() =>
-    this.viewport.phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Md,
+  private readonly url = toSignal(
+    this.router.events.pipe(
+      filter((event) => event instanceof NavigationEnd),
+      map(() => this.router.url),
+    ),
+    { initialValue: this.router.url },
   );
-  protected readonly accountIconRight = computed<IconName | undefined>(() =>
-    this.viewport.phone() ? undefined : 'chevron-down',
+  /** The tab of the current page (the tab bar marks it with `aria-current`). */
+  protected readonly activeTab = computed(() => phoneTabForUrl(this.url()));
+  /** On the settings pages the settings nav takes the place of the sidebar (tablet and up). */
+  protected readonly inSettings = computed(() => this.activeTab() === PHONE_TAB.You);
+  private readonly tabLabels = toSignal(
+    combineLatest([
+      this.transloco.selectTranslate('shell.tabs.library'),
+      this.transloco.selectTranslate('shell.tabs.search'),
+      this.transloco.selectTranslate('shell.tabs.tags'),
+      this.transloco.selectTranslate('shell.tabs.you'),
+    ]),
+    { initialValue: ['', '', '', ''] },
   );
+  protected readonly tabs = computed<TabBarItem[]>(() => {
+    const [library, search, tags, you] = this.tabLabels();
+    return [
+      { id: PHONE_TAB.Library, label: library, icon: 'bookmark', href: `/${APP_PATH.Library}` },
+      { id: PHONE_TAB.Search, label: search, icon: 'search' },
+      { id: PHONE_TAB.Tags, label: tags, icon: 'tag', href: `/${APP_PATH.Tags}` },
+      { id: PHONE_TAB.You, label: you, icon: 'user', href: `/${APP_PATH.Settings}` },
+    ];
+  });
+  /** The avatar button is 44px: the 32px avatar is never clipped and it is a touch target. */
+  protected readonly accountButtonSize = BUTTON_SIZE.Lg;
+  protected readonly THEME = THEME;
+  protected readonly theme = inject(ThemeService);
+  /** The icon shows what a press switches to. */
+  protected readonly themeIcon = computed<IconName>(() =>
+    this.theme.resolved() === THEME.Dark ? 'sun' : 'moon',
+  );
+  /** Shortcut caps of the search pill (the key is Cmd on Apple devices, else Ctrl). */
+  protected readonly searchShortcut = isMacPlatform() ? '⌘K' : 'Ctrl K';
 
-  constructor() {
-    // Growing past the phone breakpoint shows the sidebar inline: the drawer has to go.
-    effect(() => {
-      if (!this.viewport.phone()) {
-        void this.nav.close();
-      }
-    });
-    // Growing to the desktop shows the inline column, and the phone has its own sheet: the
-    // tablet side panel has to go.
-    effect(() => {
-      if (this.viewport.desktop() || this.viewport.phone()) {
-        void this.recentDrawer.close();
-      }
-    });
-  }
-
-  private readonly onboarding = inject(OnboardingStore);
+  protected readonly onboarding = inject(OnboardingStore);
 
   /** The welcome dialog opens whenever it becomes due: first sign-in, or "Show welcome again". */
   private readonly welcome = effect(() => {
@@ -142,6 +157,25 @@ export default class AppShellComponent {
     });
   });
 
+  protected toggleTheme(): void {
+    this.theme.setPreference(
+      this.theme.resolved() === THEME.Dark ? THEME_PREFERENCE.Light : THEME_PREFERENCE.Dark,
+    );
+  }
+
+  /** A tab was chosen: the pages route (the links are real `href`s), Search opens over the page. */
+  protected async selectTab({ id, event }: TabBarSelection): Promise<void> {
+    if (id === PHONE_TAB.Search) {
+      this.search.open();
+      return;
+    }
+    event.preventDefault();
+    const href = this.tabs().find((tab) => tab.id === id)?.href;
+    if (href) {
+      await this.router.navigateByUrl(href);
+    }
+  }
+
   protected async openSettings(): Promise<void> {
     await this.router.navigateByUrl(`/${APP_PATH.Settings}`);
   }
@@ -151,18 +185,8 @@ export default class AppShellComponent {
   }
 
   protected onKeydown(event: KeyboardEvent): void {
-    if (!this.toasts.handleShortcut(event)) {
-      this.search.handleShortcut(event);
-    }
-  }
-
-  protected toggleRecent(): void {
-    if (this.viewport.desktop()) {
-      this.ui.setRecentVisible(!this.ui.recentVisible());
-    } else if (this.recentDrawer.isOpen()) {
-      void this.recentDrawer.close();
-    } else {
-      this.recentDrawer.open();
+    if (!this.toasts.handleShortcut(event) && !this.search.handleShortcut(event)) {
+      this.shortcuts.handleShortcut(event);
     }
   }
 

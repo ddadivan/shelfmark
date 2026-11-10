@@ -1,8 +1,14 @@
-<section class="tags" aria-labelledby="sidebar-tags-heading">
+<section class="tags" [class.tags--page]="asPage()" aria-labelledby="sidebar-tags-heading">
   <div class="tags__header">
-    <h2 id="sidebar-tags-heading" class="tags__heading">
-      {{ 'tags.sidebar.heading' | transloco }}
-    </h2>
+    @if (asPage()) {
+      <h1 id="sidebar-tags-heading" class="tags__heading">
+        {{ 'tags.sidebar.heading' | transloco }}
+      </h1>
+    } @else {
+      <h2 id="sidebar-tags-heading" class="tags__heading">
+        {{ 'tags.sidebar.heading' | transloco }}
+      </h2>
+    }
     <ui-button
       #addButton
       variant="ghost"
@@ -16,10 +22,6 @@
     />
   </div>
 
-  @if (adding()) {
-    <ng-container *ngTemplateOutlet="editor" />
-  }
-
   @if (tags.error()) {
     <p class="tags__note">
       {{ 'tags.sidebar.loadFailed' | transloco }}
@@ -32,8 +34,17 @@
   }
 
   <ul class="tags__list" [attr.aria-label]="'tags.sidebar.list' | transloco">
+    @if (adding()) {
+      <li class="tags__item tags__item--editor" [class.tags__item--wide]="editorWide()">
+        <ng-container *ngTemplateOutlet="editor" />
+      </li>
+    }
     @for (tag of split().shown; track tag.id) {
-      <li class="tags__item">
+      <li
+        class="tags__item"
+        [class.tags__item--editor]="renamingId() === tag.id"
+        [class.tags__item--wide]="renamingId() === tag.id && editorWide()"
+      >
         @if (renamingId() === tag.id) {
           <ng-container *ngTemplateOutlet="editor" />
         } @else {
@@ -55,18 +66,14 @@
     }
     @if (split().foldable) {
       <li class="tags__item">
-        <ui-button
-          [size]="buttonSize()"
-          variant="ghost"
-          [ariaExpanded]="expanded()"
-          (click)="toggleExpanded()"
-        >
+        <!-- A neutral chip (Tags.dc "+ 7 more"); `aria-expanded` is set on its button in the TS. -->
+        <ui-chip #moreChip clickable [variant]="CHIP_VARIANT.Neutral" (clicked)="toggleExpanded()">
           @if (expanded()) {
             {{ 'tags.sidebar.showLess' | transloco }}
           } @else {
             {{ 'tags.sidebar.more' | transloco: { count: split().hidden } }}
           }
-        </ui-button>
+        </ui-chip>
       </li>
     }
   </ul>
@@ -75,6 +82,7 @@
     [ariaLabel]="menuLabel() ?? ('tags.sidebar.menu.label' | transloco)"
     (closed)="menuClosed()"
   >
+    <p class="tags__menu-summary" role="none">{{ menuSummary() }}</p>
     <ui-menu-item icon="search" (activated)="showFromMenu()">
       {{ 'tags.sidebar.menu.show' | transloco }}
     </ui-menu-item>
@@ -99,6 +107,7 @@
     (focusout)="editorFocusOut($event)"
   >
     <ui-input
+      compact
       [label]="(renamingId() === null ? 'tags.add.label' : 'tags.rename.label') | transloco"
       [placeholder]="'tags.add.placeholder' | transloco"
       [error]="fieldError()"

@@ -3,11 +3,34 @@
 // App-level styles. Tokens, themes, base rules and fonts come from libs/ui (global.scss),
 // loaded before this file through the `styles` list in project.json.
 
-// Phone: toasts are bottom centre like everywhere, but sit above the floating add button of the
-// shell (`.shell__fab`: 24px from the edge, 56px high, plus a gap), so they never cover it.
-// `ui-toast-region` reads `--ui-toast-offset` for its bottom inset.
+// Phone: toasts are bottom centre like everywhere, but in the app shell they sit 12px above the
+// floating tab bar (`ui-tab-bar`: 20px from the edge and the home indicator, 68px high). The
+// landing, sign-in and share pages have no bar. `ui-toast-region` reads `--ui-toast-offset`
+// for its bottom inset.
 @include phone {
-  :root {
-    --ui-toast-offset: calc(var(--space-6) + #{rem(56px)} + var(--space-3));
+  :root:has(app-shell) {
+    --ui-toast-offset: calc(#{rem(20px + 68px + 12px)} + env(safe-area-inset-bottom, 0rem));
   }
+}
+
+// Cards <-> list morph (View Transitions, started by the library page): every link has a
+// `view-transition-name`, so each card glides into its row. The pseudo-elements live on the
+// document, so these rules must stay global. Reduced motion never starts a transition.
+::view-transition-group(*) {
+  animation-duration: var(--duration-slow);
+  animation-timing-function: var(--ease-in-out);
+}
+
+// Page cross-fade (router `withViewTransitions`): the root snapshot fades old into new. Short, so
+// navigation never feels slower; reduced motion skips the transition in code. Declared after the
+// `(*)` rule above, and `(root)` is more specific, so the cards <-> list morph keeps its timing.
+::view-transition-group(root) {
+  animation-duration: var(--duration-fast);
+  animation-timing-function: var(--ease-out);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--duration-fast);
+  animation-timing-function: var(--ease-out);
 }

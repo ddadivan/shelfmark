@@ -1,4 +1,11 @@
-<nav class="sidebar" [attr.aria-label]="'shell.sidebar.nav' | transloco">
+<nav
+  class="sidebar"
+  [class.sidebar--folders]="foldersOnly()"
+  [attr.aria-label]="navLabelKey() | transloco"
+>
+  @if (showLogo()) {
+    <a class="sidebar__logo" routerLink="/links"><ui-logo /></a>
+  }
   <ui-tree
     [fixedNodes]="fixedNodes()"
     [nodes]="nodes()"
@@ -15,7 +22,7 @@
       variant="ghost"
       size="sm"
       iconOnly
-      iconLeft="folder-plus"
+      iconLeft="add"
       [iconSize]="ICON_SIZE.Lg"
       [ariaLabel]="'shell.sidebar.newFolder' | transloco"
       [uiTooltip]="'shell.sidebar.newFolder' | transloco"
@@ -32,7 +39,9 @@
     </p>
   }
 
-  <app-sidebar-tags />
+  @if (!foldersOnly()) {
+    <app-sidebar-tags />
+  }
 
   <ui-menu [ariaLabel]="'shell.sidebar.folderMenu' | transloco" (closed)="menuClosed()">
     <ui-menu-item icon="folder-plus" (activated)="createSubfolder()">

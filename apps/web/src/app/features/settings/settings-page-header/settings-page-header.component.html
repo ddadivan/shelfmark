@@ -1,0 +1,17 @@
+@if (viewport.phone()) {
+  <ui-button
+    class="settings-header__back"
+    variant="ghost"
+    size="sm"
+    iconLeft="chevron-left"
+    [ariaLabel]="'settings.backToList' | transloco"
+    [href]="listHref"
+    (linkClick)="back($event)"
+  >
+    {{ 'settings.phoneTitle' | transloco }}
+  </ui-button>
+}
+<h1 class="settings-header__title">{{ title() }}</h1>
+@if (description(); as text) {
+  <p class="settings-header__description">{{ text }}</p>
+}

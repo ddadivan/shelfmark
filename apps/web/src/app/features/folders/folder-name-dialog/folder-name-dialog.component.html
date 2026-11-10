@@ -1,6 +1,6 @@
 <form [formRoot]="form">
   <ui-dialog
-    [title]="titleKey() | transloco: { parent: data.parentName }"
+    [title]="titleKey() | transloco: { parent: parentName() }"
     [closeLabel]="'folders.dialog.close' | transloco"
   >
     <div class="folder-name__fields">
@@ -9,6 +9,18 @@
         [placeholder]="'folders.name.placeholder' | transloco"
         [formField]="form.name"
       />
+
+      @if (picksParent) {
+        <ui-select
+          [label]="'folders.create.inside' | transloco"
+          [options]="parentOptions()"
+          [emptyLabel]="'folders.move.topLevel' | transloco"
+          [searchLabel]="'folders.move.searchLabel' | transloco"
+          [noResultsLabel]="'folders.move.noResults' | transloco"
+          searchable
+          [formField]="form.parentId"
+        />
+      }
 
       @if (failed()) {
         <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'folders.create.failed' | transloco }}</ui-notice>

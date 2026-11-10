@@ -18,6 +18,11 @@ export abstract class UiFieldControl {
   /** Visible label above the control. */
   readonly label = input.required<string>();
   readonly hint = input('');
+  /**
+   * A small pill for fields that sit inline among chips (a new or renamed tag): the label stays
+   * for assistive technology but is not shown, and the box is a 30px pill (44px for touch).
+   */
+  readonly compact = input(false, { transform: booleanAttribute });
   /** Manual error message, shown at once; use it without Signal Forms. */
   readonly error = input('');
   readonly disabled = input(false, { transform: booleanAttribute });

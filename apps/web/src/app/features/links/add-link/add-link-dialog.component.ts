@@ -29,9 +29,11 @@ import {
 } from '@shelfmark/contracts';
 import {
   ButtonComponent,
+  CheckboxComponent,
   DialogComponent,
   FaviconComponent,
   injectDialogData,
+  KEYBOARD_KEY,
   InputComponent,
   NoticeComponent,
   NOTICE_KIND,
@@ -49,7 +51,9 @@ import {
 import { firstValueFrom, switchMap, tap, timer, type Observable } from 'rxjs';
 import { FoldersStore } from '../../../stores/folders.store';
 import { TagsStore } from '../../../stores/tags.store';
+import { ViewportService } from '../../../core/layout/viewport.service';
 import { pluralKey } from '../../../core/i18n/plural-key';
+import { isMacPlatform } from '../../search/is-mac-platform';
 import { normalizeTagNames } from '../../tags/normalize-tag-names';
 import { ADD_LINK_ACTION } from '../models/add-link-action.const';
 import type { AddLinkDialogData } from '../models/add-link-dialog-data.interface';
@@ -85,6 +89,7 @@ const PREVIEW_DEBOUNCE_MS = 350;
   selector: 'app-add-link-dialog',
   imports: [
     ButtonComponent,
+    CheckboxComponent,
     DialogComponent,
     FaviconComponent,
     FormField,
@@ -109,7 +114,11 @@ export class AddLinkDialogComponent {
   protected readonly PREVIEW_STATE = PREVIEW_STATE;
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly LINK_LIMIT = LINK_LIMIT;
+  /** Cmd (macOS) or Ctrl: the key of the "save" shortcut shown in the footer. */
+  protected readonly mac = isMacPlatform();
 
+  /** The phone sheet has no Cancel in add mode and no shortcut hint: not rendered there. */
+  protected readonly phone = inject(ViewportService).phone;
   private readonly linksApi = inject(LINKS_API);
   private readonly folders = inject(FoldersStore);
   private readonly tagStore = inject(TagsStore);
@@ -130,6 +139,7 @@ export class AddLinkDialogComponent {
     folderId: this.original ? this.original.folderId : (this.data.folderId ?? null),
     tags: [...normalizeTagNames(this.original?.tags ?? [])],
     note: this.original?.note ?? '',
+    isFavorite: this.original?.isFavorite ?? false,
   });
 
   protected readonly form = form(
@@ -307,6 +317,14 @@ export class AddLinkDialogComponent {
     }
   }
 
+  /** Cmd / Ctrl + Enter saves from any field (Enter alone in a text field submits as before). */
+  protected onKeydown(event: KeyboardEvent): void {
+    if (event.key === KEYBOARD_KEY.Enter && (event.metaKey || event.ctrlKey) && !this.saving()) {
+      event.preventDefault();
+      (event.currentTarget as HTMLFormElement).requestSubmit();
+    }
+  }
+
   protected cancel(): void {
     this.ref.close();
   }
@@ -431,6 +449,9 @@ export class AddLinkDialogComponent {
     }
     if (value.folderId !== link.folderId) {
       changes.folderId = value.folderId;
+    }
+    if (value.isFavorite !== link.isFavorite) {
+      changes.isFavorite = value.isFavorite;
     }
     if (tags.length !== link.tags.length || tags.some((tag, index) => tag !== link.tags[index])) {
       changes.tags = tags;

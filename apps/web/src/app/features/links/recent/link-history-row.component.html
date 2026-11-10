@@ -1,0 +1,48 @@
+<ui-history-row
+  newTab
+  [href]="href()"
+  [preview]="preview()"
+  [description]="href() ? ('links.item.opensInNewTab' | transloco) : undefined"
+  (activated)="opened.emit()"
+>
+  <span slot="title">{{ link().title }}</span>
+  <span slot="meta" class="link-history-row__folder">
+    <ui-folder-icon size="sm" />
+    <span class="link-history-row__folder-name">
+      {{ folderName() ?? ('links.recent.unsorted' | transloco) }}
+    </span>
+  </span>
+  <time slot="time" class="link-history-row__time" [attr.datetime]="dateTime()">{{ time() }}</time>
+  <ui-button
+    slot="actions"
+    variant="ghost"
+    size="sm"
+    iconOnly
+    iconLeft="more"
+    [uiMenuTrigger]="menu"
+    [ariaLabel]="'links.recent.more' | transloco: { title: link().title }"
+    [uiTooltip]="'links.item.moreActions' | transloco"
+  />
+  <ui-menu
+    #menu
+    slot="actions"
+    align="end"
+    [ariaLabel]="'links.recent.more' | transloco: { title: link().title }"
+  >
+    @if (href()) {
+      <ui-menu-item icon="external" (activated)="openInNewTab.emit()">
+        {{ 'links.recent.menu.openInNewTab' | transloco }}
+      </ui-menu-item>
+    }
+    <ui-menu-item icon="folder" (activated)="showInFolder.emit()">
+      {{ 'links.recent.menu.showInFolder' | transloco }}
+    </ui-menu-item>
+    <ui-menu-item icon="copy" (activated)="copyLink.emit()">
+      {{ 'links.recent.menu.copyLink' | transloco }}
+    </ui-menu-item>
+    <ui-menu-separator />
+    <ui-menu-item icon="close" (activated)="removeRequested.emit()">
+      {{ 'links.recent.menu.remove' | transloco }}
+    </ui-menu-item>
+  </ui-menu>
+</ui-history-row>

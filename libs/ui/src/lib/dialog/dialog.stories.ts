@@ -319,6 +319,24 @@ export const DialogControls: Story = {
   }),
 };
 
+const commandFrame = (theme: Theme) => `
+  <div ${THEME_ATTRIBUTE}="${theme}" class="dst-gallery">
+    <p class="dst-hint">${theme} theme: command dialog (glass, 28px corners; live version in Components/CommandList)</p>
+    <div class="dst-scrim">
+      <ui-dialog title="Search" variant="command" closeLabel="Close">
+        <p class="dst-text">The command list sits here; the title is visually hidden.</p>
+      </ui-dialog>
+    </div>
+  </div>`;
+
+/** The command dialog panel (search overlay) in both themes; the title stays hidden from 40em. */
+export const CommandDialog: Story = {
+  render: () => ({
+    moduleMetadata: { imports: [DialogComponent] },
+    template: Object.values(THEME).map(commandFrame).join(''),
+  }),
+};
+
 /** Both themes: destructive and plain confirmations and a medium dialog. */
 export const AllVariants: Story = {
   render: () => ({

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Add link loading and error</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/shelfmark/tokens.css">
+<link rel="stylesheet" href="ds/shelfmark/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root" style="min-height: 900px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; padding: 48px; box-sizing: border-box; display: grid; grid-template-columns: repeat(auto-fit, minmax(440px, 1fr)); gap: 32px; align-content: start;">
+
+<section style="display: flex; flex-direction: column; gap: 12px;">
+<h2 style="margin: 0; font-size: 13px; font-weight: 600; color: var(--text-muted);">1 · Empty — paste a link</h2>
+<form class="sm-dialog" style="max-width: none; box-shadow: var(--shadow-popover);">
+<h3 style="margin: 0; font-size: 20px; font-weight: 600;">Add link</h3>
+<div class="sm-field"><label class="sm-field__label" for="s1">Link</label><div class="sm-field__control sm-field__control--url is-focus"><input id="s1" placeholder="https://"></div><div class="sm-field__hint">Paste a link — the title and preview fill in by themselves</div></div>
+<div class="sm-dialog__foot"><button type="button" class="sm-btn sm-btn--secondary">Cancel</button><button type="submit" class="sm-btn sm-btn--primary">Save link</button></div>
+</form>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 12px;">
+<h2 style="margin: 0; font-size: 13px; font-weight: 600; color: var(--text-muted);">2 · Loading the preview</h2>
+<form class="sm-dialog" style="max-width: none; box-shadow: var(--shadow-popover);">
+<h3 style="margin: 0; font-size: 20px; font-weight: 600;">Add link</h3>
+<div class="sm-field"><label class="sm-field__label" for="s2">Link</label><div class="sm-field__control sm-field__control--url"><input id="s2" value="https://stepik.org/course/nestjs"><span class="sm-spinner" role="status" style="color: var(--text-muted);" aria-label="Loading preview"></span></div></div>
+<div style="display: flex; gap: 14px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-md);" aria-busy="true">
+<div class="sm-skel" style="width: 128px; aspect-ratio: 16 / 9; flex: none;"></div>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 8px; padding-top: 4px;"><div class="sm-skel" style="height: 10px; width: 40%;"></div><div class="sm-skel" style="height: 14px; width: 90%;"></div><div class="sm-skel" style="height: 14px; width: 60%;"></div></div>
+</div>
+<p style="margin: 0; font-size: 12px; color: var(--text-muted);">You can keep typing a note and choosing a folder while it loads.</p>
+<div class="sm-dialog__foot"><button type="button" class="sm-btn sm-btn--secondary">Cancel</button><button type="submit" class="sm-btn sm-btn--primary">Save link</button></div>
+</form>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 12px;">
+<h2 style="margin: 0; font-size: 13px; font-weight: 600; color: var(--text-muted);">3 · Not a valid link</h2>
+<form class="sm-dialog" style="max-width: none; box-shadow: var(--shadow-popover);">
+<h3 style="margin: 0; font-size: 20px; font-weight: 600;">Add link</h3>
+<div class="sm-field sm-field--error"><label class="sm-field__label" for="s3">Link</label><div class="sm-field__control sm-field__control--url"><input id="s3" value="youtube com/ng22" aria-invalid="true" aria-describedby="s3e"></div><div class="sm-field__hint" id="s3e"><span>Enter an address that starts with http:// or https://</span></div></div>
+<div class="sm-dialog__foot"><button type="button" class="sm-btn sm-btn--secondary">Cancel</button><button type="submit" class="sm-btn sm-btn--primary">Save link</button></div>
+</form>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 12px;">
+<h2 style="margin: 0; font-size: 13px; font-weight: 600; color: var(--text-muted);">4 · Preview couldn't load</h2>
+<form class="sm-dialog" style="max-width: none; box-shadow: var(--shadow-popover);">
+<h3 style="margin: 0; font-size: 20px; font-weight: 600;">Add link</h3>
+<div class="sm-field"><label class="sm-field__label" for="s4">Link</label><div class="sm-field__control sm-field__control--url"><input id="s4" value="https://intranet.example/doc/42"></div></div>
+<div class="sm-notice sm-notice--danger" role="status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px;"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span>Couldn't load a preview. The link will be saved with its address as the title — you can rename it.</span></div>
+<div class="sm-field"><label class="sm-field__label" for="s4t">Title</label><div class="sm-field__control"><input id="s4t" value="intranet.example/doc/42"></div></div>
+<div class="sm-dialog__foot"><button type="button" class="sm-btn sm-btn--secondary">Cancel</button><button type="submit" class="sm-btn sm-btn--primary">Save link</button></div>
+</form>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

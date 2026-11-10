@@ -25,14 +25,11 @@ describe('SignInMosaicComponent', () => {
     expect(root.querySelectorAll('button, a, input, [tabindex]')).toHaveLength(0);
   });
 
-  it('renders the eight translated example links', async () => {
+  it('renders the eight tiles, each with its own landing ring', async () => {
     const { root } = await setup();
-    const text = root.textContent ?? '';
 
     expect(root.querySelectorAll('.mz-tile')).toHaveLength(8);
-    expect(text).toContain('youtube.com');
-    expect(text).toContain('Signal Forms in 20 minutes');
-    expect(text).toContain('Maybe in May');
+    expect(root.querySelectorAll('.mz-ring')).toHaveLength(8);
   });
 
   it('has no axe violations', async () => {

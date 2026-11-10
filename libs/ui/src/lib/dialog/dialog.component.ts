@@ -17,11 +17,15 @@ import { nextDialogId } from './dialog-id';
 import { UiDialogRef } from './dialog-ref';
 import { PHONE_MEDIA_QUERY } from '../media';
 import type { DialogSize } from './models/dialog-size.type';
+import { SHEET_HEIGHT } from '../sheet/models/sheet-height.const';
+import type { SheetHeight } from '../sheet/models/sheet-height.type';
 import { UI_DIALOG_CONTEXT } from './models/ui-dialog-context.const';
 import type { DragState } from './models/drag-state.interface';
 import { SHEET_SAMPLES } from './models/sheet-samples.const';
 import { shouldCloseSheet, sheetVelocity } from './sheet-drag';
 import { DIALOG_SIZE } from './models/dialog-size.const';
+import { DIALOG_VARIANT } from './models/dialog-variant.const';
+import type { DialogVariant } from './models/dialog-variant.type';
 import { BUTTON_SIZE } from '../button/models/button-size.const';
 
 const DRAG_PROPERTY = '--ui-sheet-drag';
@@ -55,6 +59,11 @@ const NO_DRAG_TARGETS = 'button, a, input, select, textarea, [contenteditable]';
 export class DialogComponent {
   /** Heading of the dialog; it names it for assistive technology. */
   readonly title = input.required<string>();
+  /**
+   * The content shows its own visible heading (the welcome steps put it under an illustration):
+   * the title stays in the DOM as the accessible name, visually hidden. The sheet grip stays.
+   */
+  readonly hideTitle = input(false, { transform: booleanAttribute });
   /** `sm` (440px) or `md` (560px); default from the open options, else `sm`. */
   readonly size = input<DialogSize>();
   /** Accessible name of the close button in the header. Without it there is no close button. */
@@ -65,6 +74,20 @@ export class DialogComponent {
    * tasks such as search, where the keyboard takes half the screen.
    */
   readonly phoneFullscreen = input(false, { transform: booleanAttribute });
+
+  /**
+   * Set by `ui-sheet`: the content is a sheet. Below 40em it gets the 28px top corners, the
+   * 150px strip of the page above it and, with `tall`, the full height under that strip; on
+   * larger screens it stays a centred dialog. Unset: a plain dialog.
+   */
+  readonly sheetHeight = input<SheetHeight>();
+
+  /**
+   * `command` draws the top-placed glass panel of the search overlay (see `UiDialogConfig.variant`);
+   * set here it wins over the open options, which is how docs render a static panel. The placement
+   * itself (96px from the top) belongs to the service, so a static panel only gets the look.
+   */
+  readonly variant = input<DialogVariant>();
 
   /** The close button was used or the sheet was dragged shut. */
   readonly closeRequested = output<void>();
@@ -77,8 +100,12 @@ export class DialogComponent {
   protected readonly titleId = this.context?.titleId ?? nextDialogId('ui-dialog-title');
   protected readonly DIALOG_SIZE = DIALOG_SIZE;
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
+  protected readonly SHEET_HEIGHT = SHEET_HEIGHT;
   protected readonly effectiveSize = computed(
     () => this.size() ?? this.context?.size ?? DIALOG_SIZE.Sm,
+  );
+  protected readonly command = computed(
+    () => (this.variant() ?? this.context?.variant) === DIALOG_VARIANT.Command,
   );
   protected readonly leaving = computed(() => this.context?.leaving() ?? false);
   protected readonly phone = signal(false);

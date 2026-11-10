@@ -6,7 +6,10 @@ import { loadLibraryPage } from './features/library/load-library-page';
 import LandingPage from './features/landing/landing.page';
 
 const libraryPage = loadLibraryPage;
-const settingsPage = () => import('./features/settings/settings.page');
+const settingsRoutes = () => import('./features/settings/settings.routes');
+const recentPage = () => import('./features/links/recent/recent.page');
+const phoneLibraryPage = () => import('./features/library/phone-library/phone-library.page');
+const tagsPage = () => import('./features/tags/tags-page/tags.page');
 const sharePage = () => import('./features/share/share.page');
 
 /** The real pages. `app.routes.ts` serves them as they are; the e2e build adds a test page. */
@@ -24,6 +27,8 @@ export const pageRoutes: Routes = [
     loadComponent: () => import('./shell/app-shell.component'),
     children: [
       { path: '', pathMatch: 'full', redirectTo: APP_PATH.Links },
+      { path: APP_PATH.Library, loadComponent: phoneLibraryPage },
+      { path: APP_PATH.Tags, loadComponent: tagsPage },
       { path: APP_PATH.Links, loadComponent: libraryPage, data: { scope: LINKS_SCOPE.All } },
       {
         path: APP_PATH.Unsorted,
@@ -40,7 +45,8 @@ export const pageRoutes: Routes = [
         loadComponent: libraryPage,
         data: { scope: LINKS_SCOPE.Folder },
       },
-      { path: APP_PATH.Settings, loadComponent: settingsPage },
+      { path: APP_PATH.Recent, loadComponent: recentPage },
+      { path: APP_PATH.Settings, loadChildren: settingsRoutes },
     ],
   },
   // Public on purpose (no guard): guests, signed-in users and the OAuth consent screen reach it.
@@ -50,11 +56,19 @@ export const pageRoutes: Routes = [
   // Web Share Target (Android): outside the shell, a quick save sheet. Signed-in only.
   { path: APP_PATH.Share, canMatch: [authOnly], loadComponent: sharePage },
   // A guest on a protected URL: to sign-in, then back.
+  { path: APP_PATH.Library, canActivate: [redirectToSignIn], children: [] },
+  { path: APP_PATH.Tags, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Links, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Unsorted, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Favorites, canActivate: [redirectToSignIn], children: [] },
   { path: `${APP_PATH.Folders}/:folderId`, canActivate: [redirectToSignIn], children: [] },
-  { path: APP_PATH.Settings, canActivate: [redirectToSignIn], children: [] },
+  { path: APP_PATH.Recent, canActivate: [redirectToSignIn], children: [] },
+  // The sections are children (`/settings/account`): any depth leads to sign-in and back.
+  {
+    path: APP_PATH.Settings,
+    canActivate: [redirectToSignIn],
+    children: [{ path: '**', children: [] }],
+  },
   // `state.url` keeps the whole query, so the shared data survives the sign-in.
   { path: APP_PATH.Share, canActivate: [redirectToSignIn], children: [] },
   {

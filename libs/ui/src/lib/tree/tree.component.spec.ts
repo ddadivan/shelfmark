@@ -230,11 +230,14 @@ describe('TreeComponent', () => {
       expect(row(TREE_STORY_NAME.Angular).style.getPropertyValue('--ui-tree-level')).toBe('2');
     });
 
-    it('shows the folder icon by default and an explicit icon on fixed rows', async () => {
+    it('shows a folder tile on folder rows and an explicit icon on fixed rows', async () => {
       const { row } = await setup();
       const href = (id: string) =>
         row(id).querySelector('.ui-tree__icon use')?.getAttribute('href') ?? '';
-      expect(href(TREE_STORY_NAME.Work)).toContain('#sm-folder');
+      // Folder rows draw their glyph in a graphite `ui-folder-icon` tile.
+      const tile = row(TREE_STORY_NAME.Work).querySelector('ui-folder-icon');
+      expect(tile?.classList).toContain('ui-folder-icon--sm');
+      expect(tile?.querySelector('use')?.getAttribute('href')).toContain('#sm-folder');
       expect(href(TREE_STORY_NAME.All)).toContain('#sm-link');
     });
 

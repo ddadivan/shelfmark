@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Settings › Language</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a" style="min-height: 900px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; display: flex; flex-wrap: wrap; gap: 12px; padding: 12px; box-sizing: border-box; align-items: flex-start;">
+
+<nav aria-label="Settings" style="flex: 1 1 220px; max-width: 248px; background: var(--surface); border-radius: 22px; box-shadow: var(--shadow-card); padding: 14px 10px; display: flex; flex-direction: column; gap: 2px;">
+<a href="#" class="sm-btn sm-btn--ghost sm-btn--sm" style="text-decoration: none; align-self: flex-start; margin-bottom: 8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M14 6l-6 6 6 6"/></svg>Back to links</a>
+<div class="sm-tree__section" style="padding-top: 4px;">Settings</div>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Account</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Appearance</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Library</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Notifications and reminders</a>
+<a href="#" class="sm-tree__row is-active" aria-current="page" style="text-decoration: none;">Language</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Keyboard shortcuts</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Import and export</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Privacy and data</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Your feedback</a>
+</nav>
+
+<main style="flex: 999 1 560px; min-width: 0; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; padding: 8px 16px 40px;">
+<div style="flex: 1 1 520px; max-width: 720px; display: flex; flex-direction: column; gap: 18px;">
+<div><h1 style="margin: 0; font-size: 34px; line-height: 40px; font-weight: 600;">Language</h1><p style="margin: 4px 0 0; font-size: 14px; color: var(--text-muted);">Interface language and how dates look.</p></div>
+<section class="sm-panel sm-settings" aria-labelledby="g1">
+<h2 id="g1" class="sm-settings__title">Language</h2>
+<div class="sm-setting"><div><div class="sm-setting__title">Interface language</div><div class="sm-setting__desc">Your links and notes stay as they are</div></div><div class="sm-field__control" style="min-width: 220px;" role="button" aria-haspopup="listbox" aria-label="Interface language: English"><span class="sm-select__value" style="flex: 1;">English</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Spell-check notes</div><div class="sm-setting__desc">Uses your browser’s dictionary</div></div><button class="sm-switch" role="switch" aria-checked="true" aria-label="Spell-check notes"></button></div>
+
+</section>
+<section class="sm-panel sm-settings" aria-labelledby="g2">
+<h2 id="g2" class="sm-settings__title">Dates and numbers</h2>
+<div class="sm-setting"><div><div class="sm-setting__title">Date format</div></div><div class="sm-field__control" style="min-width: 220px;" role="button" aria-haspopup="listbox" aria-label="Date format: 10 Nov 2026"><span class="sm-select__value" style="flex: 1;">10 Nov 2026</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Time</div></div><div class="sm-seg" role="radiogroup" aria-label="Time format"><button class="sm-seg__item is-active" role="radio" aria-checked="true" style="padding: 0 14px;">24-hour</button><button class="sm-seg__item" role="radio" aria-checked="false" style="padding: 0 14px;">12-hour</button></div></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Week starts on</div><div class="sm-setting__desc">Used in the reminder calendar</div></div><div class="sm-seg" role="radiogroup" aria-label="Week starts on"><button class="sm-seg__item is-active" role="radio" aria-checked="true" style="padding: 0 14px;">Monday</button><button class="sm-seg__item" role="radio" aria-checked="false" style="padding: 0 14px;">Sunday</button></div></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Preview</div></div><span style="font-size: 14px; font-variant-numeric: tabular-nums;">Tue, 10 Nov 2026, 12:10</span></div>
+
+</section>
+
+</div>
+<aside style="flex: 1 1 300px; max-width: 360px; padding-top: 64px;"><p class="a-note" style="font-size: 13px; line-height: 20px;">The language list shows each language in its own name: English, Français, and “Match my browser”. Switching applies at once, without a reload. See the “Interface language” board for the open list and long-string checks.</p></aside>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

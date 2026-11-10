@@ -26,6 +26,10 @@ export interface LinksApi {
   list(query?: ListLinksQuery): Observable<ListLinksResponse>;
   /** `GET /api/links/recent`: links by `lastOpenedAt` descending. */
   recent(query?: RecentLinksQuery): Observable<RecentLinksResponse>;
+  /** `DELETE /api/links/recent/:id`: removes one link from the history (the link stays saved). */
+  removeRecent(id: string): Observable<void>;
+  /** `DELETE /api/links/recent`: clears the whole history. */
+  clearRecent(): Observable<void>;
   /** `GET /api/links/:id`: one link (an "open saved" target that is not in the feed). */
   get(id: string): Observable<GetLinkResponse>;
   /** `PATCH /api/links/:id`: the updated link. */

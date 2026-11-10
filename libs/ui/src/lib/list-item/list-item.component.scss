@@ -69,7 +69,7 @@
   overflow: hidden;
   color: var(--text-muted);
   background: var(--surface-hover);
-  border-radius: var(--radius-sm);
+  border-radius: rem(10px);
 }
 
 .ui-list-item__image {

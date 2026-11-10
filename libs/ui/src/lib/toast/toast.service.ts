@@ -1,23 +1,31 @@
 import { ComponentPortal } from '@angular/cdk/portal';
-import { inject, Service, type ComponentRef } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { DestroyRef, inject, Service, type ComponentRef } from '@angular/core';
 import type { ConnectedOverlay } from '../overlay/connected-overlay';
+import { KEYBOARD_KEY } from '../keyboard';
 import { OVERLAY_LAYER } from '../overlay/models/overlay-layer.const';
 import { UiOverlay } from '../overlay/overlay.service';
 import { TOAST_CLOSE_REASON } from './models/toast-close-reason.const';
 import type { ToastCloseReason } from './models/toast-close-reason.type';
 import { TOAST_SHORTCUT } from './models/toast-shortcut.const';
+import type { ToastItem } from './models/toast-item.interface';
 import type { ToastOptions } from './models/toast-options.interface';
 import type { ToastRef } from './models/toast-ref.interface';
 import { ToastRegionComponent } from './toast-region.component';
 import { ToastStore } from './toast-store';
 
 /**
- * Short confirmations and undo. `show()` renders a `ui-toast` in the `toast` overlay layer
- * (bottom centre on every screen, the author's decision over the spec's bottom-left). One toast at a time:
- * a new one replaces the older. It lasts 4 s (8 s with an action) and waits while hovered or
- * focused; it never takes focus. The live region is created once, with the service, and stays
- * in the page. Inject the service early (a field initialiser is fine) so the region has been
- * rendered before the first toast, which keeps that first one announced.
+ * Short confirmations, status and undo. `show()` renders a `ui-toast` in the `toast` overlay
+ * layer (bottom centre on every screen, 24px up; the app lifts it with `--ui-toast-offset`).
+ * Up to three stack, the newest in front; a fourth pushes out the oldest (`replaced`). Each stays
+ * for the time of its kind (see `toastDefaultDuration`), waits while hovered or focused, and never
+ * takes focus. The live regions (polite for everything, assertive for `danger`) are created once,
+ * with the service, and stay in the page. Inject the service early (a field initialiser is fine)
+ * so the regions have been rendered before the first toast, which keeps that first one announced.
+ *
+ * Keyboard: while an Undo toast is visible Ctrl/⌘+Z runs it, and Esc dismisses the newest toast;
+ * both are ignored in editable fields and inside dialogs, menus and listboxes, and when another
+ * handler already used the key.
  */
 @Service()
 export class ToastService {
@@ -28,6 +36,10 @@ export class ToastService {
   private returnTo: { readonly id: number; readonly element: HTMLElement } | undefined;
 
   constructor() {
+    const document = inject(DOCUMENT);
+    const onKeydown = (event: KeyboardEvent): void => this.handleKeydown(event);
+    document.addEventListener('keydown', onKeydown);
+    inject(DestroyRef).onDestroy(() => document.removeEventListener('keydown', onKeydown));
     this.region = inject(UiOverlay).global({
       layer: OVERLAY_LAYER.Toast,
       panelClass: 'ui-toast-pane',
@@ -51,36 +63,41 @@ export class ToastService {
     return { dismiss: () => this.store.dismiss(item.id), closed: item.closed };
   }
 
-  /** Closes the toast on screen, if any. */
+  /** Closes the newest toast on screen, if any. */
   dismiss(): void {
-    const current = this.store.items()[0];
+    const current = this.store.items().at(-1);
     if (current) {
       this.store.dismiss(current.id);
     }
   }
 
   /**
-   * Moves focus to the action button of the toast on screen. Only an explicit call moves focus
-   * (a toast never takes it by itself); while focused the timer is paused. Does nothing without
-   * a toast or an action. The app binds a shortcut to it, so keyboard users can reach an Undo
-   * before the toast closes.
+   * Moves focus to the action button of the newest toast that has one. Only an explicit call
+   * moves focus (a toast never takes it by itself); while focused the timer is paused. Does
+   * nothing without a toast or an action. The app binds a shortcut to it, so keyboard users can
+   * reach an Undo before the toast closes.
    */
   focusAction(): void {
-    if (!this.store.items()[0]?.action) {
+    const target = this.actionable();
+    if (!target) {
       return;
     }
     const regionElement = this.regionRef.location.nativeElement as HTMLElement;
+    const button = regionElement.querySelector<HTMLElement>(
+      `[data-toast-id="${target.id}"] .ui-toast__action`,
+    );
+    if (!button) {
+      return;
+    }
     const active = document.activeElement;
     if (
       active instanceof HTMLElement &&
       active !== document.body &&
       !regionElement.contains(active)
     ) {
-      this.returnTo = { id: this.store.items()[0].id, element: active };
+      this.returnTo = { id: target.id, element: active };
     }
-    const actions = regionElement.querySelectorAll<HTMLElement>('.ui-toast__action');
-    // A replaced toast can still be leaving: the newest one is last.
-    actions.item(actions.length - 1).focus();
+    button.focus();
   }
 
   /**
@@ -97,13 +114,42 @@ export class ToastService {
       !event.shiftKey ||
       event.ctrlKey ||
       event.metaKey ||
-      !this.store.items()[0]?.action
+      !this.actionable()
     ) {
       return false;
     }
     event.preventDefault();
     this.focusAction();
     return true;
+  }
+
+  /** Ctrl/⌘+Z runs the newest Undo toast; Esc dismisses the newest toast. */
+  private handleKeydown(event: KeyboardEvent): void {
+    const newest = this.store.items().at(-1);
+    if (!newest || event.defaultPrevented || event.isComposing || isInOwnedContext(event)) {
+      return;
+    }
+    if (event.key === KEYBOARD_KEY.Escape) {
+      event.preventDefault();
+      this.store.dismiss(newest.id);
+      return;
+    }
+    const undo = this.store.items().findLast((item) => item.undo);
+    if (
+      undo &&
+      event.code === UNDO_KEY_CODE &&
+      (event.ctrlKey || event.metaKey) &&
+      !event.shiftKey &&
+      !event.altKey
+    ) {
+      event.preventDefault();
+      this.store.runAction(undo);
+    }
+  }
+
+  /** The newest toast that has an action. */
+  private actionable(): ToastItem | undefined {
+    return this.store.items().findLast((item) => item.action);
   }
 
   /**
@@ -129,4 +175,20 @@ export class ToastService {
       target.element.focus();
     }
   }
+}
+
+/** `KeyboardEvent.code` of the Z key: Ctrl/⌘+Z undoes (matched by `code`, so layouts still work). */
+const UNDO_KEY_CODE = 'KeyZ';
+
+/** True where the key belongs to something else: an editable field, a dialog, menu or listbox. */
+function isInOwnedContext(event: KeyboardEvent): boolean {
+  const target = event.target;
+  if (!(target instanceof Element)) {
+    return false;
+  }
+  return (
+    target.closest(
+      'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"], [role="combobox"], [role="dialog"], [role="alertdialog"], [role="menu"], [role="listbox"]',
+    ) !== null
+  );
 }

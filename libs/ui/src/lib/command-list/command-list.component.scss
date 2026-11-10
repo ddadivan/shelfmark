@@ -8,7 +8,6 @@
   flex-direction: column;
   min-height: 0;
   color: var(--text);
-  background: var(--surface);
 
   // Keyboard hint (`Esc`, an arrow, the Enter symbol): input end slot, footer and item trailing.
   // A 2rem square cap with a 1.1rem glyph, centred on both axes in a grid (a flex row keeps the
@@ -39,20 +38,36 @@
   @include visually-hidden;
 }
 
+// The input row has no box of its own: icon, bare input and the `Esc` cap on the dialog surface,
+// a divider below it (`--ui-command-divider`: the glass line in a command dialog). On a phone it
+// is the pill of the mobile search (`radius-full`, `surface`, card shadow, 52px).
 .ui-command-list__field {
   display: flex;
   gap: var(--space-3);
   align-items: center;
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--border);
+  padding: rem(18px) rem(20px);
+  border-bottom: 1px solid var(--ui-command-divider, var(--border));
 
   // The bare input has no outline of its own, so the row shows the keyboard focus.
   &:has(.ui-command-list__input:focus-visible) {
     @include focus-ring(-2px);
   }
 
+  // The ring follows the rounded top corners of the dialog panel it sits in.
+  @include tablet-up {
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  }
+
   // Phone: the `Esc` cap in the input end slot is noise (no keyboard shortcuts on a phone).
   @include phone {
+    gap: rem(10px);
+    min-height: rem(52px);
+    padding: 0 var(--space-4);
+    background: var(--surface);
+    border-bottom: 0;
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-card);
+
     > kbd {
       display: none;
     }
@@ -67,8 +82,14 @@
 .ui-command-list__input {
   @include field-native;
 
-  font-size: rem(17px);
-  line-height: rem(24px);
+  font-size: rem(19px);
+  line-height: rem(26px);
+
+  // 16px keeps iOS from zooming the page on focus.
+  @include phone {
+    font-size: rem(16px);
+    line-height: rem(24px);
+  }
 }
 
 .ui-command-list__list {
@@ -79,6 +100,16 @@
   padding: var(--space-2);
   overflow-y: auto;
   overscroll-behavior: contain;
+  transition: opacity var(--duration-fast) var(--ease-out);
+
+  // The shown results are being replaced: dimmed until the new ones arrive.
+  &[aria-busy='true'] {
+    opacity: 0.6;
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
 
   &[hidden] {
     display: none;
@@ -101,18 +132,16 @@
 
   padding: var(--space-2) var(--space-3) var(--space-1);
   color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
 .ui-command-list__option {
   display: flex;
   gap: var(--space-3);
   align-items: center;
-  padding: rem(8px) var(--space-3);
+  padding: rem(10px) var(--space-3);
   cursor: pointer;
   user-select: none;
-  border-radius: var(--radius-sm);
+  border-radius: rem(12px);
   transition: background-color var(--duration-fast) var(--ease-out);
 
   @include hover {
@@ -144,7 +173,35 @@
   }
 }
 
-.ui-command-item__leading,
+// Leading tile: a 40px square (`surface-hover`, 10px corners) holding the site's favicon or letter
+// tile, or an icon. Without a leading element the slot is not drawn.
+.ui-command-item__leading {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: rem(40px);
+  height: rem(40px);
+  color: var(--text-muted);
+  background: var(--surface-hover);
+  border-radius: rem(10px);
+
+  &:empty {
+    display: none;
+  }
+
+  // The favicon draws its own 16px box: inside the tile it is bigger and has no square of its own.
+  .ui-favicon {
+    width: rem(20px);
+    height: rem(20px);
+    background: transparent;
+  }
+}
+
+// The row under the arrow keys sits on `accent-bg`: the tile steps back to the page colour.
+.ui-command-list__option[data-active='true'] .ui-command-item__leading {
+  background: var(--surface);
+}
+
 .ui-command-item__trailing {
   display: inline-flex;
   flex: none;
@@ -167,6 +224,23 @@
 .ui-command-item__title {
   @include type(body);
   @include line-clamp(1);
+
+  font-weight: 500;
+}
+
+// "Enter opens" cap on the row under the arrow keys; decorative (the footer names the key). The
+// double class beats the generic `kbd` rule above.
+.ui-command-list .ui-command-list__enter {
+  display: none;
+}
+
+.ui-command-list__option[data-active='true'] > .ui-command-list__enter {
+  display: inline-grid;
+
+  // No keyboard hint on touch screens.
+  @include coarse {
+    display: none;
+  }
 }
 
 .ui-command-item__meta {
@@ -207,7 +281,7 @@
   flex-wrap: wrap;
   gap: var(--space-2) var(--space-6);
   align-items: center;
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-3) rem(20px);
   font-size: rem(14px);
   line-height: rem(20px);
 
@@ -219,7 +293,7 @@
   }
 
   color: var(--text-muted);
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--ui-command-divider, var(--border));
 
   &:empty {
     display: none;

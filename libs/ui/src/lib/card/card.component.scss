@@ -12,10 +12,9 @@
   color: var(--text);
   cursor: pointer;
   background: var(--surface);
-  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
   transition:
-    border-color var(--duration-fast) var(--ease-out),
     box-shadow var(--duration-slow) var(--ease-out),
     background-color var(--duration-slow) var(--ease-out);
 }
@@ -34,11 +33,11 @@
 :host {
   @include hover {
     background: var(--card-hover-bg);
-    border-color: var(--card-hover-border);
 
     // `--shadow-x` / `--shadow-y` come from `uiPointerShadow` (a few px, away from the
     // pointer); without the directive they are 0 and the extra layer just deepens the spread.
     box-shadow:
+      0 0 0 1px var(--card-hover-border),
       var(--shadow-card-spread),
       var(--shadow-x, 0) var(--shadow-y, 0) 24px -10px var(--shadow-card-pointer);
 
@@ -73,7 +72,7 @@
 
 :host(.ui-card--selected) {
   background: var(--accent-bg);
-  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent);
 }
 
 // Media ---------------------------------------------------------------------------------------
@@ -82,9 +81,11 @@
   position: relative;
   display: grid;
   place-items: center;
+  margin: rem(6px) rem(6px) 0;
   overflow: hidden;
   color: var(--text-muted);
   background: var(--surface-hover);
+  border-radius: rem(16px); // concentric with the 22px card corner (22 - 6)
   aspect-ratio: 16 / 9;
 }
 
@@ -153,7 +154,7 @@
 .ui-card__body {
   display: flex;
   flex-direction: column;
-  gap: rem(6px);
+  gap: var(--space-2);
   padding: var(--space-3) var(--space-4) var(--space-4);
 }
 
@@ -198,6 +199,9 @@
   @include type(heading);
   @include line-clamp(2);
 
+  font-size: rem(16px);
+  line-height: rem(22px);
+  letter-spacing: -0.01em;
   padding: 0;
   margin: 0;
   color: var(--text);

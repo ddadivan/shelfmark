@@ -1,0 +1,33 @@
+@if (!store.recentLoaded()) {
+  <div class="recent-history__skeleton" aria-busy="true">
+    <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="SKELETON_COUNT" />
+  </div>
+} @else if (!hasHistory()) {
+  <ui-empty-state
+    class="recent-history__empty"
+    illustration="empty-feed"
+    [heading]="'links.recent.empty.title' | transloco"
+    [text]="'links.recent.empty.text' | transloco: { days: windowDays }"
+  />
+} @else {
+  <div class="recent-history__groups">
+    @for (day of days(); track day.key) {
+      <ui-history-group [title]="dayTitle(day)" [headingLevel]="headingLevel()">
+        @for (link of day.links; track link.id) {
+          <app-link-history-row
+            [link]="link"
+            [folderName]="folderName(link)"
+            [time]="timeOf(link)"
+            [dateTime]="link.lastOpenedAt ?? ''"
+            (opened)="actions.open(link)"
+            (openInNewTab)="openInNewTab(link)"
+            (showInFolder)="showInFolder(link)"
+            (copyLink)="copyLink(link)"
+            (removeRequested)="remove(link)"
+          />
+        }
+      </ui-history-group>
+    }
+    <p class="recent-history__note">{{ 'links.recent.note' | transloco }}</p>
+  </div>
+}

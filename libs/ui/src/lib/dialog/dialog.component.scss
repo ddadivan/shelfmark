@@ -17,11 +17,11 @@
   gap: var(--space-4);
   width: min(var(--ui-dialog-width), calc(100vw - #{rem(48px)}));
   max-height: calc(100dvh - #{rem(48px)});
-  padding: var(--space-6);
+  padding: rem(28px);
   color: var(--text);
   background: var(--surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-popover);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-float);
 
   &--md {
     --ui-dialog-width: #{rem(560px)};
@@ -30,8 +30,8 @@
   @include phone {
     width: 100vw;
     max-height: calc(100dvh - #{rem(48px)});
-    padding: var(--space-3) rem(20px) calc(var(--space-6) + env(safe-area-inset-bottom));
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: var(--space-3) rem(20px) calc(#{rem(28px)} + env(safe-area-inset-bottom));
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
     transform: translateY(var(--ui-sheet-drag, 0));
   }
 
@@ -45,6 +45,37 @@
     }
   }
 
+  // Sheet (`ui-sheet`): 28px top corners, never closer than 150px to the top of the page; `tall`
+  // fills that height. Larger screens keep the dialog.
+  .ui-dialog--sheet {
+    @include phone {
+      max-height: calc(100dvh - #{rem(150px)});
+      padding-inline: rem(20px);
+      padding-bottom: calc(#{rem(28px)} + env(safe-area-inset-bottom));
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    }
+  }
+
+  .ui-dialog--sheet-tall {
+    @include phone {
+      height: calc(100dvh - #{rem(150px)});
+    }
+  }
+
+  .ui-dialog--sheet .ui-dialog__grip {
+    @include phone {
+      width: rem(40px);
+      height: rem(5px);
+      border-radius: rem(3px);
+    }
+  }
+
+  .ui-dialog--sheet-tall .ui-dialog__body {
+    @include phone {
+      flex: 1;
+    }
+  }
+
   // The drag moves the sheet one to one: no transition while the finger is down.
   &--snapping {
     @include phone {
@@ -53,6 +84,64 @@
       @include reduced-motion {
         transition: none;
       }
+    }
+  }
+}
+
+// Command dialog (`variant: command`, the search overlay): a glass layer (the Glass spec allows
+// floating layers; the search overlay is one) 680px wide, 96px below the top edge (the global
+// position strategy puts the pane at the top), the 28px corners of every dialog. The title stays
+// in the DOM for the accessible name but is visually hidden, and so is the close button's row:
+// from 40em Esc and the scrim close it. The body is the command list, which scrolls itself.
+// Enter and leave animations are the plain dialog's (`ui-dialog--enter` / `--leave`).
+.ui-dialog--command {
+  --ui-dialog-width: #{rem(680px)};
+
+  // Divider colour read by `ui-command-list`.
+  --ui-command-divider: var(--glass-line);
+
+  @include glass;
+
+  gap: 0;
+  padding: 0;
+  margin-block-start: rem(96px);
+  overflow: hidden;
+  max-height: calc(100dvh - #{rem(96px + 48px)});
+
+  .ui-dialog__body {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .ui-dialog__drag {
+    @include tablet-up {
+      @include visually-hidden;
+    }
+  }
+
+  // A phone shows it as a page (the mockup): the page background, the title and the close
+  // button on top, no glass.
+  @include phone {
+    margin-block-start: 0;
+    background: var(--bg);
+    backdrop-filter: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: calc(var(--space-4) + env(safe-area-inset-top)) rem(16px) env(safe-area-inset-bottom);
+    max-height: 100dvh;
+
+    .ui-dialog__drag {
+      gap: 0;
+      padding-block-end: var(--space-3);
+    }
+
+    .ui-dialog__title {
+      @include type(display);
+
+      font-size: rem(34px);
+      line-height: rem(38px);
     }
   }
 }
@@ -103,11 +192,23 @@
   }
 }
 
+.ui-dialog--untitled .ui-dialog__head {
+  @include visually-hidden;
+}
+
 .ui-dialog__head {
   display: flex;
   gap: var(--space-3);
   align-items: flex-start;
   justify-content: space-between;
+}
+
+.ui-dialog__head-end {
+  display: flex;
+  flex: none;
+  gap: var(--space-1);
+  align-items: center;
+  margin-inline-start: auto;
 }
 
 .ui-dialog__title {

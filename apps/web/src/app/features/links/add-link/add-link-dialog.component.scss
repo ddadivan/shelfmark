@@ -22,15 +22,57 @@
   white-space: nowrap;
 }
 
+// AddLink.dc.html: a card on `bg` (8px inside, 20px corner) with a thumbnail tile, then the host,
+// the title and a note. The loading state keeps the bordered box of AddLinkStates.dc.html.
 .add-link__preview {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  min-width: 0;
+  padding: var(--space-2);
+  background: var(--bg);
+  border-radius: calc(var(--radius-lg) - var(--space-2) / 2);
+
+  &--loading {
+    padding: var(--space-3);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+
+    ui-skeleton {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+}
+
+// No page image yet (ADR 0027): the tile of the feed cards with the first letter of the host.
+.add-link__thumb {
+  @include type(title);
+
+  display: grid;
+  flex: none;
+  place-items: center;
+  align-self: stretch;
+  width: rem(148px);
+  min-height: rem(88px);
+  color: var(--accent-text);
+  text-transform: uppercase;
+  background: var(--accent-bg);
+  border-radius: var(--radius-md);
+
+  @include phone {
+    width: rem(88px);
+    min-height: rem(66px);
+    border-radius: var(--radius-sm);
+  }
+}
+
+.add-link__preview-main {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
   min-width: 0;
-  padding: var(--space-3);
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
 }
 
 .add-link__meta {
@@ -51,7 +93,7 @@
 }
 
 .add-link__title {
-  @include type(label);
+  @include type(heading);
 
   color: var(--text);
   overflow-wrap: anywhere;
@@ -76,5 +118,26 @@
 .add-link__delete {
   @include tablet-up {
     margin-inline-end: auto;
+  }
+}
+
+// The "save" shortcut at the start of the footer; a phone has no keyboard to press it.
+.add-link__shortcut {
+  @include type(caption);
+
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+  margin-inline-end: auto;
+  color: var(--text-muted);
+
+  kbd {
+    @include type(caption);
+
+    padding: 0 var(--space-1);
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    background: var(--surface-hover);
+    border-radius: var(--radius-sm);
   }
 }

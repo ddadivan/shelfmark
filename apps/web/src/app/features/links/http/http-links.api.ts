@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import {
   LINK_IMAGES_ENDPOINT,
+  RECENT_LINKS_ENDPOINT,
   type CaptureLinkImagesResponse,
   type CreateLinkRequest,
   type GetLinkResponse,
@@ -48,6 +49,17 @@ export class HttpLinksApi implements LinksApi {
     return this.http.get<RecentLinksResponse>(`${this.url()}/recent`, {
       params: query.limit === undefined ? undefined : new HttpParams().set('limit', query.limit),
     });
+  }
+
+  removeRecent(id: string): Observable<void> {
+    return this.http.delete<void>(
+      RECENT_LINKS_ENDPOINT.Remove.replace(':id', encodeURIComponent(id)),
+      { context: skipErrorToast() },
+    );
+  }
+
+  clearRecent(): Observable<void> {
+    return this.http.delete<void>(RECENT_LINKS_ENDPOINT.Clear, { context: skipErrorToast() });
   }
 
   get(id: string): Observable<GetLinkResponse> {

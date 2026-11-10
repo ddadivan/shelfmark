@@ -1,6 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
 import {
   afterNextRender,
+  booleanAttribute,
   afterRenderEffect,
   ChangeDetectionStrategy,
   Component,
@@ -9,6 +10,7 @@ import {
   ElementRef,
   inject,
   Injector,
+  input,
   signal,
   viewChild,
 } from '@angular/core';
@@ -21,6 +23,7 @@ import {
   BUTTON_VARIANT,
   ButtonComponent,
   ICON_SIZE,
+  CHIP_VARIANT,
   ChipComponent,
   InputComponent,
   KEYBOARD_KEY,
@@ -36,6 +39,7 @@ import {
 import { TAG_OUTCOME } from '../../../stores/models/tag-outcome.const';
 import { TagsStore } from '../../../stores/tags.store';
 import { ViewportService } from '../../../core/layout/viewport.service';
+import { pluralKey } from '../../../core/i18n/plural-key';
 import { TagActionsService } from '../tag-actions.service';
 import { splitTags } from '../tag-split';
 
@@ -67,7 +71,11 @@ import { splitTags } from '../tag-split';
 })
 export class SidebarTagsComponent {
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
+  protected readonly CHIP_VARIANT = CHIP_VARIANT;
   protected readonly ICON_SIZE = ICON_SIZE;
+
+  /** The Tags tab of the phone: the heading is the page title (an `h1`, large) and chips are bigger. */
+  readonly asPage = input(false, { transform: booleanAttribute });
 
   protected readonly tags = inject(TagsStore);
   private readonly viewport = inject(ViewportService);
@@ -88,6 +96,7 @@ export class SidebarTagsComponent {
   private readonly i18n = toSignal(this.transloco.events$, { initialValue: undefined });
 
   protected readonly expanded = signal(false);
+  private readonly moreChip = viewChild('moreChip', { read: ElementRef });
   protected readonly split = computed(() => splitTags(this.tags.entities(), this.expanded()));
 
   /** The "+" field is open. */
@@ -113,17 +122,43 @@ export class SidebarTagsComponent {
   /** The existing tag a rename ran into: the merge is offered. */
   protected readonly conflict = signal<TagResponse | null>(null);
 
+  /** The editor takes the whole row when it shows an error or the offer to merge. */
+  protected readonly editorWide = computed(
+    () => this.conflict() !== null || this.fieldError() !== '',
+  );
+
   /** `id` of the tag whose menu is open. */
   protected readonly menuTagId = signal<string | null>(null);
   protected readonly menuLabel = computed(() => {
     const tag = this.menuTag();
     return tag ? this.transloco.translate('tags.sidebar.menuFor', { name: tag.name }) : undefined;
   });
+  /** "winter, 12 links": the first line of the menu says whose menu it is. */
+  protected readonly menuSummary = computed(() => {
+    const tag = this.menuTag();
+    if (!tag) {
+      return '';
+    }
+    this.i18n();
+    return this.transloco.translate('tags.sidebar.menu.summary', {
+      name: tag.name,
+      links: this.transloco.translate(pluralKey('tags.count', tag.linkCount), {
+        count: tag.linkCount,
+      }),
+    });
+  });
   /** The tag the menu was opened for; kept while an item is chosen and the menu closes. */
   private menuTargetId: string | null = null;
 
   constructor() {
     void this.tags.load();
+    // `ui-chip` has no `aria-expanded` input: the fold chip is a disclosure button, so its inner
+    // button carries the state (the chip is only in the DOM while there is something to fold).
+    afterRenderEffect(() => {
+      this.moreChip()
+        ?.nativeElement.querySelector('.ui-chip__body')
+        ?.setAttribute('aria-expanded', String(this.expanded()));
+    });
     // A press outside the open field closes it without saving, like Esc. The "+" button is left
     // out: its own click toggles the field, so a press on it must not also close it here.
     effect((onCleanup) => {
@@ -344,7 +379,7 @@ export class SidebarTagsComponent {
         } else {
           this.toasts.show({
             kind: TOAST_KIND.Success,
-            text: this.transloco.translate('tags.add.done', { name }),
+            title: this.transloco.translate('tags.add.done', { name }),
           });
         }
         this.cancel();

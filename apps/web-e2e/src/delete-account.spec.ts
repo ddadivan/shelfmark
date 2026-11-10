@@ -1,5 +1,6 @@
 import { type Page } from '@playwright/test';
 import { COLOR_SCHEME } from './models/color-scheme.const';
+import { settled } from './support/settled';
 import { expectNoBlockingViolations } from './support/axe';
 import { demoUser, MOCK_USER, seedSession } from './support/mock-session';
 import { expect, test } from './support/test';
@@ -10,7 +11,7 @@ const SESSION_KEY = 'sm-mock-session';
 const ROW_BUTTON = 'Delete account';
 
 async function openDialog(page: Page) {
-  await page.goto('/settings');
+  await page.goto('/settings/account');
   await page.getByRole('main').getByRole('button', { name: ROW_BUTTON }).click();
   const dialog = page.getByRole('alertdialog', { name: 'Delete your account?' });
   await expect(dialog).toBeVisible();
@@ -36,11 +37,11 @@ test.describe('delete account (mock API)', () => {
 
     await expect(page).toHaveURL(/\/$/);
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-    await expect(page.getByText('Your account and all your data were deleted.')).toBeVisible();
+    await expect(page.getByText('All your data was deleted')).toBeVisible();
     expect(await page.evaluate((key) => localStorage.getItem(key), SESSION_KEY)).toBeNull();
 
     // The session is gone: a protected page sends the guest to sign-in.
-    await page.goto('/settings');
+    await page.goto('/settings/account');
     await expect(page).toHaveURL(/\/sign-in/);
   });
 
@@ -51,7 +52,7 @@ test.describe('delete account (mock API)', () => {
     await dialog.getByRole('button', { name: 'Cancel' }).click();
 
     await expect(page.getByRole('alertdialog')).toHaveCount(0);
-    await expect(page).toHaveURL(/\/settings$/);
+    await expect(page).toHaveURL(/\/settings\/account$/);
   });
 
   for (const [scenario, message] of [
@@ -71,15 +72,15 @@ test.describe('delete account (mock API)', () => {
 
       await expect(dialog.getByText(message)).toBeVisible();
       await expect(dialog).toBeVisible();
-      await expect(page).toHaveURL(/\/settings$/);
+      await expect(page).toHaveURL(/\/settings\/account$/);
     });
   }
 
   test('a demo user does not see the row', async ({ page }) => {
     await seedSession(page, demoUser(5));
-    await page.goto('/settings');
+    await page.goto('/settings/account');
 
-    await expect(page.getByRole('heading', { level: 1, name: 'Settings' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Account' })).toBeVisible();
     await expect(page.getByRole('button', { name: ROW_BUTTON })).toHaveCount(0);
   });
 
@@ -91,12 +92,14 @@ test.describe('delete account (mock API)', () => {
         page,
       }, testInfo) => {
         await seedSession(page);
-        await page.goto('/settings');
+        await page.goto('/settings/account');
         await expect(page.getByRole('button', { name: ROW_BUTTON })).toBeVisible();
+        await settled(page);
         await expectNoBlockingViolations(page, testInfo);
 
         await page.getByRole('main').getByRole('button', { name: ROW_BUTTON }).click();
         await expect(page.getByRole('alertdialog')).toBeVisible();
+        await settled(page);
         await expectNoBlockingViolations(page, testInfo, { include: '[role="alertdialog"]' });
       });
     });

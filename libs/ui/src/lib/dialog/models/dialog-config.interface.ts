@@ -1,10 +1,19 @@
 import type { DialogRole } from './dialog-role.type';
 import type { DialogSize } from './dialog-size.type';
+import type { DialogVariant } from './dialog-variant.type';
 
 /** Options of `DialogService.open()`. */
 export interface UiDialogConfig<D = undefined> {
   /** Panel width; `ui-dialog` uses it unless its own `size` input is set. Default `sm`. */
   readonly size?: DialogSize;
+  /**
+   * `command`: a command dialog as in the search overlay. Glass surface, 28px corners, about 680px
+   * wide, 96px from the top of the viewport (not centred), and the title is visually hidden (it
+   * still names the dialog); the header close button is not shown from 40em (Esc and the scrim
+   * close it), on a phone the dialog is a plain full-screen page with its title shown. Pair it
+   * with `phoneFullscreen` on `ui-dialog`. Default `default`: the plain panel, unchanged.
+   */
+  readonly variant?: DialogVariant;
   /** Read in the dialog component with `injectDialogData<D>()`. */
   readonly data?: D;
   /** Esc and a scrim click close the dialog. `false` makes it blocking. Default `true`. */

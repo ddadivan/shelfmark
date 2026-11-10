@@ -17,7 +17,7 @@
   align-items: center;
   align-self: stretch;
   min-width: 0;
-  min-height: rem(38px);
+  min-height: rem(42px);
   padding: 0 var(--space-3);
   margin: 0 calc(-1 * var(--space-3));
   color: var(--text);
@@ -83,7 +83,7 @@
 }
 
 .ui-select__panel {
-  @include popover;
+  @include glass;
 
   display: flex;
   flex-direction: column;
@@ -91,8 +91,9 @@
   min-width: 100%;
   max-width: min(rem(480px), calc(100vw - #{rem(16px)}));
   max-height: min(rem(320px), calc(100vh - #{rem(16px)}));
-  padding: var(--space-1);
+  padding: rem(6px);
   margin: var(--space-1) 0;
+  border-radius: rem(18px);
 }
 
 // `--ui-origin` is set on the overlay pane from the resolved position.
@@ -155,12 +156,12 @@
   display: flex;
   gap: rem(10px);
   align-items: center;
-  padding: rem(7px) rem(10px);
-  padding-inline-start: calc(#{rem(10px)} + var(--ui-select-level, 0) * #{rem(16px)});
+  padding: rem(9px) rem(12px);
+  padding-inline-start: calc(#{rem(12px)} + var(--ui-select-level, 0) * #{rem(16px)});
   color: var(--text);
   cursor: pointer;
   user-select: none;
-  border-radius: var(--radius-sm);
+  border-radius: rem(12px);
   transition: background-color var(--duration-fast) var(--ease-out);
 
   @include hover {

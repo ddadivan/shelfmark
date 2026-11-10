@@ -14,6 +14,6 @@ export class ViewportService {
   /** Below the phone breakpoint (40em): the sidebar is a drawer. */
   readonly phone = mediaMatch(PHONE_MEDIA_QUERY);
   private readonly belowDesktop = mediaMatch(BELOW_DESKTOP_QUERY);
-  /** From 64em: the recent panel has room. */
+  /** From 64em. */
   readonly desktop = computed(() => !this.belowDesktop());
 }

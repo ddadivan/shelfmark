@@ -1,0 +1,65 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+
+  // The height of a tile with its count line (icon, name, count): reserved from the first frame,
+  // so the page below the tiles does not jump when the tiles render.
+  min-height: rem(98px);
+}
+
+// MobileMenu tile: a 20px-corner card on the whisper ring, icon over the name and count.
+.library-tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  box-sizing: border-box;
+  height: 100%;
+  padding: rem(14px);
+  color: var(--text);
+  text-decoration: none;
+  background: var(--surface);
+  border-radius: rem(20px);
+  box-shadow: var(--shadow-card);
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  @include hover {
+    background: var(--surface-hover);
+  }
+
+  &:active {
+    background: var(--surface-pressed);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+.library-tile__icon--accent {
+  color: var(--accent);
+}
+
+.library-tile__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.library-tile__label {
+  @include type(label);
+
+  overflow-wrap: anywhere;
+}
+
+.library-tile__meta {
+  @include type(caption);
+
+  min-height: 1lh;
+  color: var(--text-muted);
+}

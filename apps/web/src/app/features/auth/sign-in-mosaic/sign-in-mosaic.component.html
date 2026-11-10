@@ -1,36 +1,21 @@
 <div class="mz">
   <div class="mz-grid">
     @for (tile of SIGN_IN_TILES; track tile.id; let i = $index) {
-      <div class="mz-tile mz-tile--{{ i }} mz-slot--{{ slot(i) }}" [attr.data-tile]="i">
-        <div class="mz-px">
-          <div class="mz-inner" [class.is-flipped]="isFlipped(i)">
-            <span class="mz-face mz-front mz-front--{{ tile.tone }} mz-front--{{ tile.mark }}">
-              @switch (tile.mark) {
-                @case (SIGN_IN_TILE_MARK.Pill) {
-                  <span class="mz-pill mz-pill--md"></span>
-                }
-                @case (SIGN_IN_TILE_MARK.Pills) {
-                  <span class="mz-pills"
-                    ><span class="mz-pill mz-pill--lg"></span
-                    ><span class="mz-pill mz-pill--sm"></span
-                  ></span>
-                }
-                @case (SIGN_IN_TILE_MARK.Square) {
-                  <span class="mz-sq"></span>
-                }
+      <div class="mz-tile mz-tile--{{ i }}">
+        <div class="mz-inner">
+          <span class="mz-front mz-front--{{ tile.tone }}">
+            @switch (tile.mark) {
+              @case (SIGN_IN_TILE_MARK.Square) {
+                <span class="mz-sq"></span>
               }
-            </span>
-            <span class="mz-face mz-back">
-              <span class="mz-meta"><ui-favicon [letter]="tile.letter" />{{ tile.domain }}</span>
-              <span class="mz-title">{{
-                'auth.signIn.tiles.' + tile.id + '.title' | transloco
-              }}</span>
-              <span class="mz-note">{{
-                'auth.signIn.tiles.' + tile.id + '.note' | transloco
-              }}</span>
-            </span>
-            <span class="mz-ring"></span>
-          </div>
+              @case (SIGN_IN_TILE_MARK.Pills) {
+                <span class="mz-pills"
+                  ><span class="mz-pill mz-pill--lg"></span><span class="mz-pill mz-pill--sm"></span
+                ></span>
+              }
+            }
+          </span>
+          <span class="mz-ring"></span>
         </div>
       </div>
     }

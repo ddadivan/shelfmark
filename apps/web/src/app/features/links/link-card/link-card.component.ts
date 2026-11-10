@@ -8,6 +8,7 @@ import {
   FaviconComponent,
   MenuComponent,
   MenuItemComponent,
+  MenuSeparatorComponent,
   MenuTriggerDirective,
   PointerShadowDirective,
   TooltipDirective,
@@ -30,6 +31,7 @@ const MAX_TAGS = 3;
     FaviconComponent,
     MenuComponent,
     MenuItemComponent,
+    MenuSeparatorComponent,
     MenuTriggerDirective,
     PointerShadowDirective,
     TooltipDirective,
@@ -44,6 +46,8 @@ export class LinkCardComponent {
   readonly reveal = input(false);
 
   readonly opened = output<void>();
+  /** "Open" from the actions menu: the link opens in a new tab. */
+  readonly openRequested = output<void>();
   readonly favoriteToggled = output<void>();
   readonly editRequested = output<void>();
   readonly deleteRequested = output<void>();
@@ -55,6 +59,7 @@ export class LinkCardComponent {
   protected readonly favicon = computed(() => ownImageUrl(this.link().faviconUrl));
   protected readonly image = computed(() => ownImageUrl(this.link().imageUrl));
   protected readonly tags = computed(() => this.link().tags.slice(0, MAX_TAGS));
+  protected readonly hiddenTags = computed(() => Math.max(0, this.link().tags.length - MAX_TAGS));
 
   protected open(): void {
     if (this.href() !== undefined) {

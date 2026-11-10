@@ -9,7 +9,8 @@ import {
   pickTagMenuItem,
 } from '../support/a11y-flows';
 import { NEW_USER, seedSession } from '../support/mock-session';
-import { openSidebar } from '../support/sidebar';
+import { SEARCH_BUTTON } from '../support/search-button';
+import { openSidebar, openTags } from '../support/sidebar';
 import type { A11yScreen } from './a11y-screen.interface';
 import { DIALOG_SELECTOR } from './dialog-selector.const';
 import { E2E_PROJECT } from './e2e-project.const';
@@ -51,6 +52,13 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     },
   },
   {
+    name: 'recently opened',
+    open: async (page) => {
+      await openSignedIn(page, '/recent');
+      await expect(page.locator('app-link-history-row').first()).toBeVisible();
+    },
+  },
+  {
     name: 'folder view',
     open: async (page) => {
       await openFeed(page, `/folders/${MOCK_FIXTURE.readingId}`);
@@ -71,7 +79,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     open: async (page) => {
       await openFeed(page);
       await openSidebar(page);
-      await page.getByRole('button', { name: 'Create a folder' }).click();
+      await page.getByRole('button', { name: 'New folder' }).click();
       const dialog = page.getByRole('dialog', { name: 'New folder' });
       await dialog.getByLabel('Name').fill('Projects');
       await dialog.getByRole('button', { name: 'Create folder' }).click();
@@ -97,7 +105,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     name: 'search dialog',
     open: async (page) => {
       await openFeed(page);
-      await page.getByRole('button', { name: 'Search', exact: true }).click();
+      await page.getByRole('button', { name: SEARCH_BUTTON }).click();
       await page
         .getByRole('combobox', { name: 'Search links, folders and tags' })
         .fill(MOCK_FIXTURE.searchWord);
@@ -107,12 +115,59 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     ...SHEET,
   },
   {
-    name: 'settings',
+    name: 'settings (You list on a phone, the account on desktop)',
     open: async (page) => {
       await openSignedIn(page, '/settings');
-      await expect(page.getByRole('heading', { level: 1, name: 'Settings' })).toBeVisible();
+      await expect(page.getByRole('heading', { level: 1, name: /^(Account|You)$/ })).toBeVisible();
+    },
+  },
+  {
+    name: 'settings account',
+    open: async (page) => {
+      await openSignedIn(page, '/settings/account');
+      await expect(page.getByRole('heading', { level: 1, name: 'Account' })).toBeVisible();
+      await expect(page.getByText('See the 3-step introduction again')).toBeVisible();
+    },
+  },
+  {
+    name: 'settings appearance',
+    open: async (page) => {
+      await openSignedIn(page, '/settings/appearance');
+      await expect(page.getByRole('heading', { level: 1, name: 'Appearance' })).toBeVisible();
+    },
+  },
+  {
+    name: 'settings export',
+    open: async (page) => {
+      await openSignedIn(page, '/settings/import-export');
+      await expect(page.getByRole('heading', { level: 1, name: 'Export' })).toBeVisible();
       await expect(page.getByText('Export your data')).toBeVisible();
     },
+  },
+  {
+    name: 'settings privacy and data',
+    open: async (page) => {
+      await openSignedIn(page, '/settings/privacy');
+      await expect(page.getByRole('heading', { level: 1, name: 'Privacy and data' })).toBeVisible();
+    },
+  },
+  {
+    name: 'settings keyboard shortcuts',
+    open: async (page) => {
+      await openSignedIn(page, '/settings/shortcuts');
+      await expect(
+        page.getByRole('heading', { level: 1, name: 'Keyboard shortcuts' }),
+      ).toBeVisible();
+    },
+  },
+  {
+    name: 'keyboard shortcuts dialog',
+    open: async (page) => {
+      await openFeed(page);
+      await page.keyboard.press('?');
+      await expect(page.getByRole('dialog', { name: 'Keyboard shortcuts' })).toBeVisible();
+    },
+    ...SHEET,
   },
   {
     name: 'export menu',
@@ -171,7 +226,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     open: async (page) => {
       await openFeed(page);
       await openSidebar(page);
-      await page.getByRole('button', { name: 'Create a folder' }).click();
+      await page.getByRole('button', { name: 'New folder' }).click();
       await expect(page.getByRole('dialog', { name: 'New folder' })).toBeVisible();
     },
     ...OVERLAY,
@@ -211,13 +266,13 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     name: 'tag, new tag field',
     open: async (page) => {
       await openFeed(page);
-      await openSidebar(page);
-      const library = page.getByRole('navigation', { name: 'Library' });
-      await library.getByRole('button', { name: 'New tag' }).click();
-      await expect(library.getByRole('textbox', { name: 'New tag' })).toBeFocused();
+      await openTags(page);
+      const tags = page.locator('app-sidebar-tags');
+      await tags.getByRole('button', { name: 'New tag' }).click();
+      await expect(tags.getByRole('textbox', { name: 'New tag' })).toBeFocused();
     },
-    include: 'app-sidebar',
-    // Both projects: on a phone the field lives in the drawer.
+    include: 'app-sidebar-tags',
+    // Both projects: on a phone the field lives on the Tags tab.
   },
   {
     name: 'merge tag dialog',
@@ -259,15 +314,33 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     ...SHEET,
   },
   {
-    name: 'phone drawer',
+    name: 'phone library',
     only: E2E_PROJECT.Phone,
     open: async (page) => {
       await openFeed(page);
       await openSidebar(page);
-      await expect(
-        page.getByRole('dialog', { name: 'Menu' }).getByRole('treeitem', { name: /^All links/ }),
-      ).toBeVisible();
+      await expect(page.locator('app-library-tile').first()).toBeVisible();
     },
-    include: '[role="dialog"][aria-label="Menu"]',
+  },
+  {
+    name: 'phone tags',
+    only: E2E_PROJECT.Phone,
+    open: async (page) => {
+      await openFeed(page);
+      await openTags(page);
+      await expect(page.locator('app-sidebar-tags ui-chip').first()).toBeVisible();
+    },
+  },
+  {
+    name: 'phone recently opened sheet',
+    only: E2E_PROJECT.Phone,
+    open: async (page) => {
+      await openFeed(page);
+      await openSidebar(page);
+      await page.getByRole('link', { name: /^Recently opened/ }).click();
+      await expect(page.getByRole('dialog', { name: 'Recently opened' })).toBeVisible();
+      await expect(page.locator('app-link-history-row').first()).toBeVisible();
+    },
+    ...SHEET,
   },
 ];

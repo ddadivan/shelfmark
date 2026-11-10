@@ -9,3 +9,5 @@ export type { DialogRole } from './models/dialog-role.type';
 export { DIALOG_SIZE } from './models/dialog-size.const';
 export type { DialogSize } from './models/dialog-size.type';
 export { UI_DIALOG_DATA } from './models/ui-dialog-data.const';
+export { DIALOG_VARIANT } from './models/dialog-variant.const';
+export type { DialogVariant } from './models/dialog-variant.type';

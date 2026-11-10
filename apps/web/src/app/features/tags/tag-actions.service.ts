@@ -63,7 +63,11 @@ export class TagActionsService {
       this.mergedInto(tag, result.tag ?? target);
       return true;
     }
-    this.toasts.show({ kind: TOAST_KIND.Error, text: this.t('tags.merge.failed') });
+    this.toasts.show({
+      kind: TOAST_KIND.Danger,
+      title: this.t('tags.merge.failedTitle'),
+      detail: this.t('tags.merge.failedDetail'),
+    });
     return false;
   }
 
@@ -88,7 +92,7 @@ export class TagActionsService {
       return;
     }
     this.undoToast.show({
-      text: this.t('tags.delete.done', { name: tag.name }),
+      title: this.t('tags.delete.done', { name: tag.name }),
       actionLabel: this.t('tags.delete.undo'),
       onUndo: () => this.tags.undoRemove(tag.id),
       onExpire: () => void this.commitDelete(tag),
@@ -100,8 +104,9 @@ export class TagActionsService {
       await this.retargetFilter(tag.name, null);
     } else {
       this.toasts.show({
-        kind: TOAST_KIND.Error,
-        text: this.t('tags.delete.failed', { name: tag.name }),
+        kind: TOAST_KIND.Danger,
+        title: this.t('tags.delete.failed', { name: tag.name }),
+        detail: this.t('tags.delete.failedDetail'),
       });
     }
   }
@@ -109,7 +114,7 @@ export class TagActionsService {
   private mergedInto(source: TagResponse, target: TagResponse): void {
     this.toasts.show({
       kind: TOAST_KIND.Success,
-      text: this.t('tags.merge.done', { name: source.name, target: target.name }),
+      title: this.t('tags.merge.done', { name: source.name, target: target.name }),
     });
     void this.retargetFilter(source.name, target.name);
   }

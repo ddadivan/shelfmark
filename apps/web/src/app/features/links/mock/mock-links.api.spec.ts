@@ -124,6 +124,35 @@ describe('MockLinksApi', () => {
       expect(times).toEqual([...times].sort().reverse());
     });
 
+    it('lists only the last 30 days of opens', async () => {
+      const feed = createApi();
+      const [target] = (await firstValueFrom(feed.list({ limit: 1 }))).items;
+      await firstValueFrom(feed.open(target.id));
+      const old = (await firstValueFrom(feed.recent({ limit: 100 }))).items.length;
+      expect(old).toBeGreaterThan(0);
+      const stale = new Date(Date.now() - 31 * 86_400_000).toISOString();
+      const data = (feed as unknown as { data: MockLibraryData }).data;
+      data.links = data.links.map((link) =>
+        link.id === target.id ? { ...link, lastOpenedAt: stale } : link,
+      );
+      const { items } = await firstValueFrom(feed.recent({ limit: 100 }));
+      expect(items.some((link) => link.id === target.id)).toBe(false);
+      expect(items).toHaveLength(old - 1);
+    });
+
+    it('removes one link from the history and clears it', async () => {
+      const feed = createApi();
+      const { items } = await firstValueFrom(feed.recent({ limit: 100 }));
+      await firstValueFrom(feed.removeRecent(items[0].id));
+      const after = await firstValueFrom(feed.recent({ limit: 100 }));
+      expect(after.items.map((link) => link.id)).not.toContain(items[0].id);
+      const saved = await firstValueFrom(feed.get(items[0].id));
+      expect(saved.lastOpenedAt).toBeNull();
+      await expect(firstValueFrom(feed.removeRecent(items[0].id))).rejects.toThrow();
+      await firstValueFrom(feed.clearRecent());
+      expect((await firstValueFrom(feed.recent({ limit: 100 }))).items).toEqual([]);
+    });
+
     it('updates, opens and removes a link in memory', async () => {
       const feed = createApi();
       const [target] = (await firstValueFrom(feed.list({ limit: 1 }))).items;

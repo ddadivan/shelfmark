@@ -24,7 +24,7 @@
   display: flex;
   gap: var(--space-2);
   align-items: center;
-  min-height: rem(40px);
+  min-height: rem(44px);
   padding: 0 var(--space-3);
   color: var(--text-muted);
   background: var(--surface);
@@ -38,7 +38,24 @@
 
 .ui-field__control--textarea {
   align-items: flex-start;
-  padding-top: rem(2px);
+  padding-top: 0;
+}
+
+// Inline pill among chips: the label is for assistive technology only.
+.ui-field--compact {
+  .ui-field__label {
+    @include visually-hidden;
+  }
+
+  .ui-field__control {
+    min-height: rem(30px);
+    padding: 0 var(--space-3);
+    border-radius: var(--radius-full);
+
+    @include coarse {
+      min-height: rem(44px);
+    }
+  }
 }
 
 // Error and disabled come after the base and focus rules at equal specificity: the border stays

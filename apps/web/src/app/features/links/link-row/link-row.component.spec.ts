@@ -1,7 +1,9 @@
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import type { LinkResponse } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import axe from 'axe-core';
+import { ViewportService } from '../../../core/layout/viewport.service';
 import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
 import { LinkRowComponent } from './link-row.component';
 
@@ -13,8 +15,13 @@ const LINK: LinkResponse = {
   isFavorite: true,
 };
 
-async function setup(link: LinkResponse = LINK) {
-  TestBed.configureTestingModule({ providers: [provideTranslocoForTest()] });
+async function setup(link: LinkResponse = LINK, phone = false) {
+  TestBed.configureTestingModule({
+    providers: [
+      provideTranslocoForTest(),
+      { provide: ViewportService, useValue: { phone: signal(phone) } },
+    ],
+  });
   await loadEnglish();
   const fixture = TestBed.createComponent(LinkRowComponent);
   fixture.componentRef.setInput('link', link);
@@ -22,7 +29,27 @@ async function setup(link: LinkResponse = LINK) {
   return { fixture, element: fixture.nativeElement as HTMLElement };
 }
 
+/** The open menu's item whose label starts with `label`. */
+function menuItem(label: string): HTMLElement {
+  const item = [...document.querySelectorAll<HTMLElement>('[role="menuitem"]')].find((candidate) =>
+    candidate.textContent?.trim().startsWith(label),
+  );
+  if (!item) {
+    throw new Error(`No menu item "${label}"`);
+  }
+  return item;
+}
+
 describe('LinkRowComponent', () => {
+  it('renders the tags on a desktop and leaves them out of the DOM on a phone', async () => {
+    const desktop = await setup();
+    expect(desktop.element.querySelector('.link-row__tags')).not.toBeNull();
+    TestBed.resetTestingModule();
+
+    const phone = await setup(LINK, true);
+    expect(phone.element.querySelector('.link-row__tags')).toBeNull();
+  });
+
   it('shows the captured same-origin icon', async () => {
     const { element } = await setup({
       ...LINK,
@@ -83,17 +110,13 @@ describe('LinkRowComponent', () => {
       .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
       ?.click();
     await fixture.whenStable();
-    const items = document.querySelectorAll<HTMLElement>('[role="menuitem"]');
-    expect(items[0].textContent).toContain('Edit');
-    items[0].click();
+    menuItem('Edit').click();
     await fixture.whenStable();
     element
       .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
       ?.click();
     await fixture.whenStable();
-    const second = document.querySelectorAll<HTMLElement>('[role="menuitem"]');
-    expect(second[1].textContent).toContain('Delete');
-    second[1].click();
+    menuItem('Delete').click();
 
     expect(edited).toHaveBeenCalledTimes(1);
     expect(opened).toHaveBeenCalledTimes(1);

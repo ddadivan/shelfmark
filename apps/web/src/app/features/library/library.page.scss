@@ -14,8 +14,15 @@
 
   // Room for the breadcrumb trail above the title: the same in every view (with or without a
   // trail), so the title never moves between them. 20px = the 12px gap under the 24px trail
-  // line plus the 8px the trail keeps from the top edge of the main column.
+  // line plus the 8px the trail keeps from the top edge of the main column (phone: no top bar).
   padding-block-start: calc(var(--space-3) + var(--space-2));
+
+  // Tablet and up (Main.dc.html): a gap under the top bar (24px ~ the mockup's 22px), the 24px
+  // trail line, a 12px gap, the title. The main column pads its top by 16px, so 44px here.
+  @include tablet-up {
+    padding-block-start: calc(var(--space-8) + var(--space-3));
+  }
+
   flex: 1;
   flex-direction: column;
   min-height: 0;
@@ -46,16 +53,27 @@
   }
 }
 
-// Empty and error states: centred in the space under the toolbar. With links the feed flows as usual.
-.library__scroll > ui-empty-state {
+// Empty and error states (EmptyStates.dc.html): a surface card with the state centred in it, in
+// in the middle of the space under the toolbar. With links the feed flows as usual.
+.library__empty {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-6);
   margin-block: auto;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+
+  @include phone {
+    padding: var(--space-4);
+  }
 }
 
 .library__toolbar {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-4);
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   margin-bottom: var(--space-4);
 }
@@ -74,10 +92,19 @@
 }
 
 .library__title {
-  @include type(title);
+  // Main.dc.html: 40 / 44, 600, -0.03em (the display style).
+  @include type(display);
 
   margin: 0;
   overflow-wrap: anywhere;
+
+  // Phone: the title of the view is large (MobileHome: 34 / 38).
+  @include phone {
+    @include type(display);
+
+    font-size: rem(34px);
+    line-height: rem(38px);
+  }
 }
 
 .library__count {
@@ -85,8 +112,13 @@
 
   // One line high even when empty (while the list loads).
   min-height: 1lh;
-  margin: var(--space-1) 0 0;
+  margin: calc(var(--space-1) + var(--space-1) / 2) 0 0;
   color: var(--text-muted);
+
+  @include phone {
+    margin-block-start: var(--space-1);
+    font-size: rem(13px);
+  }
 }
 
 .library__grid,
@@ -126,15 +158,15 @@
 }
 
 .library__list {
-  // A new first page fades in with a slight rise; no motion under reduced motion. A CSS
-  // crossfade, not router view transitions: the page is reused between views and the data
-  // arrives after the navigation has finished, so a view transition would end too early.
-  animation: library-arrive var(--duration-base) var(--ease-out) both;
-  transition: opacity var(--duration-base) var(--ease-out);
+  // `--reveal`: the list replaces a skeleton, so it fades in with a slight rise. A view switch
+  // builds the list again without it: the old list stays fully visible until the swap, so nothing
+  // disappears and comes back. No motion under reduced motion.
+  &--reveal {
+    animation: library-arrive var(--duration-base) var(--ease-out) both;
 
-  @include reduced-motion {
-    animation: none;
-    transition: none;
+    @include reduced-motion {
+      animation: none;
+    }
   }
 }
 
@@ -150,11 +182,10 @@
   }
 }
 
-// The previous view's cards while the next one loads (stale-while-loading). The dimming is a
-// deliberate exception to "opacity only for disabled": the list is inert and about to be replaced.
+// The previous view's cards while the next one loads (stale-while-loading): fully visible (the
+// Loading spec keeps old content as it is, under the progress bar), only not clickable.
 .library__list--stale {
   pointer-events: none;
-  opacity: 0.6;
 }
 
 .library__rows {
@@ -169,7 +200,7 @@
   padding: 0;
   margin: 0 0 var(--space-6);
   list-style: none;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, rem(224px)), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, rem(220px)), 1fr));
 
   // List view: one full-width row after the other, like the link rows.
   &--rows {
@@ -179,10 +210,9 @@
   }
 }
 
-// The same dimming as the stale cards (`library__list--stale`) while the next view loads.
+// The same as the stale cards (`library__list--stale`) while the next view loads.
 .library__folders--stale {
   pointer-events: none;
-  opacity: 0.6;
 }
 
 .library__more {
@@ -220,10 +250,16 @@
 }
 
 .library__crumbs {
-  // Over the top padding of the main column (24px) and the room above the title: 8px from the
-  // top edge, a 24px line, then the 12px gap above the title. The same space in every view.
+  // Over the top padding of the main column (24px on a phone) and the room above the title: 8px
+  // from the top edge, a 24px line, then the 12px gap above the title. The same space in every
+  // view. Tablet and up: 8px under the main column's 16px padding, so 24px under the top bar.
   position: absolute;
   inset-block-start: calc(var(--space-2) - var(--space-6));
+
+  @include tablet-up {
+    inset-block-start: var(--space-2);
+  }
+
   inset-inline: 0;
   display: block;
 }

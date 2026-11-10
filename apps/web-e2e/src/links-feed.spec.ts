@@ -130,9 +130,31 @@ test.describe('links feed (mock API)', () => {
     await expect(favorite).toHaveAttribute('aria-pressed', 'false');
     await favorite.click();
 
-    await expect(page.getByText("Couldn't update the favorite.")).toBeVisible();
+    await expect(page.getByText("Couldn't update the favorite")).toBeVisible();
     await expect(page.getByRole('button', { name: 'Retry' })).toBeVisible();
     await expect(favorite).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  test('the card menu lists Open, Edit, the favorite toggle and Delete last, after a separator', async ({
+    page,
+  }) => {
+    await openFeed(page);
+    const card = page.locator('ui-card').first();
+    const favorite = card.getByRole('button', { name: /^Favorite: / });
+    const before = await favorite.getAttribute('aria-pressed');
+
+    await card.getByRole('button', { name: /^Actions for / }).click();
+    const menu = page.getByRole('menu');
+    await expect(menu.getByRole('menuitem')).toHaveText([
+      /Open/,
+      /Edit/,
+      before === 'true' ? /Remove from favorites/ : /Add to favorites/,
+      /Delete/,
+    ]);
+    await expect(menu.getByRole('separator')).toHaveCount(1);
+
+    await menu.getByRole('menuitem', { name: /favorites/ }).click();
+    await expect(favorite).toHaveAttribute('aria-pressed', before === 'true' ? 'false' : 'true');
   });
 
   test('deleting asks first, removes the card and Undo brings it back', async ({ page }) => {
@@ -146,7 +168,7 @@ test.describe('links feed (mock API)', () => {
       .click();
     await page.getByRole('menuitem', { name: 'Delete' }).click();
     const confirm = page.getByRole('alertdialog');
-    await expect(confirm).toContainText('will be deleted');
+    await expect(confirm).toContainText('will be removed');
     await confirm.getByRole('button', { name: 'Delete' }).click();
 
     await expect(page.getByRole('heading', { name: title, exact: true })).toHaveCount(0);
@@ -205,7 +227,7 @@ test.describe('links feed (mock API)', () => {
     await expect(dialog.getByLabel('Title', { exact: true })).toHaveValue('Page on example.org');
     await dialog.getByRole('button', { name: 'Save link' }).click();
 
-    await expect(page.getByText('Link saved')).toBeVisible();
+    await expect(page.getByText(/Saved to /)).toBeVisible();
     await expect(page.locator('ui-card').first()).toContainText('Page on example.org');
   });
 
@@ -262,10 +284,11 @@ test.describe('links feed (mock API)', () => {
     };
     const sidebar = await box('.shell__sidebar');
     const main = await box('.shell__main');
-    const recent = await box('app-recent-links-panel');
-    // Sidebar surface, main column and the recent panel all run to the bottom of the window.
-    for (const column of [sidebar, main, recent]) {
-      expect(column.y + column.height).toBeGreaterThanOrEqual(900 - 1);
+    // Sidebar card and main column both run to the bottom of the window; the
+    // card and the content are inset by the 12px body padding.
+    const INSET = 12;
+    for (const column of [sidebar, main]) {
+      expect(column.y + column.height).toBeGreaterThanOrEqual(900 - INSET - 1);
     }
     expect(await page.evaluate('document.documentElement.scrollHeight')).toBeLessThanOrEqual(900);
 
@@ -337,18 +360,12 @@ test.describe('links feed (mock API)', () => {
     });
   });
 
-  test('the recent panel exists on a wide screen only', async ({ page }, testInfo) => {
+  test('has no recent panel and no toggle for one', async ({ page }) => {
     await openFeed(page);
 
-    const panel = page.getByRole('heading', { name: 'Recently opened' });
-    if (testInfo.project.name === E2E_PROJECT.Phone) {
-      await expect(panel).toBeHidden();
-    } else {
-      await expect(panel).toBeVisible();
-      await expect(page.locator('app-recent-links-panel a').first()).toBeVisible();
-      await page.getByRole('button', { name: 'Hide recently opened' }).click();
-      await expect(panel).toBeHidden();
-    }
+    await expect(page.locator('app-recent-links-panel')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: /recently opened/i })).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'Recently opened' })).toHaveCount(0);
   });
 
   test('fits the viewport without horizontal scroll', async ({ page }) => {

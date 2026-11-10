@@ -8,6 +8,7 @@ import './dialog-stories.scss';
 import './drawer-stories.scss';
 import './foundations.scss';
 import './field-stories.scss';
+import './history-stories.scss';
 import './illustration-stories.scss';
 import './loading-stories.scss';
 import './menu-stories.scss';

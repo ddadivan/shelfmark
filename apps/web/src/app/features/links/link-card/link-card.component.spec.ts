@@ -24,6 +24,17 @@ async function setup(link: LinkResponse = LINK) {
   return { fixture, element };
 }
 
+/** The open menu's item whose label starts with `label`. */
+function menuItem(label: string): HTMLElement {
+  const item = [...document.querySelectorAll<HTMLElement>('[role="menuitem"]')].find((candidate) =>
+    candidate.textContent?.trim().startsWith(label),
+  );
+  if (!item) {
+    throw new Error(`No menu item "${label}"`);
+  }
+  return item;
+}
+
 describe('LinkCardComponent', () => {
   it('has a decorative open bar with the address and "Open", and no extra tab stop', async () => {
     const { element } = await setup();
@@ -79,13 +90,14 @@ describe('LinkCardComponent', () => {
     expect(anchor?.textContent).toContain('Angular overview');
   });
 
-  it('shows the host without www, the note and at most three tags', async () => {
+  it('shows the host without www, the note, three tags and a +N chip', async () => {
     const { element } = await setup();
 
     expect(element.textContent).toContain('angular.dev');
     expect(element.textContent).not.toContain('www.');
     expect(element.textContent).toContain('Start here.');
-    expect(element.querySelectorAll('ui-chip')).toHaveLength(3);
+    expect(element.querySelectorAll('ui-chip')).toHaveLength(4);
+    expect(element.querySelector('ui-chip.ui-chip--neutral')?.textContent?.trim()).toBe('+1');
   });
 
   it.each(['javascript:alert(1)', 'data:text/html,hi', 'ftp://example.com/file'])(
@@ -136,9 +148,7 @@ describe('LinkCardComponent', () => {
       .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
       ?.click();
     await fixture.whenStable();
-    const item = document.querySelectorAll<HTMLElement>('[role="menuitem"]')[1];
-    expect(item.textContent).toContain('Delete');
-    item.click();
+    menuItem('Delete').click();
 
     expect(requested).toHaveBeenCalledTimes(1);
   });
@@ -152,11 +162,31 @@ describe('LinkCardComponent', () => {
       .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
       ?.click();
     await fixture.whenStable();
-    const item = document.querySelectorAll<HTMLElement>('[role="menuitem"]')[0];
-    expect(item.textContent).toContain('Edit');
-    item.click();
+    menuItem('Edit').click();
 
     expect(requested).toHaveBeenCalledTimes(1);
+  });
+
+  it('emits openRequested and favoriteToggled from the actions menu', async () => {
+    const { fixture, element } = await setup();
+    const opened = vi.fn();
+    const toggled = vi.fn();
+    fixture.componentInstance.openRequested.subscribe(opened);
+    fixture.componentInstance.favoriteToggled.subscribe(toggled);
+
+    element
+      .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
+      ?.click();
+    await fixture.whenStable();
+    menuItem('Open').click();
+    element
+      .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
+      ?.click();
+    await fixture.whenStable();
+    menuItem('Add to favorites').click();
+
+    expect(opened).toHaveBeenCalledTimes(1);
+    expect(toggled).toHaveBeenCalledTimes(1);
   });
 
   it('has no axe violations', async () => {

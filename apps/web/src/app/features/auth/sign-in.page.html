@@ -1,73 +1,75 @@
 <div class="sign-in">
-  <div class="sign-in__art">
+  @if (isDesktop()) {
+  <app-sign-in-drift />
+  } @else {
+  <div class="sign-in__art" aria-hidden="true">
     @defer (on idle) {
     <app-sign-in-mosaic />
     }
   </div>
+  }
 
-  <div class="sign-in__side">
-    <header class="sign-in__header">
-      <ui-logo />
-    </header>
+  <main class="sign-in__panel">
+    <ui-logo class="sign-in__logo" />
 
-    <main class="sign-in__panel">
-      <div class="sign-in__intro">
-        <p class="sign-in__eyebrow">{{ 'auth.signIn.eyebrow' | transloco }}</p>
-        <h1 class="sign-in__title">{{ 'auth.signIn.title' | transloco }}</h1>
-        <p class="sign-in__subtitle">{{ 'auth.signIn.subtitle' | transloco }}</p>
-      </div>
+    <div class="sign-in__intro">
+      <h1 class="sign-in__title">{{ 'auth.signIn.title' | transloco }}</h1>
+      <p class="sign-in__subtitle">{{ 'auth.signIn.subtitle' | transloco }}</p>
+    </div>
 
-      @if (reasonKey(); as key) {
-      <ui-notice [kind]="NOTICE_KIND.Warning">{{ key | transloco }}</ui-notice>
-      } @if (errorKey(); as key) {
-      <ui-notice [kind]="NOTICE_KIND.Danger">{{ key | transloco }}</ui-notice>
-      } @if (demoErrorKey(); as key) {
-      <ui-notice [kind]="NOTICE_KIND.Warning">{{ key | transloco }}</ui-notice>
-      } @else if (auth.failed() && !auth.demoError()) {
-      <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'auth.signIn.failed' | transloco }}</ui-notice>
-      }
+    @if (reasonKey(); as key) {
+    <ui-notice [kind]="NOTICE_KIND.Warning">{{ key | transloco }}</ui-notice>
+    } @if (errorKey(); as key) {
+    <ui-notice [kind]="NOTICE_KIND.Danger">{{ key | transloco }}</ui-notice>
+    } @if (demoErrorKey(); as key) {
+    <ui-notice [kind]="NOTICE_KIND.Warning">{{ key | transloco }}</ui-notice>
+    } @else if (auth.failed() && !auth.demoError()) {
+    <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'auth.signIn.failed' | transloco }}</ui-notice>
+    }
 
-      <div class="sign-in__actions">
-        <ui-button
-          class="sign-in__button"
-          size="lg"
-          iconLeft="google"
-          [loading]="isLoading(AUTH_PROVIDER.Google)"
-          [disabled]="isLocked(AUTH_PROVIDER.Google)"
-          (click)="signIn(AUTH_PROVIDER.Google)"
-        >
-          {{ 'auth.signIn.google' | transloco }}
-        </ui-button>
-        <ui-button
-          class="sign-in__button"
-          size="lg"
-          iconLeft="github"
-          [loading]="isLoading(AUTH_PROVIDER.GitHub)"
-          [disabled]="isLocked(AUTH_PROVIDER.GitHub)"
-          (click)="signIn(AUTH_PROVIDER.GitHub)"
-        >
-          {{ 'auth.signIn.github' | transloco }}
-        </ui-button>
-        <ui-button
-          class="sign-in__button"
-          variant="ghost"
-          size="lg"
-          [loading]="isLoading(AUTH_DEMO)"
-          [disabled]="isLocked(AUTH_DEMO)"
-          (click)="signInDemo()"
-        >
-          {{ 'auth.signIn.demo' | transloco }}
-        </ui-button>
-      </div>
+    <div class="sign-in__actions">
+      <ui-button
+        class="sign-in__button"
+        size="lg"
+        iconLeft="google"
+        [variant]="isDesktop() ? BUTTON_VARIANT.Primary : BUTTON_VARIANT.Secondary"
+        [loading]="isLoading(AUTH_PROVIDER.Google)"
+        [disabled]="isLocked(AUTH_PROVIDER.Google)"
+        (click)="signIn(AUTH_PROVIDER.Google)"
+      >
+        {{ 'auth.signIn.google' | transloco }}
+      </ui-button>
+      <ui-button
+        class="sign-in__button"
+        size="lg"
+        iconLeft="github"
+        [loading]="isLoading(AUTH_PROVIDER.GitHub)"
+        [disabled]="isLocked(AUTH_PROVIDER.GitHub)"
+        (click)="signIn(AUTH_PROVIDER.GitHub)"
+      >
+        {{ 'auth.signIn.github' | transloco }}
+      </ui-button>
+    </div>
 
-      <p class="sign-in__privacy">
-        {{ 'auth.signIn.privacyBefore' | transloco }}
-        <a class="sign-in__privacy-link" routerLink="/privacy"
-          >{{ 'auth.signIn.privacyLink' | transloco }}</a
-        >{{ 'auth.signIn.privacyAfter' | transloco }}
-      </p>
-    </main>
+    @if (isDesktop()) {
+    <p class="sign-in__or">{{ 'auth.signIn.or' | transloco }}</p>
+    }
 
-    <footer class="sign-in__footer">{{ 'auth.signIn.copyright' | transloco }}</footer>
-  </div>
+    <ui-button
+      class="sign-in__demo"
+      variant="ghost"
+      [loading]="isLoading(AUTH_DEMO)"
+      [disabled]="isLocked(AUTH_DEMO)"
+      (click)="signInDemo()"
+    >
+      {{ 'auth.signIn.demo' | transloco }}
+    </ui-button>
+
+    <p class="sign-in__privacy">
+      {{ 'auth.signIn.privacyBefore' | transloco }}
+      <a class="sign-in__privacy-link" routerLink="/privacy"
+        >{{ 'auth.signIn.privacyLink' | transloco }}</a
+      >{{ 'auth.signIn.privacyAfter' | transloco }}
+    </p>
+  </main>
 </div>

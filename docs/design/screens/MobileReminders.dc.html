@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Remind me · phone</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a" style="width: 390px; height: 844px; overflow: hidden; position: relative; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif;">
+<div aria-hidden="true" style="padding: 44px 16px 0; display: flex; flex-direction: column; gap: 14px;">
+<div style="font-size: 34px; line-height: 38px; font-weight: 600; letter-spacing: -0.03em;">Clothes</div>
+<div style="height: 230px; border-radius: 22px; background: var(--surface); box-shadow: var(--shadow-card);"></div>
+</div>
+<div aria-hidden="true" style="position: absolute; inset: 0; background: var(--overlay);"></div>
+<div class="sm-sheet" role="dialog" aria-modal="true" aria-labelledby="mr-h" style="position: absolute; left: 0; right: 0; bottom: 0; box-sizing: border-box; gap: 12px;">
+<div class="sm-sheet__grip" aria-hidden="true"></div>
+<div style="display: flex; align-items: center; gap: 12px;"><span style="width: 48px; height: 48px; border-radius: 12px; background: var(--accent-bg); flex: none;"></span><span style="min-width: 0;"><span id="mr-h" style="display: block; font-size: 18px; font-weight: 600;">Remind me</span><span style="display: block; font-size: 13px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Wool coat, straight cut, graphite</span></span></div>
+<div style="display: flex; flex-direction: column; gap: 2px; margin: 0 -8px;">
+<button class="sm-menu__item" style="min-height: 52px; font-size: 15px;">Later today<span class="sm-menu__hint" style="color: var(--text-muted);">18:00</span></button>
+<button class="sm-menu__item" style="min-height: 52px; font-size: 15px;">Tomorrow<span class="sm-menu__hint" style="color: var(--text-muted);">Wed 9:00</span></button>
+<button class="sm-menu__item" style="min-height: 52px; font-size: 15px; background: var(--surface-hover);" aria-pressed="true">This weekend<span class="sm-menu__hint" style="color: var(--text-muted);">Sat 10:00</span></button>
+<button class="sm-menu__item" style="min-height: 52px; font-size: 15px;">Next week<span class="sm-menu__hint" style="color: var(--text-muted);">Mon 9:00</span></button>
+<button class="sm-menu__item" style="min-height: 52px; font-size: 15px;">Pick date and time…</button>
+</div>
+<button class="sm-btn sm-btn--primary sm-btn--lg" style="width: 100%;">Remind me Sat, 10:00</button>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;dark&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true},&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844}}">
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

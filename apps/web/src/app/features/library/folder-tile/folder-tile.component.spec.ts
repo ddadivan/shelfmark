@@ -28,7 +28,7 @@ describe('FolderTileComponent', () => {
     expect(anchor?.getAttribute('aria-label')).toBe('Open folder Angular, 12 links');
     expect(anchor?.textContent).toContain('Angular');
     expect(anchor?.textContent).toContain('12 links');
-    expect(element.querySelector('ui-icon[name="folder"]')).not.toBeNull();
+    expect(element.querySelector('ui-folder-icon')).not.toBeNull();
     expect(element.querySelector('ui-icon[name="chevron-right"]')).not.toBeNull();
   });
 

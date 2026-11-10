@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { axeViolations } from '../../testing/axe';
+import { compileScss, mediaBlocks, withoutMedia } from '../../testing/scss';
 import { DialogComponent } from './dialog.component';
 import { DialogService } from './dialog.service';
 import type { DialogSize } from './models/dialog-size.type';
@@ -34,6 +35,12 @@ class HostComponent {
   template: `<ui-dialog title="Sheet" closeLabel="Close"><p>Body</p></ui-dialog>`,
 })
 class SheetComponent {}
+
+@Component({
+  imports: [DialogComponent],
+  template: `<ui-dialog title="Untitled" hideTitle><p>Body</p></ui-dialog>`,
+})
+class UntitledComponent {}
 
 function stubMatchMedia(phone: boolean): { change: (matches: boolean) => void } {
   const listeners = new Set<(event: MediaQueryListEvent) => void>();
@@ -119,6 +126,14 @@ describe('DialogComponent', () => {
     fixture.componentInstance.closeLabel.set(undefined);
     fixture.detectChanges();
     expect(root.querySelector('.ui-dialog__head button')).toBeNull();
+  });
+
+  it('hideTitle keeps the heading as the accessible name and hides it visually', async () => {
+    const fixture = TestBed.createComponent(UntitledComponent);
+    fixture.detectChanges();
+    const panel = fixture.nativeElement.querySelector('.ui-dialog');
+    expect(panel.classList).toContain('ui-dialog--untitled');
+    expect(fixture.nativeElement.querySelector('h2')?.textContent).toBe('Untitled');
   });
 
   it('has no axe violations', async () => {
@@ -318,5 +333,33 @@ describe('DialogComponent', () => {
         expect(document.querySelector('.cdk-dialog-container')).toBeNull();
       });
     });
+  });
+});
+
+describe('DialogComponent command variant styles', () => {
+  const css = compileScss('lib/dialog/dialog.component.scss');
+
+  it('is a glass panel 680px wide, 96px from the top, with the dialog corners', () => {
+    const block = withoutMedia(css, /./u);
+    const command = block.slice(block.indexOf('.ui-dialog--command {'));
+    expect(command).toContain('42.5rem');
+    expect(command).toContain('backdrop-filter');
+    expect(command).toContain('var(--glass)');
+    expect(command).toMatch(/margin-block-start:\s*6rem/);
+  });
+
+  it('hides the title visually from 40em and shows it on a phone', () => {
+    const wide = mediaBlocks(css, /min-width|width\s*>=/u).join('\n');
+    expect(wide).toContain('.ui-dialog--command .ui-dialog__drag');
+    expect(wide).toContain('clip');
+  });
+
+  it('hides the head of an untitled dialog visually at every width', () => {
+    expect(css).toMatch(/\.ui-dialog--untitled \.ui-dialog__head\s*{[^}]*clip/);
+  });
+
+  it('keeps the enter and leave animations', () => {
+    expect(css).toMatch(/\.ui-dialog--enter\s*{[^}]*animation/);
+    expect(css).toMatch(/\.ui-dialog--leave\s*{[^}]*animation/);
   });
 });

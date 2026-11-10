@@ -5,27 +5,53 @@ const toast = compileScss('lib/toast/toast.component.scss');
 
 describe('toast styles', () => {
   it('centres the region at the bottom on every screen (author decision, no bottom-left)', () => {
-    expect(region).toMatch(/:host\s*\{[^}]*align-items:\s*center/);
+    expect(region).toMatch(/:host\s*\{[^}]*justify-items:\s*center/);
     expect(region).not.toContain('flex-start');
-    expect(mediaBlocks(region, /min-width/).join('')).not.toContain('align-items');
+    expect(mediaBlocks(region, /min-width/).join('')).not.toContain('justify-items');
   });
 
-  it('lets the app lift the region above its own floating control', () => {
-    expect(region).toContain('var(--ui-toast-offset, var(--space-4))');
+  it('sits 24px up and lets the app lift it above its own bottom bar', () => {
+    expect(region).toContain('var(--ui-toast-offset, var(--space-6))');
   });
 
-  it('uses the popover surface, a wrapping text and the 18rem to 28rem size range', () => {
-    expect(toast).toContain('box-shadow: var(--shadow-popover)');
-    expect(toast).toContain('border-radius: var(--radius-md)');
-    expect(toast).toContain('min-width: min(18rem, 100%)');
-    expect(toast).toContain('max-width: min(28rem, 100%)');
-    expect(toast).toMatch(/\.ui-toast__text\s*\{[^}]*overflow-wrap:\s*anywhere/);
+  it('piles the toasts in one cell and fans them out on hover and focus', () => {
+    expect(region).toMatch(/\.ui-toast-region__item\s*\{[^}]*grid-area:\s*1\s*\/\s*1/);
+    expect(region).toMatch(/data-depth=['"]1['"]\]\s*\{[^}]*scale\(0\.95\)/);
+    expect(region).toMatch(/data-depth=['"]2['"]\]\s*\{[^}]*scale\(0\.9\)/);
+    expect(region).toContain(':host(:hover)');
+    expect(region).toContain(':host(:focus-within)');
+    expect(region).toMatch(/\.ui-toast-region__live\s*\{\s*display:\s*contents/);
   });
 
-  it('colours the icon by kind', () => {
-    expect(toast).toMatch(/ui-toast--success\)\s*\.ui-toast__icon\s*\{\s*color:\s*var\(--accent\)/);
-    expect(toast).toMatch(/ui-toast--error\)\s*\.ui-toast__icon\s*\{\s*color:\s*var\(--danger\)/);
-    expect(toast).toMatch(/\.ui-toast__icon\s*\{\s*color:\s*var\(--text-muted\)/);
+  it('plays the toast enter and leave presets, and no movement under reduced motion', () => {
+    expect(region).toContain('ui-toast-in var(--duration-slow) var(--ease-spring) both');
+    expect(region).toContain('ui-toast-out var(--duration-fast) var(--ease-in) both');
+    expect(mediaBlocks(region, /prefers-reduced-motion/).join('')).toContain('ui-reveal');
+    expect(mediaBlocks(region, /prefers-reduced-motion/).join('')).toContain('transition: none');
+  });
+
+  it('is a glass surface with 18px corners, up to 540px wide, with a truncating detail line', () => {
+    expect(toast).toContain('background: var(--glass)');
+    expect(toast).toContain('box-shadow: var(--shadow-float)');
+    expect(toast).toContain('border-radius: 1.125rem');
+    expect(toast).not.toContain('--shadow-popover');
+    expect(toast).toContain('max-inline-size: min(33.75rem, 100%)');
+    expect(toast).toMatch(/\.ui-toast__detail\s*\{[^}]*text-overflow:\s*ellipsis/);
+    expect(toast).toMatch(/\.ui-toast__detail\s*\{[^}]*white-space:\s*nowrap/);
+  });
+
+  it('tints the icon tile by kind', () => {
+    expect(toast).toMatch(/ui-toast--success\)\s*\.ui-toast__icon\s*\{[^}]*var\(--accent-bg\)/);
+    expect(toast).toMatch(/ui-toast--danger\)\s*\.ui-toast__icon\s*\{[^}]*var\(--danger-bg\)/);
+    expect(toast).toMatch(/ui-toast--warn\)\s*\.ui-toast__icon\s*\{[^}]*var\(--warning-bg\)/);
+  });
+
+  it('draws the countdown line without animation under reduced motion', () => {
+    expect(toast).toContain('animation: ui-toast-count var(--ui-toast-duration, 8s) linear');
+    expect(mediaBlocks(toast, /prefers-reduced-motion/).join('')).toContain('display: none');
+    expect(toast).toMatch(
+      /--paused\)\s*\.ui-toast__timer::after\s*\{\s*animation-play-state:\s*paused/,
+    );
   });
 
   it('shows the key caps from the tablet breakpoint up only', () => {
@@ -35,7 +61,7 @@ describe('toast styles', () => {
 
   it('makes the action 44px on coarse pointers and hover only where hover exists', () => {
     expect(mediaBlocks(toast, /pointer:\s*coarse/).join('')).toContain('min-height: 2.75rem');
-    expect(mediaBlocks(toast, /hover:\s*hover/).join('')).toContain('var(--accent-bg)');
-    expect(withoutMedia(toast, /hover:\s*hover/)).not.toContain('background: var(--accent-bg)');
+    expect(mediaBlocks(toast, /hover:\s*hover/).join('')).toContain('var(--surface-pressed)');
+    expect(withoutMedia(toast, /hover:\s*hover/)).not.toMatch(/:hover/);
   });
 });

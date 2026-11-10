@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Trash and keyboard shortcuts</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+.ks>*:nth-child(2n){justify-self:end}
+.ks{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 16px;font-size:14px;line-height:20px;align-items:center}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a a-board" style="background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));">
+
+<section class="a-state" style="flex: 0 1 760px; max-width: 760px;">
+<h2 class="a-cap">Keyboard shortcuts · press ? anywhere</h2>
+<div class="sm-dialog" role="dialog" aria-labelledby="ks-h" style="max-width: none; gap: 18px;">
+<div class="sm-dialog__head"><h3 id="ks-h" style="margin: 0; font-size: 22px; line-height: 28px; font-weight: 600;">Keyboard shortcuts</h3><button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px;">
+<div style="display: flex; flex-direction: column; gap: 10px;"><b class="a-cap">Everywhere</b>
+<div class="ks"><span>Search</span><span><span class="sm-kbd">⌘</span> <span class="sm-kbd">K</span></span><span>Add link</span><span class="sm-kbd">N</span><span>All links</span><span><span class="sm-kbd">G</span> <span class="sm-kbd">A</span></span><span>Unsorted</span><span><span class="sm-kbd">G</span> <span class="sm-kbd">U</span></span><span>Favorites</span><span><span class="sm-kbd">G</span> <span class="sm-kbd">F</span></span><span>Recently opened</span><span><span class="sm-kbd">G</span> <span class="sm-kbd">R</span></span><span>Settings</span><span><span class="sm-kbd">G</span> <span class="sm-kbd">S</span></span><span>Cards / list</span><span><span class="sm-kbd">V</span> <span class="sm-kbd">C</span> / <span class="sm-kbd">V</span> <span class="sm-kbd">L</span></span></div></div>
+<div style="display: flex; flex-direction: column; gap: 10px;"><b class="a-cap">On a link</b>
+<div class="ks"><span>Open</span><span class="sm-kbd">↵</span><span>Edit</span><span class="sm-kbd">E</span><span>Favorite</span><span class="sm-kbd">F</span><span>Pin to top</span><span class="sm-kbd">P</span><span>Remind me</span><span class="sm-kbd">R</span><span>Move to folder</span><span class="sm-kbd">M</span><span>Select</span><span class="sm-kbd">X</span><span>Delete</span><span class="sm-kbd">⌫</span></div></div>
+</div>
+<p class="a-note">Shortcuts never fire while you type in a field. They're listed in tooltips too.</p>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

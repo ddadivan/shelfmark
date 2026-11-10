@@ -1,3 +1,5 @@
+import { OVERLAY_SIDE } from '../overlay/models/overlay-side.const';
+import { TooltipDirective } from '../tooltip/tooltip.directive';
 import { NgTemplateOutlet } from '@angular/common';
 import { Tree, TreeItem, TreeItemGroup } from '@angular/aria/tree';
 import {
@@ -18,6 +20,8 @@ import {
   viewChildren,
 } from '@angular/core';
 import { ButtonComponent } from '../button/button.component';
+import { FolderIconComponent } from '../folder-icon/folder-icon.component';
+import { FOLDER_ICON_SIZE } from '../folder-icon/models/folder-icon-size.const';
 import { IconComponent } from '../icon/icon.component';
 import { LongPressDirective } from '../long-press/long-press.directive';
 import type { UiLongPressEvent } from '../long-press/models/long-press-event.interface';
@@ -52,10 +56,12 @@ const KEYBOARD_ECHO_RELEASE_MS = 100;
   selector: 'ui-tree',
   imports: [
     ButtonComponent,
+    FolderIconComponent,
     IconComponent,
     LongPressDirective,
     NgTemplateOutlet,
     RippleDirective,
+    TooltipDirective,
     Tree,
     TreeItem,
     TreeItemGroup,
@@ -70,6 +76,12 @@ const KEYBOARD_ECHO_RELEASE_MS = 100;
 })
 export class TreeComponent {
   protected readonly ICON_SIZE = ICON_SIZE;
+  protected readonly FOLDER_ICON_SIZE = FOLDER_ICON_SIZE;
+  /**
+   * The row's "…" tooltip opens to the right, towards the content: below the row it would cover
+   * the next row or the section header ("+" of Tags) and keep a resting pointer trapped on it.
+   */
+  protected readonly MORE_TOOLTIP_SIDE = OVERLAY_SIDE.Right;
   /** A keyboard menu request is pending; the browser's echoed `contextmenu` consumes it. */
   private keyboardEcho = false;
   private echoTimer: ReturnType<typeof setTimeout> | undefined;
@@ -81,6 +93,8 @@ export class TreeComponent {
   private readonly section = viewChild<ElementRef<HTMLElement>>('section');
   /** Top of the heading row inside the host; the action button is placed there. */
   protected readonly actionTop = signal(0);
+  /** Height of the text area of the heading row: the action is centred on it, not on the padding. */
+  protected readonly actionHeight = signal(0);
   /** Where every row has been seen (kept for removed rows, so focus can find a neighbour). */
   private readonly lastKnown = new Map<string, TreeRowPlace>();
   /** The row that held focus last; cleared when focus moves to another element. */
@@ -111,7 +125,10 @@ export class TreeComponent {
   private measureHeading(): void {
     const section = this.section()?.nativeElement;
     if (section) {
-      this.actionTop.set(section.offsetTop + parseFloat(getComputedStyle(section).paddingTop));
+      const style = getComputedStyle(section);
+      const paddingTop = parseFloat(style.paddingTop);
+      this.actionTop.set(section.offsetTop + paddingTop);
+      this.actionHeight.set(section.clientHeight - paddingTop - parseFloat(style.paddingBottom));
     }
   }
 

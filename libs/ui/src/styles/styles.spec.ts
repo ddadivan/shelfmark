@@ -138,7 +138,7 @@ describe('motion mixins', () => {
   it.each([
     ['enter(pop)', 'ui-pop-in var(--duration-base) var(--ease-out) both'],
     ['enter(fade)', 'ui-reveal var(--duration-base) var(--ease-out) both'],
-    ['enter(toast)', 'ui-slide-up var(--duration-slow) var(--ease-out) both'],
+    ['enter(toast)', 'ui-toast-in var(--duration-slow) var(--ease-spring) both'],
     ['enter(sheet)', 'ui-sheet-in var(--duration-slow) var(--ease-drawer) both'],
     ['enter(drawer)', 'ui-drawer-in var(--duration-slow) var(--ease-drawer) both'],
     ['leave(drawer)', 'ui-drawer-out var(--duration-base) var(--ease-in) both'],
@@ -159,7 +159,7 @@ describe('motion mixins', () => {
   ])('%s falls back to a fade in 200 ms under reduced motion', (include) => {
     const reduced = reducedMotionBlock(css(`.a { @include ${include}; }`));
     expect(reduced).toContain('animation: ui-reveal var(--duration-base) var(--ease-out) both');
-    expect(reduced).not.toMatch(/ui-(pop-in|slide-up|sheet-in|drawer-in|spinner-grow)/);
+    expect(reduced).not.toMatch(/ui-(pop-in|toast-in|sheet-in|drawer-in|spinner-grow)/);
   });
 
   it.each(['leave(pop)', 'leave(toast)', 'leave(sheet)', 'leave(drawer)', 'leave(spinner-shrink)'])(
@@ -227,8 +227,9 @@ describe('motion mixins', () => {
       'ui-sheet-out',
       'ui-drawer-in',
       'ui-drawer-out',
-      'ui-slide-up',
+      'ui-toast-in',
       'ui-toast-out',
+      'ui-toast-count',
       'ui-spin',
       'ui-spinner-in',
       'ui-spinner-grow',
@@ -295,9 +296,39 @@ function contrast(a: string, b: string): number {
   return (hi + 0.05) / (lo + 0.05);
 }
 
+describe('glass mixin', () => {
+  it('uses the glass tokens and shadow-float, blur only where supported, none under reduced motion', () => {
+    const out = css('.g { @include glass; }');
+    expect(out).toContain('background: var(--glass)');
+    expect(out).toContain('border: 1px solid var(--glass-line)');
+    expect(out).toContain('box-shadow: var(--shadow-float)');
+    expect(out).toMatch(/@supports \(backdrop-filter: blur\(1px\)\)/);
+    expect(out).toContain('backdrop-filter: blur(1.5rem) saturate(1.5)');
+    expect(reducedMotionBlock(out)).toContain('backdrop-filter: none');
+  });
+
+  it('glass-utility defines the global .ui-glass class', () => {
+    expect(css('@include glass-utility;')).toMatch(/\.ui-glass \{[^}]*var\(--glass\)/);
+  });
+});
+
+const FOLDER_COLOURS = ['graphite', 'sage', 'ocean', 'plum', 'clay', 'amber', 'rose', 'teal'];
+
+describe('folder colour contrast (WCAG AA 4.5:1)', () => {
+  it.each(['light', 'dark'] as const)('every glyph holds on its tile in %s', (theme) => {
+    for (const colour of FOLDER_COLOURS) {
+      const ratio = contrast(
+        tokenHex(theme, `folder-${colour}`),
+        tokenHex(theme, `folder-${colour}-bg`),
+      );
+      expect(ratio, `${theme} ${colour}`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+});
+
 describe('text-muted contrast (WCAG AA 4.5:1)', () => {
   it.each(['light', 'dark'] as const)('holds on every surface in %s', (theme) => {
-    expect(tokenHex(theme, 'text-muted')).toBe(theme === 'light' ? '#67676c' : '#9a9aa0');
+    expect(tokenHex(theme, 'text-muted')).toBe(theme === 'light' ? '#636368' : '#9a9aa0');
     for (const surface of ['bg', 'surface', 'surface-hover', 'surface-pressed', 'accent-bg']) {
       const ratio = contrast(tokenHex(theme, 'text-muted'), tokenHex(theme, surface));
       expect(ratio, `${theme} ${surface}`).toBeGreaterThanOrEqual(4.5);

@@ -4,7 +4,7 @@ Personal, responsive web app that keeps every saved link in one place: paste a U
 
 **Source of truth:** [`docs/PROJECT.md`](docs/PROJECT.md) — scope, stories with acceptance criteria (4), stack (5), security (5.8), data model and API (6), design (7), agent team (8), process (9). Read the relevant section before any task. If code and the document disagree, stop and ask.
 
-**Design source of truth:** [`docs/design/`](docs/design/README.md) — start with `README.md`, then `BRAND.md`, the component spec in `components/<Name>/README.md`, `components/Motion/README.md` for any animation, and `screens/*.dc.html` for layout and copy.
+**Design source of truth:** [`docs/design/`](docs/design/README.md) — start with `README.md`, then `BRAND.md`, the component spec in `components/<Name>/README.md`, `components/Motion/README.md` for any animation, and `screens/*.dc.html` for layout and copy. This is the Shelfmark 2027 Refresh; the migration plan is `docs/design/MIGRATION.md`. [`docs/design-v1/`](docs/design-v1/README.md) is the stage 1 design, kept for reference during the migration only — never build from it.
 
 **Decisions:** [`docs/adr/`](docs/adr/) — one file per significant decision.
 

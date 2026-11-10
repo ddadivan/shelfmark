@@ -1,10 +1,12 @@
 name: CI
 
+# `stage` is the integration branch of the current stage (PROJECT.md 9.3): feature PRs target it,
+# and `main` only gets release PRs from `stage` and hotfixes.
 on:
   pull_request:
-    branches: [main]
+    branches: [main, stage]
   push:
-    branches: [main]
+    branches: [main, stage]
 
 # Deny by default; each job grants only what it needs.
 permissions: {}
@@ -56,6 +58,9 @@ jobs:
             nx-lint-${{ runner.os }}-
       - run: npm ci
       - uses: nrwl/nx-set-shas@e602fada7ad5987b0f7b1905e7a99ea1c661514c # v5.1.0
+        with:
+          # Affected base: the PR's target branch, or the pushed branch itself.
+          main-branch-name: ${{ github.base_ref || github.ref_name }}
       - run: npm run format:check
       - run: npm run lint:styles
       # ADR 0020: every dependency install script needs an explicit allowScripts decision.
@@ -119,6 +124,9 @@ jobs:
             nx-e2e-${{ runner.os }}-
       - run: npm ci
       - uses: nrwl/nx-set-shas@e602fada7ad5987b0f7b1905e7a99ea1c661514c # v5.1.0
+        with:
+          # Affected base: the PR's target branch, or the pushed branch itself.
+          main-branch-name: ${{ github.base_ref || github.ref_name }}
       # The job always runs (required check), but the browser is only downloaded when a browser
       # test target is affected: `e2e` (web-e2e) or `test-storybook` (libs/ui axe over Storybook).
       - name: Detect affected browser tests
@@ -163,8 +171,11 @@ jobs:
           cache: npm
       - run: npm ci
       - uses: nrwl/nx-set-shas@e602fada7ad5987b0f7b1905e7a99ea1c661514c # v5.1.0
+        with:
+          # Affected base: the PR's target branch, or the pushed branch itself.
+          main-branch-name: ${{ github.base_ref || github.ref_name }}
       # Scores only move when the web app changes: PRs that leave `web` untouched skip the audit.
-      # Pushes to main always run it, so main keeps a baseline report.
+      # Pushes to main and stage always run it, so both keep a baseline report.
       - name: Detect affected web app
         id: web
         run: |

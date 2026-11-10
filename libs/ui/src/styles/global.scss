@@ -70,5 +70,6 @@ body {
 @include cdk.overlay;
 @include overlay-layers;
 @include overlay-passthrough;
+@include glass-utility;
 @include dialog-layout;
 @include scrollbars;

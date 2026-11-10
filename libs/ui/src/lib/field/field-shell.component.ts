@@ -31,6 +31,8 @@ export class FieldShellComponent {
   /** Visible label, always shown above the control. */
   readonly label = input.required<string>();
   readonly hint = input('');
+  /** Inline pill: the label is visually hidden and the box is a small pill. */
+  readonly compact = input(false, { transform: booleanAttribute });
   /** Error message (already translated); an empty string means no error. */
   readonly error = input('');
   /** Error look (danger border) also without a message. */

@@ -1,0 +1,29 @@
+@use 'ui' as *;
+
+// Two columns while the panel is wide enough, one in the phone sheet; a group never splits.
+.shortcuts-dialog__groups {
+  columns: rem(220px) 2;
+  column-gap: var(--space-6);
+}
+
+.shortcuts-dialog__group {
+  break-inside: avoid;
+
+  & + & {
+    margin-block-start: var(--space-4);
+  }
+}
+
+.shortcuts-dialog__heading {
+  @include type(label);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.shortcuts-dialog__hint {
+  @include type(caption);
+
+  margin: var(--space-4) 0 0;
+  color: var(--text-muted);
+}

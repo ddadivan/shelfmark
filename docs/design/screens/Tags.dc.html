@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Tags: create, rename, delete</title>
+<title>A · Tags: create, rename, delete</title>
 <script src="./support.js"></script>
-<link rel="stylesheet" href="ds/shelfmark/tokens.css">
-<link rel="stylesheet" href="ds/shelfmark/components/bundle.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
 </head>
 <body>
 <x-dc>
@@ -18,7 +19,7 @@ body{margin:0}
 .x{width:12px;height:12px}
 </style>
 </helmet>
-<div data-theme="{{theme}}" class="sm-root" style="min-height: 900px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; padding: 48px; box-sizing: border-box; display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 32px; align-content: start;">
+<div data-theme="{{theme}}" class="sm-root dir-a" style="min-height: 900px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; padding: 48px; box-sizing: border-box; display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 32px; align-content: start;">
 
 <section style="display: flex; flex-direction: column; gap: 12px;">
 <h2 class="cap">In the link form: type a new name and press Enter</h2>
@@ -37,7 +38,7 @@ body{margin:0}
 
 <section style="display: flex; flex-direction: column; gap: 12px;">
 <h2 class="cap">In the sidebar: + next to Tags</h2>
-<div style="width: 248px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 8px 12px 14px;">
+<div style="width: 248px; background: var(--surface); box-shadow: var(--shadow-card); border-radius: var(--radius-lg); padding: 8px 12px 14px;">
 <div class="sm-tree__section" style="display: flex; justify-content: space-between; align-items: center;">Tags<button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm is-pressed" aria-label="New tag" style="width: 24px; height: 24px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>
 <div style="display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 8px;">
 <span class="sm-field__control is-focus sm-reveal" style="min-height: 24px; height: 24px; padding: 0 10px; border-radius: var(--radius-full); width: 110px;"><input aria-label="New tag name" value="reading-list" style="padding: 0; font-size: 12px; line-height: 16px;"></span>

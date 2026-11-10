@@ -1,0 +1,12 @@
+@for (card of SIGN_IN_DRIFT_CARDS; track card.id; let i = $index) {
+  <div class="sd-card sd-card--{{ i }}">
+    <div class="sd-tilt">
+      <div class="sd-media sd-media--{{ card.media }}"></div>
+      <div class="sd-body">
+        <span class="sd-meta"><ui-favicon [letter]="card.letter" />{{ card.domain }}</span>
+        <span class="sd-title">{{ 'auth.signIn.tiles.' + card.id + '.title' | transloco }}</span>
+      </div>
+      <span class="sd-ring"></span>
+    </div>
+  </div>
+}

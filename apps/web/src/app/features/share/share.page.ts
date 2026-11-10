@@ -19,6 +19,7 @@ import {
   SkeletonComponent,
 } from '@shelfmark/ui';
 import { firstValueFrom } from 'rxjs';
+import { ViewportService } from '../../core/layout/viewport.service';
 import { APP_PATH } from '../../models/app-path.const';
 import { FoldersStore } from '../../stores/folders.store';
 import { buildFolderOptions } from '../links/add-link/folder-options';
@@ -66,6 +67,8 @@ export default class SharePage {
   protected readonly SHARE_STATE = SHARE_STATE;
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
 
+  /** The grip of the bottom sheet exists on a phone only. */
+  protected readonly phone = inject(ViewportService).phone;
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly linksApi = inject(LINKS_API);

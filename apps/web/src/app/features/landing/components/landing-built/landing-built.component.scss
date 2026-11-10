@@ -16,8 +16,8 @@
   gap: var(--space-4);
   padding: var(--landing-card-pad);
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: rem(22px);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
 }
 
 .landing-built__title {
@@ -44,8 +44,7 @@
   font-family: var(--font-mono);
   font-size: rem(12px);
   line-height: rem(16px);
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--bg);
   border-radius: var(--radius-full);
 }
 

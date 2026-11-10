@@ -57,6 +57,13 @@
           <ui-chip>{{ tag }}</ui-chip>
         </li>
       }
+      @if (hiddenTags() > 0) {
+        <li>
+          <ui-chip variant="neutral">{{
+            'links.card.moreTags' | transloco: { count: hiddenTags() }
+          }}</ui-chip>
+        </li>
+      }
     </ul>
   }
   <ui-menu
@@ -64,9 +71,21 @@
     align="end"
     [ariaLabel]="'links.item.actions' | transloco: { title: link().title }"
   >
+    @if (href()) {
+      <ui-menu-item icon="external" (activated)="openRequested.emit()">
+        {{ 'links.item.open' | transloco }}
+      </ui-menu-item>
+    }
     <ui-menu-item icon="edit" (activated)="editRequested.emit()">
       {{ 'links.item.edit' | transloco }}
     </ui-menu-item>
+    <ui-menu-item
+      [icon]="link().isFavorite ? 'star-filled' : 'star'"
+      (activated)="favoriteToggled.emit()"
+    >
+      {{ (link().isFavorite ? 'links.item.removeFavorite' : 'links.item.addFavorite') | transloco }}
+    </ui-menu-item>
+    <ui-menu-separator />
     <ui-menu-item icon="trash" danger (activated)="deleteRequested.emit()">
       {{ 'links.item.delete' | transloco }}
     </ui-menu-item>

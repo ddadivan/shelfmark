@@ -1,7 +1,0 @@
-@use 'ui' as *;
-
-.recent-drawer__title {
-  @include type(heading);
-
-  margin: 0;
-}

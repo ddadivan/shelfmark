@@ -59,7 +59,8 @@ export class AccountDeletionService {
       await this.router.navigateByUrl(AUTH_ROUTE.Home);
       this.toasts.show({
         kind: TOAST_KIND.Success,
-        text: this.transloco.translate('settings.delete.done'),
+        title: this.transloco.translate('settings.delete.done'),
+        detail: this.transloco.translate('settings.delete.doneDetail'),
       });
     }
   }

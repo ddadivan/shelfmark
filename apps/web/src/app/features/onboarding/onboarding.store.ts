@@ -101,8 +101,9 @@ export const OnboardingStore = signalStore(
             auth.setOnboardingCompletedAt(null);
           } catch {
             toasts.show({
-              kind: TOAST_KIND.Error,
-              text: transloco.translate('settings.welcome.error'),
+              kind: TOAST_KIND.Danger,
+              title: transloco.translate('settings.welcome.error'),
+              detail: transloco.translate('settings.welcome.errorDetail'),
             });
           } finally {
             patchState(store, { resetting: false });

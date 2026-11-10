@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Welcome to Shelfmark</title>
+<title>A · Welcome to Shelfmark</title>
 <script src="./support.js"></script>
-<link rel="stylesheet" href="ds/shelfmark/tokens.css">
-<link rel="stylesheet" href="ds/shelfmark/components/bundle.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
 </head>
 <body>
 <x-dc>
@@ -51,18 +52,18 @@ body{margin:0}
 @media (prefers-reduced-motion:reduce){.wa,.wz-step,.wbg-fly,.wbg-shift,.wbg-press,.wbg-type{animation:none!important}.wbg-type{width:5ch}.wbg-dim{animation:none!important;opacity:.28}.wbg-caret{animation:none}}
 </style>
 </helmet>
-<div data-theme="{{theme}}" class="sm-root" style="min-height: 900px; height: 900px; position: relative; overflow: hidden; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif;">
+<div data-theme="{{theme}}" class="sm-root dir-a" style="min-height: 900px; height: 900px; position: relative; overflow: hidden; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif;">
 
 <div aria-hidden="true">
 <sc-if value="{{s1}}" hint-placeholder-val="{{true}}">
 <div style="position: absolute; inset: 0; display: flex; flex-direction: column;">
-<header style="height: 60px; flex: none; display: flex; align-items: center; gap: 16px; padding: 0 20px; border-bottom: 1px solid var(--border); background: var(--surface);">
+<header style="height: 60px; flex: none; display: flex; align-items: center; gap: 16px; padding: 0 20px; background: transparent;">
 <span style="display: flex; align-items: center; gap: 8px; min-width: 208px;"><svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="6" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><span style="font-size: 16px; font-weight: 600;">Shelfmark</span></span>
-<span class="sm-field__control" style="flex: 1; max-width: 520px; margin: 0 auto; min-height: 38px; background: var(--bg);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span style="flex: 1; color: var(--text-muted); font-size: 14px;">Search links, notes and tags</span><span class="sm-kbd">⌘K</span></span>
+<span class="sm-field__control" style="flex: 1; max-width: 520px; margin: 0 auto; min-height: 42px; background: var(--surface); border-radius: 999px; border-color: transparent; box-shadow: var(--shadow-card);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span style="flex: 1; color: var(--text-muted); font-size: 14px;">Search links, notes and tags</span><span class="sm-kbd">⌘K</span></span>
 <span class="sm-btn sm-btn--primary ">+ Add link</span><span class="sm-avatar">DD</span>
 </header>
 <div style="flex: 1; display: flex; min-height: 0;">
-<div style="width: 248px; flex: none; border-right: 1px solid var(--border); background: var(--surface); padding: 16px 12px; display: flex; flex-direction: column; gap: 2px;">
+<div style="width: 248px; flex: none; margin: 0 0 12px 12px; border-radius: 22px; box-shadow: var(--shadow-card); background: var(--surface); padding: 16px 12px; display: flex; flex-direction: column; gap: 2px;">
 <div class="sm-tree__row is-active">All links<span class="sm-tree__count">6</span></div><div class="sm-tree__row">Unsorted</div><div class="sm-tree__row">Favorites</div>
 <div class="sm-tree__section">Folders</div><div class="sm-tree__row">Work</div><div class="sm-tree__row" style="padding-left: 28px;">Angular</div><div class="sm-tree__row">Clothes</div><div class="sm-tree__row">Recipes</div>
 </div>
@@ -75,13 +76,13 @@ body{margin:0}
 </sc-if>
 <sc-if value="{{s2}}" hint-placeholder-val="{{false}}">
 <div style="position: absolute; inset: 0; display: flex; flex-direction: column;">
-<header style="height: 60px; flex: none; display: flex; align-items: center; gap: 16px; padding: 0 20px; border-bottom: 1px solid var(--border); background: var(--surface);">
+<header style="height: 60px; flex: none; display: flex; align-items: center; gap: 16px; padding: 0 20px; background: transparent;">
 <span style="display: flex; align-items: center; gap: 8px; min-width: 208px;"><svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="6" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><span style="font-size: 16px; font-weight: 600;">Shelfmark</span></span>
-<span class="sm-field__control" style="flex: 1; max-width: 520px; margin: 0 auto; min-height: 38px; background: var(--bg);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span style="flex: 1; color: var(--text-muted); font-size: 14px;">Search links, notes and tags</span><span class="sm-kbd">⌘K</span></span>
+<span class="sm-field__control" style="flex: 1; max-width: 520px; margin: 0 auto; min-height: 42px; background: var(--surface); border-radius: 999px; border-color: transparent; box-shadow: var(--shadow-card);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span style="flex: 1; color: var(--text-muted); font-size: 14px;">Search links, notes and tags</span><span class="sm-kbd">⌘K</span></span>
 <span class="sm-btn sm-btn--primary wbg-press">+ Add link</span><span class="sm-avatar">DD</span>
 </header>
 <div style="flex: 1; display: flex; min-height: 0;">
-<div style="width: 248px; flex: none; border-right: 1px solid var(--border); background: var(--surface); padding: 16px 12px; display: flex; flex-direction: column; gap: 2px;">
+<div style="width: 248px; flex: none; margin: 0 0 12px 12px; border-radius: 22px; box-shadow: var(--shadow-card); background: var(--surface); padding: 16px 12px; display: flex; flex-direction: column; gap: 2px;">
 <div class="sm-tree__row is-active">All links<span class="sm-tree__count">7</span></div><div class="sm-tree__row">Unsorted</div><div class="sm-tree__row">Favorites</div>
 <div class="sm-tree__section">Folders</div><div class="sm-tree__row">Work</div><div class="sm-tree__row" style="padding-left: 28px;">Angular</div><div class="sm-tree__row">Clothes</div><div class="sm-tree__row">Recipes</div>
 </div>
@@ -94,13 +95,13 @@ body{margin:0}
 </sc-if>
 <sc-if value="{{s3}}" hint-placeholder-val="{{false}}">
 <div style="position: absolute; inset: 0; display: flex; flex-direction: column;">
-<header style="height: 60px; flex: none; display: flex; align-items: center; gap: 16px; padding: 0 20px; border-bottom: 1px solid var(--border); background: var(--surface);">
+<header style="height: 60px; flex: none; display: flex; align-items: center; gap: 16px; padding: 0 20px; background: transparent;">
 <span style="display: flex; align-items: center; gap: 8px; min-width: 208px;"><svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="6" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><span style="font-size: 16px; font-weight: 600;">Shelfmark</span></span>
-<span class="sm-field__control wbg-focus" style="flex: 1; max-width: 520px; margin: 0 auto; min-height: 38px; background: var(--bg);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span style="flex: 1; color: var(--text); font-size: 14px;"><span class="wbg-type">ramen</span><span class="wbg-caret"></span></span><span class="sm-kbd">Esc</span></span>
+<span class="sm-field__control wbg-focus" style="flex: 1; max-width: 520px; margin: 0 auto; min-height: 42px; background: var(--surface); border-radius: 999px; border-color: transparent; box-shadow: var(--shadow-card);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span style="flex: 1; color: var(--text); font-size: 14px;"><span class="wbg-type">ramen</span><span class="wbg-caret"></span></span><span class="sm-kbd">Esc</span></span>
 <span class="sm-btn sm-btn--primary ">+ Add link</span><span class="sm-avatar">DD</span>
 </header>
 <div style="flex: 1; display: flex; min-height: 0;">
-<div style="width: 248px; flex: none; border-right: 1px solid var(--border); background: var(--surface); padding: 16px 12px; display: flex; flex-direction: column; gap: 2px;">
+<div style="width: 248px; flex: none; margin: 0 0 12px 12px; border-radius: 22px; box-shadow: var(--shadow-card); background: var(--surface); padding: 16px 12px; display: flex; flex-direction: column; gap: 2px;">
 <div class="sm-tree__row is-active">All links<span class="sm-tree__count">7</span></div><div class="sm-tree__row">Unsorted</div><div class="sm-tree__row">Favorites</div>
 <div class="sm-tree__section">Folders</div><div class="sm-tree__row">Work</div><div class="sm-tree__row" style="padding-left: 28px;">Angular</div><div class="sm-tree__row">Clothes</div><div class="sm-tree__row">Recipes</div>
 </div>

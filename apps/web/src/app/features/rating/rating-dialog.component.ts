@@ -10,21 +10,26 @@ import {
   viewChild,
 } from '@angular/core';
 import { form, FormField, FormRoot, maxLength } from '@angular/forms/signals';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { FEEDBACK_LIMIT, type FeedbackScore } from '@shelfmark/contracts';
 import {
   BUTTON_TYPE,
   BUTTON_VARIANT,
   ButtonComponent,
   DialogComponent,
+  ICON_SIZE,
+  IconComponent,
   injectDialogData,
   KEYBOARD_KEY,
   NOTICE_KIND,
   NoticeComponent,
+  RatingScaleComponent,
   TextareaComponent,
   UiDialogRef,
 } from '@shelfmark/ui';
 import { ViewportService } from '../../core/layout/viewport.service';
+import { RATING_SCORES } from './models/rating-scores.const';
 import { RATING_API } from './models/rating-api.const';
 import { RATING_DELAY } from './models/rating-delay.const';
 import type { RatingDialogData } from './models/rating-dialog-data.interface';
@@ -32,7 +37,6 @@ import { RATING_STEP } from './models/rating-step.const';
 import type { RatingStep } from './models/rating-step.type';
 import { RATING_THANKS_FROM_SCORE } from './models/rating-thanks-from-score.const';
 import { isEditableTarget } from './rating-blockers';
-import { ScoreScaleComponent } from './score-scale/score-scale.component';
 import { scoreForKey } from './score-for-key';
 
 /**
@@ -41,7 +45,8 @@ import { scoreForKey } from './score-for-key';
  * closes by itself after 4 s. The score is saved the moment it is picked; "Not now", Esc and the
  * scrim close the dialog without one and the store records the skip. Digits 1 to 9 and 0 (= 10)
  * move focus to that score on the first step (Enter picks it); focus starts on the dialog itself. While focus is not in the scale (on the dialog, or on "Not now") the first ArrowLeft / ArrowRight enters it: ArrowRight at 1, ArrowLeft at 10 (intended).
- * The step slides in 24px and fades; reduced motion shows it at once.
+ * The step slides in 24px and fades; reduced motion shows it at once. The feedback step starts
+ * with a read-only copy of the chosen score, and thanks is a centred tile with a check.
  */
 @Component({
   selector: 'app-rating-dialog',
@@ -51,8 +56,9 @@ import { scoreForKey } from './score-for-key';
     DialogComponent,
     FormField,
     FormRoot,
+    IconComponent,
     NoticeComponent,
-    ScoreScaleComponent,
+    RatingScaleComponent,
     TextareaComponent,
   ],
   host: { '(document:keydown)': 'onKeydown($event)' },
@@ -65,6 +71,7 @@ export class RatingDialogComponent {
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   protected readonly NOTICE_KIND = NOTICE_KIND;
   protected readonly RATING_STEP = RATING_STEP;
+  protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly FEEDBACK_LIMIT = FEEDBACK_LIMIT;
 
   private readonly ref = inject<UiDialogRef<undefined>>(UiDialogRef);
@@ -74,12 +81,25 @@ export class RatingDialogComponent {
   /** Phone: the footer buttons span the sheet. */
   protected readonly phone = inject(ViewportService).phone;
 
-  private readonly scale = viewChild(ScoreScaleComponent);
+  private readonly scale = viewChild(RatingScaleComponent);
   private readonly commentField = viewChild(TextareaComponent);
   private readonly closeButton = viewChild<ButtonComponent>('closeButton');
 
   protected readonly step = signal<RatingStep>(RATING_STEP.Rate);
-  private readonly score = signal<FeedbackScore | null>(null);
+  protected readonly score = signal<FeedbackScore | null>(null);
+
+  private readonly transloco = inject(TranslocoService);
+  /** Ticks when the language or its translations change, so the labels re-translate. */
+  private readonly i18n = toSignal(this.transloco.events$, { initialValue: undefined });
+  /** "7 out of 10" for each button, in the order of the scale. */
+  protected readonly scoreLabels = computed(() => {
+    this.i18n();
+    return RATING_SCORES.map((score) => this.transloco.translate('rating.scale.score', { score }));
+  });
+  protected readonly yourScoreLabel = computed(() => {
+    this.i18n();
+    return this.transloco.translate('rating.feedback.yourScore', { score: this.score() ?? '' });
+  });
   protected readonly sending = signal(false);
   protected readonly failed = signal(false);
   /** The thank-you step follows a written message. */
@@ -117,6 +137,14 @@ export class RatingDialogComponent {
 
   protected close(): void {
     this.ref.close();
+  }
+
+  /** A score from the scale; anything outside it cannot come from the buttons and is ignored. */
+  protected pick(score: number): void {
+    const valid = RATING_SCORES.find((candidate) => candidate === score);
+    if (valid !== undefined) {
+      this.rate(valid);
+    }
   }
 
   /** The score is saved at once; the answer does not wait for the request. */

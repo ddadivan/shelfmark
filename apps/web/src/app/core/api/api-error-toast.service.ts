@@ -10,7 +10,7 @@ export class ApiErrorToastService {
   private readonly transloco = inject(TranslocoService);
   private readonly lastShown = new Map<string, number>();
 
-  /** Shows the error toast for a translation key, unless the same one was shown a moment ago. */
+  /** Shows the error toast for a translation key (`<key>.title` and `<key>.detail`), unless the same one was shown a moment ago. */
   show(key: string): void {
     const now = Date.now();
     const last = this.lastShown.get(key);
@@ -18,6 +18,10 @@ export class ApiErrorToastService {
       return;
     }
     this.lastShown.set(key, now);
-    this.toasts.show({ kind: TOAST_KIND.Error, text: this.transloco.translate(key) });
+    this.toasts.show({
+      kind: TOAST_KIND.Danger,
+      title: this.transloco.translate(`${key}.title`),
+      detail: this.transloco.translate(`${key}.detail`),
+    });
   }
 }

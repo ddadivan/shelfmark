@@ -34,8 +34,9 @@ export class ExportActionsService {
       });
     } catch {
       this.toasts.show({
-        kind: TOAST_KIND.Error,
-        text: this.transloco.translate('export.failed'),
+        kind: TOAST_KIND.Danger,
+        title: this.transloco.translate('export.failed'),
+        detail: this.transloco.translate('export.failedDetail'),
         action: {
           label: this.transloco.translate('export.retry'),
           run: () => void this.download(format, scope),

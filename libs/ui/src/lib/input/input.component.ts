@@ -36,7 +36,7 @@ import { INPUT_TYPE } from './models/input-type.const';
   selector: 'ui-input',
   imports: [TooltipDirective, FieldShellComponent, IconComponent, SpinnerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'ui-input' },
+  host: { class: 'ui-input', '[class.ui-input--compact]': 'compact()' },
   templateUrl: './input.component.html',
   styleUrl: './input.component.scss',
 })

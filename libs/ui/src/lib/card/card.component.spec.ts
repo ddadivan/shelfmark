@@ -250,7 +250,6 @@ describe('CardComponent', () => {
       const reduced = mediaBlocks(css, /prefers-reduced-motion:\s*reduce/).join('\n');
       expect(reduced).toContain('transform: none');
       expect(css).toContain('box-shadow var(--duration-slow)');
-      expect(css).toContain('border-color var(--duration-fast)');
     });
   });
 

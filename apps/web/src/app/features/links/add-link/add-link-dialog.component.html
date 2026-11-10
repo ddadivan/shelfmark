@@ -1,4 +1,4 @@
-<form [formRoot]="form" class="add-link">
+<form [formRoot]="form" class="add-link" (keydown)="onKeydown($event)">
   <ui-dialog
     [title]="(editing ? 'links.edit.title' : 'links.add.title') | transloco"
     [closeLabel]="'links.add.close' | transloco"
@@ -9,7 +9,8 @@
         [type]="INPUT_TYPE.Url"
         [label]="'links.add.url.label' | transloco"
         [placeholder]="'links.add.url.placeholder' | transloco"
-        [hint]="'links.add.url.hint' | transloco"
+        [hint]="editing ? '' : ('links.add.url.hint' | transloco)"
+        [loading]="shownState() === PREVIEW_STATE.Loading"
         [formField]="form.url"
       />
 
@@ -36,8 +37,8 @@
 
       @switch (shownState()) {
         @case (PREVIEW_STATE.Loading) {
-          <div class="add-link__preview" aria-busy="true">
-            <ui-skeleton [shape]="SKELETON_SHAPE.Line" [count]="3" />
+          <div class="add-link__preview add-link__preview--loading" aria-busy="true">
+            <ui-skeleton [shape]="SKELETON_SHAPE.Preview" />
           </div>
           <p class="add-link__note">{{ 'links.add.preview.loadingHint' | transloco }}</p>
         }
@@ -59,15 +60,18 @@
           }
           @if (previewData(); as data) {
             <div class="add-link__preview">
-              <div class="add-link__meta">
-                <ui-favicon [letter]="previewHost()[0]" />
-                <span class="add-link__host">{{ previewHost() }}</span>
+              <span class="add-link__thumb" aria-hidden="true">{{ previewHost()[0] }}</span>
+              <div class="add-link__preview-main">
+                <div class="add-link__meta">
+                  <ui-favicon [letter]="previewHost()[0]" />
+                  <span class="add-link__host">{{ previewHost() }}</span>
+                </div>
+                <div class="add-link__title">{{ data.title }}</div>
+                @if (data.description) {
+                  <div class="add-link__description">{{ data.description }}</div>
+                }
+                <div class="add-link__note">{{ 'links.add.preview.filled' | transloco }}</div>
               </div>
-              <div class="add-link__title">{{ data.title }}</div>
-              @if (data.description) {
-                <div class="add-link__description">{{ data.description }}</div>
-              }
-              <div class="add-link__note">{{ 'links.add.preview.filled' | transloco }}</div>
             </div>
           }
         }
@@ -109,6 +113,10 @@
         [formField]="form.note"
       />
 
+      @if (editing) {
+        <ui-checkbox [label]="'links.edit.favorite' | transloco" [formField]="form.isFavorite" />
+      }
+
       @if (saveError(); as key) {
         <ui-notice [kind]="NOTICE_KIND.Danger">{{
           key | transloco: { max: LINK_LIMIT.PerUserMax }
@@ -124,7 +132,7 @@
       <ui-button
         slot="footer"
         class="add-link__delete"
-        [variant]="BUTTON_VARIANT.Danger"
+        [variant]="BUTTON_VARIANT.Ghost"
         iconLeft="trash"
         [disabled]="saving()"
         (click)="requestDelete()"
@@ -132,9 +140,18 @@
       >
     }
 
-    <ui-button slot="footer" class="add-link__action" [disabled]="saving()" (click)="cancel()">{{
-      'links.add.actions.cancel' | transloco
-    }}</ui-button>
+    @if (!editing && !phone()) {
+      <span slot="footer" class="add-link__shortcut">
+        <kbd>{{ (mac ? 'links.add.shortcut.cmd' : 'links.add.shortcut.ctrl') | transloco }}</kbd>
+        <kbd>{{ 'links.add.shortcut.enter' | transloco }}</kbd>
+        {{ 'links.add.shortcut.save' | transloco }}
+      </span>
+    }
+    @if (editing || !phone()) {
+      <ui-button slot="footer" class="add-link__action" [disabled]="saving()" (click)="cancel()">{{
+        'links.add.actions.cancel' | transloco
+      }}</ui-button>
+    }
     @if (duplicate() && !editing) {
       <ui-button slot="footer" class="add-link__action" (click)="openExisting()">{{
         'links.add.actions.openSaved' | transloco

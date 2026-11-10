@@ -37,8 +37,9 @@ export class FolderActionsService {
   async create(parent: FolderResponse | null = null): Promise<void> {
     if (this.folders.atLimit()) {
       this.toasts.show({
-        kind: TOAST_KIND.Error,
-        text: this.t('folders.create.limit', { max: String(FOLDER_LIMIT.PerUserMax) }),
+        kind: TOAST_KIND.Danger,
+        title: this.t('folders.create.limit'),
+        detail: this.t('folders.create.limitDetail', { max: String(FOLDER_LIMIT.PerUserMax) }),
       });
       return;
     }
@@ -50,17 +51,21 @@ export class FolderActionsService {
         autoFocus: DIALOG_FIRST_FIELD,
         data: {
           mode: FOLDER_NAME_MODE.Create,
-          parentName: parent?.name ?? null,
+          parentId: parent?.id ?? null,
           name: '',
-          submit: async (name) => {
-            outcome.folder = await this.folders.create(name, parent?.id ?? null);
+          submit: async (name, parentId) => {
+            outcome.folder = await this.folders.create(name, parentId);
             return outcome.folder !== null;
           },
         },
       },
     ).result;
     if (outcome.folder) {
-      this.toasts.show({ kind: TOAST_KIND.Success, text: this.t('folders.create.done') });
+      this.toasts.show({
+        kind: TOAST_KIND.Success,
+        title: this.t('folders.create.done'),
+        detail: outcome.folder.name,
+      });
       await this.router.navigate([`/${APP_PATH.Folders}`, outcome.folder.id]);
     }
   }
@@ -73,15 +78,16 @@ export class FolderActionsService {
         autoFocus: DIALOG_FIRST_FIELD,
         data: {
           mode: FOLDER_NAME_MODE.Rename,
-          parentName: null,
+          parentId: null,
           name: folder.name,
           submit: (name) => {
             if (name !== folder.name) {
               void this.folders.rename(folder.id, name).then((saved) => {
                 if (!saved) {
                   this.toasts.show({
-                    kind: TOAST_KIND.Error,
-                    text: this.t('folders.rename.failed'),
+                    kind: TOAST_KIND.Danger,
+                    title: this.t('folders.rename.failed'),
+                    detail: this.t('folders.rename.failedDetail'),
                   });
                 }
               });
@@ -108,7 +114,11 @@ export class FolderActionsService {
           submit: (parentId) => {
             void this.folders.move(folder.id, parentId).then((moved) => {
               if (!moved) {
-                this.toasts.show({ kind: TOAST_KIND.Error, text: this.t('folders.move.failed') });
+                this.toasts.show({
+                  kind: TOAST_KIND.Danger,
+                  title: this.t('folders.move.failed'),
+                  detail: this.t('folders.move.failedDetail'),
+                });
               }
             });
           },
@@ -138,7 +148,11 @@ export class FolderActionsService {
       },
     ).result;
     if (outcome.deleted) {
-      this.toasts.show({ kind: TOAST_KIND.Success, text: this.t('folders.delete.done') });
+      this.toasts.show({
+        kind: TOAST_KIND.Success,
+        title: this.t('folders.delete.done'),
+        detail: folder.name,
+      });
     }
   }
 

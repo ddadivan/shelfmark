@@ -2,7 +2,7 @@ import type { MotionPresetDemo } from './motion-preset-demo.interface';
 
 export const MOTION_PRESET_DEMOS: readonly MotionPresetDemo[] = [
   { name: 'pop', label: 'Menu, listbox, dialog', timing: '200 ms in, 120 ms out, ease-out' },
-  { name: 'toast', label: 'Toast', timing: '320 ms in (ease-out), 120 ms out (ease-in)' },
+  { name: 'toast', label: 'Toast', timing: '320 ms in (ease-spring), 120 ms out (ease-in)' },
   { name: 'sheet', label: 'Bottom sheet', timing: '320 ms in (ease-drawer), 200 ms out (ease-in)' },
   {
     name: 'drawer',

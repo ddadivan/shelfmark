@@ -1,10 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { ButtonComponent } from '../button/button.component';
 import { DialogComponent } from '../dialog/dialog.component';
 import { DialogService } from '../dialog/dialog.service';
 import { UiDialogRef } from '../dialog/dialog-ref';
+import { injectDialogData } from '../dialog/inject-dialog-data';
 import { DIALOG_SIZE } from '../dialog/models/dialog-size.const';
+import { DIALOG_VARIANT } from '../dialog/models/dialog-variant.const';
+import { FaviconComponent } from '../favicon/favicon.component';
 import { HighlightComponent } from '../highlight/highlight.component';
 import { IconComponent } from '../icon/icon.component';
 import { THEME, THEME_ATTRIBUTE } from '../theme';
@@ -129,10 +132,11 @@ class StoryResultsComponent {
     CommandGroupComponent,
     CommandItemComponent,
     IconComponent,
+    FaviconComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <ui-dialog title="Search" closeLabel="Close" size="md">
+    <ui-dialog title="Search" closeLabel="Close" size="md" [phoneFullscreen]="command">
       <ui-command-list
         listLabel="Search results"
         inputLabel="Search links, folders and tags"
@@ -142,6 +146,7 @@ class StoryResultsComponent {
         <ui-command-group heading="Links">
           @for (link of links; track link.id) {
             <ui-command-item [value]="link.id">
+              <ui-favicon slot="leading" [letter]="link.meta" />
               {{ link.title }}
               <span slot="meta">{{ link.meta }}</span>
             </ui-command-item>
@@ -157,6 +162,7 @@ class StoryResultsComponent {
 class StoryDialogComponent {
   protected readonly ref = inject<UiDialogRef<string>>(UiDialogRef);
   protected readonly links = LINKS;
+  protected readonly command = injectDialogData<boolean>() === true;
 }
 
 @Component({
@@ -171,14 +177,22 @@ class StoryDialogComponent {
   `,
 })
 class StoryDemoComponent {
+  /** The command dialog (top, glass) of the search overlay, or the plain dialog / phone sheet. */
+  readonly command = input(false);
+
   private readonly dialogs = inject(DialogService);
   protected readonly result = signal('Nothing chosen yet.');
 
   protected async open(): Promise<void> {
-    const chosen = await this.dialogs.open<StoryDialogComponent, string>(StoryDialogComponent, {
-      size: DIALOG_SIZE.Md,
-      autoFocus: 'input',
-    }).result;
+    const chosen = await this.dialogs.open<StoryDialogComponent, string, boolean>(
+      StoryDialogComponent,
+      {
+        size: DIALOG_SIZE.Md,
+        variant: this.command() ? DIALOG_VARIANT.Command : DIALOG_VARIANT.Default,
+        data: this.command(),
+        autoFocus: 'input',
+      },
+    ).result;
     this.result.set(chosen ? `Chosen: ${chosen}` : 'Dismissed.');
   }
 }
@@ -222,6 +236,7 @@ const imports = [
   CommandItemComponent,
   HighlightComponent,
   IconComponent,
+  FaviconComponent,
 ];
 
 /** Type to filter; the matching part is marked. Enter or a click chooses, the demo ignores it. */
@@ -274,8 +289,20 @@ export const WithoutGroups: Story = {
   }),
 };
 
-/** A real dialog: focus lands in the input, Esc closes, choosing a row closes with its value. */
+/**
+ * The search overlay: a command dialog (glass, 680px, 96px from the top). Focus lands in the
+ * input, Esc closes, choosing a row closes with its value; on a phone it is a full page.
+ */
 export const InDialog: Story = {
+  parameters: { layout: 'fullscreen' },
+  render: () => ({
+    moduleMetadata: { imports },
+    template: '<ui-command-list-story-demo [command]="true" />',
+  }),
+};
+
+/** The same list in a plain centred dialog. */
+export const InPlainDialog: Story = {
   parameters: { layout: 'fullscreen' },
   render: () => ({ moduleMetadata: { imports }, template: '<ui-command-list-story-demo />' }),
 };
@@ -309,17 +336,19 @@ export const AllVariants: Story = {
                 <kbd slot="input-end">Esc</kbd>
                 <ui-command-group heading="3 links">
                   <ui-command-item value="a">
+                    <ui-favicon slot="leading" letter="y" />
                     <ui-highlight text="Angular 22: Signal Forms in 20 minutes" query="signal" />
                     <span slot="meta">youtube.com, in Work / Angular</span>
-                    <kbd slot="trailing"><ui-icon name="key-enter" [size]="16" /></kbd>
                   </ui-command-item>
                   <ui-command-item value="b">
+                    <ui-favicon slot="leading" letter="m" />
                     <ui-highlight text="Signals vs RxJS" query="signal" />
                     <span slot="meta">medium.com</span>
                   </ui-command-item>
                 </ui-command-group>
                 <ui-command-group heading="Folders and tags">
                   <ui-command-item value="c">
+                    <ui-icon slot="leading" name="folder" />
                     <ui-highlight text="Work / Angular / Signals" query="signal" />
                     <span slot="trailing">5 links</span>
                   </ui-command-item>

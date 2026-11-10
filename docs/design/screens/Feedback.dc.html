@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Toasts, offline and confirmations</title>
+<title>A · Toasts, offline and confirmations</title>
 <script src="./support.js"></script>
-<link rel="stylesheet" href="ds/shelfmark/tokens.css">
-<link rel="stylesheet" href="ds/shelfmark/components/bundle.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
 </head>
 <body>
 <x-dc>
@@ -15,19 +16,17 @@
 body{margin:0}
 </style>
 </helmet>
-<div data-theme="{{theme}}" class="sm-root" style="min-height: 900px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; padding: 48px; box-sizing: border-box; display: grid; grid-template-columns: repeat(auto-fit, minmax(440px, 1fr)); gap: 32px; align-content: start;">
+<div data-theme="{{theme}}" class="sm-root dir-a" style="min-height: 900px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; padding: 48px; box-sizing: border-box; display: grid; grid-template-columns: repeat(auto-fit, minmax(440px, 1fr)); gap: 32px; align-content: start;">
 
 <section style="display: flex; flex-direction: column; gap: 12px;">
-<h2 style="margin: 0; font-size: 13px; font-weight: 600; color: var(--text-muted);">Toasts · bottom-left on desktop, bottom-centre on phones</h2>
+<h2 style="margin: 0; font-size: 13px; font-weight: 600; color: var(--text-muted);">Toasts · bottom-centre, above any bottom bar</h2>
 <div style="position: relative; height: 300px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); overflow: hidden;">
 <div style="padding: 16px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;">
 <div class="sm-card" style="cursor: default; outline: 2px solid var(--accent); outline-offset: 0;"><div class="sm-card__media" style="background: var(--accent-bg); aspect-ratio: 16 / 10;"></div><div class="sm-card__body" style="padding: 8px;"><div class="sm-skel" style="height: 8px; width: 80%; animation: none;"></div></div></div>
 <div class="sm-card" style="cursor: default;"><div class="sm-card__media" style="aspect-ratio: 16 / 10;"></div><div class="sm-card__body" style="padding: 8px;"><div class="sm-skel" style="height: 8px; width: 70%;"></div></div></div>
 <div class="sm-card" style="cursor: default;"><div class="sm-card__media" style="aspect-ratio: 16 / 10;"></div><div class="sm-card__body" style="padding: 8px;"><div class="sm-skel" style="height: 8px; width: 60%;"></div></div></div>
 </div>
-<div style="position: absolute; left: 16px; bottom: 16px; display: flex; flex-direction: column; gap: 8px;" aria-live="polite">
-<div class="sm-toast sm-toast--success"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg><span class="sm-toast__text">Link saved to Work / Angular</span><button class="sm-toast__action">View</button></div>
-<div class="sm-toast"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg><span class="sm-toast__text">Link deleted</span><button class="sm-toast__action">Undo</button></div>
+<div style="position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); display: flex; flex-direction: column; gap: 8px; align-items: center;" aria-live="polite"><div class="sm-toast" role="status"><span class="sm-toast__thumb" style="background: var(--accent-bg);"><span class="sm-toast__badge"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></span><span class="sm-toast__text">Saved to Work / Angular<small>Signal Forms in 20 minutes</small></span><button class="sm-toast__action">View</button></div><div class="sm-toast sm-toast--danger" role="status"><span class="sm-toast__icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15M9.5 7V5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2M6.5 7l1 12a1.5 1.5 0 0 0 1.5 1.4h6a1.5 1.5 0 0 0 1.5-1.4l1-12"/></svg></span><span class="sm-toast__text">Link moved to Trash<small>Wool coat, straight cut</small></span><button class="sm-toast__action">Undo</button><span class="sm-toast__timer" style="--dur: 8s;" aria-hidden="true"></span></div></div>
 </div>
 </div>
 <p style="margin: 0; font-size: 12px; color: var(--text-muted);">The new card is outlined in sage for 1.5 s. After a delete is confirmed, the toast still offers Undo for 8 s.</p>
@@ -38,7 +37,7 @@ body{margin:0}
 <div style="position: relative; height: 300px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); overflow: hidden;">
 <div style="height: 44px; border-bottom: 1px solid var(--border);"></div>
 <div class="sm-notice sm-notice--warning" role="status" style="border-radius: 0; align-items: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18M8.5 16.5a5 5 0 0 1 7 0M5 12.9a10 10 0 0 1 4.2-2.4M19 12.9a10 10 0 0 0-2.4-1.7M12 20h.01"/></svg><span style="flex: 1;">You're offline. You can browse what's loaded; saving and editing come back when you reconnect.</span></div>
-<div style="position: absolute; left: 16px; bottom: 16px;"><div class="sm-toast sm-toast--error"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg><span class="sm-toast__text">Couldn't save. Check your connection.</span><button class="sm-toast__action">Retry</button></div></div>
+<div style="position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%);"><div class="sm-toast sm-toast--danger" role="alert"><span class="sm-toast__icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></span><span class="sm-toast__text">Couldn’t save the link<small>Check your connection, then try again</small></span><button class="sm-toast__action">Retry</button><button class="sm-toast__close" aria-label="Dismiss"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div></div>
 </div>
 </section>
 

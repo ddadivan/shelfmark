@@ -5,26 +5,24 @@
   min-width: 0;
 }
 
-// A compact tile: flat with a border and no preview, shadow or actions, so it reads as a place to
-// enter and not as a link card.
+// FolderStyle.dc.html: a compact tile on `surface` with the whisper ring, a graphite folder tile,
+// the name, the counts and a chevron. No preview or actions, so it reads as a place to enter and
+// not as a link card.
 .folder-tile__link {
   display: flex;
   gap: var(--space-3);
   align-items: center;
-  min-height: rem(56px);
-  padding: var(--space-3) var(--space-4);
+  min-height: rem(64px);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
   color: var(--text);
   text-decoration: none;
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  transition:
-    background-color var(--duration-fast) var(--ease-out),
-    border-color var(--duration-fast) var(--ease-out);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  transition: background-color var(--duration-fast) var(--ease-out);
 
   @include hover {
     background: var(--surface-hover);
-    border-color: var(--border-control);
   }
 
   &:active {
@@ -45,8 +43,8 @@
   min-height: rem(48px);
   padding-block: var(--space-2);
   background: transparent;
-  border-color: transparent;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
+  box-shadow: none;
 
   @include hover {
     background: var(--surface-hover);
@@ -59,7 +57,6 @@
 
 .folder-tile__icon {
   flex: none;
-  color: var(--accent);
 }
 
 .folder-tile__text {
@@ -72,6 +69,8 @@
 .folder-tile__name {
   @include type(label);
   @include line-clamp(1);
+
+  font-weight: 500;
 }
 
 .folder-tile__meta {

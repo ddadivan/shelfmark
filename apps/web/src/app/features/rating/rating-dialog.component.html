@@ -1,16 +1,20 @@
 <form [formRoot]="form">
-  <ui-dialog [title]="titleKey() | transloco" size="md">
+  <ui-dialog [title]="titleKey() | transloco" size="md" [hideTitle]="step() === RATING_STEP.Thanks">
     @switch (step()) {
       @case (RATING_STEP.Rate) {
         <div class="rating__step">
-          <app-score-scale
+          <ui-rating-scale
             [attr.aria-label]="'rating.scale.label' | transloco"
-            (picked)="rate($event)"
+            [labels]="scoreLabels()"
+            [lowLabel]="'rating.scale.low' | transloco"
+            [highLabel]="'rating.scale.high' | transloco"
+            (picked)="pick($event)"
           />
         </div>
       }
       @case (RATING_STEP.Feedback) {
         <div class="rating__step">
+          <ui-rating-scale readonly [score]="score()" [readonlyLabel]="yourScoreLabel()" />
           <ui-textarea
             [label]="'rating.feedback.label' | transloco"
             [placeholder]="'rating.feedback.placeholder' | transloco"
@@ -26,7 +30,13 @@
         </div>
       }
       @case (RATING_STEP.Thanks) {
-        <div class="rating__step">
+        <div class="rating__step rating__step--thanks">
+          <span class="rating__badge" aria-hidden="true"
+            ><ui-icon name="check" [size]="ICON_SIZE.Lg"
+          /></span>
+          <p class="rating__thanks-title" aria-hidden="true">
+            {{ 'rating.thanks.title' | transloco }}
+          </p>
           <p class="rating__text">
             {{
               (wroteFeedback() ? 'rating.thanks.textFeedback' : 'rating.thanks.text') | transloco

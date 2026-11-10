@@ -1,0 +1,10 @@
+<button
+  type="button"
+  role="switch"
+  class="ui-switch__track"
+  [attr.aria-checked]="checked()"
+  [attr.aria-label]="label()"
+  [disabled]="disabled()"
+  (click)="toggle()"
+  (blur)="touch.emit()"
+></button>

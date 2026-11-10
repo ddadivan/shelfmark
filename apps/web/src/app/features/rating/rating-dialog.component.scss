@@ -18,6 +18,31 @@
   color: var(--text-muted);
 }
 
+// Thanks: centred, with a check tile (Rating spec).
+.rating__step--thanks {
+  gap: var(--space-2);
+  align-items: center;
+  text-align: center;
+}
+
+.rating__badge {
+  display: grid;
+  place-items: center;
+  width: rem(64px);
+  height: rem(64px);
+  margin-block-end: var(--space-1);
+  color: var(--accent-text);
+  background: var(--accent-bg);
+  border-radius: var(--radius-lg);
+}
+
+.rating__thanks-title {
+  @include type(title);
+
+  margin: 0;
+  color: var(--text);
+}
+
 .rating__foot {
   display: flex;
   flex: 1;

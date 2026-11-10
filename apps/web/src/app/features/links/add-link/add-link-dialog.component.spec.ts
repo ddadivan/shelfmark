@@ -145,6 +145,12 @@ afterEach(() => {
 });
 
 describe('AddLinkDialogComponent', () => {
+  it('has no favorites checkbox when adding', async () => {
+    await setup(fakeApi(() => of(PLAIN)));
+
+    expect(dialog().querySelector('ui-checkbox')).toBeNull();
+  });
+
   it('starts empty with the hint and no preview', async () => {
     const api = fakeApi(() => of(PLAIN));
     await setup(api);
@@ -322,6 +328,24 @@ describe('AddLinkDialogComponent', () => {
       tags: ['docs'],
       idempotencyKey: expect.any(String),
     });
+    expect(outcome?.action).toBe(ADD_LINK_ACTION.Saved);
+  });
+
+  it('saves with Ctrl + Enter from a field and shows the shortcut in the footer', async () => {
+    const api = fakeApi(() => of(PLAIN));
+    const { result } = await setup(api);
+    expect(dialog().querySelector('.add-link__shortcut')?.textContent).toContain('to save');
+
+    await type('Link', 'https://example.org/post');
+    await until(() => {
+      expect(input('Title').value).toBe('A fine post');
+    });
+    input('Note').dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Enter', ctrlKey: true, bubbles: true }),
+    );
+
+    const outcome: AddLinkResult | undefined = await result;
+    expect(api.create).toHaveBeenCalledTimes(1);
     expect(outcome?.action).toBe(ADD_LINK_ACTION.Saved);
   });
 
@@ -764,6 +788,21 @@ describe('AddLinkDialogComponent', () => {
       expect(api.update).toHaveBeenCalledWith(EDITED.id, { title: 'New title', note: null });
       expect(api.create).not.toHaveBeenCalled();
       expect(outcome?.action).toBe(ADD_LINK_ACTION.Saved);
+    });
+
+    it('has "Add to favorites" in edit mode only and sends the change', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      const { result } = await setup(api, { link: { ...EDITED, isFavorite: false } });
+
+      const box = dialog().querySelector<HTMLInputElement>('ui-checkbox input[type="checkbox"]');
+      expect(box?.checked).toBe(false);
+      expect(dialog().textContent).toContain('Add to favorites');
+      box?.click();
+      TestBed.tick();
+      button('Save changes').click();
+
+      await result;
+      expect(api.update).toHaveBeenCalledWith(EDITED.id, { isFavorite: true });
     });
 
     it('closes without a request when nothing changed', async () => {

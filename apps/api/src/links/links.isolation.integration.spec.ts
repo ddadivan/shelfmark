@@ -3,7 +3,7 @@ import { vi } from 'vitest';
 import { createAuthTestApp } from '../../test-utils/auth-test-app';
 import { createIsolationUsers } from '../../test-utils/isolation/create-isolation-users';
 import { expectIsolated } from '../../test-utils/isolation/expect-isolated';
-import { asUser } from '../../test-utils/isolation/test-agent';
+import { anonymous, asUser } from '../../test-utils/isolation/test-agent';
 import type { AuthTestApp } from '../../test-utils/models/auth-test-app.interface';
 import type { IsolationUsers } from '../../test-utils/models/isolation-users.interface';
 import { resetRateLimits } from '../../test-utils/reset-rate-limits';
@@ -79,6 +79,31 @@ describe('links API: data isolation', () => {
     ).items;
     expect(items.map((item) => item.id)).toEqual([own]);
     expect(items.map((item) => item.id)).not.toContain(foreign);
+  });
+
+  it('removing from the history is a 404 for a foreign link and leaves the owner history intact', async () => {
+    const id = await seedLink(t.db.prisma, users.owner.userId, { lastOpenedAt: new Date() });
+    await asUser(t.app, users.intruder).delete(`${BASE}/recent/${id}`).expect(404);
+    const row = await t.db.prisma.link.findUniqueOrThrow({ where: { id } });
+    expect(row.lastOpenedAt).not.toBeNull();
+    await asUser(t.app, users.owner).delete(`${BASE}/recent/${id}`).expect(204);
+    await asUser(t.app, users.owner).delete(`${BASE}/recent/${id}`).expect(204);
+    const after = await t.db.prisma.link.findUniqueOrThrow({ where: { id } });
+    expect(after.lastOpenedAt).toBeNull();
+  });
+
+  it('clearing the history touches only the own links', async () => {
+    const own = await seedLink(t.db.prisma, users.owner.userId, { lastOpenedAt: new Date() });
+    const foreign = await seedLink(t.db.prisma, users.intruder.userId, {
+      lastOpenedAt: new Date(),
+    });
+    await asUser(t.app, users.intruder).delete(`${BASE}/recent`).expect(204);
+    const owner = await t.db.prisma.link.findUniqueOrThrow({ where: { id: own } });
+    const intruder = await t.db.prisma.link.findUniqueOrThrow({ where: { id: foreign } });
+    expect(owner.lastOpenedAt).not.toBeNull();
+    expect(intruder.lastOpenedAt).toBeNull();
+    await anonymous(t.app).delete(`${BASE}/recent`).expect(401);
+    await anonymous(t.app).delete(`${BASE}/recent/${own}`).expect(401);
   });
 
   it('every filter and the search stay inside the own links', async () => {

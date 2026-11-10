@@ -79,9 +79,9 @@ $xwide-min: 120em;
 @mixin section-title {
   margin: 0;
   font-size: rem(24px);
-  font-weight: 700;
+  font-weight: 600;
   line-height: rem(30px);
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
 
   @include tablet-up {
     font-size: rem(32px);

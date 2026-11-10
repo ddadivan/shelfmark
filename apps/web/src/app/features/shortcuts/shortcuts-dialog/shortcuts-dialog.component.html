@@ -1,0 +1,13 @@
+<ui-dialog [title]="'shortcuts.title' | transloco" [closeLabel]="'shortcuts.close' | transloco">
+  <div class="shortcuts-dialog__groups">
+    @for (group of groups; track group.id) {
+      <section class="shortcuts-dialog__group">
+        <h3 class="shortcuts-dialog__heading" [id]="headingPrefix + '-' + group.id">
+          {{ group.titleKey | transloco }}
+        </h3>
+        <app-shortcut-list [group]="group" [ariaLabelledby]="headingPrefix + '-' + group.id" />
+      </section>
+    }
+  </div>
+  <p class="shortcuts-dialog__hint">{{ 'shortcuts.hint' | transloco }}</p>
+</ui-dialog>

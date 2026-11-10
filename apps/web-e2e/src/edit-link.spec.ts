@@ -26,6 +26,23 @@ test.describe('edit link (mock API)', () => {
     await expect(page.locator('ui-card').first()).toContainText('A renamed link');
   });
 
+  test('toggles "Add to favorites" and the card star follows', async ({ page }) => {
+    const star = page
+      .locator('ui-card')
+      .first()
+      .getByRole('button', { name: /^Favorite: / });
+    const wasFavorite = (await star.getAttribute('aria-pressed')) === 'true';
+    const dialog = await openCardEdit(page);
+    const box = dialog.getByRole('checkbox', { name: 'Add to favorites' });
+    await expect(box).toBeChecked({ checked: wasFavorite });
+
+    await dialog.getByText('Add to favorites').click();
+    await dialog.getByRole('button', { name: 'Save changes' }).click();
+
+    await expect(dialog).toBeHidden();
+    await expect(star).toHaveAttribute('aria-pressed', String(!wasFavorite));
+  });
+
   test('Cancel keeps the link as it was', async ({ page }) => {
     const card = page.locator('ui-card').first();
     const before = await card.getByRole('heading').innerText();

@@ -1,14 +1,54 @@
-@for (item of store.items(); track item.id) {
-  <ui-toast
-    class="ui-toast-region__item"
-    animate.enter="ui-toast-region__item--enter"
-    animate.leave="ui-toast-region__item--leave"
-    [kind]="item.kind"
-    [text]="item.text"
-    [actionLabel]="item.action?.label"
-    [actionHint]="item.actionHint"
-    [shortcut]="item.actionHint ? shortcut : []"
-    (action)="store.runAction(item)"
-    (pausedChange)="store.setPaused(item.id, $event)"
-  />
-}
+<div class="ui-toast-region__live" role="status" aria-live="polite" aria-atomic="false">
+  @for (entry of polite(); track entry.item.id) {
+    <ui-toast
+      class="ui-toast-region__item"
+      animate.enter="ui-toast-region__item--enter"
+      animate.leave="ui-toast-region__item--leave"
+      [attr.data-toast-id]="entry.item.id"
+      [attr.data-depth]="entry.depth"
+      [style.--ui-toast-index]="entry.index"
+      [kind]="entry.item.kind"
+      [title]="entry.item.title"
+      [detail]="entry.item.detail"
+      [thumb]="entry.item.thumb"
+      [folder]="entry.item.folder"
+      [actionLabel]="entry.item.action?.label"
+      [secondaryLabel]="entry.item.secondary?.label"
+      [dismissLabel]="dismissLabel()"
+      [countdown]="entry.item.undo ? entry.item.duration : 0"
+      [actionHint]="entry.item.actionHint"
+      [shortcut]="entry.item.actionHint ? shortcut : []"
+      (action)="store.runAction(entry.item)"
+      (secondaryAction)="store.runAction(entry.item, entry.item.secondary)"
+      (dismiss)="store.dismiss(entry.item.id)"
+      (pausedChange)="store.setPaused(entry.item.id, $event)"
+    />
+  }
+</div>
+<div class="ui-toast-region__live" role="alert" aria-live="assertive" aria-atomic="false">
+  @for (entry of assertive(); track entry.item.id) {
+    <ui-toast
+      class="ui-toast-region__item"
+      animate.enter="ui-toast-region__item--enter"
+      animate.leave="ui-toast-region__item--leave"
+      [attr.data-toast-id]="entry.item.id"
+      [attr.data-depth]="entry.depth"
+      [style.--ui-toast-index]="entry.index"
+      [kind]="entry.item.kind"
+      [title]="entry.item.title"
+      [detail]="entry.item.detail"
+      [thumb]="entry.item.thumb"
+      [folder]="entry.item.folder"
+      [actionLabel]="entry.item.action?.label"
+      [secondaryLabel]="entry.item.secondary?.label"
+      [dismissLabel]="dismissLabel()"
+      [countdown]="entry.item.undo ? entry.item.duration : 0"
+      [actionHint]="entry.item.actionHint"
+      [shortcut]="entry.item.actionHint ? shortcut : []"
+      (action)="store.runAction(entry.item)"
+      (secondaryAction)="store.runAction(entry.item, entry.item.secondary)"
+      (dismiss)="store.dismiss(entry.item.id)"
+      (pausedChange)="store.setPaused(entry.item.id, $event)"
+    />
+  }
+</div>

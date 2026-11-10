@@ -1,20 +1,22 @@
 <header class="landing-header">
   <ui-logo class="landing-header__logo" [wordmark]="'landing.header.brand' | transloco" />
   <nav class="landing-header__nav" [attr.aria-label]="'landing.header.navLabel' | transloco">
-    <a
-      class="landing-header__link"
-      [attr.href]="LANDING_LINKS.HowItsBuilt"
-      (click)="onHowItsBuilt($event)"
-      >{{ 'landing.header.howItsBuilt' | transloco }}</a
-    >
-    <a
-      class="landing-header__link"
-      [attr.href]="LANDING_LINKS.Repository"
-      target="_blank"
-      rel="noopener noreferrer"
-      >{{ 'landing.header.github' | transloco
-      }}<span class="landing-header__hint"> ({{ 'landing.newTab' | transloco }})</span></a
-    >
+    @if (!phone()) {
+      <a
+        class="landing-header__link"
+        [attr.href]="LANDING_LINKS.HowItsBuilt"
+        (click)="onHowItsBuilt($event)"
+        >{{ 'landing.header.howItsBuilt' | transloco }}</a
+      >
+      <a
+        class="landing-header__link"
+        [attr.href]="LANDING_LINKS.Repository"
+        target="_blank"
+        rel="noopener noreferrer"
+        >{{ 'landing.header.github' | transloco
+        }}<span class="landing-header__hint"> ({{ 'landing.newTab' | transloco }})</span></a
+      >
+    }
     <ui-button [href]="LANDING_LINKS.SignIn">{{ 'landing.header.signIn' | transloco }}</ui-button>
   </nav>
 </header>

@@ -6,8 +6,8 @@
   min-height: 100dvh;
 
   // From the tablet width the shell is exactly the viewport (banner and header included) and the
-  // page itself never scrolls: the sidebar, the main column and the recent panel scroll on their
-  // own. A phone keeps the natural page scroll (drawer layout).
+  // page itself never scrolls: the sidebar and the main column scroll on their
+  // own. A phone keeps the natural page scroll under the tab bar.
   @include tablet-up {
     height: 100dvh;
     min-height: 0;
@@ -15,50 +15,13 @@
   }
 }
 
+// The top bar of tablet and desktop sits in the content column, above the page, with no rule under
+// it (the sidebar card and the page carry the layout). The phone has none.
 .shell__header {
   display: flex;
-  gap: var(--space-4);
+  gap: var(--space-3);
   align-items: center;
-  justify-content: space-between;
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--border);
-
-  @include tablet-up {
-    padding-inline: var(--space-6);
-  }
-
-  // Phone: the page scrolls naturally, so the header sticks to the top. It has the page
-  // background (content must not show through), sits above the page content (cards, stretched
-  // links) and below the top progress bar (900) and every overlay layer (dialog, drawer 1000+).
-  // The demo banner above it scrolls away, so it does not eat the small screen. Sticky leaves
-  // the layout untouched (no layout shift). From the tablet width the shell has its own scroll
-  // areas and the header never moves.
-  @include phone {
-    position: sticky;
-    inset-block-start: 0;
-    z-index: 800;
-    background: var(--bg);
-  }
-
-  // The shadow fades in over the first 3rem of scroll, driven by the scroll position (CSS only,
-  // no JS). Browsers without scroll-driven animations keep the border alone.
-  @supports (animation-timeline: scroll()) {
-    @include phone {
-      animation: shell-header-shadow linear both;
-      animation-timeline: scroll(root block);
-      animation-range: 0 rem(48px);
-    }
-  }
-}
-
-@keyframes shell-header-shadow {
-  from {
-    box-shadow: none;
-  }
-
-  to {
-    box-shadow: var(--shadow-card-hover);
-  }
+  padding: var(--space-1) var(--space-6) 0;
 }
 
 .shell__user {
@@ -68,70 +31,108 @@
   min-width: 0;
 }
 
-.shell__name {
+// Who is signed in, at the top of the account menu (Menus spec): avatar, name, address.
+.shell__account {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+}
+
+.shell__account-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  text-align: start;
+}
+
+.shell__account-name {
   @include type(label);
+
+  overflow: hidden;
+  color: var(--text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shell__account-email {
+  @include type(caption);
 
   overflow: hidden;
   color: var(--text-muted);
   text-overflow: ellipsis;
   white-space: nowrap;
-
-  @include phone {
-    display: none;
-  }
 }
 
-.shell__add {
-  margin-inline: var(--space-4) auto;
+// The search pill takes the room the other controls leave, up to 40rem (Main spec).
+.shell__pill {
+  flex: 1 1 rem(192px);
+  max-width: rem(640px);
 }
 
-// Phone header (mobile design): menu, logo, then search and account on the right.
-.shell__menu {
-  margin-inline-start: calc(var(--space-2) * -1);
-
-  @include tablet-up {
-    display: none;
-  }
+.shell__spacer {
+  flex: 1 1 0;
 }
 
-.shell__search {
-  @include phone {
-    margin-inline-start: auto;
-  }
-}
-
-// The floating add button of the phone design. No z-index: it comes after the page in the DOM and
-// dialogs, menus and toasts have their own overlay layers above it. MobileHome has it 20px / 28px
-// from the edges; there are no such tokens, so it takes the nearest ones (16px / 24px).
-.shell__fab {
-  position: fixed;
-  inset-block-end: calc(var(--space-6) + env(safe-area-inset-bottom));
-  inset-inline-end: calc(var(--space-4) + env(safe-area-inset-right));
-}
-
+// The sidebar is an inset card (Main spec): `surface`, `shadow-card`, `radius-lg`, set in from the
+// window edges by the body padding. It scrolls on its own.
 .shell__sidebar {
   display: block;
   flex: none;
   align-self: stretch;
   width: rem(248px);
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   background: var(--surface);
-  border-inline-end: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
 
-  @include tablet-up {
-    min-height: 0;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    scrollbar-gutter: stable;
+  @include desktop {
+    width: rem(272px);
   }
 }
 
-// The body takes the height left under the header, so the sidebar surface, the main column and the
-// recent panel run to the bottom of the viewport whatever the content height.
+// The body takes the height left under the banner. Tablet and up: the sidebar card and the content
+// column side by side, 12px from the window edges and from each other. Phone: the header and the
+// page in a column (the content wrappers vanish), the page scrolls naturally.
 .shell__body {
   display: flex;
   flex: 1;
+  flex-direction: column;
   align-items: stretch;
   min-height: 0;
+
+  @include tablet-up {
+    flex-direction: row;
+    gap: var(--space-3);
+    padding: var(--space-3);
+  }
+}
+
+.shell__content,
+.shell__row {
+  display: contents;
+
+  @include tablet-up {
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+  }
+}
+
+.shell__content {
+  @include tablet-up {
+    flex: 1;
+    flex-direction: column;
+  }
+}
+
+.shell__row {
+  @include tablet-up {
+    flex: 1;
+    align-items: stretch;
+  }
 }
 
 .shell__main {
@@ -141,33 +142,18 @@
   min-width: 0;
   padding: var(--space-6) var(--space-4);
 
-  // Room below the last row for the floating add button.
+  // Room below the last row for the floating tab bar (110px, TabBar spec).
   @include phone {
-    padding-block-end: calc(rem(88px) + env(safe-area-inset-bottom));
+    padding-block-end: calc(rem(110px) + env(safe-area-inset-bottom));
   }
 
   @include tablet-up {
     min-height: 0;
-    padding-inline: var(--space-6);
+    padding: var(--space-4) var(--space-6) var(--space-6);
 
     // Pages that are taller than the column (settings, privacy) scroll here; the library fits
     // and scrolls only its list.
     overflow-y: auto;
-    scrollbar-gutter: stable;
-  }
-}
-
-.shell__recent {
-  display: none;
-
-  @include desktop {
-    display: block;
-    flex: none;
-    width: rem(280px);
-    min-height: 0;
-    padding: var(--space-6) var(--space-6) var(--space-6) 0;
-    overflow-y: auto;
-    overscroll-behavior: contain;
     scrollbar-gutter: stable;
   }
 }

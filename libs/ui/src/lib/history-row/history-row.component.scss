@@ -1,0 +1,160 @@
+@use '../../styles/ui' as *;
+
+// Whole-row activation (as `ui-list-item`): the link's ::after covers the row (z-index 1); the
+// actions sit above it (z-index 2). Rows are told apart by a line between them.
+
+:host {
+  position: relative;
+  display: flex;
+  gap: rem(14px);
+  align-items: center;
+  padding: rem(10px) rem(14px);
+  color: var(--text);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  @include phone {
+    gap: rem(12px);
+    min-height: rem(60px);
+    padding: rem(8px) rem(6px);
+  }
+
+  @include hover {
+    background: var(--surface-hover);
+  }
+}
+
+// A line under every row but the last, inset from the row edges.
+:host(:not(:last-child))::before {
+  position: absolute;
+  inset-block-end: rem(-1px);
+  inset-inline: rem(14px);
+  content: '';
+  border-block-start: 1px solid var(--border);
+}
+
+:host(:has(.ui-history-row__link:focus-visible)) {
+  @include focus-ring;
+}
+
+// Reduced motion has no ripple, so the row itself shows the press.
+:host(:has(.ui-history-row__link:active)) {
+  @include reduced-motion {
+    background: var(--surface-pressed);
+  }
+}
+
+// 72 x 48; 48 x 48 on phones.
+.ui-history-row__preview {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: rem(72px);
+  height: rem(48px);
+  overflow: hidden;
+  color: var(--text-muted);
+  background: var(--surface-hover);
+  border-radius: var(--radius-md);
+  box-shadow: inset 0 0 0 1px var(--border);
+
+  @include phone {
+    width: rem(48px);
+  }
+}
+
+.ui-history-row__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ui-history-row__link {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: rem(2px);
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: 0;
+
+  // The row's ring replaces the one on the text.
+  &:focus-visible {
+    outline: none;
+  }
+
+  &::after {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    content: '';
+    border-radius: inherit;
+  }
+}
+
+.ui-history-row__title {
+  @include type(body);
+
+  overflow: hidden;
+  font-weight: 500;
+  color: var(--text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// The meta line holds the folder icon and name, side by side.
+.ui-history-row__meta {
+  @include type(label);
+
+  font-weight: 400;
+  display: flex;
+  gap: rem(6px);
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-muted);
+  white-space: nowrap;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.ui-history-row__time {
+  @include type(label);
+
+  font-weight: 400;
+  flex: none;
+  min-width: rem(48px);
+  color: var(--text-muted);
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.ui-history-row__actions {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: none;
+  gap: rem(8px);
+  align-items: center;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.ui-history-row__description {
+  @include visually-hidden;
+}

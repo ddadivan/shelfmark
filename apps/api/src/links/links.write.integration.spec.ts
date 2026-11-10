@@ -406,6 +406,42 @@ describe('links API: writes', () => {
     });
   });
 
+  describe('history', () => {
+    const seedHist = (options: Parameters<typeof seedLink>[2] = {}, user = users.owner) =>
+      seedLink(t.db.prisma, user.userId, options);
+
+    it('removes one link from the history, keeps the link and updatedAt, and is idempotent', async () => {
+      const id = await seedHist({ title: 'kept', lastOpenedAt: new Date() });
+      const other = await seedHist({ title: 'other', lastOpenedAt: new Date() });
+      const before = await t.db.prisma.link.findUniqueOrThrow({ where: { id } });
+      await a.delete(`${BASE}/recent/${id}`).expect(204);
+      await a.delete(`${BASE}/recent/${id}`).expect(204);
+      const after = await t.db.prisma.link.findUniqueOrThrow({ where: { id } });
+      expect(after.lastOpenedAt).toBeNull();
+      expect(after.updatedAt).toEqual(before.updatedAt);
+      const recent = (await a.get(`${BASE}/recent`).expect(200)).body as { items: LinkResponse[] };
+      expect(recent.items.map((item) => item.id)).toEqual([other]);
+      await a.get(`${BASE}/${id}`).expect(200);
+    });
+
+    it('answers 404 for a foreign or unknown link and 400 for a malformed id', async () => {
+      const id = await seedHist({ title: 'theirs', lastOpenedAt: new Date() }, users.intruder);
+      await a.delete(`${BASE}/recent/${id}`).expect(404);
+      await a.delete(`${BASE}/recent/018f0000-0000-7000-8000-00000000dead`).expect(404);
+      await a.delete(`${BASE}/recent/not-a-uuid`).expect(400);
+    });
+
+    it('clears the whole history, keeps the links, and works on an empty history', async () => {
+      await a.delete(`${BASE}/recent`).expect(204);
+      const one = await seedHist({ title: 'one', lastOpenedAt: new Date() });
+      await seedHist({ title: 'two', lastOpenedAt: new Date() });
+      await a.delete(`${BASE}/recent`).expect(204);
+      const recent = (await a.get(`${BASE}/recent`).expect(200)).body as { items: LinkResponse[] };
+      expect(recent.items).toEqual([]);
+      await a.get(`${BASE}/${one}`).expect(200);
+    });
+  });
+
   describe('open', () => {
     it('records the open without touching updatedAt', async () => {
       const id = await seedLink(t.db.prisma, users.owner.userId, { title: 'o' });

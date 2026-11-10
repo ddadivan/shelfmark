@@ -90,6 +90,37 @@
         }
       }
     },
+    "bento": {
+      "title": "Save once, find in seconds",
+      "preview": {
+        "title": "The preview fills in by itself",
+        "text": "Paste a link: the title and the site arrive on their own. Add a note so you remember why you saved it.",
+        "url": "youtube.com/watch?v=ng22",
+        "domain": "youtube.com",
+        "cardTitle": "Signal Forms in 20 minutes"
+      },
+      "folders": {
+        "title": "Folders inside folders",
+        "text": "Keep links in folders and put folders in folders, as deep as your own system needs.",
+        "work": "Work",
+        "angular": "Angular",
+        "courses": "Courses"
+      },
+      "search": {
+        "title": "Find it by any word",
+        "text": "Search the title, note or address of every link, from anywhere with ⌘K.",
+        "word": "coat",
+        "tag": "clothes"
+      },
+      "phone": {
+        "title": "Save from your phone",
+        "text": "Install Shelfmark and it shows up in the Share menu on Android. Share a page and it lands on your shelf."
+      },
+      "own": {
+        "title": "Your links stay yours",
+        "text": "Export everything as JSON or as a browser bookmarks file whenever you like."
+      }
+    },
     "beforeAfter": {
       "title": "The same links, before and after",
       "before": "Before: scattered",
@@ -200,6 +231,12 @@
         "invalid": "Enter an address that starts with http:// or https://",
         "tooLong": "The link is too long (at most {{max}} characters)"
       },
+      "shortcut": {
+        "cmd": "⌘",
+        "ctrl": "Ctrl",
+        "enter": "Enter",
+        "save": "to save"
+      },
       "preview": {
         "loading": "Loading preview",
         "loadingHint": "You can keep typing a note and choosing a folder while it loads.",
@@ -255,12 +292,16 @@
     },
     "edit": {
       "title": "Edit link",
+      "favorite": "Add to favorites",
       "meta": "Saved {{created}}, last opened {{opened}}",
       "metaNever": "Saved {{created}}, never opened",
       "actions": {
         "save": "Save changes",
         "delete": "Delete"
       }
+    },
+    "card": {
+      "moreTags": "+{{count}}"
     },
     "item": {
       "edit": "Edit",
@@ -274,27 +315,63 @@
       "delete": "Delete",
       "opensInNewTab": "Opens in a new tab",
       "open": "Open",
-      "favoriteFailed": "Couldn't update the favorite.",
+      "favoriteFailed": "Couldn't update the favorite",
       "retry": "Retry",
       "deleted": "Link deleted",
       "undo": "Undo",
-      "deleteFailed": "Couldn't delete the link. It is back in your list.",
-      "saved": "Link saved",
+      "deleteFailed": "Couldn't delete the link",
+      "deleteFailedDetail": "It is back in your list",
+      "savedTo": "Saved to {{folder}}",
       "confirm": {
         "title": "Delete this link?",
-        "message": "“{{title}}” will be deleted.",
-        "confirm": "Delete",
+        "message": "“{{title}}” will be removed. You can undo right after.",
+        "confirm": "Delete link",
         "cancel": "Cancel",
         "close": "Close"
       }
     },
     "recent": {
       "title": "Recently opened",
-      "empty": "Links you open appear here.",
-      "hide": "Hide recently opened",
-      "show": "Show recently opened",
-      "loading": "Loading recently opened links",
-      "close": "Close"
+      "count": {
+        "one": "{{count}} link in the last {{days}} days",
+        "other": "{{count}} links in the last {{days}} days"
+      },
+      "nothingYet": "Nothing yet",
+      "clear": "Clear history",
+      "clearShort": "Clear",
+      "unsorted": "Unsorted",
+      "remove": "Remove {{title}} from history",
+      "removeTooltip": "Remove from history",
+      "more": "More for {{title}}",
+      "menu": {
+        "openInNewTab": "Open in new tab",
+        "showInFolder": "Show in folder",
+        "copyLink": "Copy link",
+        "remove": "Remove from history"
+      },
+      "linkCopied": "Link copied",
+      "copyFailed": "Couldn't copy the link",
+      "removed": "Removed from history",
+      "removeFailed": "Couldn't remove it from history",
+      "cleared": "History cleared",
+      "clearFailed": "Couldn't clear the history",
+      "note": "Kept for 30 days, only on your account. Removing from history doesn't delete the link.",
+      "empty": {
+        "title": "Nothing opened yet",
+        "text": "Links you open appear here for {{days}} days."
+      },
+      "day": {
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "week": "Earlier this week"
+      },
+      "confirm": {
+        "title": "Clear history?",
+        "message": "Every link leaves Recently opened. Your saved links stay where they are.",
+        "confirm": "Clear history",
+        "cancel": "Cancel",
+        "close": "Close"
+      }
     }
   },
   "privacy": {
@@ -317,7 +394,7 @@
       "title": "Cookies and browser storage",
       "necessary": "We use strictly necessary cookies only. A session cookie keeps you signed in, in the demo as well. A short-lived cookie protects the Google and GitHub sign-in flow. They are httpOnly and SameSite=Lax, and Secure on the live site. Signing out removes the session cookie.",
       "none": "There are no advertising, analytics or tracking cookies, and no analytics scripts.",
-      "storage": "Your browser's local storage holds interface preferences only: the theme, the cards or list view and whether the Recently opened panel is shown. They stay in your browser. The installed app (PWA) caches Shelfmark's own files for fast start-up, not your links."
+      "storage": "Your browser's local storage holds interface preferences only: the theme and the cards or list view. They stay in your browser. The installed app (PWA) caches Shelfmark's own files for fast start-up, not your links."
     },
     "dont": {
       "title": "What we don't do",
@@ -373,7 +450,7 @@
   "auth": {
     "signIn": {
       "title": "All your links on one shelf",
-      "subtitle": "Save videos, articles, things to buy and courses in one place — and actually find them again.",
+      "subtitle": "Save anything once, find it again in seconds.",
       "google": "Continue with Google",
       "github": "Continue with GitHub",
       "demo": "Open the demo",
@@ -392,20 +469,12 @@
         "demoUnavailable": "The demo is full right now. Try again later, or sign in.",
         "demoFailed": "We could not open the demo. Try again, or sign in."
       },
-      "eyebrow": "Sign in to Shelfmark",
-      "copyright": "© 2026 Shelfmark",
+      "or": "or",
       "tiles": {
-        "signalForms": { "title": "Signal Forms in 20 minutes", "note": "Watch on the weekend" },
-        "woolCoat": { "title": "Wool coat, straight cut, graphite", "note": "Wait for the sale" },
-        "nestjs": { "title": "NestJS for frontend developers", "note": "For the side project" },
-        "ramen": { "title": "The best weeknight ramen", "note": "Friday dinner" },
-        "zoneless": {
-          "title": "Zoneless change detection, explained",
-          "note": "Read before stage 0"
-        },
-        "lisbon": { "title": "Lisbon in three days", "note": "Maybe in May" },
-        "icons": { "title": "Icons for the side project", "note": "Compare with our own set" },
-        "reacts": { "title": "The two Reacts", "note": "Read this one day" }
+        "signalForms": { "title": "Signal Forms in 20 minutes" },
+        "woolCoat": { "title": "Wool coat, straight cut" },
+        "nestjs": { "title": "NestJS for frontend developers" },
+        "ramen": { "title": "The best weeknight ramen" }
       },
       "privacyBefore": "By continuing you agree to the",
       "privacyLink": "Privacy policy",
@@ -415,7 +484,8 @@
       "starting": "Opening the demo…"
     },
     "signOut": "Sign out",
-    "signOutFailed": "We could not sign you out. Try again."
+    "signOutFailed": "Couldn't sign you out",
+    "signOutFailedDetail": "Try again"
   },
   "shell": {
     "demoBanner": {
@@ -426,19 +496,25 @@
       },
       "signIn": "Sign in with your own account"
     },
+    "offlineBanner": {
+      "text": "You're offline. You can browse what's loaded; saving and editing come back when you reconnect."
+    },
     "accountMenu": "Account menu",
     "settings": "Settings",
     "addLink": "Add link",
-    "menu": "Open menu",
-    "drawer": {
-      "label": "Menu",
-      "close": "Close menu"
+    "tabs": {
+      "label": "Main",
+      "library": "Library",
+      "search": "Search",
+      "tags": "Tags",
+      "you": "You"
     },
     "sidebar": {
       "nav": "Library",
+      "foldersNav": "Folders",
       "tree": "Views and folders",
       "folders": "Folders",
-      "newFolder": "Create a folder",
+      "newFolder": "New folder",
       "folderActions": "Actions for {{name}}",
       "folderMenu": "Folder actions",
       "loadFailed": "Couldn't load your folders.",
@@ -451,7 +527,11 @@
         "delete": "Delete folder…"
       }
     },
-    "search": "Search"
+    "searchHint": "Search your links",
+    "theme": {
+      "toLight": "Switch to light theme",
+      "toDark": "Switch to dark theme"
+    }
   },
   "folders": {
     "dialog": {
@@ -467,17 +547,20 @@
     "create": {
       "title": "New folder",
       "titleIn": "New folder in “{{parent}}”",
+      "inside": "Inside",
       "action": "Create folder",
       "saving": "Creating…",
       "failed": "Couldn't create the folder. Try again.",
       "done": "Folder created",
-      "limit": "You have reached the limit of {{max}} folders."
+      "limit": "Folder limit reached",
+      "limitDetail": "You can have up to {{max}} folders"
     },
     "rename": {
       "title": "Rename folder",
       "action": "Rename",
       "saving": "Renaming…",
-      "failed": "Couldn't rename the folder. The old name is back."
+      "failed": "Couldn't rename the folder",
+      "failedDetail": "The old name is back"
     },
     "move": {
       "title": "Move “{{name}}”",
@@ -486,7 +569,8 @@
       "searchLabel": "Search folders",
       "noResults": "No folders found",
       "action": "Move",
-      "failed": "Couldn't move the folder. It is back where it was."
+      "failed": "Couldn't move the folder",
+      "failedDetail": "It is back where it was"
     },
     "delete": {
       "title": "Delete folder “{{name}}”?",
@@ -525,6 +609,10 @@
   },
   "library": {
     "title": "All links",
+    "phone": {
+      "title": "Library",
+      "openedToday": "{{count}} today"
+    },
     "scope": {
       "all": "All links",
       "unsorted": "Unsorted",
@@ -546,6 +634,7 @@
       "one": "{{count}} link",
       "other": "{{count}} links"
     },
+    "countWithFolders": "{{links}}, {{folders}}",
     "countMore": {
       "one": "{{count}}+ link",
       "other": "{{count}}+ links"
@@ -636,7 +725,8 @@
   },
   "export": {
     "menu": "Export",
-    "failed": "Couldn't export your links. Try again.",
+    "failed": "Couldn't export your links",
+    "failedDetail": "Check your connection, then try again",
     "retry": "Try again",
     "view": {
       "json": "This view as JSON",
@@ -649,17 +739,42 @@
   },
   "settings": {
     "title": "Settings",
+    "phoneTitle": "You",
     "back": "Back to links",
+    "backToList": "Back to You",
+    "nav": {
+      "account": "Account",
+      "appearance": "Appearance",
+      "export": "Export",
+      "privacy": "Privacy and data",
+      "shortcuts": "Keyboard shortcuts"
+    },
+    "description": {
+      "account": "Your profile and your account.",
+      "appearance": "How Shelfmark looks.",
+      "export": "Take everything you saved with you.",
+      "privacy": "What we keep, and how to take it with you.",
+      "shortcuts": "Work without the mouse."
+    },
     "account": {
-      "title": "Account"
+      "profile": "Profile",
+      "open": "Account",
+      "signOut": {
+        "title": "Sign out",
+        "label": "Sign out of Shelfmark",
+        "hint": "Your links stay saved. Sign in again any time."
+      }
     },
     "data": {
       "title": "Your data",
       "export": {
         "label": "Export your data",
-        "hint": "All your folders, tags and links in one file",
         "json": "JSON",
-        "html": "Bookmarks HTML"
+        "jsonHint": "All your folders, tags and links in one file",
+        "html": "Bookmarks HTML",
+        "htmlHint": "Opens in any browser’s bookmark import",
+        "download": "Download",
+        "downloadAs": "Download {{format}}"
       }
     },
     "appearance": {
@@ -677,6 +792,22 @@
         "value": "English"
       }
     },
+    "privacy": {
+      "policy": {
+        "label": "Privacy policy",
+        "hint": "What we store and why, in plain words",
+        "action": "Read",
+        "actionLabel": "Read the privacy policy"
+      },
+      "data": {
+        "label": "Download your data",
+        "hint": "Everything you saved, as JSON or bookmarks HTML",
+        "action": "Open export"
+      },
+      "kept": {
+        "title": "What we keep"
+      }
+    },
     "footer": {
       "privacy": "Privacy policy",
       "version": "Shelfmark v1.0"
@@ -685,13 +816,15 @@
       "title": "Welcome tour",
       "hint": "See the 3-step introduction again",
       "action": "Show welcome again",
-      "error": "Couldn't reset the welcome tour. Try again."
+      "error": "Couldn't reset the welcome tour",
+      "errorDetail": "Try again"
     },
     "delete": {
       "title": "Delete account",
       "hint": "Removes your account and all your links, folders and tags for good. This can't be undone.",
       "action": "Delete account",
-      "done": "Your account and all your data were deleted.",
+      "done": "Account deleted",
+      "doneDetail": "All your data was deleted",
       "dialog": {
         "title": "Delete your account?",
         "text": "All your links, folders and tags will be deleted for good. This can't be undone.",
@@ -706,6 +839,53 @@
         "rateLimited": "Too many attempts. Try again in a minute.",
         "failed": "We could not delete your account. Nothing was deleted. Try again."
       }
+    }
+  },
+  "shortcuts": {
+    "title": "Keyboard shortcuts",
+    "open": "Keyboard shortcuts",
+    "close": "Close",
+    "hint": "Press ? anywhere except in a text field.",
+    "page": {
+      "label": "All shortcuts",
+      "action": "Open list",
+      "singleKey": {
+        "label": "Use single-key shortcuts",
+        "hint": "The ? key opens the list on its own, never while you type in a field. Turn off to use only the top bar button."
+      }
+    },
+    "groups": {
+      "everywhere": "Everywhere",
+      "links": "Saving and finding",
+      "folders": "In the folder list"
+    },
+    "items": {
+      "search": "Search",
+      "list": "This list",
+      "close": "Close a dialog, menu or toast",
+      "undo": "Undo the last action",
+      "toastAction": "Go to the button of a toast",
+      "save": "Save the link",
+      "results": "Move through search results",
+      "openResult": "Open the result",
+      "openBackground": "Open it in a background tab",
+      "moveFolder": "Move between folders",
+      "toggleFolder": "Close or open a folder",
+      "folderMenu": "Open the folder menu"
+    },
+    "keys": {
+      "command": "Command",
+      "ctrl": "Ctrl",
+      "option": "Option",
+      "alt": "Alt",
+      "shift": "Shift",
+      "enter": "Enter",
+      "escape": "Esc",
+      "up": "Up",
+      "down": "Down",
+      "left": "Left",
+      "right": "Right",
+      "question": "Question mark"
     }
   },
   "tags": {
@@ -724,6 +904,7 @@
       "showLess": "Show less",
       "menu": {
         "label": "Tag actions",
+        "summary": "{{name}}, {{links}}",
         "show": "Show links",
         "rename": "Rename",
         "merge": "Merge into another tag…",
@@ -759,6 +940,8 @@
       "action": "Merge",
       "required": "Choose a tag to merge into",
       "failed": "Couldn't merge the tags. Try again.",
+      "failedTitle": "Couldn't merge the tags",
+      "failedDetail": "Try again",
       "done": "Merged “{{name}}” into “{{target}}”"
     },
     "delete": {
@@ -770,7 +953,8 @@
       "confirm": "Delete tag",
       "undo": "Undo",
       "done": "Tag “{{name}}” deleted",
-      "failed": "Couldn't delete the tag “{{name}}”. It is back."
+      "failed": "Couldn't delete the tag “{{name}}”",
+      "failedDetail": "It is back"
     },
     "filter": {
       "label": "Filtered by tags",
@@ -805,7 +989,8 @@
       "one": "{{count}} result",
       "other": "{{count}} results"
     },
-    "hint": "Type to search your links, folders and tags.",
+    "hint": "Results show up as you type: titles, notes, tags and sites. Recently opened links live in Library.",
+    "emptyText": "Try another word. Search looks through titles, notes, tags and sites.",
     "searching": "Searching…",
     "failed": "Couldn't search. Try again.",
     "hints": {
@@ -864,6 +1049,7 @@
     "notNow": "Not now",
     "feedback": {
       "title": "What would make it better?",
+      "yourScore": "Your score: {{score}}",
       "label": "Your feedback",
       "placeholder": "Tell us what is missing or annoying",
       "counter": "characters",
@@ -880,10 +1066,17 @@
     }
   },
   "errors": {
-    "rateLimited": "Too many requests. Try again in a moment.",
-    "server": "Something went wrong on our side. Try again."
+    "rateLimited": {
+      "title": "Too many requests",
+      "detail": "Try again in a moment"
+    },
+    "server": {
+      "title": "Something went wrong on our side",
+      "detail": "Try again"
+    }
   },
   "toast": {
-    "actionHint": "Press {{shortcut}} to reach {{action}}"
+    "actionHint": "Press {{shortcut}} to reach {{action}}",
+    "dismiss": "Dismiss"
   }
 }

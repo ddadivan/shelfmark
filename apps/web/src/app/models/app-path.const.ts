@@ -1,9 +1,15 @@
 /** Route paths (without the leading slash) used by the route table and by navigation. */
 export const APP_PATH = {
+  /** Phone only: the Library tab (tiles and folders); tablet and desktop have the sidebar. */
+  Library: 'library',
+  /** Phone only: the Tags tab. */
+  Tags: 'tags',
   Links: 'links',
   Unsorted: 'unsorted',
   Favorites: 'favorites',
   Folders: 'folders',
+  /** Recently opened: a page; the phone opens the same list in a sheet. */
+  Recent: 'recent',
   Settings: 'settings',
   SignIn: 'sign-in',
   Demo: 'demo',

@@ -1,0 +1,27 @@
+<app-settings-page-header
+  [title]="'settings.nav.appearance' | transloco"
+  [description]="'settings.description.appearance' | transloco"
+/>
+
+<ui-settings-section [title]="'settings.appearance.title' | transloco">
+  <ui-settings-row
+    #row
+    [title]="'settings.appearance.theme.label' | transloco"
+    [description]="'settings.appearance.theme.hint' | transloco"
+  >
+    @if (themeOptions(); as options) {
+    <ui-segmented-control
+      [ariaLabelledby]="row.titleId"
+      [options]="options"
+      [value]="theme.preference()"
+      (valueChange)="setTheme($event)"
+    />
+    }
+  </ui-settings-row>
+  <ui-settings-row
+    [title]="'settings.appearance.language.label' | transloco"
+    [description]="'settings.appearance.language.hint' | transloco"
+  >
+    <span class="appearance__language">{{ 'settings.appearance.language.value' | transloco }}</span>
+  </ui-settings-row>
+</ui-settings-section>

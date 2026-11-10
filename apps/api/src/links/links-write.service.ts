@@ -217,6 +217,21 @@ export class LinksWriteService {
     return toLinkResponse(row);
   }
 
+  /** Drops one link from the history (`last_opened_at` to NULL, `updated_at` untouched); idempotent. */
+  async removeFromHistory(userId: string, id: string): Promise<void> {
+    const touched = await this.prisma.$executeRaw`
+      UPDATE links SET last_opened_at = NULL
+      WHERE id = ${id}::uuid AND user_id = ${userId}::uuid`;
+    if (touched === 0) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
+  }
+
+  /** Clears the history of the user: only the own links are touched. */
+  async clearHistory(userId: string): Promise<void> {
+    await this.prisma.$executeRaw`
+      UPDATE links SET last_opened_at = NULL
+      WHERE user_id = ${userId}::uuid AND last_opened_at IS NOT NULL`;
+  }
+
   async remove(userId: string, id: string): Promise<void> {
     const result = await this.prisma.link.deleteMany({ where: { id, userId } });
     if (result.count === 0) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);

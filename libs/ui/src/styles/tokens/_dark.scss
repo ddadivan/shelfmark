@@ -1,12 +1,12 @@
-// Dark theme colours (docs/design/tokens.css).
+// Dark theme colours (docs/design/tokens.json, 2027 Refresh).
 @mixin dark {
   color-scheme: dark;
 
-  --bg: #131315;
-  --surface: #1c1c1f;
-  --surface-hover: #26262a;
-  --surface-pressed: #2e2e33;
-  --border: #2c2c30;
+  --bg: #111113;
+  --surface: #1a1a1d;
+  --surface-hover: #242428;
+  --surface-pressed: #2c2c31;
+  --border: #29292e;
   --border-control: #6c6c73;
   --text: #ededef;
   --text-muted: #9a9aa0;
@@ -14,7 +14,7 @@
   --primary-hover: #d4d4d8;
   --on-primary: #131315;
   --accent: #8dbb86;
-  --accent-bg: #22301f;
+  --accent-bg: #21301e;
   --accent-text: #c6dec0;
   --highlight-bg: #3a5a34;
   --highlight-text: #eaf3e7;
@@ -26,6 +26,26 @@
   --warning-bg: #33280f;
   --overlay: rgb(0 0 0 / 60%);
   --logo-bookmark: #4f7a4b;
+  --glass: rgb(30 30 34 / 84%);
+  --glass-line: rgb(237 237 239 / 8%);
+  --folder-graphite: #d4d4d8;
+  --folder-graphite-bg: #2a2a2e;
+  --folder-sage: #a9cfa3;
+  --folder-sage-bg: #22301f;
+  --folder-ocean: #9cc4e6;
+  --folder-ocean-bg: #1b2b3a;
+  --folder-plum: #d2b2de;
+  --folder-plum-bg: #2e2135;
+  --folder-clay: #edb49a;
+  --folder-clay-bg: #3a231a;
+  --folder-amber: #e6c27a;
+  --folder-amber-bg: #332a12;
+  --folder-rose: #eda6bc;
+  --folder-rose-bg: #3a1e27;
+  --folder-teal: #93d3cc;
+  --folder-teal-bg: #16302e;
+  --shadow-card: 0 0 0 1px rgb(237 237 239 / 6%);
+  --shadow-float: 0 16px 48px -12px rgb(0 0 0 / 70%), 0 0 0 1px rgb(237 237 239 / 8%);
   --shadow-card-hover: 0 4px 16px rgb(0 0 0 / 40%);
   --shadow-card-spread:
     0 0 0 1px rgb(237 237 239 / 4%), 0 16px 44px -14px rgb(237 237 239 / 13%),

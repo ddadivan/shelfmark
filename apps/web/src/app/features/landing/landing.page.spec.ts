@@ -41,7 +41,8 @@ describe('LandingPage', () => {
     const scrollIntoView = vi.fn(function (this: HTMLElement) {
       seen.push(
         document.body.contains(this) &&
-          this.closest('app-landing-page')?.querySelector('app-landing-before-after') !== null,
+          this.closest('app-landing-page')?.querySelector('app-landing-before-after') !== null &&
+          this.closest('app-landing-page')?.querySelector('app-landing-bento') !== null,
       );
     });
     Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
@@ -53,6 +54,7 @@ describe('LandingPage', () => {
     const root = fixture.nativeElement as HTMLElement;
     await vi.waitFor(() => {
       fixture.detectChanges();
+      expect(root.querySelector('app-landing-bento')).not.toBeNull();
       expect(root.querySelector('app-landing-before-after')).not.toBeNull();
       expect(root.querySelector('app-landing-why')).not.toBeNull();
       expect(root.querySelector('app-landing-finale')).not.toBeNull();
@@ -76,6 +78,7 @@ describe('LandingPage', () => {
     expect(root.querySelectorAll('h1')).toHaveLength(1);
     const h2 = Array.from(root.querySelectorAll('h2')).map((h) => h.textContent?.trim());
     expect(h2).toEqual([
+      'Save once, find in seconds',
       'The same links, before and after',
       'Why this exists',
       "How it's built",

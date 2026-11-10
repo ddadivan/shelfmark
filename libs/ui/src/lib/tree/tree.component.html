@@ -38,8 +38,10 @@
             }
           </span>
         }
-        @if (node.icon ?? (folder ? 'folder' : undefined); as icon) {
-          <ui-icon class="ui-tree__icon" [name]="icon" [size]="ICON_SIZE.Lg" />
+        @if (folder) {
+          <ui-folder-icon [size]="FOLDER_ICON_SIZE.Sm" [icon]="node.icon ?? 'folder'" />
+        } @else if (node.icon) {
+          <ui-icon class="ui-tree__icon" [name]="node.icon" [size]="ICON_SIZE.Lg" />
         }
         <span class="ui-tree__name" [id]="item.id() + '-name'">{{ node.name }}</span>
         @if (countId(item.id(), node); as count) {
@@ -59,6 +61,8 @@
             ariaHaspopup="menu"
             [ariaExpanded]="menuNodeId() === node.id"
             [ariaLabel]="menuButtonLabel(node)"
+            [uiTooltip]="menuButtonLabel(node)"
+            [position]="MORE_TOOLTIP_SIDE"
             (pointerdown)="$event.stopPropagation()"
             (click)="onButton($event, node, more)"
           />
@@ -120,7 +124,7 @@
   is laid over the heading row, whose place is measured.
 -->
 @if (heading()) {
-  <div class="ui-tree__action" [style.top.px]="actionTop()">
+  <div class="ui-tree__action" [style.top.px]="actionTop()" [style.height.px]="actionHeight()">
     <ng-content select="[uiTreeHeadingAction]" />
   </div>
 }

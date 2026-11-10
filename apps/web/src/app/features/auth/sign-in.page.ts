@@ -9,7 +9,14 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { AUTH_PROVIDER, type AuthProvider } from '@shelfmark/contracts';
-import { ButtonComponent, LogoComponent, NoticeComponent, NOTICE_KIND } from '@shelfmark/ui';
+import {
+  BUTTON_VARIANT,
+  ButtonComponent,
+  LogoComponent,
+  NoticeComponent,
+  NOTICE_KIND,
+} from '@shelfmark/ui';
+import { ViewportService } from '../../core/layout/viewport.service';
 import { AuthStore } from '../../core/auth/auth.store';
 import { AUTH_DEMO } from '../../core/auth/models/auth-pending.const';
 import { AuthPending } from '../../core/auth/models/auth-pending.type';
@@ -17,6 +24,7 @@ import { AUTH_ROUTE } from '../../core/auth/models/auth-routes.const';
 import { isSignInError } from '../../core/auth/is-sign-in-error';
 import { isSignInReason } from '../../core/auth/is-sign-in-reason';
 import { safeReturnUrl } from '../../core/auth/safe-return-url';
+import { SignInDriftComponent } from './sign-in-drift/sign-in-drift.component';
 import { SignInMosaicComponent } from './sign-in-mosaic/sign-in-mosaic.component';
 import { SIGN_IN_ERROR_GENERIC_KEY } from './models/sign-in-error-generic-key.const';
 import { SIGN_IN_ERROR_KEY } from './models/sign-in-error-key.const';
@@ -32,6 +40,7 @@ import { SIGN_IN_REASON_KEY } from './models/sign-in-reason-key.const';
     ButtonComponent,
     LogoComponent,
     NoticeComponent,
+    SignInDriftComponent,
     SignInMosaicComponent,
   ],
   templateUrl: './sign-in.page.html',
@@ -40,8 +49,12 @@ import { SIGN_IN_REASON_KEY } from './models/sign-in-reason-key.const';
 })
 export default class SignInPage {
   protected readonly AUTH_PROVIDER = AUTH_PROVIDER;
+  protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   protected readonly AUTH_DEMO = AUTH_DEMO;
   protected readonly NOTICE_KIND = NOTICE_KIND;
+
+  /** From 64em: the glass card with drifting cards; below it the mosaic band on top. */
+  protected readonly isDesktop = inject(ViewportService).desktop;
 
   protected readonly auth = inject(AuthStore);
   private readonly router = inject(Router);

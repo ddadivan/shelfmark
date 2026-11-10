@@ -20,6 +20,7 @@ async function setup(url = '/links') {
         { path: 'links', children: [] },
         { path: 'unsorted', children: [] },
         { path: 'favorites', children: [] },
+        { path: 'recent', children: [] },
         { path: 'folders/:folderId', children: [] },
       ]),
       { provide: FOLDERS_API, useClass: MockFoldersApi },
@@ -57,13 +58,57 @@ describe('SidebarComponent', () => {
     const { element } = await setup();
 
     const names = rows(element).map((item) => item.querySelector('.ui-tree__name')?.textContent);
-    expect(names.slice(0, 3)).toEqual(['All links', 'Unsorted', 'Favorites']);
+    expect(names.slice(0, 4)).toEqual(['All links', 'Unsorted', 'Favorites', 'Recently opened']);
+    expect(names).not.toContain('Trash');
+    expect(element.textContent).not.toContain('Pinned');
     expect(names).toContain(MOCK_NAME.FolderReading);
     const counts = rows(element)
       .slice(0, 3)
       .map((item) => Number(item.querySelector('.ui-tree__count')?.textContent));
     expect(counts.every((count) => count > 0)).toBe(true);
     expect(element.querySelector('.ui-tree__section')?.textContent?.trim()).toBe('Folders');
+  });
+
+  it('shows folders as graphite tiles', async () => {
+    const { element } = await setup();
+
+    const tile = row(element, MOCK_NAME.FolderReading).querySelector('ui-folder-icon');
+    expect(tile?.classList).toContain('ui-folder-icon--graphite');
+  });
+
+  it('opens the Recently opened page from its row and marks it', async () => {
+    const { element, fixture, router } = await setup();
+
+    row(element, 'Recently opened').click();
+    await fixture.whenStable();
+
+    expect(router.url).toBe('/recent');
+    expect(row(element, 'Recently opened').getAttribute('aria-current')).toBe('page');
+  });
+
+  it('heads the card with the logo only when asked', async () => {
+    const { fixture, element } = await setup();
+    expect(element.querySelector('.sidebar__logo')).toBeNull();
+
+    fixture.componentRef.setInput('showLogo', true);
+    await fixture.whenStable();
+    expect(element.querySelector('.sidebar__logo ui-logo')).not.toBeNull();
+  });
+
+  it('sends the logo to All links through the router, with no page reload', async () => {
+    const { fixture, router, element } = await setup('/unsorted');
+    fixture.componentRef.setInput('showLogo', true);
+    await fixture.whenStable();
+    const logo = element.querySelector<HTMLAnchorElement>('a.sidebar__logo');
+
+    // A router link renders a real href and handles the click itself.
+    expect(logo?.getAttribute('href')).toBe('/links');
+    const click = new MouseEvent('click', { bubbles: true, cancelable: true, button: 0 });
+    logo?.dispatchEvent(click);
+    await fixture.whenStable();
+
+    expect(click.defaultPrevented).toBe(true);
+    expect(router.url).toBe('/links');
   });
 
   it('marks the row of the current URL', async () => {
@@ -114,11 +159,11 @@ describe('SidebarComponent', () => {
     ]);
   });
 
-  it('has a "Create a folder" icon button in the Folders heading row, and no "New folder" row', async () => {
+  it('has a "New folder" "+" icon button in the Folders heading row, and no such row', async () => {
     const { element } = await setup();
 
     const button = element.querySelector<HTMLElement>('.ui-tree__action button');
-    expect(button?.getAttribute('aria-label')).toBe('Create a folder');
+    expect(button?.getAttribute('aria-label')).toBe('New folder');
     expect(button?.textContent?.trim()).toBe('');
     expect(element.textContent).not.toContain('New folder');
   });

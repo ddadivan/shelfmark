@@ -1,0 +1,12 @@
+<div class="ui-settings-row__main">
+  @if (icon(); as name) {
+    <span class="ui-settings-row__icon"><ui-icon [name]="name" [size]="ICON_SIZE.Md" /></span>
+  }
+  <div class="ui-settings-row__text">
+    <div class="ui-settings-row__title" [id]="titleId">{{ title() }}</div>
+    @if (description(); as text) {
+      <div class="ui-settings-row__desc">{{ text }}</div>
+    }
+  </div>
+</div>
+<div class="ui-settings-row__control"><ng-content /></div>

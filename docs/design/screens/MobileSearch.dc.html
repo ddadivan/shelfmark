@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Search · phone</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a" style="width: 390px; height: 844px; overflow: hidden; position: relative; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; display: flex; flex-direction: column;">
+
+<div style="padding: 20px 16px 10px; display: flex; flex-direction: column; gap: 14px;">
+<h1 style="margin: 0; font-size: 34px; line-height: 38px; font-weight: 600;">Search</h1>
+<label class="sm-field__control" style="border-radius: 999px; min-height: 52px; padding: 0 16px; background: var(--surface); border-color: transparent; box-shadow: var(--shadow-card);">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true" style="color: var(--text-muted);"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>
+<input aria-label="Search links" placeholder="Search, or describe it" style="font-size: 16px;">
+</label>
+<div style="display: flex; gap: 8px; flex-wrap: wrap;">
+<button class="sm-view" style="height: 36px;">coat from last week</button>
+<button class="sm-view" style="height: 36px;">signals</button>
+<button class="sm-view" style="height: 36px;">to buy</button>
+</div>
+</div>
+
+<div style="flex: 1; overflow: hidden; padding: 6px 16px 110px; display: flex; flex-direction: column; gap: 10px;">
+<div style="padding: 0 4px;"><h2 style="margin: 0; font-size: 13px; font-weight: 500; color: var(--text-muted);">Ways to search</h2></div>
+<div style="background: var(--surface); box-shadow: var(--shadow-card); border-radius: 22px; padding: 6px; display: flex; flex-direction: column;"><button class="sm-row" style="border: 0; background: transparent; width: 100%; text-align: left; font: inherit; color: inherit; min-height: 56px;"><span style="font-family: var(--font-mono); font-size: 14px; background: var(--surface-hover); border-radius: 8px; padding: 4px 8px; flex: none;">#angular</span><span class="sm-row__main"><span class="sm-row__meta" style="font-size: 13px;">Links with a tag</span></span></button><button class="sm-row" style="border: 0; background: transparent; width: 100%; text-align: left; font: inherit; color: inherit; min-height: 56px;"><span style="font-family: var(--font-mono); font-size: 14px; background: var(--surface-hover); border-radius: 8px; padding: 4px 8px; flex: none;">in:Recipes</span><span class="sm-row__main"><span class="sm-row__meta" style="font-size: 13px;">Inside one folder</span></span></button><button class="sm-row" style="border: 0; background: transparent; width: 100%; text-align: left; font: inherit; color: inherit; min-height: 56px;"><span style="font-family: var(--font-mono); font-size: 14px; background: var(--surface-hover); border-radius: 8px; padding: 4px 8px; flex: none;">site:youtube.com</span><span class="sm-row__main"><span class="sm-row__meta" style="font-size: 13px;">From one site</span></span></button><button class="sm-row" style="border: 0; background: transparent; width: 100%; text-align: left; font: inherit; color: inherit; min-height: 56px;"><span style="font-family: var(--font-mono); font-size: 14px; background: var(--surface-hover); border-radius: 8px; padding: 4px 8px; flex: none;">coat from last week</span><span class="sm-row__main"><span class="sm-row__meta" style="font-size: 13px;">Describe it in your words</span></span></button></div>
+<p class="a-note" style="padding: 4px 4px 0; font-size: 13px; line-height: 19px;">Results show up as you type: titles, notes, tags and sites. Recently opened links live in Library.</p>
+</div>
+
+<nav aria-label="Main" class="sm-glass" style="position: absolute; left: 16px; right: 16px; bottom: 20px; height: 68px; border-radius: 26px; display: flex; align-items: center; justify-content: space-between; padding: 0 8px;">
+<a href="#" class="sm-tab"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="3"/><path d="M14 5v7l2-1.6 2 1.6V5"/></svg>Library</a>
+<a href="#" class="sm-tab is-on" aria-current="page"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>Search</a>
+<button class="sm-btn sm-btn--primary" aria-label="Add link" style="width: 56px; height: 56px; padding: 0; border-radius: 20px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+<a href="#" class="sm-tab"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h5.6a2 2 0 0 1 1.4.6l7.4 7.4a2 2 0 0 1 0 2.8l-5 5a2 2 0 0 1-2.8 0L4.6 12.4A2 2 0 0 1 4 11z"/><circle cx="8.5" cy="8.5" r="1.25" fill="currentColor" stroke="none"/></svg>Tags</a>
+<a href="#" class="sm-tab"><span class="sm-avatar sm-avatar--sm">DD</span>You</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const t = 'var(--accent-bg)', h = 'var(--surface-hover)', p = 'var(--surface-pressed)';
+    return {
+      theme: (this.props.dark ?? false) ? 'dark' : 'light',
+      recent: [
+        { title: 'Wool coat, straight cut, graphite', site: 'cos.com', when: '10 min ago', bg: t },
+        { title: 'Angular 22: everything about Signal Forms', site: 'youtube.com', when: '1 h ago', bg: h },
+        { title: 'NestJS for frontend developers', site: 'stepik.org', when: 'yesterday', bg: p },
+        { title: 'Neon free plan limits', site: 'neon.tech', when: 'yesterday', bg: h },
+        { title: 'The best weeknight ramen', site: 'seriouseats.com', when: '2 days ago', bg: t },
+        { title: 'Lisbon in three days', site: 'cntraveler.com', when: 'last week', bg: p }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

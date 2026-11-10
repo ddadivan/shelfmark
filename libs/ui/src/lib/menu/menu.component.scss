@@ -10,12 +10,13 @@
 }
 
 .ui-menu__surface {
-  @include popover;
+  @include glass;
 
   min-width: rem(200px);
   max-width: rem(360px);
   max-height: calc(100vh - #{rem(16px)});
-  padding: var(--space-1);
+  padding: rem(6px);
+  border-radius: rem(18px);
   margin: var(--space-1) 0;
   overflow-y: auto;
 

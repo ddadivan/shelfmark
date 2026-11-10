@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import type { FolderResponse } from '@shelfmark/contracts';
-import { ICON_SIZE, IconComponent } from '@shelfmark/ui';
+import { FolderIconComponent, ICON_SIZE, IconComponent } from '@shelfmark/ui';
 import { pluralKey } from '../../../core/i18n/plural-key';
 import { APP_PATH } from '../../../models/app-path.const';
 
@@ -13,7 +13,7 @@ import { APP_PATH } from '../../../models/app-path.const';
  */
 @Component({
   selector: 'app-folder-tile',
-  imports: [IconComponent, RouterLink, TranslocoPipe],
+  imports: [FolderIconComponent, IconComponent, RouterLink, TranslocoPipe],
   templateUrl: './folder-tile.component.html',
   styleUrl: './folder-tile.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,18 +1,18 @@
-/* Shelfmark — generated from tokens.json */
+/* Shelfmark 2027 — generated from tokens.json */
 :root, [data-theme="light"] {
-  --bg: #F7F7F6;
+  --bg: #F4F4F1;
   --surface: #FFFFFF;
-  --surface-hover: #F0F0EE;
-  --surface-pressed: #E8E8E5;
-  --border: #E5E5E2;
-  --border-control: #8A8A8F;
+  --surface-hover: #EEEEEA;
+  --surface-pressed: #E6E6E1;
+  --border: #E4E4DF;
+  --border-control: #85858A;
   --text: #18181A;
-  --text-muted: #67676C;
+  --text-muted: #636368;
   --primary: #18181A;
   --primary-hover: #2E2E31;
   --on-primary: #FFFFFF;
   --accent: #4F7A4B;
-  --accent-bg: #E5EEE2;
+  --accent-bg: #E3EEDF;
   --accent-text: #2F4A2C;
   --focus-ring: #5E8A58;
   --danger: #B42318;
@@ -22,15 +22,35 @@
   --warning-bg: #FBF1DE;
   --overlay: rgba(19, 19, 21, 0.4);
   --logo-bookmark: #8DBB86;
+  --glass: rgba(255, 255, 255, 0.82);
+  --glass-line: rgba(24, 24, 26, 0.08);
+  --folder-graphite: #3A3A3F;
+  --folder-graphite-bg: #ECECEA;
+  --folder-sage: #3F6B3B;
+  --folder-sage-bg: #E3EEDF;
+  --folder-ocean: #24577F;
+  --folder-ocean-bg: #DDEAF4;
+  --folder-plum: #6A3D7A;
+  --folder-plum-bg: #EFE3F3;
+  --folder-clay: #8F4423;
+  --folder-clay-bg: #F6E4DA;
+  --folder-amber: #7A5605;
+  --folder-amber-bg: #F6EBCF;
+  --folder-rose: #96304F;
+  --folder-rose-bg: #F7E0E7;
+  --folder-teal: #1F6460;
+  --folder-teal-bg: #DAEFEC;
   --shadow-card-hover: 0 4px 16px rgba(24, 24, 26, 0.08);
   --shadow-popover: 0 8px 24px rgba(24, 24, 26, 0.12), 0 2px 6px rgba(24, 24, 26, 0.06);
+  --shadow-card: 0 0 0 1px rgba(24, 24, 26, 0.05), 0 1px 2px rgba(24, 24, 26, 0.04);
+  --shadow-float: 0 12px 40px -12px rgba(24, 24, 26, 0.22), 0 0 0 1px rgba(24, 24, 26, 0.06);
 }
 [data-theme="dark"] {
-  --bg: #131315;
-  --surface: #1C1C1F;
-  --surface-hover: #26262A;
-  --surface-pressed: #2E2E33;
-  --border: #2C2C30;
+  --bg: #111113;
+  --surface: #1A1A1D;
+  --surface-hover: #242428;
+  --surface-pressed: #2C2C31;
+  --border: #29292E;
   --border-control: #6C6C73;
   --text: #EDEDEF;
   --text-muted: #9A9AA0;
@@ -38,7 +58,7 @@
   --primary-hover: #D4D4D8;
   --on-primary: #131315;
   --accent: #8DBB86;
-  --accent-bg: #22301F;
+  --accent-bg: #21301E;
   --accent-text: #C6DEC0;
   --focus-ring: #8DBB86;
   --danger: #F97066;
@@ -48,8 +68,28 @@
   --warning-bg: #33280F;
   --overlay: rgba(0, 0, 0, 0.6);
   --logo-bookmark: #4F7A4B;
+  --glass: rgba(30, 30, 34, 0.84);
+  --glass-line: rgba(237, 237, 239, 0.08);
+  --folder-graphite: #D4D4D8;
+  --folder-graphite-bg: #2A2A2E;
+  --folder-sage: #A9CFA3;
+  --folder-sage-bg: #22301F;
+  --folder-ocean: #9CC4E6;
+  --folder-ocean-bg: #1B2B3A;
+  --folder-plum: #D2B2DE;
+  --folder-plum-bg: #2E2135;
+  --folder-clay: #EDB49A;
+  --folder-clay-bg: #3A231A;
+  --folder-amber: #E6C27A;
+  --folder-amber-bg: #332A12;
+  --folder-rose: #EDA6BC;
+  --folder-rose-bg: #3A1E27;
+  --folder-teal: #93D3CC;
+  --folder-teal-bg: #16302E;
   --shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.4);
   --shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 0 0 1px rgba(237, 237, 239, 0.06);
+  --shadow-float: 0 16px 48px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(237, 237, 239, 0.08);
 }
 :root {
   --space-1: 4px;
@@ -58,9 +98,10 @@
   --space-4: 16px;
   --space-6: 24px;
   --space-8: 32px;
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-xl: 28px;
   --radius-full: 999px;
   --duration-instant: 80ms;
   --duration-fast: 120ms;
@@ -74,8 +115,8 @@
   --font-sans: "Onest", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
-.display { font-family: var(--font-sans); font-size: 32px; line-height: 38px; font-weight: 600; letter-spacing: -0.02em; }
-.title { font-family: var(--font-sans); font-size: 20px; line-height: 28px; font-weight: 600; letter-spacing: -0.01em; }
+.display { font-family: var(--font-sans); font-size: 40px; line-height: 44px; font-weight: 600; letter-spacing: -0.03em; }
+.title { font-family: var(--font-sans); font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -0.01em; }
 .heading { font-family: var(--font-sans); font-size: 16px; line-height: 24px; font-weight: 600; }
 .body { font-family: var(--font-sans); font-size: 15px; line-height: 22px; font-weight: 400; }
 .label { font-family: var(--font-sans); font-size: 13px; line-height: 18px; font-weight: 500; }

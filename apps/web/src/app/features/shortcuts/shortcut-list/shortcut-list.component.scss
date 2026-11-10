@@ -1,0 +1,60 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.shortcut-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.shortcut-list__row {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  justify-content: space-between;
+  min-height: rem(44px);
+  padding-block: var(--space-2);
+
+  & + & {
+    border-top: 1px solid var(--border);
+  }
+}
+
+.shortcut-list__label {
+  @include type(body);
+
+  min-width: 0;
+  color: var(--text);
+}
+
+.shortcut-list__keys {
+  display: flex;
+  flex: none;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+// Keyboard cap (`kbd` of the search dialog): `--text-muted` on `--bg` is AA in both themes.
+.shortcut-list__cap {
+  @include type(caption);
+
+  display: inline-grid;
+  place-items: center;
+  min-width: rem(28px);
+  height: rem(28px);
+  padding: 0 rem(8px);
+  font-family: var(--font-mono);
+  line-height: 1;
+  color: var(--text-muted);
+  text-align: center;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.shortcut-list__sr {
+  @include visually-hidden;
+}

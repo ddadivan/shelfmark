@@ -65,9 +65,9 @@
 .landing-hero__title {
   margin: 0;
   font-size: rem(44px);
-  font-weight: 700;
+  font-weight: 600;
   line-height: rem(42px);
-  letter-spacing: -0.05em;
+  letter-spacing: -0.04em;
 
   @include tablet {
     font-size: rem(64px);
