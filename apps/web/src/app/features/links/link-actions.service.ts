@@ -9,6 +9,7 @@ import { TagsStore } from '../../stores/tags.store';
 import { AddLinkDialogService } from './add-link/add-link-dialog.service';
 import { ADD_LINK_ACTION } from './models/add-link-action.const';
 import type { AddLinkData } from './models/add-link-data.interface';
+import { ownImageUrl } from './link-view';
 import { LINKS_API } from './models/links-api.const';
 import { UndoToastService } from '../../core/undo/undo-toast.service';
 
@@ -41,8 +42,9 @@ export class LinkActionsService {
       return;
     }
     this.toasts.show({
-      kind: TOAST_KIND.Error,
-      text: this.t('links.item.favoriteFailed'),
+      kind: TOAST_KIND.Danger,
+      title: this.t('links.item.favoriteFailed'),
+      detail: link.title,
       action: { label: this.t('links.item.retry'), run: () => void this.toggleFavorite(link) },
     });
   }
@@ -60,7 +62,8 @@ export class LinkActionsService {
       return;
     }
     this.undoToast.show({
-      text: this.t('links.item.deleted'),
+      title: this.t('links.item.deleted'),
+      detail: link.title,
       actionLabel: this.t('links.item.undo'),
       onUndo: () => this.store.undoRemove(link.id),
       onExpire: () => void this.commitDelete(link.id),
@@ -83,7 +86,12 @@ export class LinkActionsService {
     this.store.addSaved(link);
     void this.folders.refresh();
     void this.tags.noteLinkSaved();
-    this.toasts.show({ kind: TOAST_KIND.Success, text: this.t('links.item.saved') });
+    this.toasts.show({
+      kind: TOAST_KIND.Saved,
+      title: this.t('links.item.saved'),
+      detail: link.title,
+      thumb: ownImageUrl(link.imageUrl),
+    });
   }
 
   /** Opens the add-link dialog in edit mode; a change replaces the link in the feed. */
@@ -92,7 +100,11 @@ export class LinkActionsService {
     if (result?.action === ADD_LINK_ACTION.Saved) {
       this.store.applyEdit(result.link);
       void this.tags.noteLinkSaved();
-      this.toasts.show({ kind: TOAST_KIND.Success, text: this.t('links.item.edited') });
+      this.toasts.show({
+        kind: TOAST_KIND.Success,
+        title: this.t('links.item.edited'),
+        detail: result.link.title,
+      });
     } else if (result?.action === ADD_LINK_ACTION.Delete) {
       await this.delete(result.link);
     }
@@ -104,7 +116,7 @@ export class LinkActionsService {
         this.store.entityMap()[id] ?? (await firstValueFrom(this.injector.get(LINKS_API).get(id)));
       await this.edit(link);
     } catch {
-      this.toasts.show({ kind: TOAST_KIND.Error, text: this.t('links.item.openFailed') });
+      this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('links.item.openFailed') });
     }
   }
 
@@ -113,7 +125,7 @@ export class LinkActionsService {
       void this.folders.refresh();
       void this.tags.noteLinkSaved();
     } else {
-      this.toasts.show({ kind: TOAST_KIND.Error, text: this.t('links.item.deleteFailed') });
+      this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('links.item.deleteFailed') });
     }
   }
 

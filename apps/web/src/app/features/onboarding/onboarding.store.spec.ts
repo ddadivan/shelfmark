@@ -211,7 +211,7 @@ describe('OnboardingStore', () => {
     expect(auth.user()?.onboardingCompletedAt).toBe(SERVER_TIME);
     expect(store.resetting()).toBe(false);
     expect(toasts.show).toHaveBeenCalledWith(
-      expect.objectContaining({ text: "Couldn't reset the welcome tour. Try again." }),
+      expect.objectContaining({ title: "Couldn't reset the welcome tour. Try again." }),
     );
   });
 

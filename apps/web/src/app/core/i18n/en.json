@@ -887,6 +887,7 @@
     "server": "Something went wrong on our side. Try again."
   },
   "toast": {
-    "actionHint": "Press {{shortcut}} to reach {{action}}"
+    "actionHint": "Press {{shortcut}} to reach {{action}}",
+    "dismiss": "Dismiss"
   }
 }

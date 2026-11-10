@@ -118,8 +118,8 @@ export const AuthStore = signalStore(
           await api.signOut();
         } catch {
           injector.get(ToastService).show({
-            kind: TOAST_KIND.Error,
-            text: injector.get(TranslocoService).translate('auth.signOutFailed'),
+            kind: TOAST_KIND.Danger,
+            title: injector.get(TranslocoService).translate('auth.signOutFailed'),
           });
           return false;
         }

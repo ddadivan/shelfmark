@@ -18,6 +18,6 @@ export class ApiErrorToastService {
       return;
     }
     this.lastShown.set(key, now);
-    this.toasts.show({ kind: TOAST_KIND.Error, text: this.transloco.translate(key) });
+    this.toasts.show({ kind: TOAST_KIND.Danger, title: this.transloco.translate(key) });
   }
 }

@@ -344,7 +344,7 @@ export class SidebarTagsComponent {
         } else {
           this.toasts.show({
             kind: TOAST_KIND.Success,
-            text: this.transloco.translate('tags.add.done', { name }),
+            title: this.transloco.translate('tags.add.done', { name }),
           });
         }
         this.cancel();

@@ -32,6 +32,7 @@ import { provideMonitoring } from './core/monitoring/provide-monitoring';
 import { provideAccountDeletionApi } from './features/account-deletion/provide-account-deletion-api';
 import { provideOnboardingApi } from './features/onboarding/provide-onboarding-api';
 import { provideRatingApi } from './features/rating/provide-rating-api';
+import { TOAST_DISMISS_LABEL } from '@shelfmark/ui';
 import { ThemeService } from './core/theme/theme.service';
 
 export const appConfig: ApplicationConfig = {
@@ -55,6 +56,14 @@ export const appConfig: ApplicationConfig = {
     // Load the default language before the first render: a lazy `en.json` arriving later fills
     // in empty text and shifts the layout (CLS).
     provideAppInitializer(() => firstValueFrom(inject(TranslocoService).load(APP_LANG.En))),
+    // The close button of a toast is named in the active language.
+    {
+      provide: TOAST_DISMISS_LABEL,
+      useFactory: () => {
+        const transloco = inject(TranslocoService);
+        return () => transloco.translate('toast.dismiss');
+      },
+    },
     provideAuthApi(),
     ...provideLinksApi(),
     provideAccountDeletionApi(),

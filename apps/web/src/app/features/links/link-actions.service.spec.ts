@@ -109,7 +109,7 @@ describe('LinkActionsService', () => {
       await actions.delete(link(1));
 
       expect(ids(store)).toEqual(['id-2']);
-      expect(toasts[0].text).toBe('Link deleted');
+      expect(toasts[0].title).toBe('Link deleted');
       expect(toasts[0].action?.label).toBe('Undo');
       expect(api.remove).not.toHaveBeenCalled();
     });
@@ -142,8 +142,8 @@ describe('LinkActionsService', () => {
       await vi.advanceTimersByTimeAsync(DELETE_UNDO_MS);
 
       expect(ids(store)).toEqual(['id-1', 'id-2']);
-      expect(toasts[1]).toMatchObject({ kind: TOAST_KIND.Error });
-      expect(toasts[1].text).toContain('back in your list');
+      expect(toasts[1]).toMatchObject({ kind: TOAST_KIND.Danger });
+      expect(toasts[1].title).toContain('back in your list');
     });
   });
 
@@ -164,7 +164,7 @@ describe('LinkActionsService', () => {
       await actions.toggleFavorite(link(1));
 
       expect(store.entityMap()['id-1']?.isFavorite).toBe(false);
-      expect(toasts[0]).toMatchObject({ kind: TOAST_KIND.Error });
+      expect(toasts[0]).toMatchObject({ kind: TOAST_KIND.Danger });
       expect(toasts[0].action?.label).toBe('Retry');
 
       toasts[0].action?.run();
@@ -193,7 +193,7 @@ describe('LinkActionsService', () => {
 
       expect(addLinkOpen).toHaveBeenCalledWith({ link: link(1) });
       expect(store.entityMap()['id-1']?.title).toBe('Renamed');
-      expect(toasts[0]).toMatchObject({ kind: TOAST_KIND.Success, text: 'Changes saved' });
+      expect(toasts[0]).toMatchObject({ kind: TOAST_KIND.Success, title: 'Changes saved' });
     });
 
     it('does nothing when the dialog is dismissed', async () => {
@@ -214,7 +214,7 @@ describe('LinkActionsService', () => {
 
       expect(confirm).toHaveBeenCalled();
       expect(ids(store)).toEqual(['id-2']);
-      expect(toasts[0].text).toBe('Link deleted');
+      expect(toasts[0].title).toBe('Link deleted');
     });
   });
 
@@ -259,7 +259,10 @@ describe('LinkActionsService', () => {
 
       await actions.addLink();
 
-      expect(toasts[0]).toMatchObject({ kind: TOAST_KIND.Error, text: "Couldn't open the link." });
+      expect(toasts[0]).toMatchObject({
+        kind: TOAST_KIND.Danger,
+        title: "Couldn't open the link.",
+      });
     });
   });
 
@@ -271,7 +274,11 @@ describe('LinkActionsService', () => {
       await actions.addLink();
 
       expect(ids(store)[0]).toBe('id-9');
-      expect(toasts[0]).toMatchObject({ kind: TOAST_KIND.Success, text: 'Link saved' });
+      expect(toasts[0]).toMatchObject({
+        kind: TOAST_KIND.Saved,
+        title: 'Link saved',
+        detail: link(9).title,
+      });
     });
 
     it('does nothing when the dialog is dismissed', async () => {

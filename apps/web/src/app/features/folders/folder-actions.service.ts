@@ -37,8 +37,8 @@ export class FolderActionsService {
   async create(parent: FolderResponse | null = null): Promise<void> {
     if (this.folders.atLimit()) {
       this.toasts.show({
-        kind: TOAST_KIND.Error,
-        text: this.t('folders.create.limit', { max: String(FOLDER_LIMIT.PerUserMax) }),
+        kind: TOAST_KIND.Danger,
+        title: this.t('folders.create.limit', { max: String(FOLDER_LIMIT.PerUserMax) }),
       });
       return;
     }
@@ -60,7 +60,11 @@ export class FolderActionsService {
       },
     ).result;
     if (outcome.folder) {
-      this.toasts.show({ kind: TOAST_KIND.Success, text: this.t('folders.create.done') });
+      this.toasts.show({
+        kind: TOAST_KIND.Success,
+        title: this.t('folders.create.done'),
+        detail: outcome.folder.name,
+      });
       await this.router.navigate([`/${APP_PATH.Folders}`, outcome.folder.id]);
     }
   }
@@ -80,8 +84,8 @@ export class FolderActionsService {
               void this.folders.rename(folder.id, name).then((saved) => {
                 if (!saved) {
                   this.toasts.show({
-                    kind: TOAST_KIND.Error,
-                    text: this.t('folders.rename.failed'),
+                    kind: TOAST_KIND.Danger,
+                    title: this.t('folders.rename.failed'),
                   });
                 }
               });
@@ -108,7 +112,7 @@ export class FolderActionsService {
           submit: (parentId) => {
             void this.folders.move(folder.id, parentId).then((moved) => {
               if (!moved) {
-                this.toasts.show({ kind: TOAST_KIND.Error, text: this.t('folders.move.failed') });
+                this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('folders.move.failed') });
               }
             });
           },
@@ -138,7 +142,11 @@ export class FolderActionsService {
       },
     ).result;
     if (outcome.deleted) {
-      this.toasts.show({ kind: TOAST_KIND.Success, text: this.t('folders.delete.done') });
+      this.toasts.show({
+        kind: TOAST_KIND.Success,
+        title: this.t('folders.delete.done'),
+        detail: folder.name,
+      });
     }
   }
 

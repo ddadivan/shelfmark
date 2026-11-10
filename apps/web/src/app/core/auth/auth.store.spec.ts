@@ -217,7 +217,7 @@ describe('AuthStore', () => {
     expect(store.user()).toEqual(USER);
     expect(store.isSignedIn()).toBe(true);
     expect(links).not.toHaveBeenCalled();
-    expect(show).toHaveBeenCalledWith(expect.objectContaining({ kind: TOAST_KIND.Error }));
+    expect(show).toHaveBeenCalledWith(expect.objectContaining({ kind: TOAST_KIND.Danger }));
   });
 
   it('does not leave the page when sign-out fails', async () => {
