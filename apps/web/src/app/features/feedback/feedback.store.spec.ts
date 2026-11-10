@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import type { FeedbackMessage } from '@shelfmark/contracts';
 import { feedbackMessage } from '../../../testing/feedback-message';
 import { SessionScope } from '../../core/auth/session-scope.service';
 import { FeedbackSendError } from './feedback-send-error';
@@ -91,9 +92,9 @@ describe('FeedbackStore', () => {
   });
 
   it('forgets everything when the session ends, and drops a late answer', async () => {
-    let resolve: (items: ReturnType<typeof feedbackMessage>[]) => void = () => undefined;
+    let resolve: (items: FeedbackMessage[]) => void = () => undefined;
     const { store, scope } = setup({
-      list: vi.fn(() => new Promise((res) => (resolve = res))),
+      list: vi.fn(() => new Promise<FeedbackMessage[]>((res) => (resolve = res))),
     });
 
     const pending = store.load();

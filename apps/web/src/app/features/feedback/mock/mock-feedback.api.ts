@@ -5,9 +5,9 @@ import {
   FEEDBACK_STATUS,
   type FeedbackMessage,
   type SendFeedbackRequest,
+  type AdminFeedbackItem,
+  FEEDBACK_ENDPOINT,
 } from '@shelfmark/contracts';
-import { ADMIN_ENDPOINT } from '../../admin/models/admin-endpoint.const';
-import type { AdminFeedbackMessage } from '../../admin/models/admin-feedback-message.interface';
 import { feedbackScreenshotType } from '../feedback-screenshot-problem';
 import { FeedbackSendError } from '../feedback-send-error';
 import type { FeedbackApi } from '../models/feedback-api.interface';
@@ -24,7 +24,7 @@ function failed(): Promise<never> {
 }
 
 /** The message a user sees: the admin fields are left out. */
-function forUser(message: AdminFeedbackMessage): FeedbackMessage {
+function forUser(message: AdminFeedbackItem): FeedbackMessage {
   return {
     id: message.id,
     kind: message.kind,
@@ -90,13 +90,13 @@ export class MockFeedbackApi implements FeedbackApi {
     }
     const id = crypto.randomUUID();
     const now = new Date().toISOString();
-    const message: AdminFeedbackMessage = {
+    const message: AdminFeedbackItem = {
       id,
       kind: request.kind,
       text,
       status: FEEDBACK_STATUS.Received,
       reply: null,
-      screenshotUrl: request.screenshot ? `${ADMIN_ENDPOINT.Feedback}/${id}/screenshot` : null,
+      screenshotUrl: request.screenshot ? `${FEEDBACK_ENDPOINT.Messages}/${id}/screenshot` : null,
       createdAt: now,
       updatedAt: now,
       user: { name: user.name, email: user.email },

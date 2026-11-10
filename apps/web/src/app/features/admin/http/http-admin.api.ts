@@ -3,11 +3,13 @@ import { inject, Service } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { skipErrorToast } from '../../../core/api/skip-error-toast';
 import type { AdminApi } from '../models/admin-api.interface';
-import { ADMIN_ENDPOINT } from '../models/admin-endpoint.const';
-import type { AdminFeedbackMessage } from '../models/admin-feedback-message.interface';
-import type { AdminFeedbackPage } from '../models/admin-feedback-page.interface';
-import type { AdminFeedbackQuery } from '../models/admin-feedback-query.interface';
-import type { UpdateAdminFeedbackRequest } from '../models/update-admin-feedback-request.interface';
+import {
+  type AdminFeedbackItem,
+  type ListAdminFeedbackResponse,
+  type ListAdminFeedbackQuery,
+  type UpdateAdminFeedbackRequest,
+  ADMIN_ENDPOINT,
+} from '@shelfmark/contracts';
 
 /**
  * `AdminApi` over `/api/admin`. The status call never shows the error toast and never fails: a
@@ -29,7 +31,7 @@ export class HttpAdminApi implements AdminApi {
     }
   }
 
-  listFeedback(query: AdminFeedbackQuery): Promise<AdminFeedbackPage> {
+  listFeedback(query: ListAdminFeedbackQuery): Promise<ListAdminFeedbackResponse> {
     let params = new HttpParams();
     if (query.cursor !== undefined) {
       params = params.set('cursor', query.cursor);
@@ -41,16 +43,16 @@ export class HttpAdminApi implements AdminApi {
       params = params.set('status', query.status);
     }
     return firstValueFrom(
-      this.http.get<AdminFeedbackPage>(ADMIN_ENDPOINT.Feedback, {
+      this.http.get<ListAdminFeedbackResponse>(ADMIN_ENDPOINT.Feedback, {
         params,
         context: skipErrorToast(),
       }),
     );
   }
 
-  updateFeedback(id: string, request: UpdateAdminFeedbackRequest): Promise<AdminFeedbackMessage> {
+  updateFeedback(id: string, request: UpdateAdminFeedbackRequest): Promise<AdminFeedbackItem> {
     return firstValueFrom(
-      this.http.patch<AdminFeedbackMessage>(
+      this.http.patch<AdminFeedbackItem>(
         `${ADMIN_ENDPOINT.Feedback}/${encodeURIComponent(id)}`,
         request,
         { context: skipErrorToast() },

@@ -1,5 +1,9 @@
-import { FEEDBACK_MESSAGE_KIND, FEEDBACK_STATUS, type FeedbackMessage } from '@shelfmark/contracts';
-import type { AdminFeedbackMessage } from '../app/features/admin/models/admin-feedback-message.interface';
+import {
+  FEEDBACK_MESSAGE_KIND,
+  FEEDBACK_STATUS,
+  type FeedbackMessage,
+  type AdminFeedbackItem,
+} from '@shelfmark/contracts';
 
 /** A feedback message for specs; override what a test cares about. */
 export function feedbackMessage(overrides: Partial<FeedbackMessage> = {}): FeedbackMessage {
@@ -18,8 +22,8 @@ export function feedbackMessage(overrides: Partial<FeedbackMessage> = {}): Feedb
 
 /** The same message as the admin inbox lists it. */
 export function adminFeedbackMessage(
-  overrides: Partial<AdminFeedbackMessage> = {},
-): AdminFeedbackMessage {
+  overrides: Partial<AdminFeedbackItem> = {},
+): AdminFeedbackItem {
   return {
     ...feedbackMessage(),
     user: { name: 'Ada Lovelace', email: 'ada@example.com' },

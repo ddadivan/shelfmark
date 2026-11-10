@@ -11,7 +11,13 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { form, FormField, FormRoot, maxLength } from '@angular/forms/signals';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { FEEDBACK_MESSAGE_LIMIT, FEEDBACK_STATUS, type FeedbackStatus } from '@shelfmark/contracts';
+import {
+  ADMIN_FEEDBACK_LIMIT,
+  FEEDBACK_STATUS,
+  type FeedbackStatus,
+  type AdminFeedbackItem,
+  type UpdateAdminFeedbackRequest,
+} from '@shelfmark/contracts';
 import {
   BUTTON_TYPE,
   BUTTON_VARIANT,
@@ -28,8 +34,6 @@ import { FEEDBACK_KIND_COPY } from '../../feedback/models/feedback-kind-copy.con
 import { FEEDBACK_STATUS_VIEW } from '../../feedback/models/feedback-status-view.const';
 import { AdminFeedbackStore } from '../admin-feedback.store';
 import type { AdminFeedbackDraft } from '../models/admin-feedback-draft.interface';
-import type { AdminFeedbackMessage } from '../models/admin-feedback-message.interface';
-import type { UpdateAdminFeedbackRequest } from '../models/update-admin-feedback-request.interface';
 
 function statusOf(value: string | null): FeedbackStatus | null {
   return Object.values(FEEDBACK_STATUS).find((status) => status === value) ?? null;
@@ -58,12 +62,12 @@ function statusOf(value: string | null): FeedbackStatus | null {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminFeedbackItemComponent {
-  readonly message = input.required<AdminFeedbackMessage>();
+  readonly message = input.required<AdminFeedbackItem>();
 
   protected readonly BUTTON_TYPE = BUTTON_TYPE;
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   protected readonly CHIP_VARIANT = CHIP_VARIANT;
-  protected readonly REPLY_MAX = FEEDBACK_MESSAGE_LIMIT.TextMax;
+  protected readonly REPLY_MAX = ADMIN_FEEDBACK_LIMIT.ReplyMax;
 
   private readonly store = inject(AdminFeedbackStore);
   private readonly transloco = inject(TranslocoService);
@@ -81,10 +85,10 @@ export class AdminFeedbackItemComponent {
   protected readonly form = form(
     this.draft,
     (path) => {
-      maxLength(path.reply, FEEDBACK_MESSAGE_LIMIT.TextMax, {
+      maxLength(path.reply, ADMIN_FEEDBACK_LIMIT.ReplyMax, {
         message: () =>
           this.transloco.translate('admin.feedback.replyTooLong', {
-            max: FEEDBACK_MESSAGE_LIMIT.TextMax,
+            max: ADMIN_FEEDBACK_LIMIT.ReplyMax,
           }),
       });
     },

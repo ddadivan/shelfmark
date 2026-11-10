@@ -1,15 +1,26 @@
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
-import { FEEDBACK_MESSAGE_LIMIT, FEEDBACK_STATUS } from '@shelfmark/contracts';
+import {
+  ADMIN_ENDPOINT,
+  ADMIN_FEEDBACK_LIMIT,
+  FEEDBACK_STATUS,
+  type AdminFeedbackItem,
+  type ListAdminFeedbackResponse,
+  type ListAdminFeedbackQuery,
+  type UpdateAdminFeedbackRequest,
+} from '@shelfmark/contracts';
 import { MockFeedbackData } from '../../feedback/mock/mock-feedback-data.service';
 import { MOCK_ADMIN_ERROR_MESSAGE } from '../../feedback/mock/models/mock-admin-error-message.const';
 import { MOCK_ADMIN_MODE } from '../../feedback/mock/models/mock-admin-mode.const';
 import type { AdminApi } from '../models/admin-api.interface';
-import type { AdminFeedbackMessage } from '../models/admin-feedback-message.interface';
-import type { AdminFeedbackPage } from '../models/admin-feedback-page.interface';
-import type { AdminFeedbackQuery } from '../models/admin-feedback-query.interface';
 import { ADMIN_LIMIT } from '../models/admin-limit.const';
-import type { UpdateAdminFeedbackRequest } from '../models/update-admin-feedback-request.interface';
+
+/** The admin sees the screenshot through the admin route, not the owner's. */
+function forAdmin(message: AdminFeedbackItem): AdminFeedbackItem {
+  return message.screenshotUrl === null
+    ? message
+    : { ...message, screenshotUrl: `${ADMIN_ENDPOINT.Feedback}/${message.id}/screenshot` };
+}
 
 function notFound(): Promise<never> {
   return Promise.reject(new HttpErrorResponse({ status: HttpStatusCode.NotFound }));
@@ -29,7 +40,7 @@ export class MockAdminApi implements AdminApi {
     return Promise.resolve(this.data.isAdmin());
   }
 
-  listFeedback(query: AdminFeedbackQuery): Promise<AdminFeedbackPage> {
+  listFeedback(query: ListAdminFeedbackQuery): Promise<ListAdminFeedbackResponse> {
     if (!this.data.isAdmin()) {
       return notFound();
     }
@@ -41,12 +52,12 @@ export class MockAdminApi implements AdminApi {
     const limit = query.limit ?? ADMIN_LIMIT.PageSize;
     const end = start + limit;
     return Promise.resolve({
-      items: all.slice(start, end),
+      items: all.slice(start, end).map(forAdmin),
       nextCursor: end < all.length ? String(end) : null,
     });
   }
 
-  updateFeedback(id: string, request: UpdateAdminFeedbackRequest): Promise<AdminFeedbackMessage> {
+  updateFeedback(id: string, request: UpdateAdminFeedbackRequest): Promise<AdminFeedbackItem> {
     if (!this.data.isAdmin()) {
       return notFound();
     }
@@ -61,20 +72,22 @@ export class MockAdminApi implements AdminApi {
     }
     const reply = request.reply;
     if (
+      (request.status === undefined && reply === undefined) ||
       (request.status !== undefined &&
         !Object.values<string>(FEEDBACK_STATUS).includes(request.status)) ||
-      (typeof reply === 'string' && reply.length > FEEDBACK_MESSAGE_LIMIT.TextMax)
+      (typeof reply === 'string' && reply.length > ADMIN_FEEDBACK_LIMIT.ReplyMax)
     ) {
       return Promise.reject(new HttpErrorResponse({ status: HttpStatusCode.BadRequest }));
     }
-    const message: AdminFeedbackMessage = {
+    const message: AdminFeedbackItem = {
       ...found.message,
       status: request.status ?? found.message.status,
-      reply: reply === undefined ? found.message.reply : reply,
+      // A blank reply clears it, like null.
+      reply: reply === undefined ? found.message.reply : reply?.trim() || null,
       updatedAt: new Date().toISOString(),
     };
     entries[index] = { ...found, message };
     this.data.save(entries);
-    return Promise.resolve(message);
+    return Promise.resolve(forAdmin(message));
   }
 }

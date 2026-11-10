@@ -64,7 +64,9 @@ describe('MockFeedbackApi and MockAdminApi', () => {
       screenshot: { type: 'image/png', data: 'aGVsbG8=' },
     });
 
-    expect(sent.screenshotUrl).toContain(sent.id);
+    expect(sent.screenshotUrl).toBe(`/api/feedback/messages/${sent.id}/screenshot`);
+    const admin = await TestBed.inject(MockAdminApi).listFeedback({});
+    expect(admin.items[0]?.screenshotUrl).toBe(`/api/admin/feedback/${sent.id}/screenshot`);
   });
 
   it.each([
@@ -73,20 +75,24 @@ describe('MockFeedbackApi and MockAdminApi', () => {
       'text over 2000 characters',
       { kind: 'idea' as const, text: 'x'.repeat(FEEDBACK_MESSAGE_LIMIT.TextMax + 1) },
     ],
-    [
-      'a screenshot of the wrong type',
-      {
-        kind: 'idea' as const,
-        text: 'ok',
-        // @ts-expect-error The contract type excludes GIF; the mock must refuse it anyway.
-        screenshot: { type: 'image/gif', data: 'aGVsbG8=' },
-      },
-    ],
   ])('refuses %s', async (_name, request) => {
     const api = TestBed.inject(MockFeedbackApi);
 
     await expect(api.send(request)).rejects.toBeInstanceOf(FeedbackSendError);
     expect(await api.list()).toEqual([]);
+  });
+
+  it('refuses a screenshot of the wrong type', async () => {
+    const api = TestBed.inject(MockFeedbackApi);
+
+    await expect(
+      api.send({
+        kind: 'idea',
+        text: 'ok',
+        // @ts-expect-error The contract type excludes GIF; the mock must refuse it anyway.
+        screenshot: { type: 'image/gif', data: 'aGVsbG8=' },
+      }),
+    ).rejects.toBeInstanceOf(FeedbackSendError);
   });
 
   it('answers 429 or 500 for the scenarios of sm-mock-feedback-scenario', async () => {
@@ -155,6 +161,10 @@ describe('MockFeedbackApi and MockAdminApi', () => {
 
       await admin.updateFeedback(sent.id, { reply: null });
       expect(await api.list()).toMatchObject([{ status: 'planned', reply: null }]);
+
+      await admin.updateFeedback(sent.id, { reply: 'Again' });
+      await admin.updateFeedback(sent.id, { reply: '   ' });
+      expect(await api.list()).toMatchObject([{ reply: null }]);
     });
 
     it('refuses a reply over 2000 characters, an unknown id and (save-fails) every update', async () => {
@@ -165,6 +175,7 @@ describe('MockFeedbackApi and MockAdminApi', () => {
       await expect(
         admin.updateFeedback(sent.id, { reply: 'x'.repeat(FEEDBACK_MESSAGE_LIMIT.TextMax + 1) }),
       ).rejects.toMatchObject({ status: 400 });
+      await expect(admin.updateFeedback(sent.id, {})).rejects.toMatchObject({ status: 400 });
       await expect(admin.updateFeedback('nope', { reply: 'a' })).rejects.toMatchObject({
         status: 404,
       });

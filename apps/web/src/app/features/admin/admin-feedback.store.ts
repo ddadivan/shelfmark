@@ -5,10 +5,9 @@ import { ApiErrorToastService } from '../../core/api/api-error-toast.service';
 import { SessionScope } from '../../core/auth/session-scope.service';
 import { FEEDBACK_LOAD_STATE } from '../feedback/models/feedback-load-state.const';
 import { ADMIN_API } from './models/admin-api.const';
-import type { AdminFeedbackMessage } from './models/admin-feedback-message.interface';
 import type { AdminFeedbackState } from './models/admin-feedback-state.interface';
 import { ADMIN_LIMIT } from './models/admin-limit.const';
-import type { UpdateAdminFeedbackRequest } from './models/update-admin-feedback-request.interface';
+import { type AdminFeedbackItem, type UpdateAdminFeedbackRequest } from '@shelfmark/contracts';
 
 const initialState: AdminFeedbackState = {
   items: [],
@@ -49,10 +48,7 @@ export const AdminFeedbackStore = signalStore(
       }
       scope.onEnd(clear);
 
-      function replace(
-        id: string,
-        change: (message: AdminFeedbackMessage) => AdminFeedbackMessage,
-      ) {
+      function replace(id: string, change: (message: AdminFeedbackItem) => AdminFeedbackItem) {
         patchState(store, (state) => ({
           items: state.items.map((item) => (item.id === id ? change(item) : item)),
         }));

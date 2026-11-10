@@ -16,7 +16,9 @@ function setup(overrides: Partial<AdminApi> = {}) {
   const api: AdminApi = {
     ...adminApiStub(true),
     listFeedback: vi.fn(() => Promise.resolve({ items: [FIRST, SECOND], nextCursor: null })),
-    updateFeedback: vi.fn((id: string) => Promise.resolve({ ...FIRST, id, status: 'done' })),
+    updateFeedback: vi.fn((id: string) =>
+      Promise.resolve({ ...FIRST, id, status: 'done' as const }),
+    ),
     ...overrides,
   };
   TestBed.configureTestingModule({
