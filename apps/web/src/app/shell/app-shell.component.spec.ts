@@ -203,7 +203,7 @@ describe('AppShellComponent', () => {
               path: '',
               component: AppShellComponent,
               children: [
-                { path: 'settings', children: [] },
+                { path: 'settings', children: [{ path: 'account', children: [] }] },
                 { path: 'recent', children: [] },
                 { path: 'tags', children: [] },
               ],
@@ -235,6 +235,23 @@ describe('AppShellComponent', () => {
       expect(root.querySelector('.shell__sidebar app-sidebar')).not.toBeNull();
       expect(root.querySelector('.shell__add')).not.toBeNull();
       expect(root.querySelector('.shell__fab')).toBeNull();
+    });
+
+    it('swaps the sidebar for the settings nav on the settings pages and back', async () => {
+      const { harness, root } = await setup(false);
+      const router = TestBed.inject(Router);
+
+      await router.navigateByUrl('/settings/account');
+      await harness.fixture.whenStable();
+
+      expect(root.querySelector('.shell__sidebar app-settings-nav')).not.toBeNull();
+      expect(root.querySelector('.shell__sidebar app-sidebar')).toBeNull();
+
+      await router.navigateByUrl('/recent');
+      await harness.fixture.whenStable();
+
+      expect(root.querySelector('.shell__sidebar app-settings-nav')).toBeNull();
+      expect(root.querySelector('.shell__sidebar app-sidebar')).not.toBeNull();
     });
 
     it('puts the logo in the sidebar card and the pill, theme switch and Add link in the top bar', async () => {

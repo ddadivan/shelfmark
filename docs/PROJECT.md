@@ -274,7 +274,7 @@ CSR without SSR, zoneless, Transloco, strict-CSP build: ADR 0005; state: ADR 000
 | `/unsorted` | No folder | signed in | `features/library` |
 | `/favorites` | Favorites | signed in | `features/library` |
 | `/folders/:folderId` | Folder; nesting is shown in breadcrumbs, not in the URL | signed in | `features/library` |
-| `/settings` | Settings: account, theme, language, deletion | signed in | `features/settings` |
+| `/settings` | Settings, one page per section: `/settings/account` (profile, sign out, welcome tour, deletion), `/appearance` (theme, language), `/import-export` (export only), `/privacy`; on tablet and desktop `/settings` goes to the first section, on a phone it is the You list | signed in | `features/settings` |
 | `/share?url=&title=&text=` | Quick save from "Share" | signed in; guest goes to sign-in and back | `features/share` |
 | `/sign-in?returnUrl=&reason=` | Sign in with Google / GitHub | guest only | `features/auth` |
 | `/demo` | Creates a demo sandbox and goes to `/links` | everyone | `features/auth` |
@@ -293,8 +293,7 @@ export const routes: Routes = [
     { path: 'unsorted', loadComponent: libraryPage, data: { scope: 'unsorted' }, title: 'Unsorted' },
     { path: 'favorites', loadComponent: libraryPage, data: { scope: 'favorites' }, title: 'Favorites' },
     { path: 'folders/:folderId', loadComponent: libraryPage, data: { scope: 'folder' }, title: folderTitle },
-    { path: 'settings', loadComponent: () => import('./features/settings/settings.page'),
-      canDeactivate: [unsavedChanges], title: 'Settings' },
+    { path: 'settings', loadChildren: () => import('./features/settings/settings.routes') },
     { path: 'share', loadComponent: () => import('./features/share/share.page'), title: 'Save to Shelfmark' },
   ]},
   { path: 'links', canActivate: [redirectToSignIn], children: [] },   // guest on a protected URL
@@ -650,7 +649,7 @@ In CI: `@axe-core/playwright` on the key screens in both themes; the build fails
 5. Editing a link
 6. Deleting a folder (choice: delete links / move to "Unsorted")
 7. Empty states (no links, empty folder, nothing found)
-8. Account settings (account deletion, "Show onboarding again")
+8. Settings, a page per section (account with deletion and "Show onboarding again", appearance, export, privacy and data); the settings nav replaces the sidebar on tablet and desktop, the You list opens the pages on a phone
 9. Privacy policy
 
 Every screen in light and dark themes, in desktop and phone layouts, with loading and error states.

@@ -3,7 +3,13 @@
 <div class="shell__body">
   <!-- Below the phone breakpoint (40em) the tab bar replaces the sidebar. -->
   @if (!viewport.phone()) {
-    <div class="shell__sidebar"><app-sidebar showLogo /></div>
+    <div class="shell__sidebar">
+      @if (inSettings()) {
+        <app-settings-nav />
+      } @else {
+        <app-sidebar showLogo />
+      }
+    </div>
   }
   <div class="shell__content">
     <!-- Phone: no header; every page has its own title and the tab bar is the navigation. -->

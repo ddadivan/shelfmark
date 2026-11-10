@@ -115,11 +115,40 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     ...SHEET,
   },
   {
-    name: 'settings',
+    name: 'settings (You list on a phone, the account on desktop)',
     open: async (page) => {
       await openSignedIn(page, '/settings');
-      await expect(page.getByRole('heading', { level: 1, name: /^(Settings|You)$/ })).toBeVisible();
+      await expect(page.getByRole('heading', { level: 1, name: /^(Account|You)$/ })).toBeVisible();
+    },
+  },
+  {
+    name: 'settings account',
+    open: async (page) => {
+      await openSignedIn(page, '/settings/account');
+      await expect(page.getByRole('heading', { level: 1, name: 'Account' })).toBeVisible();
+      await expect(page.getByText('See the 3-step introduction again')).toBeVisible();
+    },
+  },
+  {
+    name: 'settings appearance',
+    open: async (page) => {
+      await openSignedIn(page, '/settings/appearance');
+      await expect(page.getByRole('heading', { level: 1, name: 'Appearance' })).toBeVisible();
+    },
+  },
+  {
+    name: 'settings export',
+    open: async (page) => {
+      await openSignedIn(page, '/settings/import-export');
+      await expect(page.getByRole('heading', { level: 1, name: 'Export' })).toBeVisible();
       await expect(page.getByText('Export your data')).toBeVisible();
+    },
+  },
+  {
+    name: 'settings privacy and data',
+    open: async (page) => {
+      await openSignedIn(page, '/settings/privacy');
+      await expect(page.getByRole('heading', { level: 1, name: 'Privacy and data' })).toBeVisible();
     },
   },
   {

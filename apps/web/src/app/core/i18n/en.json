@@ -718,16 +718,38 @@
     "title": "Settings",
     "phoneTitle": "You",
     "back": "Back to links",
+    "backToList": "Back to You",
+    "nav": {
+      "account": "Account",
+      "appearance": "Appearance",
+      "export": "Export",
+      "privacy": "Privacy and data"
+    },
+    "description": {
+      "account": "Your profile and your account.",
+      "appearance": "How Shelfmark looks.",
+      "export": "Take everything you saved with you.",
+      "privacy": "What we keep, and how to take it with you."
+    },
     "account": {
-      "title": "Account"
+      "profile": "Profile",
+      "open": "Account",
+      "signOut": {
+        "title": "Sign out",
+        "label": "Sign out of Shelfmark",
+        "hint": "Your links stay saved. Sign in again any time."
+      }
     },
     "data": {
       "title": "Your data",
       "export": {
         "label": "Export your data",
-        "hint": "All your folders, tags and links in one file",
         "json": "JSON",
-        "html": "Bookmarks HTML"
+        "jsonHint": "All your folders, tags and links in one file",
+        "html": "Bookmarks HTML",
+        "htmlHint": "Opens in any browser’s bookmark import",
+        "download": "Download",
+        "downloadAs": "Download {{format}}"
       }
     },
     "appearance": {
@@ -743,6 +765,22 @@
         "label": "Language",
         "hint": "More languages are coming",
         "value": "English"
+      }
+    },
+    "privacy": {
+      "policy": {
+        "label": "Privacy policy",
+        "hint": "What we store and why, in plain words",
+        "action": "Read",
+        "actionLabel": "Read the privacy policy"
+      },
+      "data": {
+        "label": "Download your data",
+        "hint": "Everything you saved, as JSON or bookmarks HTML",
+        "action": "Open export"
+      },
+      "kept": {
+        "title": "What we keep"
       }
     },
     "footer": {

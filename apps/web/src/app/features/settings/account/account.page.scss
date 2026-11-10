@@ -1,0 +1,36 @@
+@use 'ui' as *;
+@use '../settings-page' as *;
+@include settings-page;
+
+.account__profile {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  padding-block-start: var(--space-1);
+
+  @include tablet-up {
+    gap: var(--space-4);
+  }
+}
+
+.account__identity {
+  flex: 1;
+  min-width: 0;
+}
+
+.account__name {
+  @include type(heading);
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account__email {
+  @include type(caption);
+
+  overflow: hidden;
+  color: var(--text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

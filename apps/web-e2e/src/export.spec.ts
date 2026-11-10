@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { type Download } from '@playwright/test';
 import { expect, test } from './support/test';
-import { openAccountMenu, openSettingsPage, seedSession } from './support/mock-session';
+import { openAccountMenu, openSettingsSection, seedSession } from './support/mock-session';
 import { isPhone } from './support/sidebar';
 
 // Mirrors EXPORT_MOCK_MARKER (apps/web); this project cannot import it.
@@ -100,7 +100,7 @@ test.describe('export (mock API)', () => {
     await page.goto('/links');
     const download = page.waitForEvent('download');
     if (isPhone(page)) {
-      await openSettingsPage(page);
+      await openSettingsSection(page, 'Export');
       await page.getByRole('button', { name: 'JSON' }).click();
     } else {
       await openAccountMenu(page);
@@ -111,7 +111,7 @@ test.describe('export (mock API)', () => {
   });
 
   test('settings export both formats', async ({ page }) => {
-    await page.goto('/settings');
+    await page.goto('/settings/import-export');
     await expect(page.getByText('Export your data')).toBeVisible();
 
     const download = page.waitForEvent('download');

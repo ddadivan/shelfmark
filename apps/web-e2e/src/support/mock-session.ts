@@ -58,6 +58,23 @@ export async function openSettingsPage(page: Page): Promise<void> {
   }
 }
 
+/**
+ * Opens one section of the settings by its name ("Account", "Appearance", "Export", ...): the row
+ * in the settings nav, or in the You list on a phone (where the account is the card on top).
+ */
+export async function openSettingsSection(page: Page, section: string): Promise<void> {
+  await openSettingsPage(page);
+  if (isPhone(page)) {
+    const name = section === 'Account' ? /^Account/ : section;
+    await page.getByRole('main').getByRole('link', { name }).click();
+  } else {
+    await page
+      .getByRole('navigation', { name: 'Settings' })
+      .getByRole('link', { name: section })
+      .click();
+  }
+}
+
 /** Signs out: the "Sign out" item of the account menu, or the button on the You tab on a phone. */
 export async function signOutFromUi(page: Page): Promise<void> {
   if (isPhone(page)) {

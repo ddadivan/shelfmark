@@ -6,7 +6,7 @@ import { loadLibraryPage } from './features/library/load-library-page';
 import LandingPage from './features/landing/landing.page';
 
 const libraryPage = loadLibraryPage;
-const settingsPage = () => import('./features/settings/settings.page');
+const settingsRoutes = () => import('./features/settings/settings.routes');
 const recentPage = () => import('./features/links/recent/recent.page');
 const phoneLibraryPage = () => import('./features/library/phone-library/phone-library.page');
 const tagsPage = () => import('./features/tags/tags-page/tags.page');
@@ -46,7 +46,7 @@ export const pageRoutes: Routes = [
         data: { scope: LINKS_SCOPE.Folder },
       },
       { path: APP_PATH.Recent, loadComponent: recentPage },
-      { path: APP_PATH.Settings, loadComponent: settingsPage },
+      { path: APP_PATH.Settings, loadChildren: settingsRoutes },
     ],
   },
   // Public on purpose (no guard): guests, signed-in users and the OAuth consent screen reach it.
@@ -63,7 +63,12 @@ export const pageRoutes: Routes = [
   { path: APP_PATH.Favorites, canActivate: [redirectToSignIn], children: [] },
   { path: `${APP_PATH.Folders}/:folderId`, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Recent, canActivate: [redirectToSignIn], children: [] },
-  { path: APP_PATH.Settings, canActivate: [redirectToSignIn], children: [] },
+  // The sections are children (`/settings/account`): any depth leads to sign-in and back.
+  {
+    path: APP_PATH.Settings,
+    canActivate: [redirectToSignIn],
+    children: [{ path: '**', children: [] }],
+  },
   // `state.url` keeps the whole query, so the shared data survives the sign-in.
   { path: APP_PATH.Share, canActivate: [redirectToSignIn], children: [] },
   {

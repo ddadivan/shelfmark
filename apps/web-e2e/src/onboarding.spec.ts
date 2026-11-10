@@ -1,6 +1,11 @@
 import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
-import { dismissOnboarding, NEW_USER, openSettingsPage, seedSession } from './support/mock-session';
+import {
+  dismissOnboarding,
+  NEW_USER,
+  openSettingsSection,
+  seedSession,
+} from './support/mock-session';
 
 const FIRST_TITLE = 'All your links in one place';
 const GITHUB_BUTTON = 'Continue with GitHub';
@@ -78,8 +83,8 @@ test.describe('onboarding (mock API)', () => {
     await signInAsNewUser(page);
     await dismissOnboarding(page);
 
-    await openSettingsPage(page);
-    await expect(page.getByRole('heading', { level: 1, name: /^(Settings|You)$/ })).toBeVisible();
+    await openSettingsSection(page, 'Account');
+    await expect(page.getByRole('heading', { level: 1, name: 'Account' })).toBeVisible();
     await expect(page.getByText('See the 3-step introduction again')).toBeVisible();
 
     await page.getByRole('button', { name: 'Show welcome again' }).click();

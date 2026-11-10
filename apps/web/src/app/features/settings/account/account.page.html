@@ -1,0 +1,49 @@
+<app-settings-page-header
+  [title]="'settings.nav.account' | transloco"
+  [description]="'settings.description.account' | transloco"
+/>
+
+@if (auth.user(); as user) {
+<ui-settings-section [title]="'settings.account.profile' | transloco">
+  <div class="account__profile">
+    <ui-avatar [name]="user.name" [src]="user.image ?? undefined" size="lg" />
+    <div class="account__identity">
+      <div class="account__name">{{ user.name }}</div>
+      <div class="account__email">{{ user.email }}</div>
+    </div>
+  </div>
+</ui-settings-section>
+}
+
+<ui-settings-section [title]="'settings.account.signOut.title' | transloco">
+  <ui-settings-row
+    [title]="'settings.account.signOut.label' | transloco"
+    [description]="'settings.account.signOut.hint' | transloco"
+  >
+    <ui-button [size]="buttonSize()" (click)="signOut()">
+      {{ 'auth.signOut' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+</ui-settings-section>
+
+<ui-settings-section [title]="'settings.welcome.title' | transloco">
+  <ui-settings-row [title]="'settings.welcome.hint' | transloco">
+    <ui-button
+      [size]="buttonSize()"
+      [disabled]="onboarding.resetting()"
+      (click)="onboarding.reset()"
+    >
+      {{ 'settings.welcome.action' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+</ui-settings-section>
+
+@if (canDeleteAccount()) {
+<ui-settings-section danger [title]="'settings.delete.title' | transloco">
+  <ui-settings-row [title]="'settings.delete.hint' | transloco">
+    <ui-button [size]="buttonSize()" [variant]="BUTTON_VARIANT.Danger" (click)="deleteAccount()">
+      {{ 'settings.delete.action' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+</ui-settings-section>
+}

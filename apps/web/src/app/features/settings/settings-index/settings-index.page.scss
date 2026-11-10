@@ -1,0 +1,139 @@
+@use 'ui' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: rem(14px);
+}
+
+.settings-index__title {
+  @include type(display);
+
+  // MobileSettings title: 34 / 38.
+  padding-block-start: var(--space-2);
+  margin: 0;
+  font-size: rem(34px);
+  line-height: rem(38px);
+}
+
+// The account card and the list: surface cards with the whisper ring (MobileSettings).
+.settings-index__card,
+.settings-index__list {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.settings-index__card {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-4);
+  color: var(--text);
+  text-decoration: none;
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  &:active {
+    background: var(--surface-pressed);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.settings-index__identity {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.settings-index__name {
+  @include type(label);
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-index__email {
+  @include type(caption);
+
+  overflow: hidden;
+  color: var(--text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-index__sr {
+  @include visually-hidden;
+}
+
+.settings-index__list {
+  display: flex;
+  flex-direction: column;
+  padding-block: var(--space-1);
+}
+
+.settings-index__row {
+  @include type(body);
+
+  display: flex;
+  gap: rem(10px);
+  align-items: center;
+  min-height: rem(46px);
+  padding-inline: rem(14px);
+  color: var(--text);
+  text-decoration: none;
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  &:active {
+    background: var(--surface-pressed);
+  }
+
+  &:focus-visible {
+    @include focus-ring(-2px);
+  }
+}
+
+.settings-index__label {
+  flex: 1;
+  min-width: 0;
+}
+
+.settings-index__value {
+  color: var(--text-muted);
+}
+
+.settings-index__chevron {
+  flex: none;
+  color: var(--text-muted);
+}
+
+.settings-index__card,
+.settings-index__row {
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+.settings-index__footer {
+  @include type(caption);
+
+  display: flex;
+  gap: var(--space-4);
+  justify-content: center;
+  margin: auto 0 0;
+  color: var(--text-muted);
+}
+
+.settings-index__privacy {
+  color: inherit;
+  text-decoration: underline;
+
+  &:hover,
+  &:active {
+    color: var(--text);
+  }
+}

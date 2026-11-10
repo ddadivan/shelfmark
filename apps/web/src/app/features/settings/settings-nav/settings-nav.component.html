@@ -1,0 +1,25 @@
+<nav class="settings-nav" [attr.aria-label]="'settings.title' | transloco">
+  <ui-button
+    class="settings-nav__back"
+    variant="ghost"
+    size="sm"
+    iconLeft="chevron-left"
+    [href]="linksHref"
+    (linkClick)="back($event)"
+  >
+    {{ 'settings.back' | transloco }}
+  </ui-button>
+  <div class="settings-nav__heading">{{ 'settings.title' | transloco }}</div>
+  @for (entry of entries; track entry.path) {
+    <a
+      uiRipple
+      class="settings-nav__row"
+      routerLinkActive
+      ariaCurrentWhenActive="page"
+      [routerLink]="[settingsPath, entry.path]"
+    >
+      {{ entry.labelKey | transloco }}
+    </a>
+  }
+  <p class="settings-nav__version">{{ 'settings.footer.version' | transloco }}</p>
+</nav>

@@ -43,6 +43,7 @@ import { DemoBannerComponent } from './demo-banner/demo-banner.component';
 import { OfflineBannerComponent } from './offline-banner/offline-banner.component';
 import { PHONE_TAB } from './models/phone-tab.const';
 import { phoneTabForUrl } from './phone-tab-for-url';
+import { SettingsNavComponent } from '../features/settings/settings-nav/settings-nav.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 
 /**
@@ -64,6 +65,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     MenuSeparatorComponent,
     MenuTriggerDirective,
     SearchTriggerComponent,
+    SettingsNavComponent,
     SidebarComponent,
     TabBarComponent,
   ],
@@ -93,6 +95,8 @@ export default class AppShellComponent {
   );
   /** The tab of the current page (the tab bar marks it with `aria-current`). */
   protected readonly activeTab = computed(() => phoneTabForUrl(this.url()));
+  /** On the settings pages the settings nav takes the place of the sidebar (tablet and up). */
+  protected readonly inSettings = computed(() => this.activeTab() === PHONE_TAB.You);
   private readonly tabLabels = toSignal(
     combineLatest([
       this.transloco.selectTranslate('shell.tabs.library'),
