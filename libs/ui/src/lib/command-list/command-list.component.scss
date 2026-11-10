@@ -100,16 +100,9 @@
   padding: var(--space-2);
   overflow-y: auto;
   overscroll-behavior: contain;
-  transition: opacity var(--duration-fast) var(--ease-out);
 
-  // The shown results are being replaced: dimmed until the new ones arrive.
-  &[aria-busy='true'] {
-    opacity: 0.6;
-  }
-
-  @include reduced-motion {
-    transition: none;
-  }
+  // While new results load the shown ones stay as they are (`aria-busy` on the list); text is
+  // never faded with opacity to show a busy state (BRAND.md Colour, WCAG contrast).
 
   &[hidden] {
     display: none;
