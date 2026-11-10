@@ -38,6 +38,7 @@ import {
 import { TAG_OUTCOME } from '../../../stores/models/tag-outcome.const';
 import { TagsStore } from '../../../stores/tags.store';
 import { ViewportService } from '../../../core/layout/viewport.service';
+import { pluralKey } from '../../../core/i18n/plural-key';
 import { TagActionsService } from '../tag-actions.service';
 import { splitTags } from '../tag-split';
 
@@ -118,11 +119,30 @@ export class SidebarTagsComponent {
   /** The existing tag a rename ran into: the merge is offered. */
   protected readonly conflict = signal<TagResponse | null>(null);
 
+  /** The editor takes the whole row when it shows an error or the offer to merge. */
+  protected readonly editorWide = computed(
+    () => this.conflict() !== null || this.fieldError() !== '',
+  );
+
   /** `id` of the tag whose menu is open. */
   protected readonly menuTagId = signal<string | null>(null);
   protected readonly menuLabel = computed(() => {
     const tag = this.menuTag();
     return tag ? this.transloco.translate('tags.sidebar.menuFor', { name: tag.name }) : undefined;
+  });
+  /** "winter, 12 links": the first line of the menu says whose menu it is. */
+  protected readonly menuSummary = computed(() => {
+    const tag = this.menuTag();
+    if (!tag) {
+      return '';
+    }
+    this.i18n();
+    return this.transloco.translate('tags.sidebar.menu.summary', {
+      name: tag.name,
+      links: this.transloco.translate(pluralKey('tags.count', tag.linkCount), {
+        count: tag.linkCount,
+      }),
+    });
   });
   /** The tag the menu was opened for; kept while an item is chosen and the menu closes. */
   private menuTargetId: string | null = null;

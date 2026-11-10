@@ -150,6 +150,7 @@ test.describe('tags (mock API)', () => {
       for (const name of ['Show links', 'Rename', 'Merge into another tag…', 'Delete tag']) {
         await expect(page.getByRole('menuitem', { name })).toBeVisible();
       }
+      await expect(page.getByRole('menu').getByText(/^docs, \d+ links?$/)).toBeVisible();
       await page.keyboard.press('Escape');
     });
 

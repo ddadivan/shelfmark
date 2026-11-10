@@ -41,6 +41,23 @@
   padding-top: 0;
 }
 
+// Inline pill among chips: the label is for assistive technology only.
+.ui-field--compact {
+  .ui-field__label {
+    @include visually-hidden;
+  }
+
+  .ui-field__control {
+    min-height: rem(30px);
+    padding: 0 var(--space-3);
+    border-radius: var(--radius-full);
+
+    @include coarse {
+      min-height: rem(44px);
+    }
+  }
+}
+
 // Error and disabled come after the base and focus rules at equal specificity: the border stays
 // `danger` while focused (the halo still shows the focus).
 .ui-field--error .ui-field__control {

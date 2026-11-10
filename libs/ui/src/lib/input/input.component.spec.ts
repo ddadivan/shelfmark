@@ -28,6 +28,13 @@ describe('InputComponent', () => {
     expect(input().getAttribute('aria-invalid')).toBeNull();
   });
 
+  it('compact keeps the label wired to the input and marks the pill', () => {
+    const { host, q, input } = setup({ compact: true });
+    expect(host.classList).toContain('ui-input--compact');
+    expect(q('.ui-field--compact')).not.toBeNull();
+    expect(q('label')?.getAttribute('for')).toBe(input().id);
+  });
+
   it('url uses the mono control and URL hints', () => {
     const { q, input } = setup({ type: INPUT_TYPE.Url });
     expect(input().type).toBe('url');
@@ -245,6 +252,7 @@ describe('InputComponent', () => {
     ],
     ['error and hint', { error: 'Enter an address', hint: 'Hint' }],
     ['disabled', { disabled: true }],
+    ['compact', { compact: true, label: 'New tag' }],
     ['search loading', { type: INPUT_TYPE.Search, loading: true }],
     [
       'url loading with label',

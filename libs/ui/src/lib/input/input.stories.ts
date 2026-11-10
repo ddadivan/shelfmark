@@ -29,6 +29,7 @@ const meta: Meta<InputComponent> = {
     error: '',
     icon: undefined,
     clearable: false,
+    compact: false,
     clearLabel: 'Clear',
     shortcut: '',
     loading: false,
@@ -50,6 +51,7 @@ const meta: Meta<InputComponent> = {
           [error]="error"
           [icon]="icon"
           [clearable]="clearable"
+          [compact]="compact"
           [clearLabel]="clearLabel"
           [shortcut]="shortcut"
           [loading]="loading"
@@ -66,6 +68,11 @@ export default meta;
 type Story = StoryObj<InputComponent>;
 
 export const Default: Story = {};
+
+/** A small pill among chips (a new tag); the label is for assistive technology only. */
+export const Compact: Story = {
+  args: { compact: true, label: 'New tag', placeholder: 'Tag name', value: 'reading-list' },
+};
 
 export const Url: Story = {
   args: {

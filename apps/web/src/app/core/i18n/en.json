@@ -783,6 +783,7 @@
       "showLess": "Show less",
       "menu": {
         "label": "Tag actions",
+        "summary": "{{name}}, {{links}}",
         "show": "Show links",
         "rename": "Rename",
         "merge": "Merge into another tag…",
