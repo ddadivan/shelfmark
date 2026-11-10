@@ -59,6 +59,8 @@
             ariaHaspopup="menu"
             [ariaExpanded]="menuNodeId() === node.id"
             [ariaLabel]="menuButtonLabel(node)"
+            [uiTooltip]="menuButtonLabel(node)"
+            [position]="MORE_TOOLTIP_SIDE"
             (pointerdown)="$event.stopPropagation()"
             (click)="onButton($event, node, more)"
           />

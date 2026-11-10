@@ -1,3 +1,5 @@
+import { OVERLAY_SIDE } from '../overlay/models/overlay-side.const';
+import { TooltipDirective } from '../tooltip/tooltip.directive';
 import { NgTemplateOutlet } from '@angular/common';
 import { Tree, TreeItem, TreeItemGroup } from '@angular/aria/tree';
 import {
@@ -56,6 +58,7 @@ const KEYBOARD_ECHO_RELEASE_MS = 100;
     LongPressDirective,
     NgTemplateOutlet,
     RippleDirective,
+    TooltipDirective,
     Tree,
     TreeItem,
     TreeItemGroup,
@@ -70,6 +73,11 @@ const KEYBOARD_ECHO_RELEASE_MS = 100;
 })
 export class TreeComponent {
   protected readonly ICON_SIZE = ICON_SIZE;
+  /**
+   * The row's "…" tooltip opens to the right, towards the content: below the row it would cover
+   * the next row or the section header ("+" of Tags) and keep a resting pointer trapped on it.
+   */
+  protected readonly MORE_TOOLTIP_SIDE = OVERLAY_SIDE.Right;
   /** A keyboard menu request is pending; the browser's echoed `contextmenu` consumes it. */
   private keyboardEcho = false;
   private echoTimer: ReturnType<typeof setTimeout> | undefined;

@@ -45,7 +45,10 @@ test.describe('settings (mock auth)', () => {
       '/privacy',
     );
     await expect(main.getByText('Shelfmark v1.0')).toBeVisible();
-    const section = main.locator('app-settings-section').filter({ hasText: 'Appearance' });
+    const section = main
+      .locator('ui-settings-section')
+      .filter({ hasText: 'Appearance' })
+      .locator('ui-panel');
     await expect(section).not.toHaveCSS('padding-left', '0px');
   });
 

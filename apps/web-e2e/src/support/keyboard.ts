@@ -72,7 +72,11 @@ export async function activeOption(page: Page, option: Locator): Promise<void> {
     if ((await option.getAttribute('data-active')) === 'true') {
       return;
     }
+    // Wait for the arrow to move the active option before reading it again; reading right after
+    // the key press can see the old state and, with two options, step past the target forever.
+    const before = await active.getAttribute('id');
     await page.keyboard.press('ArrowDown');
+    await expect(active).not.toHaveAttribute('id', before ?? '');
   }
   await expect(option).toHaveAttribute('data-active', 'true');
 }

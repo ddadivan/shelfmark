@@ -205,8 +205,14 @@ export class TooltipDirective {
       }
       return;
     }
-    // Only the tooltip closes; a dialog or menu around the trigger keeps its own Esc.
-    event.stopPropagation();
+    // Only the tooltip closes; a dialog or menu around the trigger keeps its own Esc. That holds
+    // only while focus is on the trigger: a tooltip left open by the pointer must not swallow the
+    // Esc of a field that has focus elsewhere (it closes, and the Esc reaches the field too).
+    const target = this.target();
+    const active = document.activeElement;
+    if (target && active && (target === active || target.contains(active))) {
+      event.stopPropagation();
+    }
     this.dismiss();
   };
 

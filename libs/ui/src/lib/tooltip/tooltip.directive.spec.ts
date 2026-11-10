@@ -220,10 +220,11 @@ describe('TooltipDirective', () => {
     document.body.removeEventListener('keydown', seen);
   });
 
-  it('Esc on an open tooltip does not reach other listeners', async () => {
+  it('Esc on an open tooltip of the focused trigger does not reach other listeners', async () => {
     const { inner, settle } = await setup();
     const seen = vi.fn();
     document.body.addEventListener('keydown', seen);
+    inner.focus();
     enter(inner);
     await vi.advanceTimersByTimeAsync(400);
     settle();
@@ -232,6 +233,24 @@ describe('TooltipDirective', () => {
     );
     expect(seen).not.toHaveBeenCalled();
     document.body.removeEventListener('keydown', seen);
+  });
+
+  it('Esc closes a pointer-opened tooltip and still reaches a field focused elsewhere', async () => {
+    const { inner, settle, panelEl } = await setup();
+    const field = document.createElement('input');
+    document.body.appendChild(field);
+    field.focus();
+    const seen = vi.fn();
+    field.addEventListener('keydown', seen);
+    enter(inner);
+    await vi.advanceTimersByTimeAsync(400);
+    settle();
+    expect(panelEl()).not.toBeNull();
+    field.dispatchEvent(new KeyboardEvent('keydown', { key: KEYBOARD_KEY.Escape, bubbles: true }));
+    settle();
+    expect(panelEl()).toBeNull();
+    expect(seen).toHaveBeenCalledTimes(1);
+    field.remove();
   });
 
   it('skips the description when the text equals the accessible name', async () => {
