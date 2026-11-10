@@ -13,6 +13,7 @@ import { TREE_STORY_NESTED } from './stories/tree-story-nested.const';
 import { TreeComponent } from './tree.component';
 import { KEYBOARD_KEY } from '../keyboard';
 import { LONG_PRESS_DURATION_MS } from '../long-press';
+import { TREE_DROP_OPEN_DELAY_MS } from './models/tree-drop-open-delay.const';
 
 @Component({
   imports: [TreeComponent],
@@ -25,6 +26,8 @@ import { LONG_PRESS_DURATION_MS } from '../long-press';
       [activeId]="activeId()"
       [menuLabel]="menuLabel()"
       [menuNodeId]="menuNodeId()"
+      [dropTargetId]="dropTargetId()"
+      dropLabel="Move here"
       (selected)="selected.push($event)"
       (toggled)="toggled.push($event)"
       (contextMenu)="menus.push($event)"
@@ -41,6 +44,7 @@ class HostComponent {
   readonly activeId = signal<string | null>(TREE_STORY_ID.Angular);
   readonly menuLabel = signal<string | undefined>('Actions for {name}');
   readonly menuNodeId = signal<string | null>(null);
+  readonly dropTargetId = signal<string | null>(null);
   created = 0;
   readonly selected: UiTreeNode[] = [];
   readonly toggled: UiTreeToggleEvent[] = [];
@@ -184,6 +188,73 @@ describe('TreeComponent', () => {
       host.fixed.set([]);
       await settle(fixture);
       expect(component.restoreFocusNear('gone')).toBeNull();
+    });
+  });
+
+  describe('drop target', () => {
+    it('marks every row with its id for hit testing', async () => {
+      const { item } = await setup();
+
+      expect(item(TREE_STORY_NAME.Recipes).dataset['uiTreeId']).toBe(TREE_STORY_ID.Recipes);
+      expect(item(TREE_STORY_NAME.Unsorted).dataset['uiTreeId']).toBe(TREE_STORY_ID.Unsorted);
+    });
+
+    it('highlights the drop target and shows the badge instead of the count', async () => {
+      const { fixture, host, item } = await setup();
+
+      host.dropTargetId.set(TREE_STORY_ID.Recipes);
+      await settle(fixture);
+
+      const recipes = item(TREE_STORY_NAME.Recipes);
+      expect(recipes.classList).toContain('ui-tree__row--drop');
+      expect(recipes.querySelector('.ui-tree__drop-badge')?.textContent?.trim()).toBe('Move here');
+      expect(recipes.querySelector('.ui-tree__count')).toBeNull();
+      expect(item(TREE_STORY_NAME.Work).classList).not.toContain('ui-tree__row--drop');
+
+      host.dropTargetId.set(null);
+      await settle(fixture);
+      expect(recipes.classList).not.toContain('ui-tree__row--drop');
+      expect(recipes.querySelector('.ui-tree__count')).not.toBeNull();
+    });
+
+    it('opens a closed folder after the target rests on it', async () => {
+      const { fixture, host, item } = await setup();
+      const clothes = item(TREE_STORY_NAME.Clothes);
+      expect(clothes.getAttribute('aria-expanded')).toBe('false');
+      vi.useFakeTimers();
+      try {
+        host.dropTargetId.set(TREE_STORY_ID.Clothes);
+        fixture.detectChanges();
+        TestBed.tick();
+        vi.advanceTimersByTime(TREE_DROP_OPEN_DELAY_MS - 50);
+        fixture.detectChanges();
+        expect(clothes.getAttribute('aria-expanded')).toBe('false');
+
+        vi.advanceTimersByTime(100);
+        fixture.detectChanges();
+        expect(clothes.getAttribute('aria-expanded')).toBe('true');
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it('does not open a folder the target only passed over', async () => {
+      const { fixture, host, item } = await setup();
+      vi.useFakeTimers();
+      try {
+        host.dropTargetId.set(TREE_STORY_ID.Clothes);
+        fixture.detectChanges();
+        TestBed.tick();
+        vi.advanceTimersByTime(200);
+        host.dropTargetId.set(TREE_STORY_ID.Recipes);
+        fixture.detectChanges();
+        TestBed.tick();
+        vi.advanceTimersByTime(TREE_DROP_OPEN_DELAY_MS);
+        fixture.detectChanges();
+        expect(item(TREE_STORY_NAME.Clothes).getAttribute('aria-expanded')).toBe('false');
+      } finally {
+        vi.useRealTimers();
+      }
     });
   });
 

@@ -386,6 +386,11 @@
       "failed": "Couldn't move the link",
       "failedDetail": "It is back where it was",
       "undoFailed": "Couldn't move the link back"
+    },
+    "drag": {
+      "moveHere": "Move here",
+      "moveOne": "Move 1 link",
+      "wasHere": "{{title}} was here"
     }
   },
   "privacy": {
