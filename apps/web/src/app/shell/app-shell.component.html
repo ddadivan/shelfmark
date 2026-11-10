@@ -42,8 +42,19 @@
               <ui-avatar [name]="user.name" [src]="user.image ?? undefined" />
             </ui-button>
             <ui-menu #accountMenu align="end" [ariaLabel]="'shell.accountMenu' | transloco">
+              <div class="shell__account" role="none">
+                <ui-avatar [name]="user.name" [src]="user.image ?? undefined" />
+                <span class="shell__account-text">
+                  <span class="shell__account-name">{{ user.name }}</span>
+                  <span class="shell__account-email">{{ user.email }}</span>
+                </span>
+              </div>
+              <ui-menu-separator />
               <ui-menu-item icon="settings" (activated)="openSettings()">
                 {{ 'shell.settings' | transloco }}
+              </ui-menu-item>
+              <ui-menu-item icon="refresh" (activated)="onboarding.reset()">
+                {{ 'settings.welcome.action' | transloco }}
               </ui-menu-item>
               <ui-menu-item icon="download" (activated)="exportAll(EXPORT_FORMAT.Json)">
                 {{ 'export.all.json' | transloco }}

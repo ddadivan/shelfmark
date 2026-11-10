@@ -120,7 +120,7 @@ export default class AppShellComponent {
   /** Shortcut caps of the search pill (the key is Cmd on Apple devices, else Ctrl). */
   protected readonly searchShortcut = isMacPlatform() ? '⌘K' : 'Ctrl K';
 
-  private readonly onboarding = inject(OnboardingStore);
+  protected readonly onboarding = inject(OnboardingStore);
 
   /** The welcome dialog opens whenever it becomes due: first sign-in, or "Show welcome again". */
   private readonly welcome = effect(() => {

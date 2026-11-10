@@ -119,6 +119,25 @@ test.describe('folders (mock API)', () => {
       await expect(row(page, 'Essays')).toBeVisible();
     });
 
+    test('a new folder can be placed inside another one with the Inside field', async ({
+      page,
+    }) => {
+      await gotoWithSidebar(page, '/links');
+
+      await page.getByRole('button', { name: 'New folder' }).click();
+      const dialog = page.getByRole('dialog', { name: 'New folder' });
+      await dialog.getByLabel('Name').fill('Essays');
+      await dialog.getByRole('combobox', { name: 'Inside' }).click();
+      await page.getByRole('option', { name: READING.name, exact: true }).click();
+      await expect(
+        page.getByRole('dialog', { name: `New folder in “${READING.name}”` }),
+      ).toBeVisible();
+      await dialog.getByRole('button', { name: 'Create folder' }).click();
+
+      await expect(page.getByRole('heading', { level: 1, name: 'Essays' })).toBeVisible();
+      await expect(page.getByRole('link', { name: READING.name })).toBeVisible();
+    });
+
     test('asks for a name', async ({ page }) => {
       await gotoWithSidebar(page, '/links');
 

@@ -149,7 +149,8 @@
     }
     <ui-button
       slot="footer"
-      class="add-link__action add-link__cancel"
+      class="add-link__action"
+      [class.add-link__cancel]="!editing"
       [disabled]="saving()"
       (click)="cancel()"
       >{{ 'links.add.actions.cancel' | transloco }}</ui-button

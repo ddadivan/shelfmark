@@ -135,6 +135,28 @@ test.describe('links feed (mock API)', () => {
     await expect(favorite).toHaveAttribute('aria-pressed', 'false');
   });
 
+  test('the card menu lists Open, Edit, the favorite toggle and Delete last, after a separator', async ({
+    page,
+  }) => {
+    await openFeed(page);
+    const card = page.locator('ui-card').first();
+    const favorite = card.getByRole('button', { name: /^Favorite: / });
+    const before = await favorite.getAttribute('aria-pressed');
+
+    await card.getByRole('button', { name: /^Actions for / }).click();
+    const menu = page.getByRole('menu');
+    await expect(menu.getByRole('menuitem')).toHaveText([
+      /Open/,
+      /Edit/,
+      before === 'true' ? /Remove from favorites/ : /Add to favorites/,
+      /Delete/,
+    ]);
+    await expect(menu.getByRole('separator')).toHaveCount(1);
+
+    await menu.getByRole('menuitem', { name: /favorites/ }).click();
+    await expect(favorite).toHaveAttribute('aria-pressed', before === 'true' ? 'false' : 'true');
+  });
+
   test('deleting asks first, removes the card and Undo brings it back', async ({ page }) => {
     await openFeed(page);
     const title = await firstTitle(page);

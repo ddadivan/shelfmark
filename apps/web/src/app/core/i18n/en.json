@@ -519,6 +519,7 @@
     "create": {
       "title": "New folder",
       "titleIn": "New folder in “{{parent}}”",
+      "inside": "Inside",
       "action": "Create folder",
       "saving": "Creating…",
       "failed": "Couldn't create the folder. Try again.",

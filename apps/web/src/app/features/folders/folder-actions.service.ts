@@ -50,10 +50,10 @@ export class FolderActionsService {
         autoFocus: DIALOG_FIRST_FIELD,
         data: {
           mode: FOLDER_NAME_MODE.Create,
-          parentName: parent?.name ?? null,
+          parentId: parent?.id ?? null,
           name: '',
-          submit: async (name) => {
-            outcome.folder = await this.folders.create(name, parent?.id ?? null);
+          submit: async (name, parentId) => {
+            outcome.folder = await this.folders.create(name, parentId);
             return outcome.folder !== null;
           },
         },
@@ -77,7 +77,7 @@ export class FolderActionsService {
         autoFocus: DIALOG_FIRST_FIELD,
         data: {
           mode: FOLDER_NAME_MODE.Rename,
-          parentName: null,
+          parentId: null,
           name: folder.name,
           submit: (name) => {
             if (name !== folder.name) {

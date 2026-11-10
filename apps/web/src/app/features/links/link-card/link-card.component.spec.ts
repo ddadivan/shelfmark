@@ -24,6 +24,17 @@ async function setup(link: LinkResponse = LINK) {
   return { fixture, element };
 }
 
+/** The open menu's item whose label starts with `label`. */
+function menuItem(label: string): HTMLElement {
+  const item = [...document.querySelectorAll<HTMLElement>('[role="menuitem"]')].find((candidate) =>
+    candidate.textContent?.trim().startsWith(label),
+  );
+  if (!item) {
+    throw new Error(`No menu item "${label}"`);
+  }
+  return item;
+}
+
 describe('LinkCardComponent', () => {
   it('has a decorative open bar with the address and "Open", and no extra tab stop', async () => {
     const { element } = await setup();
@@ -137,9 +148,7 @@ describe('LinkCardComponent', () => {
       .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
       ?.click();
     await fixture.whenStable();
-    const item = document.querySelectorAll<HTMLElement>('[role="menuitem"]')[1];
-    expect(item.textContent).toContain('Delete');
-    item.click();
+    menuItem('Delete').click();
 
     expect(requested).toHaveBeenCalledTimes(1);
   });
@@ -153,11 +162,31 @@ describe('LinkCardComponent', () => {
       .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
       ?.click();
     await fixture.whenStable();
-    const item = document.querySelectorAll<HTMLElement>('[role="menuitem"]')[0];
-    expect(item.textContent).toContain('Edit');
-    item.click();
+    menuItem('Edit').click();
 
     expect(requested).toHaveBeenCalledTimes(1);
+  });
+
+  it('emits openRequested and favoriteToggled from the actions menu', async () => {
+    const { fixture, element } = await setup();
+    const opened = vi.fn();
+    const toggled = vi.fn();
+    fixture.componentInstance.openRequested.subscribe(opened);
+    fixture.componentInstance.favoriteToggled.subscribe(toggled);
+
+    element
+      .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
+      ?.click();
+    await fixture.whenStable();
+    menuItem('Open').click();
+    element
+      .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
+      ?.click();
+    await fixture.whenStable();
+    menuItem('Add to favorites').click();
+
+    expect(opened).toHaveBeenCalledTimes(1);
+    expect(toggled).toHaveBeenCalledTimes(1);
   });
 
   it('has no axe violations', async () => {

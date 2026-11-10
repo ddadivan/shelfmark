@@ -8,6 +8,7 @@ import {
   ListItemComponent,
   MenuComponent,
   MenuItemComponent,
+  MenuSeparatorComponent,
   MenuTriggerDirective,
   TooltipDirective,
 } from '@shelfmark/ui';
@@ -26,6 +27,7 @@ const MAX_TAGS = 2;
     ListItemComponent,
     MenuComponent,
     MenuItemComponent,
+    MenuSeparatorComponent,
     MenuTriggerDirective,
     TooltipDirective,
   ],
@@ -39,6 +41,8 @@ export class LinkRowComponent {
   readonly reveal = input(false);
 
   readonly opened = output<void>();
+  /** "Open" from the actions menu: the link opens in a new tab. */
+  readonly openRequested = output<void>();
   readonly favoriteToggled = output<void>();
   readonly editRequested = output<void>();
   readonly deleteRequested = output<void>();

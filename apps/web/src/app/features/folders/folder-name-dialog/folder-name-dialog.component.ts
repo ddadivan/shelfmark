@@ -18,10 +18,13 @@ import {
   DialogComponent,
   injectDialogData,
   InputComponent,
+  SelectComponent,
   NOTICE_KIND,
   NoticeComponent,
   UiDialogRef,
 } from '@shelfmark/ui';
+import { FoldersStore } from '../../../stores/folders.store';
+import { buildFolderOptions } from '../../links/add-link/folder-options';
 import { FOLDER_NAME_ERROR } from '../models/folder-name-error.const';
 import { FOLDER_NAME_MODE } from '../models/folder-name-mode.const';
 import type { FolderNameDialogData } from '../models/folder-name-dialog-data.interface';
@@ -39,6 +42,7 @@ import type { FolderNameDialogData } from '../models/folder-name-dialog-data.int
     FormRoot,
     InputComponent,
     NoticeComponent,
+    SelectComponent,
     TranslocoPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -58,7 +62,19 @@ export class FolderNameDialogComponent {
   /** Ticks when the active language or its translations change, so messages re-translate. */
   private readonly i18n = toSignal(this.transloco.events$, { initialValue: undefined });
 
-  private readonly model = signal({ name: this.data.name });
+  private readonly folders = inject(FoldersStore);
+
+  private readonly model = signal<{ name: string; parentId: string | null }>({
+    name: this.data.name,
+    parentId: this.data.parentId,
+  });
+
+  /** The "Inside" field belongs to a new folder; a rename keeps the place. */
+  protected readonly picksParent = this.data.mode === FOLDER_NAME_MODE.Create;
+  protected readonly parentOptions = computed(() => buildFolderOptions(this.folders.entities()));
+  protected readonly parentName = computed(
+    () => this.folders.entities().find((folder) => folder.id === this.model().parentId)?.name,
+  );
 
   protected readonly form = form(
     this.model,
@@ -87,7 +103,7 @@ export class FolderNameDialogComponent {
     if (this.data.mode === FOLDER_NAME_MODE.Rename) {
       return 'folders.rename.title';
     }
-    return this.data.parentName === null ? 'folders.create.title' : 'folders.create.titleIn';
+    return this.parentName() === undefined ? 'folders.create.title' : 'folders.create.titleIn';
   });
   protected readonly actionKey = computed(() =>
     this.data.mode === FOLDER_NAME_MODE.Rename ? 'folders.rename.action' : 'folders.create.action',
@@ -109,7 +125,7 @@ export class FolderNameDialogComponent {
     }
     this.saving.set(true);
     this.failed.set(false);
-    if (await this.data.submit(this.model().name.trim())) {
+    if (await this.data.submit(this.model().name.trim(), this.model().parentId)) {
       // `saving` stays on: the button keeps its spinner while the dialog leaves.
       this.ref.close(true);
     } else {

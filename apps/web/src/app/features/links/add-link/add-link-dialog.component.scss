@@ -121,7 +121,7 @@
   }
 }
 
-// The phone sheet has no Cancel (its close button, Esc and swipe-down dismiss it), as in the mockup.
+// The phone add sheet has no Cancel (edit keeps it; its close button, Esc and swipe-down dismiss it), as in the mockup.
 .add-link__cancel {
   @include phone {
     display: none;

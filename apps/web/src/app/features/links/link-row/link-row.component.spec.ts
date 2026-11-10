@@ -22,6 +22,17 @@ async function setup(link: LinkResponse = LINK) {
   return { fixture, element: fixture.nativeElement as HTMLElement };
 }
 
+/** The open menu's item whose label starts with `label`. */
+function menuItem(label: string): HTMLElement {
+  const item = [...document.querySelectorAll<HTMLElement>('[role="menuitem"]')].find((candidate) =>
+    candidate.textContent?.trim().startsWith(label),
+  );
+  if (!item) {
+    throw new Error(`No menu item "${label}"`);
+  }
+  return item;
+}
+
 describe('LinkRowComponent', () => {
   it('shows the captured same-origin icon', async () => {
     const { element } = await setup({
@@ -83,17 +94,13 @@ describe('LinkRowComponent', () => {
       .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
       ?.click();
     await fixture.whenStable();
-    const items = document.querySelectorAll<HTMLElement>('[role="menuitem"]');
-    expect(items[0].textContent).toContain('Edit');
-    items[0].click();
+    menuItem('Edit').click();
     await fixture.whenStable();
     element
       .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
       ?.click();
     await fixture.whenStable();
-    const second = document.querySelectorAll<HTMLElement>('[role="menuitem"]');
-    expect(second[1].textContent).toContain('Delete');
-    second[1].click();
+    menuItem('Delete').click();
 
     expect(edited).toHaveBeenCalledTimes(1);
     expect(opened).toHaveBeenCalledTimes(1);

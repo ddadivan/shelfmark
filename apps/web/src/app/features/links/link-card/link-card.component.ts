@@ -8,6 +8,7 @@ import {
   FaviconComponent,
   MenuComponent,
   MenuItemComponent,
+  MenuSeparatorComponent,
   MenuTriggerDirective,
   PointerShadowDirective,
   TooltipDirective,
@@ -30,6 +31,7 @@ const MAX_TAGS = 3;
     FaviconComponent,
     MenuComponent,
     MenuItemComponent,
+    MenuSeparatorComponent,
     MenuTriggerDirective,
     PointerShadowDirective,
     TooltipDirective,
@@ -44,6 +46,8 @@ export class LinkCardComponent {
   readonly reveal = input(false);
 
   readonly opened = output<void>();
+  /** "Open" from the actions menu: the link opens in a new tab. */
+  readonly openRequested = output<void>();
   readonly favoriteToggled = output<void>();
   readonly editRequested = output<void>();
   readonly deleteRequested = output<void>();

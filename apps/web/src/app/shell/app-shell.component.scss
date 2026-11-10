@@ -31,6 +31,39 @@
   min-width: 0;
 }
 
+// Who is signed in, at the top of the account menu (Menus spec): avatar, name, address.
+.shell__account {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+}
+
+.shell__account-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  text-align: start;
+}
+
+.shell__account-name {
+  @include type(label);
+
+  overflow: hidden;
+  color: var(--text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shell__account-email {
+  @include type(caption);
+
+  overflow: hidden;
+  color: var(--text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 // The search pill takes the room the other controls leave, up to 40rem (Main spec).
 .shell__pill {
   flex: 1 1 rem(192px);

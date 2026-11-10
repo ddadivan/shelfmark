@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { inject, Injector, Service } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import type { LinkResponse } from '@shelfmark/contracts';
@@ -9,7 +10,7 @@ import { TagsStore } from '../../stores/tags.store';
 import { AddLinkDialogService } from './add-link/add-link-dialog.service';
 import { ADD_LINK_ACTION } from './models/add-link-action.const';
 import type { AddLinkData } from './models/add-link-data.interface';
-import { ownImageUrl } from './link-view';
+import { ownImageUrl, safeHref } from './link-view';
 import { LINKS_API } from './models/links-api.const';
 import { UndoToastService } from '../../core/undo/undo-toast.service';
 
@@ -30,10 +31,20 @@ export class LinkActionsService {
   private readonly undoToast = inject(UndoToastService);
   private readonly addLinkDialog = inject(AddLinkDialogService);
   private readonly transloco = inject(TranslocoService);
+  private readonly doc = inject(DOCUMENT);
 
   /** Records the open; the browser opens the link itself (the card is a real `<a>`). */
   open(link: LinkResponse): void {
     void this.store.recordOpen(link.id);
+  }
+
+  /** "Open" from a menu: a new tab (http and https only), and the open is recorded. */
+  openInNewTab(link: LinkResponse): void {
+    const href = safeHref(link.url);
+    if (href) {
+      this.doc.defaultView?.open(href, '_blank', 'noopener,noreferrer');
+      this.open(link);
+    }
   }
 
   async toggleFavorite(link: LinkResponse): Promise<void> {
