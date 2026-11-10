@@ -30,6 +30,8 @@ export function toLinkResponse(row: LinkWithTags): LinkResponse {
     faviconUrl: imagePath(row, LINK_IMAGE_KIND.Favicon),
     imageUrl: imagePath(row, LINK_IMAGE_KIND.Preview),
     isFavorite: row.isFavorite,
+    pinnedInFolderAt: row.pinnedInFolderAt?.toISOString() ?? null,
+    pinned: row.pinnedPosition !== null,
     lastOpenedAt: row.lastOpenedAt?.toISOString() ?? null,
     tags: row.tags.map((entry) => entry.tag.name).sort((a, b) => a.localeCompare(b, 'en')),
     createdAt: row.createdAt.toISOString(),
