@@ -56,6 +56,7 @@ describe('the You list (/settings)', () => {
     );
     expect(Array.from(root.querySelectorAll('nav a')).map((a) => a.getAttribute('href'))).toEqual([
       '/settings/appearance',
+      '/settings/library',
       '/settings/import-export',
       '/settings/privacy',
     ]);

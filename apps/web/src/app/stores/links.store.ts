@@ -248,6 +248,13 @@ export const LinksStore = signalStore(
       /** Loads page one of a scope, cancelling a request still running for the previous one. */
       setFilter,
 
+      /** Reloads page one of the current scope after links came back (a Trash restore). Only once loaded. */
+      refresh(): void {
+        if (store.loaded()) {
+          setFilter(store.filter());
+        }
+      },
+
       /** Loads the next page; does nothing while a request runs or on the last page. */
       async loadMore(): Promise<void> {
         const cursor = store.nextCursor();

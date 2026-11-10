@@ -89,6 +89,11 @@
   color: var(--text);
 }
 
+// `hideLabel`: the text stays in the label (the input's accessible name) but is not drawn.
+.ui-checkbox__text--hidden {
+  @include visually-hidden;
+}
+
 .ui-checkbox__hint,
 .ui-checkbox__error {
   @include type(caption);

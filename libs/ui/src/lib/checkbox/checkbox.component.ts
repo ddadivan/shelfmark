@@ -1,4 +1,5 @@
 import {
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
   ElementRef,
@@ -18,7 +19,8 @@ import { ICON_SIZE } from '../icon/models/icon-size.const';
  * hit area. Implements `FormCheckboxControl`: bind with
  * `<ui-checkbox label="…" [formField]="form.favorite" />`, or `[(checked)]` without a form.
  * `indeterminate` is the mixed state of a parent that selects children; it is exposed through
- * the native property and clears on the next toggle.
+ * the native property and clears on the next toggle. `hideLabel` shows the box alone (the label
+ * stays its accessible name).
  */
 @Component({
   selector: 'ui-checkbox',
@@ -40,6 +42,11 @@ export class CheckboxComponent extends UiFieldControl implements FormCheckboxCon
   readonly indeterminate = model(false);
   /** Form field name of the native input. */
   readonly name = input('');
+  /**
+   * Draws only the box: the label stays as the accessible name (screen reader text) but is not
+   * shown. For a checkbox in a row or card that already says what it selects (Trash rows).
+   */
+  readonly hideLabel = input(false, { transform: booleanAttribute });
 
   protected readonly hintId = fieldHintId(this.controlId);
   protected readonly errorId = fieldErrorId(this.controlId);

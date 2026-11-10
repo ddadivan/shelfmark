@@ -34,7 +34,9 @@ import { LINKS_SCOPE } from '../../features/links/models/links-scope.const';
 import { APP_PATH } from '../../models/app-path.const';
 import type { FolderNode } from '../../stores/models/folder-node.interface';
 import { FoldersStore } from '../../stores/folders.store';
+import { TrashStore } from '../../stores/trash.store';
 import { SIDEBAR_RECENT_ID } from './models/sidebar-recent-id.const';
+import { SIDEBAR_TRASH_ID } from './models/sidebar-trash-id.const';
 import { sidebarActiveId } from './sidebar-active-id';
 import { SidebarTreeFocusService } from './sidebar-tree-focus.service';
 
@@ -51,7 +53,7 @@ const FIXED_ROUTES: Readonly<Record<string, string>> = {
  * "Favorites", "Recently opened" (a page), then the folder tree with link counts and graphite
  * folder tiles (`ui-tree`; the "Folders" heading has a "New folder" icon button) and the tags.
  * Choosing a row navigates; the active row follows the URL. A folder has a menu (right click, "..." button, Shift+F10): new subfolder, add link
- * here, rename, move, delete.
+ * here, rename, move, delete. Trash is a row of its own under a divider at the bottom.
  */
 @Component({
   selector: 'app-sidebar',
@@ -73,6 +75,7 @@ const FIXED_ROUTES: Readonly<Record<string, string>> = {
 })
 export class SidebarComponent {
   protected readonly folders = inject(FoldersStore);
+  private readonly trash = inject(TrashStore);
   protected readonly ICON_SIZE = ICON_SIZE;
   /** The logo heads the card (the desktop shell); the phone drawer has its own header. */
   readonly showLogo = input(false, { transform: booleanAttribute });
@@ -113,13 +116,15 @@ export class SidebarComponent {
       this.transloco.selectTranslate('library.scope.favorites'),
       this.transloco.selectTranslate('shell.sidebar.folderActions', { name: '{name}' }),
       this.transloco.selectTranslate('links.recent.title'),
+      this.transloco.selectTranslate('trash.title'),
     ]).pipe(
-      map(([all, unsorted, favorites, actions, recent]) => ({
+      map(([all, unsorted, favorites, actions, recent, trash]) => ({
         all,
         unsorted,
         favorites,
         actions,
         recent,
+        trash,
       })),
     ),
   );
@@ -156,6 +161,23 @@ export class SidebarComponent {
     ];
   });
 
+  /** The Trash row; its count shows once the list has loaded and only while Trash is not empty. */
+  protected readonly trashNodes = computed<UiTreeNode[]>(() => {
+    const label = this.labels()?.trash;
+    if (!label) {
+      return [];
+    }
+    const total = this.trash.total();
+    return [
+      {
+        id: SIDEBAR_TRASH_ID,
+        name: label,
+        icon: 'trash',
+        ...count(this.trash.loaded() && total > 0 ? total : undefined),
+      },
+    ];
+  });
+
   /** The folder tree; the folders above the active one start open. */
   protected readonly nodes = computed<UiTreeNode[]>(() => {
     const active = this.activeId();
@@ -179,6 +201,7 @@ export class SidebarComponent {
 
   constructor() {
     void this.folders.load();
+    void this.trash.load();
     effect((onCleanup) => onCleanup(this.treeFocus.register(this.tree())));
   }
 
@@ -189,6 +212,10 @@ export class SidebarComponent {
   protected async select(node: UiTreeNode): Promise<void> {
     const fixed = FIXED_ROUTES[node.id];
     await this.router.navigate(fixed ? [`/${fixed}`] : [`/${APP_PATH.Folders}`, node.id]);
+  }
+
+  protected async openTrash(): Promise<void> {
+    await this.router.navigate([`/${APP_PATH.Trash}`]);
   }
 
   protected openMenu(event: UiTreeContextMenuEvent): void {

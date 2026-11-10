@@ -19,7 +19,9 @@ let nextRowId = 0;
  * One opened (or trashed) link inside a `ui-history-group`: a 72 x 48 preview (48 x 48 on phones),
  * the title and `meta` (the folder: the app puts a `ui-folder-icon size="sm"` and its name there),
  * `time` (text, or a badge) and `actions` (buttons).
- * Slots (`slot="..."` attributes): `title` and `meta` inside the link, `time`, `actions`.
+ * Slots (`slot="..."` attributes): `title` and `meta` inside the link, `time`, `actions`, `select`
+ * (a checkbox before the preview, Trash) and `preview` (the fallback of a missing image, shown
+ * when `previewSlot` is set).
  *
  * **One activation target**, as in `ui-list-item`: title and meta live in one native `<a href>`
  * (or `<button>` without `href`) whose `::after` is stretched over the row, so the row is one tab
@@ -53,6 +55,11 @@ export class HistoryRowComponent {
   readonly newTab = input(false, { transform: booleanAttribute });
   /** Preview image URL; a picture icon shows when it is empty or fails to load. */
   readonly preview = input<string>();
+  /**
+   * The app draws the fallback of a missing or failed preview: content with `slot="preview"`
+   * (a letter, a folder tile) replaces the picture icon.
+   */
+  readonly previewSlot = input(false, { transform: booleanAttribute });
   /** Extra text for screen readers after the title, for example "opens in a new tab". */
   readonly description = input<string>();
 

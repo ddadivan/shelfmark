@@ -1,6 +1,5 @@
 import { inject, Service } from '@angular/core';
 import {
-  FOLDER_DELETE_MODE,
   FOLDER_LIMIT,
   type CreateFolderRequest,
   type FolderDeleteMode,
@@ -84,16 +83,7 @@ export class MockFoldersApi implements FoldersApi {
       if (!current || current.name === MOCK_FOLDER_NAME.DeleteFails) {
         return throwError(() => new Error('Mock: folder delete failed'));
       }
-      const doomed = new Set(this.data.subtreeIds(id));
-      const inDoomed = (folderId: string | null): boolean =>
-        folderId !== null && doomed.has(folderId);
-      this.data.links =
-        mode === FOLDER_DELETE_MODE.DeleteLinks
-          ? this.data.links.filter((link) => !inDoomed(link.folderId))
-          : this.data.links.map((link) =>
-              inDoomed(link.folderId) ? { ...link, folderId: null } : link,
-            );
-      this.data.setFolders(this.data.folderList.filter((folder) => !doomed.has(folder.id)));
+      this.data.trashFolder(id, mode);
       return of(undefined);
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
