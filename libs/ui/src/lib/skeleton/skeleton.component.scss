@@ -66,19 +66,20 @@
   flex-direction: column;
   overflow: hidden;
   background: var(--surface);
-  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
 }
 
 .ui-skeleton__media {
+  margin: rem(6px) rem(6px) 0;
   aspect-ratio: 16 / 9;
-  border-radius: 0;
+  border-radius: rem(16px);
 }
 
 .ui-skeleton__card-body {
   display: flex;
   flex-direction: column;
-  gap: rem(6px);
+  gap: var(--space-2);
   padding: var(--space-3) var(--space-4) var(--space-4);
 }
 

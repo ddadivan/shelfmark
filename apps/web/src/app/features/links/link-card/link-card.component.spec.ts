@@ -79,13 +79,14 @@ describe('LinkCardComponent', () => {
     expect(anchor?.textContent).toContain('Angular overview');
   });
 
-  it('shows the host without www, the note and at most three tags', async () => {
+  it('shows the host without www, the note, three tags and a +N chip', async () => {
     const { element } = await setup();
 
     expect(element.textContent).toContain('angular.dev');
     expect(element.textContent).not.toContain('www.');
     expect(element.textContent).toContain('Start here.');
-    expect(element.querySelectorAll('ui-chip')).toHaveLength(3);
+    expect(element.querySelectorAll('ui-chip')).toHaveLength(4);
+    expect(element.querySelector('ui-chip.ui-chip--neutral')?.textContent?.trim()).toBe('+1');
   });
 
   it.each(['javascript:alert(1)', 'data:text/html,hi', 'ftp://example.com/file'])(

@@ -262,6 +262,9 @@
         "delete": "Delete"
       }
     },
+    "card": {
+      "moreTags": "+{{count}}"
+    },
     "item": {
       "edit": "Edit",
       "edited": "Changes saved",

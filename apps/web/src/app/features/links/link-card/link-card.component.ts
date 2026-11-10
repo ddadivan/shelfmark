@@ -55,6 +55,7 @@ export class LinkCardComponent {
   protected readonly favicon = computed(() => ownImageUrl(this.link().faviconUrl));
   protected readonly image = computed(() => ownImageUrl(this.link().imageUrl));
   protected readonly tags = computed(() => this.link().tags.slice(0, MAX_TAGS));
+  protected readonly hiddenTags = computed(() => Math.max(0, this.link().tags.length - MAX_TAGS));
 
   protected open(): void {
     if (this.href() !== undefined) {

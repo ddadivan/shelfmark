@@ -57,6 +57,13 @@
           <ui-chip>{{ tag }}</ui-chip>
         </li>
       }
+      @if (hiddenTags() > 0) {
+        <li>
+          <ui-chip variant="neutral">{{
+            'links.card.moreTags' | transloco: { count: hiddenTags() }
+          }}</ui-chip>
+        </li>
+      }
     </ul>
   }
   <ui-menu
