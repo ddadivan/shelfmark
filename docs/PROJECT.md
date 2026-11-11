@@ -159,6 +159,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 6. **Open.** A click opens the link in a new tab and updates "Recently opened".
 7. **Edit.** URL, title, note, tags and folder can be changed.
    - **Move to folder** (stage 2, #261): "Move to folder…" in the ⋯ menu of a card and a row opens a folder picker with search (Unsorted is the empty value; a sheet on phones). The move shows at once, a `moved` toast offers Undo, and a failed request puts the link back with an error toast.
+   - **Drag and drop** (stage 2, #266): from the tablet width, drag a card or row (hold 150 ms on touch) onto a folder or Unsorted in the sidebar, or onto a subfolder tile. The preview lifts and shrinks with a "Move 1 link" badge, the slot stays as a dashed outline, the folder under the pointer is highlighted with "Move here", a closed folder opens after 600 ms, Esc cancels. The drop is the same optimistic move with Undo. Phones have no drag (long press is for selection, #267); "Move to folder…" is the way there and the keyboard path.
 8. **Delete.** Deletion requires confirmation.
 9. **Favorites.** As a user, I want to mark important links.
    - Add to favorites or remove from them in one click.
