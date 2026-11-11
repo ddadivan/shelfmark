@@ -10,6 +10,7 @@ import {
   linkedSignal,
   output,
   signal,
+  viewChild,
 } from '@angular/core';
 import type { HeadingLevel } from '../heading';
 import { TooltipDirective } from '../tooltip/tooltip.directive';
@@ -70,6 +71,8 @@ export class CardComponent {
    * hover and keyboard focus, like the breadcrumbs, so a title that fits never shows one.
    */
   protected readonly cutTitle = signal('');
+  /** The title text: hovering it (not the rest of the card) opens the full-title tooltip. */
+  protected readonly titleText = viewChild<ElementRef<HTMLElement>>('titleText');
 
   /** Id of the visually hidden description that the link points to. */
   protected readonly descriptionId = `ui-card-description-${nextId++}`;

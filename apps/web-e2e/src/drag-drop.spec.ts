@@ -79,7 +79,7 @@ test.describe('drag a link to a folder (mock API)', () => {
 
     await dragOver(page, items.nth(1), reading);
     await expect(reading).toHaveClass(/ui-tree__row--drop/);
-    await expect(page.locator('.cdk-drag-preview .library__drag-badge')).toHaveText('3 links');
+    await expect(page.locator('.cdk-drag-preview .library__drag-badge')).toHaveText('Move 3 links');
     await expect(page.locator('.cdk-drag-preview .library__drag-stack')).toHaveCount(2);
     // Every carried card shows the same dashed state; the move is announced.
     await expect(page.locator('li.library__item--carried')).not.toHaveCount(0);

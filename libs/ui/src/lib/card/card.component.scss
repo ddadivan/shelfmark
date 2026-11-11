@@ -306,6 +306,13 @@
   }
 }
 
+// Above the stretched link's layer, so the pointer on the text reaches it (the full-title
+// tooltip opens only there); it is inside the link, so a click still activates the card.
+.ui-card__title-text {
+  position: relative;
+  z-index: 2;
+}
+
 .ui-card__description {
   @include visually-hidden;
 }

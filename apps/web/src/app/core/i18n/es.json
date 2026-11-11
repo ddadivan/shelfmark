@@ -468,17 +468,16 @@
     },
     "drag": {
       "moveHere": "Mover aquí",
-      "moveOne": "Mover 1 enlace",
       "wasHere": "{{title}} estaba aquí",
-      "count": {
-        "one": "{{count}} enlace",
-        "many": "{{count}} enlaces",
-        "other": "{{count}} enlaces"
-      },
       "started": {
         "one": "Moviendo {{count}} enlace. Suéltalo sobre una carpeta o pulsa Esc para cancelar.",
         "many": "Moviendo {{count}} enlaces. Suéltalos sobre una carpeta o pulsa Esc para cancelar.",
         "other": "Moviendo {{count}} enlaces. Suéltalos sobre una carpeta o pulsa Esc para cancelar."
+      },
+      "move": {
+        "one": "Mover {{count}} enlace",
+        "many": "Mover {{count}} enlaces",
+        "other": "Mover {{count}} enlaces"
       }
     }
   },

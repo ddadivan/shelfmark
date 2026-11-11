@@ -379,7 +379,7 @@
             }
             <app-link-row [link]="link" />
             <span class="library__drag-badge"
-              >{{ dragLabelKey(link) | transloco: { count: selectedCount() } }}</span
+              >{{ dragLabelKey(link) | transloco: { count: dragCount(link) } }}</span
             >
           </div>
         </ng-template>
@@ -441,7 +441,7 @@
             }
             <app-link-card [link]="link" [readOnly]="true" />
             <span class="library__drag-badge"
-              >{{ dragLabelKey(link) | transloco: { count: selectedCount() } }}</span
+              >{{ dragLabelKey(link) | transloco: { count: dragCount(link) } }}</span
             >
           </div>
         </ng-template>

@@ -28,6 +28,9 @@ import type { OverlaySide } from '../overlay/models/overlay-side.type';
     />
     <div id="plain" tabindex="0" uiTooltip="Plain host">Plain</div>
     <button id="native" type="button" uiTooltip="Native" aria-describedby="other">Native</button>
+    <button id="wide" type="button" uiTooltip="Wide" [uiTooltipPointerTarget]="label">
+      <span #label id="label">Label</span>
+    </button>
   `,
 })
 class HostComponent {
@@ -125,6 +128,29 @@ describe('TooltipDirective', () => {
     settle();
     expect(panelEl()?.textContent).toContain('Search');
     leave(inner);
+    await vi.advanceTimersByTimeAsync(150);
+    settle();
+    expect(panelEl()).toBeNull();
+  });
+
+  it('reads hover on uiTooltipPointerTarget only; focus and the description stay on the host', async () => {
+    const { fixture, settle, panelEl } = await setup();
+    const root = fixture.nativeElement as HTMLElement;
+    const wide = root.querySelector<HTMLElement>('#wide') as HTMLElement;
+    const label = root.querySelector<HTMLElement>('#label') as HTMLElement;
+    settle();
+    expect(wide.getAttribute('aria-description')).toBe('Wide');
+
+    enter(wide);
+    await vi.advanceTimersByTimeAsync(500);
+    settle();
+    expect(panelEl()).toBeNull();
+
+    enter(label);
+    await vi.advanceTimersByTimeAsync(400);
+    settle();
+    expect(panelEl()?.textContent).toContain('Wide');
+    leave(label);
     await vi.advanceTimersByTimeAsync(150);
     settle();
     expect(panelEl()).toBeNull();

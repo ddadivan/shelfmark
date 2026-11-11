@@ -459,15 +459,14 @@
     },
     "drag": {
       "moveHere": "Move here",
-      "moveOne": "Move 1 link",
       "wasHere": "{{title}} was here",
-      "count": {
-        "one": "{{count}} link",
-        "other": "{{count}} links"
-      },
       "started": {
         "one": "Moving {{count}} link. Drop it on a folder, or press Escape to cancel.",
         "other": "Moving {{count}} links. Drop them on a folder, or press Escape to cancel."
+      },
+      "move": {
+        "one": "Move {{count}} link",
+        "other": "Move {{count}} links"
       }
     }
   },

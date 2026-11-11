@@ -630,11 +630,14 @@ export default class LibraryPage {
     return this.selectedCount() > 1 && this.selection.has(link.id);
   }
 
-  /** Label of the drag preview badge: "Move 1 link", or "3 links" when a selection travels. */
+  /** How many links a drag of `link` carries: the whole selection when it travels, else 1. */
+  protected dragCount(link: LinkResponse): number {
+    return this.bundled(link) ? this.selectedCount() : 1;
+  }
+
+  /** Label key of the drag preview badge: "Move 1 link" / "Move 3 links" (plural per language). */
   protected dragLabelKey(link: LinkResponse): string {
-    return this.bundled(link)
-      ? pluralKey('links.drag.count', this.selectedCount())
-      : 'links.drag.moveOne';
+    return pluralKey('links.drag.move', this.dragCount(link));
   }
 
   /** Hit-tests the folders under the pointer while a link is dragged. */

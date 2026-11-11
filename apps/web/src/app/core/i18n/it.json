@@ -468,17 +468,16 @@
     },
     "drag": {
       "moveHere": "Sposta qui",
-      "moveOne": "Sposta 1 link",
       "wasHere": "{{title}} era qui",
-      "count": {
-        "one": "{{count}} link",
-        "many": "{{count}} link",
-        "other": "{{count}} link"
-      },
       "started": {
         "one": "Spostamento di {{count}} link. Rilascialo su una cartella o premi Esc per annullare.",
         "many": "Spostamento di {{count}} link. Rilasciali su una cartella o premi Esc per annullare.",
         "other": "Spostamento di {{count}} link. Rilasciali su una cartella o premi Esc per annullare."
+      },
+      "move": {
+        "one": "Sposta {{count}} link",
+        "many": "Sposta {{count}} link",
+        "other": "Sposta {{count}} link"
       }
     }
   },

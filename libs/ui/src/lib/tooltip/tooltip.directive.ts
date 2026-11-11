@@ -56,6 +56,12 @@ export class TooltipDirective {
   readonly delay = input(400, { transform: numberAttribute });
   /** Shortcut shown as `kbd` after the text, for example `⌘K`. */
   readonly shortcut = input('', { alias: 'uiTooltipShortcut', transform: textTransform });
+  /**
+   * Hover is read on this element instead of the host (focus, the anchor and the description stay
+   * on the host): a control that stretches over a whole card shows its tooltip only while the
+   * pointer is on its text.
+   */
+  readonly pointerTarget = input<HTMLElement | null>(null, { alias: 'uiTooltipPointerTarget' });
 
   private readonly focusTarget = inject(UI_FOCUS_TARGET, { optional: true, self: true });
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
@@ -89,11 +95,12 @@ export class TooltipDirective {
       if (!target) {
         return;
       }
+      const pointer = this.pointerTarget() ?? target;
       const unlisten = [
-        this.renderer.listen(target, 'pointerenter', (event: PointerEvent) => {
+        this.renderer.listen(pointer, 'pointerenter', (event: PointerEvent) => {
           this.onPointerEnter(event);
         }),
-        this.renderer.listen(target, 'pointerleave', () => {
+        this.renderer.listen(pointer, 'pointerleave', () => {
           this.onPointerLeave();
         }),
         this.renderer.listen(target, 'focus', () => {

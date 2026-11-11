@@ -1,5 +1,6 @@
+<!-- The text sits above the stretched link: the full-title tooltip follows hover on it only. -->
 <ng-template #title>
-  <ng-content select="[slot=title]" />
+  <span #titleText class="ui-card__title-text"><ng-content select="[slot=title]" /></span>
 </ng-template>
 
 <ng-template #control>
@@ -8,6 +9,7 @@
       #titleLink
       class="ui-card__link"
       [uiTooltip]="cutTitle()"
+      [uiTooltipPointerTarget]="titleText()?.nativeElement ?? null"
       (pointerenter)="measureTitle(titleLink)"
       (focus)="measureTitle(titleLink)"
       [attr.href]="url"
@@ -25,6 +27,7 @@
       type="button"
       class="ui-card__link"
       [uiTooltip]="cutTitle()"
+      [uiTooltipPointerTarget]="titleText()?.nativeElement ?? null"
       (pointerenter)="measureTitle(titleLink)"
       (focus)="measureTitle(titleLink)"
       [attr.aria-current]="selected() ? 'true' : null"
