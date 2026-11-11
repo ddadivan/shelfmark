@@ -1,3 +1,4 @@
+import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { TRASH_ITEM_KIND } from '@shelfmark/contracts';
@@ -18,7 +19,12 @@ async function setup(
     get: vi.fn<UserSettingsApi['get']>(() =>
       options.failGet
         ? throwError(() => new Error('down'))
-        : of({ trashRetentionDays: 30 as const, folderColours: true, pauseHistory: false }),
+        : of({
+            trashRetentionDays: 30 as const,
+            folderColours: true,
+            pauseHistory: false,
+            ...MOCK_APPEARANCE_DEFAULTS,
+          }),
     ),
     update: vi.fn<UserSettingsApi['update']>((request) =>
       options.failUpdate
@@ -27,6 +33,7 @@ async function setup(
             trashRetentionDays: request.trashRetentionDays ?? 30,
             folderColours: request.folderColours ?? true,
             pauseHistory: request.pauseHistory ?? false,
+            ...MOCK_APPEARANCE_DEFAULTS,
           }),
     ),
   };

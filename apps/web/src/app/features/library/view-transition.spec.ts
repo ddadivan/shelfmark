@@ -1,10 +1,13 @@
 import { Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { ReducedMotion } from '@shelfmark/ui';
 import { runViewTransition } from './view-transition';
 
+/** A document with `matchMedia`; `reduced` turns the Animations setting Reduced on (`ReducedMotion`). */
 function fakeDoc(reduced: boolean, withApi: boolean): Document {
+  TestBed.inject(ReducedMotion).setAppReduced(reduced);
   const doc = {
-    defaultView: { matchMedia: () => ({ matches: reduced }) },
+    defaultView: { matchMedia: () => ({ matches: false }) },
     startViewTransition: vi.fn((callback: () => Promise<void>) => {
       void callback();
       return { finished: Promise.resolve() };

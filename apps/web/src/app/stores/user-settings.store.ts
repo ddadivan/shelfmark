@@ -7,10 +7,23 @@ import {
   type TrashRetentionDays,
 } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
+import type { Appearance } from '../core/theme/models/appearance.type';
+import { ThemeService } from '../core/theme/theme.service';
 import { SessionScope } from '../core/auth/session-scope.service';
 import { USER_SETTINGS_API } from '../features/settings/models/user-settings-api.const';
 import type { UserSettingsState } from './models/user-settings-state.interface';
 import { TrashStore } from './trash.store';
+
+function sameAppearance(a: Appearance, b: Appearance): boolean {
+  return (
+    a.theme === b.theme &&
+    a.motion === b.motion &&
+    a.customTheme.base === b.customTheme.base &&
+    a.customTheme.accent === b.customTheme.accent &&
+    a.customTheme.background === b.customTheme.background &&
+    a.customTheme.corners === b.customTheme.corners
+  );
+}
 
 const initialState: UserSettingsState = {
   trashRetentionDays: null,
@@ -22,7 +35,8 @@ const initialState: UserSettingsState = {
 
 /**
  * The account preferences (`/api/me/settings`), cached for the whole app. Today: how long Trash
- * keeps deleted items, folder colours, and whether Recently opened records opens. A change is optimistic and rolls back when the request fails; the Trash
+ * keeps deleted items, folder colours, whether Recently opened records opens, and the appearance
+ * (theme, Custom theme, Animations), which lives in ThemeService and is applied from here. A change is optimistic and rolls back when the request fails; the Trash
  * list is reloaded after it, because the days left of every entry change. The session end
  * forgets everything and drops responses still in flight.
  */
@@ -44,6 +58,7 @@ export const UserSettingsStore = signalStore(
     const injector = inject(Injector);
     const api = () => injector.get(USER_SETTINGS_API);
     const scope = inject(SessionScope);
+    const theme = inject(ThemeService);
     let epoch = 0;
     // Bumped by every change: a settings read that started before it must not overwrite it.
     let version = 0;
@@ -57,6 +72,14 @@ export const UserSettingsStore = signalStore(
         const settings = await firstValueFrom(api().get());
         if (started !== epoch) {
           return;
+        }
+        if (startedVersion === version) {
+          // The account wins over the copy in this browser (it follows the user to every device).
+          theme.apply({
+            theme: settings.theme,
+            customTheme: settings.customTheme,
+            motion: settings.motion,
+          });
         }
         patchState(
           store,
@@ -153,6 +176,38 @@ export const UserSettingsStore = signalStore(
         } catch {
           if (started === epoch && store.pauseHistory() === paused) {
             patchState(store, { pauseHistory: previous });
+          }
+          return false;
+        }
+      },
+
+      /**
+       * Changes the theme, the Custom theme or the Animations setting at once (ThemeService applies
+       * it to the whole app) and saves it on the account; resolves false (and puts the old
+       * appearance back, unless a later change replaced it) when the request fails.
+       */
+      async setAppearance(change: Partial<Appearance>): Promise<boolean> {
+        const previous = theme.appearance();
+        const next: Appearance = { ...previous, ...change };
+        if (sameAppearance(previous, next)) {
+          return true;
+        }
+        const started = epoch;
+        version++;
+        theme.apply(next);
+        try {
+          const saved = await firstValueFrom(api().update(change));
+          if (started === epoch && sameAppearance(theme.appearance(), next)) {
+            theme.apply({
+              theme: saved.theme,
+              customTheme: saved.customTheme,
+              motion: saved.motion,
+            });
+          }
+          return true;
+        } catch {
+          if (started === epoch && sameAppearance(theme.appearance(), next)) {
+            theme.apply(previous);
           }
           return false;
         }
