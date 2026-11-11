@@ -1,0 +1,112 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.paste-many__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  // Room for the focus ring of the controls at the edge of the scrolling body.
+  padding: rem(2px);
+}
+
+.paste-many__summary {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+// PasteMany.dc.html: "Select all" with the count beside it, aligned with the row check boxes.
+.paste-many__all {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  padding-inline: var(--space-3);
+}
+
+.paste-many__count {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+// The rows sit on `bg` in a rounded well (4px inside, concentric corners).
+.paste-many__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  margin: 0;
+  list-style: none;
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+}
+
+.paste-many__row {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: calc(var(--radius-lg) - var(--space-1));
+
+  @include hover {
+    background: var(--surface-hover);
+  }
+
+  &--skipped {
+    flex-direction: column;
+    gap: 0;
+    align-items: flex-start;
+    padding-inline-start: calc(var(--space-3) + #{rem(28px)});
+  }
+}
+
+.paste-many__check {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.paste-many__badge,
+.paste-many__remove {
+  flex: none;
+}
+
+.paste-many__skipped-text {
+  @include type(body);
+
+  min-width: 0;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.paste-many__meta {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+// "Folder for all" and "Tags for all" side by side; stacked on a phone.
+.paste-many__fields {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @include phone {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+// The footer note sits at the start, away from the buttons.
+.paste-many__note {
+  @include type(caption);
+
+  margin-inline-end: auto;
+  color: var(--text-muted);
+}

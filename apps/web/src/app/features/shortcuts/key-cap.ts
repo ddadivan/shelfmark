@@ -44,6 +44,8 @@ export function keyCap(key: ShortcutKey, mac: boolean): KeyCap {
       return letter('K');
     case SHORTCUT_KEY.T:
       return letter('T');
+    case SHORTCUT_KEY.V:
+      return letter('V');
     case SHORTCUT_KEY.Z:
       return letter('Z');
   }

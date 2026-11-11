@@ -20,7 +20,9 @@ import { TrashStore } from '../../stores/trash.store';
 import { UserSettingsStore } from '../../stores/user-settings.store';
 import { PinActionsService } from '../pins/pin-actions.service';
 import { AddLinkDialogService } from './add-link/add-link-dialog.service';
+import { pluralKey } from '../../core/i18n/plural-key';
 import { ADD_LINK_ACTION } from './models/add-link-action.const';
+import type { AddLinkSavedMany } from './models/add-link-saved-many.interface';
 import type { AddLinkData } from './models/add-link-data.interface';
 import { ownImageUrl, safeHref } from './link-view';
 import { LINKS_API } from './models/links-api.const';
@@ -187,6 +189,8 @@ export class LinkActionsService {
     const result = await this.addLinkDialog.open(data);
     if (result?.action === ADD_LINK_ACTION.Saved) {
       this.noteSaved(result.link);
+    } else if (result?.action === ADD_LINK_ACTION.SavedMany) {
+      this.noteSavedMany(result);
     } else if (result?.action === ADD_LINK_ACTION.OpenExisting) {
       // "Open saved": the already saved link opens in its edit dialog.
       await this.openSaved(result.existing.id);
@@ -204,6 +208,66 @@ export class LinkActionsService {
       detail: link.title,
       thumb: ownImageUrl(link.imageUrl),
     });
+  }
+
+  /**
+   * Links saved from the paste-many list: they land in the feed, the counts refresh, and one
+   * summary toast says how many went where, with Undo (8 s). Items the server skipped are named in
+   * its second line instead of the "still loading" hint.
+   */
+  noteSavedMany(result: AddLinkSavedMany): void {
+    const { links, errors, folderId } = result;
+    if (links.length === 0) {
+      this.toasts.show({
+        kind: TOAST_KIND.Danger,
+        title: this.t('links.many.noneSaved'),
+        detail: this.t(pluralKey('links.many.skippedByServer', errors.length), {
+          count: String(errors.length),
+        }),
+      });
+      return;
+    }
+    this.store.addSavedMany(links);
+    void this.folders.refresh();
+    void this.tags.noteLinkSaved();
+    const undo = this.t('links.item.undo');
+    this.toasts.show({
+      kind: errors.length > 0 ? TOAST_KIND.Warn : TOAST_KIND.Success,
+      title: this.t(pluralKey('links.many.saved', links.length), {
+        count: String(links.length),
+        folder: this.folderLabel(folderId),
+      }),
+      detail:
+        errors.length > 0
+          ? this.t(pluralKey('links.many.skippedByServer', errors.length), {
+              count: String(errors.length),
+            })
+          : this.t('links.many.stillLoading'),
+      duration: TOAST_DURATION_MS.Undo,
+      actionHint: this.t('toast.actionHint', { shortcut: toastShortcutLabel(), action: undo }),
+      action: { label: undo, run: () => void this.undoSavedMany(links) },
+    });
+  }
+
+  /**
+   * Undo of a paste-many save: the links leave the feed at once and are deleted in one request;
+   * when that fails they come back and a toast says so.
+   */
+  private async undoSavedMany(links: readonly LinkResponse[]): Promise<void> {
+    const ids = links.map((link) => link.id);
+    this.store.dropSaved(ids);
+    try {
+      await firstValueFrom(this.injector.get(LINKS_API).removeBatch(ids));
+      void this.folders.refresh();
+      void this.tags.noteLinkSaved();
+    } catch {
+      this.store.addSavedMany(links);
+      this.toasts.show({
+        kind: TOAST_KIND.Danger,
+        title: this.t('links.many.undoFailed'),
+        detail: this.t('links.many.undoFailedDetail'),
+      });
+    }
   }
 
   /** Opens the add-link dialog in edit mode; a change replaces the link in the feed. */

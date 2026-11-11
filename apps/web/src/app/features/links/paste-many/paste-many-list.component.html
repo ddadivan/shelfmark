@@ -1,0 +1,138 @@
+<form [formRoot]="form" class="paste-many">
+  <ui-dialog
+    [title]="
+      (selectedCount() === 0
+        ? 'links.many.titleNone'
+        : pluralKey('links.many.title', selectedCount())
+      ) | transloco: { count: selectedCount() }
+    "
+    [closeLabel]="'links.add.close' | transloco"
+    size="md"
+  >
+    <div class="paste-many__body">
+      <p class="paste-many__summary">
+        {{ pluralKey('links.many.found', paste().found) | transloco: { count: paste().found } }}
+        @if (duplicateCount() > 0) {
+          {{
+            pluralKey('links.many.already', duplicateCount())
+              | transloco: { count: duplicateCount() }
+          }}
+        }
+      </p>
+
+      <div class="paste-many__all">
+        <ui-checkbox
+          #all
+          [label]="'links.many.selectAll' | transloco"
+          [checked]="allChecked()"
+          [indeterminate]="someChecked()"
+          [disabled]="rows().length === 0"
+          (checkedChange)="toggleAll($event)"
+        />
+        <span class="paste-many__count" aria-live="polite">{{
+          'links.many.selectedCount'
+            | transloco: { selected: selectedCount(), total: rows().length }
+        }}</span>
+      </div>
+
+      <ul class="paste-many__list" [attr.aria-label]="'links.many.listLabel' | transloco">
+        @for (view of views(); track view.row.key) {
+          <li class="paste-many__row" [class.paste-many__row--off]="!view.checked">
+            <ui-checkbox
+              #rowBox
+              class="paste-many__check"
+              [label]="view.title"
+              [hint]="view.meta"
+              [checked]="view.checked"
+              (checkedChange)="toggle(view.row, $event)"
+            />
+            @if (view.duplicate) {
+              <ui-badge class="paste-many__badge" [tone]="BADGE_TONE.Warning">{{
+                'links.many.row.alreadySaved' | transloco
+              }}</ui-badge>
+            }
+            <ui-button
+              class="paste-many__remove"
+              [variant]="BUTTON_VARIANT.Ghost"
+              [size]="BUTTON_SIZE.Sm"
+              iconLeft="close"
+              iconOnly
+              [ariaLabel]="'links.many.row.remove' | transloco: { title: view.title }"
+              [disabled]="saving()"
+              (click)="remove(view.row)"
+            />
+          </li>
+        }
+        @for (text of paste().skipped; track $index) {
+          <li class="paste-many__row paste-many__row--skipped">
+            <span class="paste-many__skipped-text">{{
+              'links.many.row.quoted' | transloco: { text: text }
+            }}</span>
+            <span class="paste-many__meta">{{ 'links.many.row.skipped' | transloco }}</span>
+          </li>
+        }
+      </ul>
+
+      @if (paste().overflow > 0) {
+        <ui-notice>{{
+          pluralKey('links.many.overflow', paste().overflow)
+            | transloco: { count: paste().overflow, max: LINK_LIMIT.BatchMax }
+        }}</ui-notice>
+      }
+
+      <div class="paste-many__fields">
+        <ui-select
+          [label]="'links.many.folder' | transloco"
+          [options]="folderOptions()"
+          [emptyLabel]="'links.add.folder.unsorted' | transloco"
+          [searchLabel]="'links.add.folder.searchLabel' | transloco"
+          [noResultsLabel]="'links.add.folder.noResults' | transloco"
+          searchable
+          [formField]="form.folderId"
+        />
+        <ui-tag-input
+          [label]="'links.many.tags' | transloco"
+          [placeholder]="'links.add.tags.placeholder' | transloco"
+          [suggestions]="tagSuggestions()"
+          [maxTags]="LINK_LIMIT.TagsMax"
+          [maxTagsLabel]="'links.add.tags.max' | transloco: { max: LINK_LIMIT.TagsMax }"
+          [createLabel]="'links.add.tags.create' | transloco"
+          [removeLabel]="'links.add.tags.remove' | transloco"
+          [addedLabel]="'links.add.tags.added' | transloco"
+          [removedLabel]="'links.add.tags.removed' | transloco"
+          [duplicateLabel]="'links.add.tags.duplicate' | transloco"
+          [listLabel]="'links.add.tags.list' | transloco"
+          [formField]="form.tags"
+        />
+      </div>
+
+      @if (saveError(); as error) {
+        <ui-notice [kind]="NOTICE_KIND.Danger">{{
+          error.key | transloco: { fit: error.fit, max: LINK_LIMIT.PerUserMax }
+        }}</ui-notice>
+      }
+    </div>
+
+    <span slot="footer" class="paste-many__note">{{ 'links.many.note' | transloco }}</span>
+    @if (!phone()) {
+      <ui-button slot="footer" [disabled]="saving()" (click)="cancel()">{{
+        'links.add.actions.cancel' | transloco
+      }}</ui-button>
+    }
+    <ui-button
+      slot="footer"
+      [type]="BUTTON_TYPE.Submit"
+      [variant]="BUTTON_VARIANT.Primary"
+      [loading]="saving()"
+      [disabled]="selectedCount() === 0"
+      >{{
+        (saving()
+          ? 'links.add.actions.saving'
+          : selectedCount() === 0
+            ? 'links.many.saveNone'
+            : pluralKey('links.many.save', selectedCount())
+        ) | transloco: { count: selectedCount() }
+      }}</ui-button
+    >
+  </ui-dialog>
+</form>
