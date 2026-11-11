@@ -38,6 +38,7 @@ import { provideFeedbackApi } from './features/feedback/provide-feedback-api';
 import { provideAdminApi } from './features/admin/provide-admin-api';
 import { TOAST_DISMISS_LABEL } from '@shelfmark/ui';
 import { ThemeService } from './core/theme/theme.service';
+import { TabSyncService } from './core/sync/tab-sync.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -88,5 +89,7 @@ export const appConfig: ApplicationConfig = {
       registrationStrategy: 'registerWhenStable:30000',
     }),
     provideAppInitializer(() => inject(ThemeService).init()),
+    // Keeps the tabs of this browser in step (#268).
+    provideAppInitializer(() => inject(TabSyncService).init()),
   ],
 };

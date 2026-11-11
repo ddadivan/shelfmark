@@ -159,6 +159,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 6. **Open.** A click opens the link in a new tab and updates "Recently opened".
 7. **Edit.** URL, title, note, tags and folder can be changed.
    - **Move to folder** (stage 2, #261): "Move to folder…" in the ⋯ menu of a card and a row opens a folder picker with search (Unsorted is the empty value; a sheet on phones). The move shows at once, a `moved` toast offers Undo, and a failed request puts the link back with an error toast.
+   - **Drag and drop** (stage 2, #266): from the tablet width, drag a card or row (hold 150 ms on touch) onto a folder or Unsorted in the sidebar, or onto a subfolder tile. The preview lifts and shrinks with a "Move 1 link" badge, the slot stays as a dashed outline, the folder under the pointer is highlighted with "Move here", a closed folder opens after 600 ms, Esc cancels. The drop is the same optimistic move with Undo. Phones have no drag (long press is for selection, #267); "Move to folder…" is the way there and the keyboard path.
 8. **Delete.** Deletion requires confirmation.
 9. **Favorites.** As a user, I want to mark important links.
    - Add to favorites or remove from them in one click.
@@ -272,6 +273,7 @@ See ADR 0004.
   - `TagsStore`: tags;
   - `UiStore`: "cards / list" view; persisted in `localStorage`.
 - **Classic NgRx Store is not used**: it is overkill for this app.
+- **Tab sync** (stage 2, #268): the tabs of one browser share a `BroadcastChannel` (`TabSyncService`). The API seams post successful writes; other tabs of the same user apply them silently (a saved link lands with its animation; edits, moves and deletes show; folder and tag changes reload the sidebar and the feed). Signing out locks the other tabs with "You signed out in another tab" and clears their library; a sign-in anywhere reloads locked and signed-out tabs. The theme follows through the `storage` event.
 - **UI:** own component library `libs/ui` on SCSS and design tokens, behaviour from Angular Aria / CDK; Tailwind and Angular Material are not used (section 7).
 - **Rules for Claude Code:** the official Angular AI config (`ng generate ai-config --tool=claude`), the official Angular Agent Skills and Angular MCP + our own v22 rules; details in section 8.
 
