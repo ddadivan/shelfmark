@@ -7,7 +7,7 @@ import { createTranslated } from '../../../../../testing/create-translated';
 import { LandingHeaderComponent } from './landing-header.component';
 
 describe('LandingHeaderComponent', () => {
-  it('leaves the anchor and GitHub links out of the DOM on a phone; sign-in stays', async () => {
+  it('leaves the section links and "Get started" out of the DOM on a phone; sign-in stays', async () => {
     TestBed.configureTestingModule({
       providers: [{ provide: ViewportService, useValue: { phone: signal(true) } }],
     });
@@ -15,25 +15,30 @@ describe('LandingHeaderComponent', () => {
     const root = fixture.nativeElement as HTMLElement;
 
     expect(root.querySelectorAll('.landing-header__link')).toHaveLength(0);
-    expect(root.querySelector('a[href="/sign-in"]')).not.toBeNull();
+    expect(root.querySelector('nav')).toBeNull();
+    const signIn = Array.from(root.querySelectorAll('a[href="/sign-in"]'));
+    expect(signIn.map((link) => link.textContent?.trim())).toEqual(['Sign in']);
   });
 
-  it('links to the anchor, the repository and sign-in', async () => {
+  it('links to "How it works" and "Privacy", then "Sign in" and "Get started"', async () => {
     const fixture = await createTranslated(LandingHeaderComponent);
     const root = fixture.nativeElement as HTMLElement;
 
     expect(root.querySelector('header')).not.toBeNull();
     expect(root.querySelector('nav')?.getAttribute('aria-label')).toBe('Main');
-    expect(root.querySelector('a[href="#how"]')?.textContent).toContain("How it's built");
-    expect(root.querySelector('a[href="/sign-in"]')?.textContent).toContain('Sign in');
+    expect(root.querySelector('a[href="#works"]')?.textContent).toContain('How it works');
+    expect(root.querySelector('a[href="/privacy"]')?.textContent).toContain('Privacy');
+    const signIn = Array.from(root.querySelectorAll('a[href="/sign-in"]'));
+    expect(signIn.map((link) => link.textContent?.trim())).toEqual(['Sign in', 'Get started']);
+    expect(root.querySelector('a[href="https://github.com/ddadivan/shelfmark"]')).toBeNull();
   });
 
-  it('asks the page for "How it\'s built" instead of following the anchor', async () => {
+  it('asks the page for "How it works" instead of following the anchor', async () => {
     const fixture = await createTranslated(LandingHeaderComponent);
     const requested = vi.fn();
-    fixture.componentInstance.howItsBuiltRequested.subscribe(requested);
+    fixture.componentInstance.howItWorksRequested.subscribe(requested);
     const link = (fixture.nativeElement as HTMLElement).querySelector<HTMLAnchorElement>(
-      'a[href="#how"]',
+      'a[href="#works"]',
     );
     const click = new MouseEvent('click', { bubbles: true, cancelable: true });
 
@@ -51,9 +56,9 @@ describe('LandingHeaderComponent', () => {
   ])('keeps the plain link for %s-click', async (_name, init) => {
     const fixture = await createTranslated(LandingHeaderComponent);
     const requested = vi.fn();
-    fixture.componentInstance.howItsBuiltRequested.subscribe(requested);
+    fixture.componentInstance.howItWorksRequested.subscribe(requested);
     const link = (fixture.nativeElement as HTMLElement).querySelector<HTMLAnchorElement>(
-      'a[href="#how"]',
+      'a[href="#works"]',
     );
     const click = new MouseEvent('click', { bubbles: true, cancelable: true, ...init });
 
@@ -61,16 +66,6 @@ describe('LandingHeaderComponent', () => {
 
     expect(requested).not.toHaveBeenCalled();
     expect(click.defaultPrevented).toBe(false);
-  });
-
-  it('opens GitHub in a new tab with noopener', async () => {
-    const fixture = await createTranslated(LandingHeaderComponent);
-    const link = (fixture.nativeElement as HTMLElement).querySelector<HTMLAnchorElement>(
-      'a[href="https://github.com/ddadivan/shelfmark"]',
-    );
-
-    expect(link?.target).toBe('_blank');
-    expect(link?.rel).toContain('noopener');
   });
 
   it('has no axe violations', async () => {

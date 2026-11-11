@@ -21,18 +21,50 @@ test.describe('landing', () => {
     ]);
   });
 
-  test('"How it\'s built" in the header scrolls to and focuses the section', async ({ page }) => {
-    // The header link is hidden on a phone by design (sign-in stays), so use a desktop width.
+  test('"How it works" in the header scrolls to and focuses the section', async ({ page }) => {
+    // The header links are hidden on a phone by design (sign-in stays), so use a desktop width.
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto('/');
     await expect(page.getByRole('heading', { level: 1, name: LANDING_HEADLINE })).toBeVisible();
 
     // Straight away, possibly before the deferred sections are idle-loaded.
-    await page.getByRole('banner').getByRole('link', { name: "How it's built" }).click();
+    await page.getByRole('banner').getByRole('link', { name: 'How it works' }).click();
 
-    const section = page.getByRole('region', { name: "How it's built" });
+    const section = page.getByRole('region', { name: 'Save once, find in seconds' });
     await expect(section).toBeInViewport();
     await expect(section).toBeFocused();
+  });
+
+  test('the header offers "Privacy", "Sign in" and "Get started"', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto('/');
+    const header = page.getByRole('banner');
+
+    await expect(header.getByRole('link', { name: 'Privacy' })).toHaveAttribute('href', '/privacy');
+    await expect(header.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/sign-in');
+    await expect(header.getByRole('link', { name: 'Get started' })).toHaveAttribute(
+      'href',
+      '/sign-in',
+    );
+    await header.getByRole('link', { name: 'Privacy' }).click();
+    await expect(page).toHaveURL(/\/privacy$/);
+  });
+
+  test('the first screen has the mockup copy, the buttons and the note', async ({ page }) => {
+    await page.goto('/');
+    const hero = page.locator('.landing-hero');
+
+    await expect(hero).toContainText('on one calm shelf instead of chats and open tabs.');
+    await expect(hero.getByRole('link', { name: 'Start your shelf' })).toHaveAttribute(
+      'href',
+      '/sign-in',
+    );
+    await expect(hero.getByRole('link', { name: 'Open the demo' })).toHaveAttribute(
+      'href',
+      '/demo',
+    );
+    await expect(hero.getByText('Sign in with Google or GitHub.')).toBeVisible();
+    await expect(page.getByText('Saved Messages', { exact: true })).toHaveCount(0);
   });
 
   test('opening the page with #how scrolls to and focuses the section', async ({ page }) => {
@@ -58,7 +90,7 @@ test.describe('landing', () => {
       await page.setViewportSize(viewport);
       await page.goto('/');
       await expect(page.getByRole('heading', { level: 1, name: LANDING_HEADLINE })).toBeVisible();
-      await expect(page.getByTestId('landing-chat-track')).toBeAttached();
+      await expect(page.locator('.landing-hero-preview')).toBeVisible();
 
       const hero = await page.locator('.landing-hero').boundingBox();
       const header = await page.locator('.landing-header').boundingBox();
@@ -121,7 +153,9 @@ test.describe('landing', () => {
   });
 
   for (const width of [360, 800, 1280]) {
-    test(`the deferred chat and sections shift nothing at ${width}px`, async ({ page }) => {
+    test(`the app preview and the deferred sections shift nothing at ${width}px`, async ({
+      page,
+    }) => {
       await page.setViewportSize({ width, height: 900 });
       // Plain scripts (as elsewhere in this suite): the e2e project has no DOM typings.
       await page.addInitScript(`
@@ -144,8 +178,9 @@ test.describe('landing', () => {
       `);
 
       await gotoLandingLoaded(page);
-      // The chat swaps in on idle, after the headline: wait for it, then for the page to settle.
-      await expect(page.getByRole('button', { name: 'Put them on the shelf' })).toBeVisible();
+      // The preview's cards land and its toast slides in after the headline: wait for the last
+      // part to finish, then for the page to settle.
+      await expect(page.locator('.landing-hero-preview__toast')).toHaveCSS('opacity', '1');
       await page.waitForTimeout(500);
 
       // The sources go into the failure message, so a CI failure says what moved.
@@ -154,18 +189,6 @@ test.describe('landing', () => {
       expect(total, JSON.stringify(shifts)).toBeLessThan(0.001);
     });
   }
-
-  test('"Put them on the shelf" swaps the chat for the shelf and back', async ({ page }) => {
-    await page.goto('/');
-    await expect(page.getByText('Five links, five different days.')).toBeVisible();
-
-    await page.getByRole('button', { name: 'Put them on the shelf' }).click();
-    await expect(page.getByText('Notes come from your own messages.')).toBeVisible();
-    await expect(page.getByText('5 links in 4 folders, each with a note')).toBeVisible();
-
-    await page.getByRole('button', { name: 'Show the chat again' }).click();
-    await expect(page.getByText('Five links, five different days.')).toBeVisible();
-  });
 
   test('"How it\'s built" links to the repository and decision log in new tabs', async ({
     page,
@@ -213,12 +236,7 @@ test.describe('landing', () => {
       '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
     );
     expect(overflow).toBeLessThanOrEqual(0);
-
-    await page.getByRole('button', { name: 'Put them on the shelf' }).click();
-    const afterSwap = await page.evaluate<number>(
-      '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
-    );
-    expect(afterSwap).toBeLessThanOrEqual(0);
+    await expect(page.locator('.landing-hero-preview__toast')).toBeVisible();
   });
 });
 
@@ -375,67 +393,74 @@ test.describe('landing scenes and reveals', () => {
   });
 });
 
-test.describe('landing chat motion', () => {
-  const messages = (page: Page): Locator =>
-    page.getByTestId('landing-chat-messages').getByRole('listitem');
-  const track = (page: Page): Locator => page.getByTestId('landing-chat-track');
-  const readStep = (feed: Locator): Promise<string> =>
-    feed.evaluate((el) => el.style.getPropertyValue('--landing-chat-step'));
+test.describe('landing app preview motion', () => {
+  /** Three cards in the DOM; a narrow panel clips the ones that do not fit at a readable width. */
+  const cards = (page: Page): Locator => page.locator('.landing-hero-preview__item');
+  const toast = (page: Page): Locator => page.locator('.landing-hero-preview__toast');
+  /** Animations still running inside the preview. */
+  const running = (page: Page): Promise<number> =>
+    page
+      .locator('.landing-hero-preview')
+      .evaluate(
+        (el) =>
+          el
+            .getAnimations({ subtree: true })
+            .filter((animation: { playState: string }) => animation.playState === 'running').length,
+      );
 
-  test('the feed keeps rising while the block is on screen', async ({ page }) => {
+  test('the cards land one after another, then the toast slides in, once', async ({ page }) => {
     await page.goto('/');
-    const feed = track(page);
-    await expect(feed).toBeAttached();
+    await expect(cards(page)).toHaveCount(3);
 
-    await expect.poll(() => readStep(feed), { timeout: 8000 }).not.toBe('0');
+    // The toast is the last to arrive: when it is done, every card is done.
+    await expect(toast(page)).toHaveCSS('opacity', '1', { timeout: 5000 });
+    for (const card of await cards(page).all()) {
+      await expect(card).toHaveCSS('opacity', '1');
+    }
+    await expect.poll(() => running(page)).toBe(0);
+    // Played once: it does not start again while the page stays open.
+    await page.waitForTimeout(1500);
+    expect(await running(page)).toBe(0);
+    await expect(toast(page)).toContainText('Saved to Read later');
+    await expect(toast(page)).toContainText('Undo');
   });
 
-  test('the feed plays its messages once, stops on the full chat and has no pause button', async ({
+  test('is a decorative picture: hidden from assistive technology, nothing in it can be focused', async ({
     page,
   }) => {
-    // 8 messages, one every 1.8 s.
-    test.setTimeout(60_000);
     await page.goto('/');
-    const feed = track(page);
-    await expect.poll(() => readStep(feed), { timeout: 8000 }).not.toBe('0');
+    const picture = page.locator('.landing-hero-preview');
 
-    await expect.poll(() => readStep(feed), { timeout: 30_000 }).toBe('8');
-    await page.mouse.move(0, 0);
-    await page.waitForTimeout(4000);
-    expect(await readStep(feed)).toBe('8');
-    await expect(page.getByRole('button', { name: 'Pause the feed' })).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Put them on the shelf' })).toBeVisible();
-  });
-
-  test('"Put them on the shelf" clears the messages and lands the links', async ({ page }) => {
-    await page.goto('/');
-    await page.getByRole('button', { name: 'Put them on the shelf' }).click();
-
-    await expect(page.getByText('Notes come from your own messages.')).toBeVisible();
-    await expect(page.getByTestId('landing-chat-shelf-card')).toHaveCount(5);
-    await expect(track(page)).toHaveCount(0);
+    await expect(picture).toHaveAttribute('aria-hidden', 'true');
+    await expect(picture).toHaveAttribute('inert', '');
+    await expect(page.getByRole('link', { name: /css grid/i })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Undo' })).toHaveCount(0);
   });
 
   test.describe('prefers-reduced-motion', () => {
     test.use({ reducedMotion: 'reduce' });
 
-    test('shows the static final frame: five messages, no moving feed', async ({ page }) => {
+    test('shows the final frame at once: the cards and the toast, nothing moving', async ({
+      page,
+    }) => {
       await page.goto('/');
 
-      await expect(messages(page)).toHaveCount(5);
-      await expect(track(page)).toHaveCount(0);
+      await expect(cards(page)).toHaveCount(3);
+      await expect(toast(page)).toHaveCSS('opacity', '1');
+      for (const card of await cards(page).all()) {
+        await expect(card).toHaveCSS('opacity', '1');
+      }
+      expect(
+        await page
+          .locator('.landing-hero-preview')
+          .evaluate((el) => el.getAnimations({ subtree: true }).length),
+      ).toBe(0);
     });
 
-    test('swaps to the shelf at once, axe stays clean and nothing scrolls sideways at 360px', async ({
-      page,
-    }, testInfo) => {
+    test('axe stays clean and nothing scrolls sideways at 360px', async ({ page }, testInfo) => {
       await page.setViewportSize({ width: 360, height: 780 });
       await page.goto('/');
-      await expect(messages(page)).toHaveCount(5);
-      await expectNoBlockingViolations(page, testInfo);
-
-      await page.getByRole('button', { name: 'Put them on the shelf' }).click();
-      await expect(page.getByText('Notes come from your own messages.')).toBeVisible();
+      await expect(toast(page)).toBeVisible();
       await expectNoBlockingViolations(page, testInfo);
 
       const overflow = await page.evaluate<number>(
@@ -485,22 +510,10 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
         viewport: { width: viewport.width, height: viewport.height },
       });
 
-      test('chat state has no serious or critical axe violations', async ({ page }, testInfo) => {
+      test('the first screen has no serious or critical axe violations', async ({
+        page,
+      }, testInfo) => {
         await gotoLandingLoaded(page);
-        await page.evaluate('document.fonts.ready.then(() => undefined)');
-
-        await expectNoBlockingViolations(page, testInfo);
-      });
-
-      test('shelf state has no serious or critical axe violations', async ({ page }, testInfo) => {
-        await gotoLandingLoaded(page);
-        await page.getByRole('button', { name: 'Put them on the shelf' }).click();
-        await expect(page.getByText('Notes come from your own messages.')).toBeVisible();
-        // The cards fade in while they land; axe reads the colours of a finished frame.
-        await page.evaluate(
-          // A cancelled one (the shelf button's hover transition ends when the button goes) rejects.
-          'Promise.all(document.getAnimations().map((animation) => animation.finished.catch(() => undefined))).then(() => undefined)',
-        );
         await page.evaluate('document.fonts.ready.then(() => undefined)');
 
         await expectNoBlockingViolations(page, testInfo);

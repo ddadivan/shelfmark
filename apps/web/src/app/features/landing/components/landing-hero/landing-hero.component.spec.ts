@@ -11,27 +11,6 @@ describe('LandingHeroComponent', () => {
     vi.unstubAllGlobals();
   });
 
-  it('carries the readable copy of the animated chat itself, before the chat loads', async () => {
-    stubReducedMotion(false);
-
-    const fixture = await createTranslated(LandingHeroComponent);
-    const root = fixture.nativeElement as HTMLElement;
-
-    const list = root.querySelector('.landing-hero__sr');
-    expect(list?.getAttribute('aria-label')).toBe('Saved Messages');
-    expect(list?.querySelectorAll('li')).toHaveLength(5);
-    expect(list?.textContent).toContain('youtube.com/watch?v=ng22-signal-forms');
-    expect(root.querySelector('.landing-hero__demo-placeholder')).not.toBeNull();
-  });
-
-  it('leaves the text to the visible static frame under reduced motion', async () => {
-    stubReducedMotion(true);
-
-    const fixture = await createTranslated(LandingHeroComponent);
-
-    expect((fixture.nativeElement as HTMLElement).querySelector('.landing-hero__sr')).toBeNull();
-  });
-
   it('renders the headline as the page h1', async () => {
     stubReducedMotion(false);
 
@@ -43,7 +22,33 @@ describe('LandingHeroComponent', () => {
       'Paste a link. Find it again. Even in a year.',
     );
     expect(root.querySelectorAll('h1')).toHaveLength(1);
-    expect(root.textContent).toContain('For everything you send to Saved Messages');
+    expect(root.textContent).toContain(
+      'Videos, articles, things to buy, courses — on one calm shelf instead of chats and open tabs.',
+    );
+  });
+
+  it('offers "Start your shelf" and "Open the demo" with the sign-in note to a guest', async () => {
+    stubReducedMotion(false);
+
+    const fixture = await createTranslated(LandingHeroComponent);
+    const root = fixture.nativeElement as HTMLElement;
+
+    expect(root.querySelector('a[href="/sign-in"]')?.textContent).toContain('Start your shelf');
+    expect(root.querySelector('a[href="/demo"]')?.textContent).toContain('Open the demo');
+    expect(root.querySelector('.landing-hero__note')?.textContent).toContain(
+      'Sign in with Google or GitHub.',
+    );
+  });
+
+  it('shows the app preview next to the copy and no chat', async () => {
+    stubReducedMotion(false);
+
+    const fixture = await createTranslated(LandingHeroComponent);
+    const root = fixture.nativeElement as HTMLElement;
+
+    expect(root.querySelector('app-landing-hero-preview')).not.toBeNull();
+    expect(root.querySelector('app-landing-chat')).toBeNull();
+    expect(root.textContent).not.toContain('Saved Messages');
   });
 
   it('has no axe violations', async () => {
@@ -54,7 +59,7 @@ describe('LandingHeroComponent', () => {
     expect(await axeViolations(fixture.nativeElement)).toEqual([]);
   });
 
-  it('offers "Back to my shelf" and no demo or sign-in to a signed-in person (/about)', async () => {
+  it('offers "Back to my shelf" and no start, demo or sign-in note to a signed-in person (/about)', async () => {
     TestBed.configureTestingModule({
       providers: [{ provide: AuthStore, useValue: { user: signal({ id: 'u' }) } }],
     });
@@ -64,5 +69,7 @@ describe('LandingHeroComponent', () => {
     expect(root.querySelector('a[href="/links"]')?.textContent).toContain('Back to my shelf');
     expect(root.querySelector('a[href="/sign-in"]')).toBeNull();
     expect(root.querySelector('a[href="/demo"]')).toBeNull();
+    expect(root.querySelector('.landing-hero__note')).toBeNull();
+    expect(root.querySelector('app-landing-hero-preview')).not.toBeNull();
   });
 });

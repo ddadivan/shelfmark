@@ -165,8 +165,13 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
       false,
     );
     await expect(guest.locator('html')).toHaveAttribute('data-motion', 'reduced');
-    await expect(guest.getByTestId('landing-chat-messages').getByRole('listitem')).toHaveCount(5);
-    await expect(guest.getByTestId('landing-chat-track')).toHaveCount(0);
+    // The app preview shows its final frame and never moves.
+    await expect(guest.locator('.landing-hero-preview__toast')).toHaveCSS('opacity', '1');
+    expect(
+      await guest
+        .locator('.landing-hero-preview')
+        .evaluate((el) => el.getAnimations({ subtree: true }).length),
+    ).toBe(0);
     await guest.close();
   });
 });

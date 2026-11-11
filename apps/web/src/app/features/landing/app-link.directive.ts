@@ -1,4 +1,4 @@
-import { Directive, inject, input } from '@angular/core';
+import { booleanAttribute, Directive, inject, input } from '@angular/core';
 import { Router } from '@angular/router';
 import { preloadAppChunks } from '../../core/routing/preload-app-chunks';
 
@@ -21,12 +21,18 @@ export class AppLinkDirective {
   /** The path to open (the same value as the button's `href`). */
   readonly appAppLink = input.required<string>();
 
+  /** Hover and focus load the app chunks; off for a link that does not lead into the app. */
+  readonly appAppLinkPreload = input(true, { transform: booleanAttribute });
+
   protected navigate(event: Event): void {
     event.preventDefault();
     void this.router.navigateByUrl(this.appAppLink());
   }
 
   protected preload(): void {
+    if (!this.appAppLinkPreload()) {
+      return;
+    }
     preloadAppChunks();
   }
 }

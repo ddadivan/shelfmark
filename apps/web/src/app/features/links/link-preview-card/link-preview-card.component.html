@@ -1,0 +1,17 @@
+<ui-card [placeholderTone]="tone()" [headingLevel]="3">
+  <span slot="title">{{ title() }}</span>
+  <span slot="meta" class="link-preview-card__site">
+    <ui-favicon [letter]="letter()" />
+    <span class="link-preview-card__host">{{ host() }}</span>
+  </span>
+  <span slot="date">{{ saved() }}</span>
+  @if (tags().length > 0) {
+    <ul class="link-preview-card__tags">
+      @for (tag of tags(); track tag) {
+        <li>
+          <ui-chip>{{ tag }}</ui-chip>
+        </li>
+      }
+    </ul>
+  }
+</ui-card>

@@ -3,90 +3,41 @@
     "header": {
       "navLabel": "Main",
       "brand": "Shelfmark",
-      "howItsBuilt": "How it's built",
-      "github": "GitHub",
-      "signIn": "Sign in"
+      "signIn": "Sign in",
+      "howItWorks": "How it works",
+      "privacy": "Privacy",
+      "getStarted": "Get started"
     },
     "hero": {
-      "eyebrow": "For everything you send to Saved Messages",
       "line1": "Paste a link.",
       "line2": "Find it again.",
       "line3": "Even in a year.",
-      "lead": "Chats and bookmark bars are where links go to be forgotten. Shelfmark keeps them in folders, with a note on why you saved each one, and finds any of them in two keystrokes.",
+      "lead": "Videos, articles, things to buy, courses — on one calm shelf instead of chats and open tabs.",
       "demo": "Open the demo",
-      "signIn": "Sign in"
-    },
-    "chat": {
-      "savedMessages": "Saved Messages",
-      "savedSubtitle": "new links every day, none findable",
-      "shelfTitle": "Your shelf",
-      "shelfSubtitle": "5 links in 4 folders, each with a note",
-      "hintChat": "Five links, five different days.",
-      "hintShelf": "Notes come from your own messages.",
-      "putOnShelf": "Put them on the shelf",
-      "showChat": "Show the chat again",
-      "messages": {
-        "watch": {
-          "text": "watch later!!",
-          "time": "Mon 23:41"
-        },
-        "coat": {
-          "text": "this coat, wait for the sale",
-          "time": "Tue 09:12"
-        },
-        "course": {
-          "text": "Fwd: Frontend Weekly",
-          "time": "Wed 18:30"
-        },
-        "ramen": {
-          "text": "ramen recipe, friday?",
-          "time": "Thu 21:05"
-        },
-        "zoneless": {
-          "text": "where was that zoneless article…",
-          "time": "Fri 08:47"
-        },
-        "lisbon": {
-          "text": "lisbon, maybe in may",
-          "time": "Sat 11:20"
-        },
-        "icons": {
-          "text": "icons for the side project",
-          "time": "Sun 16:02"
-        },
-        "react": {
-          "text": "read this one day",
-          "time": "Mon 07:58"
-        }
-      }
-    },
-    "shelf": {
-      "folders": {
-        "angular": "Work / Angular",
-        "courses": "Courses",
-        "clothes": "Clothes",
-        "recipes": "Recipes"
-      },
-      "links": {
-        "signalForms": {
-          "title": "Signal Forms in 20 minutes",
-          "note": "Watch later"
-        },
-        "zoneless": {
-          "title": "Zoneless change detection",
-          "note": "The article about zoneless"
-        },
-        "nestjs": {
-          "title": "NestJS for frontend developers",
-          "note": "From Frontend Weekly"
-        },
-        "coat": {
-          "title": "Wool coat, graphite",
-          "note": "Wait for the sale"
-        },
-        "ramen": {
-          "title": "The best weeknight ramen",
-          "note": "Friday?"
+      "start": "Start your shelf",
+      "note": "Sign in with Google or GitHub.",
+      "preview": {
+        "label": "App preview",
+        "folder": "Read later",
+        "count": "21 links",
+        "view": "View",
+        "all": "All 21",
+        "articles": "Articles 6",
+        "savedTo": "Saved to {{folder}}",
+        "undo": "Undo",
+        "items": {
+          "grid": {
+            "title": "A complete guide to CSS grid",
+            "tag": "css"
+          },
+          "design": {
+            "title": "Designing for the long read",
+            "tag": "design"
+          },
+          "slow": {
+            "title": "Why slow software feels broken",
+            "tag": "ux"
+          }
         }
       }
     },

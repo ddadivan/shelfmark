@@ -1,0 +1,32 @@
+@use 'ui' as *;
+
+:host {
+  display: contents;
+}
+
+ui-card {
+  flex: 1;
+}
+
+.link-preview-card__site {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-width: 0;
+}
+
+.link-preview-card__host {
+  @include type(caption);
+  @include line-clamp(1);
+
+  color: var(--text-muted);
+}
+
+.link-preview-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  padding: 0;
+  margin: var(--space-2) 0 0;
+  list-style: none;
+}

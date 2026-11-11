@@ -11,6 +11,8 @@ import {
 } from '@angular/core';
 import { LandingMotionService } from './landing-motion.service';
 import { LANDING_LINKS } from './models/landing-links.const';
+import { LANDING_SCROLL_TARGET } from './models/landing-scroll-target.const';
+import type { LandingScrollTarget } from './models/landing-scroll-target.type';
 import { LandingBentoComponent } from './components/landing-bento/landing-bento.component';
 import { LandingBeforeAfterComponent } from './components/landing-before-after/landing-before-after.component';
 import { LandingBuiltComponent } from './components/landing-built/landing-built.component';
@@ -47,7 +49,7 @@ export default class LandingPage {
   protected readonly sectionsRequested = signal(false);
   /** `/about` for a signed-in person: "What's new" shows under the hero. */
   protected readonly signedIn = injectSignedIn();
-  private readonly scrollPending = signal(false);
+  private readonly scrollPending = signal<LandingScrollTarget | null>(null);
   private readonly document = inject(DOCUMENT);
   private readonly motion = inject(LandingMotionService);
   private readonly built = viewChild('built', { read: ElementRef });
@@ -57,17 +59,21 @@ export default class LandingPage {
   private readonly bento = viewChild('bento', { read: ElementRef });
 
   constructor() {
-    // Opened as `/#how` (new tab, shared link): load the sections and scroll once they exist.
-    if (this.document.defaultView?.location.hash === LANDING_LINKS.HowItsBuilt) {
-      this.showHowItsBuilt();
+    // Opened as `/#how` or `/#works` (new tab, shared link): load the sections and scroll once they exist.
+    const hash = this.document.defaultView?.location.hash;
+    if (hash === LANDING_LINKS.HowItsBuilt) {
+      this.scrollTo(LANDING_SCROLL_TARGET.HowItsBuilt);
+    } else if (hash === LANDING_LINKS.HowItWorks) {
+      this.scrollTo(LANDING_SCROLL_TARGET.HowItWorks);
     }
     effect(() => {
-      const built = this.built();
-      if (built && this.bento() && this.beforeAfter() && this.scrollPending()) {
-        this.scrollPending.set(false);
-        const target = (built.nativeElement as HTMLElement).querySelector<HTMLElement>('#how');
+      const wanted = this.scrollPending();
+      const element = this.sectionFor(wanted);
+      if (wanted && element) {
+        this.scrollPending.set(null);
+        const target = element.querySelector<HTMLElement>(`#${wanted}`) ?? element;
         // Guarded: not every environment implements it (jsdom does not).
-        if (typeof target?.scrollIntoView === 'function') {
+        if (typeof target.scrollIntoView === 'function') {
           // Smooth unless the visitor asked for reduced motion (read untracked: not a trigger).
           const reduced = untracked(() => this.motion.reducedMotion());
           // The web font swaps in after the sections: the text wraps differently and the page
@@ -77,13 +83,33 @@ export default class LandingPage {
             target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' }),
           );
         }
-        target?.focus({ preventScroll: true });
+        target.focus({ preventScroll: true });
       }
     });
   }
 
-  protected showHowItsBuilt(): void {
-    this.scrollPending.set(true);
+  protected showHowItWorks(): void {
+    this.scrollTo(LANDING_SCROLL_TARGET.HowItWorks);
+  }
+
+  private scrollTo(target: LandingScrollTarget): void {
+    this.scrollPending.set(target);
     this.sectionsRequested.set(true);
+  }
+
+  /**
+   * The section element for a scroll target once everything above it is in the DOM (a section
+   * above the target that arrives later would push the page after the scroll): the bento for
+   * "How it works"; for "How it's built" also the before / after board that sits between.
+   */
+  private sectionFor(target: LandingScrollTarget | null): HTMLElement | null {
+    const bento = this.bento()?.nativeElement as HTMLElement | undefined;
+    if (target === LANDING_SCROLL_TARGET.HowItWorks) {
+      return bento ?? null;
+    }
+    const built = this.built()?.nativeElement as HTMLElement | undefined;
+    return target === LANDING_SCROLL_TARGET.HowItsBuilt && built && bento && this.beforeAfter()
+      ? built
+      : null;
   }
 }
