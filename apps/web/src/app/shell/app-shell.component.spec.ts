@@ -9,6 +9,8 @@ import { USER_SETTINGS_API } from '../features/settings/models/user-settings-api
 import { ToastService } from '@shelfmark/ui';
 import { AUTH_API } from '../core/auth/auth-api.token';
 import { ONBOARDING_API } from '../features/onboarding/models/onboarding-api.const';
+import { ADMIN_API } from '../features/admin/models/admin-api.const';
+import { adminApiStub } from '../../testing/admin-api-stub';
 import { RATING_API } from '../features/rating/models/rating-api.const';
 import { AuthStore } from '../core/auth/auth.store';
 import { AuthApi } from '../core/auth/models/auth-api.interface';
@@ -80,6 +82,7 @@ describe('AppShellComponent', () => {
         { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
         { provide: RATING_API, useValue: { prompt: vi.fn(), record: vi.fn() } },
         { provide: USER_SETTINGS_API, useValue: settingsApi },
+        { provide: ADMIN_API, useValue: adminApiStub() },
       ],
     });
     await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
@@ -118,6 +121,7 @@ describe('AppShellComponent', () => {
         { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
         { provide: RATING_API, useValue: { prompt: vi.fn(), record: vi.fn() } },
         { provide: USER_SETTINGS_API, useValue: settingsApi },
+        { provide: ADMIN_API, useValue: adminApiStub() },
       ],
     });
     await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
@@ -149,6 +153,7 @@ describe('AppShellComponent', () => {
         { provide: AUTH_API, useValue: api },
         { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
         { provide: RATING_API, useValue: { prompt: vi.fn(), record: vi.fn() } },
+        { provide: ADMIN_API, useValue: adminApiStub() },
         { provide: SearchDialogService, useValue: search },
       ],
     });
@@ -180,6 +185,7 @@ describe('AppShellComponent', () => {
         { provide: AUTH_API, useValue: api },
         { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
         { provide: RATING_API, useValue: { prompt: vi.fn(), record: vi.fn() } },
+        { provide: ADMIN_API, useValue: adminApiStub() },
         { provide: ShortcutsDialogService, useValue: shortcuts },
       ],
     });
@@ -214,6 +220,7 @@ describe('AppShellComponent', () => {
         { provide: AUTH_API, useValue: api },
         { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
         { provide: RATING_API, useValue: { prompt: vi.fn(), record: vi.fn() } },
+        { provide: ADMIN_API, useValue: adminApiStub() },
         { provide: SearchDialogService, useValue: search },
         { provide: ToastService, useValue: toasts },
       ],
@@ -266,6 +273,7 @@ describe('AppShellComponent', () => {
           { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
           { provide: RATING_API, useValue: { prompt: vi.fn(), record: vi.fn() } },
           { provide: USER_SETTINGS_API, useValue: settingsApi },
+          { provide: ADMIN_API, useValue: adminApiStub() },
         ],
       });
       await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
@@ -428,6 +436,7 @@ describe('AppShellComponent styles', () => {
         { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
         { provide: RATING_API, useValue: { prompt: vi.fn(), record: vi.fn() } },
         { provide: USER_SETTINGS_API, useValue: settingsApi },
+        { provide: ADMIN_API, useValue: adminApiStub() },
       ],
     });
     await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));

@@ -22,7 +22,8 @@ import { FEEDBACK_ERROR_MESSAGE } from './models/feedback-error-message.const';
 const DAY_MS = 86_400_000;
 const KNOWN_MILESTONES: readonly string[] = Object.values(FEEDBACK_MILESTONE);
 
-function isMilestone(value: string): value is FeedbackMilestone {
+function isMilestone(value: string | null): value is FeedbackMilestone {
+  if (value === null) return false;
   return KNOWN_MILESTONES.includes(value);
 }
 
@@ -38,7 +39,8 @@ export class FeedbackService {
     });
     if (!user || user.isDemo || user.onboardingCompletedAt === null) return { milestone: null };
     const rows = await this.prisma.feedback.findMany({
-      where: { userId },
+      // Rating rows only: message rows (kind set) have no milestone.
+      where: { userId, kind: null },
       select: { milestone: true },
     });
     const answered = new Set(rows.map((row) => row.milestone).filter(isMilestone));

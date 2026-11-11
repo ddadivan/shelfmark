@@ -451,6 +451,11 @@
       "failed": "Couldn't move the link",
       "failedDetail": "It is back where it was",
       "undoFailed": "Couldn't move the link back"
+    },
+    "drag": {
+      "moveHere": "Move here",
+      "moveOne": "Move 1 link",
+      "wasHere": "{{title}} was here"
     }
   },
   "privacy": {
@@ -633,6 +638,8 @@
       "toLight": "Switch to light theme",
       "toDark": "Switch to dark theme"
     },
+    "sendFeedback": "Send feedback",
+    "feedbackInbox": "Feedback inbox",
     "about": "About Shelfmark"
   },
   "folders": {
@@ -895,7 +902,8 @@
       "library": "Library",
       "export": "Export",
       "privacy": "Privacy and data",
-      "shortcuts": "Keyboard shortcuts"
+      "shortcuts": "Keyboard shortcuts",
+      "feedback": "Your feedback"
     },
     "description": {
       "account": "Your profile and your account.",
@@ -903,7 +911,8 @@
       "library": "What happens to deleted items.",
       "export": "Take everything you saved with you.",
       "privacy": "What we keep, and how to take it with you.",
-      "shortcuts": "Work without the mouse."
+      "shortcuts": "Work without the mouse.",
+      "feedback": "Ideas, problems and the answers we sent."
     },
     "account": {
       "profile": "Profile",
@@ -1562,6 +1571,123 @@
     "unavailable": {
       "title": "This view is waiting for its folder",
       "detail": "The folder of {{name}} is in Trash. Restore it to use the view."
+    }
+  },
+  "feedback": {
+    "kind": {
+      "idea": "Idea",
+      "problem": "Problem",
+      "other": "Other"
+    },
+    "status": {
+      "received": "Received",
+      "planned": "Planned",
+      "inProgress": "In progress",
+      "done": "Done",
+      "notPlanned": "Not planned"
+    },
+    "dialog": {
+      "title": "Send feedback",
+      "close": "Close",
+      "kind": "Type",
+      "field": {
+        "idea": "What would make Shelfmark better?",
+        "problem": "What went wrong?",
+        "other": "What's on your mind?"
+      },
+      "placeholder": {
+        "idea": "One thing we should change or add",
+        "problem": "What you did, and what happened instead",
+        "other": "Anything you would like us to know"
+      },
+      "hint": "We read every message.",
+      "counter": "characters",
+      "required": "Write a message first.",
+      "tooLong": "Keep it to {{max}} characters or fewer.",
+      "attachClient": "Attach browser and app version",
+      "cancel": "Cancel",
+      "send": "Send",
+      "sending": "Sending…",
+      "error": "Couldn't send. Your text is kept — try again in a moment.",
+      "rateLimited": "You have sent a lot of messages in the last hour. Your text is kept — try again later."
+    },
+    "screenshot": {
+      "label": "Screenshot (optional)",
+      "drop": "Drop an image or",
+      "choose": "choose a file",
+      "hint": "PNG, JPEG or WebP, up to {{max}} MB.",
+      "remove": "Remove screenshot",
+      "size": {
+        "kb": "{{size}} KB",
+        "mb": "{{size}} MB"
+      },
+      "error": {
+        "type": "That file is not a PNG, JPEG or WebP image.",
+        "size": "That image is larger than {{max}} MB. Choose a smaller one.",
+        "empty": "That file is empty.",
+        "read": "Couldn't read that file. Try another one."
+      }
+    },
+    "thanks": {
+      "title": "Thank you",
+      "text": "We read every message. You'll see its status in Settings › Your feedback.",
+      "done": "Done"
+    },
+    "page": {
+      "send": {
+        "title": "Send feedback",
+        "label": "Tell us what you think",
+        "hint": "An idea, a problem or anything else. We read every message.",
+        "action": "Send feedback"
+      },
+      "list": {
+        "title": "Your messages",
+        "error": "Couldn't load your messages.",
+        "retry": "Try again"
+      },
+      "empty": {
+        "title": "No messages yet",
+        "text": "What you send shows up here with its status and our reply."
+      },
+      "sent": "Sent {{date}}",
+      "sentToday": "Sent today",
+      "reply": "Reply: {{reply}}"
+    }
+  },
+  "admin": {
+    "feedback": {
+      "title": "Feedback inbox",
+      "description": "Every message, with its status and your reply.",
+      "filter": "Show",
+      "filterAll": "All statuses",
+      "status": "Status",
+      "reply": "Reply",
+      "replyHint": "Shown to the sender in Your feedback. Leave empty for none.",
+      "replyTooLong": "Keep the reply to {{max}} characters or fewer.",
+      "save": "Save",
+      "screenshot": "View screenshot",
+      "error": "Couldn't load the messages.",
+      "empty": {
+        "title": "No messages",
+        "text": "Nothing matches this filter yet."
+      },
+      "loadMore": "Load more",
+      "loadingMore": "Loading more messages",
+      "loadMoreFailed": {
+        "title": "Couldn't load more messages",
+        "detail": "Try again"
+      },
+      "saveFailed": {
+        "title": "Couldn't save",
+        "detail": "The message is back as it was. Try again."
+      }
+    }
+  },
+  "tabSync": {
+    "signedOut": {
+      "title": "You signed out in another tab",
+      "text": "To keep your links private, this tab is locked too.",
+      "signIn": "Sign in again"
     }
   },
   "howItWorks": {

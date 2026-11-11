@@ -81,6 +81,14 @@
               "with": "apps/web/src/app/features/rating/mock/provide-rating-api.e2e.ts"
             },
             {
+              "replace": "apps/web/src/app/features/feedback/provide-feedback-api.ts",
+              "with": "apps/web/src/app/features/feedback/mock/provide-feedback-api.e2e.ts"
+            },
+            {
+              "replace": "apps/web/src/app/features/admin/provide-admin-api.ts",
+              "with": "apps/web/src/app/features/admin/mock/provide-admin-api.e2e.ts"
+            },
+            {
               "replace": "apps/web/src/app/features/account-deletion/provide-account-deletion-api.ts",
               "with": "apps/web/src/app/features/account-deletion/mock/provide-account-deletion-api.e2e.ts"
             }
@@ -125,6 +133,14 @@
             {
               "replace": "apps/web/src/app/features/rating/provide-rating-api.ts",
               "with": "apps/web/src/app/features/rating/mock/provide-rating-api.e2e.ts"
+            },
+            {
+              "replace": "apps/web/src/app/features/feedback/provide-feedback-api.ts",
+              "with": "apps/web/src/app/features/feedback/mock/provide-feedback-api.e2e.ts"
+            },
+            {
+              "replace": "apps/web/src/app/features/admin/provide-admin-api.ts",
+              "with": "apps/web/src/app/features/admin/mock/provide-admin-api.e2e.ts"
             },
             {
               "replace": "apps/web/src/app/features/account-deletion/provide-account-deletion-api.ts",
