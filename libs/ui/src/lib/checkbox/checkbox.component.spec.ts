@@ -51,6 +51,14 @@ describe('CheckboxComponent', () => {
     expect(fixture.componentInstance.checked()).toBe(false);
   });
 
+  it('hideLabel keeps the label as the accessible name but draws only the box', () => {
+    const { host, input } = setup({ hideLabel: true });
+    const text = host.querySelector('.ui-checkbox__text') as HTMLElement;
+    expect(text.classList).toContain('ui-checkbox__text--hidden');
+    expect(host.querySelector('label')?.getAttribute('for')).toBe(input().id);
+    expect(text.textContent).toBe('Add to favorites');
+  });
+
   it('shows the hint and links it with aria-describedby', () => {
     const { host, input } = setup({ hint: 'Shown first in the feed' });
     const hint = host.querySelector('.ui-checkbox__hint');

@@ -149,7 +149,7 @@ export class LinksWriteService {
     const stored = await this.images.capture(userId, result.link.id, sources, left);
     if (!stored) return result;
     const row = await this.prisma.link.findFirst({
-      where: { id: result.link.id, userId },
+      where: { id: result.link.id, userId, deletedAt: null },
       include: LINK_INCLUDE,
     });
     return row ? { link: toLinkResponse(row), created: true } : result;
@@ -165,7 +165,7 @@ export class LinksWriteService {
           await this.requireFolder(tx, userId, request.folderId);
         }
         const current = await tx.link.findFirst({
-          where: { id, userId },
+          where: { id, userId, deletedAt: null },
           select: { id: true, normalizedUrl: true },
         });
         if (!current) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
@@ -188,7 +188,7 @@ export class LinksWriteService {
         }
         const touched = Object.keys(data).length > 0 || request.tags !== undefined;
         const row = await tx.link.update({
-          where: { id, userId },
+          where: { id, userId, deletedAt: null },
           data: touched ? { ...data, updatedAt: new Date() } : data,
           include: LINK_INCLUDE,
         });
@@ -203,9 +203,12 @@ export class LinksWriteService {
   async open(userId: string, id: string): Promise<OpenLinkResponse> {
     const touched = await this.prisma.$executeRaw`
       UPDATE links SET last_opened_at = date_trunc('milliseconds', now())
-      WHERE id = ${id}::uuid AND user_id = ${userId}::uuid`;
+      WHERE id = ${id}::uuid AND user_id = ${userId}::uuid AND deleted_at IS NULL`;
     if (touched === 0) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
-    const row = await this.prisma.link.findFirst({ where: { id, userId }, include: LINK_INCLUDE });
+    const row = await this.prisma.link.findFirst({
+      where: { id, userId, deletedAt: null },
+      include: LINK_INCLUDE,
+    });
     if (!row) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
     return toLinkResponse(row);
   }
@@ -214,20 +217,28 @@ export class LinksWriteService {
   async removeFromHistory(userId: string, id: string): Promise<void> {
     const touched = await this.prisma.$executeRaw`
       UPDATE links SET last_opened_at = NULL
-      WHERE id = ${id}::uuid AND user_id = ${userId}::uuid`;
+      WHERE id = ${id}::uuid AND user_id = ${userId}::uuid AND deleted_at IS NULL`;
     if (touched === 0) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
   }
 
-  /** Clears the history of the user: only the own links are touched. */
+  /**
+   * Clears the history of the user: only the own links are touched. Trashed links are cleared too
+   * on purpose, so a restored link does not reappear in the history.
+   */
   async clearHistory(userId: string): Promise<void> {
     await this.prisma.$executeRaw`
       UPDATE links SET last_opened_at = NULL
       WHERE user_id = ${userId}::uuid AND last_opened_at IS NOT NULL`;
   }
 
+  /** Moves the link to Trash (ADR 0036): sets `deleted_at`; the row, tags and images stay. */
   async remove(userId: string, id: string): Promise<void> {
-    const result = await this.prisma.link.deleteMany({ where: { id, userId } });
-    if (result.count === 0) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
+    // Plain SQL so `updated_at` stays: moving to Trash is not an edit.
+    const deletedAt = new Date();
+    const touched = await this.prisma.$executeRaw`
+      UPDATE links SET deleted_at = ${deletedAt}
+      WHERE id = ${id}::uuid AND user_id = ${userId}::uuid AND deleted_at IS NULL`;
+    if (touched === 0) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
   }
 
   /** The columns a PATCH changes; absent fields stay untouched. */
@@ -274,6 +285,7 @@ export class LinksWriteService {
   private async assertUnderLimit(db: LinkDbClient, userId: string, isDemo: boolean): Promise<void> {
     // Demo sandboxes are capped far lower (PROJECT.md 5.8).
     const max = isDemo ? DEMO_LIMIT.MaxLinks : LINK_LIMIT.PerUserMax;
+    // Trash counts too (ADR 0036): delete-and-add cannot grow the table past the cap.
     const total = await db.link.count({ where: { userId } });
     if (total >= max) {
       throw new ConflictException(
@@ -289,6 +301,10 @@ export class LinksWriteService {
     }
   }
 
+  /**
+   * Deliberately includes trashed links: the unique (user, key) index covers them, so a replay must
+   * find the first link (as it is) instead of failing on the index.
+   */
   private async findByKey(
     db: LinkDbClient,
     userId: string,

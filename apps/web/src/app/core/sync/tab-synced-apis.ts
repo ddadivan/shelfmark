@@ -8,12 +8,14 @@ import type {
   RecentLinksQuery,
   UpdateFolderRequest,
   UpdateLinkRequest,
+  TrashItemRef,
   UpdateTagRequest,
 } from '@shelfmark/contracts';
 import { tap, type Observable } from 'rxjs';
 import type { FoldersApi } from '../../features/links/models/folders-api.interface';
 import type { LinksApi } from '../../features/links/models/links-api.interface';
 import type { TagsApi } from '../../features/links/models/tags-api.interface';
+import type { TrashApi } from '../../features/trash/models/trash-api.interface';
 import { TAB_SYNC_KIND } from './models/tab-sync-kind.const';
 import type { TabSyncService } from './tab-sync.service';
 
@@ -72,5 +74,16 @@ export function tabSyncedTagsApi(inner: TagsApi, sync: TabSyncService): TagsApi 
     update: (id: string, request: UpdateTagRequest) => after(inner.update(id, request), changed),
     remove: (id: string) => after(inner.remove(id), changed),
     merge: (id: string, targetTagId: string) => after(inner.merge(id, targetTagId), changed),
+  };
+}
+
+/** The Trash seam with tab sync: restore, delete forever and empty change the library in other tabs. */
+export function tabSyncedTrashApi(inner: TrashApi, sync: TabSyncService): TrashApi {
+  const changed = () => sync.post({ kind: TAB_SYNC_KIND.LibraryChanged });
+  return {
+    list: () => inner.list(),
+    restore: (items: readonly TrashItemRef[]) => after(inner.restore(items), changed),
+    deleteForever: (items: readonly TrashItemRef[]) => after(inner.deleteForever(items), changed),
+    empty: () => after(inner.empty(), changed),
   };
 }

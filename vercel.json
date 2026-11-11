@@ -19,7 +19,10 @@
       "includeFiles": "{node_modules/swagger-ui-dist/**,node_modules/@prisma/client/runtime/query_compiler_fast_bg.postgresql.*,node_modules/@img/**}"
     }
   },
-  "crons": [{ "path": "/api/cron/demo-cleanup", "schedule": "17 3 * * *" }],
+  "crons": [
+    { "path": "/api/cron/demo-cleanup", "schedule": "17 3 * * *" },
+    { "path": "/api/cron/trash-cleanup", "schedule": "47 3 * * *" }
+  ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/((?!api/).*\\.[^/]*)", "destination": "/api" },

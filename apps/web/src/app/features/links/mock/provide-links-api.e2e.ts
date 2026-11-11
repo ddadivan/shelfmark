@@ -3,6 +3,14 @@ import { inject, type Provider } from '@angular/core';
 import { MockExportApi } from '../../export/mock/mock-export.api';
 import { EXPORT_API } from '../../export/models/export-api.const';
 import { REAL_AUTH_API_STORAGE_KEY } from '../../../core/auth/models/real-auth-api-storage-key.const';
+import { HttpUserSettingsApi } from '../../settings/http/http-user-settings.api';
+import { MockUserSettingsApi } from '../../settings/mock/mock-user-settings.api';
+import { USER_SETTINGS_API } from '../../settings/models/user-settings-api.const';
+import type { UserSettingsApi } from '../../settings/models/user-settings-api.interface';
+import { HttpTrashApi } from '../../trash/http/http-trash.api';
+import { MockTrashApi } from '../../trash/mock/mock-trash.api';
+import { TRASH_API } from '../../trash/models/trash-api.const';
+import type { TrashApi } from '../../trash/models/trash-api.interface';
 import { HttpFoldersApi } from '../http/http-folders.api';
 import { HttpLinksApi } from '../http/http-links.api';
 import { HttpTagsApi } from '../http/http-tags.api';
@@ -19,6 +27,7 @@ import {
   tabSyncedFoldersApi,
   tabSyncedLinksApi,
   tabSyncedTagsApi,
+  tabSyncedTrashApi,
 } from '../../../core/sync/tab-synced-apis';
 import { TabSyncService } from '../../../core/sync/tab-sync.service';
 
@@ -58,6 +67,19 @@ export function provideLinksApi(): Provider[] {
           useRealApi() ? inject(HttpTagsApi) : inject(MockTagsApi),
           inject(TabSyncService),
         ),
+    },
+    {
+      provide: TRASH_API,
+      useFactory: (): TrashApi =>
+        tabSyncedTrashApi(
+          useRealApi() ? inject(HttpTrashApi) : inject(MockTrashApi),
+          inject(TabSyncService),
+        ),
+    },
+    {
+      provide: USER_SETTINGS_API,
+      useFactory: (): UserSettingsApi =>
+        useRealApi() ? inject(HttpUserSettingsApi) : inject(MockUserSettingsApi),
     },
     { provide: EXPORT_API, useExisting: MockExportApi },
   ];

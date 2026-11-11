@@ -1,0 +1,129 @@
+<ng-template #entry>
+  <ui-history-row
+    previewSlot
+    [attr.role]="viewport.phone() ? 'presentation' : 'listitem'"
+    [class.trash-row__row--selected]="selected()"
+    [preview]="preview()"
+    [description]="(swipeable() ? 'trash.row.actionsHint' : 'trash.row.selectHint') | transloco"
+    (activated)="onActivated()"
+  >
+    @if (selecting() || !viewport.phone()) {
+      <ui-checkbox
+        slot="select"
+        hideLabel
+        [label]="'trash.row.select' | transloco: { title: item().title }"
+        [checked]="selected()"
+        (checkedChange)="selectedChange.emit($event)"
+      />
+    }
+    @if (isFolder()) {
+      <ui-folder-icon slot="preview" size="md" />
+    } @else {
+      <span slot="preview" class="trash-row__letter" aria-hidden="true">{{ letter() }}</span>
+    }
+    <span slot="title">{{ item().title }}</span>
+    <ng-container slot="meta">
+      @if (item().fromFolderName; as from) {
+        <span class="trash-row__part trash-row__part--from">{{
+          'trash.row.from' | transloco: { folder: from }
+        }}</span>
+      } @else if (!isFolder()) {
+        <span class="trash-row__part">{{ 'trash.row.fromUnsorted' | transloco }}</span>
+      }
+      @if (isFolder()) {
+        <span class="trash-row__part">{{
+          pluralKey('trash.row.links', item().linkCount ?? 0)
+            | transloco: { count: item().linkCount ?? 0 }
+        }}</span>
+      }
+      <span class="trash-row__part">{{
+        'trash.row.deleted' | transloco: { when: deletedAgo() }
+      }}</span>
+    </ng-container>
+    <ui-badge slot="time" [tone]="soon() ? BADGE_TONE.Warning : BADGE_TONE.Neutral">
+      @if (left() >= 1) {
+        {{ pluralKey('trash.row.daysLeft', left()) | transloco: { count: left() } }}
+      } @else {
+        {{ 'trash.row.lastDay' | transloco }}
+      }
+    </ui-badge>
+    @if (!viewport.phone()) {
+      <ng-container slot="actions">
+        <ui-button
+          size="sm"
+          iconLeft="undo"
+          [ariaLabel]="'trash.row.restoreItem' | transloco: { title: item().title }"
+          (click)="restoreRequested.emit()"
+        >
+          {{ 'trash.row.restore' | transloco }}
+        </ui-button>
+        <ui-button
+          variant="ghost"
+          size="sm"
+          iconOnly
+          iconLeft="more"
+          [uiMenuTrigger]="menu"
+          [ariaLabel]="'trash.row.more' | transloco: { title: item().title }"
+          [uiTooltip]="'trash.row.moreTooltip' | transloco"
+        />
+        <ui-menu
+          #menu
+          align="end"
+          [ariaLabel]="'trash.row.more' | transloco: { title: item().title }"
+        >
+          <ui-menu-item icon="trash" danger (activated)="deleteRequested.emit()">
+            {{ 'trash.row.deleteForever' | transloco }}
+          </ui-menu-item>
+        </ui-menu>
+      </ng-container>
+    }
+  </ui-history-row>
+</ng-template>
+
+@if (viewport.phone()) {
+  <!-- Phone: the swipe frame is the list item (it holds the buttons too); the row inside is not. -->
+  <div class="trash-row__swipe" role="listitem">
+    <div
+      #actions
+      class="trash-row__actions"
+      role="group"
+      [attr.aria-label]="item().title"
+      (focusin)="onActionsFocusIn()"
+      (focusout)="onActionsFocusOut($event)"
+    >
+      <ui-button
+        size="lg"
+        iconLeft="undo"
+        [ariaLabel]="'trash.row.restoreItem' | transloco: { title: item().title }"
+        (click)="restoreFromSwipe()"
+      >
+        {{ 'trash.row.restore' | transloco }}
+      </ui-button>
+      <ui-button
+        size="lg"
+        iconLeft="trash"
+        [variant]="BUTTON_VARIANT.Danger"
+        [ariaLabel]="'trash.row.deleteItem' | transloco: { title: item().title }"
+        (click)="deleteFromSwipe()"
+      >
+        {{ 'trash.row.delete' | transloco }}
+      </ui-button>
+    </div>
+    <div
+      #surface
+      class="trash-row__surface"
+      uiLongPress
+      [class.trash-row__surface--dragging]="dragging()"
+      [style.translate.px]="offset()"
+      (uiLongPress)="onLongPress()"
+      (pointerdown)="onPointerDown($event)"
+      (pointermove)="onPointerMove($event)"
+      (pointerup)="onPointerEnd()"
+      (pointercancel)="onPointerEnd()"
+    >
+      <ng-container [ngTemplateOutlet]="entry" />
+    </div>
+  </div>
+} @else {
+  <ng-container [ngTemplateOutlet]="entry" />
+}

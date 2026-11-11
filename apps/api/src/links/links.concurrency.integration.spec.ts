@@ -67,8 +67,10 @@ describe('links API: concurrency', () => {
       ]);
       expect(deleted.status).toBe(204);
       expect([201, 404]).toContain(created.status);
-      // Whichever order won, no link of the deleted folder survives as "Unsorted".
-      expect(await t.db.prisma.link.count({ where: { userId: users.owner.userId } })).toBe(0);
+      // Whichever order won, no live link of the deleted folder survives as "Unsorted".
+      expect(
+        await t.db.prisma.link.count({ where: { userId: users.owner.userId, deletedAt: null } }),
+      ).toBe(0);
     }
   });
 
@@ -125,7 +127,7 @@ describe('links API: concurrency', () => {
       ]);
       expect([200, 404, 409]).toContain(patched.status);
       expect(deleted.status).toBe(204);
-      expect(await t.db.prisma.link.count({ where: { id } })).toBe(0);
+      expect(await t.db.prisma.link.count({ where: { id, deletedAt: null } })).toBe(0);
     }
   });
 });

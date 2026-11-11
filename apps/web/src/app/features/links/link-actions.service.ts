@@ -14,6 +14,8 @@ import {
 import { FoldersStore } from '../../stores/folders.store';
 import { LinksStore } from '../../stores/links.store';
 import { TagsStore } from '../../stores/tags.store';
+import { TrashStore } from '../../stores/trash.store';
+import { UserSettingsStore } from '../../stores/user-settings.store';
 import { AddLinkDialogService } from './add-link/add-link-dialog.service';
 import { pluralKey } from '../../core/i18n/plural-key';
 import { ADD_LINK_ACTION } from './models/add-link-action.const';
@@ -27,7 +29,8 @@ import { MoveLinkDialogComponent } from './move-link-dialog/move-link-dialog.com
 
 /**
  * What a user can do with a link from the feed, the recent panel and the header: open, favorite,
- * edit, move to a folder (optimistic, Undo), delete (confirm, optimistic removal, Undo) and add. Texts come through Transloco here, so
+ * edit, move to a folder (optimistic, Undo), delete (confirm, optimistic removal, Undo; the link then
+ * waits in Trash) and add. Texts come through Transloco here, so
  * the components only emit.
  */
 @Service()
@@ -35,6 +38,8 @@ export class LinkActionsService {
   private readonly store = inject(LinksStore);
   private readonly folders = inject(FoldersStore);
   private readonly tags = inject(TagsStore);
+  private readonly trash = inject(TrashStore);
+  private readonly settings = inject(UserSettingsStore);
   // Resolved on use: the shell injects this service where specs provide no `LINKS_API`.
   private readonly injector = inject(Injector);
   private readonly dialogs = inject(DialogService);
@@ -74,7 +79,10 @@ export class LinkActionsService {
   async delete(link: LinkResponse): Promise<void> {
     const confirmed = await this.dialogs.confirm({
       title: this.t('links.item.confirm.title'),
-      message: this.t('links.item.confirm.message', { title: link.title }),
+      message: this.t('links.item.confirm.message', {
+        title: link.title,
+        days: String(this.settings.retentionDays()),
+      }),
       confirmLabel: this.t('links.item.confirm.confirm'),
       cancelLabel: this.t('links.item.confirm.cancel'),
       closeLabel: this.t('links.item.confirm.close'),
@@ -270,6 +278,7 @@ export class LinkActionsService {
     if (await this.store.commitRemove(id)) {
       void this.folders.refresh();
       void this.tags.noteLinkSaved();
+      void this.trash.refresh();
     } else {
       this.toasts.show({
         kind: TOAST_KIND.Danger,

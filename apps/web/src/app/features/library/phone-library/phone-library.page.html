@@ -29,6 +29,13 @@
       [meta]="openedToday() ? ('library.phone.openedToday' | transloco: { count: openedToday() }) : undefined"
       (activated)="openRecent()"
     />
+    <app-library-tile
+      class="phone-library__trash"
+      [href]="'/' + APP_PATH.Trash"
+      icon="trash"
+      [label]="'trash.title' | transloco"
+      [meta]="trashMeta()"
+    />
   </div>
 
   <app-sidebar foldersOnly />

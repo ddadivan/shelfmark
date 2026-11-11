@@ -4,7 +4,13 @@ import type { FoldersApi } from '../../features/links/models/folders-api.interfa
 import type { LinksApi } from '../../features/links/models/links-api.interface';
 import type { TagsApi } from '../../features/links/models/tags-api.interface';
 import { TAB_SYNC_KIND } from './models/tab-sync-kind.const';
-import { tabSyncedFoldersApi, tabSyncedLinksApi, tabSyncedTagsApi } from './tab-synced-apis';
+import {
+  tabSyncedFoldersApi,
+  tabSyncedLinksApi,
+  tabSyncedTagsApi,
+  tabSyncedTrashApi,
+} from './tab-synced-apis';
+import type { TrashApi } from '../../features/trash/models/trash-api.interface';
 import type { TabSyncService } from './tab-sync.service';
 
 const link = MOCK_LINKS[0];
@@ -107,5 +113,28 @@ describe('tab-synced APIs', () => {
       [{ kind: TAB_SYNC_KIND.LibraryChanged }],
       [{ kind: TAB_SYNC_KIND.LibraryChanged }],
     ]);
+  });
+
+  it('posts library-changed for Trash restore, delete forever and empty, not for the list', async () => {
+    const { post, service } = sync();
+    const trash = tabSyncedTrashApi(
+      {
+        list: vi.fn(() => of({ items: [], total: 0, retentionDays: 30 })),
+        restore: vi.fn(() => of({ count: 1 })),
+        deleteForever: vi.fn(() => of({ count: 1 })),
+        empty: vi.fn(() => of({ count: 2 })),
+      } as unknown as TrashApi,
+      service,
+    );
+
+    await firstValueFrom(trash.list());
+    expect(post).not.toHaveBeenCalled();
+    const ref = [{ kind: 'link' as const, id: 'l' }];
+    await firstValueFrom(trash.restore(ref));
+    await firstValueFrom(trash.deleteForever(ref));
+    await firstValueFrom(trash.empty());
+
+    expect(post).toHaveBeenCalledTimes(3);
+    expect(post).toHaveBeenCalledWith({ kind: TAB_SYNC_KIND.LibraryChanged });
   });
 });

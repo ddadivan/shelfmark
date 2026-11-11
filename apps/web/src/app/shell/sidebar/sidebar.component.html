@@ -49,6 +49,18 @@
     <app-how-it-works-card class="sidebar__how-it-works" />
   }
 
+  @if (!foldersOnly()) {
+    <!-- Trash sits alone under a divider at the very bottom (Main spec). -->
+    <div class="sidebar__trash">
+      <ui-tree
+        [fixedNodes]="trashNodes()"
+        [activeId]="activeId()"
+        [ariaLabel]="'trash.title' | transloco"
+        (selected)="openTrash()"
+      />
+    </div>
+  }
+
   <ui-menu [ariaLabel]="'shell.sidebar.folderMenu' | transloco" (closed)="menuClosed()">
     <ui-menu-item icon="folder-plus" (activated)="createSubfolder()">
       {{ 'shell.sidebar.menu.newSubfolder' | transloco }}

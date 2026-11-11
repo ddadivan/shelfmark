@@ -3,10 +3,15 @@ import {
   tabSyncedFoldersApi,
   tabSyncedLinksApi,
   tabSyncedTagsApi,
+  tabSyncedTrashApi,
 } from '../../core/sync/tab-synced-apis';
 import { TabSyncService } from '../../core/sync/tab-sync.service';
 import { HttpExportApi } from '../export/http/http-export.api';
 import { EXPORT_API } from '../export/models/export-api.const';
+import { HttpUserSettingsApi } from '../settings/http/http-user-settings.api';
+import { USER_SETTINGS_API } from '../settings/models/user-settings-api.const';
+import { HttpTrashApi } from '../trash/http/http-trash.api';
+import { TRASH_API } from '../trash/models/trash-api.const';
 import { HttpFoldersApi } from './http/http-folders.api';
 import { HttpLinksApi } from './http/http-links.api';
 import { HttpTagsApi } from './http/http-tags.api';
@@ -16,7 +21,7 @@ import { TAGS_API } from './models/tags-api.const';
 
 /**
  * Registers the data seams of the links feature (`LINKS_API`, `FOLDERS_API`, `TAGS_API`) and
- * `EXPORT_API` over the REST API. `EXPORT_API` is registered here, not in `app.config.ts`,
+ * `EXPORT_API`, `TRASH_API` and `USER_SETTINGS_API` over the REST API. `EXPORT_API` is registered here, not in `app.config.ts`,
  * because this file is the single seam `fileReplacements` swaps: the `development` and `e2e`
  * builds replace it with `mock/provide-links-api.e2e.ts`, which provides `MockExportApi`
  * instead, so no export code needs its own build switch.
@@ -37,5 +42,10 @@ export function provideLinksApi(): Provider[] {
       useFactory: () => tabSyncedTagsApi(inject(HttpTagsApi), inject(TabSyncService)),
     },
     { provide: EXPORT_API, useExisting: HttpExportApi },
+    {
+      provide: TRASH_API,
+      useFactory: () => tabSyncedTrashApi(inject(HttpTrashApi), inject(TabSyncService)),
+    },
+    { provide: USER_SETTINGS_API, useExisting: HttpUserSettingsApi },
   ];
 }

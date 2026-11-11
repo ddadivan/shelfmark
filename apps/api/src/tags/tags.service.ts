@@ -44,7 +44,8 @@ function tagSelect(userId: string) {
     name: true,
     createdAt: true,
     updatedAt: true,
-    _count: { select: { links: { where: { link: { userId } } } } },
+    // Live links only (ADR 0036); a merge still moves the tag of trashed links, see `merge`.
+    _count: { select: { links: { where: { link: { userId, deletedAt: null } } } } },
   } as const;
 }
 
@@ -120,6 +121,8 @@ export class TagsService {
       await this.read(tx, userId, sourceId);
       await this.read(tx, userId, targetId);
       if (sourceId === targetId) throw new BadRequestException(TAG_ERROR_MESSAGE.MergeIntoItself);
+      // Trashed links move too (no deletedAt filter): the source tag is deleted, and a restored link
+      // must not lose it.
       const moved = await tx.linkTag.findMany({
         where: { tagId: sourceId, link: { userId } },
         select: { linkId: true },
