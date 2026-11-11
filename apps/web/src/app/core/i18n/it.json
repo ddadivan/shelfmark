@@ -631,17 +631,11 @@
         "kyoto": {
           "title": "Kyoto lontano dalla folla"
         },
-        "focaccia": {
-          "title": "Focaccia croccante senza impasto"
-        },
         "containerQueries": {
           "title": "Le container query in pratica"
         },
         "linenShirt": {
           "title": "Camicia di lino verde salvia"
-        },
-        "madeira": {
-          "title": "Cinque escursioni di un giorno a Madeira"
         }
       },
       "tags": {

@@ -6,9 +6,10 @@ const { Far, Mid, Near } = SIGN_IN_DRIFT_LAYER;
 const { Start, End } = SIGN_IN_DRIFT_SIDE;
 
 /**
- * Sixteen saved links, eight a side, in three depth layers (two near, three mid, three far a
- * side). Where each one sits comes from the seeded scatter (`layoutDriftLane`), not from here. A
- * narrow desktop keeps the eight marked `narrow`, four a side, one of each layer and a second mid.
+ * Fourteen saved links, seven a side, in three depth layers (two near, three mid, two far a
+ * side; #315 took one far card off each side, sixteen felt crowded). Where each one sits comes
+ * from the seeded scatter (`layoutDriftLane`), not from here. A narrow desktop keeps the eight
+ * marked `narrow`, four a side, one of each layer and a second mid.
  */
 export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
   {
@@ -82,16 +83,6 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
     narrow: false,
   },
   {
-    id: 'focaccia',
-    host: 'bonappetit.com',
-    daysAgo: 2,
-    tags: ['recipes'],
-    tone: 0,
-    layer: Far,
-    side: Start,
-    narrow: false,
-  },
-  {
     id: 'nestjs',
     host: 'stepik.org',
     daysAgo: 8,
@@ -158,16 +149,6 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
     tags: ['shopping'],
     tone: 2,
     layer: Mid,
-    side: End,
-    narrow: false,
-  },
-  {
-    id: 'madeira',
-    host: 'alltrails.com',
-    daysAgo: 14,
-    tags: ['travel'],
-    tone: 1,
-    layer: Far,
     side: End,
     narrow: false,
   },

@@ -620,17 +620,11 @@
         "kyoto": {
           "title": "Kyoto away from the crowds"
         },
-        "focaccia": {
-          "title": "Crispy no-knead focaccia"
-        },
         "containerQueries": {
           "title": "Container queries in practice"
         },
         "linenShirt": {
           "title": "Linen shirt in sage green"
-        },
-        "madeira": {
-          "title": "Five day hikes on Madeira"
         }
       },
       "tags": {
