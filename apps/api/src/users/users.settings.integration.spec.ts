@@ -5,6 +5,11 @@ import {
   CUSTOM_THEME_CORNERS,
   CUSTOM_THEME_DEFAULT,
   type CustomTheme,
+  type FolderResponse,
+  LIBRARY_SETTINGS_DEFAULT,
+  LIBRARY_SORT,
+  LIBRARY_VIEW,
+  LINK_OPEN_TARGET,
   MOTION_PREFERENCE,
   THEME_PREFERENCE,
   TRASH_RETENTION_DAYS,
@@ -57,6 +62,7 @@ describe('account settings', () => {
       folderColours: true,
       pauseHistory: false,
       ...APPEARANCE_DEFAULTS,
+      ...LIBRARY_SETTINGS_DEFAULT,
     });
   });
 
@@ -73,6 +79,7 @@ describe('account settings', () => {
       folderColours: true,
       pauseHistory: false,
       ...APPEARANCE_DEFAULTS,
+      ...LIBRARY_SETTINGS_DEFAULT,
     });
   });
 
@@ -84,6 +91,7 @@ describe('account settings', () => {
       folderColours: true,
       pauseHistory: false,
       ...APPEARANCE_DEFAULTS,
+      ...LIBRARY_SETTINGS_DEFAULT,
     });
   });
 
@@ -107,6 +115,7 @@ describe('account settings', () => {
       folderColours: false,
       pauseHistory: false,
       ...APPEARANCE_DEFAULTS,
+      ...LIBRARY_SETTINGS_DEFAULT,
     });
     const day = await a.patch(USER_SETTINGS_ENDPOINT).send({ trashRetentionDays: 7 }).expect(200);
     expect(day.body).toEqual({
@@ -114,6 +123,7 @@ describe('account settings', () => {
       folderColours: false,
       pauseHistory: false,
       ...APPEARANCE_DEFAULTS,
+      ...LIBRARY_SETTINGS_DEFAULT,
     });
     expect((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body).toEqual(day.body);
     const other = asUser(t.app, users.intruder);
@@ -122,6 +132,7 @@ describe('account settings', () => {
       folderColours: true,
       pauseHistory: false,
       ...APPEARANCE_DEFAULTS,
+      ...LIBRARY_SETTINGS_DEFAULT,
     });
   });
 
@@ -146,6 +157,7 @@ describe('account settings', () => {
       folderColours: true,
       pauseHistory: false,
       ...APPEARANCE_DEFAULTS,
+      ...LIBRARY_SETTINGS_DEFAULT,
     });
     await b.patch(USER_SETTINGS_ENDPOINT).send({ trashRetentionDays: 90 }).expect(200);
     expect(await stored(users.owner.userId)).toBe(7);
@@ -159,6 +171,7 @@ describe('account settings', () => {
       folderColours: true,
       pauseHistory: false,
       ...APPEARANCE_DEFAULTS,
+      ...LIBRARY_SETTINGS_DEFAULT,
     });
     expect(
       (await demo.patch(USER_SETTINGS_ENDPOINT).send({ trashRetentionDays: 7 }).expect(200)).body,
@@ -167,6 +180,7 @@ describe('account settings', () => {
       folderColours: true,
       pauseHistory: false,
       ...APPEARANCE_DEFAULTS,
+      ...LIBRARY_SETTINGS_DEFAULT,
     });
   });
 
@@ -255,6 +269,7 @@ describe('account settings', () => {
         customTheme: dark,
         motion: MOTION_PREFERENCE.System,
         appearanceSaved: true,
+        ...LIBRARY_SETTINGS_DEFAULT,
       });
       // Choosing another theme keeps the custom one for later.
       const light = await a
@@ -292,6 +307,7 @@ describe('account settings', () => {
         folderColours: true,
         pauseHistory: false,
         ...APPEARANCE_DEFAULTS,
+        ...LIBRARY_SETTINGS_DEFAULT,
       });
     });
 
@@ -311,6 +327,7 @@ describe('account settings', () => {
         folderColours: true,
         pauseHistory: false,
         ...APPEARANCE_DEFAULTS,
+        ...LIBRARY_SETTINGS_DEFAULT,
       });
       await b.patch(USER_SETTINGS_ENDPOINT).send({ theme: THEME_PREFERENCE.Dark }).expect(200);
       const owner = (await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse;
@@ -328,6 +345,154 @@ describe('account settings', () => {
         { customThemeCorners: 'pill' },
         { customThemeBackground: 'black' },
         { customThemeBase: 'dark' },
+      ]) {
+        await expect(t.db.prisma.user.update({ where: { id }, data })).rejects.toThrow();
+      }
+    });
+  });
+
+  describe('library (#284)', () => {
+    const library = async (userId: string) =>
+      t.db.prisma.user.findUniqueOrThrow({ where: { id: userId } });
+
+    const folder = async (agent: ReturnType<typeof asUser>, name: string): Promise<string> =>
+      ((await agent.post('/api/folders').send({ name }).expect(201)).body as FolderResponse).id;
+
+    it('saves every viewing and saving choice and reads it back', async () => {
+      const a = asUser(t.app, users.owner);
+      const id = await folder(a, 'Reading');
+      const change = {
+        defaultView: LIBRARY_VIEW.List,
+        defaultSort: LIBRARY_SORT.Title,
+        openLinksIn: LINK_OPEN_TARGET.SameTab,
+        showFolderCounts: false,
+        newLinksFolderId: id,
+        warnDuplicates: false,
+        fetchPreviews: false,
+        keepQuery: true,
+      };
+      const res = await a.patch(USER_SETTINGS_ENDPOINT).send(change).expect(200);
+      expect(res.body).toEqual({
+        trashRetentionDays: 30,
+        folderColours: true,
+        pauseHistory: false,
+        ...APPEARANCE_DEFAULTS,
+        ...change,
+      });
+      expect((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body).toEqual(res.body);
+      // Library choices are not the appearance.
+      expect((res.body as UserSettingsResponse).appearanceSaved).toBe(false);
+    });
+
+    it.each(Object.values(LIBRARY_SORT))('saves the sort %s', async (defaultSort) => {
+      const a = asUser(t.app, users.owner);
+      const res = await a.patch(USER_SETTINGS_ENDPOINT).send({ defaultSort }).expect(200);
+      expect((res.body as UserSettingsResponse).defaultSort).toBe(defaultSort);
+    });
+
+    it('goes back to Unsorted with null', async () => {
+      const a = asUser(t.app, users.owner);
+      const id = await folder(a, 'Reading');
+      await a.patch(USER_SETTINGS_ENDPOINT).send({ newLinksFolderId: id }).expect(200);
+      const res = await a
+        .patch(USER_SETTINGS_ENDPOINT)
+        .send({ newLinksFolderId: null })
+        .expect(200);
+      expect((res.body as UserSettingsResponse).newLinksFolderId).toBeNull();
+      expect((await library(users.owner.userId)).newLinksFolderId).toBeNull();
+    });
+
+    it('refuses another user’s, a missing or a trashed folder with 404 and saves nothing', async () => {
+      const a = asUser(t.app, users.owner);
+      const b = asUser(t.app, users.intruder);
+      const foreign = await folder(b, 'Theirs');
+      const trashed = await folder(a, 'Old');
+      await a.delete(`/api/folders/${trashed}?mode=move-to-unsorted`).expect(204);
+      for (const id of [foreign, trashed, '0190a000-0000-7000-8000-000000000001']) {
+        await a
+          .patch(USER_SETTINGS_ENDPOINT)
+          .send({ newLinksFolderId: id, keepQuery: true })
+          .expect(404);
+      }
+      const row = await library(users.owner.userId);
+      expect(row.newLinksFolderId).toBeNull();
+      expect(row.keepQuery).toBe(false);
+    });
+
+    it('reads as Unsorted once the folder goes to Trash or is deleted for good', async () => {
+      const a = asUser(t.app, users.owner);
+      const id = await folder(a, 'Reading');
+      await a.patch(USER_SETTINGS_ENDPOINT).send({ newLinksFolderId: id }).expect(200);
+      await a.delete(`/api/folders/${id}?mode=move-to-unsorted`).expect(204);
+      expect(
+        ((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse)
+          .newLinksFolderId,
+      ).toBeNull();
+      await t.db.prisma.folder.deleteMany({ where: { id } });
+      expect(
+        ((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse)
+          .newLinksFolderId,
+      ).toBeNull();
+    });
+
+    it.each([
+      [{ defaultView: 'grid' }],
+      [{ defaultView: null }],
+      [{ defaultSort: 'random' }],
+      [{ defaultSort: 1 }],
+      [{ openLinksIn: '_blank' }],
+      [{ openLinksIn: true }],
+      [{ showFolderCounts: 'false' }],
+      [{ showFolderCounts: null }],
+      [{ warnDuplicates: 0 }],
+      [{ fetchPreviews: 'yes' }],
+      [{ keepQuery: null }],
+      [{ newLinksFolderId: 'unsorted' }],
+      [{ newLinksFolderId: 7 }],
+      [{ newLinksFolderId: '' }],
+      [{ newLinksFolderId: ['0190a000-0000-7000-8000-000000000001'] }],
+      [{ trackingParams: ['ref'] }],
+    ])('rejects %j with 400 and changes nothing', async (body) => {
+      const a = asUser(t.app, users.owner);
+      await a.patch(USER_SETTINGS_ENDPOINT).send(body).expect(400);
+      expect((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body).toEqual({
+        trashRetentionDays: 30,
+        folderColours: true,
+        pauseHistory: false,
+        ...APPEARANCE_DEFAULTS,
+        ...LIBRARY_SETTINGS_DEFAULT,
+      });
+    });
+
+    it('is isolated: one user’s library choices never reach another', async () => {
+      const a = asUser(t.app, users.owner);
+      const b = asUser(t.app, users.intruder);
+      const id = await folder(a, 'Reading');
+      await a
+        .patch(USER_SETTINGS_ENDPOINT)
+        .send({ defaultView: LIBRARY_VIEW.List, newLinksFolderId: id, fetchPreviews: false })
+        .expect(200);
+      const other = (await b.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse;
+      expect(other.defaultView).toBe(LIBRARY_VIEW.Cards);
+      expect(other.newLinksFolderId).toBeNull();
+      expect(other.fetchPreviews).toBe(true);
+      // Nor can B point at A's folder through a hand-written row: it reads as Unsorted.
+      await t.db.prisma.user.update({
+        where: { id: users.intruder.userId },
+        data: { newLinksFolderId: id },
+      });
+      expect(
+        ((await b.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse)
+          .newLinksFolderId,
+      ).toBeNull();
+    });
+
+    it('is enforced by the database CHECKs', async () => {
+      const id = users.owner.userId;
+      for (const data of [
+        { defaultView: 'grid' },
+        { defaultSort: 'random' },
+        { openLinksIn: 'x' },
       ]) {
         await expect(t.db.prisma.user.update({ where: { id }, data })).rejects.toThrow();
       }

@@ -28,6 +28,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { TagsService } from '../tags/tags.service';
 import { LinkImageCaptureService } from './images/link-image-capture.service';
 import { LinkPreviewService } from './link-preview.service';
+import { readLinkSavePrefs, savedUrl } from './link-save-prefs';
 import type { CaptureSources } from './images/models/capture-sources.interface';
 import type { CreateLinkResult } from './models/create-link-result.interface';
 import { LINK_INCLUDE } from './models/link-include.const';
@@ -70,7 +71,7 @@ export class LinksWriteService {
     isDemo = false,
   ): Promise<CreateLinkResult> {
     const startedAt = Date.now();
-    const normalizedUrl = this.normalize(request.url);
+    this.normalize(request.url);
     this.assertTagNames(request.tags);
     const key = request.idempotencyKey;
     if (key !== undefined) {
@@ -78,18 +79,25 @@ export class LinksWriteService {
       const replay = await this.findByKey(this.prisma, userId, key);
       if (replay) return { link: replay, created: false };
     }
+    // Settings › Library (#284): the address without tracking parameters, and no page fetch or
+    // image capture at all when "Fetch titles and previews" is off (the client hints are ignored).
+    const prefs = await readLinkSavePrefs(this.prisma, userId);
+    const url = savedUrl(request.url, prefs);
+    const normalizedUrl = this.normalize(url);
 
     let title = request.title;
     // The client's kind (from its preview or the user) wins; else the page fetched below, else the host.
-    let kind = request.kind ?? deriveLinkKind(request.url);
-    let faviconSourceUrl = request.faviconUrl ?? null;
-    let imageSourceUrl = request.imageUrl ?? null;
-    if (title === undefined) {
+    let kind = request.kind ?? deriveLinkKind(url);
+    let faviconSourceUrl = prefs.fetchPreviews ? (request.faviconUrl ?? null) : null;
+    let imageSourceUrl = prefs.fetchPreviews ? (request.imageUrl ?? null) : null;
+    if (title === undefined && !prefs.fetchPreviews) {
+      title = titleOrUrl('', url);
+    } else if (title === undefined) {
       // Cheap unlocked checks first, so a request that must fail anyway never costs a page fetch
       // (up to 6 s). The locked checks in the transaction stay authoritative.
       await this.precheck(userId, request.folderId, isDemo);
-      const { preview, fetched } = await this.previews.load(request.url);
-      title = titleOrUrl(preview.title, request.url);
+      const { preview, fetched } = await this.previews.load(url);
+      title = titleOrUrl(preview.title, url);
       if (request.kind === undefined) kind = preview.kind;
       if (fetched) {
         faviconSourceUrl ??= preview.faviconUrl;
@@ -117,7 +125,7 @@ export class LinksWriteService {
           data: {
             userId,
             folderId: request.folderId ?? null,
-            url: request.url,
+            url,
             normalizedUrl,
             title: finalTitle,
             titleSortKey: finalTitle.toLowerCase(),
@@ -167,7 +175,12 @@ export class LinksWriteService {
     return row ? { link: toLinkResponse(row), created: true } : result;
   }
 
-  async update(userId: string, id: string, request: UpdateLinkRequest): Promise<LinkResponse> {
+  async update(userId: string, id: string, sent: UpdateLinkRequest): Promise<LinkResponse> {
+    // A new address is stored like a new link's: without tracking parameters unless kept (#284).
+    const request: UpdateLinkRequest =
+      sent.url === undefined
+        ? sent
+        : { ...sent, url: savedUrl(sent.url, await readLinkSavePrefs(this.prisma, userId)) };
     const data = this.updateData(request);
     this.assertTagNames(request.tags);
     const needsLock = typeof request.folderId === 'string' || request.pinnedInFolder === true;

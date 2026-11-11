@@ -49,6 +49,16 @@ model User {
   motion                String    @default("system") @map("motion")
   // Set by the first write of theme, customTheme or motion; NULL = the appearance was never chosen.
   appearanceSavedAt     DateTime? @map("appearance_saved_at") @db.Timestamptz(3)
+  // Settings › Library (#284). CHECKs in the migration keep the three text columns to the contract
+  // allow-lists. newLinksFolderId has no relation on purpose (see the migration): the API checks it.
+  defaultView           String    @default("cards") @map("default_view")
+  defaultSort           String    @default("newest") @map("default_sort")
+  openLinksIn           String    @default("new-tab") @map("open_links_in")
+  showFolderCounts      Boolean   @default(true) @map("show_folder_counts")
+  newLinksFolderId      String?   @map("new_links_folder_id") @db.Uuid
+  warnDuplicates        Boolean   @default(true) @map("warn_duplicates")
+  fetchPreviews         Boolean   @default(true) @map("fetch_previews")
+  keepQuery             Boolean   @default(false) @map("keep_query")
   createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
   sessions              Session[]

@@ -1,8 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  LIBRARY_SORT,
+  LIBRARY_VIEW,
+  LINK_OPEN_TARGET,
   MOTION_PREFERENCE,
   THEME_PREFERENCE,
   TRASH_RETENTION_DAYS,
+  type LibrarySort,
+  type LibraryView,
+  type LinkOpenTarget,
   type MotionPreference,
   type ThemePreference,
   type TrashRetentionDays,
@@ -34,4 +40,33 @@ export class UserSettingsResponseDto implements UserSettingsResponse {
     description: 'False until theme, customTheme or motion is first saved',
   })
   appearanceSaved!: boolean;
+
+  @ApiProperty({ enum: Object.values(LIBRARY_VIEW), example: LIBRARY_VIEW.Cards })
+  defaultView!: LibraryView;
+
+  @ApiProperty({ enum: Object.values(LIBRARY_SORT), example: LIBRARY_SORT.Newest })
+  defaultSort!: LibrarySort;
+
+  @ApiProperty({ enum: Object.values(LINK_OPEN_TARGET), example: LINK_OPEN_TARGET.NewTab })
+  openLinksIn!: LinkOpenTarget;
+
+  @ApiProperty({ example: true })
+  showFolderCounts!: boolean;
+
+  @ApiProperty({
+    type: String,
+    format: 'uuid',
+    nullable: true,
+    description: 'null is Unsorted, also once the chosen folder is gone or in Trash',
+  })
+  newLinksFolderId!: string | null;
+
+  @ApiProperty({ example: true })
+  warnDuplicates!: boolean;
+
+  @ApiProperty({ example: true })
+  fetchPreviews!: boolean;
+
+  @ApiProperty({ example: false })
+  keepQuery!: boolean;
 }

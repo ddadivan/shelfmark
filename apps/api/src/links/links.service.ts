@@ -18,7 +18,9 @@ import {
 import type { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { cursorKey, cursorWhere, decodeCursor, encodeCursor, linkOrderBy } from './link-cursor';
+import { fallbackPreview } from '../preview/extract-preview';
 import { LinkPreviewService } from './link-preview.service';
+import { readLinkSavePrefs, savedUrl } from './link-save-prefs';
 import { buildLinkWhere } from './link-where';
 import { LINK_CURSOR_VERSION } from './models/link-cursor-version.const';
 import { LINK_INCLUDE } from './models/link-include.const';
@@ -35,8 +37,14 @@ export class LinksService {
    * Preview of a URL plus the user's existing link for it (matched by normalized URL, also for the
    * final URL after redirects). The page is fetched without any database work around it.
    */
-  async preview(userId: string, url: string): Promise<LinkPreviewResponse> {
-    const { preview, fetched } = await this.previews.load(url);
+  async preview(userId: string, sentUrl: string): Promise<LinkPreviewResponse> {
+    // Settings › Library (#284): the address as it would be saved; with "Fetch titles and
+    // previews" off the page is not loaded at all, and only the duplicate check runs.
+    const prefs = await readLinkSavePrefs(this.prisma, userId);
+    const url = savedUrl(sentUrl, prefs);
+    const { preview, fetched } = prefs.fetchPreviews
+      ? await this.previews.load(url)
+      : { preview: fallbackPreview(url), fetched: false };
     const normalized = [...new Set([normalizeUrl(url), normalizeUrl(preview.url)])];
     const existing = await this.prisma.link.findFirst({
       where: { userId, deletedAt: null, normalizedUrl: { in: normalized } },

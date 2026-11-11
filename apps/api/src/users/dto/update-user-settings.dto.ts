@@ -1,19 +1,27 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  LIBRARY_SORT,
+  LIBRARY_VIEW,
+  LINK_OPEN_TARGET,
   MOTION_PREFERENCE,
   THEME_PREFERENCE,
   TRASH_RETENTION_DAYS,
+  type LibrarySort,
+  type LibraryView,
+  type LinkOpenTarget,
   type MotionPreference,
   type ThemePreference,
   type TrashRetentionDays,
   type UpdateUserSettingsRequest,
 } from '@shelfmark/contracts';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsIn, IsObject, ValidateIf, ValidateNested } from 'class-validator';
+import { IsBoolean, IsIn, IsObject, IsUUID, ValidateIf, ValidateNested } from 'class-validator';
 import { CustomThemeDto } from './custom-theme.dto';
 
 // Absent is fine, but an explicit null is not (IsOptional would let it through).
 const present = (_: unknown, value: unknown): boolean => value !== undefined;
+// Absent and null are both fine (null is Unsorted); anything else must be a uuid.
+const notNull = (_: unknown, value: unknown): boolean => value !== undefined && value !== null;
 
 export class UpdateUserSettingsDto implements UpdateUserSettingsRequest {
   @ApiPropertyOptional({ enum: TRASH_RETENTION_DAYS, example: 30 })
@@ -51,4 +59,58 @@ export class UpdateUserSettingsDto implements UpdateUserSettingsRequest {
   @ValidateIf(present)
   @IsIn(Object.values(MOTION_PREFERENCE))
   motion?: MotionPreference;
+
+  @ApiPropertyOptional({ enum: Object.values(LIBRARY_VIEW), example: LIBRARY_VIEW.Cards })
+  @ValidateIf(present)
+  @IsIn(Object.values(LIBRARY_VIEW))
+  defaultView?: LibraryView;
+
+  @ApiPropertyOptional({ enum: Object.values(LIBRARY_SORT), example: LIBRARY_SORT.Newest })
+  @ValidateIf(present)
+  @IsIn(Object.values(LIBRARY_SORT))
+  defaultSort?: LibrarySort;
+
+  @ApiPropertyOptional({
+    enum: Object.values(LINK_OPEN_TARGET),
+    example: LINK_OPEN_TARGET.NewTab,
+  })
+  @ValidateIf(present)
+  @IsIn(Object.values(LINK_OPEN_TARGET))
+  openLinksIn?: LinkOpenTarget;
+
+  @ApiPropertyOptional({ example: true, description: 'Link counts in the sidebar' })
+  @ValidateIf(present)
+  @IsBoolean()
+  showFolderCounts?: boolean;
+
+  @ApiPropertyOptional({
+    type: String,
+    format: 'uuid',
+    nullable: true,
+    description: 'One of your live folders, or null for Unsorted (404 for a foreign or gone one)',
+  })
+  @ValidateIf(notNull)
+  @IsUUID()
+  newLinksFolderId?: string | null;
+
+  @ApiPropertyOptional({ example: true, description: 'The add-link duplicate notice' })
+  @ValidateIf(present)
+  @IsBoolean()
+  warnDuplicates?: boolean;
+
+  @ApiPropertyOptional({
+    example: true,
+    description: 'Off: new links keep only their address (no page fetch, no images)',
+  })
+  @ValidateIf(present)
+  @IsBoolean()
+  fetchPreviews?: boolean;
+
+  @ApiPropertyOptional({
+    example: false,
+    description: 'Off: tracking parameters (utm_*, fbclid, gclid, …) are removed on save',
+  })
+  @ValidateIf(present)
+  @IsBoolean()
+  keepQuery?: boolean;
 }
