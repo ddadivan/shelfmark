@@ -1,6 +1,10 @@
+import type { LinkKind } from './link-kind.type';
+
 /** A saved link as returned by the API. */
 export interface LinkResponse {
   id: string;
+  /** Video, article, shopping or other (ADR 0038). */
+  kind: LinkKind;
   /** `null` = "Unsorted". */
   folderId: string | null;
   url: string;
