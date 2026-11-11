@@ -85,8 +85,9 @@
       </ui-menu>
     </div>
   </header>
+  @if (!emptyLibrary()) {
   <app-saved-view-chips class="library__views" [filter]="filter()" />
-  @if (filtered()) {
+  } @if (filtered()) {
   <div class="library__filter" role="group" [attr.aria-label]="'library.filter.label' | transloco">
     @if (searching()) {
     <ui-chip

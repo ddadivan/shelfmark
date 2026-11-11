@@ -284,6 +284,10 @@ export default class LibraryPage {
   protected readonly empty = computed(
     () => this.ownLoaded() && !this.store.loading() && this.ownCount() === 0,
   );
+  /** A library without any link (the new-account state): no saved view chips, nothing to filter. */
+  protected readonly emptyLibrary = computed(
+    () => this.empty() && !this.filtered() && this.scope() === LINKS_SCOPE.All,
+  );
   /** The 2px bar: a refetch and a view switch (the old content stays on screen meanwhile). */
   protected readonly refetching = computed(
     () => this.store.loading() && (this.ownLoaded() || this.stale()),
