@@ -380,6 +380,8 @@ export class BulkLinkActionsService {
         return;
       }
     }
+    // Links that had left the open view come back with the next page load.
+    this.store.refresh();
   }
 
   /**
