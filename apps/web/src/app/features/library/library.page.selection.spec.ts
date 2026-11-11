@@ -140,6 +140,51 @@ describe('LibraryPage selection', () => {
     expect(element.querySelector('.library__selection')).toBeNull();
   });
 
+  it('Esc and Done hand focus back to the last picked card, not to the toolbar above', async () => {
+    const { element, fixture, selection } = await setup();
+    const links = () => [...element.querySelectorAll<HTMLElement>('.ui-card__link')];
+    selection.toggle('id-1', ['id-1', 'id-2', 'id-3', 'id-4']);
+    selection.toggle('id-3', ['id-1', 'id-2', 'id-3', 'id-4']);
+    await stable(fixture);
+    element.querySelector<HTMLElement>('.ui-saved-views__bar')?.focus();
+
+    key({ key: 'Escape' });
+    await stable(fixture);
+    expect(element.querySelector('.library__selection')).toBeNull();
+    expect(document.activeElement).toBe(links()[2]);
+
+    // Done (focus in the selection bar, which goes away): the anchor again.
+    selection.toggle('id-2', ['id-1', 'id-2', 'id-3', 'id-4']);
+    await stable(fixture);
+    const done = [
+      ...element.querySelectorAll<HTMLButtonElement>('.library__selection button'),
+    ].find((button) => button.textContent?.trim() === 'Done');
+    done?.focus();
+    done?.click();
+    await stable(fixture);
+    expect(document.activeElement).toBe(links()[1]);
+  });
+
+  it('Esc keeps focus on a card that has it, and falls back to the first card', async () => {
+    const { element, fixture, selection } = await setup();
+    const links = () => [...element.querySelectorAll<HTMLElement>('.ui-card__link')];
+    selection.toggle('id-2', ['id-1', 'id-2']);
+    await stable(fixture);
+    links()[3]?.focus();
+    key({ key: 'Escape' }, links()[3]);
+    await stable(fixture);
+    expect(document.activeElement).toBe(links()[3]);
+
+    // The last picked link is no longer on screen (another one still is).
+    selection.toggle('id-2', ['id-2']);
+    selection.toggle('gone', ['gone']);
+    await stable(fixture);
+    (document.activeElement as HTMLElement | null)?.blur();
+    key({ key: 'Escape' });
+    await stable(fixture);
+    expect(document.activeElement).toBe(links()[0]);
+  });
+
   it('Space on a focused card toggles it, M asks to move it', async () => {
     const { element, fixture, bulk } = await setup();
     const title = element.querySelectorAll<HTMLElement>('.ui-card__link')[0] as HTMLElement;

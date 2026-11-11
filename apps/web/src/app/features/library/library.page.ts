@@ -118,6 +118,9 @@ import { VIEW_OPTION_KEYS } from './models/view-option-keys.const';
 const SKELETON_COUNT = 8;
 /** Beat between two cards of a paste of many landing in the feed. */
 const LAND_STAGGER_MS = 50;
+/** A link of the feed (card or row) and the control that takes focus in it (its stretched link). */
+const FEED_ITEM_SELECTOR = 'li.library__item[data-link-id]';
+const FEED_ITEM_FOCUS_SELECTOR = '.ui-card__link, .ui-list-item__link';
 
 interface LastShown {
   items: readonly LinkResponse[];
@@ -188,6 +191,7 @@ export default class LibraryPage {
   private readonly transloco = inject(TranslocoService);
   private readonly title = inject(Title);
   private readonly doc = inject(DOCUMENT);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly injector = inject(Injector);
   private readonly cdkDialogs = inject(Dialog);
 
@@ -666,7 +670,7 @@ export default class LibraryPage {
       return false;
     }
     if (event.key === KEYBOARD_KEY.Escape && this.selecting()) {
-      this.clearSelection();
+      this.endSelection();
       return true;
     }
     const selectAll =
@@ -695,12 +699,30 @@ export default class LibraryPage {
     if (checked) {
       this.selectAll();
     } else {
-      this.clearSelection();
+      this.endSelection();
     }
   }
 
   protected clearSelection(): void {
     this.selection.clear();
+  }
+
+  /**
+   * Leaves selection mode (Esc, Done, the header box, the phone's close button). The selection bar
+   * that may hold focus goes away, so focus returns to the feed: it stays on a card or row that
+   * has it, else goes to the link last picked (the selection anchor), else to the first one, and
+   * never falls to the toolbar above the feed.
+   */
+  protected endSelection(): void {
+    const anchor = this.selection.anchor();
+    this.clearSelection();
+    const active = this.doc.activeElement;
+    if (active instanceof HTMLElement && active.closest(FEED_ITEM_SELECTOR)) {
+      return;
+    }
+    const items = [...this.host.querySelectorAll<HTMLElement>(FEED_ITEM_SELECTOR)];
+    const item = items.find((candidate) => candidate.dataset['linkId'] === anchor) ?? items[0];
+    item?.querySelector<HTMLElement>(FEED_ITEM_FOCUS_SELECTOR)?.focus();
   }
 
   /** A bulk bar button: runs the action on the picked links; some clear the selection afterwards. */

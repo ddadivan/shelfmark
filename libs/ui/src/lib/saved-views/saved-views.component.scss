@@ -10,6 +10,13 @@
   flex-wrap: wrap;
   gap: var(--space-2);
   align-items: center;
+
+  // The toolbar is never a tab stop (Aria gives it tabindex -1; Tab and the arrows land on the
+  // chips, which draw the standard ring). A click in a gap can still focus the container, and the
+  // next key would then ring the whole row, so the container itself draws no ring.
+  &:focus {
+    outline: none;
+  }
 }
 
 // Phone: one row that scrolls sideways, the first chip flush with the content edge. The row keeps

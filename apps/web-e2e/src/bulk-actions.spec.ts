@@ -278,6 +278,34 @@ test.describe('select links and bulk actions (mock API)', () => {
       await expect(page.locator('ui-list-item.ui-list-item--checked')).toHaveCount(1);
     });
 
+    for (const view of ['Cards', 'List'] as const) {
+      test(`Esc hands focus back to the last picked ${view === 'Cards' ? 'card' : 'row'}, not the chips row`, async ({
+        page,
+      }) => {
+        await openFeed(page);
+        if (view === 'List') {
+          await switchView(page, 'List');
+        }
+        const items = page.locator(view === 'Cards' ? 'ui-card' : 'ui-list-item');
+        for (const index of [0, 1]) {
+          await items.nth(index).hover();
+          await items.nth(index).locator('ui-checkbox .ui-checkbox__box').click();
+        }
+        await expect(selectedText(page)).toHaveText('2 selected');
+        // Focus somewhere outside the feed, as after a click in a gap of the chips row.
+        await page.locator('.ui-saved-views__bar').focus();
+
+        await page.keyboard.press('Escape');
+
+        await expect(header(page)).toHaveCount(0);
+        const link = items
+          .nth(1)
+          .locator(view === 'Cards' ? '.ui-card__link' : '.ui-list-item__link');
+        await expect(link).toBeFocused();
+        await expect(page.locator('.ui-saved-views__bar')).not.toBeFocused();
+      });
+    }
+
     test('a route change clears the selection', async ({ page }) => {
       await openFeed(page);
       await pick(page, 0);

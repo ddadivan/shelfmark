@@ -165,4 +165,11 @@ describe('SavedViewsComponent', () => {
     // Nothing moves: no transition or animation to switch off under reduced motion.
     expect(css).not.toMatch(/transition|animation/);
   });
+
+  it('never rings the whole toolbar: the container is not a tab stop, the chips draw the ring', () => {
+    const css = compileScss('lib/saved-views/saved-views.component.scss');
+
+    expect(css).toMatch(/\.ui-saved-views__bar:focus\s*\{\s*outline:\s*none/);
+    expect(css).toMatch(/\.ui-saved-views__add\):focus-visible\s*\{[^}]*outline:\s*2px solid/);
+  });
 });
