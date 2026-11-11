@@ -11,7 +11,8 @@ const HOUR_MS = 60 * MINUTE_MS;
  * (`AddLink`, `Preview` #72, `Demo` #67, `Export` #107) are ready here so those issues only
  * decorate their handler. `DeleteAccount` guards `DELETE /api/me` (irreversible, so strict).
  * `AddLinksBatch` (`POST /api/links/batch`, up to 100 links each) is stricter than `AddLink`;
- * `DeleteLinksBatch` guards its Undo (`POST /api/links/batch/delete`).
+ * `DeleteLinksBatch` guards `POST /api/links/batch/delete` (bulk move to Trash, #267, and the
+ * Undo of a paste, #265).
  */
 export const RATE_LIMIT = {
   Default: { limit: 120, ttl: MINUTE_MS },
@@ -19,6 +20,8 @@ export const RATE_LIMIT = {
   AddLink: { limit: 30, ttl: MINUTE_MS },
   AddLinksBatch: { limit: 5, ttl: MINUTE_MS },
   DeleteLinksBatch: { limit: 10, ttl: MINUTE_MS },
+  // Bulk move / tags / favorite (#267): up to 100 links per call, one transaction each.
+  UpdateLinksBatch: { limit: 30, ttl: MINUTE_MS },
   Preview: { limit: 20, ttl: MINUTE_MS },
   Demo: { limit: 5, ttl: HOUR_MS },
   Export: { limit: 5, ttl: MINUTE_MS },

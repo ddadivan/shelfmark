@@ -77,6 +77,7 @@
   <ng-content />
 </div>
 <div class="ui-card__actions"><ng-content select="[slot=actions]" /></div>
+<div class="ui-card__select"><ng-content select="[slot=select]" /></div>
 @if (description(); as text) {
   <span class="ui-card__description" [id]="descriptionId">{{ text }}</span>
 }

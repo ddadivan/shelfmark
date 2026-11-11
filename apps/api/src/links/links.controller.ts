@@ -29,10 +29,13 @@ import { CurrentUser } from '../common/auth/current-user.decorator';
 import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
 import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
 import { CreateLinkDto } from './dto/create-link.dto';
-import { CreateLinksBatchDto } from './dto/create-links-batch.dto';
-import { CreateLinksBatchResponseDto } from './dto/create-links-batch-response.dto';
 import { DeleteLinksBatchDto } from './dto/delete-links-batch.dto';
 import { DeleteLinksBatchResponseDto } from './dto/delete-links-batch-response.dto';
+import { UpdateLinksBatchDto } from './dto/update-links-batch.dto';
+import { UpdateLinksBatchResponseDto } from './dto/update-links-batch-response.dto';
+import { LinksBulkService } from './links-bulk.service';
+import { CreateLinksBatchDto } from './dto/create-links-batch.dto';
+import { CreateLinksBatchResponseDto } from './dto/create-links-batch-response.dto';
 import { LinksBatchService } from './links-batch.service';
 import { LinkImageRecaptureService } from './images/link-image-recapture.service';
 import { LinkImagesService } from './images/link-images.service';
@@ -57,6 +60,7 @@ export class LinksController {
     private readonly writes: LinksWriteService,
     private readonly images: LinkImagesService,
     private readonly recapture: LinkImageRecaptureService,
+    private readonly bulk: LinksBulkService,
     private readonly batches: LinksBatchService,
   ) {}
 
@@ -212,14 +216,36 @@ export class LinksController {
   @ApiOkResponse({ type: DeleteLinksBatchResponseDto })
   @ApiBadRequestResponse({ description: 'Invalid body' })
   @ApiOperation({
-    summary: 'Delete up to 100 of your links at once (Undo of a batch)',
-    description: 'Foreign and missing ids are ignored; the answer counts the deleted links.',
+    summary: 'Move up to 100 of your links to Trash at once (bulk delete)',
+    description:
+      'Soft delete with one shared deleted_at (ADR 0036); restore them through POST /api/trash/restore. Foreign, missing and trashed ids are ignored; the answer counts the links moved to Trash.',
   })
   async removeBatch(
     @CurrentUser() user: AuthUser,
     @Body() body: DeleteLinksBatchDto,
   ): Promise<DeleteLinksBatchResponseDto> {
-    return { deleted: await this.batches.remove(user.id, body.ids) };
+    return { deleted: await this.bulk.remove(user.id, body.ids) };
+  }
+
+  @Post('batch/update')
+  @HttpCode(HttpStatus.OK)
+  @RateLimit(RATE_LIMIT.UpdateLinksBatch)
+  @ApiOkResponse({ type: UpdateLinksBatchResponseDto })
+  @ApiBadRequestResponse({
+    description: 'Invalid body, no change, or a tag both added and removed',
+  })
+  @ApiNotFoundResponse({ description: 'Unknown, foreign or trashed folder' })
+  @ApiConflictResponse({ description: 'A link would have more than 20 tags, or the tag limit' })
+  @ApiOperation({
+    summary: 'Move, tag, untag or favorite up to 100 of your links at once (bulk actions)',
+    description:
+      'One transaction for all links. Foreign, missing and trashed ids are ignored; the answer lists the changed links.',
+  })
+  updateBatch(
+    @CurrentUser() user: AuthUser,
+    @Body() body: UpdateLinksBatchDto,
+  ): Promise<UpdateLinksBatchResponseDto> {
+    return this.bulk.update(user.id, body);
   }
 
   @Post()

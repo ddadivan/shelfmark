@@ -130,7 +130,11 @@ export class LinkActionsService {
       MoveLinkDialogComponent,
       {
         size: DIALOG_SIZE.Sm,
-        data: { link, submit: (folderId) => void this.moveTo(link, folderId) },
+        data: {
+          heading: this.t('links.move.title', { title: link.title }),
+          folderId: link.folderId,
+          submit: (folderId) => void this.moveTo(link, folderId),
+        },
       },
     ).result;
   }

@@ -21,7 +21,11 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { combineLatest, map, switchMap } from 'rxjs';
 import {
   BreadcrumbsComponent,
+  BULK_BAR_LAYOUT,
+  BulkBarComponent,
   ButtonComponent,
+  CheckboxComponent,
+  KEYBOARD_KEY,
   ChipComponent,
   EmptyStateComponent,
   ICON_SIZE,
@@ -37,6 +41,7 @@ import {
   SKELETON_SHAPE,
   SkeletonComponent,
   type BreadcrumbClick,
+  type BulkBarAction,
   type BreadcrumbItem,
   type SegmentedOption,
 } from '@shelfmark/ui';
@@ -67,6 +72,13 @@ import { InViewDirective } from '../links/in-view/in-view.directive';
 import { parsePastedLinks } from '../links/paste-many/parse-pasted-links';
 import { isEditableTarget } from '../shortcuts/is-editable-target';
 import { pinnedFirst } from '../links/pinned-first';
+import { BulkLinkActionsService } from '../links/bulk/bulk-link-actions.service';
+import { BULK_ACTION } from '../links/bulk/models/bulk-action.const';
+import { isTypingTarget } from '../links/selection/is-typing-target';
+import { isLetter } from '../links/selection/link-select-keys';
+import { LINK_SELECT_SHORTCUT } from '../links/selection/models/link-select-shortcut.const';
+import type { LinkSelectToggle } from '../links/models/link-select-toggle.interface';
+import { LinkSelectionStore } from '../../stores/link-selection.store';
 import { LinkActionsService } from '../links/link-actions.service';
 import { LinkDragService } from '../links/drag/link-drag.service';
 import { HowItWorksService } from '../how-it-works/how-it-works.service';
@@ -115,7 +127,9 @@ interface LastShown {
     CdkDropList,
     TranslocoPipe,
     BreadcrumbsComponent,
+    BulkBarComponent,
     ButtonComponent,
+    CheckboxComponent,
     ChipComponent,
     EmptyStateComponent,
     FolderTileComponent,
@@ -149,6 +163,8 @@ export default class LibraryPage {
   protected readonly PIN_KIND = PIN_KIND;
   protected readonly howItWorks = inject(HowItWorksService);
   protected readonly phone = inject(ViewportService).phone;
+  protected readonly selection = inject(LinkSelectionStore);
+  private readonly bulk = inject(BulkLinkActionsService);
   protected readonly drag = inject(LinkDragService);
   /** Touch holds 150 ms before a drag starts (DragDrop spec), so a swipe still scrolls. */
   protected readonly DRAG_START_DELAY = { touch: 150, mouse: 0 };
@@ -396,6 +412,57 @@ export default class LibraryPage {
       ),
     ),
   );
+  /** Ids of the links on screen, in order: the range and "select all" of the selection. */
+  protected readonly order = computed(() => this.shownLinks().map((link) => link.id));
+  /** The picked links that are on screen (a link that left the view drops out by itself). */
+  protected readonly selectedLinks = computed(() => {
+    const ids = this.selection.idSet();
+    return this.shownLinks().filter((link) => ids.has(link.id));
+  });
+  protected readonly selectedCount = computed(() => this.selectedLinks().length);
+  /** A selection is in progress: checkboxes everywhere, the header and the bulk bar show. */
+  protected readonly selecting = computed(() => this.selectedCount() > 0);
+  protected readonly allSelected = computed(
+    () => this.selecting() && this.selectedCount() === this.shownCount(),
+  );
+  private readonly i18n = toSignal(this.transloco.selectTranslation());
+  /** The bulk bar: desktop Move, Tags, Favorite, Open all, Copy links, Delete; the phone shares instead of opening. */
+  protected readonly barActions = computed<BulkBarAction[]>(() => {
+    this.i18n();
+    const t = (key: string): string => this.transloco.translate(key);
+    const favorite = this.selecting() && this.selectedLinks().every((link) => link.isFavorite);
+    const actions: BulkBarAction[] = [
+      { id: BULK_ACTION.Move, label: t('bulk.bar.move'), icon: 'folder-move' },
+      { id: BULK_ACTION.Tags, label: t('bulk.bar.tags'), icon: 'tag' },
+      {
+        id: BULK_ACTION.Favorite,
+        label: t('bulk.bar.favorite'),
+        icon: favorite ? 'star-filled' : 'star',
+        pressed: favorite,
+      },
+    ];
+    if (this.phone()) {
+      actions.push(
+        this.bulk.canShare()
+          ? { id: BULK_ACTION.Share, label: t('bulk.bar.share'), icon: 'share' }
+          : { id: BULK_ACTION.Copy, label: t('bulk.bar.copy'), icon: 'copy' },
+      );
+    } else {
+      actions.push(
+        { id: BULK_ACTION.OpenAll, label: t('bulk.bar.openAll'), icon: 'external' },
+        { id: BULK_ACTION.Copy, label: t('bulk.bar.copy'), icon: 'copy' },
+      );
+    }
+    actions.push({
+      id: BULK_ACTION.Delete,
+      label: t('bulk.bar.delete'),
+      icon: 'trash',
+      danger: true,
+    });
+    return actions;
+  });
+  protected readonly BULK_BAR_LAYOUT = BULK_BAR_LAYOUT;
+
   /** The scroll area of the feed (the page itself scrolls on a phone). */
   private readonly scroller = viewChild<ElementRef<HTMLElement>>('scroller');
 
@@ -449,7 +516,24 @@ export default class LibraryPage {
         this.title.setTitle(text);
       }
     });
-    inject(DestroyRef).onDestroy(() => this.title.setTitle(this.appName));
+    // A new view, filter, sort or route starts without a selection; links that left the view
+    // (deleted, moved out) leave the selection too.
+    effect(() => {
+      this.filter();
+      untracked(() => this.selection.clear());
+    });
+    effect(() => {
+      const order = this.order();
+      untracked(() => {
+        if (!this.stale()) {
+          this.selection.keep(order);
+        }
+      });
+    });
+    inject(DestroyRef).onDestroy(() => {
+      this.title.setTitle(this.appName);
+      this.selection.clear();
+    });
     // The sidebar loads the folders too (the phone has none yet); the call is shared.
     void this.folders.load();
     this.store.setFilter(this.filter);
@@ -487,11 +571,91 @@ export default class LibraryPage {
     this.drag.move(event.pointerPosition.x, event.pointerPosition.y);
   }
 
-  /** Page keys with nothing focused scroll the feed area (the page itself does not scroll). */
+  /**
+   * Page keys: Esc clears the selection, Cmd/Ctrl+A selects every link on screen (not in a field,
+   * dialog or menu); with nothing focused the paging keys scroll the feed area.
+   */
   protected onKeydown(event: KeyboardEvent): void {
+    if (this.selectionKey(event)) {
+      return;
+    }
     const area = this.scroller()?.nativeElement;
     if (area) {
       scrollFeedForKey(area, event);
+    }
+  }
+
+  private selectionKey(event: KeyboardEvent): boolean {
+    if (event.defaultPrevented || event.isComposing || isTypingTarget(event.target)) {
+      return false;
+    }
+    if (event.key === KEYBOARD_KEY.Escape && this.selecting()) {
+      this.clearSelection();
+      return true;
+    }
+    const selectAll =
+      (event.metaKey || event.ctrlKey) &&
+      !event.altKey &&
+      !event.shiftKey &&
+      isLetter(event, LINK_SELECT_SHORTCUT.SelectAllKey, LINK_SELECT_SHORTCUT.SelectAllCode);
+    if (selectAll && this.showLinks() && !this.stale() && this.shownCount() > 0) {
+      event.preventDefault();
+      this.selectAll();
+      return true;
+    }
+    return false;
+  }
+
+  /** A card or row asked to toggle (checkbox, click while selecting, Space, long press). */
+  protected toggleSelected(link: LinkResponse, toggle: LinkSelectToggle): void {
+    this.selection.toggle(link.id, this.order(), toggle.range);
+  }
+
+  protected selectAll(): void {
+    this.selection.selectAll(this.order());
+  }
+
+  protected toggleAll(checked: boolean): void {
+    if (checked) {
+      this.selectAll();
+    } else {
+      this.clearSelection();
+    }
+  }
+
+  protected clearSelection(): void {
+    this.selection.clear();
+  }
+
+  /** A bulk bar button: runs the action on the picked links; some clear the selection afterwards. */
+  protected async runBulk(id: string): Promise<void> {
+    const links = this.selectedLinks();
+    let clear = false;
+    switch (id) {
+      case BULK_ACTION.Move:
+        clear = await this.bulk.move(links);
+        break;
+      case BULK_ACTION.Tags:
+        clear = await this.bulk.editTags(links);
+        break;
+      case BULK_ACTION.Favorite:
+        clear = await this.bulk.toggleFavorite(links);
+        break;
+      case BULK_ACTION.OpenAll:
+        clear = await this.bulk.openAll(links);
+        break;
+      case BULK_ACTION.Copy:
+        clear = await this.bulk.copy(links);
+        break;
+      case BULK_ACTION.Share:
+        clear = await this.bulk.share(links);
+        break;
+      case BULK_ACTION.Delete:
+        clear = await this.bulk.delete(links);
+        break;
+    }
+    if (clear) {
+      this.clearSelection();
     }
   }
 

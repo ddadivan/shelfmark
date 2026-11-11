@@ -1,0 +1,44 @@
+<form [formRoot]="form">
+  <ui-dialog [title]="data.heading" [closeLabel]="'bulk.tags.close' | transloco">
+    <div class="bulk-tags__fields">
+      <ui-tag-input
+        [label]="'bulk.tags.add' | transloco"
+        [hint]="'bulk.tags.addHint' | transloco"
+        [placeholder]="'links.add.tags.placeholder' | transloco"
+        [suggestions]="suggestions()"
+        [maxTags]="LINK_LIMIT.TagsMax"
+        [maxTagsLabel]="'links.add.tags.max' | transloco: { max: LINK_LIMIT.TagsMax }"
+        [createLabel]="'links.add.tags.create' | transloco"
+        [removeLabel]="'links.add.tags.remove' | transloco"
+        [addedLabel]="'links.add.tags.added' | transloco"
+        [removedLabel]="'links.add.tags.removed' | transloco"
+        [duplicateLabel]="'links.add.tags.duplicate' | transloco"
+        [listLabel]="'links.add.tags.list' | transloco"
+        [formField]="form.add"
+      />
+      <ui-tag-input
+        [label]="'bulk.tags.remove' | transloco"
+        [hint]="'bulk.tags.removeHint' | transloco"
+        [placeholder]="'bulk.tags.removePlaceholder' | transloco"
+        [suggestions]="present()"
+        [maxTags]="LINK_LIMIT.TagsMax"
+        [maxTagsLabel]="'links.add.tags.max' | transloco: { max: LINK_LIMIT.TagsMax }"
+        [removeLabel]="'links.add.tags.remove' | transloco"
+        [addedLabel]="'links.add.tags.added' | transloco"
+        [removedLabel]="'links.add.tags.removed' | transloco"
+        [duplicateLabel]="'links.add.tags.duplicate' | transloco"
+        [listLabel]="'links.add.tags.list' | transloco"
+        [formField]="form.remove"
+      />
+    </div>
+
+    <ui-button slot="footer" (click)="cancel()">{{ 'bulk.tags.cancel' | transloco }}</ui-button>
+    <ui-button
+      slot="footer"
+      [type]="BUTTON_TYPE.Submit"
+      [variant]="BUTTON_VARIANT.Primary"
+      [disabled]="empty()"
+      >{{ 'bulk.tags.apply' | transloco }}</ui-button
+    >
+  </ui-dialog>
+</form>

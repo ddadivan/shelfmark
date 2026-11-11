@@ -100,12 +100,6 @@ export class LinksBatchService {
     }
   }
 
-  /** Deletes the user's links among `ids` (Undo of a batch); foreign and missing ids count as nothing. */
-  async remove(userId: string, ids: readonly string[]): Promise<number> {
-    const result = await this.prisma.link.deleteMany({ where: { userId, id: { in: [...ids] } } });
-    return result.count;
-  }
-
   /**
    * Splits the items into those to save and those to skip: a normalized URL over the column limit,
    * or the same normalized URL as an earlier item of the batch.

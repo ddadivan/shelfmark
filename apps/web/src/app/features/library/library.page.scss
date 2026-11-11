@@ -280,6 +280,94 @@
   display: block;
 }
 
+// Selection header (Bulk.dc.html): "3 selected", "Select all 12", the hints and Done. It lies over
+// the room of the breadcrumb trail (phone: over the title), so starting a selection never moves
+// the feed under the pointer.
+.library__selection {
+  position: absolute;
+  inset-block-start: calc(var(--space-2) - var(--space-6));
+  inset-inline: 0;
+  z-index: 4;
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  min-height: rem(48px);
+  padding-inline: var(--space-4) var(--space-2);
+  background: var(--surface);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-card);
+
+  @include tablet-up {
+    inset-block-start: calc(var(--space-1) * -1);
+  }
+}
+
+.library__selection--phone {
+  gap: var(--space-1);
+  padding-inline: var(--space-1) var(--space-2);
+}
+
+.library__selected {
+  @include type(label);
+
+  flex: 1 1 auto;
+  margin: 0;
+  font-weight: 600;
+  white-space: nowrap;
+
+  .library__selection:not(.library__selection--phone) & {
+    flex: none;
+  }
+}
+
+.library__selection-spacer {
+  flex: 1;
+}
+
+.library__hint {
+  @include type(caption);
+
+  color: var(--text-muted);
+  white-space: nowrap;
+
+  // Touch has no Shift or Esc; the hints would only confuse.
+  @media (hover: none) {
+    display: none;
+  }
+
+  @include tablet {
+    display: none;
+  }
+}
+
+.library__kbd {
+  @include type(caption);
+
+  display: inline-block;
+  padding: 0 var(--space-1);
+  font-family: inherit;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+// The bulk bar floats at the bottom of the feed (glass); on a phone above the floating tab bar.
+.library__bulk {
+  position: sticky;
+  inset-block-end: var(--space-4);
+  z-index: 3;
+  align-self: center;
+  max-width: 100%;
+  margin-block-start: var(--space-4);
+
+  @include phone {
+    inset-block-end: calc(#{rem(20px + 68px + 12px)} + env(safe-area-inset-bottom, 0rem));
+    align-self: stretch;
+  }
+}
+
 // The slot a dragged link leaves behind (DragDrop spec): a dashed outline with the link's name.
 .library__drag-slot {
   @include type(caption);

@@ -14,6 +14,8 @@ import type {
   RecentLinksQuery,
   RecentLinksResponse,
   UpdateLinkRequest,
+  UpdateLinksBatchRequest,
+  UpdateLinksBatchResponse,
 } from '@shelfmark/contracts';
 
 /**
@@ -51,6 +53,8 @@ export interface LinksApi {
    * links in request order (created or replayed by key) and the skipped items.
    */
   createBatch(request: CreateLinksBatchRequest): Observable<CreateLinksBatchResponse>;
-  /** `POST /api/links/batch/delete`: deletes several of the user's links (Undo of a batch). */
+  /** `POST /api/links/batch/delete`: moves several of the user's links to Trash (bulk delete). */
   removeBatch(ids: readonly string[]): Observable<DeleteLinksBatchResponse>;
+  /** `POST /api/links/batch/update`: one change (move, tags, favorite) for several links. */
+  updateBatch(request: UpdateLinksBatchRequest): Observable<UpdateLinksBatchResponse>;
 }
