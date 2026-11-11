@@ -680,6 +680,7 @@
         "addLink": "Aggiungi link qui",
         "rename": "Rinomina",
         "move": "Sposta in…",
+        "share": "Condividi…",
         "delete": "Elimina cartella…",
         "pin": "Fissa nella barra laterale",
         "unpin": "Togli dalla barra laterale",
@@ -1958,6 +1959,84 @@
       "length": "1 minuto",
       "hide": "Nascondi"
     }
+  },
+  "sharing": {
+    "dialog": {
+      "title": "Condividi “{{name}}”",
+      "close": "Chiudi",
+      "done": "Fatto",
+      "count": {
+        "one": "{{count}} link, sottocartelle incluse",
+        "many": "{{count}} link, sottocartelle incluse",
+        "other": "{{count}} link, sottocartelle incluse"
+      },
+      "loading": "Caricamento delle impostazioni di condivisione…",
+      "loadFailed": "Impossibile caricare le impostazioni di condivisione.",
+      "retry": "Riprova",
+      "public": "Link pubblico",
+      "publicHint": "Chiunque abbia il link può vederlo. Nessun account richiesto.",
+      "linkLabel": "Indirizzo del link pubblico",
+      "copy": "Copia link",
+      "copied": "Link copiato",
+      "copyFallback": "Qui non è consentito copiare. Il link è selezionato: premi Ctrl+C o ⌘C per copiarlo.",
+      "settings": "Impostazioni del link",
+      "notes": "Mostra le mie note",
+      "notesHint": "Gli ospiti vedono perché hai salvato ogni link",
+      "reset": "Reimposta link",
+      "resetHint": "Il vecchio link smette subito di funzionare",
+      "resetAction": "Reimposta",
+      "privateNotes": "Le note restano private, a meno che non le attivi.",
+      "limit": "Puoi condividere fino a {{max}} cartelle. Disattiva prima un altro link pubblico.",
+      "demo": "Gli account demo non possono condividere cartelle. Accedi per condividere le tue.",
+      "saveFailed": "Impossibile salvare la modifica. Riprova."
+    },
+    "reset": {
+      "title": "Reimpostare il link pubblico?",
+      "message": "Il vecchio link smette subito di funzionare. Chi deve ancora vedere la cartella avrà bisogno del nuovo link.",
+      "confirm": "Reimposta link",
+      "cancel": "Annulla",
+      "done": "Link reimpostato",
+      "doneDetail": "Il vecchio link non funziona più"
+    }
+  },
+  "publicCollection": {
+    "home": "Home di Shelfmark",
+    "signIn": "Accedi",
+    "backToShelf": "Torna al mio scaffale",
+    "sharedBy": "Condiviso da {{name}}",
+    "sharedAnonymous": "Condiviso su Shelfmark",
+    "count": {
+      "one": "{{count}} link",
+      "many": "{{count}} link",
+      "other": "{{count}} link"
+    },
+    "updated": "Aggiornato {{time}}",
+    "copy": "Copia link",
+    "copied": "Link copiato",
+    "copyFailed": "Impossibile copiare il link",
+    "copyFailedDetail": "Copialo dalla barra degli indirizzi",
+    "filterLabel": "Sottocartelle",
+    "all": "Tutte",
+    "loading": "Caricamento della raccolta…",
+    "more": "Mostra altro",
+    "capped": "Questa pagina mostra i {{max}} link più recenti.",
+    "empty": {
+      "title": "Ancora nessun link qui",
+      "text": "Il proprietario non ha ancora salvato niente in questa cartella."
+    },
+    "notFound": {
+      "title": "Questa raccolta non è disponibile",
+      "text": "Il link potrebbe essere sbagliato, oppure il proprietario lo ha disattivato o reimpostato.",
+      "action": "Vai a Shelfmark"
+    },
+    "failed": "Impossibile caricare la raccolta.",
+    "retry": "Riprova",
+    "cta": {
+      "title": "Tieni i tuoi link così",
+      "text": "Shelfmark raccoglie video, articoli, cose da comprare e corsi su un unico scaffale tranquillo.",
+      "action": "Inizia il tuo scaffale"
+    },
+    "madeWith": "Creato con Shelfmark"
   },
   "bulk": {
     "bar": {

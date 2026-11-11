@@ -680,6 +680,7 @@
         "addLink": "Ajouter un lien ici",
         "rename": "Renommer",
         "move": "Déplacer vers…",
+        "share": "Partager…",
         "delete": "Supprimer le dossier…",
         "pin": "Épingler dans la barre latérale",
         "unpin": "Désépingler de la barre latérale",
@@ -1958,6 +1959,84 @@
       "length": "1 minute",
       "hide": "Masquer"
     }
+  },
+  "sharing": {
+    "dialog": {
+      "title": "Partager « {{name}} »",
+      "close": "Fermer",
+      "done": "Terminé",
+      "count": {
+        "one": "{{count}} lien, sous-dossiers compris",
+        "many": "{{count}} liens, sous-dossiers compris",
+        "other": "{{count}} liens, sous-dossiers compris"
+      },
+      "loading": "Chargement des paramètres de partage…",
+      "loadFailed": "Impossible de charger les paramètres de partage.",
+      "retry": "Réessayer",
+      "public": "Lien public",
+      "publicHint": "Toute personne disposant du lien peut le consulter. Aucun compte requis.",
+      "linkLabel": "Adresse du lien public",
+      "copy": "Copier le lien",
+      "copied": "Lien copié",
+      "copyFallback": "La copie n’est pas autorisée ici. Le lien est sélectionné : appuyez sur Ctrl+C ou ⌘C pour le copier.",
+      "settings": "Paramètres du lien",
+      "notes": "Afficher mes notes",
+      "notesHint": "Les invités voient pourquoi vous avez enregistré chaque lien",
+      "reset": "Réinitialiser le lien",
+      "resetHint": "L’ancien lien cesse aussitôt de fonctionner",
+      "resetAction": "Réinitialiser",
+      "privateNotes": "Les notes restent privées, sauf si vous les activez.",
+      "limit": "Vous pouvez partager jusqu’à {{max}} dossiers. Désactivez d’abord un autre lien public.",
+      "demo": "Les comptes de démo ne peuvent pas partager de dossiers. Connectez-vous pour partager les vôtres.",
+      "saveFailed": "Impossible d’enregistrer la modification. Réessayez."
+    },
+    "reset": {
+      "title": "Réinitialiser le lien public ?",
+      "message": "L’ancien lien cesse aussitôt de fonctionner. Toute personne qui doit encore voir le dossier aura besoin du nouveau lien.",
+      "confirm": "Réinitialiser le lien",
+      "cancel": "Annuler",
+      "done": "Lien réinitialisé",
+      "doneDetail": "L’ancien lien ne fonctionne plus"
+    }
+  },
+  "publicCollection": {
+    "home": "Accueil Shelfmark",
+    "signIn": "Se connecter",
+    "backToShelf": "Retour à mon étagère",
+    "sharedBy": "Partagé par {{name}}",
+    "sharedAnonymous": "Partagé sur Shelfmark",
+    "count": {
+      "one": "{{count}} lien",
+      "many": "{{count}} liens",
+      "other": "{{count}} liens"
+    },
+    "updated": "Mis à jour {{time}}",
+    "copy": "Copier le lien",
+    "copied": "Lien copié",
+    "copyFailed": "Impossible de copier le lien",
+    "copyFailedDetail": "Copiez-le depuis la barre d’adresse",
+    "filterLabel": "Sous-dossiers",
+    "all": "Tous",
+    "loading": "Chargement de la collection…",
+    "more": "Afficher plus",
+    "capped": "Cette page affiche les {{max}} liens les plus récents.",
+    "empty": {
+      "title": "Aucun lien pour l’instant",
+      "text": "Le propriétaire n’a encore rien enregistré dans ce dossier."
+    },
+    "notFound": {
+      "title": "Cette collection n’est pas disponible",
+      "text": "Le lien est peut-être mal saisi, ou le propriétaire l’a désactivé ou réinitialisé.",
+      "action": "Aller sur Shelfmark"
+    },
+    "failed": "Impossible de charger la collection.",
+    "retry": "Réessayer",
+    "cta": {
+      "title": "Rangez vos propres liens comme ça",
+      "text": "Shelfmark range vidéos, articles, achats à faire et cours sur une seule étagère, au calme.",
+      "action": "Créer votre étagère"
+    },
+    "madeWith": "Fait avec Shelfmark"
   },
   "bulk": {
     "bar": {

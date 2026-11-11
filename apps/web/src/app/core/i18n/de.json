@@ -670,6 +670,7 @@
         "addLink": "Link hier hinzufügen",
         "rename": "Umbenennen",
         "move": "Verschieben nach…",
+        "share": "Teilen…",
         "delete": "Ordner löschen…",
         "pin": "An Seitenleiste anheften",
         "unpin": "Von Seitenleiste lösen",
@@ -1922,6 +1923,82 @@
       "length": "1 Minute",
       "hide": "Ausblenden"
     }
+  },
+  "sharing": {
+    "dialog": {
+      "title": "„{{name}}“ teilen",
+      "close": "Schließen",
+      "done": "Fertig",
+      "count": {
+        "one": "{{count}} Link, inklusive Unterordner",
+        "other": "{{count}} Links, inklusive Unterordner"
+      },
+      "loading": "Freigabe-Einstellungen werden geladen…",
+      "loadFailed": "Die Freigabe-Einstellungen konnten nicht geladen werden.",
+      "retry": "Erneut versuchen",
+      "public": "Öffentlicher Link",
+      "publicHint": "Alle mit dem Link können ihn ansehen. Kein Konto nötig.",
+      "linkLabel": "Adresse des öffentlichen Links",
+      "copy": "Link kopieren",
+      "copied": "Link kopiert",
+      "copyFallback": "Kopieren ist hier nicht erlaubt. Der Link ist markiert: Drück Strg+C oder ⌘C, um ihn zu kopieren.",
+      "settings": "Link-Einstellungen",
+      "notes": "Meine Notizen zeigen",
+      "notesHint": "Gäste sehen, warum du jeden Link gespeichert hast",
+      "reset": "Link zurücksetzen",
+      "resetHint": "Der alte Link funktioniert sofort nicht mehr",
+      "resetAction": "Zurücksetzen",
+      "privateNotes": "Notizen bleiben privat, solange du sie nicht einschaltest.",
+      "limit": "Du kannst bis zu {{max}} Ordner teilen. Schalte zuerst einen anderen öffentlichen Link aus.",
+      "demo": "Demo-Konten können keine Ordner teilen. Melde dich an, um deine zu teilen.",
+      "saveFailed": "Die Änderung konnte nicht gespeichert werden. Versuch es noch einmal."
+    },
+    "reset": {
+      "title": "Öffentlichen Link zurücksetzen?",
+      "message": "Der alte Link funktioniert sofort nicht mehr. Wer den Ordner weiter sehen soll, braucht den neuen Link.",
+      "confirm": "Link zurücksetzen",
+      "cancel": "Abbrechen",
+      "done": "Link zurückgesetzt",
+      "doneDetail": "Der alte Link funktioniert nicht mehr"
+    }
+  },
+  "publicCollection": {
+    "home": "Shelfmark-Startseite",
+    "signIn": "Anmelden",
+    "backToShelf": "Zurück zu meinem Regal",
+    "sharedBy": "Geteilt von {{name}}",
+    "sharedAnonymous": "Geteilt auf Shelfmark",
+    "count": {
+      "one": "{{count}} Link",
+      "other": "{{count}} Links"
+    },
+    "updated": "Aktualisiert {{time}}",
+    "copy": "Link kopieren",
+    "copied": "Link kopiert",
+    "copyFailed": "Link konnte nicht kopiert werden",
+    "copyFailedDetail": "Kopier ihn aus der Adressleiste",
+    "filterLabel": "Unterordner",
+    "all": "Alle",
+    "loading": "Sammlung wird geladen…",
+    "more": "Mehr anzeigen",
+    "capped": "Diese Seite zeigt die neuesten {{max}} Links.",
+    "empty": {
+      "title": "Noch keine Links hier",
+      "text": "In diesem Ordner wurde noch nichts gespeichert."
+    },
+    "notFound": {
+      "title": "Diese Sammlung ist nicht verfügbar",
+      "text": "Vielleicht ist der Link falsch geschrieben, oder er wurde ausgeschaltet oder zurückgesetzt.",
+      "action": "Zu Shelfmark"
+    },
+    "failed": "Die Sammlung konnte nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "cta": {
+      "title": "Bewahre deine eigenen Links so auf",
+      "text": "Shelfmark sammelt Videos, Artikel, Dinge zum Kaufen und Kurse in einem ruhigen Regal.",
+      "action": "Dein Regal starten"
+    },
+    "madeWith": "Gemacht mit Shelfmark"
   },
   "bulk": {
     "bar": {

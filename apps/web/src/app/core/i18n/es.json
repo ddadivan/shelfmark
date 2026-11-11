@@ -680,6 +680,7 @@
         "addLink": "Añadir enlace aquí",
         "rename": "Cambiar nombre",
         "move": "Mover a…",
+        "share": "Compartir…",
         "delete": "Eliminar carpeta…",
         "pin": "Fijar en la barra lateral",
         "unpin": "Quitar de la barra lateral",
@@ -1958,6 +1959,84 @@
       "length": "1 minuto",
       "hide": "Ocultar"
     }
+  },
+  "sharing": {
+    "dialog": {
+      "title": "Compartir «{{name}}»",
+      "close": "Cerrar",
+      "done": "Listo",
+      "count": {
+        "one": "{{count}} enlace, subcarpetas incluidas",
+        "many": "{{count}} enlaces, subcarpetas incluidas",
+        "other": "{{count}} enlaces, subcarpetas incluidas"
+      },
+      "loading": "Cargando los ajustes para compartir…",
+      "loadFailed": "No se pudieron cargar los ajustes para compartir.",
+      "retry": "Reintentar",
+      "public": "Enlace público",
+      "publicHint": "Cualquiera con el enlace puede verlo. No hace falta cuenta.",
+      "linkLabel": "Dirección del enlace público",
+      "copy": "Copiar enlace",
+      "copied": "Enlace copiado",
+      "copyFallback": "Aquí no se permite copiar. El enlace está seleccionado: pulsa Ctrl+C o ⌘C para copiarlo.",
+      "settings": "Ajustes del enlace",
+      "notes": "Mostrar mis notas",
+      "notesHint": "Los invitados ven por qué guardaste cada enlace",
+      "reset": "Restablecer enlace",
+      "resetHint": "El enlace anterior deja de funcionar al instante",
+      "resetAction": "Restablecer",
+      "privateNotes": "Las notas siguen siendo privadas salvo que las actives.",
+      "limit": "Puedes compartir hasta {{max}} carpetas. Desactiva antes otro enlace público.",
+      "demo": "Las cuentas demo no pueden compartir carpetas. Inicia sesión para compartir las tuyas.",
+      "saveFailed": "No se pudo guardar el cambio. Inténtalo de nuevo."
+    },
+    "reset": {
+      "title": "¿Restablecer el enlace público?",
+      "message": "El enlace anterior deja de funcionar al instante. Quien deba seguir viendo la carpeta necesitará el nuevo enlace.",
+      "confirm": "Restablecer enlace",
+      "cancel": "Cancelar",
+      "done": "Enlace restablecido",
+      "doneDetail": "El enlace anterior ya no funciona"
+    }
+  },
+  "publicCollection": {
+    "home": "Inicio de Shelfmark",
+    "signIn": "Iniciar sesión",
+    "backToShelf": "Volver a mi estantería",
+    "sharedBy": "Compartido por {{name}}",
+    "sharedAnonymous": "Compartido en Shelfmark",
+    "count": {
+      "one": "{{count}} enlace",
+      "many": "{{count}} enlaces",
+      "other": "{{count}} enlaces"
+    },
+    "updated": "Actualizado {{time}}",
+    "copy": "Copiar enlace",
+    "copied": "Enlace copiado",
+    "copyFailed": "No se pudo copiar el enlace",
+    "copyFailedDetail": "Cópialo desde la barra de direcciones",
+    "filterLabel": "Subcarpetas",
+    "all": "Todas",
+    "loading": "Cargando la colección…",
+    "more": "Mostrar más",
+    "capped": "Esta página muestra los {{max}} enlaces más recientes.",
+    "empty": {
+      "title": "Aún no hay enlaces",
+      "text": "El propietario no ha guardado nada en esta carpeta."
+    },
+    "notFound": {
+      "title": "Esta colección no está disponible",
+      "text": "Puede que el enlace esté mal escrito o que el propietario lo haya desactivado o restablecido.",
+      "action": "Ir a Shelfmark"
+    },
+    "failed": "No se pudo cargar la colección.",
+    "retry": "Reintentar",
+    "cta": {
+      "title": "Guarda tus propios enlaces así",
+      "text": "Shelfmark guarda vídeos, artículos, cosas que comprar y cursos en una estantería tranquila.",
+      "action": "Empieza tu estantería"
+    },
+    "madeWith": "Hecho con Shelfmark"
   },
   "bulk": {
     "bar": {

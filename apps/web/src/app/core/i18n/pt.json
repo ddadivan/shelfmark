@@ -680,6 +680,7 @@
         "addLink": "Adicionar link aqui",
         "rename": "Renomear",
         "move": "Mover para…",
+        "share": "Compartilhar…",
         "delete": "Excluir pasta…",
         "pin": "Fixar na barra lateral",
         "unpin": "Desafixar da barra lateral",
@@ -1958,6 +1959,84 @@
       "length": "1 minuto",
       "hide": "Ocultar"
     }
+  },
+  "sharing": {
+    "dialog": {
+      "title": "Compartilhar “{{name}}”",
+      "close": "Fechar",
+      "done": "Concluído",
+      "count": {
+        "one": "{{count}} link, incluindo subpastas",
+        "many": "{{count}} links, incluindo subpastas",
+        "other": "{{count}} links, incluindo subpastas"
+      },
+      "loading": "Carregando as configurações de compartilhamento…",
+      "loadFailed": "Não foi possível carregar as configurações de compartilhamento.",
+      "retry": "Tentar de novo",
+      "public": "Link público",
+      "publicHint": "Qualquer pessoa com o link pode ver. Não precisa de conta.",
+      "linkLabel": "Endereço do link público",
+      "copy": "Copiar link",
+      "copied": "Link copiado",
+      "copyFallback": "Não é possível copiar aqui. O link está selecionado: pressione Ctrl+C ou ⌘C para copiá-lo.",
+      "settings": "Configurações do link",
+      "notes": "Mostrar minhas notas",
+      "notesHint": "Os convidados veem por que você salvou cada link",
+      "reset": "Redefinir link",
+      "resetHint": "O link antigo para de funcionar na hora",
+      "resetAction": "Redefinir",
+      "privateNotes": "As notas ficam privadas, a menos que você as ative.",
+      "limit": "Você pode compartilhar até {{max}} pastas. Desative outro link público primeiro.",
+      "demo": "Contas de demo não podem compartilhar pastas. Entre para compartilhar as suas.",
+      "saveFailed": "Não foi possível salvar a alteração. Tente de novo."
+    },
+    "reset": {
+      "title": "Redefinir o link público?",
+      "message": "O link antigo para de funcionar na hora. Quem ainda precisar ver a pasta vai precisar do novo link.",
+      "confirm": "Redefinir link",
+      "cancel": "Cancelar",
+      "done": "Link redefinido",
+      "doneDetail": "O link antigo não funciona mais"
+    }
+  },
+  "publicCollection": {
+    "home": "Início do Shelfmark",
+    "signIn": "Entrar",
+    "backToShelf": "Voltar para minha estante",
+    "sharedBy": "Compartilhado por {{name}}",
+    "sharedAnonymous": "Compartilhado no Shelfmark",
+    "count": {
+      "one": "{{count}} link",
+      "many": "{{count}} links",
+      "other": "{{count}} links"
+    },
+    "updated": "Atualizado {{time}}",
+    "copy": "Copiar link",
+    "copied": "Link copiado",
+    "copyFailed": "Não foi possível copiar o link",
+    "copyFailedDetail": "Copie da barra de endereços",
+    "filterLabel": "Subpastas",
+    "all": "Todas",
+    "loading": "Carregando a coleção…",
+    "more": "Mostrar mais",
+    "capped": "Esta página mostra os {{max}} links mais recentes.",
+    "empty": {
+      "title": "Nenhum link aqui ainda",
+      "text": "O dono ainda não salvou nada nesta pasta."
+    },
+    "notFound": {
+      "title": "Esta coleção não está disponível",
+      "text": "O link pode estar digitado errado, ou o dono o desativou ou redefiniu.",
+      "action": "Ir para o Shelfmark"
+    },
+    "failed": "Não foi possível carregar a coleção.",
+    "retry": "Tentar de novo",
+    "cta": {
+      "title": "Guarde seus próprios links assim",
+      "text": "O Shelfmark guarda vídeos, artigos, coisas para comprar e cursos em uma única estante tranquila.",
+      "action": "Comece sua estante"
+    },
+    "madeWith": "Feito com Shelfmark"
   },
   "bulk": {
     "bar": {
