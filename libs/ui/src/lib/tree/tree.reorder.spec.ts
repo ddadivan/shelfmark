@@ -3,7 +3,10 @@ import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { axeViolations } from '../../testing/axe';
 import { KEYBOARD_KEY } from '../keyboard';
+import { LONG_PRESS_DURATION_MS } from '../long-press/models/long-press.const';
+import type { UiTreeContextMenuEvent } from './models/tree-context-menu-event.interface';
 import type { UiTreeNode } from './models/tree-node.interface';
+import { TREE_REORDER_TOUCH_DELAY_MS } from './models/tree-reorder-touch-delay.const';
 import type { UiTreeReorderEvent } from './models/tree-reorder-event.interface';
 import { UI_TREE_REORDER_TRIGGER } from './models/tree-reorder-trigger.const';
 import { TREE_STORY_FIXED } from './stories/tree-story-fixed.const';
@@ -24,6 +27,8 @@ import { TreeReorderListDirective } from './tree-reorder-list.directive';
       [nodes]="nodes()"
       [reorderable]="reorderable()"
       (reordered)="reordered.push($event)"
+      (reorderStarted)="started.push($event)"
+      (contextMenu)="menus.push($event)"
     />
   `,
 })
@@ -32,6 +37,8 @@ class ReorderHostComponent {
   readonly nodes = signal<readonly UiTreeNode[]>(TREE_STORY_NESTED);
   readonly reorderable = signal(true);
   readonly reordered: UiTreeReorderEvent[] = [];
+  readonly started: UiTreeNode[] = [];
+  readonly menus: UiTreeContextMenuEvent[] = [];
 }
 
 async function settle(fixture: ComponentFixture<unknown>): Promise<void> {
@@ -177,6 +184,36 @@ describe('TreeComponent reorder', () => {
       toIndex: 1,
       total: 2,
     });
+  });
+
+  it('starts a touch drag after a short rest, before the long press opens the menu (#315)', async () => {
+    const { row } = await setup();
+    expect(TREE_REORDER_TOUCH_DELAY_MS).toBeGreaterThan(0);
+    expect(TREE_REORDER_TOUCH_DELAY_MS).toBeLessThan(LONG_PRESS_DURATION_MS);
+    // CDK makes a handle `touch-action: none`; a swipe on a row must still scroll the list.
+    expect(row(TREE_STORY_NAME.Work).style.touchAction).toBe('pan-y');
+    expect(row(TREE_STORY_NAME.Courses).style.touchAction).toBe('pan-y');
+  });
+
+  it('says when a row drag starts and opens no row menu until it is dropped', async () => {
+    const { host, fixture, row } = await setup();
+    const top = fixture.debugElement
+      .queryAll(By.directive(TreeReorderListDirective))
+      .map((debug) => debug.injector.get(TreeReorderListDirective))[0];
+    const menuAt = () =>
+      row(TREE_STORY_NAME.Clothes).dispatchEvent(
+        new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: 9, clientY: 9 }),
+      );
+
+    top.started.emit(TREE_STORY_ID.Clothes);
+    expect(host.started.map((node) => node.id)).toEqual([TREE_STORY_ID.Clothes]);
+    menuAt();
+    expect(host.menus).toEqual([]);
+
+    top.dropped.emit({ id: TREE_STORY_ID.Clothes, previousIndex: 1, currentIndex: 1 });
+    menuAt();
+    expect(host.menus).toHaveLength(1);
+    expect(host.menus[0].node.id).toBe(TREE_STORY_ID.Clothes);
   });
 
   it('has no axe violations', async () => {

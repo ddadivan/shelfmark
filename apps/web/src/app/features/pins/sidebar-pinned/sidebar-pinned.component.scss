@@ -157,8 +157,8 @@
   }
 }
 
-// Drag and drop (desktop): the row lands in a reserved slot, the same as the folder tree's: one
-// row tall, the row's width and corners, a soft sage tint, a thin dashed sage outline and a faint
+// Drag and drop (a mouse at once, a finger after a short rest, #315): the row lands in a reserved
+// slot, the same as the folder tree's: one row tall, the row's width and corners, a soft sage tint, a thin dashed sage outline and a faint
 // ghost of the row (icon at low opacity, the name muted). It sits where the row was, so the
 // section keeps its height; the other rows glide apart. Reduced motion: no glide, no fade.
 .pinned__drop-slot {

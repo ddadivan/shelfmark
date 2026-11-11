@@ -7,6 +7,7 @@ import {
   inject,
   input,
   type TemplateRef,
+  untracked,
   ViewContainerRef,
 } from '@angular/core';
 import type { TreeReorderPreviewContext } from './models/tree-reorder-preview-context.interface';
@@ -17,6 +18,10 @@ import type { TreeReorderListDirective } from './tree-reorder-list.directive';
  * A `ui-tree` row item (the `li`, so an open folder travels with its children) as a CDK drag
  * whose handle is the row itself: pressing a child row never drags its parent. The preview and
  * the drop slot come from templates of the tree. Internal to `ui-tree`.
+ * Touch (#315): a drag starts after the finger rested `TREE_REORDER_TOUCH_DELAY_MS` and then
+ * moves; CDK sets `touch-action: none` on a handle, which would stop a swipe on a row from
+ * scrolling, so the handle gets `pan-y` back (CSSOM) and CDK cancels the scroll itself once a
+ * drag has started.
  */
 @Directive({ selector: '[uiTreeReorderItem]' })
 export class TreeReorderItemDirective {
@@ -49,9 +54,12 @@ export class TreeReorderItemDirective {
       this.ref.disabled = this.disabled();
       // Only draggable rows count as places of the list.
       this.list().sync();
+      this.allowScroll(untracked(this.handle));
     });
     effect(() => {
-      this.ref.withHandles([this.handle()]);
+      const handle = this.handle();
+      this.ref.withHandles([handle]);
+      this.allowScroll(handle);
     });
     effect(() => {
       const context = this.context();
@@ -84,5 +92,10 @@ export class TreeReorderItemDirective {
       });
     });
     inject(DestroyRef).onDestroy(() => this.ref.dispose());
+  }
+
+  /** A swipe on the row scrolls the list; CDK prevents the scroll once a drag has started. */
+  private allowScroll(handle: HTMLElement): void {
+    handle.style.touchAction = 'pan-y';
   }
 }

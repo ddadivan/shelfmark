@@ -58,8 +58,9 @@ const KEYBOARD_ECHO_RELEASE_MS = 100;
  * example "Create a folder"); it is outside the tree element, which only allows rows.
  *
  * With `reorderable`, folder rows also move among their siblings (never to another parent): drag
- * a row with a mouse (CDK drag and drop, a reserved slot marks the place) or press Alt+Up / Alt+Down
- * on the focused row; both emit `reordered`, and the row keeps focus after a keyboard move.
+ * a row with a mouse, or with a finger after a short rest (CDK drag and drop, a reserved slot marks
+ * the place), or press Alt+Up / Alt+Down on the focused row; all emit `reordered`, and the row
+ * keeps focus after a keyboard move.
  *
  * Presentational: it emits `selected`, `toggled`, `contextMenu` and `reordered`; the feature routes and opens
  * its `ui-menu` (`openAt(position)` for a right click, `openFrom(anchor)` for the "..." button
@@ -100,6 +101,8 @@ export class TreeComponent {
   protected readonly MORE_TOOLTIP_SIDE = OVERLAY_SIDE.Right;
   /** A keyboard menu request is pending; the browser's echoed `contextmenu` consumes it. */
   private keyboardEcho = false;
+  /** A folder row is being dragged (pointer or touch): long press and `contextmenu` stay quiet. */
+  private reorderDragging = false;
   private echoTimer: ReturnType<typeof setTimeout> | undefined;
 
   private readonly injector = inject(Injector);
@@ -286,12 +289,18 @@ export class TreeComponent {
   /** Badge text on the drop target row ("Move here"); none when empty. */
   readonly dropLabel = input<string>();
   /**
-   * Folder rows can be reordered among their siblings: dragged with a mouse (never by touch) or
+   * Folder rows can be reordered among their siblings: dragged with a mouse, by touch after a
+   * rest of `TREE_REORDER_TOUCH_DELAY_MS` and a move (a swipe scrolls, a hold opens the menu), or
    * moved with Alt+Up / Alt+Down. The tree only emits `reordered`; the feature saves the order.
    */
   readonly reorderable = input(false, { transform: booleanAttribute });
   /** A folder row asks for another place among its siblings (see `UiTreeReorderEvent`). */
   readonly reordered = output<UiTreeReorderEvent>();
+  /**
+   * A pointer or touch drag of a folder row started. A long press may have opened the row menu
+   * just before (press, hold, then move, as on iOS): the feature closes it here.
+   */
+  readonly reorderStarted = output<UiTreeNode>();
   /** A row was chosen (click, Enter). */
   readonly selected = output<UiTreeNode>();
   /** A folder opened or closed. */
@@ -368,6 +377,10 @@ export class TreeComponent {
 
   /** Touch route to the folder menu: iOS Safari fires no `contextmenu`, so a long press opens it. */
   protected onLongPress(event: UiLongPressEvent, node: UiTreeNode, row: HTMLElement): void {
+    // A touch drag started inside the long-press tolerance: the finger is moving a row, no menu.
+    if (this.reorderDragging) {
+      return;
+    }
     this.contextMenu.emit({
       node,
       trigger: UI_TREE_CONTEXT_MENU_TRIGGER.Pointer,
@@ -378,6 +391,10 @@ export class TreeComponent {
 
   protected onContextMenu(event: MouseEvent, node: UiTreeNode, row: HTMLElement): void {
     event.preventDefault();
+    // Android's own long-press `contextmenu` can arrive while a row is being dragged.
+    if (this.reorderDragging) {
+      return;
+    }
     if (this.keyboardEcho) {
       // The echo of the key press that already emitted: not a pointer request.
       this.disarmEcho();
@@ -431,7 +448,17 @@ export class TreeComponent {
   }
 
   /** A drag ended in the sibling list of `parentId` (`null` = the top level). */
+  /** A row drag started: no row menu until it is dropped, and the feature hears of it. */
+  protected onReorderStarted(id: string): void {
+    this.reorderDragging = true;
+    const node = this.nodesById().get(id);
+    if (node) {
+      this.reorderStarted.emit(node);
+    }
+  }
+
   protected onDropped(drop: TreeReorderDrop, parentId: string | null): void {
+    this.reorderDragging = false;
     if (drop.previousIndex !== drop.currentIndex) {
       this.emitReorder(drop.id, parentId, drop.currentIndex, UI_TREE_REORDER_TRIGGER.Pointer);
     }

@@ -250,8 +250,8 @@ $more-column: rem(30px);
   }
 }
 
-// Reorder (folder rows, a mouse): the siblings glide apart (ease-in-out, a move across the list)
-// and the row lands in a reserved slot (DragDrop spec, like the feed's carried cards): one row
+// Reorder (folder rows, a mouse or a finger after a rest): the siblings glide apart (ease-in-out,
+// a move across the list) and the row lands in a reserved slot (DragDrop spec, like the feed's carried cards): one row
 // tall, the row's own width and corners, a soft sage tint, a thin dashed sage outline and a faint
 // ghost of the row (its icon at low opacity, the name muted). It is the CDK placeholder, which
 // sits where the row was, so the list keeps its height and nothing below moves. The dragged row

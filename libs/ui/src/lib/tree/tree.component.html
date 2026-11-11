@@ -104,6 +104,7 @@
             uiTreeReorderList
             [id]="item.id() + '-group'"
             (dropped)="onDropped($event, node.id)"
+            (started)="onReorderStarted($event)"
           >
             <ng-template ngTreeItemGroup [ownedBy]="item" #group="ngTreeItemGroup">
               <ng-container
@@ -137,6 +138,7 @@
   [attr.aria-label]="ariaLabel() || null"
   (valueChange)="onValueChange($event)"
   (dropped)="onDropped($event, null)"
+  (started)="onReorderStarted($event)"
 >
   <ng-container
     *ngTemplateOutlet="

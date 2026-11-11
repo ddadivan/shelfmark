@@ -7,15 +7,17 @@
       class="pinned__list"
       cdkDropList
       cdkDropListLockAxis="y"
-      [cdkDropListDisabled]="dragDisabled()"
       (cdkDropListDropped)="dropped($event)"
     >
       @for (row of pins.rows(); track row.key; let index = $index) {
         <li
           class="pinned__item"
           cdkDrag
-          [cdkDragDisabled]="dragDisabled()"
+          [cdkDragStartDelay]="DRAG_START_DELAY"
           [attr.data-pin]="row.key"
+          (cdkDragStarted)="dragStarted()"
+          (cdkDragEnded)="dragEnded()"
+          (contextmenu)="onContextMenu($event)"
         >
           <!-- The row as a small floating card down-right of the pointer, so the slot shows. -->
           <div *cdkDragPreview class="pinned__preview">

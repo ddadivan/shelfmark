@@ -41,6 +41,8 @@ export class TreeReorderListDirective {
   protected readonly sorting = signal(false);
   /** A row was dropped (also when it lands where it started). */
   readonly dropped = output<TreeReorderDrop>();
+  /** A drag of one of its rows started (the row's id). */
+  readonly started = output<string>();
 
   constructor() {
     this.ref.withOrientation('vertical');
@@ -49,6 +51,10 @@ export class TreeReorderListDirective {
       this.sync();
       this.ref.withScrollableParents(scrollableParents(this.element));
       this.sorting.set(true);
+      const entry = [...this.entries].find((candidate) => candidate.ref.isDragging());
+      if (entry) {
+        this.started.emit(entry.id());
+      }
     });
     const dropped = this.ref.dropped.subscribe((event) => {
       this.sorting.set(false);

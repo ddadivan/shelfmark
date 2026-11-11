@@ -278,6 +278,16 @@ export class SidebarComponent {
     }
   }
 
+  /**
+   * A folder row started to move: a long press may have opened its menu just before (press, hold,
+   * then move, as on iOS), so the menu closes and the drag goes on (#315).
+   */
+  protected reorderStarted(): void {
+    if (this.menu().isOpen()) {
+      this.menu().close({ restoreFocus: false });
+    }
+  }
+
   /** A folder row moved among its siblings (drag or Alt+Up / Alt+Down): said, then saved. */
   protected reorder(event: UiTreeReorderEvent): void {
     this.announcer.announce(event.fromIndex, event.toIndex, event.total);

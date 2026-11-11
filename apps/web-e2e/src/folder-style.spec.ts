@@ -5,6 +5,7 @@ import { openSettingsSection } from './support/mock-session';
 import { gotoWithSidebar, isPhone, openSidebar, tabBar } from './support/sidebar';
 import { settled } from './support/settled';
 import { expect, test } from './support/test';
+import { Finger } from './support/touch';
 
 const READING = MOCK_FIXTURE.readingName;
 const NOTES = 'Notes';
@@ -226,7 +227,7 @@ test.describe('folder style and pins (mock API)', () => {
   test('reorders folders by dragging inside the Folders section (desktop, #314)', async ({
     page,
   }) => {
-    test.skip(isPhone(page), 'a touch never starts a reorder drag');
+    test.skip(isPhone(page), 'the touch drag has its own tests below');
     await createNotes(page);
     await settled(page);
     const notes = page.getByRole('treeitem', { name: new RegExp(`^${NOTES}\\b`) });
@@ -264,7 +265,7 @@ test.describe('folder style and pins (mock API)', () => {
   });
 
   test('reorders pinned items by dragging (desktop)', async ({ page }) => {
-    test.skip(isPhone(page), 'a phone reorders with Alt+arrows or Settings › Edit pinned');
+    test.skip(isPhone(page), 'the touch drag has its own test below');
     await createNotes(page);
     await pickFolderMenuItem(page, READING, 'Pin to sidebar');
     await pickFolderMenuItem(page, NOTES, 'Pin to sidebar');
@@ -289,6 +290,119 @@ test.describe('folder style and pins (mock API)', () => {
     await page.mouse.up();
 
     await expect(pinnedItems(page).first()).toContainText(NOTES);
+  });
+
+  /** Centre of a locator's box. */
+  const centre = async (locator: Locator): Promise<{ x: number; y: number }> => {
+    const box = await locator.boundingBox();
+    expect(box).not.toBeNull();
+    return { x: (box?.x ?? 0) + (box?.width ?? 0) / 2, y: (box?.y ?? 0) + (box?.height ?? 0) / 2 };
+  };
+  /** Rest longer than the touch drag delay (400 ms), shorter than the long press (500 ms). */
+  const DRAG_REST_MS = 440;
+
+  test.describe('touch reorder on a phone (#315)', () => {
+    test.beforeEach(({ page }) => {
+      test.skip(!isPhone(page), 'touch screens only; a mouse drags at once');
+    });
+
+    const notesRow = (page: Page) =>
+      page.getByRole('treeitem', { name: new RegExp(`^${NOTES}\\b`) });
+    const readingRow = (page: Page) =>
+      page.getByRole('treeitem', { name: new RegExp(`^${READING}\\b`) });
+
+    test('a press, a short rest and a move drag a folder; the reserved slot shows, nothing jumps', async ({
+      page,
+    }) => {
+      await createNotes(page);
+      await settled(page);
+      const from = await centre(notesRow(page));
+      const to = await readingRow(page).boundingBox();
+      const height = (await notesRow(page).boundingBox())?.height ?? 0;
+      const tilesTop = (await page.locator('app-library-tile').first().boundingBox())?.y ?? 0;
+
+      const finger = await Finger.down(page, from);
+      await finger.hold(DRAG_REST_MS);
+      await finger.move({ x: from.x, y: (to?.y ?? 0) + 2 }, 12);
+      const slot = page.locator('app-sidebar .ui-tree__drop-slot');
+      await expect(slot).toHaveCount(1);
+      await expect(slot).toContainText(NOTES);
+      expect((await slot.boundingBox())?.height).toBeCloseTo(height, 0);
+      // The finger moves the row, not the page.
+      expect((await page.locator('app-library-tile').first().boundingBox())?.y).toBeCloseTo(
+        tilesTop,
+        0,
+      );
+      // A drag past the long-press time opens no folder menu.
+      await expect(page.getByRole('menu')).toHaveCount(0);
+      await finger.up();
+
+      await expect
+        .poll(async () => {
+          const names = await folderNames(page);
+          return names.indexOf(NOTES) < names.indexOf(READING);
+        })
+        .toBe(true);
+      await expect(page).toHaveURL('/library');
+      await expect(slot).toHaveCount(0);
+      await expect(page.locator('.cdk-live-announcer-element')).toHaveText(/^Moved up, position/);
+    });
+
+    test('a long press without moving still opens the folder menu', async ({ page }) => {
+      await createNotes(page);
+      await settled(page);
+      const finger = await Finger.down(page, await centre(notesRow(page)));
+      await finger.hold(800);
+      await finger.up();
+
+      await expect(page.getByRole('menuitem', { name: 'Rename' })).toBeVisible();
+      await expect(page.locator('app-sidebar .ui-tree__drop-slot')).toHaveCount(0);
+      const names = await folderNames(page);
+      expect(names.indexOf(NOTES)).toBeGreaterThan(names.indexOf(READING));
+    });
+
+    test('a plain swipe on a folder row scrolls the page and moves nothing', async ({ page }) => {
+      await createNotes(page);
+      await settled(page);
+      // Room to scroll: a shorter phone screen than the Library page.
+      await page.setViewportSize({ width: 360, height: 620 });
+      await page.evaluate('window.scrollTo(0, 0)');
+      const before = await folderNames(page);
+      const start = await centre(readingRow(page));
+      expect(start.y).toBeLessThan(600);
+
+      const finger = await Finger.down(page, start);
+      await finger.move({ x: start.x, y: start.y - 240 }, 8);
+      await finger.up();
+
+      await expect.poll(() => page.evaluate('window.scrollY')).toBeGreaterThan(40);
+      await expect(page.locator('app-sidebar .ui-tree__drop-slot')).toHaveCount(0);
+      expect(await folderNames(page)).toEqual(before);
+      await expect(page).toHaveURL('/library');
+    });
+
+    test('pinned items move the same way', async ({ page }) => {
+      await createNotes(page);
+      await pickFolderMenuItem(page, READING, 'Pin to sidebar');
+      await pickFolderMenuItem(page, NOTES, 'Pin to sidebar');
+      await backToTree(page);
+      await expect(pinnedItems(page)).toHaveCount(2);
+      await expect(pinnedItems(page).first()).toContainText(READING);
+      await settled(page);
+
+      const from = await centre(pinnedItems(page).first());
+      const to = await pinnedItems(page).nth(1).boundingBox();
+      const finger = await Finger.down(page, from);
+      await finger.hold(DRAG_REST_MS);
+      await finger.move({ x: from.x, y: (to?.y ?? 0) + (to?.height ?? 0) - 2 }, 12);
+      const slot = pinned(page).locator('.pinned__drop-slot');
+      await expect(slot).toHaveCount(1);
+      await expect(slot).toContainText(READING);
+      await finger.up();
+
+      await expect(pinnedItems(page).first()).toContainText(NOTES);
+      await expect(page).toHaveURL('/library');
+    });
   });
 
   test('explains the limit with a toast on the eighth pin', async ({ page }) => {

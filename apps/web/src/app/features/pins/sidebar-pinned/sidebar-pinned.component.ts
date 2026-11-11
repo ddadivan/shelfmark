@@ -10,7 +10,6 @@ import {
   booleanAttribute,
   ChangeDetectionStrategy,
   Component,
-  computed,
   ElementRef,
   inject,
   Injector,
@@ -24,10 +23,10 @@ import {
   FaviconComponent,
   FolderIconComponent,
   KEYBOARD_KEY,
+  TREE_REORDER_TOUCH_DELAY_MS,
   TooltipDirective,
 } from '@shelfmark/ui';
 import { ReorderAnnouncer } from '../../../core/a11y/reorder-announcer.service';
-import { ViewportService } from '../../../core/layout/viewport.service';
 import { PinsStore } from '../../../stores/pins.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { APP_PATH } from '../../../models/app-path.const';
@@ -62,7 +61,8 @@ import { PinActionsService } from '../pin-actions.service';
   templateUrl: './sidebar-pinned.component.html',
   styleUrl: './sidebar-pinned.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '[class.pinned--card]': 'card()' },
+  // No pins: no section, so no empty card on the phone Library page either.
+  host: { '[class.pinned--card]': 'card() && pins.rows().length > 0' },
 })
 export class SidebarPinnedComponent {
   protected readonly PIN_KIND = PIN_KIND;
@@ -73,7 +73,6 @@ export class SidebarPinnedComponent {
   private readonly actions = inject(PinActionsService);
   private readonly linkActions = inject(LinkActionsService);
   private readonly transloco = inject(TranslocoService);
-  private readonly viewport = inject(ViewportService);
   private readonly announcer = inject(ReorderAnnouncer);
   private readonly injector = inject(Injector);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
@@ -83,8 +82,28 @@ export class SidebarPinnedComponent {
   /** Its own card with a page-sized heading: the phone Library page. */
   readonly card = input(false, { transform: booleanAttribute });
 
-  /** Dragging is for a mouse; on a phone a drag would fight scrolling (Alt+arrows still work). */
-  protected readonly dragDisabled = computed(() => this.viewport.phone());
+  /**
+   * Touch reorder like iOS (#315): the finger rests `TREE_REORDER_TOUCH_DELAY_MS` (the folder
+   * tree's delay), then moving starts the drag; a move before that scrolls. Mouse at once.
+   */
+  protected readonly DRAG_START_DELAY = { touch: TREE_REORDER_TOUCH_DELAY_MS, mouse: 0 };
+  /** A row is being dragged: a long press must not open the browser's link menu meanwhile. */
+  private dragging = false;
+
+  protected dragStarted(): void {
+    this.dragging = true;
+  }
+
+  protected dragEnded(): void {
+    this.dragging = false;
+  }
+
+  /** Android fires its own long-press `contextmenu` (the link menu) while a finger drags a row. */
+  protected onContextMenu(event: Event): void {
+    if (this.dragging) {
+      event.preventDefault();
+    }
+  }
 
   protected folderLink(folder: FolderResponse): string[] {
     return ['/', APP_PATH.Folders, folder.id];
