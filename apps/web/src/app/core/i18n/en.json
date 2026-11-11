@@ -217,7 +217,29 @@
       "privacy": "Privacy",
       "github": "GitHub"
     },
-    "newTab": "opens in a new tab"
+    "newTab": "opens in a new tab",
+    "backToShelf": "Back to my shelf",
+    "whatsNew": {
+      "title": "What's new",
+      "items": {
+        "trash": {
+          "title": "Trash",
+          "text": "Deleted links and folders wait in Trash, so nothing is gone by accident. Choose how long they stay in Settings."
+        },
+        "tabs": {
+          "title": "Your tabs stay in step",
+          "text": "Save, edit or delete a link in one tab and every other open tab shows it."
+        },
+        "move": {
+          "title": "Move to folder and drag and drop",
+          "text": "Move a link from its menu, or drag it onto a folder in the sidebar."
+        },
+        "refresh": {
+          "title": "A fresh look",
+          "text": "Softer corners, a floating tab bar on phones and toasts that say what happened."
+        }
+      }
+    }
   },
   "links": {
     "add": {
@@ -305,6 +327,7 @@
     },
     "item": {
       "edit": "Edit",
+      "move": "Move to folder…",
       "edited": "Changes saved",
       "openFailed": "Couldn't open the link.",
       "favorite": "Favorite: {{title}}",
@@ -372,6 +395,19 @@
         "cancel": "Cancel",
         "close": "Close"
       }
+    },
+    "move": {
+      "title": "Move “{{title}}”",
+      "label": "Folder",
+      "searchLabel": "Search folders",
+      "noResults": "No folders found",
+      "action": "Move",
+      "cancel": "Cancel",
+      "close": "Close",
+      "moved": "Moved to {{folder}}",
+      "failed": "Couldn't move the link",
+      "failedDetail": "It is back where it was",
+      "undoFailed": "Couldn't move the link back"
     }
   },
   "privacy": {
@@ -539,7 +575,8 @@
     "theme": {
       "toLight": "Switch to light theme",
       "toDark": "Switch to dark theme"
-    }
+    },
+    "about": "About Shelfmark"
   },
   "folders": {
     "dialog": {
@@ -885,7 +922,8 @@
           "close": "Close"
         }
       }
-    }
+    },
+    "help": "Help"
   },
   "shortcuts": {
     "title": "Keyboard shortcuts",
@@ -1241,5 +1279,25 @@
       "emptyFailedDetail": "Nothing was deleted."
     },
     "emptyShort": "Empty"
+  },
+  "howItWorks": {
+    "menu": "How it works",
+    "title": "Shelfmark in 60 seconds",
+    "close": "Close",
+    "captions": "English",
+    "chaptersLabel": "Chapters",
+    "soon": "The video is on its way. Until then, the chapters show what it covers.",
+    "chapters": {
+      "save": "Save a link",
+      "organise": "Folders and tags",
+      "find": "Find it again"
+    },
+    "emptyLink": "Watch how it works",
+    "card": {
+      "label": "How it works",
+      "title": "New here? Watch how it works",
+      "length": "1 minute",
+      "hide": "Hide"
+    }
   }
 }

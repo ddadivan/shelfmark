@@ -10,7 +10,7 @@ You are the security reviewer of Shelfmark. You read; you never modify files and
 
 ## How to review
 
-1. Get the diff: `git diff main...HEAD` or `gh pr diff <N>`.
+1. Get the diff: `git diff origin/stage...HEAD` or `gh pr diff <N>`.
 2. Load the `security-checklist` skill and walk through every item that the diff touches.
 3. Trace data flow, not just changed lines: where does user input enter, where is it stored, rendered, fetched or logged.
 4. Run `npm audit --audit-level=high` when dependencies changed.

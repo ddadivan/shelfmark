@@ -3,7 +3,14 @@ import { inject, Injector, Service } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import type { LinkResponse } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
-import { DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
+import {
+  DIALOG_SIZE,
+  DialogService,
+  TOAST_DURATION_MS,
+  TOAST_KIND,
+  ToastService,
+  toastShortcutLabel,
+} from '@shelfmark/ui';
 import { FoldersStore } from '../../stores/folders.store';
 import { LinksStore } from '../../stores/links.store';
 import { TagsStore } from '../../stores/tags.store';
@@ -15,10 +22,13 @@ import type { AddLinkData } from './models/add-link-data.interface';
 import { ownImageUrl, safeHref } from './link-view';
 import { LINKS_API } from './models/links-api.const';
 import { UndoToastService } from '../../core/undo/undo-toast.service';
+import type { MoveLinkDialogData } from './models/move-link-dialog-data.interface';
+import { MoveLinkDialogComponent } from './move-link-dialog/move-link-dialog.component';
 
 /**
  * What a user can do with a link from the feed, the recent panel and the header: open, favorite,
- * edit, delete (confirm, optimistic removal, Undo; the link then waits in Trash) and add. Texts come through Transloco here, so
+ * edit, move to a folder (optimistic, Undo), delete (confirm, optimistic removal, Undo; the link then
+ * waits in Trash) and add. Texts come through Transloco here, so
  * the components only emit.
  */
 @Service()
@@ -85,6 +95,60 @@ export class LinkActionsService {
       actionLabel: this.t('links.item.undo'),
       onUndo: () => this.store.undoRemove(link.id),
       onExpire: () => void this.commitDelete(link.id),
+    });
+  }
+
+  /** "Move to folder…": picks a folder in a dialog (a sheet on phones), then moves the link. */
+  async move(link: LinkResponse): Promise<void> {
+    await this.dialogs.open<MoveLinkDialogComponent, boolean, MoveLinkDialogData>(
+      MoveLinkDialogComponent,
+      {
+        size: DIALOG_SIZE.Sm,
+        data: { link, submit: (folderId) => void this.moveTo(link, folderId) },
+      },
+    ).result;
+  }
+
+  /**
+   * Moves a link at once and confirms with a `moved` toast that offers Undo; a failed request
+   * rolls the move back and says so. Also used by drag and drop.
+   */
+  async moveTo(link: LinkResponse, folderId: string | null): Promise<void> {
+    const from = link.folderId;
+    if (from === folderId) {
+      return;
+    }
+    if (!(await this.store.move(link, folderId))) {
+      this.toasts.show({
+        kind: TOAST_KIND.Danger,
+        title: this.t('links.move.failed'),
+        detail: this.t('links.move.failedDetail'),
+        action: { label: this.t('links.item.retry'), run: () => void this.moveTo(link, folderId) },
+      });
+      return;
+    }
+    void this.folders.refresh();
+    const undo = this.t('links.item.undo');
+    this.toasts.show({
+      kind: TOAST_KIND.Moved,
+      title: this.t('links.move.moved', { folder: this.folderLabel(folderId) }),
+      detail: link.title,
+      folder: {},
+      duration: TOAST_DURATION_MS.Undo,
+      actionHint: this.t('toast.actionHint', { shortcut: toastShortcutLabel(), action: undo }),
+      action: { label: undo, run: () => void this.moveBack({ ...link, folderId }, from) },
+    });
+  }
+
+  private async moveBack(link: LinkResponse, folderId: string | null): Promise<void> {
+    if (await this.store.move(link, folderId)) {
+      void this.folders.refresh();
+      return;
+    }
+    this.toasts.show({
+      kind: TOAST_KIND.Danger,
+      title: this.t('links.move.undoFailed'),
+      detail: link.title,
     });
   }
 

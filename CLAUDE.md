@@ -49,7 +49,7 @@ npx nx graph                             # project graph
 
 ## Non-negotiables
 
-- **Never commit to `main`.** One branch per issue: `feat/<issue>-short-name`, `fix/…`, `chore/…`, `docs/…`, `ci/…`. Conventional Commits. PR body has `Closes #N`. The author reviews and merges; you never merge.
+- **Never commit to `main` or `stage`.** `main` is production, `stage` is the integration branch (PROJECT.md 9.3, ADR 0035). One branch per issue from fresh `stage`: `feat/<issue>-short-name`, `fix/…`, `chore/…`, `docs/…`, `ci/…`. Conventional Commits. PR into `stage` (squash) with `Refs #N`; the release PR `stage → main` at the end of a stage closes the issues. The author reviews and merges; you never merge.
 - **Secrets:** never read, print or create `.env*` files (except `.env.example` with names only). Secrets live in Vercel / GitHub settings, entered by the author.
 - **Security (5.8) is part of done:** user data filtered by `userId` from the session, DTO validation, no `innerHTML` / `bypassSecurityTrust*`, no `$queryRawUnsafe`, SSRF guard on any outbound fetch.
 - **TypeScript (PROJECT.md 5.0):** strictly typed, **no `any`** (explicit or `as any`) — use `unknown` + narrowing or generics; no `@ts-ignore` / `@ts-nocheck` (`@ts-expect-error` only in tests, with a reason). **One interface / type / enum / array-of-objects constant per file**, named `<kebab-name>.interface.ts` / `.type.ts` / `.const.ts`, in a `models/` folder next to its users (shared web↔api types in `libs/shared/contracts/src/<domain>/`). No dump files (`types.ts`, `models.ts`, `constants.ts`); `index.ts` only re-exports. **No TS `enum`**: fixed value sets are an `as const` object (`THEME.Dark`) plus a derived union type; code uses the constant, never a repeated string literal (ADR 0024).
@@ -59,7 +59,7 @@ npx nx graph                             # project graph
 
 ## Task flow (PROJECT.md 8.2)
 
-Issue on the board (Todo) → `project-manager` moves it to In progress → `architect` writes a short plan (larger tasks) → dev agent implements on its branch → `test-engineer` adds tests → `code-reviewer` + `security-reviewer` review the diff, findings go back to the dev agent → tech lead opens the PR, `project-manager` moves to In review → author merges → Done.
+Issue on the board (Todo) → `project-manager` moves it to In progress → `architect` writes a short plan (larger tasks) → dev agent implements on its branch → `test-engineer` adds tests → `code-reviewer` + `security-reviewer` review the diff, findings go back to the dev agent → tech lead opens the PR into `stage`, `project-manager` moves to In review → author merges into `stage` → To release → the release PR `stage → main` closes the issue → Done.
 
 The tech lead (main session) is the only one who dispatches agents; subagents cannot call each other. On Claude Max run at most 4 agents in parallel, each in its own git worktree; avoid parallel edits of shared files (`libs/*/src/index.ts`, `CLAUDE.md`, Storybook `preview.ts`, `package.json`). A blocked agent finishes what it can and reports what blocks it.
 
@@ -72,7 +72,7 @@ Skills in `.claude/skills/`: `angular-v22-rules`, `create-ui-component`, `create
 
 ## Hooks and MCP
 
-- `PreToolUse` → `.claude/hooks/guard.mjs` (blocks secrets, `main` commits, `--no-verify`, destructive commands).
+- `PreToolUse` → `.claude/hooks/guard.mjs` (blocks secrets, commits and pushes to `main` / `stage`, `--no-verify`, destructive commands).
 - `PostToolUse` on Edit / Write / MultiEdit → `.claude/hooks/format-on-edit.mjs`: Prettier + `eslint --fix` on the edited file (repo root = git top level of the file, so worktrees work; skipped if that checkout has no `node_modules`); leftover lint errors come back as context. Never blocks.
 - `Stop` / `SubagentStop` → `.claude/hooks/stop-checks.mjs`: `nx affected -t typecheck test` for uncommitted changes (incl. untracked and deleted files) under `apps/` and `libs/`; a failure blocks the stop once per cycle (`stop_hook_active`) so the work continues. Instant when nothing changed; timeouts are not treated as failures; read-only agents (reviewers, architect, project-manager) are skipped. Committed work is checked by CI.
 - `.mcp.json` (pinned, pre-enabled via `enabledMcpjsonServers`): Angular CLI MCP (`@angular/cli mcp`), Nx MCP (`nx-mcp`), Playwright MCP (`@playwright/mcp`). Check with `/mcp`.

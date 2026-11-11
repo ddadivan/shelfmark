@@ -104,6 +104,8 @@ export const LinksStore = signalStore(
     const api = () => injector.get(LINKS_API);
     const pending = new Map<string, PendingRemoval>();
     const favoriteBusy = new Set<string>();
+    // Feed slots of links a move took out of the open scope, so moving them back restores the slot.
+    const movedFrom = new Map<string, number>();
     // Links whose image capture was requested this session: one request per link.
     const captureRequested = new Set<string>();
     const captureQueue: LinkResponse[] = [];
@@ -176,6 +178,27 @@ export const LinksStore = signalStore(
       }
     }
 
+    /**
+     * Shows `link` with its new folder: kept in place while it still belongs to the open scope,
+     * removed (remembering its slot) when it no longer does, put back at `slot` when it belongs
+     * again. The recent list only takes the new folder.
+     */
+    function placeMoved(link: LinkResponse, slot: number | undefined): void {
+      const index = store.entities().findIndex((item) => item.id === link.id);
+      if (index >= 0) {
+        if (staysAfterEdit(store.filter(), link)) {
+          patchState(store, setEntity(link));
+        } else {
+          movedFrom.set(link.id, index);
+          patchState(store, removeEntity(link.id));
+        }
+      } else if (store.loaded() && slot !== undefined && inFilter(store.filter(), link)) {
+        movedFrom.delete(link.id);
+        patchState(store, setAllEntities(insertAt(store.entities(), slot, link)));
+      }
+      patchState(store, { recent: mapRecent(link.id, { folderId: link.folderId }) });
+    }
+
     function restore(id: string): void {
       const removal = pending.get(id);
       if (!removal) {
@@ -210,6 +233,7 @@ export const LinksStore = signalStore(
       pipe(
         tap((filter) => {
           generation++;
+          movedFrom.clear();
           const changed = !sameFilter(filter, store.filter());
           patchState(
             store,
@@ -399,6 +423,38 @@ export const LinksStore = signalStore(
         });
       },
 
+      /**
+       * Moves a link to another folder (`null` = Unsorted) at once: a link that leaves the open
+       * scope leaves the feed, and comes back to its old slot when it is moved back (Undo). Resolves
+       * false, with the change rolled back, when the request fails.
+       */
+      async move(link: LinkResponse, folderId: string | null): Promise<boolean> {
+        const current = store.entityMap()[link.id] ?? link;
+        if (current.folderId === folderId || pending.has(link.id)) {
+          return true;
+        }
+        const started = generation;
+        const startedEpoch = epoch;
+        const index = store.entities().findIndex((item) => item.id === link.id);
+        const slot = index >= 0 ? index : movedFrom.get(link.id);
+        placeMoved({ ...current, folderId }, slot);
+        try {
+          const saved = await firstValueFrom(api().update(link.id, { folderId }));
+          if (startedEpoch === epoch && store.entityMap()[link.id]) {
+            patchState(
+              store,
+              updateEntity({ id: link.id, changes: { updatedAt: saved.updatedAt } }),
+            );
+          }
+          return true;
+        } catch {
+          if (startedEpoch === epoch) {
+            placeMoved(current, started === generation ? slot : undefined);
+          }
+          return false;
+        }
+      },
+
       /** Hides a link while its Undo window is open. Returns false when it is not in the feed. */
       remove(id: string): boolean {
         const index = store.entities().findIndex((link) => link.id === id);
@@ -552,6 +608,7 @@ export const LinksStore = signalStore(
         favoriteBusy.clear();
         captureRequested.clear();
         captureQueue.length = 0;
+        movedFrom.clear();
         generation++;
         epoch++;
         patchState(store, initialState, removeAllEntities());

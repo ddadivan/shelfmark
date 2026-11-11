@@ -122,7 +122,8 @@
   },
   "overrides": {
     "swagger-ui-dist": "$swagger-ui-dist",
-    "vite": "8.3.6"
+    "vite": "8.3.6",
+    "minimatch@^10": "11.0.6"
   },
   "allowScripts": {
     "@parcel/watcher": false,

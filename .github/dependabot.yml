@@ -2,6 +2,8 @@ version: 2
 updates:
   - package-ecosystem: npm
     directory: /
+    # Version updates go to the integration branch like every other change (ADR 0035).
+    target-branch: stage
     schedule:
       interval: weekly
       day: monday
@@ -43,6 +45,8 @@ updates:
   # Isolated Lighthouse CI install, outside the root audit scope (ADR 0028).
   - package-ecosystem: npm
     directory: /tools/lighthouse
+    # Version updates go to the integration branch like every other change (ADR 0035).
+    target-branch: stage
     schedule:
       interval: weekly
       day: monday
@@ -53,6 +57,8 @@ updates:
     labels: ['type:chore', 'area:infra']
   - package-ecosystem: github-actions
     directory: /
+    # Version updates go to the integration branch like every other change (ADR 0035).
+    target-branch: stage
     schedule:
       interval: weekly
       day: monday
