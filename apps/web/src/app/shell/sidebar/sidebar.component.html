@@ -52,6 +52,10 @@
     <app-sidebar-tags />
   }
 
+  @if (!foldersOnly() && howItWorks.cardVisible()) {
+    <app-how-it-works-card class="sidebar__how-it-works" />
+  }
+
   @if (!foldersOnly()) {
     <!-- Trash sits alone under a divider at the very bottom (Main spec). -->
     <div class="sidebar__trash">

@@ -38,12 +38,15 @@ async function setup(confirmed = true) {
     open: vi.fn<LinksApi['open']>((id) => of(link(Number(id.slice(3))))),
   };
   const confirm = vi.fn(() => Promise.resolve(confirmed));
+  const dialogOpen = vi.fn<(component: unknown, config: unknown) => { result: Promise<undefined> }>(
+    () => ({ result: Promise.resolve(undefined) }),
+  );
   const addLinkOpen = vi.fn();
   TestBed.configureTestingModule({
     providers: [
       provideTranslocoForTest(),
       { provide: LINKS_API, useValue: api },
-      { provide: DialogService, useValue: { confirm } },
+      { provide: DialogService, useValue: { confirm, open: dialogOpen } },
       {
         provide: ToastService,
         useValue: {
@@ -83,7 +86,15 @@ async function setup(confirmed = true) {
   await loadEnglish();
   const store = TestBed.inject(LinksStore);
   store.setFilter({ scope: LINKS_SCOPE.All });
-  return { api, confirm, addLinkOpen, toasts, store, actions: TestBed.inject(LinkActionsService) };
+  return {
+    api,
+    confirm,
+    dialogOpen,
+    addLinkOpen,
+    toasts,
+    store,
+    actions: TestBed.inject(LinkActionsService),
+  };
 }
 
 const ids = (store: InstanceType<typeof LinksStore>) => store.entities().map((item) => item.id);
@@ -150,6 +161,67 @@ describe('LinkActionsService', () => {
       expect(toasts[1]).toMatchObject({ kind: TOAST_KIND.Danger });
       expect(toasts[1].title).toBe("Couldn't delete the link");
       expect(toasts[1].detail).toContain('back in your list');
+    });
+  });
+
+  describe('move to a folder', () => {
+    const folderId = '019a0000-0000-7000-8000-0000000000f1';
+
+    it('opens the folder picker and moves the link with the chosen folder', async () => {
+      const { actions, dialogOpen, api } = await setup();
+
+      await actions.move(link(1));
+      const config = dialogOpen.mock.calls[0]?.[1] as {
+        data: { link: LinkResponse; submit: (id: string | null) => void };
+      };
+      expect(config.data.link.id).toBe('id-1');
+      config.data.submit(folderId);
+      await vi.runAllTicks();
+
+      expect(api.update).toHaveBeenCalledWith('id-1', { folderId });
+    });
+
+    it('confirms with a moved toast and moves the link back on Undo', async () => {
+      const { actions, toasts, api, store } = await setup();
+
+      await actions.moveTo(link(1), folderId);
+
+      expect(toasts[0]).toEqual(
+        expect.objectContaining({
+          kind: TOAST_KIND.Moved,
+          title: 'Moved to Unsorted',
+          detail: 'Link 1',
+        }),
+      );
+      expect(store.entityMap()['id-1']?.folderId).toBe(folderId);
+
+      toasts[0]?.action?.run();
+      await vi.runAllTicks();
+
+      expect(api.update).toHaveBeenLastCalledWith('id-1', { folderId: link(1).folderId });
+      expect(store.entityMap()['id-1']?.folderId).toBe(link(1).folderId);
+    });
+
+    it('rolls back and offers Retry when the move fails', async () => {
+      const { actions, toasts, api, store } = await setup();
+      api.update.mockReturnValueOnce(throwError(() => new Error('offline')));
+
+      await actions.moveTo(link(1), folderId);
+
+      expect(store.entityMap()['id-1']?.folderId).toBe(link(1).folderId);
+      expect(toasts[0]).toEqual(
+        expect.objectContaining({ kind: TOAST_KIND.Danger, title: "Couldn't move the link" }),
+      );
+      expect(toasts[0]?.action?.label).toBe('Retry');
+    });
+
+    it('does nothing when the folder does not change', async () => {
+      const { actions, toasts, api } = await setup();
+
+      await actions.moveTo(link(1), link(1).folderId);
+
+      expect(api.update).not.toHaveBeenCalled();
+      expect(toasts).toEqual([]);
     });
   });
 

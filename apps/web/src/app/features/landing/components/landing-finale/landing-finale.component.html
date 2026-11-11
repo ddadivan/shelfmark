@@ -7,15 +7,24 @@
       <p class="landing-finale__lead">{{ 'landing.finale.lead' | transloco }}</p>
     </div>
     <div class="landing-finale__actions">
-      <ui-button
-        [variant]="BUTTON_VARIANT.Primary"
-        [size]="BUTTON_SIZE.Lg"
-        [href]="LANDING_LINKS.Demo"
-        >{{ 'landing.finale.demo' | transloco }}</ui-button
-      >
-      <ui-button [size]="BUTTON_SIZE.Lg" [href]="LANDING_LINKS.SignIn">{{
-        'landing.finale.signIn' | transloco
-      }}</ui-button>
+      @if (signedIn()) {
+        <ui-button
+          [variant]="BUTTON_VARIANT.Primary"
+          [size]="BUTTON_SIZE.Lg"
+          [href]="LANDING_LINKS.Shelf"
+          >{{ 'landing.backToShelf' | transloco }}</ui-button
+        >
+      } @else {
+        <ui-button
+          [variant]="BUTTON_VARIANT.Primary"
+          [size]="BUTTON_SIZE.Lg"
+          [href]="LANDING_LINKS.Demo"
+          >{{ 'landing.finale.demo' | transloco }}</ui-button
+        >
+        <ui-button [size]="BUTTON_SIZE.Lg" [href]="LANDING_LINKS.SignIn">{{
+          'landing.finale.signIn' | transloco
+        }}</ui-button>
+      }
     </div>
   </div>
 </section>
