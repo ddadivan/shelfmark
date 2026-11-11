@@ -85,12 +85,15 @@ describe('route protection', () => {
       const req = request(t.app.getHttpServer())[verb](path);
       return cookie === undefined ? req : req.set('Cookie', cookie);
     };
-    const expectUnauthorized = (res: { status: number; body: unknown }) => {
-      expect(res.status).toBe(401);
+    // Below /api/admin a missing session is a 404, so the admin routes do not reveal themselves.
+    const expectUnauthorized = (res: { status: number; body: unknown }, key: string) => {
+      const hidden = key.split(' ')[1].startsWith('/api/admin');
+      const [statusCode, error] = hidden ? [404, 'Not Found'] : [401, 'Unauthorized'];
+      expect(res.status).toBe(statusCode);
       expect(res.body).toEqual({
-        statusCode: 401,
-        error: 'Unauthorized',
-        message: 'Unauthorized',
+        statusCode,
+        error,
+        message: error,
         requestId: expect.any(String),
       });
     };
@@ -100,13 +103,13 @@ describe('route protection', () => {
     });
 
     it('answers 401 without a cookie', async () => {
-      for (const route of guarded()) expectUnauthorized(await call(route.key));
+      for (const route of guarded()) expectUnauthorized(await call(route.key), route.key);
     });
 
     it('answers 401 for a forged cookie', async () => {
       const name = users.owner.cookie.split('=')[0];
       for (const route of guarded()) {
-        expectUnauthorized(await call(route.key, `${name}=forged.value`));
+        expectUnauthorized(await call(route.key, `${name}=forged.value`), route.key);
       }
     });
 
@@ -117,7 +120,7 @@ describe('route protection', () => {
         .set('Origin', t.baseUrl)
         .set('Cookie', cookie)
         .expect(200);
-      for (const route of guarded()) expectUnauthorized(await call(route.key, cookie));
+      for (const route of guarded()) expectUnauthorized(await call(route.key, cookie), route.key);
     });
   });
 
