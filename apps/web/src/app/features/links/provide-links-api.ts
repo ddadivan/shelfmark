@@ -1,4 +1,12 @@
-import type { Provider } from '@angular/core';
+import { inject, type Provider } from '@angular/core';
+import {
+  tabSyncedFoldersApi,
+  tabSyncedLinksApi,
+  tabSyncedTagsApi,
+  tabSyncedPinsApi,
+  tabSyncedTrashApi,
+} from '../../core/sync/tab-synced-apis';
+import { TabSyncService } from '../../core/sync/tab-sync.service';
 import { HttpExportApi } from '../export/http/http-export.api';
 import { EXPORT_API } from '../export/models/export-api.const';
 import { HttpUserSettingsApi } from '../settings/http/http-user-settings.api';
@@ -23,12 +31,28 @@ import { TAGS_API } from './models/tags-api.const';
  */
 export function provideLinksApi(): Provider[] {
   return [
-    { provide: LINKS_API, useExisting: HttpLinksApi },
-    { provide: FOLDERS_API, useExisting: HttpFoldersApi },
-    { provide: TAGS_API, useExisting: HttpTagsApi },
+    // Writes are also posted to the other tabs (tab sync, #268).
+    {
+      provide: LINKS_API,
+      useFactory: () => tabSyncedLinksApi(inject(HttpLinksApi), inject(TabSyncService)),
+    },
+    {
+      provide: FOLDERS_API,
+      useFactory: () => tabSyncedFoldersApi(inject(HttpFoldersApi), inject(TabSyncService)),
+    },
+    {
+      provide: TAGS_API,
+      useFactory: () => tabSyncedTagsApi(inject(HttpTagsApi), inject(TabSyncService)),
+    },
     { provide: EXPORT_API, useExisting: HttpExportApi },
-    { provide: PINS_API, useExisting: HttpPinsApi },
-    { provide: TRASH_API, useExisting: HttpTrashApi },
+    {
+      provide: PINS_API,
+      useFactory: () => tabSyncedPinsApi(inject(HttpPinsApi), inject(TabSyncService)),
+    },
+    {
+      provide: TRASH_API,
+      useFactory: () => tabSyncedTrashApi(inject(HttpTrashApi), inject(TabSyncService)),
+    },
     { provide: USER_SETTINGS_API, useExisting: HttpUserSettingsApi },
   ];
 }

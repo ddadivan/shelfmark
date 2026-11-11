@@ -19,7 +19,12 @@ import { APP_PATH } from '../../../models/app-path.const';
   templateUrl: './folder-tile.component.html',
   styleUrl: './folder-tile.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '[class.folder-tile--row]': 'row()' },
+  host: {
+    '[class.folder-tile--row]': 'row()',
+    '[class.folder-tile--drop]': 'dropTarget()',
+    // `LINK_DROP_ATTRIBUTE`, hit-tested by `LinkDragService`: a dragged link can be dropped here.
+    '[attr.data-link-drop-folder]': 'folder().id',
+  },
 })
 export class FolderTileComponent {
   readonly folder = input.required<FolderResponse>();
@@ -27,6 +32,8 @@ export class FolderTileComponent {
   readonly childCount = input(0);
   /** The list view: a full-width row instead of a tile. */
   readonly row = input(false);
+  /** A dragged link is over this tile: it is highlighted as the drop target. */
+  readonly dropTarget = input(false);
 
   protected readonly settings = inject(UserSettingsStore);
   protected readonly ICON_SIZE = ICON_SIZE;

@@ -1,0 +1,8 @@
+@use 'ui' as *;
+
+.signed-out__text {
+  @include type(body);
+
+  margin: 0;
+  color: var(--text-muted);
+}
