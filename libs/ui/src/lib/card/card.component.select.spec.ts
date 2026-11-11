@@ -56,7 +56,7 @@ describe('CardComponent select slot', () => {
     expect(touch).toContain('.ui-card__select');
     const base = css;
     expect(base).toContain('.ui-card--selecting');
-    expect(base).toMatch(/box-shadow: 0 0 0 2px var\(--primary\)/);
+    expect(base).toMatch(/box-shadow: 0 0 0 2px var\(--accent\)/);
   });
 
   it('has no axe violations, checked or not', async () => {

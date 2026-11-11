@@ -77,13 +77,20 @@
   box-shadow: 0 0 0 2px var(--accent);
 }
 
-// Picked for a bulk action (Checkbox spec): a 2px `primary` ring, also while hovered.
+// Picked for a bulk action: a thin 2px `accent` (sage) ring and a light `accent-bg` tint, also
+// while hovered. The author's choice (the Checkbox spec says a `primary` ring, which is too loud
+// in dark); `text` and `text-muted` hold 4.5:1 on `accent-bg` in both themes.
 :host(.ui-card--checked) {
-  box-shadow: 0 0 0 2px var(--primary);
+  // Chips are `accent-bg` too: on the tinted card they sit on `surface`, so they stay visible.
+  --ui-chip-bg: var(--surface);
+
+  background: var(--accent-bg);
+  box-shadow: 0 0 0 2px var(--accent);
 
   @include hover {
+    background: var(--accent-bg);
     box-shadow:
-      0 0 0 2px var(--primary),
+      0 0 0 2px var(--accent),
       var(--shadow-card-spread);
   }
 }
@@ -305,7 +312,10 @@
 
 .ui-card__actions {
   position: absolute;
-  inset: rem(8px) rem(8px) auto auto;
+
+  --ui-button-sm-size: #{rem(32px)};
+
+  inset: rem(10px) rem(10px) auto auto;
   z-index: 2;
   display: flex;
   gap: rem(4px);
@@ -355,7 +365,15 @@
 // It fades in with the actions on hover and keyboard focus, and stays while a selection runs.
 .ui-card__select {
   position: absolute;
-  inset: rem(14px) auto auto rem(14px);
+
+  // Same row, size and inset as the "..." on the right: 32px squares (40px on touch).
+  --ui-checkbox-size: #{rem(32px)};
+  --ui-checkbox-hit: #{rem(32px)};
+  --ui-checkbox-radius: #{rem(10px)};
+  --ui-checkbox-tick: #{rem(20px)};
+  --ui-checkbox-fill: var(--accent);
+
+  inset: rem(10px) auto auto rem(10px);
   z-index: 2;
   display: flex;
   opacity: 0;
@@ -383,5 +401,18 @@
 @media (hover: none) {
   .ui-card__select {
     opacity: 1;
+  }
+}
+
+// Touch: the checkbox and the "..." both grow to 40px.
+@include coarse {
+  .ui-card__select {
+    --ui-checkbox-size: #{rem(40px)};
+    --ui-checkbox-hit: #{rem(40px)};
+    --ui-checkbox-radius: #{rem(12px)};
+  }
+
+  .ui-card__actions {
+    --ui-button-sm-size: #{rem(40px)};
   }
 }
