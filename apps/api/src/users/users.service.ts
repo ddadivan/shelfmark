@@ -9,6 +9,8 @@ import type {
 import type { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { toRetentionDays } from '../trash/trash.service';
+import { APPEARANCE_SELECT } from './models/appearance-select.const';
+import { customThemeColumns, toAppearanceSettings } from './to-appearance-settings';
 
 @Injectable()
 export class UsersService {
@@ -59,13 +61,19 @@ export class UsersService {
   async getSettings(user: AuthUser): Promise<UserSettingsResponse> {
     const row = await this.prisma.user.findUnique({
       where: { id: user.id },
-      select: { trashRetentionDays: true, folderColours: true, historyPaused: true },
+      select: {
+        trashRetentionDays: true,
+        folderColours: true,
+        historyPaused: true,
+        ...APPEARANCE_SELECT,
+      },
     });
     if (!row) throw new NotFoundException();
     return {
       trashRetentionDays: toRetentionDays(row.trashRetentionDays),
       folderColours: row.folderColours,
       pauseHistory: row.historyPaused,
+      ...toAppearanceSettings(row),
     };
   }
 
@@ -79,6 +87,10 @@ export class UsersService {
       data.trashRetentionDays = request.trashRetentionDays;
     if (request.folderColours !== undefined) data.folderColours = request.folderColours;
     if (request.pauseHistory !== undefined) data.historyPaused = request.pauseHistory;
+    if (request.theme !== undefined) data.theme = request.theme;
+    if (request.motion !== undefined) data.motion = request.motion;
+    if (request.customTheme !== undefined)
+      Object.assign(data, customThemeColumns(request.customTheme));
     if (Object.keys(data).length > 0) {
       await this.prisma.user.updateMany({ where: { id: user.id }, data });
     }
