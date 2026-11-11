@@ -26,7 +26,12 @@ describe('ShortcutsDialogComponent', () => {
     const headings = Array.from(root.querySelectorAll('h3')).map((h) => h.textContent?.trim());
 
     expect(root.querySelector('h2')?.textContent).toContain('Keyboard shortcuts');
-    expect(headings).toEqual(['Everywhere', 'Saving and finding', 'In the folder list']);
+    expect(headings).toEqual([
+      'Everywhere',
+      'Saving and finding',
+      'Selecting links',
+      'In the folder list',
+    ]);
     const count = SHORTCUT_GROUPS.reduce((sum, group) => sum + group.shortcuts.length, 0);
     expect(root.querySelectorAll('li')).toHaveLength(count);
     expect(root.textContent).toContain('Press ? anywhere except in a text field.');

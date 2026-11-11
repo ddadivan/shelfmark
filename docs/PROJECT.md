@@ -413,7 +413,7 @@ const libraryPage = () => import('./features/library/library.page');
 
 **"Share" (PWA).** The manifest has `share_target` with `method: "GET"` and `action: "/share"`, params `url`, `title`, `text`. Telegram often puts the link in `text`, so the page extracts the first URL from there. Saving is a regular `POST /api/links`, followed by a toast and a return to the original app.
 
-**Navigation shortcuts:** `G` then `A` for all links, `G` `U` for no folder, `G` `F` for favorites, `G` `S` for settings, ⌘K for search from anywhere (full list in the "Tooltips and keyboard shortcuts" section).
+**Navigation shortcuts:** ⌘K for search from anywhere; the planned `G` `A` / `G` `U` / `G` `F` / `G` `S` letters are not built (the real list is `SHORTCUT_GROUPS`, see "Keyboard shortcuts" in 7.2).
 
 **Frontend structure:** `apps/web/src/app/` → `app.routes.ts`, `app.config.ts`, `shell/` (AppShell, Header, Sidebar), `core/` (guards, interceptors, `AuthStore`, `TitleStrategy`, `DialogService`), `features/{landing,auth,library,settings,share,legal,not-found}/`, `stores/` (Links, Folders, Tags, Ui).
 
@@ -774,7 +774,7 @@ In CI: `@axe-core/playwright` on the key screens in both themes; the build fails
 
 **Tooltips** (`uiTooltip`, appear after 400 ms on hover or keyboard focus, not shown on touch screens): on every icon button (theme, avatar, new folder, view toggle, card actions, star), on titles truncated with "…" (full title), on relative dates ("2 days ago" → exact date). The tooltip shows the keyboard shortcut if there is one. A tooltip is never the only place where information is available.
 
-**Keyboard shortcuts:** ⌘K / Ctrl+K for search; N to add a link; on a selected link E to edit, F to favorite, Delete to delete; V C / V L for the "cards" / "list" view; G A / G U / G F / G S to go to all links, no folder, favorites, settings; Esc to close a window. The list of the shortcuts that exist is a dialog from the keyboard icon in the top bar and under the "?" key, and a page in settings.
+**Keyboard shortcuts:** one list, `SHORTCUT_GROUPS` (`features/shortcuts`), is the source of truth: the dialog (keyboard icon in the top bar and the "?" key) and Settings › Keyboard shortcuts both render it, and a unit test compares it with the key handlers, so every bound shortcut is listed and nothing unbound is (#315). Today: ⌘K / Ctrl+K search, ? this list, Esc closes a dialog, menu or toast, ⌘Z undo while an Undo toast shows, Alt+Shift+T the toast's button; ⌘Enter saves the link dialog, ⌘V pastes links into the library, ↑ ↓ / Enter / ⌘Enter in the search results; Space, Shift+Space, ⌘A, M and Esc for selecting links; ↑ ↓ ← → and Shift+F10 in the folder list, Alt+↑ / Alt+↓ to reorder pinned items and folders. The letter shortcuts of the stage 1 plan (N, E, F, V C, G A …) are not built.
 
 ### 7.3 Stage 1 screens
 

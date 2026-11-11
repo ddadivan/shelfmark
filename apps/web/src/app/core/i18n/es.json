@@ -1407,7 +1407,8 @@
     "groups": {
       "everywhere": "En todas partes",
       "links": "Guardar y encontrar",
-      "folders": "En la lista de carpetas"
+      "folders": "En la lista de carpetas",
+      "selecting": "Seleccionar enlaces"
     },
     "items": {
       "search": "Buscar",
@@ -1423,7 +1424,12 @@
       "toggleFolder": "Cerrar o abrir una carpeta",
       "folderMenu": "Abrir el menú de la carpeta",
       "paste": "Pegar enlaces en la biblioteca",
-      "reorder": "Subir o bajar un elemento fijado o una carpeta"
+      "reorder": "Subir o bajar un elemento fijado o una carpeta",
+      "select": "Seleccionar o deseleccionar el enlace activo",
+      "selectRange": "Seleccionar hasta el enlace activo",
+      "selectAll": "Seleccionar todos los enlaces de la lista",
+      "moveLink": "Mover el enlace activo a una carpeta",
+      "clearSelection": "Borrar la selección"
     },
     "keys": {
       "command": "Comando",
@@ -1437,7 +1443,8 @@
       "down": "Abajo",
       "left": "Izquierda",
       "right": "Derecha",
-      "question": "Signo de interrogación"
+      "question": "Signo de interrogación",
+      "space": "Espacio"
     }
   },
   "tags": {

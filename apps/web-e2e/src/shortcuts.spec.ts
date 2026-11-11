@@ -26,6 +26,7 @@ test.describe('keyboard shortcuts (mock API)', () => {
     await expect(dialog.getByRole('heading', { level: 3 })).toHaveText([
       'Everywhere',
       'Saving and finding',
+      'Selecting links',
       'In the folder list',
     ]);
     await expect(dialog.getByRole('listitem').filter({ hasText: 'Search' }).first()).toBeVisible();
@@ -116,6 +117,7 @@ test.describe('keyboard shortcuts (mock API)', () => {
       DIALOG,
       'Everywhere',
       'Saving and finding',
+      'Selecting links',
       'In the folder list',
     ]);
 

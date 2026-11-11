@@ -1383,7 +1383,8 @@
     "groups": {
       "everywhere": "Everywhere",
       "links": "Saving and finding",
-      "folders": "In the folder list"
+      "folders": "In the folder list",
+      "selecting": "Selecting links"
     },
     "items": {
       "search": "Search",
@@ -1399,7 +1400,12 @@
       "toggleFolder": "Close or open a folder",
       "folderMenu": "Open the folder menu",
       "paste": "Paste links into the library",
-      "reorder": "Move a pinned item or folder up or down"
+      "reorder": "Move a pinned item or folder up or down",
+      "select": "Select or unselect the focused link",
+      "selectRange": "Select up to the focused link",
+      "selectAll": "Select every link in the list",
+      "moveLink": "Move the focused link to a folder",
+      "clearSelection": "Clear the selection"
     },
     "keys": {
       "command": "Command",
@@ -1413,7 +1419,8 @@
       "down": "Down",
       "left": "Left",
       "right": "Right",
-      "question": "Question mark"
+      "question": "Question mark",
+      "space": "Space"
     }
   },
   "tags": {

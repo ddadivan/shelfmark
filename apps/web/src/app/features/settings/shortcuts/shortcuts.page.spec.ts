@@ -34,6 +34,7 @@ describe('ShortcutsPage', () => {
       'Keyboard shortcuts',
       'Everywhere',
       'Saving and finding',
+      'Selecting links',
       'In the folder list',
     ]);
     const count = SHORTCUT_GROUPS.reduce((sum, group) => sum + group.shortcuts.length, 0);

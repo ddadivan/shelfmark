@@ -4,18 +4,21 @@ import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco
 import { SHORTCUT_GROUPS } from '../models/shortcut-groups.const';
 import { ShortcutListComponent } from './shortcut-list.component';
 
-async function setup(index: number): Promise<ComponentFixture<ShortcutListComponent>> {
+async function setup(id: string): Promise<ComponentFixture<ShortcutListComponent>> {
   TestBed.configureTestingModule({ providers: [provideTranslocoForTest()] });
   await loadEnglish();
   const fixture = TestBed.createComponent(ShortcutListComponent);
-  fixture.componentRef.setInput('group', SHORTCUT_GROUPS[index]);
+  fixture.componentRef.setInput(
+    'group',
+    SHORTCUT_GROUPS.find((group) => group.id === id),
+  );
   await fixture.whenStable();
   return fixture;
 }
 
 describe('ShortcutListComponent', () => {
   it('lists what each shortcut does with its keys as kbd caps', async () => {
-    const fixture = await setup(0);
+    const fixture = await setup('everywhere');
     const rows = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('li'));
 
     expect(rows.map((row) => row.querySelector('.shortcut-list__label')?.textContent)).toEqual([
@@ -30,7 +33,7 @@ describe('ShortcutListComponent', () => {
   });
 
   it('names symbol caps for screen readers and hides the symbol', async () => {
-    const fixture = await setup(2);
+    const fixture = await setup('folders');
     const cap = (fixture.nativeElement as HTMLElement).querySelector('kbd');
 
     expect(cap?.querySelector('[aria-hidden="true"]')?.textContent).toBe('↑');
@@ -38,7 +41,7 @@ describe('ShortcutListComponent', () => {
   });
 
   it('has no axe violations', async () => {
-    const fixture = await setup(1);
+    const fixture = await setup('links');
 
     expect(await axeViolations(fixture.nativeElement as HTMLElement)).toEqual([]);
   });

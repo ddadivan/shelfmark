@@ -1407,7 +1407,8 @@
     "groups": {
       "everywhere": "Em qualquer lugar",
       "links": "Salvar e encontrar",
-      "folders": "Na lista de pastas"
+      "folders": "Na lista de pastas",
+      "selecting": "Selecionar links"
     },
     "items": {
       "search": "Pesquisar",
@@ -1423,7 +1424,12 @@
       "toggleFolder": "Fechar ou abrir uma pasta",
       "folderMenu": "Abrir o menu da pasta",
       "paste": "Colar links na biblioteca",
-      "reorder": "Mover um item fixado ou uma pasta para cima ou para baixo"
+      "reorder": "Mover um item fixado ou uma pasta para cima ou para baixo",
+      "select": "Selecionar ou desmarcar o link em foco",
+      "selectRange": "Selecionar até o link em foco",
+      "selectAll": "Selecionar todos os links da lista",
+      "moveLink": "Mover o link em foco para uma pasta",
+      "clearSelection": "Limpar a seleção"
     },
     "keys": {
       "command": "Command",
@@ -1437,7 +1443,8 @@
       "down": "Para baixo",
       "left": "Esquerda",
       "right": "Direita",
-      "question": "Ponto de interrogação"
+      "question": "Ponto de interrogação",
+      "space": "Espaço"
     }
   },
   "tags": {

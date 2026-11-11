@@ -1383,7 +1383,8 @@
     "groups": {
       "everywhere": "Überall",
       "links": "Speichern und finden",
-      "folders": "In der Ordnerliste"
+      "folders": "In der Ordnerliste",
+      "selecting": "Links auswählen"
     },
     "items": {
       "search": "Suchen",
@@ -1399,7 +1400,12 @@
       "toggleFolder": "Ordner zu- oder aufklappen",
       "folderMenu": "Ordnermenü öffnen",
       "paste": "Links in die Bibliothek einfügen",
-      "reorder": "Angeheftetes Element oder Ordner nach oben oder unten verschieben"
+      "reorder": "Angeheftetes Element oder Ordner nach oben oder unten verschieben",
+      "select": "Fokussierten Link aus- oder abwählen",
+      "selectRange": "Bis zum fokussierten Link auswählen",
+      "selectAll": "Alle Links der Liste auswählen",
+      "moveLink": "Fokussierten Link in einen Ordner verschieben",
+      "clearSelection": "Auswahl aufheben"
     },
     "keys": {
       "command": "Befehl",
@@ -1413,7 +1419,8 @@
       "down": "Nach unten",
       "left": "Links",
       "right": "Rechts",
-      "question": "Fragezeichen"
+      "question": "Fragezeichen",
+      "space": "Leertaste"
     }
   },
   "tags": {
