@@ -36,6 +36,16 @@ function menuItem(label: string): HTMLElement {
 }
 
 describe('LinkCardComponent', () => {
+  it('readOnly drops the favorite button and the actions menu, and keeps the link', async () => {
+    const { fixture, element } = await setup();
+    fixture.componentRef.setInput('readOnly', true);
+    await fixture.whenStable();
+
+    expect(element.querySelector('button[aria-label^="Actions for"]')).toBeNull();
+    expect(element.querySelector('button[aria-pressed]')).toBeNull();
+    expect(element.querySelector('a[href]')?.getAttribute('target')).toBe('_blank');
+  });
+
   it('has a decorative open bar with the address and "Open", and no extra tab stop', async () => {
     const { element } = await setup();
 

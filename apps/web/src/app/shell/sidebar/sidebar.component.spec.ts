@@ -155,6 +155,7 @@ describe('SidebarComponent', () => {
       'Add link here',
       'Rename',
       'Move to…',
+      'Share…',
       'Delete folder…',
     ]);
   });

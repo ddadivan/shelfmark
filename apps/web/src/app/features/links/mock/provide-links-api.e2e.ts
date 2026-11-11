@@ -15,6 +15,10 @@ import type { TagsApi } from '../models/tags-api.interface';
 import { MockFoldersApi } from './mock-folders.api';
 import { MockLinksApi } from './mock-links.api';
 import { MockTagsApi } from './mock-tags.api';
+import { HttpSharesApi } from '../../sharing/http/http-shares.api';
+import { MockSharesApi } from '../../sharing/mock/mock-shares.api';
+import { SHARES_API } from '../../sharing/models/shares-api.const';
+import type { SharesApi } from '../../sharing/models/shares-api.interface';
 
 /** True when `sm-real-auth-api` is set in `localStorage` (the same switch as `provide-auth-api.dev.ts`). */
 function useRealApi(): boolean {
@@ -41,6 +45,10 @@ export function provideLinksApi(): Provider[] {
     {
       provide: TAGS_API,
       useFactory: (): TagsApi => (useRealApi() ? inject(HttpTagsApi) : inject(MockTagsApi)),
+    },
+    {
+      provide: SHARES_API,
+      useFactory: (): SharesApi => (useRealApi() ? inject(HttpSharesApi) : inject(MockSharesApi)),
     },
     { provide: EXPORT_API, useExisting: MockExportApi },
   ];

@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import type { LinkResponse } from '@shelfmark/contracts';
 import {
   ButtonComponent,
   CardComponent,
@@ -13,6 +12,7 @@ import {
   PointerShadowDirective,
   TooltipDirective,
 } from '@shelfmark/ui';
+import type { LinkCardItem } from '../models/link-card-item.type';
 import { linkAddress, linkHost, ownImageUrl, safeHref, siteLetter } from '../link-view';
 
 const MAX_TAGS = 3;
@@ -41,7 +41,9 @@ const MAX_TAGS = 3;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LinkCardComponent {
-  readonly link = input.required<LinkResponse>();
+  readonly link = input.required<LinkCardItem>();
+  /** No favorite button and no actions menu: a guest looks at someone else's link (#276). */
+  readonly readOnly = input(false);
   /** Plays the fade-in of cards that replace the skeleton. */
   readonly reveal = input(false);
 

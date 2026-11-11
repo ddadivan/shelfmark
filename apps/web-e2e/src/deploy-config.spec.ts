@@ -160,6 +160,19 @@ test.describe('vercel.json deployment config', () => {
     }
   });
 
+  test('public collections (/c/:token) are noindex, nothing else is (ADR 0040)', () => {
+    const rules = config.headers.filter((rule) =>
+      rule.headers.some((h) => h.key === 'X-Robots-Tag'),
+    );
+    expect(rules).toHaveLength(1);
+    expect(rules[0].headers).toEqual([{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }]);
+    const regexp = sourceToRegExp(rules[0].source);
+    expect(regexp.test('/c/sampleToken-sampleToke')).toBe(true);
+    for (const path of ['/', '/links', '/about', '/collections', '/api/c/x']) {
+      expect(regexp.test(path), path).toBe(false);
+    }
+  });
+
   test('hashed js and css share one immutable cache rule', () => {
     const rules = config.headers.filter((rule) =>
       rule.headers.some((h) => h.key === 'Cache-Control' && h.value.includes('immutable')),

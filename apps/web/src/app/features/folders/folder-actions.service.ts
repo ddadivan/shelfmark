@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { FOLDER_LIMIT, type FolderResponse } from '@shelfmark/contracts';
 import { DIALOG_SIZE, DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
+import { AuthStore } from '../../core/auth/auth.store';
 import { APP_PATH } from '../../models/app-path.const';
 import { DIALOG_FIRST_FIELD } from '../../models/dialog-first-field.const';
 import { sidebarActiveId } from '../../shell/sidebar/sidebar-active-id';
@@ -16,10 +17,12 @@ import type { FolderNameDialogData } from './models/folder-name-dialog-data.inte
 import { FOLDER_NAME_MODE } from './models/folder-name-mode.const';
 import type { MoveFolderDialogData } from './models/move-folder-dialog-data.interface';
 import { MoveFolderDialogComponent } from './move-folder-dialog/move-folder-dialog.component';
+import type { ShareFolderDialogData } from '../sharing/models/share-folder-dialog-data.interface';
+import { ShareFolderDialogComponent } from '../sharing/share-folder-dialog/share-folder-dialog.component';
 
 /**
  * What a user can do with folders from the sidebar: create (also as a subfolder), rename, move,
- * delete and add a link into one. Dialogs and texts live here, so components only call.
+ * share as a public collection, delete and add a link into one. Dialogs and texts live here, so components only call.
  * Create and delete wait for the server inside their dialog; rename and move close at once and
  * roll back with a toast when the request fails.
  */
@@ -32,6 +35,7 @@ export class FolderActionsService {
   private readonly transloco = inject(TranslocoService);
   private readonly linkActions = inject(LinkActionsService);
   private readonly treeFocus = inject(SidebarTreeFocusService);
+  private readonly auth = inject(AuthStore);
 
   /** Creates a folder at the top level or inside `parent`, then opens it. */
   async create(parent: FolderResponse | null = null): Promise<void> {
@@ -154,6 +158,21 @@ export class FolderActionsService {
         detail: folder.name,
       });
     }
+  }
+
+  /** Opens the share dialog: the public link of the folder and its settings (#276). */
+  async share(folder: FolderResponse): Promise<void> {
+    await this.dialogs.open<ShareFolderDialogComponent, void, ShareFolderDialogData>(
+      ShareFolderDialogComponent,
+      {
+        size: DIALOG_SIZE.Md,
+        data: {
+          folder,
+          linkCount: this.folders.subtreeLinkCount(folder.id),
+          isDemo: this.auth.user()?.isDemo ?? false,
+        },
+      },
+    ).result;
   }
 
   /** Opens the add-link dialog with the folder preselected. */
