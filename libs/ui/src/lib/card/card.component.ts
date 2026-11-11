@@ -23,8 +23,9 @@ let nextId = 0;
  * meta row), `favorite` (a toggle at the end of the meta row), `actions` (the "..." menu
  * trigger, top right), `overlay` (the bar over the preview, for example the domain and
  * "Open"), `fallback` (shown instead of the image, for example the site letter on `accent-bg`;
- * without it a picture icon is shown); the default slot is the body below the title (note,
- * tags).
+ * without it a picture icon is shown), `select` (a `ui-checkbox` for bulk selection, top left
+ * over the preview: shown on hover, focus inside, while `selecting` and always on touch); the
+ * default slot is the body below the title (note, tags).
  *
  * **One activation target.** The title lives in a single native `<a>` (with `href`) or
  * `<button>` (without) whose `::after` is stretched over the whole card, so the card has one
@@ -53,6 +54,8 @@ let nextId = 0;
   host: {
     class: 'ui-card',
     '[class.ui-card--selected]': 'selected()',
+    '[class.ui-card--checked]': 'checked()',
+    '[class.ui-card--selecting]': 'selecting()',
     '[class.ui-card--pinned]': 'actionsPinned()',
     '[class.ui-card--reveal]': 'reveal()',
   },
@@ -72,6 +75,13 @@ export class CardComponent {
   readonly newTab = input(false, { transform: booleanAttribute });
   /** Selected state: `accent` border and `accent-bg` surface; sets `aria-current="true"`. */
   readonly selected = input(false, { transform: booleanAttribute });
+  /**
+   * Picked for a bulk action (Checkbox spec): a 2px `primary` ring. No ARIA of its own: the
+   * checkbox in the `select` slot carries the state.
+   */
+  readonly checked = input(false, { transform: booleanAttribute });
+  /** A selection is in progress: the `select` slot shows on every card, not only on hover or focus. */
+  readonly selecting = input(false, { transform: booleanAttribute });
   /** Extra text for screen readers after the title, for example "opens in a new tab". */
   readonly description = input<string>();
   /** Keeps the actions visible without hover or focus, for example while their menu is open. */

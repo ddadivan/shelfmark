@@ -1,8 +1,5 @@
 <form [formRoot]="form">
-  <ui-dialog
-    [title]="'links.move.title' | transloco: { title: data.link.title }"
-    [closeLabel]="'links.move.close' | transloco"
-  >
+  <ui-dialog [title]="data.heading" [closeLabel]="'links.move.close' | transloco">
     <div class="move-link__fields">
       <ui-select
         [label]="'links.move.label' | transloco"

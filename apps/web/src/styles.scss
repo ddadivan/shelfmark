@@ -13,6 +13,20 @@
   }
 }
 
+// While the bulk bar shows (#267), toasts sit 12px above it: on desktop above the bar (16px from
+// the bottom, 58px high), on a phone above the bar that floats over the tab bar (68px high).
+:root:has(.library__bulk) {
+  --ui-toast-offset: #{rem(16px + 58px + 12px)};
+}
+
+@include phone {
+  :root:has(app-shell):has(.library__bulk) {
+    --ui-toast-offset: calc(
+      #{rem(20px + 68px + 12px + 68px + 12px)} + env(safe-area-inset-bottom, 0rem)
+    );
+  }
+}
+
 // Cards <-> list morph (View Transitions, started by the library page): every link has a
 // `view-transition-name`, so each card glides into its row. The pseudo-elements live on the
 // document, so these rules must stay global. Reduced motion never starts a transition.

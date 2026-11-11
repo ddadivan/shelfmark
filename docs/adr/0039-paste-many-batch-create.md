@@ -16,6 +16,7 @@ People paste up to 100 links at once (a list, a chat export, a note). The single
 4. **Idempotency per item.** Each item carries its own key, generated once per dialog session; a retry replays known keys (200 when every key was replayed, 201 otherwise). Two items with the same key are a 400. The unique `(user_id, idempotency_key)` index stays the last line of defence.
 5. **Skipped items, not failed batches.** An item whose normalised URL is over the column limit, or repeats an earlier item of the same batch, is skipped and listed in `errors` (`index`, `url`, `code`); the others are saved. Duplicates of links that are already saved are allowed ("save anyway"); the client unchecks them by default.
 6. **Undo.** `POST /api/links/batch/delete` deletes up to 100 of the user's links by id in one statement filtered by `userId`; foreign or missing ids count as nothing (no oracle). The client takes the links out of the feed at once and puts them back if the request fails.
+   *Update (Nov 11, 2026, with #267):* the route now moves the links to Trash (soft delete with one shared `deletedAt`, ADR 0036) like any other delete, so the Undo of a paste and the bulk delete share one handler; the links can still be restored from Trash.
 7. **Stricter limits.** The batch has its own rate limit (5 per minute per IP), the delete 10 per minute; DTO validation caps items, URL, title and tag lengths before the transaction opens.
 
 ## Consequences

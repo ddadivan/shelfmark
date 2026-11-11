@@ -1,11 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
   BadgeComponent,
   ButtonComponent,
+  CheckboxComponent,
   CardComponent,
   ChipComponent,
   FaviconComponent,
+  LongPressDirective,
   MenuComponent,
   MenuItemComponent,
   MenuSeparatorComponent,
@@ -14,6 +16,10 @@ import {
   TooltipDirective,
 } from '@shelfmark/ui';
 import type { LinkCardItem } from '../models/link-card-item.type';
+import { ViewportService } from '../../../core/layout/viewport.service';
+import { linkKeyIntent } from '../selection/link-select-keys';
+import { LINK_KEY_INTENT } from '../selection/models/link-key-intent.const';
+import type { LinkSelectToggle } from '../models/link-select-toggle.interface';
 import { linkAddress, linkHost, ownImageUrl, safeHref, siteLetter } from '../link-view';
 
 const MAX_TAGS = 3;
@@ -28,6 +34,8 @@ const MAX_TAGS = 3;
     TranslocoPipe,
     BadgeComponent,
     ButtonComponent,
+    CheckboxComponent,
+    LongPressDirective,
     CardComponent,
     ChipComponent,
     FaviconComponent,
@@ -43,6 +51,8 @@ const MAX_TAGS = 3;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LinkCardComponent {
+  protected readonly viewport = inject(ViewportService);
+
   readonly link = input.required<LinkCardItem>();
   /** No favorite button and no actions menu: a guest looks at someone else's link (#276). */
   readonly readOnly = input(false);
@@ -71,6 +81,46 @@ export class LinkCardComponent {
   readonly moveRequested = output<void>();
   readonly deleteRequested = output<void>();
 
+  /** A selection is in progress: a click toggles the link instead of opening it (#267). */
+  readonly selecting = input(false);
+  /** The link is picked for a bulk action. */
+  readonly selected = input(false);
+  /** The checkbox, a click while selecting, Space or a long press (phone) asks to toggle. */
+  readonly selectToggled = output<LinkSelectToggle>();
+
+  /** Phone: the checkbox shows only while selecting (a long press starts it). */
+  protected readonly showCheckbox = computed(
+    () => !this.readOnly() && (!this.viewport.phone() || this.selecting()),
+  );
+
+  /** The checkbox is drawn from `selected`; the native toggle is cancelled and the page decides. */
+  protected onCheckboxClick(event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.selectToggled.emit({ range: event.shiftKey });
+  }
+
+  protected onLongPress(): void {
+    if (this.viewport.phone() && !this.readOnly()) {
+      this.selectToggled.emit({ range: false });
+    }
+  }
+
+  /** Space toggles the selection, M moves the link (keys pressed on the link itself). */
+  protected onKeydown(event: KeyboardEvent): void {
+    if (this.readOnly()) {
+      return;
+    }
+    const intent = linkKeyIntent(event);
+    if (intent === LINK_KEY_INTENT.Toggle) {
+      event.preventDefault();
+      this.selectToggled.emit({ range: event.shiftKey });
+    } else if (intent === LINK_KEY_INTENT.Move) {
+      event.preventDefault();
+      this.moveRequested.emit();
+    }
+  }
+
   protected readonly href = computed(() => safeHref(this.link().url));
   protected readonly host = computed(() => linkHost(this.link().url));
   protected readonly address = computed(() => linkAddress(this.link().url));
@@ -80,7 +130,13 @@ export class LinkCardComponent {
   protected readonly tags = computed(() => this.link().tags.slice(0, MAX_TAGS));
   protected readonly hiddenTags = computed(() => Math.max(0, this.link().tags.length - MAX_TAGS));
 
-  protected open(): void {
+  protected open(event?: MouseEvent): void {
+    if (this.selecting()) {
+      // While selecting, the card toggles instead of opening.
+      event?.preventDefault();
+      this.selectToggled.emit({ range: event?.shiftKey ?? false });
+      return;
+    }
     if (this.href() !== undefined) {
       this.opened.emit();
     }

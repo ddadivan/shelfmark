@@ -18,8 +18,10 @@ let nextId = 0;
 /**
  * One saved link in the list view (and, `compact`, in "Recently opened"): a row with `leading`
  * (a `ui-favicon`, or `thumb` for a 56 x 40 preview), the main text and `trailing` controls.
- * Slots (`slot="..."` attributes): `leading`, `title` and `meta` (both inside the link, so
- * they name it), `trailing` (tags, the favorite toggle, the "..." menu trigger).
+ * Slots (`slot="..."` attributes): `select` (a `ui-checkbox` for bulk selection, first in the
+ * row and above the link; it keeps its place and shows on hover, focus inside, while `selecting`
+ * and always on touch), `leading`, `title` and `meta` (both inside the link, so they name it),
+ * `trailing` (tags, the favorite toggle, the "..." menu trigger).
  *
  * **One activation target.** The title and meta live in a single native `<a>` (with `href`) or
  * `<button>` (without) whose `::after` is stretched over the row, so the row has one tab stop
@@ -40,11 +42,15 @@ let nextId = 0;
   selector: 'ui-list-item',
   imports: [NgTemplateOutlet, IconComponent],
   hostDirectives: [{ directive: RippleDirective, inputs: ['uiRipple: ripple'] }],
-  providers: [{ provide: UI_RIPPLE_IGNORE, useValue: '.ui-list-item__trailing' }],
+  providers: [
+    { provide: UI_RIPPLE_IGNORE, useValue: '.ui-list-item__trailing, .ui-list-item__select' },
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-list-item',
     '[class.ui-list-item--selected]': 'selected()',
+    '[class.ui-list-item--checked]': 'checked()',
+    '[class.ui-list-item--selecting]': 'selecting()',
     '[class.ui-list-item--compact]': 'compact()',
     '[class.ui-list-item--reveal]': 'reveal()',
   },
@@ -62,6 +68,10 @@ export class ListItemComponent {
   readonly newTab = input(false, { transform: booleanAttribute });
   /** Selected state: `accent-bg`; sets `aria-current="true"`. */
   readonly selected = input(false, { transform: booleanAttribute });
+  /** Picked for a bulk action: `accent-bg`, no ARIA of its own (the `select` checkbox carries it). */
+  readonly checked = input(false, { transform: booleanAttribute });
+  /** A selection is in progress: the `select` slot shows on every row, not only on hover or focus. */
+  readonly selecting = input(false, { transform: booleanAttribute });
   /** Denser row (8px padding, smaller title) for side panels. */
   readonly compact = input(false, { transform: booleanAttribute });
   /**

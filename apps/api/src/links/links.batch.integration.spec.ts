@@ -392,7 +392,7 @@ describe('links API: batch create and delete (#265)', () => {
   });
 
   describe('batch delete', () => {
-    it('deletes the given own links and ignores missing ids', async () => {
+    it('moves the given own links to Trash (the Undo of a paste) and ignores missing ids', async () => {
       const { links } = await batch(a, {
         items: [item('https://del.test/1'), item('https://del.test/2'), item('https://del.test/3')],
       });
@@ -401,8 +401,16 @@ describe('links API: batch create and delete (#265)', () => {
         .send({ ids: [links[0].id, links[1].id, randomUUID()] })
         .expect(200);
       expect(res.body as DeleteLinksBatchResponse).toEqual({ deleted: 2 });
-      const left = await t.db.prisma.link.findMany({ where: { userId: users.owner.userId } });
-      expect(left.map((row) => row.id)).toEqual([links[2].id]);
+      const live = await t.db.prisma.link.findMany({
+        where: { userId: users.owner.userId, deletedAt: null },
+      });
+      expect(live.map((row) => row.id)).toEqual([links[2].id]);
+      // Soft delete (#267, ADR 0036): the two links wait in Trash with one shared timestamp.
+      const trashed = await t.db.prisma.link.findMany({
+        where: { userId: users.owner.userId, deletedAt: { not: null } },
+      });
+      expect(trashed.map((row) => row.id).sort()).toEqual([links[0].id, links[1].id].sort());
+      expect(new Set(trashed.map((row) => row.deletedAt?.toISOString())).size).toBe(1);
     });
 
     it.each([

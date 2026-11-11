@@ -6,8 +6,23 @@
   [reveal]="reveal()"
   [description]="href() ? ('links.item.opensInNewTab' | transloco) : undefined"
   [actionsPinned]="menu.isOpen()"
-  (activated)="open()"
+  [checked]="selected()"
+  [selecting]="selecting()"
+  uiLongPress
+  [uiLongPressDisabled]="!viewport.phone() || readOnly()"
+  (uiLongPress)="onLongPress()"
+  (activated)="open($event)"
+  (keydown)="onKeydown($event)"
 >
+  @if (showCheckbox()) {
+    <ui-checkbox
+      slot="select"
+      hideLabel
+      [label]="'bulk.item.select' | transloco: { title: link().title }"
+      [checked]="selected()"
+      (click)="onCheckboxClick($event)"
+    />
+  }
   <span slot="fallback" class="link-card__letter" aria-hidden="true">{{ letter() }}</span>
   @if (href()) {
     <span slot="overlay" class="link-card__open">

@@ -1,0 +1,123 @@
+@use '../../styles/ui' as *;
+
+:host {
+  display: block;
+  max-inline-size: 100%;
+}
+
+// Rises in and drops out like a toast (the feature binds the classes with `animate.enter` /
+// `animate.leave`); reduced motion fades.
+:host(.ui-bulk-bar--enter) {
+  @include enter(toast);
+}
+
+:host(.ui-bulk-bar--leave) {
+  @include leave(toast);
+}
+
+.ui-bulk-bar__bar {
+  @include glass;
+
+  box-sizing: border-box;
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+  max-inline-size: 100%;
+  padding: var(--space-2);
+  overflow-x: auto;
+  border-radius: var(--radius-lg);
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// Scoped under the bar (one class more than a host page's `… button` rule), so the buttons stay
+// transparent on the glass.
+.ui-bulk-bar__bar .ui-bulk-bar__action {
+  @include type(label);
+
+  display: inline-flex;
+  flex: none;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-block-size: rem(40px);
+  padding: 0 var(--space-3);
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-md);
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  @include hover {
+    background: var(--surface-hover);
+  }
+
+  &:active {
+    background: var(--surface-pressed);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &[aria-disabled='true'] {
+    cursor: default;
+    opacity: 0.5;
+  }
+
+  @include coarse {
+    min-block-size: rem(44px);
+  }
+}
+
+.ui-bulk-bar__bar .ui-bulk-bar__action--danger {
+  color: var(--danger);
+}
+
+.ui-bulk-bar__icon {
+  flex: none;
+}
+
+.ui-bulk-bar__divider {
+  flex: none;
+  inline-size: 0;
+  block-size: rem(24px);
+  margin-inline: var(--space-1);
+  border-inline-start: 1px solid var(--border);
+}
+
+// Phone: 68px tall, 26px corners like the tab bar; the buttons share the width, icon above label.
+:host(.ui-bulk-bar--stacked) {
+  .ui-bulk-bar__bar {
+    block-size: rem(68px);
+    padding-block: 0;
+    padding-inline: var(--space-2);
+    border-radius: rem(26px);
+  }
+
+  .ui-bulk-bar__bar .ui-bulk-bar__action {
+    @include type(caption);
+
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: rem(2px);
+    min-inline-size: rem(52px);
+    block-size: rem(52px);
+    padding: 0 var(--space-1);
+    font-weight: 500;
+    border-radius: rem(18px);
+  }
+
+  .ui-bulk-bar__label {
+    max-inline-size: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

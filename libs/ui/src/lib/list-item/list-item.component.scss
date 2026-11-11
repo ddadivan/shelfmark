@@ -50,6 +50,45 @@
   }
 }
 
+:host(.ui-list-item--checked) {
+  background: var(--accent-bg);
+}
+
+// Bulk selection checkbox: above the stretched link, keeps its place (no shift on hover).
+.ui-list-item__select {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: none;
+  align-items: center;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+
+  &:empty {
+    display: none;
+  }
+}
+
+:host {
+  @include hover {
+    .ui-list-item__select {
+      opacity: 1;
+    }
+  }
+}
+
+:host(:has(:focus-visible)) .ui-list-item__select,
+:host(.ui-list-item--selecting) .ui-list-item__select,
+:host(.ui-list-item--checked) .ui-list-item__select {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .ui-list-item__select {
+    opacity: 1;
+  }
+}
+
 .ui-list-item__leading {
   display: flex;
   flex: none;

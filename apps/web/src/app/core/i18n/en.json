@@ -1839,5 +1839,126 @@
       "action": "Start your shelf"
     },
     "madeWith": "Made with Shelfmark"
+  },
+  "bulk": {
+    "bar": {
+      "label": {
+        "one": "Actions for {{count}} selected link",
+        "other": "Actions for {{count}} selected links"
+      },
+      "move": "Move",
+      "tags": "Tags",
+      "favorite": "Favorite",
+      "openAll": "Open all",
+      "copy": "Copy links",
+      "share": "Share",
+      "delete": "Delete"
+    },
+    "header": {
+      "label": "Selection",
+      "selected": {
+        "one": "{{count}} selected",
+        "other": "{{count}} selected"
+      },
+      "selectAll": "Select all {{count}}",
+      "selectAllShort": "Select all",
+      "selectAllBox": {
+        "one": "Select all {{count}} link",
+        "other": "Select all {{count}} links"
+      },
+      "shift": "Shift",
+      "rangeHint": "+ click selects a range",
+      "esc": "Esc",
+      "clearHint": "clears",
+      "done": "Done",
+      "cancel": "Cancel selection",
+      "longPressHint": "Long-press a link to start selecting, then tap others."
+    },
+    "item": {
+      "select": "Select {{title}}"
+    },
+    "move": {
+      "title": {
+        "one": "Move {{count}} link",
+        "other": "Move {{count}} links"
+      },
+      "moved": {
+        "one": "{{count}} link moved to {{folder}}",
+        "other": "{{count}} links moved to {{folder}}"
+      },
+      "failed": "Couldn't move the links",
+      "failedDetail": "They are back where they were",
+      "undoFailed": "Couldn't move the links back"
+    },
+    "tags": {
+      "title": {
+        "one": "Tags for {{count}} link",
+        "other": "Tags for {{count}} links"
+      },
+      "add": "Add to all",
+      "addHint": "Added to every selected link",
+      "remove": "Remove from all",
+      "removeHint": "Taken off every selected link; the tags themselves stay",
+      "removePlaceholder": "Pick a tag",
+      "onLinks": "on {{count}} of {{total}}",
+      "apply": "Apply",
+      "cancel": "Cancel",
+      "close": "Close",
+      "done": {
+        "one": "Tags updated on {{count}} link",
+        "other": "Tags updated on {{count}} links"
+      },
+      "failed": "Couldn't change the tags",
+      "failedDetail": "Nothing was changed",
+      "tooMany": "A link can have at most {{max}} tags. Nothing was changed."
+    },
+    "favorite": {
+      "on": {
+        "one": "{{count}} link added to favorites",
+        "other": "{{count}} links added to favorites"
+      },
+      "off": {
+        "one": "{{count}} link removed from favorites",
+        "other": "{{count}} links removed from favorites"
+      },
+      "failed": "Couldn't change favorites",
+      "failedDetail": "Nothing was changed"
+    },
+    "open": {
+      "confirmTitle": "Open {{count}} links?",
+      "confirmMessage": "Each link opens in a new tab.",
+      "confirm": "Open all",
+      "cancel": "Cancel",
+      "close": "Close",
+      "blocked": "The browser blocked {{blocked}} of {{count}} tabs",
+      "blockedDetail": "Allow pop-ups for this site to open them all"
+    },
+    "copy": {
+      "done": {
+        "one": "{{count}} link copied",
+        "other": "{{count}} links copied"
+      },
+      "failed": "Couldn't copy the links"
+    },
+    "share": {
+      "failed": "Couldn't share the links"
+    },
+    "delete": {
+      "title": {
+        "one": "Move {{count}} link to Trash?",
+        "other": "Move {{count}} links to Trash?"
+      },
+      "message": "They stay in Trash for {{days}} days, then they are deleted for good.",
+      "confirm": "Move to Trash",
+      "cancel": "Cancel",
+      "close": "Close",
+      "done": {
+        "one": "{{count}} link moved to Trash",
+        "other": "{{count}} links moved to Trash"
+      },
+      "failed": "Couldn't delete the links",
+      "failedDetail": "They are back in the list",
+      "undoFailed": "Couldn't restore the links"
+    }
   }
 }
