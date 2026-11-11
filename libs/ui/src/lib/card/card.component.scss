@@ -219,6 +219,10 @@
 
 .ui-card__body {
   display: flex;
+
+  // Cards in a grid row share one height: the body takes the free room, so projected tags can sit
+  // at the bottom (`margin-block-start: auto`).
+  flex: 1;
   flex-direction: column;
   gap: var(--density-card-gap);
   padding: var(--density-card-padding);

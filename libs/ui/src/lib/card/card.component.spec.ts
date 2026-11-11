@@ -96,6 +96,29 @@ describe('CardComponent', () => {
     expect(card.querySelector('.ui-card__overlay')?.getAttribute('aria-hidden')).toBe('true');
   });
 
+  it('describes the full title with a tooltip only while the clamp cuts it', () => {
+    const { card, update } = setup();
+    const link = card.querySelector('.ui-card__link') as HTMLElement;
+    const sizes = (scroll: number, client: number) => {
+      Object.defineProperty(link, 'scrollHeight', { configurable: true, value: scroll });
+      Object.defineProperty(link, 'clientHeight', { configurable: true, value: client });
+    };
+    sizes(44, 44);
+    link.dispatchEvent(new Event('focus'));
+    update(() => undefined);
+    expect(link.getAttribute('aria-description')).toBeNull();
+
+    sizes(66, 44);
+    link.dispatchEvent(new Event('focus'));
+    update(() => undefined);
+    expect(link.getAttribute('aria-description')).toBe('Angular 22 Signal Forms');
+
+    sizes(44, 44);
+    link.dispatchEvent(new Event('focus'));
+    update(() => undefined);
+    expect(link.getAttribute('aria-description')).toBeNull();
+  });
+
   it('forwards a click on the open bar to the title link, keeping modifier keys', () => {
     const { card, instance } = setup();
     card

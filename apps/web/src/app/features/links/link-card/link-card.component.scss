@@ -35,8 +35,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-1);
-  padding: 0;
-  margin: var(--space-2) 0 0;
+  padding: var(--space-2) 0 0;
+  margin: auto 0 0; // the card body is a flex column: tags sit at the bottom of every card
   list-style: none;
 }
 
