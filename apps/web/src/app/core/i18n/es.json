@@ -454,6 +454,67 @@
       "failedDetail": "Ha vuelto a donde estaba",
       "undoFailed": "No se pudo devolver el enlace a su sitio"
     },
+    "many": {
+      "title": {
+        "one": "Añadir {{count}} enlace",
+        "many": "Añadir {{count}} enlaces",
+        "other": "Añadir {{count}} enlaces"
+      },
+      "titleNone": "Añadir enlaces",
+      "found": {
+        "one": "Se encontró {{count}} enlace en lo que pegaste.",
+        "many": "Se encontraron {{count}} enlaces en lo que pegaste.",
+        "other": "Se encontraron {{count}} enlaces en lo que pegaste."
+      },
+      "already": {
+        "one": "{{count}} ya está en tu estantería.",
+        "many": "{{count}} ya están en tu estantería.",
+        "other": "{{count}} ya están en tu estantería."
+      },
+      "selectAll": "Seleccionar todo",
+      "selectedCount": "{{selected}} de {{total}} seleccionados",
+      "listLabel": "Enlaces pegados",
+      "row": {
+        "loading": "Cargando vista previa",
+        "alreadySaved": "Ya guardado",
+        "remove": "Quitar {{title}}",
+        "quoted": "«{{text}}»",
+        "skipped": "No es un enlace, omitido"
+      },
+      "overflow": {
+        "one": "Se dejó fuera {{count}} enlace más: hasta {{max}} enlaces a la vez. Las listas más largas van por Importar como texto.",
+        "many": "Se dejaron fuera {{count}} enlaces más: hasta {{max}} enlaces a la vez. Las listas más largas van por Importar como texto.",
+        "other": "Se dejaron fuera {{count}} enlaces más: hasta {{max}} enlaces a la vez. Las listas más largas van por Importar como texto."
+      },
+      "folder": "Carpeta para todos",
+      "tags": "Etiquetas para todos",
+      "note": "Los títulos y las vistas previas siguen cargando después de guardar.",
+      "save": {
+        "one": "Guardar {{count}} enlace",
+        "many": "Guardar {{count}} enlaces",
+        "other": "Guardar {{count}} enlaces"
+      },
+      "saveNone": "Guardar enlaces",
+      "saveFailedFit": {
+        "one": "Solo cabe {{fit}} enlace más en tu estantería. Desmarca algunos e inténtalo de nuevo.",
+        "many": "Solo caben {{fit}} enlaces más en tu estantería. Desmarca algunos e inténtalo de nuevo.",
+        "other": "Solo caben {{fit}} enlaces más en tu estantería. Desmarca algunos e inténtalo de nuevo."
+      },
+      "saved": {
+        "one": "{{count}} enlace guardado en {{folder}}",
+        "many": "{{count}} enlaces guardados en {{folder}}",
+        "other": "{{count}} enlaces guardados en {{folder}}"
+      },
+      "stillLoading": "Los títulos y las vistas previas aún se están cargando",
+      "skippedByServer": {
+        "one": "Se omitió {{count}} enlace: estaba repetido o era demasiado largo",
+        "many": "Se omitieron {{count}} enlaces: repetidos o demasiado largos",
+        "other": "Se omitieron {{count}} enlaces: repetidos o demasiado largos"
+      },
+      "noneSaved": "No se guardó ningún enlace",
+      "undoFailed": "No se pudo deshacer",
+      "undoFailedDetail": "Los enlaces siguen guardados"
+    },
     "drag": {
       "moveHere": "Mover aquí",
       "moveOne": "Mover 1 enlace",
@@ -1335,7 +1396,8 @@
       "openBackground": "Abrirlo en una pestaña en segundo plano",
       "moveFolder": "Moverse entre carpetas",
       "toggleFolder": "Cerrar o abrir una carpeta",
-      "folderMenu": "Abrir el menú de la carpeta"
+      "folderMenu": "Abrir el menú de la carpeta",
+      "paste": "Pegar enlaces en la biblioteca"
     },
     "keys": {
       "command": "Comando",

@@ -454,6 +454,67 @@
       "failedDetail": "Ele voltou para onde estava",
       "undoFailed": "Não foi possível devolver o link"
     },
+    "many": {
+      "title": {
+        "one": "Adicionar {{count}} link",
+        "many": "Adicionar {{count}} links",
+        "other": "Adicionar {{count}} links"
+      },
+      "titleNone": "Adicionar links",
+      "found": {
+        "one": "{{count}} link encontrado no que você colou.",
+        "many": "{{count}} links encontrados no que você colou.",
+        "other": "{{count}} links encontrados no que você colou."
+      },
+      "already": {
+        "one": "{{count}} já está na sua estante.",
+        "many": "{{count}} já estão na sua estante.",
+        "other": "{{count}} já estão na sua estante."
+      },
+      "selectAll": "Selecionar tudo",
+      "selectedCount": "{{selected}} de {{total}} selecionados",
+      "listLabel": "Links colados",
+      "row": {
+        "loading": "Carregando prévia",
+        "alreadySaved": "Já salvo",
+        "remove": "Remover {{title}}",
+        "quoted": "“{{text}}”",
+        "skipped": "Não é um link, ignorado"
+      },
+      "overflow": {
+        "one": "{{count}} link a mais ficou de fora: no máximo {{max}} links por vez. Listas maiores vão por Importar como texto.",
+        "many": "{{count}} links a mais ficaram de fora: no máximo {{max}} links por vez. Listas maiores vão por Importar como texto.",
+        "other": "{{count}} links a mais ficaram de fora: no máximo {{max}} links por vez. Listas maiores vão por Importar como texto."
+      },
+      "folder": "Pasta para todos",
+      "tags": "Tags para todos",
+      "note": "Títulos e prévias continuam carregando depois de salvar.",
+      "save": {
+        "one": "Salvar {{count}} link",
+        "many": "Salvar {{count}} links",
+        "other": "Salvar {{count}} links"
+      },
+      "saveNone": "Salvar links",
+      "saveFailedFit": {
+        "one": "Só cabe mais {{fit}} link na sua estante. Desmarque alguns e tente de novo.",
+        "many": "Só cabem mais {{fit}} links na sua estante. Desmarque alguns e tente de novo.",
+        "other": "Só cabem mais {{fit}} links na sua estante. Desmarque alguns e tente de novo."
+      },
+      "saved": {
+        "one": "{{count}} link salvo em {{folder}}",
+        "many": "{{count}} links salvos em {{folder}}",
+        "other": "{{count}} links salvos em {{folder}}"
+      },
+      "stillLoading": "Títulos e prévias ainda estão carregando",
+      "skippedByServer": {
+        "one": "{{count}} link foi ignorado: era repetido ou longo demais",
+        "many": "{{count}} links foram ignorados: repetidos ou longos demais",
+        "other": "{{count}} links foram ignorados: repetidos ou longos demais"
+      },
+      "noneSaved": "Nenhum link foi salvo",
+      "undoFailed": "Não foi possível desfazer",
+      "undoFailedDetail": "Os links continuam salvos"
+    },
     "drag": {
       "moveHere": "Mover para cá",
       "moveOne": "Mover 1 link",
@@ -1335,7 +1396,8 @@
       "openBackground": "Abrir em uma aba em segundo plano",
       "moveFolder": "Passar de uma pasta a outra",
       "toggleFolder": "Fechar ou abrir uma pasta",
-      "folderMenu": "Abrir o menu da pasta"
+      "folderMenu": "Abrir o menu da pasta",
+      "paste": "Colar links na biblioteca"
     },
     "keys": {
       "command": "Command",

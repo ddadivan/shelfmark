@@ -21,7 +21,7 @@ import {
 import { REQUEST_TIMEOUT_MS } from '../common/interceptors/models/request-timeout.const';
 import { FoldersService } from '../folders/folders.service';
 import { Prisma } from '../generated/prisma/client';
-import { stripControlChars } from '../common/validation/has-control-chars';
+import { titleOrUrl } from './title-or-url';
 import { hasPrismaCode } from '../common/prisma/has-prisma-code';
 import { PRISMA_ERROR_CODE } from '../common/prisma/prisma-error-code.const';
 import { PrismaService } from '../prisma/prisma.service';
@@ -41,13 +41,6 @@ const CREATE_RESPONSE_MARGIN_MS = 1_000;
 /** `null` and blank text both mean "no note". */
 function noteOrNull(note: string | null | undefined): string | null {
   return note === undefined || note === null || note.trim() === '' ? null : note;
-}
-
-/** The title when the page gave none: the URL, cut to the title limit. */
-function titleOrUrl(title: string, url: string): string {
-  const clean = stripControlChars(title).replace(/\s+/g, ' ').trim();
-  // By code points: a cut inside a surrogate pair would leave a lone half.
-  return [...(clean === '' ? url : clean)].slice(0, LINK_LIMIT.TitleMax).join('');
 }
 
 /**

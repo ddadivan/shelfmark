@@ -454,6 +454,67 @@
       "failedDetail": "È tornato al suo posto",
       "undoFailed": "Impossibile rimettere il link al suo posto"
     },
+    "many": {
+      "title": {
+        "one": "Aggiungi {{count}} link",
+        "many": "Aggiungi {{count}} link",
+        "other": "Aggiungi {{count}} link"
+      },
+      "titleNone": "Aggiungi link",
+      "found": {
+        "one": "Trovato {{count}} link in ciò che hai incollato.",
+        "many": "Trovati {{count}} link in ciò che hai incollato.",
+        "other": "Trovati {{count}} link in ciò che hai incollato."
+      },
+      "already": {
+        "one": "{{count}} è già sul tuo scaffale.",
+        "many": "{{count}} sono già sul tuo scaffale.",
+        "other": "{{count}} sono già sul tuo scaffale."
+      },
+      "selectAll": "Seleziona tutti",
+      "selectedCount": "{{selected}} di {{total}} selezionati",
+      "listLabel": "Link incollati",
+      "row": {
+        "loading": "Caricamento anteprima",
+        "alreadySaved": "Già salvato",
+        "remove": "Rimuovi {{title}}",
+        "quoted": "«{{text}}»",
+        "skipped": "Non è un link, saltato"
+      },
+      "overflow": {
+        "one": "{{count}} link in più è stato escluso: al massimo {{max}} link alla volta. Gli elenchi più lunghi passano da Importa come testo.",
+        "many": "{{count}} link in più sono stati esclusi: al massimo {{max}} link alla volta. Gli elenchi più lunghi passano da Importa come testo.",
+        "other": "{{count}} link in più sono stati esclusi: al massimo {{max}} link alla volta. Gli elenchi più lunghi passano da Importa come testo."
+      },
+      "folder": "Cartella per tutti",
+      "tags": "Tag per tutti",
+      "note": "Titoli e anteprime continuano a caricarsi dopo il salvataggio.",
+      "save": {
+        "one": "Salva {{count}} link",
+        "many": "Salva {{count}} link",
+        "other": "Salva {{count}} link"
+      },
+      "saveNone": "Salva link",
+      "saveFailedFit": {
+        "one": "C’è posto solo per {{fit}} altro link. Deselezionane alcuni e riprova.",
+        "many": "C’è posto solo per altri {{fit}} link. Deselezionane alcuni e riprova.",
+        "other": "C’è posto solo per altri {{fit}} link. Deselezionane alcuni e riprova."
+      },
+      "saved": {
+        "one": "{{count}} link salvato in {{folder}}",
+        "many": "{{count}} link salvati in {{folder}}",
+        "other": "{{count}} link salvati in {{folder}}"
+      },
+      "stillLoading": "Titoli e anteprime si stanno ancora caricando",
+      "skippedByServer": {
+        "one": "{{count}} link è stato saltato: era un doppione o troppo lungo",
+        "many": "{{count}} link sono stati saltati: doppioni o troppo lunghi",
+        "other": "{{count}} link sono stati saltati: doppioni o troppo lunghi"
+      },
+      "noneSaved": "Nessun link è stato salvato",
+      "undoFailed": "Impossibile annullare",
+      "undoFailedDetail": "I link restano salvati"
+    },
     "drag": {
       "moveHere": "Sposta qui",
       "moveOne": "Sposta 1 link",
@@ -1335,7 +1396,8 @@
       "openBackground": "Aprilo in una scheda in background",
       "moveFolder": "Passa da una cartella all’altra",
       "toggleFolder": "Chiudi o apri una cartella",
-      "folderMenu": "Apri il menu della cartella"
+      "folderMenu": "Apri il menu della cartella",
+      "paste": "Incolla link nella libreria"
     },
     "keys": {
       "command": "Comando",

@@ -454,6 +454,67 @@
       "failedDetail": "Il est de retour à sa place",
       "undoFailed": "Impossible de remettre le lien à sa place"
     },
+    "many": {
+      "title": {
+        "one": "Ajouter {{count}} lien",
+        "many": "Ajouter {{count}} liens",
+        "other": "Ajouter {{count}} liens"
+      },
+      "titleNone": "Ajouter des liens",
+      "found": {
+        "one": "{{count}} lien trouvé dans ce que vous avez collé.",
+        "many": "{{count}} liens trouvés dans ce que vous avez collé.",
+        "other": "{{count}} liens trouvés dans ce que vous avez collé."
+      },
+      "already": {
+        "one": "{{count}} est déjà sur votre étagère.",
+        "many": "{{count}} sont déjà sur votre étagère.",
+        "other": "{{count}} sont déjà sur votre étagère."
+      },
+      "selectAll": "Tout sélectionner",
+      "selectedCount": "{{selected}} sur {{total}} sélectionnés",
+      "listLabel": "Liens collés",
+      "row": {
+        "loading": "Chargement de l’aperçu",
+        "alreadySaved": "Déjà enregistré",
+        "remove": "Retirer {{title}}",
+        "quoted": "« {{text}} »",
+        "skipped": "Pas un lien, ignoré"
+      },
+      "overflow": {
+        "one": "{{count}} lien de plus a été laissé de côté : {{max}} liens maximum à la fois. Les listes plus longues passent par Importer du texte.",
+        "many": "{{count}} liens de plus ont été laissés de côté : {{max}} liens maximum à la fois. Les listes plus longues passent par Importer du texte.",
+        "other": "{{count}} liens de plus ont été laissés de côté : {{max}} liens maximum à la fois. Les listes plus longues passent par Importer du texte."
+      },
+      "folder": "Dossier pour tous",
+      "tags": "Tags pour tous",
+      "note": "Les titres et aperçus continuent de se charger après l’enregistrement.",
+      "save": {
+        "one": "Enregistrer {{count}} lien",
+        "many": "Enregistrer {{count}} liens",
+        "other": "Enregistrer {{count}} liens"
+      },
+      "saveNone": "Enregistrer les liens",
+      "saveFailedFit": {
+        "one": "Il ne reste de la place que pour {{fit}} lien. Décochez-en quelques-uns et réessayez.",
+        "many": "Il ne reste de la place que pour {{fit}} liens. Décochez-en quelques-uns et réessayez.",
+        "other": "Il ne reste de la place que pour {{fit}} liens. Décochez-en quelques-uns et réessayez."
+      },
+      "saved": {
+        "one": "{{count}} lien enregistré dans {{folder}}",
+        "many": "{{count}} liens enregistrés dans {{folder}}",
+        "other": "{{count}} liens enregistrés dans {{folder}}"
+      },
+      "stillLoading": "Les titres et aperçus sont encore en cours de chargement",
+      "skippedByServer": {
+        "one": "{{count}} lien a été ignoré : doublon ou trop long",
+        "many": "{{count}} liens ont été ignorés : doublons ou trop longs",
+        "other": "{{count}} liens ont été ignorés : doublons ou trop longs"
+      },
+      "noneSaved": "Aucun lien n’a été enregistré",
+      "undoFailed": "Impossible d’annuler",
+      "undoFailedDetail": "Les liens restent enregistrés"
+    },
     "drag": {
       "moveHere": "Déplacer ici",
       "moveOne": "Déplacer 1 lien",
@@ -1335,7 +1396,8 @@
       "openBackground": "L’ouvrir dans un onglet en arrière-plan",
       "moveFolder": "Passer d’un dossier à l’autre",
       "toggleFolder": "Fermer ou ouvrir un dossier",
-      "folderMenu": "Ouvrir le menu du dossier"
+      "folderMenu": "Ouvrir le menu du dossier",
+      "paste": "Coller des liens dans la bibliothèque"
     },
     "keys": {
       "command": "Commande",

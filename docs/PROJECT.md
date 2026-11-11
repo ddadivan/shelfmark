@@ -155,6 +155,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
    - An invalid URL is not saved; an error is shown.
    - Folder, tags and note can be set right away; all three fields are optional.
    - If a folder is open, it is pre-filled in the form by default.
+   - **Paste several links** (stage 2, #265, screen `PasteMany`): text with more than one link pasted into the Link field, or pasted with ⌘V / Ctrl+V anywhere in the library outside a field, turns Add link into a list. Links are read one per line or from inside any text; a bare domain with a path gets `https://`; the same link twice counts once; lines without a link are listed as "Not a link, skipped"; at most 100 links, the rest is left out with a note that bigger lists go to Import as text. Each row is checked by default and loads its preview (a few at a time through the preview endpoint); a link that is already saved comes unchecked with an "Already saved" badge; rows can be unchecked or removed; "Folder for all" and "Tags for all" apply to every link. "Save N links" saves them in one request; they land at the top of the feed and a toast says "N links saved to <folder>" with "Titles and previews are still loading" and Undo (8 s). Over the link limit, the dialog says how many more fit.
 4. **Automatic preview.** As a user, I want the title, site icon and preview image to be fetched automatically.
    - After pasting a URL the fields are filled automatically; the user can change them.
    - If the preview could not be fetched (site unavailable, error), the link is saved with the URL instead of the title and a placeholder icon.
@@ -495,7 +496,6 @@ Not part of stage 1. Auto-tags, short descriptions and smart search are planned 
 Stage 1 runs for free on **Vercel (Hobby) + Neon** and is available at a public link; code, tasks and CI are on GitHub.
 
 | Component | Service | Details |
-| --- | --- | --- |
 | Code, tasks | GitHub | Public repository, GitHub Projects |
 | CI | GitHub Actions | Lint, tests, build on every PR |
 | Frontend + API | Vercel (Hobby) | Angular as static files; NestJS as one Vercel Function (zero-config). One `*.vercel.app` domain, so session cookies work without cross-domain issues |
@@ -525,7 +525,6 @@ Sources: [NestJS on Vercel](https://vercel.com/docs/frameworks/backend/nestjs), 
 Security is a mandatory requirement, not a wish: a task is not done until the items below that apply to it are met.
 
 | Risk | Mandatory measures |
-| --- | --- |
 | **SSRF** when fetching previews (the main risk of the service) | Only `http`/`https`; block private and reserved IPs (localhost, 10.x, 172.16–31.x, 192.168.x, 169.254.x, IPv6 equivalents) after DNS resolution; timeout; limits on response size and number of redirects; no cookie forwarding |
 | **Access to other users' data (IDOR)** | Every request to links, folders, tags is filtered by the session `userId`; dedicated tests "user A cannot see or change user B's data" |
 | **XSS** | Angular escaping by default; `innerHTML` and `bypassSecurityTrust…` are forbidden; links with a `javascript:` / `data:` scheme are rejected on the backend |
@@ -576,7 +575,6 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 **Folder**: a folder (nesting via `parentId`)
 
 | Field | Type | Note |
-| --- | --- | --- |
 | `id` | uuid | PK |
 | `userId` | uuid | FK → User |
 | `parentId` | uuid, null | FK → Folder; `null` = top-level folder |
@@ -588,10 +586,6 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 
 **Link**: a link
 
-| Field | Type | Note |
-| --- | --- | --- |
-| `id` | uuid | PK |
-| `userId` | uuid | FK → User |
 | `folderId` | uuid, null | FK → Folder; `null` = "Unsorted" |
 | `url` | string (≤ 2048) | As entered by the user |
 | `normalizedUrl` | string | For duplicate detection (see below) |
@@ -631,7 +625,6 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 All routes except `/api/auth/*` require a session and work only with the current user's data. Contracts (DTOs) are in `libs/shared/contracts`; documentation is Swagger.
 
 | Method | Path | Purpose |
-| --- | --- | --- |
 | `*` | `/api/auth/*` | Sign-in / sign-out with Google and GitHub (Better Auth) |
 | GET | `/api/auth/get-session` | Current user and session (Better Auth); `null` when signed out |
 | DELETE | `/api/me` | Delete the account and all data |
@@ -642,11 +635,12 @@ All routes except `/api/auth/*` require a session and work only with the current
 | DELETE | `/api/links/recent` | Clear the whole history of the user (all own links' `lastOpenedAt` to null); 204 |
 | GET | `/api/links/:id` | One link |
 | POST | `/api/links` | Create: `url`, `title?`, `note?`, `folderId?`, `tags?` (names; new tags are created automatically), `kind?` (from the preview; derived by the server when absent). `POST /api/links/preview` answers `preview.kind`. The account's `keepQuery` off strips tracking parameters from `url` (also on `PATCH`); `fetchPreviews` off means no page fetch and no image capture, image hints ignored (#284) |
+| POST | `/api/links/batch` | Paste many (#265): up to 100 `items` (`url`, `title?`, `idempotencyKey`, `faviconUrl?`, `imageUrl?`) with `folderId?` and `tags?` for all. One transaction under the ADR 0033 lock order, per-item idempotency keys (a replayed key returns its link; 200 when every key was replayed, else 201), the per-user link cap checked for the whole batch (409 whose message says how many more fit), a stricter rate limit (5 per minute). It fetches nothing: images, and the page title of links sent without one, come from the lazy capture (ADR 0027). Items whose normalised URL is too long or repeats an earlier item are skipped and listed in `errors` |
 | PATCH | `/api/links/:id` | Change any fields, including `isFavorite`, `folderId`, `kind` (a new URL without `kind` recomputes it from the host) and `pinnedInFolder` (pin to the top of the folder: 400 in Unsorted, 409 beyond 20 per folder; a move unpins) |
 | POST | `/api/links/:id/open` | Record an open (updates `lastOpenedAt`); answers the link with `recorded: boolean`, `false` while the history is paused (nothing is written, #269) |
 | POST | `/api/links/:id/images/capture` | Re-capture favicon and preview image of a link whose URL changed (pending marker `?v=pending`); claims atomically with a 1 h cooldown, always 200 with the link, 404 for a foreign or missing one |
 | DELETE | `/api/links/:id` | Move to Trash (soft delete: sets `deletedAt`); 404 for a foreign, missing or already trashed link |
-| POST | `/api/links/batch/delete` | Bulk move to Trash: `{ ids }` (1–100 distinct UUIDs) → `{ deleted }`; one shared `deletedAt`, pins cleared; foreign, missing and trashed ids are ignored; restore through `POST /api/trash/restore` (#267, the same route and contract as #265) |
+| POST | `/api/links/batch/delete` | Bulk move to Trash: `{ ids }` (1–100 distinct UUIDs) → `{ deleted }`; one shared `deletedAt`, pins cleared; foreign, missing and trashed ids are ignored; restore through `POST /api/trash/restore` (#267; also the Undo of a paste, #265) |
 | POST | `/api/links/batch/update` | Bulk change: `{ ids, folderId?, addTags?, removeTags?, isFavorite? }` (at least one change; a tag in both lists is a 400) → `{ updated, links }`; one transaction (folders lock, then tags lock, ADR 0033); the folder must be the user's and live (404); a link past 20 tags fails all (409); removing never deletes tags; foreign, missing and trashed ids are ignored; `RATE_LIMIT.UpdateLinksBatch` (#267) |
 | GET | `/api/folders` | All folders as a flat list ordered by name (`parentId` + direct link count) plus `counts` (`all`, `unsorted`, `favorites`) for the fixed sidebar rows; the frontend builds the tree |
 | GET | `/api/folders/:id` | Read one folder (`GetFolderResponse` = `FolderResponse`, with its direct link count); 404 if unknown or foreign |
@@ -707,7 +701,6 @@ A minimalist, recognisable interface with light and dark themes on the own UI li
 **Palette: monochrome (graphite) + a "sage" accent.** Graphite for the background, text and primary buttons; sage only where colour carries meaning: favorites, active menu item, tags, focus. The dark theme is not pure black, text is not pure white. The values are a starting point; final ones are refined in Claude Design with a WCAG AA contrast check.
 
 | Token | Light | Dark |
-| --- | --- | --- |
 | `bg` (page background) | `#F7F7F6` | `#131315` |
 | `surface` (cards, panels) | `#FFFFFF` | `#1C1C1F` |
 | `border` | `#E5E5E2` | `#2C2C30` |
@@ -817,7 +810,6 @@ Buttons: "Skip" (on every step), "Next", and on the last step the primary button
 - every component has a Storybook story with all variants and both themes, unit tests and an accessibility check.
 
 | Component | Variants and states | Behaviour basis |
-| --- | --- | --- |
 | `ui-button` | `primary` / `secondary` / `ghost` / `danger`; sizes `sm` / `md` / `lg`; icon left/right; icon only; `loading`, `disabled` | native button |
 | `ui-input` | types `text` / `url` / `search`; label, hint, error, icon, clear button; `disabled` | Signal Forms |
 | `ui-textarea` | label, hint, error, character counter | Signal Forms |
@@ -853,7 +845,6 @@ Buttons: "Skip" (on every step), "Next", and on the last step the primary button
 Shelfmark's visual uniqueness rests on one geometric language: cards, tag "pills" and site-icon squares, the same motif as on the design-system cover.
 
 | What | Decision |
-| --- | --- |
 | **Logo** | Chosen: a card with a bookmark notch in the top-right corner (graphite + light sage), a "saved link", + the name in Onest 600. Files in the design system: mark for light and dark themes, monochrome, app icon (favicon, PWA) |
 | **Interface icons** | Shelfmark's own set: 44 icons, 24 px grid, 1.75 px stroke, 3 px corner radius, bookmark motif. In Angular, one `ui-icon` component with an SVG sprite |
 | **Illustrations** | Flat geometric scenes in colour tokens (work in both themes): 3 onboarding steps, empty states ("no links", "empty folder", "nothing found"), errors (404, no network), the sign-in screen. Format: SVG, colours via CSS variables |
@@ -869,7 +860,6 @@ Development is run by a "team" made of the main Claude Code session (tech lead) 
 Subagents are `.claude/agents/<name>.md` files in the repository. Subagents cannot launch other subagents, so only the tech lead distributes work.
 
 | Agent | Role | Constraints |
-| --- | --- | --- |
 | **Tech lead** (main session) | Takes a task, calls agents in turn, assembles the result, opens the PR | Does not merge PRs |
 | `project-manager` | Creates issues from this document, sorts them into GitHub Projects statuses, assigns the agent (label), moves the status as work progresses | GitHub only (`gh` CLI / GitHub MCP), does not touch code |
 | `architect` | Solution plan before code: files, contracts, risks | Read-only on code |
@@ -932,7 +922,6 @@ Detailed educational explanations are not written in PRs, except for the backlog
 Skills are `.claude/skills/<name>/SKILL.md` folders.
 
 | Skill | What it does |
-| --- | --- |
 | Angular Agent Skills (official) | Modern Angular context for agents |
 | `angular-v22-rules` | Our own v22 rules on top of the official ones; what is forbidden (NgModules, `*ngIf`, Reactive Forms, `@Injectable`) |
 | `create-ui-component` | Template for a new `libs/ui` component: variants via typed inputs, tokens, Storybook story, tests, a11y |
@@ -943,7 +932,6 @@ Skills are `.claude/skills/<name>/SKILL.md` folders.
 ### 8.5 Hooks and permissions
 
 | When | What happens |
-| --- | --- |
 | After a file edit (`PostToolUse`) | Prettier + ESLint on the changed file |
 | Before a tool call (`PreToolUse`) | Blocks reading and editing `.env*` and dangerous commands (`rm -rf`, `git push --force`, `prisma migrate reset` on a non-local database) |
 | Before finishing (`Stop`) | Typecheck and tests of affected projects (`nx affected`); on failure the agent keeps working |
@@ -965,7 +953,6 @@ Stage 1 is 8 stages (GitHub milestones), roughly 8–9 weeks at \~3 hours a day;
 ### 9.1 Stages
 
 | # | Stage | Contents | Estimate |
-| --- | --- | --- | --- |
 | 0 | Foundation | Nx monorepo, CI, Vercel, Neon, GitHub Projects, CLAUDE.md, agents, skills, hooks | 4–5 days |
 | 1 | Design system | Mockups in Claude Design, tokens, `libs/ui` + Storybook | \~2 weeks |
 | 2 | Authorisation | Google / GitHub, API protection, data isolation | 3–4 days |
@@ -1018,7 +1005,6 @@ The estimate assumes the bottleneck is PR review and fixes, not writing code. Hi
 ### 9.4 Testing
 
 | Level | Tool | Requirement |
-| --- | --- | --- |
 | Unit | Vitest | Coverage ≥ 80% for `apps/api` and `libs/ui` |
 | Components | Storybook | A story for every variant and both themes |
 | E2E | Playwright | Key scenarios: sign-in, adding a link, folders, search, account deletion; phone and desktop |
@@ -1098,7 +1084,6 @@ Stage 1 is considered successful when all acceptance criteria are met, the app p
 ### 10.1 Stage 1 completion criteria
 
 | Area | Criterion |
-| --- | --- |
 | Functionality | All 24 stories of section 4 (including "Onboarding") are done according to their acceptance criteria |
 | Tests | Coverage ≥ 80% (`apps/api`, `libs/ui`); e2e of key scenarios pass on desktop and phone |
 | Security | All 5.8 measures are in place; 0 critical and high vulnerabilities in `npm audit` and CodeQL |
@@ -1115,7 +1100,6 @@ Vercel Analytics (no personal data): number of registered users; share of users 
 Decided by the author on Nov 9, 2026; the full lists are in "Roadmap after stage 1" above.
 
 | Stage | Goal | Contents |
-| --- | --- | --- |
 | 2 | Daily use and polish | Redesign (2027 Refresh), Trash, folder colours, icons and pinning, saved views, paste several links, email and password sign-in, reminders, sharing, custom themes, feedback form, drag & drop, selection and bulk actions, "Move to folder", sync between tabs, interface languages (not Ukrainian for now), landing for signed-in users, Lighthouse ≥ 0.9, dev Dependabot alerts, promo video with a "How it works" button that plays it |
 | 3 | Save faster, smarter | Browser extension, AI tags and descriptions, smart search, demo data carried into a real account |
 | Backlog | Later | Import from Telegram, own authentication (learning format), subscriptions and monetisation, paid hosting, interactive guided tour |

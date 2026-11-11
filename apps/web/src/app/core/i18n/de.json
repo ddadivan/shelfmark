@@ -453,6 +453,59 @@
       "failedDetail": "Er ist wieder an seinem Platz",
       "undoFailed": "Link konnte nicht zurückverschoben werden"
     },
+    "many": {
+      "title": {
+        "one": "{{count}} Link hinzufügen",
+        "other": "{{count}} Links hinzufügen"
+      },
+      "titleNone": "Links hinzufügen",
+      "found": {
+        "one": "{{count}} Link im Eingefügten gefunden.",
+        "other": "{{count}} Links im Eingefügten gefunden."
+      },
+      "already": {
+        "one": "{{count}} ist schon in deinem Regal.",
+        "other": "{{count}} sind schon in deinem Regal."
+      },
+      "selectAll": "Alle auswählen",
+      "selectedCount": "{{selected}} von {{total}} ausgewählt",
+      "listLabel": "Eingefügte Links",
+      "row": {
+        "loading": "Vorschau wird geladen",
+        "alreadySaved": "Schon gespeichert",
+        "remove": "{{title}} entfernen",
+        "quoted": "„{{text}}“",
+        "skipped": "Kein Link, übersprungen"
+      },
+      "overflow": {
+        "one": "{{count}} weiterer Link wurde weggelassen: höchstens {{max}} Links auf einmal. Längere Listen gehen über „Als Text importieren“.",
+        "other": "{{count}} weitere Links wurden weggelassen: höchstens {{max}} Links auf einmal. Längere Listen gehen über „Als Text importieren“."
+      },
+      "folder": "Ordner für alle",
+      "tags": "Tags für alle",
+      "note": "Titel und Vorschauen laden nach dem Speichern weiter.",
+      "save": {
+        "one": "{{count}} Link speichern",
+        "other": "{{count}} Links speichern"
+      },
+      "saveNone": "Links speichern",
+      "saveFailedFit": {
+        "one": "Nur noch {{fit}} Link passt in dein Regal. Wähle einige ab und versuch es noch mal.",
+        "other": "Nur noch {{fit}} Links passen in dein Regal. Wähle einige ab und versuch es noch mal."
+      },
+      "saved": {
+        "one": "{{count}} Link in {{folder}} gespeichert",
+        "other": "{{count}} Links in {{folder}} gespeichert"
+      },
+      "stillLoading": "Titel und Vorschauen werden noch geladen",
+      "skippedByServer": {
+        "one": "{{count}} Link wurde übersprungen: doppelt oder zu lang",
+        "other": "{{count}} Links wurden übersprungen: doppelt oder zu lang"
+      },
+      "noneSaved": "Es wurden keine Links gespeichert",
+      "undoFailed": "Rückgängig machen fehlgeschlagen",
+      "undoFailedDetail": "Die Links bleiben gespeichert"
+    },
     "drag": {
       "moveHere": "Hierher verschieben",
       "moveOne": "1 Link verschieben",
@@ -1321,7 +1374,8 @@
       "openBackground": "In einem Hintergrund-Tab öffnen",
       "moveFolder": "Zwischen Ordnern wechseln",
       "toggleFolder": "Ordner zu- oder aufklappen",
-      "folderMenu": "Ordnermenü öffnen"
+      "folderMenu": "Ordnermenü öffnen",
+      "paste": "Links in die Bibliothek einfügen"
     },
     "keys": {
       "command": "Befehl",

@@ -67,6 +67,9 @@ import { LINKS_API } from '../models/links-api.const';
 import { PREVIEW_STATE } from '../models/preview-state.const';
 import type { PreviewState } from '../models/preview-state.type';
 import { LocaleService } from '../../../core/i18n/locale.service';
+import { parsePastedLinks } from '../paste-many/parse-pasted-links';
+import type { ParsedPaste } from '../paste-many/models/parsed-paste.interface';
+import { PasteManyListComponent } from '../paste-many/paste-many-list.component';
 import { buildFolderOptions } from './folder-options';
 import { displayHost, urlWithoutScheme } from './http-url';
 import { saveErrorKey } from './save-error-key';
@@ -84,6 +87,10 @@ const PREVIEW_DEBOUNCE_MS = 350;
  * (the debounce is the `timer` inside the stream). Its result autofills the title until the user
  * edits it. A failed preview is not an error for saving: the link keeps its address as the title.
  *
+ * Several links pasted into the address field (or handed over as `data.text` by ⌘V in the
+ * library) turn the dialog into the paste-many list (`PasteManyListComponent`), which keeps the
+ * folder and tags chosen so far and closes the dialog itself.
+ *
  * Edit mode (`data.link`): the form is prefilled, the preview runs only after the URL changed and
  * serves the duplicate check alone (the link itself is not a duplicate), saving sends the changed
  * fields only, and Delete hands the link back to the caller (confirm and Undo live there).
@@ -99,6 +106,7 @@ const PREVIEW_DEBOUNCE_MS = 350;
     FormRoot,
     InputComponent,
     NoticeComponent,
+    PasteManyListComponent,
     SelectComponent,
     SkeletonComponent,
     TagInputComponent,
@@ -141,8 +149,12 @@ export class AddLinkDialogComponent {
   protected readonly original = this.data.link;
   protected readonly editing = this.original !== undefined;
 
+  /** What a paste with several links held; set, the paste-many list replaces the form. */
+  protected readonly pasted = signal<ParsedPaste | null>(null);
+  private readonly handedOver = this.editing ? null : this.readHandedOver();
+
   private readonly model = signal<AddLinkFormModel>({
-    url: this.original?.url ?? '',
+    url: this.original?.url ?? this.handedOver?.url ?? '',
     title: this.original?.title ?? '',
     // The folder of the page, else "New links go to" (null is Unsorted).
     folderId: this.original
@@ -340,6 +352,21 @@ export class AddLinkDialogComponent {
   /** Translation key of why the last save failed; `null` while nothing failed. */
   protected readonly saveError = signal<string | null>(null);
 
+  /**
+   * A paste into the address field: text with more than one link opens the paste-many list
+   * instead of landing in the field. One link (or none) pastes as usual.
+   */
+  protected onUrlPaste(event: ClipboardEvent): void {
+    if (this.editing) {
+      return;
+    }
+    const parsed = parsePastedLinks(event.clipboardData?.getData('text/plain') ?? '');
+    if (parsed.links.length > 1) {
+      event.preventDefault();
+      this.pasted.set(parsed);
+    }
+  }
+
   protected openExisting(): void {
     const existing = this.duplicate();
     if (existing) {
@@ -504,6 +531,24 @@ export class AddLinkDialogComponent {
     if (!this.editing && !field.dirty()) {
       field.value.set(title.slice(0, LINK_LIMIT.TitleMax));
     }
+  }
+
+  /**
+   * Text handed over by ⌘V in the library: several links open the list at once, a single one
+   * fills the address (and the preview runs as if it had been pasted into the field).
+   */
+  private readHandedOver(): { url: string } | null {
+    const text = this.data.text;
+    if (text === undefined) {
+      return null;
+    }
+    const parsed = parsePastedLinks(text);
+    if (parsed.links.length > 1) {
+      this.pasted.set(parsed);
+      return null;
+    }
+    const [url] = parsed.links;
+    return url === undefined ? null : { url };
   }
 
   /** Reads `i18n` so a validation message re-translates when the language changes or loads. */

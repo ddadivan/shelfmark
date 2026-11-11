@@ -632,6 +632,60 @@ describe('LibraryPage of a folder', () => {
   });
 });
 
+describe('LibraryPage paste (Cmd/Ctrl+V)', () => {
+  function paste(target: EventTarget, text: string): Event {
+    const event = new Event('paste', { bubbles: true, cancelable: true });
+    Object.defineProperty(event, 'clipboardData', {
+      value: { getData: (type: string) => (type === 'text/plain' ? text : '') },
+    });
+    target.dispatchEvent(event);
+    return event;
+  }
+
+  async function withSpy() {
+    const context = await setup();
+    const open = vi
+      .spyOn(TestBed.inject(AddLinkDialogService), 'open')
+      .mockResolvedValue(undefined);
+    return { ...context, open };
+  }
+
+  it('opens Add link with text that holds links pasted outside a field', async () => {
+    const { open } = await withSpy();
+
+    const event = paste(document.body, 'a.example/1\nb.example/2');
+
+    expect(event.defaultPrevented).toBe(true);
+    expect(open).toHaveBeenCalledWith({ text: 'a.example/1\nb.example/2' });
+  });
+
+  it('pre-selects the open folder', async () => {
+    const { open, fixture } = await withSpy();
+    fixture.componentRef.setInput('scope', LINKS_SCOPE.Folder);
+    fixture.componentRef.setInput('folderId', MOCK_FOLDERS[0].id);
+    await fixture.whenStable();
+
+    paste(document.body, 'https://a.example/1');
+
+    expect(open).toHaveBeenCalledWith({
+      folderId: MOCK_FOLDERS[0].id,
+      text: 'https://a.example/1',
+    });
+  });
+
+  it('leaves a paste into a field, a paste without links and a paste behind a dialog alone', async () => {
+    const { open } = await withSpy();
+    const field = document.createElement('input');
+    document.body.append(field);
+
+    expect(paste(field, 'https://a.example/1').defaultPrevented).toBe(false);
+    expect(paste(document.body, 'just some words').defaultPrevented).toBe(false);
+    field.remove();
+
+    expect(open).not.toHaveBeenCalled();
+  });
+});
+
 describe('LibraryPage breadcrumbs', () => {
   const ROOT: FolderResponse = { ...MOCK_FOLDERS[0], id: 'f1', name: 'Work', parentId: null };
   const CHILD: FolderResponse = { ...ROOT, id: 'f2', name: 'Angular', parentId: 'f1' };

@@ -11,6 +11,8 @@ import {
   type DeleteLinksBatchResponse,
   type UpdateLinksBatchRequest,
   type UpdateLinksBatchResponse,
+  type CreateLinksBatchRequest,
+  type CreateLinksBatchResponse,
   type GetLinkResponse,
   type LinkPreviewRequest,
   type LinkPreviewResponse,
@@ -94,6 +96,12 @@ export class HttpLinksApi implements LinksApi {
       {},
       { context: skipErrorToast() },
     );
+  }
+
+  createBatch(request: CreateLinksBatchRequest): Observable<CreateLinksBatchResponse> {
+    return this.http.post<CreateLinksBatchResponse>(LINKS_BATCH_ENDPOINT.Create, request, {
+      context: skipErrorToast(),
+    });
   }
 
   removeBatch(ids: readonly string[]): Observable<DeleteLinksBatchResponse> {
