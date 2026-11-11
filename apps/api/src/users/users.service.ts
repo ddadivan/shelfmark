@@ -89,6 +89,13 @@ export class UsersService {
     if (request.pauseHistory !== undefined) data.historyPaused = request.pauseHistory;
     if (request.theme !== undefined) data.theme = request.theme;
     if (request.motion !== undefined) data.motion = request.motion;
+    if (
+      request.theme !== undefined ||
+      request.customTheme !== undefined ||
+      request.motion !== undefined
+    ) {
+      data.appearanceSavedAt = new Date();
+    }
     if (request.customTheme !== undefined)
       Object.assign(data, customThemeColumns(request.customTheme));
     if (Object.keys(data).length > 0) {

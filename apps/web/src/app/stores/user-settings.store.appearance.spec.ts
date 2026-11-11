@@ -9,7 +9,9 @@ import {
 import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
 import { of, Subject, throwError } from 'rxjs';
 import { SessionScope } from '../core/auth/session-scope.service';
+import { THEME_STORAGE_KEY } from '../core/theme/models/theme-storage-key.const';
 import { ThemeService } from '../core/theme/theme.service';
+import { ToastService } from '@shelfmark/ui';
 import { USER_SETTINGS_API } from '../features/settings/models/user-settings-api.const';
 import type { UserSettingsApi } from '../features/settings/models/user-settings-api.interface';
 import { TRASH_API } from '../features/trash/models/trash-api.const';
@@ -43,10 +45,11 @@ describe('UserSettingsStore appearance', () => {
   afterEach(() => localStorage.clear());
 
   it('applies the account appearance when the settings load (the account wins)', async () => {
-    const { store, theme } = setup({
+    const { store, theme, api } = setup({
       theme: THEME_PREFERENCE.Custom,
       customTheme: DARK,
       motion: MOTION_PREFERENCE.Reduced,
+      appearanceSaved: true,
     });
     theme.setPreference(THEME_PREFERENCE.Light);
 
@@ -57,6 +60,61 @@ describe('UserSettingsStore appearance', () => {
       customTheme: DARK,
       motion: MOTION_PREFERENCE.Reduced,
     });
+    expect(api.update).not.toHaveBeenCalled();
+  });
+
+  it('keeps a theme this browser had while the account never stored one, and saves it once', async () => {
+    localStorage.setItem(THEME_STORAGE_KEY, THEME_PREFERENCE.Dark);
+    const { store, theme, api } = setup();
+    theme.init();
+
+    await store.load();
+
+    expect(theme.preference()).toBe(THEME_PREFERENCE.Dark);
+    expect(api.update).toHaveBeenCalledTimes(1);
+    expect(api.update).toHaveBeenCalledWith({
+      theme: THEME_PREFERENCE.Dark,
+      customTheme: CUSTOM_THEME_DEFAULT,
+      motion: MOTION_PREFERENCE.System,
+    });
+  });
+
+  it('saves the local theme silently: a failure keeps it and shows nothing', async () => {
+    localStorage.setItem(THEME_STORAGE_KEY, THEME_PREFERENCE.Dark);
+    const { store, theme, api } = setup();
+    theme.init();
+    api.update.mockReturnValueOnce(throwError(() => new Error('down')));
+    const show = vi.spyOn(TestBed.inject(ToastService), 'show');
+
+    await store.load();
+    await Promise.resolve();
+
+    expect(theme.preference()).toBe(THEME_PREFERENCE.Dark);
+    expect(show).not.toHaveBeenCalled();
+  });
+
+  it('applies the account defaults when neither the account nor the browser has a theme', async () => {
+    const { store, theme, api } = setup();
+
+    await store.load();
+
+    expect(theme.appearance()).toEqual({
+      theme: THEME_PREFERENCE.System,
+      customTheme: CUSTOM_THEME_DEFAULT,
+      motion: MOTION_PREFERENCE.System,
+    });
+    expect(api.update).not.toHaveBeenCalled();
+  });
+
+  it('lets a saved account appearance win over the browser', async () => {
+    localStorage.setItem(THEME_STORAGE_KEY, THEME_PREFERENCE.Dark);
+    const { store, theme, api } = setup({ theme: THEME_PREFERENCE.Light, appearanceSaved: true });
+    theme.init();
+
+    await store.load();
+
+    expect(theme.preference()).toBe(THEME_PREFERENCE.Light);
+    expect(api.update).not.toHaveBeenCalled();
   });
 
   it('does not let a slower first load undo a change made meanwhile', async () => {
@@ -72,6 +130,7 @@ describe('UserSettingsStore appearance', () => {
       pauseHistory: false,
       ...MOCK_APPEARANCE_DEFAULTS,
       theme: THEME_PREFERENCE.Dark,
+      appearanceSaved: true,
     });
     gate.complete();
     await loading;

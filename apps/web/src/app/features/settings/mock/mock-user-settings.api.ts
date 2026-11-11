@@ -20,7 +20,7 @@ import type { UserSettingsApi } from '../models/user-settings-api.interface';
 /**
  * `UserSettingsApi` over the shared in-memory library, with simulated latency: the retention
  * lives next to the mock Trash, so a change shows in the days left of the mock entries. The
- * appearance (theme, custom theme, motion) stands in for the account: it is kept in
+ * appearance (theme, custom theme, motion, whether it was ever saved) stands in for the account: it is kept in
  * `localStorage`, so a reload and another tab see it like they would see the server's.
  */
 @Service()
@@ -43,12 +43,15 @@ export class MockUserSettingsApi implements UserSettingsApi {
       if (request.pauseHistory !== undefined) {
         this.data.pauseHistory = request.pauseHistory;
       }
-      const appearance = this.readAppearance();
-      this.writeAppearance({
-        theme: request.theme ?? appearance.theme,
-        customTheme: request.customTheme ?? appearance.customTheme,
-        motion: request.motion ?? appearance.motion,
-      });
+      if (request.theme ?? request.customTheme ?? request.motion) {
+        const appearance = this.readAppearance();
+        this.writeAppearance({
+          theme: request.theme ?? appearance.theme,
+          customTheme: request.customTheme ?? appearance.customTheme,
+          motion: request.motion ?? appearance.motion,
+          appearanceSaved: true,
+        });
+      }
       return of(this.current());
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
@@ -80,6 +83,8 @@ export class MockUserSettingsApi implements UserSettingsApi {
         ? stored.customTheme
         : { ...CUSTOM_THEME_DEFAULT },
       motion: isMotionPreference(stored.motion) ? stored.motion : MOTION_PREFERENCE.System,
+      // Stored only by a write of the appearance, like the account's `appearance_saved_at`.
+      appearanceSaved: isThemePreference(stored.theme),
     };
   }
 

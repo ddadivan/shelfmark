@@ -19,4 +19,9 @@ export interface UserSettingsResponse {
   customTheme: CustomTheme;
   /** Settings › Appearance › Animations. Default `system`. */
   motion: MotionPreference;
+  /**
+   * False until `theme`, `customTheme` or `motion` is first written: the three fields then hold
+   * the defaults, and the web app keeps (and saves once) an appearance the browser already had.
+   */
+  appearanceSaved: boolean;
 }

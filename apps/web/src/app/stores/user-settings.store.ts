@@ -74,12 +74,19 @@ export const UserSettingsStore = signalStore(
           return;
         }
         if (startedVersion === version) {
-          // The account wins over the copy in this browser (it follows the user to every device).
-          theme.apply({
-            theme: settings.theme,
-            customTheme: settings.customTheme,
-            motion: settings.motion,
-          });
+          if (settings.appearanceSaved) {
+            // The account wins over the copy in this browser (it follows the user to every device).
+            theme.apply({
+              theme: settings.theme,
+              customTheme: settings.customTheme,
+              motion: settings.motion,
+            });
+          } else if (theme.hasStoredAppearance()) {
+            // Never chosen on the account, but this browser has a theme (from before the account
+            // kept one): keep it and save it once, silently; a failure retries on the next load.
+            firstValueFrom(api().update(theme.appearance())).catch(() => undefined);
+          }
+          // Neither has one: the defaults already show, and nothing is written to the browser.
         }
         patchState(
           store,

@@ -30,7 +30,17 @@ describe('MockUserSettingsApi', () => {
       }),
     );
     const again = await firstValueFrom(create().api.get());
-    expect(again).toMatchObject({ theme: 'custom', customTheme, motion: 'full' });
+    expect(again).toMatchObject({
+      theme: 'custom',
+      customTheme,
+      motion: 'full',
+      appearanceSaved: true,
+    });
+    // Another setting alone does not mark the appearance saved.
+    localStorage.removeItem(MOCK_APPEARANCE_STORAGE_KEY);
+    expect(
+      (await firstValueFrom(create().api.update({ pauseHistory: true }))).appearanceSaved,
+    ).toBe(false);
   });
 
   it('falls back to the defaults for a broken or invalid stored appearance', async () => {

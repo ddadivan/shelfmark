@@ -80,6 +80,30 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     expect(await token(page, '--accent')).toBe('#4f7a4b');
   });
 
+  test('a theme chosen before the account kept one stays and is saved to the account once', async ({
+    page,
+  }) => {
+    // A browser from before #273: only `sm-theme`, and a fresh account that never stored a theme.
+    await page.addInitScript(`(() => {
+      if (!sessionStorage.getItem('sm-e2e-theme-seeded')) {
+        sessionStorage.setItem('sm-e2e-theme-seeded', '1');
+        localStorage.setItem('sm-theme', 'dark');
+        localStorage.removeItem('sm-mock-appearance');
+      }
+    })()`);
+    await page.goto('/links');
+    await expect(page.locator('ui-card').first()).toBeVisible();
+
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await expect
+      .poll(() => page.evaluate<string | null>(`localStorage.getItem('sm-mock-appearance')`))
+      .toContain('"theme":"dark"');
+
+    await page.reload();
+    await expect(page.locator('ui-card').first()).toBeVisible();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  });
+
   test('another tab follows the change', async ({ page, context }) => {
     await openAppearance(page);
     const other = await context.newPage();

@@ -23,6 +23,7 @@ const APPEARANCE_DEFAULTS = {
   theme: THEME_PREFERENCE.System,
   customTheme: CUSTOM_THEME_DEFAULT,
   motion: MOTION_PREFERENCE.System,
+  appearanceSaved: false,
 };
 
 describe('account settings', () => {
@@ -99,7 +100,7 @@ describe('account settings', () => {
     const a = asUser(t.app, users.owner);
     const off = await a
       .patch(USER_SETTINGS_ENDPOINT)
-      .send({ folderColours: false, pauseHistory: false, ...APPEARANCE_DEFAULTS })
+      .send({ folderColours: false, pauseHistory: false })
       .expect(200);
     expect(off.body).toEqual({
       trashRetentionDays: 30,
@@ -210,6 +211,29 @@ describe('account settings', () => {
       ).toBe(theme);
     });
 
+    it('marks the appearance saved on its first write only, not on other settings', async () => {
+      const a = asUser(t.app, users.owner);
+      const other = await a
+        .patch(USER_SETTINGS_ENDPOINT)
+        .send({ trashRetentionDays: 7 })
+        .expect(200);
+      expect((other.body as UserSettingsResponse).appearanceSaved).toBe(false);
+      const motion = await a
+        .patch(USER_SETTINGS_ENDPOINT)
+        .send({ motion: MOTION_PREFERENCE.Full })
+        .expect(200);
+      expect((motion.body as UserSettingsResponse).appearanceSaved).toBe(true);
+      const saved = await t.db.prisma.user.findUniqueOrThrow({ where: { id: users.owner.userId } });
+      expect(saved.appearanceSavedAt).toBeInstanceOf(Date);
+      // Saving the defaults explicitly still counts as chosen.
+      const b = asUser(t.app, users.intruder);
+      const chosen = await b
+        .patch(USER_SETTINGS_ENDPOINT)
+        .send({ theme: THEME_PREFERENCE.System })
+        .expect(200);
+      expect((chosen.body as UserSettingsResponse).appearanceSaved).toBe(true);
+    });
+
     it.each(Object.values(MOTION_PREFERENCE))('saves motion %s', async (motion) => {
       const a = asUser(t.app, users.owner);
       const res = await a.patch(USER_SETTINGS_ENDPOINT).send({ motion }).expect(200);
@@ -230,6 +254,7 @@ describe('account settings', () => {
         theme: THEME_PREFERENCE.Custom,
         customTheme: dark,
         motion: MOTION_PREFERENCE.System,
+        appearanceSaved: true,
       });
       // Choosing another theme keeps the custom one for later.
       const light = await a

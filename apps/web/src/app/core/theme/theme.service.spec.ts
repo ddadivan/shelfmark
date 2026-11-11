@@ -315,6 +315,25 @@ describe('ThemeService', () => {
       expect(service.motion()).toBe(MOTION_PREFERENCE.Reduced);
     });
 
+    it('tells whether this browser holds a valid appearance of its own', () => {
+      stubSystemScheme(false);
+      const service = createService();
+      expect(service.hasStoredAppearance()).toBe(false);
+
+      localStorage.setItem(THEME_STORAGE_KEY, 'purple');
+      localStorage.setItem(CUSTOM_THEME_STORAGE_KEY, '{');
+      expect(service.hasStoredAppearance()).toBe(false);
+
+      localStorage.setItem(CUSTOM_THEME_STORAGE_KEY, JSON.stringify(dark));
+      expect(service.hasStoredAppearance()).toBe(true);
+      localStorage.clear();
+      localStorage.setItem(MOTION_STORAGE_KEY, MOTION_PREFERENCE.Reduced);
+      expect(service.hasStoredAppearance()).toBe(true);
+      localStorage.clear();
+      localStorage.setItem(THEME_STORAGE_KEY, THEME_PREFERENCE.Dark);
+      expect(service.hasStoredAppearance()).toBe(true);
+    });
+
     it('stops following other tabs when destroyed', () => {
       stubSystemScheme(false);
       const remove = vi.spyOn(window, 'removeEventListener');

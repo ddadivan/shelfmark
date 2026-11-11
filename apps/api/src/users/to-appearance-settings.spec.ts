@@ -11,11 +11,13 @@ describe('toAppearanceSettings', () => {
         customThemeBackground: 'forest',
         customThemeCorners: 'round',
         motion: 'reduced',
+        appearanceSavedAt: new Date(0),
       }),
     ).toEqual({
       theme: 'custom',
       customTheme: { base: 'dark', accent: 'teal', background: 'forest', corners: 'round' },
       motion: 'reduced',
+      appearanceSaved: true,
     });
   });
 
@@ -28,8 +30,14 @@ describe('toAppearanceSettings', () => {
         customThemeBackground: 'paper',
         customThemeCorners: 'soft',
         motion: 'none',
+        appearanceSavedAt: null,
       }),
-    ).toEqual({ theme: 'system', customTheme: CUSTOM_THEME_DEFAULT, motion: 'system' });
+    ).toEqual({
+      theme: 'system',
+      customTheme: CUSTOM_THEME_DEFAULT,
+      motion: 'system',
+      appearanceSaved: false,
+    });
   });
 
   it('writes the four custom theme columns', () => {

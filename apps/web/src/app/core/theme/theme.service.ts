@@ -176,6 +176,24 @@ export class ThemeService {
     }
   }
 
+  /**
+   * Whether this browser holds a valid appearance of its own (a theme chosen before the account
+   * stored one): the account settings keep it, and save it once, while the account has none.
+   */
+  hasStoredAppearance(): boolean {
+    if (
+      isThemePreference(this.read(THEME_STORAGE_KEY)) ||
+      isMotionPreference(this.read(MOTION_STORAGE_KEY))
+    ) {
+      return true;
+    }
+    try {
+      return isCustomTheme(JSON.parse(this.read(CUSTOM_THEME_STORAGE_KEY) ?? 'null'));
+    } catch {
+      return false;
+    }
+  }
+
   /** Takes every valid stored value; a missing or broken one keeps the current value. */
   private readStored(): void {
     const preference = this.read(THEME_STORAGE_KEY);

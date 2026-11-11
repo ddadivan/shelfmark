@@ -28,4 +28,10 @@ export class UserSettingsResponseDto implements UserSettingsResponse {
 
   @ApiProperty({ enum: Object.values(MOTION_PREFERENCE), example: MOTION_PREFERENCE.System })
   motion!: MotionPreference;
+
+  @ApiProperty({
+    example: false,
+    description: 'False until theme, customTheme or motion is first saved',
+  })
+  appearanceSaved!: boolean;
 }
