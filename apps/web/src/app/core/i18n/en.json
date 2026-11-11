@@ -305,6 +305,7 @@
     },
     "item": {
       "edit": "Edit",
+      "move": "Move to folder…",
       "edited": "Changes saved",
       "openFailed": "Couldn't open the link.",
       "favorite": "Favorite: {{title}}",
@@ -372,6 +373,19 @@
         "cancel": "Cancel",
         "close": "Close"
       }
+    },
+    "move": {
+      "title": "Move “{{title}}”",
+      "label": "Folder",
+      "searchLabel": "Search folders",
+      "noResults": "No folders found",
+      "action": "Move",
+      "cancel": "Cancel",
+      "close": "Close",
+      "moved": "Moved to {{folder}}",
+      "failed": "Couldn't move the link",
+      "failedDetail": "It is back where it was",
+      "undoFailed": "Couldn't move the link back"
     }
   },
   "privacy": {
