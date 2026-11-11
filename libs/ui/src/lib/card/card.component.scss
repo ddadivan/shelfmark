@@ -75,6 +75,17 @@
   box-shadow: 0 0 0 2px var(--accent);
 }
 
+// Picked for a bulk action (Checkbox spec): a 2px `primary` ring, also while hovered.
+:host(.ui-card--checked) {
+  box-shadow: 0 0 0 2px var(--primary);
+
+  @include hover {
+    box-shadow:
+      0 0 0 2px var(--primary),
+      var(--shadow-card-spread);
+  }
+}
+
 // Media ---------------------------------------------------------------------------------------
 
 .ui-card__media {
@@ -262,5 +273,43 @@
   .ui-card__actions {
     opacity: 1;
     transform: none;
+  }
+}
+
+// Bulk selection checkbox, top left over the preview (above the stretched link, like the actions).
+// It fades in with the actions on hover and keyboard focus, and stays while a selection runs.
+.ui-card__select {
+  position: absolute;
+  inset: rem(14px) auto auto rem(14px);
+  z-index: 2;
+  display: flex;
+  padding: rem(4px);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+
+  &:empty {
+    display: none;
+  }
+}
+
+:host {
+  @include hover {
+    .ui-card__select {
+      opacity: 1;
+    }
+  }
+}
+
+:host(:has(:focus-visible)) .ui-card__select,
+:host(.ui-card--selecting) .ui-card__select,
+:host(.ui-card--checked) .ui-card__select {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .ui-card__select {
+    opacity: 1;
   }
 }
