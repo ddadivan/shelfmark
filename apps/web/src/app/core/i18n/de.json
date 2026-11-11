@@ -452,6 +452,11 @@
       "failed": "Link konnte nicht verschoben werden",
       "failedDetail": "Er ist wieder an seinem Platz",
       "undoFailed": "Link konnte nicht zurückverschoben werden"
+    },
+    "drag": {
+      "moveHere": "Hierher verschieben",
+      "moveOne": "1 Link verschieben",
+      "wasHere": "{{title}} war hier"
     }
   },
   "privacy": {
@@ -634,6 +639,8 @@
       "toLight": "Zum hellen Design wechseln",
       "toDark": "Zum dunklen Design wechseln"
     },
+    "sendFeedback": "Feedback senden",
+    "feedbackInbox": "Feedback-Eingang",
     "about": "Über Shelfmark"
   },
   "folders": {
@@ -897,7 +904,8 @@
       "language": "Sprache",
       "export": "Exportieren",
       "privacy": "Datenschutz und Daten",
-      "shortcuts": "Tastenkürzel"
+      "shortcuts": "Tastenkürzel",
+      "feedback": "Dein Feedback"
     },
     "description": {
       "account": "Dein Profil und dein Konto.",
@@ -906,7 +914,8 @@
       "language": "Sprache der Oberfläche und wie Datumsangaben aussehen.",
       "export": "Nimm alles mit, was du gespeichert hast.",
       "privacy": "Was wir speichern und wie du es mitnimmst.",
-      "shortcuts": "Arbeite ohne Maus."
+      "shortcuts": "Arbeite ohne Maus.",
+      "feedback": "Ideen, Probleme und unsere Antworten."
     },
     "account": {
       "profile": "Profil",
@@ -1722,6 +1731,123 @@
     "unavailable": {
       "title": "Diese Ansicht wartet auf ihren Ordner",
       "detail": "Der Ordner von {{name}} liegt im Papierkorb. Stell ihn wieder her, um die Ansicht zu nutzen."
+    }
+  },
+  "feedback": {
+    "kind": {
+      "idea": "Idee",
+      "problem": "Problem",
+      "other": "Sonstiges"
+    },
+    "status": {
+      "received": "Eingegangen",
+      "planned": "Geplant",
+      "inProgress": "In Arbeit",
+      "done": "Erledigt",
+      "notPlanned": "Nicht geplant"
+    },
+    "dialog": {
+      "title": "Feedback senden",
+      "close": "Schließen",
+      "kind": "Art",
+      "field": {
+        "idea": "Was würde Shelfmark besser machen?",
+        "problem": "Was ist schiefgelaufen?",
+        "other": "Was liegt dir auf dem Herzen?"
+      },
+      "placeholder": {
+        "idea": "Eine Sache, die wir ändern oder ergänzen sollten",
+        "problem": "Was du gemacht hast und was stattdessen passiert ist",
+        "other": "Alles, was du uns sagen möchtest"
+      },
+      "hint": "Wir lesen jede Nachricht.",
+      "counter": "Zeichen",
+      "required": "Schreib zuerst eine Nachricht.",
+      "tooLong": "Höchstens {{max}} Zeichen.",
+      "attachClient": "Browser- und App-Version anhängen",
+      "cancel": "Abbrechen",
+      "send": "Senden",
+      "sending": "Wird gesendet…",
+      "error": "Senden fehlgeschlagen. Dein Text bleibt erhalten — versuch es gleich noch einmal.",
+      "rateLimited": "Du hast in der letzten Stunde viele Nachrichten gesendet. Dein Text bleibt erhalten — versuch es später noch einmal."
+    },
+    "screenshot": {
+      "label": "Screenshot (optional)",
+      "drop": "Bild hierher ziehen oder",
+      "choose": "Datei auswählen",
+      "hint": "PNG, JPEG oder WebP, bis {{max}} MB.",
+      "remove": "Screenshot entfernen",
+      "size": {
+        "kb": "{{size}} KB",
+        "mb": "{{size}} MB"
+      },
+      "error": {
+        "type": "Diese Datei ist kein PNG-, JPEG- oder WebP-Bild.",
+        "size": "Dieses Bild ist größer als {{max}} MB. Wähle ein kleineres.",
+        "empty": "Diese Datei ist leer.",
+        "read": "Die Datei konnte nicht gelesen werden. Versuch eine andere."
+      }
+    },
+    "thanks": {
+      "title": "Danke",
+      "text": "Wir lesen jede Nachricht. Den Status siehst du unter Einstellungen › Dein Feedback.",
+      "done": "Fertig"
+    },
+    "page": {
+      "send": {
+        "title": "Feedback senden",
+        "label": "Sag uns, was du denkst",
+        "hint": "Eine Idee, ein Problem oder etwas anderes. Wir lesen jede Nachricht.",
+        "action": "Feedback senden"
+      },
+      "list": {
+        "title": "Deine Nachrichten",
+        "error": "Deine Nachrichten konnten nicht geladen werden.",
+        "retry": "Erneut versuchen"
+      },
+      "empty": {
+        "title": "Noch keine Nachrichten",
+        "text": "Was du sendest, erscheint hier mit Status und unserer Antwort."
+      },
+      "sent": "Gesendet am {{date}}",
+      "sentToday": "Heute gesendet",
+      "reply": "Antwort: {{reply}}"
+    }
+  },
+  "admin": {
+    "feedback": {
+      "title": "Feedback-Eingang",
+      "description": "Alle Nachrichten mit Status und deiner Antwort.",
+      "filter": "Anzeigen",
+      "filterAll": "Alle Status",
+      "status": "Status",
+      "reply": "Antwort",
+      "replyHint": "Wird dem Absender unter Dein Feedback angezeigt. Leer lassen für keine.",
+      "replyTooLong": "Höchstens {{max}} Zeichen für die Antwort.",
+      "save": "Speichern",
+      "screenshot": "Screenshot ansehen",
+      "error": "Die Nachrichten konnten nicht geladen werden.",
+      "empty": {
+        "title": "Keine Nachrichten",
+        "text": "Noch nichts passt zu diesem Filter."
+      },
+      "loadMore": "Mehr laden",
+      "loadingMore": "Weitere Nachrichten werden geladen",
+      "loadMoreFailed": {
+        "title": "Weitere Nachrichten konnten nicht geladen werden",
+        "detail": "Versuch es noch einmal"
+      },
+      "saveFailed": {
+        "title": "Speichern fehlgeschlagen",
+        "detail": "Die Nachricht ist wieder wie vorher. Versuch es noch einmal."
+      }
+    }
+  },
+  "tabSync": {
+    "signedOut": {
+      "title": "Du hast dich in einem anderen Tab abgemeldet",
+      "text": "Damit deine Links privat bleiben, ist auch dieser Tab gesperrt.",
+      "signIn": "Erneut anmelden"
     }
   },
   "howItWorks": {

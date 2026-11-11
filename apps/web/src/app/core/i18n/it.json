@@ -453,6 +453,11 @@
       "failed": "Impossibile spostare il link",
       "failedDetail": "È tornato al suo posto",
       "undoFailed": "Impossibile rimettere il link al suo posto"
+    },
+    "drag": {
+      "moveHere": "Sposta qui",
+      "moveOne": "Sposta 1 link",
+      "wasHere": "{{title}} era qui"
     }
   },
   "privacy": {
@@ -636,6 +641,8 @@
       "toLight": "Passa al tema chiaro",
       "toDark": "Passa al tema scuro"
     },
+    "sendFeedback": "Invia feedback",
+    "feedbackInbox": "Feedback ricevuti",
     "about": "Informazioni su Shelfmark"
   },
   "folders": {
@@ -908,7 +915,8 @@
       "language": "Lingua",
       "export": "Esporta",
       "privacy": "Privacy e dati",
-      "shortcuts": "Scorciatoie da tastiera"
+      "shortcuts": "Scorciatoie da tastiera",
+      "feedback": "Il tuo feedback"
     },
     "description": {
       "account": "Il tuo profilo e il tuo account.",
@@ -917,7 +925,8 @@
       "language": "Lingua dell’interfaccia e aspetto delle date.",
       "export": "Porta con te tutto quello che hai salvato.",
       "privacy": "Cosa conserviamo e come portarlo con te.",
-      "shortcuts": "Lavora senza mouse."
+      "shortcuts": "Lavora senza mouse.",
+      "feedback": "Idee, problemi e le nostre risposte."
     },
     "account": {
       "profile": "Profilo",
@@ -1750,6 +1759,123 @@
     "unavailable": {
       "title": "Questa vista aspetta la sua cartella",
       "detail": "La cartella di {{name}} è nel cestino. Ripristinala per usare la vista."
+    }
+  },
+  "feedback": {
+    "kind": {
+      "idea": "Idea",
+      "problem": "Problema",
+      "other": "Altro"
+    },
+    "status": {
+      "received": "Ricevuto",
+      "planned": "Pianificato",
+      "inProgress": "In corso",
+      "done": "Fatto",
+      "notPlanned": "Non pianificato"
+    },
+    "dialog": {
+      "title": "Invia feedback",
+      "close": "Chiudi",
+      "kind": "Tipo",
+      "field": {
+        "idea": "Cosa renderebbe Shelfmark migliore?",
+        "problem": "Cosa è andato storto?",
+        "other": "Cosa ti passa per la testa?"
+      },
+      "placeholder": {
+        "idea": "Una cosa da cambiare o aggiungere",
+        "problem": "Cosa hai fatto e cosa è successo invece",
+        "other": "Qualsiasi cosa vuoi farci sapere"
+      },
+      "hint": "Leggiamo ogni messaggio.",
+      "counter": "caratteri",
+      "required": "Scrivi prima un messaggio.",
+      "tooLong": "Usa al massimo {{max}} caratteri.",
+      "attachClient": "Allega browser e versione dell’app",
+      "cancel": "Annulla",
+      "send": "Invia",
+      "sending": "Invio in corso…",
+      "error": "Invio non riuscito. Il tuo testo è salvato — riprova tra un momento.",
+      "rateLimited": "Hai inviato molti messaggi nell’ultima ora. Il tuo testo è salvato — riprova più tardi."
+    },
+    "screenshot": {
+      "label": "Screenshot (facoltativo)",
+      "drop": "Trascina un’immagine o",
+      "choose": "scegli un file",
+      "hint": "PNG, JPEG o WebP, fino a {{max}} MB.",
+      "remove": "Rimuovi screenshot",
+      "size": {
+        "kb": "{{size}} KB",
+        "mb": "{{size}} MB"
+      },
+      "error": {
+        "type": "Questo file non è un’immagine PNG, JPEG o WebP.",
+        "size": "L’immagine supera {{max}} MB. Scegline una più piccola.",
+        "empty": "Il file è vuoto.",
+        "read": "Impossibile leggere il file. Provane un altro."
+      }
+    },
+    "thanks": {
+      "title": "Grazie",
+      "text": "Leggiamo ogni messaggio. Vedrai il suo stato in Impostazioni › Il tuo feedback.",
+      "done": "Fatto"
+    },
+    "page": {
+      "send": {
+        "title": "Invia feedback",
+        "label": "Dicci cosa ne pensi",
+        "hint": "Un’idea, un problema o altro. Leggiamo ogni messaggio.",
+        "action": "Invia feedback"
+      },
+      "list": {
+        "title": "I tuoi messaggi",
+        "error": "Impossibile caricare i tuoi messaggi.",
+        "retry": "Riprova"
+      },
+      "empty": {
+        "title": "Ancora nessun messaggio",
+        "text": "Quello che invii compare qui con il suo stato e la nostra risposta."
+      },
+      "sent": "Inviato il {{date}}",
+      "sentToday": "Inviato oggi",
+      "reply": "Risposta: {{reply}}"
+    }
+  },
+  "admin": {
+    "feedback": {
+      "title": "Feedback ricevuti",
+      "description": "Tutti i messaggi, con stato e la tua risposta.",
+      "filter": "Mostra",
+      "filterAll": "Tutti gli stati",
+      "status": "Stato",
+      "reply": "Risposta",
+      "replyHint": "Visibile al mittente in Il tuo feedback. Lascia vuoto per nessuna.",
+      "replyTooLong": "Usa al massimo {{max}} caratteri per la risposta.",
+      "save": "Salva",
+      "screenshot": "Vedi screenshot",
+      "error": "Impossibile caricare i messaggi.",
+      "empty": {
+        "title": "Nessun messaggio",
+        "text": "Ancora niente corrisponde a questo filtro."
+      },
+      "loadMore": "Carica altri",
+      "loadingMore": "Caricamento di altri messaggi",
+      "loadMoreFailed": {
+        "title": "Impossibile caricare altri messaggi",
+        "detail": "Riprova"
+      },
+      "saveFailed": {
+        "title": "Salvataggio non riuscito",
+        "detail": "Il messaggio è tornato com’era. Riprova."
+      }
+    }
+  },
+  "tabSync": {
+    "signedOut": {
+      "title": "Sei uscito in un’altra scheda",
+      "text": "Per mantenere privati i tuoi link, anche questa scheda è bloccata.",
+      "signIn": "Accedi di nuovo"
     }
   },
   "howItWorks": {

@@ -453,6 +453,11 @@
       "failed": "No se pudo mover el enlace",
       "failedDetail": "Ha vuelto a donde estaba",
       "undoFailed": "No se pudo devolver el enlace a su sitio"
+    },
+    "drag": {
+      "moveHere": "Mover aquí",
+      "moveOne": "Mover 1 enlace",
+      "wasHere": "{{title}} estaba aquí"
     }
   },
   "privacy": {
@@ -636,6 +641,8 @@
       "toLight": "Cambiar al tema claro",
       "toDark": "Cambiar al tema oscuro"
     },
+    "sendFeedback": "Enviar comentarios",
+    "feedbackInbox": "Buzón de comentarios",
     "about": "Acerca de Shelfmark"
   },
   "folders": {
@@ -908,7 +915,8 @@
       "language": "Idioma",
       "export": "Exportar",
       "privacy": "Privacidad y datos",
-      "shortcuts": "Atajos de teclado"
+      "shortcuts": "Atajos de teclado",
+      "feedback": "Tus comentarios"
     },
     "description": {
       "account": "Tu perfil y tu cuenta.",
@@ -917,7 +925,8 @@
       "language": "Idioma de la interfaz y formato de las fechas.",
       "export": "Llévate todo lo que has guardado.",
       "privacy": "Qué guardamos y cómo llevártelo.",
-      "shortcuts": "Trabaja sin ratón."
+      "shortcuts": "Trabaja sin ratón.",
+      "feedback": "Ideas, problemas y nuestras respuestas."
     },
     "account": {
       "profile": "Perfil",
@@ -1750,6 +1759,123 @@
     "unavailable": {
       "title": "Esta vista espera a su carpeta",
       "detail": "La carpeta de {{name}} está en la papelera. Restáurala para usar la vista."
+    }
+  },
+  "feedback": {
+    "kind": {
+      "idea": "Idea",
+      "problem": "Problema",
+      "other": "Otro"
+    },
+    "status": {
+      "received": "Recibido",
+      "planned": "Previsto",
+      "inProgress": "En curso",
+      "done": "Hecho",
+      "notPlanned": "No previsto"
+    },
+    "dialog": {
+      "title": "Enviar comentarios",
+      "close": "Cerrar",
+      "kind": "Tipo",
+      "field": {
+        "idea": "¿Qué mejoraría Shelfmark?",
+        "problem": "¿Qué salió mal?",
+        "other": "¿Qué tienes en mente?"
+      },
+      "placeholder": {
+        "idea": "Algo que deberíamos cambiar o añadir",
+        "problem": "Qué hiciste y qué pasó en su lugar",
+        "other": "Lo que quieras contarnos"
+      },
+      "hint": "Leemos todos los mensajes.",
+      "counter": "caracteres",
+      "required": "Escribe un mensaje primero.",
+      "tooLong": "Usa {{max}} caracteres como máximo.",
+      "attachClient": "Adjuntar navegador y versión de la app",
+      "cancel": "Cancelar",
+      "send": "Enviar",
+      "sending": "Enviando…",
+      "error": "No se pudo enviar. Tu texto se conserva — inténtalo de nuevo en un momento.",
+      "rateLimited": "Has enviado muchos mensajes en la última hora. Tu texto se conserva — inténtalo más tarde."
+    },
+    "screenshot": {
+      "label": "Captura de pantalla (opcional)",
+      "drop": "Suelta una imagen o",
+      "choose": "elige un archivo",
+      "hint": "PNG, JPEG o WebP, hasta {{max}} MB.",
+      "remove": "Quitar captura de pantalla",
+      "size": {
+        "kb": "{{size}} KB",
+        "mb": "{{size}} MB"
+      },
+      "error": {
+        "type": "Ese archivo no es una imagen PNG, JPEG o WebP.",
+        "size": "Esa imagen supera {{max}} MB. Elige una más pequeña.",
+        "empty": "Ese archivo está vacío.",
+        "read": "No se pudo leer ese archivo. Prueba con otro."
+      }
+    },
+    "thanks": {
+      "title": "Gracias",
+      "text": "Leemos todos los mensajes. Verás su estado en Ajustes › Tus comentarios.",
+      "done": "Listo"
+    },
+    "page": {
+      "send": {
+        "title": "Enviar comentarios",
+        "label": "Cuéntanos qué te parece",
+        "hint": "Una idea, un problema o cualquier otra cosa. Leemos todos los mensajes.",
+        "action": "Enviar comentarios"
+      },
+      "list": {
+        "title": "Tus mensajes",
+        "error": "No se pudieron cargar tus mensajes.",
+        "retry": "Reintentar"
+      },
+      "empty": {
+        "title": "Aún no hay mensajes",
+        "text": "Lo que envíes aparece aquí con su estado y nuestra respuesta."
+      },
+      "sent": "Enviado el {{date}}",
+      "sentToday": "Enviado hoy",
+      "reply": "Respuesta: {{reply}}"
+    }
+  },
+  "admin": {
+    "feedback": {
+      "title": "Buzón de comentarios",
+      "description": "Todos los mensajes, con su estado y tu respuesta.",
+      "filter": "Mostrar",
+      "filterAll": "Todos los estados",
+      "status": "Estado",
+      "reply": "Respuesta",
+      "replyHint": "Se muestra al remitente en Tus comentarios. Déjalo vacío para no responder.",
+      "replyTooLong": "Usa {{max}} caracteres como máximo en la respuesta.",
+      "save": "Guardar",
+      "screenshot": "Ver captura de pantalla",
+      "error": "No se pudieron cargar los mensajes.",
+      "empty": {
+        "title": "No hay mensajes",
+        "text": "Nada coincide todavía con este filtro."
+      },
+      "loadMore": "Cargar más",
+      "loadingMore": "Cargando más mensajes",
+      "loadMoreFailed": {
+        "title": "No se pudieron cargar más mensajes",
+        "detail": "Inténtalo de nuevo"
+      },
+      "saveFailed": {
+        "title": "No se pudo guardar",
+        "detail": "El mensaje ha vuelto a como estaba. Inténtalo de nuevo."
+      }
+    }
+  },
+  "tabSync": {
+    "signedOut": {
+      "title": "Cerraste sesión en otra pestaña",
+      "text": "Para mantener tus enlaces privados, esta pestaña también se ha bloqueado.",
+      "signIn": "Volver a iniciar sesión"
     }
   },
   "howItWorks": {

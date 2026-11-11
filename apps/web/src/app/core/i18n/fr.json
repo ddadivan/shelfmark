@@ -453,6 +453,11 @@
       "failed": "Impossible de déplacer le lien",
       "failedDetail": "Il est de retour à sa place",
       "undoFailed": "Impossible de remettre le lien à sa place"
+    },
+    "drag": {
+      "moveHere": "Déplacer ici",
+      "moveOne": "Déplacer 1 lien",
+      "wasHere": "{{title}} était ici"
     }
   },
   "privacy": {
@@ -636,6 +641,8 @@
       "toLight": "Passer au thème clair",
       "toDark": "Passer au thème sombre"
     },
+    "sendFeedback": "Envoyer un avis",
+    "feedbackInbox": "Boîte des avis",
     "about": "À propos de Shelfmark"
   },
   "folders": {
@@ -908,7 +915,8 @@
       "language": "Langue",
       "export": "Exporter",
       "privacy": "Confidentialité et données",
-      "shortcuts": "Raccourcis clavier"
+      "shortcuts": "Raccourcis clavier",
+      "feedback": "Vos avis"
     },
     "description": {
       "account": "Votre profil et votre compte.",
@@ -917,7 +925,8 @@
       "language": "Langue de l’interface et affichage des dates.",
       "export": "Emportez tout ce que vous avez enregistré.",
       "privacy": "Ce que nous conservons, et comment le récupérer.",
-      "shortcuts": "Travaillez sans la souris."
+      "shortcuts": "Travaillez sans la souris.",
+      "feedback": "Idées, problèmes et nos réponses."
     },
     "account": {
       "profile": "Profil",
@@ -1750,6 +1759,123 @@
     "unavailable": {
       "title": "Cette vue attend son dossier",
       "detail": "Le dossier de {{name}} est dans la corbeille. Restaurez-le pour utiliser la vue."
+    }
+  },
+  "feedback": {
+    "kind": {
+      "idea": "Idée",
+      "problem": "Problème",
+      "other": "Autre"
+    },
+    "status": {
+      "received": "Reçu",
+      "planned": "Prévu",
+      "inProgress": "En cours",
+      "done": "Terminé",
+      "notPlanned": "Non prévu"
+    },
+    "dialog": {
+      "title": "Envoyer un avis",
+      "close": "Fermer",
+      "kind": "Type",
+      "field": {
+        "idea": "Qu’est-ce qui améliorerait Shelfmark ?",
+        "problem": "Qu’est-ce qui n’a pas marché ?",
+        "other": "Qu’avez-vous en tête ?"
+      },
+      "placeholder": {
+        "idea": "Une chose à changer ou à ajouter",
+        "problem": "Ce que vous avez fait, et ce qui s’est passé",
+        "other": "Tout ce que vous voulez nous dire"
+      },
+      "hint": "Nous lisons chaque message.",
+      "counter": "caractères",
+      "required": "Écrivez d’abord un message.",
+      "tooLong": "{{max}} caractères au maximum.",
+      "attachClient": "Joindre le navigateur et la version de l’app",
+      "cancel": "Annuler",
+      "send": "Envoyer",
+      "sending": "Envoi…",
+      "error": "Envoi impossible. Votre texte est conservé — réessayez dans un instant.",
+      "rateLimited": "Vous avez envoyé beaucoup de messages dans la dernière heure. Votre texte est conservé — réessayez plus tard."
+    },
+    "screenshot": {
+      "label": "Capture d’écran (facultatif)",
+      "drop": "Déposez une image ou",
+      "choose": "choisissez un fichier",
+      "hint": "PNG, JPEG ou WebP, jusqu’à {{max}} Mo.",
+      "remove": "Retirer la capture d’écran",
+      "size": {
+        "kb": "{{size}} Ko",
+        "mb": "{{size}} Mo"
+      },
+      "error": {
+        "type": "Ce fichier n’est pas une image PNG, JPEG ou WebP.",
+        "size": "Cette image dépasse {{max}} Mo. Choisissez-en une plus petite.",
+        "empty": "Ce fichier est vide.",
+        "read": "Impossible de lire ce fichier. Essayez-en un autre."
+      }
+    },
+    "thanks": {
+      "title": "Merci",
+      "text": "Nous lisons chaque message. Vous verrez son statut dans Paramètres › Vos avis.",
+      "done": "Terminé"
+    },
+    "page": {
+      "send": {
+        "title": "Envoyer un avis",
+        "label": "Dites-nous ce que vous en pensez",
+        "hint": "Une idée, un problème ou autre chose. Nous lisons chaque message.",
+        "action": "Envoyer un avis"
+      },
+      "list": {
+        "title": "Vos messages",
+        "error": "Impossible de charger vos messages.",
+        "retry": "Réessayer"
+      },
+      "empty": {
+        "title": "Aucun message pour l’instant",
+        "text": "Vos envois apparaissent ici avec leur statut et notre réponse."
+      },
+      "sent": "Envoyé le {{date}}",
+      "sentToday": "Envoyé aujourd’hui",
+      "reply": "Réponse : {{reply}}"
+    }
+  },
+  "admin": {
+    "feedback": {
+      "title": "Boîte des avis",
+      "description": "Tous les messages, avec leur statut et votre réponse.",
+      "filter": "Afficher",
+      "filterAll": "Tous les statuts",
+      "status": "Statut",
+      "reply": "Réponse",
+      "replyHint": "Visible par l’expéditeur dans Vos avis. Laissez vide pour ne rien afficher.",
+      "replyTooLong": "Réponse de {{max}} caractères au maximum.",
+      "save": "Enregistrer",
+      "screenshot": "Voir la capture d’écran",
+      "error": "Impossible de charger les messages.",
+      "empty": {
+        "title": "Aucun message",
+        "text": "Rien ne correspond encore à ce filtre."
+      },
+      "loadMore": "Charger plus",
+      "loadingMore": "Chargement d’autres messages",
+      "loadMoreFailed": {
+        "title": "Impossible de charger plus de messages",
+        "detail": "Réessayez"
+      },
+      "saveFailed": {
+        "title": "Enregistrement impossible",
+        "detail": "Le message est revenu à son état précédent. Réessayez."
+      }
+    }
+  },
+  "tabSync": {
+    "signedOut": {
+      "title": "Vous vous êtes déconnecté dans un autre onglet",
+      "text": "Pour garder vos liens privés, cet onglet est verrouillé aussi.",
+      "signIn": "Se reconnecter"
     }
   },
   "howItWorks": {
