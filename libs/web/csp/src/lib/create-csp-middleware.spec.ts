@@ -33,6 +33,14 @@ describe('createCspMiddleware', () => {
     expect(response?.headers.get('Cache-Control')).toBe('private, no-store');
   });
 
+  it('marks public collections noindex, and only them', () => {
+    expect(handle('/c/sampleToken-sampleToke')?.headers.get('X-Robots-Tag')).toBe(
+      'noindex, nofollow',
+    );
+    expect(handle('/links')?.headers.get('X-Robots-Tag')).toBeNull();
+    expect(handle('/collections')?.headers.get('X-Robots-Tag')).toBeNull();
+  });
+
   describe('service worker shell fetch', () => {
     const swHeaders = { 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors' };
 

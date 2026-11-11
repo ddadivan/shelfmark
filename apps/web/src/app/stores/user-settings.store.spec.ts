@@ -44,6 +44,9 @@ function setup() {
 }
 
 describe('UserSettingsStore', () => {
+  // An appearance left in localStorage by another spec would trigger the one-off silent save of it.
+  beforeEach(() => localStorage.clear());
+
   it('shows the default retention until the settings arrive, then the account value', async () => {
     const { store } = setup();
     expect(store.retentionDays()).toBe(TRASH_RETENTION_DEFAULT);

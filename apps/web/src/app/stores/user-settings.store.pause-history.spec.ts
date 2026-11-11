@@ -33,6 +33,9 @@ function setup(pauseHistory = false) {
 }
 
 describe('UserSettingsStore pause history', () => {
+  // An appearance left in localStorage by another spec would trigger the one-off silent save of it.
+  beforeEach(() => localStorage.clear());
+
   it('is off until the settings say otherwise, then follows the account', async () => {
     const { store } = setup(true);
     expect(store.historyPaused()).toBe(false);

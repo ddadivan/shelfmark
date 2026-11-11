@@ -3,6 +3,7 @@ import {
   DEMO_ENDPOINT,
   MONITORING_CONFIG_ROUTE,
   MONITORING_TUNNEL_ROUTE,
+  SHARE_ENDPOINT,
 } from '@shelfmark/contracts';
 import { HTTP_METHOD } from './http-method.const';
 import type { PublicRoute } from './public-route.interface';
@@ -40,6 +41,24 @@ export const PUBLIC_ROUTES: readonly PublicRoute[] = [
     path: CRON_ENDPOINT.DemoCleanup,
     reason:
       'Vercel Cron cannot send a session: authenticated by the CRON_SECRET bearer guard on the handler, fails closed (ADR 0034)',
+  },
+  {
+    method: HTTP_METHOD.Get,
+    path: SHARE_ENDPOINT.PublicCollection,
+    reason:
+      'a public collection is opened by guests without an account: the 128-bit token is the capability; read-only, notes only when the owner allows, strict per-IP rate limit (ADR 0040)',
+  },
+  {
+    method: HTTP_METHOD.Get,
+    path: SHARE_ENDPOINT.PublicFavicon,
+    reason:
+      'the site icons on a public collection page; only links inside the shared subtree of a live token (ADR 0040)',
+  },
+  {
+    method: HTTP_METHOD.Get,
+    path: SHARE_ENDPOINT.PublicImage,
+    reason:
+      'the preview images on a public collection page; only links inside the shared subtree of a live token (ADR 0040)',
   },
   {
     method: HTTP_METHOD.Get,

@@ -40,6 +40,9 @@ function setup(account: Partial<UserSettingsResponse> = {}) {
 }
 
 describe('UserSettingsStore library settings', () => {
+  // An appearance left in localStorage by another spec would trigger the one-off silent save of it.
+  beforeEach(() => localStorage.clear());
+
   it('shows the defaults until the account tells, then the account', async () => {
     const { store } = setup({
       defaultView: LIBRARY_VIEW.List,
