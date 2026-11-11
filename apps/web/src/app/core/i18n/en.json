@@ -922,6 +922,11 @@
     },
     "kind": {
       "remove": "Remove filter {{kind}}"
+    },
+    "viewMenu": {
+      "label": "View options",
+      "button": "View",
+      "sortBy": "Sort by"
     }
   },
   "export": {

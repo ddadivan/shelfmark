@@ -91,6 +91,11 @@
   align-items: flex-end;
   justify-content: space-between;
   margin-bottom: var(--space-4);
+
+  // Phone: the title and the one "View" button share a line; a long title wraps inside its block.
+  @include phone {
+    flex-wrap: nowrap;
+  }
 }
 
 .library__heading {

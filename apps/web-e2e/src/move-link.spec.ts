@@ -1,6 +1,7 @@
 import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
+import { switchView } from './support/library-toolbar';
 
 // Mirror MOCK_LINKS ("Simple pasta" is unsorted) and MOCK_NAME.FolderReading (libs/shared/contracts);
 // the e2e project cannot import from them.
@@ -50,7 +51,7 @@ test.describe('move a link to a folder (mock API)', () => {
   });
 
   test('works from a row in the list view', async ({ page }) => {
-    await page.getByRole('radio', { name: 'List' }).click();
+    await switchView(page, 'List');
     const dialog = await openMoveDialog(page, 'ui-list-item');
     await pickFolder(page, dialog, READING);
 

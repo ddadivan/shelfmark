@@ -3,6 +3,7 @@ import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
 import { settled } from './support/settled';
 import { isPhone } from './support/sidebar';
+import { switchView } from './support/library-toolbar';
 
 // Mirror MOCK_LINKS ("Simple pasta" is unsorted, "Angular overview" is in Angular) and the
 // MOCK_FOLDERS names (libs/shared/contracts); the e2e project cannot import from them.
@@ -134,7 +135,7 @@ test.describe('drag a link to a folder (mock API)', () => {
     page,
   }) => {
     test.skip(isPhone(page), 'phones have no sidebar');
-    await page.getByRole('radio', { name: 'List' }).click();
+    await switchView(page, 'List');
     const row = page.locator('li.library__item').filter({ hasText: PASTA });
     await expect(row.locator('ui-list-item')).toBeVisible();
     await settled(page);

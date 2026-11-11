@@ -23,6 +23,7 @@ import { DIALOG_SELECTOR } from './dialog-selector.const';
 import { E2E_PROJECT } from './e2e-project.const';
 import { MOCK_FIXTURE } from './mock-fixture.const';
 import { TITLED_DIALOG_SELECTOR } from './titled-dialog-selector.const';
+import { switchView } from '../support/library-toolbar';
 
 const DUPLICATE_URL = 'https://angular.dev/overview';
 // Dialogs and menus are laid out alike on a phone, so one project is enough for them; the ones
@@ -54,7 +55,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     name: 'feed, list',
     open: async (page) => {
       await openFeed(page);
-      await page.getByRole('radio', { name: 'List' }).click();
+      await switchView(page, 'List');
       await expect(page.locator('ui-list-item').first()).toBeVisible();
     },
   },

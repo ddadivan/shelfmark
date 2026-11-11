@@ -943,6 +943,11 @@
     },
     "kind": {
       "remove": "Quitar el filtro {{kind}}"
+    },
+    "viewMenu": {
+      "label": "Opciones de vista",
+      "button": "Vista",
+      "sortBy": "Ordenar por"
     }
   },
   "export": {

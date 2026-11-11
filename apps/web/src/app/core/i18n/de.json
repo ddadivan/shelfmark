@@ -922,6 +922,11 @@
     },
     "kind": {
       "remove": "Filter {{kind}} entfernen"
+    },
+    "viewMenu": {
+      "label": "Ansichtsoptionen",
+      "button": "Ansicht",
+      "sortBy": "Sortieren nach"
     }
   },
   "export": {

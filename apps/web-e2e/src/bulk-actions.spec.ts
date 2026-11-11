@@ -5,6 +5,7 @@ import { expectNoBlockingViolations } from './support/axe';
 import { settled } from './support/settled';
 import { viewEntry } from './support/sidebar';
 import { expect, test } from './support/test';
+import { switchView } from './support/library-toolbar';
 
 // Mirror MOCK_NAME.FolderReading (libs/shared/contracts); the e2e project cannot import from it.
 const READING = 'Reading';
@@ -269,7 +270,7 @@ test.describe('select links and bulk actions (mock API)', () => {
 
     test('the list view selects rows too', async ({ page }) => {
       await openFeed(page);
-      await page.getByRole('radio', { name: 'List' }).check({ force: true });
+      await switchView(page, 'List');
       const row = page.locator('ui-list-item').first();
       await row.hover();
       await row.locator('ui-checkbox .ui-checkbox__box').click();

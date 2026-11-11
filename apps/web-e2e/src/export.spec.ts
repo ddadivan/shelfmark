@@ -3,6 +3,7 @@ import { type Download } from '@playwright/test';
 import { expect, test } from './support/test';
 import { openAccountMenu, openSettingsSection, seedSession } from './support/mock-session';
 import { isPhone } from './support/sidebar';
+import { openExportMenu } from './support/library-toolbar';
 
 // Mirrors EXPORT_MOCK_MARKER (apps/web); this project cannot import it.
 const MOCK_MARKER = 'sm-mock-export';
@@ -28,7 +29,7 @@ test.describe('export (mock API)', () => {
 
   test('the library menu exports everything as JSON and as Bookmarks HTML', async ({ page }) => {
     await page.goto('/links');
-    await page.getByRole('button', { name: 'Export' }).click();
+    await openExportMenu(page);
     // No folder or tag narrows "All links": only the two "everything" items.
     await expect(page.getByRole('menuitem', { name: /^This view/ })).toHaveCount(0);
 
@@ -40,7 +41,7 @@ test.describe('export (mock API)', () => {
 
     // The first menu is still leaving: opening now would toggle it shut.
     await expect(page.getByRole('menu')).toBeHidden();
-    await page.getByRole('button', { name: 'Export' }).click();
+    await openExportMenu(page);
     await expect(page.getByRole('menuitem', { name: 'Everything as JSON' })).toBeVisible();
     const html = page.waitForEvent('download');
     await page.getByRole('menuitem', { name: 'Everything as Bookmarks HTML' }).click();
@@ -51,7 +52,7 @@ test.describe('export (mock API)', () => {
 
   test('a tag filter adds "This view" items that carry the tag', async ({ page }) => {
     await page.goto('/links?tag=docs&tag=c%2B%2B');
-    await page.getByRole('button', { name: 'Export' }).click();
+    await openExportMenu(page);
 
     const download = page.waitForEvent('download');
     await page.getByRole('menuitem', { name: 'This view as JSON' }).click();
@@ -61,7 +62,7 @@ test.describe('export (mock API)', () => {
 
   test('a folder view exports that folder', async ({ page }) => {
     await page.goto(`/folders/${READING_ID}`);
-    await page.getByRole('button', { name: 'Export' }).click();
+    await openExportMenu(page);
 
     const download = page.waitForEvent('download');
     await page.getByRole('menuitem', { name: 'This view as JSON' }).click();
@@ -73,7 +74,7 @@ test.describe('export (mock API)', () => {
 
   test('a failed export toasts and the retry downloads the file', async ({ page }) => {
     await page.goto(`/links?tag=${FAILS_TAG}`);
-    await page.getByRole('button', { name: 'Export' }).click();
+    await openExportMenu(page);
     await page.getByRole('menuitem', { name: 'This view as JSON' }).click();
 
     await expect(page.getByText("Couldn't export your links")).toBeVisible();
@@ -88,7 +89,9 @@ test.describe('export (mock API)', () => {
   test('the toolbar does not scroll the page sideways at 360px', async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 780 });
     await page.goto('/links?tag=docs');
-    await expect(page.getByRole('button', { name: 'Export' })).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: isPhone(page) ? 'View options' : 'Export' }),
+    ).toBeVisible();
 
     const overflow = await page.evaluate<number>(
       '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',

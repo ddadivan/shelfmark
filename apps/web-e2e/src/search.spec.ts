@@ -2,6 +2,7 @@ import { type Locator, type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
 import { SEARCH_BUTTON } from './support/search-button';
+import { chooseSort, expectSort } from './support/library-toolbar';
 
 // Mirror the contract mock links (libs/shared/contracts/src/testing); the e2e project cannot
 // import from them.
@@ -51,11 +52,10 @@ test.describe('search (mock API)', () => {
       await page.goto('/links');
       await expect(page.getByRole('main').getByText(ANGULAR_TITLE, { exact: true })).toBeVisible();
 
-      await page.getByRole('button', { name: /^Sort: / }).click();
-      await page.getByRole('menuitemradio', { name: 'Title A–Z' }).click();
+      await chooseSort(page, 'Title A–Z');
 
       await expect(page).toHaveURL(/\/links\?sort=title$/);
-      await expect(page.getByRole('button', { name: 'Sort: Title A–Z' })).toBeVisible();
+      await expectSort(page, 'Title A–Z');
     });
   });
 

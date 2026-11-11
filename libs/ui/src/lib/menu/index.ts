@@ -1,4 +1,5 @@
 export { MenuItemComponent } from './menu-item.component';
+export { MenuLabelComponent } from './menu-label.component';
 export { MenuSeparatorComponent } from './menu-separator.component';
 export { MenuTriggerDirective } from './menu-trigger.directive';
 export { MenuComponent } from './menu.component';

@@ -79,6 +79,59 @@
         'library.count', shownCount()) | transloco: { count: shownCount() } }} } }
       </p>
     </div>
+    @if (phone()) {
+    <div class="library__tools">
+      <ui-button
+        [uiMenuTrigger]="viewMenu"
+        variant="secondary"
+        iconLeft="sort"
+        iconRight="chevron-down"
+        [iconSize]="ICON_SIZE.Sm"
+        [ariaLabel]="'library.viewMenu.label' | transloco"
+      >
+        {{ 'library.viewMenu.button' | transloco }}
+      </ui-button>
+      <ui-menu #viewMenu align="end" [ariaLabel]="'library.viewMenu.label' | transloco">
+        @if (showControls() && viewOptions(); as options) {
+        <ui-menu-label>{{ 'library.viewMenu.sortBy' | transloco }}</ui-menu-label>
+        @for (option of SORT_OPTIONS; track option) {
+        <ui-menu-item type="radio" [selected]="option === feedSort()" (activated)="setSort(option)">
+          {{ SORT_OPTION_KEYS[option] | transloco }}
+        </ui-menu-item>
+        }
+        <ui-menu-separator />
+        <ui-menu-label>{{ 'library.view.label' | transloco }}</ui-menu-label>
+        @for (option of options; track option.value) {
+        <ui-menu-item
+          type="radio"
+          [icon]="option.icon"
+          [selected]="option.value === view()"
+          (activated)="setView(option.value)"
+        >
+          {{ option.label }}
+        </ui-menu-item>
+        }
+        <ui-menu-separator />
+        }
+        <ui-menu-label>{{ 'export.menu' | transloco }}</ui-menu-label>
+        @if (viewScope()) {
+        <ui-menu-item icon="download" (activated)="exportView(EXPORT_FORMAT.Json)">
+          {{ 'export.view.json' | transloco }}
+        </ui-menu-item>
+        <ui-menu-item icon="bookmark" (activated)="exportView(EXPORT_FORMAT.Html)">
+          {{ 'export.view.html' | transloco }}
+        </ui-menu-item>
+        <ui-menu-separator />
+        }
+        <ui-menu-item icon="download" (activated)="exportAll(EXPORT_FORMAT.Json)">
+          {{ 'export.all.json' | transloco }}
+        </ui-menu-item>
+        <ui-menu-item icon="bookmark" (activated)="exportAll(EXPORT_FORMAT.Html)">
+          {{ 'export.all.html' | transloco }}
+        </ui-menu-item>
+      </ui-menu>
+    </div>
+    } @else {
     <div class="library__tools">
       @if (showControls() && viewOptions(); as options) {
       <div class="library__controls">
@@ -113,10 +166,9 @@
       }
       <ui-button
         [uiMenuTrigger]="exportMenu"
-        [variant]="phone() ? 'ghost' : 'secondary'"
+        variant="secondary"
         iconLeft="download"
-        [iconRight]="phone() ? undefined : 'chevron-down'"
-        [iconOnly]="phone()"
+        iconRight="chevron-down"
         [ariaLabel]="'export.menu' | transloco"
       >
         {{ 'export.menu' | transloco }}
@@ -139,6 +191,7 @@
         </ui-menu-item>
       </ui-menu>
     </div>
+    }
   </header>
   @if (!emptyLibrary()) {
   <app-saved-view-chips class="library__views" [filter]="filter()" />

@@ -22,6 +22,11 @@
   scrollbar-width: none;
   overscroll-behavior-x: contain;
 
+  // A fade at the right edge says there is more; the end padding lets the last chip scroll clear
+  // of it. The first chip stays flush left.
+  padding-inline-end: var(--space-8);
+  mask-image: linear-gradient(to right, #000 calc(100% - var(--space-8)), transparent);
+
   &::-webkit-scrollbar {
     display: none;
   }

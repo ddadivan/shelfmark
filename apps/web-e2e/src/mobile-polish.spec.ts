@@ -3,6 +3,7 @@ import { seedSession } from './support/mock-session';
 import { settled } from './support/settled';
 import { SEARCH_BUTTON } from './support/search-button';
 import { openSidebar, tabBar } from './support/sidebar';
+import { switchView } from './support/library-toolbar';
 
 // Mirror MOCK_ID.FolderReading / FolderAngular and their names (libs/shared/contracts); the e2e
 // project cannot import from them.
@@ -31,7 +32,7 @@ test.describe('mobile polish (mock API)', () => {
 
     test('opens with the keyboard in the list view', async ({ page }) => {
       await page.goto(`/folders/${READING.id}`);
-      await page.getByRole('radio', { name: 'List' }).check({ force: true });
+      await switchView(page, 'List');
 
       const tile = page.getByRole('link', { name: /^Open folder Angular/ });
       await tile.focus();
@@ -150,6 +151,39 @@ test.describe('mobile polish (mock API)', () => {
         "getComputedStyle(document.documentElement).getPropertyValue('-webkit-tap-highlight-color')",
       );
       expect(['transparent', 'rgba(0, 0, 0, 0)']).toContain(color);
+    });
+  });
+
+  test.describe('library toolbar on a phone', () => {
+    test.skip(({ isMobile }) => !isMobile, 'phone only');
+
+    test('one View menu holds sort, view and export; the saved views scroll in one row', async ({
+      page,
+    }) => {
+      await page.goto('/links');
+      await expect(page.locator('ui-card').first()).toBeVisible();
+      // No loose sort button, switch or Export button next to the title.
+      await expect(page.getByRole('button', { name: /^Sort: / })).toHaveCount(0);
+      await expect(page.getByRole('radio', { name: 'List' })).toHaveCount(0);
+      await expect(page.getByRole('button', { name: 'Export' })).toHaveCount(0);
+
+      await page.getByRole('button', { name: 'View options' }).click();
+      const menu = page.getByRole('menu');
+      await expect(menu.getByText('Sort by', { exact: true })).toBeVisible();
+      await expect(menu.getByText('View', { exact: true })).toBeVisible();
+      await expect(menu.getByText('Export', { exact: true })).toBeVisible();
+      await expect(menu.getByRole('menuitemradio', { name: 'Newest first' })).toBeVisible();
+      await expect(menu.getByRole('menuitemradio', { name: 'Cards' })).toBeVisible();
+      await expect(menu.getByRole('menuitem', { name: 'Everything as JSON' })).toBeVisible();
+      await page.keyboard.press('Escape');
+
+      // The saved views are one row that scrolls sideways, the first chip flush left.
+      const bar = page.getByRole('toolbar', { name: 'Saved views' });
+      const scrolls = await bar.evaluate((el) => el.scrollWidth > el.clientWidth);
+      expect(scrolls).toBe(true);
+      const first = await bar.getByRole('button').first().boundingBox();
+      const main = await page.getByRole('main').boundingBox();
+      expect(Math.abs((first?.x ?? 0) - (main?.x ?? 0))).toBeLessThan(24);
     });
   });
 
