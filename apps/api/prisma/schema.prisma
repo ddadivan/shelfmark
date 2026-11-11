@@ -33,6 +33,8 @@ model User {
   demoSourceHash        String?   @map("demo_source_hash")
   // Same for the wider IPv6 /48 network (null for IPv4 clients).
   demoNetworkHash       String?   @map("demo_network_hash")
+  // How long deleted links and folders stay in Trash (ADR 0036); a CHECK in the migration keeps it to 7, 30, 90.
+  trashRetentionDays    Int       @default(30) @map("trash_retention_days") @db.SmallInt
   createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
   sessions              Session[]
@@ -112,6 +114,8 @@ model Folder {
   userId    String   @map("user_id") @db.Uuid
   parentId  String?  @map("parent_id") @db.Uuid
   name      String   @db.VarChar(100)
+  // Set when the folder is in Trash (ADR 0036): one shared value for the folder and the subtree deleted with it.
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(3)
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -147,6 +151,8 @@ model Link {
   idempotencyKey     String?     @map("idempotency_key") @db.Uuid
   isFavorite         Boolean     @default(false) @map("is_favorite")
   lastOpenedAt       DateTime?   @map("last_opened_at") @db.Timestamptz(3)
+  // Set when the link is in Trash (ADR 0036). The partial indexes for Trash live in the migration.
+  deletedAt          DateTime?   @map("deleted_at") @db.Timestamptz(3)
   createdAt          DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt          DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
   user               User        @relation(fields: [userId], references: [id], onDelete: Cascade)

@@ -1,0 +1,78 @@
+@use 'ui' as *;
+
+// The row sits between the list and `ui-history-row`, so the library's own line between rows
+// (it looks for a next sibling) cannot see its neighbours: the line is drawn here.
+:host {
+  position: relative;
+  display: block;
+}
+
+:host(:not(:last-child))::after {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline: var(--space-3);
+  content: '';
+  border-block-start: 1px solid var(--border);
+}
+
+.trash-row__row--selected {
+  background: var(--accent-bg);
+}
+
+// Fallback of a link without an image: the site's letter, large in the 72 x 48 preview.
+.trash-row__letter {
+  @include type(heading);
+
+  color: var(--text-muted);
+}
+
+// The meta parts are separate elements, set apart by room, not by a mark.
+.trash-row__part {
+  flex: none;
+
+  & + & {
+    margin-inline-start: var(--space-2);
+  }
+}
+
+.trash-row__part--from {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Phone: Restore and Delete wait behind the row; a swipe (or focus) slides the row aside.
+.trash-row__swipe {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+}
+
+.trash-row__actions {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  padding-inline: var(--space-2);
+}
+
+.trash-row__surface {
+  position: relative;
+  touch-action: pan-y;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  transition: translate var(--duration-fast) var(--ease-out);
+}
+
+.trash-row__surface--dragging {
+  transition: none;
+}
+
+@include reduced-motion {
+  .trash-row__surface {
+    transition: none;
+  }
+}

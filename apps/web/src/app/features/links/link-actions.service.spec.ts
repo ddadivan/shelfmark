@@ -110,7 +110,7 @@ describe('LinkActionsService', () => {
       expect(confirm).toHaveBeenCalledWith(
         expect.objectContaining({
           destructive: true,
-          message: '“Link 1” will be removed. You can undo right after.',
+          message: '“Link 1” moves to Trash. You can restore it for 30 days.',
         }),
       );
       expect(ids(store)).toEqual(['id-1', 'id-2']);
@@ -123,7 +123,7 @@ describe('LinkActionsService', () => {
       await actions.delete(link(1));
 
       expect(ids(store)).toEqual(['id-2']);
-      expect(toasts[0].title).toBe('Link deleted');
+      expect(toasts[0].title).toBe('Moved to Trash');
       expect(toasts[0].action?.label).toBe('Undo');
       expect(api.remove).not.toHaveBeenCalled();
     });
@@ -290,7 +290,7 @@ describe('LinkActionsService', () => {
 
       expect(confirm).toHaveBeenCalled();
       expect(ids(store)).toEqual(['id-2']);
-      expect(toasts[0].title).toBe('Link deleted');
+      expect(toasts[0].title).toBe('Moved to Trash');
     });
   });
 

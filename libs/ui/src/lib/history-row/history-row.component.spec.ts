@@ -159,6 +159,35 @@ describe('HistoryRowComponent', () => {
     expect(row.querySelector('.ui-history-row__preview ui-icon')).not.toBeNull();
   });
 
+  it('projects a select control before the preview and a custom preview fallback', async () => {
+    @Component({
+      imports: [HistoryGroupComponent, HistoryRowComponent],
+      template: `
+        <ui-history-group title="Trash">
+          <ui-history-row previewSlot>
+            <input slot="select" type="checkbox" aria-label="Select coat" />
+            <span slot="preview" class="fallback">C</span>
+            <span slot="title">Coat</span>
+          </ui-history-row>
+        </ui-history-group>
+      `,
+    })
+    class SlotHostComponent {}
+    const fixture = TestBed.createComponent(SlotHostComponent);
+    fixture.detectChanges();
+    const row = (fixture.nativeElement as HTMLElement).querySelector(
+      'ui-history-row',
+    ) as HTMLElement;
+    const children = Array.from(row.children);
+    const select = row.querySelector('.ui-history-row__select') as HTMLElement;
+    expect(select.querySelector('input[slot=select]')).not.toBeNull();
+    const preview = row.querySelector('.ui-history-row__preview') as HTMLElement;
+    expect(children.indexOf(select)).toBeLessThan(children.indexOf(preview));
+    expect(preview.querySelector('.fallback')?.textContent).toBe('C');
+    expect(preview.querySelector('ui-icon')).toBeNull();
+    expect(await axeViolations(fixture.nativeElement)).toEqual([]);
+  });
+
   it('does not ripple a press on an action', () => {
     const { row } = setup();
     expect(row.classList.contains('ui-ripple-host')).toBe(true);

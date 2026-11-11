@@ -11,6 +11,8 @@ import { MockTagsApi } from '../../links/mock/mock-tags.api';
 import { FOLDERS_API } from '../../links/models/folders-api.const';
 import { LINKS_API } from '../../links/models/links-api.const';
 import { TAGS_API } from '../../links/models/tags-api.const';
+import { MockTrashApi } from '../../trash/mock/mock-trash.api';
+import { TRASH_API } from '../../trash/models/trash-api.const';
 import { RecentSheetComponent } from '../../links/recent/recent-sheet.component';
 import PhoneLibraryPage from './phone-library.page';
 
@@ -27,6 +29,7 @@ async function setup(phone = true) {
       { provide: FOLDERS_API, useClass: MockFoldersApi },
       { provide: LINKS_API, useClass: MockLinksApi },
       { provide: TAGS_API, useClass: MockTagsApi },
+      { provide: TRASH_API, useClass: MockTrashApi },
       { provide: DialogService, useValue: { open } },
       { provide: ViewportService, useValue: { phone: signal(phone) } },
     ],
@@ -44,19 +47,20 @@ async function setup(phone = true) {
 }
 
 describe('PhoneLibraryPage', () => {
-  it('has the title, four tiles with their routes and the folder tree', async () => {
+  it('has the title, five tiles with their routes and the folder tree', async () => {
     const { element } = await setup();
 
     expect(element.querySelector('h1')?.textContent?.trim()).toBe('Library');
     const tiles = [...element.querySelectorAll<HTMLAnchorElement>('a.library-tile')];
     expect(
       tiles.map((tile) => tile.querySelector('.library-tile__label')?.textContent?.trim()),
-    ).toEqual(['All links', 'Unsorted', 'Favorites', 'Recently opened']);
+    ).toEqual(['All links', 'Unsorted', 'Favorites', 'Recently opened', 'Trash']);
     expect(tiles.map((tile) => tile.getAttribute('href'))).toEqual([
       '/links',
       '/unsorted',
       '/favorites',
       '/recent',
+      '/trash',
     ]);
     expect(element.querySelector('nav[aria-label="Folders"] [role="tree"]')).not.toBeNull();
     // Folders only: no fixed rows and no tags inside the card.

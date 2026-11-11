@@ -2,9 +2,11 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
   Logger,
+  Patch,
   Post,
   Req,
   Res,
@@ -27,6 +29,8 @@ import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
 import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
 import { DeleteAccountRequestDto } from './dto/delete-account-request.dto';
 import { OnboardingResponseDto } from './dto/onboarding-response.dto';
+import { UpdateUserSettingsDto } from './dto/update-user-settings.dto';
+import { UserSettingsResponseDto } from './dto/user-settings-response.dto';
 import { UsersService } from './users.service';
 
 @ApiTags('me')
@@ -70,6 +74,26 @@ export class UsersController {
     for (const cookie of cookies) {
       res.append(SET_COOKIE_HEADER, cookie);
     }
+  }
+
+  @Get('settings')
+  @ApiOperation({ summary: 'Account settings (trash retention)' })
+  @ApiOkResponse({ type: UserSettingsResponseDto })
+  @ApiUnauthorizedResponse({ type: ApiErrorResponseDto, description: 'No valid session' })
+  getSettings(@CurrentUser() user: AuthUser): Promise<UserSettingsResponseDto> {
+    return this.users.getSettings(user);
+  }
+
+  @Patch('settings')
+  @ApiOperation({ summary: 'Change account settings; send only the fields to change' })
+  @ApiOkResponse({ type: UserSettingsResponseDto })
+  @ApiBadRequestResponse({ type: ApiErrorResponseDto, description: 'Invalid value or extra field' })
+  @ApiUnauthorizedResponse({ type: ApiErrorResponseDto, description: 'No valid session' })
+  updateSettings(
+    @CurrentUser() user: AuthUser,
+    @Body() body: UpdateUserSettingsDto,
+  ): Promise<UserSettingsResponseDto> {
+    return this.users.updateSettings(user, body);
   }
 
   @Post('onboarding')

@@ -3,13 +3,17 @@ import { provideRouter, Router } from '@angular/router';
 import { MOCK_ID, MOCK_NAME } from '@shelfmark/contracts/testing';
 import axe from 'axe-core';
 import { FoldersStore } from '../../stores/folders.store';
+import { TrashStore } from '../../stores/trash.store';
 import { loadEnglish, provideTranslocoForTest } from '../../testing/transloco-testing';
+import { MockLibraryData } from '../../features/links/mock/mock-library-data';
 import { MockFoldersApi } from '../../features/links/mock/mock-folders.api';
 import { MockLinksApi } from '../../features/links/mock/mock-links.api';
 import { MockTagsApi } from '../../features/links/mock/mock-tags.api';
 import { FOLDERS_API } from '../../features/links/models/folders-api.const';
 import { LINKS_API } from '../../features/links/models/links-api.const';
 import { TAGS_API } from '../../features/links/models/tags-api.const';
+import { MockTrashApi } from '../../features/trash/mock/mock-trash.api';
+import { TRASH_API } from '../../features/trash/models/trash-api.const';
 import { SidebarComponent } from './sidebar.component';
 
 async function setup(url = '/links') {
@@ -21,11 +25,13 @@ async function setup(url = '/links') {
         { path: 'unsorted', children: [] },
         { path: 'favorites', children: [] },
         { path: 'recent', children: [] },
+        { path: 'trash', children: [] },
         { path: 'folders/:folderId', children: [] },
       ]),
       { provide: FOLDERS_API, useClass: MockFoldersApi },
       { provide: LINKS_API, useClass: MockLinksApi },
       { provide: TAGS_API, useClass: MockTagsApi },
+      { provide: TRASH_API, useClass: MockTrashApi },
     ],
   });
   await loadEnglish();
@@ -59,7 +65,9 @@ describe('SidebarComponent', () => {
 
     const names = rows(element).map((item) => item.querySelector('.ui-tree__name')?.textContent);
     expect(names.slice(0, 4)).toEqual(['All links', 'Unsorted', 'Favorites', 'Recently opened']);
-    expect(names).not.toContain('Trash');
+    // Trash is the last row, alone under a divider (its own tree), and has no count while empty.
+    expect(names.at(-1)).toBe('Trash');
+    expect(element.querySelector('.sidebar__trash [role="tree"]')).not.toBeNull();
     expect(element.textContent).not.toContain('Pinned');
     expect(names).toContain(MOCK_NAME.FolderReading);
     const counts = rows(element)
@@ -84,6 +92,32 @@ describe('SidebarComponent', () => {
 
     expect(router.url).toBe('/recent');
     expect(row(element, 'Recently opened').getAttribute('aria-current')).toBe('page');
+  });
+
+  it('opens Trash from its row, marks it on /trash and counts what is in it', async () => {
+    const { element, fixture, router } = await setup();
+    expect(row(element, 'Trash').querySelector('.ui-tree__count')).toBeNull();
+
+    row(element, 'Trash').click();
+    await fixture.whenStable();
+
+    expect(router.url).toBe('/trash');
+    expect(row(element, 'Trash').getAttribute('aria-current')).toBe('page');
+    expect(row(element, 'All links').getAttribute('aria-current')).toBeNull();
+  });
+
+  it('shows the number of items in Trash on its row', async () => {
+    const { element, fixture } = await setup();
+    const data = TestBed.inject(MockLibraryData);
+    const trash = TestBed.inject(TrashStore);
+    await trash.load();
+
+    data.trashLink(data.links[0]);
+    data.trashLink(data.links[0]);
+    await trash.refresh();
+    await fixture.whenStable();
+
+    expect(row(element, 'Trash').querySelector('.ui-tree__count')?.textContent?.trim()).toBe('2');
   });
 
   it('heads the card with the logo only when asked', async () => {
