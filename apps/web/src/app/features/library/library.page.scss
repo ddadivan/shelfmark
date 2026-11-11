@@ -26,6 +26,21 @@
   flex: 1;
   flex-direction: column;
   min-height: 0;
+
+  // Phone: the selection bar needs a line of its own over the title. The page pushes the title
+  // (and the feed) down by the bar's room while a selection runs, with a short ease; there is no
+  // room to keep free at rest on a phone. Reduced motion: the change is instant.
+  @include phone {
+    transition: padding-block-start var(--duration-base) var(--ease-out);
+
+    &.library--selecting {
+      padding-block-start: calc(var(--space-3) + var(--space-2) + var(--space-6));
+    }
+
+    @include reduced-motion {
+      transition: none;
+    }
+  }
 }
 
 // The feed (or the empty state) under the fixed title, count and toolbar. From the tablet width
@@ -302,8 +317,11 @@
   border-radius: var(--radius-full);
   box-shadow: var(--shadow-card);
 
+  // Tablet and up: the bar starts 8px above the trail line (it covers the trail) and its 48px end
+  // 4px above the title box (the 44px room under the main column's padding); the title's line box
+  // has 10px of leading, so the text keeps a clear gap and nothing moves when the bar appears.
   @include tablet-up {
-    inset-block-start: calc(var(--space-1) * -1);
+    inset-block-start: calc(var(--space-2) * -1);
   }
 }
 

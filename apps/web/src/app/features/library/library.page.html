@@ -1,5 +1,9 @@
 <ui-progress-bar [active]="refetching()" [label]="'library.loading' | transloco" />
-<section class="library" [attr.aria-busy]="store.loading()">
+<section
+  class="library"
+  [class.library--selecting]="selecting()"
+  [attr.aria-busy]="store.loading()"
+>
   @if (selecting()) {
   <div
     class="library__selection"
