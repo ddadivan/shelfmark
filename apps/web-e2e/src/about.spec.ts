@@ -163,6 +163,26 @@ test.describe('About and "How it works" (mock API)', () => {
     await expect(page.getByRole('region', { name: 'How it works' })).toHaveCount(0);
   });
 
+  test('the sidebar card keeps a section gap under Tags and above Trash (#315)', async ({
+    page,
+  }) => {
+    test.skip(isPhone(page), 'the card lives in the desktop sidebar');
+    await seedSession(page);
+    await page.goto('/links');
+    const card = page.getByRole('region', { name: 'How it works' });
+    await expect(card).toBeVisible();
+    await expect(page.locator('app-sidebar-tags ui-chip').first()).toBeVisible();
+
+    const tags = await page.locator('app-sidebar-tags').boundingBox();
+    const box = await card.boundingBox();
+    const trash = await page.locator('.sidebar__trash').boundingBox();
+    expect(tags && box && trash).toBeTruthy();
+    const tagsBottom = (tags?.y ?? 0) + (tags?.height ?? 0);
+    // 24px (space-6) under the last row of tags, at least 12px above the Trash divider.
+    expect(Math.round((box?.y ?? 0) - tagsBottom)).toBeGreaterThanOrEqual(24);
+    expect((trash?.y ?? 0) - ((box?.y ?? 0) + (box?.height ?? 0))).toBeGreaterThanOrEqual(12);
+  });
+
   test('opening the video from the card also retires the card', async ({ page }) => {
     test.skip(isPhone(page), 'the card lives in the desktop sidebar');
     await seedSession(page);

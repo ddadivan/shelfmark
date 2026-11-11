@@ -35,6 +35,12 @@
   }
 }
 
+// "New here? Watch how it works": its own block, a section gap under Tags (#315) and room above
+// the Trash divider even when the sidebar scrolls (the divider's auto margin is then 0).
+.sidebar__how-it-works {
+  margin-block: var(--space-6) var(--space-3);
+}
+
 // Trash: the last row, under a divider, kept at the bottom of the card (it stays in view when the
 // folders scroll).
 .sidebar__trash {
