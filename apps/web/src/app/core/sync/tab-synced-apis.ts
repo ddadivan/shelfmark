@@ -1,6 +1,7 @@
 import type {
   CreateFolderRequest,
   CreateLinkRequest,
+  CreateLinksBatchRequest,
   CreateTagRequest,
   FolderDeleteMode,
   ListLinksQuery,
@@ -48,7 +49,9 @@ export function tabSyncedLinksApi(inner: LinksApi, sync: TabSyncService): LinksA
       ),
     remove: (id: string) =>
       after(inner.remove(id), () => sync.post({ kind: TAB_SYNC_KIND.LinkRemoved, id })),
-    // Bulk actions: the other tabs reload the feed and the sidebar.
+    // Paste many and bulk actions: the other tabs reload the feed and the sidebar.
+    createBatch: (request: CreateLinksBatchRequest) =>
+      after(inner.createBatch(request), () => sync.post({ kind: TAB_SYNC_KIND.LibraryChanged })),
     removeBatch: (ids: readonly string[]) =>
       after(inner.removeBatch(ids), () => sync.post({ kind: TAB_SYNC_KIND.LibraryChanged })),
     updateBatch: (request: UpdateLinksBatchRequest) =>

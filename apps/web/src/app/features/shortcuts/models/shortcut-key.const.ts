@@ -13,5 +13,6 @@ export const SHORTCUT_KEY = {
   Question: 'question',
   K: 'k',
   T: 't',
+  V: 'v',
   Z: 'z',
 } as const;

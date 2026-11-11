@@ -28,6 +28,13 @@ export type { UpdateLinksBatchRequest } from './links/update-links-batch-request
 export type { UpdateLinksBatchResponse } from './links/update-links-batch-response.interface';
 export { LINKS_BATCH_UPDATE_ENDPOINT } from './links/links-batch-update-endpoint.const';
 export { LINKS_BATCH_ERROR_MESSAGE } from './links/links-batch-error-message.const';
+export type { CreateLinksBatchItem } from './links/create-links-batch-item.interface';
+export type { CreateLinksBatchRequest } from './links/create-links-batch-request.interface';
+export type { CreateLinksBatchResponse } from './links/create-links-batch-response.interface';
+export type { LinkBatchItemError } from './links/link-batch-item-error.interface';
+export type { LinkBatchErrorCode } from './links/link-batch-error-code.type';
+export { LINK_BATCH_ERROR_CODE } from './links/link-batch-error-code.const';
+export { linkLimitFit, linkLimitMessage } from './links/link-limit-message';
 export type { LinkSortField } from './links/link-sort-field.type';
 export type { LinkImageKind } from './links/link-image-kind.type';
 export { LINK_IMAGE_KIND } from './links/link-image-kind.const';

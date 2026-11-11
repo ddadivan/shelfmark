@@ -4,6 +4,7 @@ import { REQUEST_TIMEOUT_MS } from '../../common/interceptors/models/request-tim
 import { PrismaService } from '../../prisma/prisma.service';
 import { LinkPreviewService } from '../link-preview.service';
 import { LINK_INCLUDE } from '../models/link-include.const';
+import { fallbackTitle, titleOrUrl } from '../title-or-url';
 import { toLinkResponse } from '../to-link-response';
 import { LinkImageCaptureService } from './link-image-capture.service';
 import {
@@ -62,6 +63,7 @@ export class LinkImageRecaptureService {
           maxRedirects: 3,
         });
         if (!fetched) return;
+        await this.fillTitle(userId, linkId, link.url, preview.title);
         sources.faviconSourceUrl = preview.faviconUrl;
         sources.imageSourceUrl = preview.imageUrl;
       }
@@ -71,6 +73,27 @@ export class LinkImageRecaptureService {
     } catch {
       // Best effort: the link simply stays without images.
     }
+  }
+
+  /**
+   * A link saved without a title (paste many, #265) keeps its URL as the title until this page load:
+   * the page title replaces it only while the stored title is still exactly that fallback and the
+   * URL is the one that was loaded, so a title the user typed meanwhile always wins. Plain SQL so
+   * `updated_at` stays as it is, like the claim: filling in a title is not an edit.
+   */
+  private async fillTitle(
+    userId: string,
+    linkId: string,
+    url: string,
+    pageTitle: string,
+  ): Promise<void> {
+    const fallback = fallbackTitle(url);
+    const title = titleOrUrl(pageTitle, url);
+    if (title === fallback) return;
+    await this.prisma.$executeRaw`
+      UPDATE links SET title = ${title}, title_sort_key = ${title.toLowerCase()}
+      WHERE id = ${linkId}::uuid AND user_id = ${userId}::uuid
+        AND url = ${url} AND title = ${fallback}`;
   }
 
   /**
