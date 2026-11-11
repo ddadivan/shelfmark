@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import { SEARCH_BUTTON } from '../../src/support/search-button';
-import { openSidebar } from '../../src/support/sidebar';
+import { openSidebar, openTags } from '../../src/support/sidebar';
 import type { PromoStep } from './promo-step.interface';
 
 /** The link the video saves; the mock preview API answers "Page on web.dev". */
@@ -112,10 +112,29 @@ export const PROMO_STEPS: readonly PromoStep[] = [
         );
         await openSidebar(page);
         await director.pause(900);
-        await director.press(page.locator('app-library-tile', { hasText: FOLDER }).first());
-      } else {
-        await director.press(page.getByRole('treeitem', { name: new RegExp(`^${FOLDER}\\b`) }));
       }
+      // The folder tree: in the sidebar, or on the Library page on a phone.
+      await director.press(page.getByRole('treeitem', { name: new RegExp(`^${FOLDER}\\b`) }));
+      await expect(page.locator('ui-card', { hasText: LINK_TITLE }).first()).toBeVisible();
+      await director.parkPointer();
+      await director.pause(2500);
+    },
+  },
+  {
+    id: 'tag-filter',
+    caption: { desktop: 'A tag gathers its links from every folder.' },
+    run: async ({ page, phone, director }) => {
+      if (phone) {
+        await director.press(
+          page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Tags' }),
+        );
+        await openTags(page);
+        await director.pause(900);
+      }
+      // The same tags section: in the sidebar, or the page of the Tags tab on a phone.
+      await director.press(
+        page.locator('app-sidebar-tags').getByRole('button', { name: TAG, exact: true }),
+      );
       await expect(page.locator('ui-card', { hasText: LINK_TITLE }).first()).toBeVisible();
       await director.parkPointer();
       await director.pause(2500);

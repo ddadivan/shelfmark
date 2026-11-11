@@ -52,6 +52,11 @@ export function encodeVideo(
     ...cut,
     '-c:v',
     'libx264',
+    // Fixed so the app can name the codec in `<source type>`: avc1.64001F (High, level 3.1).
+    '-profile:v',
+    'high',
+    '-level',
+    '3.1',
     '-preset',
     'slow',
     '-crf',

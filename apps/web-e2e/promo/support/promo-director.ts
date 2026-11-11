@@ -1,6 +1,11 @@
+// `cursorScript` runs in the page, so this file needs the DOM types.
+/// <reference lib="dom" />
 import type { Locator, Page } from '@playwright/test';
 import { PROMO_CHAPTER_START_MS } from '../models/promo-chapter.const';
 import type { PromoChapter } from '../models/promo-chapter.type';
+
+/** Screenshot CSS that leaves the recording pointer out of the poster. */
+export const HIDE_CURSOR_CSS = '[data-promo-cursor] { visibility: hidden !important; }';
 
 /** Pointer steps of a glide: about 0.4 s at 60 Hz, slow enough to follow. */
 const GLIDE_STEPS = 24;
@@ -23,6 +28,7 @@ function cursorScript(touch: boolean): void {
     const dot = document.createElement('div');
     dot.setAttribute('popover', 'manual');
     dot.setAttribute('aria-hidden', 'true');
+    dot.setAttribute('data-promo-cursor', '');
     const size = touch ? 44 : 22;
     const css: Record<string, string> = {
       position: 'fixed',
@@ -181,14 +187,14 @@ export class PromoDirector {
     await field.pressSequentially(text, { delay: TYPE_DELAY_MS });
   }
 
-  /** Parks the pointer in the middle of the screen, out of the way. */
+  /** Parks the pointer in the empty band beside the page title, so no card shows its hover. */
   async parkPointer(): Promise<void> {
     if (this.phone) {
       return;
     }
     const size = this.page.viewportSize();
     if (size) {
-      await this.page.mouse.move(size.width * 0.62, size.height * 0.55, { steps: GLIDE_STEPS });
+      await this.page.mouse.move(size.width * 0.55, size.height * 0.16, { steps: GLIDE_STEPS });
     }
   }
 }

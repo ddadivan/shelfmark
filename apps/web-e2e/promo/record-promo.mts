@@ -5,13 +5,12 @@ import { devices, expect, test } from '@playwright/test';
 import { LANDING_HEADLINE } from '../src/models/landing-headline.const';
 import { PROMO_CHAPTER_START_MS } from './models/promo-chapter.const';
 import type { PromoChapter } from './models/promo-chapter.type';
-import type { PromoCue } from './models/promo-cue.interface';
 import { PROMO_DEVICE } from './models/promo-device.const';
 import { PROMO_MEDIA } from './models/promo-media.const';
-import { PROMO_STEPS } from './models/promo-steps.const';
 import { PROMO_VARIANTS } from './models/promo-variants.const';
 import { assertFfmpeg, encodePoster, encodeVideo } from './support/ffmpeg';
 import { PromoDirector } from './support/promo-director';
+import { runPromoSteps } from './support/run-promo-steps';
 import { toWebVtt } from './support/webvtt';
 
 /** A Mac user agent, so the app shows ⌘ (not Ctrl) and answers ⌘K. */
@@ -21,6 +20,7 @@ const MAC_CHROME_UA =
 const CHAPTER_TOLERANCE_MS = 500;
 /** Lets the landing's first animation settle before the kept part of the video starts. */
 const LANDING_SETTLE_MS = 600;
+const ACTION_TIMEOUT_MS = 15_000;
 
 /**
  * Records the "How it works" promo video on the mock demo (#271): every variant of
@@ -48,6 +48,8 @@ for (const variant of PROMO_VARIANTS) {
       locale: 'en-US',
       recordVideo: { dir: testInfo.outputPath('raw'), size },
     });
+    // A step that cannot find its target fails fast instead of recording a minute of nothing.
+    context.setDefaultTimeout(ACTION_TIMEOUT_MS);
     // No API runs here: answer the monitoring config, as the e2e `test` fixture does.
     await context.route('**/api/monitoring/config', (route) =>
       route.fulfill({ json: { dsn: null, environment: 'promo', release: null } }),
@@ -63,27 +65,8 @@ for (const variant of PROMO_VARIANTS) {
     director.start();
     const trimStart = Date.now() - recordingStartedAt;
 
-    const starts: { readonly start: number; readonly text: string }[] = [];
-    const chapters: Partial<Record<PromoChapter, number>> = {};
     const posterPng = testInfo.outputPath('poster.png');
-    for (const step of PROMO_STEPS) {
-      if (step.chapter) {
-        chapters[step.chapter] = await director.holdUntil(step.chapter);
-      }
-      starts.push({
-        start: director.elapsed(),
-        text: (phone && step.caption.phone) || step.caption.desktop,
-      });
-      await test.step(step.id, () => step.run({ page, phone, director }));
-      if (step.poster) {
-        await page.screenshot({ path: posterPng });
-      }
-    }
-    const duration = director.elapsed();
-    const cues: PromoCue[] = starts.map((cue, index) => ({
-      ...cue,
-      end: starts[index + 1]?.start ?? duration,
-    }));
+    const { cues, chapters, duration } = await runPromoSteps({ page, phone, director }, posterPng);
 
     const video = page.video();
     await context.close();
