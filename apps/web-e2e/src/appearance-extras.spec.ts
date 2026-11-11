@@ -107,10 +107,7 @@ test.describe('appearance extras (mock API)', () => {
   test('Density: Compact tightens the feed and survives a reload', async ({ page }) => {
     await openFeed(page);
     const gap = (): Promise<string> =>
-      page
-        .locator('.library__grid')
-        .first()
-        .evaluate((grid) => getComputedStyle(grid).rowGap);
+      page.evaluate<string>("getComputedStyle(document.querySelector('.library__grid')).rowGap");
     expect(await gap()).toBe('16px');
 
     await openAppearance(page);
