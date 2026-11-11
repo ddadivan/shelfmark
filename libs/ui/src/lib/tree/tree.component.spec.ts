@@ -228,13 +228,32 @@ describe('TreeComponent', () => {
       const REDUCED = /prefers-reduced-motion: reduce/;
       const base = withoutMedia(css, REDUCED);
       const dropRow = /\.ui-tree__row--drop\s*\{([^}]*)\}/.exec(base)?.[1] ?? '';
-      const badge = /\.ui-tree__drop-badge\s*\{([^}]*)\}/.exec(base)?.[1] ?? '';
+      const badge =
+        /\.ui-tree__drop-badge,\s*\.ui-tree__drop-slot\s*\{([^}]*)\}/.exec(base)?.[1] ?? '';
 
       expect(dropRow).toContain('background');
       expect(dropRow).not.toMatch(/height|padding|margin/);
       expect(badge).toMatch(/animation:\s*ui-reveal var\(--duration-base\) var\(--ease-out\)/);
       expect(mediaBlocks(css, REDUCED).join('\n')).toMatch(
-        /\.ui-tree__drop-badge[^{]*\{\s*animation:\s*none/,
+        /\.ui-tree__drop-badge,[^{]*\{\s*animation:\s*none/,
+      );
+    });
+
+    it('reorders into a reserved slot: tinted, dashed, no line or dot, glides ease-in-out', () => {
+      const css = compileScss('lib/tree/tree.component.scss');
+      const REDUCED = /prefers-reduced-motion: reduce/;
+      const base = withoutMedia(css, REDUCED);
+      const slot = [...base.matchAll(/(?:^|\})\s*\.ui-tree__drop-slot\s*\{([^}]*)\}/g)]
+        .map((match) => match[1])
+        .join('\n');
+
+      expect(slot).toMatch(/background:\s*var\(--accent-bg\)/);
+      expect(slot).toMatch(/border:\s*1px dashed var\(--accent\)/);
+      expect(slot).toMatch(/min-height:\s*2\.25rem/);
+      expect(css).not.toContain('drop-line');
+      expect(base).toMatch(/transition:\s*transform var\(--duration-base\) var\(--ease-in-out\)/);
+      expect(mediaBlocks(css, REDUCED).join('\n')).toMatch(
+        /\.ui-tree__drop-slot\s*\{\s*animation:\s*none/,
       );
     });
 

@@ -179,10 +179,9 @@ $more-column: rem(30px);
   }
 }
 
-// Fades in where the count was (duration-base, ease-out); it simply appears under reduced motion.
+// Where the count was; fades in with the reorder slot below.
 .ui-tree__drop-badge {
   @include type(caption);
-  @include enter(fade);
 
   flex: none;
   padding: rem(2px) rem(8px);
@@ -192,10 +191,6 @@ $more-column: rem(30px);
   white-space: nowrap;
   background: var(--surface);
   border-radius: var(--radius-full);
-
-  @include reduced-motion {
-    animation: none;
-  }
 }
 
 // "..." button: fades in on hover or focus, always there on touch.
@@ -255,22 +250,51 @@ $more-column: rem(30px);
   }
 }
 
-// Reorder (folder rows, a mouse): the siblings glide aside while a row is dragged; the place
-// where it lands is a slot with a 2px sage line and a dot at its start (DragDrop spec: one clear
-// drop indicator). The dragged row follows the pointer as a small floating card.
-.ui-tree__list--sorting > .ui-tree__item:not(.ui-tree__drop-line),
+// Reorder (folder rows, a mouse): the siblings glide apart (ease-in-out, a move across the list)
+// and the row lands in a reserved slot (DragDrop spec, like the feed's carried cards): one row
+// tall, the row's own width and corners, a soft sage tint, a thin dashed sage outline and a faint
+// ghost of the row (its icon at low opacity, the name muted). It is the CDK placeholder, which
+// sits where the row was, so the list keeps its height and nothing below moves. The dragged row
+// follows the pointer as a small floating card. Reduced motion: no glide, the slot just appears.
+.ui-tree__list--sorting > .ui-tree__item:not(.ui-tree__drop-slot),
 .ui-tree__item.cdk-drag-animating {
-  transition: transform var(--duration-base) var(--ease-out);
+  transition: transform var(--duration-base) var(--ease-in-out);
 
   @include reduced-motion {
     transition: none;
   }
 }
 
-.ui-tree__drop-line {
-  position: relative;
+// The "Move here" badge and the reorder slot fade in (duration-base, ease-out); under reduced
+// motion they simply appear.
+.ui-tree__drop-badge,
+.ui-tree__drop-slot {
+  @include enter(fade);
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+.ui-tree__drop-slot {
+  display: flex;
+  gap: rem(8px);
+  align-items: center;
+  box-sizing: border-box;
   min-height: rem(36px);
+  padding-block: 0;
+  padding-inline: calc(#{rem(10px)} + (var(--ui-tree-level, 1) - 1) * #{rem(16px)}) rem(10px);
+  font-size: rem(14px);
+  line-height: rem(20px);
+  color: var(--text-muted);
   list-style: none;
+  background: var(--accent-bg);
+  border: 1px dashed var(--accent);
+  border-radius: calc(var(--radius-md) - #{rem(2px)});
+
+  ui-folder-icon {
+    opacity: 0.5;
+  }
 
   @include phone {
     min-height: rem(44px);
@@ -278,32 +302,6 @@ $more-column: rem(30px);
 
   @include coarse {
     min-height: rem(44px);
-  }
-}
-
-.ui-tree__drop-line-mark {
-  position: absolute;
-  inset-block-start: 50%;
-
-  // Starts under the folder tile (row padding + the 24px chevron slot + its 8px gap).
-  inset-inline: calc(#{rem(42px)} + (var(--ui-tree-level, 1) - 1) * #{rem(16px)}) rem(4px);
-  height: rem(2px);
-  background: var(--accent);
-  border-radius: var(--radius-full);
-  transform: translateY(-50%);
-
-  // The dot marks where the line starts, like an insertion caret.
-  &::before {
-    position: absolute;
-    inset-block-start: 50%;
-    inset-inline-start: 0;
-    width: rem(8px);
-    height: rem(8px);
-    content: '';
-    background: var(--surface);
-    border: 2px solid var(--accent);
-    border-radius: var(--radius-full);
-    transform: translate(-50%, -50%);
   }
 }
 

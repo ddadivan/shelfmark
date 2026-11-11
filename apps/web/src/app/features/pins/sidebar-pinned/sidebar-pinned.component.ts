@@ -40,7 +40,7 @@ import { PinActionsService } from '../pin-actions.service';
  * The "Pinned" section of the sidebar and of the phone Library page: up to seven folders and
  * links in the order the user chose, a folder with its colour, icon and count, a link with its
  * favicon letter. A folder opens its page, a link opens in a new tab. Reorder by dragging (desktop,
- * a drop line marks the place) or with Alt+Up / Alt+Down on the focused row (announced). Unpin is
+ * a reserved slot marks the place) or with Alt+Up / Alt+Down on the focused row (announced). Unpin is
  * the row's only action: an icon button (hover / focus, always on touch) with Undo, no "…" menu
  * (#314). Settings ›
  * Library › Edit pinned keeps its buttons. Nothing is rendered while nothing is pinned.

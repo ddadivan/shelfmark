@@ -58,7 +58,7 @@ const KEYBOARD_ECHO_RELEASE_MS = 100;
  * example "Create a folder"); it is outside the tree element, which only allows rows.
  *
  * With `reorderable`, folder rows also move among their siblings (never to another parent): drag
- * a row with a mouse (CDK drag and drop, a drop line marks the place) or press Alt+Up / Alt+Down
+ * a row with a mouse (CDK drag and drop, a reserved slot marks the place) or press Alt+Up / Alt+Down
  * on the focused row; both emit `reordered`, and the row keeps focus after a keyboard move.
  *
  * Presentational: it emits `selected`, `toggled`, `contextMenu` and `reordered`; the feature routes and opens

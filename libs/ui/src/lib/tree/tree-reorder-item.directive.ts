@@ -16,7 +16,7 @@ import type { TreeReorderListDirective } from './tree-reorder-list.directive';
 /**
  * A `ui-tree` row item (the `li`, so an open folder travels with its children) as a CDK drag
  * whose handle is the row itself: pressing a child row never drags its parent. The preview and
- * the drop line come from templates of the tree. Internal to `ui-tree`.
+ * the drop slot come from templates of the tree. Internal to `ui-tree`.
  */
 @Directive({ selector: '[uiTreeReorderItem]' })
 export class TreeReorderItemDirective {

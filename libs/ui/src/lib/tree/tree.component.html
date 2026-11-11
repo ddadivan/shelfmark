@@ -173,7 +173,8 @@
   </div>
 }
 
-<!-- Reorder by dragging (folder rows, a mouse): the row that follows the pointer, and the drop line. -->
+<!-- Reorder by dragging (folder rows, a mouse): the row that follows the pointer, and the slot
+     where it lands (one row tall, a faint ghost of the row inside). -->
 <ng-template #reorderPreview let-node>
   <div class="ui-tree__reorder-preview">
     <div class="ui-tree__reorder-card">
@@ -186,8 +187,14 @@
     </div>
   </div>
 </ng-template>
-<ng-template #reorderPlaceholder let-level="level">
-  <li class="ui-tree__drop-line" role="none" aria-hidden="true" [style.--ui-tree-level]="level">
-    <span class="ui-tree__drop-line-mark"></span>
+<ng-template #reorderPlaceholder let-node let-level="level">
+  <li class="ui-tree__drop-slot" role="none" aria-hidden="true" [style.--ui-tree-level]="level">
+    <span class="ui-tree__twist"></span>
+    <ui-folder-icon
+      [size]="FOLDER_ICON_SIZE.Sm"
+      [icon]="node.icon ?? 'folder'"
+      [colour]="node.colour ?? FOLDER_COLOUR.Graphite"
+    />
+    <span class="ui-tree__name">{{ node.name }}</span>
   </li>
 </ng-template>

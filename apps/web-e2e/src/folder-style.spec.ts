@@ -184,6 +184,18 @@ test.describe('folder style and pins (mock API)', () => {
     await expect(pinned(page).getByRole('button', { name: /^Actions for / })).toHaveCount(0);
   });
 
+  /** Top of the sidebar's Tags section, which a reorder drag above it must never move. */
+  const sidebarTagsTop = async (page: Page): Promise<number> => {
+    const tags = page.locator('app-sidebar app-sidebar-tags');
+    await expect(tags).toBeVisible();
+    return (await tags.boundingBox())?.y ?? 0;
+  };
+
+  async function expectStill(page: Page, tagsTop: number): Promise<void> {
+    const now = await sidebarTagsTop(page);
+    expect(Math.abs(now - tagsTop)).toBeLessThanOrEqual(0.5);
+  }
+
   const folderNames = (page: Page) =>
     page.locator('app-sidebar ui-tree [data-ui-tree-id] .ui-tree__name').allTextContents();
 
@@ -225,11 +237,18 @@ test.describe('folder style and pins (mock API)', () => {
       throw new Error('folder rows have no box');
     }
     const url = page.url();
+    const tagsTop = await sidebarTagsTop(page);
     await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
     await page.mouse.down();
     await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2 - 8, { steps: 4 });
     await page.mouse.move(to.x + to.width / 2, to.y + 2, { steps: 10 });
-    await expect(page.locator('app-sidebar .ui-tree__drop-line')).toHaveCount(1);
+    // The place it lands is a reserved slot one row tall with a ghost of the row; the section
+    // keeps its height, so Tags below does not move.
+    const slot = page.locator('app-sidebar .ui-tree__drop-slot');
+    await expect(slot).toHaveCount(1);
+    await expect(slot).toContainText(NOTES);
+    expect((await slot.boundingBox())?.height).toBeCloseTo(from.height, 0);
+    await expectStill(page, tagsTop);
     await page.mouse.up();
 
     await expect
@@ -241,7 +260,7 @@ test.describe('folder style and pins (mock API)', () => {
     // A drag never opens a folder nor moves it into another one.
     expect(page.url()).toBe(url);
     await expect(notes).toHaveAttribute('aria-level', '1');
-    await expect(page.locator('app-sidebar .ui-tree__drop-line')).toHaveCount(0);
+    await expect(page.locator('app-sidebar .ui-tree__drop-slot')).toHaveCount(0);
   });
 
   test('reorders pinned items by dragging (desktop)', async ({ page }) => {
@@ -257,10 +276,16 @@ test.describe('folder style and pins (mock API)', () => {
     if (!from || !to) {
       throw new Error('pinned items have no box');
     }
+    const tagsTop = await sidebarTagsTop(page);
     await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
     await page.mouse.down();
     await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2 + 8, { steps: 4 });
     await page.mouse.move(to.x + to.width / 2, to.y + to.height - 2, { steps: 10 });
+    const slot = pinned(page).locator('.pinned__drop-slot');
+    await expect(slot).toHaveCount(1);
+    await expect(slot).toContainText(READING);
+    expect((await slot.boundingBox())?.height).toBeCloseTo(from.height, 0);
+    await expectStill(page, tagsTop);
     await page.mouse.up();
 
     await expect(pinnedItems(page).first()).toContainText(NOTES);

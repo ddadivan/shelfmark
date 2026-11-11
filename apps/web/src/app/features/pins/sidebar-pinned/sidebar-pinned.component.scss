@@ -157,44 +157,47 @@
   }
 }
 
-// Drag and drop (desktop): the place the row lands is a slot with a 2px sage line and a dot at
-// its start (the same drop line as the folder tree), the other rows glide aside.
-.pinned__drop-line {
-  position: relative;
+// Drag and drop (desktop): the row lands in a reserved slot, the same as the folder tree's: one
+// row tall, the row's width and corners, a soft sage tint, a thin dashed sage outline and a faint
+// ghost of the row (icon at low opacity, the name muted). It sits where the row was, so the
+// section keeps its height; the other rows glide apart. Reduced motion: no glide, no fade.
+.pinned__drop-slot {
+  @include type(body);
+  @include enter(fade);
+
+  display: flex;
+  gap: rem(8px);
+  align-items: center;
+  box-sizing: border-box;
   min-height: rem(36px);
-  list-style: none;
+  padding-block: 0;
+  padding-inline: rem(10px) rem(40px);
+  font-size: rem(14px);
+  line-height: rem(20px);
+  color: var(--text-muted);
+  background: var(--accent-bg);
+  border: 1px dashed var(--accent);
+  border-radius: calc(var(--radius-md) - #{rem(2px)});
+
+  ui-folder-icon,
+  ui-favicon {
+    opacity: 0.5;
+  }
 
   @include phone {
     min-height: rem(44px);
   }
-}
 
-.pinned__drop-line-mark {
-  position: absolute;
-  inset-block-start: 50%;
-  inset-inline: rem(10px) rem(4px);
-  height: rem(2px);
-  background: var(--accent);
-  border-radius: var(--radius-full);
-  transform: translateY(-50%);
+  @include touch-target;
 
-  &::before {
-    position: absolute;
-    inset-block-start: 50%;
-    inset-inline-start: 0;
-    width: rem(8px);
-    height: rem(8px);
-    content: '';
-    background: var(--surface);
-    border: 2px solid var(--accent);
-    border-radius: var(--radius-full);
-    transform: translate(-50%, -50%);
+  @include reduced-motion {
+    animation: none;
   }
 }
 
 .cdk-drop-list-dragging .pinned__item:not(.cdk-drag-placeholder),
 .pinned__item.cdk-drag-animating {
-  transition: transform var(--duration-base) var(--ease-out);
+  transition: transform var(--duration-base) var(--ease-in-out);
 
   @include reduced-motion {
     transition: none;
