@@ -32,6 +32,9 @@ function setup(folderColours = true) {
 }
 
 describe('UserSettingsStore folder colours', () => {
+  // An appearance left in localStorage by another spec would trigger the one-off silent save of it.
+  beforeEach(() => localStorage.clear());
+
   it('shows colours until the settings say otherwise, then follows the account', async () => {
     const { store } = setup(false);
     expect(store.coloursOn()).toBe(true);
