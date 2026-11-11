@@ -702,8 +702,6 @@
       "pinned": {
         "heading": "Fijados",
         "list": "Elementos fijados",
-        "menu": "Acciones del elemento fijado",
-        "actions": "Acciones para {{name}}",
         "moveUp": "Subir",
         "moveDown": "Bajar",
         "unpin": "Quitar de la barra lateral",

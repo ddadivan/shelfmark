@@ -33,10 +33,6 @@ test.describe('folder style and pins (mock API)', () => {
     return trigger.page().locator(`#${menuId}`).getByRole('menuitem', { name });
   }
 
-  async function pinnedMenuItem(page: Page, name: string, item: string): Promise<Locator> {
-    return menuItem(pinned(page).getByRole('button', { name: `Actions for ${name}` }), item);
-  }
-
   const cardMenuItem = (card: Locator, item: string) =>
     menuItem(card.getByRole('button', { name: /^Actions for / }), item);
 
@@ -143,9 +139,7 @@ test.describe('folder style and pins (mock API)', () => {
     await expect(pinnedItems(page).first()).toContainText(READING);
   });
 
-  test('pins a link from its card menu and unpins it from the Pinned item menu', async ({
-    page,
-  }) => {
+  test('pins a link from its card menu and unpins it from its Pinned row', async ({ page }) => {
     const card = page.locator('ui-card').first();
     const title = (await card.getByRole('link').first().innerText()).trim();
     await (await cardMenuItem(card, 'Pin to sidebar')).click();
@@ -154,11 +148,15 @@ test.describe('folder style and pins (mock API)', () => {
     await expect(pinnedItems(page)).toHaveCount(1);
     await expect(pinnedItems(page).first()).toContainText(title);
 
-    await (await pinnedMenuItem(page, title, 'Unpin from sidebar')).click();
+    const row = pinnedItems(page).first();
+    if (!isPhone(page)) {
+      await row.hover();
+    }
+    await row.getByRole('button', { name: `Unpin ${title}` }).click();
     await expect(pinned(page)).toHaveCount(0);
   });
 
-  test('reorders pinned items with Alt+ArrowDown / Alt+ArrowUp; the menu has no Move up', async ({
+  test('reorders pinned items with Alt+ArrowDown / Alt+ArrowUp; rows have no "…" menu', async ({
     page,
   }) => {
     await createNotes(page);
@@ -182,12 +180,8 @@ test.describe('folder style and pins (mock API)', () => {
       'Moved up, position 1 of 2',
     );
 
-    const trigger = pinned(page).getByRole('button', { name: `Actions for ${READING}` });
-    await trigger.click();
-    const menu = page.locator(`#${await trigger.getAttribute('aria-controls')}`);
-    await expect(menu.getByRole('menuitem', { name: 'Unpin from sidebar' })).toBeVisible();
-    await expect(menu.getByRole('menuitem', { name: /Move (up|down)/ })).toHaveCount(0);
-    await page.keyboard.press('Escape');
+    // Unpin is the only row action, so there is no "…" menu (#314).
+    await expect(pinned(page).getByRole('button', { name: /^Actions for / })).toHaveCount(0);
   });
 
   const folderNames = (page: Page) =>

@@ -702,8 +702,6 @@
       "pinned": {
         "heading": "Épinglés",
         "list": "Éléments épinglés",
-        "menu": "Actions de l’élément épinglé",
-        "actions": "Actions pour {{name}}",
         "moveUp": "Monter",
         "moveDown": "Descendre",
         "unpin": "Désépingler de la barre latérale",

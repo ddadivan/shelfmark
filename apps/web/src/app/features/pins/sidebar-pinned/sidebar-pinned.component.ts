@@ -26,9 +26,6 @@ import {
   ICON_SIZE,
   IconComponent,
   KEYBOARD_KEY,
-  MenuComponent,
-  MenuItemComponent,
-  MenuTriggerDirective,
   TooltipDirective,
 } from '@shelfmark/ui';
 import { ReorderAnnouncer } from '../../../core/a11y/reorder-announcer.service';
@@ -45,9 +42,9 @@ import { PinActionsService } from '../pin-actions.service';
  * The "Pinned" section of the sidebar and of the phone Library page: up to seven folders and
  * links in the order the user chose, a folder with its colour, icon and count, a link with its
  * favicon letter. A folder opens its page, a link opens in a new tab. Reorder by dragging (desktop,
- * a drop line marks the place) or with Alt+Up / Alt+Down on the focused row (announced); "Unpin
- * from sidebar" is an icon button on the row (hover / focus, always on touch) and in the menu, both
- * with Undo (#314: no "Move up" / "Move down" in the menu any more). Settings ›
+ * a drop line marks the place) or with Alt+Up / Alt+Down on the focused row (announced). Unpin is
+ * the row's only action: an icon button (hover / focus, always on touch) with Undo, no "…" menu
+ * (#314). Settings ›
  * Library › Edit pinned keeps its buttons. Nothing is rendered while nothing is pinned.
  */
 @Component({
@@ -61,9 +58,6 @@ import { PinActionsService } from '../pin-actions.service';
     FaviconComponent,
     FolderIconComponent,
     IconComponent,
-    MenuComponent,
-    MenuItemComponent,
-    MenuTriggerDirective,
     RouterLink,
     TooltipDirective,
     TranslocoPipe,
@@ -98,10 +92,6 @@ export class SidebarPinnedComponent {
 
   protected folderLink(folder: FolderResponse): string[] {
     return ['/', APP_PATH.Folders, folder.id];
-  }
-
-  protected menuLabel(name: string): string {
-    return this.transloco.translate('shell.sidebar.pinned.actions', { name });
   }
 
   protected href(link: LinkResponse): string | undefined {
@@ -165,13 +155,8 @@ export class SidebarPinnedComponent {
     return this.transloco.translate('shell.sidebar.pinned.unpinButton', { name });
   }
 
-  /** The row's "Unpin" button or menu item: unpinned at once, with an Undo toast. */
+  /** The row's "Unpin" button: unpinned at once, with an Undo toast. */
   protected unpin(row: PinRow): void {
     void this.actions.unpinRow(row);
-  }
-
-  protected openContext(event: MouseEvent, menu: MenuComponent): void {
-    event.preventDefault();
-    menu.openAt({ x: event.clientX, y: event.clientY });
   }
 }

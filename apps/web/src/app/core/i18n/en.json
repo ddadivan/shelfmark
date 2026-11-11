@@ -690,8 +690,6 @@
       "pinned": {
         "heading": "Pinned",
         "list": "Pinned items",
-        "menu": "Pinned item actions",
-        "actions": "Actions for {{name}}",
         "moveUp": "Move up",
         "moveDown": "Move down",
         "unpin": "Unpin from sidebar",

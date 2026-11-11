@@ -690,8 +690,6 @@
       "pinned": {
         "heading": "Angeheftet",
         "list": "Angeheftete Elemente",
-        "menu": "Aktionen für angeheftetes Element",
-        "actions": "Aktionen für {{name}}",
         "moveUp": "Nach oben",
         "moveDown": "Nach unten",
         "unpin": "Von Seitenleiste lösen",

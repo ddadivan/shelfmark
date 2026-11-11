@@ -49,24 +49,6 @@ function items(element: HTMLElement): HTMLElement[] {
   return [...element.querySelectorAll<HTMLElement>('.pinned__item')];
 }
 
-async function openMenu(element: HTMLElement, index: number): Promise<void> {
-  items(element)[index].querySelector<HTMLButtonElement>('.pinned__more button')?.click();
-  await vi.waitFor(() => {
-    TestBed.tick();
-    expect(document.querySelector('[role="menu"]')).not.toBeNull();
-  });
-}
-
-function menuItem(label: string): HTMLElement {
-  const found = [...document.querySelectorAll<HTMLElement>('[role="menuitem"]')].find((item) =>
-    item.textContent?.includes(label),
-  );
-  if (!found) {
-    throw new Error(`no menu item ${label}`);
-  }
-  return found;
-}
-
 afterEach(() => {
   toastShow.mockReset();
   document.querySelectorAll('.cdk-overlay-container > *').forEach((node) => node.remove());
@@ -99,14 +81,12 @@ describe('SidebarPinnedComponent', () => {
     expect(rows[1].textContent).toContain(data.links[0].title);
   });
 
-  it('has no "Move up" / "Move down" in the item menu any more (#314)', async () => {
+  it('has no "…" menu: Unpin is the only row action (#314)', async () => {
     const { element } = await setup();
-    await openMenu(element, 0);
-    const labels = [...document.querySelectorAll('[role="menuitem"]')].map((item) =>
-      item.textContent?.trim(),
-    );
-    expect(labels).not.toContain('Move up');
-    expect(labels).not.toContain('Move down');
+    const row = items(element)[0];
+    expect(row.querySelectorAll('ui-button')).toHaveLength(1);
+    expect(row.querySelector('.pinned__unpin')).not.toBeNull();
+    expect(element.querySelector('[aria-haspopup="menu"]')).toBeNull();
   });
 
   it('moves the focused row with Alt+ArrowDown / Alt+ArrowUp, announces it and keeps focus', async () => {
@@ -145,7 +125,7 @@ describe('SidebarPinnedComponent', () => {
     expect(announce).toHaveBeenLastCalledWith('Moved up, position 1 of 2', 'polite');
   });
 
-  it('does nothing past the ends, from the "..." button or without Alt', async () => {
+  it('does nothing past the ends, from the Unpin button or without Alt', async () => {
     const { element, pins } = await setup();
     const first = items(element)[0];
     const fire = (target: Element | null, init: KeyboardEventInit) =>
@@ -154,27 +134,9 @@ describe('SidebarPinnedComponent', () => {
       );
     fire(first.querySelector('.pinned__link'), { key: 'ArrowUp', altKey: true });
     fire(first.querySelector('.pinned__link'), { key: 'ArrowDown' });
-    fire(first.querySelector('.pinned__more button'), { key: 'ArrowDown', altKey: true });
+    fire(first.querySelector('.pinned__unpin button'), { key: 'ArrowDown', altKey: true });
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(pins.rows().map((row) => row.kind)).toEqual([PIN_KIND.Folder, PIN_KIND.Link]);
-  });
-
-  it('unpins from the menu', async () => {
-    const { element, fixture, pins } = await setup();
-
-    await openMenu(element, 0);
-    menuItem('Unpin').click();
-
-    await vi.waitFor(() => {
-      fixture.detectChanges();
-      expect(pins.rows().map((row) => row.kind)).toEqual([PIN_KIND.Link]);
-    });
-    // The menu item unpins like the row button: with an Undo toast.
-    await vi.waitFor(() =>
-      expect(toastShow).toHaveBeenCalledWith(
-        expect.objectContaining({ title: 'Unpinned from sidebar' }),
-      ),
-    );
   });
 
   it('unpins from the row\'s "Unpin" button with an Undo toast that puts it back in place', async () => {
