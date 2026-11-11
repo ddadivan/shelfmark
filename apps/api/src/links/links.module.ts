@@ -7,6 +7,7 @@ import { LinkImageRecaptureService } from './images/link-image-recapture.service
 import { LinkImagesService } from './images/link-images.service';
 import { LinkPreviewService } from './link-preview.service';
 import { LinksController } from './links.controller';
+import { LinksBatchService } from './links-batch.service';
 import { LinksWriteService } from './links-write.service';
 import { LinksService } from './links.service';
 
@@ -16,6 +17,7 @@ import { LinksService } from './links.service';
   providers: [
     LinksService,
     LinksWriteService,
+    LinksBatchService,
     LinkPreviewService,
     LinkImageCaptureService,
     LinkImageRecaptureService,

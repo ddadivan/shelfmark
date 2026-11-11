@@ -29,6 +29,11 @@ import { CurrentUser } from '../common/auth/current-user.decorator';
 import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
 import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
 import { CreateLinkDto } from './dto/create-link.dto';
+import { CreateLinksBatchDto } from './dto/create-links-batch.dto';
+import { CreateLinksBatchResponseDto } from './dto/create-links-batch-response.dto';
+import { DeleteLinksBatchDto } from './dto/delete-links-batch.dto';
+import { DeleteLinksBatchResponseDto } from './dto/delete-links-batch-response.dto';
+import { LinksBatchService } from './links-batch.service';
 import { LinkImageRecaptureService } from './images/link-image-recapture.service';
 import { LinkImagesService } from './images/link-images.service';
 import { sendLinkImage } from './images/send-link-image';
@@ -51,6 +56,7 @@ export class LinksController {
     private readonly writes: LinksWriteService,
     private readonly images: LinkImagesService,
     private readonly recapture: LinkImageRecaptureService,
+    private readonly batches: LinksBatchService,
   ) {}
 
   @Post('preview')
@@ -170,6 +176,49 @@ export class LinksController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<LinkResponseDto> {
     return this.recapture.recapture(user.id, id);
+  }
+
+  @Post('batch')
+  @RateLimit(RATE_LIMIT.AddLinksBatch)
+  @ApiCreatedResponse({ type: CreateLinksBatchResponseDto })
+  @ApiOkResponse({
+    type: CreateLinksBatchResponseDto,
+    description: 'Every idempotencyKey was already used: the links of the first request',
+  })
+  @ApiBadRequestResponse({ description: 'Invalid body, or one idempotencyKey used twice' })
+  @ApiNotFoundResponse({ description: 'Unknown or foreign folder' })
+  @ApiConflictResponse({
+    description: 'The links do not fit the link limit; the message says how many more fit',
+  })
+  @ApiOperation({
+    summary: 'Save up to 100 links at once (paste many)',
+    description:
+      'One transaction, no page fetch: links without a title keep their URL until the lazy image capture fills in the page title. Items with an over-long URL or a URL repeated within the batch are skipped and listed in errors.',
+  })
+  async createBatch(
+    @CurrentUser() user: AuthUser,
+    @Body() body: CreateLinksBatchDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<CreateLinksBatchResponseDto> {
+    const { response, created } = await this.batches.create(user.id, body, user.isDemo);
+    if (!created) res.status(HttpStatus.OK);
+    return response;
+  }
+
+  @Post('batch/delete')
+  @HttpCode(HttpStatus.OK)
+  @RateLimit(RATE_LIMIT.DeleteLinksBatch)
+  @ApiOkResponse({ type: DeleteLinksBatchResponseDto })
+  @ApiBadRequestResponse({ description: 'Invalid body' })
+  @ApiOperation({
+    summary: 'Delete up to 100 of your links at once (Undo of a batch)',
+    description: 'Foreign and missing ids are ignored; the answer counts the deleted links.',
+  })
+  async removeBatch(
+    @CurrentUser() user: AuthUser,
+    @Body() body: DeleteLinksBatchDto,
+  ): Promise<DeleteLinksBatchResponseDto> {
+    return { deleted: await this.batches.remove(user.id, body.ids) };
   }
 
   @Post()
