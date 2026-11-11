@@ -239,8 +239,26 @@ describe('motion mixins', () => {
       'ui-progress',
       'ui-ripple-grow',
       'ui-ripple-fade',
+      'ui-land',
+      'ui-land-ring',
     ]);
     expect(out).not.toMatch(/\d+px/);
+  });
+
+  it('landed drops the card in with the spring and fades the sage ring, staggered by --ui-land-delay', () => {
+    const out = css('.a { @include landed; }');
+    expect(out).toContain(
+      'ui-land var(--duration-slow) var(--ease-spring) var(--ui-land-delay, 0s) both',
+    );
+    expect(out).toContain('ui-land-ring 1.8s var(--ease-out) var(--ui-land-delay, 0s) both');
+    expect(out).not.toContain('infinite');
+  });
+
+  it('landed keeps only a fade and the ring under reduced motion', () => {
+    const reduced = reducedMotionBlock(css('.a { @include landed; }'));
+    expect(reduced).toContain('ui-reveal var(--duration-base)');
+    expect(reduced).toContain('ui-land-ring');
+    expect(reduced).not.toMatch(/(^|[\s,])ui-land\s/);
   });
 });
 
