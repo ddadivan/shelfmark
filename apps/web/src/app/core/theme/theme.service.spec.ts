@@ -81,6 +81,22 @@ describe('ThemeService', () => {
     expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe(THEME.Dark);
   });
 
+  it('follows a theme changed in another tab (storage event)', () => {
+    stubSystemScheme(false);
+    const service = createService();
+
+    localStorage.setItem(THEME_STORAGE_KEY, THEME_PREFERENCE.Dark);
+    window.dispatchEvent(new StorageEvent('storage', { key: THEME_STORAGE_KEY }));
+    expect(service.preference()).toBe(THEME_PREFERENCE.Dark);
+
+    window.dispatchEvent(new StorageEvent('storage', { key: 'something-else' }));
+    expect(service.preference()).toBe(THEME_PREFERENCE.Dark);
+
+    localStorage.removeItem(THEME_STORAGE_KEY);
+    window.dispatchEvent(new StorageEvent('storage', { key: THEME_STORAGE_KEY }));
+    expect(service.preference()).toBe(THEME_PREFERENCE.System);
+  });
+
   it('keeps the persisted storage key stable', () => {
     // Renaming it would drop every saved user preference.
     // eslint-disable-next-line no-restricted-syntax -- pinned on purpose (ADR 0024)

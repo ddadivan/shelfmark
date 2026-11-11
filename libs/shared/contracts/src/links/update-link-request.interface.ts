@@ -14,4 +14,9 @@ export interface UpdateLinkRequest {
    */
   tags?: string[];
   isFavorite?: boolean;
+  /**
+   * Pin to (`true`) or unpin from (`false`) the top of the link's folder. Pinning needs a folder (400 in Unsorted)
+   * and is 409 beyond `LINK_LIMIT.PinnedInFolderMax` in that folder. Moving a link to another folder unpins it.
+   */
+  pinnedInFolder?: boolean;
 }

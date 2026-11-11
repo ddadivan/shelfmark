@@ -1,0 +1,161 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+// Same section heading as "Folders" in the tree: caption, muted.
+.pinned__heading {
+  @include type(caption);
+
+  display: flex;
+  align-items: center;
+  min-height: rem(30px);
+  padding: rem(18px) rem(10px) rem(6px);
+  margin: 0;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.pinned__list {
+  display: flex;
+  flex-direction: column;
+  gap: rem(1px);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+// A row like a tree row: 36px (44px on touch), `radius-md`, hover tint, the "..." button at the end.
+.pinned__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius-md);
+
+  @include hover {
+    background: var(--surface-hover);
+  }
+
+  &:has(.is-active) {
+    background: var(--accent-bg);
+  }
+
+  &:has(.pinned__link:focus-visible) {
+    background: var(--surface-hover);
+  }
+
+  &:has(.is-active):has(.pinned__link:focus-visible) {
+    background: var(--accent-bg);
+  }
+}
+
+.pinned__link {
+  @include type(body);
+
+  display: flex;
+  flex: 1 1 auto;
+  gap: rem(8px);
+  align-items: center;
+  min-width: 0;
+  min-height: rem(36px);
+  padding-block: 0;
+  padding-inline: rem(10px) rem(40px);
+  color: var(--text);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+
+  &:focus-visible {
+    @include focus-ring(-2px);
+  }
+
+  @include phone {
+    min-height: rem(44px);
+  }
+
+  @include touch-target;
+}
+
+.pinned__link.is-active {
+  .pinned__count {
+    color: var(--accent-text);
+  }
+}
+
+.pinned__name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pinned__count {
+  @include type(caption);
+
+  flex: none;
+  margin-inline-start: auto;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.pinned__hidden {
+  @include visually-hidden;
+}
+
+// "..." button: sits over the end of the row; fades in on hover or focus, always there on touch.
+.pinned__more {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: rem(4px);
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+
+  &:focus-within {
+    opacity: 1;
+  }
+
+  @media (hover: none) {
+    opacity: 1;
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+.pinned__item:hover .pinned__more,
+.pinned__item:has(.pinned__link:focus-visible) .pinned__more {
+  opacity: 1;
+}
+
+// The phone Library page: the section is a card of its own, like the folder tree below it.
+:host(.pinned--card) {
+  padding: var(--space-1) var(--space-1) var(--space-2);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+
+  .pinned__heading {
+    padding-block-start: var(--space-3);
+  }
+}
+
+// Drag and drop (desktop): the row you hold leaves a quiet slot, the others glide aside.
+.pinned__item.cdk-drag-placeholder {
+  background: var(--surface-hover);
+
+  > * {
+    visibility: hidden;
+  }
+}
+
+.cdk-drop-list-dragging .pinned__item:not(.cdk-drag-placeholder),
+.pinned__item.cdk-drag-animating {
+  transition: transform var(--duration-base) var(--ease-out);
+
+  @include reduced-motion {
+    transition: none;
+  }
+}

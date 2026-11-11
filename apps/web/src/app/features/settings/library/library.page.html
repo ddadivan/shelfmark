@@ -1,0 +1,64 @@
+<app-settings-page-header
+  [title]="'settings.nav.library' | transloco"
+  [description]="'settings.description.library' | transloco"
+/>
+
+<ui-settings-section [title]="'settings.library.folders.title' | transloco">
+  <ui-settings-row
+    [title]="'settings.library.folders.colours.label' | transloco"
+    [description]="'settings.library.folders.colours.hint' | transloco"
+  >
+    <ui-switch
+      [label]="'settings.library.folders.colours.label' | transloco"
+      [checked]="settings.coloursOn()"
+      (checkedChange)="setColours($event)"
+    />
+  </ui-settings-row>
+  <ui-settings-row
+    [title]="'settings.library.folders.pinned.label' | transloco"
+    [description]="'settings.library.folders.pinned.hint' | transloco: { max: PIN_LIMIT.Max }"
+  >
+    <ui-button [size]="BUTTON_SIZE.Sm" ariaHaspopup="dialog" (click)="editPinned()">
+      {{ 'settings.library.folders.pinned.action' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+</ui-settings-section>
+
+<ui-settings-section [title]="'settings.library.trash.title' | transloco">
+  <ui-settings-row
+    #row
+    [title]="'settings.library.trash.retention.label' | transloco"
+    [description]="'settings.library.trash.retention.hint' | transloco"
+  >
+    <ui-segmented-control
+      [ariaLabelledby]="row.titleId"
+      [options]="options()"
+      [disabled]="!settings.loaded()"
+      [value]="value()"
+      (valueChange)="setRetention($event)"
+    />
+  </ui-settings-row>
+  @if (settings.error()) {
+  <ui-notice [kind]="NOTICE_KIND.Danger">
+    {{ 'settings.library.trash.retention.loadFailed' | transloco }}
+    <ui-button [size]="BUTTON_SIZE.Sm" (click)="retry()">
+      {{ 'trash.loadFailed.retry' | transloco }}
+    </ui-button>
+  </ui-notice>
+  }
+  <ui-settings-row
+    [title]="'settings.library.trash.open.label' | transloco"
+    [description]="
+      trash.loaded() && trash.total() > 0
+        ? (pluralKey('settings.library.trash.open.count', trash.total())
+          | transloco: { count: trash.total() })
+        : trash.loaded()
+          ? ('settings.library.trash.open.none' | transloco)
+          : undefined
+    "
+  >
+    <ui-button [size]="BUTTON_SIZE.Sm" [href]="trashHref" (linkClick)="openTrash($event)">
+      {{ 'settings.library.trash.open.action' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+</ui-settings-section>

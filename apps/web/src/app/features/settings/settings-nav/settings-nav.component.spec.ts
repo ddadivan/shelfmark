@@ -29,16 +29,20 @@ describe('SettingsNavComponent', () => {
     expect(rows.map((row) => row.textContent?.trim())).toEqual([
       'Account',
       'Appearance',
+      'Library',
       'Keyboard shortcuts',
       'Export',
       'Privacy and data',
+      'Your feedback',
     ]);
     expect(rows.map((row) => row.getAttribute('href'))).toEqual([
       '/settings/account',
       '/settings/appearance',
+      '/settings/library',
       '/settings/shortcuts',
       '/settings/import-export',
       '/settings/privacy',
+      '/settings/feedback',
     ]);
   });
 

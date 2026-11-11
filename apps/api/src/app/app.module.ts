@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { AdminModule } from '../admin/admin.module';
 import { AuthModule } from '../auth/auth.module';
 import { SessionAuthGuard } from '../auth/session-auth.guard';
 import { CsrfGuard } from '../common/csrf/csrf.guard';
@@ -18,8 +19,10 @@ import { FoldersModule } from '../folders/folders.module';
 import { HealthModule } from '../health/health.module';
 import { LinksModule } from '../links/links.module';
 import { MonitoringModule } from '../monitoring/monitoring.module';
+import { PinsModule } from '../pins/pins.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { TagsModule } from '../tags/tags.module';
+import { TrashModule } from '../trash/trash.module';
 import { UsersModule } from '../users/users.module';
 
 @Module({
@@ -33,8 +36,11 @@ import { UsersModule } from '../users/users.module';
     LinksModule,
     DemoModule,
     FeedbackModule,
+    AdminModule,
     UsersModule,
     ExportModule,
+    TrashModule,
+    PinsModule,
     // Async so the environment is read at DI time, not at import time.
     ThrottlerModule.forRootAsync({
       useFactory: () => createRateLimitOptions(shouldTrustProxyHeaders()),

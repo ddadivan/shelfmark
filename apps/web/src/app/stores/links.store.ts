@@ -29,6 +29,7 @@ import { LINKS_SCOPE } from '../features/links/models/links-scope.const';
 import type { PendingRemoval } from '../features/links/models/pending-removal.interface';
 import { RECENT_LINKS_LIMIT } from '../features/links/models/recent-links-limit.const';
 import type { LinksState } from './models/links-state.interface';
+import { PinsStore } from './pins.store';
 
 /** Image capture requests in flight at once (the endpoint shares the AddLink rate limit). */
 const CAPTURE_CONCURRENCY = 3;
@@ -229,6 +230,24 @@ export const LinksStore = signalStore(
       }
     }
 
+    async function loadRecent(): Promise<void> {
+      const started = epoch;
+      try {
+        const { items } = await firstValueFrom(api().recent({ limit: RECENT_LINKS_LIMIT }));
+        if (started === epoch) {
+          patchState(store, {
+            recent: items.filter((link) => !pending.has(link.id)),
+            recentLoaded: true,
+          });
+          noteLinks(items);
+        }
+      } catch {
+        if (started === epoch) {
+          patchState(store, { recentLoaded: true });
+        }
+      }
+    }
+
     const setFilter = rxMethod<LinksFilter>(
       pipe(
         tap((filter) => {
@@ -251,7 +270,10 @@ export const LinksStore = signalStore(
                 if (started === epoch) {
                   patchState(
                     store,
-                    setAllEntities(page.items.filter((link) => !pending.has(link.id))),
+                    // The pinned links of a folder come first; the rest follow in the sort order.
+                    setAllEntities(
+                      [...page.pinned, ...page.items].filter((link) => !pending.has(link.id)),
+                    ),
                     { nextCursor: page.nextCursor, loaded: true, loading: false },
                   );
                   noteLinks(page.items);
@@ -271,6 +293,43 @@ export const LinksStore = signalStore(
     return {
       /** Loads page one of a scope, cancelling a request still running for the previous one. */
       setFilter,
+
+      /**
+       * Pins a link to the top of its folder (or takes it off) at once; resolves false (and puts
+       * the old state back) when the request fails. After an unpin the page is loaded again, so
+       * the link finds its place in the sort order.
+       */
+      async setPinnedInFolder(id: string, pinned: boolean): Promise<boolean> {
+        const link = store.entityMap()[id];
+        if (!link || (link.pinnedInFolderAt !== null) === pinned) {
+          return true;
+        }
+        const previous = link.pinnedInFolderAt;
+        const optimistic = pinned ? new Date().toISOString() : null;
+        const started = epoch;
+        patchState(store, updateEntity({ id, changes: { pinnedInFolderAt: optimistic } }));
+        try {
+          const saved = await firstValueFrom(api().update(id, { pinnedInFolder: pinned }));
+          if (started === epoch) {
+            patchState(
+              store,
+              updateEntity({
+                id,
+                changes: { pinnedInFolderAt: saved.pinnedInFolderAt, updatedAt: saved.updatedAt },
+              }),
+            );
+            if (!pinned && store.loaded()) {
+              setFilter(store.filter());
+            }
+          }
+          return true;
+        } catch {
+          if (started === epoch && store.entityMap()[id]?.pinnedInFolderAt === optimistic) {
+            patchState(store, updateEntity({ id, changes: { pinnedInFolderAt: previous } }));
+          }
+          return false;
+        }
+      },
 
       /** Loads the next page; does nothing while a request runs or on the last page. */
       async loadMore(): Promise<void> {
@@ -416,6 +475,26 @@ export const LinksStore = signalStore(
         });
       },
 
+      /** Another tab deleted the link (tab sync): it leaves the feed and the recent list. */
+      applyRemoval(id: string): void {
+        if (pending.has(id)) {
+          return;
+        }
+        patchState(store, removeEntity(id), {
+          recent: store.recent().filter((item) => item.id !== id),
+        });
+      },
+
+      /** Loads the open feed and the recent list again, keeping what shows meanwhile (tab sync). */
+      refresh(): void {
+        if (store.loaded()) {
+          setFilter(store.filter());
+        }
+        if (store.recentLoaded()) {
+          void loadRecent();
+        }
+      },
+
       /**
        * Moves a link to another folder (`null` = Unsorted) at once: a link that leaves the open
        * scope leaves the feed, and comes back to its old slot when it is moved back (Undo). Resolves
@@ -457,14 +536,18 @@ export const LinksStore = signalStore(
         }
         const recentIndex = store.recent().findIndex((item) => item.id === id);
         pending.set(id, { link, index, recentIndex, committing: false });
+        injector.get(PinsStore).dropLink(id);
         patchState(store, removeEntity(id), {
           recent: store.recent().filter((item) => item.id !== id),
         });
         return true;
       },
 
-      /** Brings a hidden link back where it was. */
-      undoRemove: restore,
+      /** Brings a hidden link back where it was (the server still has its sidebar pin). */
+      undoRemove(id: string): void {
+        restore(id);
+        void injector.get(PinsStore).refresh();
+      },
 
       /** Sends the delete; resolves false (and brings the link back) when it fails. */
       commitRemove,
@@ -573,23 +656,7 @@ export const LinksStore = signalStore(
         }
       },
 
-      async loadRecent(): Promise<void> {
-        const started = epoch;
-        try {
-          const { items } = await firstValueFrom(api().recent({ limit: RECENT_LINKS_LIMIT }));
-          if (started === epoch) {
-            patchState(store, {
-              recent: items.filter((link) => !pending.has(link.id)),
-              recentLoaded: true,
-            });
-            noteLinks(items);
-          }
-        } catch {
-          if (started === epoch) {
-            patchState(store, { recentLoaded: true });
-          }
-        }
-      },
+      loadRecent,
 
       /**
        * Sign-out: forgets everything of this user and drops responses still in flight. Call

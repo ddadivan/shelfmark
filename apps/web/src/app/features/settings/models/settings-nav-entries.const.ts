@@ -16,6 +16,12 @@ export const SETTINGS_NAV_ENTRIES: readonly SettingsNavEntry[] = [
     phone: true,
   },
   {
+    path: SETTINGS_PATH.Library,
+    labelKey: 'settings.nav.library',
+    descriptionKey: 'settings.description.library',
+    phone: true,
+  },
+  {
     path: SETTINGS_PATH.Shortcuts,
     labelKey: 'settings.nav.shortcuts',
     descriptionKey: 'settings.description.shortcuts',
@@ -31,6 +37,12 @@ export const SETTINGS_NAV_ENTRIES: readonly SettingsNavEntry[] = [
     path: SETTINGS_PATH.Privacy,
     labelKey: 'settings.nav.privacy',
     descriptionKey: 'settings.description.privacy',
+    phone: true,
+  },
+  {
+    path: SETTINGS_PATH.Feedback,
+    labelKey: 'settings.nav.feedback',
+    descriptionKey: 'settings.description.feedback',
     phone: true,
   },
 ];

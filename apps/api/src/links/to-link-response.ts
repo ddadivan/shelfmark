@@ -7,7 +7,10 @@ import type { LinkWithTags } from './models/link-with-tags.type';
  * changed) gets the path with `v=pending`: requesting it triggers the lazy re-capture (a 404 shows
  * the letter). `null` when nothing was captured and nothing is pending.
  */
-function imagePath(row: LinkWithTags, kind: LinkImageKind): string | null {
+export function imagePath(
+  row: Pick<LinkWithTags, 'id' | 'images' | 'captureAttemptedAt'>,
+  kind: LinkImageKind,
+): string | null {
   const image = row.images.find((entry) => entry.kind === kind);
   if (image) return linkImagePath(row.id, kind, image.sha256);
   return row.captureAttemptedAt === null ? linkImagePath(row.id, kind) : null;
@@ -27,6 +30,8 @@ export function toLinkResponse(row: LinkWithTags): LinkResponse {
     faviconUrl: imagePath(row, LINK_IMAGE_KIND.Favicon),
     imageUrl: imagePath(row, LINK_IMAGE_KIND.Preview),
     isFavorite: row.isFavorite,
+    pinnedInFolderAt: row.pinnedInFolderAt?.toISOString() ?? null,
+    pinned: row.pinnedPosition !== null,
     lastOpenedAt: row.lastOpenedAt?.toISOString() ?? null,
     tags: row.tags.map((entry) => entry.tag.name).sort((a, b) => a.localeCompare(b, 'en')),
     createdAt: row.createdAt.toISOString(),

@@ -47,6 +47,11 @@
     [ariaLabel]="'links.item.actions' | transloco: { title: link().title }"
     [uiTooltip]="'links.item.moreActions' | transloco"
   />
+  @if (pinnedToTop()) {
+    <ui-badge class="link-card__pinned" icon="bookmark">{{
+      'links.item.pinned' | transloco
+    }}</ui-badge>
+  }
   @if (link().note; as note) {
     <p class="link-card__note">{{ note }}</p>
   }
@@ -84,6 +89,16 @@
       (activated)="favoriteToggled.emit()"
     >
       {{ (link().isFavorite ? 'links.item.removeFavorite' : 'links.item.addFavorite') | transloco }}
+    </ui-menu-item>
+    @if (pinnable()) {
+      <ui-menu-item icon="bookmark" (activated)="pinToTopToggled.emit()">
+        {{ (pinnedToTop() ? 'links.item.unpinFromTop' : 'links.item.pinToTop') | transloco }}
+      </ui-menu-item>
+    }
+    <ui-menu-item icon="bookmark" (activated)="pinToSidebarToggled.emit()">
+      {{
+        (pinnedToSidebar() ? 'links.item.unpinFromSidebar' : 'links.item.pinToSidebar') | transloco
+      }}
     </ui-menu-item>
     <ui-menu-item icon="folder-move" (activated)="moveRequested.emit()">
       {{ 'links.item.move' | transloco }}

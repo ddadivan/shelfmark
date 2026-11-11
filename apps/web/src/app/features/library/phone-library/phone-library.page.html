@@ -1,6 +1,8 @@
 <section class="phone-library">
   <h1 class="phone-library__title">{{ 'library.phone.title' | transloco }}</h1>
 
+  <app-sidebar-pinned card />
+
   <div class="phone-library__tiles">
     <app-library-tile
       [href]="'/' + APP_PATH.Links"
@@ -28,6 +30,13 @@
       [label]="'links.recent.title' | transloco"
       [meta]="openedToday() ? ('library.phone.openedToday' | transloco: { count: openedToday() }) : undefined"
       (activated)="openRecent()"
+    />
+    <app-library-tile
+      class="phone-library__trash"
+      [href]="'/' + APP_PATH.Trash"
+      icon="trash"
+      [label]="'trash.title' | transloco"
+      [meta]="trashMeta()"
     />
   </div>
 

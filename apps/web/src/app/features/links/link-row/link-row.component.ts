@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, output } f
 import { TranslocoPipe } from '@jsverse/transloco';
 import type { LinkResponse } from '@shelfmark/contracts';
 import {
+  BadgeComponent,
   ButtonComponent,
   ChipComponent,
   FaviconComponent,
@@ -22,6 +23,7 @@ const MAX_TAGS = 2;
   selector: 'app-link-row',
   imports: [
     TranslocoPipe,
+    BadgeComponent,
     ButtonComponent,
     ChipComponent,
     FaviconComponent,
@@ -43,6 +45,19 @@ export class LinkRowComponent {
   readonly link = input.required<LinkResponse>();
   /** Plays the fade-in of rows that replace the skeleton. */
   readonly reveal = input(false);
+
+  /** The link is shown inside a folder: its menu offers "Pin to top" (a pinned link leads the folder). */
+  readonly pinnable = input(false);
+  /** The link is pinned to the sidebar. */
+  readonly pinnedToSidebar = input(false);
+
+  readonly pinToTopToggled = output<void>();
+  readonly pinToSidebarToggled = output<void>();
+
+  /** Pinned to the top of the folder that is open. */
+  protected readonly pinnedToTop = computed(
+    () => this.pinnable() && this.link().pinnedInFolderAt !== null,
+  );
 
   readonly opened = output<void>();
   /** "Open" from the actions menu: the link opens in a new tab. */

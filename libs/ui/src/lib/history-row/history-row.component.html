@@ -3,6 +3,7 @@
   <span class="ui-history-row__meta"><ng-content select="[slot=meta]" /></span>
 </ng-template>
 
+<div class="ui-history-row__select"><ng-content select="[slot=select]" /></div>
 <div class="ui-history-row__preview">
   @if (previewSrc(); as url) {
     <img
@@ -14,6 +15,8 @@
       [src]="url"
       (error)="failed.set(true)"
     />
+  } @else if (previewSlot()) {
+    <ng-content select="[slot=preview]" />
   } @else {
     <ui-icon name="image" [size]="ICON_SIZE.Lg" />
   }

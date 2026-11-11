@@ -23,6 +23,7 @@ const meta: Meta<CheckboxComponent> = {
     indeterminate: false,
     disabled: false,
     required: false,
+    hideLabel: false,
   },
   render: (args) => ({
     props: args,
@@ -33,6 +34,7 @@ const meta: Meta<CheckboxComponent> = {
         [error]="error"
         [disabled]="disabled"
         [required]="required"
+        [hideLabel]="hideLabel"
         [indeterminate]="indeterminate"
         [(checked)]="checked"
       />`,
@@ -51,6 +53,9 @@ export const Indeterminate: Story = { args: { indeterminate: true } };
 export const WithHint: Story = { args: { hint: 'Favorites appear first in the feed' } };
 
 export const WithError: Story = { args: { error: 'Confirm to continue' } };
+
+/** Box only: the label stays the accessible name (a checkbox inside a row that names its item). */
+export const HiddenLabel: Story = { args: { hideLabel: true } };
 
 export const Disabled: Story = { args: { disabled: true, checked: true } };
 

@@ -11,6 +11,7 @@ import {
 import { NEW_USER, seedSession } from '../support/mock-session';
 import { SEARCH_BUTTON } from '../support/search-button';
 import { openSidebar, openTags } from '../support/sidebar';
+import { deleteFirstLink, deleteReadingFolderWithLinks, openTrash } from '../support/trash';
 import type { A11yScreen } from './a11y-screen.interface';
 import { DIALOG_SELECTOR } from './dialog-selector.const';
 import { E2E_PROJECT } from './e2e-project.const';
@@ -56,6 +57,26 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     open: async (page) => {
       await openSignedIn(page, '/recent');
       await expect(page.locator('app-link-history-row').first()).toBeVisible();
+    },
+  },
+  {
+    name: 'trash with a link and a folder',
+    open: async (page) => {
+      await openFeed(page);
+      await deleteFirstLink(page);
+      // Opening Trash sends the delete that still waits for its Undo window.
+      await openTrash(page);
+      await deleteReadingFolderWithLinks(page);
+      await openTrash(page);
+      await expect(page.locator('app-trash-row')).toHaveCount(2);
+    },
+  },
+  {
+    name: 'empty trash',
+    open: async (page) => {
+      await openFeed(page);
+      await openTrash(page);
+      await expect(page.getByRole('heading', { name: 'Trash is empty' })).toBeVisible();
     },
   },
   {
@@ -134,6 +155,14 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     open: async (page) => {
       await openSignedIn(page, '/settings/appearance');
       await expect(page.getByRole('heading', { level: 1, name: 'Appearance' })).toBeVisible();
+    },
+  },
+  {
+    name: 'settings library',
+    open: async (page) => {
+      await openSignedIn(page, '/settings/library');
+      await expect(page.getByRole('heading', { level: 1, name: 'Library' })).toBeVisible();
+      await expect(page.getByRole('radio', { name: '30 days' })).toBeChecked();
     },
   },
   {
@@ -241,6 +270,26 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
       ).toBeVisible();
     },
     ...OVERLAY,
+  },
+  {
+    name: 'folder colour and icon dialog',
+    open: async (page) => {
+      await openFeed(page);
+      await pickFolderMenuItem(page, MOCK_FIXTURE.readingName, 'Colour and icon…');
+      await expect(
+        page.getByRole('dialog', { name: MOCK_FIXTURE.readingName }).getByRole('radiogroup'),
+      ).toHaveCount(2);
+    },
+    include: TITLED_DIALOG_SELECTOR,
+    // Both projects: the dialog is a sheet on a phone.
+  },
+  {
+    name: 'sidebar with pinned items',
+    open: async (page) => {
+      await openFeed(page);
+      await pickFolderMenuItem(page, MOCK_FIXTURE.readingName, 'Pin to sidebar');
+      await expect(page.getByRole('heading', { name: 'Pinned' })).toBeVisible();
+    },
   },
   {
     name: 'delete folder dialog',

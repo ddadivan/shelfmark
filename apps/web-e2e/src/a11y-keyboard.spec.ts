@@ -134,8 +134,15 @@ test.describe('keyboard-only flows (mock API)', () => {
     await expect(create).toBeHidden();
     await expect(page.getByRole('heading', { level: 1, name: ARCHIVE })).toBeVisible();
 
-    // The tree has one tab stop (roving tabindex): Tab enters it, the arrows move inside.
-    await pressUntilFocused(page, library(page).locator('[role="treeitem"][tabindex="0"]'));
+    // The folder tree has one tab stop (roving tabindex; the views and the Pinned section come
+    // before it): Tab enters it, the arrows move inside.
+    await pressUntilFocused(
+      page,
+      library(page)
+        .getByRole('tree', { name: 'Folders' })
+        .locator('[role="treeitem"][tabindex="0"]')
+        .first(),
+    );
     await pressUntilFocused(page, row(page, READING), 'ArrowDown');
     await expectVisibleFocus(page);
     await page.keyboard.press('Shift+F10');
@@ -166,7 +173,13 @@ test.describe('keyboard-only flows (mock API)', () => {
   test('renames a folder: the field has focus and focus returns to the row', async ({ page }) => {
     await openFeed(page);
 
-    await pressUntilFocused(page, library(page).locator('[role="treeitem"][tabindex="0"]'));
+    await pressUntilFocused(
+      page,
+      library(page)
+        .getByRole('tree', { name: 'Folders' })
+        .locator('[role="treeitem"][tabindex="0"]')
+        .first(),
+    );
     await pressUntilFocused(page, row(page, READING), 'ArrowDown');
     await page.keyboard.press('Shift+F10');
     await pressUntilFocused(page, page.getByRole('menuitem', { name: 'Rename' }), 'ArrowDown');

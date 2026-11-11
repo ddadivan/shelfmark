@@ -95,9 +95,11 @@ test.describe('settings (mock auth)', () => {
       'Back to links',
       'Account',
       'Appearance',
+      'Library',
       'Keyboard shortcuts',
       'Export',
       'Privacy and data',
+      'Your feedback',
     ]);
     await expect(nav.getByRole('link', { name: 'Account' })).toHaveAttribute(
       'aria-current',

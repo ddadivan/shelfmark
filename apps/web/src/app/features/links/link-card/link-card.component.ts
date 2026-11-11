@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 import { TranslocoPipe } from '@jsverse/transloco';
 import type { LinkResponse } from '@shelfmark/contracts';
 import {
+  BadgeComponent,
   ButtonComponent,
   CardComponent,
   ChipComponent,
@@ -25,6 +26,7 @@ const MAX_TAGS = 3;
   selector: 'app-link-card',
   imports: [
     TranslocoPipe,
+    BadgeComponent,
     ButtonComponent,
     CardComponent,
     ChipComponent,
@@ -44,6 +46,19 @@ export class LinkCardComponent {
   readonly link = input.required<LinkResponse>();
   /** Plays the fade-in of cards that replace the skeleton. */
   readonly reveal = input(false);
+
+  /** The link is shown inside a folder: its menu offers "Pin to top" (a pinned link leads the folder). */
+  readonly pinnable = input(false);
+  /** The link is pinned to the sidebar. */
+  readonly pinnedToSidebar = input(false);
+
+  readonly pinToTopToggled = output<void>();
+  readonly pinToSidebarToggled = output<void>();
+
+  /** Pinned to the top of the folder that is open. */
+  protected readonly pinnedToTop = computed(
+    () => this.pinnable() && this.link().pinnedInFolderAt !== null,
+  );
 
   readonly opened = output<void>();
   /** "Open" from the actions menu: the link opens in a new tab. */

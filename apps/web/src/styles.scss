@@ -34,3 +34,60 @@
   animation-duration: var(--duration-fast);
   animation-timing-function: var(--ease-out);
 }
+
+// The row held while it is dragged in the sidebar's Pinned section. The CDK puts the preview in
+// <body>, outside the component, so the rules must stay global. It floats, so it is raised.
+.pinned-drag-preview {
+  display: flex;
+  align-items: center;
+  color: var(--text);
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-float);
+
+  .pinned__more {
+    display: none;
+  }
+}
+
+// Drag a link to a folder (DragDrop spec). The CDK appends the preview (a clone of the feed item)
+// to <body>, outside the library page's styles. It lifts and shrinks (rotate and scale are their
+// own properties, so the CDK's translate keeps working) and carries a "Move 1 link" badge read
+// from `data-drag-label`. The CDK's settle animation is skipped under reduced motion.
+.library__item.cdk-drag-preview {
+  z-index: 1100;
+  rotate: -4deg;
+  scale: 0.86;
+  pointer-events: none;
+  list-style: none;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-float);
+
+  &::after {
+    @include type(caption);
+
+    position: absolute;
+    inset-block-start: rem(-12px);
+    inset-inline-end: rem(-12px);
+    padding: rem(4px) rem(10px);
+    font-weight: 500;
+    color: var(--on-primary);
+    white-space: nowrap;
+    content: attr(data-drag-label);
+    background: var(--primary);
+    border-radius: var(--radius-full);
+  }
+
+  @include reduced-motion {
+    rotate: none;
+    scale: none;
+  }
+}
+
+.library__item.cdk-drag-animating {
+  transition: transform var(--duration-base) var(--ease-out);
+
+  @include reduced-motion {
+    transition: none;
+  }
+}

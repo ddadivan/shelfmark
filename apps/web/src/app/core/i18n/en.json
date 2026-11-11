@@ -340,18 +340,23 @@
       "open": "Open",
       "favoriteFailed": "Couldn't update the favorite",
       "retry": "Retry",
-      "deleted": "Link deleted",
+      "deleted": "Moved to Trash",
       "undo": "Undo",
       "deleteFailed": "Couldn't delete the link",
       "deleteFailedDetail": "It is back in your list",
       "savedTo": "Saved to {{folder}}",
       "confirm": {
         "title": "Delete this link?",
-        "message": "“{{title}}” will be removed. You can undo right after.",
+        "message": "“{{title}}” moves to Trash. You can restore it for {{days}} days.",
         "confirm": "Delete link",
         "cancel": "Cancel",
         "close": "Close"
-      }
+      },
+      "pinToTop": "Pin to top",
+      "unpinFromTop": "Unpin from top",
+      "pinToSidebar": "Pin to sidebar",
+      "unpinFromSidebar": "Unpin from sidebar",
+      "pinned": "Pinned"
     },
     "recent": {
       "title": "Recently opened",
@@ -408,6 +413,11 @@
       "failed": "Couldn't move the link",
       "failedDetail": "It is back where it was",
       "undoFailed": "Couldn't move the link back"
+    },
+    "drag": {
+      "moveHere": "Move here",
+      "moveOne": "Move 1 link",
+      "wasHere": "{{title}} was here"
     }
   },
   "privacy": {
@@ -507,10 +517,18 @@
       },
       "or": "or",
       "tiles": {
-        "signalForms": { "title": "Signal Forms in 20 minutes" },
-        "woolCoat": { "title": "Wool coat, straight cut" },
-        "nestjs": { "title": "NestJS for frontend developers" },
-        "ramen": { "title": "The best weeknight ramen" }
+        "signalForms": {
+          "title": "Signal Forms in 20 minutes"
+        },
+        "woolCoat": {
+          "title": "Wool coat, straight cut"
+        },
+        "nestjs": {
+          "title": "NestJS for frontend developers"
+        },
+        "ramen": {
+          "title": "The best weeknight ramen"
+        }
       },
       "privacyBefore": "By continuing you agree to the",
       "privacyLink": "Privacy policy",
@@ -560,7 +578,21 @@
         "addLink": "Add link here",
         "rename": "Rename",
         "move": "Move to…",
-        "delete": "Delete folder…"
+        "delete": "Delete folder…",
+        "pin": "Pin to sidebar",
+        "unpin": "Unpin from sidebar",
+        "style": "Colour and icon…"
+      },
+      "views": "Views",
+      "foldersTree": "Folders",
+      "pinned": {
+        "heading": "Pinned",
+        "list": "Pinned items",
+        "menu": "Pinned item actions",
+        "actions": "Actions for {{name}}",
+        "moveUp": "Move up",
+        "moveDown": "Move down",
+        "unpin": "Unpin from sidebar"
       }
     },
     "searchHint": "Search your links",
@@ -568,6 +600,8 @@
       "toLight": "Switch to light theme",
       "toDark": "Switch to dark theme"
     },
+    "sendFeedback": "Send feedback",
+    "feedbackInbox": "Feedback inbox",
     "about": "About Shelfmark"
   },
   "folders": {
@@ -633,7 +667,7 @@
       },
       "remove": {
         "title": "Delete links too",
-        "desc": "This can't be undone"
+        "desc": "They wait in Trash with the folder"
       },
       "action": "Delete folder",
       "actionWithLinks": {
@@ -641,14 +675,56 @@
         "other": "Delete folder and {{count}} links"
       },
       "failed": "Couldn't delete the folder. Nothing was changed.",
-      "done": "Folder deleted"
+      "done": "Folder moved to Trash"
+    },
+    "style": {
+      "colour": "Colour",
+      "icon": "Icon",
+      "reset": "Reset",
+      "save": "Save",
+      "cancel": "Cancel",
+      "close": "Close",
+      "failed": "Couldn't save the style",
+      "failedDetail": "The old colour and icon are back.",
+      "colours": {
+        "graphite": "Graphite",
+        "sage": "Sage",
+        "ocean": "Ocean",
+        "plum": "Plum",
+        "clay": "Clay",
+        "amber": "Amber",
+        "rose": "Rose",
+        "teal": "Teal"
+      },
+      "icons": {
+        "folder": "Folder",
+        "bookmark": "Bookmark",
+        "star": "Star",
+        "clock": "Clock",
+        "link": "Link",
+        "tag": "Tag",
+        "inbox": "Inbox",
+        "image": "Image",
+        "cards": "Cards",
+        "list": "List",
+        "saved-link": "Saved link",
+        "monitor": "Monitor",
+        "user": "User",
+        "settings": "Settings",
+        "download": "Download",
+        "share": "Share"
+      }
     }
   },
   "library": {
     "title": "All links",
     "phone": {
       "title": "Library",
-      "openedToday": "{{count}} today"
+      "openedToday": "{{count}} today",
+      "trashCount": {
+        "one": "{{count}} item",
+        "other": "{{count}} items"
+      }
     },
     "scope": {
       "all": "All links",
@@ -782,16 +858,20 @@
     "nav": {
       "account": "Account",
       "appearance": "Appearance",
+      "library": "Library",
       "export": "Export",
       "privacy": "Privacy and data",
-      "shortcuts": "Keyboard shortcuts"
+      "shortcuts": "Keyboard shortcuts",
+      "feedback": "Your feedback"
     },
     "description": {
       "account": "Your profile and your account.",
       "appearance": "How Shelfmark looks.",
+      "library": "What happens to deleted items.",
       "export": "Take everything you saved with you.",
       "privacy": "What we keep, and how to take it with you.",
-      "shortcuts": "Work without the mouse."
+      "shortcuts": "Work without the mouse.",
+      "feedback": "Ideas, problems and the answers we sent."
     },
     "account": {
       "profile": "Profile",
@@ -875,6 +955,63 @@
         "mismatch": "That email does not match your account. Check it and try again.",
         "rateLimited": "Too many attempts. Try again in a minute.",
         "failed": "We could not delete your account. Nothing was deleted. Try again."
+      }
+    },
+    "library": {
+      "trash": {
+        "title": "Trash",
+        "retention": {
+          "label": "Keep deleted items for",
+          "hint": "Then they’re removed for good",
+          "days": "{{count}} days",
+          "failed": "Couldn't save the setting",
+          "failedDetail": "It is back to {{days}} days.",
+          "loadFailed": "Couldn't load the setting."
+        },
+        "open": {
+          "label": "Trash",
+          "count": {
+            "one": "{{count}} item",
+            "other": "{{count}} items"
+          },
+          "none": "Nothing in Trash",
+          "action": "Open Trash"
+        },
+        "shorten": {
+          "title": "Shorten how long Trash keeps items?",
+          "message": {
+            "one": "{{count}} item in Trash is older than {{days}} days and will be deleted for good tonight.",
+            "other": "{{count}} items in Trash are older than {{days}} days and will be deleted for good tonight."
+          },
+          "confirm": "Keep for {{days}} days",
+          "cancel": "Cancel",
+          "close": "Close"
+        }
+      },
+      "folders": {
+        "title": "Folders",
+        "colours": {
+          "label": "Folder colours",
+          "hint": "Coloured folder icons in the sidebar and tiles",
+          "failed": "Couldn't save the setting",
+          "failedDetail": "It is back to how it was."
+        },
+        "pinned": {
+          "label": "Pinned at the top",
+          "hint": "Up to {{max}} folders and links",
+          "action": "Edit pinned"
+        }
+      },
+      "pinnedDialog": {
+        "title": "Pinned",
+        "description": "The order of the Pinned section in the sidebar.",
+        "empty": "Nothing is pinned. Use “Pin to sidebar” in the menu of a folder or link.",
+        "list": "Pinned items",
+        "close": "Close",
+        "done": "Done",
+        "moveUp": "Move {{name}} up",
+        "moveDown": "Move {{name}} down",
+        "unpin": "Unpin {{name}} from the sidebar"
       }
     },
     "help": "Help"
@@ -1116,6 +1253,262 @@
   "toast": {
     "actionHint": "Press {{shortcut}} to reach {{action}}",
     "dismiss": "Dismiss"
+  },
+  "trash": {
+    "title": "Trash",
+    "count": {
+      "one": "{{count}} item, kept for {{days}} days",
+      "other": "{{count}} items, kept for {{days}} days"
+    },
+    "nothing": "Nothing here",
+    "emptyAction": "Empty trash",
+    "loading": "Loading Trash",
+    "loadFailed": {
+      "title": "Couldn't load Trash",
+      "text": "Check your connection and try again.",
+      "retry": "Try again"
+    },
+    "filter": {
+      "label": "Show",
+      "all": "All {{count}}",
+      "links": "Links {{count}}",
+      "folders": "Folders {{count}}",
+      "emptyTitle": "Nothing of this kind in Trash",
+      "emptyText": "Show everything to see what else is waiting here.",
+      "showAll": "Show all"
+    },
+    "selectAll": "Select all",
+    "selected": {
+      "one": "{{count}} selected",
+      "other": "{{count}} selected"
+    },
+    "group": "Recently deleted",
+    "row": {
+      "from": "From {{folder}}",
+      "fromUnsorted": "From Unsorted",
+      "deleted": "Deleted {{when}}",
+      "links": {
+        "one": "{{count}} link",
+        "other": "{{count}} links"
+      },
+      "daysLeft": {
+        "one": "{{count}} day left",
+        "other": "{{count}} days left"
+      },
+      "lastDay": "Less than a day left",
+      "select": "Select {{title}}",
+      "selectHint": "Selects this entry",
+      "restore": "Restore",
+      "restoreItem": "Restore {{title}}",
+      "deleteItem": "Delete {{title}} forever",
+      "more": "More for {{title}}",
+      "moreTooltip": "More actions",
+      "deleteForever": "Delete forever",
+      "actionsHint": "Shows Restore and Delete",
+      "delete": "Delete"
+    },
+    "footer": "Items are deleted for good after {{days}} days. Restore puts a link back in its folder, or in Unsorted if the folder is gone.",
+    "swipeHint": "Swipe left to restore or delete for good. Long-press to select several.",
+    "emptyState": {
+      "title": "Trash is empty",
+      "text": "Deleted links and folders wait here for {{days}} days, so nothing is gone by accident."
+    },
+    "bar": {
+      "label": "Actions for selected items",
+      "restore": "Restore",
+      "deleteForever": "Delete forever",
+      "clear": "Clear selection"
+    },
+    "emptyConfirm": {
+      "title": "Empty trash?",
+      "message": "{{items}} will be deleted for good. This can’t be undone.",
+      "messageFolder": "{{items}} will be deleted for good, including the folder “{{name}}” and its {{links}}. This can’t be undone.",
+      "messageFolders": "{{items}} will be deleted for good, including {{folders}} and their {{links}}. This can’t be undone.",
+      "folders": {
+        "one": "{{count}} folder",
+        "other": "{{count}} folders"
+      },
+      "items": {
+        "one": "{{count}} item",
+        "other": "{{count}} items"
+      },
+      "confirm": {
+        "one": "Delete {{count}} item",
+        "other": "Delete {{count}} items"
+      },
+      "cancel": "Cancel",
+      "close": "Close"
+    },
+    "deleteConfirm": {
+      "title": "Delete forever?",
+      "message": "“{{title}}” will be deleted for good. This can’t be undone.",
+      "messageFolder": "The folder “{{title}}” and its {{links}} will be deleted for good. This can’t be undone.",
+      "messageMany": "{{items}} will be deleted for good. This can’t be undone.",
+      "confirm": "Delete forever",
+      "cancel": "Cancel",
+      "close": "Close"
+    },
+    "toast": {
+      "restored": "Restored",
+      "restoredMany": {
+        "one": "{{count}} item is back",
+        "other": "{{count}} items are back"
+      },
+      "restoreFailed": "Couldn't restore",
+      "restoreFailedDetail": "Nothing was changed.",
+      "restoreFull": "Couldn't restore",
+      "restoreFullDetail": "Your library is full. Delete something and try again.",
+      "deleted": "Deleted for good",
+      "deletedMany": {
+        "one": "{{count}} item deleted for good",
+        "other": "{{count}} items deleted for good"
+      },
+      "deleteFailed": "Couldn't delete",
+      "deleteFailedDetail": "It is back in Trash.",
+      "emptied": "Trash emptied",
+      "emptyFailed": "Couldn't empty Trash",
+      "emptyFailedDetail": "Nothing was deleted."
+    },
+    "emptyShort": "Empty"
+  },
+  "pins": {
+    "limit": {
+      "title": "Pinned is full",
+      "detail": "You can pin up to {{max}} folders and links. Unpin one first."
+    },
+    "pinFailed": {
+      "title": "Couldn't pin",
+      "detail": "Nothing was changed. Try again."
+    },
+    "unpinFailed": {
+      "title": "Couldn't unpin",
+      "detail": "It is still pinned."
+    },
+    "moveFailed": {
+      "title": "Couldn't change the order",
+      "detail": "The old order is back."
+    },
+    "pinnedToTopFailed": {
+      "title": "Couldn't change the pin",
+      "detail": "It is back as it was."
+    }
+  },
+  "feedback": {
+    "kind": {
+      "idea": "Idea",
+      "problem": "Problem",
+      "other": "Other"
+    },
+    "status": {
+      "received": "Received",
+      "planned": "Planned",
+      "inProgress": "In progress",
+      "done": "Done",
+      "notPlanned": "Not planned"
+    },
+    "dialog": {
+      "title": "Send feedback",
+      "close": "Close",
+      "kind": "Type",
+      "field": {
+        "idea": "What would make Shelfmark better?",
+        "problem": "What went wrong?",
+        "other": "What's on your mind?"
+      },
+      "placeholder": {
+        "idea": "One thing we should change or add",
+        "problem": "What you did, and what happened instead",
+        "other": "Anything you would like us to know"
+      },
+      "hint": "We read every message.",
+      "counter": "characters",
+      "required": "Write a message first.",
+      "tooLong": "Keep it to {{max}} characters or fewer.",
+      "attachClient": "Attach browser and app version",
+      "cancel": "Cancel",
+      "send": "Send",
+      "sending": "Sending…",
+      "error": "Couldn't send. Your text is kept — try again in a moment.",
+      "rateLimited": "You have sent a lot of messages in the last hour. Your text is kept — try again later."
+    },
+    "screenshot": {
+      "label": "Screenshot (optional)",
+      "drop": "Drop an image or",
+      "choose": "choose a file",
+      "hint": "PNG, JPEG or WebP, up to {{max}} MB.",
+      "remove": "Remove screenshot",
+      "size": {
+        "kb": "{{size}} KB",
+        "mb": "{{size}} MB"
+      },
+      "error": {
+        "type": "That file is not a PNG, JPEG or WebP image.",
+        "size": "That image is larger than {{max}} MB. Choose a smaller one.",
+        "empty": "That file is empty.",
+        "read": "Couldn't read that file. Try another one."
+      }
+    },
+    "thanks": {
+      "title": "Thank you",
+      "text": "We read every message. You'll see its status in Settings › Your feedback.",
+      "done": "Done"
+    },
+    "page": {
+      "send": {
+        "title": "Send feedback",
+        "label": "Tell us what you think",
+        "hint": "An idea, a problem or anything else. We read every message.",
+        "action": "Send feedback"
+      },
+      "list": {
+        "title": "Your messages",
+        "error": "Couldn't load your messages.",
+        "retry": "Try again"
+      },
+      "empty": {
+        "title": "No messages yet",
+        "text": "What you send shows up here with its status and our reply."
+      },
+      "sent": "Sent {{date}}",
+      "sentToday": "Sent today",
+      "reply": "Reply: {{reply}}"
+    }
+  },
+  "admin": {
+    "feedback": {
+      "title": "Feedback inbox",
+      "description": "Every message, with its status and your reply.",
+      "filter": "Show",
+      "filterAll": "All statuses",
+      "status": "Status",
+      "reply": "Reply",
+      "replyHint": "Shown to the sender in Your feedback. Leave empty for none.",
+      "replyTooLong": "Keep the reply to {{max}} characters or fewer.",
+      "save": "Save",
+      "screenshot": "View screenshot",
+      "error": "Couldn't load the messages.",
+      "empty": {
+        "title": "No messages",
+        "text": "Nothing matches this filter yet."
+      },
+      "loadMore": "Load more",
+      "loadingMore": "Loading more messages",
+      "loadMoreFailed": {
+        "title": "Couldn't load more messages",
+        "detail": "Try again"
+      },
+      "saveFailed": {
+        "title": "Couldn't save",
+        "detail": "The message is back as it was. Try again."
+      }
+    }
+  },
+  "tabSync": {
+    "signedOut": {
+      "title": "You signed out in another tab",
+      "text": "To keep your links private, this tab is locked too.",
+      "signIn": "Sign in again"
+    }
   },
   "howItWorks": {
     "menu": "How it works",

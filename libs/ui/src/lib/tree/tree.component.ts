@@ -21,6 +21,7 @@ import {
 } from '@angular/core';
 import { ButtonComponent } from '../button/button.component';
 import { FolderIconComponent } from '../folder-icon/folder-icon.component';
+import { FOLDER_COLOUR } from '../folder-icon/models/folder-colour.const';
 import { FOLDER_ICON_SIZE } from '../folder-icon/models/folder-icon-size.const';
 import { IconComponent } from '../icon/icon.component';
 import { LongPressDirective } from '../long-press/long-press.directive';
@@ -33,6 +34,7 @@ import type { UiTreeToggleEvent } from './models/tree-toggle-event.interface';
 import { KEYBOARD_KEY } from '../keyboard';
 import type { TreeRowPlace } from './models/tree-row-place.interface';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
+import { TREE_DROP_OPEN_DELAY_MS } from './models/tree-drop-open-delay.const';
 
 /** Safety net: a pending keyboard echo is dropped after this long (a held key refreshes it). */
 const KEYBOARD_ECHO_TIMEOUT_MS = 1000;
@@ -77,6 +79,7 @@ const KEYBOARD_ECHO_RELEASE_MS = 100;
 export class TreeComponent {
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly FOLDER_ICON_SIZE = FOLDER_ICON_SIZE;
+  protected readonly FOLDER_COLOUR = FOLDER_COLOUR;
   /**
    * The row's "…" tooltip opens to the right, towards the content: below the row it would cover
    * the next row or the section header ("+" of Tags) and keep a resting pointer trapped on it.
@@ -112,6 +115,20 @@ export class TreeComponent {
       observer.observe(this.host);
       inject(DestroyRef).onDestroy(() => observer.disconnect());
     }
+    // Drag and drop: a closed folder under the drop target opens after a short rest.
+    effect((onCleanup) => {
+      const id = this.dropTargetId();
+      if (id === null) {
+        return;
+      }
+      const timer = setTimeout(() => {
+        const item = this.items().find((candidate) => candidate.value() === id);
+        if (item && this.nodesById().get(id)?.children?.length && !item.expanded()) {
+          item.expanded.set(true);
+        }
+      }, TREE_DROP_OPEN_DELAY_MS);
+      onCleanup(() => clearTimeout(timer));
+    });
     effect(() => {
       this.remember();
       // The rows are re-rendered after this effect: look at them then.
@@ -234,6 +251,14 @@ export class TreeComponent {
   readonly menuLabel = input<string>();
   /** `id` of the folder whose menu is open: its button shows `aria-expanded="true"` and stays visible. */
   readonly menuNodeId = input<string | null>(null);
+  /**
+   * `id` of the row under a dragged item (drag and drop is the feature's): the row is highlighted,
+   * shows `dropLabel` instead of its count, and a closed folder opens after
+   * `TREE_DROP_OPEN_DELAY_MS`. Every row carries its id in `data-ui-tree-id` for hit testing.
+   */
+  readonly dropTargetId = input<string | null>(null);
+  /** Badge text on the drop target row ("Move here"); none when empty. */
+  readonly dropLabel = input<string>();
   /** A row was chosen (click, Enter). */
   readonly selected = output<UiTreeNode>();
   /** A folder opened or closed. */
@@ -271,8 +296,12 @@ export class TreeComponent {
     return node.count === undefined ? null : `${itemId}-count`;
   }
 
-  /** The row is named by its name, then its count (never by its children). */
+  /** The row is named by its name, then its count or drop badge (never by its children). */
   protected labelledBy(itemId: string, node: UiTreeNode): string {
+    // The drop target's badge replaces the count, in the name too ("Recipes Move here").
+    if (this.dropTargetId() === node.id && this.dropLabel()) {
+      return `${itemId}-name ${itemId}-drop`;
+    }
     const count = this.countId(itemId, node);
     return count ? `${itemId}-name ${count}` : `${itemId}-name`;
   }

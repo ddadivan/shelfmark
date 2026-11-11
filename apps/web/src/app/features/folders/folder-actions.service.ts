@@ -8,7 +8,10 @@ import { DIALOG_FIRST_FIELD } from '../../models/dialog-first-field.const';
 import { sidebarActiveId } from '../../shell/sidebar/sidebar-active-id';
 import { SidebarTreeFocusService } from '../../shell/sidebar/sidebar-tree-focus.service';
 import { FoldersStore } from '../../stores/folders.store';
+import { TrashStore } from '../../stores/trash.store';
 import { LinkActionsService } from '../links/link-actions.service';
+import { FolderStyleDialogComponent } from './folder-style-dialog/folder-style-dialog.component';
+import type { FolderStyleDialogData } from './models/folder-style-dialog-data.interface';
 import { DeleteFolderDialogComponent } from './delete-folder-dialog/delete-folder-dialog.component';
 import { FolderNameDialogComponent } from './folder-name-dialog/folder-name-dialog.component';
 import type { DeleteFolderDialogData } from './models/delete-folder-dialog-data.interface';
@@ -26,6 +29,7 @@ import { MoveFolderDialogComponent } from './move-folder-dialog/move-folder-dial
 @Service()
 export class FolderActionsService {
   private readonly folders = inject(FoldersStore);
+  private readonly trash = inject(TrashStore);
   private readonly dialogs = inject(DialogService);
   private readonly toasts = inject(ToastService);
   private readonly router = inject(Router);
@@ -127,6 +131,40 @@ export class FolderActionsService {
     ).result;
   }
 
+  /**
+   * "Colour and icon": the dialog closes at once on Save and the folder wears the new style while
+   * the request runs; a failure puts the old style back with a toast.
+   */
+  async style(folder: FolderResponse): Promise<void> {
+    await this.dialogs.open<FolderStyleDialogComponent, boolean, FolderStyleDialogData>(
+      FolderStyleDialogComponent,
+      {
+        size: DIALOG_SIZE.Sm,
+        autoFocus: 'input:checked',
+        data: {
+          folder,
+          linkCount: folder.linkCount,
+          subfolderCount: this.folders.entities().filter((item) => item.parentId === folder.id)
+            .length,
+          submit: (style) => {
+            if (style.colour === folder.colour && style.icon === folder.icon) {
+              return;
+            }
+            void this.folders.setStyle(folder.id, style).then((saved) => {
+              if (!saved) {
+                this.toasts.show({
+                  kind: TOAST_KIND.Danger,
+                  title: this.t('folders.style.failed'),
+                  detail: this.t('folders.style.failedDetail'),
+                });
+              }
+            });
+          },
+        },
+      },
+    ).result;
+  }
+
   /** Asks how to treat the links, deletes, and leaves the page when it showed a deleted folder. */
   async delete(folder: FolderResponse): Promise<void> {
     const outcome = { deleted: false };
@@ -148,6 +186,7 @@ export class FolderActionsService {
       },
     ).result;
     if (outcome.deleted) {
+      void this.trash.refresh();
       this.toasts.show({
         kind: TOAST_KIND.Success,
         title: this.t('folders.delete.done'),

@@ -45,6 +45,19 @@
   }
 }
 
+// A checkbox before the preview: above the stretched link layer, so it takes its own clicks.
+.ui-history-row__select {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: none;
+  align-items: center;
+
+  &:empty {
+    display: none;
+  }
+}
+
 // 72 x 48; 48 x 48 on phones.
 .ui-history-row__preview {
   display: grid;

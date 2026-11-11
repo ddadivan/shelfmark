@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { inject, Injector, Service } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
-import type { LinkResponse } from '@shelfmark/contracts';
+import { PIN_KIND, type LinkResponse } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
 import {
   DIALOG_SIZE,
@@ -10,10 +10,15 @@ import {
   TOAST_KIND,
   ToastService,
   toastShortcutLabel,
+  type ToastFolder,
 } from '@shelfmark/ui';
 import { FoldersStore } from '../../stores/folders.store';
 import { LinksStore } from '../../stores/links.store';
+import { PinsStore } from '../../stores/pins.store';
 import { TagsStore } from '../../stores/tags.store';
+import { TrashStore } from '../../stores/trash.store';
+import { UserSettingsStore } from '../../stores/user-settings.store';
+import { PinActionsService } from '../pins/pin-actions.service';
 import { AddLinkDialogService } from './add-link/add-link-dialog.service';
 import { ADD_LINK_ACTION } from './models/add-link-action.const';
 import type { AddLinkData } from './models/add-link-data.interface';
@@ -25,7 +30,8 @@ import { MoveLinkDialogComponent } from './move-link-dialog/move-link-dialog.com
 
 /**
  * What a user can do with a link from the feed, the recent panel and the header: open, favorite,
- * edit, move to a folder (optimistic, Undo), delete (confirm, optimistic removal, Undo) and add. Texts come through Transloco here, so
+ * edit, move to a folder (optimistic, Undo), delete (confirm, optimistic removal, Undo; the link then
+ * waits in Trash) and add. Texts come through Transloco here, so
  * the components only emit.
  */
 @Service()
@@ -33,6 +39,10 @@ export class LinkActionsService {
   private readonly store = inject(LinksStore);
   private readonly folders = inject(FoldersStore);
   private readonly tags = inject(TagsStore);
+  private readonly trash = inject(TrashStore);
+  private readonly settings = inject(UserSettingsStore);
+  private readonly pins = inject(PinsStore);
+  private readonly pinActions = inject(PinActionsService);
   // Resolved on use: the shell injects this service where specs provide no `LINKS_API`.
   private readonly injector = inject(Injector);
   private readonly dialogs = inject(DialogService);
@@ -69,10 +79,32 @@ export class LinkActionsService {
     });
   }
 
+  /** "Pin to top" / "Unpin from top" of the open folder; a failure puts the link back with a toast. */
+  async togglePinInFolder(link: LinkResponse): Promise<void> {
+    if (await this.store.setPinnedInFolder(link.id, link.pinnedInFolderAt === null)) {
+      return;
+    }
+    this.toasts.show({
+      kind: TOAST_KIND.Danger,
+      title: this.t('pins.pinnedToTopFailed.title'),
+      detail: link.title,
+    });
+  }
+
+  /** "Pin to sidebar" / "Unpin from sidebar". */
+  async togglePinToSidebar(link: LinkResponse): Promise<void> {
+    await (this.pins.has(PIN_KIND.Link, link.id)
+      ? this.pinActions.unpinLink(link)
+      : this.pinActions.pinLink(link));
+  }
+
   async delete(link: LinkResponse): Promise<void> {
     const confirmed = await this.dialogs.confirm({
       title: this.t('links.item.confirm.title'),
-      message: this.t('links.item.confirm.message', { title: link.title }),
+      message: this.t('links.item.confirm.message', {
+        title: link.title,
+        days: String(this.settings.retentionDays()),
+      }),
       confirmLabel: this.t('links.item.confirm.confirm'),
       cancelLabel: this.t('links.item.confirm.cancel'),
       closeLabel: this.t('links.item.confirm.close'),
@@ -125,11 +157,17 @@ export class LinkActionsService {
       kind: TOAST_KIND.Moved,
       title: this.t('links.move.moved', { folder: this.folderLabel(folderId) }),
       detail: link.title,
-      folder: {},
+      folder: this.toastFolder(folderId),
       duration: TOAST_DURATION_MS.Undo,
       actionHint: this.t('toast.actionHint', { shortcut: toastShortcutLabel(), action: undo }),
       action: { label: undo, run: () => void this.moveBack({ ...link, folderId }, from) },
     });
+  }
+
+  /** The folder tile of a `moved` toast: the folder's colour and icon, graphite for Unsorted. */
+  private toastFolder(folderId: string | null): ToastFolder {
+    const folder = folderId === null ? undefined : this.folders.entityMap()[folderId];
+    return folder ? { colour: this.settings.shownColour(folder.colour), icon: folder.icon } : {};
   }
 
   private async moveBack(link: LinkResponse, folderId: string | null): Promise<void> {
@@ -206,6 +244,7 @@ export class LinkActionsService {
     if (await this.store.commitRemove(id)) {
       void this.folders.refresh();
       void this.tags.noteLinkSaved();
+      void this.trash.refresh();
     } else {
       this.toasts.show({
         kind: TOAST_KIND.Danger,

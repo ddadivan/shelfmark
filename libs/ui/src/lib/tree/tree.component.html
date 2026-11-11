@@ -8,6 +8,8 @@
         ngTreeItem
         class="ui-tree__row"
         [class.ui-tree__row--folder]="folder"
+        [class.ui-tree__row--drop]="dropTargetId() === node.id"
+        [attr.data-ui-tree-id]="node.id"
         [style.--ui-tree-level]="level"
         [uiRipple]="true"
         uiLongPress
@@ -39,12 +41,20 @@
           </span>
         }
         @if (folder) {
-          <ui-folder-icon [size]="FOLDER_ICON_SIZE.Sm" [icon]="node.icon ?? 'folder'" />
+          <ui-folder-icon
+            [size]="FOLDER_ICON_SIZE.Sm"
+            [icon]="node.icon ?? 'folder'"
+            [colour]="node.colour ?? FOLDER_COLOUR.Graphite"
+          />
         } @else if (node.icon) {
           <ui-icon class="ui-tree__icon" [name]="node.icon" [size]="ICON_SIZE.Lg" />
         }
         <span class="ui-tree__name" [id]="item.id() + '-name'">{{ node.name }}</span>
-        @if (countId(item.id(), node); as count) {
+        @if (dropTargetId() === node.id && dropLabel()) {
+          <span class="ui-tree__drop-badge" [id]="item.id() + '-drop'"
+            >&ngsp;{{ dropLabel() }}</span
+          >
+        } @else if (countId(item.id(), node); as count) {
           <span class="ui-tree__count" [id]="count">&ngsp;{{ node.count }}</span>
         }
         @if (folder && menuLabel()) {

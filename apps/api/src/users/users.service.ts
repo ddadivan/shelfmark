@@ -1,6 +1,14 @@
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import type { AuthUser, DeleteAccountRequest, OnboardingResponse } from '@shelfmark/contracts';
+import type {
+  AuthUser,
+  DeleteAccountRequest,
+  OnboardingResponse,
+  UpdateUserSettingsRequest,
+  UserSettingsResponse,
+} from '@shelfmark/contracts';
+import type { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { toRetentionDays } from '../trash/trash.service';
 
 @Injectable()
 export class UsersService {
@@ -45,6 +53,34 @@ export class UsersService {
     });
     if (!row?.onboardingCompletedAt) throw new NotFoundException();
     return { onboardingCompletedAt: row.onboardingCompletedAt.toISOString() };
+  }
+
+  /** Account preferences of the session user (demo users too). */
+  async getSettings(user: AuthUser): Promise<UserSettingsResponse> {
+    const row = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      select: { trashRetentionDays: true, folderColours: true },
+    });
+    if (!row) throw new NotFoundException();
+    return {
+      trashRetentionDays: toRetentionDays(row.trashRetentionDays),
+      folderColours: row.folderColours,
+    };
+  }
+
+  /** Changes only the fields sent; the owner is the session user, never the request. */
+  async updateSettings(
+    user: AuthUser,
+    request: UpdateUserSettingsRequest,
+  ): Promise<UserSettingsResponse> {
+    const data: Prisma.UserUpdateManyMutationInput = {};
+    if (request.trashRetentionDays !== undefined)
+      data.trashRetentionDays = request.trashRetentionDays;
+    if (request.folderColours !== undefined) data.folderColours = request.folderColours;
+    if (Object.keys(data).length > 0) {
+      await this.prisma.user.updateMany({ where: { id: user.id }, data });
+    }
+    return this.getSettings(user);
   }
 
   /** Clears the flag so the onboarding shows again. Idempotent. */

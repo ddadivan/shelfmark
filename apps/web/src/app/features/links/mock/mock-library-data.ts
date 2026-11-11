@@ -1,17 +1,36 @@
 import { Service } from '@angular/core';
-import type {
-  FolderResponse,
-  LibraryCounts,
-  LinkResponse,
-  TagResponse,
+import {
+  FOLDER_DELETE_MODE,
+  PIN_KIND,
+  TRASH_ITEM_KIND,
+  TRASH_RETENTION_DEFAULT,
+  type FolderDeleteMode,
+  type FolderResponse,
+  type LibraryCounts,
+  type LinkResponse,
+  type ListPinsResponse,
+  type PinKind,
+  type PinRef,
+  type PinResponse,
+  type TagResponse,
+  type TrashRetentionDays,
 } from '@shelfmark/contracts';
 import { MOCK_FOLDERS, MOCK_TAGS } from '@shelfmark/contracts/testing';
+import type { MockTrashEntry } from '../../trash/mock/models/mock-trash-entry.interface';
+import { MOCK_TRASH_SCENARIO } from '../../trash/mock/models/mock-trash-scenario.const';
+import { MOCK_TRASH_SCENARIO_KEY } from '../../trash/mock/models/mock-trash-scenario-key.const';
+import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
 import { generateMockLinks } from './generate-mock-links';
+
+const SEEDED_OLD_LINKS = 2;
+const SEEDED_OLD_DAYS = 20;
 
 /**
  * The one in-memory library behind the mock links, folders and tags APIs, so a folder deleted
  * through `MockFoldersApi` also disappears from `MockLinksApi` lists. Counts (`linkCount`, the
- * fixed rows) are derived from the links on every read, never stored.
+ * fixed rows) are derived from the links on every read, never stored. Deleted links and folders
+ * wait in `trash` (the mock Trash and the mock settings read it); the retention is the mock
+ * account setting.
  */
 @Service()
 export class MockLibraryData {
@@ -21,6 +40,15 @@ export class MockLibraryData {
     ...MOCK_TAGS.map((tag) => ({ ...tag })),
     ...generatedTagNames(this.links, MOCK_TAGS).map((name) => newTag(name)),
   ];
+
+  /** The mock Trash, newest first. */
+  trash: MockTrashEntry[] = this.seedTrash();
+  /** The mock account setting "Keep deleted items for". */
+  trashRetentionDays: TrashRetentionDays = TRASH_RETENTION_DEFAULT;
+  /** The mock account setting "Folder colours". */
+  folderColours = true;
+  /** The sidebar pins in order (folders and links together). */
+  pins: PinRef[] = [];
 
   /** Stored folders without counts; mutate through `setFolders`. */
   get folderList(): readonly FolderResponse[] {
@@ -36,9 +64,39 @@ export class MockLibraryData {
     return this.folders
       .map((folder) => ({
         ...folder,
+        pinned: this.isPinned(PIN_KIND.Folder, folder.id),
         linkCount: this.links.filter((link) => link.folderId === folder.id).length,
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  isPinned(kind: PinKind, id: string): boolean {
+    return this.pins.some((pin) => pin.kind === kind && pin.id === id);
+  }
+
+  /** A copy of the link with the sidebar pin flag applied. */
+  linkView(link: LinkResponse): LinkResponse {
+    return { ...link, pinned: this.isPinned(PIN_KIND.Link, link.id) };
+  }
+
+  /** The pins as the API answers them. */
+  pinsView(): ListPinsResponse {
+    const folders = this.foldersView();
+    return {
+      items: this.pins.flatMap((pin, position): PinResponse[] => {
+        if (pin.kind === PIN_KIND.Folder) {
+          const folder = folders.find((item) => item.id === pin.id);
+          return folder ? [{ kind: pin.kind, position, folder, link: null }] : [];
+        }
+        const link = this.links.find((item) => item.id === pin.id);
+        return link ? [{ kind: pin.kind, position, folder: null, link: this.linkView(link) }] : [];
+      }),
+    };
+  }
+
+  /** Pin writes and Trash drop pins of items that are gone. */
+  unpin(kind: PinKind, ids: readonly string[]): void {
+    this.pins = this.pins.filter((pin) => pin.kind !== kind || !ids.includes(pin.id));
   }
 
   counts(): LibraryCounts {
@@ -93,6 +151,91 @@ export class MockLibraryData {
     });
   }
 
+  /** The `old-items` scenario: two links deleted 20 days ago; otherwise an empty Trash. */
+  private seedTrash(): MockTrashEntry[] {
+    let scenario: string | null = null;
+    try {
+      scenario = globalThis.sessionStorage.getItem(MOCK_TRASH_SCENARIO_KEY);
+    } catch {
+      // No sessionStorage (a spec without a DOM): an empty Trash.
+    }
+    if (scenario !== MOCK_TRASH_SCENARIO.OldItems) {
+      return [];
+    }
+    const old = this.links.splice(0, SEEDED_OLD_LINKS);
+    return old.map((link, index) => ({
+      kind: TRASH_ITEM_KIND.Link,
+      id: link.id,
+      deletedAt: new Date(Date.now() - SEEDED_OLD_DAYS * MS_PER_DAY - index * 1000).toISOString(),
+      fromFolderName: null,
+      link: { ...link, folderId: null },
+      folders: [],
+      links: [],
+    }));
+  }
+
+  /** Moves a link to Trash. */
+  trashLink(link: LinkResponse): void {
+    this.links = this.links.filter((item) => item.id !== link.id);
+    this.unpin(PIN_KIND.Link, [link.id]);
+    const stored = unpinned(link);
+    this.trash = [
+      {
+        kind: TRASH_ITEM_KIND.Link,
+        id: link.id,
+        deletedAt: new Date().toISOString(),
+        fromFolderName: this.folderName(link.folderId),
+        link: stored,
+        folders: [],
+        links: [],
+      },
+      ...this.trash,
+    ];
+  }
+
+  /**
+   * Deletes a folder and its subfolders: one Trash entry. `delete-links` takes the links inside
+   * along into the entry, `move-to-unsorted` moves them out to Unsorted first.
+   */
+  trashFolder(id: string, mode: FolderDeleteMode): void {
+    const ids = new Set(this.subtreeIds(id));
+    const inTree = (folderId: string | null): boolean => folderId !== null && ids.has(folderId);
+    const root = this.folders.find((folder) => folder.id === id);
+    if (!root) {
+      return;
+    }
+    const folders = [
+      root,
+      ...this.folders.filter((folder) => ids.has(folder.id) && folder !== root),
+    ];
+    const withLinks = mode === FOLDER_DELETE_MODE.DeleteLinks;
+    this.unpin(PIN_KIND.Folder, [...ids]);
+    const links = withLinks ? this.links.filter((link) => inTree(link.folderId)).map(unpinned) : [];
+    this.links = withLinks
+      ? this.links.filter((link) => !inTree(link.folderId))
+      : this.links.map((link) =>
+          inTree(link.folderId) ? { ...link, folderId: null, pinnedInFolderAt: null } : link,
+        );
+    this.folders = this.folders.filter((folder) => !ids.has(folder.id));
+    this.trash = [
+      {
+        kind: TRASH_ITEM_KIND.Folder,
+        id,
+        deletedAt: new Date().toISOString(),
+        fromFolderName: this.folderName(root.parentId),
+        link: null,
+        folders,
+        links,
+      },
+      ...this.trash,
+    ];
+  }
+
+  /** Name of the live folder `id`, or `null` (Unsorted, the top level, or a folder that is gone). */
+  folderName(id: string | null): string | null {
+    return id === null ? null : (this.folders.find((folder) => folder.id === id)?.name ?? null);
+  }
+
   /** `id` and every descendant of it. */
   subtreeIds(id: string): string[] {
     const ids = [id];
@@ -105,6 +248,10 @@ export class MockLibraryData {
     }
     return ids;
   }
+}
+
+function unpinned(link: LinkResponse): LinkResponse {
+  return { ...link, pinnedInFolderAt: null };
 }
 
 function generatedTagNames(

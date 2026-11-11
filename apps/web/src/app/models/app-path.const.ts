@@ -10,7 +10,11 @@ export const APP_PATH = {
   Folders: 'folders',
   /** Recently opened: a page; the phone opens the same list in a sheet. */
   Recent: 'recent',
+  /** Deleted links and folders waiting for their retention to pass; reached from the sidebar and the phone Library. */
+  Trash: 'trash',
   Settings: 'settings',
+  /** The author's pages (`/admin/feedback`); behind `adminOnly`. */
+  Admin: 'admin',
   SignIn: 'sign-in',
   Demo: 'demo',
   /** Target of the Android Web Share Target (`share_target.action` in the manifest). */
