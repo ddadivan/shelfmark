@@ -229,6 +229,8 @@
     [title]="'settings.appearance.language.label' | transloco"
     [description]="'settings.appearance.language.hint' | transloco"
   >
-    <span class="appearance__language">{{ 'settings.appearance.language.value' | transloco }}</span>
+    <ui-button [size]="BUTTON_SIZE.Sm" [href]="languageHref" (linkClick)="openLanguage($event)">
+      {{ 'settings.appearance.language.value' | transloco }}
+    </ui-button>
   </ui-settings-row>
 </ui-settings-section>

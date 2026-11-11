@@ -1,1279 +1,1332 @@
 {
   "landing": {
     "header": {
-      "navLabel": "Main",
+      "navLabel": "Principal",
       "brand": "Shelfmark",
-      "howItsBuilt": "How it's built",
+      "howItsBuilt": "Como é feito",
       "github": "GitHub",
-      "signIn": "Sign in"
+      "signIn": "Entrar"
     },
     "hero": {
-      "eyebrow": "For everything you send to Saved Messages",
-      "line1": "Paste a link.",
-      "line2": "Find it again.",
-      "line3": "Even in a year.",
-      "lead": "Chats and bookmark bars are where links go to be forgotten. Shelfmark keeps them in folders, with a note on why you saved each one, and finds any of them in two keystrokes.",
-      "demo": "Open the demo",
-      "signIn": "Sign in"
+      "eyebrow": "Para tudo o que você manda para si mesmo",
+      "line1": "Cole um link.",
+      "line2": "Encontre de novo.",
+      "line3": "Mesmo daqui a um ano.",
+      "lead": "Chats e barras de favoritos são onde os links caem no esquecimento. O Shelfmark guarda tudo em pastas, com uma nota sobre por que você salvou cada um, e encontra qualquer link em dois toques de tecla.",
+      "demo": "Abrir a demo",
+      "signIn": "Entrar"
     },
     "chat": {
-      "savedMessages": "Saved Messages",
-      "savedSubtitle": "new links every day, none findable",
-      "shelfTitle": "Your shelf",
-      "shelfSubtitle": "5 links in 4 folders, each with a note",
-      "hintChat": "Five links, five different days.",
-      "hintShelf": "Notes come from your own messages.",
-      "putOnShelf": "Put them on the shelf",
-      "showChat": "Show the chat again",
+      "savedMessages": "Mensagens salvas",
+      "savedSubtitle": "links novos todo dia, nenhum fácil de achar",
+      "shelfTitle": "Sua estante",
+      "shelfSubtitle": "5 links em 4 pastas, cada um com uma nota",
+      "hintChat": "Cinco links, cinco dias diferentes.",
+      "hintShelf": "As notas vêm das suas próprias mensagens.",
+      "putOnShelf": "Colocar na estante",
+      "showChat": "Mostrar o chat de novo",
       "messages": {
         "watch": {
-          "text": "watch later!!",
-          "time": "Mon 23:41"
+          "text": "ver depois!!",
+          "time": "seg 23:41"
         },
         "coat": {
-          "text": "this coat, wait for the sale",
-          "time": "Tue 09:12"
+          "text": "esse casaco, esperar a liquidação",
+          "time": "ter 09:12"
         },
         "course": {
-          "text": "Fwd: Frontend Weekly",
-          "time": "Wed 18:30"
+          "text": "Enc: Frontend Weekly",
+          "time": "qua 18:30"
         },
         "ramen": {
-          "text": "ramen recipe, friday?",
-          "time": "Thu 21:05"
+          "text": "receita de lámen, sexta?",
+          "time": "qui 21:05"
         },
         "zoneless": {
-          "text": "where was that zoneless article…",
-          "time": "Fri 08:47"
+          "text": "cadê aquele artigo sobre zoneless…",
+          "time": "sex 08:47"
         },
         "lisbon": {
-          "text": "lisbon, maybe in may",
-          "time": "Sat 11:20"
+          "text": "lisboa, talvez em maio",
+          "time": "sáb 11:20"
         },
         "icons": {
-          "text": "icons for the side project",
-          "time": "Sun 16:02"
+          "text": "ícones para o projeto pessoal",
+          "time": "dom 16:02"
         },
         "react": {
-          "text": "read this one day",
-          "time": "Mon 07:58"
+          "text": "ler um dia",
+          "time": "seg 07:58"
         }
       }
     },
     "shelf": {
       "folders": {
-        "angular": "Work / Angular",
-        "courses": "Courses",
-        "clothes": "Clothes",
-        "recipes": "Recipes"
+        "angular": "Trabalho / Angular",
+        "courses": "Cursos",
+        "clothes": "Roupas",
+        "recipes": "Receitas"
       },
       "links": {
         "signalForms": {
-          "title": "Signal Forms in 20 minutes",
-          "note": "Watch later"
+          "title": "Signal Forms em 20 minutos",
+          "note": "Ver depois"
         },
         "zoneless": {
-          "title": "Zoneless change detection",
-          "note": "The article about zoneless"
+          "title": "Detecção de mudanças zoneless",
+          "note": "O artigo sobre zoneless"
         },
         "nestjs": {
-          "title": "NestJS for frontend developers",
-          "note": "From Frontend Weekly"
+          "title": "NestJS para desenvolvedores frontend",
+          "note": "Da Frontend Weekly"
         },
         "coat": {
-          "title": "Wool coat, graphite",
-          "note": "Wait for the sale"
+          "title": "Casaco de lã, grafite",
+          "note": "Esperar a liquidação"
         },
         "ramen": {
-          "title": "The best weeknight ramen",
-          "note": "Friday?"
+          "title": "O melhor lámen para dias de semana",
+          "note": "Sexta?"
         }
       }
     },
     "bento": {
-      "title": "Save once, find in seconds",
+      "title": "Salve uma vez, encontre em segundos",
       "preview": {
-        "title": "The preview fills in by itself",
-        "text": "Paste a link: the title and the site arrive on their own. Add a note so you remember why you saved it.",
+        "title": "A prévia se preenche sozinha",
+        "text": "Cole um link: o título e o site chegam sozinhos. Adicione uma nota para lembrar por que você salvou.",
         "url": "youtube.com/watch?v=ng22",
         "domain": "youtube.com",
-        "cardTitle": "Signal Forms in 20 minutes"
+        "cardTitle": "Signal Forms em 20 minutos"
       },
       "folders": {
-        "title": "Folders inside folders",
-        "text": "Keep links in folders and put folders in folders, as deep as your own system needs.",
-        "work": "Work",
+        "title": "Pastas dentro de pastas",
+        "text": "Guarde links em pastas e pastas dentro de pastas, tão fundo quanto o seu sistema precisar.",
+        "work": "Trabalho",
         "angular": "Angular",
-        "courses": "Courses"
+        "courses": "Cursos"
       },
       "search": {
-        "title": "Find it by any word",
-        "text": "Search the title, note or address of every link, from anywhere with ⌘K.",
-        "word": "coat",
-        "tag": "clothes"
+        "title": "Encontre por qualquer palavra",
+        "text": "Pesquise no título, na nota ou no endereço de cada link, de qualquer lugar com ⌘K.",
+        "word": "casaco",
+        "tag": "roupas"
       },
       "phone": {
-        "title": "Save from your phone",
-        "text": "Install Shelfmark and it shows up in the Share menu on Android. Share a page and it lands on your shelf."
+        "title": "Salve pelo celular",
+        "text": "Instale o Shelfmark e ele aparece no menu Compartilhar do Android. Compartilhe uma página e ela chega à sua estante."
       },
       "own": {
-        "title": "Your links stay yours",
-        "text": "Export everything as JSON or as a browser bookmarks file whenever you like."
+        "title": "Seus links continuam seus",
+        "text": "Exporte tudo em JSON ou como arquivo de favoritos do navegador quando quiser."
       }
     },
     "beforeAfter": {
-      "title": "The same links, before and after",
-      "before": "Before: scattered",
-      "after": "After: on one shelf",
-      "pauseMotion": "Pause animations"
+      "title": "Os mesmos links, antes e depois",
+      "before": "Antes: espalhados",
+      "after": "Depois: numa estante só",
+      "pauseMotion": "Pausar animações"
     },
     "before": {
-      "pingTitle": "+1 in Saved Messages",
+      "pingTitle": "+1 em Mensagens salvas",
       "pingLink": "youtu.be/…",
-      "bubbleTitle": "Saved messages",
+      "bubbleTitle": "Mensagens salvas",
       "bubbleLink": "youtube.com/watch?v=ng22…",
-      "tabCoat": "Wool coat…",
-      "tabCourse": "NestJS c…",
+      "tabCoat": "Casaco de l…",
+      "tabCourse": "Curso Nes…",
       "tabMore": "+ 37",
-      "sticky": "watch later: ramen recipe?? link somewhere in chat",
-      "bookmarks": "Bookmarks bar (91)",
-      "summary": "Links scattered across Saved Messages, browser tabs, sticky notes and a bookmarks bar."
+      "sticky": "ver depois: receita de lámen?? link em algum lugar do chat",
+      "bookmarks": "Barra de favoritos (91)",
+      "summary": "Links espalhados entre Mensagens salvas, abas do navegador, post-its e uma barra de favoritos."
     },
     "after": {
-      "treeLabel": "Folders",
-      "listLabel": "Links in the selected folder",
+      "treeLabel": "Pastas",
+      "listLabel": "Links da pasta selecionada",
       "tagsTitle": "Tags",
       "tags": {
-        "video": "video",
-        "courses": "courses"
+        "video": "vídeo",
+        "courses": "cursos"
       },
       "folders": {
-        "clothes": "Clothes",
-        "work": "Work",
+        "clothes": "Roupas",
+        "work": "Trabalho",
         "angular": "Angular",
-        "recipes": "Recipes"
+        "recipes": "Receitas"
       },
       "links": {
         "coat": {
-          "title": "Wool coat, graphite",
-          "note": "Wait for the sale, size M"
+          "title": "Casaco de lã, grafite",
+          "note": "Esperar a liquidação, tamanho M"
         },
         "boots": {
-          "title": "Leather Chelsea boots",
-          "note": "For the winter"
+          "title": "Botas Chelsea de couro",
+          "note": "Para o inverno"
         },
         "jumper": {
-          "title": "Merino crew-neck jumper",
-          "note": "Gift idea"
+          "title": "Suéter de gola redonda de merino",
+          "note": "Ideia de presente"
         },
         "signalForms": {
-          "title": "Signal Forms in 20 minutes",
-          "note": "Watch on the weekend"
+          "title": "Signal Forms em 20 minutos",
+          "note": "Ver no fim de semana"
         },
         "nestjs": {
-          "title": "NestJS for frontend developers",
-          "note": "For the side project"
+          "title": "NestJS para desenvolvedores frontend",
+          "note": "Para o projeto pessoal"
         },
         "zoneless": {
-          "title": "Zoneless change detection",
-          "note": "Read before stage 0"
+          "title": "Detecção de mudanças zoneless",
+          "note": "Ler antes da etapa 0"
         },
         "ramen": {
-          "title": "The best weeknight ramen",
-          "note": "Friday dinner"
+          "title": "O melhor lámen para dias de semana",
+          "note": "Jantar de sexta"
         },
         "focaccia": {
-          "title": "Focaccia, no knead",
-          "note": "For Sunday"
+          "title": "Focaccia sem sova",
+          "note": "Para domingo"
         },
         "kimchi": {
-          "title": "Kimchi in a jar",
-          "note": "Needs a big jar"
+          "title": "Kimchi no pote",
+          "note": "Precisa de um pote grande"
         }
       }
     },
     "why": {
-      "title": "Why this exists",
-      "quote": "“My saved messages had hundreds of links: courses, a coat I wanted, a ramen recipe, that one article about zoneless Angular. I could never find any of them again. So I built the shelf I wanted.”",
+      "title": "Por que isto existe",
+      "quote": "“Minhas mensagens salvas tinham centenas de links: cursos, um casaco que eu queria, uma receita de lámen, aquele artigo sobre Angular zoneless. Eu nunca conseguia achar nenhum deles. Então construí a estante que eu queria.”",
       "author": "Dmytro",
       "authorName": "Dmytro Dadivan",
-      "role": "Frontend developer"
+      "role": "Desenvolvedor frontend"
     },
     "built": {
-      "title": "How it's built",
-      "text": "Angular 22 with signals, NestJS, PostgreSQL. Planned, coded, tested and reviewed by a team of Claude Code agents, with every decision in the open.",
-      "agentsLabel": "Claude Code agents",
-      "code": "Read the code on GitHub",
-      "decisions": "Read the decision log"
+      "title": "Como é feito",
+      "text": "Angular 22 com signals, NestJS, PostgreSQL. Planejado, programado, testado e revisado por uma equipe de agentes do Claude Code, com cada decisão às claras.",
+      "agentsLabel": "Agentes do Claude Code",
+      "code": "Ler o código no GitHub",
+      "decisions": "Ler o registro de decisões"
     },
     "finale": {
-      "title": "Empty your Saved Messages.",
-      "lead": "Paste a link, give it a folder and a note. Everything you save from now on lands on one shelf, and any of it is two keystrokes away.",
-      "demo": "Open the demo",
-      "signIn": "Sign in"
+      "title": "Esvazie suas Mensagens salvas.",
+      "lead": "Cole um link, dê a ele uma pasta e uma nota. Tudo o que você salvar daqui em diante chega a uma estante só, a dois toques de tecla.",
+      "demo": "Abrir a demo",
+      "signIn": "Entrar"
     },
     "footer": {
       "copyright": "© 2026 Shelfmark",
-      "privacy": "Privacy",
-      "github": "GitHub"
+      "privacy": "Privacidade",
+      "github": "GitHub",
+      "language": "Idioma"
     },
-    "newTab": "opens in a new tab",
-    "backToShelf": "Back to my shelf",
+    "newTab": "abre em uma nova aba",
+    "backToShelf": "Voltar para minha estante",
     "whatsNew": {
-      "title": "What's new",
+      "title": "Novidades",
       "items": {
         "trash": {
-          "title": "Trash",
-          "text": "Deleted links and folders wait in Trash, so nothing is gone by accident. Choose how long they stay in Settings."
+          "title": "Lixeira",
+          "text": "Links e pastas excluídos ficam na lixeira, então nada some por acidente. Escolha por quanto tempo eles ficam nas Configurações."
         },
         "tabs": {
-          "title": "Your tabs stay in step",
-          "text": "Save, edit or delete a link in one tab and every other open tab shows it."
+          "title": "Suas abas ficam em sincronia",
+          "text": "Salve, edite ou exclua um link em uma aba e todas as outras abas abertas mostram a mudança."
         },
         "move": {
-          "title": "Move to folder and drag and drop",
-          "text": "Move a link from its menu, or drag it onto a folder in the sidebar."
+          "title": "Mover para pasta e arrastar e soltar",
+          "text": "Mova um link pelo menu dele ou arraste-o para uma pasta na barra lateral."
         },
         "refresh": {
-          "title": "A fresh look",
-          "text": "Softer corners, a floating tab bar on phones and toasts that say what happened."
+          "title": "Um visual novo",
+          "text": "Cantos mais suaves, uma barra de abas flutuante no celular e avisos que dizem o que aconteceu."
         }
       }
     }
   },
   "links": {
     "add": {
-      "title": "Add link",
-      "close": "Close",
+      "title": "Adicionar link",
+      "close": "Fechar",
       "url": {
         "label": "Link",
         "placeholder": "https://",
-        "hint": "Paste a link — the title and preview fill in by themselves",
-        "required": "Enter a link",
-        "invalid": "Enter an address that starts with http:// or https://",
-        "tooLong": "The link is too long (at most {{max}} characters)"
+        "hint": "Cole um link — o título e a prévia se preenchem sozinhos",
+        "required": "Digite um link",
+        "invalid": "Digite um endereço que comece com http:// ou https://",
+        "tooLong": "O link é longo demais (no máximo {{max}} caracteres)"
       },
       "shortcut": {
         "cmd": "⌘",
         "ctrl": "Ctrl",
         "enter": "Enter",
-        "save": "to save"
+        "save": "para salvar"
       },
       "preview": {
-        "loading": "Loading preview",
-        "loadingHint": "You can keep typing a note and choosing a folder while it loads.",
-        "filled": "Filled in from the page. You can edit the title.",
-        "failed": "Couldn't load a preview. The link will be saved with its address as the title — you can rename it.",
-        "ready": "Preview loaded: {{title}}",
-        "unavailable": "No preview is available for this page. The link will be saved with its address as the title — you can rename it."
+        "loading": "Carregando prévia",
+        "loadingHint": "Você pode continuar escrevendo uma nota e escolhendo uma pasta enquanto carrega.",
+        "filled": "Preenchido a partir da página. Você pode editar o título.",
+        "failed": "Não foi possível carregar a prévia. O link será salvo com o endereço como título — você pode renomeá-lo.",
+        "ready": "Prévia carregada: {{title}}",
+        "unavailable": "Não há prévia para esta página. O link será salvo com o endereço como título — você pode renomeá-lo."
       },
       "titleField": {
-        "label": "Title",
-        "required": "Enter a title",
-        "tooLong": "The title is too long (at most {{max}} characters)"
+        "label": "Título",
+        "required": "Digite um título",
+        "tooLong": "O título é longo demais (no máximo {{max}} caracteres)"
       },
       "folder": {
-        "label": "Folder",
-        "unsorted": "Unsorted",
-        "searchLabel": "Search folders",
-        "noResults": "No folders found"
+        "label": "Pasta",
+        "unsorted": "Sem pasta",
+        "searchLabel": "Pesquisar pastas",
+        "noResults": "Nenhuma pasta encontrada"
       },
       "tags": {
         "label": "Tags",
-        "placeholder": "Add tag",
-        "max": "Up to {{max}} tags",
-        "create": "Create tag “{name}”",
-        "remove": "Remove tag {name}",
-        "added": "Tag {name} added",
-        "removed": "Tag {name} removed",
-        "duplicate": "Tag {name} is already added",
-        "list": "Tag suggestions"
+        "placeholder": "Adicionar tag",
+        "max": "Até {{max}} tags",
+        "create": "Criar a tag “{name}”",
+        "remove": "Remover a tag {name}",
+        "added": "Tag {name} adicionada",
+        "removed": "Tag {name} removida",
+        "duplicate": "A tag {name} já foi adicionada",
+        "list": "Sugestões de tags"
       },
       "note": {
-        "label": "Note",
-        "placeholder": "Why are you saving this?",
-        "hint": "Helps you find it later",
-        "counter": "characters",
-        "tooLong": "The note is too long (at most {{max}} characters)"
+        "label": "Nota",
+        "placeholder": "Por que você está salvando isto?",
+        "hint": "Ajuda a encontrar depois",
+        "counter": "caracteres",
+        "tooLong": "A nota é longa demais (no máximo {{max}} caracteres)"
       },
       "duplicate": {
-        "text": "You already saved this link in {{folder}}. Open it, or save it again."
+        "text": "Você já salvou este link em {{folder}}. Abra-o ou salve de novo."
       },
-      "saveFailed": "Couldn't save the link. Try again.",
-      "saveFailedLimit": "You have reached the limit of {{max}} saved links. Delete some to save more.",
-      "saveFailedChanged": "A folder or tag changed while saving. Try again.",
-      "saveFailedRateLimit": "Too many requests. Wait a moment and try again.",
-      "saveFailedInvalid": "The link couldn't be saved because some details are invalid. Check the address, title and note.",
+      "saveFailed": "Não foi possível salvar o link. Tente de novo.",
+      "saveFailedLimit": "Você atingiu o limite de {{max}} links salvos. Exclua alguns para salvar mais.",
+      "saveFailedChanged": "Uma pasta ou tag mudou durante o salvamento. Tente de novo.",
+      "saveFailedRateLimit": "Muitas solicitações. Aguarde um momento e tente de novo.",
+      "saveFailedInvalid": "Não foi possível salvar o link porque alguns dados são inválidos. Confira o endereço, o título e a nota.",
       "actions": {
-        "cancel": "Cancel",
-        "openSaved": "Open saved",
-        "save": "Save link",
-        "saveAnyway": "Save anyway",
-        "saving": "Saving…"
+        "cancel": "Cancelar",
+        "openSaved": "Abrir o salvo",
+        "save": "Salvar link",
+        "saveAnyway": "Salvar mesmo assim",
+        "saving": "Salvando…"
       }
     },
     "edit": {
-      "title": "Edit link",
-      "favorite": "Add to favorites",
-      "meta": "Saved {{created}}, last opened {{opened}}",
-      "metaNever": "Saved {{created}}, never opened",
+      "title": "Editar link",
+      "favorite": "Adicionar aos favoritos",
+      "meta": "Salvo {{created}}, aberto pela última vez {{opened}}",
+      "metaNever": "Salvo {{created}}, nunca aberto",
       "actions": {
-        "save": "Save changes",
-        "delete": "Delete"
+        "save": "Salvar alterações",
+        "delete": "Excluir"
       }
     },
     "card": {
       "moreTags": "+{{count}}"
     },
     "item": {
-      "edit": "Edit",
-      "move": "Move to folder…",
-      "edited": "Changes saved",
-      "openFailed": "Couldn't open the link.",
-      "favorite": "Favorite: {{title}}",
-      "addFavorite": "Add to favorites",
-      "removeFavorite": "Remove from favorites",
-      "actions": "Actions for {{title}}",
-      "moreActions": "More actions",
-      "delete": "Delete",
-      "opensInNewTab": "Opens in a new tab",
-      "open": "Open",
-      "favoriteFailed": "Couldn't update the favorite",
-      "retry": "Retry",
-      "deleted": "Moved to Trash",
-      "undo": "Undo",
-      "deleteFailed": "Couldn't delete the link",
-      "deleteFailedDetail": "It is back in your list",
-      "savedTo": "Saved to {{folder}}",
+      "edit": "Editar",
+      "move": "Mover para pasta…",
+      "edited": "Alterações salvas",
+      "openFailed": "Não foi possível abrir o link.",
+      "favorite": "Favorito: {{title}}",
+      "addFavorite": "Adicionar aos favoritos",
+      "removeFavorite": "Remover dos favoritos",
+      "actions": "Ações para {{title}}",
+      "moreActions": "Mais ações",
+      "delete": "Excluir",
+      "opensInNewTab": "Abre em uma nova aba",
+      "open": "Abrir",
+      "favoriteFailed": "Não foi possível atualizar o favorito",
+      "retry": "Tentar de novo",
+      "deleted": "Movido para a lixeira",
+      "undo": "Desfazer",
+      "deleteFailed": "Não foi possível excluir o link",
+      "deleteFailedDetail": "Ele voltou para a sua lista",
+      "savedTo": "Salvo em {{folder}}",
       "confirm": {
-        "title": "Delete this link?",
-        "message": "“{{title}}” moves to Trash. You can restore it for {{days}} days.",
-        "confirm": "Delete link",
-        "cancel": "Cancel",
-        "close": "Close"
+        "title": "Excluir este link?",
+        "message": "“{{title}}” vai para a lixeira. Você pode restaurá-lo por {{days}} dias.",
+        "confirm": "Excluir link",
+        "cancel": "Cancelar",
+        "close": "Fechar"
       },
-      "pinToTop": "Pin to top",
-      "unpinFromTop": "Unpin from top",
-      "pinToSidebar": "Pin to sidebar",
-      "unpinFromSidebar": "Unpin from sidebar",
-      "pinned": "Pinned"
+      "pinToTop": "Fixar no topo",
+      "unpinFromTop": "Desafixar do topo",
+      "pinToSidebar": "Fixar na barra lateral",
+      "unpinFromSidebar": "Desafixar da barra lateral",
+      "pinned": "Fixado"
     },
     "recent": {
-      "title": "Recently opened",
+      "title": "Abertos recentemente",
       "count": {
-        "one": "{{count}} link in the last {{days}} days",
-        "other": "{{count}} links in the last {{days}} days"
+        "one": "{{count}} link nos últimos {{days}} dias",
+        "many": "{{count}} links nos últimos {{days}} dias",
+        "other": "{{count}} links nos últimos {{days}} dias"
       },
-      "nothingYet": "Nothing yet",
-      "clear": "Clear history",
-      "clearShort": "Clear",
-      "unsorted": "Unsorted",
-      "remove": "Remove {{title}} from history",
-      "removeTooltip": "Remove from history",
-      "more": "More for {{title}}",
+      "nothingYet": "Nada ainda",
+      "clear": "Limpar histórico",
+      "clearShort": "Limpar",
+      "unsorted": "Sem pasta",
+      "remove": "Remover {{title}} do histórico",
+      "removeTooltip": "Remover do histórico",
+      "more": "Mais para {{title}}",
       "menu": {
-        "openInNewTab": "Open in new tab",
-        "showInFolder": "Show in folder",
-        "copyLink": "Copy link",
-        "remove": "Remove from history"
+        "openInNewTab": "Abrir em nova aba",
+        "showInFolder": "Mostrar na pasta",
+        "copyLink": "Copiar link",
+        "remove": "Remover do histórico"
       },
-      "linkCopied": "Link copied",
-      "copyFailed": "Couldn't copy the link",
-      "removed": "Removed from history",
-      "removeFailed": "Couldn't remove it from history",
-      "cleared": "History cleared",
-      "clearFailed": "Couldn't clear the history",
-      "note": "Kept for 30 days, only on your account. Removing from history doesn't delete the link.",
+      "linkCopied": "Link copiado",
+      "copyFailed": "Não foi possível copiar o link",
+      "removed": "Removido do histórico",
+      "removeFailed": "Não foi possível remover do histórico",
+      "cleared": "Histórico limpo",
+      "clearFailed": "Não foi possível limpar o histórico",
+      "note": "Mantido por 30 dias, só na sua conta. Remover do histórico não exclui o link.",
       "empty": {
-        "title": "Nothing opened yet",
-        "text": "Links you open appear here for {{days}} days."
+        "title": "Nada aberto ainda",
+        "text": "Os links que você abre aparecem aqui por {{days}} dias."
       },
       "day": {
-        "today": "Today",
-        "yesterday": "Yesterday",
-        "week": "Earlier this week"
+        "today": "Hoje",
+        "yesterday": "Ontem",
+        "week": "Mais cedo nesta semana"
       },
       "confirm": {
-        "title": "Clear history?",
-        "message": "Every link leaves Recently opened. Your saved links stay where they are.",
-        "confirm": "Clear history",
-        "cancel": "Cancel",
-        "close": "Close"
+        "title": "Limpar o histórico?",
+        "message": "Todos os links saem de Abertos recentemente. Seus links salvos ficam onde estão.",
+        "confirm": "Limpar histórico",
+        "cancel": "Cancelar",
+        "close": "Fechar"
       },
       "filter": {
-        "label": "Filter by type",
-        "all": "All",
-        "emptyTitle": "Nothing of this type",
-        "emptyText": "No link of this type was opened in the last {{days}} days.",
-        "showAll": "Show all"
+        "label": "Filtrar por tipo",
+        "all": "Todos",
+        "emptyTitle": "Nada deste tipo",
+        "emptyText": "Nenhum link deste tipo foi aberto nos últimos {{days}} dias.",
+        "showAll": "Mostrar tudo"
       },
       "pause": {
-        "pause": "Pause history",
-        "resume": "Resume history",
-        "notice": "History is paused. Links you open now aren't added.",
-        "noticeResume": "Resume",
-        "pauseFailed": "Couldn't pause history",
-        "resumeFailed": "Couldn't resume history"
+        "pause": "Pausar histórico",
+        "resume": "Retomar histórico",
+        "notice": "O histórico está pausado. Os links que você abrir agora não são adicionados.",
+        "noticeResume": "Retomar",
+        "pauseFailed": "Não foi possível pausar o histórico",
+        "resumeFailed": "Não foi possível retomar o histórico"
       },
       "search": {
-        "label": "Search history",
-        "clear": "Clear search",
-        "emptyTitle": "Nothing matches",
-        "emptyText": "No link in your history matches “{{query}}”."
+        "label": "Pesquisar no histórico",
+        "clear": "Limpar pesquisa",
+        "emptyTitle": "Nenhum resultado",
+        "emptyText": "Nenhum link do seu histórico corresponde a “{{query}}”."
       },
       "swipe": {
-        "remove": "Remove",
-        "hint": "Swipe a row left to remove it from history."
+        "remove": "Remover",
+        "hint": "Deslize uma linha para a esquerda para removê-la do histórico."
       }
     },
     "kind": {
-      "label": "Type",
-      "video": "Videos",
-      "article": "Articles",
-      "shopping": "Shopping",
-      "other": "Other"
+      "label": "Tipo",
+      "video": "Vídeos",
+      "article": "Artigos",
+      "shopping": "Compras",
+      "other": "Outros"
     },
     "kindOption": {
-      "video": "Video",
-      "article": "Article",
-      "shopping": "Shopping",
-      "other": "Other"
+      "video": "Vídeo",
+      "article": "Artigo",
+      "shopping": "Compra",
+      "other": "Outro"
     },
     "move": {
-      "title": "Move “{{title}}”",
-      "label": "Folder",
-      "searchLabel": "Search folders",
-      "noResults": "No folders found",
-      "action": "Move",
-      "cancel": "Cancel",
-      "close": "Close",
-      "moved": "Moved to {{folder}}",
-      "failed": "Couldn't move the link",
-      "failedDetail": "It is back where it was",
-      "undoFailed": "Couldn't move the link back"
+      "title": "Mover “{{title}}”",
+      "label": "Pasta",
+      "searchLabel": "Pesquisar pastas",
+      "noResults": "Nenhuma pasta encontrada",
+      "action": "Mover",
+      "cancel": "Cancelar",
+      "close": "Fechar",
+      "moved": "Movido para {{folder}}",
+      "failed": "Não foi possível mover o link",
+      "failedDetail": "Ele voltou para onde estava",
+      "undoFailed": "Não foi possível devolver o link"
     }
   },
   "privacy": {
-    "title": "Privacy policy",
-    "home": "Shelfmark, home",
-    "newTab": "(opens in a new tab)",
-    "updated": "Last updated {{date}}",
-    "updatedDate": "9 November 2026",
-    "intro": "Shelfmark is a personal project that stores the links you save. This page explains what we keep and why, in plain words.",
+    "title": "Política de privacidade",
+    "home": "Shelfmark, início",
+    "newTab": "(abre em uma nova aba)",
+    "updated": "Última atualização: {{date}}",
+    "updatedDate": "9 de novembro de 2026",
+    "intro": "O Shelfmark é um projeto pessoal que guarda os links que você salva. Esta página explica o que mantemos e por quê, em palavras simples.",
     "store": {
-      "title": "What we store",
-      "account": "From Google or GitHub: your name, email address and avatar (a link to your profile picture). They are used to sign you in and to show who is signed in. Your account record also holds which provider you used and your id there.",
-      "content": "Your links (address, title, note, favourite mark, when you last opened it), your folders and your tags.",
-      "images": "For each link, a small copy of the site's icon and preview image, if the site has them. Our server downloads and stores them so they load from Shelfmark.",
-      "feedback": "Your answers to the in-app rating, linked to your account: a score from 1 to 10 and, if you write one, a comment.",
-      "sessions": "For each sign-in: when it expires, plus the IP address and the browser (user agent) it was started from, to keep sessions secure.",
-      "logs": "Our API logs the request method, path, status, duration and a request id, without link contents or personal data. Our host, Vercel, keeps its own standard request logs, which include IP addresses, for a limited time."
+      "title": "O que guardamos",
+      "account": "Do Google ou do GitHub: seu nome, endereço de e-mail e avatar (um link para sua foto de perfil). Eles servem para você entrar e para mostrar quem está conectado. Sua conta também registra qual provedor você usou e seu id nele.",
+      "content": "Seus links (endereço, título, nota, marcação de favorito, quando você abriu pela última vez), suas pastas e suas tags.",
+      "images": "Para cada link, uma pequena cópia do ícone e da imagem de prévia do site, se ele tiver. Nosso servidor baixa e guarda essas imagens para que carreguem a partir do Shelfmark.",
+      "feedback": "Suas respostas à avaliação no app, vinculadas à sua conta: uma nota de 1 a 10 e, se você escrever, um comentário.",
+      "sessions": "Para cada login: quando expira, além do endereço IP e do navegador (user agent) de onde foi iniciado, para manter as sessões seguras.",
+      "logs": "Nossa API registra o método, o caminho, o status, a duração e um id da solicitação, sem conteúdo de links nem dados pessoais. Nossa hospedagem, a Vercel, mantém seus próprios registros padrão de solicitações, que incluem endereços IP, por tempo limitado."
     },
     "cookies": {
-      "title": "Cookies and browser storage",
-      "necessary": "We use strictly necessary cookies only. A session cookie keeps you signed in, in the demo as well. A short-lived cookie protects the Google and GitHub sign-in flow. They are httpOnly and SameSite=Lax, and Secure on the live site. Signing out removes the session cookie.",
-      "none": "There are no advertising, analytics or tracking cookies, and no analytics scripts.",
-      "storage": "Your browser's local storage holds interface preferences only: the theme and the cards or list view. They stay in your browser. The installed app (PWA) caches Shelfmark's own files for fast start-up, not your links."
+      "title": "Cookies e armazenamento do navegador",
+      "necessary": "Usamos apenas cookies estritamente necessários. Um cookie de sessão mantém você conectado, inclusive na demo. Um cookie de curta duração protege o login com Google e GitHub. Eles são httpOnly e SameSite=Lax, e Secure no site publicado. Sair remove o cookie de sessão.",
+      "none": "Não há cookies de publicidade, análise ou rastreamento, nem scripts de análise.",
+      "storage": "O armazenamento local do seu navegador guarda só preferências da interface: o tema, o idioma e a visualização em cartões ou lista. Elas ficam no seu navegador. O app instalado (PWA) guarda em cache os arquivos do próprio Shelfmark para abrir rápido, não os seus links."
     },
     "dont": {
-      "title": "What we don't do",
-      "sell": "We don't sell or share your data and don't show ads.",
-      "read": "We don't look at your saved links except where needed to run the service, for example to fetch a preview."
+      "title": "O que não fazemos",
+      "sell": "Não vendemos nem compartilhamos seus dados e não mostramos anúncios.",
+      "read": "Não olhamos seus links salvos, exceto quando é necessário para o serviço, por exemplo para buscar uma prévia."
     },
     "previews": {
-      "title": "Link previews",
-      "body": "When you save a link, our server visits that page to read its title, icon and preview image. The site therefore sees our server's IP address and the user agent \"ShelfmarkBot\", not your IP address."
+      "title": "Prévias de links",
+      "body": "Quando você salva um link, nosso servidor visita a página para ler o título, o ícone e a imagem de prévia. Por isso o site vê o endereço IP do nosso servidor e o user agent \"ShelfmarkBot\", não o seu endereço IP."
     },
     "third": {
-      "title": "Other services",
-      "signin": "Sign-in goes through Google or GitHub. They receive the fact that you sign in to Shelfmark, and each has its own privacy policy:",
-      "google": "Google privacy policy",
-      "github": "GitHub privacy statement",
-      "tokens": "We do not store the access tokens that Google or GitHub issue when you sign in.",
-      "monitoring": "If error monitoring is switched on, crashes and server errors are reported to Sentry through our own server. Reports are scrubbed before they leave: no email, IP address, cookies, request contents or saved link addresses, only technical details such as the error type, where in the code it happened, your browser and system type, the page path and a request id. If it is off, nothing is sent."
+      "title": "Outros serviços",
+      "signin": "O login passa pelo Google ou pelo GitHub. Eles ficam sabendo que você entra no Shelfmark, e cada um tem a própria política de privacidade:",
+      "google": "Política de privacidade do Google",
+      "github": "Declaração de privacidade do GitHub",
+      "tokens": "Não guardamos os tokens de acesso que o Google ou o GitHub emitem quando você entra.",
+      "monitoring": "Se o monitoramento de erros estiver ativado, falhas e erros do servidor são enviados ao Sentry pelo nosso próprio servidor. Os relatórios são limpos antes de sair: sem e-mail, endereço IP, cookies, conteúdo das solicitações ou endereços de links salvos, só detalhes técnicos como o tipo de erro, onde no código aconteceu, o tipo de navegador e sistema, o caminho da página e um id da solicitação. Se estiver desativado, nada é enviado."
     },
     "where": {
-      "title": "Where it lives",
-      "hosting": "The API runs on Vercel in the fra1 region (Frankfurt) and the database on Neon in eu-central-1 (Frankfurt). The app's static files are served from Vercel's global network."
+      "title": "Onde fica",
+      "hosting": "A API roda na Vercel na região fra1 (Frankfurt) e o banco de dados na Neon em eu-central-1 (Frankfurt). Os arquivos estáticos do app são servidos pela rede global da Vercel."
     },
     "retention": {
-      "title": "How long we keep it",
-      "data": "We keep your account and everything in it until you delete it.",
-      "sessions": "A sign-in lasts 7 days and is extended when you use the app, at most once a day. After that you sign in again.",
-      "demo": "The demo is a temporary sandbox with sample links. It ends after 24 hours, and a daily cleanup job deletes expired demo accounts with all their data. To limit abuse we keep a one-way hash of the network address that opened the demo, never the address itself, and it is deleted with the demo account."
+      "title": "Por quanto tempo guardamos",
+      "data": "Guardamos sua conta e tudo o que há nela até você excluí-la.",
+      "sessions": "Um login dura 7 dias e é estendido quando você usa o app, no máximo uma vez por dia. Depois disso, você entra de novo.",
+      "demo": "A demo é um ambiente de testes temporário com links de exemplo. Ela termina após 24 horas, e uma limpeza diária exclui contas de demo expiradas com todos os dados. Para limitar abusos, guardamos um hash de mão única do endereço de rede que abriu a demo, nunca o endereço em si, e ele é excluído junto com a conta de demo."
     },
     "control": {
-      "title": "Your control",
-      "export": "In Settings you can export your links, folders, tags and notes as JSON or as a browser bookmarks file (HTML).",
-      "delete": "You can delete any link at any time, or delete your whole account in Settings. Your account and all its data are then removed from the database. Backups kept by the database provider may take a short while to expire."
+      "title": "O controle é seu",
+      "export": "Nas Configurações você pode exportar seus links, pastas, tags e notas em JSON ou como arquivo de favoritos do navegador (HTML).",
+      "delete": "Você pode excluir qualquer link a qualquer momento, ou excluir sua conta inteira nas Configurações. Sua conta e todos os dados dela são então removidos do banco de dados. Backups mantidos pelo provedor do banco de dados podem levar um pouco para expirar."
     },
     "security": {
-      "title": "Security",
-      "body": "Data is sent over HTTPS. Each account can only reach its own data. Sign-in uses Google or GitHub, so we never see or store a password."
+      "title": "Segurança",
+      "body": "Os dados trafegam por HTTPS. Cada conta só acessa os próprios dados. O login usa Google ou GitHub, então nunca vemos nem guardamos uma senha."
     },
     "children": {
-      "title": "Children",
-      "body": "Shelfmark is not directed at children, and we do not knowingly collect data from them."
+      "title": "Crianças",
+      "body": "O Shelfmark não é voltado para crianças, e não coletamos dados delas intencionalmente."
     },
     "changes": {
-      "title": "Changes to this policy",
-      "body": "If the way Shelfmark handles data changes, we update this page and its \"Last updated\" date."
+      "title": "Mudanças nesta política",
+      "body": "Se a forma como o Shelfmark trata dados mudar, atualizamos esta página e a data de \"Última atualização\"."
     },
     "contact": {
-      "title": "Contact",
-      "body": "For questions about this policy or your data, open an issue in the GitHub repository.",
+      "title": "Contato",
+      "body": "Para dúvidas sobre esta política ou seus dados, abra uma issue no repositório do GitHub.",
       "link": "github.com/ddadivan/shelfmark",
-      "noPersonal": "Issues are public, so please do not put personal data in them."
+      "noPersonal": "As issues são públicas, então não coloque dados pessoais nelas."
     }
   },
   "auth": {
     "signIn": {
-      "title": "All your links on one shelf",
-      "subtitle": "Save anything once, find it again in seconds.",
-      "google": "Continue with Google",
-      "github": "Continue with GitHub",
-      "demo": "Open the demo",
-      "failed": "We could not sign you in. Try again.",
+      "title": "Todos os seus links numa estante só",
+      "subtitle": "Salve qualquer coisa uma vez e encontre em segundos.",
+      "google": "Continuar com Google",
+      "github": "Continuar com GitHub",
+      "demo": "Abrir a demo",
+      "failed": "Não conseguimos fazer seu login. Tente de novo.",
       "error": {
-        "generic": "Sign-in did not finish. Try again.",
-        "denied": "Sign-in was cancelled. Try again when you are ready.",
-        "emailMissing": "Your GitHub account has no verified email. Verify an email in your GitHub settings, or sign in with Google.",
-        "restart": "The sign-in took too long or was interrupted. Start again.",
-        "notLinked": "This email already belongs to an account that could not be linked. Sign in with the provider you used before."
+        "generic": "O login não foi concluído. Tente de novo.",
+        "denied": "O login foi cancelado. Tente de novo quando quiser.",
+        "emailMissing": "Sua conta do GitHub não tem e-mail verificado. Verifique um e-mail nas configurações do GitHub ou entre com o Google.",
+        "restart": "O login demorou demais ou foi interrompido. Comece de novo.",
+        "notLinked": "Este e-mail já pertence a uma conta que não pôde ser vinculada. Entre com o provedor que você usou antes."
       },
       "reason": {
-        "sessionExpired": "Your session has expired. Sign in again.",
-        "demoExpired": "The demo has ended. Open a new one or sign in.",
-        "demoLimit": "Too many demos were opened from your network. Try again in an hour, or sign in.",
-        "demoUnavailable": "The demo is full right now. Try again later, or sign in.",
-        "demoFailed": "We could not open the demo. Try again, or sign in."
+        "sessionExpired": "Sua sessão expirou. Entre de novo.",
+        "demoExpired": "A demo terminou. Abra uma nova ou entre.",
+        "demoLimit": "Muitas demos foram abertas a partir da sua rede. Tente de novo daqui a uma hora ou entre.",
+        "demoUnavailable": "A demo está cheia no momento. Tente mais tarde ou entre.",
+        "demoFailed": "Não conseguimos abrir a demo. Tente de novo ou entre."
       },
-      "or": "or",
+      "or": "ou",
       "tiles": {
         "signalForms": {
-          "title": "Signal Forms in 20 minutes"
+          "title": "Signal Forms em 20 minutos"
         },
         "woolCoat": {
-          "title": "Wool coat, straight cut"
+          "title": "Casaco de lã, corte reto"
         },
         "nestjs": {
-          "title": "NestJS for frontend developers"
+          "title": "NestJS para desenvolvedores frontend"
         },
         "ramen": {
-          "title": "The best weeknight ramen"
+          "title": "O melhor lámen para dias de semana"
         }
       },
-      "privacyBefore": "By continuing you agree to the",
-      "privacyLink": "Privacy policy",
-      "privacyAfter": ". We only use your name, email and avatar."
+      "privacyBefore": "Ao continuar, você concorda com a",
+      "privacyLink": "Política de privacidade",
+      "privacyAfter": ". Usamos apenas seu nome, e-mail e avatar."
     },
     "demo": {
-      "starting": "Opening the demo…"
+      "starting": "Abrindo a demo…"
     },
-    "signOut": "Sign out",
-    "signOutFailed": "Couldn't sign you out",
-    "signOutFailedDetail": "Try again"
+    "signOut": "Sair",
+    "signOutFailed": "Não foi possível sair",
+    "signOutFailedDetail": "Tente de novo"
   },
   "shell": {
     "demoBanner": {
-      "title": "You're in a demo.",
+      "title": "Você está em uma demo.",
       "remaining": {
-        "one": "Play with everything — this sandbox resets in {{ hours }} hour.",
-        "other": "Play with everything — this sandbox resets in {{ hours }} hours."
+        "one": "Explore à vontade — este ambiente de testes é reiniciado em {{ hours }} hora.",
+        "many": "Explore à vontade — este ambiente de testes é reiniciado em {{ hours }} horas.",
+        "other": "Explore à vontade — este ambiente de testes é reiniciado em {{ hours }} horas."
       },
-      "signIn": "Sign in with your own account"
+      "signIn": "Entrar com sua própria conta"
     },
     "offlineBanner": {
-      "text": "You're offline. You can browse what's loaded; saving and editing come back when you reconnect."
+      "text": "Você está offline. Dá para navegar pelo que já carregou; salvar e editar voltam quando a conexão voltar."
     },
-    "accountMenu": "Account menu",
-    "settings": "Settings",
-    "addLink": "Add link",
+    "accountMenu": "Menu da conta",
+    "settings": "Configurações",
+    "addLink": "Adicionar link",
     "tabs": {
-      "label": "Main",
-      "library": "Library",
-      "search": "Search",
+      "label": "Principal",
+      "library": "Biblioteca",
+      "search": "Pesquisar",
       "tags": "Tags",
-      "you": "You"
+      "you": "Você"
     },
     "sidebar": {
-      "nav": "Library",
-      "foldersNav": "Folders",
-      "tree": "Views and folders",
-      "folders": "Folders",
-      "newFolder": "New folder",
-      "folderActions": "Actions for {{name}}",
-      "folderMenu": "Folder actions",
-      "loadFailed": "Couldn't load your folders.",
-      "retry": "Try again",
+      "nav": "Biblioteca",
+      "foldersNav": "Pastas",
+      "tree": "Visualizações e pastas",
+      "folders": "Pastas",
+      "newFolder": "Nova pasta",
+      "folderActions": "Ações para {{name}}",
+      "folderMenu": "Ações da pasta",
+      "loadFailed": "Não foi possível carregar suas pastas.",
+      "retry": "Tentar de novo",
       "menu": {
-        "newSubfolder": "New subfolder",
-        "addLink": "Add link here",
-        "rename": "Rename",
-        "move": "Move to…",
-        "delete": "Delete folder…",
-        "pin": "Pin to sidebar",
-        "unpin": "Unpin from sidebar",
-        "style": "Colour and icon…"
+        "newSubfolder": "Nova subpasta",
+        "addLink": "Adicionar link aqui",
+        "rename": "Renomear",
+        "move": "Mover para…",
+        "delete": "Excluir pasta…",
+        "pin": "Fixar na barra lateral",
+        "unpin": "Desafixar da barra lateral",
+        "style": "Cor e ícone…"
       },
-      "views": "Views",
-      "foldersTree": "Folders",
+      "views": "Visualizações",
+      "foldersTree": "Pastas",
       "pinned": {
-        "heading": "Pinned",
-        "list": "Pinned items",
-        "menu": "Pinned item actions",
-        "actions": "Actions for {{name}}",
-        "moveUp": "Move up",
-        "moveDown": "Move down",
-        "unpin": "Unpin from sidebar"
+        "heading": "Fixados",
+        "list": "Itens fixados",
+        "menu": "Ações do item fixado",
+        "actions": "Ações para {{name}}",
+        "moveUp": "Mover para cima",
+        "moveDown": "Mover para baixo",
+        "unpin": "Desafixar da barra lateral"
       }
     },
-    "searchHint": "Search your links",
+    "searchHint": "Pesquise seus links",
     "theme": {
-      "toLight": "Switch to light theme",
-      "toDark": "Switch to dark theme"
+      "toLight": "Mudar para o tema claro",
+      "toDark": "Mudar para o tema escuro"
     },
-    "about": "About Shelfmark"
+    "about": "Sobre o Shelfmark"
   },
   "folders": {
     "dialog": {
-      "close": "Close",
-      "cancel": "Cancel"
+      "close": "Fechar",
+      "cancel": "Cancelar"
     },
     "name": {
-      "label": "Name",
-      "placeholder": "For example, Reading list",
-      "required": "Enter a folder name",
-      "tooLong": "Use {{max}} characters or fewer"
+      "label": "Nome",
+      "placeholder": "Por exemplo, Para ler",
+      "required": "Digite um nome para a pasta",
+      "tooLong": "Use no máximo {{max}} caracteres"
     },
     "create": {
-      "title": "New folder",
-      "titleIn": "New folder in “{{parent}}”",
-      "inside": "Inside",
-      "action": "Create folder",
-      "saving": "Creating…",
-      "failed": "Couldn't create the folder. Try again.",
-      "done": "Folder created",
-      "limit": "Folder limit reached",
-      "limitDetail": "You can have up to {{max}} folders"
+      "title": "Nova pasta",
+      "titleIn": "Nova pasta em “{{parent}}”",
+      "inside": "Dentro de",
+      "action": "Criar pasta",
+      "saving": "Criando…",
+      "failed": "Não foi possível criar a pasta. Tente de novo.",
+      "done": "Pasta criada",
+      "limit": "Limite de pastas atingido",
+      "limitDetail": "Você pode ter até {{max}} pastas"
     },
     "rename": {
-      "title": "Rename folder",
-      "action": "Rename",
-      "saving": "Renaming…",
-      "failed": "Couldn't rename the folder",
-      "failedDetail": "The old name is back"
+      "title": "Renomear pasta",
+      "action": "Renomear",
+      "saving": "Renomeando…",
+      "failed": "Não foi possível renomear a pasta",
+      "failedDetail": "O nome antigo voltou"
     },
     "move": {
-      "title": "Move “{{name}}”",
-      "label": "Move to",
-      "topLevel": "Top level",
-      "searchLabel": "Search folders",
-      "noResults": "No folders found",
-      "action": "Move",
-      "failed": "Couldn't move the folder",
-      "failedDetail": "It is back where it was"
+      "title": "Mover “{{name}}”",
+      "label": "Mover para",
+      "topLevel": "Nível superior",
+      "searchLabel": "Pesquisar pastas",
+      "noResults": "Nenhuma pasta encontrada",
+      "action": "Mover",
+      "failed": "Não foi possível mover a pasta",
+      "failedDetail": "Ela voltou para onde estava"
     },
     "delete": {
-      "title": "Delete folder “{{name}}”?",
-      "textEmpty": "This folder is empty.",
-      "textNoLinks": "It has {{subfolders}} and no links.",
-      "textLinks": "It has {{links}}. What should happen to the links?",
-      "textBoth": "It has {{links}} and {{subfolders}}. What should happen to the links?",
+      "title": "Excluir a pasta “{{name}}”?",
+      "textEmpty": "Esta pasta está vazia.",
+      "textNoLinks": "Ela tem {{subfolders}} e nenhum link.",
+      "textLinks": "Ela tem {{links}}. O que fazer com os links?",
+      "textBoth": "Ela tem {{links}} e {{subfolders}}. O que fazer com os links?",
       "links": {
         "one": "{{count}} link",
+        "many": "{{count}} links",
         "other": "{{count}} links"
       },
       "subfolders": {
-        "one": "{{count}} subfolder",
-        "other": "{{count}} subfolders"
+        "one": "{{count}} subpasta",
+        "many": "{{count}} subpastas",
+        "other": "{{count}} subpastas"
       },
-      "modeLabel": "What happens to the links",
+      "modeLabel": "O que acontece com os links",
       "move": {
-        "title": "Move links to Unsorted",
+        "title": "Mover os links para Sem pasta",
         "desc": {
-          "one": "The folders are deleted, the link stays",
-          "other": "The folders are deleted, all {{count}} links stay"
+          "one": "As pastas são excluídas, o link fica",
+          "many": "As pastas são excluídas, os {{count}} links ficam",
+          "other": "As pastas são excluídas, os {{count}} links ficam"
         }
       },
       "remove": {
-        "title": "Delete links too",
-        "desc": "They wait in Trash with the folder"
+        "title": "Excluir os links também",
+        "desc": "Eles ficam na lixeira com a pasta"
       },
-      "action": "Delete folder",
+      "action": "Excluir pasta",
       "actionWithLinks": {
-        "one": "Delete folder and {{count}} link",
-        "other": "Delete folder and {{count}} links"
+        "one": "Excluir pasta e {{count}} link",
+        "many": "Excluir pasta e {{count}} links",
+        "other": "Excluir pasta e {{count}} links"
       },
-      "failed": "Couldn't delete the folder. Nothing was changed.",
-      "done": "Folder moved to Trash"
+      "failed": "Não foi possível excluir a pasta. Nada foi alterado.",
+      "done": "Pasta movida para a lixeira"
     },
     "style": {
-      "colour": "Colour",
-      "icon": "Icon",
-      "reset": "Reset",
-      "save": "Save",
-      "cancel": "Cancel",
-      "close": "Close",
-      "failed": "Couldn't save the style",
-      "failedDetail": "The old colour and icon are back.",
+      "colour": "Cor",
+      "icon": "Ícone",
+      "reset": "Redefinir",
+      "save": "Salvar",
+      "cancel": "Cancelar",
+      "close": "Fechar",
+      "failed": "Não foi possível salvar o estilo",
+      "failedDetail": "A cor e o ícone antigos voltaram.",
       "colours": {
-        "graphite": "Graphite",
-        "sage": "Sage",
-        "ocean": "Ocean",
-        "plum": "Plum",
-        "clay": "Clay",
-        "amber": "Amber",
-        "rose": "Rose",
-        "teal": "Teal"
+        "graphite": "Grafite",
+        "sage": "Sálvia",
+        "ocean": "Oceano",
+        "plum": "Ameixa",
+        "clay": "Argila",
+        "amber": "Âmbar",
+        "rose": "Rosa",
+        "teal": "Azul-petróleo"
       },
       "icons": {
-        "folder": "Folder",
-        "bookmark": "Bookmark",
-        "star": "Star",
-        "clock": "Clock",
+        "folder": "Pasta",
+        "bookmark": "Marcador",
+        "star": "Estrela",
+        "clock": "Relógio",
         "link": "Link",
         "tag": "Tag",
-        "inbox": "Inbox",
-        "image": "Image",
-        "cards": "Cards",
-        "list": "List",
-        "saved-link": "Saved link",
+        "inbox": "Caixa de entrada",
+        "image": "Imagem",
+        "cards": "Cartões",
+        "list": "Lista",
+        "saved-link": "Link salvo",
         "monitor": "Monitor",
-        "user": "User",
-        "settings": "Settings",
+        "user": "Usuário",
+        "settings": "Configurações",
         "download": "Download",
-        "share": "Share"
+        "share": "Compartilhar"
       }
     }
   },
   "library": {
-    "title": "All links",
+    "title": "Todos os links",
     "phone": {
-      "title": "Library",
-      "openedToday": "{{count}} today",
+      "title": "Biblioteca",
+      "openedToday": "{{count}} hoje",
       "trashCount": {
         "one": "{{count}} item",
-        "other": "{{count}} items"
+        "many": "{{count}} itens",
+        "other": "{{count}} itens"
       }
     },
     "scope": {
-      "all": "All links",
-      "unsorted": "Unsorted",
-      "favorites": "Favorites",
-      "folder": "Folder"
+      "all": "Todos os links",
+      "unsorted": "Sem pasta",
+      "favorites": "Favoritos",
+      "folder": "Pasta"
     },
     "folderNotFound": {
-      "title": "Folder not found",
-      "text": "This folder doesn't exist, or it was deleted.",
-      "action": "Show all links"
+      "title": "Pasta não encontrada",
+      "text": "Esta pasta não existe ou foi excluída.",
+      "action": "Mostrar todos os links"
     },
     "emptyFolder": {
-      "title": "This folder is empty",
-      "text": "Add a link here, or move links from Unsorted.",
-      "action": "Add link",
-      "unsorted": "Open Unsorted"
+      "title": "Esta pasta está vazia",
+      "text": "Adicione um link aqui ou mova links de Sem pasta.",
+      "action": "Adicionar link",
+      "unsorted": "Abrir Sem pasta"
     },
     "count": {
       "one": "{{count}} link",
+      "many": "{{count}} links",
       "other": "{{count}} links"
     },
     "countWithFolders": "{{links}}, {{folders}}",
     "countMore": {
       "one": "{{count}}+ link",
+      "many": "{{count}}+ links",
       "other": "{{count}}+ links"
     },
     "subfolders": {
-      "label": "Subfolders",
+      "label": "Subpastas",
       "links": {
         "one": "{{count}} link",
+        "many": "{{count}} links",
         "other": "{{count}} links"
       },
       "folders": {
-        "one": "{{count}} subfolder",
-        "other": "{{count}} subfolders"
+        "one": "{{count}} subpasta",
+        "many": "{{count}} subpastas",
+        "other": "{{count}} subpastas"
       },
       "meta": "{{links}}",
       "metaWithFolders": "{{links}}, {{folders}}",
-      "aria": "Open folder {{name}}, {{links}}",
-      "ariaWithFolders": "Open folder {{name}}, {{links}}, {{folders}}"
+      "aria": "Abrir a pasta {{name}}, {{links}}",
+      "ariaWithFolders": "Abrir a pasta {{name}}, {{links}}, {{folders}}"
     },
     "view": {
-      "label": "View",
-      "cards": "Cards",
-      "list": "List"
+      "label": "Visualização",
+      "cards": "Cartões",
+      "list": "Lista"
     },
     "list": {
-      "label": "Saved links"
+      "label": "Links salvos"
     },
-    "loading": "Loading links",
-    "loadingMore": "Loading more links",
-    "loadMore": "Load more",
-    "loadMoreFailed": "Couldn't load more links.",
+    "loading": "Carregando links",
+    "loadingMore": "Carregando mais links",
+    "loadMore": "Carregar mais",
+    "loadMoreFailed": "Não foi possível carregar mais links.",
     "error": {
-      "title": "Couldn't load your links",
-      "text": "Check your connection and try again.",
-      "retry": "Try again"
+      "title": "Não foi possível carregar seus links",
+      "text": "Verifique sua conexão e tente de novo.",
+      "retry": "Tentar de novo"
     },
     "empty": {
       "all": {
-        "title": "Your links will live here",
-        "text": "Paste a link to a video, an article or something to buy — the title and preview fill in by themselves.",
-        "action": "Add link"
+        "title": "Seus links vão morar aqui",
+        "text": "Cole o link de um vídeo, de um artigo ou de algo para comprar — o título e a prévia se preenchem sozinhos.",
+        "action": "Adicionar link"
       },
       "unsorted": {
-        "title": "Unsorted is empty",
-        "text": "Links you save without a folder wait here until you file them.",
-        "action": "Add link"
+        "title": "Sem pasta está vazia",
+        "text": "Os links que você salva sem pasta esperam aqui até você organizá-los.",
+        "action": "Adicionar link"
       },
       "favorites": {
-        "title": "Your favorites will live here",
-        "text": "Tap the star on a link to keep it here.",
-        "action": "Show all links"
+        "title": "Seus favoritos vão morar aqui",
+        "text": "Toque na estrela de um link para mantê-lo aqui.",
+        "action": "Mostrar todos os links"
       }
     },
-    "refetchFailed": "Couldn't refresh your links. You are seeing the last loaded list.",
+    "refetchFailed": "Não foi possível atualizar seus links. Você está vendo a última lista carregada.",
     "emptyFiltered": {
-      "title": "No links with these tags",
-      "text": "Nothing you saved has all of the selected tags.",
-      "clear": "Clear filter"
+      "title": "Nenhum link com estas tags",
+      "text": "Nada do que você salvou tem todas as tags selecionadas.",
+      "clear": "Limpar filtro"
     },
     "filter": {
-      "label": "Active filters"
+      "label": "Filtros ativos"
     },
     "sort": {
-      "label": "Sort: {{sort}}",
-      "menu": "Sort links",
-      "newest": "Newest first",
-      "oldest": "Oldest first",
-      "title": "Title A–Z"
+      "label": "Ordem: {{sort}}",
+      "menu": "Ordenar links",
+      "newest": "Mais recentes primeiro",
+      "oldest": "Mais antigos primeiro",
+      "title": "Título A–Z"
     },
     "search": {
-      "chip": "Search: {{query}}",
-      "remove": "Remove search {{query}}"
+      "chip": "Pesquisa: {{query}}",
+      "remove": "Remover a pesquisa {{query}}"
     },
     "emptySearch": {
-      "title": "Nothing found for “{{query}}”",
-      "text": "Try another word, or search in all folders.",
-      "clear": "Clear search",
-      "all": "Search all folders"
+      "title": "Nada encontrado para “{{query}}”",
+      "text": "Tente outra palavra ou pesquise em todas as pastas.",
+      "clear": "Limpar pesquisa",
+      "all": "Pesquisar em todas as pastas"
     },
     "breadcrumb": {
-      "label": "Breadcrumb",
-      "collapsed": "Show hidden folders"
+      "label": "Trilha de navegação",
+      "collapsed": "Mostrar pastas ocultas"
     },
     "pageTitle": {
       "page": "{{page}} · {{app}}",
-      "search": "Search: {{query}} · {{app}}"
+      "search": "Pesquisa: {{query}} · {{app}}"
     },
     "kind": {
-      "remove": "Remove filter {{kind}}"
+      "remove": "Remover o filtro {{kind}}"
     }
   },
   "export": {
-    "menu": "Export",
-    "failed": "Couldn't export your links",
-    "failedDetail": "Check your connection, then try again",
-    "retry": "Try again",
+    "menu": "Exportar",
+    "failed": "Não foi possível exportar seus links",
+    "failedDetail": "Verifique sua conexão e tente de novo",
+    "retry": "Tentar de novo",
     "view": {
-      "json": "This view as JSON",
-      "html": "This view as Bookmarks HTML"
+      "json": "Esta visualização em JSON",
+      "html": "Esta visualização como HTML de favoritos"
     },
     "all": {
-      "json": "Everything as JSON",
-      "html": "Everything as Bookmarks HTML"
+      "json": "Tudo em JSON",
+      "html": "Tudo como HTML de favoritos"
     }
   },
   "settings": {
-    "title": "Settings",
-    "phoneTitle": "You",
-    "back": "Back to links",
-    "backToList": "Back to You",
+    "title": "Configurações",
+    "phoneTitle": "Você",
+    "back": "Voltar para os links",
+    "backToList": "Voltar para Você",
     "nav": {
-      "account": "Account",
-      "appearance": "Appearance",
-      "library": "Library",
-      "export": "Export",
-      "privacy": "Privacy and data",
-      "shortcuts": "Keyboard shortcuts"
+      "account": "Conta",
+      "appearance": "Aparência",
+      "library": "Biblioteca",
+      "language": "Idioma",
+      "export": "Exportar",
+      "privacy": "Privacidade e dados",
+      "shortcuts": "Atalhos de teclado"
     },
     "description": {
-      "account": "Your profile and your account.",
-      "appearance": "Saved as you go and synced to all your devices.",
-      "library": "How links are shown, saved and kept.",
-      "export": "Take everything you saved with you.",
-      "privacy": "What we keep, and how to take it with you.",
-      "shortcuts": "Work without the mouse."
+      "account": "Seu perfil e sua conta.",
+      "appearance": "Salvo na hora e sincronizado em todos os seus dispositivos.",
+      "library": "Como os links são mostrados, salvos e mantidos.",
+      "language": "Idioma da interface e formato das datas.",
+      "export": "Leve com você tudo o que salvou.",
+      "privacy": "O que guardamos e como levar com você.",
+      "shortcuts": "Trabalhe sem o mouse."
     },
     "account": {
-      "profile": "Profile",
-      "open": "Account",
+      "profile": "Perfil",
+      "open": "Conta",
       "signOut": {
-        "title": "Sign out",
-        "label": "Sign out of Shelfmark",
-        "hint": "Your links stay saved. Sign in again any time."
+        "title": "Sair",
+        "label": "Sair do Shelfmark",
+        "hint": "Seus links continuam salvos. Entre de novo quando quiser."
       }
     },
     "data": {
-      "title": "Your data",
+      "title": "Seus dados",
       "export": {
-        "label": "Export your data",
+        "label": "Exportar seus dados",
         "json": "JSON",
-        "jsonHint": "All your folders, tags and links in one file",
-        "html": "Bookmarks HTML",
-        "htmlHint": "Opens in any browser’s bookmark import",
-        "download": "Download",
-        "downloadAs": "Download {{format}}"
+        "jsonHint": "Todas as suas pastas, tags e links em um arquivo",
+        "html": "HTML de favoritos",
+        "htmlHint": "Abre na importação de favoritos de qualquer navegador",
+        "download": "Baixar",
+        "downloadAs": "Baixar {{format}}"
       }
     },
     "appearance": {
-      "title": "Appearance",
+      "title": "Aparência",
       "theme": {
-        "label": "Theme",
-        "hint": "Light and Dark are tuned by us and always stay the same. Custom is yours to change.",
-        "system": "System",
-        "light": "Light",
-        "dark": "Dark",
-        "custom": "Custom",
-        "note": "Want other colours or corners? Choose Custom. Light and Dark won’t change."
+        "label": "Tema",
+        "hint": "Claro e Escuro são ajustados por nós e nunca mudam. O Personalizado você muda como quiser.",
+        "system": "Sistema",
+        "light": "Claro",
+        "dark": "Escuro",
+        "custom": "Personalizado",
+        "note": "Quer outras cores ou cantos? Escolha Personalizado. Claro e Escuro não mudam."
       },
       "custom": {
         "base": {
-          "label": "Start from",
-          "hint": "Your colours sit on the light or the dark base",
-          "light": "Light",
-          "dark": "Dark"
+          "label": "Começar de",
+          "hint": "Suas cores ficam sobre a base clara ou a escura",
+          "light": "Claro",
+          "dark": "Escuro"
         },
         "accent": {
-          "label": "Accent colour",
-          "hint": "Active folder, tags, favourites and focus. Every option keeps 4.5:1 contrast in light and dark.",
-          "sage": "Sage",
-          "ocean": "Ocean",
-          "plum": "Plum",
-          "clay": "Clay",
-          "amber": "Amber",
-          "rose": "Rose",
-          "teal": "Teal",
-          "graphite": "Graphite"
+          "label": "Cor de destaque",
+          "hint": "Pasta ativa, tags, favoritos e foco. Toda opção mantém contraste de 4,5:1 no claro e no escuro.",
+          "sage": "Sálvia",
+          "ocean": "Oceano",
+          "plum": "Ameixa",
+          "clay": "Argila",
+          "amber": "Âmbar",
+          "rose": "Rosa",
+          "teal": "Azul-petróleo",
+          "graphite": "Grafite"
         },
         "background": {
-          "label": "Background",
-          "hint": "The page behind cards and panels",
-          "stone": "Stone",
-          "paper": "Paper",
-          "mist": "Mist",
-          "white": "White",
-          "graphite": "Graphite",
-          "ink": "Ink",
-          "forest": "Forest",
-          "black": "Black"
+          "label": "Fundo",
+          "hint": "A página atrás dos cartões e painéis",
+          "stone": "Pedra",
+          "paper": "Papel",
+          "mist": "Névoa",
+          "white": "Branco",
+          "graphite": "Grafite",
+          "ink": "Tinta",
+          "forest": "Floresta",
+          "black": "Preto"
         },
         "corners": {
-          "label": "Corners",
-          "hint": "Cards, panels and buttons",
-          "round": "Round",
-          "soft": "Soft",
-          "square": "Square"
+          "label": "Cantos",
+          "hint": "Cartões, painéis e botões",
+          "round": "Redondos",
+          "soft": "Suaves",
+          "square": "Retos"
         },
-        "reset": "Reset custom theme"
+        "reset": "Redefinir tema personalizado"
       },
       "layout": {
-        "title": "Text and layout",
+        "title": "Texto e layout",
         "textSize": {
-          "label": "Text size",
-          "hint": "Scales the whole interface, not just text",
+          "label": "Tamanho do texto",
+          "hint": "Ajusta a interface inteira, não só o texto",
           "s": "90%",
           "m": "100%",
           "l": "112%",
           "xl": "125%"
         },
         "font": {
-          "label": "Font",
-          "hint": "Readable is designed for low vision",
+          "label": "Fonte",
+          "hint": "Legível foi feita para baixa visão",
           "onest": "Onest",
-          "system": "System",
-          "readable": "Readable"
+          "system": "Sistema",
+          "readable": "Legível"
         },
         "density": {
-          "label": "Density",
-          "hint": "Compact fits more links on screen",
-          "comfortable": "Comfortable",
-          "compact": "Compact"
+          "label": "Densidade",
+          "hint": "Compacta mostra mais links na tela",
+          "comfortable": "Confortável",
+          "compact": "Compacta"
         }
       },
       "cards": {
-        "title": "Cards",
+        "title": "Cartões",
         "preview": {
-          "label": "Preview image",
-          "hint": "The picture at the top of each card",
-          "large": "Large",
-          "small": "Small",
-          "off": "Off"
+          "label": "Imagem de prévia",
+          "hint": "A imagem no topo de cada cartão",
+          "large": "Grande",
+          "small": "Pequena",
+          "off": "Nenhuma"
         },
         "site": {
-          "label": "Show site",
-          "hint": "Domain and favicon above the title"
+          "label": "Mostrar o site",
+          "hint": "Domínio e favicon acima do título"
         },
         "notes": {
-          "label": "Show notes",
-          "hint": "Your note under the title"
+          "label": "Mostrar as notas",
+          "hint": "Sua nota abaixo do título"
         },
         "tags": {
-          "label": "Show tags",
-          "hint": "Tag chips at the bottom of the card"
+          "label": "Mostrar as tags",
+          "hint": "As tags no rodapé do cartão"
         }
       },
       "sidebar": {
         "counts": {
-          "label": "Link counts",
-          "hint": "Numbers next to folders"
+          "label": "Contagem de links",
+          "hint": "Os números ao lado das pastas"
         },
         "recent": {
-          "label": "Remember recently opened",
-          "hint": "Keeps the Recently opened list. Off clears it and stops recording.",
+          "label": "Lembrar os abertos recentemente",
+          "hint": "Mantém a lista Abertos recentemente. Desligado, limpa a lista e para de registrar.",
           "confirm": {
-            "title": "Stop remembering recently opened?",
-            "message": "The Recently opened list is cleared, and links you open are not added until you turn this back on. Your links stay saved.",
-            "confirm": "Clear and stop",
-            "cancel": "Cancel",
-            "close": "Close"
+            "title": "Parar de lembrar os abertos recentemente?",
+            "message": "A lista Abertos recentemente é limpa, e os links que você abrir não são adicionados até você ligar de novo. Seus links continuam salvos.",
+            "confirm": "Limpar e parar",
+            "cancel": "Cancelar",
+            "close": "Fechar"
           }
         },
         "colours": {
-          "label": "Folder colours",
-          "hint": "Off shows every folder in plain graphite"
+          "label": "Cores das pastas",
+          "hint": "Desligado, todas as pastas ficam em grafite"
         }
       },
       "motion": {
-        "title": "Sidebar and motion",
-        "label": "Animations",
-        "hint": "Reduced keeps fades and loaders, removes movement",
-        "system": "System",
-        "full": "Full",
-        "reduced": "Reduced"
+        "title": "Barra lateral e movimento",
+        "label": "Animações",
+        "hint": "Reduzidas mantém transições suaves e indicadores de carregamento, remove o movimento",
+        "system": "Sistema",
+        "full": "Completas",
+        "reduced": "Reduzidas"
       },
       "preview": {
-        "title": "Live preview",
-        "label": "Preview of your settings",
-        "hint": "Changes apply to the whole app at once.",
+        "title": "Prévia ao vivo",
+        "label": "Prévia das suas configurações",
+        "hint": "As mudanças valem na hora para o app inteiro.",
         "folders": {
           "angular": "Angular",
-          "clothes": "Clothes",
-          "recipes": "Recipes"
+          "clothes": "Roupas",
+          "recipes": "Receitas"
         },
         "cards": {
           "one": {
             "site": "youtube.com",
-            "title": "Signal Forms in 20 minutes",
+            "title": "Signal Forms em 20 minutos",
             "tag": "angular",
-            "note": "Watch on the weekend"
+            "note": "Ver no fim de semana"
           },
           "two": {
             "site": "cos.com",
-            "title": "Wool coat, straight cut",
-            "tag": "clothes",
-            "note": "Wait for the sale"
+            "title": "Casaco de lã, corte reto",
+            "tag": "roupas",
+            "note": "Esperar a liquidação"
           }
         },
-        "recent": "Recently opened"
+        "recent": "Abertos recentemente"
       },
-      "failed": "Couldn't save the appearance",
-      "failedDetail": "It is back to how it was.",
+      "failed": "Não foi possível salvar a aparência",
+      "failedDetail": "Ela voltou a ser como era.",
       "language": {
-        "label": "Language",
-        "hint": "More languages are coming",
-        "value": "English"
+        "label": "Idioma",
+        "hint": "Idioma da interface, formato de data e corretor ortográfico",
+        "value": "Mudar idioma"
       }
     },
     "privacy": {
       "policy": {
-        "label": "Privacy policy",
-        "hint": "What we store and why, in plain words",
-        "action": "Read",
-        "actionLabel": "Read the privacy policy"
+        "label": "Política de privacidade",
+        "hint": "O que guardamos e por quê, em palavras simples",
+        "action": "Ler",
+        "actionLabel": "Ler a política de privacidade"
       },
       "data": {
-        "label": "Download your data",
-        "hint": "Everything you saved, as JSON or bookmarks HTML",
-        "action": "Open export"
+        "label": "Baixar seus dados",
+        "hint": "Tudo o que você salvou, em JSON ou HTML de favoritos",
+        "action": "Abrir exportação"
       },
       "kept": {
-        "title": "What we keep"
+        "title": "O que guardamos"
       }
     },
     "footer": {
-      "privacy": "Privacy policy",
+      "privacy": "Política de privacidade",
       "version": "Shelfmark v1.0"
     },
     "welcome": {
-      "title": "Welcome tour",
-      "hint": "See the 3-step introduction again",
-      "action": "Show welcome again",
-      "error": "Couldn't reset the welcome tour",
-      "errorDetail": "Try again"
+      "title": "Tour de boas-vindas",
+      "hint": "Ver de novo a introdução em 3 passos",
+      "action": "Mostrar boas-vindas de novo",
+      "error": "Não foi possível redefinir o tour de boas-vindas",
+      "errorDetail": "Tente de novo"
     },
     "delete": {
-      "title": "Delete account",
-      "hint": "Removes your account and all your links, folders and tags for good. This can't be undone.",
-      "action": "Delete account",
-      "done": "Account deleted",
-      "doneDetail": "All your data was deleted",
+      "title": "Excluir conta",
+      "hint": "Remove para sempre sua conta e todos os seus links, pastas e tags. Isso não pode ser desfeito.",
+      "action": "Excluir conta",
+      "done": "Conta excluída",
+      "doneDetail": "Todos os seus dados foram excluídos",
       "dialog": {
-        "title": "Delete your account?",
-        "text": "All your links, folders and tags will be deleted for good. This can't be undone.",
-        "label": "Type your email to confirm",
-        "hint": "Enter {{email}} to confirm.",
-        "cancel": "Cancel",
-        "close": "Close",
-        "deleting": "Deleting…"
+        "title": "Excluir sua conta?",
+        "text": "Todos os seus links, pastas e tags serão excluídos para sempre. Isso não pode ser desfeito.",
+        "label": "Digite seu e-mail para confirmar",
+        "hint": "Digite {{email}} para confirmar.",
+        "cancel": "Cancelar",
+        "close": "Fechar",
+        "deleting": "Excluindo…"
       },
       "error": {
-        "mismatch": "That email does not match your account. Check it and try again.",
-        "rateLimited": "Too many attempts. Try again in a minute.",
-        "failed": "We could not delete your account. Nothing was deleted. Try again."
+        "mismatch": "Esse e-mail não corresponde à sua conta. Confira e tente de novo.",
+        "rateLimited": "Muitas tentativas. Tente de novo em um minuto.",
+        "failed": "Não conseguimos excluir sua conta. Nada foi excluído. Tente de novo."
       }
     },
     "library": {
       "viewing": {
-        "title": "Viewing",
+        "title": "Visualização",
         "view": {
-          "label": "Default view",
-          "hint": "How folders open the first time"
+          "label": "Visualização padrão",
+          "hint": "Como as pastas abrem pela primeira vez"
         },
         "sort": {
-          "label": "Sort links by",
-          "hint": "Each folder remembers its own choice after you change it"
+          "label": "Ordenar links por",
+          "hint": "Cada pasta lembra a própria escolha depois que você muda"
         },
         "open": {
-          "label": "Open links in",
-          "newTab": "New tab",
-          "sameTab": "Same tab"
+          "label": "Abrir links em",
+          "newTab": "Nova aba",
+          "sameTab": "Mesma aba"
         },
         "counts": {
-          "label": "Show folder counts",
-          "hint": "Numbers next to folders in the sidebar"
+          "label": "Mostrar contagem nas pastas",
+          "hint": "Os números ao lado das pastas na barra lateral"
         }
       },
       "saving": {
-        "title": "Saving",
+        "title": "Salvamento",
         "folder": {
-          "label": "New links go to",
-          "hint": "When you paste a link without picking a folder"
+          "label": "Novos links vão para",
+          "hint": "Quando você cola um link sem escolher uma pasta"
         },
         "duplicates": {
-          "label": "Warn about duplicates",
-          "hint": "Shows where you already saved the same link"
+          "label": "Avisar sobre duplicados",
+          "hint": "Mostra onde você já salvou o mesmo link"
         },
         "previews": {
-          "label": "Fetch titles and previews",
-          "hint": "Turn off to save only the address"
+          "label": "Buscar títulos e prévias",
+          "hint": "Desligue para salvar só o endereço"
         },
         "query": {
-          "label": "Keep the query part of links",
-          "hint": "Removes tracking like ?utm_source when off"
+          "label": "Manter os parâmetros dos links",
+          "hint": "Desligado, remove rastreamento como ?utm_source"
         }
       },
       "tags": {
         "label": "Tags",
         "hint": {
-          "one": "{{count}} tag. Rename, merge or delete it.",
-          "other": "{{count}} tags. Rename, merge or delete them."
+          "one": "{{count}} tag. Renomeie, junte ou exclua.",
+          "many": "{{count}} tags. Renomeie, junte ou exclua.",
+          "other": "{{count}} tags. Renomeie, junte ou exclua."
         },
-        "hintPending": "Rename, merge or delete them",
-        "action": "Manage tags"
+        "hintPending": "Renomeie, junte ou exclua",
+        "action": "Gerenciar tags"
       },
-      "failed": "Couldn't save the setting",
-      "failedDetail": "It is back to how it was.",
-      "note": "Subfolders are always shown first in a folder; it isn’t a setting. Changes apply at once and sync to your other devices.",
+      "failed": "Não foi possível salvar a configuração",
+      "failedDetail": "Ela voltou a ser como era.",
+      "note": "Subpastas sempre aparecem primeiro dentro de uma pasta; isso não é uma configuração. As mudanças valem na hora e sincronizam com seus outros dispositivos.",
       "trash": {
-        "title": "Trash",
+        "title": "Lixeira",
         "retention": {
-          "label": "Keep deleted items for",
-          "hint": "Then they’re removed for good",
-          "days": "{{count}} days",
-          "failed": "Couldn't save the setting",
-          "failedDetail": "It is back to {{days}} days.",
-          "loadFailed": "Couldn't load the setting."
+          "label": "Manter itens excluídos por",
+          "hint": "Depois são removidos para sempre",
+          "days": "{{count}} dias",
+          "failed": "Não foi possível salvar a configuração",
+          "failedDetail": "Ela voltou para {{days}} dias.",
+          "loadFailed": "Não foi possível carregar a configuração."
         },
         "open": {
-          "label": "Trash",
+          "label": "Lixeira",
           "count": {
             "one": "{{count}} item",
-            "other": "{{count}} items"
+            "many": "{{count}} itens",
+            "other": "{{count}} itens"
           },
-          "none": "Nothing in Trash",
-          "action": "Open Trash"
+          "none": "Nada na lixeira",
+          "action": "Abrir lixeira"
         },
         "shorten": {
-          "title": "Shorten how long Trash keeps items?",
+          "title": "Encurtar o tempo que a lixeira guarda os itens?",
           "message": {
-            "one": "{{count}} item in Trash is older than {{days}} days and will be deleted for good tonight.",
-            "other": "{{count}} items in Trash are older than {{days}} days and will be deleted for good tonight."
+            "one": "{{count}} item na lixeira tem mais de {{days}} dias e será excluído para sempre esta noite.",
+            "many": "{{count}} itens na lixeira têm mais de {{days}} dias e serão excluídos para sempre esta noite.",
+            "other": "{{count}} itens na lixeira têm mais de {{days}} dias e serão excluídos para sempre esta noite."
           },
-          "confirm": "Keep for {{days}} days",
-          "cancel": "Cancel",
-          "close": "Close"
+          "confirm": "Manter por {{days}} dias",
+          "cancel": "Cancelar",
+          "close": "Fechar"
         }
       },
       "folders": {
-        "title": "Tags and folders",
+        "title": "Tags e pastas",
         "colours": {
-          "label": "Folder colours",
-          "hint": "Coloured folder icons in the sidebar and tiles",
-          "failed": "Couldn't save the setting",
-          "failedDetail": "It is back to how it was."
+          "label": "Cores das pastas",
+          "hint": "Ícones de pasta coloridos na barra lateral e nos blocos",
+          "failed": "Não foi possível salvar a configuração",
+          "failedDetail": "Ela voltou a ser como era."
         },
         "pinned": {
-          "label": "Pinned at the top",
-          "hint": "Up to {{max}} folders and links",
-          "action": "Edit pinned"
+          "label": "Fixados no topo",
+          "hint": "Até {{max}} pastas e links",
+          "action": "Editar fixados"
         }
       },
       "pinnedDialog": {
-        "title": "Pinned",
-        "description": "The order of the Pinned section in the sidebar.",
-        "empty": "Nothing is pinned. Use “Pin to sidebar” in the menu of a folder or link.",
-        "list": "Pinned items",
-        "close": "Close",
-        "done": "Done",
-        "moveUp": "Move {{name}} up",
-        "moveDown": "Move {{name}} down",
-        "unpin": "Unpin {{name}} from the sidebar"
+        "title": "Fixados",
+        "description": "A ordem da seção Fixados na barra lateral.",
+        "empty": "Nada está fixado. Use “Fixar na barra lateral” no menu de uma pasta ou de um link.",
+        "list": "Itens fixados",
+        "close": "Fechar",
+        "done": "Concluído",
+        "moveUp": "Mover {{name}} para cima",
+        "moveDown": "Mover {{name}} para baixo",
+        "unpin": "Desafixar {{name}} da barra lateral"
       }
     },
-    "help": "Help"
+    "language": {
+      "title": "Idioma",
+      "interface": {
+        "label": "Idioma da interface",
+        "hint": "Seus links e notas ficam como estão",
+        "browser": "Igual ao navegador"
+      },
+      "spellcheck": {
+        "label": "Corretor ortográfico nas notas",
+        "hint": "Usa o dicionário do seu navegador"
+      },
+      "dates": {
+        "title": "Datas e números"
+      },
+      "date": {
+        "label": "Formato de data",
+        "default": "Padrão do idioma ({{example}})"
+      },
+      "time": {
+        "label": "Hora",
+        "default": "Auto",
+        "h24": "24 horas",
+        "h12": "12 horas"
+      },
+      "week": {
+        "label": "Início da semana",
+        "hint": "Agrupa “esta semana” em Abertos recentemente",
+        "default": "Auto"
+      },
+      "preview": {
+        "label": "Prévia",
+        "value": "{{weekday}}, {{date}}, {{time}}"
+      },
+      "failed": "Não foi possível salvar a configuração",
+      "failedDetail": "Ela voltou a ser como era."
+    },
+    "help": "Ajuda"
   },
   "shortcuts": {
-    "title": "Keyboard shortcuts",
-    "open": "Keyboard shortcuts",
-    "close": "Close",
-    "hint": "Press ? anywhere except in a text field.",
+    "title": "Atalhos de teclado",
+    "open": "Atalhos de teclado",
+    "close": "Fechar",
+    "hint": "Pressione ? em qualquer lugar, menos em um campo de texto.",
     "page": {
-      "label": "All shortcuts",
-      "action": "Open list",
+      "label": "Todos os atalhos",
+      "action": "Abrir lista",
       "singleKey": {
-        "label": "Use single-key shortcuts",
-        "hint": "The ? key opens the list on its own, never while you type in a field. Turn off to use only the top bar button."
+        "label": "Usar atalhos de uma tecla",
+        "hint": "A tecla ? abre a lista sozinha, nunca enquanto você digita em um campo. Desligue para usar só o botão da barra superior."
       }
     },
     "groups": {
-      "everywhere": "Everywhere",
-      "links": "Saving and finding",
-      "folders": "In the folder list"
+      "everywhere": "Em qualquer lugar",
+      "links": "Salvar e encontrar",
+      "folders": "Na lista de pastas"
     },
     "items": {
-      "search": "Search",
-      "list": "This list",
-      "close": "Close a dialog, menu or toast",
-      "undo": "Undo the last action",
-      "toastAction": "Go to the button of a toast",
-      "save": "Save the link",
-      "results": "Move through search results",
-      "openResult": "Open the result",
-      "openBackground": "Open it in a background tab",
-      "moveFolder": "Move between folders",
-      "toggleFolder": "Close or open a folder",
-      "folderMenu": "Open the folder menu"
+      "search": "Pesquisar",
+      "list": "Esta lista",
+      "close": "Fechar uma caixa de diálogo, um menu ou um aviso",
+      "undo": "Desfazer a última ação",
+      "toastAction": "Ir para o botão de um aviso",
+      "save": "Salvar o link",
+      "results": "Navegar pelos resultados da pesquisa",
+      "openResult": "Abrir o resultado",
+      "openBackground": "Abrir em uma aba em segundo plano",
+      "moveFolder": "Passar de uma pasta a outra",
+      "toggleFolder": "Fechar ou abrir uma pasta",
+      "folderMenu": "Abrir o menu da pasta"
     },
     "keys": {
       "command": "Command",
@@ -1283,547 +1336,573 @@
       "shift": "Shift",
       "enter": "Enter",
       "escape": "Esc",
-      "up": "Up",
-      "down": "Down",
-      "left": "Left",
-      "right": "Right",
-      "question": "Question mark"
+      "up": "Para cima",
+      "down": "Para baixo",
+      "left": "Esquerda",
+      "right": "Direita",
+      "question": "Ponto de interrogação"
     }
   },
   "tags": {
     "dialog": {
-      "cancel": "Cancel",
-      "close": "Close"
+      "cancel": "Cancelar",
+      "close": "Fechar"
     },
     "sidebar": {
       "heading": "Tags",
-      "add": "New tag",
+      "add": "Nova tag",
       "list": "Tags",
-      "loadFailed": "Couldn't load your tags.",
-      "empty": "No tags yet. Add one with +.",
-      "menuFor": "Actions for tag {{name}}",
-      "more": "+ {{count}} more",
-      "showLess": "Show less",
+      "loadFailed": "Não foi possível carregar suas tags.",
+      "empty": "Nenhuma tag ainda. Adicione uma com +.",
+      "menuFor": "Ações para a tag {{name}}",
+      "more": "+ {{count}} a mais",
+      "showLess": "Mostrar menos",
       "menu": {
-        "label": "Tag actions",
+        "label": "Ações da tag",
         "summary": "{{name}}, {{links}}",
-        "show": "Show links",
-        "rename": "Rename",
-        "merge": "Merge into another tag…",
-        "delete": "Delete tag"
+        "show": "Mostrar links",
+        "rename": "Renomear",
+        "merge": "Juntar com outra tag…",
+        "delete": "Excluir tag"
       }
     },
     "add": {
-      "label": "New tag",
-      "placeholder": "Tag name",
-      "hint": "Enter saves, Esc cancels. Spaces become dashes.",
-      "done": "Tag “{{name}}” created",
-      "failed": "Couldn't create the tag. Try again.",
-      "limit": "You have reached the limit of {{max}} tags."
+      "label": "Nova tag",
+      "placeholder": "Nome da tag",
+      "hint": "Enter salva, Esc cancela. Espaços viram hifens.",
+      "done": "Tag “{{name}}” criada",
+      "failed": "Não foi possível criar a tag. Tente de novo.",
+      "limit": "Você atingiu o limite de {{max}} tags."
     },
     "name": {
-      "required": "Enter a tag name",
-      "tooLong": "Use {{max}} characters or fewer",
-      "exists": "There's already a tag “{{name}}”."
+      "required": "Digite um nome para a tag",
+      "tooLong": "Use no máximo {{max}} caracteres",
+      "exists": "Já existe uma tag “{{name}}”."
     },
     "rename": {
-      "label": "Tag name",
-      "conflict": "There's already a tag “{{name}}”. Merge them instead?",
-      "merge": "Merge into “{{name}}”",
-      "failed": "Couldn't rename the tag. The old name is back."
+      "label": "Nome da tag",
+      "conflict": "Já existe uma tag “{{name}}”. Quer juntar as duas?",
+      "merge": "Juntar com “{{name}}”",
+      "failed": "Não foi possível renomear a tag. O nome antigo voltou."
     },
     "merge": {
-      "title": "Merge “{{name}}”",
-      "text": "Every link tagged “{{name}}” gets the tag you choose, then “{{name}}” is deleted.",
-      "label": "Merge into",
-      "placeholder": "Choose a tag",
-      "searchLabel": "Search tags",
-      "noResults": "No tags found",
-      "action": "Merge",
-      "required": "Choose a tag to merge into",
-      "failed": "Couldn't merge the tags. Try again.",
-      "failedTitle": "Couldn't merge the tags",
-      "failedDetail": "Try again",
-      "done": "Merged “{{name}}” into “{{target}}”"
+      "title": "Juntar “{{name}}”",
+      "text": "Todo link com a tag “{{name}}” recebe a tag escolhida, e depois “{{name}}” é excluída.",
+      "label": "Juntar com",
+      "placeholder": "Escolha uma tag",
+      "searchLabel": "Pesquisar tags",
+      "noResults": "Nenhuma tag encontrada",
+      "action": "Juntar",
+      "required": "Escolha a tag de destino",
+      "failed": "Não foi possível juntar as tags. Tente de novo.",
+      "failedTitle": "Não foi possível juntar as tags",
+      "failedDetail": "Tente de novo",
+      "done": "“{{name}}” juntada com “{{target}}”"
     },
     "delete": {
-      "title": "Delete tag “{{name}}”?",
+      "title": "Excluir a tag “{{name}}”?",
       "message": {
-        "one": "It will be removed from {{count}} link. The link itself stays where it is.",
-        "other": "It will be removed from {{count}} links. The links themselves stay where they are."
+        "one": "Ela será removida de {{count}} link. O link continua onde está.",
+        "many": "Ela será removida de {{count}} links. Os links continuam onde estão.",
+        "other": "Ela será removida de {{count}} links. Os links continuam onde estão."
       },
-      "confirm": "Delete tag",
-      "undo": "Undo",
-      "done": "Tag “{{name}}” deleted",
-      "failed": "Couldn't delete the tag “{{name}}”",
-      "failedDetail": "It is back"
+      "confirm": "Excluir tag",
+      "undo": "Desfazer",
+      "done": "Tag “{{name}}” excluída",
+      "failed": "Não foi possível excluir a tag “{{name}}”",
+      "failedDetail": "Ela voltou"
     },
     "filter": {
-      "label": "Filtered by tags",
-      "remove": "Remove tag filter {{name}}",
-      "clear": "Clear filter"
+      "label": "Filtrado por tags",
+      "remove": "Remover o filtro da tag {{name}}",
+      "clear": "Limpar filtro"
     },
     "count": {
       "one": "{{count}} link",
+      "many": "{{count}} links",
       "other": "{{count}} links"
     }
   },
   "search": {
-    "title": "Search",
-    "close": "Close search",
-    "label": "Search links, folders and tags",
-    "placeholder": "Search links, folders and tags",
-    "results": "Search results",
+    "title": "Pesquisar",
+    "close": "Fechar pesquisa",
+    "label": "Pesquisar links, pastas e tags",
+    "placeholder": "Pesquisar links, pastas e tags",
+    "results": "Resultados da pesquisa",
     "esc": "Esc",
-    "inFolder": "in {{folder}}",
-    "noteMatches": "note matches:",
-    "showAll": "Show all results for “{{query}}”",
-    "foldersAndTags": "Folders and tags",
+    "inFolder": "em {{folder}}",
+    "noteMatches": "corresponde na nota:",
+    "showAll": "Mostrar todos os resultados para “{{query}}”",
+    "foldersAndTags": "Pastas e tags",
     "linkCount": {
       "one": "{{count}} link",
+      "many": "{{count}} links",
       "other": "{{count}} links"
     },
     "tagMeta": {
       "one": "Tag, {{count}} link",
+      "many": "Tag, {{count}} links",
       "other": "Tag, {{count}} links"
     },
     "status": {
-      "one": "{{count}} result",
-      "other": "{{count}} results"
+      "one": "{{count}} resultado",
+      "many": "{{count}} resultados",
+      "other": "{{count}} resultados"
     },
-    "hint": "Results show up as you type: titles, notes, tags and sites. Recently opened links live in Library.",
-    "emptyText": "Try another word. Search looks through titles, notes, tags and sites.",
-    "searching": "Searching…",
-    "failed": "Couldn't search. Try again.",
+    "hint": "Os resultados aparecem enquanto você digita: títulos, notas, tags e sites. Os links abertos recentemente ficam na Biblioteca.",
+    "emptyText": "Tente outra palavra. A pesquisa olha títulos, notas, tags e sites.",
+    "searching": "Pesquisando…",
+    "failed": "Não foi possível pesquisar. Tente de novo.",
     "hints": {
       "ctrl": "Ctrl",
       "command": "Command",
-      "up": "Up",
-      "down": "Down",
+      "up": "Para cima",
+      "down": "Para baixo",
       "enter": "Enter",
-      "move": "move",
-      "open": "open",
-      "background": "open in background"
+      "move": "mover",
+      "open": "abrir",
+      "background": "abrir em segundo plano"
     }
   },
   "share": {
-    "title": "Save to Shelfmark",
-    "subtitle": "Shared from another app",
-    "footnote": "After saving you land in your library.",
+    "title": "Salvar no Shelfmark",
+    "subtitle": "Compartilhado de outro app",
+    "footnote": "Depois de salvar, você vai para sua biblioteca.",
     "actions": {
-      "save": "Save"
+      "save": "Salvar"
     },
     "invalid": {
-      "title": "Nothing to save",
-      "text": "This share has no web address starting with http:// or https://, so nothing was saved.",
-      "action": "Go to my links",
-      "footnote": "To try again, share a page or a link from your browser or another app."
+      "title": "Nada para salvar",
+      "text": "Este compartilhamento não tem um endereço web que comece com http:// ou https://, então nada foi salvo.",
+      "action": "Ir para meus links",
+      "footnote": "Para tentar de novo, compartilhe uma página ou um link do navegador ou de outro app."
     }
   },
   "onboarding": {
-    "stepLabel": "Step {{current}} of {{count}}",
-    "announce": "Step {{current}} of {{count}}: {{title}}",
-    "skip": "Skip",
-    "back": "Back",
-    "next": "Next",
-    "addFirst": "Add your first link",
+    "stepLabel": "Passo {{current}} de {{count}}",
+    "announce": "Passo {{current}} de {{count}}: {{title}}",
+    "skip": "Pular",
+    "back": "Voltar",
+    "next": "Avançar",
+    "addFirst": "Adicione seu primeiro link",
     "collect": {
-      "title": "All your links in one place",
-      "text": "Videos, articles, things to buy, courses — everything you save lives on one calm shelf instead of chats and tabs."
+      "title": "Todos os seus links em um só lugar",
+      "text": "Vídeos, artigos, coisas para comprar, cursos — tudo o que você salva mora numa estante tranquila, longe de chats e abas."
     },
     "save": {
-      "title": "Save in a second",
-      "text": "Paste a link and the title and preview fill in by themselves. Add a note so you remember why you saved it."
+      "title": "Salve em um segundo",
+      "text": "Cole um link e o título e a prévia se preenchem sozinhos. Adicione uma nota para lembrar por que você salvou."
     },
     "find": {
-      "title": "Find it right away",
-      "text": "Folders, tags, favorites and search with ⌘K bring back any link in a couple of keystrokes."
+      "title": "Encontre na hora",
+      "text": "Pastas, tags, favoritos e pesquisa com ⌘K trazem de volta qualquer link em poucos toques de tecla."
     }
   },
   "rating": {
-    "title": "How do you like Shelfmark so far?",
+    "title": "O que você está achando do Shelfmark até agora?",
     "scale": {
-      "label": "Rating from 1 to 10",
-      "score": "{{score}} out of 10",
-      "low": "Not really",
-      "high": "Love it"
+      "label": "Nota de 1 a 10",
+      "score": "{{score}} de 10",
+      "low": "Não muito",
+      "high": "Adorei"
     },
-    "notNow": "Not now",
+    "notNow": "Agora não",
     "feedback": {
-      "title": "What would make it better?",
-      "yourScore": "Your score: {{score}}",
-      "label": "Your feedback",
-      "placeholder": "Tell us what is missing or annoying",
-      "counter": "characters",
-      "send": "Send",
-      "sending": "Sending…",
-      "skip": "Skip",
-      "error": "Couldn't send your feedback. Try again."
+      "title": "O que deixaria melhor?",
+      "yourScore": "Sua nota: {{score}}",
+      "label": "Sua opinião",
+      "placeholder": "Conte o que está faltando ou incomodando",
+      "counter": "caracteres",
+      "send": "Enviar",
+      "sending": "Enviando…",
+      "skip": "Pular",
+      "error": "Não foi possível enviar sua opinião. Tente de novo."
     },
     "thanks": {
-      "title": "Thank you",
-      "text": "Your rating helps us make Shelfmark better.",
-      "textFeedback": "We read every message.",
-      "close": "Close"
+      "title": "Obrigado",
+      "text": "Sua nota nos ajuda a melhorar o Shelfmark.",
+      "textFeedback": "Lemos todas as mensagens.",
+      "close": "Fechar"
     }
   },
   "errors": {
     "rateLimited": {
-      "title": "Too many requests",
-      "detail": "Try again in a moment"
+      "title": "Muitas solicitações",
+      "detail": "Tente de novo em instantes"
     },
     "server": {
-      "title": "Something went wrong on our side",
-      "detail": "Try again"
+      "title": "Algo deu errado do nosso lado",
+      "detail": "Tente de novo"
     }
   },
   "toast": {
-    "actionHint": "Press {{shortcut}} to reach {{action}}",
-    "dismiss": "Dismiss"
+    "actionHint": "Pressione {{shortcut}} para chegar a {{action}}",
+    "dismiss": "Dispensar"
   },
   "trash": {
-    "title": "Trash",
+    "title": "Lixeira",
     "count": {
-      "one": "{{count}} item, kept for {{days}} days",
-      "other": "{{count}} items, kept for {{days}} days"
+      "one": "{{count}} item, mantido por {{days}} dias",
+      "many": "{{count}} itens, mantidos por {{days}} dias",
+      "other": "{{count}} itens, mantidos por {{days}} dias"
     },
-    "nothing": "Nothing here",
-    "emptyAction": "Empty trash",
-    "loading": "Loading Trash",
+    "nothing": "Nada aqui",
+    "emptyAction": "Esvaziar lixeira",
+    "loading": "Carregando a lixeira",
     "loadFailed": {
-      "title": "Couldn't load Trash",
-      "text": "Check your connection and try again.",
-      "retry": "Try again"
+      "title": "Não foi possível carregar a lixeira",
+      "text": "Verifique sua conexão e tente de novo.",
+      "retry": "Tentar de novo"
     },
     "filter": {
-      "label": "Show",
-      "all": "All {{count}}",
+      "label": "Mostrar",
+      "all": "Todos {{count}}",
       "links": "Links {{count}}",
-      "folders": "Folders {{count}}",
-      "emptyTitle": "Nothing of this kind in Trash",
-      "emptyText": "Show everything to see what else is waiting here.",
-      "showAll": "Show all"
+      "folders": "Pastas {{count}}",
+      "emptyTitle": "Nada deste tipo na lixeira",
+      "emptyText": "Mostre tudo para ver o que mais está esperando aqui.",
+      "showAll": "Mostrar tudo"
     },
-    "selectAll": "Select all",
+    "selectAll": "Selecionar tudo",
     "selected": {
-      "one": "{{count}} selected",
-      "other": "{{count}} selected"
+      "one": "{{count}} selecionado",
+      "many": "{{count}} selecionados",
+      "other": "{{count}} selecionados"
     },
-    "group": "Recently deleted",
+    "group": "Excluídos recentemente",
     "row": {
-      "from": "From {{folder}}",
-      "fromUnsorted": "From Unsorted",
-      "deleted": "Deleted {{when}}",
+      "from": "De {{folder}}",
+      "fromUnsorted": "De Sem pasta",
+      "deleted": "Excluído {{when}}",
       "links": {
         "one": "{{count}} link",
+        "many": "{{count}} links",
         "other": "{{count}} links"
       },
       "daysLeft": {
-        "one": "{{count}} day left",
-        "other": "{{count}} days left"
+        "one": "Falta {{count}} dia",
+        "many": "Faltam {{count}} dias",
+        "other": "Faltam {{count}} dias"
       },
-      "lastDay": "Less than a day left",
-      "select": "Select {{title}}",
-      "selectHint": "Selects this entry",
-      "restore": "Restore",
-      "restoreItem": "Restore {{title}}",
-      "deleteItem": "Delete {{title}} forever",
-      "more": "More for {{title}}",
-      "moreTooltip": "More actions",
-      "deleteForever": "Delete forever",
-      "actionsHint": "Shows Restore and Delete",
-      "delete": "Delete"
+      "lastDay": "Falta menos de um dia",
+      "select": "Selecionar {{title}}",
+      "selectHint": "Seleciona esta entrada",
+      "restore": "Restaurar",
+      "restoreItem": "Restaurar {{title}}",
+      "deleteItem": "Excluir {{title}} para sempre",
+      "more": "Mais para {{title}}",
+      "moreTooltip": "Mais ações",
+      "deleteForever": "Excluir para sempre",
+      "actionsHint": "Mostra Restaurar e Excluir",
+      "delete": "Excluir"
     },
-    "footer": "Items are deleted for good after {{days}} days. Restore puts a link back in its folder, or in Unsorted if the folder is gone.",
-    "swipeHint": "Swipe left to restore or delete for good. Long-press to select several.",
+    "footer": "Os itens são excluídos para sempre depois de {{days}} dias. Restaurar devolve um link à pasta dele, ou a Sem pasta se a pasta não existir mais.",
+    "swipeHint": "Deslize para a esquerda para restaurar ou excluir para sempre. Toque e segure para selecionar vários.",
     "emptyState": {
-      "title": "Trash is empty",
-      "text": "Deleted links and folders wait here for {{days}} days, so nothing is gone by accident."
+      "title": "A lixeira está vazia",
+      "text": "Links e pastas excluídos ficam aqui por {{days}} dias, então nada some por acidente."
     },
     "bar": {
-      "label": "Actions for selected items",
-      "restore": "Restore",
-      "deleteForever": "Delete forever",
-      "clear": "Clear selection"
+      "label": "Ações para os itens selecionados",
+      "restore": "Restaurar",
+      "deleteForever": "Excluir para sempre",
+      "clear": "Limpar seleção"
     },
     "emptyConfirm": {
-      "title": "Empty trash?",
-      "message": "{{items}} will be deleted for good. This can’t be undone.",
-      "messageFolder": "{{items}} will be deleted for good, including the folder “{{name}}” and its {{links}}. This can’t be undone.",
-      "messageFolders": "{{items}} will be deleted for good, including {{folders}} and their {{links}}. This can’t be undone.",
+      "title": "Esvaziar a lixeira?",
+      "message": "{{items}} serão excluídos para sempre. Isso não pode ser desfeito.",
+      "messageFolder": "{{items}} serão excluídos para sempre, incluindo a pasta “{{name}}” e seus {{links}}. Isso não pode ser desfeito.",
+      "messageFolders": "{{items}} serão excluídos para sempre, incluindo {{folders}} e seus {{links}}. Isso não pode ser desfeito.",
       "folders": {
-        "one": "{{count}} folder",
-        "other": "{{count}} folders"
+        "one": "{{count}} pasta",
+        "many": "{{count}} pastas",
+        "other": "{{count}} pastas"
       },
       "items": {
         "one": "{{count}} item",
-        "other": "{{count}} items"
+        "many": "{{count}} itens",
+        "other": "{{count}} itens"
       },
       "confirm": {
-        "one": "Delete {{count}} item",
-        "other": "Delete {{count}} items"
+        "one": "Excluir {{count}} item",
+        "many": "Excluir {{count}} itens",
+        "other": "Excluir {{count}} itens"
       },
-      "cancel": "Cancel",
-      "close": "Close"
+      "cancel": "Cancelar",
+      "close": "Fechar"
     },
     "deleteConfirm": {
-      "title": "Delete forever?",
-      "message": "“{{title}}” will be deleted for good. This can’t be undone.",
-      "messageFolder": "The folder “{{title}}” and its {{links}} will be deleted for good. This can’t be undone.",
-      "messageMany": "{{items}} will be deleted for good. This can’t be undone.",
-      "confirm": "Delete forever",
-      "cancel": "Cancel",
-      "close": "Close"
+      "title": "Excluir para sempre?",
+      "message": "“{{title}}” será excluído para sempre. Isso não pode ser desfeito.",
+      "messageFolder": "A pasta “{{title}}” e seus {{links}} serão excluídos para sempre. Isso não pode ser desfeito.",
+      "messageMany": "{{items}} serão excluídos para sempre. Isso não pode ser desfeito.",
+      "confirm": "Excluir para sempre",
+      "cancel": "Cancelar",
+      "close": "Fechar"
     },
     "toast": {
-      "restored": "Restored",
+      "restored": "Restaurado",
       "restoredMany": {
-        "one": "{{count}} item is back",
-        "other": "{{count}} items are back"
+        "one": "{{count}} item voltou",
+        "many": "{{count}} itens voltaram",
+        "other": "{{count}} itens voltaram"
       },
-      "restoreFailed": "Couldn't restore",
-      "restoreFailedDetail": "Nothing was changed.",
-      "restoreFull": "Couldn't restore",
-      "restoreFullDetail": "Your library is full. Delete something and try again.",
-      "deleted": "Deleted for good",
+      "restoreFailed": "Não foi possível restaurar",
+      "restoreFailedDetail": "Nada foi alterado.",
+      "restoreFull": "Não foi possível restaurar",
+      "restoreFullDetail": "Sua biblioteca está cheia. Exclua algo e tente de novo.",
+      "deleted": "Excluído para sempre",
       "deletedMany": {
-        "one": "{{count}} item deleted for good",
-        "other": "{{count}} items deleted for good"
+        "one": "{{count}} item excluído para sempre",
+        "many": "{{count}} itens excluídos para sempre",
+        "other": "{{count}} itens excluídos para sempre"
       },
-      "deleteFailed": "Couldn't delete",
-      "deleteFailedDetail": "It is back in Trash.",
-      "emptied": "Trash emptied",
-      "emptyFailed": "Couldn't empty Trash",
-      "emptyFailedDetail": "Nothing was deleted."
+      "deleteFailed": "Não foi possível excluir",
+      "deleteFailedDetail": "Ele voltou para a lixeira.",
+      "emptied": "Lixeira esvaziada",
+      "emptyFailed": "Não foi possível esvaziar a lixeira",
+      "emptyFailedDetail": "Nada foi excluído."
     },
-    "emptyShort": "Empty"
+    "emptyShort": "Esvaziar"
   },
   "pins": {
     "limit": {
-      "title": "Pinned is full",
-      "detail": "You can pin up to {{max}} folders and links. Unpin one first."
+      "title": "Fixados está cheio",
+      "detail": "Você pode fixar até {{max}} pastas e links. Desafixe um antes."
     },
     "pinFailed": {
-      "title": "Couldn't pin",
-      "detail": "Nothing was changed. Try again."
+      "title": "Não foi possível fixar",
+      "detail": "Nada foi alterado. Tente de novo."
     },
     "unpinFailed": {
-      "title": "Couldn't unpin",
-      "detail": "It is still pinned."
+      "title": "Não foi possível desafixar",
+      "detail": "Ele continua fixado."
     },
     "moveFailed": {
-      "title": "Couldn't change the order",
-      "detail": "The old order is back."
+      "title": "Não foi possível mudar a ordem",
+      "detail": "A ordem antiga voltou."
     },
     "pinnedToTopFailed": {
-      "title": "Couldn't change the pin",
-      "detail": "It is back as it was."
+      "title": "Não foi possível mudar a fixação",
+      "detail": "Ele voltou a ser como era."
     }
   },
   "views": {
-    "label": "Saved views",
-    "all": "All",
-    "add": "Save this view",
+    "label": "Visualizações salvas",
+    "all": "Todos",
+    "add": "Salvar esta visualização",
     "menu": {
-      "for": "Actions for {{name}}",
-      "rename": "Rename",
-      "moveLeft": "Move left",
-      "moveRight": "Move right",
-      "delete": "Delete view"
+      "for": "Ações para {{name}}",
+      "rename": "Renomear",
+      "moveLeft": "Mover para a esquerda",
+      "moveRight": "Mover para a direita",
+      "delete": "Excluir visualização"
     },
     "name": {
-      "label": "Name",
-      "placeholder": "To read",
-      "required": "Enter a name",
-      "tooLong": "Use at most {{max}} characters"
+      "label": "Nome",
+      "placeholder": "Para ler",
+      "required": "Digite um nome",
+      "tooLong": "Use no máximo {{max}} caracteres"
     },
     "dialog": {
-      "close": "Close",
-      "cancel": "Cancel"
+      "close": "Fechar",
+      "cancel": "Cancelar"
     },
     "create": {
-      "title": "Save this view",
-      "action": "Save view",
-      "saving": "Saving…",
-      "failed": "Couldn't save the view. Try again.",
-      "limit": "You already have the most views you can save. Delete one first.",
-      "missing": "The folder of this view is gone. Open another folder and try again."
+      "title": "Salvar esta visualização",
+      "action": "Salvar visualização",
+      "saving": "Salvando…",
+      "failed": "Não foi possível salvar a visualização. Tente de novo.",
+      "limit": "Você já tem o máximo de visualizações. Exclua uma antes.",
+      "missing": "A pasta desta visualização não existe mais. Abra outra pasta e tente de novo."
     },
     "created": {
-      "title": "View saved"
+      "title": "Visualização salva"
     },
     "rename": {
-      "title": "Rename view",
-      "action": "Rename",
-      "saving": "Renaming…"
+      "title": "Renomear visualização",
+      "action": "Renomear",
+      "saving": "Renomeando…"
     },
     "renameFailed": {
-      "title": "Couldn't rename the view"
+      "title": "Não foi possível renomear a visualização"
     },
     "deleteConfirm": {
-      "title": "Delete view {{name}}?",
-      "message": "Only the view goes. The links stay where they are.",
-      "confirm": "Delete view",
-      "cancel": "Cancel",
-      "close": "Close"
+      "title": "Excluir a visualização {{name}}?",
+      "message": "Só a visualização sai. Os links ficam onde estão.",
+      "confirm": "Excluir visualização",
+      "cancel": "Cancelar",
+      "close": "Fechar"
     },
     "deleted": {
-      "title": "View deleted"
+      "title": "Visualização excluída"
     },
     "deleteFailed": {
-      "title": "Couldn't delete the view"
+      "title": "Não foi possível excluir a visualização"
     },
     "moveFailed": {
-      "title": "Couldn't move the view"
+      "title": "Não foi possível mover a visualização"
     },
     "limit": {
-      "title": "Saved views are full",
-      "detail": "You can save up to {{max}} views. Delete one first."
+      "title": "As visualizações salvas estão cheias",
+      "detail": "Você pode salvar até {{max}} visualizações. Exclua uma antes."
     },
     "unavailable": {
-      "title": "This view is waiting for its folder",
-      "detail": "The folder of {{name}} is in Trash. Restore it to use the view."
+      "title": "Esta visualização está esperando a pasta dela",
+      "detail": "A pasta de {{name}} está na lixeira. Restaure-a para usar a visualização."
     }
   },
   "howItWorks": {
-    "menu": "How it works",
-    "title": "Shelfmark in 60 seconds",
-    "close": "Close",
-    "captions": "English",
-    "chaptersLabel": "Chapters",
-    "soon": "The video is on its way. Until then, the chapters show what it covers.",
+    "menu": "Como funciona",
+    "title": "Shelfmark em 60 segundos",
+    "close": "Fechar",
+    "captions": "Inglês",
+    "chaptersLabel": "Capítulos",
+    "soon": "O vídeo está a caminho. Enquanto isso, os capítulos mostram o que ele aborda.",
     "chapters": {
-      "save": "Save a link",
-      "organise": "Folders and tags",
-      "find": "Find it again"
+      "save": "Salvar um link",
+      "organise": "Pastas e tags",
+      "find": "Encontrar de novo"
     },
-    "emptyLink": "Watch how it works",
+    "emptyLink": "Veja como funciona",
     "card": {
-      "label": "How it works",
-      "title": "New here? Watch how it works",
-      "length": "1 minute",
-      "hide": "Hide"
+      "label": "Como funciona",
+      "title": "É novo por aqui? Veja como funciona",
+      "length": "1 minuto",
+      "hide": "Ocultar"
     }
   },
   "bulk": {
     "bar": {
       "label": {
-        "one": "Actions for {{count}} selected link",
-        "other": "Actions for {{count}} selected links"
+        "one": "Ações para {{count}} link selecionado",
+        "many": "Ações para {{count}} links selecionados",
+        "other": "Ações para {{count}} links selecionados"
       },
-      "move": "Move",
+      "move": "Mover",
       "tags": "Tags",
-      "favorite": "Favorite",
-      "openAll": "Open all",
-      "copy": "Copy links",
-      "share": "Share",
-      "delete": "Delete"
+      "favorite": "Favorito",
+      "openAll": "Abrir todos",
+      "copy": "Copiar links",
+      "share": "Compartilhar",
+      "delete": "Excluir"
     },
     "header": {
-      "label": "Selection",
+      "label": "Seleção",
       "selected": {
-        "one": "{{count}} selected",
-        "other": "{{count}} selected"
+        "one": "{{count}} selecionado",
+        "many": "{{count}} selecionados",
+        "other": "{{count}} selecionados"
       },
-      "selectAll": "Select all {{count}}",
-      "selectAllShort": "Select all",
+      "selectAll": "Selecionar todos os {{count}}",
+      "selectAllShort": "Selecionar tudo",
       "selectAllBox": {
-        "one": "Select all {{count}} link",
-        "other": "Select all {{count}} links"
+        "one": "Selecionar {{count}} link",
+        "many": "Selecionar todos os {{count}} links",
+        "other": "Selecionar todos os {{count}} links"
       },
       "shift": "Shift",
-      "rangeHint": "+ click selects a range",
+      "rangeHint": "+ clique seleciona um intervalo",
       "esc": "Esc",
-      "clearHint": "clears",
-      "done": "Done",
-      "cancel": "Cancel selection",
-      "longPressHint": "Long-press a link to start selecting, then tap others."
+      "clearHint": "limpa",
+      "done": "Concluído",
+      "cancel": "Cancelar seleção",
+      "longPressHint": "Toque e segure um link para começar a selecionar, depois toque nos outros."
     },
     "item": {
-      "select": "Select {{title}}"
+      "select": "Selecionar {{title}}"
     },
     "move": {
       "title": {
-        "one": "Move {{count}} link",
-        "other": "Move {{count}} links"
+        "one": "Mover {{count}} link",
+        "many": "Mover {{count}} links",
+        "other": "Mover {{count}} links"
       },
       "moved": {
-        "one": "{{count}} link moved to {{folder}}",
-        "other": "{{count}} links moved to {{folder}}"
+        "one": "{{count}} link movido para {{folder}}",
+        "many": "{{count}} links movidos para {{folder}}",
+        "other": "{{count}} links movidos para {{folder}}"
       },
-      "failed": "Couldn't move the links",
-      "failedDetail": "They are back where they were",
-      "undoFailed": "Couldn't move the links back"
+      "failed": "Não foi possível mover os links",
+      "failedDetail": "Eles voltaram para onde estavam",
+      "undoFailed": "Não foi possível devolver os links"
     },
     "tags": {
       "title": {
-        "one": "Tags for {{count}} link",
-        "other": "Tags for {{count}} links"
+        "one": "Tags de {{count}} link",
+        "many": "Tags de {{count}} links",
+        "other": "Tags de {{count}} links"
       },
-      "add": "Add to all",
-      "addHint": "Added to every selected link",
-      "remove": "Remove from all",
-      "removeHint": "Taken off every selected link; the tags themselves stay",
-      "removePlaceholder": "Pick a tag",
-      "onLinks": "on {{count}} of {{total}}",
-      "apply": "Apply",
-      "cancel": "Cancel",
-      "close": "Close",
+      "add": "Adicionar a todos",
+      "addHint": "Adicionada a cada link selecionado",
+      "remove": "Remover de todos",
+      "removeHint": "Removida de cada link selecionado; as tags continuam existindo",
+      "removePlaceholder": "Escolha uma tag",
+      "onLinks": "em {{count}} de {{total}}",
+      "apply": "Aplicar",
+      "cancel": "Cancelar",
+      "close": "Fechar",
       "done": {
-        "one": "Tags updated on {{count}} link",
-        "other": "Tags updated on {{count}} links"
+        "one": "Tags atualizadas em {{count}} link",
+        "many": "Tags atualizadas em {{count}} links",
+        "other": "Tags atualizadas em {{count}} links"
       },
-      "failed": "Couldn't change the tags",
-      "failedDetail": "Nothing was changed",
-      "tooMany": "A link can have at most {{max}} tags. Nothing was changed."
+      "failed": "Não foi possível mudar as tags",
+      "failedDetail": "Nada foi alterado",
+      "tooMany": "Um link pode ter no máximo {{max}} tags. Nada foi alterado."
     },
     "favorite": {
       "on": {
-        "one": "{{count}} link added to favorites",
-        "other": "{{count}} links added to favorites"
+        "one": "{{count}} link adicionado aos favoritos",
+        "many": "{{count}} links adicionados aos favoritos",
+        "other": "{{count}} links adicionados aos favoritos"
       },
       "off": {
-        "one": "{{count}} link removed from favorites",
-        "other": "{{count}} links removed from favorites"
+        "one": "{{count}} link removido dos favoritos",
+        "many": "{{count}} links removidos dos favoritos",
+        "other": "{{count}} links removidos dos favoritos"
       },
-      "failed": "Couldn't change favorites",
-      "failedDetail": "Nothing was changed"
+      "failed": "Não foi possível mudar os favoritos",
+      "failedDetail": "Nada foi alterado"
     },
     "open": {
-      "confirmTitle": "Open {{count}} links?",
-      "confirmMessage": "Each link opens in a new tab.",
-      "confirm": "Open all",
-      "cancel": "Cancel",
-      "close": "Close",
-      "blocked": "The browser blocked {{blocked}} of {{count}} tabs",
-      "blockedDetail": "Allow pop-ups for this site to open them all"
+      "confirmTitle": "Abrir {{count}} links?",
+      "confirmMessage": "Cada link abre em uma nova aba.",
+      "confirm": "Abrir todos",
+      "cancel": "Cancelar",
+      "close": "Fechar",
+      "blocked": "O navegador bloqueou {{blocked}} de {{count}} abas",
+      "blockedDetail": "Permita pop-ups neste site para abrir todas"
     },
     "copy": {
       "done": {
-        "one": "{{count}} link copied",
-        "other": "{{count}} links copied"
+        "one": "{{count}} link copiado",
+        "many": "{{count}} links copiados",
+        "other": "{{count}} links copiados"
       },
-      "failed": "Couldn't copy the links"
+      "failed": "Não foi possível copiar os links"
     },
     "share": {
-      "failed": "Couldn't share the links"
+      "failed": "Não foi possível compartilhar os links"
     },
     "delete": {
       "title": {
-        "one": "Move {{count}} link to Trash?",
-        "other": "Move {{count}} links to Trash?"
+        "one": "Mover {{count}} link para a lixeira?",
+        "many": "Mover {{count}} links para a lixeira?",
+        "other": "Mover {{count}} links para a lixeira?"
       },
-      "message": "They stay in Trash for {{days}} days, then they are deleted for good.",
-      "confirm": "Move to Trash",
-      "cancel": "Cancel",
-      "close": "Close",
+      "message": "Eles ficam na lixeira por {{days}} dias e depois são excluídos para sempre.",
+      "confirm": "Mover para a lixeira",
+      "cancel": "Cancelar",
+      "close": "Fechar",
       "done": {
-        "one": "{{count}} link moved to Trash",
-        "other": "{{count}} links moved to Trash"
+        "one": "{{count}} link movido para a lixeira",
+        "many": "{{count}} links movidos para a lixeira",
+        "other": "{{count}} links movidos para a lixeira"
       },
-      "failed": "Couldn't delete the links",
-      "failedDetail": "They are back in the list",
-      "undoFailed": "Couldn't restore the links"
+      "failed": "Não foi possível excluir os links",
+      "failedDetail": "Eles voltaram para a lista",
+      "undoFailed": "Não foi possível restaurar os links"
     }
   }
 }

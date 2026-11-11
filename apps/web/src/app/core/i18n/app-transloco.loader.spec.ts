@@ -18,8 +18,20 @@ describe('AppTranslocoLoader', () => {
     }
   });
 
+  it.each([
+    [APP_LANG.Fr, 'Collez un lien.'],
+    [APP_LANG.De, 'Link einfügen.'],
+    [APP_LANG.It, 'Incolla un link.'],
+    [APP_LANG.Es, 'Pega un enlace.'],
+    [APP_LANG.Pt, 'Cole um link.'],
+  ])('loads the %s translations lazily', async (lang, line1) => {
+    const translation = await loader.getTranslation(lang);
+
+    expect(translation).toMatchObject({ landing: { hero: { line1 } } });
+  });
+
   it('rejects an unsupported language', async () => {
-    await expect(loader.getTranslation('de')).rejects.toThrow('Unsupported language: de');
+    await expect(loader.getTranslation('uk')).rejects.toThrow('Unsupported language: uk');
   });
 
   it('does not resolve prototype keys as languages', async () => {

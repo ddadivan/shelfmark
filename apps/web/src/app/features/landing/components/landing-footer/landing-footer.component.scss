@@ -31,3 +31,12 @@
 .landing-footer__hint {
   @include visually-hidden;
 }
+
+// Language switcher (#274): a row of the six languages that wraps on a phone.
+.landing-footer__languages {
+  display: flex;
+  flex-wrap: wrap;
+  flex-basis: 100%;
+  gap: var(--space-1);
+  margin-inline-start: calc(-1 * var(--space-2));
+}

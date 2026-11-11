@@ -111,7 +111,10 @@ describe('AppearancePage', () => {
     expect(page.textContent).toContain('Light and Dark are tuned by us');
     expect(page.textContent).toContain('Want other colours or corners? Choose Custom.');
     expect(page.textContent).toContain('Animations');
-    expect(page.textContent).toContain('English');
+    expect(page.textContent).toContain('Interface language, date format and spell-check');
+    expect(page.querySelector('a[href="/settings/language"]')?.textContent).toContain(
+      'Change language',
+    );
     expect(page.querySelector('ui-theme-preview')?.getAttribute('aria-label')).toBe(
       'Preview of your settings',
     );

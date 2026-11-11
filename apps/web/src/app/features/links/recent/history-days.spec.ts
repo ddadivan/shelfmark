@@ -48,6 +48,23 @@ describe('groupByDay', () => {
     expect(days.map((day) => day.kind)).toEqual([HISTORY_DAY_KIND.Today]);
   });
 
+  it('makes the week the calendar week when the week start is given', () => {
+    // NOW is a Tuesday: a Monday week started yesterday, a Sunday week the day before.
+    const links = [
+      opened('sun', new Date(2026, 10, 8, 12, 0)),
+      opened('sat', new Date(2026, 10, 7, 12, 0)),
+    ];
+
+    expect(groupByDay(links, NOW, 1).map((day) => day.kind)).toEqual([
+      HISTORY_DAY_KIND.Date,
+      HISTORY_DAY_KIND.Date,
+    ]);
+    expect(groupByDay(links, NOW, 7).map((day) => day.kind)).toEqual([
+      HISTORY_DAY_KIND.Week,
+      HISTORY_DAY_KIND.Date,
+    ]);
+  });
+
   it('is empty for no links', () => {
     expect(groupByDay([], NOW)).toEqual([]);
   });

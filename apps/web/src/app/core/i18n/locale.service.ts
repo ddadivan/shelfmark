@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { DestroyRef, Service, computed, effect, inject, signal } from '@angular/core';
+import { DestroyRef, Injector, Service, computed, effect, inject, signal } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import {
   DATE_FORMAT,
@@ -40,7 +40,9 @@ function toDate(value: DateInput): Date {
 export class LocaleService {
   private readonly document = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly transloco = inject(TranslocoService);
+  private readonly injector = inject(Injector);
+  /** Resolved on the first switch only: code that just reads the settings needs no Transloco. */
+  private readonly transloco = (): TranslocoService => this.injector.get(TranslocoService);
 
   private readonly settingsState = signal<LanguageSettings>({ ...LANGUAGE_SETTINGS_DEFAULT });
   private readonly browserLangs = signal<readonly string[]>(this.readBrowserLangs());
@@ -213,16 +215,16 @@ export class LocaleService {
     const id = ++this.switches;
     let target = lang;
     try {
-      await firstValueFrom(this.transloco.load(lang));
+      await firstValueFrom(this.transloco().load(lang));
     } catch {
       // The chunk did not load (offline, a new deploy): stay readable in English.
       target = APP_LANG.En;
-      await firstValueFrom(this.transloco.load(target)).catch(() => undefined);
+      await firstValueFrom(this.transloco().load(target)).catch(() => undefined);
     }
     if (id !== this.switches) {
       return; // A later switch won.
     }
-    this.transloco.setActiveLang(target);
+    this.transloco().setActiveLang(target);
     setActiveLang(target);
   }
 
