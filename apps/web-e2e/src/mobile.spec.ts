@@ -277,6 +277,8 @@ test.describe('mobile layout (mock API)', () => {
 
     const undo = page.getByRole('button', { name: 'Undo' });
     await expect(undo).toBeVisible();
+    // Measure after the toast's rise-in animation, not halfway through it.
+    await settled(page);
     const toast = await page.locator('ui-toast').first().boundingBox();
     const bar = await tabBar(page).boundingBox();
     // 12px above the bar (no safe area in the test browser).
