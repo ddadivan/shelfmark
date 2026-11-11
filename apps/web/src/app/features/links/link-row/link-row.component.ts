@@ -49,6 +49,8 @@ export class LinkRowComponent {
   readonly openRequested = output<void>();
   readonly favoriteToggled = output<void>();
   readonly editRequested = output<void>();
+  /** "Move to folder…" from the actions menu. */
+  readonly moveRequested = output<void>();
   readonly deleteRequested = output<void>();
 
   protected readonly href = computed(() => safeHref(this.link().url));

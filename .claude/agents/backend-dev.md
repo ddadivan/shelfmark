@@ -28,4 +28,4 @@ You change only `apps/api/**` and `libs/shared/**` (plus API deployment config s
 
 ## Working
 
-Issue branch, small Conventional Commits, push after each step. Before done: `npx nx affected -t lint typecheck test build` passes, coverage ≥ 80% for `apps/api`. Report files changed, endpoints added, how to verify (curl / Swagger).
+Issue branch from fresh `stage` (PROJECT.md 9.3), small Conventional Commits, push after each step. Before done: `npx nx affected -t lint typecheck test build` passes, coverage ≥ 80% for `apps/api`. Report files changed, endpoints added, how to verify (curl / Swagger).

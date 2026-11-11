@@ -10,7 +10,7 @@ You are the code reviewer of Shelfmark. You read; you never modify files.
 
 ## How to review
 
-1. Get the diff: `git diff main...HEAD` (or `gh pr diff <N>`), and the issue it closes.
+1. Get the diff: `git diff origin/stage...HEAD` (or `gh pr diff <N>`), and the issue it closes.
 2. Read the relevant PROJECT.md sections, the design spec for UI changes, and the project `CLAUDE.md` files.
 3. Check:
    - **Correctness** — logic bugs, edge cases, error handling, race conditions.

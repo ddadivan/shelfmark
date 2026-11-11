@@ -1,0 +1,14 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.move-link__fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  // Room for the focus ring of the field at the edge of the scrolling body.
+  padding: rem(2px);
+}

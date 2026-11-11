@@ -48,7 +48,6 @@ export const AuthStore = signalStore(
   withMethods(
     (
       store,
-      api = inject(AUTH_API),
       router = inject(Router),
       links = inject(LinksStore),
       folders = inject(FoldersStore),
@@ -56,6 +55,8 @@ export const AuthStore = signalStore(
       injector = inject(Injector),
       scope = inject(SessionScope),
     ) => {
+      // Resolved on use: pages that only read `user` (landing, library) need no auth API in specs.
+      const api = () => injector.get(AUTH_API);
       let loading: Promise<void> | null = null;
 
       /**
@@ -125,7 +126,7 @@ export const AuthStore = signalStore(
         // never longer than the timeout.
         await flushWithin(SIGN_OUT_FLUSH_TIMEOUT_MS);
         try {
-          await api.signOut();
+          await api().signOut();
         } catch {
           injector.get(ToastService).show({
             kind: TOAST_KIND.Danger,
@@ -152,7 +153,7 @@ export const AuthStore = signalStore(
           }
           // A failed request leaves `loaded` false and clears `loading`, so the next guard call
           // retries; the current navigation is treated as a guest (fail-closed).
-          loading ??= api
+          loading ??= api()
             .getSession()
             .then(
               (user) => {
@@ -165,8 +166,8 @@ export const AuthStore = signalStore(
           return loading;
         },
         signIn: (provider: AuthProvider, returnUrl: string | null = null) =>
-          run(provider, () => api.signIn(provider, returnUrl)),
-        signInDemo: () => run(AUTH_DEMO, () => api.signInDemo()),
+          run(provider, () => api().signIn(provider, returnUrl)),
+        signInDemo: () => run(AUTH_DEMO, () => api().signInDemo()),
         signOut,
         /**
          * The demo ran out: the server session is probably gone already, so a failing sign-out
@@ -174,7 +175,7 @@ export const AuthStore = signalStore(
          */
         async expireDemo(): Promise<void> {
           try {
-            await api.signOut();
+            await api().signOut();
           } catch {
             // Expected when the session expired on the server; nothing to tell the user.
           }
