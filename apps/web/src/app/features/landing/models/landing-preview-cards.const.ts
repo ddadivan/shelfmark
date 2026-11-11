@@ -6,6 +6,6 @@ import type { LandingPreviewCard } from './landing-preview-card.interface';
  */
 export const LANDING_PREVIEW_CARDS: readonly LandingPreviewCard[] = [
   { id: 'grid', host: 'web.dev', daysAgo: 2, tone: 0 },
-  { id: 'design', host: 'nngroup.com', daysAgo: 8, tone: 1 },
+  { id: 'design', host: 'vox.com', daysAgo: 8, tone: 1 },
   { id: 'slow', host: 'wired.com', daysAgo: 21, tone: 2 },
 ];
