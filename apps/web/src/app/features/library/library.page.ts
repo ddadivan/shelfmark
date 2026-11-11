@@ -1,3 +1,4 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { CdkDrag, type CdkDragMove, CdkDragPlaceholder, CdkDropList } from '@angular/cdk/drag-drop';
 import { DOCUMENT } from '@angular/common';
 import {
@@ -68,6 +69,8 @@ import { SavedViewChipsComponent } from '../views/saved-view-chips/saved-view-ch
 import { sameFilter } from '../links/links-filter';
 import { parseSearchQuery } from '../links/search-query';
 import { InViewDirective } from '../links/in-view/in-view.directive';
+import { parsePastedLinks } from '../links/paste-many/parse-pasted-links';
+import { isEditableTarget } from '../shortcuts/is-editable-target';
 import { pinnedFirst } from '../links/pinned-first';
 import { BulkLinkActionsService } from '../links/bulk/bulk-link-actions.service';
 import { BULK_ACTION } from '../links/bulk/models/bulk-action.const';
@@ -105,6 +108,8 @@ import { VIEW_OPTION_KEYS } from './models/view-option-keys.const';
 
 /** Number of placeholders shown while the first page loads. */
 const SKELETON_COUNT = 8;
+/** Beat between two cards of a paste of many landing in the feed. */
+const LAND_STAGGER_MS = 50;
 
 interface LastShown {
   items: readonly LinkResponse[];
@@ -147,7 +152,10 @@ interface LastShown {
   templateUrl: './library.page.html',
   styleUrl: './library.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '(document:keydown)': 'onKeydown($event)' },
+  host: {
+    '(document:keydown)': 'onKeydown($event)',
+    '(document:paste)': 'onPaste($event)',
+  },
 })
 export default class LibraryPage {
   protected readonly store = inject(LinksStore);
@@ -170,6 +178,7 @@ export default class LibraryPage {
   private readonly title = inject(Title);
   private readonly doc = inject(DOCUMENT);
   private readonly injector = inject(Injector);
+  private readonly cdkDialogs = inject(Dialog);
 
   /** From the route data. */
   readonly scope = input<LinksScope>(LINKS_SCOPE.All);
@@ -547,6 +556,33 @@ export default class LibraryPage {
     // The sidebar loads the folders too (the phone has none yet); the call is shared.
     void this.folders.load();
     this.store.setFilter(this.filter);
+  }
+
+  /** The stagger of a link that is landing: each card of a paste lands a beat after the one before. */
+  protected landDelay(id: string): string | null {
+    const position = this.store.landed()[id];
+    return position === undefined || position === 0 ? null : `${position * LAND_STAGGER_MS}ms`;
+  }
+
+  /**
+   * ⌘V / Ctrl+V in the library, outside any field and while no dialog is open: text with a link
+   * opens Add link with it (one link fills the address, several turn the dialog into the list).
+   * Text without a link is left alone.
+   */
+  protected onPaste(event: ClipboardEvent): void {
+    if (
+      event.defaultPrevented ||
+      isEditableTarget(event.target) ||
+      this.cdkDialogs.openDialogs.length > 0
+    ) {
+      return;
+    }
+    const text = event.clipboardData?.getData('text/plain') ?? '';
+    if (parsePastedLinks(text).links.length === 0) {
+      return;
+    }
+    event.preventDefault();
+    void this.actions.addLink({ ...this.addLinkData(), text });
   }
 
   /** Hit-tests the folders under the pointer while a link is dragged. */

@@ -188,6 +188,18 @@
   pointer-events: none;
 }
 
+// A link that was just saved (one, or a paste of many staggered by `--ui-land-delay`) lands at
+// the top: it drops in and a sage ring fades around it (`landed`; a fade under reduced motion).
+.library__landed {
+  border-radius: var(--radius-lg);
+
+  @include landed;
+}
+
+.library__rows > .library__landed {
+  border-radius: var(--radius-md);
+}
+
 .library__rows {
   display: flex;
   flex-direction: column;
