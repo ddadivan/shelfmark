@@ -338,6 +338,24 @@ describe('PasteManyListComponent', () => {
     expect(outcome?.action === ADD_LINK_ACTION.SavedMany && outcome.links).toHaveLength(3);
   });
 
+  it('cuts a long preview title to the API limit without splitting an emoji', async () => {
+    const long = `${'a'.repeat(299)}😀 and more`;
+    const api = fakeApi((url) => {
+      const response = preview(url);
+      return of({ ...response, preview: { ...response.preview, title: long } });
+    });
+    const { result } = await setup(api, { text: 'https://a.example/1\nhttps://b.example/2' });
+    await until(() => {
+      expect(api.preview).toHaveBeenCalledTimes(2);
+      expect(heading()).toBe('Add 2 links');
+    });
+
+    button('Save 2 links').click();
+    await result;
+
+    expect(api.createBatch.mock.calls[0][0].items[0].title).toBe('a'.repeat(299));
+  });
+
   it('sends a link without a loaded preview with its URL only', async () => {
     const api = fakeApi((url) =>
       url.includes('dev.to') ? throwError(() => new Error('down')) : of(preview(url)),

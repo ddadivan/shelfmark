@@ -60,6 +60,21 @@ import type { PasteManyFormModel } from './models/paste-many-form-model.interfac
 import type { PasteRow } from './models/paste-row.interface';
 
 /**
+ * A preview title cut to `LINK_LIMIT.TitleMax` UTF-16 units (what the API's `MaxLength` counts),
+ * never inside a surrogate pair, then trimmed.
+ */
+function fitTitle(title: string): string {
+  let fitted = '';
+  for (const char of title.trim()) {
+    if (fitted.length + char.length > LINK_LIMIT.TitleMax) {
+      break;
+    }
+    fitted += char;
+  }
+  return fitted.trim();
+}
+
+/**
  * The add-link dialog after a paste with several links (screen `PasteMany`): one row per link,
  * selected by default, with its preview loaded in the background (a few at a time through the
  * preview endpoint); links that are already saved come unchecked with an "Already saved" badge.
@@ -286,7 +301,7 @@ export class PasteManyListComponent {
   private item(row: PasteRow): CreateLinksBatchItem {
     const response = this.previews().get(row.url);
     const preview = response?.fetched ? response.preview : null;
-    const title = preview ? [...preview.title.trim()].slice(0, LINK_LIMIT.TitleMax).join('') : '';
+    const title = preview ? fitTitle(preview.title) : '';
     return {
       url: row.url,
       idempotencyKey: row.key,

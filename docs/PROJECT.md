@@ -147,6 +147,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
    - An invalid URL is not saved; an error is shown.
    - Folder, tags and note can be set right away; all three fields are optional.
    - If a folder is open, it is pre-filled in the form by default.
+   - **Paste several links** (stage 2, #265, screen `PasteMany`): text with more than one link pasted into the Link field, or pasted with ⌘V / Ctrl+V anywhere in the library outside a field, turns Add link into a list. Links are read one per line or from inside any text; a bare domain with a path gets `https://`; the same link twice counts once; lines without a link are listed as "Not a link, skipped"; at most 100 links, the rest is left out with a note that bigger lists go to Import as text. Each row is checked by default and loads its preview (a few at a time through the preview endpoint); a link that is already saved comes unchecked with an "Already saved" badge; rows can be unchecked or removed; "Folder for all" and "Tags for all" apply to every link. "Save N links" saves them in one request; they land at the top of the feed and a toast says "N links saved to <folder>" with "Titles and previews are still loading" and Undo (8 s). Over the link limit, the dialog says how many more fit.
 4. **Automatic preview.** As a user, I want the title, site icon and preview image to be fetched automatically.
    - After pasting a URL the fields are filled automatically; the user can change them.
    - If the preview could not be fetched (site unavailable, error), the link is saved with the URL instead of the title and a placeholder icon.
@@ -540,6 +541,8 @@ All routes except `/api/auth/*` require a session and work only with the current
 | DELETE | `/api/links/recent` | Clear the whole history of the user (all own links' `lastOpenedAt` to null); 204 |
 | GET | `/api/links/:id` | One link |
 | POST | `/api/links` | Create: `url`, `title?`, `note?`, `folderId?`, `tags?` (names; new tags are created automatically) |
+| POST | `/api/links/batch` | Paste many (#265): up to 100 `items` (`url`, `title?`, `idempotencyKey`, `faviconUrl?`, `imageUrl?`) with `folderId?` and `tags?` for all. One transaction under the ADR 0033 lock order, per-item idempotency keys (a replayed key returns its link; 200 when every key was replayed, else 201), the per-user link cap checked for the whole batch (409 whose message says how many more fit), a stricter rate limit (5 per minute). It fetches nothing: images, and the page title of links sent without one, come from the lazy capture (ADR 0027). Items whose normalised URL is too long or repeats an earlier item are skipped and listed in `errors` |
+| POST | `/api/links/batch/delete` | Undo of a batch: up to 100 `ids`; foreign and missing ids are ignored; answers `{ deleted }` (rate limit 10 per minute) |
 | PATCH | `/api/links/:id` | Change any fields, including `isFavorite` and `folderId` |
 | POST | `/api/links/:id/open` | Record an open (updates `lastOpenedAt`) |
 | POST | `/api/links/:id/images/capture` | Re-capture favicon and preview image of a link whose URL changed (pending marker `?v=pending`); claims atomically with a 1 h cooldown, always 200 with the link, 404 for a foreign or missing one |

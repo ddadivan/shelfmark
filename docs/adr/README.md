@@ -59,3 +59,4 @@ Routine features, bug fixes and choices already fully covered by an existing ADR
 | [0033](0033-links-search-cursor-idempotency.md) | Links API: escaped multi-word search, keyset cursor, idempotent create, global lock order (folders before tags) | Proposed | 2026-11-07 |
 | [0034](0034-demo-session-and-cleanup-cron.md) | Demo sign-in: server-only session plugin, 24h expiry in four places, Postgres quota and cap, cron GET exception | Proposed | 2026-11-08 |
 | [0035](0035-stage-integration-branch-release-flow.md) | `stage` integration branch, release PR `stage → main` (merge commit), hotfix flow, no staging environment, To release column | Accepted | 2026-11-10 |
+| [0039](0039-paste-many-batch-create.md) | Paste many: one batch create (lock order, cap for the whole batch, per-item keys) without page fetches, previews loaded by the client, batch delete for Undo | Proposed | 2026-11-11 |
