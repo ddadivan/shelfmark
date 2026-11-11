@@ -1,6 +1,8 @@
 import { inject, Service } from '@angular/core';
 import {
+  LINK_BATCH_ERROR_CODE,
   LINK_IMAGE_PENDING_VERSION,
+  LINK_LIMIT,
   LINK_SORT_FIELD,
   normalizeUrl,
   PAGE_LIMIT,
@@ -8,6 +10,10 @@ import {
   SORT_ORDER,
   type CaptureLinkImagesResponse,
   type CreateLinkRequest,
+  type CreateLinksBatchRequest,
+  type CreateLinksBatchResponse,
+  type DeleteLinksBatchResponse,
+  type LinkBatchItemError,
   type LinkPreviewResponse,
   type LinkResponse,
   type ListLinksQuery,
@@ -44,6 +50,8 @@ export class MockLinksApi implements LinksApi {
   private readonly created = new Map<string, LinkResponse>();
   /** Ids whose images were "captured" by `captureImages`. */
   private readonly captured = new Set<string>();
+  /** Ids saved by `createBatch` whose capture has not run yet (pending images, like the server). */
+  private readonly pending = new Set<string>();
 
   private get links(): LinkResponse[] {
     return this.data.links;
@@ -128,7 +136,8 @@ export class MockLinksApi implements LinksApi {
         .map((link) =>
           this.withImages(
             link,
-            scenario === MOCK_LINKS_SCENARIO.PendingImages && link.id === first,
+            this.pending.has(link.id) ||
+              (scenario === MOCK_LINKS_SCENARIO.PendingImages && link.id === first),
           ),
         );
       const next = offset + limit;
@@ -233,7 +242,94 @@ export class MockLinksApi implements LinksApi {
         return throwError(() => new Error('Mock: capture failed'));
       }
       this.captured.add(id);
+      this.pending.delete(id);
+      // Like the server: a link saved without a title gets the page title from this page load.
+      if (current.title === current.url) {
+        const titled = { ...current, title: `Page on ${displayHost(current.url)}` };
+        this.links = this.links.map((link) => (link.id === id ? titled : link));
+        return of(this.withImages(titled, false));
+      }
       return of(this.withImages(current, false));
+    }).pipe(delay(MOCK_LATENCY_MS.Create));
+  }
+
+  /**
+   * Mirrors `POST /api/links/batch`: replay by item key, a URL repeated within the batch or one
+   * that is too long is skipped, the links are pending until `captureImages` ran. A batch with a
+   * `save-fails.example` link fails as a whole.
+   */
+  createBatch(request: CreateLinksBatchRequest): Observable<CreateLinksBatchResponse> {
+    return defer(() => {
+      if (request.items.some((item) => displayHost(item.url) === MOCK_HOST.SaveFails)) {
+        return throwError(() => new Error('Mock: save failed'));
+      }
+      const links: LinkResponse[] = [];
+      const errors: LinkBatchItemError[] = [];
+      const seen = new Set<string>();
+      const fresh: LinkResponse[] = [];
+      const now = Date.now();
+      request.items.forEach((item, index) => {
+        const normalized = normalizeUrl(item.url);
+        if (normalized.length > LINK_LIMIT.UrlMax) {
+          errors.push({ index, url: item.url, code: LINK_BATCH_ERROR_CODE.UrlTooLong });
+          return;
+        }
+        if (seen.has(normalized)) {
+          errors.push({ index, url: item.url, code: LINK_BATCH_ERROR_CODE.DuplicateInBatch });
+          return;
+        }
+        seen.add(normalized);
+        const replay = this.created.get(item.idempotencyKey);
+        if (replay) {
+          links.push({ ...replay });
+          return;
+        }
+        // The first pasted link is the newest, as on the server.
+        const at = new Date(now - fresh.length).toISOString();
+        const link: LinkResponse = {
+          id: globalThis.crypto.randomUUID(),
+          folderId: request.folderId ?? null,
+          url: item.url,
+          title: item.title ?? item.url,
+          note: null,
+          faviconUrl: null,
+          imageUrl: null,
+          isFavorite: false,
+          lastOpenedAt: null,
+          tags: request.tags ?? [],
+          createdAt: at,
+          updatedAt: at,
+        };
+        this.created.set(item.idempotencyKey, link);
+        this.pending.add(link.id);
+        fresh.push(link);
+        links.push(link);
+      });
+      this.links = [...fresh, ...this.links];
+      this.data.ensureTags(request.tags ?? []);
+      return of<CreateLinksBatchResponse>({
+        links: links.map((link) => this.withImages(link, this.pending.has(link.id))),
+        errors,
+      });
+    }).pipe(delay(MOCK_LATENCY_MS.Create));
+  }
+
+  removeBatch(ids: readonly string[]): Observable<DeleteLinksBatchResponse> {
+    return defer(() => {
+      const wanted = new Set(ids);
+      if (
+        this.links.some(
+          (link) => wanted.has(link.id) && displayHost(link.url) === MOCK_HOST.DeleteFails,
+        )
+      ) {
+        return throwError(() => new Error('Mock: delete failed'));
+      }
+      const before = this.links.length;
+      this.links = this.links.filter((link) => !wanted.has(link.id));
+      for (const id of ids) {
+        this.pending.delete(id);
+      }
+      return of<DeleteLinksBatchResponse>({ deleted: before - this.links.length });
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
 

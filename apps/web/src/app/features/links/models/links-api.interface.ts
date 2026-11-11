@@ -2,6 +2,9 @@ import type { Observable } from 'rxjs';
 import type {
   CaptureLinkImagesResponse,
   CreateLinkRequest,
+  CreateLinksBatchRequest,
+  CreateLinksBatchResponse,
+  DeleteLinksBatchResponse,
   GetLinkResponse,
   LinkPreviewResponse,
   LinkResponse,
@@ -43,4 +46,11 @@ export interface LinksApi {
    * (its image paths carry the pending marker). Answers with the link as it is afterwards.
    */
   captureImages(id: string): Observable<CaptureLinkImagesResponse>;
+  /**
+   * `POST /api/links/batch`: saves several links in one request (paste many). Answers the saved
+   * links in request order (created or replayed by key) and the skipped items.
+   */
+  createBatch(request: CreateLinksBatchRequest): Observable<CreateLinksBatchResponse>;
+  /** `POST /api/links/batch/delete`: deletes several of the user's links (Undo of a batch). */
+  removeBatch(ids: readonly string[]): Observable<DeleteLinksBatchResponse>;
 }
