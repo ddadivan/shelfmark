@@ -45,6 +45,22 @@
   border-radius: var(--radius-sm);
 }
 
+.ui-theme-preview__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ui-theme-preview__count {
+  flex: none;
+  color: var(--text-muted);
+}
+
+.ui-theme-preview__row--recent {
+  color: var(--text-muted);
+}
+
 .ui-theme-preview__row--active {
   font-weight: 600;
   color: var(--accent-text);
@@ -67,7 +83,7 @@
   display: grid;
   flex: 1;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-3);
+  gap: var(--density-feed-gap);
   align-content: start;
   min-width: 0;
 }
@@ -75,9 +91,9 @@
 .ui-theme-preview__card {
   display: flex;
   flex-direction: column;
-  gap: rem(4px);
+  gap: var(--density-card-gap);
   min-width: 0;
-  padding: var(--space-2);
+  padding: var(--density-card-padding);
   background: var(--surface);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-card);
@@ -91,6 +107,25 @@
 
 .ui-theme-preview__card--alt .ui-theme-preview__media {
   background: var(--surface-pressed);
+}
+
+.ui-theme-preview__note {
+  @include type(caption);
+  @include line-clamp(2);
+
+  color: var(--text-muted);
+}
+
+// Settings › Appearance › Cards (#285): the same options as the real cards.
+:host-context([data-card-preview='small']) .ui-theme-preview__media {
+  block-size: rem(24px);
+}
+
+:host-context([data-card-preview='off']) .ui-theme-preview__media,
+:host-context([data-card-site='off']) .ui-theme-preview__site,
+:host-context([data-card-notes='off']) .ui-theme-preview__note,
+:host-context([data-card-tags='off']) .ui-theme-preview__tag {
+  display: none;
 }
 
 .ui-theme-preview__site {

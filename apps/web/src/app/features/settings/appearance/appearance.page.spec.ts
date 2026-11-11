@@ -8,7 +8,17 @@ import {
   type UserSettingsResponse,
 } from '@shelfmark/contracts';
 import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
-import { CUSTOM_THEME_ATTRIBUTE, THEME_ATTRIBUTE, THEME_CUSTOM, ToastService } from '@shelfmark/ui';
+import {
+  CUSTOM_THEME_ATTRIBUTE,
+  DialogService,
+  LAYOUT_ATTRIBUTE,
+  LAYOUT_OFF,
+  THEME_ATTRIBUTE,
+  THEME_CUSTOM,
+  ToastService,
+} from '@shelfmark/ui';
+import { LinksStore } from '../../../stores/links.store';
+import { LAYOUT_STORAGE_KEY } from '../../../core/theme/models/layout-storage-key.const';
 import { of, throwError } from 'rxjs';
 import { axeViolations } from '../../../../testing/axe';
 import { setupSettingsPage } from '../../../../testing/settings-page-testbed';
@@ -76,13 +86,21 @@ describe('AppearancePage', () => {
   const root = document.documentElement;
 
   afterEach(() => {
-    for (const key of [THEME_STORAGE_KEY, CUSTOM_THEME_STORAGE_KEY, MOTION_STORAGE_KEY]) {
+    for (const key of [
+      THEME_STORAGE_KEY,
+      CUSTOM_THEME_STORAGE_KEY,
+      MOTION_STORAGE_KEY,
+      LAYOUT_STORAGE_KEY,
+    ]) {
       localStorage.removeItem(key);
     }
     for (const name of Object.values(CUSTOM_THEME_ATTRIBUTE)) {
       root.removeAttribute(name);
     }
     root.removeAttribute('data-motion');
+    for (const name of Object.values(LAYOUT_ATTRIBUTE)) {
+      root.removeAttribute(name);
+    }
   });
 
   it('shows the theme choice, animations, the preview and the language', async () => {
@@ -99,8 +117,10 @@ describe('AppearancePage', () => {
     );
     // The custom options appear only for Custom.
     expect(page.textContent).not.toContain('Start from');
-    // Not in this issue (#285).
-    expect(page.textContent).not.toMatch(/text size|density|font/i);
+    // The extras of #285.
+    for (const title of ['Text and layout', 'Cards', 'Sidebar and motion']) {
+      expect(page.textContent).toContain(title);
+    }
   });
 
   it('applies and saves a fixed theme on the account', async () => {
@@ -197,6 +217,123 @@ describe('AppearancePage', () => {
     }
     page['setBase']('light');
     expect(settingsApi.update).not.toHaveBeenCalled();
+  });
+
+  describe('text, layout, cards and sidebar (#285)', () => {
+    function switchNamed(page: HTMLElement, name: string): HTMLButtonElement {
+      const found = page.querySelector<HTMLButtonElement>(
+        `button[role="switch"][aria-label="${name}"]`,
+      );
+      if (!found) {
+        throw new Error(`No switch "${name}"`);
+      }
+      return found;
+    }
+
+    it('sets text size, font, density and the preview image on <html> and the account', async () => {
+      const { root: page, settingsApi, stable, theme } = await setup();
+
+      radioIn(page, 'Text size', '125%').click();
+      await stable();
+      radioIn(page, 'Font', 'Readable').click();
+      await stable();
+      radioIn(page, 'Density', 'Compact').click();
+      await stable();
+      radioIn(page, 'Preview image', 'Small').click();
+      await stable();
+
+      expect(settingsApi.update).toHaveBeenCalledWith({ textSize: 'xl' });
+      expect(settingsApi.update).toHaveBeenCalledWith({ font: 'readable' });
+      expect(settingsApi.update).toHaveBeenCalledWith({ density: 'compact' });
+      expect(settingsApi.update).toHaveBeenCalledWith({ cardPreview: 'small' });
+      expect(theme.layout().textSize).toBe('xl');
+      expect(root.getAttribute(LAYOUT_ATTRIBUTE.TextSize)).toBe('xl');
+      expect(root.getAttribute(LAYOUT_ATTRIBUTE.Font)).toBe('readable');
+      expect(root.getAttribute(LAYOUT_ATTRIBUTE.Density)).toBe('compact');
+      expect(root.getAttribute(LAYOUT_ATTRIBUTE.CardPreview)).toBe('small');
+    });
+
+    it('hides site, notes and tags of cards with the switches', async () => {
+      const { root: page, settingsApi, stable } = await setup();
+
+      for (const [name, key, attribute] of [
+        ['Show site', 'cardSite', LAYOUT_ATTRIBUTE.CardSite],
+        ['Show notes', 'cardNotes', LAYOUT_ATTRIBUTE.CardNotes],
+        ['Show tags', 'cardTags', LAYOUT_ATTRIBUTE.CardTags],
+      ] as const) {
+        switchNamed(page, name).click();
+        await stable();
+        expect(settingsApi.update).toHaveBeenCalledWith({ [key]: false });
+        expect(root.getAttribute(attribute)).toBe(LAYOUT_OFF);
+      }
+    });
+
+    it('rolls a layout change back with a toast when saving fails', async () => {
+      const { root: page, show, stable, theme } = await setup({ fail: true });
+
+      radioIn(page, 'Density', 'Compact').click();
+      await stable();
+
+      expect(theme.layout().density).toBe('comfortable');
+      expect(root.hasAttribute(LAYOUT_ATTRIBUTE.Density)).toBe(false);
+      expect(show).toHaveBeenCalledWith(
+        expect.objectContaining({ title: "Couldn't save the appearance" }),
+      );
+    });
+
+    it('turns link counts and folder colours off through the same account settings as Library', async () => {
+      const { root: page, settingsApi, stable } = await setup();
+      await vi.waitFor(async () => {
+        await stable();
+        expect(switchNamed(page, 'Link counts').getAttribute('aria-checked')).toBe('true');
+      });
+
+      switchNamed(page, 'Link counts').click();
+      await stable();
+      switchNamed(page, 'Folder colours').click();
+      await stable();
+
+      expect(settingsApi.update).toHaveBeenCalledWith({ showFolderCounts: false });
+      expect(settingsApi.update).toHaveBeenCalledWith({ folderColours: false });
+      const preview = page.querySelector('ui-theme-preview');
+      expect(preview?.querySelector('.ui-theme-preview__count')).toBeNull();
+    });
+
+    it('asks before it stops remembering recently opened, then pauses and clears', async () => {
+      const { root: page, settingsApi, stable } = await setup();
+      const confirm = vi.spyOn(TestBed.inject(DialogService), 'confirm');
+      const clear = vi.spyOn(TestBed.inject(LinksStore), 'clearHistory').mockResolvedValue(true);
+      await vi.waitFor(async () => {
+        await stable();
+        expect(page.querySelector('.ui-theme-preview__row--recent')).not.toBeNull();
+      });
+      const remember = () => switchNamed(page, 'Remember recently opened');
+
+      confirm.mockResolvedValueOnce(false);
+      remember().click();
+      await vi.waitFor(async () => {
+        await stable();
+        expect(confirm).toHaveBeenCalledTimes(1);
+        expect(remember().getAttribute('aria-checked')).toBe('true');
+      });
+      expect(settingsApi.update).not.toHaveBeenCalledWith({ pauseHistory: true });
+
+      confirm.mockResolvedValueOnce(true);
+      remember().click();
+      await vi.waitFor(async () => {
+        await stable();
+        expect(settingsApi.update).toHaveBeenCalledWith({ pauseHistory: true });
+        expect(clear).toHaveBeenCalledTimes(1);
+        expect(remember().getAttribute('aria-checked')).toBe('false');
+      });
+      expect(page.querySelector('.ui-theme-preview__row--recent')).toBeNull();
+
+      remember().click();
+      await vi.waitFor(async () => {
+        await stable();
+        expect(settingsApi.update).toHaveBeenLastCalledWith({ pauseHistory: false });
+      });
+    });
   });
 
   it('has no axe violations, with the custom options open too', async () => {

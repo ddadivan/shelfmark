@@ -1,12 +1,17 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
-import { THEME, THEME_ATTRIBUTE, THEME_CUSTOM } from '../theme';
+import { LAYOUT_ATTRIBUTE, LAYOUT_OFF, THEME, THEME_ATTRIBUTE, THEME_CUSTOM } from '../theme';
 import type { ThemePreviewCard } from './models/theme-preview-card.interface';
 import { ThemePreviewComponent } from './theme-preview.component';
 
 const FOLDERS = ['Angular', 'Clothes', 'Recipes'];
 const CARDS: ThemePreviewCard[] = [
-  { site: 'youtube.com', title: 'Signal Forms in 20 minutes', tag: 'angular' },
-  { site: 'cos.com', title: 'Wool coat, straight cut', tag: 'clothes' },
+  {
+    site: 'youtube.com',
+    title: 'Signal Forms in 20 minutes',
+    note: 'Watch on the weekend',
+    tag: 'angular',
+  },
+  { site: 'cos.com', title: 'Wool coat, straight cut', note: 'Wait for the sale', tag: 'clothes' },
   { site: 'dev.to', title: 'NgRx SignalStore patterns', tag: 'angular' },
   { site: 'seriouseats.com', title: 'Weeknight ramen', tag: 'recipes' },
 ];
@@ -77,6 +82,43 @@ export const AllVariants: Story = {
             class="ds-pane"
           >
             <ui-theme-preview ariaLabel="Preview of your settings" [folders]="folders" [cards]="cards" />
+          </div>
+        }
+      </div>`,
+  }),
+};
+
+/**
+ * The layout options of #285 on a wrapper (the app sets them on <html>): the readable font,
+ * compact density, small previews and no tags, with link counts and a Recently opened row; both
+ * themes.
+ */
+export const Layout: Story = {
+  render: () => ({
+    props: {
+      themes: Object.values(THEME),
+      folders: ['All links', 'Angular', 'Clothes'],
+      counts: [248, 12, 7],
+      cards: CARDS.slice(0, 2),
+    },
+    template: `
+      <div class="ds-themes">
+        @for (theme of themes; track theme) {
+          <div
+            [attr.${THEME_ATTRIBUTE}]="theme"
+            ${LAYOUT_ATTRIBUTE.Font}="readable"
+            ${LAYOUT_ATTRIBUTE.Density}="compact"
+            ${LAYOUT_ATTRIBUTE.CardPreview}="small"
+            ${LAYOUT_ATTRIBUTE.CardTags}="${LAYOUT_OFF}"
+            class="ds-pane"
+          >
+            <ui-theme-preview
+              ariaLabel="Preview of your settings"
+              [folders]="folders"
+              [counts]="counts"
+              recentLabel="Recently opened"
+              [cards]="cards"
+            />
           </div>
         }
       </div>`,

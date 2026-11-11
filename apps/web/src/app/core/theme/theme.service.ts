@@ -1,7 +1,14 @@
 import { DOCUMENT } from '@angular/common';
 import { DestroyRef, Service, computed, effect, inject, signal } from '@angular/core';
 import {
+  APP_FONT,
+  CARD_PREVIEW,
   CUSTOM_THEME_DEFAULT,
+  DENSITY,
+  LAYOUT_SETTINGS_DEFAULT,
+  TEXT_SIZE,
+  isLayoutSettings,
+  type LayoutSettings,
   MOTION_PREFERENCE,
   THEME_PREFERENCE,
   isCustomTheme,
@@ -13,6 +20,8 @@ import {
 } from '@shelfmark/contracts';
 import {
   CUSTOM_THEME_ATTRIBUTE,
+  LAYOUT_ATTRIBUTE,
+  LAYOUT_OFF,
   MOTION_ATTRIBUTE,
   ReducedMotion,
   THEME,
@@ -22,6 +31,7 @@ import {
 } from '@shelfmark/ui';
 import type { Appearance } from './models/appearance.type';
 import { CUSTOM_THEME_STORAGE_KEY } from './models/custom-theme-storage-key.const';
+import { LAYOUT_STORAGE_KEY } from './models/layout-storage-key.const';
 import { MOTION_STORAGE_KEY } from './models/motion-storage-key.const';
 import { THEME_STORAGE_KEY } from './models/theme-storage-key.const';
 
@@ -29,9 +39,11 @@ const DARK_QUERY = '(prefers-color-scheme: dark)';
 const STORAGE_EVENT = 'storage';
 
 /**
- * Owns the appearance: theme (System, Light, Dark or Custom), the Custom theme and the
- * Animations setting. The only writer of `html[data-theme]`, `html[data-custom-*]`,
- * `html[data-motion]` and `color-scheme`; styles react through the tokens (`global.scss`,
+ * Owns the appearance: theme (System, Light, Dark or Custom), the Custom theme, the
+ * Animations setting and the text, layout and card options (#285). The only writer of
+ * `html[data-theme]`, `html[data-custom-*]`, `html[data-motion]`, the `LAYOUT_ATTRIBUTE`
+ * attributes (`data-text-size`, `data-font`, `data-density`, `data-card-*`; left out for the
+ * defaults) and `color-scheme`; styles react through the tokens (`global.scss`,
  * `tokens/_custom.scss`) and the `reduced-motion` mixin, scripts through `ReducedMotion`.
  *
  * The account is the source of truth (`UserSettingsStore` calls `applyAccount`); `localStorage`
@@ -47,11 +59,14 @@ export class ThemeService {
   private readonly preferenceState = signal<ThemePreference>(THEME_PREFERENCE.System);
   private readonly customThemeState = signal<CustomTheme>({ ...CUSTOM_THEME_DEFAULT });
   private readonly motionState = signal<MotionPreference>(MOTION_PREFERENCE.System);
+  private readonly layoutState = signal<LayoutSettings>({ ...LAYOUT_SETTINGS_DEFAULT });
   private readonly systemDark = signal(false);
 
   readonly preference = this.preferenceState.asReadonly();
   readonly customTheme = this.customThemeState.asReadonly();
   readonly motion = this.motionState.asReadonly();
+  /** Text size, font, density and the card options. */
+  readonly layout = this.layoutState.asReadonly();
   /** The base the page is drawn on: the fixed theme, the system's, or the Custom theme's base. */
   readonly resolved = computed<Theme>(() => {
     switch (this.preferenceState()) {
@@ -70,6 +85,7 @@ export class ThemeService {
     theme: this.preferenceState(),
     customTheme: this.customThemeState(),
     motion: this.motionState(),
+    ...this.layoutState(),
   }));
 
   private initialized = false;
@@ -108,6 +124,27 @@ export class ThemeService {
       }
       this.reducedMotion.setAppReduced(motion === MOTION_PREFERENCE.Reduced);
     });
+    effect(() => {
+      const layout = this.layoutState();
+      const root = this.document.documentElement;
+      const values: Record<string, string | null> = {
+        [LAYOUT_ATTRIBUTE.TextSize]: layout.textSize === TEXT_SIZE.M ? null : layout.textSize,
+        [LAYOUT_ATTRIBUTE.Font]: layout.font === APP_FONT.Onest ? null : layout.font,
+        [LAYOUT_ATTRIBUTE.Density]: layout.density === DENSITY.Comfortable ? null : layout.density,
+        [LAYOUT_ATTRIBUTE.CardPreview]:
+          layout.cardPreview === CARD_PREVIEW.Large ? null : layout.cardPreview,
+        [LAYOUT_ATTRIBUTE.CardSite]: layout.cardSite ? null : LAYOUT_OFF,
+        [LAYOUT_ATTRIBUTE.CardNotes]: layout.cardNotes ? null : LAYOUT_OFF,
+        [LAYOUT_ATTRIBUTE.CardTags]: layout.cardTags ? null : LAYOUT_OFF,
+      };
+      for (const [name, value] of Object.entries(values)) {
+        if (value === null) {
+          root.removeAttribute(name);
+        } else {
+          root.setAttribute(name, value);
+        }
+      }
+    });
   }
 
   /** Reads the stored appearance, follows the system scheme and other tabs. Idempotent. */
@@ -132,6 +169,7 @@ export class ThemeService {
         THEME_STORAGE_KEY,
         CUSTOM_THEME_STORAGE_KEY,
         MOTION_STORAGE_KEY,
+        LAYOUT_STORAGE_KEY,
         null, // `localStorage.clear()` in another tab
       ];
       const onStorage = (event: StorageEvent): void => {
@@ -159,11 +197,27 @@ export class ThemeService {
     this.store(MOTION_STORAGE_KEY, motion);
   }
 
+  /** Text size, font, density and the card options, always whole. */
+  setLayout(layout: LayoutSettings): void {
+    const next: LayoutSettings = {
+      textSize: layout.textSize,
+      font: layout.font,
+      density: layout.density,
+      cardPreview: layout.cardPreview,
+      cardSite: layout.cardSite,
+      cardNotes: layout.cardNotes,
+      cardTags: layout.cardTags,
+    };
+    this.layoutState.set(next);
+    this.store(LAYOUT_STORAGE_KEY, JSON.stringify(next));
+  }
+
   /** Applies (and remembers) the given appearance; the account settings call this when they load. */
   apply(appearance: Appearance): void {
     this.setPreference(appearance.theme);
     this.setCustomTheme(appearance.customTheme);
     this.setMotion(appearance.motion);
+    this.setLayout(appearance);
   }
 
   private store(key: string, value: string): void {
@@ -187,10 +241,19 @@ export class ThemeService {
     ) {
       return true;
     }
+    return (
+      this.parse(CUSTOM_THEME_STORAGE_KEY, isCustomTheme) !== null ||
+      this.parse(LAYOUT_STORAGE_KEY, isLayoutSettings) !== null
+    );
+  }
+
+  /** The stored JSON under `key` when it passes `guard`; `null` when missing, broken or invalid. */
+  private parse<T>(key: string, guard: (value: unknown) => value is T): T | null {
     try {
-      return isCustomTheme(JSON.parse(this.read(CUSTOM_THEME_STORAGE_KEY) ?? 'null'));
+      const parsed: unknown = JSON.parse(this.read(key) ?? 'null');
+      return guard(parsed) ? parsed : null;
     } catch {
-      return false;
+      return null;
     }
   }
 
@@ -204,16 +267,13 @@ export class ThemeService {
     if (isMotionPreference(motion)) {
       this.motionState.set(motion);
     }
-    const custom = this.read(CUSTOM_THEME_STORAGE_KEY);
+    const custom = this.parse(CUSTOM_THEME_STORAGE_KEY, isCustomTheme);
     if (custom !== null) {
-      try {
-        const parsed: unknown = JSON.parse(custom);
-        if (isCustomTheme(parsed)) {
-          this.customThemeState.set(parsed);
-        }
-      } catch {
-        // Not JSON: keep the current custom theme.
-      }
+      this.customThemeState.set(custom);
+    }
+    const layout = this.parse(LAYOUT_STORAGE_KEY, isLayoutSettings);
+    if (layout !== null) {
+      this.layoutState.set(layout);
     }
   }
 

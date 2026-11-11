@@ -100,6 +100,16 @@
   aspect-ratio: 16 / 9;
 }
 
+// Settings › Appearance › Cards › Preview image (#285, `data-card-preview` on an ancestor): a
+// short strip, or no image area at all.
+:host-context([data-card-preview='small']) .ui-card__media {
+  aspect-ratio: 32 / 9;
+}
+
+:host-context([data-card-preview='off']) .ui-card__media {
+  display: none;
+}
+
 .ui-card__image {
   position: absolute;
   inset: 0;
@@ -165,8 +175,8 @@
 .ui-card__body {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4) var(--space-4);
+  gap: var(--density-card-gap);
+  padding: var(--density-card-padding);
 }
 
 .ui-card__meta {

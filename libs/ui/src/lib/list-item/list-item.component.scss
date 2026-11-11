@@ -8,7 +8,7 @@
   display: flex;
   gap: rem(12px);
   align-items: center;
-  padding: rem(10px) rem(12px);
+  padding: var(--density-row-padding);
   color: var(--text);
   cursor: pointer;
   border-radius: var(--radius-md);

@@ -114,3 +114,10 @@ ui-card:has(.ui-card__link:focus-visible) .link-card__open-text {
   background: var(--surface);
   box-shadow: var(--shadow-card);
 }
+
+// Settings › Appearance › Cards (#285): `data-card-site|notes|tags="off"` on <html> hides the part.
+:host-context([data-card-site='off']) .link-card__site,
+:host-context([data-card-notes='off']) .link-card__note,
+:host-context([data-card-tags='off']) .link-card__tags {
+  display: none;
+}

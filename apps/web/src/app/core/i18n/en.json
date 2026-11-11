@@ -977,8 +977,75 @@
         },
         "reset": "Reset custom theme"
       },
+      "layout": {
+        "title": "Text and layout",
+        "textSize": {
+          "label": "Text size",
+          "hint": "Scales the whole interface, not just text",
+          "s": "90%",
+          "m": "100%",
+          "l": "112%",
+          "xl": "125%"
+        },
+        "font": {
+          "label": "Font",
+          "hint": "Readable is designed for low vision",
+          "onest": "Onest",
+          "system": "System",
+          "readable": "Readable"
+        },
+        "density": {
+          "label": "Density",
+          "hint": "Compact fits more links on screen",
+          "comfortable": "Comfortable",
+          "compact": "Compact"
+        }
+      },
+      "cards": {
+        "title": "Cards",
+        "preview": {
+          "label": "Preview image",
+          "hint": "The picture at the top of each card",
+          "large": "Large",
+          "small": "Small",
+          "off": "Off"
+        },
+        "site": {
+          "label": "Show site",
+          "hint": "Domain and favicon above the title"
+        },
+        "notes": {
+          "label": "Show notes",
+          "hint": "Your note under the title"
+        },
+        "tags": {
+          "label": "Show tags",
+          "hint": "Tag chips at the bottom of the card"
+        }
+      },
+      "sidebar": {
+        "counts": {
+          "label": "Link counts",
+          "hint": "Numbers next to folders"
+        },
+        "recent": {
+          "label": "Remember recently opened",
+          "hint": "Keeps the Recently opened list. Off clears it and stops recording.",
+          "confirm": {
+            "title": "Stop remembering recently opened?",
+            "message": "The Recently opened list is cleared, and links you open are not added until you turn this back on. Your links stay saved.",
+            "confirm": "Clear and stop",
+            "cancel": "Cancel",
+            "close": "Close"
+          }
+        },
+        "colours": {
+          "label": "Folder colours",
+          "hint": "Off shows every folder in plain graphite"
+        }
+      },
       "motion": {
-        "title": "Motion",
+        "title": "Sidebar and motion",
         "label": "Animations",
         "hint": "Reduced keeps fades and loaders, removes movement",
         "system": "System",
@@ -998,14 +1065,17 @@
           "one": {
             "site": "youtube.com",
             "title": "Signal Forms in 20 minutes",
-            "tag": "angular"
+            "tag": "angular",
+            "note": "Watch on the weekend"
           },
           "two": {
             "site": "cos.com",
             "title": "Wool coat, straight cut",
-            "tag": "clothes"
+            "tag": "clothes",
+            "note": "Wait for the sale"
           }
-        }
+        },
+        "recent": "Recently opened"
       },
       "failed": "Couldn't save the appearance",
       "failedDetail": "It is back to how it was.",

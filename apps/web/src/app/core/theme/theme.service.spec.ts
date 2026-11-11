@@ -1,3 +1,4 @@
+import { LAYOUT_SETTINGS_DEFAULT } from '@shelfmark/contracts';
 import { TestBed } from '@angular/core/testing';
 import {
   CUSTOM_THEME_ATTRIBUTE,
@@ -229,6 +230,7 @@ describe('ThemeService', () => {
         theme: THEME_PREFERENCE.Custom,
         customTheme: dark,
         motion: MOTION_PREFERENCE.System,
+        ...LAYOUT_SETTINGS_DEFAULT,
       });
       TestBed.tick();
       service.setPreference(THEME_PREFERENCE.Light);
@@ -265,6 +267,7 @@ describe('ThemeService', () => {
         theme: THEME_PREFERENCE.Custom,
         customTheme: dark,
         motion: MOTION_PREFERENCE.Reduced,
+        ...LAYOUT_SETTINGS_DEFAULT,
       });
       expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe(THEME_PREFERENCE.Custom);
       expect(JSON.parse(localStorage.getItem(CUSTOM_THEME_STORAGE_KEY) ?? 'null')).toEqual(dark);
@@ -276,6 +279,7 @@ describe('ThemeService', () => {
         theme: THEME_PREFERENCE.Custom,
         customTheme: dark,
         motion: MOTION_PREFERENCE.Reduced,
+        ...LAYOUT_SETTINGS_DEFAULT,
       });
       expect(root.getAttribute(THEME_ATTRIBUTE)).toBe(THEME_CUSTOM);
     });

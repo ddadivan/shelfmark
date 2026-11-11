@@ -1,3 +1,4 @@
+import { LAYOUT_SETTINGS_DEFAULT } from '@shelfmark/contracts';
 import { LIBRARY_SETTINGS_DEFAULT } from '@shelfmark/contracts';
 import { TestBed } from '@angular/core/testing';
 import {
@@ -61,6 +62,7 @@ describe('UserSettingsStore appearance', () => {
       theme: THEME_PREFERENCE.Custom,
       customTheme: DARK,
       motion: MOTION_PREFERENCE.Reduced,
+      ...LAYOUT_SETTINGS_DEFAULT,
     });
     expect(api.update).not.toHaveBeenCalled();
   });
@@ -78,6 +80,7 @@ describe('UserSettingsStore appearance', () => {
       theme: THEME_PREFERENCE.Dark,
       customTheme: CUSTOM_THEME_DEFAULT,
       motion: MOTION_PREFERENCE.System,
+      ...LAYOUT_SETTINGS_DEFAULT,
     });
   });
 
@@ -104,6 +107,7 @@ describe('UserSettingsStore appearance', () => {
       theme: THEME_PREFERENCE.System,
       customTheme: CUSTOM_THEME_DEFAULT,
       motion: MOTION_PREFERENCE.System,
+      ...LAYOUT_SETTINGS_DEFAULT,
     });
     expect(api.update).not.toHaveBeenCalled();
   });
