@@ -8,6 +8,8 @@ import { AUTH_API } from '../app/core/auth/auth-api.token';
 import { AuthStore } from '../app/core/auth/auth.store';
 import type { AuthApi } from '../app/core/auth/models/auth-api.interface';
 import { ViewportService } from '../app/core/layout/viewport.service';
+import { CUSTOM_THEME_STORAGE_KEY } from '../app/core/theme/models/custom-theme-storage-key.const';
+import { MOTION_STORAGE_KEY } from '../app/core/theme/models/motion-storage-key.const';
 import { THEME_STORAGE_KEY } from '../app/core/theme/models/theme-storage-key.const';
 import { ThemeService } from '../app/core/theme/theme.service';
 import { ACCOUNT_DELETION_API } from '../app/features/account-deletion/models/account-deletion-api.const';
@@ -36,7 +38,10 @@ export async function setupSettingsPage(
   path: string,
   { user = SETTINGS_TEST_USER, phone = false }: SetupOptions = {},
 ) {
-  localStorage.removeItem(THEME_STORAGE_KEY);
+  // No appearance from an earlier spec: the settings load would keep and save it (#273).
+  for (const key of [THEME_STORAGE_KEY, CUSTOM_THEME_STORAGE_KEY, MOTION_STORAGE_KEY]) {
+    localStorage.removeItem(key);
+  }
   const onboardingApi = { complete: vi.fn(), reset: vi.fn(() => Promise.resolve()) };
   const exportApi = { download: vi.fn() };
   const api: AuthApi = {
