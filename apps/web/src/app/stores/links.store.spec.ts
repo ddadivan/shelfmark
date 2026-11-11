@@ -211,6 +211,88 @@ describe('LinksStore', () => {
     });
   });
 
+  describe('move to a folder', () => {
+    const folderA = '019a0000-0000-7000-8000-00000000000a';
+    const folderB = '019a0000-0000-7000-8000-00000000000b';
+
+    it('keeps the link in place in a scope it still belongs to and sends the folder', async () => {
+      const { api, store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.All });
+
+      const moved = await store.move(link(2), folderA);
+
+      expect(moved).toBe(true);
+      expect(api.update).toHaveBeenCalledWith('id-2', { folderId: folderA });
+      expect(ids(store)).toEqual(['id-1', 'id-2', 'id-3']);
+      expect(store.entityMap()['id-2']?.folderId).toBe(folderA);
+      expect(store.entityMap()['id-2']?.updatedAt).toBe('later');
+    });
+
+    it('takes the link out of the open folder and puts it back in its slot when moved back', async () => {
+      const items = [1, 2, 3].map((n) => link(n, { folderId: folderA }));
+      const { store } = setup({ items });
+      store.setFilter({ scope: LINKS_SCOPE.Folder, folderId: folderA });
+
+      await store.move(items[1], folderB);
+      expect(ids(store)).toEqual(['id-1', 'id-3']);
+
+      await store.move({ ...items[1], folderId: folderB }, folderA);
+      expect(ids(store)).toEqual(['id-1', 'id-2', 'id-3']);
+    });
+
+    it('leaves "Unsorted" when moved into a folder', async () => {
+      const items = [link(1, { folderId: null }), link(2, { folderId: null })];
+      const { store } = setup({ items });
+      store.setFilter({ scope: LINKS_SCOPE.Unsorted });
+
+      await store.move(items[0], folderA);
+
+      expect(ids(store)).toEqual(['id-2']);
+    });
+
+    it('rolls back and resolves false when the request fails', async () => {
+      const items = [1, 2, 3].map((n) => link(n, { folderId: folderA }));
+      const { api, store } = setup({ items });
+      store.setFilter({ scope: LINKS_SCOPE.Folder, folderId: folderA });
+      api.update.mockReturnValueOnce(throwError(() => new Error('offline')));
+
+      const moved = await store.move(items[0], null);
+
+      expect(moved).toBe(false);
+      expect(ids(store)).toEqual(['id-1', 'id-2', 'id-3']);
+      expect(store.entityMap()['id-1']?.folderId).toBe(folderA);
+    });
+
+    it('updates the folder of the link in the recent list', async () => {
+      const { store } = setup();
+      await store.loadRecent();
+
+      await store.move(link(2), folderB);
+
+      expect(store.recent()[0]?.folderId).toBe(folderB);
+    });
+
+    it('does not call the API when the folder does not change', async () => {
+      const { api, store } = setup({ items: [link(1, { folderId: folderA })] });
+      store.setFilter({ scope: LINKS_SCOPE.All });
+
+      expect(await store.move(link(1, { folderId: folderA }), folderA)).toBe(true);
+      expect(api.update).not.toHaveBeenCalled();
+    });
+
+    it('does not bring a link back into a scope opened after the move', async () => {
+      const items = [link(1, { folderId: folderA }), link(2, { folderId: folderA })];
+      const { store } = setup({ items });
+      store.setFilter({ scope: LINKS_SCOPE.Folder, folderId: folderA });
+      await store.move(items[0], folderB);
+
+      store.setFilter({ scope: LINKS_SCOPE.Folder, folderId: folderA });
+      await store.move({ ...items[0], folderId: folderB }, folderA);
+
+      expect(ids(store)).toEqual(['id-1', 'id-2']);
+    });
+  });
+
   describe('delete with Undo', () => {
     it('hides the link and sends the request only on commit', async () => {
       const { api, store } = setup();

@@ -77,6 +77,9 @@
             | transloco
         }}
       </ui-menu-item>
+      <ui-menu-item icon="folder-move" (activated)="moveRequested.emit()">
+        {{ 'links.item.move' | transloco }}
+      </ui-menu-item>
       <ui-menu-separator />
       <ui-menu-item icon="trash" danger (activated)="deleteRequested.emit()">
         {{ 'links.item.delete' | transloco }}

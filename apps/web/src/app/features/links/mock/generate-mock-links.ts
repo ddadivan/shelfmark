@@ -6,6 +6,8 @@ const HOURS_MS = 3_600_000;
 const SITE_COUNT = 7;
 /** Generated opens are spread back from now (3 hours per index), so the 30-day window never empties. */
 const OPEN_STEP_MS = 3 * HOURS_MS;
+/** The first generated link that counts as opened (every fourth index from here). */
+const FIRST_OPENED_INDEX = 4;
 const BASE_TIME = Date.UTC(2026, 10, 1);
 const TAGS = ['docs', 'recipes', 'reading', 'video'] as const;
 
@@ -29,7 +31,11 @@ export function generateMockLinks(): LinkResponse[] {
       isFavorite: i % 5 === 0,
       pinnedInFolderAt: null,
       pinned: false,
-      lastOpenedAt: i % 4 === 0 ? new Date(Date.now() - i * OPEN_STEP_MS).toISOString() : null,
+      // The newest open is "now", so "Today" always has a row whatever the time of day.
+      lastOpenedAt:
+        i % 4 === 0
+          ? new Date(Date.now() - (i - FIRST_OPENED_INDEX) * OPEN_STEP_MS).toISOString()
+          : null,
       tags: [TAGS[i % TAGS.length]],
       createdAt: created,
       updatedAt: created,

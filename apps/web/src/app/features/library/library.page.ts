@@ -64,6 +64,7 @@ import { parseSearchQuery } from '../links/search-query';
 import { InViewDirective } from '../links/in-view/in-view.directive';
 import { pinnedFirst } from '../links/pinned-first';
 import { LinkActionsService } from '../links/link-actions.service';
+import { HowItWorksService } from '../how-it-works/how-it-works.service';
 import { LinkCardComponent } from '../links/link-card/link-card.component';
 import { LinkRowComponent } from '../links/link-row/link-row.component';
 import type { AddLinkData } from '../links/models/add-link-data.interface';
@@ -133,6 +134,7 @@ export default class LibraryPage {
   protected readonly actions = inject(LinkActionsService);
   protected readonly pins = inject(PinsStore);
   protected readonly PIN_KIND = PIN_KIND;
+  protected readonly howItWorks = inject(HowItWorksService);
   protected readonly phone = inject(ViewportService).phone;
   private readonly exporter = inject(ExportActionsService);
   private readonly folders = inject(FoldersStore);

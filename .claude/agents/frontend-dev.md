@@ -27,6 +27,6 @@ You change only `apps/web/**` (features live in `apps/web/src/app/features/*`) a
 
 ## Working
 
-- Work on the issue branch (`feat/<issue>-…`), small Conventional Commits, push after each finished step.
+- Work on the issue branch (`feat/<issue>-…`, from fresh `stage`, PROJECT.md 9.3), small Conventional Commits, push after each finished step.
 - Before reporting done: `npx nx affected -t lint typecheck test build` passes.
 - Report: what changed (files), how to verify, anything left or blocked.

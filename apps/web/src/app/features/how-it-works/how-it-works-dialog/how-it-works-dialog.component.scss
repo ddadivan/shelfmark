@@ -1,0 +1,24 @@
+@use 'ui' as *;
+
+.how-it-works__video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--surface-pressed);
+  border-radius: var(--radius-md);
+}
+
+.how-it-works__chapters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: 0;
+  margin: var(--space-4) 0 0;
+  list-style: none;
+}
+
+.how-it-works__time {
+  margin-inline-start: var(--space-2);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
