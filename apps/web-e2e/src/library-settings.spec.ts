@@ -5,6 +5,7 @@ import { seedSession } from './support/mock-session';
 import { settled } from './support/settled';
 import { isPhone } from './support/sidebar';
 import { expect, test } from './support/test';
+import { chooseSort, expectSort, switchView } from './support/library-toolbar';
 
 // Settings › Library in full (issue #284). In the mock build the account settings live in
 // localStorage (`MockUserSettingsApi`), so a reload sees them like it would see the server's; the
@@ -92,7 +93,7 @@ test.describe('settings › library (mock API)', () => {
     await expect(page.locator('ui-card')).toHaveCount(0);
 
     // This feed goes back to cards; another feed still opens with the default.
-    await page.getByRole('radio', { name: 'Cards' }).click();
+    await switchView(page, 'Cards');
     await expect(page.locator('ui-card').first()).toBeVisible();
     await openFeed(page, READING);
     await expect(page.locator('ui-card')).toHaveCount(0);
@@ -112,18 +113,17 @@ test.describe('settings › library (mock API)', () => {
     await expect(page.getByRole('combobox', { name: 'Sort links by' })).toContainText('Title A–Z');
 
     await openFeed(page, '/links');
-    await expect(page.getByRole('button', { name: 'Sort: Title A–Z' })).toBeVisible();
+    await expectSort(page, 'Title A–Z');
     await expect(page).toHaveURL('/links');
 
     await openFeed(page, READING);
-    await page.getByRole('button', { name: 'Sort: Title A–Z' }).click();
-    await page.getByRole('menuitemradio', { name: 'Oldest first' }).click();
-    await expect(page.getByRole('button', { name: 'Sort: Oldest first' })).toBeVisible();
+    await chooseSort(page, 'Oldest first');
+    await expectSort(page, 'Oldest first');
 
     await page.goto(READING);
-    await expect(page.getByRole('button', { name: 'Sort: Oldest first' })).toBeVisible();
+    await expectSort(page, 'Oldest first');
     await openFeed(page, '/links');
-    await expect(page.getByRole('button', { name: 'Sort: Title A–Z' })).toBeVisible();
+    await expectSort(page, 'Title A–Z');
   });
 
   test('Open links in the same tab drops target on cards and rows', async ({ page }) => {
@@ -139,7 +139,7 @@ test.describe('settings › library (mock API)', () => {
     await openFeed(page, '/links');
     await expect(link).not.toHaveAttribute('target', /.*/);
     await expect(link).toHaveAttribute('rel', 'noreferrer');
-    await page.getByRole('radio', { name: 'List' }).click();
+    await switchView(page, 'List');
     const row = page.locator('ui-list-item a[href^="http"]').first();
     await expect(row).not.toHaveAttribute('target', /.*/);
   });

@@ -48,7 +48,9 @@
   }
 
   .ui-field__control {
-    min-height: rem(30px);
+    // `--ui-field-compact-height`: a row that shares a line with 40px controls (saved-view chips)
+    // sets it to 40px; the default pill is 30px.
+    min-height: var(--ui-field-compact-height, #{rem(30px)});
     padding: 0 var(--space-3);
     border-radius: var(--radius-full);
 

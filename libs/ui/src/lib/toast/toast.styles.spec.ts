@@ -10,6 +10,10 @@ describe('toast styles', () => {
     expect(mediaBlocks(region, /min-width/).join('')).not.toContain('justify-items');
   });
 
+  it('uses one shrinkable column, so a long detail line never pushes the toasts off centre', () => {
+    expect(region).toMatch(/:host\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/);
+  });
+
   it('sits 24px up and lets the app lift it above its own bottom bar', () => {
     expect(region).toContain('var(--ui-toast-offset, var(--space-6))');
   });

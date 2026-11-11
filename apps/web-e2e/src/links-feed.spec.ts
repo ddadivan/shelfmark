@@ -3,6 +3,7 @@ import { expect, test } from './support/test';
 import { E2E_PROJECT } from './models/e2e-project.const';
 import { MOCK_LINKS_SCENARIO } from './models/mock-links-scenario.const';
 import { seedSession } from './support/mock-session';
+import { switchView } from './support/library-toolbar';
 
 // The mock page size is 50 of 60 links.
 const FIRST_PAGE = 50;
@@ -94,7 +95,7 @@ test.describe('links feed (mock API)', () => {
   test('switches to the list view and remembers it after a reload', async ({ page }) => {
     await openFeed(page);
 
-    await page.getByRole('radio', { name: 'List' }).click();
+    await switchView(page, 'List');
     await expect(page.locator('ui-list-item').first()).toBeVisible();
     await expect(page.locator('ui-card')).toHaveCount(0);
 

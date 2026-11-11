@@ -10,27 +10,52 @@
       [cdkDropListDisabled]="dragDisabled()"
       (cdkDropListDropped)="dropped($event)"
     >
-      @for (
-        row of pins.rows();
-        track row.key;
-        let index = $index;
-        let first = $first;
-        let last = $last
-      ) {
+      @for (row of pins.rows(); track row.key; let index = $index) {
         <li
           class="pinned__item"
           cdkDrag
-          cdkDragPreviewClass="pinned-drag-preview"
           [cdkDragDisabled]="dragDisabled()"
           [attr.data-pin]="row.key"
-          (contextmenu)="openContext($event, menu)"
         >
+          <!-- The row as a small floating card down-right of the pointer, so the slot shows. -->
+          <div *cdkDragPreview class="pinned__preview">
+            <div class="pinned__preview-card">
+              @if (row.folder; as folder) {
+                <ui-folder-icon
+                  size="sm"
+                  [icon]="folder.icon"
+                  [colour]="settings.shownColour(folder.colour)"
+                />
+                <span class="pinned__name">{{ folder.name }}</span>
+              } @else if (row.link; as link) {
+                <ui-favicon [src]="favicon(link)" [letter]="letter(link)" />
+                <span class="pinned__name">{{ link.title }}</span>
+              }
+            </div>
+          </div>
+          <!-- The place it lands: a reserved slot one row tall with a faint ghost of the row (the
+               folder tree's look), the siblings glide apart. A div: an li cannot sit in this li's
+               template; it only lives while dragging. -->
+          <div *cdkDragPlaceholder class="pinned__drop-slot" aria-hidden="true">
+            @if (row.folder; as folder) {
+              <ui-folder-icon
+                size="sm"
+                [icon]="folder.icon"
+                [colour]="settings.shownColour(folder.colour)"
+              />
+              <span class="pinned__name">{{ folder.name }}</span>
+            } @else if (row.link; as link) {
+              <ui-favicon [src]="favicon(link)" [letter]="letter(link)" />
+              <span class="pinned__name">{{ link.title }}</span>
+            }
+          </div>
           @if (row.folder; as folder) {
             <a
               class="pinned__link"
               [class.is-active]="activeId() === folder.id"
               [routerLink]="folderLink(folder)"
               [attr.aria-current]="activeId() === folder.id ? 'page' : null"
+              (keydown)="onKeydown($event, index, row.key)"
             >
               <ui-folder-icon
                 size="sm"
@@ -49,40 +74,29 @@
               [attr.target]="href(link) && newTab() ? '_blank' : null"
               [attr.rel]="href(link) ? (newTab() ? 'noopener noreferrer' : 'noreferrer') : null"
               (click)="openLink(link)"
+              (keydown)="onKeydown($event, index, row.key)"
             >
               <ui-favicon [src]="favicon(link)" [letter]="letter(link)" />
               <span class="pinned__name">{{ link.title }}</span>
               @if (href(link) && newTab()) {
                 <span class="pinned__hidden">{{ 'links.item.opensInNewTab' | transloco }}</span>
               }
-              <!-- Decorative: the section heading already says "Pinned". -->
-              <ui-icon class="pinned__pin" name="pin" [size]="ICON_SIZE.Sm" />
             </a>
           }
-          <ui-button
-            class="pinned__more"
-            variant="ghost"
-            size="sm"
-            iconOnly
-            iconLeft="more"
-            [uiMenuTrigger]="menu"
-            [ariaLabel]="menuLabel(row.folder?.name ?? row.link?.title ?? '')"
-            [uiTooltip]="menuLabel(row.folder?.name ?? row.link?.title ?? '')"
-          />
-          <ui-menu #menu align="end" [ariaLabel]="'shell.sidebar.pinned.menu' | transloco">
-            <ui-menu-item icon="sort" [disabled]="first" (activated)="move(index, -1)">
-              {{ 'shell.sidebar.pinned.moveUp' | transloco }}
-            </ui-menu-item>
-            <ui-menu-item icon="sort" [disabled]="last" (activated)="move(index, 1)">
-              {{ 'shell.sidebar.pinned.moveDown' | transloco }}
-            </ui-menu-item>
-            <ui-menu-item
-              icon="pin"
-              (activated)="row.folder ? unpinFolder(row.folder) : unpinLink(row.link!)"
-            >
-              {{ 'shell.sidebar.pinned.unpin' | transloco }}
-            </ui-menu-item>
-          </ui-menu>
+          <!-- Unpin is the row's only action, so no "…" menu (author, #314): shown on hover or
+               focus, always on touch. -->
+          <div class="pinned__actions">
+            <ui-button
+              class="pinned__unpin"
+              variant="ghost"
+              size="sm"
+              iconOnly
+              iconLeft="pin-off"
+              [ariaLabel]="unpinLabel(row.folder?.name ?? row.link?.title ?? '')"
+              [uiTooltip]="unpinLabel(row.folder?.name ?? row.link?.title ?? '')"
+              (click)="unpin(row)"
+            />
+          </div>
         </li>
       }
     </ul>

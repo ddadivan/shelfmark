@@ -1,9 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import type { HeadingLevel } from '../heading';
 import { axeViolations } from '../../testing/axe';
 import { compileScss, mediaBlocks, withoutMedia } from '../../testing/scss';
 import { ButtonComponent } from '../button/button.component';
+import { TooltipDirective } from '../tooltip/tooltip.directive';
 import { CardComponent } from './card.component';
 import { CARD_STORY_IMAGE } from './stories/card-story-image.const';
 
@@ -74,7 +76,7 @@ function setup() {
     apply(fixture.componentInstance);
     fixture.detectChanges();
   };
-  return { host, card, update, instance: fixture.componentInstance };
+  return { host, card, update, fixture, instance: fixture.componentInstance };
 }
 
 /** The tab stops: every native control in the card (the ui-button wrappers are not focusable). */
@@ -94,6 +96,42 @@ describe('CardComponent', () => {
     expect(card.querySelector('.ui-card__favorite ui-button')).not.toBeNull();
     expect(card.querySelector('.ui-card__actions ui-button')).not.toBeNull();
     expect(card.querySelector('.ui-card__overlay')?.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('describes the full title with a tooltip only while the clamp cuts it', () => {
+    const { card, update } = setup();
+    const link = card.querySelector('.ui-card__link') as HTMLElement;
+    const sizes = (scroll: number, client: number) => {
+      Object.defineProperty(link, 'scrollHeight', { configurable: true, value: scroll });
+      Object.defineProperty(link, 'clientHeight', { configurable: true, value: client });
+    };
+    sizes(44, 44);
+    link.dispatchEvent(new Event('focus'));
+    update(() => undefined);
+    expect(link.getAttribute('aria-description')).toBeNull();
+
+    sizes(66, 44);
+    link.dispatchEvent(new Event('focus'));
+    update(() => undefined);
+    expect(link.getAttribute('aria-description')).toBe('Angular 22 Signal Forms');
+
+    sizes(44, 44);
+    link.dispatchEvent(new Event('focus'));
+    update(() => undefined);
+    expect(link.getAttribute('aria-description')).toBeNull();
+  });
+
+  it('reads hover for the full-title tooltip on the title text, not on the whole card (#314)', () => {
+    const { card, fixture } = setup();
+    const link = card.querySelector('.ui-card__link') as HTMLElement;
+    const text = link.querySelector('.ui-card__title-text') as HTMLElement;
+    expect(text.textContent?.trim()).toBe('Angular 22 Signal Forms');
+    // The text is above the link's stretched layer, so the pointer on it reaches it.
+    expect(getComputedStyle(text).zIndex).toBe('2');
+    const tooltip = fixture.debugElement
+      .query(By.css('.ui-card__link'))
+      .injector.get(TooltipDirective);
+    expect(tooltip.pointerTarget()).toBe(text);
   });
 
   it('forwards a click on the open bar to the title link, keeping modifier keys', () => {

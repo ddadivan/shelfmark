@@ -9,6 +9,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import {
@@ -27,6 +28,7 @@ import { CreateFolderDto } from './dto/create-folder.dto';
 import { DeleteFolderQueryDto } from './dto/delete-folder-query.dto';
 import { FolderResponseDto } from './dto/folder-response.dto';
 import { ListFoldersResponseDto } from './dto/list-folders-response.dto';
+import { ReorderFoldersDto } from './dto/reorder-folders.dto';
 import { UpdateFolderDto } from './dto/update-folder.dto';
 import { FoldersService } from './folders.service';
 
@@ -38,10 +40,23 @@ export class FoldersController {
   @Get()
   @ApiOkResponse({ type: ListFoldersResponseDto })
   @ApiOperation({
-    summary: 'All folders (flat, by name) with direct link counts and library counts',
+    summary: 'All folders (flat, by position then name) with direct link counts and library counts',
   })
   list(@CurrentUser() user: AuthUser): Promise<ListFoldersResponseDto> {
     return this.folders.list(user.id);
+  }
+
+  // Declared before `:id`; a different method, kept here for readability.
+  @Put('order')
+  @ApiOkResponse({ type: ListFoldersResponseDto, description: 'All folders afterwards' })
+  @ApiBadRequestResponse({ description: 'The list is not exactly the subfolders of that parent' })
+  @ApiNotFoundResponse({ description: 'Unknown, foreign or trashed parent' })
+  @ApiOperation({ summary: 'Reorder the subfolders of one parent (null = top level)' })
+  reorder(
+    @CurrentUser() user: AuthUser,
+    @Body() body: ReorderFoldersDto,
+  ): Promise<ListFoldersResponseDto> {
+    return this.folders.reorder(user.id, body.parentId, body.ids);
   }
 
   @Get(':id')

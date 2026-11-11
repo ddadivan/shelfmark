@@ -15,7 +15,9 @@ import { ReducedMotion } from '@shelfmark/ui';
 import { activeLang } from '../../../core/i18n/active-lang';
 import { ViewportService } from '../../../core/layout/viewport.service';
 import { LinkPreviewCardComponent } from '../../links/link-preview-card/link-preview-card.component';
+import { layoutDriftLane } from './drift-layout';
 import { SIGN_IN_DRIFT_CARDS } from './models/sign-in-drift-cards.const';
+import { SIGN_IN_DRIFT_FRAMES } from './models/sign-in-drift-frames.const';
 import type { SignInDriftItem } from './models/sign-in-drift-item.interface';
 import type { SignInDriftLane } from './models/sign-in-drift-lane.interface';
 import { SIGN_IN_DRIFT_SIDE } from './models/sign-in-drift-side.const';
@@ -24,18 +26,59 @@ import { tiltVector } from './tilt-vector';
 /** Tilt only where a precise hovering pointer exists, and never for people who want less motion. */
 const HOVER_QUERY = '(hover: hover) and (pointer: fine)';
 
-/** Rows a lane is split into: a card takes two (wide) or one of three (narrow). */
-const WIDE_ROWS = 6;
-const NARROW_ROWS = 3;
+/** One loop of the landing rings (`sd-ring` in the styles) and when the first one pulses, in seconds. */
+const RING_LOOP_S = 24;
+const RING_START_S = 2.6;
+
+/** The cards of each side with their seeded spots, for the wide and the narrow layout (computed once). */
+function laneLayout(wide: boolean): SignInDriftLane[] {
+  const frame = wide ? SIGN_IN_DRIFT_FRAMES.wide : SIGN_IN_DRIFT_FRAMES.narrow;
+  const lanes = Object.values(SIGN_IN_DRIFT_SIDE).map((side, sideIndex) => {
+    const cards = SIGN_IN_DRIFT_CARDS.filter((card) => card.side === side && (wide || card.narrow));
+    const places = layoutDriftLane(
+      cards.map((card) => card.layer),
+      frame,
+      frame.seeds[sideIndex],
+    );
+    return { side, cards, places };
+  });
+  // The rings take turns across both sides, one side then the other.
+  const total = lanes.reduce((sum, lane) => sum + lane.cards.length, 0);
+  const step = RING_LOOP_S / total;
+  return lanes.map(({ side, cards, places }, sideIndex) => ({
+    side,
+    frame,
+    cards: cards.map((card, i) => ({
+      card,
+      place: places[i],
+      ringDelay: Math.round(((i * lanes.length + sideIndex) * step + RING_START_S) * 100) / 100,
+      tags: card.tags,
+    })),
+  }));
+}
+
+const LAYOUTS = new Map<boolean, SignInDriftLane[]>();
+
+function cachedLayout(wide: boolean): SignInDriftLane[] {
+  let layout = LAYOUTS.get(wide);
+  if (!layout) {
+    layout = laneLayout(wide);
+    LAYOUTS.set(wide, layout);
+  }
+  return layout;
+}
 
 /**
- * Saved-link cards that drift in the two side lanes of the glass sign-in card on a desktop
- * (docs/design/screens/SignIn.dc.html): ten on a wide screen, six on a narrower desktop
+ * Saved-link cards that drift around the glass sign-in card on a desktop
+ * (docs/design/screens/SignIn.dc.html): sixteen on a wide screen, eight on a narrower desktop
  * (from 64em, `ViewportService.wideDesktop`). They are drawn by `LinkPreviewCardComponent`, so
- * they look like the library's cards, and sit in three depth layers: far ones are smaller,
- * dimmer and slower and lean less toward the pointer, near ones larger and livelier. Every
- * visit they fly out from behind the sign-in card in a staggered wave and settle in their lanes
- * (the sign-in card never waits for them), then each floats on its own slow loop and in turn
+ * they look like the library's cards. Each lane is a seeded scatter (`layoutDriftLane`): every
+ * card has its own spot, size, tilt and float, some hang over the window edge, small far cards
+ * fill the gaps and may tuck slightly behind nearer ones, and none ever reaches under the sign-in
+ * card. Three depth layers: far ones are smaller, dimmer and slower and lean less toward the
+ * pointer, near ones larger and livelier. Every visit they fly out from behind the sign-in card
+ * in a staggered wave and settle (the sign-in card never waits for them), then each floats on its
+ * own loop (speed, amplitude and phase differ, so they never move in sync) and in turn
  * "lands" with an accent ring like a newly saved link (the ring of the phone mosaic). With a
  * mouse the cards also lean toward the pointer, as parallax by layer (on an inner element, so it
  * composes with the float; one `pointermove` listener, throttled to a frame). Reduced motion (the
@@ -52,7 +95,7 @@ const NARROW_ROWS = 3;
   host: { 'aria-hidden': 'true', inert: '' },
 })
 export class SignInDriftComponent {
-  /** Ten cards from 80em, six on the narrower desktops. */
+  /** Sixteen cards from 80em, eight on the narrower desktops. */
   protected readonly wide = inject(ViewportService).wideDesktop;
 
   private readonly transloco = inject(TranslocoService);
@@ -60,31 +103,12 @@ export class SignInDriftComponent {
   protected readonly lanes = computed<SignInDriftLane[]>(() => {
     // Re-runs on a language switch (`translate` itself is not reactive).
     activeLang();
-    const wide = this.wide();
-    const items = SIGN_IN_DRIFT_CARDS.flatMap((card, index): SignInDriftItem[] => {
-      if (!wide && card.narrowRow === null) {
-        return [];
-      }
-      const row = wide ? card.row : (card.narrowRow ?? 1);
-      const span = wide ? 2 : 1;
-      const rows = wide ? WIDE_ROWS : NARROW_ROWS;
-      const start = card.side === SIGN_IN_DRIFT_SIDE.Start;
-      return [
-        {
-          card,
-          index,
-          column: !wide ? 1 : start ? card.column + 1 : 2 - card.column,
-          row,
-          span,
-          outer: wide ? card.column : 0,
-          centreY: (row - 1 + span / 2) / rows,
-          tags: card.tags.map((tag) => this.transloco.translate(`auth.signIn.tags.${tag}`)),
-        },
-      ];
-    });
-    return Object.values(SIGN_IN_DRIFT_SIDE).map((side) => ({
-      side,
-      cards: items.filter((item) => item.card.side === side),
+    return cachedLayout(this.wide()).map((lane) => ({
+      ...lane,
+      cards: lane.cards.map((item): SignInDriftItem => ({
+        ...item,
+        tags: item.card.tags.map((tag) => this.transloco.translate(`auth.signIn.tags.${tag}`)),
+      })),
     }));
   });
 
@@ -115,12 +139,16 @@ export class SignInDriftComponent {
     const apply = (): void => {
       frame = 0;
       const pointer = latest;
-      for (const tilt of this.tiltElements()) {
-        const rect = tilt.parentElement?.getBoundingClientRect();
-        const vector = pointer && rect ? tiltVector(pointer, rect) : { x: 0, y: 0 };
-        tilt.style.setProperty('--tx', vector.x.toFixed(3));
-        tilt.style.setProperty('--ty', vector.y.toFixed(3));
-      }
+      // Every read first, then every write: no layout is forced between two cards.
+      const tilts = this.tiltElements();
+      const vectors = tilts.map((tilt) => {
+        const rect = pointer ? tilt.parentElement?.getBoundingClientRect() : undefined;
+        return pointer && rect ? tiltVector(pointer, rect) : { x: 0, y: 0 };
+      });
+      tilts.forEach((tilt, i) => {
+        tilt.style.setProperty('--tx', vectors[i].x.toFixed(3));
+        tilt.style.setProperty('--ty', vectors[i].y.toFixed(3));
+      });
     };
     const schedule = (): void => {
       frame ||= view.requestAnimationFrame(apply);

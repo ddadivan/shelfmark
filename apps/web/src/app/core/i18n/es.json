@@ -20,12 +20,17 @@
         "label": "Vista previa de la aplicación",
         "folder": "Leer más tarde",
         "count": "21 enlaces",
+        "countArticles": "6 enlaces",
         "view": "Vista",
         "all": "Todos 21",
         "articles": "Artículos 6",
         "savedTo": "Guardado en {{folder}}",
         "undo": "Deshacer",
         "items": {
+          "talk": {
+            "title": "Tecnología tranquila, una charla de 20 minutos",
+            "tag": "vídeo"
+          },
           "grid": {
             "title": "La guía completa de CSS grid",
             "tag": "css"
@@ -468,8 +473,17 @@
     },
     "drag": {
       "moveHere": "Mover aquí",
-      "moveOne": "Mover 1 enlace",
-      "wasHere": "{{title}} estaba aquí"
+      "moving": "Moviendo",
+      "started": {
+        "one": "Moviendo {{count}} enlace. Suéltalo sobre una carpeta o pulsa Esc para cancelar.",
+        "many": "Moviendo {{count}} enlaces. Suéltalos sobre una carpeta o pulsa Esc para cancelar.",
+        "other": "Moviendo {{count}} enlaces. Suéltalos sobre una carpeta o pulsa Esc para cancelar."
+      },
+      "move": {
+        "one": "Mover {{count}} enlace",
+        "many": "Mover {{count}} enlaces",
+        "other": "Mover {{count}} enlaces"
+      }
     }
   },
   "privacy": {
@@ -598,6 +612,24 @@
         },
         "sneakers": {
           "title": "Zapatillas de cuero minimalistas"
+        },
+        "typeScale": {
+          "title": "Escalas tipográficas que funcionan de verdad"
+        },
+        "kyoto": {
+          "title": "Kioto lejos de las multitudes"
+        },
+        "focaccia": {
+          "title": "Focaccia crujiente sin amasar"
+        },
+        "containerQueries": {
+          "title": "Container queries en la práctica"
+        },
+        "linenShirt": {
+          "title": "Camisa de lino verde salvia"
+        },
+        "madeira": {
+          "title": "Cinco rutas de un día en Madeira"
         }
       },
       "tags": {
@@ -670,11 +702,14 @@
       "pinned": {
         "heading": "Fijados",
         "list": "Elementos fijados",
-        "menu": "Acciones del elemento fijado",
-        "actions": "Acciones para {{name}}",
         "moveUp": "Subir",
         "moveDown": "Bajar",
-        "unpin": "Quitar de la barra lateral"
+        "unpin": "Quitar de la barra lateral",
+        "unpinButton": "Quitar {{name}}"
+      },
+      "reorder": {
+        "movedUp": "Movido hacia arriba, posición {{position}} de {{total}}",
+        "movedDown": "Movido hacia abajo, posición {{position}} de {{total}}"
       }
     },
     "searchHint": "Busca en tus enlaces",
@@ -933,6 +968,11 @@
     },
     "kind": {
       "remove": "Quitar el filtro {{kind}}"
+    },
+    "viewMenu": {
+      "label": "Opciones de vista",
+      "button": "Vista",
+      "sortBy": "Ordenar por"
     }
   },
   "export": {
@@ -1382,7 +1422,8 @@
       "moveFolder": "Moverse entre carpetas",
       "toggleFolder": "Cerrar o abrir una carpeta",
       "folderMenu": "Abrir el menú de la carpeta",
-      "paste": "Pegar enlaces en la biblioteca"
+      "paste": "Pegar enlaces en la biblioteca",
+      "reorder": "Subir o bajar un elemento fijado o una carpeta"
     },
     "keys": {
       "command": "Comando",
@@ -1741,6 +1782,9 @@
     "pinnedToTopFailed": {
       "title": "No se pudo cambiar la fijación",
       "detail": "Ha vuelto a como estaba."
+    },
+    "unpinned": {
+      "title": "Quitado de la barra lateral"
     }
   },
   "views": {
@@ -2057,7 +2101,9 @@
       "clearHint": "borra",
       "done": "Listo",
       "cancel": "Cancelar selección",
-      "longPressHint": "Mantén pulsado un enlace para empezar a seleccionar y luego toca otros."
+      "longPressHint": "Mantén pulsado un enlace para empezar a seleccionar y luego toca otros.",
+      "modeOn": "Modo de selección activado. Activar un enlace ahora lo selecciona.",
+      "modeOff": "Modo de selección desactivado."
     },
     "item": {
       "select": "Seleccionar {{title}}"

@@ -3,6 +3,7 @@ import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
 import { settled } from './support/settled';
 import { isPhone } from './support/sidebar';
+import { switchView } from './support/library-toolbar';
 
 // Mirror MOCK_LINKS ("Simple pasta" is unsorted, "Angular overview" is in Angular) and the
 // MOCK_FOLDERS names (libs/shared/contracts); the e2e project cannot import from them.
@@ -45,11 +46,22 @@ test.describe('drag a link to a folder (mock API)', () => {
     test.skip(isPhone(page), 'phones have no sidebar; "Move to folder" is the way there');
     const card = page.locator('li.library__item').filter({ hasText: PASTA });
     const reading = treeRow(page, READING);
+    const tags = page.locator('app-sidebar-tags');
+    await expect(tags).toBeVisible();
+    const tagsTop = (await tags.boundingBox())?.y ?? 0;
+    const readingHeight = (await reading.boundingBox())?.height ?? 0;
 
     await dragOver(page, card, reading);
     await expect(reading).toHaveClass(/ui-tree__row--drop/);
     await expect(reading).toContainText('Move here');
-    await expect(page.locator('.library__drag-slot')).toContainText(`${PASTA} was here`);
+    // The "Move here" hint fits in the row: neither the row nor the Tags section below moves.
+    expect(Math.abs(((await tags.boundingBox())?.y ?? 0) - tagsTop)).toBeLessThanOrEqual(0.5);
+    expect(
+      Math.abs(((await reading.boundingBox())?.height ?? 0) - readingHeight),
+    ).toBeLessThanOrEqual(0.5);
+    const slot = page.locator('.library__drag-slot');
+    await expect(slot).toContainText('Moving');
+    await expect(slot).toContainText(PASTA);
     await page.mouse.up();
 
     await expect(page.getByRole('heading', { name: PASTA, exact: true })).toHaveCount(0);
@@ -59,6 +71,70 @@ test.describe('drag a link to a folder (mock API)', () => {
 
     await toast.getByRole('button', { name: 'Undo' }).click();
     await expect(page.getByRole('heading', { name: PASTA, exact: true })).toBeVisible();
+  });
+
+  test('dragging a picked card carries every picked card, with one toast and Undo', async ({
+    page,
+  }) => {
+    test.skip(isPhone(page), 'phones have no sidebar; "Move to folder" is the way there');
+    await page.goto('/links');
+    const items = page.locator('li.library__item');
+    await expect(items.first()).toBeVisible();
+    const reading = treeRow(page, READING);
+    for (const index of [0, 1, 2]) {
+      const card = items.nth(index).locator('ui-card');
+      await card.hover();
+      await card.locator('.ui-checkbox__box').click();
+    }
+    await settled(page);
+    const boxes = await Promise.all([0, 1, 2].map((index) => items.nth(index).boundingBox()));
+
+    await dragOver(page, items.nth(1), reading);
+    await expect(reading).toHaveClass(/ui-tree__row--drop/);
+    await expect(page.locator('.cdk-drag-preview .library__drag-badge')).toHaveText('Move 3 links');
+    // All three picked cards show the same "Moving" slot (the grabbed one as the placeholder), at
+    // the size they had: nothing in the grid reflows.
+    const slots = page.locator('ul.library__grid app-drag-slot');
+    await expect(slots).toHaveCount(3);
+    for (const index of [0, 1, 2]) {
+      await expect(slots.nth(index)).toContainText('Moving');
+      const slotBox = await slots.nth(index).boundingBox();
+      expect(slotBox?.width).toBeCloseTo(boxes[index]?.width ?? 0, 0);
+      expect(slotBox?.height).toBeCloseTo(boxes[index]?.height ?? 0, 0);
+    }
+    await expect(page.locator('.cdk-drag-preview .library__drag-stack')).toHaveCount(2);
+    // The move is announced.
+    await expect(page.locator('li.library__item--carried')).not.toHaveCount(0);
+    await expect(page.locator('.library__live')).toContainText('Moving 3 links');
+    await page.mouse.up();
+    await expect(page.locator('li.library__item--carried')).toHaveCount(0);
+
+    // Some of the picked links may already live in Reading; only the others move.
+    const toast = page
+      .getByRole('status')
+      .filter({ hasText: new RegExp(`\\d links? moved to ${READING}`) });
+    await expect(toast).toBeVisible();
+    await expect(page.getByRole('group', { name: 'Selection' })).toHaveCount(0);
+    await toast.getByRole('button', { name: 'Undo' }).click();
+    await expect(toast).toHaveCount(0);
+  });
+
+  test('dragging an unselected card moves just that card', async ({ page }) => {
+    test.skip(isPhone(page), 'phones have no sidebar');
+    await page.goto('/links');
+    const items = page.locator('li.library__item');
+    await expect(items.first()).toBeVisible();
+    const first = items.nth(0).locator('ui-card');
+    await first.hover();
+    await first.locator('.ui-checkbox__box').click();
+    await settled(page);
+
+    await dragOver(page, items.nth(1), treeRow(page, READING));
+    await expect(page.locator('.cdk-drag-preview .library__drag-badge')).toHaveText('Move 1 link');
+    await expect(page.locator('.cdk-drag-preview .library__drag-stack')).toHaveCount(0);
+    await page.mouse.up();
+
+    await expect(page.getByRole('status').filter({ hasText: `Moved to ${READING}` })).toBeVisible();
   });
 
   test('Esc cancels the drag and nothing moves', async ({ page }) => {
@@ -81,13 +157,21 @@ test.describe('drag a link to a folder (mock API)', () => {
     page,
   }) => {
     test.skip(isPhone(page), 'phones have no sidebar');
-    await page.getByRole('radio', { name: 'List' }).click();
+    await switchView(page, 'List');
     const row = page.locator('li.library__item').filter({ hasText: PASTA });
     await expect(row.locator('ui-list-item')).toBeVisible();
     await settled(page);
 
+    const rowBox = await row.boundingBox();
+
     await dragOver(page, row, treeRow(page, READING));
     await expect(page.locator('.cdk-drag-preview')).toBeVisible();
+    // The row leaves a one-line "Moving · title" slot of its own height.
+    const slot = page.locator('ul.library__rows .library__drag-slot');
+    await expect(slot).toHaveClass(/drag-slot--compact/);
+    await expect(slot).toContainText('Moving');
+    await expect(slot).toContainText(PASTA);
+    expect((await slot.boundingBox())?.height).toBeCloseTo(rowBox?.height ?? 0, 0);
     await page.mouse.up();
 
     await expect(page.getByRole('status').filter({ hasText: `Moved to ${READING}` })).toBeVisible();

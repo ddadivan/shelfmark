@@ -101,7 +101,16 @@ export class MockLibraryData {
     this.folders = folders;
   }
 
-  /** Folders with `linkCount` (links directly in the folder), ordered by name. */
+  /** The place after the last subfolder of `parentId` (a new or moved folder goes last). */
+  nextFolderPosition(parentId: string | null): number {
+    return (
+      this.folders
+        .filter((folder) => folder.parentId === parentId)
+        .reduce((max, folder) => Math.max(max, folder.position), -1) + 1
+    );
+  }
+
+  /** Folders with `linkCount` (links directly in the folder), by position, then name (the API order). */
   foldersView(): FolderResponse[] {
     return this.folders
       .map((folder) => ({
@@ -109,7 +118,7 @@ export class MockLibraryData {
         pinned: this.isPinned(PIN_KIND.Folder, folder.id),
         linkCount: this.links.filter((link) => link.folderId === folder.id).length,
       }))
-      .sort((a, b) => a.name.localeCompare(b.name));
+      .sort((a, b) => a.position - b.position || a.name.localeCompare(b.name));
   }
 
   isPinned(kind: PinKind, id: string): boolean {

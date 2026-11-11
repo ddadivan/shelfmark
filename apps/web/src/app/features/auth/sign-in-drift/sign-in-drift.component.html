@@ -1,15 +1,24 @@
 @for (lane of lanes(); track lane.side) {
-  <div class="sd-lane sd-lane--{{ lane.side }}" [class.sd-lane--narrow]="!wide()">
+  <div
+    class="sd-lane sd-lane--{{ lane.side }}"
+    [class.sd-lane--narrow]="!wide()"
+    [style.--sd-ref-w]="lane.frame.width"
+    [style.--sd-ref-h]="lane.frame.height"
+  >
     @for (item of lane.cards; track item.card.id) {
       <div
         class="sd-card sd-card--{{ item.card.layer }}"
-        [style.grid-column]="item.column"
-        [style.grid-row]="item.row + ' / span ' + item.span"
-        [style.--sd-r]="item.card.rotate + 'deg'"
-        [style.--sd-n]="item.index"
-        [style.--sd-wave]="item.card.wave"
-        [style.--sd-outer]="item.outer"
-        [style.--sd-cy]="item.centreY"
+        [style.--sd-x]="item.place.x"
+        [style.--sd-y]="item.place.y"
+        [style.--sd-s]="item.place.scale"
+        [style.--sd-r]="item.place.rotate + 'deg'"
+        [style.--sd-spin]="item.place.spin + 'deg'"
+        [style.--sd-wave]="item.place.wave"
+        [style.--sd-t]="item.place.duration + 's'"
+        [style.--sd-d]="item.place.delay + 's'"
+        [style.--sd-ax]="item.place.ampX"
+        [style.--sd-ay]="item.place.ampY"
+        [style.--sd-ring-d]="item.ringDelay + 's'"
       >
         <div class="sd-fly">
           <div class="sd-float">

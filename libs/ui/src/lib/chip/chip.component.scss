@@ -6,7 +6,7 @@
   height: rem(28px);
   color: var(--accent-text);
   white-space: nowrap;
-  background: var(--accent-bg);
+  background: var(--ui-chip-bg, var(--accent-bg));
   border-radius: var(--radius-full);
   transition: filter var(--duration-fast) var(--ease-out);
 }

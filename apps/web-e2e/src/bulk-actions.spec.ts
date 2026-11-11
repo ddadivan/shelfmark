@@ -5,6 +5,7 @@ import { expectNoBlockingViolations } from './support/axe';
 import { settled } from './support/settled';
 import { viewEntry } from './support/sidebar';
 import { expect, test } from './support/test';
+import { switchView } from './support/library-toolbar';
 
 // Mirror MOCK_NAME.FolderReading (libs/shared/contracts); the e2e project cannot import from it.
 const READING = 'Reading';
@@ -43,6 +44,34 @@ test.describe('select links and bulk actions (mock API)', () => {
 
   test.describe('desktop', () => {
     test.skip(({ isMobile }) => isMobile, 'the phone has its own tests');
+
+    test('a click opens until a link is picked, then it toggles; the mode is announced', async ({
+      page,
+    }) => {
+      await openFeed(page);
+      const first = cards(page).first();
+      // Not selecting: the link is a real link and the "Open" bar is there.
+      await expect(first.locator('a.ui-card__link')).toHaveAttribute('href', /^https?:/);
+      await expect(first.locator('.ui-card__overlay')).toHaveCount(1);
+      await expect(first.locator('.link-card__open')).toHaveCount(1);
+
+      await pick(page, 0);
+      await expect(page.locator('.library__live')).toHaveText(/Selection mode on/);
+      // Selection mode: no "Open" bar, a click on the card toggles the card.
+      await expect(first.locator('.link-card__open')).toHaveCount(0);
+      await cards(page).nth(1).locator('.ui-card__link').click();
+      await expect(selectedText(page)).toHaveText('2 selected');
+      await cards(page)
+        .nth(1)
+        .locator('.ui-card__link')
+        .click({ modifiers: ['Meta'] });
+      await expect(selectedText(page)).toHaveText('1 selected');
+
+      await page.keyboard.press('Escape');
+      await expect(header(page)).toHaveCount(0);
+      await expect(page.locator('.library__live')).toHaveText('Selection mode off.');
+      await expect(first.locator('.link-card__open')).toHaveCount(1);
+    });
 
     test('hover checkbox, Shift range, click toggles, select all and Esc', async ({ page }) => {
       await openFeed(page);
@@ -241,13 +270,41 @@ test.describe('select links and bulk actions (mock API)', () => {
 
     test('the list view selects rows too', async ({ page }) => {
       await openFeed(page);
-      await page.getByRole('radio', { name: 'List' }).check({ force: true });
+      await switchView(page, 'List');
       const row = page.locator('ui-list-item').first();
       await row.hover();
       await row.locator('ui-checkbox .ui-checkbox__box').click();
       await expect(selectedText(page)).toHaveText('1 selected');
       await expect(page.locator('ui-list-item.ui-list-item--checked')).toHaveCount(1);
     });
+
+    for (const view of ['Cards', 'List'] as const) {
+      test(`Esc hands focus back to the last picked ${view === 'Cards' ? 'card' : 'row'}, not the chips row`, async ({
+        page,
+      }) => {
+        await openFeed(page);
+        if (view === 'List') {
+          await switchView(page, 'List');
+        }
+        const items = page.locator(view === 'Cards' ? 'ui-card' : 'ui-list-item');
+        for (const index of [0, 1]) {
+          await items.nth(index).hover();
+          await items.nth(index).locator('ui-checkbox .ui-checkbox__box').click();
+        }
+        await expect(selectedText(page)).toHaveText('2 selected');
+        // Focus somewhere outside the feed, as after a click in a gap of the chips row.
+        await page.locator('.ui-saved-views__bar').focus();
+
+        await page.keyboard.press('Escape');
+
+        await expect(header(page)).toHaveCount(0);
+        const link = items
+          .nth(1)
+          .locator(view === 'Cards' ? '.ui-card__link' : '.ui-list-item__link');
+        await expect(link).toBeFocused();
+        await expect(page.locator('.ui-saved-views__bar')).not.toBeFocused();
+      });
+    }
 
     test('a route change clears the selection', async ({ page }) => {
       await openFeed(page);
@@ -264,7 +321,6 @@ test.describe('select links and bulk actions (mock API)', () => {
 
     test('a long press starts the selection, taps add to it, Cancel clears', async ({ page }) => {
       await openFeed(page);
-      await expect(cards(page).first().locator('ui-checkbox')).toHaveCount(0);
       await longPress(page, cards(page).nth(0));
       await expect(selectedText(page)).toHaveText('1 selected');
       await expect(cards(page).nth(1).locator('ui-checkbox')).toHaveCount(1);
@@ -276,6 +332,17 @@ test.describe('select links and bulk actions (mock API)', () => {
 
       await header(page).getByRole('button', { name: 'Cancel selection' }).click();
       await expect(header(page)).toHaveCount(0);
+    });
+
+    test('the checkboxes are visible at rest and a tap on one starts the selection', async ({
+      page,
+    }) => {
+      await openFeed(page);
+      const box = cards(page).first().locator('ui-checkbox .ui-checkbox__box');
+      await expect(cards(page).first().locator('.ui-card__select')).toHaveCSS('opacity', '1');
+      await expect(box).toBeVisible();
+      await box.tap();
+      await expect(selectedText(page)).toHaveText('1 selected');
     });
 
     test('Share is hidden without the Web Share API (Copy links instead)', async ({ page }) => {

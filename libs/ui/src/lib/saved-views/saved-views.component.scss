@@ -10,6 +10,13 @@
   flex-wrap: wrap;
   gap: var(--space-2);
   align-items: center;
+
+  // The toolbar is never a tab stop (Aria gives it tabindex -1; Tab and the arrows land on the
+  // chips, which draw the standard ring). A click in a gap can still focus the container, and the
+  // next key would then ring the whole row, so the container itself draws no ring.
+  &:focus {
+    outline: none;
+  }
 }
 
 // Phone: one row that scrolls sideways, the first chip flush with the content edge. The row keeps
@@ -22,6 +29,11 @@
   scrollbar-width: none;
   overscroll-behavior-x: contain;
 
+  // A fade at the right edge says there is more; the end padding lets the last chip scroll clear
+  // of it. The first chip stays flush left.
+  padding-inline-end: var(--space-8);
+  mask-image: linear-gradient(to right, #000 calc(100% - var(--space-8)), transparent);
+
   &::-webkit-scrollbar {
     display: none;
   }
@@ -32,7 +44,7 @@
   display: inline-flex;
   flex: none;
   align-items: stretch;
-  height: rem(34px);
+  height: rem(40px); // the 2027 control height, level with buttons and the search field
   color: var(--text);
   white-space: nowrap;
   background: var(--surface);
@@ -138,7 +150,7 @@
   flex: none;
   gap: rem(6px);
   align-items: center;
-  height: rem(34px);
+  height: rem(40px);
   padding: 0 rem(14px);
   color: var(--text-muted);
   white-space: nowrap;

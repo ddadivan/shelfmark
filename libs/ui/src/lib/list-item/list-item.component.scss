@@ -51,11 +51,16 @@
 }
 
 :host(.ui-list-item--checked) {
+  --ui-chip-bg: var(--surface);
+
   background: var(--accent-bg);
 }
 
 // Bulk selection checkbox: above the stretched link, keeps its place (no shift on hover).
 .ui-list-item__select {
+  // The checked box is filled with the sage `accent` (like the card's), on the `accent-bg` row.
+  --ui-checkbox-fill: var(--accent);
+
   position: relative;
   z-index: 2;
   display: flex;

@@ -8,6 +8,11 @@
 :host {
   box-sizing: border-box;
   display: grid;
+
+  // One column that can shrink to the viewport (`minmax(0, 1fr)`, not `auto`): an auto track
+  // grows to the widest toast's max-content (a long second line, such as the titles of 16
+  // deleted links), pushes the centred toasts to the right and half off the screen.
+  grid-template-columns: minmax(0, 1fr);
   justify-items: center;
   inline-size: 100%;
 

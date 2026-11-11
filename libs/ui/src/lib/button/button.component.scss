@@ -42,7 +42,11 @@
   cursor: pointer;
   background: transparent;
   border: 1px solid transparent;
-  border-radius: var(--radius-full);
+  border-radius: var(
+    --ui-button-radius,
+    var(--radius-full)
+  ); // a feature may ask for a round square
+
   transition:
     background-color var(--duration-fast) var(--ease-out),
     border-color var(--duration-fast) var(--ease-out),
@@ -164,7 +168,9 @@ a.ui-button {
 
 // sm inherits the `label` line-height; only font-size shrinks (spec: 12px text, 16px icons).
 .ui-button--sm {
-  height: rem(32px);
+  // `--ui-button-sm-size`: a feature that needs a larger small button (the card's "..." at 40px on
+  // touch) sets it on an ancestor.
+  height: var(--ui-button-sm-size, #{rem(32px)});
   padding: 0 rem(12px);
   font-size: rem(12px);
 }
@@ -185,7 +191,7 @@ a.ui-button {
   padding: 0;
 
   &.ui-button--sm {
-    width: rem(32px);
+    width: var(--ui-button-sm-size, #{rem(32px)});
   }
 
   &.ui-button--lg {

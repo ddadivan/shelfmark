@@ -5,6 +5,7 @@ import type {
   CreateTagRequest,
   FolderDeleteMode,
   ListLinksQuery,
+  ReorderFoldersRequest,
   RecentLinksQuery,
   UpdateFolderRequest,
   UpdateLinkRequest,
@@ -66,6 +67,7 @@ export function tabSyncedFoldersApi(inner: FoldersApi, sync: TabSyncService): Fo
     list: () => inner.list(),
     create: (request: CreateFolderRequest) => after(inner.create(request), changed),
     update: (id: string, request: UpdateFolderRequest) => after(inner.update(id, request), changed),
+    reorder: (request: ReorderFoldersRequest) => after(inner.reorder(request), changed),
     remove: (id: string, mode: FolderDeleteMode) => after(inner.remove(id, mode), changed),
   };
 }

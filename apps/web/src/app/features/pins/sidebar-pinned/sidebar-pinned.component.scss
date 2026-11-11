@@ -101,25 +101,24 @@
   color: var(--text-muted);
 }
 
-// A pinned link ends with a small pin glyph where a folder shows its count (Main mockup).
-.pinned__pin {
-  flex: none;
-  margin-inline-start: auto;
-  color: var(--text-muted);
-}
-
 .pinned__hidden {
   @include visually-hidden;
 }
 
-// "..." button: sits over the end of the row; fades in on hover or focus, always there on touch.
-.pinned__more {
+// "Unpin": sits over the end of the row (on the row's own background, so they cover the
+// count), fade in on hover or focus, always there on touch.
+.pinned__actions {
   position: absolute;
   inset-block-start: 50%;
   inset-inline-end: rem(4px);
-  transform: translateY(-50%);
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+  background: inherit;
+  border-radius: calc(var(--radius-md) - #{rem(2px)});
   opacity: 0;
   transition: opacity var(--duration-fast) var(--ease-out);
+  transform: translateY(-50%);
 
   &:focus-within {
     opacity: 1;
@@ -134,9 +133,16 @@
   }
 }
 
-.pinned__item:hover .pinned__more,
-.pinned__item:has(.pinned__link:focus-visible) .pinned__more {
+.pinned__item:hover .pinned__actions,
+.pinned__item:has(.pinned__link:focus-visible) .pinned__actions {
   opacity: 1;
+}
+
+// On touch both buttons always show: the name stops before them.
+@media (hover: none) {
+  .pinned__link {
+    padding-inline-end: rem(84px);
+  }
 }
 
 // The phone Library page: the section is a card of its own, like the folder tree below it.
@@ -151,20 +157,78 @@
   }
 }
 
-// Drag and drop (desktop): the row you hold leaves a quiet slot, the others glide aside.
-.pinned__item.cdk-drag-placeholder {
-  background: var(--surface-hover);
+// Drag and drop (desktop): the row lands in a reserved slot, the same as the folder tree's: one
+// row tall, the row's width and corners, a soft sage tint, a thin dashed sage outline and a faint
+// ghost of the row (icon at low opacity, the name muted). It sits where the row was, so the
+// section keeps its height; the other rows glide apart. Reduced motion: no glide, no fade.
+.pinned__drop-slot {
+  @include type(body);
+  @include enter(fade);
 
-  > * {
-    visibility: hidden;
+  display: flex;
+  gap: rem(8px);
+  align-items: center;
+  box-sizing: border-box;
+  min-height: rem(36px);
+  padding-block: 0;
+  padding-inline: rem(10px) rem(40px);
+  font-size: rem(14px);
+  line-height: rem(20px);
+  color: var(--text-muted);
+  background: var(--accent-bg);
+  border: 1px dashed var(--accent);
+  border-radius: calc(var(--radius-md) - #{rem(2px)});
+
+  ui-folder-icon,
+  ui-favicon {
+    opacity: 0.5;
+  }
+
+  @include phone {
+    min-height: rem(44px);
+  }
+
+  @include touch-target;
+
+  @include reduced-motion {
+    animation: none;
   }
 }
 
 .cdk-drop-list-dragging .pinned__item:not(.cdk-drag-placeholder),
 .pinned__item.cdk-drag-animating {
-  transition: transform var(--duration-base) var(--ease-out);
+  transition: transform var(--duration-base) var(--ease-in-out);
 
   @include reduced-motion {
     transition: none;
+  }
+}
+
+// The row being dragged follows the pointer as a small floating card (the folder tree's look):
+// its top-left is at the pointer, the card is shifted so the pointer sits at its start.
+.pinned__preview {
+  pointer-events: none;
+}
+
+.pinned__preview-card {
+  @include type(body);
+
+  display: flex;
+  gap: rem(8px);
+  align-items: center;
+  max-width: rem(240px);
+  min-height: rem(36px);
+  padding-inline: rem(10px) rem(14px);
+  font-size: rem(14px);
+  font-weight: 500;
+  line-height: rem(20px);
+  color: var(--text);
+  background: var(--surface);
+  border-radius: calc(var(--radius-md) - #{rem(2px)});
+  box-shadow: var(--shadow-float);
+  transform: translate(rem(-12px), -50%) rotate(-1.5deg);
+
+  @include reduced-motion {
+    transform: translate(rem(-12px), -50%);
   }
 }

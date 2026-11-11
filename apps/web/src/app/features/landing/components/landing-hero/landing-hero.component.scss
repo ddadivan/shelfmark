@@ -19,10 +19,16 @@
   // centres its content in it. On a short window it never gets smaller than its content.
   min-block-size: max(rem(560px), calc(100svh - var(--landing-header-height, #{rem(72px)})));
 
+  // Desktop: half the row for the preview, so two cards fit from 1024px; from 1280px it takes a
+  // little more than half, for three (the headline scales to its column, below).
   @include desktop {
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-    gap: rem(64px);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: rem(48px);
     padding-block: var(--space-6) calc(var(--space-8) * 2);
+  }
+
+  @include landing.large {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
   }
 
   @include landing.wide {
@@ -43,6 +49,9 @@
 
   @include desktop {
     gap: rem(28px);
+
+    // The headline's size follows this column's width (`cqi`).
+    container-type: inline-size;
   }
 
   @include landing.wide {
@@ -62,19 +71,19 @@
     line-height: rem(60px);
   }
 
+  // From the desktop up the headline keeps its three lines: its longest line ("Even in a year.")
+  // is about 6.35em wide, so the size is capped at 15.5% of the column (`cqi` of the copy).
   @include desktop {
-    font-size: rem(84px);
-    line-height: rem(78px);
+    font-size: min(#{rem(84px)}, 15.5cqi);
+    line-height: 0.93;
   }
 
   @include landing.wide {
-    font-size: rem(96px);
-    line-height: rem(88px);
+    font-size: min(#{rem(96px)}, 15.5cqi);
   }
 
   @include landing.xwide {
-    font-size: rem(112px);
-    line-height: rem(104px);
+    font-size: min(#{rem(112px)}, 15.5cqi);
   }
 }
 

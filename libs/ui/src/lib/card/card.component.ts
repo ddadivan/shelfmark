@@ -9,8 +9,11 @@ import {
   input,
   linkedSignal,
   output,
+  signal,
+  viewChild,
 } from '@angular/core';
 import type { HeadingLevel } from '../heading';
+import { TooltipDirective } from '../tooltip/tooltip.directive';
 
 let nextId = 0;
 
@@ -48,7 +51,7 @@ let nextId = 0;
  */
 @Component({
   selector: 'ui-card',
-  imports: [NgTemplateOutlet],
+  imports: [NgTemplateOutlet, TooltipDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-card',
@@ -63,6 +66,14 @@ let nextId = 0;
   styleUrl: './card.component.scss',
 })
 export class CardComponent {
+  /**
+   * The full title while it is cut by the two-line clamp, else empty (no tooltip). Measured on
+   * hover and keyboard focus, like the breadcrumbs, so a title that fits never shows one.
+   */
+  protected readonly cutTitle = signal('');
+  /** The title text: hovering it (not the rest of the card) opens the full-title tooltip. */
+  protected readonly titleText = viewChild<ElementRef<HTMLElement>>('titleText');
+
   /** Id of the visually hidden description that the link points to. */
   protected readonly descriptionId = `ui-card-description-${nextId++}`;
 
@@ -135,4 +146,9 @@ export class CardComponent {
   protected readonly tone = computed(() => ((this.placeholderTone() % 3) + 3) % 3);
 
   protected readonly imageSrc = computed(() => (this.failed() ? null : this.image() || null));
+
+  protected measureTitle(element: HTMLElement): void {
+    const cut = element.scrollHeight > element.clientHeight + 1;
+    this.cutTitle.set(cut ? (element.textContent ?? '').trim() : '');
+  }
 }

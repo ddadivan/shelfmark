@@ -4,6 +4,7 @@ import { COLOR_SCHEME } from './models/color-scheme.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { LANDING_HEADLINE } from './models/landing-headline.const';
 import { gotoLandingLoaded } from './support/landing';
+import { isPhone } from './support/sidebar';
 
 test.describe('landing', () => {
   test('a guest sees the headline and the sections in order', async ({ page }) => {
@@ -394,8 +395,26 @@ test.describe('landing scenes and reveals', () => {
 });
 
 test.describe('landing app preview motion', () => {
-  /** Three cards in the DOM; a narrow panel clips the ones that do not fit at a readable width. */
+  /**
+   * Four cards in the DOM (a video and three articles); a row shows as many as fit at a readable
+   * width, the others are off it (transparent).
+   */
   const cards = (page: Page): Locator => page.locator('.landing-hero-preview__item');
+  /** The cards on the row: opaque ones. */
+  // String scripts: this project has no DOM lib, and the code runs in the browser anyway.
+  const shownCards = (page: Page): Promise<string[]> =>
+    page.evaluate<string[]>(
+      "[...document.querySelectorAll('.landing-hero-preview__item')].filter((el) => getComputedStyle(el).opacity === '1').map((el) => el.querySelector('.link-preview-card__host')?.textContent.trim() ?? '')",
+    );
+  const switchValue = (page: Page): Promise<string | undefined> =>
+    page.evaluate<string | undefined>(
+      "document.querySelector('.landing-hero-preview ui-segmented-control input:checked')?.value",
+    );
+  /** Layout box of every card (left, top, width): they all share one grid cell. */
+  const cardBoxes = (page: Page): Promise<string[]> =>
+    page.evaluate<string[]>(
+      "[...document.querySelectorAll('.landing-hero-preview__item')].map((el) => [el.offsetLeft, el.offsetTop, el.offsetWidth].join(','))",
+    );
   const toast = (page: Page): Locator => page.locator('.landing-hero-preview__toast');
   /** Animations still running inside the preview. */
   const running = (page: Page): Promise<number> =>
@@ -410,19 +429,58 @@ test.describe('landing app preview motion', () => {
 
   test('the cards land one after another, then the toast slides in, once', async ({ page }) => {
     await page.goto('/');
-    await expect(cards(page)).toHaveCount(3);
+    await expect(cards(page)).toHaveCount(4);
 
     // The toast is the last to arrive: when it is done, every card is done.
     await expect(toast(page)).toHaveCSS('opacity', '1', { timeout: 5000 });
-    for (const card of await cards(page).all()) {
-      await expect(card).toHaveCSS('opacity', '1');
-    }
     await expect.poll(() => running(page)).toBe(0);
-    // Played once: it does not start again while the page stays open.
+    expect((await shownCards(page)).length).toBeGreaterThan(0);
+    // The landing does not start again while the page stays open (the switch loop below moves
+    // the cards sideways; none of them lands again).
     await page.waitForTimeout(1500);
-    expect(await running(page)).toBe(0);
+    const landing = await page.evaluate<number>(
+      "document.querySelector('.landing-hero-preview').getAnimations({ subtree: true }).filter((a) => a instanceof CSSAnimation && a.animationName.includes('land')).length",
+    );
+    expect(landing).toBe(0);
     await expect(toast(page)).toContainText('Saved to Read later');
     await expect(toast(page)).toContainText('Undo');
+  });
+
+  test('then the switch loops: All, Articles (the video leaves, the next article comes in), back to All', async ({
+    page,
+  }) => {
+    test.skip(isPhone(page), 'one card on a phone row: covered by the unit tests');
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    await expect(toast(page)).toHaveCSS('opacity', '1', { timeout: 5000 });
+    await expect.poll(() => shownCards(page)).toEqual(['youtube.com', 'web.dev', 'vox.com']);
+    expect(await switchValue(page)).toBe('all');
+    const focused = await page.evaluate('document.activeElement?.tagName');
+    const boxes = await cardBoxes(page);
+    expect(new Set(boxes).size).toBe(1);
+
+    await expect.poll(() => switchValue(page), { timeout: 8000 }).toBe('articles');
+    await expect(page.locator('.landing-hero-preview__count')).toHaveText('6 links');
+    await expect.poll(() => shownCards(page)).toEqual(['web.dev', 'vox.com', 'wired.com']);
+    // Only transform properties and opacity move; no card's layout box changed.
+    await expect(cards(page).first()).toHaveCSS('transition-property', 'translate, opacity, scale');
+    expect(await cardBoxes(page)).toEqual(boxes);
+
+    await expect.poll(() => switchValue(page), { timeout: 8000 }).toBe('all');
+    await expect.poll(() => shownCards(page)).toEqual(['youtube.com', 'web.dev', 'vox.com']);
+    // Decorative: it never takes focus.
+    expect(await page.evaluate('document.activeElement?.tagName')).toBe(focused);
+  });
+
+  test('the loop waits while the tab is hidden', async ({ page }) => {
+    await page.goto('/');
+    await expect(toast(page)).toHaveCSS('opacity', '1', { timeout: 5000 });
+    await page.evaluate(`(() => {
+      Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' });
+      document.dispatchEvent(new Event('visibilitychange'));
+    })()`);
+    await page.waitForTimeout(6000);
+    expect(await switchValue(page)).toBe('all');
   });
 
   test('is a decorative picture: hidden from assistive technology, nothing in it can be focused', async ({
@@ -445,11 +503,25 @@ test.describe('landing app preview motion', () => {
     }) => {
       await page.goto('/');
 
-      await expect(cards(page)).toHaveCount(3);
+      await expect(cards(page)).toHaveCount(4);
       await expect(toast(page)).toHaveCSS('opacity', '1');
-      for (const card of await cards(page).all()) {
-        await expect(card).toHaveCSS('opacity', '1');
-      }
+      // The "All" frame: the row's first cards fully there, from the first one, no gaps.
+      const shown = await shownCards(page);
+      expect(shown.length).toBeGreaterThan(0);
+      expect(shown).toEqual(['youtube.com', 'web.dev', 'vox.com'].slice(0, shown.length));
+      expect(
+        await page
+          .locator('.landing-hero-preview')
+          .evaluate((el) => el.getAnimations({ subtree: true }).length),
+      ).toBe(0);
+    });
+
+    test('the switch stays on All: no loop', async ({ page }) => {
+      await page.goto('/');
+      await expect(toast(page)).toHaveCSS('opacity', '1');
+      await page.waitForTimeout(6000);
+
+      expect(await switchValue(page)).toBe('all');
       expect(
         await page
           .locator('.landing-hero-preview')

@@ -5,6 +5,7 @@ export interface FolderRow {
   name: string;
   colour: string;
   icon: string;
+  position: number;
   pinnedPosition: number | null;
   createdAt: Date;
   updatedAt: Date;

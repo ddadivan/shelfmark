@@ -4,6 +4,7 @@ import type {
   FolderDeleteMode,
   FolderResponse,
   ListFoldersResponse,
+  ReorderFoldersRequest,
   UpdateFolderRequest,
 } from '@shelfmark/contracts';
 
@@ -18,6 +19,8 @@ export interface FoldersApi {
   create(request: CreateFolderRequest): Observable<FolderResponse>;
   /** `PATCH /api/folders/:id`: rename and / or move. */
   update(id: string, request: UpdateFolderRequest): Observable<FolderResponse>;
+  /** `PUT /api/folders/order`: the subfolders of one parent in a new order; answers the whole list. */
+  reorder(request: ReorderFoldersRequest): Observable<ListFoldersResponse>;
   /** `DELETE /api/folders/:id?mode=`: the folder and its subfolders; `mode` decides about the links. */
   remove(id: string, mode: FolderDeleteMode): Observable<void>;
 }

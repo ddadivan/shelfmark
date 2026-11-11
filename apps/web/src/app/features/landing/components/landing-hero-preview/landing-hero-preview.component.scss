@@ -56,37 +56,55 @@
 
 // As many cards as fit at a readable width (160px each): three, two or one. The panel's width
 // decides (a container query on it, 32px of padding included), not the window's, because the
-// preview sits in a column that changes with the layout.
+// preview sits in a column that changes with the layout. Every card sits in the first cell and is moved to its slot (`--landing-preview-slot`, from the
+// component) by `translate`, one column plus the gap per slot, so the switch loop never lays
+// anything out again: it only changes `translate`, `scale` and `opacity`. A slot past the last
+// column (`--landing-preview-cols`) is off the row and transparent; slot -1 is a card that left
+// (it fades and shrinks where it stood). The grid clips what slides past its edges.
 .landing-hero-preview__grid {
+  --landing-preview-cols: 3;
+  --landing-preview-gap: var(--space-3);
+
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-3);
+  grid-template-columns: repeat(var(--landing-preview-cols), minmax(0, 1fr));
+  gap: var(--landing-preview-gap);
+  overflow: clip;
+  overflow-clip-margin: var(--space-3);
 }
 
 // The cards are a picture: nothing reacts to the pointer.
 .landing-hero-preview__item {
+  --landing-preview-shown: min(
+    clamp(0, var(--landing-preview-cols) - var(--landing-preview-slot), 1),
+    clamp(0, var(--landing-preview-slot) + 1, 1)
+  );
+
   display: flex;
+  grid-area: 1 / 1;
   min-width: 0;
   pointer-events: none;
+  opacity: var(--landing-preview-shown);
+  translate: calc(max(var(--landing-preview-slot), 0) * (100% + var(--landing-preview-gap))) 0;
+  scale: calc(1 - 0.08 * clamp(0, -1 * var(--landing-preview-slot), 1));
+  transition:
+    translate var(--duration-slow) var(--ease-in-out) 60ms,
+    opacity var(--duration-base) var(--ease-out),
+    scale var(--duration-base) var(--ease-out);
+
+  @include reduced-motion {
+    transition: none;
+  }
 }
 
 @container (inline-size < #{rem(536px)}) {
   .landing-hero-preview__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .landing-hero-preview__item:nth-child(n + 3) {
-    display: none;
+    --landing-preview-cols: 2;
   }
 }
 
 @container (inline-size < #{rem(364px)}) {
   .landing-hero-preview__grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .landing-hero-preview__item:nth-child(n + 2) {
-    display: none;
+    --landing-preview-cols: 1;
   }
 }
 
@@ -110,8 +128,14 @@ $landing-preview-step: 120ms;
   .landing-hero-preview__item,
   .landing-hero-preview__toast {
     opacity: 0;
+  }
 
-    @include reduced-motion {
+  @include reduced-motion {
+    .landing-hero-preview__item {
+      opacity: var(--landing-preview-shown);
+    }
+
+    .landing-hero-preview__toast {
       opacity: 1;
     }
   }

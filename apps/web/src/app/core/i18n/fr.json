@@ -20,12 +20,17 @@
         "label": "Aperçu de l’application",
         "folder": "À lire plus tard",
         "count": "21 liens",
+        "countArticles": "6 liens",
         "view": "Vue",
         "all": "Tous 21",
         "articles": "Articles 6",
         "savedTo": "Enregistré dans {{folder}}",
         "undo": "Annuler",
         "items": {
+          "talk": {
+            "title": "La technologie calme, une conférence de 20 minutes",
+            "tag": "vidéo"
+          },
           "grid": {
             "title": "Le guide complet de CSS grid",
             "tag": "css"
@@ -468,8 +473,17 @@
     },
     "drag": {
       "moveHere": "Déplacer ici",
-      "moveOne": "Déplacer 1 lien",
-      "wasHere": "{{title}} était ici"
+      "moving": "Déplacement",
+      "started": {
+        "one": "Déplacement de {{count}} lien. Déposez-le sur un dossier ou appuyez sur Échap pour annuler.",
+        "many": "Déplacement de {{count}} liens. Déposez-les sur un dossier ou appuyez sur Échap pour annuler.",
+        "other": "Déplacement de {{count}} liens. Déposez-les sur un dossier ou appuyez sur Échap pour annuler."
+      },
+      "move": {
+        "one": "Déplacer {{count}} lien",
+        "many": "Déplacer {{count}} liens",
+        "other": "Déplacer {{count}} liens"
+      }
     }
   },
   "privacy": {
@@ -598,6 +612,24 @@
         },
         "sneakers": {
           "title": "Baskets minimalistes en cuir"
+        },
+        "typeScale": {
+          "title": "Des échelles typographiques qui marchent"
+        },
+        "kyoto": {
+          "title": "Kyoto loin de la foule"
+        },
+        "focaccia": {
+          "title": "Focaccia croustillante sans pétrissage"
+        },
+        "containerQueries": {
+          "title": "Les container queries en pratique"
+        },
+        "linenShirt": {
+          "title": "Chemise en lin vert sauge"
+        },
+        "madeira": {
+          "title": "Cinq randonnées d’une journée à Madère"
         }
       },
       "tags": {
@@ -670,11 +702,14 @@
       "pinned": {
         "heading": "Épinglés",
         "list": "Éléments épinglés",
-        "menu": "Actions de l’élément épinglé",
-        "actions": "Actions pour {{name}}",
         "moveUp": "Monter",
         "moveDown": "Descendre",
-        "unpin": "Désépingler de la barre latérale"
+        "unpin": "Désépingler de la barre latérale",
+        "unpinButton": "Désépingler {{name}}"
+      },
+      "reorder": {
+        "movedUp": "Déplacé vers le haut, position {{position}} sur {{total}}",
+        "movedDown": "Déplacé vers le bas, position {{position}} sur {{total}}"
       }
     },
     "searchHint": "Rechercher dans vos liens",
@@ -933,6 +968,11 @@
     },
     "kind": {
       "remove": "Retirer le filtre {{kind}}"
+    },
+    "viewMenu": {
+      "label": "Options d'affichage",
+      "button": "Affichage",
+      "sortBy": "Trier par"
     }
   },
   "export": {
@@ -1382,7 +1422,8 @@
       "moveFolder": "Passer d’un dossier à l’autre",
       "toggleFolder": "Fermer ou ouvrir un dossier",
       "folderMenu": "Ouvrir le menu du dossier",
-      "paste": "Coller des liens dans la bibliothèque"
+      "paste": "Coller des liens dans la bibliothèque",
+      "reorder": "Monter ou descendre un élément épinglé ou un dossier"
     },
     "keys": {
       "command": "Commande",
@@ -1741,6 +1782,9 @@
     "pinnedToTopFailed": {
       "title": "Impossible de modifier l’épingle",
       "detail": "Il est revenu comme avant."
+    },
+    "unpinned": {
+      "title": "Désépinglé de la barre latérale"
     }
   },
   "views": {
@@ -2057,7 +2101,9 @@
       "clearHint": "efface",
       "done": "Terminé",
       "cancel": "Annuler la sélection",
-      "longPressHint": "Appuyez longuement sur un lien pour commencer la sélection, puis touchez les autres."
+      "longPressHint": "Appuyez longuement sur un lien pour commencer la sélection, puis touchez les autres.",
+      "modeOn": "Mode sélection activé. Activer un lien le sélectionne désormais.",
+      "modeOff": "Mode sélection désactivé."
     },
     "item": {
       "select": "Sélectionner {{title}}"

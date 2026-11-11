@@ -1,5 +1,11 @@
 import { Dialog } from '@angular/cdk/dialog';
-import { CdkDrag, type CdkDragMove, CdkDragPlaceholder, CdkDropList } from '@angular/cdk/drag-drop';
+import {
+  CdkDrag,
+  type CdkDragMove,
+  CdkDragPlaceholder,
+  CdkDragPreview,
+  CdkDropList,
+} from '@angular/cdk/drag-drop';
 import { DOCUMENT } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -33,6 +39,7 @@ import {
   LoadMoreComponent,
   MenuComponent,
   MenuItemComponent,
+  MenuLabelComponent,
   MenuSeparatorComponent,
   MenuTriggerDirective,
   NoticeComponent,
@@ -80,6 +87,7 @@ import { LINK_SELECT_SHORTCUT } from '../links/selection/models/link-select-shor
 import type { LinkSelectToggle } from '../links/models/link-select-toggle.interface';
 import { LinkSelectionStore } from '../../stores/link-selection.store';
 import { LinkActionsService } from '../links/link-actions.service';
+import { DragSlotComponent } from '../links/drag/drag-slot/drag-slot.component';
 import { LinkDragService } from '../links/drag/link-drag.service';
 import { HowItWorksService } from '../how-it-works/how-it-works.service';
 import { LinkCardComponent } from '../links/link-card/link-card.component';
@@ -110,6 +118,9 @@ import { VIEW_OPTION_KEYS } from './models/view-option-keys.const';
 const SKELETON_COUNT = 8;
 /** Beat between two cards of a paste of many landing in the feed. */
 const LAND_STAGGER_MS = 50;
+/** A link of the feed (card or row) and the control that takes focus in it (its stretched link). */
+const FEED_ITEM_SELECTOR = 'li.library__item[data-link-id]';
+const FEED_ITEM_FOCUS_SELECTOR = '.ui-card__link, .ui-list-item__link';
 
 interface LastShown {
   items: readonly LinkResponse[];
@@ -126,6 +137,7 @@ interface LastShown {
   imports: [
     CdkDrag,
     CdkDragPlaceholder,
+    CdkDragPreview,
     CdkDropList,
     TranslocoPipe,
     BreadcrumbsComponent,
@@ -138,9 +150,11 @@ interface LastShown {
     InViewDirective,
     LinkCardComponent,
     LinkRowComponent,
+    DragSlotComponent,
     LoadMoreComponent,
     MenuComponent,
     MenuItemComponent,
+    MenuLabelComponent,
     MenuSeparatorComponent,
     MenuTriggerDirective,
     NoticeComponent,
@@ -177,6 +191,7 @@ export default class LibraryPage {
   private readonly transloco = inject(TranslocoService);
   private readonly title = inject(Title);
   private readonly doc = inject(DOCUMENT);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly injector = inject(Injector);
   private readonly cdkDialogs = inject(Dialog);
 
@@ -373,7 +388,7 @@ export default class LibraryPage {
     toObservable(this.titleKey).pipe(switchMap((key) => this.transloco.selectTranslate(key))),
   );
   /**
-   * The direct subfolders of the folder of the page, by name, with the number of folders inside
+   * The direct subfolders of the folder of the page, in the sidebar order (#314), with the number of folders inside
    * each. Hidden while a search or tag filter is on (they do not filter) and for a missing folder.
    */
   private readonly currentSubfolders = computed<readonly SubfolderItem[]>(() => {
@@ -384,7 +399,6 @@ export default class LibraryPage {
     const all = this.folders.entities();
     return all
       .filter((folder) => folder.parentId === id)
-      .sort((a, b) => a.name.localeCompare(b.name))
       .map((folder) => ({
         folder,
         childCount: all.filter((child) => child.parentId === folder.id).length,
@@ -535,6 +549,19 @@ export default class LibraryPage {
         this.title.setTitle(text);
       }
     });
+    // Entering and leaving selection mode is announced politely (the "N selected" header is gone
+    // once the mode ends, so it cannot say so itself).
+    effect(() => {
+      const on = this.selecting();
+      untracked(() => {
+        if (on !== this.announcedSelecting) {
+          this.announcedSelecting = on;
+          this.modeAnnouncement.set(
+            this.transloco.translate(on ? 'bulk.header.modeOn' : 'bulk.header.modeOff'),
+          );
+        }
+      });
+    });
     // A new view, filter, sort or route starts without a selection; links that left the view
     // (deleted, moved out) leave the selection too.
     effect(() => {
@@ -585,6 +612,40 @@ export default class LibraryPage {
     void this.actions.addLink({ ...this.addLinkData(), text });
   }
 
+  /** Polite live text for entering / leaving selection mode (empty until the first change). */
+  protected readonly modeAnnouncement = signal('');
+  private announcedSelecting = false;
+
+  /** A drag began: the drag service takes the links along and a screen reader hears what moves. */
+  protected onDragStarted(link: LinkResponse): void {
+    this.drag.start(link, this.selectedLinks());
+    const count = this.bundled(link) ? this.selectedCount() : 1;
+    this.modeAnnouncement.set(
+      this.transloco.translate(pluralKey('links.drag.started', count), { count }),
+    );
+  }
+
+  /** The drag ended (drop or Esc): clears the spoken text, the toast tells what moved. */
+  protected onDragEnded(): void {
+    this.modeAnnouncement.set('');
+    this.drag.drop();
+  }
+
+  /** Dragging a picked link (with others picked) carries the whole selection. */
+  protected bundled(link: LinkResponse): boolean {
+    return this.selectedCount() > 1 && this.selection.has(link.id);
+  }
+
+  /** How many links a drag of `link` carries: the whole selection when it travels, else 1. */
+  protected dragCount(link: LinkResponse): number {
+    return this.bundled(link) ? this.selectedCount() : 1;
+  }
+
+  /** Label key of the drag preview badge: "Move 1 link" / "Move 3 links" (plural per language). */
+  protected dragLabelKey(link: LinkResponse): string {
+    return pluralKey('links.drag.move', this.dragCount(link));
+  }
+
   /** Hit-tests the folders under the pointer while a link is dragged. */
   protected onDragMoved(event: CdkDragMove<unknown>): void {
     this.drag.move(event.pointerPosition.x, event.pointerPosition.y);
@@ -609,7 +670,7 @@ export default class LibraryPage {
       return false;
     }
     if (event.key === KEYBOARD_KEY.Escape && this.selecting()) {
-      this.clearSelection();
+      this.endSelection();
       return true;
     }
     const selectAll =
@@ -638,12 +699,30 @@ export default class LibraryPage {
     if (checked) {
       this.selectAll();
     } else {
-      this.clearSelection();
+      this.endSelection();
     }
   }
 
   protected clearSelection(): void {
     this.selection.clear();
+  }
+
+  /**
+   * Leaves selection mode (Esc, Done, the header box, the phone's close button). The selection bar
+   * that may hold focus goes away, so focus returns to the feed: it stays on a card or row that
+   * has it, else goes to the link last picked (the selection anchor), else to the first one, and
+   * never falls to the toolbar above the feed.
+   */
+  protected endSelection(): void {
+    const anchor = this.selection.anchor();
+    this.clearSelection();
+    const active = this.doc.activeElement;
+    if (active instanceof HTMLElement && active.closest(FEED_ITEM_SELECTOR)) {
+      return;
+    }
+    const items = [...this.host.querySelectorAll<HTMLElement>(FEED_ITEM_SELECTOR)];
+    const item = items.find((candidate) => candidate.dataset['linkId'] === anchor) ?? items[0];
+    item?.querySelector<HTMLElement>(FEED_ITEM_FOCUS_SELECTOR)?.focus();
   }
 
   /** A bulk bar button: runs the action on the picked links; some clear the selection afterwards. */

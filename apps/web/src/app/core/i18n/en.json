@@ -20,12 +20,17 @@
         "label": "App preview",
         "folder": "Read later",
         "count": "21 links",
+        "countArticles": "6 links",
         "view": "View",
         "all": "All 21",
         "articles": "Articles 6",
         "savedTo": "Saved to {{folder}}",
         "undo": "Undo",
         "items": {
+          "talk": {
+            "title": "Calm technology, a 20-minute talk",
+            "tag": "video"
+          },
           "grid": {
             "title": "A complete guide to CSS grid",
             "tag": "css"
@@ -459,8 +464,15 @@
     },
     "drag": {
       "moveHere": "Move here",
-      "moveOne": "Move 1 link",
-      "wasHere": "{{title}} was here"
+      "moving": "Moving",
+      "started": {
+        "one": "Moving {{count}} link. Drop it on a folder, or press Escape to cancel.",
+        "other": "Moving {{count}} links. Drop them on a folder, or press Escape to cancel."
+      },
+      "move": {
+        "one": "Move {{count}} link",
+        "other": "Move {{count}} links"
+      }
     }
   },
   "privacy": {
@@ -589,6 +601,24 @@
         },
         "sneakers": {
           "title": "Minimal leather sneakers"
+        },
+        "typeScale": {
+          "title": "Type scales that actually work"
+        },
+        "kyoto": {
+          "title": "Kyoto away from the crowds"
+        },
+        "focaccia": {
+          "title": "Crispy no-knead focaccia"
+        },
+        "containerQueries": {
+          "title": "Container queries in practice"
+        },
+        "linenShirt": {
+          "title": "Linen shirt in sage green"
+        },
+        "madeira": {
+          "title": "Five day hikes on Madeira"
         }
       },
       "tags": {
@@ -660,11 +690,14 @@
       "pinned": {
         "heading": "Pinned",
         "list": "Pinned items",
-        "menu": "Pinned item actions",
-        "actions": "Actions for {{name}}",
         "moveUp": "Move up",
         "moveDown": "Move down",
-        "unpin": "Unpin from sidebar"
+        "unpin": "Unpin from sidebar",
+        "unpinButton": "Unpin {{name}}"
+      },
+      "reorder": {
+        "movedUp": "Moved up, position {{position}} of {{total}}",
+        "movedDown": "Moved down, position {{position}} of {{total}}"
       }
     },
     "searchHint": "Search your links",
@@ -914,6 +947,11 @@
     },
     "kind": {
       "remove": "Remove filter {{kind}}"
+    },
+    "viewMenu": {
+      "label": "View options",
+      "button": "View",
+      "sortBy": "Sort by"
     }
   },
   "export": {
@@ -1360,7 +1398,8 @@
       "moveFolder": "Move between folders",
       "toggleFolder": "Close or open a folder",
       "folderMenu": "Open the folder menu",
-      "paste": "Paste links into the library"
+      "paste": "Paste links into the library",
+      "reorder": "Move a pinned item or folder up or down"
     },
     "keys": {
       "command": "Command",
@@ -1705,6 +1744,9 @@
     "pinnedToTopFailed": {
       "title": "Couldn't change the pin",
       "detail": "It is back as it was."
+    },
+    "unpinned": {
+      "title": "Unpinned from sidebar"
     }
   },
   "views": {
@@ -2016,7 +2058,9 @@
       "clearHint": "clears",
       "done": "Done",
       "cancel": "Cancel selection",
-      "longPressHint": "Long-press a link to start selecting, then tap others."
+      "longPressHint": "Long-press a link to start selecting, then tap others.",
+      "modeOn": "Selection mode on. Activating a link now selects it.",
+      "modeOff": "Selection mode off."
     },
     "item": {
       "select": "Select {{title}}"

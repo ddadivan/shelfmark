@@ -26,6 +26,21 @@
   flex: 1;
   flex-direction: column;
   min-height: 0;
+
+  // Phone: the selection bar needs a line of its own over the title. The page pushes the title
+  // (and the feed) down by the bar's room while a selection runs, with a short ease; there is no
+  // room to keep free at rest on a phone. Reduced motion: the change is instant.
+  @include phone {
+    transition: padding-block-start var(--duration-base) var(--ease-out);
+
+    &.library--selecting {
+      padding-block-start: calc(var(--space-3) + var(--space-2) + var(--space-6));
+    }
+
+    @include reduced-motion {
+      transition: none;
+    }
+  }
 }
 
 // The feed (or the empty state) under the fixed title, count and toolbar. From the tablet width
@@ -76,6 +91,11 @@
   align-items: flex-end;
   justify-content: space-between;
   margin-bottom: var(--space-4);
+
+  // Phone: the title and the one "View" button share a line; a long title wraps inside its block.
+  @include phone {
+    flex-wrap: nowrap;
+  }
 }
 
 .library__heading {
@@ -285,6 +305,11 @@
   display: block;
 }
 
+// Screen reader text only: "Selection mode on / off".
+.library__live {
+  @include visually-hidden;
+}
+
 // Selection header (Bulk.dc.html): "3 selected", "Select all 12", the hints and Done. It lies over
 // the room of the breadcrumb trail (phone: over the title), so starting a selection never moves
 // the feed under the pointer.
@@ -302,8 +327,11 @@
   border-radius: var(--radius-full);
   box-shadow: var(--shadow-card);
 
+  // Tablet and up: the bar starts 8px above the trail line (it covers the trail) and its 48px end
+  // 4px above the title box (the 44px room under the main column's padding); the title's line box
+  // has 10px of leading, so the text keeps a clear gap and nothing moves when the bar appears.
   @include tablet-up {
-    inset-block-start: calc(var(--space-1) * -1);
+    inset-block-start: calc(var(--space-2) * -1);
   }
 }
 
@@ -373,22 +401,25 @@
   }
 }
 
-// The slot a dragged link leaves behind (DragDrop spec): a dashed outline with the link's name.
-.library__drag-slot {
-  @include type(caption);
-  @include line-clamp(2);
+// Every link that travels with a drag shows the same empty slot (DragDrop spec, `app-drag-slot`):
+// the grabbed one as the CDK placeholder, at the height it had (`--drag-slot-height`, set on grab),
+// every other carried one laid over its own card, which stays in place invisible to keep its box.
+// Nothing reflows. Back on drop or Esc.
+.library__item--carried {
+  position: relative;
 
-  display: grid;
-  place-items: center;
-  min-height: 100%;
-  padding: var(--space-4);
-  color: var(--text-muted);
-  text-align: center;
-  border: 2px dashed var(--border-control);
-  border-radius: var(--radius-lg);
+  > :not(.library__carried-slot) {
+    visibility: hidden;
+  }
 }
 
-.library__rows .library__drag-slot {
-  min-height: rem(56px);
-  border-radius: var(--radius-md);
+.library__carried-slot {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.library__drag-slot {
+  block-size: var(--drag-slot-height, 100%);
 }

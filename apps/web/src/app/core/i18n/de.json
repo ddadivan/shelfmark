@@ -20,12 +20,17 @@
         "label": "Vorschau der App",
         "folder": "Später lesen",
         "count": "21 Links",
+        "countArticles": "6 Links",
         "view": "Ansicht",
         "all": "Alle 21",
         "articles": "Artikel 6",
         "savedTo": "Gespeichert in {{folder}}",
         "undo": "Rückgängig",
         "items": {
+          "talk": {
+            "title": "Ruhige Technologie, ein 20-Minuten-Vortrag",
+            "tag": "Video"
+          },
           "grid": {
             "title": "Der komplette Guide zu CSS Grid",
             "tag": "css"
@@ -459,8 +464,15 @@
     },
     "drag": {
       "moveHere": "Hierher verschieben",
-      "moveOne": "1 Link verschieben",
-      "wasHere": "{{title}} war hier"
+      "moving": "Wird verschoben",
+      "started": {
+        "one": "{{count}} Link wird verschoben. Auf einen Ordner ziehen oder mit Esc abbrechen.",
+        "other": "{{count}} Links werden verschoben. Auf einen Ordner ziehen oder mit Esc abbrechen."
+      },
+      "move": {
+        "one": "{{count}} Link verschieben",
+        "other": "{{count}} Links verschieben"
+      }
     }
   },
   "privacy": {
@@ -589,6 +601,24 @@
         },
         "sneakers": {
           "title": "Minimalistische Ledersneaker"
+        },
+        "typeScale": {
+          "title": "Typo-Skalen, die wirklich funktionieren"
+        },
+        "kyoto": {
+          "title": "Kyoto abseits der Massen"
+        },
+        "focaccia": {
+          "title": "Knusprige Focaccia ohne Kneten"
+        },
+        "containerQueries": {
+          "title": "Container Queries in der Praxis"
+        },
+        "linenShirt": {
+          "title": "Leinenhemd in Salbeigrün"
+        },
+        "madeira": {
+          "title": "Fünf Tageswanderungen auf Madeira"
         }
       },
       "tags": {
@@ -660,11 +690,14 @@
       "pinned": {
         "heading": "Angeheftet",
         "list": "Angeheftete Elemente",
-        "menu": "Aktionen für angeheftetes Element",
-        "actions": "Aktionen für {{name}}",
         "moveUp": "Nach oben",
         "moveDown": "Nach unten",
-        "unpin": "Von Seitenleiste lösen"
+        "unpin": "Von Seitenleiste lösen",
+        "unpinButton": "{{name}} lösen"
+      },
+      "reorder": {
+        "movedUp": "Nach oben verschoben, Position {{position}} von {{total}}",
+        "movedDown": "Nach unten verschoben, Position {{position}} von {{total}}"
       }
     },
     "searchHint": "Deine Links durchsuchen",
@@ -914,6 +947,11 @@
     },
     "kind": {
       "remove": "Filter {{kind}} entfernen"
+    },
+    "viewMenu": {
+      "label": "Ansichtsoptionen",
+      "button": "Ansicht",
+      "sortBy": "Sortieren nach"
     }
   },
   "export": {
@@ -1360,7 +1398,8 @@
       "moveFolder": "Zwischen Ordnern wechseln",
       "toggleFolder": "Ordner zu- oder aufklappen",
       "folderMenu": "Ordnermenü öffnen",
-      "paste": "Links in die Bibliothek einfügen"
+      "paste": "Links in die Bibliothek einfügen",
+      "reorder": "Angeheftetes Element oder Ordner nach oben oder unten verschieben"
     },
     "keys": {
       "command": "Befehl",
@@ -1705,6 +1744,9 @@
     "pinnedToTopFailed": {
       "title": "Anheften konnte nicht geändert werden",
       "detail": "Es ist wieder wie vorher."
+    },
+    "unpinned": {
+      "title": "Von Seitenleiste gelöst"
     }
   },
   "views": {
@@ -2016,7 +2058,9 @@
       "clearHint": "hebt auf",
       "done": "Fertig",
       "cancel": "Auswahl abbrechen",
-      "longPressHint": "Halte einen Link gedrückt, um die Auswahl zu starten, und tippe dann weitere an."
+      "longPressHint": "Halte einen Link gedrückt, um die Auswahl zu starten, und tippe dann weitere an.",
+      "modeOn": "Auswahlmodus an. Ein Link wird jetzt ausgewählt, statt geöffnet.",
+      "modeOff": "Auswahlmodus aus."
     },
     "item": {
       "select": "{{title}} auswählen"

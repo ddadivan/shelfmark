@@ -14,6 +14,8 @@ export class FolderResponseDto implements FolderResponse, GetFolderResponse {
   @ApiProperty() name!: string;
   @ApiProperty({ enum: Object.values(FOLDER_COLOUR) }) colour!: FolderColour;
   @ApiProperty({ enum: Object.values(FOLDER_ICON) }) icon!: FolderIcon;
+  @ApiProperty({ description: 'Place among its siblings, 0 first (manual order)' })
+  position!: number;
   @ApiProperty({ description: 'Pinned to the sidebar' }) pinned!: boolean;
   @ApiProperty({ description: 'Links directly in this folder' }) linkCount!: number;
   @ApiProperty({ format: 'date-time' }) createdAt!: string;
