@@ -12,6 +12,7 @@
           [variant]="BUTTON_VARIANT.Primary"
           [size]="BUTTON_SIZE.Lg"
           [href]="LANDING_LINKS.Shelf"
+          [appAppLink]="LANDING_LINKS.Shelf"
           >{{ 'landing.backToShelf' | transloco }}</ui-button
         >
       } @else {
@@ -19,11 +20,15 @@
           [variant]="BUTTON_VARIANT.Primary"
           [size]="BUTTON_SIZE.Lg"
           [href]="LANDING_LINKS.Demo"
+          [appAppLink]="LANDING_LINKS.Demo"
           >{{ 'landing.finale.demo' | transloco }}</ui-button
         >
-        <ui-button [size]="BUTTON_SIZE.Lg" [href]="LANDING_LINKS.SignIn">{{
-          'landing.finale.signIn' | transloco
-        }}</ui-button>
+        <ui-button
+          [size]="BUTTON_SIZE.Lg"
+          [href]="LANDING_LINKS.SignIn"
+          [appAppLink]="LANDING_LINKS.SignIn"
+          >{{ 'landing.finale.signIn' | transloco }}</ui-button
+        >
       }
     </div>
   </div>

@@ -1,3 +1,4 @@
+import { AppLinkDirective } from '../../app-link.directive';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { BUTTON_SIZE, BUTTON_VARIANT, ButtonComponent } from '@shelfmark/ui';
@@ -10,7 +11,7 @@ import { LandingChatComponent } from '../landing-chat/landing-chat.component';
 /** First screen: the headline with its lead, the demo and sign-in buttons and the "Saved Messages" demo. */
 @Component({
   selector: 'app-landing-hero',
-  imports: [TranslocoPipe, ButtonComponent, LandingChatComponent],
+  imports: [AppLinkDirective, TranslocoPipe, ButtonComponent, LandingChatComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './landing-hero.component.html',
   styleUrl: './landing-hero.component.scss',

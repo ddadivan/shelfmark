@@ -6,6 +6,7 @@ import {
   effect,
   inject,
   input,
+  linkedSignal,
   signal,
   viewChild,
 } from '@angular/core';
@@ -101,8 +102,8 @@ export class SidebarComponent {
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   /** The folder list answered (or failed): before that the section stays out, not empty. */
-  protected readonly foldersReady = computed(() => this.folders.loaded() || this.folders.error());
-  protected readonly tagsReady = computed(() => this.tagsStore.loaded() || this.tagsStore.error());
+  protected readonly foldersReady = latched(() => this.folders.loaded() || this.folders.error());
+  protected readonly tagsReady = latched(() => this.tagsStore.loaded() || this.tagsStore.error());
   /** Rows of the first load show after 300 ms (Loading spec), never a flash for a fast answer. */
   protected readonly loaderShown = loaderVisible(computed(() => !this.foldersReady()));
   /** The logo heads the card (the desktop shell); the phone drawer has its own header. */
@@ -342,6 +343,17 @@ export class SidebarComponent {
   private menuFolder() {
     return this.menuFolderId === null ? undefined : this.folders.entityMap()[this.menuFolderId];
   }
+}
+
+/**
+ * True once `ready` has been true: a reload (Retry) flips `error` off for a moment and must not
+ * remove a section that is already on screen (its component loads its own data when created).
+ */
+function latched(ready: () => boolean) {
+  return linkedSignal<boolean, boolean>({
+    source: ready,
+    computation: (now, previous) => now || (previous?.value ?? false),
+  });
 }
 
 function count(value: number | undefined): { count: number } | Record<string, never> {

@@ -1,3 +1,4 @@
+import { AppLinkDirective } from '../../app-link.directive';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { BUTTON_SIZE, BUTTON_VARIANT, ButtonComponent } from '@shelfmark/ui';
@@ -8,7 +9,7 @@ import { LandingRevealDirective } from '../../directives/landing-reveal.directiv
 /** Closing call to action: open the demo or sign in. */
 @Component({
   selector: 'app-landing-finale',
-  imports: [LandingRevealDirective, TranslocoPipe, ButtonComponent],
+  imports: [AppLinkDirective, LandingRevealDirective, TranslocoPipe, ButtonComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './landing-finale.component.html',
   styleUrl: './landing-finale.component.scss',

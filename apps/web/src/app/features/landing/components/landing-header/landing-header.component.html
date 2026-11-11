@@ -18,9 +18,13 @@
       >
     }
     @if (signedIn()) {
-      <ui-button [href]="LANDING_LINKS.Shelf">{{ 'landing.backToShelf' | transloco }}</ui-button>
+      <ui-button [href]="LANDING_LINKS.Shelf" [appAppLink]="LANDING_LINKS.Shelf">{{
+        'landing.backToShelf' | transloco
+      }}</ui-button>
     } @else {
-      <ui-button [href]="LANDING_LINKS.SignIn">{{ 'landing.header.signIn' | transloco }}</ui-button>
+      <ui-button [href]="LANDING_LINKS.SignIn" [appAppLink]="LANDING_LINKS.SignIn">{{
+        'landing.header.signIn' | transloco
+      }}</ui-button>
     }
   </nav>
 </header>
