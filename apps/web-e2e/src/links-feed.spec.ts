@@ -135,7 +135,7 @@ test.describe('links feed (mock API)', () => {
     await expect(favorite).toHaveAttribute('aria-pressed', 'false');
   });
 
-  test('the card menu lists Open, Edit, the favorite toggle and Delete last, after a separator', async ({
+  test('the card menu lists Open, Edit, the favorite toggle, Pin to sidebar and Delete last, after a separator', async ({
     page,
   }) => {
     await openFeed(page);
@@ -149,6 +149,7 @@ test.describe('links feed (mock API)', () => {
       /Open/,
       /Edit/,
       before === 'true' ? /Remove from favorites/ : /Add to favorites/,
+      /Pin to sidebar/,
       /Delete/,
     ]);
     await expect(menu.getByRole('separator')).toHaveCount(1);
