@@ -4,6 +4,7 @@
   [class.library--selecting]="selecting()"
   [attr.aria-busy]="store.loading()"
 >
+  <p class="library__live" role="status">{{ modeAnnouncement() }}</p>
   @if (selecting()) {
   <div
     class="library__selection"

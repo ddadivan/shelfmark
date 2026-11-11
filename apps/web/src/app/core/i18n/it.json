@@ -2057,7 +2057,9 @@
       "clearHint": "annulla",
       "done": "Fatto",
       "cancel": "Annulla selezione",
-      "longPressHint": "Tieni premuto un link per iniziare a selezionare, poi tocca gli altri."
+      "longPressHint": "Tieni premuto un link per iniziare a selezionare, poi tocca gli altri.",
+      "modeOn": "Modalità selezione attiva. Attivare un link ora lo seleziona.",
+      "modeOff": "Modalità selezione disattivata."
     },
     "item": {
       "select": "Seleziona {{title}}"

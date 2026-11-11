@@ -44,6 +44,34 @@ test.describe('select links and bulk actions (mock API)', () => {
   test.describe('desktop', () => {
     test.skip(({ isMobile }) => isMobile, 'the phone has its own tests');
 
+    test('a click opens until a link is picked, then it toggles; the mode is announced', async ({
+      page,
+    }) => {
+      await openFeed(page);
+      const first = cards(page).first();
+      // Not selecting: the link is a real link and the "Open" bar is there.
+      await expect(first.locator('a.ui-card__link')).toHaveAttribute('href', /^https?:/);
+      await expect(first.locator('.ui-card__overlay')).toHaveCount(1);
+      await expect(first.locator('.link-card__open')).toHaveCount(1);
+
+      await pick(page, 0);
+      await expect(page.locator('.library__live')).toHaveText(/Selection mode on/);
+      // Selection mode: no "Open" bar, a click on the card toggles the card.
+      await expect(first.locator('.link-card__open')).toHaveCount(0);
+      await cards(page).nth(1).locator('.ui-card__link').click();
+      await expect(selectedText(page)).toHaveText('2 selected');
+      await cards(page)
+        .nth(1)
+        .locator('.ui-card__link')
+        .click({ modifiers: ['Meta'] });
+      await expect(selectedText(page)).toHaveText('1 selected');
+
+      await page.keyboard.press('Escape');
+      await expect(header(page)).toHaveCount(0);
+      await expect(page.locator('.library__live')).toHaveText('Selection mode off.');
+      await expect(first.locator('.link-card__open')).toHaveCount(1);
+    });
+
     test('hover checkbox, Shift range, click toggles, select all and Esc', async ({ page }) => {
       await openFeed(page);
       await expect(header(page)).toHaveCount(0);

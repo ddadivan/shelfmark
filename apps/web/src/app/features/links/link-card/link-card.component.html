@@ -25,7 +25,8 @@
       (click)="onCheckboxClick($event)"
     />
   }
-  @if (href()) {
+  <!-- No "Open" bar in selection mode: a click only toggles, so nothing opens by surprise. -->
+  @if (href() && !selecting()) {
     <span slot="overlay" class="link-card__open">
       <span class="link-card__address">{{ address() }}</span>
       <span class="link-card__open-label">

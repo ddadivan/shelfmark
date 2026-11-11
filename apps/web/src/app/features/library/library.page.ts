@@ -535,6 +535,19 @@ export default class LibraryPage {
         this.title.setTitle(text);
       }
     });
+    // Entering and leaving selection mode is announced politely (the "N selected" header is gone
+    // once the mode ends, so it cannot say so itself).
+    effect(() => {
+      const on = this.selecting();
+      untracked(() => {
+        if (on !== this.announcedSelecting) {
+          this.announcedSelecting = on;
+          this.modeAnnouncement.set(
+            this.transloco.translate(on ? 'bulk.header.modeOn' : 'bulk.header.modeOff'),
+          );
+        }
+      });
+    });
     // A new view, filter, sort or route starts without a selection; links that left the view
     // (deleted, moved out) leave the selection too.
     effect(() => {
@@ -584,6 +597,10 @@ export default class LibraryPage {
     event.preventDefault();
     void this.actions.addLink({ ...this.addLinkData(), text });
   }
+
+  /** Polite live text for entering / leaving selection mode (empty until the first change). */
+  protected readonly modeAnnouncement = signal('');
+  private announcedSelecting = false;
 
   /** Dragging a picked link (with others picked) carries the whole selection. */
   protected bundled(link: LinkResponse): boolean {

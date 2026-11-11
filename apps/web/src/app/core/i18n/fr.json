@@ -2057,7 +2057,9 @@
       "clearHint": "efface",
       "done": "Terminé",
       "cancel": "Annuler la sélection",
-      "longPressHint": "Appuyez longuement sur un lien pour commencer la sélection, puis touchez les autres."
+      "longPressHint": "Appuyez longuement sur un lien pour commencer la sélection, puis touchez les autres.",
+      "modeOn": "Mode sélection activé. Activer un lien le sélectionne désormais.",
+      "modeOff": "Mode sélection désactivé."
     },
     "item": {
       "select": "Sélectionner {{title}}"

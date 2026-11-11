@@ -2016,7 +2016,9 @@
       "clearHint": "hebt auf",
       "done": "Fertig",
       "cancel": "Auswahl abbrechen",
-      "longPressHint": "Halte einen Link gedrückt, um die Auswahl zu starten, und tippe dann weitere an."
+      "longPressHint": "Halte einen Link gedrückt, um die Auswahl zu starten, und tippe dann weitere an.",
+      "modeOn": "Auswahlmodus an. Ein Link wird jetzt ausgewählt, statt geöffnet.",
+      "modeOff": "Auswahlmodus aus."
     },
     "item": {
       "select": "{{title}} auswählen"

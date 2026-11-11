@@ -2016,7 +2016,9 @@
       "clearHint": "clears",
       "done": "Done",
       "cancel": "Cancel selection",
-      "longPressHint": "Long-press a link to start selecting, then tap others."
+      "longPressHint": "Long-press a link to start selecting, then tap others.",
+      "modeOn": "Selection mode on. Activating a link now selects it.",
+      "modeOff": "Selection mode off."
     },
     "item": {
       "select": "Select {{title}}"

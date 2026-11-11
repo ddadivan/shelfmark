@@ -300,6 +300,11 @@
   display: block;
 }
 
+// Screen reader text only: "Selection mode on / off".
+.library__live {
+  @include visually-hidden;
+}
+
 // Selection header (Bulk.dc.html): "3 selected", "Select all 12", the hints and Done. It lies over
 // the room of the breadcrumb trail (phone: over the title), so starting a selection never moves
 // the feed under the pointer.
