@@ -18,7 +18,16 @@ const KEY_ICONS = ['key-command', 'key-enter', 'key-option', 'key-shift'];
  * Other glyphs drawn for this app where the design set has none: the video play button (#270), the
  * sidebar / card pin and the folder topic glyphs of the Main mockup (#312).
  */
-const APP_ICONS = ['briefcase', 'code', 'cooking-pot', 'graduation-cap', 'pin', 'play', 'shirt'];
+const APP_ICONS = [
+  'briefcase',
+  'code',
+  'cooking-pot',
+  'graduation-cap',
+  'pin',
+  'pin-off',
+  'play',
+  'shirt',
+];
 
 const sprite = readFileSync(SPRITE_PATH, 'utf8');
 

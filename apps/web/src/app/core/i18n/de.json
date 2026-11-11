@@ -672,7 +672,8 @@
         "actions": "Aktionen für {{name}}",
         "moveUp": "Nach oben",
         "moveDown": "Nach unten",
-        "unpin": "Von Seitenleiste lösen"
+        "unpin": "Von Seitenleiste lösen",
+        "unpinButton": "{{name}} lösen"
       },
       "reorder": {
         "movedUp": "Nach oben verschoben, Position {{position}} von {{total}}",
@@ -1723,6 +1724,9 @@
     "pinnedToTopFailed": {
       "title": "Anheften konnte nicht geändert werden",
       "detail": "Es ist wieder wie vorher."
+    },
+    "unpinned": {
+      "title": "Von Seitenleiste gelöst"
     }
   },
   "views": {

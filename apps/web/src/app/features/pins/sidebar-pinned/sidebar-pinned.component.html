@@ -75,21 +75,30 @@
               <ui-icon class="pinned__pin" name="pin" [size]="ICON_SIZE.Sm" />
             </a>
           }
-          <ui-button
-            class="pinned__more"
-            variant="ghost"
-            size="sm"
-            iconOnly
-            iconLeft="more"
-            [uiMenuTrigger]="menu"
-            [ariaLabel]="menuLabel(row.folder?.name ?? row.link?.title ?? '')"
-            [uiTooltip]="menuLabel(row.folder?.name ?? row.link?.title ?? '')"
-          />
+          <!-- Unpin and "…": shown on hover or focus, always on touch (FolderStyle, #314). -->
+          <div class="pinned__actions">
+            <ui-button
+              class="pinned__unpin"
+              variant="ghost"
+              size="sm"
+              iconOnly
+              iconLeft="pin-off"
+              [ariaLabel]="unpinLabel(row.folder?.name ?? row.link?.title ?? '')"
+              (click)="unpin(row)"
+            />
+            <ui-button
+              class="pinned__more"
+              variant="ghost"
+              size="sm"
+              iconOnly
+              iconLeft="more"
+              [uiMenuTrigger]="menu"
+              [ariaLabel]="menuLabel(row.folder?.name ?? row.link?.title ?? '')"
+              [uiTooltip]="menuLabel(row.folder?.name ?? row.link?.title ?? '')"
+            />
+          </div>
           <ui-menu #menu align="end" [ariaLabel]="'shell.sidebar.pinned.menu' | transloco">
-            <ui-menu-item
-              icon="pin"
-              (activated)="row.folder ? unpinFolder(row.folder) : unpinLink(row.link!)"
-            >
+            <ui-menu-item icon="pin-off" (activated)="unpin(row)">
               {{ 'shell.sidebar.pinned.unpin' | transloco }}
             </ui-menu-item>
           </ui-menu>

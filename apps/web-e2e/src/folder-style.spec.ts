@@ -120,6 +120,29 @@ test.describe('folder style and pins (mock API)', () => {
     await expect(pinned(page)).toHaveCount(0);
   });
 
+  test("unpins from the row's Unpin button (hover on desktop, always on touch) with Undo", async ({
+    page,
+  }) => {
+    await pickFolderMenuItem(page, READING, 'Pin to sidebar');
+    await expect(pinnedItems(page)).toHaveCount(1);
+    const row = pinnedItems(page).first();
+    const unpin = row.getByRole('button', { name: `Unpin ${READING}` });
+    const actions = row.locator('.pinned__actions');
+    if (!isPhone(page)) {
+      await expect(actions).toHaveCSS('opacity', '0');
+      await row.hover();
+    }
+    await expect(actions).toHaveCSS('opacity', '1');
+    await unpin.click();
+    await expect(pinned(page)).toHaveCount(0);
+
+    const toast = page.locator('ui-toast').filter({ hasText: 'Unpinned from sidebar' });
+    await expect(toast).toContainText(READING);
+    await toast.getByRole('button', { name: 'Undo' }).click();
+    await expect(pinnedItems(page)).toHaveCount(1);
+    await expect(pinnedItems(page).first()).toContainText(READING);
+  });
+
   test('pins a link from its card menu and unpins it from the Pinned item menu', async ({
     page,
   }) => {

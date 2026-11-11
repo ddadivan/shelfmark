@@ -112,14 +112,20 @@
   @include visually-hidden;
 }
 
-// "..." button: sits over the end of the row; fades in on hover or focus, always there on touch.
-.pinned__more {
+// "Unpin" and "...": sit over the end of the row (on the row's own background, so they cover the
+// count), fade in on hover or focus, always there on touch.
+.pinned__actions {
   position: absolute;
   inset-block-start: 50%;
   inset-inline-end: rem(4px);
-  transform: translateY(-50%);
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+  background: inherit;
+  border-radius: calc(var(--radius-md) - #{rem(2px)});
   opacity: 0;
   transition: opacity var(--duration-fast) var(--ease-out);
+  transform: translateY(-50%);
 
   &:focus-within {
     opacity: 1;
@@ -134,9 +140,16 @@
   }
 }
 
-.pinned__item:hover .pinned__more,
-.pinned__item:has(.pinned__link:focus-visible) .pinned__more {
+.pinned__item:hover .pinned__actions,
+.pinned__item:has(.pinned__link:focus-visible) .pinned__actions {
   opacity: 1;
+}
+
+// On touch both buttons always show: the name stops before them.
+@media (hover: none) {
+  .pinned__link {
+    padding-inline-end: rem(84px);
+  }
 }
 
 // The phone Library page: the section is a card of its own, like the folder tree below it.

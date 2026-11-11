@@ -672,7 +672,8 @@
         "actions": "Actions for {{name}}",
         "moveUp": "Move up",
         "moveDown": "Move down",
-        "unpin": "Unpin from sidebar"
+        "unpin": "Unpin from sidebar",
+        "unpinButton": "Unpin {{name}}"
       },
       "reorder": {
         "movedUp": "Moved up, position {{position}} of {{total}}",
@@ -1723,6 +1724,9 @@
     "pinnedToTopFailed": {
       "title": "Couldn't change the pin",
       "detail": "It is back as it was."
+    },
+    "unpinned": {
+      "title": "Unpinned from sidebar"
     }
   },
   "views": {

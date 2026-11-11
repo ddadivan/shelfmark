@@ -684,7 +684,8 @@
         "actions": "Acciones para {{name}}",
         "moveUp": "Subir",
         "moveDown": "Bajar",
-        "unpin": "Quitar de la barra lateral"
+        "unpin": "Quitar de la barra lateral",
+        "unpinButton": "Quitar {{name}}"
       },
       "reorder": {
         "movedUp": "Movido hacia arriba, posición {{position}} de {{total}}",
@@ -1761,6 +1762,9 @@
     "pinnedToTopFailed": {
       "title": "No se pudo cambiar la fijación",
       "detail": "Ha vuelto a como estaba."
+    },
+    "unpinned": {
+      "title": "Quitado de la barra lateral"
     }
   },
   "views": {

@@ -38,6 +38,7 @@ import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { APP_PATH } from '../../../models/app-path.const';
 import { LinkActionsService } from '../../links/link-actions.service';
 import { ownImageUrl, safeHref, siteLetter } from '../../links/link-view';
+import type { PinRow } from '../models/pin-row.interface';
 import { PinActionsService } from '../pin-actions.service';
 
 /**
@@ -45,7 +46,8 @@ import { PinActionsService } from '../pin-actions.service';
  * links in the order the user chose, a folder with its colour, icon and count, a link with its
  * favicon letter. A folder opens its page, a link opens in a new tab. Reorder by dragging (desktop,
  * a drop line marks the place) or with Alt+Up / Alt+Down on the focused row (announced); "Unpin
- * from sidebar" is in the menu (#314: no "Move up" / "Move down" there any more). Settings ›
+ * from sidebar" is an icon button on the row (hover / focus, always on touch) and in the menu, both
+ * with Undo (#314: no "Move up" / "Move down" in the menu any more). Settings ›
  * Library › Edit pinned keeps its buttons. Nothing is rendered while nothing is pinned.
  */
 @Component({
@@ -159,12 +161,13 @@ export class SidebarPinnedComponent {
     );
   }
 
-  protected unpinFolder(folder: FolderResponse): void {
-    void this.actions.unpinFolder(folder);
+  protected unpinLabel(name: string): string {
+    return this.transloco.translate('shell.sidebar.pinned.unpinButton', { name });
   }
 
-  protected unpinLink(link: LinkResponse): void {
-    void this.actions.unpinLink(link);
+  /** The row's "Unpin" button or menu item: unpinned at once, with an Undo toast. */
+  protected unpin(row: PinRow): void {
+    void this.actions.unpinRow(row);
   }
 
   protected openContext(event: MouseEvent, menu: MenuComponent): void {

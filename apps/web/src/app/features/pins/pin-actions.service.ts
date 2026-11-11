@@ -7,13 +7,14 @@ import {
   type LinkResponse,
   type PinKind,
 } from '@shelfmark/contracts';
-import { TOAST_KIND, ToastService } from '@shelfmark/ui';
+import { TOAST_DURATION_MS, TOAST_KIND, toastShortcutLabel, ToastService } from '@shelfmark/ui';
 import { PinsStore } from '../../stores/pins.store';
 import { PIN_OUTCOME } from './models/pin-outcome.const';
+import type { PinRow } from './models/pin-row.interface';
 
 /**
- * What a user can do with the sidebar pins: pin and unpin a folder or link, move an item in the
- * Pinned section. Texts and toasts live here, so components only call. The eighth pin is refused
+ * What a user can do with the sidebar pins: pin and unpin a folder or link (a row of the Pinned
+ * section unpins with Undo), move an item in the Pinned section. Texts and toasts live here, so components only call. The eighth pin is refused
  * with a toast that names the limit.
  */
 @Service()
@@ -38,6 +39,32 @@ export class PinActionsService {
     return this.unpin(PIN_KIND.Link, link.id, link.title);
   }
 
+  /**
+   * Unpins a row of the Pinned section (its "Unpin" button or menu item) with an Undo toast; Undo
+   * pins it again at the place it had.
+   */
+  async unpinRow(row: PinRow): Promise<void> {
+    const index = this.pins.rows().findIndex((item) => item.key === row.key);
+    const name = row.folder?.name ?? row.link?.title ?? '';
+    if (!(await this.pins.unpin({ kind: row.kind, id: row.id }))) {
+      this.toasts.show({
+        kind: TOAST_KIND.Danger,
+        title: this.t('pins.unpinFailed.title'),
+        detail: name,
+      });
+      return;
+    }
+    const undo = this.t('links.item.undo');
+    this.toasts.show({
+      kind: TOAST_KIND.Success,
+      title: this.t('pins.unpinned.title'),
+      detail: name,
+      duration: TOAST_DURATION_MS.Undo,
+      actionHint: this.t('toast.actionHint', { shortcut: toastShortcutLabel(), action: undo }),
+      action: { label: undo, run: () => void this.restore(row, index, name) },
+    });
+  }
+
   /** Moves the pinned item at `from` to `to` (a drag, or "Move up" / "Move down"). */
   async move(from: number, to: number): Promise<void> {
     const item = this.pins.rows()[from];
@@ -50,6 +77,14 @@ export class PinActionsService {
         title: this.t('pins.moveFailed.title'),
         detail: this.t('pins.moveFailed.detail'),
       });
+    }
+  }
+
+  /** Undo of `unpinRow`: pinned again (at the end), then put back at `index`. */
+  private async restore(row: PinRow, index: number, name: string): Promise<void> {
+    await this.pin(row.kind, row.id, name);
+    if (index >= 0 && this.pins.has(row.kind, row.id)) {
+      await this.pins.move({ kind: row.kind, id: row.id }, index);
     }
   }
 

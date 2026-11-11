@@ -684,7 +684,8 @@
         "actions": "Actions pour {{name}}",
         "moveUp": "Monter",
         "moveDown": "Descendre",
-        "unpin": "Désépingler de la barre latérale"
+        "unpin": "Désépingler de la barre latérale",
+        "unpinButton": "Désépingler {{name}}"
       },
       "reorder": {
         "movedUp": "Déplacé vers le haut, position {{position}} sur {{total}}",
@@ -1761,6 +1762,9 @@
     "pinnedToTopFailed": {
       "title": "Impossible de modifier l’épingle",
       "detail": "Il est revenu comme avant."
+    },
+    "unpinned": {
+      "title": "Désépinglé de la barre latérale"
     }
   },
   "views": {

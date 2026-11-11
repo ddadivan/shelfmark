@@ -44,6 +44,7 @@ export const ICON_NAMES = [
   'offline',
   'panel-right',
   'pin',
+  'pin-off',
   'play',
   'refresh',
   'saved-link',

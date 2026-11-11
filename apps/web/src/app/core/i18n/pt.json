@@ -684,7 +684,8 @@
         "actions": "Ações para {{name}}",
         "moveUp": "Mover para cima",
         "moveDown": "Mover para baixo",
-        "unpin": "Desafixar da barra lateral"
+        "unpin": "Desafixar da barra lateral",
+        "unpinButton": "Desafixar {{name}}"
       },
       "reorder": {
         "movedUp": "Movido para cima, posição {{position}} de {{total}}",
@@ -1761,6 +1762,9 @@
     "pinnedToTopFailed": {
       "title": "Não foi possível mudar a fixação",
       "detail": "Ele voltou a ser como era."
+    },
+    "unpinned": {
+      "title": "Desafixado da barra lateral"
     }
   },
   "views": {

@@ -2,6 +2,7 @@ import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { PIN_KIND } from '@shelfmark/contracts';
+import { ToastService } from '@shelfmark/ui';
 import axe from 'axe-core';
 import { PinsStore } from '../../../stores/pins.store';
 import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
@@ -16,6 +17,9 @@ import { MockPinsApi } from '../mock/mock-pins.api';
 import { PINS_API } from '../models/pins-api.const';
 import { SidebarPinnedComponent } from './sidebar-pinned.component';
 
+// Toasts are ToastService's own business (and need its overlay region): here only what is asked.
+const toastShow = vi.fn<ToastService['show']>();
+
 async function setup(pinned: 'none' | 'both' = 'both') {
   TestBed.configureTestingModule({
     providers: [
@@ -25,6 +29,7 @@ async function setup(pinned: 'none' | 'both' = 'both') {
       { provide: FOLDERS_API, useClass: MockFoldersApi },
       { provide: LINKS_API, useClass: MockLinksApi },
       { provide: TAGS_API, useClass: MockTagsApi },
+      { provide: ToastService, useValue: { show: toastShow } },
     ],
   });
   await loadEnglish();
@@ -63,6 +68,7 @@ function menuItem(label: string): HTMLElement {
 }
 
 afterEach(() => {
+  toastShow.mockReset();
   document.querySelectorAll('.cdk-overlay-container > *').forEach((node) => node.remove());
 });
 
@@ -163,6 +169,43 @@ describe('SidebarPinnedComponent', () => {
       fixture.detectChanges();
       expect(pins.rows().map((row) => row.kind)).toEqual([PIN_KIND.Link]);
     });
+    // The menu item unpins like the row button: with an Undo toast.
+    await vi.waitFor(() =>
+      expect(toastShow).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Unpinned from sidebar' }),
+      ),
+    );
+  });
+
+  it('unpins from the row\'s "Unpin" button with an Undo toast that puts it back in place', async () => {
+    const { element, fixture, pins, data } = await setup();
+    const show = toastShow;
+    const button = items(element)[0].querySelector<HTMLButtonElement>('.pinned__unpin button');
+    expect(button?.getAttribute('aria-label')).toBe(`Unpin ${data.foldersView()[0].name}`);
+    expect(items(element)[0].querySelector('.pinned__unpin use')?.getAttribute('href')).toMatch(
+      /#sm-pin-off$/,
+    );
+
+    button?.click();
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(pins.rows().map((row) => row.kind)).toEqual([PIN_KIND.Link]);
+    });
+    await vi.waitFor(() => expect(show).toHaveBeenCalled());
+    const toast = show.mock.lastCall?.[0];
+    expect(toast?.title).toBe('Unpinned from sidebar');
+    expect(toast?.detail).toBe(data.foldersView()[0].name);
+    expect(toast?.action?.label).toBe('Undo');
+
+    toast?.action?.run();
+    // Pinned again (a mock round trip), then moved back to the first place (another one).
+    await vi.waitFor(
+      () => {
+        fixture.detectChanges();
+        expect(pins.rows().map((row) => row.kind)).toEqual([PIN_KIND.Folder, PIN_KIND.Link]);
+      },
+      { timeout: 5000 },
+    );
   });
 
   it('has no axe violations', async () => {
