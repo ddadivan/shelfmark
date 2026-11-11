@@ -103,10 +103,23 @@ export class UsersService {
     if (request.pauseHistory !== undefined) data.historyPaused = request.pauseHistory;
     if (request.theme !== undefined) data.theme = request.theme;
     if (request.motion !== undefined) data.motion = request.motion;
+    const layout = {
+      textSize: request.textSize,
+      font: request.font,
+      density: request.density,
+      cardPreview: request.cardPreview,
+      cardSite: request.cardSite,
+      cardNotes: request.cardNotes,
+      cardTags: request.cardTags,
+    };
+    const layoutSent = Object.values(layout).some((value) => value !== undefined);
+    // Prisma skips `undefined` fields: only the layout fields sent are written.
+    if (layoutSent) Object.assign(data, layout);
     if (
       request.theme !== undefined ||
       request.customTheme !== undefined ||
-      request.motion !== undefined
+      request.motion !== undefined ||
+      layoutSent
     ) {
       data.appearanceSavedAt = new Date();
     }

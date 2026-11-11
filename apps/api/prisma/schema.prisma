@@ -59,6 +59,15 @@ model User {
   warnDuplicates        Boolean   @default(true) @map("warn_duplicates")
   fetchPreviews         Boolean   @default(true) @map("fetch_previews")
   keepQuery             Boolean   @default(false) @map("keep_query")
+  // Settings › Appearance extras (#285): part of the appearance (appearanceSavedAt). CHECKs in the
+  // migration keep the text columns to the contract allow-lists.
+  textSize              String    @default("m") @map("text_size")
+  font                  String    @default("onest") @map("font")
+  density               String    @default("comfortable") @map("density")
+  cardPreview           String    @default("large") @map("card_preview")
+  cardSite              Boolean   @default(true) @map("card_site")
+  cardNotes             Boolean   @default(true) @map("card_notes")
+  cardTags              Boolean   @default(true) @map("card_tags")
   createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
   sessions              Session[]

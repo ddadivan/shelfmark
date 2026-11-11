@@ -1,11 +1,12 @@
 import type { TrashRetentionDays } from '../trash/trash-retention-days.type';
 import type { CustomTheme } from './custom-theme.interface';
+import type { LayoutSettings } from './layout-settings.interface';
 import type { LibrarySettings } from './library-settings.interface';
 import type { MotionPreference } from './motion-preference.type';
 import type { ThemePreference } from './theme-preference.type';
 
 /** `GET /api/me/settings`: preferences kept on the account, so they follow the user to every device. */
-export interface UserSettingsResponse extends LibrarySettings {
+export interface UserSettingsResponse extends LibrarySettings, LayoutSettings {
   trashRetentionDays: TrashRetentionDays;
   /** Coloured folder icons; off shows every folder in graphite. Default on. */
   folderColours: boolean;
@@ -21,8 +22,9 @@ export interface UserSettingsResponse extends LibrarySettings {
   /** Settings › Appearance › Animations. Default `system`. */
   motion: MotionPreference;
   /**
-   * False until `theme`, `customTheme` or `motion` is first written: the three fields then hold
-   * the defaults, and the web app keeps (and saves once) an appearance the browser already had.
+   * False until `theme`, `customTheme`, `motion` or a `LayoutSettings` field is first written:
+   * they then hold the defaults, and the web app keeps (and saves once) an appearance the browser
+   * already had.
    */
   appearanceSaved: boolean;
 }
