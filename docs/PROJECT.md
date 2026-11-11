@@ -38,6 +38,7 @@ Updated as work goes on — every session resumes from here.
   - Nov 10, 2026: the 2027 Refresh redesign of everything stage 1 has is merged into `stage` (#259, issues #219–#258 in To release); the Storybook a11y follow-up #278 made the `stage` CI green. The author reviewed the redesign and started the features: milestone `Stage 2 · Features`, issues #260–#276, #195, #205.
   - Nov 10, 2026: release flow recorded in [ADR 0035](adr/0035-stage-integration-branch-release-flow.md) (#260): branches from `stage`, PRs into `stage` with `Refs #N`, To release column, release PR `stage → main`; `CLAUDE.md`, the `github-workflow` skill, the agents, the PR template, Dependabot and the guard hook follow it.
   - Nov 10, 2026, decisions of the author for the stage 2 features (recorded on each issue): work order #260, #205, #261, #266, #262, #263, #264, #265, #267, #268, #269, #195, #270, #272, #273, #274, #276, #271, then the Settings › Library and the Appearance extras issues; independent tasks run as parallel PRs from `stage`, dependent ones are stacked ("Merge after #N"). Trash: every delete of links and folders goes to Trash (account deletion and demo cleanup do not), retention 7 / 30 / 90 days, default 30. Saved views: a link `kind` (video, article, shopping, other) derived at save time; starter views All, Videos, Articles. Languages: English, French, German, Italian, Spanish, Portuguese. Feedback: statuses Received, Planned, In progress, Done, Not planned, set by the author on an admin page (`/admin/feedback`, allowed by the `ADMIN_EMAILS` setting); the screenshot is stored in Postgres. Reminders (#275) moved to the backlog as a whole. Sharing: public link only; invites and roles moved to the backlog. Email and password sign-in (#277) moved to the backlog.
+  - Nov 11, 2026: #264 saved views on `feat/264-saved-views` (stacked on #263): `links.kind` derived at save time, `/api/views` with counts in one grouped query, starter views from a database trigger (ADR 0038), `ui-saved-views`, chips on the library page and on Recently opened. Waiting for review.
 - [x] Motion in code (landing and app); promo video moved to stage 2
 
 ## 1. Problem and idea
@@ -226,6 +227,14 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
     - "Pin to sidebar" / "Unpin from sidebar" in the menu of a folder, a link card and a link row. A "Pinned" section above Folders lists the pinned folders and links in the chosen order (on a phone at the top of the Library page); a folder opens its page, a link opens in a new tab. At most 7 items: the eighth is refused with a toast that names the limit.
     - Reorder by dragging (desktop) or with "Move up" / "Move down" in the menu of a pinned item (also on a phone); Settings › Library has "Pinned at the top, up to 7 folders and links" with an "Edit pinned" dialog (move up, move down, unpin).
     - In a folder view a link menu also has "Pin to top" / "Unpin from top" (not in Unsorted, All links and other views): pinned links come first with a "Pinned" label, in the order they were pinned (at most 20 per folder); subfolders always come before links. A move or Trash unpins.
+
+26. **Saved views.** As a user, I want to come back to the filters I use often in one click (ADR 0038, screens `Main`, `RecentView`, component `SavedView`).
+    - Every link has a type: video, article, shopping or other. It is set when the link is saved (from the page: `og:type`, then known video and shop sites), follows a changed address, and can be changed in the edit dialog ("Type").
+    - Above the feed, chips: "All" with the number of links, then the saved views with their counts ("Videos 5", "Articles 4"), then a dashed "+ Save this view". A new account starts with Videos and Articles. The pressed chip (filled) is the view the feed shows now; "All" when nothing is narrowed. The chips wrap on a desktop and scroll sideways in one row on a phone; arrow keys move between them.
+    - A view stores the place (all links, Unsorted, Favorites or a folder), tags, type, search and sort. Choosing it opens that place with that filter; the type shows as a removable chip in the filter row.
+    - "+ Save this view" asks for a name (up to 40 characters) and saves the current filter at the end. Each view (not "All") has a menu: Rename, Move left, Move right, Delete view (after a confirmation; the links stay). At most 20 views; the 21st is refused with a toast.
+    - A view of a folder that went to Trash stays, shows 0 and says so when chosen; it works again once the folder is restored.
+    - Recently opened has the same type chips (All, Videos, Articles, Shopping) with counts, filtering the history on the page.
 
 ### Navigation (left sidebar)
 
@@ -487,7 +496,7 @@ Security is a mandatory requirement, not a wish: a task is not done until the it
 
 ## 6. Data model and API
 
-Five own tables (`Feedback`, `Folder`, `Link`, `Tag`, `LinkTag` + `User` from Better Auth) and a REST API of \~17 endpoints under the `/api` prefix. Draft, for review.
+Six own tables (`Feedback`, `Folder`, `Link`, `Tag`, `LinkTag`, `SavedView` + `User` from Better Auth) and a REST API of \~17 endpoints under the `/api` prefix. Draft, for review.
 
 ### 6.1 Data model
 
@@ -532,10 +541,13 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 | `faviconSourceUrl`, `imageSourceUrl` | string (≤ 2048), null | Server only, never returned: remote http(s) URLs the capture fetches (from the client hint or the preview) |
 | `captureAttemptedAt` | timestamp, null | Server only: time of the last image capture attempt, defaults to the insert time; `null` = pending (the URL changed), claimed atomically by `POST /api/links/{id}/images/capture`, which is also its cooldown (ADR 0027 note, #189) |
 | `isFavorite` | boolean | Defaults to `false` |
+| `kind` | string | `video`, `article`, `shopping` or `other` (`LINK_KIND`, CHECK, default `other`): derived at save time from `og:type` and the host, recomputed from the host when the URL changes, changeable by the user; backfilled from the host (ADR 0038) |
 | `lastOpenedAt` | timestamp, null | For the "Recently opened" page |
 | `pinnedInFolderAt` | timestamp, null | Pinned to the top of its folder; pinned links come first in pin order (at most 20 per folder); cleared on a move and in Trash (ADR 0037) |
 | `pinnedPosition` | smallint, null | Place in the sidebar pins, shared with folders (see `Folder`); `null` = not pinned |
 | `deletedAt` | timestamp, null | `null` = live; set = in Trash (ADR 0036). Every live read filters `deletedAt IS NULL`; only the link image routes still serve a trashed link to its owner |
+
+**SavedView** (ADR 0038): a saved filter shown as a chip above the feed: `id`, `userId` (cascade), `name` (≤ 40), `query` (jsonb, the normalized `SavedViewQuery` `{ scope: all | unsorted | favorites | folder, folderId, tags (≤ 5), kind, sort, order, q (≤ 200) }`, validated by the API), `position`. At most 20 per user. New users get "Videos" and "Articles" from a database trigger on `users` (existing users from the migration); "All" is the client's fixed chip, not a row.
 
 **LinkImage** (ADR 0027): re-encoded copy of a link's favicon or preview image: `id`, `userId`, `linkId` (cascade), `kind` (`favicon` | `preview`), `contentType` (always `image/webp`), `bytes` (≤ 64 KB), `width`, `height`, `sha256`; unique per `linkId + kind`.
 
@@ -547,7 +559,7 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 
 **URL normalisation** (for duplicates): lowercase host, no `#fragment`, no `utm_*` params and no trailing `/`. Duplicates are allowed (the user can "save anyway"), so the index is non-unique.
 
-**Indexes:** `Link(userId, createdAt)`, `Link(userId, normalizedUrl)`, `Link(userId, lastOpenedAt)`, `Link.title`, `Link.note` and `Link.url` (`pg_trgm` GIN for search), `Folder(userId, parentId)`; partial indexes on `pinnedPosition` (`Folder`, `Link`) and `Link(folderId, pinnedInFolderAt)`; partial indexes `Link(userId, deletedAt)` and `Folder(userId, deletedAt)` `WHERE deletedAt IS NOT NULL` for the Trash list and the purge.
+**Indexes:** `Link(userId, createdAt)`, `Link(userId, normalizedUrl)`, `Link(userId, lastOpenedAt)`, `Link.title`, `Link.note` and `Link.url` (`pg_trgm` GIN for search), `Folder(userId, parentId)`; partial indexes on `pinnedPosition` (`Folder`, `Link`) and `Link(folderId, pinnedInFolderAt)`; `Link(userId, kind)`, `SavedView(userId, position)`; partial indexes `Link(userId, deletedAt)` and `Folder(userId, deletedAt)` `WHERE deletedAt IS NOT NULL` for the Trash list and the purge.
 
 **Interface settings** (view, panel) are not stored in the database, only in `localStorage`.
 
@@ -561,13 +573,13 @@ All routes except `/api/auth/*` require a session and work only with the current
 | GET | `/api/auth/get-session` | Current user and session (Better Auth); `null` when signed out |
 | DELETE | `/api/me` | Delete the account and all data |
 | POST | `/api/links/preview` | For a URL, return title, icon, image + the existing link if it is a duplicate (for form autofill) |
-| GET | `/api/links` | List with filters: `folderId`, `unsorted`, `favorite`, `tag` (repeated, `?tag=a&tag=b`: AND, case-insensitive, max 5, more is a 400; empty or absent = no filter), `q` (search in title, note and URL; every word must match, at most 5 words), `sort` (`createdAt` / `title`), `order`, `cursor`, `limit`. With `folderId` the first page also returns `pinned`: the links pinned to the top of that folder in pin order (same filters), not repeated in `items` or later pages (ADR 0037) |
+| GET | `/api/links` | List with filters: `folderId`, `unsorted`, `favorite`, `tag` (repeated, `?tag=a&tag=b`: AND, case-insensitive, max 5, more is a 400; empty or absent = no filter), `q` (search in title, note and URL; every word must match, at most 5 words), `kind` (one of `video`, `article`, `shopping`, `other`; ADR 0038), `sort` (`createdAt` / `title`), `order`, `cursor`, `limit`. With `folderId` the first page also returns `pinned`: the links pinned to the top of that folder in pin order (same filters), not repeated in `items` or later pages (ADR 0037) |
 | GET | `/api/links/recent` | Recently opened (by `lastOpenedAt`, only the last 30 days, `RECENT_LINKS_WINDOW_DAYS`), `limit` |
 | DELETE | `/api/links/recent/:id` | Remove one link from the history (`lastOpenedAt` to null, the link stays); 204, idempotent, 404 for a foreign or missing link |
 | DELETE | `/api/links/recent` | Clear the whole history of the user (all own links' `lastOpenedAt` to null); 204 |
 | GET | `/api/links/:id` | One link |
-| POST | `/api/links` | Create: `url`, `title?`, `note?`, `folderId?`, `tags?` (names; new tags are created automatically) |
-| PATCH | `/api/links/:id` | Change any fields, including `isFavorite`, `folderId` and `pinnedInFolder` (pin to the top of the folder: 400 in Unsorted, 409 beyond 20 per folder; a move unpins) |
+| POST | `/api/links` | Create: `url`, `title?`, `note?`, `folderId?`, `tags?` (names; new tags are created automatically), `kind?` (from the preview; derived by the server when absent). `POST /api/links/preview` answers `preview.kind` |
+| PATCH | `/api/links/:id` | Change any fields, including `isFavorite`, `folderId`, `kind` (a new URL without `kind` recomputes it from the host) and `pinnedInFolder` (pin to the top of the folder: 400 in Unsorted, 409 beyond 20 per folder; a move unpins) |
 | POST | `/api/links/:id/open` | Record an open (updates `lastOpenedAt`) |
 | POST | `/api/links/:id/images/capture` | Re-capture favicon and preview image of a link whose URL changed (pending marker `?v=pending`); claims atomically with a 1 h cooldown, always 200 with the link, 404 for a foreign or missing one |
 | DELETE | `/api/links/:id` | Move to Trash (soft delete: sets `deletedAt`); 404 for a foreign, missing or already trashed link |
@@ -584,6 +596,11 @@ All routes except `/api/auth/*` require a session and work only with the current
 | POST | `/api/trash/restore` | `{ items: [{ kind: 'link' \| 'folder', id }] }` (1 to 100): puts entries back (a link whose folder is not live goes to Unsorted, a folder whose parent is not live to the top level); entries not in Trash or foreign are skipped; answers `{ count }` |
 | POST | `/api/trash/delete` | Same body: deletes entries for good (a folder takes its subtree and the links deleted with it); answers `{ count }` |
 | DELETE | `/api/trash` | Empty Trash: deletes every entry for good; answers `{ count }` |
+| GET | `/api/views` | Saved views in order, each `{ id, name, query, position, count, available }` (`count` = live links matching, `available` false while the folder of a folder view is in Trash or gone), plus `total` (all live links, the "All" chip); counted in one grouped query (ADR 0038) |
+| POST | `/api/views` | `{ name, query }`: saves at the end (strict query, 400 otherwise; 404 for a foreign, missing or trashed folder; 409 beyond 20) |
+| PATCH | `/api/views/:id` | `{ name?, query? }`: rename or replace the query; 404 for a foreign or missing view |
+| PUT | `/api/views/order` | `{ ids }`: every view exactly once in the new order, else 400 |
+| DELETE | `/api/views/:id` | Delete a view (the links stay); 204, 404 for a foreign or missing one |
 | GET, PATCH | `/api/me/settings` | Account settings `{ trashRetentionDays: 7 \| 30 \| 90, folderColours: boolean }`; PATCH sends only the fields to change (400 for another value or an extra field); demo users too |
 | GET | `/api/cron/trash-cleanup` | Vercel Cron only (`CRON_SECRET` bearer, 401 otherwise, no-store): deletes Trash rows past the owner's retention in batches of 500 within 5 s; answers `{ deleted, hasMore }` (ADR 0036) |
 | GET, POST, GET /:id, PATCH /:id, DELETE /:id, POST /:id/merge | `/api/tags` | The user's tags with link counts, sorted by link count descending, then name; read one tag with its count (404 if unknown or foreign); create an empty tag (409 if the name is taken or at the per-user cap of 1000), rename (409 if the name is taken; changing only the case of its own name is allowed), delete (links remain), merge with another tag (merging into itself is a 400). Names are normalized with `normalizeTagName` (trim, whitespace runs become one hyphen) on create and rename |
@@ -598,7 +615,7 @@ All routes except `/api/auth/*` require a session and work only with the current
 
 **Additionally:** `POST /api/me/onboarding` marks onboarding as completed and `DELETE /api/me/onboarding` resets it ("Show welcome again" in Settings); the user from `GET /api/auth/get-session` carries `onboardingCompletedAt` (#151).
 
-**Demo, export, PWA:** `POST /api/demo` creates a demo sandbox and session (strict per-IP rate limit); `GET /api/export?format=json|html` (+ optional `folderId`, `tag` (repeated, same AND semantics as the list), `q`, the same filters as the list) downloads the current folder (with its subfolders) or all data; `q` searches title, note and URL; the HTML file omits links whose URL is not http(s); receiving a link from the "Share" menu (Web Share Target) needs no separate endpoint: the manifest opens the `/share?url=…` route (GET), and the page saves via `POST /api/links`.
+**Demo, export, PWA:** `POST /api/demo` creates a demo sandbox and session (strict per-IP rate limit); `GET /api/export?format=json|html` (+ optional `folderId`, `tag` (repeated, same AND semantics as the list), `q`, `kind`, the same filters as the list; each JSON link carries its `kind`) downloads the current folder (with its subfolders) or all data; `q` searches title, note and URL; the HTML file omits links whose URL is not http(s); receiving a link from the "Share" menu (Web Share Target) needs no separate endpoint: the manifest opens the `/share?url=…` route (GET), and the page saves via `POST /api/links`.
 
 **App rating:** `GET /api/feedback/prompt` (no-store) returns `{ milestone: 'day3' | 'week1' | 'month1' | 'year1' | null }`, which dialog to show now (the latest reached milestone without a `Feedback` row, computed by the backend from `User.createdAt`; `null` for demo users and before onboarding is completed); `POST /api/feedback` `{ milestone, score | null, comment? }` answers 204 and saves a rating, feedback or a skip (a comment needs a score). Errors: 400 invalid body (or combined comment over 2000 characters), 403 demo user, 409 onboarding pending, milestone not reached yet, or a different score already stored for the milestone. Resubmitting for the same milestone with the same score appends the comment after a blank line. Rate-limited; the feedback text is stored as is and rendered only as text (no HTML).
 
@@ -695,6 +712,7 @@ In CI: `@axe-core/playwright` on the key screens in both themes; the build fails
 9. Privacy policy
 10. Trash (desktop and phone, with the empty state, selection and the "Empty trash" confirmation)
 11. Folder style (the "Colour and icon" dialog, the Pinned section, "Pin to top" in a folder, "Folder colours" and "Pinned at the top" in Settings › Library)
+12. Saved views (the chips above the feed with counts and "+ Save this view", the name dialog, the view menu, the type chips on Recently opened, the "Type" select in the edit dialog)
 
 Every screen in light and dark themes, in desktop and phone layouts, with loading and error states.
 
@@ -961,7 +979,7 @@ Chosen by the author on Nov 9, 2026. Stages 2 and 3 are planned; everything else
 - [ ] **Second: redesign** (before the features below). An updated design rather than a new one: more convenient blocks and layouts on the existing design system. The author provides the new mockups in Claude Design, and they already include the screens of the stage 2 features, so those are built on the new design. Steps: update `docs/design` (screens, components, tokens if they change), then bring `libs/ui` and the existing screens up to it, keeping a11y, both themes, the phone and the e2e and Storybook suites green. Started Nov 10, 2026 with the "Shelfmark 2027 Refresh" design; plan and decisions in `docs/design/MIGRATION.md`
 - [ ] Trash: deleted links and folders go to Trash and are kept for a period set in settings; restore and delete forever (screens `TrashView`, `MobileTrash`). Added by the author on Nov 10, 2026 with the redesign, built after the redesign and the author's review of it
 - [x] Folder colours and icons, pinned folders and links (screen `FolderStyle`, story 25; API in #263, web on `feat/263-folder-style-web`). Added Nov 10, 2026, built after the redesign and the author's review of it
-- [ ] Saved views: chips above the feed with saved filters (All, Videos, Articles, To read, "Save this view"). Added Nov 10, 2026, built after the redesign and the author's review of it
+- [x] Saved views: chips above the feed with saved filters (All, Videos, Articles, To read, "Save this view"), the link kind and the kind chips on Recently opened (story 26, ADR 0038; #264 on `feat/264-saved-views`, stacked on #263). Added Nov 10, 2026, built after the redesign and the author's review of it
 - [ ] Paste several links at once (screen `PasteMany`). Added Nov 10, 2026, built after the redesign and the author's review of it
 - [ ] Recently opened extras from the 2027 design (screen `RecentView`): "Pause history" (a setting that stops recording opens, needs an API field), filter chips and a search inside the history page, swipe actions on phone history rows. Added Nov 10, 2026 by the author's decision: large items go to stage 2
 - [ ] Sharing: open a collection (folder) to other people by a public link (on / off, reset, show notes). Invites by email and roles are in the backlog (decided Nov 10, 2026)
