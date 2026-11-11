@@ -583,7 +583,7 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 | `parentId` | uuid, null | FK → Folder; `null` = top-level folder |
 | `name` | string (≤ 100) |  |
 | `colour` | string | One of `graphite` (default), `sage`, `ocean`, `plum`, `clay`, `amber`, `rose`, `teal` (`FOLDER_COLOUR`, CHECK) |
-| `icon` | string | One of `FOLDER_ICON` (16 icon names, default `folder`; validated by the API) |
+| `icon` | string | One of `FOLDER_ICON` (21 icon names, default `folder`; validated by the API) |
 | `pinnedPosition` | smallint, null | Place in the sidebar pins; `null` = not pinned. At most 7 live pinned folders and links together per user (ADR 0037); cleared when the folder goes to Trash |
 | `deletedAt` | timestamp, null | `null` = live; set = in Trash. One shared value for the folder and the live subfolders and links deleted with it (ADR 0036) |
 

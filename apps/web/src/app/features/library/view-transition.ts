@@ -15,6 +15,24 @@ export function prefersReducedMotion(doc: Document, injector: Injector): boolean
   return typeof doc.defaultView?.matchMedia !== 'function' || injector.get(ReducedMotion).reduced();
 }
 
+/** Whether a transition can run now: a hidden tab cannot paint one, the browser aborts it. */
+export function canRunViewTransition(doc: Document): boolean {
+  return doc.visibilityState !== 'hidden';
+}
+
+/**
+ * A skipped or aborted transition (a newer one started, the tab went to the background, the page
+ * changed under it) rejects `ready`, `updateCallbackDone` and `finished` with an `AbortError` or
+ * `InvalidStateError`. That is expected, not a failure: nobody awaits the animation, so the
+ * rejections are swallowed here and never reach the console as unhandled.
+ */
+export function settleViewTransition(transition: ViewTransition): void {
+  const ignore = (): void => undefined;
+  transition.ready.catch(ignore);
+  transition.updateCallbackDone.catch(ignore);
+  transition.finished.catch(ignore);
+}
+
 /**
  * Runs `update` (a state change that re-renders the page) inside a View Transition so elements
  * that share a `view-transition-name` glide from their old box to the new one. Without browser
@@ -31,7 +49,11 @@ export function runViewTransition(
   update: () => void,
   names?: ViewTransitionNames,
 ): void {
-  if (prefersReducedMotion(doc, injector) || !('startViewTransition' in doc)) {
+  if (
+    prefersReducedMotion(doc, injector) ||
+    !('startViewTransition' in doc) ||
+    !canRunViewTransition(doc)
+  ) {
     update();
     return;
   }
@@ -43,6 +65,7 @@ export function runViewTransition(
           afterNextRender({ read: () => resolve() }, { injector });
         }),
     );
+    settleViewTransition(transition);
     if (names) {
       const off = (): void => names.off();
       void transition.finished.then(off, off);

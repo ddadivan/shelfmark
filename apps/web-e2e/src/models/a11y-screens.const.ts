@@ -75,6 +75,9 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
       await deleteReadingFolderWithLinks(page);
       await openTrash(page);
       await expect(page.locator('app-trash-row')).toHaveCount(2);
+      // The folder's 3 s confirmation would fade out in the middle of the scan (axe then measures
+      // half-transparent text); the screen under test is Trash, the toast has its own stories.
+      await expect(page.getByText('Folder moved to Trash')).toBeHidden();
     },
   },
   {

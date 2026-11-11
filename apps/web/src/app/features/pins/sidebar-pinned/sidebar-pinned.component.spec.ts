@@ -66,6 +66,16 @@ afterEach(() => {
 });
 
 describe('SidebarPinnedComponent', () => {
+  it('ends a pinned link row with a decorative pin glyph, a folder row with none', async () => {
+    const { element } = await setup();
+    const [folderRow, linkRow] = items(element);
+
+    expect(folderRow.querySelector('.pinned__pin')).toBeNull();
+    const glyph = linkRow.querySelector('.pinned__pin');
+    expect(glyph?.getAttribute('name')).toBe('pin');
+    expect(glyph?.getAttribute('aria-hidden')).toBe('true');
+  });
+
   it('renders nothing while nothing is pinned', async () => {
     const { element } = await setup('none');
 

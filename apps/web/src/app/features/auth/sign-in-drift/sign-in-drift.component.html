@@ -1,12 +1,31 @@
-@for (card of SIGN_IN_DRIFT_CARDS; track card.id; let i = $index) {
-  <div class="sd-card sd-card--{{ i }}">
-    <div class="sd-tilt">
-      <div class="sd-media sd-media--{{ card.media }}"></div>
-      <div class="sd-body">
-        <span class="sd-meta"><ui-favicon [letter]="card.letter" />{{ card.domain }}</span>
-        <span class="sd-title">{{ 'auth.signIn.tiles.' + card.id + '.title' | transloco }}</span>
+@for (lane of lanes(); track lane.side) {
+  <div class="sd-lane sd-lane--{{ lane.side }}" [class.sd-lane--narrow]="!wide()">
+    @for (item of lane.cards; track item.card.id) {
+      <div
+        class="sd-card sd-card--{{ item.card.layer }}"
+        [style.grid-column]="item.column"
+        [style.grid-row]="item.row + ' / span ' + item.span"
+        [style.--sd-r]="item.card.rotate + 'deg'"
+        [style.--sd-n]="item.index"
+        [style.--sd-wave]="item.card.wave"
+        [style.--sd-outer]="item.outer"
+        [style.--sd-cy]="item.centreY"
+      >
+        <div class="sd-fly">
+          <div class="sd-float">
+            <div class="sd-tilt">
+              <app-link-preview-card
+                [title]="'auth.signIn.tiles.' + item.card.id + '.title' | transloco"
+                [host]="item.card.host"
+                [daysAgo]="item.card.daysAgo"
+                [tone]="item.card.tone"
+                [tags]="item.tags"
+              />
+              <span class="sd-ring"></span>
+            </div>
+          </div>
+        </div>
       </div>
-      <span class="sd-ring"></span>
-    </div>
+    }
   </div>
 }

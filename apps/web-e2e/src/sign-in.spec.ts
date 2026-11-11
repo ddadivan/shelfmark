@@ -61,7 +61,9 @@ test.describe('sign-in flow (mock auth)', () => {
     expect(overflow).toBeLessThanOrEqual(0);
   });
 
-  test('on a desktop the glass card is centred and the cards drift around it', async ({ page }) => {
+  test('on a desktop the glass card is centred and ten cards drift in the side lanes', async ({
+    page,
+  }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/sign-in');
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
@@ -75,27 +77,133 @@ test.describe('sign-in flow (mock auth)', () => {
     // The mosaic band is a phone layout.
     await expect(page.locator('.sign-in__art')).toHaveCount(0);
 
-    // The four cards float and take turns to land (ring), each on its own loop.
-    await expect(page.locator('.sd-card')).toHaveCount(4);
+    // Ten cards in three depth layers, each floating and taking its turn to land (ring).
+    await expect(page.locator('.sd-card')).toHaveCount(10);
+    for (const layer of ['far', 'mid', 'near']) {
+      expect(await page.locator(`.sd-card--${layer}`).count()).toBeGreaterThan(0);
+    }
     // String scripts: this project has no DOM lib, and the code runs in the browser anyway.
     const running = await page.evaluate<string[]>(
       "document.getAnimations().filter((a) => a instanceof CSSAnimation && a.playState === 'running').map((a) => a.animationName).filter((name) => name.endsWith('sd-float') || name.endsWith('sd-ring'))",
     );
-    expect(running.filter((n) => n.endsWith('sd-float'))).toHaveLength(4);
-    expect(running.filter((n) => n.endsWith('sd-ring'))).toHaveLength(4);
+    expect(running.filter((n) => n.endsWith('sd-float'))).toHaveLength(10);
+    expect(running.filter((n) => n.endsWith('sd-ring'))).toHaveLength(10);
+    // Every card looks like the library's: the drawing, favicon and domain, the date, tag chips.
+    await expect(page.locator('.sd-card ui-card .ui-card__placeholder')).toHaveCount(10);
+    await expect(page.locator('.sd-card .ui-card__date').first()).not.toBeEmpty();
+    expect(await page.locator('.sd-card ui-chip').count()).toBeGreaterThanOrEqual(10);
+    // Far is dimmer and smaller than near.
+    const far = page.locator('.sd-card--far .sd-fly').first();
+    const near = page.locator('.sd-card--near .sd-fly').first();
+    // The layer's opacity once the fly-in is over (while it flies, every card fades in from 0).
+    await expect
+      .poll(() =>
+        page.evaluate<number>(
+          "document.getAnimations().filter((a) => a instanceof CSSAnimation && a.animationName.endsWith('sd-fly') && a.playState === 'running').length",
+        ),
+      )
+      .toBe(0);
+    await expect(far).toHaveCSS('opacity', '0.6');
+    await expect(near).toHaveCSS('opacity', '1');
+    const [farBox, nearBox] = await Promise.all([
+      far.locator('.sd-tilt').boundingBox(),
+      near.locator('.sd-tilt').boundingBox(),
+    ]);
+    expect(farBox?.width ?? 0).toBeLessThan(nearBox?.width ?? 0);
   });
 
-  test('with reduced motion the drifting cards stay still', async ({ page }) => {
+  test('the cards fly in on every visit while the sign-in card is there at once', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    for (const visit of [1, 2]) {
+      await page.goto('/sign-in');
+      const panel = page.locator('.sign-in__panel');
+      await expect(panel, `visit ${visit}`).toBeVisible();
+
+      // The card is fully opaque and nothing animates it, while the cards are still on their way.
+      await expect(panel).toHaveCSS('opacity', '1');
+      expect(
+        await page.evaluate<number>(
+          "document.querySelector('.sign-in__panel').getAnimations({ subtree: true }).length",
+        ),
+      ).toBe(0);
+      const flying = await page.evaluate<number>(
+        "document.getAnimations().filter((a) => a instanceof CSSAnimation && a.animationName.endsWith('sd-fly') && a.playState === 'running').length",
+      );
+      expect(flying, `visit ${visit}`).toBe(10);
+      // ... and they settle: the wave ends.
+      await expect
+        .poll(() =>
+          page.evaluate<number>(
+            "document.getAnimations().filter((a) => a instanceof CSSAnimation && a.animationName.endsWith('sd-fly') && a.playState === 'running').length",
+          ),
+        )
+        .toBe(0);
+    }
+  });
+
+  test('with reduced motion the cards rest in their lanes: no fly-in, no drift, no ring', async ({
+    page,
+  }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/sign-in');
-    await expect(page.locator('.sd-card')).toHaveCount(4);
+    await expect(page.locator('.sd-card')).toHaveCount(10);
+    await expect(page.locator('.sd-card .sd-fly').first()).toHaveCSS('opacity', /^(1|0\.\d+)$/);
 
     const animations = await page.evaluate<number>(
       'document.getAnimations().filter((a) => a instanceof CSSAnimation).length',
     );
     expect(animations).toBe(0);
   });
+
+  for (const viewport of [
+    { width: 1024, height: 768, cards: 6 },
+    { width: 1280, height: 720, cards: 10 },
+    { width: 1366, height: 768, cards: 10 },
+    { width: 1440, height: 900, cards: 10 },
+    { width: 1920, height: 1080, cards: 10 },
+  ]) {
+    test(`at ${viewport.width}x${viewport.height} ${viewport.cards} cards sit in the side lanes: no overlap, none under the sign-in card`, async ({
+      page,
+    }) => {
+      // At rest (reduced motion): the boxes are the resting places.
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+      await page.goto('/sign-in');
+      await expect(page.locator('.sd-card')).toHaveCount(viewport.cards);
+      await page.evaluate('document.fonts.ready.then(() => undefined)');
+
+      const panel = await page.locator('.sign-in__panel').boundingBox();
+      if (!panel) {
+        throw new Error('the sign-in card has no box');
+      }
+      const boxes = await page.locator('.sd-tilt').evaluateAll((els) =>
+        els.map((el) => {
+          const r = el.getBoundingClientRect();
+          return { left: r.left, right: r.right, top: r.top, bottom: r.bottom };
+        }),
+      );
+      expect(boxes).toHaveLength(viewport.cards);
+      for (const [i, a] of boxes.entries()) {
+        const where = `card ${i} ${JSON.stringify(a)}`;
+        // Inside the window, outside the sign-in card.
+        expect(a.left, where).toBeGreaterThanOrEqual(0);
+        expect(a.top, where).toBeGreaterThanOrEqual(0);
+        expect(a.right, where).toBeLessThanOrEqual(viewport.width);
+        expect(a.bottom, where).toBeLessThanOrEqual(viewport.height);
+        expect(a.right <= panel.x || a.left >= panel.x + panel.width, where).toBe(true);
+        for (const [j, b] of boxes.entries()) {
+          if (j > i) {
+            const apart =
+              a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top;
+            expect(apart, `cards ${i} and ${j} overlap`).toBe(true);
+          }
+        }
+      }
+    });
+  }
 
   test('with a mouse the cards lean toward the pointer while they keep drifting', async ({
     page,
@@ -113,14 +221,14 @@ test.describe('sign-in flow (mock auth)', () => {
     const running = await page.evaluate<number>(
       "document.getAnimations().filter((a) => a instanceof CSSAnimation && a.animationName.endsWith('sd-float')).length",
     );
-    expect(running).toBe(4);
+    expect(running).toBe(10);
   });
 
   test('with reduced motion the cards do not lean', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/sign-in');
-    await expect(page.locator('.sd-tilt')).toHaveCount(4);
+    await expect(page.locator('.sd-tilt')).toHaveCount(10);
 
     await page.mouse.move(1400, 880);
     await page.waitForTimeout(150);

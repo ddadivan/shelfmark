@@ -27,6 +27,18 @@ export function siteLetter(url: string): string {
   return displayHost(url).charAt(0).toUpperCase();
 }
 
+/** Number of soft backgrounds the card placeholder rotates over (`ui-card placeholderTone`). */
+const PLACEHOLDER_TONES = 3;
+
+/** A stable placeholder tone (0 to 2) for a link id, so a card keeps its look when the feed reorders. */
+export function placeholderTone(id: string | undefined): number {
+  let hash = 0;
+  for (const char of id ?? '') {
+    hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+  }
+  return hash % PLACEHOLDER_TONES;
+}
+
 /**
  * Image paths of our own API: `linkImagePath` (ADR 0027) and the images of a public collection,
  * keyed by its 22-character token (ADR 0040).

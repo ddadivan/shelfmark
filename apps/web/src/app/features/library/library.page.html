@@ -62,7 +62,11 @@
       <h1 class="library__title">{{ folder()?.name ?? (titleKey() | transloco) }}</h1>
       <!-- Always there (empty while the list loads) so the title block keeps its height. -->
       <p class="library__count">
-        @if (showLinks()) { @if (subfolders().length > 0) { {{ 'library.countWithFolders' |
+        @if (skeletonVisible() && !showLinks()) {
+        <span class="library__count-skeleton" aria-hidden="true">
+          <ui-skeleton [shape]="SKELETON_SHAPE.Line" />
+        </span>
+        } @if (showLinks()) { @if (subfolders().length > 0) { {{ 'library.countWithFolders' |
         transloco : { links: (pluralKey(shownHasMore() ? 'library.countMore' : 'library.count',
         shownCount()) | transloco: { count: shownCount() }), folders:
         (pluralKey('library.subfolders.folders', subfolders().length) | transloco: { count:

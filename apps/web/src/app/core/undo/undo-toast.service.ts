@@ -1,6 +1,12 @@
 import { inject, Service } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
-import { TOAST_CLOSE_REASON, TOAST_KIND, ToastService, toastShortcutLabel } from '@shelfmark/ui';
+import {
+  TOAST_CLOSE_REASON,
+  TOAST_KIND,
+  ToastService,
+  toastShortcutLabel,
+  type ToastRef,
+} from '@shelfmark/ui';
 import { DELETE_UNDO_MS } from './models/delete-undo.const';
 import type { UndoToastOptions } from './models/undo-toast-options.interface';
 
@@ -15,7 +21,8 @@ export class UndoToastService {
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
 
-  show(options: UndoToastOptions): void {
+  /** Shows the toast; `dismiss()` closes it as expired (the change is committed then). */
+  show(options: UndoToastOptions): ToastRef {
     const ref = this.toasts.show({
       kind: TOAST_KIND.Danger,
       title: options.title,
@@ -32,5 +39,6 @@ export class UndoToastService {
         options.onExpire();
       }
     });
+    return ref;
   }
 }

@@ -414,6 +414,26 @@ describe('LinksStore', () => {
       expect(api.remove).toHaveBeenCalledTimes(2);
     });
 
+    it('closes the Undo toast of each delete a flush sent, not of a failed one', async () => {
+      const { api, store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      store.remove('id-1');
+      store.remove('id-3');
+      const sent = vi.fn();
+      const failed = vi.fn();
+      store.attachUndo('id-1', sent);
+      store.attachUndo('id-3', failed);
+      api.remove.mockImplementation((id: string) =>
+        id === 'id-3' ? throwError(() => new Error('offline')) : of(undefined),
+      );
+
+      await store.flushPending();
+
+      expect(sent).toHaveBeenCalledTimes(1);
+      expect(failed).not.toHaveBeenCalled();
+      expect(ids(store)).toContain('id-3');
+    });
+
     it('flushes waiting deletes on pagehide', () => {
       const { api, store } = setup();
       store.setFilter({ scope: LINKS_SCOPE.All });

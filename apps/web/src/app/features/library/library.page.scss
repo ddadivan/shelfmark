@@ -121,6 +121,11 @@
   }
 }
 
+.library__count-skeleton {
+  display: block;
+  inline-size: rem(120px);
+}
+
 .library__grid,
 .library__rows {
   padding: 0;

@@ -47,13 +47,15 @@
       transform: none;
     }
 
-    .ui-card__actions {
+    .ui-card__favorite,
+    .ui-card__more {
       opacity: 1;
       transform: none;
     }
 
     @media (prefers-reduced-motion: no-preference) {
-      .ui-card__image {
+      .ui-card__image,
+      .ui-card__placeholder {
         transform: scale(1.06);
       }
     }
@@ -119,7 +121,50 @@
   transition: transform var(--duration-slow) var(--ease-out);
 }
 
-// The site letter (or any fallback) sits on `accent-bg`; with no fallback a picture icon shows.
+// Soft background and a small card drawing when there is no image (and no `fallback` content);
+// the tone rotates over `accent-bg`, `surface-hover` and `surface-pressed`. The opacities are
+// decorative (no text), so they are allowed.
+.ui-card__placeholder {
+  position: absolute;
+  inset: 0;
+  background: var(--surface-hover);
+  transition: transform var(--duration-slow) var(--ease-out);
+
+  &[data-tone='0'] {
+    background: var(--accent-bg);
+  }
+
+  &[data-tone='2'] {
+    background: var(--surface-pressed);
+  }
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.ui-card__art-glow {
+  fill: var(--surface);
+  opacity: 0.4;
+}
+
+.ui-card__art-card {
+  fill: var(--surface);
+  opacity: 0.75;
+}
+
+.ui-card__art-bar {
+  fill: var(--text-muted);
+  opacity: 0.45;
+}
+
+.ui-card__art-bar--short {
+  opacity: 0.3;
+}
+
+// A custom `fallback` (for example a site letter) sits on `accent-bg` over the drawing.
 .ui-card__fallback {
   position: absolute;
   inset: 0;
@@ -185,13 +230,13 @@
   display: flex;
   gap: rem(6px);
   align-items: center;
-  justify-content: space-between;
   min-width: 0;
   color: var(--text-muted);
 }
 
 .ui-card__site {
   display: flex;
+  flex: 0 1 auto;
   gap: rem(6px);
   align-items: center;
   min-width: 0;
@@ -200,12 +245,15 @@
   white-space: nowrap;
 }
 
-.ui-card__favorite {
-  position: relative;
-  z-index: 2;
-  display: flex;
+.ui-card__date {
   flex: none;
-  align-items: center;
+  margin-inline-start: auto;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+
+  &:empty {
+    display: none;
+  }
 }
 
 // The heading wraps the link. It stays static positioned (the link's `::after` is stretched
@@ -257,6 +305,15 @@
   z-index: 2;
   display: flex;
   gap: rem(4px);
+}
+
+// The favorite toggle and the "..." trigger reveal on their own, so a toggled-on favorite can stay.
+.ui-card__favorite,
+.ui-card__more {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
   opacity: 0;
   transform: translateY(#{rem(-2px)});
   transition:
@@ -272,15 +329,17 @@
   }
 }
 
-:host(:has(:focus-visible)) .ui-card__actions,
-:host(.ui-card--pinned) .ui-card__actions {
+:host(:has(:focus-visible)) :is(.ui-card__favorite, .ui-card__more),
+:host(.ui-card--pinned) :is(.ui-card__favorite, .ui-card__more),
+:host(.ui-card--favorited) .ui-card__favorite {
   opacity: 1;
   transform: none;
 }
 
 // Touch has no hover: the actions are always there.
 @media (hover: none) {
-  .ui-card__actions {
+  .ui-card__favorite,
+  .ui-card__more {
     opacity: 1;
     transform: none;
   }

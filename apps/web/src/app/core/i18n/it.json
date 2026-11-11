@@ -3,90 +3,41 @@
     "header": {
       "navLabel": "Principale",
       "brand": "Shelfmark",
-      "howItsBuilt": "Come è fatto",
-      "github": "GitHub",
-      "signIn": "Accedi"
+      "signIn": "Accedi",
+      "howItWorks": "Come funziona",
+      "privacy": "Privacy",
+      "getStarted": "Inizia"
     },
     "hero": {
-      "eyebrow": "Per tutto quello che mandi a te stesso",
       "line1": "Incolla un link.",
       "line2": "Ritrovalo.",
       "line3": "Anche tra un anno.",
-      "lead": "Chat e barre dei preferiti sono il posto dove i link finiscono dimenticati. Shelfmark li tiene in cartelle, con una nota sul perché li hai salvati, e ritrova qualsiasi link in due tasti.",
+      "lead": "Video, articoli, cose da comprare, corsi — su uno scaffale tranquillo invece che in chat e schede aperte.",
       "demo": "Apri la demo",
-      "signIn": "Accedi"
-    },
-    "chat": {
-      "savedMessages": "Messaggi salvati",
-      "savedSubtitle": "nuovi link ogni giorno, nessuno ritrovabile",
-      "shelfTitle": "Il tuo scaffale",
-      "shelfSubtitle": "5 link in 4 cartelle, ognuno con una nota",
-      "hintChat": "Cinque link, cinque giorni diversi.",
-      "hintShelf": "Le note vengono dai tuoi stessi messaggi.",
-      "putOnShelf": "Mettili sullo scaffale",
-      "showChat": "Mostra di nuovo la chat",
-      "messages": {
-        "watch": {
-          "text": "da guardare dopo!!",
-          "time": "lun 23:41"
-        },
-        "coat": {
-          "text": "questo cappotto, aspettare i saldi",
-          "time": "mar 09:12"
-        },
-        "course": {
-          "text": "Fwd: Frontend Weekly",
-          "time": "mer 18:30"
-        },
-        "ramen": {
-          "text": "ricetta del ramen, venerdì?",
-          "time": "gio 21:05"
-        },
-        "zoneless": {
-          "text": "dov’era quell’articolo su zoneless…",
-          "time": "ven 08:47"
-        },
-        "lisbon": {
-          "text": "lisbona, magari a maggio",
-          "time": "sab 11:20"
-        },
-        "icons": {
-          "text": "icone per il progetto personale",
-          "time": "dom 16:02"
-        },
-        "react": {
-          "text": "da leggere un giorno",
-          "time": "lun 07:58"
-        }
-      }
-    },
-    "shelf": {
-      "folders": {
-        "angular": "Lavoro / Angular",
-        "courses": "Corsi",
-        "clothes": "Vestiti",
-        "recipes": "Ricette"
-      },
-      "links": {
-        "signalForms": {
-          "title": "Signal Forms in 20 minuti",
-          "note": "Da guardare dopo"
-        },
-        "zoneless": {
-          "title": "Change detection zoneless",
-          "note": "L’articolo su zoneless"
-        },
-        "nestjs": {
-          "title": "NestJS per sviluppatori frontend",
-          "note": "Da Frontend Weekly"
-        },
-        "coat": {
-          "title": "Cappotto di lana, grafite",
-          "note": "Aspettare i saldi"
-        },
-        "ramen": {
-          "title": "Il miglior ramen dei giorni feriali",
-          "note": "Venerdì?"
+      "start": "Crea il tuo scaffale",
+      "note": "Accedi con Google o GitHub.",
+      "preview": {
+        "label": "Anteprima dell’app",
+        "folder": "Da leggere",
+        "count": "21 link",
+        "view": "Vista",
+        "all": "Tutti 21",
+        "articles": "Articoli 6",
+        "savedTo": "Salvato in {{folder}}",
+        "undo": "Annulla",
+        "items": {
+          "grid": {
+            "title": "La guida completa a CSS grid",
+            "tag": "css"
+          },
+          "design": {
+            "title": "Progettare per la lettura lunga",
+            "tag": "design"
+          },
+          "slow": {
+            "title": "Perché un software lento sembra rotto",
+            "tag": "ux"
+          }
         }
       }
     },
@@ -629,7 +580,35 @@
         },
         "ramen": {
           "title": "Il miglior ramen dei giorni feriali"
+        },
+        "zoneless": {
+          "title": "Il change detection senza zone, spiegato"
+        },
+        "lisbon": {
+          "title": "Lisbona a maggio: un lungo weekend"
+        },
+        "icons": {
+          "title": "Set di icone gratuiti per progetti personali"
+        },
+        "grid": {
+          "title": "La guida completa a CSS grid"
+        },
+        "sourdough": {
+          "title": "Pane a lievito madre per principianti, passo passo"
+        },
+        "sneakers": {
+          "title": "Sneaker minimali in pelle"
         }
+      },
+      "tags": {
+        "video": "video",
+        "angular": "angular",
+        "shopping": "acquisti",
+        "course": "corso",
+        "recipes": "ricette",
+        "travel": "viaggi",
+        "design": "design",
+        "css": "css"
       },
       "privacyBefore": "Continuando accetti la nostra",
       "privacyLink": "Informativa sulla privacy",
@@ -805,6 +784,11 @@
       },
       "icons": {
         "folder": "Cartella",
+        "briefcase": "Valigetta",
+        "code": "Codice",
+        "graduation-cap": "Tocco",
+        "shirt": "Maglietta",
+        "cooking-pot": "Pentola",
         "bookmark": "Segnalibro",
         "star": "Stella",
         "clock": "Orologio",

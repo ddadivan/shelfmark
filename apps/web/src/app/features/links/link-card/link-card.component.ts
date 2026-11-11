@@ -20,7 +20,15 @@ import { ViewportService } from '../../../core/layout/viewport.service';
 import { linkKeyIntent } from '../selection/link-select-keys';
 import { LINK_KEY_INTENT } from '../selection/models/link-key-intent.const';
 import type { LinkSelectToggle } from '../models/link-select-toggle.interface';
-import { linkAddress, linkHost, ownImageUrl, safeHref, siteLetter } from '../link-view';
+import { LocaleService } from '../../../core/i18n/locale.service';
+import {
+  linkAddress,
+  linkHost,
+  ownImageUrl,
+  placeholderTone,
+  safeHref,
+  siteLetter,
+} from '../link-view';
 
 const MAX_TAGS = 3;
 
@@ -56,6 +64,8 @@ export class LinkCardComponent {
   /** Settings › Library › Open links in: a new tab (default) or the same tab. */
   protected readonly newTab = inject(UserSettingsStore).openInNewTab;
   protected readonly viewport = inject(ViewportService);
+  private readonly locale = inject(LocaleService);
+  private readonly now = Date.now();
 
   readonly link = input.required<LinkCardItem>();
   /** No favorite button and no actions menu: a guest looks at someone else's link (#276). */
@@ -130,6 +140,12 @@ export class LinkCardComponent {
   protected readonly address = computed(() => linkAddress(this.link().url));
   protected readonly letter = computed(() => siteLetter(this.link().url));
   protected readonly favicon = computed(() => ownImageUrl(this.link().faviconUrl));
+  protected readonly tone = computed(() => placeholderTone(this.link().id));
+  /** "2 days ago", "Last week", "Oct 28": when the link was saved, in the interface language. */
+  protected readonly saved = computed(() => {
+    const created = this.link().createdAt;
+    return created ? this.locale.formatSaved(created, this.now) : '';
+  });
   protected readonly image = computed(() => ownImageUrl(this.link().imageUrl));
   protected readonly tags = computed(() => this.link().tags.slice(0, MAX_TAGS));
   protected readonly hiddenTags = computed(() => Math.max(0, this.link().tags.length - MAX_TAGS));

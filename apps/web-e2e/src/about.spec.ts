@@ -48,6 +48,31 @@ test.describe('About and "How it works" (mock API)', () => {
     await expect(page).toHaveURL('/links');
   });
 
+  test('"What\'s new" sits in the page column like the other sections, caption not cut', async ({
+    page,
+  }) => {
+    await seedSession(page);
+    await page.goto('/about');
+    const caption = page.getByRole('heading', { name: "What's new" });
+    await expect(caption).toBeVisible();
+    await settled(page);
+
+    const [captionBox, panelBox, heroBox, viewport] = await Promise.all([
+      caption.boundingBox(),
+      page.locator('.landing-whats-new__list').boundingBox(),
+      page.locator('.landing-hero__copy').boundingBox(),
+      page.viewportSize(),
+    ]);
+    if (!captionBox || !panelBox || !heroBox || !viewport) {
+      throw new Error('A box is missing');
+    }
+    // The same left edge as the hero's copy, away from the window edge, panel inside the column.
+    expect(captionBox.x).toBeGreaterThan(8);
+    expect(Math.abs(captionBox.x - heroBox.x)).toBeLessThanOrEqual(1);
+    expect(panelBox.x + panelBox.width).toBeLessThan(viewport.width - 8);
+    await expect(caption).toHaveText("What's new");
+  });
+
   test('"How it works" plays the promo video with captions, and chapters jump', async ({
     page,
   }, testInfo) => {

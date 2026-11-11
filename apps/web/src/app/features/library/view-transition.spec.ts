@@ -7,10 +7,15 @@ import { runViewTransition } from './view-transition';
 function fakeDoc(reduced: boolean, withApi: boolean): Document {
   TestBed.inject(ReducedMotion).setAppReduced(reduced);
   const doc = {
+    visibilityState: 'visible',
     defaultView: { matchMedia: () => ({ matches: false }) },
     startViewTransition: vi.fn((callback: () => Promise<void>) => {
       void callback();
-      return { finished: Promise.resolve() };
+      return {
+        ready: Promise.resolve(),
+        updateCallbackDone: Promise.resolve(),
+        finished: Promise.resolve(),
+      };
     }),
   };
   if (!withApi) {
@@ -21,6 +26,15 @@ function fakeDoc(reduced: boolean, withApi: boolean): Document {
 }
 
 describe('runViewTransition', () => {
+  it('runs the update at once while the tab is hidden', () => {
+    const doc = fakeDoc(false, true);
+    Object.assign(doc, { visibilityState: 'hidden' });
+    const update = vi.fn();
+    runViewTransition(doc, TestBed.inject(Injector), update);
+    expect(update).toHaveBeenCalledTimes(1);
+    expect(doc.startViewTransition).not.toHaveBeenCalled();
+  });
+
   it('runs the update inside startViewTransition when supported', () => {
     const doc = fakeDoc(false, true);
     const update = vi.fn();

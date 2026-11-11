@@ -52,7 +52,10 @@ async function setup(
       ),
       provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
       { provide: AUTH_API, useValue: api },
-      { provide: ViewportService, useValue: { desktop: signal(desktop) } },
+      {
+        provide: ViewportService,
+        useValue: { desktop: signal(desktop), wideDesktop: signal(true) },
+      },
     ],
   });
   await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
@@ -60,8 +63,9 @@ async function setup(
   return { api, harness, router: TestBed.inject(Router) };
 }
 
+/** The page's real buttons: the inert, decorative cards' own title buttons are not among them. */
 function buttons(root: HTMLElement): HTMLButtonElement[] {
-  return Array.from(root.querySelectorAll('button'));
+  return Array.from(root.querySelectorAll('button')).filter((b) => !b.closest('[inert]'));
 }
 
 function button(root: HTMLElement, label: string): HTMLButtonElement {
@@ -100,14 +104,15 @@ describe('SignInPage', () => {
     );
   });
 
-  it('shows four decorative drifting cards on a desktop and no mosaic band', async () => {
+  it('shows ten decorative, inert drifting cards on a desktop and no mosaic band', async () => {
     const { harness } = await setup();
     await harness.navigateByUrl('/sign-in');
     const root = harness.routeNativeElement as HTMLElement;
     const drift = root.querySelector('app-sign-in-drift');
 
     expect(drift?.getAttribute('aria-hidden')).toBe('true');
-    expect(drift?.querySelectorAll('.sd-card')).toHaveLength(4);
+    expect(drift?.hasAttribute('inert')).toBe(true);
+    expect(drift?.querySelectorAll('.sd-card')).toHaveLength(10);
     expect(drift?.textContent).toContain('Signal Forms in 20 minutes');
     expect(root.querySelector('.sign-in__art')).toBeNull();
   });

@@ -4,6 +4,12 @@
  */
 export const FOLDER_ICON = {
   Folder: 'folder',
+  // Topic glyphs of the Main mockup (#312): work, code, learning, clothes, cooking.
+  Briefcase: 'briefcase',
+  Code: 'code',
+  GraduationCap: 'graduation-cap',
+  Shirt: 'shirt',
+  CookingPot: 'cooking-pot',
   Bookmark: 'bookmark',
   Star: 'star',
   Clock: 'clock',

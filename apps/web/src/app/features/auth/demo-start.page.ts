@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/cor
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { LogoComponent, SpinnerComponent } from '@shelfmark/ui';
+import { preloadAppChunks } from '../../core/routing/preload-app-chunks';
 import { AuthStore } from '../../core/auth/auth.store';
 import { AUTH_ROUTE } from '../../core/auth/models/auth-routes.const';
 import { SIGN_IN_QUERY } from '../../core/auth/models/sign-in-query.const';
@@ -24,6 +25,8 @@ export default class DemoStartPage implements OnInit {
   private readonly router = inject(Router);
 
   async ngOnInit(): Promise<void> {
+    // The shell and the library load while the sandbox opens.
+    preloadAppChunks();
     await this.auth.ensureLoaded();
     if (!this.auth.isSignedIn()) {
       await this.auth.signInDemo();

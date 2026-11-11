@@ -3,90 +3,41 @@
     "header": {
       "navLabel": "Principal",
       "brand": "Shelfmark",
-      "howItsBuilt": "Comment c’est fait",
-      "github": "GitHub",
-      "signIn": "Se connecter"
+      "signIn": "Se connecter",
+      "howItWorks": "Comment ça marche",
+      "privacy": "Confidentialité",
+      "getStarted": "Commencer"
     },
     "hero": {
-      "eyebrow": "Pour tout ce que vous vous envoyez à vous-même",
       "line1": "Collez un lien.",
       "line2": "Retrouvez-le.",
       "line3": "Même dans un an.",
-      "lead": "Les discussions et les barres de favoris, c’est là que les liens tombent dans l’oubli. Shelfmark les range dans des dossiers, avec une note sur la raison de chaque lien, et retrouve n’importe lequel en deux touches.",
+      "lead": "Vidéos, articles, achats, cours — sur une étagère calme plutôt que dans des discussions et des onglets ouverts.",
       "demo": "Ouvrir la démo",
-      "signIn": "Se connecter"
-    },
-    "chat": {
-      "savedMessages": "Messages enregistrés",
-      "savedSubtitle": "des liens chaque jour, introuvables",
-      "shelfTitle": "Votre étagère",
-      "shelfSubtitle": "5 liens dans 4 dossiers, chacun avec une note",
-      "hintChat": "Cinq liens, cinq jours différents.",
-      "hintShelf": "Les notes viennent de vos propres messages.",
-      "putOnShelf": "Les ranger sur l’étagère",
-      "showChat": "Revoir la discussion",
-      "messages": {
-        "watch": {
-          "text": "à regarder plus tard !!",
-          "time": "lun. 23:41"
-        },
-        "coat": {
-          "text": "ce manteau, attendre les soldes",
-          "time": "mar. 09:12"
-        },
-        "course": {
-          "text": "Tr : Frontend Weekly",
-          "time": "mer. 18:30"
-        },
-        "ramen": {
-          "text": "recette de ramen, vendredi ?",
-          "time": "jeu. 21:05"
-        },
-        "zoneless": {
-          "text": "où était cet article sur zoneless…",
-          "time": "ven. 08:47"
-        },
-        "lisbon": {
-          "text": "lisbonne, peut-être en mai",
-          "time": "sam. 11:20"
-        },
-        "icons": {
-          "text": "icônes pour le projet perso",
-          "time": "dim. 16:02"
-        },
-        "react": {
-          "text": "à lire un jour",
-          "time": "lun. 07:58"
-        }
-      }
-    },
-    "shelf": {
-      "folders": {
-        "angular": "Travail / Angular",
-        "courses": "Cours",
-        "clothes": "Vêtements",
-        "recipes": "Recettes"
-      },
-      "links": {
-        "signalForms": {
-          "title": "Signal Forms en 20 minutes",
-          "note": "À regarder plus tard"
-        },
-        "zoneless": {
-          "title": "Détection des changements zoneless",
-          "note": "L’article sur zoneless"
-        },
-        "nestjs": {
-          "title": "NestJS pour les développeurs frontend",
-          "note": "Vu dans Frontend Weekly"
-        },
-        "coat": {
-          "title": "Manteau en laine, graphite",
-          "note": "Attendre les soldes"
-        },
-        "ramen": {
-          "title": "Les meilleurs ramen de la semaine",
-          "note": "Vendredi ?"
+      "start": "Créer mon étagère",
+      "note": "Connexion avec Google ou GitHub.",
+      "preview": {
+        "label": "Aperçu de l’application",
+        "folder": "À lire plus tard",
+        "count": "21 liens",
+        "view": "Vue",
+        "all": "Tous 21",
+        "articles": "Articles 6",
+        "savedTo": "Enregistré dans {{folder}}",
+        "undo": "Annuler",
+        "items": {
+          "grid": {
+            "title": "Le guide complet de CSS grid",
+            "tag": "css"
+          },
+          "design": {
+            "title": "Concevoir pour la lecture longue",
+            "tag": "design"
+          },
+          "slow": {
+            "title": "Pourquoi un logiciel lent paraît cassé",
+            "tag": "ux"
+          }
         }
       }
     },
@@ -629,7 +580,35 @@
         },
         "ramen": {
           "title": "Les meilleurs ramen de la semaine"
+        },
+        "zoneless": {
+          "title": "La détection de changements sans zone, expliquée"
+        },
+        "lisbon": {
+          "title": "Lisbonne en mai : un long week-end"
+        },
+        "icons": {
+          "title": "Jeux d’icônes gratuits pour projets perso"
+        },
+        "grid": {
+          "title": "Le guide complet de CSS grid"
+        },
+        "sourdough": {
+          "title": "Pain au levain pour débutants, pas à pas"
+        },
+        "sneakers": {
+          "title": "Baskets minimalistes en cuir"
         }
+      },
+      "tags": {
+        "video": "vidéo",
+        "angular": "angular",
+        "shopping": "achats",
+        "course": "cours",
+        "recipes": "recettes",
+        "travel": "voyage",
+        "design": "design",
+        "css": "css"
       },
       "privacyBefore": "En continuant, vous acceptez la",
       "privacyLink": "Politique de confidentialité",
@@ -805,6 +784,11 @@
       },
       "icons": {
         "folder": "Dossier",
+        "briefcase": "Mallette",
+        "code": "Code",
+        "graduation-cap": "Toque de diplômé",
+        "shirt": "T-shirt",
+        "cooking-pot": "Marmite",
         "bookmark": "Marque-page",
         "star": "Étoile",
         "clock": "Horloge",

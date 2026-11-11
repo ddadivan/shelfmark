@@ -1,92 +1,152 @@
 @use 'ui' as *;
 
+// Everything is sized from the stage itself (`cqw` / `cqh` of the host, a size container), so
+// the lanes follow the window without any script: a lane is the room between the window edge
+// and the glass sign-in card (420px wide, centred), the cards never reach under it.
 :host {
+  --sd-pad: var(--space-6);
+
+  // Half of the sign-in card (420px) and the gap between it and a lane.
+  --sd-clear: #{rem(210px)};
+  --sd-lane-w: calc(50cqw - var(--sd-clear) - var(--sd-pad) * 2);
+
   position: absolute;
   inset: 0;
   overflow: hidden;
   pointer-events: none;
+  container-type: size;
 }
 
-// Position (left / right, top / bottom), width, tilt (`--r`), sideways drift (`--dx`), the loop
-// length (`--t`) and its offset (`--d`) per card, from the mockup. `--n` is the ring step.
-.sd-card {
+// One lane on each side: a grid of two columns by six rows (a card takes two rows, the inner
+// column sits half a card lower), or one column by three rows on a narrow desktop.
+.sd-lane {
+  // Set here, not on the host: they depend on the lane's own column count.
+  --sd-cols: 2;
+  --sd-rows: 6;
+
+  // The room one card has: a column of the lane (width) and a third of the lane's height. The
+  // card is as wide as its column allows (minus a gutter for its tilt and float); when the window
+  // is too short for its height (about `9/16` of the drawing plus a fixed body) it is scaled down
+  // to fit (`--sd-fit`, below), not squeezed, so the text stays readable and the layout holds.
+  --sd-gutter: #{rem(40px)};
+  --sd-cell-w: calc(var(--sd-lane-w) / var(--sd-cols));
+  --sd-cell-h: calc((100cqh - var(--sd-pad) * 2) / 3);
+  --sd-card-w: clamp(#{rem(144px)}, var(--sd-cell-w) - var(--sd-gutter), #{rem(248px)});
+  --sd-card-h: calc((var(--sd-card-w) - #{rem(12px)}) * 0.5625 + #{rem(164px)});
+  --sd-room-h: calc(var(--sd-cell-h) - #{rem(32px)});
+
+  // A number from two lengths (`tan(atan2())` is their ratio): 1 when the card fits, less when not.
+  --sd-fit: 1;
+
+  @supports (scale: calc(tan(atan2(1px, 1px)))) {
+    --sd-fit: min(1, tan(atan2(var(--sd-room-h), var(--sd-card-h))));
+  }
+
   position: absolute;
-  transform: rotate(var(--r));
-  animation:
-    sd-in 600ms var(--ease-out) backwards,
-    sd-float var(--t) ease-in-out infinite;
-  animation-delay: calc(var(--i) * 120ms + 150ms), var(--d);
+  inset-block: var(--sd-pad);
+  inline-size: var(--sd-lane-w);
+  display: grid;
+  grid-template-columns: repeat(var(--sd-cols), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--sd-rows), minmax(0, 1fr));
+}
+
+.sd-lane--start {
+  inset-inline-start: var(--sd-pad);
+}
+
+.sd-lane--end {
+  inset-inline-end: var(--sd-pad);
+}
+
+.sd-lane--narrow {
+  --sd-cols: 1;
+  --sd-rows: 3;
+}
+
+// A cell: centres its card. The depth layer sets how small, dim and slow the card is and how far
+// it follows the pointer.
+.sd-card {
+  --sd-scale: 1;
+  --sd-opacity: 1;
+  --sd-t: 8s;
+  --sd-amp: #{rem(10px)};
+  --sd-shift: #{rem(14px)};
+  --sd-lean: 1;
+
+  display: grid;
+  place-items: center;
+  min-width: 0;
+}
+
+.sd-card--mid {
+  --sd-scale: 0.86;
+  --sd-opacity: 0.85;
+  --sd-t: 10s;
+  --sd-amp: #{rem(8px)};
+  --sd-shift: #{rem(9px)};
+  --sd-lean: 0.7;
+}
+
+.sd-card--far {
+  --sd-scale: 0.72;
+  --sd-opacity: 0.6;
+  --sd-t: 13s;
+  --sd-amp: #{rem(5px)};
+  --sd-shift: #{rem(4px)};
+  --sd-lean: 0.4;
+}
+
+// Fly-in: from the middle of the window (behind the sign-in card) to the card's place, a wave
+// from the cards nearest the sign-in card outwards. `dx` / `dy` are the distance from the
+// card's centre to the window's centre, from the lane's geometry: the lane's outer edge is
+// `--sd-pad` from the window edge and the card's centre is `outer + 0.5` columns in.
+.sd-fly {
+  --sd-dir: 1;
+  --sd-from-edge: calc((var(--sd-outer) + 0.5) / var(--sd-cols) * var(--sd-lane-w));
+  --sd-dx: calc((50cqw - var(--sd-pad) - var(--sd-from-edge)) * var(--sd-dir));
+  --sd-dy: calc(50cqh - var(--sd-pad) - var(--sd-cy) * (100cqh - var(--sd-pad) * 2));
+
+  inline-size: var(--sd-card-w);
+  opacity: var(--sd-opacity);
+  animation: sd-fly 1000ms var(--ease-out) backwards;
+  animation-delay: calc(var(--sd-wave) * 110ms + 80ms);
 
   @include reduced-motion {
     animation: none;
   }
 }
 
-.sd-card--0 {
-  --i: 0;
-  --n: 2;
-  --r: -6deg;
-  --dx: #{rem(4px)};
-  --t: 7s;
-  --d: -1s;
+.sd-lane--end .sd-fly {
+  --sd-dir: -1;
 
-  inset-block-start: 12%;
-  inset-inline-start: 8%;
-  width: rem(220px);
+  animation-delay: calc(var(--sd-wave) * 110ms + 135ms);
 }
 
-.sd-card--1 {
-  --i: 1;
-  --n: 5;
-  --r: 4deg;
-  --dx: #{rem(-5px)};
-  --t: 8.5s;
-  --d: -3s;
+// The float: its own slow loop per card (longer and smaller the further away). The rest tilt
+// `--sd-r` stays when the loop is off.
+.sd-float {
+  transform: rotate(var(--sd-r));
+  animation: sd-float var(--sd-t) ease-in-out infinite;
+  animation-delay: calc(var(--sd-n) * -1.7s);
 
-  inset-block-end: 10%;
-  inset-inline-start: 14%;
-  width: rem(200px);
+  @include reduced-motion {
+    animation: none;
+  }
 }
 
-.sd-card--2 {
-  --i: 2;
-  --n: 0;
-  --r: 5deg;
-  --dx: #{rem(-4px)};
-  --t: 7.8s;
-  --d: -5s;
-
-  inset-block-start: 16%;
-  inset-inline-end: 9%;
-  width: rem(210px);
-}
-
-.sd-card--3 {
-  --i: 3;
-  --n: 7;
-  --r: -3deg;
-  --dx: #{rem(5px)};
-  --t: 9s;
-  --d: -2s;
-
-  inset-block-end: 12%;
-  inset-inline-end: 13%;
-  width: rem(230px);
-}
-
-// The pointer tilt lives here, on the inner element, so it composes with the card's float
-// (`--tx` / `--ty` are set from the component, -1 to 1: the pointer's side of this card).
+// The pointer parallax lives here, on the inner element, so it composes with the float (`--tx` /
+// `--ty` are set from the component, -1 to 1: the pointer's side of this card). Near cards lean
+// and shift more than far ones (`--sd-lean`, `--sd-shift`); the layer's scale is its own property.
 .sd-tilt {
   --tx: 0;
   --ty: 0;
 
   position: relative;
-  background: var(--surface);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  transform: perspective(rem(700px)) rotateX(calc(var(--ty) * -7deg))
-    rotateY(calc(var(--tx) * 9deg))
-    translate(calc(var(--tx) * #{rem(4px)}), calc(var(--ty) * #{rem(4px)}));
+  scale: calc(var(--sd-scale) * var(--sd-fit));
+  transform: perspective(rem(700px)) rotateX(calc(var(--ty) * var(--sd-lean) * -7deg))
+    rotateY(calc(var(--tx) * var(--sd-lean) * 9deg))
+    translate(calc(var(--tx) * var(--sd-shift)), calc(var(--ty) * var(--sd-shift)));
   transition: transform 450ms var(--ease-out);
 
   @include reduced-motion {
@@ -95,48 +155,8 @@
   }
 }
 
-.sd-media {
-  aspect-ratio: 16 / 10;
-  margin: rem(6px);
-  border-radius: rem(16px);
-}
-
-.sd-media--accent-soft {
-  background: var(--accent-bg);
-}
-
-.sd-media--pressed {
-  background: var(--surface-pressed);
-}
-
-.sd-media--hover {
-  background: var(--surface-hover);
-}
-
-.sd-body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-2) var(--space-4) var(--space-4);
-}
-
-.sd-meta {
-  @include type(caption);
-
-  display: flex;
-  gap: var(--space-2);
-  align-items: center;
-  color: var(--text-muted);
-}
-
-.sd-title {
-  @include type(label);
-  @include line-clamp(2);
-
-  color: var(--text);
-}
-
-// "Lands": an accent ring that pulses on one card at a time, a 24 s loop.
+// "Lands": an accent ring that pulses on one card at a time, a 24 s loop that starts once the
+// cards have settled.
 .sd-ring {
   position: absolute;
   inset: 0;
@@ -145,29 +165,29 @@
   box-shadow: inset 0 0 0 3px var(--accent);
   opacity: 0;
   animation: sd-ring 24s var(--ease-out) infinite;
-  animation-delay: calc(var(--n) * 3s + 1.6s);
+  animation-delay: calc(var(--sd-n) * 2.4s + 2.6s);
 
   @include reduced-motion {
     animation: none;
   }
 }
 
-@keyframes sd-in {
+@keyframes sd-fly {
   from {
     opacity: 0;
-    translate: 0 #{rem(18px)};
-    scale: 0.92;
+    translate: var(--sd-dx) var(--sd-dy);
+    scale: 0.35;
   }
 }
 
 @keyframes sd-float {
   0%,
   100% {
-    transform: translate3d(0, 0, 0) rotate(var(--r));
+    transform: translate3d(0, 0, 0) rotate(var(--sd-r));
   }
 
   50% {
-    transform: translate3d(var(--dx), #{rem(-12px)}, 0) rotate(calc(var(--r) + 1.5deg));
+    transform: translate3d(0, calc(var(--sd-amp) * -1), 0) rotate(calc(var(--sd-r) + 1.5deg));
   }
 }
 

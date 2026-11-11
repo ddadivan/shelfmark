@@ -15,31 +15,38 @@
     />
     <app-sidebar-pinned [activeId]="activeId()" />
   }
-  <ui-tree
-    #folderTree
-    [nodes]="nodes()"
-    [activeId]="activeId()"
-    [heading]="'shell.sidebar.folders' | transloco"
-    [ariaLabel]="'shell.sidebar.foldersTree' | transloco"
-    [menuLabel]="menuLabel()"
-    [menuNodeId]="menuNodeId()"
-    [dropTargetId]="drag.treeTargetId()"
-    [dropLabel]="'links.drag.moveHere' | transloco"
-    (selected)="select($event)"
-    (contextMenu)="openMenu($event)"
-  >
-    <ui-button
-      uiTreeHeadingAction
-      variant="ghost"
-      size="sm"
-      iconOnly
-      iconLeft="add"
-      [iconSize]="ICON_SIZE.Lg"
-      [ariaLabel]="'shell.sidebar.newFolder' | transloco"
-      [uiTooltip]="'shell.sidebar.newFolder' | transloco"
-      (click)="createTopLevel()"
-    />
-  </ui-tree>
+  @if (foldersReady()) {
+    <ui-tree
+      #folderTree
+      [nodes]="nodes()"
+      [activeId]="activeId()"
+      [heading]="'shell.sidebar.folders' | transloco"
+      [ariaLabel]="'shell.sidebar.foldersTree' | transloco"
+      [menuLabel]="menuLabel()"
+      [menuNodeId]="menuNodeId()"
+      [dropTargetId]="drag.treeTargetId()"
+      [dropLabel]="'links.drag.moveHere' | transloco"
+      (selected)="select($event)"
+      (contextMenu)="openMenu($event)"
+    >
+      <ui-button
+        uiTreeHeadingAction
+        variant="ghost"
+        size="sm"
+        iconOnly
+        iconLeft="add"
+        [iconSize]="ICON_SIZE.Md"
+        [ariaLabel]="'shell.sidebar.newFolder' | transloco"
+        [uiTooltip]="'shell.sidebar.newFolder' | transloco"
+        (click)="createTopLevel()"
+      />
+    </ui-tree>
+  } @else if (loaderShown()) {
+    <!-- The first load: nothing before 300 ms, then rows of the right height; never empty sections. -->
+    <div class="sidebar__loading" aria-hidden="true">
+      <ui-skeleton [shape]="SKELETON_SHAPE.Tree" [count]="foldersOnly() ? 5 : 4" />
+    </div>
+  }
 
   @if (folders.error()) {
     <p class="sidebar__error">
@@ -50,7 +57,7 @@
     </p>
   }
 
-  @if (!foldersOnly()) {
+  @if (!foldersOnly() && tagsReady()) {
     <app-sidebar-tags />
   }
 
@@ -71,7 +78,7 @@
   }
 
   <ui-menu [ariaLabel]="'shell.sidebar.folderMenu' | transloco" (closed)="menuClosed()">
-    <ui-menu-item icon="bookmark" (activated)="togglePin()">
+    <ui-menu-item icon="pin" (activated)="togglePin()">
       {{ (menuPinned() ? 'shell.sidebar.menu.unpin' : 'shell.sidebar.menu.pin') | transloco }}
     </ui-menu-item>
     <ui-menu-item icon="edit" (activated)="style()">

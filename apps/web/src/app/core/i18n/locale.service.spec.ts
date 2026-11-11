@@ -143,6 +143,19 @@ describe('LocaleService', () => {
     );
   });
 
+  it('formats the saved date of a card: relative, then a calendar date', async () => {
+    const { locale } = setup();
+    await locale.init();
+    const now = new Date('2026-11-10T12:00:00Z').getTime();
+    const ago = (days: number): string => new Date(now - days * 86_400_000).toISOString();
+    expect(locale.formatSaved(ago(2), now)).toBe('2 days ago');
+    expect(locale.formatSaved(ago(9), now)).toBe('Last week');
+    expect(locale.formatSaved(ago(14), now)).toBe('Oct 27');
+    expect(locale.formatSaved('2025-03-04T10:00:00Z', now)).toBe('Mar 4, 2025');
+    locale.apply(settings({ dateFormat: DATE_FORMAT.Iso }));
+    expect(locale.formatSaved(ago(14), now)).toBe('2026-10-27');
+  });
+
   it('follows the clock setting', async () => {
     const { locale } = setup();
     await locale.init();

@@ -46,6 +46,8 @@ test.describe('trash (mock API)', () => {
 
     await openTrash(page);
     await expect(trashRow(page, title)).toBeVisible();
+    // Opening Trash sent the delete, so its Undo toast closes at once (Undo could not bring it back).
+    await expect(page.getByText('Moved to Trash')).toBeHidden({ timeout: 2000 });
     await expect(trashRow(page, title)).toContainText('30 days left');
     await expect(trashRow(page, title)).toContainText('Deleted');
     await expect(page.locator('.trash-page__count')).toHaveText('1 item, kept for 30 days');

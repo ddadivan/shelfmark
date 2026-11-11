@@ -2,6 +2,8 @@
   uiPointerShadow
   [href]="href()"
   [image]="image()"
+  [placeholderTone]="tone()"
+  [favorited]="link().isFavorite"
   [newTab]="newTab()"
   [reveal]="reveal()"
   [description]="href() && newTab() ? ('links.item.opensInNewTab' | transloco) : undefined"
@@ -23,7 +25,6 @@
       (click)="onCheckboxClick($event)"
     />
   }
-  <span slot="fallback" class="link-card__letter" aria-hidden="true">{{ letter() }}</span>
   @if (href()) {
     <span slot="overlay" class="link-card__open">
       <span class="link-card__address">{{ address() }}</span>
@@ -38,9 +39,14 @@
     <ui-favicon [src]="favicon()" [letter]="letter()" />
     <span class="link-card__host">{{ host() }}</span>
   </span>
+  @if (saved()) {
+    <span slot="date">{{ saved() }}</span>
+  }
   @if (!readOnly()) {
     <ui-button
       slot="favorite"
+      class="link-card__star"
+      [class.link-card__star--on]="link().isFavorite"
       variant="ghost"
       size="sm"
       iconOnly
@@ -67,9 +73,7 @@
     />
   }
   @if (pinnedToTop()) {
-    <ui-badge class="link-card__pinned" icon="bookmark">{{
-      'links.item.pinned' | transloco
-    }}</ui-badge>
+    <ui-badge class="link-card__pinned" icon="pin">{{ 'links.item.pinned' | transloco }}</ui-badge>
   }
   @if (link().note; as note) {
     <p class="link-card__note">{{ note }}</p>
@@ -110,11 +114,11 @@
       {{ (link().isFavorite ? 'links.item.removeFavorite' : 'links.item.addFavorite') | transloco }}
     </ui-menu-item>
     @if (pinnable()) {
-      <ui-menu-item icon="bookmark" (activated)="pinToTopToggled.emit()">
+      <ui-menu-item icon="pin" (activated)="pinToTopToggled.emit()">
         {{ (pinnedToTop() ? 'links.item.unpinFromTop' : 'links.item.pinToTop') | transloco }}
       </ui-menu-item>
     }
-    <ui-menu-item icon="bookmark" (activated)="pinToSidebarToggled.emit()">
+    <ui-menu-item icon="pin" (activated)="pinToSidebarToggled.emit()">
       {{
         (pinnedToSidebar() ? 'links.item.unpinFromSidebar' : 'links.item.pinToSidebar') | transloco
       }}

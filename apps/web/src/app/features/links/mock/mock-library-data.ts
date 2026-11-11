@@ -23,6 +23,7 @@ import { MOCK_TRASH_SCENARIO } from '../../trash/mock/models/mock-trash-scenario
 import { MOCK_TRASH_SCENARIO_KEY } from '../../trash/mock/models/mock-trash-scenario-key.const';
 import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
 import { matchesQuery } from '../search-query';
+import { buildDemoLibrarySeed, isDemoMockSession } from './demo-library-seed';
 import { generateMockLinks } from './generate-mock-links';
 import type { MockSavedView } from '../../views/mock/models/mock-saved-view.interface';
 import { mockStarterViews } from '../../views/mock/mock-starter-views';
@@ -52,11 +53,14 @@ const SEEDED_OLD_DAYS = 20;
  */
 @Service()
 export class MockLibraryData {
-  links: LinkResponse[] = generateMockLinks();
-  private folders: FolderResponse[] = MOCK_FOLDERS.map((folder) => ({ ...folder }));
+  /** The demo sandbox starts from the mockup library; every other mock session from the fixtures. */
+  private readonly demo = isDemoMockSession() ? buildDemoLibrarySeed() : null;
+  links: LinkResponse[] = this.demo?.links ?? generateMockLinks();
+  private folders: FolderResponse[] =
+    this.demo?.folders ?? MOCK_FOLDERS.map((folder) => ({ ...folder }));
   private tags: TagResponse[] = [
-    ...MOCK_TAGS.map((tag) => ({ ...tag })),
-    ...generatedTagNames(this.links, MOCK_TAGS).map((name) => newTag(name)),
+    ...(this.demo ? [] : MOCK_TAGS.map((tag) => ({ ...tag }))),
+    ...generatedTagNames(this.links, this.demo ? [] : MOCK_TAGS).map((name) => newTag(name)),
   ];
 
   /** The mock Trash, newest first. */
@@ -68,7 +72,7 @@ export class MockLibraryData {
   /** The mock account setting "Pause history": while on, the mock open records nothing. */
   pauseHistory = false;
   /** The sidebar pins in order (folders and links together). */
-  pins: PinRef[] = [];
+  pins: PinRef[] = this.demo?.pins ?? [];
   /** The saved views in order; a new account starts with the starter views. */
   views: MockSavedView[] = mockStarterViews();
 

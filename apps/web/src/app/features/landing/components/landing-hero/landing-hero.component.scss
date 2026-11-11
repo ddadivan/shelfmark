@@ -26,6 +26,8 @@
   }
 
   @include landing.wide {
+    // Equal columns: the preview gets the room for three readable cards.
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: calc(var(--space-8) * 3);
   }
 
@@ -45,20 +47,6 @@
 
   @include landing.wide {
     gap: var(--space-8);
-  }
-}
-
-.landing-hero__eyebrow {
-  @include landing.eyebrow;
-
-  @include landing.wide {
-    font-size: rem(15px);
-    line-height: rem(22px);
-  }
-
-  @include landing.xwide {
-    font-size: rem(17px);
-    line-height: rem(26px);
   }
 }
 
@@ -133,29 +121,19 @@
   @include landing.zoom(1.2, 1.45);
 }
 
-// Stands in for the chat phone while it loads (same height from the shared size mixin), so the
-// swap causes no layout shift. It sits in the same grid cell as the demo.
-.landing-hero__demo-placeholder {
-  @include landing.chat-size;
+.landing-hero__note {
+  margin: 0;
+  font-size: rem(13px);
+  line-height: rem(18px);
+  color: var(--text-muted);
 
-  min-height: calc(
-    var(--landing-chat-height) + var(--landing-chat-chrome) + var(--landing-chat-touch)
-  );
-
-  // The same zoom as the chat itself (below), so the swap shifts nothing.
-  @include landing.zoom(1.15, 1.4);
+  @include landing.wide {
+    font-size: rem(15px);
+    line-height: rem(22px);
+  }
 }
 
-.landing-hero__demo {
-  // The chat and its footer are spaced by the gap, not by a margin on the footer.
-  display: flex;
-  flex-direction: column;
-  gap: rem(32px);
-
-  // Smaller steps than the buttons: the phone is the tallest part of the first screen.
-  @include landing.zoom(1.15, 1.4);
-}
-
-.landing-hero__sr {
-  @include visually-hidden;
+.landing-hero__preview {
+  // The preview is a block of its own (not stretched by the grid): centred next to the copy.
+  align-self: center;
 }
