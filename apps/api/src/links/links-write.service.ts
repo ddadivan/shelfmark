@@ -217,18 +217,31 @@ export class LinksWriteService {
     }
   }
 
-  /** Records an open without touching `updatedAt` (an open is not an edit). */
+  /**
+   * Records an open without touching `updatedAt` (an open is not an edit). While the user's
+   * history is paused the statement still matches the link (so a foreign or missing one is a 404)
+   * but keeps `last_opened_at`, and the answer says `recorded: false`. One statement, so a pause
+   * that lands at the same time is either seen or not, never half.
+   */
   async open(userId: string, id: string): Promise<OpenLinkResponse> {
-    const touched = await this.prisma.$executeRaw`
-      UPDATE links SET last_opened_at = date_trunc('milliseconds', now())
-      WHERE id = ${id}::uuid AND user_id = ${userId}::uuid AND deleted_at IS NULL`;
-    if (touched === 0) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
+    const touched = await this.prisma.$queryRaw<{ paused: boolean }[]>`
+      UPDATE links AS l
+      SET last_opened_at = CASE
+        WHEN u.history_paused THEN l.last_opened_at
+        ELSE date_trunc('milliseconds', now())
+      END
+      FROM users AS u
+      WHERE u.id = l.user_id AND l.id = ${id}::uuid AND l.user_id = ${userId}::uuid
+        AND l.deleted_at IS NULL
+      RETURNING u.history_paused AS paused`;
+    const result = touched[0];
+    if (!result) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
     const row = await this.prisma.link.findFirst({
       where: { id, userId, deletedAt: null },
       include: LINK_INCLUDE,
     });
     if (!row) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
-    return toLinkResponse(row);
+    return { ...toLinkResponse(row), recorded: !result.paused };
   }
 
   /** Drops one link from the history (`last_opened_at` to NULL, `updated_at` untouched); idempotent. */

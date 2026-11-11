@@ -59,12 +59,13 @@ export class UsersService {
   async getSettings(user: AuthUser): Promise<UserSettingsResponse> {
     const row = await this.prisma.user.findUnique({
       where: { id: user.id },
-      select: { trashRetentionDays: true, folderColours: true },
+      select: { trashRetentionDays: true, folderColours: true, historyPaused: true },
     });
     if (!row) throw new NotFoundException();
     return {
       trashRetentionDays: toRetentionDays(row.trashRetentionDays),
       folderColours: row.folderColours,
+      pauseHistory: row.historyPaused,
     };
   }
 
@@ -77,6 +78,7 @@ export class UsersService {
     if (request.trashRetentionDays !== undefined)
       data.trashRetentionDays = request.trashRetentionDays;
     if (request.folderColours !== undefined) data.folderColours = request.folderColours;
+    if (request.pauseHistory !== undefined) data.historyPaused = request.pauseHistory;
     if (Object.keys(data).length > 0) {
       await this.prisma.user.updateMany({ where: { id: user.id }, data });
     }

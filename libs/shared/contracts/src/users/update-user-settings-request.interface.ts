@@ -5,4 +5,5 @@ export interface UpdateUserSettingsRequest {
   /** One of `TRASH_RETENTION_DAYS`. */
   trashRetentionDays?: TrashRetentionDays;
   folderColours?: boolean;
+  pauseHistory?: boolean;
 }
