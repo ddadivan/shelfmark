@@ -20,12 +20,17 @@
         "label": "Vista previa de la aplicación",
         "folder": "Leer más tarde",
         "count": "21 enlaces",
+        "countArticles": "6 enlaces",
         "view": "Vista",
         "all": "Todos 21",
         "articles": "Artículos 6",
         "savedTo": "Guardado en {{folder}}",
         "undo": "Deshacer",
         "items": {
+          "talk": {
+            "title": "Tecnología tranquila, una charla de 20 minutos",
+            "tag": "vídeo"
+          },
           "grid": {
             "title": "La guía completa de CSS grid",
             "tag": "css"

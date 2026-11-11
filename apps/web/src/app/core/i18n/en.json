@@ -20,12 +20,17 @@
         "label": "App preview",
         "folder": "Read later",
         "count": "21 links",
+        "countArticles": "6 links",
         "view": "View",
         "all": "All 21",
         "articles": "Articles 6",
         "savedTo": "Saved to {{folder}}",
         "undo": "Undo",
         "items": {
+          "talk": {
+            "title": "Calm technology, a 20-minute talk",
+            "tag": "video"
+          },
           "grid": {
             "title": "A complete guide to CSS grid",
             "tag": "css"

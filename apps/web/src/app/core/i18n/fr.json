@@ -20,12 +20,17 @@
         "label": "Aperçu de l’application",
         "folder": "À lire plus tard",
         "count": "21 liens",
+        "countArticles": "6 liens",
         "view": "Vue",
         "all": "Tous 21",
         "articles": "Articles 6",
         "savedTo": "Enregistré dans {{folder}}",
         "undo": "Annuler",
         "items": {
+          "talk": {
+            "title": "La technologie calme, une conférence de 20 minutes",
+            "tag": "vidéo"
+          },
           "grid": {
             "title": "Le guide complet de CSS grid",
             "tag": "css"

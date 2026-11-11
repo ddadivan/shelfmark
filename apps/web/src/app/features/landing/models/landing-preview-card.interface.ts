@@ -6,4 +6,6 @@ export interface LandingPreviewCard {
   readonly daysAgo: number;
   /** Which of the three soft preview backgrounds the drawing sits on. */
   readonly tone: number;
+  /** Shown under "Articles" too; the others leave when the switch moves there. */
+  readonly article: boolean;
 }

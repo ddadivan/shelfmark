@@ -1,8 +1,16 @@
 @use 'ui' as *;
 
-// Wide screens (landing only, in `em` like the layout breakpoints): 1440px and 1920px.
+// Wide screens (landing only, in `em` like the layout breakpoints): 1440px and 1920px, and a
+// large desktop from 1280px (room for three preview cards next to the headline).
+$large-min: 80em;
 $wide-min: 90em;
 $xwide-min: 120em;
+
+@mixin large {
+  @media (width >= #{$large-min}) {
+    @content;
+  }
+}
 
 @mixin wide {
   @media (width >= #{$wide-min}) {

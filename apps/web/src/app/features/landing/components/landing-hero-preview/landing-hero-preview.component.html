@@ -1,6 +1,6 @@
 <!--
   A picture of the app, not the app: decorative, so hidden from assistive technology and inert
-  (the cards' own title buttons must not be tab stops).
+  (the cards' own title buttons and the switch's radios must not be tab stops).
 -->
 <div
   class="landing-hero-preview"
@@ -15,24 +15,29 @@
         'landing.hero.preview.folder' | transloco
       }}</span>
       <span class="landing-hero-preview__count">{{
-        'landing.hero.preview.count' | transloco
+        (articles() ? 'landing.hero.preview.countArticles' : 'landing.hero.preview.count')
+          | transloco
       }}</span>
       <ui-segmented-control
         class="landing-hero-preview__switch"
         [options]="options()"
-        value="all"
+        [value]="shown()"
         [ariaLabel]="'landing.hero.preview.view' | transloco"
       />
     </div>
     <div class="landing-hero-preview__grid">
-      @for (card of cards; track card.id; let index = $index) {
-        <div class="landing-hero-preview__item" [style.--landing-preview-index]="index">
+      @for (item of cards(); track item.card.id) {
+        <div
+          class="landing-hero-preview__item"
+          [style.--landing-preview-index]="item.index"
+          [style.--landing-preview-slot]="item.slot"
+        >
           <app-link-preview-card
-            [title]="'landing.hero.preview.items.' + card.id + '.title' | transloco"
-            [host]="card.host"
-            [daysAgo]="card.daysAgo"
-            [tone]="card.tone"
-            [tags]="['landing.hero.preview.items.' + card.id + '.tag' | transloco]"
+            [title]="'landing.hero.preview.items.' + item.card.id + '.title' | transloco"
+            [host]="item.card.host"
+            [daysAgo]="item.card.daysAgo"
+            [tone]="item.card.tone"
+            [tags]="['landing.hero.preview.items.' + item.card.id + '.tag' | transloco]"
           />
         </div>
       }
@@ -40,7 +45,7 @@
   </div>
   <ui-toast
     class="landing-hero-preview__toast"
-    [style.--landing-preview-index]="cards.length"
+    [style.--landing-preview-index]="INTRO_SLOTS"
     [kind]="TOAST_KIND.Saved"
     [title]="'landing.hero.preview.savedTo' | transloco: { folder: folder() }"
     [actionLabel]="'landing.hero.preview.undo' | transloco"

@@ -20,12 +20,17 @@
         "label": "Vorschau der App",
         "folder": "Später lesen",
         "count": "21 Links",
+        "countArticles": "6 Links",
         "view": "Ansicht",
         "all": "Alle 21",
         "articles": "Artikel 6",
         "savedTo": "Gespeichert in {{folder}}",
         "undo": "Rückgängig",
         "items": {
+          "talk": {
+            "title": "Ruhige Technologie, ein 20-Minuten-Vortrag",
+            "tag": "Video"
+          },
           "grid": {
             "title": "Der komplette Guide zu CSS Grid",
             "tag": "css"

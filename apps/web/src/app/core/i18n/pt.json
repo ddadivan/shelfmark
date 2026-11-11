@@ -20,12 +20,17 @@
         "label": "Prévia do aplicativo",
         "folder": "Ler depois",
         "count": "21 links",
+        "countArticles": "6 links",
         "view": "Visualização",
         "all": "Todos 21",
         "articles": "Artigos 6",
         "savedTo": "Salvo em {{folder}}",
         "undo": "Desfazer",
         "items": {
+          "talk": {
+            "title": "Tecnologia calma, uma palestra de 20 minutos",
+            "tag": "vídeo"
+          },
           "grid": {
             "title": "O guia completo de CSS grid",
             "tag": "css"

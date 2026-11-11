@@ -20,12 +20,17 @@
         "label": "Anteprima dell’app",
         "folder": "Da leggere",
         "count": "21 link",
+        "countArticles": "6 link",
         "view": "Vista",
         "all": "Tutti 21",
         "articles": "Articoli 6",
         "savedTo": "Salvato in {{folder}}",
         "undo": "Annulla",
         "items": {
+          "talk": {
+            "title": "Tecnologia calma, un talk di 20 minuti",
+            "tag": "video"
+          },
           "grid": {
             "title": "La guida completa a CSS grid",
             "tag": "css"
