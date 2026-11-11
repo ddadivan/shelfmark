@@ -31,7 +31,7 @@ import { pluralKey } from '../../core/i18n/plural-key';
 import { APP_PATH } from '../../models/app-path.const';
 import { LinkCardComponent } from '../links/link-card/link-card.component';
 import type { LinkCardItem } from '../links/models/link-card-item.type';
-import { relativeTime } from '../links/relative-time';
+import { relativeTime } from '../../core/i18n/relative-time';
 import { PublicCollectionStore } from './public-collection.store';
 import { publicCollectionUrl } from './public-collection-url';
 
