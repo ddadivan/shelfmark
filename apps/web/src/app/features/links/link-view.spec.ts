@@ -29,6 +29,15 @@ describe('link view helpers', () => {
     expect(ownImageUrl('data:image/png;base64,AAAA')).toBeUndefined();
   });
 
+  it('accepts the image paths of a public collection keyed by its token', () => {
+    const own =
+      '/api/public/collections/sampleToken-sampleToke/links/0123456789abcdef0123456789abcdef0123/favicon?v=abcdef0123456789';
+    expect(ownImageUrl(own)).toBe(own);
+    expect(ownImageUrl(own.replace('sampleToken-sampleToke', 'short'))).toBeUndefined();
+    expect(ownImageUrl(own.replace('/links/', '/x/'))).toBeUndefined();
+    expect(ownImageUrl(own.replace('abcdef0123456789', 'pending'))).toBeUndefined();
+  });
+
   it('detects the pending marker of either image path', () => {
     const base = { ...MOCK_LINKS[0], faviconUrl: null, imageUrl: null };
     expect(hasPendingImages(base)).toBe(false);

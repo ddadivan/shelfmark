@@ -31,6 +31,10 @@ import type { TagsApi } from '../models/tags-api.interface';
 import { MockFoldersApi } from './mock-folders.api';
 import { MockLinksApi } from './mock-links.api';
 import { MockTagsApi } from './mock-tags.api';
+import { HttpSharesApi } from '../../sharing/http/http-shares.api';
+import { MockSharesApi } from '../../sharing/mock/mock-shares.api';
+import { SHARES_API } from '../../sharing/models/shares-api.const';
+import type { SharesApi } from '../../sharing/models/shares-api.interface';
 import {
   tabSyncedFoldersApi,
   tabSyncedLinksApi,
@@ -76,6 +80,10 @@ export function provideLinksApi(): Provider[] {
           useRealApi() ? inject(HttpTagsApi) : inject(MockTagsApi),
           inject(TabSyncService),
         ),
+    },
+    {
+      provide: SHARES_API,
+      useFactory: (): SharesApi => (useRealApi() ? inject(HttpSharesApi) : inject(MockSharesApi)),
     },
     {
       provide: TRASH_API,

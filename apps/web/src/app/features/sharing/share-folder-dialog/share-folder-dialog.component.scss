@@ -1,0 +1,61 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.share__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  // Room for the focus rings at the edge of the scrolling body.
+  padding: rem(2px);
+}
+
+.share__count,
+.share__muted {
+  margin: 0;
+  color: var(--text-muted);
+
+  @include type(caption);
+}
+
+.share__public {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+}
+
+.share__link {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-end;
+}
+
+.share__field {
+  flex: 1;
+  min-width: 0;
+}
+
+.share__retry {
+  align-self: flex-start;
+}
+
+.share__settings {
+  display: flex;
+  flex-direction: column;
+}
+
+.share__heading {
+  margin: 0 0 var(--space-2);
+
+  @include type(label);
+}
+
+@include phone {
+  .share__link {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

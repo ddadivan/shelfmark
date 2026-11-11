@@ -22,6 +22,7 @@ import { MonitoringModule } from '../monitoring/monitoring.module';
 import { PinsModule } from '../pins/pins.module';
 import { ViewsModule } from '../views/views.module';
 import { PrismaModule } from '../prisma/prisma.module';
+import { SharesModule } from '../shares/shares.module';
 import { TagsModule } from '../tags/tags.module';
 import { TrashModule } from '../trash/trash.module';
 import { UsersModule } from '../users/users.module';
@@ -40,6 +41,7 @@ import { UsersModule } from '../users/users.module';
     AdminModule,
     UsersModule,
     ExportModule,
+    SharesModule,
     TrashModule,
     PinsModule,
     ViewsModule,

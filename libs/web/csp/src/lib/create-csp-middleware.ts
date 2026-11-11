@@ -3,6 +3,7 @@ import { generateNonce } from './generate-nonce';
 import { injectNonce } from './inject-nonce';
 import { isHtmlDocumentPath } from './is-html-document-path';
 import { CSP_NONCE_PLACEHOLDER } from './models/csp-nonce-placeholder.const';
+import { NOINDEX_PATH_PREFIX } from './models/noindex-path-prefix.const';
 
 /** Query parameter the Angular service worker adds to its own fetches of ngsw.json and assets. */
 const SERVICE_WORKER_CACHE_BUST_PARAM = 'ngsw-cache-bust';
@@ -33,7 +34,8 @@ export function createCspMiddleware(shellHtml: string): (request: Request) => Re
     if (request.method !== 'GET' && request.method !== 'HEAD') {
       return undefined;
     }
-    if (!isHtmlDocumentPath(new URL(request.url).pathname)) {
+    const { pathname } = new URL(request.url);
+    if (!isHtmlDocumentPath(pathname)) {
       return undefined;
     }
 
@@ -51,6 +53,7 @@ export function createCspMiddleware(shellHtml: string): (request: Request) => Re
         'Content-Security-Policy': buildCsp(nonce),
         'Cache-Control': 'private, no-store',
         Vary: 'Sec-Fetch-Dest, Sec-Fetch-Mode',
+        ...(pathname.startsWith(NOINDEX_PATH_PREFIX) && { 'X-Robots-Tag': 'noindex, nofollow' }),
       },
     });
   };

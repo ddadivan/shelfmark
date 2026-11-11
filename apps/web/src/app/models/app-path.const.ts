@@ -23,4 +23,6 @@ export const APP_PATH = {
   About: 'about',
   /** Public privacy policy: no guard, for guests and signed-in users. */
   Privacy: 'privacy',
+  /** A public collection (`/c/:token`, #276): no guard, outside the app shell. */
+  Collection: 'c',
 } as const;

@@ -1,0 +1,132 @@
+<div class="collection">
+  <header class="collection__header">
+    <a
+      class="collection__home"
+      routerLink="/"
+      [attr.aria-label]="'publicCollection.home' | transloco"
+    >
+      <ui-logo />
+    </a>
+    @if (signedIn()) {
+    <ui-button [href]="shelfHref">{{ 'publicCollection.backToShelf' | transloco }}</ui-button>
+    } @else {
+    <ui-button [href]="signInHref" [variant]="BUTTON_VARIANT.Ghost"
+      >{{ 'publicCollection.signIn' | transloco }}</ui-button
+    >
+    }
+  </header>
+
+  <main class="collection__main">
+    @if (store.notFound()) {
+    <ui-empty-state
+      class="collection__state"
+      illustration="not-found"
+      [headingLevel]="1"
+      [heading]="'publicCollection.notFound.title' | transloco"
+      [text]="'publicCollection.notFound.text' | transloco"
+    >
+      <ui-button href="/" [variant]="BUTTON_VARIANT.Primary"
+        >{{ 'publicCollection.notFound.action' | transloco }}</ui-button
+      >
+    </ui-empty-state>
+    } @else if (store.collection(); as collection) {
+    <section class="collection__intro">
+      <div class="collection__titles">
+        <p class="collection__owner">
+          @if (collection.ownerName) {
+          <ui-avatar size="sm" [name]="collection.ownerName" />
+          {{ 'publicCollection.sharedBy' | transloco: { name: collection.ownerName } }} } @else { {{
+          'publicCollection.sharedAnonymous' | transloco }} }
+        </p>
+        <h1 class="collection__title">{{ collection.name }}</h1>
+        <p class="collection__meta">
+          <span>{{ countKey() | transloco: { count: collection.linkCount } }}</span>
+          <span>{{ 'publicCollection.updated' | transloco: { time: updated() } }}</span>
+        </p>
+      </div>
+      <ui-button iconLeft="copy" (click)="copy()"
+        >{{ 'publicCollection.copy' | transloco }}</ui-button
+      >
+    </section>
+
+    @if (collection.subfolders.length > 0) {
+    <div
+      class="collection__chips"
+      role="group"
+      [attr.aria-label]="'publicCollection.filterLabel' | transloco"
+    >
+      <ui-button
+        size="sm"
+        [variant]="store.folder() === null ? BUTTON_VARIANT.Primary : BUTTON_VARIANT.Secondary"
+        [ariaPressed]="store.folder() === null"
+        (click)="select(null)"
+        >{{ 'publicCollection.all' | transloco }}
+        <span class="collection__chip-count">{{ collection.linkCount }}</span></ui-button
+      >
+      @for (folder of collection.subfolders; track folder.id) {
+      <ui-button
+        size="sm"
+        [variant]="store.folder() === folder.id ? BUTTON_VARIANT.Primary : BUTTON_VARIANT.Secondary"
+        [ariaPressed]="store.folder() === folder.id"
+        (click)="select(folder.id)"
+        >{{ folder.name }}
+        <span class="collection__chip-count">{{ folder.linkCount }}</span></ui-button
+      >
+      }
+    </div>
+    } @if (store.loading()) {
+    <p class="collection__status" role="status">{{ 'publicCollection.loading' | transloco }}</p>
+    } @else if (store.failed()) {
+    <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'publicCollection.failed' | transloco }}</ui-notice>
+    <ui-button class="collection__retry" (click)="retry()"
+      >{{ 'publicCollection.retry' | transloco }}</ui-button
+    >
+    } @else if (cards().length === 0) {
+    <ui-empty-state
+      class="collection__state"
+      illustration="empty-folder"
+      [heading]="'publicCollection.empty.title' | transloco"
+      [text]="'publicCollection.empty.text' | transloco"
+    />
+    } @else {
+    <ul class="collection__grid">
+      @for (link of cards(); track link.id) {
+      <li><app-link-card [readOnly]="true" [link]="link" /></li>
+      }
+    </ul>
+    @if (store.hasMore()) {
+    <ui-button class="collection__more" [loading]="store.loadingMore()" (click)="more()"
+      >{{ 'publicCollection.more' | transloco }}</ui-button
+    >
+    } @else if (store.capped()) {
+    <p class="collection__status">
+      {{ 'publicCollection.capped' | transloco: { max: SHARE_LIMIT.MaxLinks } }}
+    </p>
+    } } @if (!signedIn()) {
+    <ui-panel class="collection__cta">
+      <div>
+        <h2 class="collection__cta-title">{{ 'publicCollection.cta.title' | transloco }}</h2>
+        <p class="collection__cta-text">{{ 'publicCollection.cta.text' | transloco }}</p>
+      </div>
+      <ui-button [href]="signInHref" size="lg" [variant]="BUTTON_VARIANT.Primary"
+        >{{ 'publicCollection.cta.action' | transloco }}</ui-button
+      >
+    </ui-panel>
+    } } @else if (store.failed()) {
+    <div class="collection__state">
+      <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'publicCollection.failed' | transloco }}</ui-notice>
+      <ui-button class="collection__retry" (click)="retry()"
+        >{{ 'publicCollection.retry' | transloco }}</ui-button
+      >
+    </div>
+    } @else {
+    <p class="collection__status" role="status">{{ 'publicCollection.loading' | transloco }}</p>
+    }
+  </main>
+
+  <footer class="collection__footer">
+    <a class="collection__footer-link" [routerLink]="aboutHref"
+      >{{ 'publicCollection.madeWith' | transloco }}</a
+    >
+  </footer>
+</div>

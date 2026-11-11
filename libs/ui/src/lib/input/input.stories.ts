@@ -35,6 +35,7 @@ const meta: Meta<InputComponent> = {
     loading: false,
     loadingLabel: 'Searching',
     disabled: false,
+    readonly: false,
     required: false,
     value: '',
   },
@@ -57,6 +58,7 @@ const meta: Meta<InputComponent> = {
           [loading]="loading"
           [loadingLabel]="loadingLabel"
           [disabled]="disabled"
+          [readonly]="readonly"
           [required]="required"
           [(value)]="value"
         />
@@ -141,6 +143,15 @@ export const Disabled: Story = {
   args: { disabled: true, value: 'https://angular.dev', hint: 'Only the owner can change this' },
 };
 
+export const ReadOnly: Story = {
+  args: {
+    label: 'Public link',
+    type: INPUT_TYPE.Url,
+    readonly: true,
+    value: 'https://shelfmark-app.vercel.app/c/sampleToken-sampleToke',
+  },
+};
+
 /** Every type and state in both themes, independent of the toolbar. */
 export const AllVariants: Story = {
   parameters: { layout: 'padded' },
@@ -162,6 +173,7 @@ export const AllVariants: Story = {
             <ui-input label="Link" type="url" value="youtube com/ng22"
               error="Enter an address starting with http:// or https://" />
             <ui-input label="Disabled" value="https://angular.dev" [disabled]="true" />
+            <ui-input label="Read-only" type="url" value="https://shelfmark-app.vercel.app/c/sampleToken-sampleToke" [readonly]="true" />
           </div>
         }
       </div>`,
