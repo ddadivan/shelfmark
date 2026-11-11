@@ -155,13 +155,13 @@ export const PinsStore = signalStore(
         const started = epoch;
         const before = store.items();
         const optimistic = placeholder(ref);
-        version++;
+        const mine = ++version;
         if (optimistic) {
           patchState(store, { items: [...before, optimistic] });
         }
         try {
           const response = await firstValueFrom(api().create(ref));
-          if (started === epoch) {
+          if (started === epoch && version === mine) {
             version++;
             patchState(store, { items: response.items, loaded: true });
           }
@@ -215,19 +215,25 @@ export const PinsStore = signalStore(
         const [moved] = next.splice(from, 1);
         next.splice(to, 0, moved);
         const started = epoch;
-        version++;
+        const mine = ++version;
         patchState(store, { items: renumber(next) });
         try {
           const response = await firstValueFrom(api().reorder(next.map(toRef)));
-          if (started === epoch) {
+          // Another change since (an unpin, a pin) already shows the newer state: keep it.
+          if (started === epoch && version === mine) {
             version++;
             patchState(store, { items: response.items });
           }
           return true;
         } catch {
           if (started === epoch) {
-            version++;
-            patchState(store, { items: before });
+            if (version === mine) {
+              version++;
+              patchState(store, { items: before });
+            } else {
+              // Later changes sit on top of this one: do not undo them, ask the server instead.
+              void fetchList();
+            }
           }
           return false;
         }

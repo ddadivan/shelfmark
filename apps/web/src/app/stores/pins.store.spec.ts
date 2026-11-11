@@ -198,6 +198,37 @@ describe('PinsStore', () => {
       expect(api.reorder).not.toHaveBeenCalled();
     });
 
+    it('keeps a newer unpin when the slower reorder answers with the old list', async () => {
+      const { store, api } = setup(list('a', 'b'));
+      await store.load();
+      const reorder = new Subject<ListPinsResponse>();
+      api.reorder.mockImplementation(() => reorder);
+
+      const moving = store.move(ref('a'), 1);
+      await store.unpin(ref('b'));
+      reorder.next(list('b', 'a'));
+      reorder.complete();
+      await moving;
+
+      expect(store.rows().map((row) => row.id)).toEqual(['a']);
+    });
+
+    it('does not bring an unpinned item back when the reorder fails', async () => {
+      const { store, api } = setup(list('a', 'b'));
+      await store.load();
+      const reorder = new Subject<ListPinsResponse>();
+      api.reorder.mockImplementation(() => reorder);
+
+      const moving = store.move(ref('a'), 1);
+      await store.unpin(ref('b'));
+      // The server has the unpin: the resync after the failed reorder shows it.
+      api.list.mockImplementation(() => of(list('a')));
+      reorder.error(new Error('400'));
+      await moving;
+
+      await vi.waitFor(() => expect(store.rows().map((row) => row.id)).toEqual(['a']));
+    });
+
     it('puts the old order back when the request fails', async () => {
       const { store, api } = setup();
       await store.load();
