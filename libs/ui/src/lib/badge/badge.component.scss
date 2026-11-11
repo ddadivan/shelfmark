@@ -1,23 +1,18 @@
 @use '../../styles/ui' as *;
 
-// Badge spec: a 22px pill, label-weight 11/16 text, optional 12px icon first.
 :host {
-  @include type(label);
+  @include type(caption);
 
   display: inline-flex;
-  flex: none;
-  gap: rem(4px);
+  gap: var(--space-1);
   align-items: center;
   height: rem(22px);
   padding: 0 rem(8px);
-  font-size: rem(11px);
-  line-height: rem(16px);
+  font-weight: 500;
   color: var(--text);
   white-space: nowrap;
   background: var(--surface-hover);
   border-radius: var(--radius-full);
-
-  --ui-icon-size: #{rem(12px)};
 }
 
 :host(.ui-badge--accent) {
@@ -25,7 +20,7 @@
   background: var(--accent-bg);
 }
 
-:host(.ui-badge--warn) {
+:host(.ui-badge--warning) {
   color: var(--warning);
   background: var(--warning-bg);
 }

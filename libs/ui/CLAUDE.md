@@ -115,7 +115,7 @@ Angular keeps the element until the leave animation ends and a second toggle mid
 
 ## Badge (issue #265)
 
-- `ui-badge` (`variant` `BADGE_VARIANT`: `neutral | accent | warn | danger`, `icon`): the Badge spec's 22px pill with 11/16 label-weight text and an optional 12px decorative icon first; the words are projected and read as part of the row (no role, not interactive). Words first, colour second; one badge per card or row ("Already saved" in the paste-many list is `warn`).
+- `ui-badge` (`tone` `BADGE_TONE`: `neutral | accent | warning | danger`, optional `icon`): small status pill; the label is projected and always carries the meaning (words first, colour second), the icon is decorative, no role, not interactive. One badge per card or row ("Already saved" in the paste-many list is `warning`). The component is identical to the one on the trash branch (#262), so both merge cleanly.
 
 ## Chip, avatar, notice, steps (issue #25)
 

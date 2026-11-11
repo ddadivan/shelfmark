@@ -1,3 +1,3 @@
 export { BadgeComponent } from './badge.component';
-export { BADGE_VARIANT } from './models/badge-variant.const';
-export type { BadgeVariant } from './models/badge-variant.type';
+export { BADGE_TONE } from './models/badge-tone.const';
+export type { BadgeTone } from './models/badge-tone.type';
