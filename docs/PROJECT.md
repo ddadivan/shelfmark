@@ -39,6 +39,7 @@ Updated as work goes on — every session resumes from here.
   - Nov 10, 2026: release flow recorded in [ADR 0035](adr/0035-stage-integration-branch-release-flow.md) (#260): branches from `stage`, PRs into `stage` with `Refs #N`, To release column, release PR `stage → main`; `CLAUDE.md`, the `github-workflow` skill, the agents, the PR template, Dependabot and the guard hook follow it.
   - Nov 10, 2026, decisions of the author for the stage 2 features (recorded on each issue): work order #260, #205, #261, #266, #262, #263, #264, #265, #267, #268, #269, #195, #270, #272, #273, #274, #276, #271, then the Settings › Library and the Appearance extras issues; independent tasks run as parallel PRs from `stage`, dependent ones are stacked ("Merge after #N"). Trash: every delete of links and folders goes to Trash (account deletion and demo cleanup do not), retention 7 / 30 / 90 days, default 30. Saved views: a link `kind` (video, article, shopping, other) derived at save time; starter views All, Videos, Articles. Languages: English, French, German, Italian, Spanish, Portuguese. Feedback: statuses Received, Planned, In progress, Done, Not planned, set by the author on an admin page (`/admin/feedback`, allowed by the `ADMIN_EMAILS` setting); the screenshot is stored in Postgres. Reminders (#275) moved to the backlog as a whole. Sharing: public link only; invites and roles moved to the backlog. Email and password sign-in (#277) moved to the backlog.
   - Nov 11, 2026: #264 saved views on `feat/264-saved-views` (stacked on #263): `links.kind` derived at save time, `/api/views` with counts in one grouped query, starter views from a database trigger (ADR 0038), `ui-saved-views`, chips on the library page and on Recently opened. Waiting for review.
+  - Nov 11, 2026: #269 Recently opened extras on `feat/269-recent-extras` (stacked on #264): "Pause history" on the account (`users.history_paused`, opens not recorded while paused, `recorded: false`), in-page search, swipe to remove on phone rows (the swipe moved into the shared `SwipeReveal`). Waiting for review.
 - [x] Motion in code (landing and app); promo video moved to stage 2
 
 ## 1. Problem and idea
@@ -187,6 +188,9 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 16. **Sorting.** By date added (newest first, the default) and by title.
 17. **View.** A "cards / list" toggle; the choice is remembered.
 18. **Recently opened.** A page (`/recent`, opened from the sidebar; the same list in a sheet from the Library tab on a phone) with the links opened in the last 30 days, in day groups (Today, Yesterday, Earlier this week, then by date), each with its folder and the time of the open. A link can be removed from the history, and "Clear history" (after a confirmation) empties it; the saved links are not touched.
+    - Row menu: Open in new tab, Show in folder (the folder, or Unsorted), Copy link, Remove from history. On a phone a row swiped left reveals "Remove"; the button is always reachable without the swipe (focus slides the row aside, #269).
+    - "Pause history" / "Resume history" in the page header (#269): an account setting (`pauseHistory` in `/api/me/settings`), so it follows the user to every device. While paused the server does not record opens (the link still opens; `POST /api/links/:id/open` answers `recorded: false`), and the page shows "History is paused. Links you open now aren't added." with "Resume". The toggle is optimistic and rolls back with an error toast.
+    - A search field next to the type chips filters the loaded history by title and domain (client-side, debounced, with a clear button and a "Nothing matches" state). The footer says "Kept for 30 days, only on your account. Removing from history doesn't delete the link."
 19. **Trash.** As a user, I want to get back what I deleted by mistake (ADR 0036, screens `TrashView`, `MobileTrash`).
     - Every deleted link and folder waits in Trash for the period set in Settings › Library (7, 30 or 90 days, 30 by default); then it is removed for good. A folder is one entry that says how many links went with it.
     - The page `/trash` (a row at the very bottom of the sidebar under a divider, with the count; a tile on the phone Library page) shows the entries as "Recently deleted" rows: preview, title, where it came from ("From Clothes", "From Unsorted"), when it was deleted and a days-left badge (warning at 3 days or fewer). Chips All / Links / Folders with counts filter them.
@@ -510,6 +514,8 @@ Own field on `User`: `trashRetentionDays` (smallint, default 30, CHECK in 7, 30,
 
 Own field on `User`: `folderColours` (boolean, default true): the "Folder colours" setting; off = the client shows every folder in graphite (ADR 0037).
 
+Own field on `User`: `historyPaused` (column `history_paused`, boolean, default false): "Pause history" on Recently opened (#269); while true, opens do not update `lastOpenedAt`.
+
 Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, null). Demo data is created from the seed set in `apps/api/src/demo/seed.json`.
 
 **Folder**: a folder (nesting via `parentId`)
@@ -580,7 +586,7 @@ All routes except `/api/auth/*` require a session and work only with the current
 | GET | `/api/links/:id` | One link |
 | POST | `/api/links` | Create: `url`, `title?`, `note?`, `folderId?`, `tags?` (names; new tags are created automatically), `kind?` (from the preview; derived by the server when absent). `POST /api/links/preview` answers `preview.kind` |
 | PATCH | `/api/links/:id` | Change any fields, including `isFavorite`, `folderId`, `kind` (a new URL without `kind` recomputes it from the host) and `pinnedInFolder` (pin to the top of the folder: 400 in Unsorted, 409 beyond 20 per folder; a move unpins) |
-| POST | `/api/links/:id/open` | Record an open (updates `lastOpenedAt`) |
+| POST | `/api/links/:id/open` | Record an open (updates `lastOpenedAt`); answers the link with `recorded: boolean`, `false` while the history is paused (nothing is written, #269) |
 | POST | `/api/links/:id/images/capture` | Re-capture favicon and preview image of a link whose URL changed (pending marker `?v=pending`); claims atomically with a 1 h cooldown, always 200 with the link, 404 for a foreign or missing one |
 | DELETE | `/api/links/:id` | Move to Trash (soft delete: sets `deletedAt`); 404 for a foreign, missing or already trashed link |
 | GET | `/api/folders` | All folders as a flat list ordered by name (`parentId` + direct link count) plus `counts` (`all`, `unsorted`, `favorites`) for the fixed sidebar rows; the frontend builds the tree |
@@ -601,7 +607,7 @@ All routes except `/api/auth/*` require a session and work only with the current
 | PATCH | `/api/views/:id` | `{ name?, query? }`: rename or replace the query; 404 for a foreign or missing view |
 | PUT | `/api/views/order` | `{ ids }`: every view exactly once in the new order, else 400 |
 | DELETE | `/api/views/:id` | Delete a view (the links stay); 204, 404 for a foreign or missing one |
-| GET, PATCH | `/api/me/settings` | Account settings `{ trashRetentionDays: 7 \| 30 \| 90, folderColours: boolean }`; PATCH sends only the fields to change (400 for another value or an extra field); demo users too |
+| GET, PATCH | `/api/me/settings` | Account settings `{ trashRetentionDays: 7 \| 30 \| 90, folderColours: boolean, pauseHistory: boolean }`; PATCH sends only the fields to change (400 for another value or an extra field); demo users too |
 | GET | `/api/cron/trash-cleanup` | Vercel Cron only (`CRON_SECRET` bearer, 401 otherwise, no-store): deletes Trash rows past the owner's retention in batches of 500 within 5 s; answers `{ deleted, hasMore }` (ADR 0036) |
 | GET, POST, GET /:id, PATCH /:id, DELETE /:id, POST /:id/merge | `/api/tags` | The user's tags with link counts, sorted by link count descending, then name; read one tag with its count (404 if unknown or foreign); create an empty tag (409 if the name is taken or at the per-user cap of 1000), rename (409 if the name is taken; changing only the case of its own name is allowed), delete (links remain), merge with another tag (merging into itself is a 400). Names are normalized with `normalizeTagName` (trim, whitespace runs become one hyphen) on create and rename |
 | GET | `/api/feedback/prompt` | Which rating dialog to show now: `{ milestone }`, the latest reached milestone without a row, `null` for demo users and before onboarding (no-store) |
