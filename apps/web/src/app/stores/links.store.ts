@@ -229,6 +229,24 @@ export const LinksStore = signalStore(
       }
     }
 
+    async function loadRecent(): Promise<void> {
+      const started = epoch;
+      try {
+        const { items } = await firstValueFrom(api().recent({ limit: RECENT_LINKS_LIMIT }));
+        if (started === epoch) {
+          patchState(store, {
+            recent: items.filter((link) => !pending.has(link.id)),
+            recentLoaded: true,
+          });
+          noteLinks(items);
+        }
+      } catch {
+        if (started === epoch) {
+          patchState(store, { recentLoaded: true });
+        }
+      }
+    }
+
     const setFilter = rxMethod<LinksFilter>(
       pipe(
         tap((filter) => {
@@ -271,13 +289,6 @@ export const LinksStore = signalStore(
     return {
       /** Loads page one of a scope, cancelling a request still running for the previous one. */
       setFilter,
-
-      /** Reloads page one of the current scope after links came back (a Trash restore). Only once loaded. */
-      refresh(): void {
-        if (store.loaded()) {
-          setFilter(store.filter());
-        }
-      },
 
       /** Loads the next page; does nothing while a request runs or on the last page. */
       async loadMore(): Promise<void> {
@@ -421,6 +432,26 @@ export const LinksStore = signalStore(
         patchState(store, setAllEntities(store.entities().map(drop)), {
           recent: store.recent().map(drop),
         });
+      },
+
+      /** Another tab deleted the link (tab sync): it leaves the feed and the recent list. */
+      applyRemoval(id: string): void {
+        if (pending.has(id)) {
+          return;
+        }
+        patchState(store, removeEntity(id), {
+          recent: store.recent().filter((item) => item.id !== id),
+        });
+      },
+
+      /** Loads the open feed and the recent list again, keeping what shows meanwhile (tab sync). */
+      refresh(): void {
+        if (store.loaded()) {
+          setFilter(store.filter());
+        }
+        if (store.recentLoaded()) {
+          void loadRecent();
+        }
       },
 
       /**
@@ -580,23 +611,7 @@ export const LinksStore = signalStore(
         }
       },
 
-      async loadRecent(): Promise<void> {
-        const started = epoch;
-        try {
-          const { items } = await firstValueFrom(api().recent({ limit: RECENT_LINKS_LIMIT }));
-          if (started === epoch) {
-            patchState(store, {
-              recent: items.filter((link) => !pending.has(link.id)),
-              recentLoaded: true,
-            });
-            noteLinks(items);
-          }
-        } catch {
-          if (started === epoch) {
-            patchState(store, { recentLoaded: true });
-          }
-        }
-      },
+      loadRecent,
 
       /**
        * Sign-out: forgets everything of this user and drops responses still in flight. Call

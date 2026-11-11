@@ -408,6 +408,11 @@
       "failed": "Couldn't move the link",
       "failedDetail": "It is back where it was",
       "undoFailed": "Couldn't move the link back"
+    },
+    "drag": {
+      "moveHere": "Move here",
+      "moveOne": "Move 1 link",
+      "wasHere": "{{title}} was here"
     }
   },
   "privacy": {
@@ -1279,6 +1284,13 @@
       "emptyFailedDetail": "Nothing was deleted."
     },
     "emptyShort": "Empty"
+  },
+  "tabSync": {
+    "signedOut": {
+      "title": "You signed out in another tab",
+      "text": "To keep your links private, this tab is locked too.",
+      "signIn": "Sign in again"
+    }
   },
   "howItWorks": {
     "menu": "How it works",

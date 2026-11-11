@@ -131,6 +131,7 @@
           [folder]="item.folder"
           [childCount]="item.childCount"
           [row]="ui.view() === UI_VIEW.List"
+          [dropTarget]="drag.folderTargetId() === item.folder.id"
         />
       </li>
       }
@@ -224,6 +225,9 @@
     UI_VIEW.List) {
     <ul
       class="library__rows library__list"
+      cdkDropList
+      cdkDropListSortingDisabled
+      [cdkDropListDisabled]="phone()"
       [class.library__list--reveal]="reveal()"
       [class.library__list--stale]="stale()"
       [attr.aria-busy]="stale() ? 'true' : null"
@@ -231,7 +235,21 @@
       [attr.aria-label]="'library.list.label' | transloco"
     >
       @for (link of shownLinks(); track link.id) {
-      <li [style.view-transition-name]="morphing() ? 'link-' + link.id : null">
+      <li
+        class="library__item"
+        cdkDrag
+        [cdkDragData]="link"
+        [cdkDragDisabled]="phone()"
+        [cdkDragStartDelay]="DRAG_START_DELAY"
+        [attr.data-drag-label]="'links.drag.moveOne' | transloco"
+        [style.view-transition-name]="morphing() ? 'link-' + link.id : null"
+        (cdkDragStarted)="drag.start(link)"
+        (cdkDragMoved)="onDragMoved($event)"
+        (cdkDragEnded)="drag.drop()"
+      >
+        <div *cdkDragPlaceholder class="library__drag-slot" aria-hidden="true">
+          {{ 'links.drag.wasHere' | transloco: { title: link.title } }}
+        </div>
         <app-link-row
           [link]="link"
           (opened)="actions.open(link)"
@@ -247,6 +265,9 @@
     } @else {
     <ul
       class="library__grid library__list"
+      cdkDropList
+      cdkDropListSortingDisabled
+      [cdkDropListDisabled]="phone()"
       [class.library__list--reveal]="reveal()"
       [class.library__list--stale]="stale()"
       [attr.aria-busy]="stale() ? 'true' : null"
@@ -254,7 +275,21 @@
       [attr.aria-label]="'library.list.label' | transloco"
     >
       @for (link of shownLinks(); track link.id) {
-      <li [style.view-transition-name]="morphing() ? 'link-' + link.id : null">
+      <li
+        class="library__item"
+        cdkDrag
+        [cdkDragData]="link"
+        [cdkDragDisabled]="phone()"
+        [cdkDragStartDelay]="DRAG_START_DELAY"
+        [attr.data-drag-label]="'links.drag.moveOne' | transloco"
+        [style.view-transition-name]="morphing() ? 'link-' + link.id : null"
+        (cdkDragStarted)="drag.start(link)"
+        (cdkDragMoved)="onDragMoved($event)"
+        (cdkDragEnded)="drag.drop()"
+      >
+        <div *cdkDragPlaceholder class="library__drag-slot" aria-hidden="true">
+          {{ 'links.drag.wasHere' | transloco: { title: link.title } }}
+        </div>
         <app-link-card
           [link]="link"
           (opened)="actions.open(link)"
