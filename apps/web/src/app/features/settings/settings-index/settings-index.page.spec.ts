@@ -45,7 +45,7 @@ async function setup(phone: boolean) {
 describe('the You list (/settings)', () => {
   afterEach(() => localStorage.removeItem(THEME_STORAGE_KEY));
 
-  it('on a phone lists the account, the sections that touch a phone and Sign out', async () => {
+  it('on a phone lists the account, the sections that touch a phone, help and Sign out', async () => {
     const { harness, router } = await setup(true);
     const root = harness.routeNativeElement as HTMLElement;
 
@@ -58,7 +58,11 @@ describe('the You list (/settings)', () => {
       '/settings/appearance',
       '/settings/import-export',
       '/settings/privacy',
+      '/about',
     ]);
+    expect(
+      Array.from(root.querySelectorAll('ui-button')).map((b) => b.textContent?.trim()),
+    ).toEqual(['How it works', 'Sign out']);
     expect(root.querySelector('nav a[href="/settings/appearance"]')?.textContent).toContain(
       'System',
     );

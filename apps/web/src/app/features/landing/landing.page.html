@@ -1,6 +1,9 @@
 <app-landing-header (howItsBuiltRequested)="showHowItsBuilt()" />
 <main class="landing">
   <app-landing-hero />
+  @if (signedIn()) {
+  <app-landing-whats-new />
+  }
   <!--
     Below the fold: loaded when the browser is idle, so the first paint ships less JS, or at once
     when the visitor asks for "How it's built" (its target lives in here). Each part is its own

@@ -15,6 +15,8 @@ export const APP_PATH = {
   Demo: 'demo',
   /** Target of the Android Web Share Target (`share_target.action` in the manifest). */
   Share: 'share',
+  /** The landing page for everyone (#270): signed-in people reach it from the account menu. */
+  About: 'about',
   /** Public privacy policy: no guard, for guests and signed-in users. */
   Privacy: 'privacy',
 } as const;

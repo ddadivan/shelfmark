@@ -14,6 +14,8 @@ const DESIGN_DIR = resolve(ROOT, 'docs/design/assets/icons');
 const PROVIDER_ICONS = ['google', 'github'];
 /** Keyboard key glyphs drawn for this app (no design file; the fonts have no such glyphs). */
 const KEY_ICONS = ['key-command', 'key-enter', 'key-option', 'key-shift'];
+/** Other glyphs drawn for this app where the design set has none (#270: the video play button). */
+const APP_ICONS = ['play'];
 
 const sprite = readFileSync(SPRITE_PATH, 'utf8');
 
@@ -44,8 +46,10 @@ describe('ICON_NAMES', () => {
     expect(new Set(ICON_NAMES).size).toBe(ICON_NAMES.length);
   });
 
-  it('has the 44 design icons, the 2 brand marks and the key glyphs', () => {
-    expect(ICON_NAMES).toHaveLength(44 + PROVIDER_ICONS.length + KEY_ICONS.length);
+  it('has the 44 design icons, the 2 brand marks, the key glyphs and the app glyphs', () => {
+    expect(ICON_NAMES).toHaveLength(
+      44 + PROVIDER_ICONS.length + KEY_ICONS.length + APP_ICONS.length,
+    );
   });
 
   it('keeps the sprite free of stroke, styles and active content', () => {
@@ -100,7 +104,7 @@ describe('brand marks and key glyphs', () => {
     }
   });
 
-  it.each(KEY_ICONS)('%s is a filled shape without colour', (name) => {
+  it.each([...KEY_ICONS, ...APP_ICONS])('%s is a filled shape without colour', (name) => {
     expect(symbol(name)).toMatch(/^<path /);
     expect(symbol(name)).not.toContain('fill="');
   });

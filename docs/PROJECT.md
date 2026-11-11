@@ -216,6 +216,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 ### Navigation (left sidebar)
 
 - All links · Unsorted · Favorites · folder tree · tag list.
+- **About and "How it works"** (stage 2, #270): `/about` is the landing for everyone. A signed-in person reaches it from "About Shelfmark" in the account menu (phone: the You tab) and sees "Back to my shelf" instead of the sign-in and demo buttons, plus a "What's new" list kept by hand in `landing-whats-new.const.ts`. "How it works" (account menu, You tab, a link in the empty library) opens the promo video in a dialog: own domain, so the CSP is unchanged; muted with captions; no autoplay with reduced motion; chapters jump to their start. A card at the bottom of the desktop sidebar invites new accounts for two weeks after the account is first seen on the device, until the video was opened or the card hidden (state per user in `localStorage`; not shown to demo users). Until the recording exists (#271) the dialog shows the chapters with a note.
 
 ## 5. Tech stack and architecture
 
