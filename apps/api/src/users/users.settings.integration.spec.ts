@@ -6,6 +6,11 @@ import {
   CUSTOM_THEME_DEFAULT,
   type CustomTheme,
   type FolderResponse,
+  APP_FONT,
+  CARD_PREVIEW,
+  DENSITY,
+  LAYOUT_SETTINGS_DEFAULT,
+  TEXT_SIZE,
   LIBRARY_SETTINGS_DEFAULT,
   LIBRARY_SORT,
   LIBRARY_VIEW,
@@ -29,6 +34,7 @@ const APPEARANCE_DEFAULTS = {
   customTheme: CUSTOM_THEME_DEFAULT,
   motion: MOTION_PREFERENCE.System,
   appearanceSaved: false,
+  ...LAYOUT_SETTINGS_DEFAULT,
 };
 
 describe('account settings', () => {
@@ -269,6 +275,7 @@ describe('account settings', () => {
         customTheme: dark,
         motion: MOTION_PREFERENCE.System,
         appearanceSaved: true,
+        ...LAYOUT_SETTINGS_DEFAULT,
         ...LIBRARY_SETTINGS_DEFAULT,
       });
       // Choosing another theme keeps the custom one for later.
@@ -493,6 +500,100 @@ describe('account settings', () => {
         { defaultView: 'grid' },
         { defaultSort: 'random' },
         { openLinksIn: 'x' },
+      ]) {
+        await expect(t.db.prisma.user.update({ where: { id }, data })).rejects.toThrow();
+      }
+    });
+  });
+
+  describe('appearance layout (#285)', () => {
+    const layout = {
+      textSize: TEXT_SIZE.XL,
+      font: APP_FONT.Readable,
+      density: DENSITY.Compact,
+      cardPreview: CARD_PREVIEW.Off,
+      cardSite: false,
+      cardNotes: false,
+      cardTags: false,
+    };
+
+    it('saves text size, font, density and the card options, and marks the appearance saved', async () => {
+      const a = asUser(t.app, users.owner);
+      const res = await a.patch(USER_SETTINGS_ENDPOINT).send(layout).expect(200);
+      expect(res.body).toEqual({
+        trashRetentionDays: 30,
+        folderColours: true,
+        pauseHistory: false,
+        ...APPEARANCE_DEFAULTS,
+        ...LIBRARY_SETTINGS_DEFAULT,
+        ...layout,
+        appearanceSaved: true,
+      });
+      expect((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body).toEqual(res.body);
+    });
+
+    it('changes only the layout fields sent', async () => {
+      const a = asUser(t.app, users.owner);
+      await a.patch(USER_SETTINGS_ENDPOINT).send({ density: DENSITY.Compact }).expect(200);
+      const res = await a
+        .patch(USER_SETTINGS_ENDPOINT)
+        .send({ cardPreview: CARD_PREVIEW.Small })
+        .expect(200);
+      const body = res.body as UserSettingsResponse;
+      expect(body.density).toBe(DENSITY.Compact);
+      expect(body.cardPreview).toBe(CARD_PREVIEW.Small);
+      expect(body.textSize).toBe(TEXT_SIZE.M);
+      expect(body.cardTags).toBe(true);
+    });
+
+    it.each(Object.values(TEXT_SIZE))('saves the text size %s', async (textSize) => {
+      const a = asUser(t.app, users.owner);
+      const res = await a.patch(USER_SETTINGS_ENDPOINT).send({ textSize }).expect(200);
+      expect((res.body as UserSettingsResponse).textSize).toBe(textSize);
+    });
+
+    it.each([
+      [{ textSize: '125%' }],
+      [{ textSize: null }],
+      [{ font: 'Atkinson Hyperlegible' }],
+      [{ font: 1 }],
+      [{ density: 'cozy' }],
+      [{ cardPreview: 'medium' }],
+      [{ cardPreview: false }],
+      [{ cardSite: 'off' }],
+      [{ cardNotes: null }],
+      [{ cardTags: 0 }],
+      [{ fontSize: 20 }],
+    ])('rejects %j with 400 and changes nothing', async (body) => {
+      const a = asUser(t.app, users.owner);
+      await a.patch(USER_SETTINGS_ENDPOINT).send(body).expect(400);
+      expect((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body).toEqual({
+        trashRetentionDays: 30,
+        folderColours: true,
+        pauseHistory: false,
+        ...APPEARANCE_DEFAULTS,
+        ...LIBRARY_SETTINGS_DEFAULT,
+      });
+    });
+
+    it('is isolated: one user’s layout never reaches another', async () => {
+      const a = asUser(t.app, users.owner);
+      const b = asUser(t.app, users.intruder);
+      await a.patch(USER_SETTINGS_ENDPOINT).send(layout).expect(200);
+      const other = (await b.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse;
+      expect(other).toMatchObject({ ...LAYOUT_SETTINGS_DEFAULT, appearanceSaved: false });
+      await b.patch(USER_SETTINGS_ENDPOINT).send({ textSize: TEXT_SIZE.S }).expect(200);
+      const owner = (await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse;
+      expect(owner.textSize).toBe(TEXT_SIZE.XL);
+    });
+
+    it('is enforced by the database CHECKs', async () => {
+      const id = users.owner.userId;
+      for (const data of [
+        { textSize: 'xxl' },
+        { font: 'comic' },
+        { density: 'airy' },
+        { cardPreview: 'giant' },
       ]) {
         await expect(t.db.prisma.user.update({ where: { id }, data })).rejects.toThrow();
       }

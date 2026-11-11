@@ -1,5 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  APP_FONT,
+  CARD_PREVIEW,
+  DENSITY,
+  TEXT_SIZE,
+  type AppFont,
+  type CardPreview,
+  type Density,
+  type TextSize,
   LIBRARY_SORT,
   LIBRARY_VIEW,
   LINK_OPEN_TARGET,
@@ -69,4 +77,25 @@ export class UserSettingsResponseDto implements UserSettingsResponse {
 
   @ApiProperty({ example: false })
   keepQuery!: boolean;
+
+  @ApiProperty({ enum: Object.values(TEXT_SIZE), example: TEXT_SIZE.M })
+  textSize!: TextSize;
+
+  @ApiProperty({ enum: Object.values(APP_FONT), example: APP_FONT.Onest })
+  font!: AppFont;
+
+  @ApiProperty({ enum: Object.values(DENSITY), example: DENSITY.Comfortable })
+  density!: Density;
+
+  @ApiProperty({ enum: Object.values(CARD_PREVIEW), example: CARD_PREVIEW.Large })
+  cardPreview!: CardPreview;
+
+  @ApiProperty({ example: true })
+  cardSite!: boolean;
+
+  @ApiProperty({ example: true })
+  cardNotes!: boolean;
+
+  @ApiProperty({ example: true })
+  cardTags!: boolean;
 }

@@ -2,9 +2,15 @@ import { DOCUMENT } from '@angular/common';
 import { inject, Service } from '@angular/core';
 import {
   CUSTOM_THEME_DEFAULT,
+  LAYOUT_SETTINGS_DEFAULT,
+  type LayoutSettings,
   MOTION_PREFERENCE,
   THEME_PREFERENCE,
+  isAppFont,
+  isCardPreview,
   isCustomTheme,
+  isDensity,
+  isTextSize,
   isMotionPreference,
   isThemePreference,
   type UpdateUserSettingsRequest,
@@ -51,9 +57,18 @@ export class MockUserSettingsApi implements UserSettingsApi {
         }
       }
       this.data.library = library;
-      if (request.theme ?? request.customTheme ?? request.motion) {
+      const layoutKeys = Object.keys(LAYOUT_SETTINGS_DEFAULT) as (keyof LayoutSettings)[];
+      const layoutSent = layoutKeys.some((key) => request[key] !== undefined);
+      if (request.theme ?? request.customTheme ?? request.motion ?? layoutSent) {
         const appearance = this.readAppearance();
+        const layout: LayoutSettings = { ...appearance };
+        for (const key of layoutKeys) {
+          if (request[key] !== undefined) {
+            Object.assign(layout, { [key]: request[key] });
+          }
+        }
         this.writeAppearance({
+          ...layout,
           theme: request.theme ?? appearance.theme,
           customTheme: request.customTheme ?? appearance.customTheme,
           motion: request.motion ?? appearance.motion,
@@ -92,8 +107,25 @@ export class MockUserSettingsApi implements UserSettingsApi {
         ? stored.customTheme
         : { ...CUSTOM_THEME_DEFAULT },
       motion: isMotionPreference(stored.motion) ? stored.motion : MOTION_PREFERENCE.System,
+      ...this.readLayout(stored),
       // Stored only by a write of the appearance, like the account's `appearance_saved_at`.
       appearanceSaved: isThemePreference(stored.theme),
+    };
+  }
+
+  /** The layout fields of the stored mock appearance; a missing or broken one is the default. */
+  private readLayout(stored: Partial<Record<keyof MockAppearance, unknown>>): LayoutSettings {
+    const d = LAYOUT_SETTINGS_DEFAULT;
+    const flag = (value: unknown, fallback: boolean): boolean =>
+      typeof value === 'boolean' ? value : fallback;
+    return {
+      textSize: isTextSize(stored.textSize) ? stored.textSize : d.textSize,
+      font: isAppFont(stored.font) ? stored.font : d.font,
+      density: isDensity(stored.density) ? stored.density : d.density,
+      cardPreview: isCardPreview(stored.cardPreview) ? stored.cardPreview : d.cardPreview,
+      cardSite: flag(stored.cardSite, d.cardSite),
+      cardNotes: flag(stored.cardNotes, d.cardNotes),
+      cardTags: flag(stored.cardTags, d.cardTags),
     };
   }
 

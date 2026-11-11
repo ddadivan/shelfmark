@@ -19,6 +19,22 @@ import type { UserSettingsState } from './models/user-settings-state.interface';
 import { TrashStore } from './trash.store';
 
 /** The Settings › Library part of a settings response. */
+/** The appearance part of a settings response. */
+function appearanceOf(settings: UserSettingsResponse): Appearance {
+  return {
+    theme: settings.theme,
+    customTheme: settings.customTheme,
+    motion: settings.motion,
+    textSize: settings.textSize,
+    font: settings.font,
+    density: settings.density,
+    cardPreview: settings.cardPreview,
+    cardSite: settings.cardSite,
+    cardNotes: settings.cardNotes,
+    cardTags: settings.cardTags,
+  };
+}
+
 function libraryOf(settings: UserSettingsResponse): LibrarySettings {
   return {
     defaultView: settings.defaultView,
@@ -36,6 +52,13 @@ function sameAppearance(a: Appearance, b: Appearance): boolean {
   return (
     a.theme === b.theme &&
     a.motion === b.motion &&
+    a.textSize === b.textSize &&
+    a.font === b.font &&
+    a.density === b.density &&
+    a.cardPreview === b.cardPreview &&
+    a.cardSite === b.cardSite &&
+    a.cardNotes === b.cardNotes &&
+    a.cardTags === b.cardTags &&
     a.customTheme.base === b.customTheme.base &&
     a.customTheme.accent === b.customTheme.accent &&
     a.customTheme.background === b.customTheme.background &&
@@ -107,11 +130,7 @@ export const UserSettingsStore = signalStore(
         if (startedVersion === version) {
           if (settings.appearanceSaved) {
             // The account wins over the copy in this browser (it follows the user to every device).
-            theme.apply({
-              theme: settings.theme,
-              customTheme: settings.customTheme,
-              motion: settings.motion,
-            });
+            theme.apply(appearanceOf(settings));
           } else if (theme.hasStoredAppearance()) {
             // Never chosen on the account, but this browser has a theme (from before the account
             // kept one): keep it and save it once, silently; a failure retries on the next load.
@@ -226,7 +245,8 @@ export const UserSettingsStore = signalStore(
       },
 
       /**
-       * Changes the theme, the Custom theme or the Animations setting at once (ThemeService applies
+       * Changes the theme, the Custom theme, the Animations setting or a text, layout or card
+       * option at once (ThemeService applies
        * it to the whole app) and saves it on the account; resolves false (and puts the old
        * appearance back, unless a later change replaced it) when the request fails.
        */
@@ -242,11 +262,7 @@ export const UserSettingsStore = signalStore(
         try {
           const saved = await firstValueFrom(api().update(change));
           if (started === epoch && sameAppearance(theme.appearance(), next)) {
-            theme.apply({
-              theme: saved.theme,
-              customTheme: saved.customTheme,
-              motion: saved.motion,
-            });
+            theme.apply(appearanceOf(saved));
           }
           return true;
         } catch {

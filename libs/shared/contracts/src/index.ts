@@ -159,6 +159,23 @@ export type { LinkOpenTarget } from './users/link-open-target.type';
 export type { LibrarySettings } from './users/library-settings.interface';
 export { LIBRARY_SETTINGS_DEFAULT } from './users/library-settings-default.const';
 export { isLibrarySort, isLibraryView, isLinkOpenTarget } from './users/is-library-setting';
+export { TEXT_SIZE } from './users/text-size.const';
+export type { TextSize } from './users/text-size.type';
+export { APP_FONT } from './users/app-font.const';
+export type { AppFont } from './users/app-font.type';
+export { DENSITY } from './users/density.const';
+export type { Density } from './users/density.type';
+export { CARD_PREVIEW } from './users/card-preview.const';
+export type { CardPreview } from './users/card-preview.type';
+export type { LayoutSettings } from './users/layout-settings.interface';
+export { LAYOUT_SETTINGS_DEFAULT } from './users/layout-settings-default.const';
+export {
+  isAppFont,
+  isCardPreview,
+  isDensity,
+  isLayoutSettings,
+  isTextSize,
+} from './users/is-layout-settings';
 export { TRACKING_QUERY_PARAMS } from './links/tracking-query-params.const';
 export { TRACKING_QUERY_PARAM_PREFIXES } from './links/tracking-query-param-prefixes.const';
 export { isTrackingParam, stripTrackingParams } from './links/strip-tracking-params';

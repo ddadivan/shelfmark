@@ -2,7 +2,15 @@
   @for (folder of folders(); track $index) {
     <span class="ui-theme-preview__row" [class.ui-theme-preview__row--active]="$first">
       <span class="ui-theme-preview__glyph"></span>
-      {{ folder }}
+      <span class="ui-theme-preview__name">{{ folder }}</span>
+      @if (showCounts() && counts()[$index] !== undefined) {
+        <span class="ui-theme-preview__count">{{ counts()[$index] }}</span>
+      }
+    </span>
+  }
+  @if (recentLabel()) {
+    <span class="ui-theme-preview__row ui-theme-preview__row--recent">
+      <span class="ui-theme-preview__name">{{ recentLabel() }}</span>
     </span>
   }
 </div>
@@ -12,6 +20,9 @@
       <span class="ui-theme-preview__media"></span>
       <span class="ui-theme-preview__site">{{ card.site }}</span>
       <span class="ui-theme-preview__title">{{ card.title }}</span>
+      @if (card.note) {
+        <span class="ui-theme-preview__note">{{ card.note }}</span>
+      }
       <span class="ui-theme-preview__tag">{{ card.tag }}</span>
     </span>
   }

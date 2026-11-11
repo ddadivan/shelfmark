@@ -2,6 +2,14 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
+  APP_FONT,
+  CARD_PREVIEW,
+  DENSITY,
+  TEXT_SIZE,
+  isAppFont,
+  isCardPreview,
+  isDensity,
+  isTextSize,
   CUSTOM_THEME_ACCENT,
   CUSTOM_THEME_BACKGROUNDS,
   CUSTOM_THEME_BASE,
@@ -17,7 +25,9 @@ import {
   BUTTON_SIZE,
   BUTTON_VARIANT,
   ButtonComponent,
+  DialogService,
   SegmentedControlComponent,
+  SwitchComponent,
   SETTINGS_ROW_ALIGN,
   SettingsRowComponent,
   SettingsSectionComponent,
@@ -33,6 +43,7 @@ import {
 } from '@shelfmark/ui';
 import type { Appearance } from '../../../core/theme/models/appearance.type';
 import { ThemeService } from '../../../core/theme/theme.service';
+import { LinksStore } from '../../../stores/links.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { THEME_OPTION_KEYS } from '../models/theme-option-keys.const';
 import { SettingsPageHeaderComponent } from '../settings-page-header/settings-page-header.component';
@@ -41,9 +52,11 @@ const KEY = 'settings.appearance';
 const SYSTEM_THUMB = 'system';
 
 /**
- * `/settings/appearance` (Themes mockup, issue #273): Theme (System, Light, Dark, Custom); for
- * Custom the base, accent, background and corners and "Reset custom theme"; Animations; a live
- * preview; the language. Every change applies to the whole app at once (ThemeService) and is
+ * `/settings/appearance` (Themes mockup, issues #273 and #285): Theme (System, Light, Dark,
+ * Custom); for Custom the base, accent, background and corners and "Reset custom theme"; a live
+ * preview; Text and layout (text size, font, density); Cards (preview image, site, notes, tags);
+ * Sidebar and motion (link counts, remember recently opened, folder colours, Animations); the
+ * language. Every change applies to the whole app at once (ThemeService) and is
  * saved on the account right away, so the preview simply shows a sample in the current tokens;
  * a failed save puts the old appearance back and says so. Light and Dark never change.
  */
@@ -56,6 +69,7 @@ const SYSTEM_THUMB = 'system';
     SettingsPageHeaderComponent,
     SettingsRowComponent,
     SettingsSectionComponent,
+    SwitchComponent,
     ThemePickerComponent,
     ThemePreviewComponent,
   ],
@@ -71,7 +85,9 @@ export default class AppearancePage {
   protected readonly THEME_PREFERENCE = THEME_PREFERENCE;
 
   protected readonly theme = inject(ThemeService);
-  private readonly settings = inject(UserSettingsStore);
+  protected readonly settings = inject(UserSettingsStore);
+  private readonly links = inject(LinksStore);
+  private readonly dialogs = inject(DialogService);
   private readonly transloco = inject(TranslocoService);
   private readonly toasts = inject(ToastService);
 
@@ -120,6 +136,30 @@ export default class AppearancePage {
     this.labels(Object.values(MOTION_PREFERENCE), `${KEY}.motion`),
   );
 
+  protected readonly textSizeOptions = computed<SegmentedOption[]>(() =>
+    this.labels(Object.values(TEXT_SIZE), `${KEY}.layout.textSize`),
+  );
+
+  protected readonly fontOptions = computed<SegmentedOption[]>(() =>
+    this.labels(Object.values(APP_FONT), `${KEY}.layout.font`),
+  );
+
+  protected readonly densityOptions = computed<SegmentedOption[]>(() =>
+    this.labels(Object.values(DENSITY), `${KEY}.layout.density`),
+  );
+
+  protected readonly previewImageOptions = computed<SegmentedOption[]>(() =>
+    this.labels(Object.values(CARD_PREVIEW), `${KEY}.cards.preview`),
+  );
+
+  /** Sample link counts of the preview's sidebar rows. */
+  protected readonly previewCounts = [12, 7, 23];
+
+  protected readonly previewRecent = computed(() => {
+    this.translation();
+    return this.settings.historyPaused() ? '' : this.transloco.translate(`${KEY}.preview.recent`);
+  });
+
   protected readonly previewFolders = computed<string[]>(() =>
     this.labels(['angular', 'clothes', 'recipes'], `${KEY}.preview.folders`).map((o) => o.label),
   );
@@ -129,6 +169,7 @@ export default class AppearancePage {
     return ['one', 'two'].map((card) => ({
       site: this.transloco.translate(`${KEY}.preview.cards.${card}.site`),
       title: this.transloco.translate(`${KEY}.preview.cards.${card}.title`),
+      note: this.transloco.translate(`${KEY}.preview.cards.${card}.note`),
       tag: this.transloco.translate(`${KEY}.preview.cards.${card}.tag`),
     }));
   });
@@ -182,17 +223,100 @@ export default class AppearancePage {
     }
   }
 
+  protected setTextSize(value: string): void {
+    if (isTextSize(value)) {
+      void this.save({ textSize: value });
+    }
+  }
+
+  protected setFont(value: string): void {
+    if (isAppFont(value)) {
+      void this.save({ font: value });
+    }
+  }
+
+  protected setDensity(value: string): void {
+    if (isDensity(value)) {
+      void this.save({ density: value });
+    }
+  }
+
+  protected setPreviewImage(value: string): void {
+    if (isCardPreview(value)) {
+      void this.save({ cardPreview: value });
+    }
+  }
+
+  protected setCardPart(
+    change: Pick<Partial<Appearance>, 'cardSite' | 'cardNotes' | 'cardTags'>,
+  ): void {
+    void this.save(change);
+  }
+
+  /** "Link counts" is the Library setting "Show folder counts" (one value on the account). */
+  protected async setCounts(on: boolean): Promise<void> {
+    if (!(await this.settings.setLibrary({ showFolderCounts: on }))) {
+      this.failed();
+    }
+  }
+
+  protected async setFolderColours(on: boolean): Promise<void> {
+    if (!(await this.settings.setFolderColours(on))) {
+      this.failed();
+    }
+  }
+
+  /**
+   * "Remember recently opened": on resumes recording opens; off asks first, then clears the list
+   * and stops recording (the account's "Pause history"). A switch that was not confirmed, or a
+   * failed save, stays or goes back on.
+   */
+  protected async setRemember(on: boolean, control: SwitchComponent): Promise<void> {
+    if (on) {
+      if (!(await this.settings.setPauseHistory(false))) {
+        this.failed();
+      }
+      return;
+    }
+    const confirmed = await this.dialogs.confirm({
+      title: this.transloco.translate(`${KEY}.sidebar.recent.confirm.title`),
+      message: this.transloco.translate(`${KEY}.sidebar.recent.confirm.message`),
+      confirmLabel: this.transloco.translate(`${KEY}.sidebar.recent.confirm.confirm`),
+      cancelLabel: this.transloco.translate(`${KEY}.sidebar.recent.confirm.cancel`),
+      closeLabel: this.transloco.translate(`${KEY}.sidebar.recent.confirm.close`),
+      destructive: true,
+    });
+    if (!confirmed) {
+      control.checked.set(true);
+      return;
+    }
+    if (!(await this.settings.setPauseHistory(true))) {
+      this.failed();
+      return;
+    }
+    if (!(await this.links.clearHistory())) {
+      this.toasts.show({
+        kind: TOAST_KIND.Danger,
+        title: this.transloco.translate('links.recent.clearFailed'),
+      });
+    }
+  }
+
+  private failed(): void {
+    this.toasts.show({
+      kind: TOAST_KIND.Danger,
+      title: this.transloco.translate(`${KEY}.failed`),
+      detail: this.transloco.translate(`${KEY}.failedDetail`),
+    });
+  }
+
   private setCustom(change: Partial<CustomTheme>): void {
     void this.save({ customTheme: { ...this.theme.customTheme(), ...change } });
   }
 
   private async save(change: Partial<Appearance>): Promise<void> {
     if (!(await this.settings.setAppearance(change))) {
-      this.toasts.show({
-        kind: TOAST_KIND.Danger,
-        title: this.transloco.translate(`${KEY}.failed`),
-        detail: this.transloco.translate(`${KEY}.failedDetail`),
-      });
+      this.failed();
     }
   }
 

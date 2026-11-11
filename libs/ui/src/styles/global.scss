@@ -38,6 +38,39 @@
 // Custom theme: a fixed base plus curated accent, background and corners (tokens/_custom.scss).
 @include custom-themes;
 
+// Settings › Appearance › Text and layout (#285), attributes set on <html> by the app's
+// ThemeService (LAYOUT_ATTRIBUTE). Text size scales the root font size, so every rem size (type,
+// spacing, controls) grows with it; breakpoints are in em and stay where they are.
+:root[data-text-size='s'] {
+  font-size: 90%;
+}
+
+:root[data-text-size='l'] {
+  font-size: 112.5%;
+}
+
+:root[data-text-size='xl'] {
+  font-size: 125%;
+}
+
+// Font: the system UI font, or Atkinson Hyperlegible (self-hosted, SIL OFL 1.1) for low vision.
+// On any element, so a preview can wear it too.
+[data-font='system'] {
+  --font-sans: system-ui, -apple-system, 'Segoe UI', roboto, 'Helvetica Neue', arial, sans-serif;
+}
+
+[data-font='readable'] {
+  --font-sans: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+// Density: tighter card padding, feed gap and row padding.
+[data-density='compact'] {
+  --density-card-padding: var(--space-2) var(--space-3) var(--space-3);
+  --density-card-gap: var(--space-1);
+  --density-feed-gap: var(--space-2);
+  --density-row-padding: #{rem(6px)} #{rem(10px)};
+}
+
 html {
   font-size: 100%;
 

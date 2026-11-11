@@ -1,4 +1,6 @@
 import '@fontsource-variable/onest/wght.css';
+import '@fontsource/atkinson-hyperlegible/400.css';
+import '@fontsource/atkinson-hyperlegible/700.css';
 import '../src/styles/global.scss';
 import './breadcrumbs-stories.scss';
 import './card-stories.scss';

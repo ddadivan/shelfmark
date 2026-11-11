@@ -4,7 +4,14 @@ import { compile, compileString } from 'sass';
 import { PHONE_MEDIA_QUERY } from '../lib/media';
 import { encapsulateStyle } from '@angular/compiler';
 import { MOTION_ATTRIBUTE, MOTION_REDUCED } from '../lib/motion';
-import { CUSTOM_THEME_ATTRIBUTE, THEME, THEME_ATTRIBUTE, THEME_CUSTOM } from '../lib/theme';
+import {
+  CUSTOM_THEME_ATTRIBUTE,
+  LAYOUT_ATTRIBUTE,
+  LAYOUT_OFF,
+  THEME,
+  THEME_ATTRIBUTE,
+  THEME_CUSTOM,
+} from '../lib/theme';
 
 const STYLES_PATH = 'libs/ui/src/styles';
 
@@ -433,5 +440,77 @@ describe('reduced-motion mixin and the Animations setting', () => {
     );
     expect(out).toMatch(new RegExp(`\\.d\\[_ngcontent-c0\\]`));
     expect(out).not.toContain(':host');
+  });
+});
+
+describe('appearance layout attributes (#285)', () => {
+  const globalCss = (): string =>
+    compile(resolve(STYLES_DIR, 'global.scss'), {
+      loadPaths: [resolve(STYLES_DIR, '../../../../node_modules')],
+    }).css;
+
+  /** The declarations of the first rule whose selector is exactly `selector`. */
+  function rule(output: string, selector: string): string {
+    const at = output.indexOf(`${selector} {`);
+    expect(at, `no rule for ${selector}`).toBeGreaterThanOrEqual(0);
+    const open = output.indexOf('{', at);
+    return output.slice(open + 1, output.indexOf('}', open));
+  }
+
+  it('scales the root font size for every text size but the default', () => {
+    const out = globalCss();
+    const size = (value: string) => rule(out, `:root[${LAYOUT_ATTRIBUTE.TextSize}=${value}]`);
+    expect(size('s')).toContain('font-size: 90%');
+    expect(size('l')).toContain('font-size: 112.5%');
+    expect(size('xl')).toContain('font-size: 125%');
+    expect(out).not.toContain(`[${LAYOUT_ATTRIBUTE.TextSize}=m]`);
+  });
+
+  it('swaps --font-sans for the system and the readable font', () => {
+    const out = globalCss();
+    expect(rule(out, `[${LAYOUT_ATTRIBUTE.Font}=system]`)).toContain('--font-sans: system-ui');
+    expect(rule(out, `[${LAYOUT_ATTRIBUTE.Font}=readable]`)).toContain(
+      "--font-sans: 'Atkinson Hyperlegible'",
+    );
+  });
+
+  it('has comfortable density tokens on :root and tighter ones under compact', () => {
+    const out = globalCss();
+    const root = out.slice(out.indexOf(':root {'));
+    for (const token of ['card-padding', 'card-gap', 'feed-gap', 'row-padding']) {
+      expect(root).toContain(`--density-${token}:`);
+      expect(rule(out, `[${LAYOUT_ATTRIBUTE.Density}=compact]`)).toContain(`--density-${token}:`);
+    }
+    expect(rule(out, `[${LAYOUT_ATTRIBUTE.Density}=compact]`)).toContain(
+      '--density-feed-gap: var(--space-2)',
+    );
+  });
+
+  it('lets ui-card shrink or drop its image area on the preview attribute', () => {
+    const card = compile(resolve(STYLES_DIR, '../lib/card/card.component.scss'), {
+      loadPaths: [STYLES_DIR],
+    }).css;
+    expect(card).toMatch(
+      /:host-context\(\[data-card-preview=small\]\) \.ui-card__media \{\s*aspect-ratio: 32 ?\/ ?9;/,
+    );
+    expect(card).toMatch(
+      /:host-context\(\[data-card-preview=off\]\) \.ui-card__media \{\s*display: none;/,
+    );
+    expect(card).toContain('padding: var(--density-card-padding)');
+    const preview = compile(
+      resolve(STYLES_DIR, '../lib/theme-preview/theme-preview.component.scss'),
+      {
+        loadPaths: [STYLES_DIR],
+      },
+    ).css;
+    for (const [attribute, part] of [
+      [LAYOUT_ATTRIBUTE.CardSite, 'site'],
+      [LAYOUT_ATTRIBUTE.CardNotes, 'note'],
+      [LAYOUT_ATTRIBUTE.CardTags, 'tag'],
+    ] as const) {
+      expect(preview).toContain(
+        `:host-context([${attribute}=${LAYOUT_OFF}]) .ui-theme-preview__${part}`,
+      );
+    }
   });
 });

@@ -85,13 +85,131 @@
     <ui-theme-preview
       [ariaLabel]="'settings.appearance.preview.label' | transloco"
       [folders]="previewFolders()"
+      [counts]="previewCounts"
+      [showCounts]="settings.countsShown()"
+      [recentLabel]="previewRecent()"
       [cards]="previewCards()"
     />
     <p class="appearance__note">{{ 'settings.appearance.preview.hint' | transloco }}</p>
   </div>
 </ui-settings-section>
 
+<ui-settings-section [title]="'settings.appearance.layout.title' | transloco">
+  <ui-settings-row
+    #textSizeRow
+    [title]="'settings.appearance.layout.textSize.label' | transloco"
+    [description]="'settings.appearance.layout.textSize.hint' | transloco"
+  >
+    <ui-segmented-control
+      [ariaLabelledby]="textSizeRow.titleId"
+      [options]="textSizeOptions()"
+      [value]="theme.layout().textSize"
+      (valueChange)="setTextSize($event)"
+    />
+  </ui-settings-row>
+  <ui-settings-row
+    #fontRow
+    [title]="'settings.appearance.layout.font.label' | transloco"
+    [description]="'settings.appearance.layout.font.hint' | transloco"
+  >
+    <ui-segmented-control
+      [ariaLabelledby]="fontRow.titleId"
+      [options]="fontOptions()"
+      [value]="theme.layout().font"
+      (valueChange)="setFont($event)"
+    />
+  </ui-settings-row>
+  <ui-settings-row
+    #densityRow
+    [title]="'settings.appearance.layout.density.label' | transloco"
+    [description]="'settings.appearance.layout.density.hint' | transloco"
+  >
+    <ui-segmented-control
+      [ariaLabelledby]="densityRow.titleId"
+      [options]="densityOptions()"
+      [value]="theme.layout().density"
+      (valueChange)="setDensity($event)"
+    />
+  </ui-settings-row>
+</ui-settings-section>
+
+<ui-settings-section [title]="'settings.appearance.cards.title' | transloco">
+  <ui-settings-row
+    #previewImageRow
+    [title]="'settings.appearance.cards.preview.label' | transloco"
+    [description]="'settings.appearance.cards.preview.hint' | transloco"
+  >
+    <ui-segmented-control
+      [ariaLabelledby]="previewImageRow.titleId"
+      [options]="previewImageOptions()"
+      [value]="theme.layout().cardPreview"
+      (valueChange)="setPreviewImage($event)"
+    />
+  </ui-settings-row>
+  <ui-settings-row
+    [title]="'settings.appearance.cards.site.label' | transloco"
+    [description]="'settings.appearance.cards.site.hint' | transloco"
+  >
+    <ui-switch
+      [label]="'settings.appearance.cards.site.label' | transloco"
+      [checked]="theme.layout().cardSite"
+      (checkedChange)="setCardPart({ cardSite: $event })"
+    />
+  </ui-settings-row>
+  <ui-settings-row
+    [title]="'settings.appearance.cards.notes.label' | transloco"
+    [description]="'settings.appearance.cards.notes.hint' | transloco"
+  >
+    <ui-switch
+      [label]="'settings.appearance.cards.notes.label' | transloco"
+      [checked]="theme.layout().cardNotes"
+      (checkedChange)="setCardPart({ cardNotes: $event })"
+    />
+  </ui-settings-row>
+  <ui-settings-row
+    [title]="'settings.appearance.cards.tags.label' | transloco"
+    [description]="'settings.appearance.cards.tags.hint' | transloco"
+  >
+    <ui-switch
+      [label]="'settings.appearance.cards.tags.label' | transloco"
+      [checked]="theme.layout().cardTags"
+      (checkedChange)="setCardPart({ cardTags: $event })"
+    />
+  </ui-settings-row>
+</ui-settings-section>
+
 <ui-settings-section [title]="'settings.appearance.motion.title' | transloco">
+  <ui-settings-row
+    [title]="'settings.appearance.sidebar.counts.label' | transloco"
+    [description]="'settings.appearance.sidebar.counts.hint' | transloco"
+  >
+    <ui-switch
+      [label]="'settings.appearance.sidebar.counts.label' | transloco"
+      [checked]="settings.countsShown()"
+      (checkedChange)="setCounts($event)"
+    />
+  </ui-settings-row>
+  <ui-settings-row
+    [title]="'settings.appearance.sidebar.recent.label' | transloco"
+    [description]="'settings.appearance.sidebar.recent.hint' | transloco"
+  >
+    <ui-switch
+      #rememberSwitch
+      [label]="'settings.appearance.sidebar.recent.label' | transloco"
+      [checked]="!settings.historyPaused()"
+      (checkedChange)="setRemember($event, rememberSwitch)"
+    />
+  </ui-settings-row>
+  <ui-settings-row
+    [title]="'settings.appearance.sidebar.colours.label' | transloco"
+    [description]="'settings.appearance.sidebar.colours.hint' | transloco"
+  >
+    <ui-switch
+      [label]="'settings.appearance.sidebar.colours.label' | transloco"
+      [checked]="settings.coloursOn()"
+      (checkedChange)="setFolderColours($event)"
+    />
+  </ui-settings-row>
   <ui-settings-row
     #motionRow
     [title]="'settings.appearance.motion.label' | transloco"

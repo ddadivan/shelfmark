@@ -1,5 +1,13 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  APP_FONT,
+  CARD_PREVIEW,
+  DENSITY,
+  TEXT_SIZE,
+  type AppFont,
+  type CardPreview,
+  type Density,
+  type TextSize,
   LIBRARY_SORT,
   LIBRARY_VIEW,
   LINK_OPEN_TARGET,
@@ -113,4 +121,39 @@ export class UpdateUserSettingsDto implements UpdateUserSettingsRequest {
   @ValidateIf(present)
   @IsBoolean()
   keepQuery?: boolean;
+
+  @ApiPropertyOptional({ enum: Object.values(TEXT_SIZE), example: TEXT_SIZE.M })
+  @ValidateIf(present)
+  @IsIn(Object.values(TEXT_SIZE))
+  textSize?: TextSize;
+
+  @ApiPropertyOptional({ enum: Object.values(APP_FONT), example: APP_FONT.Onest })
+  @ValidateIf(present)
+  @IsIn(Object.values(APP_FONT))
+  font?: AppFont;
+
+  @ApiPropertyOptional({ enum: Object.values(DENSITY), example: DENSITY.Comfortable })
+  @ValidateIf(present)
+  @IsIn(Object.values(DENSITY))
+  density?: Density;
+
+  @ApiPropertyOptional({ enum: Object.values(CARD_PREVIEW), example: CARD_PREVIEW.Large })
+  @ValidateIf(present)
+  @IsIn(Object.values(CARD_PREVIEW))
+  cardPreview?: CardPreview;
+
+  @ApiPropertyOptional({ example: true, description: 'Domain and favicon on cards' })
+  @ValidateIf(present)
+  @IsBoolean()
+  cardSite?: boolean;
+
+  @ApiPropertyOptional({ example: true, description: 'The note on cards' })
+  @ValidateIf(present)
+  @IsBoolean()
+  cardNotes?: boolean;
+
+  @ApiPropertyOptional({ example: true, description: 'Tag chips on cards' })
+  @ValidateIf(present)
+  @IsBoolean()
+  cardTags?: boolean;
 }

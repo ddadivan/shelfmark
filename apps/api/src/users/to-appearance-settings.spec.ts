@@ -1,4 +1,4 @@
-import { CUSTOM_THEME_DEFAULT } from '@shelfmark/contracts';
+import { CUSTOM_THEME_DEFAULT, LAYOUT_SETTINGS_DEFAULT } from '@shelfmark/contracts';
 import { customThemeColumns, toAppearanceSettings } from './to-appearance-settings';
 
 describe('toAppearanceSettings', () => {
@@ -12,12 +12,26 @@ describe('toAppearanceSettings', () => {
         customThemeCorners: 'round',
         motion: 'reduced',
         appearanceSavedAt: new Date(0),
+        textSize: 'xl',
+        font: 'readable',
+        density: 'compact',
+        cardPreview: 'off',
+        cardSite: false,
+        cardNotes: false,
+        cardTags: true,
       }),
     ).toEqual({
       theme: 'custom',
       customTheme: { base: 'dark', accent: 'teal', background: 'forest', corners: 'round' },
       motion: 'reduced',
       appearanceSaved: true,
+      textSize: 'xl',
+      font: 'readable',
+      density: 'compact',
+      cardPreview: 'off',
+      cardSite: false,
+      cardNotes: false,
+      cardTags: true,
     });
   });
 
@@ -31,12 +45,20 @@ describe('toAppearanceSettings', () => {
         customThemeCorners: 'soft',
         motion: 'none',
         appearanceSavedAt: null,
+        textSize: 'huge',
+        font: 'comic',
+        density: 'airy',
+        cardPreview: 'giant',
+        cardSite: true,
+        cardNotes: true,
+        cardTags: true,
       }),
     ).toEqual({
       theme: 'system',
       customTheme: CUSTOM_THEME_DEFAULT,
       motion: 'system',
       appearanceSaved: false,
+      ...LAYOUT_SETTINGS_DEFAULT,
     });
   });
 

@@ -38,6 +38,32 @@ describe('ThemePreviewComponent', () => {
     expect(cards[0].querySelector('.ui-theme-preview__tag')?.textContent).toBe('angular');
   });
 
+  it('shows counts, a Recently opened row and notes when given (#285)', () => {
+    const fixture = TestBed.createComponent(ThemePreviewComponent);
+    fixture.componentRef.setInput('ariaLabel', 'Preview');
+    fixture.componentRef.setInput('folders', ['All links', 'Angular']);
+    fixture.componentRef.setInput('counts', [248, 12]);
+    fixture.componentRef.setInput('recentLabel', 'Recently opened');
+    fixture.componentRef.setInput('cards', [
+      { site: 'cos.com', title: 'Wool coat', note: 'Wait for the sale', tag: 'clothes' },
+    ]);
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    const counts = () =>
+      [...host.querySelectorAll('.ui-theme-preview__count')].map((count) => count.textContent);
+    expect(counts()).toEqual(['248', '12']);
+    expect(host.querySelector('.ui-theme-preview__row--recent')?.textContent).toContain(
+      'Recently opened',
+    );
+    expect(host.querySelector('.ui-theme-preview__note')?.textContent).toBe('Wait for the sale');
+
+    fixture.componentRef.setInput('showCounts', false);
+    fixture.componentRef.setInput('recentLabel', '');
+    fixture.detectChanges();
+    expect(counts()).toEqual([]);
+    expect(host.querySelector('.ui-theme-preview__row--recent')).toBeNull();
+  });
+
   it('has no axe violations', async () => {
     expect(await axeViolations(setup())).toEqual([]);
   });

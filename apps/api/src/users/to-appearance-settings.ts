@@ -1,5 +1,11 @@
 import {
   CUSTOM_THEME_DEFAULT,
+  LAYOUT_SETTINGS_DEFAULT,
+  isAppFont,
+  isCardPreview,
+  isDensity,
+  isTextSize,
+  type LayoutSettings,
   MOTION_PREFERENCE,
   THEME_PREFERENCE,
   isCustomTheme,
@@ -16,7 +22,9 @@ import type { AppearanceRow } from './models/appearance-row.interface';
  */
 export function toAppearanceSettings(
   row: AppearanceRow,
-): Pick<UserSettingsResponse, 'theme' | 'customTheme' | 'motion' | 'appearanceSaved'> {
+): Pick<UserSettingsResponse, 'theme' | 'customTheme' | 'motion' | 'appearanceSaved'> &
+  LayoutSettings {
+  const d = LAYOUT_SETTINGS_DEFAULT;
   const customTheme: unknown = {
     base: row.customThemeBase,
     accent: row.customThemeAccent,
@@ -28,13 +36,23 @@ export function toAppearanceSettings(
     customTheme: isCustomTheme(customTheme) ? customTheme : { ...CUSTOM_THEME_DEFAULT },
     motion: isMotionPreference(row.motion) ? row.motion : MOTION_PREFERENCE.System,
     appearanceSaved: row.appearanceSavedAt !== null,
+    textSize: isTextSize(row.textSize) ? row.textSize : d.textSize,
+    font: isAppFont(row.font) ? row.font : d.font,
+    density: isDensity(row.density) ? row.density : d.density,
+    cardPreview: isCardPreview(row.cardPreview) ? row.cardPreview : d.cardPreview,
+    cardSite: row.cardSite,
+    cardNotes: row.cardNotes,
+    cardTags: row.cardTags,
   };
 }
 
 /** The columns to write for a whole custom theme. */
 export function customThemeColumns(
   theme: CustomTheme,
-): Omit<AppearanceRow, 'theme' | 'motion' | 'appearanceSavedAt'> {
+): Pick<
+  AppearanceRow,
+  'customThemeBase' | 'customThemeAccent' | 'customThemeBackground' | 'customThemeCorners'
+> {
   return {
     customThemeBase: theme.base,
     customThemeAccent: theme.accent,

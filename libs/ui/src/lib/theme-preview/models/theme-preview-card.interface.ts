@@ -2,5 +2,7 @@
 export interface ThemePreviewCard {
   readonly site: string;
   readonly title: string;
+  /** The note under the title; none without it. */
+  readonly note?: string;
   readonly tag: string;
 }

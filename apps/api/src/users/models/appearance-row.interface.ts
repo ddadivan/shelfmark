@@ -7,4 +7,11 @@ export interface AppearanceRow {
   customThemeCorners: string;
   motion: string;
   appearanceSavedAt: Date | null;
+  textSize: string;
+  font: string;
+  density: string;
+  cardPreview: string;
+  cardSite: boolean;
+  cardNotes: boolean;
+  cardTags: boolean;
 }

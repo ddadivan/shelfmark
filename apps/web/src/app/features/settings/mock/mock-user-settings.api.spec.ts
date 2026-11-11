@@ -6,6 +6,7 @@ import { CUSTOM_THEME_DEFAULT, MOTION_PREFERENCE, THEME_PREFERENCE } from '@shel
 import { MOCK_APPEARANCE_STORAGE_KEY } from '../models/mock-appearance-storage-key.const';
 import { firstValueFrom } from 'rxjs';
 import { MockLibraryData } from '../../links/mock/mock-library-data';
+import { MOCK_LIBRARY_SETTINGS_STORAGE_KEY } from '../models/mock-library-settings-storage-key.const';
 import { MockUserSettingsApi } from './mock-user-settings.api';
 
 function create() {
@@ -19,7 +20,10 @@ function create() {
 }
 
 describe('MockUserSettingsApi', () => {
-  afterEach(() => localStorage.removeItem(MOCK_APPEARANCE_STORAGE_KEY));
+  afterEach(() => {
+    localStorage.removeItem(MOCK_APPEARANCE_STORAGE_KEY);
+    localStorage.removeItem(MOCK_LIBRARY_SETTINGS_STORAGE_KEY);
+  });
 
   it('keeps the appearance in localStorage like an account: a new instance (a reload) reads it', async () => {
     const customTheme = { ...CUSTOM_THEME_DEFAULT, accent: 'teal' as const };
@@ -104,6 +108,35 @@ describe('MockUserSettingsApi', () => {
       pauseHistory: false,
       ...MOCK_APPEARANCE_DEFAULTS,
       ...LIBRARY_SETTINGS_DEFAULT,
+    });
+  });
+
+  it('keeps the layout options (#285) as appearance, and the library choices (#284), over a reload', async () => {
+    const saved = await firstValueFrom(
+      create().api.update({ density: 'compact', cardTags: false, defaultView: 'list' }),
+    );
+    expect(saved).toMatchObject({ density: 'compact', cardTags: false, appearanceSaved: true });
+
+    const reloaded = await firstValueFrom(create().api.get());
+    expect(reloaded).toMatchObject({
+      density: 'compact',
+      cardTags: false,
+      textSize: 'm',
+      defaultView: 'list',
+      appearanceSaved: true,
+    });
+  });
+
+  it('falls back to the default for broken stored layout values', async () => {
+    localStorage.setItem(
+      MOCK_APPEARANCE_STORAGE_KEY,
+      JSON.stringify({ theme: 'dark', textSize: 'huge', font: 3, cardSite: 'no' }),
+    );
+    expect(await firstValueFrom(create().api.get())).toMatchObject({
+      theme: 'dark',
+      textSize: 'm',
+      font: 'onest',
+      cardSite: true,
     });
   });
 });
