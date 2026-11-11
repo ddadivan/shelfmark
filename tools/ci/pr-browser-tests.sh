@@ -9,7 +9,8 @@
 #            - the specs of each changed feature (apps/web/src/app/features/<name>: specs whose
 #              file name contains the feature name, or FEATURE_SPECS below),
 #            - SHARED_SPECS when app-wide code changes (core, shell, stores, libs).
-#            A change to the Playwright config or the dependencies runs every spec.
+#            - DEPS_SPECS when the dependencies change (package.json / package-lock.json).
+#            A change to the Playwright config runs every spec.
 #   ui axe:  the Storybook stories of the changed libs/ui components; a change to the shared
 #            styles, the Storybook setup or the a11y runner checks every story.
 #
@@ -29,6 +30,9 @@ has() { echo "${changed}" | grep -Eq "$1"; }
 SMOKE_SPECS=(smoke sign-in add-link links-feed)
 # App-wide code (core, shell, stores, shared libraries) reaches every page.
 SHARED_SPECS=(mobile api-error-toasts)
+# A dependency update (Dependabot) can break any page: the main screens with axe, the phone
+# layout and the CSP. The full suites still run on the push to `stage` (author's decision, #309).
+DEPS_SPECS=(a11y-app mobile csp)
 # Features whose specs do not carry the feature name.
 declare -A FEATURE_SPECS=(
   [account-deletion]='delete-account'
@@ -43,13 +47,17 @@ declare -A FEATURE_SPECS=(
 # --- web-e2e -------------------------------------------------------------------------------------
 if ! has '^(apps/web|apps/web-e2e|libs)/' && ! has '^(package\.json|package-lock\.json)$'; then
   echo "::notice::web-e2e: nothing in the web app, its e2e or its libraries changed"
-elif has "^(${config//./\\.}|package\.json|package-lock\.json)$"; then
-  echo "::notice::web-e2e: the Playwright config or the dependencies changed, running every spec"
+elif has "^${config//./\\.}$"; then
+  echo "::notice::web-e2e: the Playwright config changed, running every spec"
   npx playwright test -c "${config}"
 else
   names=("${SMOKE_SPECS[@]}")
   if has '^(apps/web/src/(app/(core|shell|stores)/|app/app\.|index\.html|styles)|libs/)'; then
     names+=("${SHARED_SPECS[@]}")
+  fi
+  if has '^(package\.json|package-lock\.json)$'; then
+    echo "::notice::web-e2e: the dependencies changed, adding ${DEPS_SPECS[*]}"
+    names+=("${DEPS_SPECS[@]}")
   fi
   for feature in $(echo "${changed}" | sed -n 's#^apps/web/src/app/features/\([^/]*\)/.*#\1#p' | sort -u); do
     singular="${feature%s}"

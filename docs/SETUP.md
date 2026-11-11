@@ -40,13 +40,15 @@ The local database is PGlite (embedded PostgreSQL, ADR 0025): no Docker and noth
 **Verify** (already done in stage 0) at github.com/ddadivan/shelfmark → Settings:
 
 - [ ] Advanced Security (Code security): **Secret scanning** on, **Push protection** on, **Dependabot alerts** and **security updates** on.
-- [ ] General → Pull Requests: **Allow squash merging** only (merge commits and rebase merging off).
+- [ ] General → Pull Requests: **Allow squash merging** and **Allow merge commits** on, rebase merging off (ADR 0035: feature PRs into `stage` are squashed; the release PR `stage → main` and merging `main` back into `stage` after a hotfix use a merge commit).
 - [ ] Projects: the board exists with the statuses from PROJECT.md 8.2.
 - [ ] Your local `gh` is logged in with the `project` scope: `gh auth status`.
 
 **Later, by issue:**
 
-- Branch protection / ruleset on `main` (PR required, required checks, no force-push, linear history, 0 approvals) — configured in **the CI task**; reference only here.
+- Rulesets (configured in **the CI task** and in the release-flow switch, ADR 0035; reference only here):
+  - `main`: PR required, the required checks, no force-push or deletion, 0 approvals; merge methods **Merge** and **Squash**, **no** "Require linear history" (the release PR `stage → main` is a merge commit).
+  - `stage`: PR required, required checks `lint-test-build`, `e2e`, `npm-audit`, `gitleaks`, no force-push or deletion, 0 approvals; merge methods **Squash** and **Merge** (merge only for `main → stage` after a hotfix), no rebase, no linear history.
 - CodeQL default setup — **the CI task** (Settings → Advanced Security → Code scanning → CodeQL analysis → Default).
 - **Actions secrets and variables** (Settings → Secrets and variables → Actions). None are needed for the CI task: it uses the built-in `GITHUB_TOKEN`, and Vercel deploys through its Git integration, so no Vercel token is stored in GitHub. Possible later entries:
   - a direct (unpooled) Neon connection string for production, **only if** Prisma migrations run in GitHub Actions — name and location decided in stage 2. If so, store it as an **Environment secret** of a `production` environment (Settings → Environments), not a repository secret.
@@ -259,7 +261,7 @@ Prevention layers: gitleaks in the pre-commit hook (locally) and in CI (CI task)
 | # | Step | Where | Owner | Needed by |
 | --- | --- | --- | --- | --- |
 | 1 | Node 26, gitleaks, `npm ci`, Playwright Chromium | local machine | author | now |
-| 2 | Verify secret scanning, push protection, Dependabot, squash-only | GitHub settings | author | CI task |
+| 2 | Verify secret scanning, push protection, Dependabot, merge methods (squash and merge commits, ADR 0035) | GitHub settings | author | CI task |
 | 3 | `gh auth status` with `project` scope | local machine | author | now |
 | 4 | Branch protection on `main`, CodeQL | GitHub settings | author / CI task | CI task |
 | 5 | Neon account, project in `eu-central-1` (CLI optional) | neon.com | author | deploy task |
