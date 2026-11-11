@@ -464,7 +464,7 @@
     },
     "drag": {
       "moveHere": "Hierher verschieben",
-      "wasHere": "{{title}} war hier",
+      "moving": "Wird verschoben",
       "started": {
         "one": "{{count}} Link wird verschoben. Auf einen Ordner ziehen oder mit Esc abbrechen.",
         "other": "{{count}} Links werden verschoben. Auf einen Ordner ziehen oder mit Esc abbrechen."

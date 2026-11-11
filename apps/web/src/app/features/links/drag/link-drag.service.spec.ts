@@ -133,6 +133,25 @@ describe('LinkDragService', () => {
     expect(event.defaultPrevented).toBe(false);
   });
 
+  it('remembers where the item was grabbed and its height until the drag ends', () => {
+    const { drag, doc } = setup();
+    const item = doc.createElement('li');
+    item.getBoundingClientRect = () => new DOMRect(10, 20, 300, 180);
+    const event = new PointerEvent('pointerdown', { clientX: 40, clientY: 70 });
+    Object.defineProperty(event, 'currentTarget', { value: item });
+    const root = doc.documentElement.style;
+
+    drag.grab(event);
+    drag.start(link(null));
+
+    expect(root.getPropertyValue('--drag-grab-x')).toBe('30px');
+    expect(root.getPropertyValue('--drag-grab-y')).toBe('50px');
+    expect(root.getPropertyValue('--drag-slot-height')).toBe('180px');
+    drag.drop();
+    expect(root.getPropertyValue('--drag-slot-height')).toBe('');
+    expect(root.getPropertyValue('--drag-grab-x')).toBe('');
+  });
+
   describe('with a selection', () => {
     const picked = (): LinkResponse[] => [
       { ...MOCK_LINKS[0], id: 'a', folderId: FOLDER_A.id },

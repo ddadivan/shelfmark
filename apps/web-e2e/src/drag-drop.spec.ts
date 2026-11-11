@@ -50,7 +50,9 @@ test.describe('drag a link to a folder (mock API)', () => {
     await dragOver(page, card, reading);
     await expect(reading).toHaveClass(/ui-tree__row--drop/);
     await expect(reading).toContainText('Move here');
-    await expect(page.locator('.library__drag-slot')).toContainText(`${PASTA} was here`);
+    const slot = page.locator('.library__drag-slot');
+    await expect(slot).toContainText('Moving');
+    await expect(slot).toContainText(PASTA);
     await page.mouse.up();
 
     await expect(page.getByRole('heading', { name: PASTA, exact: true })).toHaveCount(0);
@@ -76,12 +78,23 @@ test.describe('drag a link to a folder (mock API)', () => {
       await card.locator('.ui-checkbox__box').click();
     }
     await settled(page);
+    const boxes = await Promise.all([0, 1, 2].map((index) => items.nth(index).boundingBox()));
 
     await dragOver(page, items.nth(1), reading);
     await expect(reading).toHaveClass(/ui-tree__row--drop/);
     await expect(page.locator('.cdk-drag-preview .library__drag-badge')).toHaveText('Move 3 links');
+    // All three picked cards show the same "Moving" slot (the grabbed one as the placeholder), at
+    // the size they had: nothing in the grid reflows.
+    const slots = page.locator('ul.library__grid app-drag-slot');
+    await expect(slots).toHaveCount(3);
+    for (const index of [0, 1, 2]) {
+      await expect(slots.nth(index)).toContainText('Moving');
+      const slotBox = await slots.nth(index).boundingBox();
+      expect(slotBox?.width).toBeCloseTo(boxes[index]?.width ?? 0, 0);
+      expect(slotBox?.height).toBeCloseTo(boxes[index]?.height ?? 0, 0);
+    }
     await expect(page.locator('.cdk-drag-preview .library__drag-stack')).toHaveCount(2);
-    // Every carried card shows the same dashed state; the move is announced.
+    // The move is announced.
     await expect(page.locator('li.library__item--carried')).not.toHaveCount(0);
     await expect(page.locator('.library__live')).toContainText('Moving 3 links');
     await page.mouse.up();
@@ -140,8 +153,16 @@ test.describe('drag a link to a folder (mock API)', () => {
     await expect(row.locator('ui-list-item')).toBeVisible();
     await settled(page);
 
+    const rowBox = await row.boundingBox();
+
     await dragOver(page, row, treeRow(page, READING));
     await expect(page.locator('.cdk-drag-preview')).toBeVisible();
+    // The row leaves a one-line "Moving · title" slot of its own height.
+    const slot = page.locator('ul.library__rows .library__drag-slot');
+    await expect(slot).toHaveClass(/drag-slot--compact/);
+    await expect(slot).toContainText('Moving');
+    await expect(slot).toContainText(PASTA);
+    expect((await slot.boundingBox())?.height).toBeCloseTo(rowBox?.height ?? 0, 0);
     await page.mouse.up();
 
     await expect(page.getByRole('status').filter({ hasText: `Moved to ${READING}` })).toBeVisible();

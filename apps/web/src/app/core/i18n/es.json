@@ -473,7 +473,7 @@
     },
     "drag": {
       "moveHere": "Mover aquí",
-      "wasHere": "{{title}} estaba aquí",
+      "moving": "Moviendo",
       "started": {
         "one": "Moviendo {{count}} enlace. Suéltalo sobre una carpeta o pulsa Esc para cancelar.",
         "many": "Moviendo {{count}} enlaces. Suéltalos sobre una carpeta o pulsa Esc para cancelar.",

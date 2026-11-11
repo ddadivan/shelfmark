@@ -401,51 +401,25 @@
   }
 }
 
-// Every link that travels with a drag (the grabbed one leaves its dashed slot, see below) gets the
-// same state: a faded scrim over the recognisable card and the same dashed outline. It is back on
-// drop or Esc. A state, not a transition, so reduced motion needs nothing special.
+// Every link that travels with a drag shows the same empty slot (DragDrop spec, `app-drag-slot`):
+// the grabbed one as the CDK placeholder, at the height it had (`--drag-slot-height`, set on grab),
+// every other carried one laid over its own card, which stays in place invisible to keep its box.
+// Nothing reflows. Back on drop or Esc.
 .library__item--carried {
   position: relative;
 
-  // The picked card's 2px ring is a shadow outside its box; clipping to the item leaves one frame.
-  clip-path: inset(0 round var(--radius-lg));
-
-  &::after {
-    position: absolute;
-    inset: 0;
-    z-index: 5;
-    pointer-events: none;
-    content: '';
-    background: color-mix(in srgb, var(--bg) 60%, transparent);
-    border: 2px dashed var(--border-control);
-    border-radius: var(--radius-lg);
+  > :not(.library__carried-slot) {
+    visibility: hidden;
   }
 }
 
-.library__rows > .library__item--carried {
-  clip-path: inset(0 round var(--radius-md));
-
-  &::after {
-    border-radius: var(--radius-md);
-  }
+.library__carried-slot {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
 }
 
-// The slot a dragged link leaves behind (DragDrop spec): a dashed outline with the link's name.
 .library__drag-slot {
-  @include type(caption);
-  @include line-clamp(2);
-
-  display: grid;
-  place-items: center;
-  min-height: 100%;
-  padding: var(--space-4);
-  color: var(--text-muted);
-  text-align: center;
-  border: 2px dashed var(--border-control);
-  border-radius: var(--radius-lg);
-}
-
-.library__rows .library__drag-slot {
-  min-height: rem(56px);
-  border-radius: var(--radius-md);
+  block-size: var(--drag-slot-height, 100%);
 }

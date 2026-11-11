@@ -87,6 +87,7 @@ import { LINK_SELECT_SHORTCUT } from '../links/selection/models/link-select-shor
 import type { LinkSelectToggle } from '../links/models/link-select-toggle.interface';
 import { LinkSelectionStore } from '../../stores/link-selection.store';
 import { LinkActionsService } from '../links/link-actions.service';
+import { DragSlotComponent } from '../links/drag/drag-slot/drag-slot.component';
 import { LinkDragService } from '../links/drag/link-drag.service';
 import { HowItWorksService } from '../how-it-works/how-it-works.service';
 import { LinkCardComponent } from '../links/link-card/link-card.component';
@@ -146,6 +147,7 @@ interface LastShown {
     InViewDirective,
     LinkCardComponent,
     LinkRowComponent,
+    DragSlotComponent,
     LoadMoreComponent,
     MenuComponent,
     MenuItemComponent,

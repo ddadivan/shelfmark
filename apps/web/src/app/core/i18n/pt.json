@@ -473,7 +473,7 @@
     },
     "drag": {
       "moveHere": "Mover para cá",
-      "wasHere": "{{title}} estava aqui",
+      "moving": "Movendo",
       "started": {
         "one": "Movendo {{count}} link. Solte-o sobre uma pasta ou pressione Esc para cancelar.",
         "many": "Movendo {{count}} links. Solte-os sobre uma pasta ou pressione Esc para cancelar.",

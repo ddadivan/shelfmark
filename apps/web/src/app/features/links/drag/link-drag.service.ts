@@ -60,7 +60,8 @@ export class LinkDragService {
   /**
    * The pointer went down on a draggable item: remembers where in the item it grabbed (CSS
    * variables on the root, read by the drag preview), so the shrunk preview can sit down-right of
-   * the pointer instead of around it. Cleared when the drag ends.
+   * the pointer instead of around it, and the item's height, so the slot it leaves behind (the
+   * CDK placeholder) keeps its exact size. Cleared when the drag ends.
    */
   grab(event: PointerEvent): void {
     const item = event.currentTarget;
@@ -71,6 +72,7 @@ export class LinkDragService {
     const root = this.doc.documentElement.style;
     root.setProperty('--drag-grab-x', `${event.clientX - box.left}px`);
     root.setProperty('--drag-grab-y', `${event.clientY - box.top}px`);
+    root.setProperty('--drag-slot-height', `${box.height}px`);
   }
 
   /**
@@ -123,6 +125,7 @@ export class LinkDragService {
     this.links.set([]);
     this.doc.documentElement.style.removeProperty('--drag-grab-x');
     this.doc.documentElement.style.removeProperty('--drag-grab-y');
+    this.doc.documentElement.style.removeProperty('--drag-slot-height');
     this.target.set(undefined);
     this.doc.removeEventListener('keydown', this.onKeydown, true);
   }

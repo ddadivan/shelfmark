@@ -464,7 +464,7 @@
     },
     "drag": {
       "moveHere": "Move here",
-      "wasHere": "{{title}} was here",
+      "moving": "Moving",
       "started": {
         "one": "Moving {{count}} link. Drop it on a folder, or press Escape to cancel.",
         "other": "Moving {{count}} links. Drop them on a folder, or press Escape to cancel."

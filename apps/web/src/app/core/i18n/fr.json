@@ -473,7 +473,7 @@
     },
     "drag": {
       "moveHere": "Déplacer ici",
-      "wasHere": "{{title}} était ici",
+      "moving": "Déplacement",
       "started": {
         "one": "Déplacement de {{count}} lien. Déposez-le sur un dossier ou appuyez sur Échap pour annuler.",
         "many": "Déplacement de {{count}} liens. Déposez-les sur un dossier ou appuyez sur Échap pour annuler.",

@@ -368,9 +368,15 @@
         (cdkDragMoved)="onDragMoved($event)"
         (cdkDragEnded)="onDragEnded()"
       >
-        <div *cdkDragPlaceholder class="library__drag-slot" aria-hidden="true">
-          {{ 'links.drag.wasHere' | transloco: { title: link.title } }}
-        </div>
+        <app-drag-slot
+          *cdkDragPlaceholder
+          class="library__drag-slot"
+          [title]="link.title"
+          [compact]="true"
+        />
+        @if (drag.dragging() && drag.carriedIds().has(link.id)) {
+        <app-drag-slot class="library__carried-slot" [title]="link.title" [compact]="true" />
+        }
         <ng-template cdkDragPreview matchSize>
           <div class="library__drag-preview" aria-hidden="true">
             @if (bundled(link)) {
@@ -430,9 +436,10 @@
         (cdkDragMoved)="onDragMoved($event)"
         (cdkDragEnded)="onDragEnded()"
       >
-        <div *cdkDragPlaceholder class="library__drag-slot" aria-hidden="true">
-          {{ 'links.drag.wasHere' | transloco: { title: link.title } }}
-        </div>
+        <app-drag-slot *cdkDragPlaceholder class="library__drag-slot" [title]="link.title" />
+        @if (drag.dragging() && drag.carriedIds().has(link.id)) {
+        <app-drag-slot class="library__carried-slot" [title]="link.title" />
+        }
         <ng-template cdkDragPreview matchSize>
           <div class="library__drag-preview" aria-hidden="true">
             @if (bundled(link)) {
