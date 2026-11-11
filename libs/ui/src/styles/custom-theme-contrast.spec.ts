@@ -8,7 +8,14 @@ import {
   type CustomThemeBase,
 } from '@shelfmark/contracts';
 import { compileString } from 'sass';
-import { THEME_ATTRIBUTE, THEME_CUSTOM } from '../lib/theme';
+import {
+  CUSTOM_THEME_SURFACES,
+  THEME_ATTRIBUTE,
+  THEME_CUSTOM,
+  customAccentTokens,
+  isAccessibleAccent,
+  nearestAccessibleAccent,
+} from '../lib/theme';
 
 /**
  * WCAG AA for every Custom theme combination (issue #273), computed from the token values in
@@ -177,5 +184,109 @@ describe('Custom theme tokens', () => {
     expect(contrast('#000', '#fff')).toBeCloseTo(21, 5);
     expect(contrast('#777777', '#ffffff')).toBeCloseTo(4.48, 2);
     expect(() => luminance('rgb(0 0 0)')).toThrow();
+  });
+
+  it('keeps the own-colour surfaces equal to the compiled tokens', () => {
+    for (const base of Object.values(CUSTOM_THEME_BASE)) {
+      const fixed = rule(`.base-${base}`);
+      const own = CUSTOM_THEME_SURFACES[base];
+      const hex = (value: string | undefined): string | undefined =>
+        value && /^#[0-9a-f]{3}$/i.test(value)
+          ? `#${[...value.slice(1)].map((c) => c + c).join('')}`.toLowerCase()
+          : value?.toLowerCase();
+      expect(own.surface).toBe(hex(fixed['--surface']));
+      expect(own.surfaceHover).toBe(hex(fixed['--surface-hover']));
+      expect(own.surfacePressed).toBe(hex(fixed['--surface-pressed']));
+      expect(own.text).toBe(hex(fixed['--text']));
+      expect(own.textMuted).toBe(hex(fixed['--text-muted']));
+      expect(Object.keys(own.backgrounds).sort()).toEqual(
+        [...CUSTOM_THEME_BACKGROUNDS[base]].sort(),
+      );
+      for (const background of CUSTOM_THEME_BACKGROUNDS[base]) {
+        const tokens = rule(
+          custom(`[data-custom-base=${base}][data-custom-background=${background}]`),
+        );
+        expect(own.backgrounds[background], `${base} ${background}`).toBe(hex(tokens['--bg']));
+      }
+    }
+  });
+});
+
+/** Own accent colours (#315): a spread of hues, greys and extremes. */
+const OWN_COLOURS = [
+  '#ff0000',
+  '#ffff00',
+  '#00ff00',
+  '#00ffff',
+  '#0000ff',
+  '#ff00ff',
+  '#ffffff',
+  '#000000',
+  '#808080',
+  '#f5d0e0',
+  '#2e6a99',
+  '#e6b33c',
+  '#4f9a54',
+  '#8a5bb5',
+  '#e0533f',
+  '#7fd1c4',
+  '#1a1a1d',
+  '#fafafa',
+  '#c0ffee',
+  '#123456',
+  '#abcdef',
+  '#ff8800',
+  '#663399',
+  '#00aa55',
+];
+
+describe('own accent colour', () => {
+  const grounds = Object.values(CUSTOM_THEME_BASE).flatMap((base) =>
+    CUSTOM_THEME_BACKGROUNDS[base].map((background) => ({ base, background })),
+  );
+
+  it.each(grounds)(
+    'derives AA tokens on the $base base, $background background',
+    ({ base, background }) => {
+      const page = {
+        ...rule(`.base-${base}`),
+        ...rule(custom(`[data-custom-base=${base}][data-custom-background=${background}]`)),
+      };
+      const failures: string[] = [];
+      for (const colour of OWN_COLOURS) {
+        const t: Tokens = { ...page, ...customAccentTokens(colour, base, background) };
+        const check = (fg: string, bgs: string[], min: number): void => {
+          for (const bg of bgs) {
+            const ratio = contrast(t[fg], t[bg]);
+            if (ratio < min) {
+              failures.push(`${colour}: ${fg} on ${bg}: ${ratio.toFixed(2)} < ${min}`);
+            }
+          }
+        };
+        check('--text', ['--accent-bg'], 4.5);
+        check('--text-muted', ['--accent-bg'], 4.5);
+        check('--accent-text', ['--accent-bg', '--surface', '--bg'], 4.5);
+        check('--accent', ['--bg', '--surface'], 4.5);
+        check('--accent', ['--surface-hover', '--surface-pressed', '--accent-bg'], 3);
+        check('--focus-ring', ['--bg', '--surface', '--surface-hover', '--accent-bg'], 3);
+        expect(
+          isAccessibleAccent(nearestAccessibleAccent(colour, base, background), base, background),
+        ).toBe(true);
+      }
+      expect(failures).toEqual([]);
+    },
+  );
+
+  it('keeps a passing colour and moves a failing one the least way', () => {
+    expect(nearestAccessibleAccent('#2E6A99', 'light', 'paper')).toBe('#2e6a99');
+    expect(isAccessibleAccent('#2e6a99', 'light', 'paper')).toBe(true);
+    expect(isAccessibleAccent('#f5d0e0', 'light', 'paper')).toBe(false);
+    const darker = nearestAccessibleAccent('#f5d0e0', 'light', 'paper');
+    expect(luminance(darker)).toBeLessThan(luminance('#f5d0e0'));
+    expect(isAccessibleAccent('#123456', 'dark', 'ink')).toBe(false);
+    expect(luminance(nearestAccessibleAccent('#123456', 'dark', 'ink'))).toBeGreaterThan(
+      luminance('#123456'),
+    );
+    expect(isAccessibleAccent('not a colour', 'light', 'paper')).toBe(false);
   });
 });

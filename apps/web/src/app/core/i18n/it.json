@@ -1084,7 +1084,16 @@
           "soft": "Morbidi",
           "square": "Squadrati"
         },
-        "reset": "Ripristina tema personalizzato"
+        "reset": "Ripristina tema personalizzato",
+        "own": {
+          "label": "Il tuo colore",
+          "picker": "Scegli un colore",
+          "hex": "Codice esadecimale",
+          "invalid": "Inserisci # e sei cifre o lettere a–f, ad esempio #2e6a99.",
+          "hint": "Shelfmark mantiene un contrasto di 4,5:1: sull’altra base usa una tonalità più scura o più chiara del tuo colore.",
+          "warning": "Questo colore è difficile da leggere sul tuo sfondo ({{ratio}}:1, serve 4,5:1).",
+          "use": "Usa {{colour}}"
+        }
       },
       "layout": {
         "title": "Testo e layout",

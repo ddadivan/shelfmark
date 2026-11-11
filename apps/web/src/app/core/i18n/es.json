@@ -1084,7 +1084,16 @@
           "soft": "Suaves",
           "square": "Rectas"
         },
-        "reset": "Restablecer tema personalizado"
+        "reset": "Restablecer tema personalizado",
+        "own": {
+          "label": "Tu propio color",
+          "picker": "Elegir un color",
+          "hex": "Código hexadecimal",
+          "invalid": "Escribe # y seis dígitos o letras a–f, por ejemplo #2e6a99.",
+          "hint": "Shelfmark mantiene un contraste de 4,5:1: en la otra base usa un tono más oscuro o más claro de tu color.",
+          "warning": "Este color se lee mal sobre tu fondo ({{ratio}}:1; necesita 4,5:1).",
+          "use": "Usar {{colour}}"
+        }
       },
       "layout": {
         "title": "Texto y diseño",

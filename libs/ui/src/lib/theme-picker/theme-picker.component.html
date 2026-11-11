@@ -31,6 +31,7 @@
           [attr.data-custom-accent]="option.accent ?? null"
           [attr.data-custom-background]="option.background ?? null"
           [attr.data-custom-corners]="option.corners ?? null"
+          [style]="option.tokens ?? null"
         >
           @if (kind() === THEME_PICKER_KIND.Theme) {
             <ng-container [ngTemplateOutlet]="thumb" />

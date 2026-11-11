@@ -1,0 +1,72 @@
+<button
+  type="button"
+  class="ui-color-picker__swatch"
+  [class.ui-color-picker__swatch--own]="value() !== ''"
+  [class.ui-color-picker__swatch--selected]="selected()"
+  [disabled]="disabled()"
+  [attr.aria-label]="label()"
+  [attr.aria-expanded]="open()"
+  [attr.aria-controls]="panelId"
+  (click)="toggle()"
+  (focusout)="onFocusOut($event)"
+>
+  <span
+    class="ui-color-picker__paint"
+    aria-hidden="true"
+    [style.background-color]="value() || null"
+  ></span>
+  @if (value() === '') {
+    <span class="ui-color-picker__plus" aria-hidden="true">
+      <ui-icon name="add" [size]="ICON_SIZE.Sm" />
+    </span>
+  }
+</button>
+@if (open()) {
+  <div
+    class="ui-color-picker__panel"
+    role="group"
+    animate.enter="ui-color-picker__panel--enter"
+    [id]="panelId"
+    [attr.aria-label]="label()"
+    (keydown.escape)="close($event)"
+    (focusout)="onFocusOut($event)"
+  >
+    <div class="ui-color-picker__fields">
+      <label class="ui-color-picker__native">
+        <input
+          type="color"
+          class="ui-color-picker__native-input"
+          [value]="nativeValue()"
+          [disabled]="disabled()"
+          (input)="onPickerInput($event)"
+          (change)="onPickerChange($event)"
+        />
+        <span class="ui-color-picker__native-label">{{ pickerLabel() }}</span>
+      </label>
+      <div class="ui-color-picker__hex">
+        <label class="ui-color-picker__hex-label" [for]="hexId">{{ hexLabel() }}</label>
+        <input
+          type="text"
+          class="ui-color-picker__hex-input"
+          inputmode="text"
+          autocomplete="off"
+          spellcheck="false"
+          maxlength="7"
+          placeholder="#2e6a99"
+          [id]="hexId"
+          [value]="draft()"
+          [disabled]="disabled()"
+          [attr.aria-invalid]="hexInvalid() || null"
+          [attr.aria-describedby]="hexInvalid() ? errorId : null"
+          (input)="onHexInput($event)"
+          (keydown.enter)="commitHex($event)"
+          (blur)="commitHex()"
+        />
+      </div>
+    </div>
+    @if (hexInvalid()) {
+      <p class="ui-color-picker__error" [id]="errorId">{{ invalidMessage() }}</p>
+    }
+    <ng-content />
+  </div>
+}

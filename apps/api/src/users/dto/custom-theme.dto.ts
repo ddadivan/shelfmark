@@ -4,12 +4,15 @@ import {
   CUSTOM_THEME_BACKGROUND,
   CUSTOM_THEME_BASE,
   CUSTOM_THEME_CORNERS,
+  HEX_COLOUR_PATTERN,
   isBackgroundOfBase,
+  isHexColour,
   type CustomTheme,
   type CustomThemeAccent,
   type CustomThemeBackground,
   type CustomThemeBase,
   type CustomThemeCorners,
+  type HexColour,
 } from '@shelfmark/contracts';
 import { IsIn, ValidateBy, type ValidationArguments } from 'class-validator';
 
@@ -25,15 +28,39 @@ function BelongsToBase(): PropertyDecorator {
   });
 }
 
-/** The whole Custom theme; every field is required and comes from a curated allow-list. */
+/** A curated accent name or an own colour as lower-case `#rrggbb` (#315). */
+function IsAccent(): PropertyDecorator {
+  const names: readonly string[] = Object.values(CUSTOM_THEME_ACCENT);
+  return ValidateBy({
+    name: 'isAccent',
+    validator: {
+      validate: (value: unknown): boolean =>
+        (typeof value === 'string' && names.includes(value)) || isHexColour(value),
+      defaultMessage: (): string =>
+        `customTheme.accent must be one of ${names.join(', ')} or a lower-case #rrggbb colour`,
+    },
+  });
+}
+
+/**
+ * The whole Custom theme; every field is required. Base, background and corners come from curated
+ * allow-lists; the accent is a curated name or an own `#rrggbb` colour.
+ */
 export class CustomThemeDto implements CustomTheme {
   @ApiProperty({ enum: Object.values(CUSTOM_THEME_BASE), example: CUSTOM_THEME_BASE.Light })
   @IsIn(Object.values(CUSTOM_THEME_BASE))
   base!: CustomThemeBase;
 
-  @ApiProperty({ enum: Object.values(CUSTOM_THEME_ACCENT), example: CUSTOM_THEME_ACCENT.Ocean })
-  @IsIn(Object.values(CUSTOM_THEME_ACCENT))
-  accent!: CustomThemeAccent;
+  @ApiProperty({
+    oneOf: [
+      { type: 'string', enum: Object.values(CUSTOM_THEME_ACCENT) },
+      { type: 'string', pattern: HEX_COLOUR_PATTERN.source },
+    ],
+    example: CUSTOM_THEME_ACCENT.Ocean,
+    description: 'A curated accent name or an own colour as lower-case `#rrggbb`',
+  })
+  @IsAccent()
+  accent!: CustomThemeAccent | HexColour;
 
   @ApiProperty({
     enum: Object.values(CUSTOM_THEME_BACKGROUND),

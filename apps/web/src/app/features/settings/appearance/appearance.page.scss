@@ -94,6 +94,24 @@
   padding-bottom: var(--space-2);
 }
 
+// The curated accent swatches and the "+" swatch share a wrapping row; the colour panel opens on a
+// line of its own under them (Themes mockup: up to 420px, right-aligned beside the text).
+.appearance__accents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(10px);
+  align-items: center;
+  justify-content: flex-end;
+  max-width: rem(420px);
+}
+
+.appearance__own-hint {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
 // The Custom options sit on the page background, inset in the panel (Themes mockup).
 .appearance__custom {
   display: flex;

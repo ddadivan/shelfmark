@@ -13,4 +13,9 @@ export interface ThemePickerOption {
   readonly accent?: string;
   readonly background?: string;
   readonly corners?: string;
+  /**
+   * Token values the drawing sets as custom properties (an own accent colour of the Custom theme,
+   * `customAccentTokens()`); they win over the attributes. Bound through CSSOM, so the CSP holds.
+   */
+  readonly tokens?: Readonly<Record<string, string>>;
 }

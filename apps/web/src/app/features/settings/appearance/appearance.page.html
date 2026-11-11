@@ -55,13 +55,38 @@
           [title]="'settings.appearance.custom.accent.label' | transloco"
           [description]="'settings.appearance.custom.accent.hint' | transloco"
         >
-          <ui-theme-picker
-            [kind]="THEME_PICKER_KIND.Accent"
-            [ariaLabelledby]="accentRow.titleId"
-            [options]="accentOptions()"
-            [value]="theme.customTheme().accent"
-            (valueChange)="setAccent($event)"
-          />
+          <!-- The curated swatches, then the "+" swatch for an own colour (#315). -->
+          <div class="appearance__accents">
+            <ui-theme-picker
+              [kind]="THEME_PICKER_KIND.Accent"
+              [ariaLabelledby]="accentRow.titleId"
+              [options]="accentOptions()"
+              [value]="curatedAccent()"
+              (valueChange)="setAccent($event)"
+            />
+            <ui-color-picker
+              [label]="'settings.appearance.custom.own.label' | transloco"
+              [pickerLabel]="'settings.appearance.custom.own.picker' | transloco"
+              [hexLabel]="'settings.appearance.custom.own.hex' | transloco"
+              [invalidMessage]="'settings.appearance.custom.own.invalid' | transloco"
+              [selected]="ownAccent() !== null"
+              [value]="shownColour()"
+              (valueChange)="pickedColour.set($event)"
+              (committed)="pickOwnAccent($event)"
+            >
+              <p class="appearance__own-hint">
+                {{ 'settings.appearance.custom.own.hint' | transloco }}
+              </p>
+              @if (accentWarning(); as warning) {
+              <ui-notice [kind]="NOTICE_KIND.Warning">
+                {{ 'settings.appearance.custom.own.warning' | transloco: { ratio: warning.ratio } }}
+                <ui-button uiNoticeAction [size]="BUTTON_SIZE.Sm" (click)="useShade(warning.shade)">
+                  {{ 'settings.appearance.custom.own.use' | transloco: { colour: warning.shade } }}
+                </ui-button>
+              </ui-notice>
+              }
+            </ui-color-picker>
+          </div>
         </ui-settings-row>
         <ui-settings-row
           #backgroundRow

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { APP_PATH } from '../../../models/app-path.const';
 import { SETTINGS_PATH } from '../models/settings-path.const';
@@ -20,6 +20,7 @@ import {
   CUSTOM_THEME_DEFAULT,
   MOTION_PREFERENCE,
   THEME_PREFERENCE,
+  isHexColour,
   isMotionPreference,
   isThemePreference,
   type CustomTheme,
@@ -28,7 +29,11 @@ import {
   BUTTON_SIZE,
   BUTTON_VARIANT,
   ButtonComponent,
+  ColorPickerComponent,
+  CUSTOM_ACCENT_OWN,
   DialogService,
+  NOTICE_KIND,
+  NoticeComponent,
   SegmentedControlComponent,
   SwitchComponent,
   SETTINGS_ROW_ALIGN,
@@ -43,11 +48,17 @@ import {
   type SegmentedOption,
   type ThemePickerOption,
   type ThemePreviewCard,
+  accentContrast,
+  customAccentTokens,
+  isAccessibleAccent,
+  nearestAccessibleAccent,
 } from '@shelfmark/ui';
 import type { Appearance } from '../../../core/theme/models/appearance.type';
+import { LocaleService } from '../../../core/i18n/locale.service';
 import { ThemeService } from '../../../core/theme/theme.service';
 import { LinksStore } from '../../../stores/links.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
+import type { AccentWarning } from '../models/accent-warning.interface';
 import { THEME_OPTION_KEYS } from '../models/theme-option-keys.const';
 import { SettingsPageHeaderComponent } from '../settings-page-header/settings-page-header.component';
 
@@ -68,6 +79,8 @@ const SYSTEM_THUMB = 'system';
   imports: [
     TranslocoPipe,
     ButtonComponent,
+    ColorPickerComponent,
+    NoticeComponent,
     SegmentedControlComponent,
     SettingsPageHeaderComponent,
     SettingsRowComponent,
@@ -86,6 +99,7 @@ export default class AppearancePage {
   protected readonly languageHref = `/${APP_PATH.Settings}/${SETTINGS_PATH.Language}`;
   private readonly router = inject(Router);
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
+  protected readonly NOTICE_KIND = NOTICE_KIND;
   protected readonly SETTINGS_ROW_ALIGN = SETTINGS_ROW_ALIGN;
   protected readonly THEME_PICKER_KIND = THEME_PICKER_KIND;
   protected readonly THEME_PREFERENCE = THEME_PREFERENCE;
@@ -96,6 +110,7 @@ export default class AppearancePage {
   private readonly dialogs = inject(DialogService);
   private readonly transloco = inject(TranslocoService);
   private readonly toasts = inject(ToastService);
+  private readonly locale = inject(LocaleService);
 
   /** Changes when the translations load, so the labels below are computed again. */
   private readonly translation = toSignal(this.transloco.selectTranslation());
@@ -111,7 +126,7 @@ export default class AppearancePage {
       ...(value === THEME_PREFERENCE.System
         ? { theme: SYSTEM_THUMB }
         : value === THEME_PREFERENCE.Custom
-          ? { theme: THEME_CUSTOM, ...custom }
+          ? { theme: THEME_CUSTOM, ...custom, ...this.ownAccentDrawing(custom) }
           : { theme: value }),
     }));
   });
@@ -126,6 +141,24 @@ export default class AppearancePage {
       (option) => ({ ...option, theme: THEME_CUSTOM, base, accent: option.value }),
     );
   });
+
+  /** The own accent colour of the Custom theme (#315), or null for a curated accent. */
+  protected readonly ownAccent = computed(() => {
+    const accent = this.theme.customTheme().accent;
+    return isHexColour(accent) ? accent : null;
+  });
+
+  /** The curated accent that is checked; none while an own colour is the accent. */
+  protected readonly curatedAccent = computed(() =>
+    this.ownAccent() === null ? this.theme.customTheme().accent : '',
+  );
+
+  /** What the colour picker shows: the last colour picked here, else the saved own colour. */
+  protected readonly pickedColour = signal('');
+  protected readonly shownColour = computed(() => this.pickedColour() || (this.ownAccent() ?? ''));
+
+  /** A picked colour that would not keep 4.5:1, with the nearest shade that does. */
+  protected readonly accentWarning = signal<AccentWarning | null>(null);
 
   protected readonly backgroundOptions = computed<ThemePickerOption[]>(() => {
     const base = this.theme.customTheme().base;
@@ -200,8 +233,44 @@ export default class AppearancePage {
   protected setAccent(value: string): void {
     const accent = Object.values(CUSTOM_THEME_ACCENT).find((name) => name === value);
     if (accent) {
+      this.accentWarning.set(null);
       this.setCustom({ accent });
     }
+  }
+
+  /**
+   * A colour finished in the picker (#315): one that keeps 4.5:1 on the current base and
+   * background becomes the accent at once; one that does not is not applied, a warning offers the
+   * nearest shade that passes instead.
+   */
+  protected pickOwnAccent(colour: string): void {
+    if (!isHexColour(colour)) {
+      return;
+    }
+    const { base, background } = this.theme.customTheme();
+    this.pickedColour.set(colour);
+    if (isAccessibleAccent(colour, base, background)) {
+      this.accentWarning.set(null);
+      this.setCustom({ accent: colour });
+      return;
+    }
+    this.accentWarning.set({
+      colour,
+      // Rounded down, so a colour just short of 4.5:1 never reads as 4.5.
+      ratio: this.locale.formatNumber(
+        Math.floor(accentContrast(colour, base, background) * 10) / 10,
+      ),
+      shade: nearestAccessibleAccent(colour, base, background),
+    });
+  }
+
+  protected useShade(shade: string): void {
+    if (!isHexColour(shade)) {
+      return;
+    }
+    this.pickedColour.set(shade);
+    this.accentWarning.set(null);
+    this.setCustom({ accent: shade });
   }
 
   protected setBackground(value: string): void {
@@ -220,7 +289,22 @@ export default class AppearancePage {
   }
 
   protected resetCustom(): void {
+    this.pickedColour.set('');
+    this.accentWarning.set(null);
     void this.save({ customTheme: { ...CUSTOM_THEME_DEFAULT } });
+  }
+
+  /** The Custom thumbnail of an own accent: no Sass rule, the derived tokens instead. */
+  private ownAccentDrawing(custom: CustomTheme): Partial<ThemePickerOption> {
+    if (!isHexColour(custom.accent)) {
+      return {};
+    }
+    return {
+      accent: CUSTOM_ACCENT_OWN,
+      tokens: Object.fromEntries(
+        Object.entries(customAccentTokens(custom.accent, custom.base, custom.background)),
+      ),
+    };
   }
 
   protected setMotion(value: string): void {

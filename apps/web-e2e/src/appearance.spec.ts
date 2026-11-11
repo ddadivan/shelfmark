@@ -80,6 +80,54 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     expect(await token(page, '--accent')).toBe('#4f7a4b');
   });
 
+  test('an own accent colour: a readable one applies at once, a faint one gets a passing shade', async ({
+    page,
+  }) => {
+    await openAppearance(page);
+    const html = page.locator('html');
+    await pick(page, 'Theme', 'Custom');
+
+    const swatch = page.getByRole('button', { name: 'Your own colour' });
+    await swatch.click();
+    await expect(swatch).toHaveAttribute('aria-expanded', 'true');
+    const hex = page.getByRole('textbox', { name: 'Hex code' });
+    await expect(hex).toBeFocused();
+    await expect(page.getByLabel('Choose a colour')).toBeVisible();
+
+    // Readable on Paper: it is the accent right away.
+    await hex.fill('#23716c');
+    await hex.press('Enter');
+    await expect(html).toHaveAttribute('data-custom-accent', 'own');
+    expect(await token(page, '--accent')).toBe('#23716c');
+    await expect(choice(page, 'Accent colour', 'Ocean')).not.toBeChecked();
+
+    // Too faint: not applied, a warning offers the nearest shade that keeps 4.5:1.
+    await hex.fill('#f5d0e0');
+    await hex.press('Enter');
+    await expect(page.getByText(/hard to read on your background/u)).toBeVisible();
+    expect(await token(page, '--accent')).toBe('#23716c');
+    const use = page.getByRole('button', { name: /^Use #[0-9a-f]{6}$/u });
+    const shade = ((await use.textContent()) ?? '').trim().replace('Use ', '');
+    await use.click();
+    await expect(page.getByText(/hard to read on your background/u)).toHaveCount(0);
+    expect(await token(page, '--accent')).toBe(shade);
+    await expectNoBlockingViolations(page, test.info());
+
+    // Esc closes the panel and returns to the swatch; a reload keeps the colour.
+    await hex.press('Escape');
+    await expect(swatch).toBeFocused();
+    await expect(swatch).toHaveAttribute('aria-expanded', 'false');
+    await page.reload();
+    await expect(html).toHaveAttribute('data-custom-accent', 'own');
+    expect(await token(page, '--accent')).toBe(shade);
+
+    // The dark base draws the same colour in a lighter shade that still reads.
+    await pick(page, 'Start from', 'Dark');
+    const dark = await token(page, '--accent');
+    expect(dark).not.toBe(shade);
+    expect(dark).toMatch(/^#[0-9a-f]{6}$/u);
+  });
+
   test('a theme chosen before the account kept one stays and is saved to the account once', async ({
     page,
   }) => {

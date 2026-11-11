@@ -296,6 +296,38 @@ describe('account settings', () => {
       expect((light.body as UserSettingsResponse).customTheme).toEqual(dark);
     });
 
+    it('saves an own accent colour (#315) and the database keeps only #rrggbb', async () => {
+      const a = asUser(t.app, users.owner);
+      const own: CustomTheme = { ...CUSTOM_THEME_DEFAULT, accent: '#2e6a99' };
+      const res = await a
+        .patch(USER_SETTINGS_ENDPOINT)
+        .send({ theme: THEME_PREFERENCE.Custom, customTheme: own })
+        .expect(200);
+      expect((res.body as UserSettingsResponse).customTheme).toEqual(own);
+      expect(
+        ((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse)
+          .customTheme,
+      ).toEqual(own);
+      // Another user's settings stay untouched.
+      const b = asUser(t.app, users.intruder);
+      expect(
+        ((await b.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse)
+          .customTheme,
+      ).toEqual(CUSTOM_THEME_DEFAULT);
+      await expect(
+        t.db.prisma.user.update({
+          where: { id: users.owner.userId },
+          data: { customThemeAccent: 'red' },
+        }),
+      ).rejects.toThrow();
+      await expect(
+        t.db.prisma.user.update({
+          where: { id: users.owner.userId },
+          data: { customThemeAccent: '#ABCDEF' },
+        }),
+      ).rejects.toThrow();
+    });
+
     it.each([
       [{ theme: 'sepia' }],
       [{ theme: null }],
@@ -305,7 +337,12 @@ describe('account settings', () => {
       [{ customTheme: null }],
       [{ customTheme: 'dark' }],
       [{ customTheme: [] }],
-      [{ customTheme: { ...CUSTOM_THEME_DEFAULT, accent: '#ff0000' } }],
+      [{ customTheme: { ...CUSTOM_THEME_DEFAULT, accent: '#FF0000' } }],
+      [{ customTheme: { ...CUSTOM_THEME_DEFAULT, accent: '#ff00' } }],
+      [{ customTheme: { ...CUSTOM_THEME_DEFAULT, accent: 'ff0000' } }],
+      [{ customTheme: { ...CUSTOM_THEME_DEFAULT, accent: '#ff0000; color: red' } }],
+      [{ customTheme: { ...CUSTOM_THEME_DEFAULT, accent: 'rgb(255 0 0)' } }],
+      [{ customTheme: { ...CUSTOM_THEME_DEFAULT, accent: 7 } }],
       [{ customTheme: { ...CUSTOM_THEME_DEFAULT, accent: 'red' } }],
       [{ customTheme: { ...CUSTOM_THEME_DEFAULT, corners: 'pill' } }],
       [{ customTheme: { ...CUSTOM_THEME_DEFAULT, base: 'sepia' } }],

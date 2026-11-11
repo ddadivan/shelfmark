@@ -1063,7 +1063,16 @@
           "soft": "Soft",
           "square": "Square"
         },
-        "reset": "Reset custom theme"
+        "reset": "Reset custom theme",
+        "own": {
+          "label": "Your own colour",
+          "picker": "Choose a colour",
+          "hex": "Hex code",
+          "invalid": "Enter # and six digits or letters a–f, like #2e6a99.",
+          "hint": "Shelfmark keeps 4.5:1 contrast: on the other base it uses a darker or lighter shade of your colour.",
+          "warning": "This colour is hard to read on your background ({{ratio}}:1, it needs 4.5:1).",
+          "use": "Use {{colour}}"
+        }
       },
       "layout": {
         "title": "Text and layout",

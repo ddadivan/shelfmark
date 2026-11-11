@@ -12,6 +12,7 @@ import {
   MOTION_PREFERENCE,
   THEME_PREFERENCE,
   isCustomTheme,
+  isHexColour,
   isMotionPreference,
   isThemePreference,
   type CustomTheme,
@@ -19,6 +20,7 @@ import {
   type ThemePreference,
 } from '@shelfmark/contracts';
 import {
+  CUSTOM_ACCENT_OWN,
   CUSTOM_THEME_ATTRIBUTE,
   LAYOUT_ATTRIBUTE,
   LAYOUT_OFF,
@@ -27,6 +29,8 @@ import {
   THEME,
   THEME_ATTRIBUTE,
   THEME_CUSTOM,
+  customAccentTokens,
+  type CustomAccentTokens,
   type Theme,
 } from '@shelfmark/ui';
 import type { Appearance } from './models/appearance.type';
@@ -36,6 +40,13 @@ import { MOTION_STORAGE_KEY } from './models/motion-storage-key.const';
 import { THEME_STORAGE_KEY } from './models/theme-storage-key.const';
 
 const DARK_QUERY = '(prefers-color-scheme: dark)';
+/** The custom properties an own accent colour sets on `html` (#315). */
+const OWN_ACCENT_TOKENS: readonly (keyof CustomAccentTokens)[] = [
+  '--accent',
+  '--accent-bg',
+  '--accent-text',
+  '--focus-ring',
+];
 const STORAGE_EVENT = 'storage';
 
 /**
@@ -44,7 +55,10 @@ const STORAGE_EVENT = 'storage';
  * `html[data-theme]`, `html[data-custom-*]`, `html[data-motion]`, the `LAYOUT_ATTRIBUTE`
  * attributes (`data-text-size`, `data-font`, `data-density`, `data-card-*`; left out for the
  * defaults) and `color-scheme`; styles react through the tokens (`global.scss`,
- * `tokens/_custom.scss`) and the `reduced-motion` mixin, scripts through `ReducedMotion`.
+ * `tokens/_custom.scss`) and the `reduced-motion` mixin, scripts through `ReducedMotion`. An own
+ * accent colour of the Custom theme (#315) has no Sass rule: `data-custom-accent="own"` and the
+ * four accent tokens from `customAccentTokens()` as custom properties on `html` (CSSOM, which the
+ * strict CSP allows, like `color-scheme`), always in the nearest shade that keeps WCAG AA.
  *
  * The account is the source of truth (`UserSettingsStore` calls `applyAccount`); `localStorage`
  * keeps the last values so the first paint is already right (the app initializer calls `init()`
@@ -100,9 +114,10 @@ export class ThemeService {
       root.setAttribute(THEME_ATTRIBUTE, custom ? THEME_CUSTOM : theme);
       root.style.colorScheme = theme;
       const customTheme = this.customThemeState();
+      const own = custom && isHexColour(customTheme.accent);
       const values: Record<string, string> = {
         [CUSTOM_THEME_ATTRIBUTE.Base]: customTheme.base,
-        [CUSTOM_THEME_ATTRIBUTE.Accent]: customTheme.accent,
+        [CUSTOM_THEME_ATTRIBUTE.Accent]: own ? CUSTOM_ACCENT_OWN : customTheme.accent,
         [CUSTOM_THEME_ATTRIBUTE.Background]: customTheme.background,
         [CUSTOM_THEME_ATTRIBUTE.Corners]: customTheme.corners,
       };
@@ -111,6 +126,16 @@ export class ThemeService {
           root.setAttribute(name, value);
         } else {
           root.removeAttribute(name);
+        }
+      }
+      const tokens = own
+        ? customAccentTokens(customTheme.accent, customTheme.base, customTheme.background)
+        : null;
+      for (const name of OWN_ACCENT_TOKENS) {
+        if (tokens) {
+          root.style.setProperty(name, tokens[name]);
+        } else {
+          root.style.removeProperty(name);
         }
       }
     });

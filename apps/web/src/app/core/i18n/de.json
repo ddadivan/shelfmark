@@ -1063,7 +1063,16 @@
           "soft": "Weich",
           "square": "Eckig"
         },
-        "reset": "Eigenes Design zurücksetzen"
+        "reset": "Eigenes Design zurücksetzen",
+        "own": {
+          "label": "Eigene Farbe",
+          "picker": "Farbe wählen",
+          "hex": "Hex-Code",
+          "invalid": "Gib # und sechs Ziffern oder Buchstaben a–f ein, z. B. #2e6a99.",
+          "hint": "Shelfmark hält einen Kontrast von 4,5:1: Auf der anderen Basis nutzt es einen dunkleren oder helleren Ton deiner Farbe.",
+          "warning": "Diese Farbe ist auf deinem Hintergrund schwer lesbar ({{ratio}}:1, nötig sind 4,5:1).",
+          "use": "{{colour}} verwenden"
+        }
       },
       "layout": {
         "title": "Text und Layout",

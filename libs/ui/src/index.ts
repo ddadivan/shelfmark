@@ -6,6 +6,7 @@ export * from './lib/button';
 export * from './lib/card';
 export * from './lib/checkbox';
 export * from './lib/choice-grid';
+export * from './lib/color-picker';
 export * from './lib/chip';
 export * from './lib/saved-views';
 export * from './lib/command-list';

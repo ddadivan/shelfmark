@@ -1,6 +1,7 @@
 import { LAYOUT_SETTINGS_DEFAULT } from '@shelfmark/contracts';
 import { TestBed } from '@angular/core/testing';
 import {
+  CUSTOM_ACCENT_OWN,
   CUSTOM_THEME_ATTRIBUTE,
   MOTION_ATTRIBUTE,
   MOTION_REDUCED,
@@ -8,6 +9,8 @@ import {
   THEME,
   THEME_ATTRIBUTE,
   THEME_CUSTOM,
+  contrastRatio,
+  nearestAccessibleAccent,
 } from '@shelfmark/ui';
 import { CUSTOM_THEME_STORAGE_KEY } from './models/custom-theme-storage-key.const';
 import { MOTION_STORAGE_KEY } from './models/motion-storage-key.const';
@@ -241,6 +244,37 @@ describe('ThemeService', () => {
       expect(service.customTheme()).toEqual(dark);
     });
 
+    it('draws an own accent colour through custom properties in its nearest AA shade (#315)', () => {
+      stubSystemScheme(false);
+      const service = createService();
+      service.setCustomTheme({
+        ...dark,
+        base: CUSTOM_THEME_BASE.Light,
+        background: CUSTOM_THEME_BACKGROUND.Paper,
+        accent: '#f5d0e0',
+      });
+      service.setPreference(THEME_PREFERENCE.Custom);
+      TestBed.tick();
+
+      expect(root.getAttribute(CUSTOM_THEME_ATTRIBUTE.Accent)).toBe(CUSTOM_ACCENT_OWN);
+      const accent = root.style.getPropertyValue('--accent');
+      expect(accent).toBe(nearestAccessibleAccent('#f5d0e0', 'light', 'paper'));
+      expect(contrastRatio(accent, '#f7f4ee')).toBeGreaterThanOrEqual(4.5);
+      expect(root.style.getPropertyValue('--accent-bg')).not.toBe('');
+      expect(root.style.getPropertyValue('--accent-text')).not.toBe('');
+      expect(root.style.getPropertyValue('--focus-ring')).toBe(accent);
+
+      // A curated accent or a fixed theme drops them again.
+      service.setCustomTheme(dark);
+      TestBed.tick();
+      expect(root.style.getPropertyValue('--accent')).toBe('');
+      service.setCustomTheme({ ...dark, accent: '#2e6a99' });
+      service.setPreference(THEME_PREFERENCE.Light);
+      TestBed.tick();
+      expect(root.style.getPropertyValue('--accent')).toBe('');
+      expect(root.getAttribute(CUSTOM_THEME_ATTRIBUTE.Accent)).toBeNull();
+    });
+
     it('sets data-motion and ReducedMotion for the Animations setting', () => {
       stubSystemScheme(false);
       const service = createService();
@@ -286,7 +320,8 @@ describe('ThemeService', () => {
 
     it.each([
       ['not json', '{'],
-      ['a free colour', JSON.stringify({ ...CUSTOM_THEME_DEFAULT, accent: '#ff0000' })],
+      ['a colour that is not #rrggbb', JSON.stringify({ ...CUSTOM_THEME_DEFAULT, accent: 'red' })],
+      ['an upper-case colour', JSON.stringify({ ...CUSTOM_THEME_DEFAULT, accent: '#FF0000' })],
       [
         'a background of the other base',
         JSON.stringify({ ...CUSTOM_THEME_DEFAULT, background: 'black' }),

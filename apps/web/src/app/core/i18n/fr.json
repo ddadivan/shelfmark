@@ -1084,7 +1084,16 @@
           "soft": "Doux",
           "square": "Carrés"
         },
-        "reset": "Réinitialiser le thème personnalisé"
+        "reset": "Réinitialiser le thème personnalisé",
+        "own": {
+          "label": "Votre propre couleur",
+          "picker": "Choisir une couleur",
+          "hex": "Code hexadécimal",
+          "invalid": "Saisissez # suivi de six chiffres ou lettres a–f, par exemple #2e6a99.",
+          "hint": "Shelfmark garde un contraste de 4,5:1 : sur l’autre base, il utilise une nuance plus foncée ou plus claire de votre couleur.",
+          "warning": "Cette couleur est difficile à lire sur votre fond ({{ratio}}:1, il faut 4,5:1).",
+          "use": "Utiliser {{colour}}"
+        }
       },
       "layout": {
         "title": "Texte et mise en page",
