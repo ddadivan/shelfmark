@@ -469,7 +469,12 @@
     "drag": {
       "moveHere": "Mover aquí",
       "moveOne": "Mover 1 enlace",
-      "wasHere": "{{title}} estaba aquí"
+      "wasHere": "{{title}} estaba aquí",
+      "count": {
+        "one": "{{count}} enlace",
+        "many": "{{count}} enlaces",
+        "other": "{{count}} enlaces"
+      }
     }
   },
   "privacy": {

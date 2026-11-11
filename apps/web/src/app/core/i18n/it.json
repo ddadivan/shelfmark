@@ -469,7 +469,12 @@
     "drag": {
       "moveHere": "Sposta qui",
       "moveOne": "Sposta 1 link",
-      "wasHere": "{{title}} era qui"
+      "wasHere": "{{title}} era qui",
+      "count": {
+        "one": "{{count}} link",
+        "many": "{{count}} link",
+        "other": "{{count}} link"
+      }
     }
   },
   "privacy": {

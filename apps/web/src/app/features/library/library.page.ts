@@ -1,5 +1,11 @@
 import { Dialog } from '@angular/cdk/dialog';
-import { CdkDrag, type CdkDragMove, CdkDragPlaceholder, CdkDropList } from '@angular/cdk/drag-drop';
+import {
+  CdkDrag,
+  type CdkDragMove,
+  CdkDragPlaceholder,
+  CdkDragPreview,
+  CdkDropList,
+} from '@angular/cdk/drag-drop';
 import { DOCUMENT } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -80,6 +86,7 @@ import { LINK_SELECT_SHORTCUT } from '../links/selection/models/link-select-shor
 import type { LinkSelectToggle } from '../links/models/link-select-toggle.interface';
 import { LinkSelectionStore } from '../../stores/link-selection.store';
 import { LinkActionsService } from '../links/link-actions.service';
+import { LinkDragChipComponent } from '../links/drag/link-drag-chip/link-drag-chip.component';
 import { LinkDragService } from '../links/drag/link-drag.service';
 import { HowItWorksService } from '../how-it-works/how-it-works.service';
 import { LinkCardComponent } from '../links/link-card/link-card.component';
@@ -126,6 +133,7 @@ interface LastShown {
   imports: [
     CdkDrag,
     CdkDragPlaceholder,
+    CdkDragPreview,
     CdkDropList,
     TranslocoPipe,
     BreadcrumbsComponent,
@@ -136,6 +144,7 @@ interface LastShown {
     EmptyStateComponent,
     FolderTileComponent,
     InViewDirective,
+    LinkDragChipComponent,
     LinkCardComponent,
     LinkRowComponent,
     LoadMoreComponent,
@@ -605,13 +614,6 @@ export default class LibraryPage {
   /** Dragging a picked link (with others picked) carries the whole selection. */
   protected bundled(link: LinkResponse): boolean {
     return this.selectedCount() > 1 && this.selection.has(link.id);
-  }
-
-  /** Label of the drag preview: "Move 1 link" or, for a selection, "Move 3 links". */
-  protected dragLabelKey(link: LinkResponse): string {
-    return this.bundled(link)
-      ? pluralKey('bulk.move.title', this.selectedCount())
-      : 'links.drag.moveOne';
   }
 
   /** Hit-tests the folders under the pointer while a link is dragged. */

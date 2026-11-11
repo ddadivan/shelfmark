@@ -460,7 +460,11 @@
     "drag": {
       "moveHere": "Move here",
       "moveOne": "Move 1 link",
-      "wasHere": "{{title}} was here"
+      "wasHere": "{{title}} was here",
+      "count": {
+        "one": "{{count}} link",
+        "other": "{{count}} links"
+      }
     }
   },
   "privacy": {
