@@ -15,7 +15,7 @@ export type { LinkResponse } from './links/link-response.interface';
 export type { CreateLinkRequest } from './links/create-link-request.interface';
 export type { UpdateLinkRequest } from './links/update-link-request.interface';
 export type { ListLinksQuery } from './links/list-links-query.interface';
-export type { ListLinksResponse } from './links/list-links-response.type';
+export type { ListLinksResponse } from './links/list-links-response.interface';
 export type { RecentLinksQuery } from './links/recent-links-query.interface';
 export type { RecentLinksResponse } from './links/recent-links-response.interface';
 export type { OpenLinkResponse } from './links/open-link-response.type';
@@ -110,6 +110,24 @@ export type { TrashActionResponse } from './trash/trash-action-response.interfac
 export type { UserSettingsResponse } from './users/user-settings-response.interface';
 export type { UpdateUserSettingsRequest } from './users/update-user-settings-request.interface';
 export { USER_SETTINGS_ENDPOINT } from './users/user-settings-endpoint.const';
+
+export { FOLDER_COLOUR } from './folders/folder-colour.const';
+export type { FolderColour } from './folders/folder-colour.type';
+export { FOLDER_DEFAULT_COLOUR } from './folders/folder-default-colour.const';
+export { FOLDER_ICON } from './folders/folder-icon.const';
+export type { FolderIcon } from './folders/folder-icon.type';
+export { FOLDER_DEFAULT_ICON } from './folders/folder-default-icon.const';
+
+export { PIN_KIND } from './pins/pin-kind.const';
+export type { PinKind } from './pins/pin-kind.type';
+export { PIN_LIMIT } from './pins/pin-limit.const';
+export { PIN_ENDPOINT } from './pins/pin-endpoint.const';
+export { PIN_ERROR_MESSAGE } from './pins/pin-error-message.const';
+export type { PinRef } from './pins/pin-ref.interface';
+export type { CreatePinRequest } from './pins/create-pin-request.interface';
+export type { PinResponse } from './pins/pin-response.interface';
+export type { ListPinsResponse } from './pins/list-pins-response.interface';
+export type { ReorderPinsRequest } from './pins/reorder-pins-request.interface';
 export { FEEDBACK_MESSAGE_KIND } from './feedback/feedback-message-kind.const';
 export type { FeedbackMessageKind } from './feedback/feedback-message-kind.type';
 export { FEEDBACK_STATUS } from './feedback/feedback-status.const';

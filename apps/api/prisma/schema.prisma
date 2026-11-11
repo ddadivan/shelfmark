@@ -35,6 +35,8 @@ model User {
   demoNetworkHash       String?   @map("demo_network_hash")
   // How long deleted links and folders stay in Trash (ADR 0036); a CHECK in the migration keeps it to 7, 30, 90.
   trashRetentionDays    Int       @default(30) @map("trash_retention_days") @db.SmallInt
+  // Account setting "Folder colours" (#263): off shows every folder in graphite.
+  folderColours         Boolean   @default(true) @map("folder_colours")
   createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
   sessions              Session[]
@@ -114,6 +116,11 @@ model Folder {
   userId    String   @map("user_id") @db.Uuid
   parentId  String?  @map("parent_id") @db.Uuid
   name      String   @db.VarChar(100)
+  // Style (#263, ADR 0037): one of FOLDER_COLOUR / FOLDER_ICON; a CHECK in the migration closes the colour set.
+  colour    String   @default("graphite") @db.VarChar(16)
+  icon      String   @default("folder") @db.VarChar(24)
+  // Place in the user's sidebar pins (ADR 0037); NULL = not pinned. Cleared when the folder goes to Trash.
+  pinnedPosition Int? @map("pinned_position") @db.SmallInt
   // Set when the folder is in Trash (ADR 0036): one shared value for the folder and the subtree deleted with it.
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz(3)
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
@@ -150,6 +157,10 @@ model Link {
   // Client-generated UUID that makes a retried create return the first link (ADR 0033).
   idempotencyKey     String?     @map("idempotency_key") @db.Uuid
   isFavorite         Boolean     @default(false) @map("is_favorite")
+  // Pinned to the top of its folder (#263): the pin time orders pinned links; NULL = not pinned.
+  pinnedInFolderAt   DateTime?   @map("pinned_in_folder_at") @db.Timestamptz(3)
+  // Place in the user's sidebar pins (ADR 0037); NULL = not pinned. Cleared when the link goes to Trash.
+  pinnedPosition     Int?        @map("pinned_position") @db.SmallInt
   lastOpenedAt       DateTime?   @map("last_opened_at") @db.Timestamptz(3)
   // Set when the link is in Trash (ADR 0036). The partial indexes for Trash live in the migration.
   deletedAt          DateTime?   @map("deleted_at") @db.Timestamptz(3)

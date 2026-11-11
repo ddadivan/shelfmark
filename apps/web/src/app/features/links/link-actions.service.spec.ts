@@ -27,7 +27,9 @@ function link(n: number): LinkResponse {
 async function setup(confirmed = true) {
   const toasts: ToastOptions[] = [];
   const api = {
-    list: vi.fn<LinksApi['list']>(() => of({ items: [link(1), link(2)], nextCursor: null })),
+    list: vi.fn<LinksApi['list']>(() =>
+      of({ items: [link(1), link(2)], nextCursor: null, pinned: [] }),
+    ),
     get: vi.fn<LinksApi['get']>((id) => of(link(Number(id.slice(3))))),
     update: vi.fn<LinksApi['update']>((id) =>
       of({ ...link(Number(id.slice(3))), isFavorite: true }),

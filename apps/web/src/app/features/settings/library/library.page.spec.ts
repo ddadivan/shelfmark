@@ -18,12 +18,15 @@ async function setup(
     get: vi.fn<UserSettingsApi['get']>(() =>
       options.failGet
         ? throwError(() => new Error('down'))
-        : of({ trashRetentionDays: 30 as const }),
+        : of({ trashRetentionDays: 30 as const, folderColours: true }),
     ),
     update: vi.fn<UserSettingsApi['update']>((request) =>
       options.failUpdate
         ? timer(10).pipe(switchMap(() => throwError(() => new Error('boom'))))
-        : of({ trashRetentionDays: request.trashRetentionDays ?? 30 }),
+        : of({
+            trashRetentionDays: request.trashRetentionDays ?? 30,
+            folderColours: request.folderColours ?? true,
+          }),
     ),
   };
   const total = options.total ?? 0;
@@ -48,12 +51,13 @@ async function setup(
     ),
   };
   const confirm = vi.fn(() => Promise.resolve(options.confirm ?? true));
+  const open = vi.fn(() => ({ result: Promise.resolve(undefined) }));
   const toasts: Parameters<ToastService['show']>[0][] = [];
   TestBed.configureTestingModule({
     providers: [
       { provide: USER_SETTINGS_API, useValue: settingsApi },
       { provide: TRASH_API, useValue: trashApi },
-      { provide: DialogService, useValue: { confirm } },
+      { provide: DialogService, useValue: { confirm, open } },
       {
         provide: ToastService,
         useValue: { show: (toast: (typeof toasts)[number]) => toasts.push(toast) },
@@ -65,7 +69,7 @@ async function setup(
     page.harness.fixture.detectChanges();
     expect(page.root.querySelector('input[type="radio"]:not(:disabled)')).not.toBeNull();
   });
-  return { ...page, settingsApi, trashApi, toasts, confirm };
+  return { ...page, settingsApi, trashApi, toasts, confirm, open };
 }
 
 function radio(root: HTMLElement, label: string): HTMLInputElement {
@@ -83,7 +87,10 @@ describe('LibrarySettingsPage', () => {
     const { root } = await setup();
 
     expect(root.querySelector('h1')?.textContent).toContain('Library');
-    expect(root.querySelector('h2')?.textContent).toContain('Trash');
+    expect([...root.querySelectorAll('h2')].map((h) => h.textContent?.trim())).toEqual([
+      'Folders',
+      'Trash',
+    ]);
     expect(root.textContent).toContain('Keep deleted items for');
     expect(
       Array.from(root.querySelectorAll('input[type="radio"]')).map((input) =>
@@ -191,6 +198,49 @@ describe('LibrarySettingsPage', () => {
       harness.fixture.detectChanges();
       expect(root.textContent).toContain('Nothing in Trash');
     });
+  });
+
+  it('turns folder colours off at once with the switch, and back on', async () => {
+    const { root, settingsApi, harness } = await setup();
+    const colours = root.querySelector<HTMLButtonElement>('button[role="switch"]');
+    expect(colours?.getAttribute('aria-checked')).toBe('true');
+
+    colours?.click();
+    await vi.waitFor(() => {
+      harness.fixture.detectChanges();
+      expect(settingsApi.update).toHaveBeenCalledWith({ folderColours: false });
+      expect(colours?.getAttribute('aria-checked')).toBe('false');
+    });
+
+    colours?.click();
+    await vi.waitFor(() => {
+      harness.fixture.detectChanges();
+      expect(settingsApi.update).toHaveBeenLastCalledWith({ folderColours: true });
+    });
+  });
+
+  it('puts the switch back with an error toast when saving the colours fails', async () => {
+    const { root, toasts, harness } = await setup({ failUpdate: true });
+    const colours = root.querySelector<HTMLButtonElement>('button[role="switch"]');
+
+    colours?.click();
+    await vi.waitFor(() => {
+      harness.fixture.detectChanges();
+      expect(toasts.at(-1)?.kind).toBe(TOAST_KIND.Danger);
+      expect(colours?.getAttribute('aria-checked')).toBe('true');
+    });
+  });
+
+  it('opens the pinned items editor from the "Pinned at the top" row', async () => {
+    const { root, open } = await setup();
+    expect(root.textContent).toContain('Up to 7 folders and links');
+    const edit = Array.from(root.querySelectorAll('button')).find(
+      (b) => b.getAttribute('aria-haspopup') === 'dialog',
+    );
+
+    edit?.click();
+
+    expect(open).toHaveBeenCalledTimes(1);
   });
 
   it('has no axe violations', async () => {

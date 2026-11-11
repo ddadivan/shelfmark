@@ -165,17 +165,19 @@ export class LinksWriteService {
   async update(userId: string, id: string, request: UpdateLinkRequest): Promise<LinkResponse> {
     const data = this.updateData(request);
     this.assertTagNames(request.tags);
+    const needsLock = typeof request.folderId === 'string' || request.pinnedInFolder === true;
     try {
       return await this.prisma.$transaction(async (tx) => {
+        if (needsLock) await this.folders.lockTree(tx, userId);
         if (typeof request.folderId === 'string') {
-          await this.folders.lockTree(tx, userId);
           await this.requireFolder(tx, userId, request.folderId);
         }
         const current = await tx.link.findFirst({
           where: { id, userId, deletedAt: null },
-          select: { id: true, normalizedUrl: true },
+          select: { id: true, normalizedUrl: true, folderId: true, pinnedInFolderAt: true },
         });
         if (!current) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
+        await this.applyFolderPin(tx, userId, current, request, data);
         // Only a really different page invalidates the captured images and the source hints (the
         // same URL written differently keeps them); the card then falls back to the site letter.
         if (data.normalizedUrl !== undefined && data.normalizedUrl !== current.normalizedUrl) {
@@ -243,9 +245,40 @@ export class LinksWriteService {
     // Plain SQL so `updated_at` stays: moving to Trash is not an edit.
     const deletedAt = new Date();
     const touched = await this.prisma.$executeRaw`
-      UPDATE links SET deleted_at = ${deletedAt}
+      UPDATE links SET deleted_at = ${deletedAt}, pinned_position = NULL, pinned_in_folder_at = NULL
       WHERE id = ${id}::uuid AND user_id = ${userId}::uuid AND deleted_at IS NULL`;
     if (touched === 0) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
+  }
+
+  /**
+   * Pin to the top of the folder: pinning needs a folder and room (`PinnedInFolderMax`, counted under
+   * the folders lock); a move to another folder unpins; an explicit `false` unpins.
+   */
+  private async applyFolderPin(
+    tx: LinkDbClient,
+    userId: string,
+    current: { id: string; folderId: string | null; pinnedInFolderAt: Date | null },
+    request: UpdateLinkRequest,
+    data: Prisma.LinkUncheckedUpdateInput,
+  ): Promise<void> {
+    const targetFolder = request.folderId === undefined ? current.folderId : request.folderId;
+    if (request.pinnedInFolder === true) {
+      if (targetFolder === null) throw new BadRequestException(LINK_ERROR_MESSAGE.PinNeedsFolder);
+      const moved = targetFolder !== current.folderId;
+      if (current.pinnedInFolderAt !== null && !moved) return;
+      const count = await tx.link.count({
+        where: { userId, deletedAt: null, folderId: targetFolder, pinnedInFolderAt: { not: null } },
+      });
+      if (count >= LINK_LIMIT.PinnedInFolderMax) {
+        throw new ConflictException(LINK_ERROR_MESSAGE.PinnedInFolderLimit);
+      }
+      data.pinnedInFolderAt = new Date();
+    } else if (
+      request.pinnedInFolder === false ||
+      (request.folderId !== undefined && request.folderId !== current.folderId)
+    ) {
+      if (current.pinnedInFolderAt !== null) data.pinnedInFolderAt = null;
+    }
   }
 
   /** The columns a PATCH changes; absent fields stay untouched. */

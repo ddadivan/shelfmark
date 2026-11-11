@@ -4,6 +4,7 @@ import { FoldersStore } from '../../stores/folders.store';
 import { LinksStore } from '../../stores/links.store';
 import { TagsStore } from '../../stores/tags.store';
 import { TrashStore } from '../../stores/trash.store';
+import { PinsStore } from '../../stores/pins.store';
 import { AuthStore } from '../auth/auth.store';
 import { isTabSyncMessage } from './is-tab-sync-message';
 import { TAB_SYNC_CHANNEL } from './models/tab-sync-channel.const';
@@ -97,6 +98,7 @@ export class TabSyncService {
     void this.injector.get(TagsStore).refresh();
     // A delete, restore or empty elsewhere changes what Trash lists (a no-op until it was opened).
     void this.injector.get(TrashStore).refresh();
+    void this.injector.get(PinsStore).refresh();
     if (feed) {
       this.links().refresh();
     }

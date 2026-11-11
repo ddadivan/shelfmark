@@ -103,3 +103,14 @@ ui-card:has(.ui-card__link:focus-visible) .link-card__open-text {
     }
   }
 }
+
+// "Pinned" over the preview (FolderStyle spec); it only informs, a click goes to the title link.
+.link-card__pinned {
+  position: absolute;
+  inset-block-start: var(--space-3);
+  inset-inline-start: var(--space-3);
+  z-index: 2;
+  pointer-events: none;
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}

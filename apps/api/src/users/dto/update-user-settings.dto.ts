@@ -4,7 +4,7 @@ import {
   type TrashRetentionDays,
   type UpdateUserSettingsRequest,
 } from '@shelfmark/contracts';
-import { IsIn, ValidateIf } from 'class-validator';
+import { IsBoolean, IsIn, ValidateIf } from 'class-validator';
 
 export class UpdateUserSettingsDto implements UpdateUserSettingsRequest {
   @ApiPropertyOptional({ enum: TRASH_RETENTION_DAYS, example: 30 })
@@ -12,4 +12,9 @@ export class UpdateUserSettingsDto implements UpdateUserSettingsRequest {
   @ValidateIf((_, value: unknown) => value !== undefined)
   @IsIn(TRASH_RETENTION_DAYS)
   trashRetentionDays?: TrashRetentionDays;
+
+  @ApiPropertyOptional({ example: true })
+  @ValidateIf((_, value: unknown) => value !== undefined)
+  @IsBoolean()
+  folderColours?: boolean;
 }

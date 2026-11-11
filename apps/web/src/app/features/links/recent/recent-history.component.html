@@ -17,6 +17,8 @@
           <app-link-history-row
             [link]="link"
             [folderName]="folderName(link)"
+            [folderColour]="folderColour(link)"
+            [folderIcon]="folderIcon(link)"
             [time]="timeOf(link)"
             [dateTime]="link.lastOpenedAt ?? ''"
             (opened)="actions.open(link)"

@@ -28,7 +28,7 @@ function link(n: number, changes: Partial<LinkResponse> = {}): LinkResponse {
 }
 
 function page(items: LinkResponse[], nextCursor: string | null = null): ListLinksResponse {
-  return { items, nextCursor };
+  return { items, nextCursor, pinned: [] };
 }
 
 async function setup(list: LinksApi['list'] = () => of(page([link(1), link(2)]))) {

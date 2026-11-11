@@ -88,6 +88,8 @@ export class FoldersService {
 
         const data: Prisma.FolderUncheckedUpdateInput = {};
         if (request.name !== undefined) data.name = request.name;
+        if (request.colour !== undefined) data.colour = request.colour;
+        if (request.icon !== undefined) data.icon = request.icon;
         if (request.parentId !== undefined) {
           if (request.parentId !== null) {
             await this.requireOwned(tx, userId, request.parentId);
@@ -145,14 +147,19 @@ export class FoldersService {
           UPDATE links SET deleted_at = ${deletedAt}
           WHERE user_id = ${userId}::uuid AND deleted_at IS NULL
             AND folder_id = ANY(${ids}::uuid[])`;
+        // Links that go to Trash leave the sidebar pins and the top of their folder.
+        await tx.$executeRaw`
+          UPDATE links SET pinned_position = NULL, pinned_in_folder_at = NULL
+          WHERE user_id = ${userId}::uuid AND pinned_position IS NOT NULL
+            AND folder_id = ANY(${ids}::uuid[])`;
       } else {
         await tx.$executeRaw`
-          UPDATE links SET folder_id = NULL
+          UPDATE links SET folder_id = NULL, pinned_in_folder_at = NULL
           WHERE user_id = ${userId}::uuid AND deleted_at IS NULL
             AND folder_id = ANY(${ids}::uuid[])`;
       }
       await tx.$executeRaw`
-        UPDATE folders SET deleted_at = ${deletedAt}
+        UPDATE folders SET deleted_at = ${deletedAt}, pinned_position = NULL
         WHERE user_id = ${userId}::uuid AND id = ANY(${ids}::uuid[])`;
     });
   }

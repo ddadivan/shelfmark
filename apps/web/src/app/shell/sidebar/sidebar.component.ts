@@ -12,6 +12,7 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { PIN_KIND } from '@shelfmark/contracts';
 import {
   BUTTON_SIZE,
   ButtonComponent,
@@ -29,12 +30,16 @@ import {
 import { combineLatest, filter, map } from 'rxjs';
 import { ViewportService } from '../../core/layout/viewport.service';
 import { FolderActionsService } from '../../features/folders/folder-actions.service';
+import { PinActionsService } from '../../features/pins/pin-actions.service';
+import { SidebarPinnedComponent } from '../../features/pins/sidebar-pinned/sidebar-pinned.component';
 import { SidebarTagsComponent } from '../../features/tags/sidebar-tags/sidebar-tags.component';
 import { LINKS_SCOPE } from '../../features/links/models/links-scope.const';
 import { APP_PATH } from '../../models/app-path.const';
 import type { FolderNode } from '../../stores/models/folder-node.interface';
 import { FoldersStore } from '../../stores/folders.store';
+import { PinsStore } from '../../stores/pins.store';
 import { TrashStore } from '../../stores/trash.store';
+import { UserSettingsStore } from '../../stores/user-settings.store';
 import { LinkDragService } from '../../features/links/drag/link-drag.service';
 import { HowItWorksService } from '../../features/how-it-works/how-it-works.service';
 import { HowItWorksCardComponent } from '../../features/how-it-works/how-it-works-card/how-it-works-card.component';
@@ -68,6 +73,7 @@ const FIXED_ROUTES: Readonly<Record<string, string>> = {
     MenuSeparatorComponent,
     LogoComponent,
     RouterLink,
+    SidebarPinnedComponent,
     SidebarTagsComponent,
     TooltipDirective,
     TranslocoPipe,
@@ -80,6 +86,9 @@ const FIXED_ROUTES: Readonly<Record<string, string>> = {
 export class SidebarComponent {
   protected readonly folders = inject(FoldersStore);
   private readonly trash = inject(TrashStore);
+  private readonly pins = inject(PinsStore);
+  private readonly settings = inject(UserSettingsStore);
+  private readonly pinActions = inject(PinActionsService);
   protected readonly drag = inject(LinkDragService);
   protected readonly howItWorks = inject(HowItWorksService);
   protected readonly ICON_SIZE = ICON_SIZE;
@@ -100,7 +109,7 @@ export class SidebarComponent {
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
   private readonly menu = viewChild.required(MenuComponent);
-  private readonly tree = viewChild.required(TreeComponent);
+  private readonly tree = viewChild.required<TreeComponent>('folderTree');
   private readonly treeFocus = inject(SidebarTreeFocusService);
 
   private readonly url = toSignal(
@@ -139,6 +148,11 @@ export class SidebarComponent {
 
   /** `id` of the folder whose menu is open (the tree shows its button as pressed). */
   protected readonly menuNodeId = signal<string | null>(null);
+  /** The folder of the open menu is pinned to the sidebar (the menu offers Unpin). */
+  protected readonly menuPinned = computed(() => {
+    const id = this.menuNodeId();
+    return id !== null && this.pins.has(PIN_KIND.Folder, id);
+  });
   /** The folder the menu was opened for; kept while an item is chosen and the menu closes. */
   private menuFolderId: string | null = null;
 
@@ -199,6 +213,8 @@ export class SidebarComponent {
       id: folder.id,
       name: folder.name,
       count: folder.linkCount,
+      icon: folder.icon,
+      colour: this.settings.shownColour(folder.colour),
       ...(open.has(folder.id) && { expanded: true }),
       ...(children.length > 0 && { children: children.map(toNode) }),
     });
@@ -208,6 +224,8 @@ export class SidebarComponent {
   constructor() {
     void this.folders.load();
     void this.trash.load();
+    void this.pins.load();
+    void this.settings.load();
     effect((onCleanup) => onCleanup(this.treeFocus.register(this.tree())));
   }
 
@@ -240,6 +258,22 @@ export class SidebarComponent {
 
   protected createTopLevel(): void {
     void this.actions.create();
+  }
+
+  protected togglePin(): void {
+    const folder = this.menuFolder();
+    if (folder) {
+      void (this.pins.has(PIN_KIND.Folder, folder.id)
+        ? this.pinActions.unpinFolder(folder)
+        : this.pinActions.pinFolder(folder));
+    }
+  }
+
+  protected style(): void {
+    const folder = this.menuFolder();
+    if (folder) {
+      void this.actions.style(folder);
+    }
   }
 
   protected createSubfolder(): void {
