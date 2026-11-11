@@ -10,6 +10,10 @@ const HOUR_MS = 60 * MINUTE_MS;
  * Better Auth is mounted outside Nest's router. The limits of routes that do not exist yet
  * (`AddLink`, `Preview` #72, `Demo` #67, `Export` #107) are ready here so those issues only
  * decorate their handler. `DeleteAccount` guards `DELETE /api/me` (irreversible, so strict).
+ * `Share` limits the owner's enable / reset of a public link (#276). `PublicCollection` is the
+ * anonymous collection page (strict: it is a capability lookup anyone can try);
+ * `PublicCollectionImage` its images (a page shows up to 50 cards with two images each, and the
+ * browser caches them for a year).
  */
 export const RATE_LIMIT = {
   Default: { limit: 120, ttl: MINUTE_MS },
@@ -20,4 +24,7 @@ export const RATE_LIMIT = {
   Export: { limit: 5, ttl: MINUTE_MS },
   Feedback: { limit: 10, ttl: MINUTE_MS },
   DeleteAccount: { limit: 5, ttl: MINUTE_MS },
+  Share: { limit: 20, ttl: MINUTE_MS },
+  PublicCollection: { limit: 30, ttl: MINUTE_MS },
+  PublicCollectionImage: { limit: 240, ttl: MINUTE_MS },
 } as const satisfies Record<string, RateLimitPreset>;

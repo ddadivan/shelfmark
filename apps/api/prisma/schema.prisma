@@ -42,6 +42,7 @@ model User {
   linkImages            LinkImage[]
   tags                  Tag[]
   feedback              Feedback[]
+  folderShares          FolderShare[]
 
   @@map("users")
 }
@@ -118,6 +119,7 @@ model Folder {
   parent    Folder?  @relation("FolderTree", fields: [parentId, userId], references: [id, userId], onDelete: Cascade)
   children  Folder[] @relation("FolderTree")
   links     Link[]
+  share     FolderShare?
 
   @@unique([id, userId])
   @@index([userId, parentId])
@@ -228,4 +230,29 @@ model Feedback {
 
   @@unique([userId, milestone])
   @@map("feedback")
+}
+
+// Public link of a folder (#276, ADR 0040): a row exists exactly while the folder is shared, so
+// disabling deletes it and an old token can never come back. `token` is the capability in the
+// public URL `/c/{token}`: 16 random bytes as 22 base64url characters, stored as is (the owner can
+// copy the link again) behind a unique index, so the public lookup is one indexed equality read.
+// The composite FK keeps the share on a folder of the same user; deleting the folder (or the user)
+// deletes the share. A CHECK in the migration pins the token format.
+model FolderShare {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  folderId  String   @unique @map("folder_id") @db.Uuid
+  token     String   @unique @db.VarChar(22)
+  showNotes Boolean  @default(false) @map("show_notes")
+  // When the current token was created: enable, or the last reset.
+  tokenCreatedAt DateTime @default(now()) @map("token_created_at") @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  folder    Folder   @relation(fields: [folderId, userId], references: [id, userId], onDelete: Cascade)
+
+  // Required by Prisma for the one-to-one composite relation; folderId alone is already unique.
+  @@unique([folderId, userId])
+  @@index([userId])
+  @@map("folder_shares")
 }
