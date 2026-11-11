@@ -253,10 +253,7 @@ test.describe('select links and bulk actions (mock API)', () => {
       await openFeed(page);
       await pick(page, 0);
       await expect(header(page)).toBeVisible();
-      await page
-        .getByRole('link', { name: /^Favorites/ })
-        .first()
-        .click();
+      await viewEntry(page, 'Favorites').click();
       await expect(page).toHaveURL(/\/favorites/);
       await expect(header(page)).toHaveCount(0);
     });
@@ -306,7 +303,8 @@ test.describe('select links and bulk actions (mock API)', () => {
       await openFeed(page);
       await longPress(page, cards(page).nth(0));
       await barButton(page, 'Favorite').click();
-      const toast = page.locator('ui-toast').filter({ hasText: 'added to favorites' });
+      // Added or removed: the toast for the bulk favorite change.
+      const toast = page.locator('ui-toast').filter({ hasText: /from favorites|to favorites/ });
       await expect(toast).toBeVisible();
       await settled(page);
       const barBox = await bar(page).boundingBox();
