@@ -1,31 +1,27 @@
 <ui-dialog [title]="'howItWorks.title' | transloco" [closeLabel]="'howItWorks.close' | transloco">
-  @if (video.Src; as src) {
-    <!-- Muted so it may autoplay; the captions carry the words. -->
-    <video
-      #player
-      class="how-it-works__video"
-      [src]="src"
-      [attr.poster]="video.Poster"
-      [autoplay]="autoplay"
-      [muted]="true"
-      controls
-      playsinline
-      preload="metadata"
-      (timeupdate)="onTime($event)"
-    >
-      @if (video.Captions; as captions) {
-        <track
-          kind="captions"
-          srclang="en"
-          [attr.label]="'howItWorks.captions' | transloco"
-          [src]="captions"
-          default
-        />
-      }
-    </video>
-  } @else {
-    <ui-notice kind="info">{{ 'howItWorks.soon' | transloco }}</ui-notice>
-  }
+  <!-- Muted so it may autoplay; the captions carry the words. MP4 first, WebM without H.264. -->
+  <video
+    #player
+    class="how-it-works__video"
+    [class.how-it-works__video--phone]="media.phone"
+    [poster]="media.poster"
+    [autoplay]="autoplay"
+    [muted]="true"
+    controls
+    playsinline
+    preload="metadata"
+    (timeupdate)="onTime($event)"
+  >
+    <source [src]="media.mp4" [type]="video.Mp4Type" />
+    <source [src]="media.webm" [type]="video.WebmType" />
+    <track
+      kind="captions"
+      srclang="en"
+      [attr.label]="'howItWorks.captions' | transloco"
+      [src]="media.captions"
+      default
+    />
+  </video>
 
   <ol class="how-it-works__chapters" [attr.aria-label]="'howItWorks.chaptersLabel' | transloco">
     @for (chapter of chapters; track chapter.id) {
@@ -33,8 +29,7 @@
         <ui-button
           variant="ghost"
           size="sm"
-          [disabled]="!video.Src"
-          [ariaPressed]="video.Src ? current() === chapter.id : undefined"
+          [ariaPressed]="current() === chapter.id"
           (click)="jump(chapter)"
         >
           {{ chapter.titleKey | transloco }}
