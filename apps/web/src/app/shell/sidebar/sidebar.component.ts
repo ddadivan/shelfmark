@@ -61,6 +61,7 @@ const FIXED_ROUTES: Readonly<Record<string, string>> = {
  * "Favorites", "Recently opened" (a page), then the folder tree with link counts and graphite
  * folder tiles (`ui-tree`; the "Folders" heading has a "New folder" icon button) and the tags.
  * Choosing a row navigates; the active row follows the URL. A folder has a menu (right click, "..." button, Shift+F10): new subfolder, add link
+ * here, rename, move, share, delete.
  * here, rename, move, delete. Trash is a row of its own under a divider at the bottom.
  */
 @Component({
@@ -303,6 +304,13 @@ export class SidebarComponent {
     const folder = this.menuFolder();
     if (folder) {
       void this.actions.move(folder);
+    }
+  }
+
+  protected share(): void {
+    const folder = this.menuFolder();
+    if (folder) {
+      void this.actions.share(folder);
     }
   }
 

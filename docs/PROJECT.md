@@ -38,6 +38,7 @@ Updated as work goes on — every session resumes from here.
   - Nov 10, 2026: the 2027 Refresh redesign of everything stage 1 has is merged into `stage` (#259, issues #219–#258 in To release); the Storybook a11y follow-up #278 made the `stage` CI green. The author reviewed the redesign and started the features: milestone `Stage 2 · Features`, issues #260–#276, #195, #205.
   - Nov 10, 2026: release flow recorded in [ADR 0035](adr/0035-stage-integration-branch-release-flow.md) (#260): branches from `stage`, PRs into `stage` with `Refs #N`, To release column, release PR `stage → main`; `CLAUDE.md`, the `github-workflow` skill, the agents, the PR template, Dependabot and the guard hook follow it.
   - Nov 10, 2026, decisions of the author for the stage 2 features (recorded on each issue): work order #260, #205, #261, #266, #262, #263, #264, #265, #267, #268, #269, #195, #270, #272, #273, #274, #276, #271, then the Settings › Library and the Appearance extras issues; independent tasks run as parallel PRs from `stage`, dependent ones are stacked ("Merge after #N"). Trash: every delete of links and folders goes to Trash (account deletion and demo cleanup do not), retention 7 / 30 / 90 days, default 30. Saved views: a link `kind` (video, article, shopping, other) derived at save time; starter views All, Videos, Articles. Languages: English, French, German, Italian, Spanish, Portuguese. Feedback: statuses Received, Planned, In progress, Done, Not planned, set by the author on an admin page (`/admin/feedback`, allowed by the `ADMIN_EMAILS` setting); the screenshot is stored in Postgres. Reminders (#275) moved to the backlog as a whole. Sharing: public link only; invites and roles moved to the backlog. Email and password sign-in (#277) moved to the backlog.
+  - Nov 11, 2026: public collections (#276) on `feat/276-public-collection`: share a folder by a public link (story 25, ADR 0040); API, share dialog, `/c/:token`, tests; PR into `stage` left to the tech lead.
   - Nov 11, 2026: promo video (#271) on `chore/271-promo-video`: `npx nx run web-e2e:promo` records the scripted demo in light and dark, desktop and phone (`apps/web-e2e/promo/README.md`); the "How it works" dialog plays the recording of the current theme and device, chapters at 0:00 / 0:18 / 0:41 as measured.
   - Nov 11, 2026: #264 saved views on `feat/264-saved-views` (stacked on #263): `links.kind` derived at save time, `/api/views` with counts in one grouped query, starter views from a database trigger (ADR 0038), `ui-saved-views`, chips on the library page and on Recently opened. Waiting for review.
   - Nov 11, 2026: #269 Recently opened extras on `feat/269-recent-extras` (stacked on #264): "Pause history" on the account (`users.history_paused`, opens not recorded while paused, `recorded: false`), in-page search, swipe to remove on phone rows (the swipe moved into the shared `SwipeReveal`). Waiting for review.
@@ -131,7 +132,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 
 ## 4. User stories and requirements
 
-24 stories in 7 groups; acceptance criteria under each one are used to verify completion. Numbers 1–18 and 20–24 plus the unnumbered "Onboarding"; number 19 is not used, so references to stories do not shift.
+24 stories of stage 1 in 7 groups, plus the stage 2 stories (25 onwards); acceptance criteria under each one are used to verify completion. Numbers 1–18 and 20–25 plus the unnumbered "Onboarding"; number 19 is not used, so references to stories do not shift.
 
 ### Account
 
@@ -247,6 +248,13 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
     - Reorder by dragging (desktop) or with "Move up" / "Move down" in the menu of a pinned item (also on a phone); Settings › Library has "Pinned at the top, up to 7 folders and links" with an "Edit pinned" dialog (move up, move down, unpin).
     - In a folder view a link menu also has "Pin to top" / "Unpin from top" (not in Unsorted, All links and other views): pinned links come first with a "Pinned" label, in the order they were pinned (at most 20 per folder); subfolders always come before links. A move or Trash unpins.
 
+### Sharing (stage 2)
+
+25. **Public collection** (#276, ADR 0040). As a user, I want to share one folder by a link so that friends can see its links without an account.
+    - "Share…" in the folder menu opens the share dialog: a "Public link" switch (off by default), the link with "Copy link" (the read-only field is selected when the clipboard is refused), "Show my notes" (off by default) and "Reset link" (after a confirmation the old link stops working at once). Turning the link off ends it; turning it on again makes a new link.
+    - The link `/c/{token}` (22 base64url characters, 128 random bits) opens a read-only page for guests and signed-in people alike: "Shared by" with the owner's first name, the folder name, the link count and the time of the last change as separate elements, "Copy link", chips All and the direct subfolders, the links of the folder and all its subfolders as cards without favorite or menu (notes only with "Show my notes"), "Show more" up to 500 links, "Keep your own links like this" with "Start your shelf" for guests, "Made with Shelfmark"; "Sign in" or "Back to my shelf" in the header. An unknown, turned-off or reset link shows "This collection isn't available". The page is `noindex`.
+    - At most 10 public folders per user; demo accounts cannot share. Invites, roles, "Shared with me", "Save to my shelf" and "Report this collection" are not part of it (backlog).
+
 27. **Saved views.** As a user, I want to come back to the filters I use often in one click (ADR 0038, screens `Main`, `RecentView`, component `SavedView`).
     - Every link has a type: video, article, shopping or other. It is set when the link is saved (from the page: `og:type`, then known video and shop sites), follows a changed address, and can be changed in the edit dialog ("Type").
     - Above the feed, chips: "All" with the number of links, then the saved views with their counts ("Videos 5", "Articles 4"), then a dashed "+ Save this view". A new account starts with Videos and Articles. The pressed chip (filled) is the view the feed shows now; "All" when nothing is narrowed. The chips wrap on a desktop and scroll sideways in one row on a phone; arrow keys move between them.
@@ -360,6 +368,7 @@ CSR without SSR, zoneless, Transloco, strict-CSP build: ADR 0005; state: ADR 000
 | `/sign-in?returnUrl=&reason=` | Sign in with Google / GitHub | guest only | `features/auth` |
 | `/demo` | Creates a demo sandbox and goes to `/links` | everyone | `features/auth` |
 | `/privacy` | Privacy policy | everyone | `features/legal` |
+| `/c/:token` | Public collection: a shared folder, read-only, `noindex` (story 25) | everyone, no guard, outside the shell | `features/sharing` |
 | `**` | 404 with an illustration | everyone | `features/not-found` |
 
 **Tree structure.** Two empty-path routes are told apart by `canMatch`: for a guest `/` shows the landing, for a signed-in user `AppShell` (header, sidebar) with child routes. No flickering redirects.
@@ -539,6 +548,7 @@ Security is a mandatory requirement, not a wish: a task is not done until the it
 | **Admin routes** | `/api/admin/*` is for the author only: `AdminGuard` checks the session email against `ADMIN_EMAILS` (case-insensitive, unset or empty = nobody, demo users never); everyone else, guests included, gets 404 so the routes do not reveal themselves. Admin queries are the only ones not filtered by the session `userId`; they touch message rows only |
 | **Uploads** | Feedback screenshots: PNG/JPEG/WebP only, at most 2 MB, base64 canonical and magic bytes checked against the declared type, stored in Postgres, served with the stored type, `nosniff`, `inline`, `private, no-store` and the strict CSP; the larger body limit applies to that one route; per-user hourly message limit in Postgres |
 | **Test data** | Preview deployments run on a separate Neon database branch, not on production |
+| **Public collections** (ADR 0040) | The token is 128 random bits (base64url, 22 characters) and the only key to the page; the anonymous routes are in `PUBLIC_ROUTES`, one indexed lookup, the same 404 for unknown, turned-off and reset tokens and for anything outside the shared subtree; strict per-IP rate limits; only the owner's first name, folder names, link titles, URLs and same-origin image paths are exposed, notes only when the owner allows; `X-Robots-Tag: noindex` and `Cache-Control: no-store`; 10 public folders per user; no sharing for demo users |
 
 **Security when working with Claude Code** (details in section 8): reading and editing `.env` is denied in the permission settings; a hook blocks committing secrets; the **security-reviewer** subagent checks every PR against this table.
 
@@ -618,11 +628,13 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 
 **Indexes:** `Link(userId, createdAt)`, `Link(userId, normalizedUrl)`, `Link(userId, lastOpenedAt)`, `Link.title`, `Link.note` and `Link.url` (`pg_trgm` GIN for search), `Folder(userId, parentId)`; partial indexes on `pinnedPosition` (`Folder`, `Link`) and `Link(folderId, pinnedInFolderAt)`; `Link(userId, kind)`, `SavedView(userId, position)`; partial indexes `Link(userId, deletedAt)` and `Folder(userId, deletedAt)` `WHERE deletedAt IS NOT NULL` for the Trash list and the purge.
 
+**FolderShare** (#276, ADR 0040): the public link of a folder: `id`, `userId`, `folderId` (unique; composite FK to the user's folder, cascade), `token` (22 base64url characters, unique, CHECK on the format; stored as is so the owner can copy the link again), `showNotes` (default `false`), `tokenCreatedAt`. A row exists only while the folder is shared; turning it off deletes the row.
+
 **Interface settings** (view, panel) are not stored in the database, only in `localStorage`.
 
 ### 6.2 REST API
 
-All routes except `/api/auth/*` require a session and work only with the current user's data. Contracts (DTOs) are in `libs/shared/contracts`; documentation is Swagger.
+All routes except `/api/auth/*` and the allow-listed public routes (`PUBLIC_ROUTES`: health, monitoring, demo, cron, public collections) require a session and work only with the current user's data. Contracts (DTOs) are in `libs/shared/contracts`; documentation is Swagger.
 
 | Method | Path | Purpose |
 | `*` | `/api/auth/*` | Sign-in / sign-out with Google and GitHub (Better Auth) |
@@ -664,6 +676,10 @@ All routes except `/api/auth/*` require a session and work only with the current
 | GET | `/api/cron/trash-cleanup` | Vercel Cron only (`CRON_SECRET` bearer, 401 otherwise, no-store): deletes Trash rows past the owner's retention in batches of 500 within 5 s; answers `{ deleted, hasMore }` (ADR 0036) |
 | GET, POST, GET /:id, PATCH /:id, DELETE /:id, POST /:id/merge | `/api/tags` | The user's tags with link counts, sorted by link count descending, then name; read one tag with its count (404 if unknown or foreign); create an empty tag (409 if the name is taken or at the per-user cap of 1000), rename (409 if the name is taken; changing only the case of its own name is allowed), delete (links remain), merge with another tag (merging into itself is a 400). Names are normalized with `normalizeTagName` (trim, whitespace runs become one hyphen) on create and rename |
 | GET | `/api/feedback/prompt` | Which rating dialog to show now: `{ milestone }`, the latest reached milestone without a row, `null` for demo users and before onboarding (no-store) |
+| GET, POST, PATCH, DELETE | `/api/folders/:id/share` | The public link of a folder (#276): read (`enabled: false` when not shared), turn on (idempotent, 200; 403 demo, 409 at 10 public folders), `{ showNotes }`, turn off (204, idempotent); 404 for a foreign or missing folder |
+| POST | `/api/folders/:id/share/reset` | A new token; the old link answers 404 at once; 404 when not shared |
+| GET | `/api/public/collections/:token?folder=&page=` | Anonymous: the shared folder (owner's first name, name, link count, last change, direct subfolders with counts) and its subtree's links newest first, 50 per page, pages 1–10 (at most 500); notes only with `showNotes`; one 404 shape; `noindex`, `no-store`; 30 a minute per IP |
+| GET | `/api/public/collections/:token/links/:linkId/favicon\|image` | Anonymous: a stored image of a link inside the shared subtree (ADR 0027 headers), else the same 404; 240 a minute per IP |
 | POST | `/api/feedback` | Save a rating, feedback or a skip `{ milestone, score \| null, comment? }` (204; 403 demo, 409 onboarding pending / milestone not reached / different score stored; same score appends the comment) |
 | POST | `/api/feedback/messages` | Send a feedback message `{ kind, text, screenshot?: { type, data (base64) }, client?: { appVersion, userAgent } }` (201 `FeedbackMessage`; 400 invalid body, wrong magic bytes or over 2 MB; 429 with `Retry-After` after 10 messages in a rolling hour, counted in Postgres, demo users included). The JSON body limit of this route alone is 3 MB (100 kB elsewhere) |
 | GET | `/api/feedback/messages` | The user's own messages, newest first, at most 100, with `status` and `reply` (no-store) |

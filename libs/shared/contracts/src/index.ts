@@ -109,6 +109,17 @@ export { FEEDBACK_ENDPOINT } from './feedback/feedback-endpoint.const';
 export { dueFeedbackMilestone, reachedFeedbackMilestone } from './feedback/due-feedback-milestone';
 export type { DeleteAccountRequest } from './users/delete-account-request.interface';
 export { USER_LIMIT } from './users/user-limit.const';
+
+export type { FolderShareResponse } from './shares/folder-share-response.interface';
+export type { UpdateFolderShareRequest } from './shares/update-folder-share-request.interface';
+export type { PublicCollectionFolder } from './shares/public-collection-folder.interface';
+export type { PublicCollectionLink } from './shares/public-collection-link.interface';
+export type { PublicCollectionQuery } from './shares/public-collection-query.interface';
+export type { PublicCollectionResponse } from './shares/public-collection-response.interface';
+export { SHARE_ENDPOINT } from './shares/share-endpoint.const';
+export { SHARE_ERROR_MESSAGE } from './shares/share-error-message.const';
+export { SHARE_LIMIT } from './shares/share-limit.const';
+export { SHARE_TOKEN_PATTERN } from './shares/share-token-pattern.const';
 export { TRASH_ITEM_KIND } from './trash/trash-item-kind.const';
 export type { TrashItemKind } from './trash/trash-item-kind.type';
 export { TRASH_RETENTION_DAYS } from './trash/trash-retention-days.const';

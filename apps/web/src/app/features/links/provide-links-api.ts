@@ -23,10 +23,12 @@ import { HttpTagsApi } from './http/http-tags.api';
 import { FOLDERS_API } from './models/folders-api.const';
 import { LINKS_API } from './models/links-api.const';
 import { TAGS_API } from './models/tags-api.const';
+import { HttpSharesApi } from '../sharing/http/http-shares.api';
+import { SHARES_API } from '../sharing/models/shares-api.const';
 
 /**
  * Registers the data seams of the links feature (`LINKS_API`, `FOLDERS_API`, `TAGS_API`) and
- * `EXPORT_API`, `TRASH_API`, `USER_SETTINGS_API` and `SAVED_VIEWS_API` over the REST API. `EXPORT_API` is registered here, not in `app.config.ts`,
+ * `EXPORT_API`, `TRASH_API`, `USER_SETTINGS_API`, `SAVED_VIEWS_API` and `SHARES_API` over the REST API. `EXPORT_API` is registered here, not in `app.config.ts`,
  * because this file is the single seam `fileReplacements` swaps: the `development` and `e2e`
  * builds replace it with `mock/provide-links-api.e2e.ts`, which provides `MockExportApi`
  * instead, so no export code needs its own build switch.
@@ -47,6 +49,7 @@ export function provideLinksApi(): Provider[] {
       useFactory: () => tabSyncedTagsApi(inject(HttpTagsApi), inject(TabSyncService)),
     },
     { provide: EXPORT_API, useExisting: HttpExportApi },
+    { provide: SHARES_API, useExisting: HttpSharesApi },
     {
       provide: PINS_API,
       useFactory: () => tabSyncedPinsApi(inject(HttpPinsApi), inject(TabSyncService)),

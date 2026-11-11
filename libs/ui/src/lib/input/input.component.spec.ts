@@ -105,6 +105,24 @@ describe('InputComponent', () => {
     host.remove();
   });
 
+  it('readonly keeps the field focusable, hides the clear button and select() selects all', () => {
+    const { fixture, host, input, q } = setup({
+      readonly: true,
+      clearable: true,
+      clearLabel: 'Clear',
+      value: 'https://example.com/c/token',
+    });
+    document.body.append(host);
+    expect(input().readOnly).toBe(true);
+    expect(input().disabled).toBe(false);
+    expect(q('.ui-input__clear')).toBeNull();
+    fixture.componentInstance.select();
+    expect(document.activeElement).toBe(input());
+    expect(input().selectionStart).toBe(0);
+    expect(input().selectionEnd).toBe('https://example.com/c/token'.length);
+    host.remove();
+  });
+
   it('shows a shortcut hint hidden from screen readers', () => {
     const { q } = setup({ shortcut: '⌘K' });
     expect(q('.ui-input__kbd')?.textContent).toBe('⌘K');

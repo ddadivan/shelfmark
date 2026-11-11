@@ -82,6 +82,18 @@ describe('LinkCardComponent', () => {
     fixture.destroy();
   });
 
+  it('readOnly drops the favorite button, the actions menu and the select box, and keeps the link', async () => {
+    const { fixture, element } = await setup();
+    fixture.componentRef.setInput('readOnly', true);
+    await fixture.whenStable();
+
+    expect(element.querySelector('button[aria-label^="Actions for"]')).toBeNull();
+    expect(element.querySelector('button[aria-pressed]')).toBeNull();
+    // A guest cannot select someone else's links (#267 selection is for the owner's feed).
+    expect(element.querySelector('input[type="checkbox"]')).toBeNull();
+    expect(element.querySelector('a[href]')?.getAttribute('target')).toBe('_blank');
+  });
+
   it('has a decorative open bar with the address and "Open", and no extra tab stop', async () => {
     const { element } = await setup();
 
