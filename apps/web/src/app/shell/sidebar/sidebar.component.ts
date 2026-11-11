@@ -40,6 +40,7 @@ import { FoldersStore } from '../../stores/folders.store';
 import { PinsStore } from '../../stores/pins.store';
 import { TrashStore } from '../../stores/trash.store';
 import { UserSettingsStore } from '../../stores/user-settings.store';
+import { LinkDragService } from '../../features/links/drag/link-drag.service';
 import { HowItWorksService } from '../../features/how-it-works/how-it-works.service';
 import { HowItWorksCardComponent } from '../../features/how-it-works/how-it-works-card/how-it-works-card.component';
 import { SIDEBAR_RECENT_ID } from './models/sidebar-recent-id.const';
@@ -88,6 +89,7 @@ export class SidebarComponent {
   private readonly pins = inject(PinsStore);
   private readonly settings = inject(UserSettingsStore);
   private readonly pinActions = inject(PinActionsService);
+  protected readonly drag = inject(LinkDragService);
   protected readonly howItWorks = inject(HowItWorksService);
   protected readonly ICON_SIZE = ICON_SIZE;
   /** The logo heads the card (the desktop shell); the phone drawer has its own header. */

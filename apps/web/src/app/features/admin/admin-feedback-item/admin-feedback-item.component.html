@@ -1,0 +1,48 @@
+<form class="admin-item" [formRoot]="form">
+  <div class="admin-item__head">
+    <ui-chip [variant]="CHIP_VARIANT.Neutral">{{ kindKey() | transloco }}</ui-chip>
+    <span class="admin-item__name">{{ message().user.name }}</span>
+    <span class="admin-item__email">{{ message().user.email }}</span>
+    <span class="admin-item__date">{{
+      (sent().today ? 'feedback.page.sentToday' : 'feedback.page.sent')
+        | transloco: { date: sent().text }
+    }}</span>
+    <app-feedback-status-badge class="admin-item__status" [status]="message().status" />
+  </div>
+
+  <p class="admin-item__text">{{ message().text }}</p>
+
+  @if (message().screenshotUrl; as screenshot) {
+    <a class="admin-item__link" [href]="screenshot" target="_blank" rel="noopener noreferrer">{{
+      'admin.feedback.screenshot' | transloco
+    }}</a>
+  }
+
+  <div class="admin-item__controls">
+    <ui-select
+      class="admin-item__select"
+      [label]="'admin.feedback.status' | transloco"
+      [options]="statusOptions()"
+      [formField]="form.status"
+    />
+    <ui-textarea
+      class="admin-item__reply"
+      [label]="'admin.feedback.reply' | transloco"
+      [hint]="'admin.feedback.replyHint' | transloco"
+      [counterLabel]="'feedback.dialog.counter' | transloco"
+      [rows]="2"
+      [formField]="form.reply"
+    />
+  </div>
+
+  <div class="admin-item__foot">
+    <ui-button
+      [type]="BUTTON_TYPE.Submit"
+      [variant]="BUTTON_VARIANT.Primary"
+      [disabled]="!dirty()"
+      [loading]="saving()"
+    >
+      {{ 'admin.feedback.save' | transloco }}
+    </ui-button>
+  </div>
+</form>

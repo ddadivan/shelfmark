@@ -1,0 +1,27 @@
+@use 'ui' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: rem(840px);
+  min-width: 0;
+
+  @include tablet-up {
+    gap: rem(18px);
+  }
+}
+
+.admin-feedback__filter {
+  max-width: rem(280px);
+}
+
+.admin-feedback__list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.admin-feedback__more {
+  align-self: center;
+}
