@@ -8,6 +8,7 @@ import type {
   RecentLinksQuery,
   UpdateFolderRequest,
   UpdateLinkRequest,
+  PinRef,
   TrashItemRef,
   UpdateTagRequest,
 } from '@shelfmark/contracts';
@@ -15,6 +16,7 @@ import { tap, type Observable } from 'rxjs';
 import type { FoldersApi } from '../../features/links/models/folders-api.interface';
 import type { LinksApi } from '../../features/links/models/links-api.interface';
 import type { TagsApi } from '../../features/links/models/tags-api.interface';
+import type { PinsApi } from '../../features/pins/models/pins-api.interface';
 import type { TrashApi } from '../../features/trash/models/trash-api.interface';
 import { TAB_SYNC_KIND } from './models/tab-sync-kind.const';
 import type { TabSyncService } from './tab-sync.service';
@@ -85,5 +87,16 @@ export function tabSyncedTrashApi(inner: TrashApi, sync: TabSyncService): TrashA
     restore: (items: readonly TrashItemRef[]) => after(inner.restore(items), changed),
     deleteForever: (items: readonly TrashItemRef[]) => after(inner.deleteForever(items), changed),
     empty: () => after(inner.empty(), changed),
+  };
+}
+
+/** The pins seam with tab sync: pinning, unpinning and reordering show in the other tabs' sidebar. */
+export function tabSyncedPinsApi(inner: PinsApi, sync: TabSyncService): PinsApi {
+  const changed = () => sync.post({ kind: TAB_SYNC_KIND.LibraryChanged });
+  return {
+    list: () => inner.list(),
+    create: (ref: PinRef) => after(inner.create(ref), changed),
+    remove: (ref: PinRef) => after(inner.remove(ref), changed),
+    reorder: (refs: readonly PinRef[]) => after(inner.reorder(refs), changed),
   };
 }

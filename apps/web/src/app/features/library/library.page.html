@@ -254,6 +254,10 @@
         </div>
         <app-link-row
           [link]="link"
+          [pinnable]="isFolder()"
+          [pinnedToSidebar]="pins.has(PIN_KIND.Link, link.id)"
+          (pinToTopToggled)="actions.togglePinInFolder(link)"
+          (pinToSidebarToggled)="actions.togglePinToSidebar(link)"
           (opened)="actions.open(link)"
           (openRequested)="actions.openInNewTab(link)"
           (favoriteToggled)="actions.toggleFavorite(link)"
@@ -296,6 +300,10 @@
         </div>
         <app-link-card
           [link]="link"
+          [pinnable]="isFolder()"
+          [pinnedToSidebar]="pins.has(PIN_KIND.Link, link.id)"
+          (pinToTopToggled)="actions.togglePinInFolder(link)"
+          (pinToSidebarToggled)="actions.togglePinToSidebar(link)"
           (opened)="actions.open(link)"
           (openRequested)="actions.openInNewTab(link)"
           (favoriteToggled)="actions.toggleFavorite(link)"

@@ -7,6 +7,7 @@ import { FoldersStore } from '../../stores/folders.store';
 import { LinksStore } from '../../stores/links.store';
 import { TagsStore } from '../../stores/tags.store';
 import { TrashStore } from '../../stores/trash.store';
+import { PinsStore } from '../../stores/pins.store';
 import { AuthStore } from '../auth/auth.store';
 import { TAB_SYNC_KIND } from './models/tab-sync-kind.const';
 import { SignedOutLockService } from './signed-out-lock.service';
@@ -48,6 +49,7 @@ function setup(user: AuthUser | null = USER) {
   const folders = { refresh: vi.fn(() => Promise.resolve()) };
   const tags = { refresh: vi.fn(() => Promise.resolve()) };
   const trash = { refresh: vi.fn(() => Promise.resolve()) };
+  const pins = { refresh: vi.fn(() => Promise.resolve()) };
   const lock = { lock: vi.fn(() => Promise.resolve()) };
   const reload = vi.fn();
   TestBed.configureTestingModule({
@@ -57,6 +59,7 @@ function setup(user: AuthUser | null = USER) {
       { provide: FoldersStore, useValue: folders },
       { provide: TagsStore, useValue: tags },
       { provide: TrashStore, useValue: trash },
+      { provide: PinsStore, useValue: pins },
       { provide: SignedOutLockService, useValue: lock },
     ],
   });

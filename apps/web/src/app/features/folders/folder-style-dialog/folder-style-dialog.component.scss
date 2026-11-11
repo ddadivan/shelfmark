@@ -1,0 +1,58 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.folder-style {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  // Room for the focus ring and the swatch ring at the edge of the scrolling body.
+  padding: var(--space-2);
+}
+
+// The folder as it will look: a bg-coloured strip, as in the FolderStyle spec.
+.folder-style__preview {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  padding: var(--space-3);
+  background: var(--bg);
+  border-radius: var(--radius-md);
+}
+
+.folder-style__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.folder-style__name {
+  @include type(label);
+  @include line-clamp(1);
+
+  font-size: rem(16px);
+}
+
+.folder-style__meta {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+.folder-style__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.folder-style__label {
+  @include type(label);
+}
+
+// Reset sits at the start of the footer, away from Cancel and Save.
+.folder-style__reset {
+  margin-inline-end: auto;
+}

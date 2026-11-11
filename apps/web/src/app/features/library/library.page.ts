@@ -40,7 +40,12 @@ import {
   type BreadcrumbItem,
   type SegmentedOption,
 } from '@shelfmark/ui';
-import { EXPORT_FORMAT, type ExportFormat, type LinkResponse } from '@shelfmark/contracts';
+import {
+  EXPORT_FORMAT,
+  PIN_KIND,
+  type ExportFormat,
+  type LinkResponse,
+} from '@shelfmark/contracts';
 import { Router } from '@angular/router';
 import { pluralKey } from '../../core/i18n/plural-key';
 import { ViewportService } from '../../core/layout/viewport.service';
@@ -58,6 +63,7 @@ import { parseSearchQuery } from '../links/search-query';
 import { InViewDirective } from '../links/in-view/in-view.directive';
 import { parsePastedLinks } from '../links/paste-many/parse-pasted-links';
 import { isEditableTarget } from '../shortcuts/is-editable-target';
+import { pinnedFirst } from '../links/pinned-first';
 import { LinkActionsService } from '../links/link-actions.service';
 import { LinkDragService } from '../links/drag/link-drag.service';
 import { HowItWorksService } from '../how-it-works/how-it-works.service';
@@ -70,6 +76,7 @@ import type { LinksScope } from '../links/models/links-scope.type';
 import { APP_PATH } from '../../models/app-path.const';
 import { FoldersStore } from '../../stores/folders.store';
 import { LinksStore } from '../../stores/links.store';
+import { PinsStore } from '../../stores/pins.store';
 import { UI_VIEW } from '../../stores/models/ui-view.const';
 import { isUiView } from '../../stores/is-ui-view';
 import { UiStore } from '../../stores/ui.store';
@@ -134,6 +141,8 @@ export default class LibraryPage {
   protected readonly store = inject(LinksStore);
   protected readonly ui = inject(UiStore);
   protected readonly actions = inject(LinkActionsService);
+  protected readonly pins = inject(PinsStore);
+  protected readonly PIN_KIND = PIN_KIND;
   protected readonly howItWorks = inject(HowItWorksService);
   protected readonly phone = inject(ViewportService).phone;
   protected readonly drag = inject(LinkDragService);
@@ -229,7 +238,9 @@ export default class LibraryPage {
   private readonly ownCount = computed(() => (this.synced() ? this.store.count() : 0));
   private readonly ownError = computed(() => this.synced() && this.store.error());
   private readonly ownLoaded = computed(() => this.synced() && this.store.loaded());
-  private readonly ownLinks = computed(() => (this.synced() ? this.store.entities() : []));
+  private readonly ownLinks = computed(() =>
+    this.synced() ? pinnedFirst(this.store.entities(), this.isFolder()) : [],
+  );
   /** The last list that was fully loaded; it stays on screen while the next view loads. */
   private readonly lastShown = signal<LastShown>({ items: [], hasMore: false });
   /**

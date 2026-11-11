@@ -1,12 +1,17 @@
 import { Service } from '@angular/core';
 import {
   FOLDER_DELETE_MODE,
+  PIN_KIND,
   TRASH_ITEM_KIND,
   TRASH_RETENTION_DEFAULT,
   type FolderDeleteMode,
   type FolderResponse,
   type LibraryCounts,
   type LinkResponse,
+  type ListPinsResponse,
+  type PinKind,
+  type PinRef,
+  type PinResponse,
   type TagResponse,
   type TrashRetentionDays,
 } from '@shelfmark/contracts';
@@ -40,6 +45,10 @@ export class MockLibraryData {
   trash: MockTrashEntry[] = this.seedTrash();
   /** The mock account setting "Keep deleted items for". */
   trashRetentionDays: TrashRetentionDays = TRASH_RETENTION_DEFAULT;
+  /** The mock account setting "Folder colours". */
+  folderColours = true;
+  /** The sidebar pins in order (folders and links together). */
+  pins: PinRef[] = [];
 
   /** Stored folders without counts; mutate through `setFolders`. */
   get folderList(): readonly FolderResponse[] {
@@ -55,9 +64,39 @@ export class MockLibraryData {
     return this.folders
       .map((folder) => ({
         ...folder,
+        pinned: this.isPinned(PIN_KIND.Folder, folder.id),
         linkCount: this.links.filter((link) => link.folderId === folder.id).length,
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  isPinned(kind: PinKind, id: string): boolean {
+    return this.pins.some((pin) => pin.kind === kind && pin.id === id);
+  }
+
+  /** A copy of the link with the sidebar pin flag applied. */
+  linkView(link: LinkResponse): LinkResponse {
+    return { ...link, pinned: this.isPinned(PIN_KIND.Link, link.id) };
+  }
+
+  /** The pins as the API answers them. */
+  pinsView(): ListPinsResponse {
+    const folders = this.foldersView();
+    return {
+      items: this.pins.flatMap((pin, position): PinResponse[] => {
+        if (pin.kind === PIN_KIND.Folder) {
+          const folder = folders.find((item) => item.id === pin.id);
+          return folder ? [{ kind: pin.kind, position, folder, link: null }] : [];
+        }
+        const link = this.links.find((item) => item.id === pin.id);
+        return link ? [{ kind: pin.kind, position, folder: null, link: this.linkView(link) }] : [];
+      }),
+    };
+  }
+
+  /** Pin writes and Trash drop pins of items that are gone. */
+  unpin(kind: PinKind, ids: readonly string[]): void {
+    this.pins = this.pins.filter((pin) => pin.kind !== kind || !ids.includes(pin.id));
   }
 
   counts(): LibraryCounts {
@@ -138,13 +177,15 @@ export class MockLibraryData {
   /** Moves a link to Trash. */
   trashLink(link: LinkResponse): void {
     this.links = this.links.filter((item) => item.id !== link.id);
+    this.unpin(PIN_KIND.Link, [link.id]);
+    const stored = unpinned(link);
     this.trash = [
       {
         kind: TRASH_ITEM_KIND.Link,
         id: link.id,
         deletedAt: new Date().toISOString(),
         fromFolderName: this.folderName(link.folderId),
-        link,
+        link: stored,
         folders: [],
         links: [],
       },
@@ -168,10 +209,13 @@ export class MockLibraryData {
       ...this.folders.filter((folder) => ids.has(folder.id) && folder !== root),
     ];
     const withLinks = mode === FOLDER_DELETE_MODE.DeleteLinks;
-    const links = withLinks ? this.links.filter((link) => inTree(link.folderId)) : [];
+    this.unpin(PIN_KIND.Folder, [...ids]);
+    const links = withLinks ? this.links.filter((link) => inTree(link.folderId)).map(unpinned) : [];
     this.links = withLinks
       ? this.links.filter((link) => !inTree(link.folderId))
-      : this.links.map((link) => (inTree(link.folderId) ? { ...link, folderId: null } : link));
+      : this.links.map((link) =>
+          inTree(link.folderId) ? { ...link, folderId: null, pinnedInFolderAt: null } : link,
+        );
     this.folders = this.folders.filter((folder) => !ids.has(folder.id));
     this.trash = [
       {
@@ -204,6 +248,10 @@ export class MockLibraryData {
     }
     return ids;
   }
+}
+
+function unpinned(link: LinkResponse): LinkResponse {
+  return { ...link, pinnedInFolderAt: null };
 }
 
 function generatedTagNames(

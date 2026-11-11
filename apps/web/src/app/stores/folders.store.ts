@@ -1,11 +1,18 @@
 import { computed, inject, Injector } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { removeAllEntities, setAllEntities, withEntities } from '@ngrx/signals/entities';
-import { FOLDER_LIMIT, type FolderDeleteMode, type FolderResponse } from '@shelfmark/contracts';
+import {
+  FOLDER_LIMIT,
+  type FolderColour,
+  type FolderDeleteMode,
+  type FolderIcon,
+  type FolderResponse,
+} from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
 import { FOLDERS_API } from '../features/links/models/folders-api.const';
 import { buildFolderTree, descendantIds, pathTo } from './folder-tree';
 import { LinksStore } from './links.store';
+import { PinsStore } from './pins.store';
 import type { FoldersState } from './models/folders-state.interface';
 
 const initialState: FoldersState = {
@@ -191,6 +198,47 @@ export const FoldersStore = signalStore(
       },
 
       /**
+       * Sets colour and / or icon at once; resolves false (and puts the old style back) when the
+       * request fails.
+       */
+      async setStyle(
+        id: string,
+        style: { colour?: FolderColour; icon?: FolderIcon },
+      ): Promise<boolean> {
+        const previous = store.entityMap()[id];
+        if (!previous) {
+          return false;
+        }
+        const token = begin();
+        const changes: Partial<FolderResponse> = {
+          ...(style.colour !== undefined && { colour: style.colour }),
+          ...(style.icon !== undefined && { icon: style.icon }),
+        };
+        replace(id, changes);
+        try {
+          const saved = await firstValueFrom(api().update(id, style));
+          if (token === epoch) {
+            replace(id, { updatedAt: saved.updatedAt });
+          }
+          return true;
+        } catch {
+          // Only what is still the optimistic value goes back: a later edit must not be undone.
+          if (token === epoch) {
+            const current = store.entityMap()[id];
+            replace(id, {
+              ...(style.colour !== undefined &&
+                current?.colour === style.colour && { colour: previous.colour }),
+              ...(style.icon !== undefined &&
+                current?.icon === style.icon && { icon: previous.icon }),
+            });
+          }
+          return false;
+        } finally {
+          finish(token);
+        }
+      },
+
+      /**
        * Moves at once (`null` = top level); resolves false (and moves it back) when the request
        * fails. Moving into itself or a descendant is refused without a request.
        */
@@ -257,6 +305,7 @@ export const FoldersStore = signalStore(
             setAllEntities(store.entities().filter((folder) => !doomed.has(folder.id))),
           );
           injector.get(LinksStore).applyFolderRemoval([...doomed], mode);
+          injector.get(PinsStore).dropFolders([...doomed]);
           finish(token);
           void fetchAll();
         }

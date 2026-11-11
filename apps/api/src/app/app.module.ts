@@ -19,6 +19,7 @@ import { FoldersModule } from '../folders/folders.module';
 import { HealthModule } from '../health/health.module';
 import { LinksModule } from '../links/links.module';
 import { MonitoringModule } from '../monitoring/monitoring.module';
+import { PinsModule } from '../pins/pins.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { TagsModule } from '../tags/tags.module';
 import { TrashModule } from '../trash/trash.module';
@@ -39,6 +40,7 @@ import { UsersModule } from '../users/users.module';
     UsersModule,
     ExportModule,
     TrashModule,
+    PinsModule,
     // Async so the environment is read at DI time, not at import time.
     ThrottlerModule.forRootAsync({
       useFactory: () => createRateLimitOptions(shouldTrustProxyHeaders()),

@@ -317,6 +317,19 @@ describe('TreeComponent', () => {
       expect(href(TREE_STORY_NAME.All)).toContain('#sm-link');
     });
 
+    it('draws the folder tile in the node colour and icon, graphite without one', async () => {
+      const { host, fixture, row } = await setup();
+      host.nodes.set([
+        { id: 'a', name: 'Angular', colour: 'clay', icon: 'star' },
+        { id: 'b', name: 'Plain' },
+      ]);
+      await settle(fixture);
+      const tile = (name: string) => row(name).querySelector('ui-folder-icon');
+      expect(tile('Angular')?.classList).toContain('ui-folder-icon--clay');
+      expect(tile('Angular')?.querySelector('use')?.getAttribute('href')).toContain('#sm-star');
+      expect(tile('Plain')?.classList).toContain('ui-folder-icon--graphite');
+    });
+
     it('hides closed children from the tab order and assistive tech through the closed class', async () => {
       const { item } = await setup();
       expect(

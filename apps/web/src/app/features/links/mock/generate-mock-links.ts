@@ -28,6 +28,8 @@ export function generateMockLinks(): LinkResponse[] {
       faviconUrl: null,
       imageUrl: null,
       isFavorite: i % 5 === 0,
+      pinnedInFolderAt: null,
+      pinned: false,
       // The newest open is "now", so "Today" always has a row whatever the time of day.
       lastOpenedAt:
         i % 4 === 0

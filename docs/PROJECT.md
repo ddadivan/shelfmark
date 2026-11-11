@@ -229,6 +229,12 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
     - States: Sending… (button loading); "Thank you" with "Done"; a failed send keeps the text and says "Couldn't send. Your text is kept — try again in a moment."; a 429 has its own message.
     - Settings › Your feedback (`/settings/feedback`): a "Send feedback" button and the user's messages, newest first: type, text, sent date ("Sent today", "Sent 3 Nov"), the author's reply ("Reply: …") when there is one, and a status badge (Received, Planned, In progress, Done, Not planned). Loading, empty and error states. The "Ratings" block of the mockup is not part of this story.
     - The author's inbox (`/admin/feedback`, only for the author; everyone else is sent to `/links` and the API answers 404): a "Feedback inbox" item in the account menu and the You list, shown only when `GET /api/admin/status` says so; every message with sender name and email, date, status badge and screenshot link; a status filter; per message a status select and a reply field with Save. Saving is optimistic: it rolls back with an error toast when the API refuses.
+26. **Folder colours, icons and pins.** As a user, I want to tell folders apart at a glance and keep the few I use most within reach (ADR 0037, screen `FolderStyle`).
+    - The folder menu (sidebar row, phone Library) has "Colour and icon…": a dialog with a preview tile, eight colours and the icon set as two radio groups (arrow keys move inside a group), Reset (graphite folder icon), Cancel and Save. Save closes at once and the folder wears the style at once; a failed request puts the old style back with an error toast.
+    - The chosen colour and icon show everywhere the folder does: sidebar rows, subfolder tiles, the phone Library list and the `moved` toast tile. Settings › Library › "Folder colours" off shows every folder in graphite (the choice is kept).
+    - "Pin to sidebar" / "Unpin from sidebar" in the menu of a folder, a link card and a link row. A "Pinned" section above Folders lists the pinned folders and links in the chosen order (on a phone at the top of the Library page); a folder opens its page, a link opens in a new tab. At most 7 items: the eighth is refused with a toast that names the limit.
+    - Reorder by dragging (desktop) or with "Move up" / "Move down" in the menu of a pinned item (also on a phone); Settings › Library has "Pinned at the top, up to 7 folders and links" with an "Edit pinned" dialog (move up, move down, unpin).
+    - In a folder view a link menu also has "Pin to top" / "Unpin from top" (not in Unsorted, All links and other views): pinned links come first with a "Pinned" label, in the order they were pinned (at most 20 per folder); subfolders always come before links. A move or Trash unpins.
 
 ### Navigation (left sidebar)
 
@@ -280,7 +286,7 @@ See ADR 0004.
   - `LinksStore`: links, filters, sorting (`withEntities`);
   - `FoldersStore`: folder tree;
   - `TagsStore`: tags;
-  - `TrashStore`: what is in Trash (optimistic restore / delete forever / empty); `UserSettingsStore`: account preferences (the Trash retention);
+  - `TrashStore`: what is in Trash (optimistic restore / delete forever / empty); `UserSettingsStore`: account preferences (the Trash retention, "Folder colours"); `PinsStore`: the sidebar pins (optimistic pin / unpin / reorder, limit 7);
   - `UiStore`: "cards / list" view; persisted in `localStorage`.
 - **Classic NgRx Store is not used**: it is overkill for this app.
 - **Tab sync** (stage 2, #268): the tabs of one browser share a `BroadcastChannel` (`TabSyncService`). The API seams post successful writes; other tabs of the same user apply them silently (a saved link lands with its animation; edits, moves and deletes show; folder and tag changes reload the sidebar and the feed). Signing out locks the other tabs with "You signed out in another tab" and clears their library; a sign-in anywhere reloads locked and signed-out tabs. The theme follows through the `storage` event.
@@ -507,6 +513,8 @@ Own field on `User`: `onboardingCompletedAt` (timestamp, null): when the user cl
 
 Own field on `User`: `trashRetentionDays` (smallint, default 30, CHECK in 7, 30, 90): how long Trash keeps deleted items (ADR 0036).
 
+Own field on `User`: `folderColours` (boolean, default true): the "Folder colours" setting; off = the client shows every folder in graphite (ADR 0037).
+
 Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, null). Demo data is created from the seed set in `apps/api/src/demo/seed.json`.
 
 **Folder**: a folder (nesting via `parentId`)
@@ -517,6 +525,9 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 | `userId` | uuid | FK → User |
 | `parentId` | uuid, null | FK → Folder; `null` = top-level folder |
 | `name` | string (≤ 100) |  |
+| `colour` | string | One of `graphite` (default), `sage`, `ocean`, `plum`, `clay`, `amber`, `rose`, `teal` (`FOLDER_COLOUR`, CHECK) |
+| `icon` | string | One of `FOLDER_ICON` (16 icon names, default `folder`; validated by the API) |
+| `pinnedPosition` | smallint, null | Place in the sidebar pins; `null` = not pinned. At most 7 live pinned folders and links together per user (ADR 0037); cleared when the folder goes to Trash |
 | `deletedAt` | timestamp, null | `null` = live; set = in Trash. One shared value for the folder and the live subfolders and links deleted with it (ADR 0036) |
 
 **Link**: a link
@@ -536,6 +547,8 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 | `captureAttemptedAt` | timestamp, null | Server only: time of the last image capture attempt, defaults to the insert time; `null` = pending (the URL changed), claimed atomically by `POST /api/links/{id}/images/capture`, which is also its cooldown (ADR 0027 note, #189) |
 | `isFavorite` | boolean | Defaults to `false` |
 | `lastOpenedAt` | timestamp, null | For the "Recently opened" page |
+| `pinnedInFolderAt` | timestamp, null | Pinned to the top of its folder; pinned links come first in pin order (at most 20 per folder); cleared on a move and in Trash (ADR 0037) |
+| `pinnedPosition` | smallint, null | Place in the sidebar pins, shared with folders (see `Folder`); `null` = not pinned |
 | `deletedAt` | timestamp, null | `null` = live; set = in Trash (ADR 0036). Every live read filters `deletedAt IS NULL`; only the link image routes still serve a trashed link to its owner |
 
 **LinkImage** (ADR 0027): re-encoded copy of a link's favicon or preview image: `id`, `userId`, `linkId` (cascade), `kind` (`favicon` | `preview`), `contentType` (always `image/webp`), `bytes` (≤ 64 KB), `width`, `height`, `sha256`; unique per `linkId + kind`.
@@ -550,7 +563,7 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 
 **URL normalisation** (for duplicates): lowercase host, no `#fragment`, no `utm_*` params and no trailing `/`. Duplicates are allowed (the user can "save anyway"), so the index is non-unique.
 
-**Indexes:** `Link(userId, createdAt)`, `Link(userId, normalizedUrl)`, `Link(userId, lastOpenedAt)`, `Link.title`, `Link.note` and `Link.url` (`pg_trgm` GIN for search), `Folder(userId, parentId)`; partial indexes `Link(userId, deletedAt)` and `Folder(userId, deletedAt)` `WHERE deletedAt IS NOT NULL` for the Trash list and the purge.
+**Indexes:** `Link(userId, createdAt)`, `Link(userId, normalizedUrl)`, `Link(userId, lastOpenedAt)`, `Link.title`, `Link.note` and `Link.url` (`pg_trgm` GIN for search), `Folder(userId, parentId)`; partial indexes on `pinnedPosition` (`Folder`, `Link`) and `Link(folderId, pinnedInFolderAt)`; partial indexes `Link(userId, deletedAt)` and `Folder(userId, deletedAt)` `WHERE deletedAt IS NOT NULL` for the Trash list and the purge.
 
 **Interface settings** (view, panel) are not stored in the database, only in `localStorage`.
 
@@ -564,7 +577,7 @@ All routes except `/api/auth/*` require a session and work only with the current
 | GET | `/api/auth/get-session` | Current user and session (Better Auth); `null` when signed out |
 | DELETE | `/api/me` | Delete the account and all data |
 | POST | `/api/links/preview` | For a URL, return title, icon, image + the existing link if it is a duplicate (for form autofill) |
-| GET | `/api/links` | List with filters: `folderId`, `unsorted`, `favorite`, `tag` (repeated, `?tag=a&tag=b`: AND, case-insensitive, max 5, more is a 400; empty or absent = no filter), `q` (search in title, note and URL; every word must match, at most 5 words), `sort` (`createdAt` / `title`), `order`, `cursor`, `limit` |
+| GET | `/api/links` | List with filters: `folderId`, `unsorted`, `favorite`, `tag` (repeated, `?tag=a&tag=b`: AND, case-insensitive, max 5, more is a 400; empty or absent = no filter), `q` (search in title, note and URL; every word must match, at most 5 words), `sort` (`createdAt` / `title`), `order`, `cursor`, `limit`. With `folderId` the first page also returns `pinned`: the links pinned to the top of that folder in pin order (same filters), not repeated in `items` or later pages (ADR 0037) |
 | GET | `/api/links/recent` | Recently opened (by `lastOpenedAt`, only the last 30 days, `RECENT_LINKS_WINDOW_DAYS`), `limit` |
 | DELETE | `/api/links/recent/:id` | Remove one link from the history (`lastOpenedAt` to null, the link stays); 204, idempotent, 404 for a foreign or missing link |
 | DELETE | `/api/links/recent` | Clear the whole history of the user (all own links' `lastOpenedAt` to null); 204 |
@@ -572,20 +585,24 @@ All routes except `/api/auth/*` require a session and work only with the current
 | POST | `/api/links` | Create: `url`, `title?`, `note?`, `folderId?`, `tags?` (names; new tags are created automatically) |
 | POST | `/api/links/batch` | Paste many (#265): up to 100 `items` (`url`, `title?`, `idempotencyKey`, `faviconUrl?`, `imageUrl?`) with `folderId?` and `tags?` for all. One transaction under the ADR 0033 lock order, per-item idempotency keys (a replayed key returns its link; 200 when every key was replayed, else 201), the per-user link cap checked for the whole batch (409 whose message says how many more fit), a stricter rate limit (5 per minute). It fetches nothing: images, and the page title of links sent without one, come from the lazy capture (ADR 0027). Items whose normalised URL is too long or repeats an earlier item are skipped and listed in `errors` |
 | POST | `/api/links/batch/delete` | Undo of a batch: up to 100 `ids`; foreign and missing ids are ignored; answers `{ deleted }` (rate limit 10 per minute) |
-| PATCH | `/api/links/:id` | Change any fields, including `isFavorite` and `folderId` |
+| PATCH | `/api/links/:id` | Change any fields, including `isFavorite`, `folderId` and `pinnedInFolder` (pin to the top of the folder: 400 in Unsorted, 409 beyond 20 per folder; a move unpins) |
 | POST | `/api/links/:id/open` | Record an open (updates `lastOpenedAt`) |
 | POST | `/api/links/:id/images/capture` | Re-capture favicon and preview image of a link whose URL changed (pending marker `?v=pending`); claims atomically with a 1 h cooldown, always 200 with the link, 404 for a foreign or missing one |
 | DELETE | `/api/links/:id` | Move to Trash (soft delete: sets `deletedAt`); 404 for a foreign, missing or already trashed link |
 | GET | `/api/folders` | All folders as a flat list ordered by name (`parentId` + direct link count) plus `counts` (`all`, `unsorted`, `favorites`) for the fixed sidebar rows; the frontend builds the tree |
 | GET | `/api/folders/:id` | Read one folder (`GetFolderResponse` = `FolderResponse`, with its direct link count); 404 if unknown or foreign |
 | POST | `/api/folders` | Create: `name`, `parentId?`; 409 at the per-user cap (500 folders) |
-| PATCH | `/api/folders/:id` | Rename / move; moving into itself or its own subfolder is forbidden |
+| PATCH | `/api/folders/:id` | Rename / move / `colour` / `icon` (allow-lists, 400 otherwise); moving into itself or its own subfolder is forbidden |
+| GET | `/api/pins` | Sidebar pins in order: up to 7 live folders and links together, each `{ kind, position, folder \| link }` |
+| POST | `/api/pins` | `{ kind: 'folder' \| 'link', id }`: pins at the end (idempotent, answers the list); 404 for a foreign, missing or trashed target, 409 beyond 7 |
+| PUT | `/api/pins/order` | `{ items: [{ kind, id }] }`: every pinned item exactly once in the new order, else 400 |
+| DELETE | `/api/pins/:kind/:id` | Unpin; 204, idempotent; 404 for a foreign, missing or trashed target |
 | DELETE | `/api/folders/:id?mode=` | Move a folder with all subfolders to Trash (one shared `deletedAt`); `mode=delete-links` also trashes the links, `mode=move-to-unsorted` moves them to "Unsorted" |
 | GET | `/api/trash` | Trash entries, newest first (at most 500) with `total` and `retentionDays`: a link deleted on its own, or a folder standing for its subtree (`linkCount`); each has `deletedAt`, `expiresAt`, `fromFolderName` |
 | POST | `/api/trash/restore` | `{ items: [{ kind: 'link' \| 'folder', id }] }` (1 to 100): puts entries back (a link whose folder is not live goes to Unsorted, a folder whose parent is not live to the top level); entries not in Trash or foreign are skipped; answers `{ count }` |
 | POST | `/api/trash/delete` | Same body: deletes entries for good (a folder takes its subtree and the links deleted with it); answers `{ count }` |
 | DELETE | `/api/trash` | Empty Trash: deletes every entry for good; answers `{ count }` |
-| GET, PATCH | `/api/me/settings` | Account settings `{ trashRetentionDays: 7 \| 30 \| 90 }`; PATCH sends only the fields to change (400 for another value or an extra field); demo users too |
+| GET, PATCH | `/api/me/settings` | Account settings `{ trashRetentionDays: 7 \| 30 \| 90, folderColours: boolean }`; PATCH sends only the fields to change (400 for another value or an extra field); demo users too |
 | GET | `/api/cron/trash-cleanup` | Vercel Cron only (`CRON_SECRET` bearer, 401 otherwise, no-store): deletes Trash rows past the owner's retention in batches of 500 within 5 s; answers `{ deleted, hasMore }` (ADR 0036) |
 | GET, POST, GET /:id, PATCH /:id, DELETE /:id, POST /:id/merge | `/api/tags` | The user's tags with link counts, sorted by link count descending, then name; read one tag with its count (404 if unknown or foreign); create an empty tag (409 if the name is taken or at the per-user cap of 1000), rename (409 if the name is taken; changing only the case of its own name is allowed), delete (links remain), merge with another tag (merging into itself is a 400). Names are normalized with `normalizeTagName` (trim, whitespace runs become one hyphen) on create and rename |
 | GET | `/api/feedback/prompt` | Which rating dialog to show now: `{ milestone }`, the latest reached milestone without a row, `null` for demo users and before onboarding (no-store) |
@@ -703,6 +720,7 @@ In CI: `@axe-core/playwright` on the key screens in both themes; the build fails
 9. Privacy policy
 10. Trash (desktop and phone, with the empty state, selection and the "Empty trash" confirmation)
 11. Send feedback dialog (form, sending, thank you, error) and Settings › Your feedback (SendFeedback, SetFeedback); the author's feedback inbox is built from the same parts and has no mockup
+12. Folder style (the "Colour and icon" dialog, the Pinned section, "Pin to top" in a folder, "Folder colours" and "Pinned at the top" in Settings › Library)
 
 Every screen in light and dark themes, in desktop and phone layouts, with loading and error states.
 
@@ -946,7 +964,8 @@ Stage 0 E2E: Chromium only, see ADR 0008.
 ### 9.5 CI/CD
 
 - **On every PR** (GitHub Actions, only affected projects via `nx affected`): lint, typecheck, unit tests with a coverage threshold, build, `npm audit`, CodeQL; Vercel creates a preview version.
-- **Merge to `stage`** (from stage 2) → CI only; no deployment while there is no staging environment (9.3).
+- **Browser tests on a PR into `stage`** (the required `e2e` check): only what the diff touches, so the check takes minutes, not twenty (`tools/ci/pr-browser-tests.sh`, decided Nov 11, 2026). Playwright runs a smoke set (smoke, sign-in, add-link, links-feed), the specs of each changed feature, the specs the diff changes and, for app-wide code, `mobile` and `api-error-toasts`; a change to the Playwright config or the dependencies runs every spec. The Storybook axe run checks only the stories of the changed `libs/ui` components, or all of them when the shared styles or the Storybook setup change. Every e2e spec and every story still runs on the push to `stage` after the merge and on the release PR into `main`, so a regression a PR skipped shows up on `stage` before any release.
+- **Merge to `stage`** (from stage 2) → CI only, with the full browser suites; no deployment while there is no staging environment (9.3).
 - **Merge to `main`** (a release, from stage 2; every merge in stage 1) → automatic deployment to Vercel production; Prisma migrations are applied to the production Neon database by the Vercel build (`prisma migrate deploy`, ADR 0025); every PR checks the migrations against a Postgres service (`scripts/db-check.mjs`; `nx run api:db-check` is the local PGlite equivalent).
 
 ### 9.6 Claude subscription
@@ -968,7 +987,7 @@ Chosen by the author on Nov 9, 2026. Stages 2 and 3 are planned; everything else
 - [x] **First:** release flow with the `stage` integration branch (9.3): ADR, `stage` branch and ruleset, CI, To release column and board workflows, agent instructions; no staging environment for now
 - [ ] **Second: redesign** (before the features below). An updated design rather than a new one: more convenient blocks and layouts on the existing design system. The author provides the new mockups in Claude Design, and they already include the screens of the stage 2 features, so those are built on the new design. Steps: update `docs/design` (screens, components, tokens if they change), then bring `libs/ui` and the existing screens up to it, keeping a11y, both themes, the phone and the e2e and Storybook suites green. Started Nov 10, 2026 with the "Shelfmark 2027 Refresh" design; plan and decisions in `docs/design/MIGRATION.md`
 - [ ] Trash: deleted links and folders go to Trash and are kept for a period set in settings; restore and delete forever (screens `TrashView`, `MobileTrash`). Added by the author on Nov 10, 2026 with the redesign, built after the redesign and the author's review of it
-- [ ] Folder colours and icons, pinned folders (screen `FolderStyle`). Added Nov 10, 2026, built after the redesign and the author's review of it
+- [x] Folder colours and icons, pinned folders and links (screen `FolderStyle`, story 25; API in #263, web on `feat/263-folder-style-web`). Added Nov 10, 2026, built after the redesign and the author's review of it
 - [ ] Saved views: chips above the feed with saved filters (All, Videos, Articles, To read, "Save this view"). Added Nov 10, 2026, built after the redesign and the author's review of it
 - [ ] Paste several links at once (screen `PasteMany`). Added Nov 10, 2026, built after the redesign and the author's review of it
 - [ ] Recently opened extras from the 2027 design (screen `RecentView`): "Pause history" (a setting that stops recording opens, needs an API field), filter chips and a search inside the history page, swipe actions on phone history rows. Added Nov 10, 2026 by the author's decision: large items go to stage 2

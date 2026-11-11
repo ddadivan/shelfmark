@@ -4,4 +4,5 @@ import type { TrashRetentionDays } from '../trash/trash-retention-days.type';
 export interface UpdateUserSettingsRequest {
   /** One of `TRASH_RETENTION_DAYS`. */
   trashRetentionDays?: TrashRetentionDays;
+  folderColours?: boolean;
 }

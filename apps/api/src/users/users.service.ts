@@ -6,6 +6,7 @@ import type {
   UpdateUserSettingsRequest,
   UserSettingsResponse,
 } from '@shelfmark/contracts';
+import type { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { toRetentionDays } from '../trash/trash.service';
 
@@ -58,10 +59,13 @@ export class UsersService {
   async getSettings(user: AuthUser): Promise<UserSettingsResponse> {
     const row = await this.prisma.user.findUnique({
       where: { id: user.id },
-      select: { trashRetentionDays: true },
+      select: { trashRetentionDays: true, folderColours: true },
     });
     if (!row) throw new NotFoundException();
-    return { trashRetentionDays: toRetentionDays(row.trashRetentionDays) };
+    return {
+      trashRetentionDays: toRetentionDays(row.trashRetentionDays),
+      folderColours: row.folderColours,
+    };
   }
 
   /** Changes only the fields sent; the owner is the session user, never the request. */
@@ -69,11 +73,12 @@ export class UsersService {
     user: AuthUser,
     request: UpdateUserSettingsRequest,
   ): Promise<UserSettingsResponse> {
-    if (request.trashRetentionDays !== undefined) {
-      await this.prisma.user.updateMany({
-        where: { id: user.id },
-        data: { trashRetentionDays: request.trashRetentionDays },
-      });
+    const data: Prisma.UserUpdateManyMutationInput = {};
+    if (request.trashRetentionDays !== undefined)
+      data.trashRetentionDays = request.trashRetentionDays;
+    if (request.folderColours !== undefined) data.folderColours = request.folderColours;
+    if (Object.keys(data).length > 0) {
+      await this.prisma.user.updateMany({ where: { id: user.id }, data });
     }
     return this.getSettings(user);
   }

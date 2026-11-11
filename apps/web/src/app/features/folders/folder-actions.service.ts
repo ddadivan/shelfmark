@@ -10,6 +10,8 @@ import { SidebarTreeFocusService } from '../../shell/sidebar/sidebar-tree-focus.
 import { FoldersStore } from '../../stores/folders.store';
 import { TrashStore } from '../../stores/trash.store';
 import { LinkActionsService } from '../links/link-actions.service';
+import { FolderStyleDialogComponent } from './folder-style-dialog/folder-style-dialog.component';
+import type { FolderStyleDialogData } from './models/folder-style-dialog-data.interface';
 import { DeleteFolderDialogComponent } from './delete-folder-dialog/delete-folder-dialog.component';
 import { FolderNameDialogComponent } from './folder-name-dialog/folder-name-dialog.component';
 import type { DeleteFolderDialogData } from './models/delete-folder-dialog-data.interface';
@@ -120,6 +122,40 @@ export class FolderActionsService {
                   kind: TOAST_KIND.Danger,
                   title: this.t('folders.move.failed'),
                   detail: this.t('folders.move.failedDetail'),
+                });
+              }
+            });
+          },
+        },
+      },
+    ).result;
+  }
+
+  /**
+   * "Colour and icon": the dialog closes at once on Save and the folder wears the new style while
+   * the request runs; a failure puts the old style back with a toast.
+   */
+  async style(folder: FolderResponse): Promise<void> {
+    await this.dialogs.open<FolderStyleDialogComponent, boolean, FolderStyleDialogData>(
+      FolderStyleDialogComponent,
+      {
+        size: DIALOG_SIZE.Sm,
+        autoFocus: 'input:checked',
+        data: {
+          folder,
+          linkCount: folder.linkCount,
+          subfolderCount: this.folders.entities().filter((item) => item.parentId === folder.id)
+            .length,
+          submit: (style) => {
+            if (style.colour === folder.colour && style.icon === folder.icon) {
+              return;
+            }
+            void this.folders.setStyle(folder.id, style).then((saved) => {
+              if (!saved) {
+                this.toasts.show({
+                  kind: TOAST_KIND.Danger,
+                  title: this.t('folders.style.failed'),
+                  detail: this.t('folders.style.failedDetail'),
                 });
               }
             });

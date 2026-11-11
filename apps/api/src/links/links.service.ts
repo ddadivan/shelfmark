@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import {
+  LINK_LIMIT,
   LINK_SORT_FIELD,
   normalizeUrl,
   PAGE_LIMIT,
@@ -14,6 +15,7 @@ import {
   type RecentLinksQuery,
   type RecentLinksResponse,
 } from '@shelfmark/contracts';
+import type { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { cursorKey, cursorWhere, decodeCursor, encodeCursor, linkOrderBy } from './link-cursor';
 import { LinkPreviewService } from './link-preview.service';
@@ -63,10 +65,25 @@ export class LinksService {
     const order = query.order ?? SORT_ORDER.Desc;
     const limit = query.limit ?? PAGE_LIMIT.Default;
     const base = buildLinkWhere(userId, query);
+    // In a folder the pinned links are the separate `pinned` array of page one; the keyset list holds
+    // only the unpinned ones, so its cursor never has to know about pins.
+    const inFolder = query.folderId !== undefined && query.unsorted !== true;
+    const unpinned: Prisma.LinkWhereInput = inFolder
+      ? { AND: [base, { pinnedInFolderAt: null }] }
+      : base;
     const where =
       query.cursor === undefined
-        ? base
-        : { AND: [base, cursorWhere(decodeCursor(query.cursor, sort, order))] };
+        ? unpinned
+        : { AND: [unpinned, cursorWhere(decodeCursor(query.cursor, sort, order))] };
+    const pinned =
+      inFolder && query.cursor === undefined
+        ? await this.prisma.link.findMany({
+            where: { AND: [base, { pinnedInFolderAt: { not: null } }] },
+            include: LINK_INCLUDE,
+            orderBy: [{ pinnedInFolderAt: 'asc' }, { id: 'asc' }],
+            take: LINK_LIMIT.PinnedInFolderMax,
+          })
+        : [];
 
     // One extra row tells whether another page exists; it is never returned.
     const rows = await this.prisma.link.findMany({
@@ -87,7 +104,7 @@ export class LinksService {
             id: last.id,
           })
         : null;
-    return { items: page.map(toLinkResponse), nextCursor };
+    return { items: page.map(toLinkResponse), nextCursor, pinned: pinned.map(toLinkResponse) };
   }
 
   async recent(userId: string, query: RecentLinksQuery): Promise<RecentLinksResponse> {

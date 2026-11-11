@@ -7,7 +7,7 @@
 >
   <span slot="title">{{ link().title }}</span>
   <span slot="meta" class="link-history-row__folder">
-    <ui-folder-icon size="sm" />
+    <ui-folder-icon size="sm" [icon]="folderIcon()" [colour]="folderColour()" />
     <span class="link-history-row__folder-name">
       {{ folderName() ?? ('links.recent.unsorted' | transloco) }}
     </span>

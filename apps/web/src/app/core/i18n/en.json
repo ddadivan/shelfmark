@@ -351,7 +351,12 @@
         "confirm": "Delete link",
         "cancel": "Cancel",
         "close": "Close"
-      }
+      },
+      "pinToTop": "Pin to top",
+      "unpinFromTop": "Unpin from top",
+      "pinToSidebar": "Pin to sidebar",
+      "unpinFromSidebar": "Unpin from sidebar",
+      "pinned": "Pinned"
     },
     "recent": {
       "title": "Recently opened",
@@ -626,7 +631,21 @@
         "addLink": "Add link here",
         "rename": "Rename",
         "move": "Move to…",
-        "delete": "Delete folder…"
+        "delete": "Delete folder…",
+        "pin": "Pin to sidebar",
+        "unpin": "Unpin from sidebar",
+        "style": "Colour and icon…"
+      },
+      "views": "Views",
+      "foldersTree": "Folders",
+      "pinned": {
+        "heading": "Pinned",
+        "list": "Pinned items",
+        "menu": "Pinned item actions",
+        "actions": "Actions for {{name}}",
+        "moveUp": "Move up",
+        "moveDown": "Move down",
+        "unpin": "Unpin from sidebar"
       }
     },
     "searchHint": "Search your links",
@@ -710,6 +729,44 @@
       },
       "failed": "Couldn't delete the folder. Nothing was changed.",
       "done": "Folder moved to Trash"
+    },
+    "style": {
+      "colour": "Colour",
+      "icon": "Icon",
+      "reset": "Reset",
+      "save": "Save",
+      "cancel": "Cancel",
+      "close": "Close",
+      "failed": "Couldn't save the style",
+      "failedDetail": "The old colour and icon are back.",
+      "colours": {
+        "graphite": "Graphite",
+        "sage": "Sage",
+        "ocean": "Ocean",
+        "plum": "Plum",
+        "clay": "Clay",
+        "amber": "Amber",
+        "rose": "Rose",
+        "teal": "Teal"
+      },
+      "icons": {
+        "folder": "Folder",
+        "bookmark": "Bookmark",
+        "star": "Star",
+        "clock": "Clock",
+        "link": "Link",
+        "tag": "Tag",
+        "inbox": "Inbox",
+        "image": "Image",
+        "cards": "Cards",
+        "list": "List",
+        "saved-link": "Saved link",
+        "monitor": "Monitor",
+        "user": "User",
+        "settings": "Settings",
+        "download": "Download",
+        "share": "Share"
+      }
     }
   },
   "library": {
@@ -983,6 +1040,31 @@
           "cancel": "Cancel",
           "close": "Close"
         }
+      },
+      "folders": {
+        "title": "Folders",
+        "colours": {
+          "label": "Folder colours",
+          "hint": "Coloured folder icons in the sidebar and tiles",
+          "failed": "Couldn't save the setting",
+          "failedDetail": "It is back to how it was."
+        },
+        "pinned": {
+          "label": "Pinned at the top",
+          "hint": "Up to {{max}} folders and links",
+          "action": "Edit pinned"
+        }
+      },
+      "pinnedDialog": {
+        "title": "Pinned",
+        "description": "The order of the Pinned section in the sidebar.",
+        "empty": "Nothing is pinned. Use “Pin to sidebar” in the menu of a folder or link.",
+        "list": "Pinned items",
+        "close": "Close",
+        "done": "Done",
+        "moveUp": "Move {{name}} up",
+        "moveDown": "Move {{name}} down",
+        "unpin": "Unpin {{name}} from the sidebar"
       }
     },
     "help": "Help"
@@ -1342,6 +1424,28 @@
       "emptyFailedDetail": "Nothing was deleted."
     },
     "emptyShort": "Empty"
+  },
+  "pins": {
+    "limit": {
+      "title": "Pinned is full",
+      "detail": "You can pin up to {{max}} folders and links. Unpin one first."
+    },
+    "pinFailed": {
+      "title": "Couldn't pin",
+      "detail": "Nothing was changed. Try again."
+    },
+    "unpinFailed": {
+      "title": "Couldn't unpin",
+      "detail": "It is still pinned."
+    },
+    "moveFailed": {
+      "title": "Couldn't change the order",
+      "detail": "The old order is back."
+    },
+    "pinnedToTopFailed": {
+      "title": "Couldn't change the pin",
+      "detail": "It is back as it was."
+    }
   },
   "feedback": {
     "kind": {

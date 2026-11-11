@@ -1,0 +1,45 @@
+<form [formRoot]="form">
+  <ui-dialog [title]="data.folder.name" [closeLabel]="'folders.style.close' | transloco">
+    <div class="folder-style">
+      <div class="folder-style__preview">
+        <ui-folder-icon size="xl" [icon]="previewIcon()" [colour]="previewColour()" />
+        <span class="folder-style__text">
+          <span class="folder-style__name">{{ data.folder.name }}</span>
+          <span class="folder-style__meta">{{ meta() }}</span>
+        </span>
+      </div>
+
+      <div class="folder-style__group">
+        <span class="folder-style__label" id="folder-style-colour">{{
+          'folders.style.colour' | transloco
+        }}</span>
+        <ui-choice-grid
+          [options]="colourOptions"
+          ariaLabelledby="folder-style-colour"
+          [formField]="form.colour"
+        />
+      </div>
+
+      <div class="folder-style__group">
+        <span class="folder-style__label" id="folder-style-icon">{{
+          'folders.style.icon' | transloco
+        }}</span>
+        <ui-choice-grid
+          kind="icon"
+          [colour]="previewColour()"
+          [options]="iconOptions"
+          ariaLabelledby="folder-style-icon"
+          [formField]="form.icon"
+        />
+      </div>
+    </div>
+
+    <ui-button slot="footer" class="folder-style__reset" variant="ghost" (click)="reset()">{{
+      'folders.style.reset' | transloco
+    }}</ui-button>
+    <ui-button slot="footer" (click)="cancel()">{{ 'folders.style.cancel' | transloco }}</ui-button>
+    <ui-button slot="footer" [type]="BUTTON_TYPE.Submit" [variant]="BUTTON_VARIANT.Primary">{{
+      'folders.style.save' | transloco
+    }}</ui-button>
+  </ui-dialog>
+</form>
