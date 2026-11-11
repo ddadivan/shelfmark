@@ -103,7 +103,9 @@ jobs:
   e2e:
     name: e2e
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # Stopgap: the full browser run (pushes to `stage`, release PRs into `main`) outgrew 30 minutes
+    # and was cancelled. Issue #313 shards it so it fits well under the limit; lower this then.
+    timeout-minutes: 60
     permissions:
       contents: read
       actions: read
