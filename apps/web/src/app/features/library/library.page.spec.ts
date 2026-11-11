@@ -166,7 +166,7 @@ describe('LibraryPage', () => {
         'Your links will live here',
       );
       expect(element.querySelector('ui-illustration')).not.toBeNull();
-      expect(buttons(element)).toEqual(['Add link']);
+      expect(buttons(element)).toEqual(['Add link', 'Watch how it works']);
       const open = vi
         .spyOn(TestBed.inject(AddLinkDialogService), 'open')
         .mockResolvedValue(undefined);

@@ -45,6 +45,10 @@
     <app-sidebar-tags />
   }
 
+  @if (!foldersOnly() && howItWorks.cardVisible()) {
+    <app-how-it-works-card class="sidebar__how-it-works" />
+  }
+
   <ui-menu [ariaLabel]="'shell.sidebar.folderMenu' | transloco" (closed)="menuClosed()">
     <ui-menu-item icon="folder-plus" (activated)="createSubfolder()">
       {{ 'shell.sidebar.menu.newSubfolder' | transloco }}

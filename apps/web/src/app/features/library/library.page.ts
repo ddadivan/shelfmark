@@ -57,6 +57,7 @@ import { parseSearchQuery } from '../links/search-query';
 import { InViewDirective } from '../links/in-view/in-view.directive';
 import { LinkActionsService } from '../links/link-actions.service';
 import { LinkDragService } from '../links/drag/link-drag.service';
+import { HowItWorksService } from '../how-it-works/how-it-works.service';
 import { LinkCardComponent } from '../links/link-card/link-card.component';
 import { LinkRowComponent } from '../links/link-row/link-row.component';
 import type { AddLinkData } from '../links/models/add-link-data.interface';
@@ -125,6 +126,7 @@ export default class LibraryPage {
   protected readonly store = inject(LinksStore);
   protected readonly ui = inject(UiStore);
   protected readonly actions = inject(LinkActionsService);
+  protected readonly howItWorks = inject(HowItWorksService);
   protected readonly phone = inject(ViewportService).phone;
   protected readonly drag = inject(LinkDragService);
   /** Touch holds 150 ms before a drag starts (DragDrop spec), so a swipe still scrolls. */

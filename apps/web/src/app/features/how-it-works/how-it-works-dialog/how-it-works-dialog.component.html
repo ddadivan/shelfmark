@@ -1,0 +1,46 @@
+<ui-dialog [title]="'howItWorks.title' | transloco" [closeLabel]="'howItWorks.close' | transloco">
+  @if (video.Src; as src) {
+    <!-- Muted so it may autoplay; the captions carry the words. -->
+    <video
+      #player
+      class="how-it-works__video"
+      [src]="src"
+      [attr.poster]="video.Poster"
+      [autoplay]="autoplay"
+      [muted]="true"
+      controls
+      playsinline
+      preload="metadata"
+      (timeupdate)="onTime($event)"
+    >
+      @if (video.Captions; as captions) {
+        <track
+          kind="captions"
+          srclang="en"
+          [attr.label]="'howItWorks.captions' | transloco"
+          [src]="captions"
+          default
+        />
+      }
+    </video>
+  } @else {
+    <ui-notice kind="info">{{ 'howItWorks.soon' | transloco }}</ui-notice>
+  }
+
+  <ol class="how-it-works__chapters" [attr.aria-label]="'howItWorks.chaptersLabel' | transloco">
+    @for (chapter of chapters; track chapter.id) {
+      <li>
+        <ui-button
+          variant="ghost"
+          size="sm"
+          [disabled]="!video.Src"
+          [ariaPressed]="video.Src ? current() === chapter.id : undefined"
+          (click)="jump(chapter)"
+        >
+          {{ chapter.titleKey | transloco }}
+          <span class="how-it-works__time">{{ clock(chapter.start) }}</span>
+        </ui-button>
+      </li>
+    }
+  </ol>
+</ui-dialog>

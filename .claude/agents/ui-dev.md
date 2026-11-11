@@ -27,4 +27,4 @@ You change only `libs/ui/**`. Feature code in `apps/web` is `frontend-dev`'s. If
 
 ## Working
 
-Issue branch, small Conventional Commits, push after each step. Before done: `npx nx affected -t lint typecheck test build` and `npx nx build-storybook ui` pass. Report files changed and how to verify in Storybook.
+Issue branch from fresh `stage` (PROJECT.md 9.3), small Conventional Commits, push after each step. Before done: `npx nx affected -t lint typecheck test build` and `npx nx build-storybook ui` pass. Report files changed and how to verify in Storybook.

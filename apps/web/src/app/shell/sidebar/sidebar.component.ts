@@ -35,6 +35,8 @@ import { APP_PATH } from '../../models/app-path.const';
 import type { FolderNode } from '../../stores/models/folder-node.interface';
 import { FoldersStore } from '../../stores/folders.store';
 import { LinkDragService } from '../../features/links/drag/link-drag.service';
+import { HowItWorksService } from '../../features/how-it-works/how-it-works.service';
+import { HowItWorksCardComponent } from '../../features/how-it-works/how-it-works-card/how-it-works-card.component';
 import { SIDEBAR_RECENT_ID } from './models/sidebar-recent-id.const';
 import { sidebarActiveId } from './sidebar-active-id';
 import { SidebarTreeFocusService } from './sidebar-tree-focus.service';
@@ -57,6 +59,7 @@ const FIXED_ROUTES: Readonly<Record<string, string>> = {
 @Component({
   selector: 'app-sidebar',
   imports: [
+    HowItWorksCardComponent,
     ButtonComponent,
     MenuComponent,
     MenuItemComponent,
@@ -75,6 +78,7 @@ const FIXED_ROUTES: Readonly<Record<string, string>> = {
 export class SidebarComponent {
   protected readonly folders = inject(FoldersStore);
   protected readonly drag = inject(LinkDragService);
+  protected readonly howItWorks = inject(HowItWorksService);
   protected readonly ICON_SIZE = ICON_SIZE;
   /** The logo heads the card (the desktop shell); the phone drawer has its own header. */
   readonly showLogo = input(false, { transform: booleanAttribute });
