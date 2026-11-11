@@ -72,6 +72,12 @@ export class MockLinksApi implements LinksApi {
     if (normalized === normalizeUrl(MOCK_LINK_PREVIEW_DUPLICATE.preview.url)) {
       return of(MOCK_LINK_PREVIEW_DUPLICATE).pipe(delay(MOCK_LATENCY_MS.Preview));
     }
+    // Like the server: a URL that is already saved (by normalised URL) comes with that link.
+    const saved = this.links.find((link) => normalizeUrl(link.url) === normalized);
+    const folder =
+      saved === undefined || saved.folderId === null
+        ? undefined
+        : this.data.folderList.find((item) => item.id === saved.folderId);
     const response: LinkPreviewResponse = {
       preview: {
         url,
@@ -80,7 +86,14 @@ export class MockLinksApi implements LinksApi {
         imageUrl: null,
         faviconUrl: null,
       },
-      duplicate: null,
+      duplicate: saved
+        ? {
+            id: saved.id,
+            title: saved.title,
+            folderId: saved.folderId,
+            folderName: folder?.name ?? null,
+          }
+        : null,
       fetched: true,
     };
     return of(response).pipe(delay(MOCK_LATENCY_MS.Preview));

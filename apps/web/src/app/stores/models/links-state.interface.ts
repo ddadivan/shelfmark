@@ -19,4 +19,10 @@ export interface LinksState {
   /** "Recently opened", newest first. */
   recent: LinkResponse[];
   recentLoaded: boolean;
+  /**
+   * Links that were just saved and play the "card lands" motion, by id, with their place in the
+   * stagger (0 first). Cleared after the motion, so a card that scrolls back into view does not
+   * land again.
+   */
+  landed: Readonly<Record<string, number>>;
 }

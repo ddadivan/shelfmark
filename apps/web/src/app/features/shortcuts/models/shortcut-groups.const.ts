@@ -4,7 +4,8 @@ import { SHORTCUT_KEY } from './shortcut-key.const';
 /**
  * Every shortcut the app really has (read from the code, not from the mockups, which draw many
  * more): search (`SearchDialogService`), Esc (dialogs, menus, toasts), undo and the toast action
- * (`ToastService`), save in the link dialog, the search results, the folder tree.
+ * (`ToastService`), save in the link dialog, paste links into the library (`LibraryPage`), the
+ * search results, the folder tree.
  */
 export const SHORTCUT_GROUPS: readonly ShortcutGroup[] = [
   {
@@ -26,6 +27,7 @@ export const SHORTCUT_GROUPS: readonly ShortcutGroup[] = [
     titleKey: 'shortcuts.groups.links',
     shortcuts: [
       { labelKey: 'shortcuts.items.save', keys: [SHORTCUT_KEY.Command, SHORTCUT_KEY.Enter] },
+      { labelKey: 'shortcuts.items.paste', keys: [SHORTCUT_KEY.Command, SHORTCUT_KEY.V] },
       { labelKey: 'shortcuts.items.results', keys: [SHORTCUT_KEY.Up, SHORTCUT_KEY.Down] },
       { labelKey: 'shortcuts.items.openResult', keys: [SHORTCUT_KEY.Enter] },
       {

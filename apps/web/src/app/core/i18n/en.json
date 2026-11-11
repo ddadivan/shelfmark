@@ -408,6 +408,59 @@
       "failed": "Couldn't move the link",
       "failedDetail": "It is back where it was",
       "undoFailed": "Couldn't move the link back"
+    },
+    "many": {
+      "title": {
+        "one": "Add {{count}} link",
+        "other": "Add {{count}} links"
+      },
+      "titleNone": "Add links",
+      "found": {
+        "one": "Found {{count}} link in what you pasted.",
+        "other": "Found {{count}} links in what you pasted."
+      },
+      "already": {
+        "one": "{{count}} is already on your shelf.",
+        "other": "{{count}} are already on your shelf."
+      },
+      "selectAll": "Select all",
+      "selectedCount": "{{selected}} of {{total}} selected",
+      "listLabel": "Pasted links",
+      "row": {
+        "loading": "Loading preview",
+        "alreadySaved": "Already saved",
+        "remove": "Remove {{title}}",
+        "quoted": "“{{text}}”",
+        "skipped": "Not a link, skipped"
+      },
+      "overflow": {
+        "one": "{{count}} more link was left out: up to {{max}} links at a time. Bigger lists go to Import as text.",
+        "other": "{{count}} more links were left out: up to {{max}} links at a time. Bigger lists go to Import as text."
+      },
+      "folder": "Folder for all",
+      "tags": "Tags for all",
+      "note": "Titles and previews keep loading after you save.",
+      "save": {
+        "one": "Save {{count}} link",
+        "other": "Save {{count}} links"
+      },
+      "saveNone": "Save links",
+      "saveFailedFit": {
+        "one": "Only {{fit}} more link fits your shelf. Uncheck some and try again.",
+        "other": "Only {{fit}} more links fit your shelf. Uncheck some and try again."
+      },
+      "saved": {
+        "one": "{{count}} link saved to {{folder}}",
+        "other": "{{count}} links saved to {{folder}}"
+      },
+      "stillLoading": "Titles and previews are still loading",
+      "skippedByServer": {
+        "one": "{{count}} link was skipped: it was a repeat or too long",
+        "other": "{{count}} links were skipped: repeats or too long"
+      },
+      "noneSaved": "No links were saved",
+      "undoFailed": "Couldn't undo",
+      "undoFailedDetail": "The links are still saved"
     }
   },
   "privacy": {
@@ -909,7 +962,8 @@
       "openBackground": "Open it in a background tab",
       "moveFolder": "Move between folders",
       "toggleFolder": "Close or open a folder",
-      "folderMenu": "Open the folder menu"
+      "folderMenu": "Open the folder menu",
+      "paste": "Paste links into the library"
     },
     "keys": {
       "command": "Command",

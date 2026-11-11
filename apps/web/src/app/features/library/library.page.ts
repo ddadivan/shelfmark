@@ -1,3 +1,4 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { DOCUMENT } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -54,6 +55,8 @@ import { SORT_QUERY_PARAM } from '../links/models/sort-query-param.const';
 import { sameFilter } from '../links/links-filter';
 import { parseSearchQuery } from '../links/search-query';
 import { InViewDirective } from '../links/in-view/in-view.directive';
+import { parsePastedLinks } from '../links/paste-many/parse-pasted-links';
+import { isEditableTarget } from '../shortcuts/is-editable-target';
 import { LinkActionsService } from '../links/link-actions.service';
 import { HowItWorksService } from '../how-it-works/how-it-works.service';
 import { LinkCardComponent } from '../links/link-card/link-card.component';
@@ -79,6 +82,8 @@ import { VIEW_OPTION_KEYS } from './models/view-option-keys.const';
 
 /** Number of placeholders shown while the first page loads. */
 const SKELETON_COUNT = 8;
+/** Beat between two cards of a paste of many landing in the feed. */
+const LAND_STAGGER_MS = 50;
 
 interface LastShown {
   items: readonly LinkResponse[];
@@ -115,7 +120,10 @@ interface LastShown {
   templateUrl: './library.page.html',
   styleUrl: './library.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '(document:keydown)': 'onKeydown($event)' },
+  host: {
+    '(document:keydown)': 'onKeydown($event)',
+    '(document:paste)': 'onPaste($event)',
+  },
 })
 export default class LibraryPage {
   protected readonly store = inject(LinksStore);
@@ -130,6 +138,7 @@ export default class LibraryPage {
   private readonly title = inject(Title);
   private readonly doc = inject(DOCUMENT);
   private readonly injector = inject(Injector);
+  private readonly cdkDialogs = inject(Dialog);
 
   /** From the route data. */
   readonly scope = input<LinksScope>(LINKS_SCOPE.All);
@@ -413,6 +422,33 @@ export default class LibraryPage {
   }
 
   /** Page keys with nothing focused scroll the feed area (the page itself does not scroll). */
+  /** The stagger of a link that is landing: each card of a paste lands a beat after the one before. */
+  protected landDelay(id: string): string | null {
+    const position = this.store.landed()[id];
+    return position === undefined || position === 0 ? null : `${position * LAND_STAGGER_MS}ms`;
+  }
+
+  /**
+   * ⌘V / Ctrl+V in the library, outside any field and while no dialog is open: text with a link
+   * opens Add link with it (one link fills the address, several turn the dialog into the list).
+   * Text without a link is left alone.
+   */
+  protected onPaste(event: ClipboardEvent): void {
+    if (
+      event.defaultPrevented ||
+      isEditableTarget(event.target) ||
+      this.cdkDialogs.openDialogs.length > 0
+    ) {
+      return;
+    }
+    const text = event.clipboardData?.getData('text/plain') ?? '';
+    if (parsePastedLinks(text).links.length === 0) {
+      return;
+    }
+    event.preventDefault();
+    void this.actions.addLink({ ...this.addLinkData(), text });
+  }
+
   protected onKeydown(event: KeyboardEvent): void {
     const area = this.scroller()?.nativeElement;
     if (area) {
