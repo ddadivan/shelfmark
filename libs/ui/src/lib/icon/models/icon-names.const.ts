@@ -38,6 +38,7 @@ export const ICON_NAMES = [
   'list',
   'logout',
   'menu',
+  'message',
   'monitor',
   'moon',
   'more',
