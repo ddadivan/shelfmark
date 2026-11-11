@@ -791,6 +791,11 @@
       },
       "icons": {
         "folder": "Folder",
+        "briefcase": "Briefcase",
+        "code": "Code",
+        "graduation-cap": "Graduation cap",
+        "shirt": "Shirt",
+        "cooking-pot": "Cooking pot",
         "bookmark": "Bookmark",
         "star": "Star",
         "clock": "Clock",

@@ -98,7 +98,7 @@ describe('FolderActionsService style', () => {
     expect(colours).toEqual(['Graphite', 'Sage', 'Ocean', 'Plum', 'Clay', 'Amber', 'Rose', 'Teal']);
     expect(radio('colour', 'Graphite').checked).toBe(true);
     expect(radio('icon', 'Folder').checked).toBe(true);
-    expect(root.querySelectorAll('[aria-labelledby="folder-style-icon"] input')).toHaveLength(16);
+    expect(root.querySelectorAll('[aria-labelledby="folder-style-icon"] input')).toHaveLength(21);
     button('Cancel').click();
     await closed();
   });

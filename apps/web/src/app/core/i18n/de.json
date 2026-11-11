@@ -791,6 +791,11 @@
       },
       "icons": {
         "folder": "Ordner",
+        "briefcase": "Aktentasche",
+        "code": "Code",
+        "graduation-cap": "Doktorhut",
+        "shirt": "T-Shirt",
+        "cooking-pot": "Kochtopf",
         "bookmark": "Lesezeichen",
         "star": "Stern",
         "clock": "Uhr",

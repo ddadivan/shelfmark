@@ -805,6 +805,11 @@
       },
       "icons": {
         "folder": "Cartella",
+        "briefcase": "Valigetta",
+        "code": "Codice",
+        "graduation-cap": "Tocco",
+        "shirt": "Maglietta",
+        "cooking-pot": "Pentola",
         "bookmark": "Segnalibro",
         "star": "Stella",
         "clock": "Orologio",

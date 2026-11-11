@@ -805,6 +805,11 @@
       },
       "icons": {
         "folder": "Dossier",
+        "briefcase": "Mallette",
+        "code": "Code",
+        "graduation-cap": "Toque de diplômé",
+        "shirt": "T-shirt",
+        "cooking-pot": "Marmite",
         "bookmark": "Marque-page",
         "star": "Étoile",
         "clock": "Horloge",
