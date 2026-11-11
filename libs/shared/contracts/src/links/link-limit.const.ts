@@ -1,7 +1,8 @@
 /**
  * Limits for link fields (PROJECT.md 6.1). `TagsMax` is the number of tag names per link, `QueryMax` the length
  * of `q`, `QueryTermsMax` the number of words of `q` that are used (extra words are ignored), `TagFilterMax` the
- * number of `tag` values in one list request and `PerUserMax` the number of links one user can save, `PinnedInFolderMax` the links pinned to the top of one folder.
+ * number of `tag` values in one list request and `PerUserMax` the number of links one user can save, `PinnedInFolderMax` the links pinned to the top of one folder,
+ * `BatchMax` the number of links in one batch create, delete or update (paste many, bulk actions).
  */
 export const LINK_LIMIT = {
   UrlMax: 2048,
@@ -13,4 +14,5 @@ export const LINK_LIMIT = {
   TagFilterMax: 5,
   PerUserMax: 10_000,
   PinnedInFolderMax: 20,
+  BatchMax: 100,
 } as const;

@@ -21,6 +21,13 @@ export type { RecentLinksResponse } from './links/recent-links-response.interfac
 export type { OpenLinkResponse } from './links/open-link-response.type';
 export type { CaptureLinkImagesResponse } from './links/capture-link-images-response.type';
 export type { GetLinkResponse } from './links/get-link-response.type';
+export type { DeleteLinksBatchRequest } from './links/delete-links-batch-request.interface';
+export type { DeleteLinksBatchResponse } from './links/delete-links-batch-response.interface';
+export { LINKS_BATCH_ENDPOINT } from './links/links-batch-endpoint.const';
+export type { UpdateLinksBatchRequest } from './links/update-links-batch-request.interface';
+export type { UpdateLinksBatchResponse } from './links/update-links-batch-response.interface';
+export { LINKS_BATCH_UPDATE_ENDPOINT } from './links/links-batch-update-endpoint.const';
+export { LINKS_BATCH_ERROR_MESSAGE } from './links/links-batch-error-message.const';
 export type { LinkSortField } from './links/link-sort-field.type';
 export type { LinkImageKind } from './links/link-image-kind.type';
 export { LINK_IMAGE_KIND } from './links/link-image-kind.const';
