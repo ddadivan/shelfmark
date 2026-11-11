@@ -15,4 +15,8 @@ export interface DemoSeedLink {
   openedDaysAgo: number | null;
   favorite?: true;
   note?: string;
+  /** Pinned to the sidebar (the "Pinned" section of the Main mockup). */
+  pinned?: true;
+  /** Pinned to the top of its folder (the card with the "Pinned" badge). */
+  pinnedToTop?: true;
 }

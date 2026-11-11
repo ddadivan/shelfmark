@@ -101,6 +101,13 @@
   color: var(--text-muted);
 }
 
+// A pinned link ends with a small pin glyph where a folder shows its count (Main mockup).
+.pinned__pin {
+  flex: none;
+  margin-inline-start: auto;
+  color: var(--text-muted);
+}
+
 .pinned__hidden {
   @include visually-hidden;
 }

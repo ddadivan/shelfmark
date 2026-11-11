@@ -16,6 +16,7 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     daysAgo: 2,
     openedDaysAgo: 1,
     favorite: true,
+    pinnedToTop: true,
   },
   {
     folder: DEMO_FOLDER_KEY.Angular,
@@ -182,6 +183,7 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     tags: ['tools', 'docs'],
     daysAgo: 11,
     openedDaysAgo: null,
+    pinned: true,
   },
   {
     folder: DEMO_FOLDER_KEY.Work,

@@ -62,8 +62,8 @@ export function buildDemoLibrarySeed(now: number = Date.now()): DemoLibrarySeed 
       faviconUrl: null,
       imageUrl: null,
       isFavorite: link.favorite === true,
-      pinnedInFolderAt: null,
-      pinned: false,
+      pinnedInFolderAt: link.pinnedToTop === true ? created : null,
+      pinned: link.pinned === true,
       lastOpenedAt:
         link.openedDaysAgo === null
           ? null
@@ -74,9 +74,15 @@ export function buildDemoLibrarySeed(now: number = Date.now()): DemoLibrarySeed 
     };
   });
   links.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  const pins = folders
-    .filter((folder) => folder.pinned)
-    .map((folder): PinRef => ({ kind: PIN_KIND.Folder, id: folder.id }));
+  // Pinned folders first, then pinned links, as in the mockup's sidebar.
+  const pins = [
+    ...folders
+      .filter((folder) => folder.pinned)
+      .map((folder): PinRef => ({ kind: PIN_KIND.Folder, id: folder.id })),
+    ...links
+      .filter((link) => link.pinned)
+      .map((link): PinRef => ({ kind: PIN_KIND.Link, id: link.id })),
+  ];
   return { folders, links, pins };
 }
 

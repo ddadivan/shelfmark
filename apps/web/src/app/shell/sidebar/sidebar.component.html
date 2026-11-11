@@ -78,7 +78,7 @@
   }
 
   <ui-menu [ariaLabel]="'shell.sidebar.folderMenu' | transloco" (closed)="menuClosed()">
-    <ui-menu-item icon="bookmark" (activated)="togglePin()">
+    <ui-menu-item icon="pin" (activated)="togglePin()">
       {{ (menuPinned() ? 'shell.sidebar.menu.unpin' : 'shell.sidebar.menu.pin') | transloco }}
     </ui-menu-item>
     <ui-menu-item icon="edit" (activated)="style()">

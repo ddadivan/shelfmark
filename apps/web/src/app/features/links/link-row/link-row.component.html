@@ -25,7 +25,7 @@
   <span slot="meta" class="link-row__meta">
     {{ host() }}
     @if (pinnedToTop()) {
-      <ui-badge icon="bookmark">{{ 'links.item.pinned' | transloco }}</ui-badge>
+      <ui-badge icon="pin">{{ 'links.item.pinned' | transloco }}</ui-badge>
     }
   </span>
   <div slot="trailing" class="link-row__trailing">
@@ -82,11 +82,11 @@
         }}
       </ui-menu-item>
       @if (pinnable()) {
-        <ui-menu-item icon="bookmark" (activated)="pinToTopToggled.emit()">
+        <ui-menu-item icon="pin" (activated)="pinToTopToggled.emit()">
           {{ (pinnedToTop() ? 'links.item.unpinFromTop' : 'links.item.pinToTop') | transloco }}
         </ui-menu-item>
       }
-      <ui-menu-item icon="bookmark" (activated)="pinToSidebarToggled.emit()">
+      <ui-menu-item icon="pin" (activated)="pinToSidebarToggled.emit()">
         {{
           (pinnedToSidebar() ? 'links.item.unpinFromSidebar' : 'links.item.pinToSidebar')
             | transloco

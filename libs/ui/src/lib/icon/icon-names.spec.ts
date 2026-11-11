@@ -14,8 +14,11 @@ const DESIGN_DIR = resolve(ROOT, 'docs/design/assets/icons');
 const PROVIDER_ICONS = ['google', 'github'];
 /** Keyboard key glyphs drawn for this app (no design file; the fonts have no such glyphs). */
 const KEY_ICONS = ['key-command', 'key-enter', 'key-option', 'key-shift'];
-/** Other glyphs drawn for this app where the design set has none (#270: the video play button). */
-const APP_ICONS = ['play'];
+/**
+ * Other glyphs drawn for this app where the design set has none: the video play button (#270) and
+ * the sidebar / card pin (#312), drawn from the Main mockup.
+ */
+const APP_ICONS = ['pin', 'play'];
 
 const sprite = readFileSync(SPRITE_PATH, 'utf8');
 

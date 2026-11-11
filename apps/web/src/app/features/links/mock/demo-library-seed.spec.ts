@@ -34,10 +34,25 @@ describe('demo library seed', () => {
     expect(Math.max(...days)).toBeGreaterThan(35);
   });
 
-  it('pins the Angular folder', () => {
-    const { folders, pins } = buildDemoLibrarySeed(NOW);
+  it('pins the Angular folder, then the Neon link, as in the mockup sidebar', () => {
+    const { folders, links, pins } = buildDemoLibrarySeed(NOW);
     const angular = folders.find((folder) => folder.name === 'Angular');
-    expect(pins).toEqual([{ kind: PIN_KIND.Folder, id: angular?.id }]);
+    const neon = links.find((link) => link.title === 'Neon free plan limits');
+    expect(pins).toEqual([
+      { kind: PIN_KIND.Folder, id: angular?.id },
+      { kind: PIN_KIND.Link, id: neon?.id },
+    ]);
+    expect(neon?.pinned).toBe(true);
+  });
+
+  it('pins the Signal Forms video to the top of Angular', () => {
+    const { folders, links } = buildDemoLibrarySeed(NOW);
+    const angular = folders.find((folder) => folder.name === 'Angular');
+    const onTop = links.filter((link) => link.pinnedInFolderAt !== null);
+    expect(onTop.map((link) => link.title)).toEqual([
+      'Angular 22: everything about Signal Forms in 20 minutes',
+    ]);
+    expect(onTop[0]?.folderId).toBe(angular?.id);
   });
 
   it('recognises the demo session only', () => {
