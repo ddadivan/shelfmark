@@ -9,9 +9,10 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { TRASH_RETENTION_DAYS, type TrashRetentionDays } from '@shelfmark/contracts';
+import { PIN_LIMIT, TRASH_RETENTION_DAYS, type TrashRetentionDays } from '@shelfmark/contracts';
 import {
   BUTTON_SIZE,
+  DIALOG_SIZE,
   DialogService,
   ButtonComponent,
   NOTICE_KIND,
@@ -19,13 +20,16 @@ import {
   SegmentedControlComponent,
   SettingsRowComponent,
   SettingsSectionComponent,
+  SwitchComponent,
   TOAST_KIND,
   ToastService,
   type SegmentedOption,
 } from '@shelfmark/ui';
+import { PinnedEditDialogComponent } from '../../pins/pinned-edit-dialog/pinned-edit-dialog.component';
 import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
 import { pluralKey } from '../../../core/i18n/plural-key';
 import { APP_PATH } from '../../../models/app-path.const';
+import { PinsStore } from '../../../stores/pins.store';
 import { TrashStore } from '../../../stores/trash.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { SettingsPageHeaderComponent } from '../settings-page-header/settings-page-header.component';
@@ -45,6 +49,7 @@ import { SettingsPageHeaderComponent } from '../settings-page-header/settings-pa
     SettingsPageHeaderComponent,
     SettingsRowComponent,
     SettingsSectionComponent,
+    SwitchComponent,
   ],
   templateUrl: './library.page.html',
   styleUrl: './library.page.scss',
@@ -62,6 +67,7 @@ export default class LibrarySettingsPage {
 
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
   protected readonly NOTICE_KIND = NOTICE_KIND;
+  protected readonly PIN_LIMIT = PIN_LIMIT;
   protected readonly pluralKey = pluralKey;
   protected readonly trashHref = `/${APP_PATH.Trash}`;
 
@@ -77,10 +83,25 @@ export default class LibrarySettingsPage {
   constructor() {
     void this.settings.load();
     void this.trash.load();
+    void inject(PinsStore).load();
   }
 
   protected retry(): void {
     void this.settings.load();
+  }
+
+  protected async setColours(on: boolean): Promise<void> {
+    if (!(await this.settings.setFolderColours(on))) {
+      this.toasts.show({
+        kind: TOAST_KIND.Danger,
+        title: this.transloco.translate('settings.library.folders.colours.failed'),
+        detail: this.transloco.translate('settings.library.folders.colours.failedDetail'),
+      });
+    }
+  }
+
+  protected async editPinned(): Promise<void> {
+    await this.dialogs.open(PinnedEditDialogComponent, { size: DIALOG_SIZE.Md }).result;
   }
 
   protected async setRetention(value: string): Promise<void> {

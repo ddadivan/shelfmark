@@ -185,6 +185,8 @@ describe('SidebarComponent', () => {
       item.textContent?.trim(),
     );
     expect(items).toEqual([
+      'Pin to sidebar',
+      'Colour and icon…',
       'New subfolder',
       'Add link here',
       'Rename',

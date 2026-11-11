@@ -6,12 +6,21 @@
   @if (showLogo()) {
     <a class="sidebar__logo" routerLink="/links"><ui-logo /></a>
   }
+  @if (!foldersOnly()) {
+    <ui-tree
+      [fixedNodes]="fixedNodes()"
+      [activeId]="activeId()"
+      [ariaLabel]="'shell.sidebar.views' | transloco"
+      (selected)="select($event)"
+    />
+    <app-sidebar-pinned [activeId]="activeId()" />
+  }
   <ui-tree
-    [fixedNodes]="fixedNodes()"
+    #folderTree
     [nodes]="nodes()"
     [activeId]="activeId()"
     [heading]="'shell.sidebar.folders' | transloco"
-    [ariaLabel]="'shell.sidebar.tree' | transloco"
+    [ariaLabel]="'shell.sidebar.foldersTree' | transloco"
     [menuLabel]="menuLabel()"
     [menuNodeId]="menuNodeId()"
     [dropTargetId]="drag.treeTargetId()"
@@ -62,6 +71,12 @@
   }
 
   <ui-menu [ariaLabel]="'shell.sidebar.folderMenu' | transloco" (closed)="menuClosed()">
+    <ui-menu-item icon="bookmark" (activated)="togglePin()">
+      {{ (menuPinned() ? 'shell.sidebar.menu.unpin' : 'shell.sidebar.menu.pin') | transloco }}
+    </ui-menu-item>
+    <ui-menu-item icon="edit" (activated)="style()">
+      {{ 'shell.sidebar.menu.style' | transloco }}
+    </ui-menu-item>
     <ui-menu-item icon="folder-plus" (activated)="createSubfolder()">
       {{ 'shell.sidebar.menu.newSubfolder' | transloco }}
     </ui-menu-item>

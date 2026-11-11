@@ -8,4 +8,7 @@ import {
 export class UserSettingsResponseDto implements UserSettingsResponse {
   @ApiProperty({ enum: TRASH_RETENTION_DAYS, example: 30 })
   trashRetentionDays!: TrashRetentionDays;
+
+  @ApiProperty({ example: true })
+  folderColours!: boolean;
 }

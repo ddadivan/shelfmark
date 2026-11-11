@@ -15,7 +15,10 @@ describe('MockUserSettingsApi', () => {
   it('starts with the default retention of 30 days', async () => {
     const { api } = create();
 
-    expect(await firstValueFrom(api.get())).toEqual({ trashRetentionDays: 30 });
+    expect(await firstValueFrom(api.get())).toEqual({
+      trashRetentionDays: 30,
+      folderColours: true,
+    });
   });
 
   it('changes the retention and answers the settings as they are', async () => {
@@ -23,14 +26,21 @@ describe('MockUserSettingsApi', () => {
 
     expect(await firstValueFrom(api.update({ trashRetentionDays: 90 }))).toEqual({
       trashRetentionDays: 90,
+      folderColours: true,
     });
     expect(data.trashRetentionDays).toBe(90);
-    expect(await firstValueFrom(api.get())).toEqual({ trashRetentionDays: 90 });
+    expect(await firstValueFrom(api.get())).toEqual({
+      trashRetentionDays: 90,
+      folderColours: true,
+    });
   });
 
   it('keeps what is not sent', async () => {
     const { api } = create();
 
-    expect(await firstValueFrom(api.update({}))).toEqual({ trashRetentionDays: 30 });
+    expect(await firstValueFrom(api.update({}))).toEqual({
+      trashRetentionDays: 30,
+      folderColours: true,
+    });
   });
 });

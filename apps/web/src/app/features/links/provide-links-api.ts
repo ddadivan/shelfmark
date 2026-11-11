@@ -3,6 +3,7 @@ import {
   tabSyncedFoldersApi,
   tabSyncedLinksApi,
   tabSyncedTagsApi,
+  tabSyncedPinsApi,
   tabSyncedTrashApi,
 } from '../../core/sync/tab-synced-apis';
 import { TabSyncService } from '../../core/sync/tab-sync.service';
@@ -10,6 +11,8 @@ import { HttpExportApi } from '../export/http/http-export.api';
 import { EXPORT_API } from '../export/models/export-api.const';
 import { HttpUserSettingsApi } from '../settings/http/http-user-settings.api';
 import { USER_SETTINGS_API } from '../settings/models/user-settings-api.const';
+import { HttpPinsApi } from '../pins/http/http-pins.api';
+import { PINS_API } from '../pins/models/pins-api.const';
 import { HttpTrashApi } from '../trash/http/http-trash.api';
 import { TRASH_API } from '../trash/models/trash-api.const';
 import { HttpFoldersApi } from './http/http-folders.api';
@@ -45,6 +48,10 @@ export function provideLinksApi(): Provider[] {
     },
     { provide: EXPORT_API, useExisting: HttpExportApi },
     { provide: SHARES_API, useExisting: HttpSharesApi },
+    {
+      provide: PINS_API,
+      useFactory: () => tabSyncedPinsApi(inject(HttpPinsApi), inject(TabSyncService)),
+    },
     {
       provide: TRASH_API,
       useFactory: () => tabSyncedTrashApi(inject(HttpTrashApi), inject(TabSyncService)),

@@ -65,4 +65,9 @@ export class UpdateLinkDto implements UpdateLinkRequest {
   @ValidateIf(present)
   @IsBoolean()
   isFavorite?: boolean;
+
+  @ApiPropertyOptional({ description: 'Pin to or unpin from the top of the link folder' })
+  @ValidateIf(present)
+  @IsBoolean()
+  pinnedInFolder?: boolean;
 }

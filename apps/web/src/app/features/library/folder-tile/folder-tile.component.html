@@ -15,7 +15,12 @@
           }
   "
 >
-  <ui-folder-icon class="folder-tile__icon" size="lg" />
+  <ui-folder-icon
+    class="folder-tile__icon"
+    size="lg"
+    [icon]="folder().icon"
+    [colour]="settings.shownColour(folder().colour)"
+  />
   <span class="folder-tile__text">
     <span class="folder-tile__name">{{ folder().name }}</span>
     <span class="folder-tile__meta">

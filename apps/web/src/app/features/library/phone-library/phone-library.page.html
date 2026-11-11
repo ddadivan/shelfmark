@@ -1,6 +1,8 @@
 <section class="phone-library">
   <h1 class="phone-library__title">{{ 'library.phone.title' | transloco }}</h1>
 
+  <app-sidebar-pinned card />
+
   <div class="phone-library__tiles">
     <app-library-tile
       [href]="'/' + APP_PATH.Links"

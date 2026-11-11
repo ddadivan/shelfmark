@@ -12,6 +12,9 @@ export class LinkResponseDto implements LinkResponse, GetLinkResponse, OpenLinkR
   @ApiProperty({ nullable: true, type: String, description: 'Always null until #149' })
   imageUrl!: string | null;
   @ApiProperty() isFavorite!: boolean;
+  @ApiProperty({ format: 'date-time', nullable: true, type: String }) pinnedInFolderAt!:
+    string | null;
+  @ApiProperty({ description: 'Pinned to the sidebar' }) pinned!: boolean;
   @ApiProperty({ format: 'date-time', nullable: true, type: String }) lastOpenedAt!: string | null;
   @ApiProperty({ type: [String] }) tags!: string[];
   @ApiProperty({ format: 'date-time' }) createdAt!: string;

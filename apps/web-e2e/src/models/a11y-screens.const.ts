@@ -278,6 +278,26 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     ...OVERLAY,
   },
   {
+    name: 'folder colour and icon dialog',
+    open: async (page) => {
+      await openFeed(page);
+      await pickFolderMenuItem(page, MOCK_FIXTURE.readingName, 'Colour and icon…');
+      await expect(
+        page.getByRole('dialog', { name: MOCK_FIXTURE.readingName }).getByRole('radiogroup'),
+      ).toHaveCount(2);
+    },
+    include: TITLED_DIALOG_SELECTOR,
+    // Both projects: the dialog is a sheet on a phone.
+  },
+  {
+    name: 'sidebar with pinned items',
+    open: async (page) => {
+      await openFeed(page);
+      await pickFolderMenuItem(page, MOCK_FIXTURE.readingName, 'Pin to sidebar');
+      await expect(page.getByRole('heading', { name: 'Pinned' })).toBeVisible();
+    },
+  },
+  {
     name: 'delete folder dialog',
     open: async (page) => {
       await openFeed(page);

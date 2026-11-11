@@ -1,13 +1,23 @@
 import { computed, inject, Injector } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-import { TRASH_RETENTION_DEFAULT, type TrashRetentionDays } from '@shelfmark/contracts';
+import {
+  FOLDER_DEFAULT_COLOUR,
+  TRASH_RETENTION_DEFAULT,
+  type FolderColour,
+  type TrashRetentionDays,
+} from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
 import { SessionScope } from '../core/auth/session-scope.service';
 import { USER_SETTINGS_API } from '../features/settings/models/user-settings-api.const';
 import type { UserSettingsState } from './models/user-settings-state.interface';
 import { TrashStore } from './trash.store';
 
-const initialState: UserSettingsState = { trashRetentionDays: null, loading: false, error: false };
+const initialState: UserSettingsState = {
+  trashRetentionDays: null,
+  folderColours: null,
+  loading: false,
+  error: false,
+};
 
 /**
  * The account preferences (`/api/me/settings`), cached for the whole app. Today: how long Trash
@@ -18,12 +28,14 @@ const initialState: UserSettingsState = { trashRetentionDays: null, loading: fal
 export const UserSettingsStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
-  withComputed(({ trashRetentionDays }) => ({
+  withComputed(({ trashRetentionDays, folderColours }) => ({
     /** The retention to show: the account's, or the default until it is known. */
     retentionDays: computed<TrashRetentionDays>(
       () => trashRetentionDays() ?? TRASH_RETENTION_DEFAULT,
     ),
     loaded: computed(() => trashRetentionDays() !== null),
+    /** Folders show their colour (default until the settings say otherwise). */
+    coloursOn: computed(() => folderColours() ?? true),
   })),
   withMethods((store) => {
     const injector = inject(Injector);
@@ -46,7 +58,11 @@ export const UserSettingsStore = signalStore(
         patchState(
           store,
           startedVersion === version
-            ? { trashRetentionDays: settings.trashRetentionDays, loading: false }
+            ? {
+                trashRetentionDays: settings.trashRetentionDays,
+                folderColours: settings.folderColours,
+                loading: false,
+              }
             : { loading: false },
         );
       } catch {
@@ -66,7 +82,7 @@ export const UserSettingsStore = signalStore(
     return {
       /** Loads the settings once; a failure can be retried by calling again. */
       load(): Promise<void> {
-        if (store.loaded()) {
+        if (store.loaded() && store.folderColours() !== null) {
           return Promise.resolve();
         }
         firstLoad ??= fetchSettings().finally(() => (firstLoad = null));
@@ -81,6 +97,34 @@ export const UserSettingsStore = signalStore(
       noteRetention(days: TrashRetentionDays): void {
         if (store.trashRetentionDays() === null) {
           patchState(store, { trashRetentionDays: days });
+        }
+      },
+
+      /** The colour a folder tile is drawn in: its own, or graphite when "Folder colours" is off. */
+      shownColour(colour: FolderColour): FolderColour {
+        return (store.folderColours() ?? true) ? colour : FOLDER_DEFAULT_COLOUR;
+      },
+
+      /** Switches "Folder colours" at once; resolves false (and puts the old value back) when the request fails. */
+      async setFolderColours(on: boolean): Promise<boolean> {
+        const previous = store.folderColours();
+        if ((previous ?? true) === on) {
+          return true;
+        }
+        const started = epoch;
+        version++;
+        patchState(store, { folderColours: on });
+        try {
+          const saved = await firstValueFrom(api().update({ folderColours: on }));
+          if (started === epoch) {
+            patchState(store, { folderColours: saved.folderColours });
+          }
+          return true;
+        } catch {
+          if (started === epoch && store.folderColours() === on) {
+            patchState(store, { folderColours: previous });
+          }
+          return false;
         }
       },
 

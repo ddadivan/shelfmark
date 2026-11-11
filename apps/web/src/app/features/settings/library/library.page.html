@@ -3,6 +3,27 @@
   [description]="'settings.description.library' | transloco"
 />
 
+<ui-settings-section [title]="'settings.library.folders.title' | transloco">
+  <ui-settings-row
+    [title]="'settings.library.folders.colours.label' | transloco"
+    [description]="'settings.library.folders.colours.hint' | transloco"
+  >
+    <ui-switch
+      [label]="'settings.library.folders.colours.label' | transloco"
+      [checked]="settings.coloursOn()"
+      (checkedChange)="setColours($event)"
+    />
+  </ui-settings-row>
+  <ui-settings-row
+    [title]="'settings.library.folders.pinned.label' | transloco"
+    [description]="'settings.library.folders.pinned.hint' | transloco: { max: PIN_LIMIT.Max }"
+  >
+    <ui-button [size]="BUTTON_SIZE.Sm" ariaHaspopup="dialog" (click)="editPinned()">
+      {{ 'settings.library.folders.pinned.action' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+</ui-settings-section>
+
 <ui-settings-section [title]="'settings.library.trash.title' | transloco">
   <ui-settings-row
     #row

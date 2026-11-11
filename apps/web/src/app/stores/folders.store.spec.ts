@@ -44,6 +44,7 @@ function setup(overrides: Partial<FoldersApi> = {}) {
           { ...MOCK_LINKS[0], id: 'l3', folderId: null },
         ],
         nextCursor: null,
+        pinned: [],
       }),
     ),
     recent: vi.fn<LinksApi['recent']>(() => of({ items: [] })),

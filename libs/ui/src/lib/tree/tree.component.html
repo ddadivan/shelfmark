@@ -41,7 +41,11 @@
           </span>
         }
         @if (folder) {
-          <ui-folder-icon [size]="FOLDER_ICON_SIZE.Sm" [icon]="node.icon ?? 'folder'" />
+          <ui-folder-icon
+            [size]="FOLDER_ICON_SIZE.Sm"
+            [icon]="node.icon ?? 'folder'"
+            [colour]="node.colour ?? FOLDER_COLOUR.Graphite"
+          />
         } @else if (node.icon) {
           <ui-icon class="ui-tree__icon" [name]="node.icon" [size]="ICON_SIZE.Lg" />
         }

@@ -1,0 +1,86 @@
+@if (pins.rows().length > 0) {
+  <section class="pinned" aria-labelledby="sidebar-pinned-heading">
+    <h2 id="sidebar-pinned-heading" class="pinned__heading">
+      {{ 'shell.sidebar.pinned.heading' | transloco }}
+    </h2>
+    <ul
+      class="pinned__list"
+      cdkDropList
+      cdkDropListLockAxis="y"
+      [cdkDropListDisabled]="dragDisabled()"
+      (cdkDropListDropped)="dropped($event)"
+    >
+      @for (
+        row of pins.rows();
+        track row.key;
+        let index = $index;
+        let first = $first;
+        let last = $last
+      ) {
+        <li
+          class="pinned__item"
+          cdkDrag
+          cdkDragPreviewClass="pinned-drag-preview"
+          [cdkDragDisabled]="dragDisabled()"
+          [attr.data-pin]="row.key"
+          (contextmenu)="openContext($event, menu)"
+        >
+          @if (row.folder; as folder) {
+            <a
+              class="pinned__link"
+              [class.is-active]="activeId() === folder.id"
+              [routerLink]="folderLink(folder)"
+              [attr.aria-current]="activeId() === folder.id ? 'page' : null"
+            >
+              <ui-folder-icon
+                size="sm"
+                [icon]="folder.icon"
+                [colour]="settings.shownColour(folder.colour)"
+              />
+              <span class="pinned__name">{{ folder.name }}</span>
+              <span class="pinned__count">&ngsp;{{ folder.linkCount }}</span>
+            </a>
+          } @else if (row.link; as link) {
+            <a
+              class="pinned__link"
+              [attr.href]="href(link) ?? null"
+              [attr.target]="href(link) ? '_blank' : null"
+              [attr.rel]="href(link) ? 'noopener noreferrer' : null"
+              (click)="openLink(link)"
+            >
+              <ui-favicon [src]="favicon(link)" [letter]="letter(link)" />
+              <span class="pinned__name">{{ link.title }}</span>
+              @if (href(link)) {
+                <span class="pinned__hidden">{{ 'links.item.opensInNewTab' | transloco }}</span>
+              }
+            </a>
+          }
+          <ui-button
+            class="pinned__more"
+            variant="ghost"
+            size="sm"
+            iconOnly
+            iconLeft="more"
+            [uiMenuTrigger]="menu"
+            [ariaLabel]="menuLabel(row.folder?.name ?? row.link?.title ?? '')"
+            [uiTooltip]="menuLabel(row.folder?.name ?? row.link?.title ?? '')"
+          />
+          <ui-menu #menu align="end" [ariaLabel]="'shell.sidebar.pinned.menu' | transloco">
+            <ui-menu-item icon="sort" [disabled]="first" (activated)="move(index, -1)">
+              {{ 'shell.sidebar.pinned.moveUp' | transloco }}
+            </ui-menu-item>
+            <ui-menu-item icon="sort" [disabled]="last" (activated)="move(index, 1)">
+              {{ 'shell.sidebar.pinned.moveDown' | transloco }}
+            </ui-menu-item>
+            <ui-menu-item
+              icon="bookmark"
+              (activated)="row.folder ? unpinFolder(row.folder) : unpinLink(row.link!)"
+            >
+              {{ 'shell.sidebar.pinned.unpin' | transloco }}
+            </ui-menu-item>
+          </ui-menu>
+        </li>
+      }
+    </ul>
+  </section>
+}

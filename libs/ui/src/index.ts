@@ -4,6 +4,7 @@ export * from './lib/breadcrumbs';
 export * from './lib/button';
 export * from './lib/card';
 export * from './lib/checkbox';
+export * from './lib/choice-grid';
 export * from './lib/chip';
 export * from './lib/command-list';
 export * from './lib/dialog';

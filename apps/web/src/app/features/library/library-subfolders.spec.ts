@@ -46,7 +46,8 @@ async function setup(folderId: string, inputs: Record<string, unknown> = {}) {
       {
         provide: LINKS_API,
         useValue: {
-          list: () => of({ items: [{ ...MOCK_LINKS[0], id: 'id-1' }], nextCursor: null }),
+          list: () =>
+            of({ items: [{ ...MOCK_LINKS[0], id: 'id-1' }], nextCursor: null, pinned: [] }),
           recent: () => of({ items: [] }),
         },
       },

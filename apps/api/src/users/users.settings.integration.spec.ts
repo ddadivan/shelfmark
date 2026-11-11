@@ -37,7 +37,7 @@ describe('account settings', () => {
 
   it('defaults to 30 days', async () => {
     const res = await asUser(t.app, users.owner).get(USER_SETTINGS_ENDPOINT).expect(200);
-    expect(res.body).toEqual({ trashRetentionDays: 30 });
+    expect(res.body).toEqual({ trashRetentionDays: 30, folderColours: true });
   });
 
   it.each(TRASH_RETENTION_DAYS)('saves %i days and reads it back', async (days) => {
@@ -50,6 +50,7 @@ describe('account settings', () => {
     expect(await stored(users.owner.userId)).toBe(days);
     expect((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body).toEqual({
       trashRetentionDays: days,
+      folderColours: true,
     });
   });
 
@@ -58,6 +59,7 @@ describe('account settings', () => {
     await a.patch(USER_SETTINGS_ENDPOINT).send({ trashRetentionDays: 90 }).expect(200);
     expect((await a.patch(USER_SETTINGS_ENDPOINT).send({}).expect(200)).body).toEqual({
       trashRetentionDays: 90,
+      folderColours: true,
     });
   });
 
@@ -69,6 +71,25 @@ describe('account settings', () => {
       expect(await stored(users.owner.userId)).toBe(30);
     },
   );
+
+  it('saves folderColours independently of the retention', async () => {
+    const a = asUser(t.app, users.owner);
+    const off = await a.patch(USER_SETTINGS_ENDPOINT).send({ folderColours: false }).expect(200);
+    expect(off.body).toEqual({ trashRetentionDays: 30, folderColours: false });
+    const day = await a.patch(USER_SETTINGS_ENDPOINT).send({ trashRetentionDays: 7 }).expect(200);
+    expect(day.body).toEqual({ trashRetentionDays: 7, folderColours: false });
+    expect((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body).toEqual(day.body);
+    const other = asUser(t.app, users.intruder);
+    expect((await other.get(USER_SETTINGS_ENDPOINT).expect(200)).body).toEqual({
+      trashRetentionDays: 30,
+      folderColours: true,
+    });
+  });
+
+  it.each([['false'], [null], [0], [1]])('rejects folderColours %j with 400', async (value) => {
+    const a = asUser(t.app, users.owner);
+    await a.patch(USER_SETTINGS_ENDPOINT).send({ folderColours: value }).expect(400);
+  });
 
   it('rejects extra fields', async () => {
     const a = asUser(t.app, users.owner);
@@ -83,6 +104,7 @@ describe('account settings', () => {
     await a.patch(USER_SETTINGS_ENDPOINT).send({ trashRetentionDays: 7 }).expect(200);
     expect((await b.get(USER_SETTINGS_ENDPOINT).expect(200)).body).toEqual({
       trashRetentionDays: 30,
+      folderColours: true,
     });
     await b.patch(USER_SETTINGS_ENDPOINT).send({ trashRetentionDays: 90 }).expect(200);
     expect(await stored(users.owner.userId)).toBe(7);
@@ -93,10 +115,11 @@ describe('account settings', () => {
     const demo = asUser(t.app, await signInDemo(t.app, t.baseUrl));
     expect((await demo.get(USER_SETTINGS_ENDPOINT).expect(200)).body).toEqual({
       trashRetentionDays: 30,
+      folderColours: true,
     });
     expect(
       (await demo.patch(USER_SETTINGS_ENDPOINT).send({ trashRetentionDays: 7 }).expect(200)).body,
-    ).toEqual({ trashRetentionDays: 7 });
+    ).toEqual({ trashRetentionDays: 7, folderColours: true });
   });
 
   it('needs a session, a JSON body and the same origin', async () => {
