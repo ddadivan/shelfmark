@@ -137,7 +137,14 @@ jobs:
           if [ "$projects" = "[]" ]; then echo "needed=false" >> "$GITHUB_OUTPUT"; else echo "needed=true" >> "$GITHUB_OUTPUT"; fi
       - name: Install Chromium
         if: steps.browser.outputs.needed == 'true'
-        run: npx playwright install --with-deps chromium
+        # The system packages come from the Ubuntu mirrors; when those are down, the runner image
+        # already has Chromium's libraries, so the browser alone is enough (no screenshot tests
+        # depend on system fonts).
+        run: |
+          timeout 600 npx playwright install --with-deps chromium || {
+            echo "::warning::System packages for Chromium failed to install (Ubuntu mirror?); installing the browser only"
+            npx playwright install chromium
+          }
       # A PR into `stage` runs only the browser tests its diff touches plus a smoke set
       # (tools/ci/pr-browser-tests.sh), so the required check stays short. Pushes to `stage` and
       # release PRs into `main` run every affected suite, so nothing skipped on a PR goes unchecked.
@@ -191,7 +198,14 @@ jobs:
           if [ "$projects" = "[]" ]; then echo "needed=false" >> "$GITHUB_OUTPUT"; else echo "needed=true" >> "$GITHUB_OUTPUT"; fi
       - name: Install Chromium
         if: steps.web.outputs.needed == 'true'
-        run: npx playwright install --with-deps chromium
+        # The system packages come from the Ubuntu mirrors; when those are down, the runner image
+        # already has Chromium's libraries, so the browser alone is enough (no screenshot tests
+        # depend on system fonts).
+        run: |
+          timeout 600 npx playwright install --with-deps chromium || {
+            echo "::warning::System packages for Chromium failed to install (Ubuntu mirror?); installing the browser only"
+            npx playwright install chromium
+          }
       # @lhci/cli lives in its own lockfile (tools/lighthouse, ADR 0028): its dependency tree has
       # high npm audit advisories that must not reach the root tree or the required npm-audit job.
       - name: Install Lighthouse CI (install scripts off)
