@@ -138,8 +138,14 @@ jobs:
       - name: Install Chromium
         if: steps.browser.outputs.needed == 'true'
         run: npx playwright install --with-deps chromium
-      - name: Run e2e and Storybook a11y tests
-        if: steps.browser.outputs.needed == 'true'
+      # A PR into `stage` runs only the browser tests its diff touches plus a smoke set
+      # (tools/ci/pr-browser-tests.sh), so the required check stays short. Pushes to `stage` and
+      # release PRs into `main` run every affected suite, so nothing skipped on a PR goes unchecked.
+      - name: Run e2e and Storybook a11y tests for the diff
+        if: steps.browser.outputs.needed == 'true' && github.event_name == 'pull_request' && github.base_ref == 'stage'
+        run: tools/ci/pr-browser-tests.sh origin/stage
+      - name: Run every e2e and Storybook a11y test
+        if: steps.browser.outputs.needed == 'true' && !(github.event_name == 'pull_request' && github.base_ref == 'stage')
         # One target at a time: web-e2e and test-storybook each use 4 browser workers.
         run: npx nx affected -t e2e test-storybook --parallel=1 --output-style=static
       - if: failure()
