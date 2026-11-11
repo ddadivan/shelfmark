@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { AdminModule } from '../admin/admin.module';
 import { AuthModule } from '../auth/auth.module';
 import { SessionAuthGuard } from '../auth/session-auth.guard';
 import { CsrfGuard } from '../common/csrf/csrf.guard';
@@ -34,6 +35,7 @@ import { UsersModule } from '../users/users.module';
     LinksModule,
     DemoModule,
     FeedbackModule,
+    AdminModule,
     UsersModule,
     ExportModule,
     SharesModule,

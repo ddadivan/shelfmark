@@ -29,6 +29,8 @@ import {
 } from '@shelfmark/ui';
 import { EXPORT_FORMAT, type ExportFormat } from '@shelfmark/contracts';
 import { combineLatest, filter, map } from 'rxjs';
+import { AdminStore } from '../features/admin/admin.store';
+import { FeedbackDialogService } from '../features/feedback/feedback-dialog.service';
 import { ExportActionsService } from '../features/export/export-actions.service';
 import { AuthStore } from '../core/auth/auth.store';
 import { LinkActionsService } from '../features/links/link-actions.service';
@@ -41,6 +43,7 @@ import { ThemeService } from '../core/theme/theme.service';
 import { isMacPlatform } from '../features/search/is-mac-platform';
 import { ViewportService } from '../core/layout/viewport.service';
 import { APP_PATH } from '../models/app-path.const';
+import { ADMIN_PATH } from '../features/admin/models/admin-path.const';
 import { HowItWorksService } from '../features/how-it-works/how-it-works.service';
 import { DemoBannerComponent } from './demo-banner/demo-banner.component';
 import { OfflineBannerComponent } from './offline-banner/offline-banner.component';
@@ -133,6 +136,18 @@ export default class AppShellComponent {
   protected readonly searchShortcut = isMacPlatform() ? '⌘K' : 'Ctrl K';
 
   protected readonly onboarding = inject(OnboardingStore);
+  protected readonly feedback = inject(FeedbackDialogService);
+  protected readonly admin = inject(AdminStore);
+
+  /** Asks once per session whether this is the author (the "Feedback inbox" entry); never for a demo user. */
+  private readonly adminCheck = effect(() => {
+    const user = this.auth.user();
+    untracked(() => {
+      if (user !== null && !user.isDemo) {
+        void this.admin.check();
+      }
+    });
+  });
 
   /** The welcome dialog opens whenever it becomes due: first sign-in, or "Show welcome again". */
   private readonly welcome = effect(() => {
@@ -180,6 +195,10 @@ export default class AppShellComponent {
 
   protected async openSettings(): Promise<void> {
     await this.router.navigateByUrl(`/${APP_PATH.Settings}`);
+  }
+
+  protected async openFeedbackInbox(): Promise<void> {
+    await this.router.navigateByUrl(`/${APP_PATH.Admin}/${ADMIN_PATH.Feedback}`);
   }
 
   /** "About Shelfmark": the landing page, with "Back to my shelf" and "What's new" (#270). */

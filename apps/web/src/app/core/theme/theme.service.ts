@@ -60,6 +60,18 @@ export class ThemeService {
       query.addEventListener('change', onChange);
       this.destroyRef.onDestroy(() => query.removeEventListener('change', onChange));
     }
+
+    // Another tab changed the theme (tab sync, #268): the browser reports the stored value here.
+    const view = this.document.defaultView;
+    if (view) {
+      const onStorage = (event: StorageEvent): void => {
+        if (event.key === THEME_STORAGE_KEY) {
+          this.preferenceState.set(this.readStored() ?? THEME_PREFERENCE.System);
+        }
+      };
+      view.addEventListener('storage', onStorage);
+      this.destroyRef.onDestroy(() => view.removeEventListener('storage', onStorage));
+    }
   }
 
   setPreference(preference: ThemePreference): void {

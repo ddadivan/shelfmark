@@ -19,6 +19,12 @@ import { HttpSharesApi } from '../../sharing/http/http-shares.api';
 import { MockSharesApi } from '../../sharing/mock/mock-shares.api';
 import { SHARES_API } from '../../sharing/models/shares-api.const';
 import type { SharesApi } from '../../sharing/models/shares-api.interface';
+import {
+  tabSyncedFoldersApi,
+  tabSyncedLinksApi,
+  tabSyncedTagsApi,
+} from '../../../core/sync/tab-synced-apis';
+import { TabSyncService } from '../../../core/sync/tab-sync.service';
 
 /** True when `sm-real-auth-api` is set in `localStorage` (the same switch as `provide-auth-api.dev.ts`). */
 function useRealApi(): boolean {
@@ -29,22 +35,33 @@ function useRealApi(): boolean {
 /**
  * Replaces `provide-links-api.ts` in the `development` and `e2e` builds (`fileReplacements`):
  * the same seams backed by the contract mocks, or by the `Http*` APIs when `sm-real-auth-api`
- * is set. The production build never imports this file.
+ * is set, wrapped for tab sync like the production seams. The production build never imports this file.
  */
 export function provideLinksApi(): Provider[] {
   return [
     {
       provide: LINKS_API,
-      useFactory: (): LinksApi => (useRealApi() ? inject(HttpLinksApi) : inject(MockLinksApi)),
+      useFactory: (): LinksApi =>
+        tabSyncedLinksApi(
+          useRealApi() ? inject(HttpLinksApi) : inject(MockLinksApi),
+          inject(TabSyncService),
+        ),
     },
     {
       provide: FOLDERS_API,
       useFactory: (): FoldersApi =>
-        useRealApi() ? inject(HttpFoldersApi) : inject(MockFoldersApi),
+        tabSyncedFoldersApi(
+          useRealApi() ? inject(HttpFoldersApi) : inject(MockFoldersApi),
+          inject(TabSyncService),
+        ),
     },
     {
       provide: TAGS_API,
-      useFactory: (): TagsApi => (useRealApi() ? inject(HttpTagsApi) : inject(MockTagsApi)),
+      useFactory: (): TagsApi =>
+        tabSyncedTagsApi(
+          useRealApi() ? inject(HttpTagsApi) : inject(MockTagsApi),
+          inject(TabSyncService),
+        ),
     },
     {
       provide: SHARES_API,

@@ -1,3 +1,4 @@
+import { CdkDrag, type CdkDragMove, CdkDragPlaceholder, CdkDropList } from '@angular/cdk/drag-drop';
 import { DOCUMENT } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -55,6 +56,7 @@ import { sameFilter } from '../links/links-filter';
 import { parseSearchQuery } from '../links/search-query';
 import { InViewDirective } from '../links/in-view/in-view.directive';
 import { LinkActionsService } from '../links/link-actions.service';
+import { LinkDragService } from '../links/drag/link-drag.service';
 import { HowItWorksService } from '../how-it-works/how-it-works.service';
 import { LinkCardComponent } from '../links/link-card/link-card.component';
 import { LinkRowComponent } from '../links/link-row/link-row.component';
@@ -93,6 +95,9 @@ interface LastShown {
 @Component({
   selector: 'app-library-page',
   imports: [
+    CdkDrag,
+    CdkDragPlaceholder,
+    CdkDropList,
     TranslocoPipe,
     BreadcrumbsComponent,
     ButtonComponent,
@@ -123,6 +128,9 @@ export default class LibraryPage {
   protected readonly actions = inject(LinkActionsService);
   protected readonly howItWorks = inject(HowItWorksService);
   protected readonly phone = inject(ViewportService).phone;
+  protected readonly drag = inject(LinkDragService);
+  /** Touch holds 150 ms before a drag starts (DragDrop spec), so a swipe still scrolls. */
+  protected readonly DRAG_START_DELAY = { touch: 150, mouse: 0 };
   private readonly exporter = inject(ExportActionsService);
   private readonly folders = inject(FoldersStore);
   private readonly router = inject(Router);
@@ -413,6 +421,11 @@ export default class LibraryPage {
   }
 
   /** Page keys with nothing focused scroll the feed area (the page itself does not scroll). */
+  /** Hit-tests the folders under the pointer while a link is dragged. */
+  protected onDragMoved(event: CdkDragMove<unknown>): void {
+    this.drag.move(event.pointerPosition.x, event.pointerPosition.y);
+  }
+
   protected onKeydown(event: KeyboardEvent): void {
     const area = this.scroller()?.nativeElement;
     if (area) {

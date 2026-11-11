@@ -55,6 +55,8 @@ const template = `
         [fixedNodes]="fixedNodes"
         [nodes]="nodes"
         [activeId]="activeId"
+        [dropTargetId]="dropTargetId"
+        [dropLabel]="dropLabel"
       />
     </div>
   </div>`;
@@ -85,6 +87,15 @@ export const LongNames: Story = {
 /** The active row is `accent-bg`; a different row is current here. */
 export const SelectedState: Story = {
   args: { activeId: TREE_STORY_ID.Favorites },
+  render: (args) => ({ props: args, template }),
+};
+
+/**
+ * A link is dragged over "Recipes": the row is the drop target (sage fill and ring, "Move here"
+ * instead of the count). A closed folder under the target opens after 600 ms.
+ */
+export const DropTarget: Story = {
+  args: { dropTargetId: TREE_STORY_ID.Recipes, dropLabel: 'Move here' },
   render: (args) => ({ props: args, template }),
 };
 

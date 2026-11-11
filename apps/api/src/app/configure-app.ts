@@ -3,6 +3,7 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ThrottlerStorage } from '@nestjs/throttler';
 import helmet from 'helmet';
+import { createFeedbackMessageBodyParser } from '../feedback/feedback-message-body-parser';
 import { authAllowListMiddleware } from '../auth/auth-allow-list.middleware';
 import { AllExceptionsFilter } from '../common/errors/all-exceptions.filter';
 import { createAuthRateLimitMiddleware } from '../common/rate-limit/auth-rate-limit.middleware';
@@ -36,6 +37,14 @@ export function configureApp(app: NestExpressApplication, options: ConfigureAppO
       app.get(ThrottlerStorage, { strict: false }),
       shouldTrustProxyHeaders(),
       options.authRateLimit ?? RATE_LIMIT.Auth,
+    ),
+  );
+  // The one route that takes a larger JSON body (a base64 screenshot of up to 2 MB plus text). It
+  // parses first; the global parser then skips the already parsed body. Everything else stays 100kb.
+  app.use(
+    createFeedbackMessageBodyParser(
+      app.get(ThrottlerStorage, { strict: false }),
+      shouldTrustProxyHeaders(),
     ),
   );
   app.useBodyParser('json', { limit: '100kb' });
