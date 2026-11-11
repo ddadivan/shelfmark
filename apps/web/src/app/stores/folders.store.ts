@@ -22,14 +22,15 @@ const initialState: FoldersState = {
   error: false,
 };
 
+/** The API order: the manual place among the siblings (#314), then the name. */
 function byName(folders: readonly FolderResponse[]): FolderResponse[] {
-  return [...folders].sort((a, b) => a.name.localeCompare(b.name));
+  return [...folders].sort((a, b) => a.position - b.position || a.name.localeCompare(b.name));
 }
 
 /**
  * The user's folders as a flat list (the API shape) with the counts of the fixed sidebar rows,
- * cached for the whole app. Create waits for the server; rename and move are optimistic and roll
- * back on failure; remove updates the folder list and the loaded links. `reset()` (sign-out)
+ * cached for the whole app. Create waits for the server; rename, move and reorder are optimistic and
+ * roll back on failure; remove updates the folder list and the loaded links. `reset()` (sign-out)
  * forgets everything and drops responses still in flight.
  */
 export const FoldersStore = signalStore(
@@ -37,7 +38,7 @@ export const FoldersStore = signalStore(
   withEntities<FolderResponse>(),
   withState(initialState),
   withComputed(({ entities }) => ({
-    /** The nested tree, siblings in list order (by name). */
+    /** The nested tree, siblings in list order (manual position, then name). */
     tree: computed(() => buildFolderTree(entities())),
     count: computed(() => entities().length),
     /** The per-user folder limit is reached. */
@@ -118,6 +119,20 @@ export const FoldersStore = signalStore(
             store
               .entities()
               .map((folder) => (folder.id === id ? { ...folder, ...changes } : folder)),
+          ),
+        ),
+      );
+    }
+
+    function setPositions(positions: ReadonlyMap<string, number>): void {
+      patchState(
+        store,
+        setAllEntities(
+          byName(
+            store.entities().map((folder) => {
+              const position = positions.get(folder.id);
+              return position === undefined ? folder : { ...folder, position };
+            }),
           ),
         ),
       );
@@ -252,17 +267,72 @@ export const FoldersStore = signalStore(
           return false;
         }
         const token = begin();
-        replace(id, { parentId });
+        // A move goes to the end of the new parent (the API does the same).
+        const position =
+          parentId === previous.parentId
+            ? previous.position
+            : store
+                .entities()
+                .filter((folder) => folder.parentId === parentId && folder.id !== id)
+                .reduce((max, folder) => Math.max(max, folder.position), -1) + 1;
+        replace(id, { parentId, position });
         try {
           const saved = await firstValueFrom(api().update(id, { parentId }));
           if (token === epoch) {
-            replace(id, { updatedAt: saved.updatedAt });
+            replace(id, { updatedAt: saved.updatedAt, position: saved.position });
           }
           return true;
         } catch {
           // Only while the parent is still the optimistic one: a later move must not be undone.
           if (token === epoch && store.entityMap()[id]?.parentId === parentId) {
-            replace(id, { parentId: previous.parentId });
+            replace(id, { parentId: previous.parentId, position: previous.position });
+          }
+          return false;
+        } finally {
+          finish(token);
+        }
+      },
+
+      /** The folders that share the parent of `id` (itself included), in order. */
+      siblingsOf(id: string): FolderResponse[] {
+        const folder = store.entityMap()[id];
+        return folder ? store.entities().filter((other) => other.parentId === folder.parentId) : [];
+      },
+
+      /**
+       * Moves the folder to `toIndex` among its siblings at once (never to another parent);
+       * resolves false (and puts the order back) when the request fails.
+       */
+      async reorder(id: string, toIndex: number): Promise<boolean> {
+        const folder = store.entityMap()[id];
+        if (!folder) {
+          return false;
+        }
+        const siblings = store.entities().filter((other) => other.parentId === folder.parentId);
+        const from = siblings.findIndex((other) => other.id === id);
+        const to = Math.max(0, Math.min(toIndex, siblings.length - 1));
+        if (from === to) {
+          return true;
+        }
+        const next = [...siblings];
+        const [moved] = next.splice(from, 1);
+        next.splice(to, 0, moved);
+        const before = new Map(siblings.map((other) => [other.id, other.position]));
+        const wanted = new Map(next.map((other, position) => [other.id, position]));
+        const token = begin();
+        setPositions(wanted);
+        try {
+          await firstValueFrom(
+            api().reorder({ parentId: folder.parentId, ids: next.map((other) => other.id) }),
+          );
+          return true;
+        } catch {
+          // Only while the order is still the optimistic one: a later change must not be undone.
+          if (
+            token === epoch &&
+            [...wanted].every(([key, position]) => store.entityMap()[key]?.position === position)
+          ) {
+            setPositions(before);
           }
           return false;
         } finally {

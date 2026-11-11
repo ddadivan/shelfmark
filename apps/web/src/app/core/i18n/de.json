@@ -673,6 +673,10 @@
         "moveUp": "Nach oben",
         "moveDown": "Nach unten",
         "unpin": "Von Seitenleiste lösen"
+      },
+      "reorder": {
+        "movedUp": "Nach oben verschoben, Position {{position}} von {{total}}",
+        "movedDown": "Nach unten verschoben, Position {{position}} von {{total}}"
       }
     },
     "searchHint": "Deine Links durchsuchen",
@@ -1373,7 +1377,8 @@
       "moveFolder": "Zwischen Ordnern wechseln",
       "toggleFolder": "Ordner zu- oder aufklappen",
       "folderMenu": "Ordnermenü öffnen",
-      "paste": "Links in die Bibliothek einfügen"
+      "paste": "Links in die Bibliothek einfügen",
+      "reorder": "Angeheftetes Element oder Ordner nach oben oder unten verschieben"
     },
     "keys": {
       "command": "Befehl",

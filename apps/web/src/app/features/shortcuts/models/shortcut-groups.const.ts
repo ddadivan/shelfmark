@@ -5,7 +5,7 @@ import { SHORTCUT_KEY } from './shortcut-key.const';
  * Every shortcut the app really has (read from the code, not from the mockups, which draw many
  * more): search (`SearchDialogService`), Esc (dialogs, menus, toasts), undo and the toast action
  * (`ToastService`), save in the link dialog, paste links into the library (`LibraryPage`), the
- * search results, the folder tree.
+ * search results, the folder tree and reordering the sidebar (Alt+Up / Alt+Down).
  */
 export const SHORTCUT_GROUPS: readonly ShortcutGroup[] = [
   {
@@ -43,6 +43,11 @@ export const SHORTCUT_GROUPS: readonly ShortcutGroup[] = [
       { labelKey: 'shortcuts.items.moveFolder', keys: [SHORTCUT_KEY.Up, SHORTCUT_KEY.Down] },
       { labelKey: 'shortcuts.items.toggleFolder', keys: [SHORTCUT_KEY.Left, SHORTCUT_KEY.Right] },
       { labelKey: 'shortcuts.items.folderMenu', keys: [SHORTCUT_KEY.Shift, SHORTCUT_KEY.F10] },
+      // The sidebar's Pinned rows and folder rows (#314): the keyboard route of dragging.
+      {
+        labelKey: 'shortcuts.items.reorder',
+        keys: [SHORTCUT_KEY.Alt, SHORTCUT_KEY.Up, SHORTCUT_KEY.Down],
+      },
     ],
   },
 ];

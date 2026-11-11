@@ -255,3 +255,84 @@ $more-column: rem(30px);
     }
   }
 }
+
+// Reorder (folder rows, a mouse): the siblings glide aside while a row is dragged; the place
+// where it lands is a slot with a 2px sage line and a dot at its start (DragDrop spec: one clear
+// drop indicator). The dragged row follows the pointer as a small floating card.
+.ui-tree__list--sorting > .ui-tree__item:not(.ui-tree__drop-line),
+.ui-tree__item.cdk-drag-animating {
+  transition: transform var(--duration-base) var(--ease-out);
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+.ui-tree__drop-line {
+  position: relative;
+  min-height: rem(36px);
+  list-style: none;
+
+  @include phone {
+    min-height: rem(44px);
+  }
+
+  @include coarse {
+    min-height: rem(44px);
+  }
+}
+
+.ui-tree__drop-line-mark {
+  position: absolute;
+  inset-block-start: 50%;
+
+  // Starts under the folder tile (row padding + the 24px chevron slot + its 8px gap).
+  inset-inline: calc(#{rem(42px)} + (var(--ui-tree-level, 1) - 1) * #{rem(16px)}) rem(4px);
+  height: rem(2px);
+  background: var(--accent);
+  border-radius: var(--radius-full);
+  transform: translateY(-50%);
+
+  // The dot marks where the line starts, like an insertion caret.
+  &::before {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 0;
+    width: rem(8px);
+    height: rem(8px);
+    content: '';
+    background: var(--surface);
+    border: 2px solid var(--accent);
+    border-radius: var(--radius-full);
+    transform: translate(-50%, -50%);
+  }
+}
+
+// The preview's top-left corner is at the pointer: the card is offset so the pointer sits at its
+// start and the rows below stay visible.
+.ui-tree__reorder-preview {
+  pointer-events: none;
+}
+
+.ui-tree__reorder-card {
+  @include type(body);
+
+  display: flex;
+  gap: rem(8px);
+  align-items: center;
+  max-width: rem(240px);
+  min-height: rem(36px);
+  padding-inline: rem(10px) rem(14px);
+  font-size: rem(14px);
+  font-weight: 500;
+  line-height: rem(20px);
+  color: var(--text);
+  background: var(--surface);
+  border-radius: calc(var(--radius-md) - #{rem(2px)});
+  box-shadow: var(--shadow-float);
+  transform: translate(rem(-12px), -50%) rotate(-1.5deg);
+
+  @include reduced-motion {
+    transform: translate(rem(-12px), -50%);
+  }
+}

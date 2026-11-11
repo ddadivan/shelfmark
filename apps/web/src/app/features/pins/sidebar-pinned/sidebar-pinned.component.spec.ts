@@ -1,3 +1,4 @@
+import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { PIN_KIND } from '@shelfmark/contracts';
@@ -92,22 +93,64 @@ describe('SidebarPinnedComponent', () => {
     expect(rows[1].textContent).toContain(data.links[0].title);
   });
 
-  it('moves an item down with its menu and back up (keyboard alternative to dragging)', async () => {
-    const { element, fixture, pins } = await setup();
-
+  it('has no "Move up" / "Move down" in the item menu any more (#314)', async () => {
+    const { element } = await setup();
     await openMenu(element, 0);
-    menuItem('Move down').click();
+    const labels = [...document.querySelectorAll('[role="menuitem"]')].map((item) =>
+      item.textContent?.trim(),
+    );
+    expect(labels).not.toContain('Move up');
+    expect(labels).not.toContain('Move down');
+  });
+
+  it('moves the focused row with Alt+ArrowDown / Alt+ArrowUp, announces it and keeps focus', async () => {
+    const { element, fixture, pins } = await setup();
+    const announce = vi.spyOn(TestBed.inject(LiveAnnouncer), 'announce');
+    const link = () => items(element)[0].querySelector<HTMLElement>('.pinned__link');
+    const press = (target: HTMLElement | null, key: string) => {
+      const event = new KeyboardEvent('keydown', {
+        key,
+        altKey: true,
+        bubbles: true,
+        cancelable: true,
+      });
+      target?.dispatchEvent(event);
+      return event;
+    };
+
+    link()?.focus();
+    const down = press(link(), 'ArrowDown');
+    expect(down.defaultPrevented).toBe(true);
     await vi.waitFor(() => {
       fixture.detectChanges();
       expect(pins.rows().map((row) => row.kind)).toEqual([PIN_KIND.Link, PIN_KIND.Folder]);
     });
+    expect(announce).toHaveBeenLastCalledWith('Moved down, position 2 of 2', 'polite');
+    await vi.waitFor(() => {
+      TestBed.tick();
+      expect(document.activeElement).toBe(items(element)[1].querySelector('.pinned__link'));
+    });
 
-    await openMenu(element, 1);
-    menuItem('Move up').click();
+    press(items(element)[1].querySelector<HTMLElement>('.pinned__link'), 'ArrowUp');
     await vi.waitFor(() => {
       fixture.detectChanges();
       expect(pins.rows().map((row) => row.kind)).toEqual([PIN_KIND.Folder, PIN_KIND.Link]);
     });
+    expect(announce).toHaveBeenLastCalledWith('Moved up, position 1 of 2', 'polite');
+  });
+
+  it('does nothing past the ends, from the "..." button or without Alt', async () => {
+    const { element, pins } = await setup();
+    const first = items(element)[0];
+    const fire = (target: Element | null, init: KeyboardEventInit) =>
+      target?.dispatchEvent(
+        new KeyboardEvent('keydown', { bubbles: true, cancelable: true, ...init }),
+      );
+    fire(first.querySelector('.pinned__link'), { key: 'ArrowUp', altKey: true });
+    fire(first.querySelector('.pinned__link'), { key: 'ArrowDown' });
+    fire(first.querySelector('.pinned__more button'), { key: 'ArrowDown', altKey: true });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(pins.rows().map((row) => row.kind)).toEqual([PIN_KIND.Folder, PIN_KIND.Link]);
   });
 
   it('unpins from the menu', async () => {

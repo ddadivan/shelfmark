@@ -673,6 +673,10 @@
         "moveUp": "Move up",
         "moveDown": "Move down",
         "unpin": "Unpin from sidebar"
+      },
+      "reorder": {
+        "movedUp": "Moved up, position {{position}} of {{total}}",
+        "movedDown": "Moved down, position {{position}} of {{total}}"
       }
     },
     "searchHint": "Search your links",
@@ -1373,7 +1377,8 @@
       "moveFolder": "Move between folders",
       "toggleFolder": "Close or open a folder",
       "folderMenu": "Open the folder menu",
-      "paste": "Paste links into the library"
+      "paste": "Paste links into the library",
+      "reorder": "Move a pinned item or folder up or down"
     },
     "keys": {
       "command": "Command",

@@ -3,6 +3,7 @@ import { TooltipDirective } from '../tooltip/tooltip.directive';
 import { NgTemplateOutlet } from '@angular/common';
 import { Tree, TreeItem, TreeItemGroup } from '@angular/aria/tree';
 import {
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
   computed,
@@ -35,6 +36,12 @@ import { KEYBOARD_KEY } from '../keyboard';
 import type { TreeRowPlace } from './models/tree-row-place.interface';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
 import { TREE_DROP_OPEN_DELAY_MS } from './models/tree-drop-open-delay.const';
+import type { TreeReorderDrop } from './models/tree-reorder-drop.interface';
+import type { UiTreeReorderEvent } from './models/tree-reorder-event.interface';
+import { UI_TREE_REORDER_TRIGGER } from './models/tree-reorder-trigger.const';
+import type { UiTreeReorderTrigger } from './models/tree-reorder-trigger.type';
+import { TreeReorderItemDirective } from './tree-reorder-item.directive';
+import { TreeReorderListDirective } from './tree-reorder-list.directive';
 
 /** Safety net: a pending keyboard echo is dropped after this long (a held key refreshes it). */
 const KEYBOARD_ECHO_TIMEOUT_MS = 1000;
@@ -50,7 +57,11 @@ const KEYBOARD_ECHO_RELEASE_MS = 100;
  * A button with the `uiTreeHeadingAction` attribute is shown at the end of the heading row (for
  * example "Create a folder"); it is outside the tree element, which only allows rows.
  *
- * Presentational: it emits `selected`, `toggled` and `contextMenu`; the feature routes and opens
+ * With `reorderable`, folder rows also move among their siblings (never to another parent): drag
+ * a row with a mouse (CDK drag and drop, a drop line marks the place) or press Alt+Up / Alt+Down
+ * on the focused row; both emit `reordered`, and the row keeps focus after a keyboard move.
+ *
+ * Presentational: it emits `selected`, `toggled`, `contextMenu` and `reordered`; the feature routes and opens
  * its `ui-menu` (`openAt(position)` for a right click, `openFrom(anchor)` for the "..." button
  * and Shift+F10 / the context-menu key). Every string comes in through an input.
  */
@@ -67,6 +78,8 @@ const KEYBOARD_ECHO_RELEASE_MS = 100;
     Tree,
     TreeItem,
     TreeItemGroup,
+    TreeReorderItemDirective,
+    TreeReorderListDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -100,6 +113,8 @@ export class TreeComponent {
   protected readonly actionHeight = signal(0);
   /** Where every row has been seen (kept for removed rows, so focus can find a neighbour). */
   private readonly lastKnown = new Map<string, TreeRowPlace>();
+  /** A row moved with the keyboard: it takes focus back once the new order is on screen. */
+  private refocusId: string | null = null;
   /** The row that held focus last; cleared when focus moves to another element. */
   private focused: { readonly id: string; readonly element: HTMLElement } | null = null;
 
@@ -132,7 +147,18 @@ export class TreeComponent {
     effect(() => {
       this.remember();
       // The rows are re-rendered after this effect: look at them then.
-      if (this.focused) {
+      if (this.refocusId !== null) {
+        const id = this.refocusId;
+        afterNextRender(
+          () => {
+            if (this.refocusId === id) {
+              this.refocusId = null;
+              this.focusRow(id);
+            }
+          },
+          { injector: this.injector },
+        );
+      } else if (this.focused) {
         afterNextRender(() => this.restoreIfDropped(), { injector: this.injector });
       }
     });
@@ -259,6 +285,13 @@ export class TreeComponent {
   readonly dropTargetId = input<string | null>(null);
   /** Badge text on the drop target row ("Move here"); none when empty. */
   readonly dropLabel = input<string>();
+  /**
+   * Folder rows can be reordered among their siblings: dragged with a mouse (never by touch) or
+   * moved with Alt+Up / Alt+Down. The tree only emits `reordered`; the feature saves the order.
+   */
+  readonly reorderable = input(false, { transform: booleanAttribute });
+  /** A folder row asks for another place among its siblings (see `UiTreeReorderEvent`). */
+  readonly reordered = output<UiTreeReorderEvent>();
   /** A row was chosen (click, Enter). */
   readonly selected = output<UiTreeNode>();
   /** A folder opened or closed. */
@@ -363,7 +396,7 @@ export class TreeComponent {
 
   /**
    * Keys the row handles itself: the context-menu key, Shift+F10 and Alt+Enter open the folder
-   * menu. Keys that come from the "..." button inside the row never reach the Aria tree (Enter
+   * menu; Alt+Up / Alt+Down move a folder among its siblings (with `reorderable`). Keys that come from the "..." button inside the row never reach the Aria tree (Enter
    * would choose the roving row, Space is blocked, letters would start a typeahead).
    */
   protected onKeydown(
@@ -374,6 +407,9 @@ export class TreeComponent {
   ): void {
     const echoing =
       event.key === KEYBOARD_KEY.ContextMenu || (event.shiftKey && event.key === KEYBOARD_KEY.F10);
+    if (folder && event.target === row && this.reorderByKey(event, node)) {
+      return;
+    }
     if (folder && (echoing || (event.altKey && event.key === KEYBOARD_KEY.Enter))) {
       event.preventDefault();
       event.stopPropagation();
@@ -392,6 +428,66 @@ export class TreeComponent {
     } else if (event.target !== row) {
       event.stopPropagation();
     }
+  }
+
+  /** A drag ended in the sibling list of `parentId` (`null` = the top level). */
+  protected onDropped(drop: TreeReorderDrop, parentId: string | null): void {
+    if (drop.previousIndex !== drop.currentIndex) {
+      this.emitReorder(drop.id, parentId, drop.currentIndex, UI_TREE_REORDER_TRIGGER.Pointer);
+    }
+  }
+
+  /** Alt+Up / Alt+Down on a folder row: one place up or down among its siblings. */
+  private reorderByKey(event: KeyboardEvent, node: UiTreeNode): boolean {
+    const up = event.key === KEYBOARD_KEY.ArrowUp;
+    if (
+      !this.reorderable() ||
+      !event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey ||
+      (!up && event.key !== KEYBOARD_KEY.ArrowDown)
+    ) {
+      return false;
+    }
+    // Ours, also at the ends: Aria must not read Alt+arrow as a plain arrow.
+    event.preventDefault();
+    event.stopPropagation();
+    const parentId = this.lastKnown.get(node.id)?.parent ?? null;
+    const siblings = this.siblingsOf(parentId);
+    const from = siblings.findIndex((sibling) => sibling.id === node.id);
+    const to = from + (up ? -1 : 1);
+    if (from >= 0 && to >= 0 && to < siblings.length) {
+      this.refocusId = node.id;
+      this.emitReorder(node.id, parentId, to, UI_TREE_REORDER_TRIGGER.Keyboard);
+    }
+    return true;
+  }
+
+  private emitReorder(
+    id: string,
+    parentId: string | null,
+    toIndex: number,
+    trigger: UiTreeReorderTrigger,
+  ): void {
+    const siblings = this.siblingsOf(parentId);
+    const fromIndex = siblings.findIndex((sibling) => sibling.id === id);
+    if (fromIndex < 0) {
+      return;
+    }
+    this.reordered.emit({
+      node: siblings[fromIndex],
+      parentId,
+      fromIndex,
+      toIndex,
+      total: siblings.length,
+      trigger,
+    });
+  }
+
+  /** The folder rows under `parentId` (`null` = the top level) as they are now. */
+  private siblingsOf(parentId: string | null): readonly UiTreeNode[] {
+    return parentId === null ? this.nodes() : (this.nodesById().get(parentId)?.children ?? []);
   }
 
   protected onKeyup(): void {

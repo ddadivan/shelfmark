@@ -32,7 +32,7 @@ export class FoldersService {
     const [rows, perFolder, all, unsorted, favorites] = await this.prisma.$transaction([
       this.prisma.folder.findMany({
         where: { userId, deletedAt: null },
-        orderBy: [{ name: 'asc' }, { id: 'asc' }],
+        orderBy: [{ position: 'asc' }, { name: 'asc' }, { id: 'asc' }],
       }),
       this.prisma.link.groupBy({
         by: ['folderId'],
@@ -67,8 +67,14 @@ export class FoldersService {
         if (total >= FOLDER_LIMIT.PerUserMax) {
           throw new ConflictException(FOLDER_ERROR_MESSAGE.LimitReached);
         }
+        const parentId = request.parentId ?? null;
         const row = await tx.folder.create({
-          data: { userId, name: request.name, parentId: request.parentId ?? null },
+          data: {
+            userId,
+            name: request.name,
+            parentId,
+            position: await this.nextPosition(tx, userId, parentId),
+          },
         });
         return toFolderResponse(row, 0);
       });
@@ -101,6 +107,10 @@ export class FoldersService {
               throw new BadRequestException(FOLDER_ERROR_MESSAGE.MoveIntoDescendant);
             }
           }
+          if (request.parentId !== current.parentId) {
+            // A move lands at the end of the new parent; the order is never mixed with a move.
+            data.position = await this.nextPosition(tx, userId, request.parentId);
+          }
           data.parentId = request.parentId;
         }
         const row =
@@ -112,6 +122,40 @@ export class FoldersService {
     } catch (error) {
       throw this.mapForeignKey(error);
     }
+  }
+
+  /**
+   * Sets the manual order of the live subfolders of `parentId` (`null` = top level): `ids` must be
+   * exactly those folders (any case), else 400; a foreign, missing or trashed parent is 404. Plain
+   * SQL keeps `updated_at`: the order is not an edit of a folder. Answers the whole list afterwards.
+   */
+  async reorder(
+    userId: string,
+    parentId: string | null,
+    ids: readonly string[],
+  ): Promise<ListFoldersResponse> {
+    const order = ids.map((id) => id.toLowerCase());
+    const parent = parentId?.toLowerCase() ?? null;
+    await this.prisma.$transaction(async (tx) => {
+      await this.lockTree(tx, userId);
+      if (parent !== null) await this.requireOwned(tx, userId, parent);
+      const siblings = await tx.folder.findMany({
+        where: { userId, parentId: parent, deletedAt: null },
+        select: { id: true },
+      });
+      const wanted = new Set(order);
+      const same =
+        wanted.size === order.length &&
+        order.length === siblings.length &&
+        siblings.every((sibling) => wanted.has(sibling.id));
+      if (!same) throw new BadRequestException(FOLDER_ERROR_MESSAGE.OrderMismatch);
+      for (const [position, id] of order.entries()) {
+        await tx.$executeRaw`
+          UPDATE folders SET position = ${position}::smallint
+          WHERE id = ${id}::uuid AND user_id = ${userId}::uuid AND deleted_at IS NULL`;
+      }
+    });
+    return this.list(userId);
   }
 
   /**
@@ -185,6 +229,19 @@ export class FoldersService {
       select: { id: true },
     });
     if (!found) throw new NotFoundException(FOLDER_ERROR_MESSAGE.NotFound);
+  }
+
+  /** The place after the last live subfolder of `parentId` (`null` = top level). */
+  private async nextPosition(
+    tx: Prisma.TransactionClient,
+    userId: string,
+    parentId: string | null,
+  ): Promise<number> {
+    const last = await tx.folder.aggregate({
+      where: { userId, parentId, deletedAt: null },
+      _max: { position: true },
+    });
+    return (last._max.position ?? -1) + 1;
   }
 
   private directLinkCount(

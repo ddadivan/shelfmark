@@ -10,6 +10,7 @@ export function toFolderResponse(row: FolderRow, linkCount: number): FolderRespo
     name: row.name,
     colour: row.colour as FolderColour,
     icon: row.icon as FolderIcon,
+    position: row.position,
     pinned: row.pinnedPosition !== null,
     linkCount,
     createdAt: row.createdAt.toISOString(),

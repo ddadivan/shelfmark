@@ -685,6 +685,10 @@
         "moveUp": "Monter",
         "moveDown": "Descendre",
         "unpin": "Désépingler de la barre latérale"
+      },
+      "reorder": {
+        "movedUp": "Déplacé vers le haut, position {{position}} sur {{total}}",
+        "movedDown": "Déplacé vers le bas, position {{position}} sur {{total}}"
       }
     },
     "searchHint": "Rechercher dans vos liens",
@@ -1397,7 +1401,8 @@
       "moveFolder": "Passer d’un dossier à l’autre",
       "toggleFolder": "Fermer ou ouvrir un dossier",
       "folderMenu": "Ouvrir le menu du dossier",
-      "paste": "Coller des liens dans la bibliothèque"
+      "paste": "Coller des liens dans la bibliothèque",
+      "reorder": "Monter ou descendre un élément épinglé ou un dossier"
     },
     "keys": {
       "command": "Commande",

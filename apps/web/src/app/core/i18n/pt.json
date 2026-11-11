@@ -685,6 +685,10 @@
         "moveUp": "Mover para cima",
         "moveDown": "Mover para baixo",
         "unpin": "Desafixar da barra lateral"
+      },
+      "reorder": {
+        "movedUp": "Movido para cima, posição {{position}} de {{total}}",
+        "movedDown": "Movido para baixo, posição {{position}} de {{total}}"
       }
     },
     "searchHint": "Pesquise seus links",
@@ -1397,7 +1401,8 @@
       "moveFolder": "Passar de uma pasta a outra",
       "toggleFolder": "Fechar ou abrir uma pasta",
       "folderMenu": "Abrir o menu da pasta",
-      "paste": "Colar links na biblioteca"
+      "paste": "Colar links na biblioteca",
+      "reorder": "Mover um item fixado ou uma pasta para cima ou para baixo"
     },
     "keys": {
       "command": "Command",

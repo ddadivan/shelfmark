@@ -151,12 +151,38 @@
   }
 }
 
-// Drag and drop (desktop): the row you hold leaves a quiet slot, the others glide aside.
-.pinned__item.cdk-drag-placeholder {
-  background: var(--surface-hover);
+// Drag and drop (desktop): the place the row lands is a slot with a 2px sage line and a dot at
+// its start (the same drop line as the folder tree), the other rows glide aside.
+.pinned__drop-line {
+  position: relative;
+  min-height: rem(36px);
+  list-style: none;
 
-  > * {
-    visibility: hidden;
+  @include phone {
+    min-height: rem(44px);
+  }
+}
+
+.pinned__drop-line-mark {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline: rem(10px) rem(4px);
+  height: rem(2px);
+  background: var(--accent);
+  border-radius: var(--radius-full);
+  transform: translateY(-50%);
+
+  &::before {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 0;
+    width: rem(8px);
+    height: rem(8px);
+    content: '';
+    background: var(--surface);
+    border: 2px solid var(--accent);
+    border-radius: var(--radius-full);
+    transform: translate(-50%, -50%);
   }
 }
 
@@ -166,5 +192,34 @@
 
   @include reduced-motion {
     transition: none;
+  }
+}
+
+// The row being dragged follows the pointer as a small floating card (the folder tree's look):
+// its top-left is at the pointer, the card is shifted so the pointer sits at its start.
+.pinned__preview {
+  pointer-events: none;
+}
+
+.pinned__preview-card {
+  @include type(body);
+
+  display: flex;
+  gap: rem(8px);
+  align-items: center;
+  max-width: rem(240px);
+  min-height: rem(36px);
+  padding-inline: rem(10px) rem(14px);
+  font-size: rem(14px);
+  font-weight: 500;
+  line-height: rem(20px);
+  color: var(--text);
+  background: var(--surface);
+  border-radius: calc(var(--radius-md) - #{rem(2px)});
+  box-shadow: var(--shadow-float);
+  transform: translate(rem(-12px), -50%) rotate(-1.5deg);
+
+  @include reduced-motion {
+    transform: translate(rem(-12px), -50%);
   }
 }

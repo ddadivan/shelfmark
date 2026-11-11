@@ -382,7 +382,7 @@ export default class LibraryPage {
     toObservable(this.titleKey).pipe(switchMap((key) => this.transloco.selectTranslate(key))),
   );
   /**
-   * The direct subfolders of the folder of the page, by name, with the number of folders inside
+   * The direct subfolders of the folder of the page, in the sidebar order (#314), with the number of folders inside
    * each. Hidden while a search or tag filter is on (they do not filter) and for a missing folder.
    */
   private readonly currentSubfolders = computed<readonly SubfolderItem[]>(() => {
@@ -393,7 +393,6 @@ export default class LibraryPage {
     const all = this.folders.entities();
     return all
       .filter((folder) => folder.parentId === id)
-      .sort((a, b) => a.name.localeCompare(b.name))
       .map((folder) => ({
         folder,
         childCount: all.filter((child) => child.parentId === folder.id).length,

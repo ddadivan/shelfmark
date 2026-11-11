@@ -1,6 +1,23 @@
-<ng-template #branch let-list let-parent="parent" let-level="level" let-folder="folder">
+<ng-template
+  #branch
+  let-list
+  let-parent="parent"
+  let-level="level"
+  let-folder="folder"
+  let-dropList="dropList"
+>
   @for (node of list; track node.id) {
-    <li class="ui-tree__item" role="none">
+    <li
+      class="ui-tree__item"
+      role="none"
+      [uiTreeReorderItem]="dropList"
+      [uiTreeReorderItemId]="node.id"
+      [uiTreeReorderItemHandle]="row"
+      [uiTreeReorderItemDisabled]="!folder || !reorderable()"
+      [uiTreeReorderItemContext]="{ $implicit: node, level: level }"
+      [uiTreeReorderItemPreview]="reorderPreview"
+      [uiTreeReorderItemPlaceholder]="reorderPlaceholder"
+    >
       <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- ngTreeItem sets the roving tabindex -->
       <div
         #item="ngTreeItem"
@@ -80,7 +97,14 @@
       </div>
       @if (node.children?.length) {
         <div class="ui-tree__children" [class.is-open]="item.expanded()">
-          <ul class="ui-tree__list ui-tree__group" role="group" [id]="item.id() + '-group'">
+          <ul
+            #groupList="uiTreeReorderList"
+            class="ui-tree__list ui-tree__group"
+            role="group"
+            uiTreeReorderList
+            [id]="item.id() + '-group'"
+            (dropped)="onDropped($event, node.id)"
+          >
             <ng-template ngTreeItemGroup [ownedBy]="item" #group="ngTreeItemGroup">
               <ng-container
                 *ngTemplateOutlet="
@@ -90,6 +114,7 @@
                     parent: group,
                     level: level + 1,
                     folder: folder,
+                    dropList: groupList,
                   }
                 "
               />
@@ -103,17 +128,26 @@
 
 <ul
   #tree="ngTree"
+  #rootList="uiTreeReorderList"
   ngTree
   nav
+  uiTreeReorderList
   class="ui-tree__list"
   [value]="selectedValue()"
   [attr.aria-label]="ariaLabel() || null"
   (valueChange)="onValueChange($event)"
+  (dropped)="onDropped($event, null)"
 >
   <ng-container
     *ngTemplateOutlet="
       branch;
-      context: { $implicit: fixedNodes(), parent: tree, level: 1, folder: false }
+      context: {
+        $implicit: fixedNodes(),
+        parent: tree,
+        level: 1,
+        folder: false,
+        dropList: rootList,
+      }
     "
   />
   @if (heading()) {
@@ -124,7 +158,7 @@
   <ng-container
     *ngTemplateOutlet="
       branch;
-      context: { $implicit: nodes(), parent: tree, level: 1, folder: true }
+      context: { $implicit: nodes(), parent: tree, level: 1, folder: true, dropList: rootList }
     "
   />
 </ul>
@@ -138,3 +172,22 @@
     <ng-content select="[uiTreeHeadingAction]" />
   </div>
 }
+
+<!-- Reorder by dragging (folder rows, a mouse): the row that follows the pointer, and the drop line. -->
+<ng-template #reorderPreview let-node>
+  <div class="ui-tree__reorder-preview">
+    <div class="ui-tree__reorder-card">
+      <ui-folder-icon
+        [size]="FOLDER_ICON_SIZE.Sm"
+        [icon]="node.icon ?? 'folder'"
+        [colour]="node.colour ?? FOLDER_COLOUR.Graphite"
+      />
+      <span class="ui-tree__name">{{ node.name }}</span>
+    </div>
+  </div>
+</ng-template>
+<ng-template #reorderPlaceholder let-level="level">
+  <li class="ui-tree__drop-line" role="none" aria-hidden="true" [style.--ui-tree-level]="level">
+    <span class="ui-tree__drop-line-mark"></span>
+  </li>
+</ng-template>

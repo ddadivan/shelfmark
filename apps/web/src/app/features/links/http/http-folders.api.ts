@@ -6,6 +6,7 @@ import type {
   FolderDeleteMode,
   FolderResponse,
   ListFoldersResponse,
+  ReorderFoldersRequest,
   UpdateFolderRequest,
 } from '@shelfmark/contracts';
 import type { Observable } from 'rxjs';
@@ -32,6 +33,12 @@ export class HttpFoldersApi implements FoldersApi {
 
   update(id: string, request: UpdateFolderRequest): Observable<FolderResponse> {
     return this.http.patch<FolderResponse>(this.url(id), request, { context: skipErrorToast() });
+  }
+
+  reorder(request: ReorderFoldersRequest): Observable<ListFoldersResponse> {
+    return this.http.put<ListFoldersResponse>(`${this.url()}/order`, request, {
+      context: skipErrorToast(),
+    });
   }
 
   remove(id: string, mode: FolderDeleteMode): Observable<void> {

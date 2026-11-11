@@ -33,6 +33,7 @@ function setup(overrides: Partial<FoldersApi> = {}) {
     ),
     update: vi.fn<FoldersApi['update']>((id) => of({ ...folder(id, null), updatedAt: 'later' })),
     remove: vi.fn<FoldersApi['remove']>(() => of(undefined)),
+    reorder: vi.fn<FoldersApi['reorder']>(() => of(LIST)),
     ...overrides,
   };
   const linksApi = {
@@ -242,6 +243,94 @@ describe('FoldersStore', () => {
 
       expect(api.update).not.toHaveBeenCalled();
       expect(store.entityMap()['a'].parentId).toBeNull();
+    });
+  });
+
+  describe('move to the end', () => {
+    it('places a moved folder after the last folder of its new parent', async () => {
+      const ordered: ListFoldersResponse = {
+        items: [
+          { ...folder('x', null), position: 0 },
+          { ...folder('y', 'x'), position: 3 },
+          { ...folder('z', null), position: 1 },
+        ],
+        counts: MOCK_LIBRARY_COUNTS,
+      };
+      const saved = new Subject<FolderResponse>();
+      const { store } = setup({ list: () => of(ordered), update: () => saved });
+      await store.load();
+
+      const done = store.move('z', 'x');
+      expect(store.entityMap()['z'].position).toBe(4);
+      saved.next({ ...folder('z', 'x'), position: 4 });
+      saved.complete();
+      expect(await done).toBe(true);
+      expect(store.siblingsOf('y').map((item) => item.id)).toEqual(['y', 'z']);
+    });
+  });
+
+  describe('reorder', () => {
+    // Top level: a, d (both position 0, so by name) — moving d first swaps them.
+    it('moves at once among the siblings and sends the whole sibling order', async () => {
+      const { api, store } = setup();
+      await store.load();
+
+      expect(await store.reorder('d', 0)).toBe(true);
+
+      expect(store.tree().map((node) => node.folder.id)).toEqual(['d', 'a']);
+      expect(api.reorder).toHaveBeenCalledWith({ parentId: null, ids: ['d', 'a'] });
+      expect(store.entityMap()['b'].parentId).toBe('a');
+    });
+
+    it('reorders inside one parent and never changes a parent', async () => {
+      const list: ListFoldersResponse = {
+        items: [folder('p', null), folder('q', 'p'), folder('r', 'p'), folder('s', 'p')],
+        counts: MOCK_LIBRARY_COUNTS,
+      };
+      const { api, store } = setup({ list: () => of(list) });
+      await store.load();
+
+      expect(await store.reorder('q', 5)).toBe(true);
+
+      expect(store.siblingsOf('q').map((item) => item.id)).toEqual(['r', 's', 'q']);
+      expect(api.reorder).toHaveBeenCalledWith({ parentId: 'p', ids: ['r', 's', 'q'] });
+      expect(store.entities().every((item) => item.id === 'p' || item.parentId === 'p')).toBe(true);
+    });
+
+    it('sends nothing when the place does not change, refuses an unknown folder', async () => {
+      const { api, store } = setup();
+      await store.load();
+
+      expect(await store.reorder('a', 0)).toBe(true);
+      expect(await store.reorder('nope', 0)).toBe(false);
+      expect(api.reorder).not.toHaveBeenCalled();
+    });
+
+    it('puts the old order back when the request fails', async () => {
+      const { store } = setup({ reorder: () => throwError(() => new Error('no')) });
+      await store.load();
+
+      expect(await store.reorder('d', 0)).toBe(false);
+
+      expect(store.tree().map((node) => node.folder.id)).toEqual(['a', 'd']);
+    });
+
+    it('does not undo a later reorder when an earlier one fails', async () => {
+      const first = new Subject<ListFoldersResponse>();
+      let calls = 0;
+      const { store } = setup({
+        reorder: () => (++calls === 1 ? first : of(LIST)),
+      });
+      await store.load();
+
+      const failing = store.reorder('d', 0);
+      expect(await store.reorder('a', 0)).toBe(true);
+      first.error(new Error('no'));
+
+      expect(await failing).toBe(false);
+      expect(store.tree().map((node) => node.folder.id)).toEqual(['a', 'd']);
+      expect(store.entityMap()['a'].position).toBe(0);
+      expect(store.entityMap()['d'].position).toBe(1);
     });
   });
 

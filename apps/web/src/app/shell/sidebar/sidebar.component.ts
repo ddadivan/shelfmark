@@ -30,7 +30,9 @@ import {
   UI_TREE_CONTEXT_MENU_TRIGGER,
   type UiTreeContextMenuEvent,
   type UiTreeNode,
+  type UiTreeReorderEvent,
 } from '@shelfmark/ui';
+import { ReorderAnnouncer } from '../../core/a11y/reorder-announcer.service';
 import { combineLatest, filter, map } from 'rxjs';
 import { ViewportService } from '../../core/layout/viewport.service';
 import { FolderActionsService } from '../../features/folders/folder-actions.service';
@@ -65,9 +67,10 @@ const FIXED_ROUTES: Readonly<Record<string, string>> = {
  * The library sidebar, an inset card that only navigates: the logo, "All links", "Unsorted",
  * "Favorites", "Recently opened" (a page), then the folder tree with link counts and graphite
  * folder tiles (`ui-tree`; the "Folders" heading has a "New folder" icon button) and the tags.
- * Choosing a row navigates; the active row follows the URL. A folder has a menu (right click, "..." button, Shift+F10): new subfolder, add link
- * here, rename, move, share, delete.
- * here, rename, move, delete. Trash is a row of its own under a divider at the bottom.
+ * Choosing a row navigates; the active row follows the URL. A folder has a menu (right click,
+ * "..." button, Shift+F10): new subfolder, add link here, rename, move, share, delete. Folders
+ * reorder among their siblings by dragging or Alt+Up / Alt+Down (#314). Trash is a row of its
+ * own under a divider at the bottom.
  */
 @Component({
   selector: 'app-sidebar',
@@ -125,6 +128,7 @@ export class SidebarComponent {
   private readonly menu = viewChild.required(MenuComponent);
   private readonly tree = viewChild<TreeComponent>('folderTree');
   private readonly treeFocus = inject(SidebarTreeFocusService);
+  private readonly announcer = inject(ReorderAnnouncer);
 
   private readonly url = toSignal(
     this.router.events.pipe(
@@ -272,6 +276,12 @@ export class SidebarComponent {
     } else {
       this.menu().openFrom(event.anchor);
     }
+  }
+
+  /** A folder row moved among its siblings (drag or Alt+Up / Alt+Down): said, then saved. */
+  protected reorder(event: UiTreeReorderEvent): void {
+    this.announcer.announce(event.fromIndex, event.toIndex, event.total);
+    void this.actions.reorder(event.node.id, event.toIndex);
   }
 
   protected menuClosed(): void {

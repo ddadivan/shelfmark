@@ -7,6 +7,7 @@ import {
   type FolderDeleteMode,
   type FolderResponse,
   type ListFoldersResponse,
+  type ReorderFoldersRequest,
   type UpdateFolderRequest,
 } from '@shelfmark/contracts';
 import { defer, delay, type Observable, of, throwError } from 'rxjs';
@@ -47,6 +48,7 @@ export class MockFoldersApi implements FoldersApi {
         name: request.name,
         colour: FOLDER_DEFAULT_COLOUR,
         icon: FOLDER_DEFAULT_ICON,
+        position: this.data.nextFolderPosition(parentId),
         pinned: false,
         linkCount: 0,
         createdAt: now,
@@ -75,12 +77,48 @@ export class MockFoldersApi implements FoldersApi {
         parentId,
         colour: request.colour ?? current.colour,
         icon: request.icon ?? current.icon,
+        // A move goes to the end of the new parent, like the API.
+        position:
+          parentId === current.parentId ? current.position : this.data.nextFolderPosition(parentId),
         updatedAt: new Date().toISOString(),
       };
       this.data.setFolders(
         this.data.folderList.map((folder) => (folder.id === id ? updated : folder)),
       );
       return of({ ...updated });
+    }).pipe(delay(MOCK_LATENCY_MS.Create));
+  }
+
+  /**
+   * Like the API: `ids` must be exactly the subfolders of `parentId` (else the request fails); the
+   * order is not an edit, so `updatedAt` stays.
+   */
+  reorder(request: ReorderFoldersRequest): Observable<ListFoldersResponse> {
+    return defer(() => {
+      const siblings = this.data.folderList.filter(
+        (folder) => folder.parentId === request.parentId,
+      );
+      const wanted = new Set(request.ids);
+      if (
+        (request.parentId !== null && !this.find(request.parentId)) ||
+        wanted.size !== request.ids.length ||
+        siblings.length !== request.ids.length ||
+        siblings.some((folder) => !wanted.has(folder.id)) ||
+        siblings.some((folder) => folder.name === MOCK_FOLDER_NAME.UpdateFails)
+      ) {
+        return throwError(() => new Error('Mock: folder reorder failed'));
+      }
+      const place = new Map(request.ids.map((id, index) => [id, index]));
+      this.data.setFolders(
+        this.data.folderList.map((folder) => {
+          const position = place.get(folder.id);
+          return position === undefined ? folder : { ...folder, position };
+        }),
+      );
+      return of<ListFoldersResponse>({
+        items: this.data.foldersView(),
+        counts: this.data.counts(),
+      });
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
 

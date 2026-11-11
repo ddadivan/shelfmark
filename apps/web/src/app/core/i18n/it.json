@@ -685,6 +685,10 @@
         "moveUp": "Sposta su",
         "moveDown": "Sposta giù",
         "unpin": "Togli dalla barra laterale"
+      },
+      "reorder": {
+        "movedUp": "Spostato in alto, posizione {{position}} di {{total}}",
+        "movedDown": "Spostato in basso, posizione {{position}} di {{total}}"
       }
     },
     "searchHint": "Cerca nei tuoi link",
@@ -1397,7 +1401,8 @@
       "moveFolder": "Passa da una cartella all’altra",
       "toggleFolder": "Chiudi o apri una cartella",
       "folderMenu": "Apri il menu della cartella",
-      "paste": "Incolla link nella libreria"
+      "paste": "Incolla link nella libreria",
+      "reorder": "Sposta su o giù un elemento fissato o una cartella"
     },
     "keys": {
       "command": "Comando",

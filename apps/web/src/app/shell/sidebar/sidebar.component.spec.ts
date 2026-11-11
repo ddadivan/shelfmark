@@ -1,3 +1,4 @@
+import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { MOCK_ID, MOCK_NAME } from '@shelfmark/contracts/testing';
@@ -240,6 +241,35 @@ describe('SidebarComponent', () => {
     expect(button?.getAttribute('aria-label')).toBe('New folder');
     expect(button?.textContent?.trim()).toBe('');
     expect(element.textContent).not.toContain('New folder');
+  });
+
+  it('moves a folder among its siblings with Alt+ArrowUp, says so and saves it (#314)', async () => {
+    const { element, fixture } = await setup();
+    const folders = TestBed.inject(FoldersStore);
+    await folders.create('Zeta', null);
+    await fixture.whenStable();
+    const announce = vi.spyOn(TestBed.inject(LiveAnnouncer), 'announce');
+    const zeta = row(element, 'Zeta');
+    zeta.focus();
+    zeta.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'ArrowUp',
+        altKey: true,
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    expect(announce).toHaveBeenLastCalledWith('Moved up, position 1 of 2', 'polite');
+    await vi.waitFor(() => {
+      TestBed.tick();
+      expect(folders.tree().map((node) => node.folder.name)).toEqual([
+        'Zeta',
+        MOCK_NAME.FolderReading,
+      ]);
+    });
+    // The mock API kept the order: a reload shows it too.
+    await folders.refresh();
+    expect(folders.tree()[0].folder.name).toBe('Zeta');
   });
 
   it('has no axe violations', async () => {

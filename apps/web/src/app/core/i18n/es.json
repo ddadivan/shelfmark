@@ -685,6 +685,10 @@
         "moveUp": "Subir",
         "moveDown": "Bajar",
         "unpin": "Quitar de la barra lateral"
+      },
+      "reorder": {
+        "movedUp": "Movido hacia arriba, posición {{position}} de {{total}}",
+        "movedDown": "Movido hacia abajo, posición {{position}} de {{total}}"
       }
     },
     "searchHint": "Busca en tus enlaces",
@@ -1397,7 +1401,8 @@
       "moveFolder": "Moverse entre carpetas",
       "toggleFolder": "Cerrar o abrir una carpeta",
       "folderMenu": "Abrir el menú de la carpeta",
-      "paste": "Pegar enlaces en la biblioteca"
+      "paste": "Pegar enlaces en la biblioteca",
+      "reorder": "Subir o bajar un elemento fijado o una carpeta"
     },
     "keys": {
       "command": "Comando",

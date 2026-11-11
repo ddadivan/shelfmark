@@ -26,8 +26,10 @@
       [menuNodeId]="menuNodeId()"
       [dropTargetId]="drag.treeTargetId()"
       [dropLabel]="'links.drag.moveHere' | transloco"
+      reorderable
       (selected)="select($event)"
       (contextMenu)="openMenu($event)"
+      (reordered)="reorder($event)"
     >
       <ui-button
         uiTreeHeadingAction

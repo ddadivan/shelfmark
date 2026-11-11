@@ -54,6 +54,7 @@ export type { GetFolderResponse } from './folders/get-folder-response.type';
 export type { ListFoldersResponse } from './folders/list-folders-response.interface';
 export type { CreateFolderRequest } from './folders/create-folder-request.interface';
 export type { UpdateFolderRequest } from './folders/update-folder-request.interface';
+export type { ReorderFoldersRequest } from './folders/reorder-folders-request.interface';
 export type { DeleteFolderQuery } from './folders/delete-folder-query.interface';
 export type { FolderDeleteMode } from './folders/folder-delete-mode.type';
 export { FOLDER_DELETE_MODE } from './folders/folder-delete-mode.const';

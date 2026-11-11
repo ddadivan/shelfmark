@@ -136,6 +136,20 @@ export class FolderActionsService {
   }
 
   /**
+   * Moves the folder to `toIndex` among its siblings (a drag or Alt+Up / Alt+Down in the sidebar);
+   * the new place shows at once, a failure puts the old order back with a toast.
+   */
+  async reorder(folderId: string, toIndex: number): Promise<void> {
+    if (!(await this.folders.reorder(folderId, toIndex))) {
+      this.toasts.show({
+        kind: TOAST_KIND.Danger,
+        title: this.t('pins.moveFailed.title'),
+        detail: this.t('pins.moveFailed.detail'),
+      });
+    }
+  }
+
+  /**
    * "Colour and icon": the dialog closes at once on Save and the folder wears the new style while
    * the request runs; a failure puts the old style back with a toast.
    */

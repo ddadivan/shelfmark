@@ -98,6 +98,7 @@ describe('MockSharesApi', () => {
       name: `Extra ${i}`,
       colour: FOLDER_DEFAULT_COLOUR,
       icon: FOLDER_DEFAULT_ICON,
+      position: i + 1,
       pinned: false,
       linkCount: 0,
       createdAt: now,

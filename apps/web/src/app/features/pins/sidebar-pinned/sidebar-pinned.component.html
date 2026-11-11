@@ -10,27 +10,42 @@
       [cdkDropListDisabled]="dragDisabled()"
       (cdkDropListDropped)="dropped($event)"
     >
-      @for (
-        row of pins.rows();
-        track row.key;
-        let index = $index;
-        let first = $first;
-        let last = $last
-      ) {
+      @for (row of pins.rows(); track row.key; let index = $index) {
         <li
           class="pinned__item"
           cdkDrag
-          cdkDragPreviewClass="pinned-drag-preview"
           [cdkDragDisabled]="dragDisabled()"
           [attr.data-pin]="row.key"
           (contextmenu)="openContext($event, menu)"
         >
+          <!-- The place it lands: a slot with a sage line (DragDrop spec), the siblings glide aside. -->
+          <!-- The row as a small floating card down-right of the pointer, so the drop line shows. -->
+          <div *cdkDragPreview class="pinned__preview">
+            <div class="pinned__preview-card">
+              @if (row.folder; as folder) {
+                <ui-folder-icon
+                  size="sm"
+                  [icon]="folder.icon"
+                  [colour]="settings.shownColour(folder.colour)"
+                />
+                <span class="pinned__name">{{ folder.name }}</span>
+              } @else if (row.link; as link) {
+                <ui-favicon [src]="favicon(link)" [letter]="letter(link)" />
+                <span class="pinned__name">{{ link.title }}</span>
+              }
+            </div>
+          </div>
+          <!-- A div: an li cannot sit in this li's template; it only lives while dragging. -->
+          <div *cdkDragPlaceholder class="pinned__drop-line" aria-hidden="true">
+            <span class="pinned__drop-line-mark"></span>
+          </div>
           @if (row.folder; as folder) {
             <a
               class="pinned__link"
               [class.is-active]="activeId() === folder.id"
               [routerLink]="folderLink(folder)"
               [attr.aria-current]="activeId() === folder.id ? 'page' : null"
+              (keydown)="onKeydown($event, index, row.key)"
             >
               <ui-folder-icon
                 size="sm"
@@ -49,6 +64,7 @@
               [attr.target]="href(link) && newTab() ? '_blank' : null"
               [attr.rel]="href(link) ? (newTab() ? 'noopener noreferrer' : 'noreferrer') : null"
               (click)="openLink(link)"
+              (keydown)="onKeydown($event, index, row.key)"
             >
               <ui-favicon [src]="favicon(link)" [letter]="letter(link)" />
               <span class="pinned__name">{{ link.title }}</span>
@@ -70,12 +86,6 @@
             [uiTooltip]="menuLabel(row.folder?.name ?? row.link?.title ?? '')"
           />
           <ui-menu #menu align="end" [ariaLabel]="'shell.sidebar.pinned.menu' | transloco">
-            <ui-menu-item icon="sort" [disabled]="first" (activated)="move(index, -1)">
-              {{ 'shell.sidebar.pinned.moveUp' | transloco }}
-            </ui-menu-item>
-            <ui-menu-item icon="sort" [disabled]="last" (activated)="move(index, 1)">
-              {{ 'shell.sidebar.pinned.moveDown' | transloco }}
-            </ui-menu-item>
             <ui-menu-item
               icon="pin"
               (activated)="row.folder ? unpinFolder(row.folder) : unpinLink(row.link!)"

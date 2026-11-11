@@ -135,22 +135,100 @@ test.describe('folder style and pins (mock API)', () => {
     await expect(pinned(page)).toHaveCount(0);
   });
 
-  test('reorders pinned items with Move up and Move down', async ({ page }) => {
+  test('reorders pinned items with Alt+ArrowDown / Alt+ArrowUp; the menu has no Move up', async ({
+    page,
+  }) => {
     await createNotes(page);
     await pickFolderMenuItem(page, READING, 'Pin to sidebar');
     await pickFolderMenuItem(page, NOTES, 'Pin to sidebar');
     await expect(pinnedItems(page)).toHaveCount(2);
     await expect(pinnedItems(page).first()).toContainText(READING);
 
-    await (await pinnedMenuItem(page, READING, 'Move down')).click();
+    const readingLink = pinned(page).getByRole('link', { name: new RegExp(`^${READING}\\b`) });
+    await readingLink.focus();
+    await page.keyboard.press('Alt+ArrowDown');
     await expect(pinnedItems(page).first()).toContainText(NOTES);
+    await expect(readingLink).toBeFocused();
+    await expect(page.locator('.cdk-live-announcer-element')).toHaveText(
+      'Moved down, position 2 of 2',
+    );
 
-    await (await pinnedMenuItem(page, READING, 'Move up')).click();
+    await page.keyboard.press('Alt+ArrowUp');
     await expect(pinnedItems(page).first()).toContainText(READING);
+    await expect(page.locator('.cdk-live-announcer-element')).toHaveText(
+      'Moved up, position 1 of 2',
+    );
+
+    const trigger = pinned(page).getByRole('button', { name: `Actions for ${READING}` });
+    await trigger.click();
+    const menu = page.locator(`#${await trigger.getAttribute('aria-controls')}`);
+    await expect(menu.getByRole('menuitem', { name: 'Unpin from sidebar' })).toBeVisible();
+    await expect(menu.getByRole('menuitem', { name: /Move (up|down)/ })).toHaveCount(0);
+    await page.keyboard.press('Escape');
+  });
+
+  const folderNames = (page: Page) =>
+    page.locator('app-sidebar ui-tree [data-ui-tree-id] .ui-tree__name').allTextContents();
+
+  test('reorders folders with Alt+ArrowUp on the focused row, announced (#314)', async ({
+    page,
+  }) => {
+    await createNotes(page);
+    const before = await folderNames(page);
+    expect(before.indexOf(NOTES)).toBeGreaterThan(before.indexOf(READING));
+
+    const notes = page.getByRole('treeitem', { name: new RegExp(`^${NOTES}\\b`) });
+    const url = page.url();
+    await notes.focus();
+    await page.keyboard.press('Alt+ArrowUp');
+
+    await expect
+      .poll(async () => {
+        const names = await folderNames(page);
+        return names.indexOf(NOTES) < names.indexOf(READING);
+      })
+      .toBe(true);
+    await expect(notes).toBeFocused();
+    await expect(page.locator('.cdk-live-announcer-element')).toHaveText(/^Moved up, position/);
+    // Not read as a plain arrow by the tree, and no other page opened.
+    expect(page.url()).toBe(url);
+  });
+
+  test('reorders folders by dragging inside the Folders section (desktop, #314)', async ({
+    page,
+  }) => {
+    test.skip(isPhone(page), 'a touch never starts a reorder drag');
+    await createNotes(page);
+    await settled(page);
+    const notes = page.getByRole('treeitem', { name: new RegExp(`^${NOTES}\\b`) });
+    const reading = page.getByRole('treeitem', { name: new RegExp(`^${READING}\\b`) });
+    const from = await notes.boundingBox();
+    const to = await reading.boundingBox();
+    if (!from || !to) {
+      throw new Error('folder rows have no box');
+    }
+    const url = page.url();
+    await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2 - 8, { steps: 4 });
+    await page.mouse.move(to.x + to.width / 2, to.y + 2, { steps: 10 });
+    await expect(page.locator('app-sidebar .ui-tree__drop-line')).toHaveCount(1);
+    await page.mouse.up();
+
+    await expect
+      .poll(async () => {
+        const names = await folderNames(page);
+        return names.indexOf(NOTES) < names.indexOf(READING);
+      })
+      .toBe(true);
+    // A drag never opens a folder nor moves it into another one.
+    expect(page.url()).toBe(url);
+    await expect(notes).toHaveAttribute('aria-level', '1');
+    await expect(page.locator('app-sidebar .ui-tree__drop-line')).toHaveCount(0);
   });
 
   test('reorders pinned items by dragging (desktop)', async ({ page }) => {
-    test.skip(isPhone(page), 'a phone reorders with the item menu');
+    test.skip(isPhone(page), 'a phone reorders with Alt+arrows or Settings › Edit pinned');
     await createNotes(page);
     await pickFolderMenuItem(page, READING, 'Pin to sidebar');
     await pickFolderMenuItem(page, NOTES, 'Pin to sidebar');
