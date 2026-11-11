@@ -130,6 +130,18 @@ export const Block: Story = {
   }),
 };
 
+/** `wrap`: a long (translated) label wraps and the button grows in height instead of cutting it. */
+export const Wrap: Story = {
+  render: () => ({
+    template: `
+      <div style="max-inline-size: 14rem; display: grid; gap: 0.75rem">
+        <ui-button wrap variant="ghost">Neu hier? Sieh dir an, wie es funktioniert</ui-button>
+        <ui-button wrap>Nouveau ici ? Découvrez comment ça marche</ui-button>
+      </div>
+    `,
+  }),
+};
+
 /** Press it: a ripple grows from the touch point (20% of the text colour on filled buttons). */
 export const WithRipple: Story = {
   args: { variant: BUTTON_VARIANT.Primary, size: BUTTON_SIZE.Lg },

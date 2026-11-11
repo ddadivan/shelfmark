@@ -110,8 +110,8 @@ export default class LanguageSettingsPage {
         value: WEEK_START.Default,
         label: this.transloco.translate('settings.language.week.default'),
       },
-      { value: WEEK_START.Monday, label: this.locale.formatWeekday(MONDAY, 'long') },
-      { value: WEEK_START.Sunday, label: this.locale.formatWeekday(SUNDAY, 'long') },
+      { value: WEEK_START.Monday, label: this.weekday(MONDAY) },
+      { value: WEEK_START.Sunday, label: this.weekday(SUNDAY) },
     ];
   });
 
@@ -127,6 +127,12 @@ export default class LanguageSettingsPage {
 
   constructor() {
     void this.settings.load();
+  }
+
+  /** The weekday name in sentence case: French, Italian, Spanish and Portuguese write it lower case. */
+  private weekday(date: Date): string {
+    const name = this.locale.formatWeekday(date, 'long');
+    return name.charAt(0).toLocaleUpperCase(this.locale.locale()) + name.slice(1);
   }
 
   protected setLanguage(value: string | null): void {

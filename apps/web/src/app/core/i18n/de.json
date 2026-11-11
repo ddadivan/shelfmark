@@ -592,7 +592,7 @@
     "addLink": "Link hinzufügen",
     "tabs": {
       "label": "Hauptmenü",
-      "library": "Bibliothek",
+      "library": "Links",
       "search": "Suche",
       "tags": "Tags",
       "you": "Du"
@@ -1260,7 +1260,7 @@
       },
       "date": {
         "label": "Datumsformat",
-        "default": "Standard der Sprache ({{example}})"
+        "default": "Standard ({{example}})"
       },
       "time": {
         "label": "Uhrzeit",

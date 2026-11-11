@@ -594,7 +594,7 @@
     "addLink": "Añadir enlace",
     "tabs": {
       "label": "Principal",
-      "library": "Biblioteca",
+      "library": "Enlaces",
       "search": "Buscar",
       "tags": "Etiquetas",
       "you": "Tú"
@@ -1274,7 +1274,7 @@
       },
       "date": {
         "label": "Formato de fecha",
-        "default": "Predeterminado del idioma ({{example}})"
+        "default": "Predeterminado ({{example}})"
       },
       "time": {
         "label": "Hora",

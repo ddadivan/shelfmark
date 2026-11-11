@@ -104,6 +104,17 @@ describe('ButtonComponent', () => {
     expect(button().className).not.toMatch(/--(sm|lg|icon)/);
   });
 
+  it('wraps a long label only with `wrap`', () => {
+    const fixture = TestBed.createComponent(ButtonComponent);
+    fixture.detectChanges();
+    const hostElement = fixture.nativeElement as HTMLElement;
+    expect(hostElement.classList.contains('ui-button-host--wrap')).toBe(false);
+
+    fixture.componentRef.setInput('wrap', true);
+    fixture.detectChanges();
+    expect(hostElement.classList.contains('ui-button-host--wrap')).toBe(true);
+  });
+
   it('adds the fab class only for a fab', async () => {
     const { host, root, button, settle } = await setup();
     host.iconOnly.set(true);

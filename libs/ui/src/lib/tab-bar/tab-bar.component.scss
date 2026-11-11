@@ -51,7 +51,9 @@
   min-inline-size: rem(56px);
   max-inline-size: 100%;
   block-size: rem(52px);
-  padding: 0 var(--space-2);
+
+  // Narrow side padding: labels get the room (translations run longer; at 360px a slot is ~60px).
+  padding: 0 var(--space-1);
   font-weight: 500;
   color: var(--text-muted);
   text-decoration: none;

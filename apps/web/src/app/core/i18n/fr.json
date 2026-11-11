@@ -594,8 +594,8 @@
     "addLink": "Ajouter un lien",
     "tabs": {
       "label": "Principal",
-      "library": "Bibliothèque",
-      "search": "Recherche",
+      "library": "Liens",
+      "search": "Trouver",
       "tags": "Tags",
       "you": "Vous"
     },
