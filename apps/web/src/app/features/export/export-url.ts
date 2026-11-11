@@ -1,4 +1,4 @@
-import type { ExportFormat } from '@shelfmark/contracts';
+import type { ExportFormat, LinkKind } from '@shelfmark/contracts';
 import type { ExportScope } from './models/export-scope.interface';
 import type { LinksFilter } from '../links/models/links-filter.type';
 import { LINKS_SCOPE } from '../links/models/links-scope.const';
@@ -12,7 +12,7 @@ export function exportScopeOf(filter: LinksFilter): ExportScope | undefined {
   if (filter.scope === LINKS_SCOPE.Unsorted || filter.scope === LINKS_SCOPE.Favorites) {
     return undefined;
   }
-  const scope: { folderId?: string; tags?: readonly string[]; q?: string } = {};
+  const scope: { folderId?: string; tags?: readonly string[]; q?: string; kind?: LinkKind } = {};
   if (filter.scope === LINKS_SCOPE.Folder) {
     scope.folderId = filter.folderId;
   }
@@ -21,6 +21,9 @@ export function exportScopeOf(filter: LinksFilter): ExportScope | undefined {
   }
   if (filter.q) {
     scope.q = filter.q;
+  }
+  if (filter.kind !== undefined) {
+    scope.kind = filter.kind;
   }
   return Object.keys(scope).length > 0 ? scope : undefined;
 }
@@ -39,6 +42,9 @@ export function buildExportUrl(base: string, format: ExportFormat, scope: Export
   }
   if (scope.q) {
     params.append('q', scope.q);
+  }
+  if (scope.kind !== undefined) {
+    params.append('kind', scope.kind);
   }
   return `${base}/export?${params.toString()}`;
 }

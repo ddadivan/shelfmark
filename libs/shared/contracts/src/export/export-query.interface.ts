@@ -1,3 +1,4 @@
+import type { LinkKind } from '../links/link-kind.type';
 import type { ExportFormat } from './export-format.type';
 
 /** `GET /api/export` query. The handler sees the parsed values. */
@@ -9,4 +10,6 @@ export interface ExportQuery {
   tag?: string[];
   /** Search in title, note and URL (case-insensitive substring), at most `LINK_LIMIT.QueryMax` characters. */
   q?: string;
+  /** Only links of this kind, same as `ListLinksQuery.kind`. */
+  kind?: LinkKind;
 }

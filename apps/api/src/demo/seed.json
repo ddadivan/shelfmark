@@ -40,6 +40,7 @@
     {
       "url": "https://12factor.net/",
       "title": "The Twelve-Factor App",
+      "kind": "article",
       "folder": "work",
       "tags": ["reading", "reference"],
       "isFavorite": true,
@@ -50,6 +51,7 @@
     {
       "url": "https://martinfowler.com/articles/microservices.html",
       "title": "Microservices",
+      "kind": "article",
       "folder": "work",
       "tags": ["reading"],
       "isFavorite": false,
@@ -59,6 +61,7 @@
     {
       "url": "https://www.nngroup.com/articles/ten-usability-heuristics/",
       "title": "10 Usability Heuristics for User Interface Design",
+      "kind": "article",
       "folder": "work",
       "tags": ["design", "reference"],
       "isFavorite": true,
@@ -150,6 +153,7 @@
     {
       "url": "https://www.uniqlo.com/",
       "title": "Uniqlo",
+      "kind": "shopping",
       "folder": "clothes",
       "tags": ["shopping"],
       "isFavorite": false,
@@ -159,6 +163,7 @@
     {
       "url": "https://www.patagonia.com/worn-wear/",
       "title": "Patagonia Worn Wear",
+      "kind": "shopping",
       "folder": "clothes",
       "tags": ["shopping", "reading"],
       "isFavorite": false,
@@ -169,6 +174,7 @@
     {
       "url": "https://www.everlane.com/",
       "title": "Everlane",
+      "kind": "shopping",
       "folder": "clothes",
       "tags": ["shopping"],
       "isFavorite": false,
@@ -178,6 +184,7 @@
     {
       "url": "https://smittenkitchen.com/",
       "title": "Smitten Kitchen",
+      "kind": "article",
       "folder": "recipes",
       "tags": ["cooking"],
       "isFavorite": true,
@@ -187,6 +194,7 @@
     {
       "url": "https://www.budgetbytes.com/",
       "title": "Budget Bytes",
+      "kind": "article",
       "folder": "recipes",
       "tags": ["cooking"],
       "isFavorite": false,
@@ -196,6 +204,7 @@
     {
       "url": "https://www.bbcgoodfood.com/recipes/collection/pasta-recipes",
       "title": "Pasta recipes",
+      "kind": "article",
       "folder": "recipes",
       "tags": ["cooking", "reading"],
       "isFavorite": false,

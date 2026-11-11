@@ -1,0 +1,25 @@
+<form [formRoot]="form">
+  <ui-dialog [title]="titleKey | transloco" [closeLabel]="'views.dialog.close' | transloco">
+    <div class="view-name__fields">
+      <ui-input
+        [label]="'views.name.label' | transloco"
+        [placeholder]="'views.name.placeholder' | transloco"
+        [formField]="form.name"
+      />
+      @if (errorKey(); as key) {
+        <ui-notice [kind]="NOTICE_KIND.Danger">{{ key | transloco }}</ui-notice>
+      }
+    </div>
+
+    <ui-button slot="footer" [disabled]="saving()" (click)="cancel()">{{
+      'views.dialog.cancel' | transloco
+    }}</ui-button>
+    <ui-button
+      slot="footer"
+      [type]="BUTTON_TYPE.Submit"
+      [variant]="BUTTON_VARIANT.Primary"
+      [loading]="saving()"
+      >{{ (saving() ? savingKey : actionKey) | transloco }}</ui-button
+    >
+  </ui-dialog>
+</form>

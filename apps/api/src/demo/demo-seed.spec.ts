@@ -1,5 +1,6 @@
 import {
   isHttpUrl,
+  LINK_KIND,
   LINK_LIMIT,
   normalizeTagName,
   normalizeUrl,
@@ -26,6 +27,13 @@ describe('demo seed (seed.json)', () => {
     expect(names).toEqual(
       expect.arrayContaining(['Work', 'Angular', 'Courses', 'Clothes', 'Recipes']),
     );
+  });
+
+  it('gives only known kinds', () => {
+    const kinds: readonly string[] = Object.values(LINK_KIND);
+    for (const link of DEMO_SEED.links) {
+      if (link.kind !== undefined) expect(kinds).toContain(link.kind);
+    }
   });
 
   it('has unique folder keys, parents before children and no missing parent', () => {

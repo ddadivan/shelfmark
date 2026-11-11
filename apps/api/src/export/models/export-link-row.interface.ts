@@ -3,6 +3,7 @@ export interface ExportLinkRow {
   id: string;
   url: string;
   title: string;
+  kind: string;
   note: string | null;
   isFavorite: boolean;
   folderId: string | null;

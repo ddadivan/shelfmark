@@ -1,8 +1,15 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { LINK_LIMIT, TAG_LIMIT, type CreateLinkRequest } from '@shelfmark/contracts';
+import {
+  LINK_KIND,
+  LINK_LIMIT,
+  TAG_LIMIT,
+  type CreateLinkRequest,
+  type LinkKind,
+} from '@shelfmark/contracts';
 import {
   ArrayMaxSize,
   IsArray,
+  IsIn,
   IsOptional,
   IsString,
   IsUUID,
@@ -41,6 +48,14 @@ export class CreateLinkDto implements CreateLinkRequest {
   @NoControlChars(true)
   @MaxLength(LINK_LIMIT.NoteMax)
   note?: string;
+
+  @ApiPropertyOptional({
+    enum: Object.values(LINK_KIND),
+    description: 'Usually the preview kind; derived by the server when absent',
+  })
+  @IsOptional()
+  @IsIn(Object.values(LINK_KIND))
+  kind?: LinkKind;
 
   @ApiPropertyOptional({ format: 'uuid', description: 'One of your folders' })
   @IsOptional()

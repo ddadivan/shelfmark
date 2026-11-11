@@ -114,6 +114,11 @@
       />
 
       @if (editing) {
+        <ui-select
+          [label]="'links.kind.label' | transloco"
+          [options]="kindOptions()"
+          [formField]="form.kind"
+        />
         <ui-checkbox [label]="'links.edit.favorite' | transloco" [formField]="form.isFavorite" />
       }
 

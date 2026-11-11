@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import {
   LINK_ERROR_MESSAGE,
+  LINK_KIND,
   type LinkPreviewResponse,
   type LinkResponse,
 } from '@shelfmark/contracts';
@@ -24,6 +25,7 @@ import { AddLinkDialogService } from './add-link-dialog.service';
 
 const PLAIN: LinkPreviewResponse = {
   preview: {
+    kind: LINK_KIND.Article,
     url: 'https://example.org/post',
     title: 'A fine post',
     description: 'About a thing.',
@@ -326,6 +328,7 @@ describe('AddLinkDialogComponent', () => {
       note: 'Read on the weekend',
       folderId: MOCK_ID.FolderAngular,
       tags: ['docs'],
+      kind: LINK_KIND.Article,
       idempotencyKey: expect.any(String),
     });
     expect(outcome?.action).toBe(ADD_LINK_ACTION.Saved);
@@ -803,6 +806,33 @@ describe('AddLinkDialogComponent', () => {
 
       await result;
       expect(api.update).toHaveBeenCalledWith(EDITED.id, { isFavorite: true });
+    });
+
+    it('has a Type select in edit mode that sends a changed kind', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      const { result } = await setup(api, { link: { ...EDITED, kind: LINK_KIND.Article } });
+
+      const selects = [...dialog().querySelectorAll('ui-select')];
+      const type = selects.find((select) => select.textContent?.includes('Type'));
+      expect(type?.textContent).toContain('Article');
+      type?.querySelector<HTMLButtonElement>('button')?.click();
+      await until(() => {
+        expect(document.querySelectorAll('[role="option"]').length).toBeGreaterThan(0);
+      });
+      [...document.querySelectorAll<HTMLElement>('[role="option"]')]
+        .find((option) => option.textContent?.trim() === 'Shopping')
+        ?.click();
+      TestBed.tick();
+      button('Save changes').click();
+
+      await result;
+      expect(api.update).toHaveBeenCalledWith(EDITED.id, { kind: LINK_KIND.Shopping });
+    });
+
+    it('has no Type select when adding', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      await setup(api);
+      expect(dialog().textContent).not.toContain('Type');
     });
 
     it('closes without a request when nothing changed', async () => {

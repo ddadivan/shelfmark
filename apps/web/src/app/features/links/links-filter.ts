@@ -25,6 +25,9 @@ export function linksQuery(filter: LinksFilter, cursor?: string): ListLinksQuery
   if (filter.q) {
     query.q = filter.q;
   }
+  if (filter.kind !== undefined) {
+    query.kind = filter.kind;
+  }
   if (filter.sort !== undefined) {
     query.sort = filter.sort;
   }
@@ -58,7 +61,8 @@ export function inFilter(filter: LinksFilter, link: LinkResponse): boolean {
   const names = link.tags.map((name) => name.toLowerCase());
   const tagsMatch = (filter.tags ?? []).every((tag) => names.includes(tag.toLowerCase()));
   const queryMatch = !filter.q || matchesQuery(link, filter.q);
-  return tagsMatch && queryMatch;
+  const kindMatch = filter.kind === undefined || link.kind === filter.kind;
+  return tagsMatch && queryMatch && kindMatch;
 }
 
 /** Two filters list the same links (the same request). */
