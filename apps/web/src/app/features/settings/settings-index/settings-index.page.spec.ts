@@ -60,6 +60,7 @@ describe('the You list (/settings)', () => {
     expect(Array.from(root.querySelectorAll('nav a')).map((a) => a.getAttribute('href'))).toEqual([
       '/settings/appearance',
       '/settings/library',
+      '/settings/language',
       '/settings/import-export',
       '/settings/privacy',
       '/settings/feedback',
@@ -70,6 +71,9 @@ describe('the You list (/settings)', () => {
     ).toEqual(['Send feedback', 'How it works', 'Sign out']);
     expect(root.querySelector('nav a[href="/settings/appearance"]')?.textContent).toContain(
       'System',
+    );
+    expect(root.querySelector('nav a[href="/settings/language"]')?.textContent).toContain(
+      'Match my browser',
     );
     expect(root.querySelector('a[href="/privacy"]')?.textContent).toContain('Privacy policy');
     expect(root.textContent).toContain('Shelfmark v1.0');

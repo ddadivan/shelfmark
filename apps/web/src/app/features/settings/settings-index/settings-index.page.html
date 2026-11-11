@@ -18,7 +18,13 @@
     <span class="settings-index__label">{{ entry.labelKey | transloco }}</span>
     @if (entry.path === SETTINGS_PATH.Appearance) {
     <span class="settings-index__value">{{ themeKey() | transloco }}</span>
-    }
+    } @if (entry.path === SETTINGS_PATH.Language) { @if (languageName(); as name) {
+    <span class="settings-index__value" [attr.lang]="name.lang">{{ name.text }}</span>
+    } @else {
+    <span class="settings-index__value"
+      >{{ 'settings.language.interface.browser' | transloco }}</span
+    >
+    } }
     <ui-icon class="settings-index__chevron" name="chevron-right" [size]="ICON_SIZE.Md" />
   </a>
   } @if (admin.isAdmin()) {

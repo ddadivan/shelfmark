@@ -23,6 +23,10 @@ export default [
     loadComponent: () => import('./library/library.page'),
   },
   {
+    path: SETTINGS_PATH.Language,
+    loadComponent: () => import('./language/language.page'),
+  },
+  {
     path: SETTINGS_PATH.Shortcuts,
     loadComponent: () => import('./shortcuts/shortcuts.page'),
   },

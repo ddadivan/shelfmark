@@ -7,6 +7,11 @@ import {
   type CustomTheme,
   type FolderResponse,
   APP_FONT,
+  DATE_FORMAT,
+  INTERFACE_LANGUAGE,
+  LANGUAGE_SETTINGS_DEFAULT,
+  TIME_FORMAT,
+  WEEK_START,
   CARD_PREVIEW,
   DENSITY,
   LAYOUT_SETTINGS_DEFAULT,
@@ -35,6 +40,9 @@ const APPEARANCE_DEFAULTS = {
   motion: MOTION_PREFERENCE.System,
   appearanceSaved: false,
   ...LAYOUT_SETTINGS_DEFAULT,
+  // Not the appearance, but every whole-body expectation needs them too (#274).
+  ...LANGUAGE_SETTINGS_DEFAULT,
+  languageSaved: false,
 };
 
 describe('account settings', () => {
@@ -277,6 +285,8 @@ describe('account settings', () => {
         appearanceSaved: true,
         ...LAYOUT_SETTINGS_DEFAULT,
         ...LIBRARY_SETTINGS_DEFAULT,
+        ...LANGUAGE_SETTINGS_DEFAULT,
+        languageSaved: false,
       });
       // Choosing another theme keeps the custom one for later.
       const light = await a
@@ -594,6 +604,115 @@ describe('account settings', () => {
         { font: 'comic' },
         { density: 'airy' },
         { cardPreview: 'giant' },
+      ]) {
+        await expect(t.db.prisma.user.update({ where: { id }, data })).rejects.toThrow();
+      }
+    });
+  });
+
+  describe('language (#274)', () => {
+    const language = {
+      language: INTERFACE_LANGUAGE.Fr,
+      dateFormat: DATE_FORMAT.Iso,
+      timeFormat: TIME_FORMAT.H12,
+      weekStart: WEEK_START.Sunday,
+      spellcheck: false,
+    };
+    const defaults = {
+      trashRetentionDays: 30,
+      folderColours: true,
+      pauseHistory: false,
+      ...APPEARANCE_DEFAULTS,
+      ...LIBRARY_SETTINGS_DEFAULT,
+    };
+
+    it('defaults to the browser language and keeps it unsaved', async () => {
+      const res = await asUser(t.app, users.owner).get(USER_SETTINGS_ENDPOINT).expect(200);
+      expect(res.body).toMatchObject({ ...LANGUAGE_SETTINGS_DEFAULT, languageSaved: false });
+    });
+
+    it('saves every language setting and marks them saved, not the appearance', async () => {
+      const a = asUser(t.app, users.owner);
+      const res = await a.patch(USER_SETTINGS_ENDPOINT).send(language).expect(200);
+      expect(res.body).toEqual({ ...defaults, ...language, languageSaved: true });
+      expect((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body).toEqual(res.body);
+    });
+
+    it('changes only the language fields sent', async () => {
+      const a = asUser(t.app, users.owner);
+      await a.patch(USER_SETTINGS_ENDPOINT).send({ language: INTERFACE_LANGUAGE.De }).expect(200);
+      const res = await a
+        .patch(USER_SETTINGS_ENDPOINT)
+        .send({ timeFormat: TIME_FORMAT.H24 })
+        .expect(200);
+      const body = res.body as UserSettingsResponse;
+      expect(body.language).toBe(INTERFACE_LANGUAGE.De);
+      expect(body.timeFormat).toBe(TIME_FORMAT.H24);
+      expect(body.dateFormat).toBe(DATE_FORMAT.Default);
+      expect(body.spellcheck).toBe(true);
+      expect(body.languageSaved).toBe(true);
+    });
+
+    it('does not mark the language saved for other settings', async () => {
+      const a = asUser(t.app, users.owner);
+      const res = await a.patch(USER_SETTINGS_ENDPOINT).send({ folderColours: false }).expect(200);
+      expect((res.body as UserSettingsResponse).languageSaved).toBe(false);
+    });
+
+    it.each(Object.values(INTERFACE_LANGUAGE))('saves the language %s', async (value) => {
+      const a = asUser(t.app, users.owner);
+      const res = await a.patch(USER_SETTINGS_ENDPOINT).send({ language: value }).expect(200);
+      expect((res.body as UserSettingsResponse).language).toBe(value);
+    });
+
+    it.each(Object.values(DATE_FORMAT))('saves the date format %s', async (value) => {
+      const a = asUser(t.app, users.owner);
+      const res = await a.patch(USER_SETTINGS_ENDPOINT).send({ dateFormat: value }).expect(200);
+      expect((res.body as UserSettingsResponse).dateFormat).toBe(value);
+    });
+
+    it.each([
+      [{ language: 'uk' }],
+      [{ language: 'EN' }],
+      [{ language: 'fr-FR' }],
+      [{ language: null }],
+      [{ dateFormat: 'dd/MM/yyyy' }],
+      [{ dateFormat: 1 }],
+      [{ timeFormat: '24' }],
+      [{ timeFormat: true }],
+      [{ weekStart: 'saturday' }],
+      [{ weekStart: null }],
+      [{ spellcheck: 'on' }],
+      [{ spellcheck: null }],
+      [{ locale: 'fr' }],
+    ])('rejects %j with 400 and changes nothing', async (body) => {
+      const a = asUser(t.app, users.owner);
+      await a.patch(USER_SETTINGS_ENDPOINT).send(body).expect(400);
+      expect((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body).toEqual(defaults);
+    });
+
+    it('needs a session', async () => {
+      await anonymous(t.app).patch(USER_SETTINGS_ENDPOINT).send(language).expect(401);
+    });
+
+    it('is isolated: one user’s language never reaches another', async () => {
+      const a = asUser(t.app, users.owner);
+      const b = asUser(t.app, users.intruder);
+      await a.patch(USER_SETTINGS_ENDPOINT).send(language).expect(200);
+      const other = (await b.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse;
+      expect(other).toMatchObject({ ...LANGUAGE_SETTINGS_DEFAULT, languageSaved: false });
+      await b.patch(USER_SETTINGS_ENDPOINT).send({ language: INTERFACE_LANGUAGE.It }).expect(200);
+      const owner = (await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse;
+      expect(owner.language).toBe(INTERFACE_LANGUAGE.Fr);
+    });
+
+    it('is enforced by the database CHECKs', async () => {
+      const id = users.owner.userId;
+      for (const data of [
+        { language: 'uk' },
+        { dateFormat: 'yyyy' },
+        { timeFormat: 'h13' },
+        { weekStart: 'saturday' },
       ]) {
         await expect(t.db.prisma.user.update({ where: { id }, data })).rejects.toThrow();
       }

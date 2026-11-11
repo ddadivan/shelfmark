@@ -9,7 +9,7 @@ import {
   output,
   viewChild,
 } from '@angular/core';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { TRASH_ITEM_KIND, type TrashItem } from '@shelfmark/contracts';
 import {
   BADGE_TONE,
@@ -29,7 +29,7 @@ import { pluralKey } from '../../../core/i18n/plural-key';
 import { SwipeReveal } from '../../../core/layout/swipe-reveal';
 import { ViewportService } from '../../../core/layout/viewport.service';
 import { ownImageUrl, siteLetter } from '../../links/link-view';
-import { relativeTime } from '../../links/relative-time';
+import { LocaleService } from '../../../core/i18n/locale.service';
 import { TRASH_EXPIRING_SOON_DAYS } from '../models/trash-expiring-soon-days.const';
 import { daysLeft } from '../trash-days-left';
 
@@ -67,7 +67,7 @@ import { daysLeft } from '../trash-days-left';
 })
 export class TrashRowComponent {
   protected readonly viewport = inject(ViewportService);
-  private readonly transloco = inject(TranslocoService);
+  private readonly locale = inject(LocaleService);
 
   protected readonly BADGE_TONE = BADGE_TONE;
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
@@ -99,7 +99,7 @@ export class TrashRowComponent {
   protected readonly left = computed(() => daysLeft(this.item().expiresAt, this.now()));
   protected readonly soon = computed(() => this.left() <= TRASH_EXPIRING_SOON_DAYS);
   protected readonly deletedAgo = computed(() =>
-    relativeTime(this.item().deletedAt, this.now(), this.transloco.getActiveLang()),
+    this.locale.formatRelative(this.item().deletedAt, this.now()),
   );
 
   protected readonly swipeable = computed(() => this.viewport.phone() && !this.selecting());

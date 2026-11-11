@@ -215,7 +215,8 @@
     "footer": {
       "copyright": "© 2026 Shelfmark",
       "privacy": "Privacy",
-      "github": "GitHub"
+      "github": "GitHub",
+      "language": "Language"
     },
     "newTab": "opens in a new tab",
     "backToShelf": "Back to my shelf",
@@ -531,7 +532,7 @@
       "title": "Cookies and browser storage",
       "necessary": "We use strictly necessary cookies only. A session cookie keeps you signed in, in the demo as well. A short-lived cookie protects the Google and GitHub sign-in flow. They are httpOnly and SameSite=Lax, and Secure on the live site. Signing out removes the session cookie.",
       "none": "There are no advertising, analytics or tracking cookies, and no analytics scripts.",
-      "storage": "Your browser's local storage holds interface preferences only: the theme and the cards or list view. They stay in your browser. The installed app (PWA) caches Shelfmark's own files for fast start-up, not your links."
+      "storage": "Your browser's local storage holds interface preferences only: the theme, the language and the cards or list view. They stay in your browser. The installed app (PWA) caches Shelfmark's own files for fast start-up, not your links."
     },
     "dont": {
       "title": "What we don't do",
@@ -954,6 +955,7 @@
       "account": "Account",
       "appearance": "Appearance",
       "library": "Library",
+      "language": "Language",
       "export": "Export",
       "privacy": "Privacy and data",
       "shortcuts": "Keyboard shortcuts",
@@ -963,6 +965,7 @@
       "account": "Your profile and your account.",
       "appearance": "Saved as you go and synced to all your devices.",
       "library": "How links are shown, saved and kept.",
+      "language": "Interface language and how dates look.",
       "export": "Take everything you saved with you.",
       "privacy": "What we keep, and how to take it with you.",
       "shortcuts": "Work without the mouse.",
@@ -1144,8 +1147,8 @@
       "failedDetail": "It is back to how it was.",
       "language": {
         "label": "Language",
-        "hint": "More languages are coming",
-        "value": "English"
+        "hint": "Interface language, date format and spell-check",
+        "value": "Change language"
       }
     },
     "privacy": {
@@ -1303,6 +1306,42 @@
         "moveDown": "Move {{name}} down",
         "unpin": "Unpin {{name}} from the sidebar"
       }
+    },
+    "language": {
+      "title": "Language",
+      "interface": {
+        "label": "Interface language",
+        "hint": "Your links and notes stay as they are",
+        "browser": "Match my browser"
+      },
+      "spellcheck": {
+        "label": "Spell-check notes",
+        "hint": "Uses your browser’s dictionary"
+      },
+      "dates": {
+        "title": "Dates and numbers"
+      },
+      "date": {
+        "label": "Date format",
+        "default": "Language default ({{example}})"
+      },
+      "time": {
+        "label": "Time",
+        "default": "Auto",
+        "h24": "24-hour",
+        "h12": "12-hour"
+      },
+      "week": {
+        "label": "Week starts on",
+        "hint": "Groups this week in Recently opened",
+        "default": "Auto"
+      },
+      "preview": {
+        "label": "Preview",
+        "value": "{{weekday}}, {{date}}, {{time}}"
+      },
+      "failed": "Couldn’t save the setting",
+      "failedDetail": "It is back to how it was."
     },
     "help": "Help"
   },

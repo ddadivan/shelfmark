@@ -1,3 +1,4 @@
+import { activeLang } from '../../../core/i18n/active-lang';
 import { NgTemplateOutlet } from '@angular/common';
 import {
   afterNextRender,
@@ -130,6 +131,8 @@ export class SidebarTagsComponent {
   /** `id` of the tag whose menu is open. */
   protected readonly menuTagId = signal<string | null>(null);
   protected readonly menuLabel = computed(() => {
+    // Re-runs on a language switch (`translate` itself is not reactive).
+    activeLang();
     const tag = this.menuTag();
     return tag ? this.transloco.translate('tags.sidebar.menuFor', { name: tag.name }) : undefined;
   });

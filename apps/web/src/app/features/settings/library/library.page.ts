@@ -1,3 +1,4 @@
+import { activeLang } from '../../../core/i18n/active-lang';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -97,41 +98,51 @@ export default class LibrarySettingsPage {
   protected readonly pluralKey = pluralKey;
   protected readonly trashHref = `/${APP_PATH.Trash}`;
 
-  protected readonly options = computed<SegmentedOption[]>(() =>
-    TRASH_RETENTION_DAYS.map((days) => ({
+  protected readonly options = computed<SegmentedOption[]>(() => {
+    // Re-runs on a language switch (`translate` itself is not reactive).
+    activeLang();
+    return TRASH_RETENTION_DAYS.map((days) => ({
       value: String(days),
       label: this.transloco.translate('settings.library.trash.retention.days', { count: days }),
-    })),
-  );
+    }));
+  });
 
   protected readonly value = computed(() => String(this.settings.retentionDays()));
 
   protected readonly library = this.settings.libraryShown;
 
-  protected readonly viewOptions = computed<SegmentedOption[]>(() =>
-    Object.values(UI_VIEW).map((view) => ({
+  protected readonly viewOptions = computed<SegmentedOption[]>(() => {
+    // Re-runs on a language switch (`translate` itself is not reactive).
+    activeLang();
+    return Object.values(UI_VIEW).map((view) => ({
       value: view,
       label: this.transloco.translate(VIEW_OPTION_KEYS[view]),
-    })),
-  );
+    }));
+  });
 
-  protected readonly sortOptions = computed<SelectOption[]>(() =>
-    Object.values(FEED_SORT).map((sort) => ({
+  protected readonly sortOptions = computed<SelectOption[]>(() => {
+    // Re-runs on a language switch (`translate` itself is not reactive).
+    activeLang();
+    return Object.values(FEED_SORT).map((sort) => ({
       id: sort,
       name: this.transloco.translate(SORT_OPTION_KEYS[sort]),
-    })),
-  );
+    }));
+  });
 
-  protected readonly openOptions = computed<SegmentedOption[]>(() => [
-    {
-      value: LINK_OPEN_TARGET.NewTab,
-      label: this.transloco.translate('settings.library.viewing.open.newTab'),
-    },
-    {
-      value: LINK_OPEN_TARGET.SameTab,
-      label: this.transloco.translate('settings.library.viewing.open.sameTab'),
-    },
-  ]);
+  protected readonly openOptions = computed<SegmentedOption[]>(() => {
+    // Re-runs on a language switch (`translate` itself is not reactive).
+    activeLang();
+    return [
+      {
+        value: LINK_OPEN_TARGET.NewTab,
+        label: this.transloco.translate('settings.library.viewing.open.newTab'),
+      },
+      {
+        value: LINK_OPEN_TARGET.SameTab,
+        label: this.transloco.translate('settings.library.viewing.open.sameTab'),
+      },
+    ];
+  });
 
   protected readonly folderOptions = computed(() => buildFolderOptions(this.folders.entities()));
   /** The chosen folder while the folder list knows it; Unsorted otherwise. */

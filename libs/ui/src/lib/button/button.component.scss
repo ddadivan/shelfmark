@@ -9,6 +9,21 @@
   inline-size: 100%;
 }
 
+// `wrap`: the label wraps and the height grows (at least the size's height stays).
+:host(.ui-button-host--wrap) {
+  max-inline-size: 100%;
+}
+
+:host(.ui-button-host--wrap) .ui-button {
+  height: auto;
+  min-height: rem(40px);
+  max-inline-size: 100%;
+  padding-block: var(--space-2);
+  text-align: start;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
 .ui-button {
   @include type(label);
 

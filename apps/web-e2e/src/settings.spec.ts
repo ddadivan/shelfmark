@@ -74,7 +74,11 @@ test.describe('settings (mock auth)', () => {
     await page.goto('/settings/appearance');
     const main = page.getByRole('main');
 
-    await expect(main.getByText('More languages are coming')).toBeVisible();
+    await expect(main.getByText('Interface language, date format and spell-check')).toBeVisible();
+    await expect(main.getByRole('link', { name: 'Change language' })).toHaveAttribute(
+      'href',
+      '/settings/language',
+    );
 
     await openSettingsSection(page, 'Privacy and data');
     await expect(page).toHaveURL(/\/settings\/privacy$/);
@@ -96,6 +100,7 @@ test.describe('settings (mock auth)', () => {
       'Account',
       'Appearance',
       'Library',
+      'Language',
       'Keyboard shortcuts',
       'Export',
       'Privacy and data',

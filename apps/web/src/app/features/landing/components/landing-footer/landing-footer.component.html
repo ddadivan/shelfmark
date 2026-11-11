@@ -13,4 +13,20 @@
       }}<span class="landing-footer__hint"> ({{ 'landing.newTab' | transloco }})</span></a
     >
   </span>
+  <div
+    class="landing-footer__languages"
+    role="group"
+    [attr.aria-label]="'landing.footer.language' | transloco"
+  >
+    @for (item of languages; track item.lang) {
+      <ui-button
+        [variant]="BUTTON_VARIANT.Ghost"
+        [size]="BUTTON_SIZE.Sm"
+        [attr.lang]="item.lang"
+        [ariaPressed]="locale.lang() === item.lang"
+        (click)="choose(item.lang)"
+        >{{ item.name }}</ui-button
+      >
+    }
+  </div>
 </footer>

@@ -4,6 +4,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  booleanAttribute,
   input,
   model,
   numberAttribute,
@@ -41,6 +42,8 @@ export class TextareaComponent extends UiFieldControl implements FormValueContro
   readonly maxLength = input<number | undefined>(undefined);
   /** Unit for screen readers after the counter, for example "characters". */
   readonly counterLabel = input('');
+  /** The browser's spell-check (its own dictionary) while typing; on by default. */
+  readonly spellcheck = input(true, { transform: booleanAttribute });
 
   protected readonly maxRows = TEXTAREA_MAX_ROWS;
 

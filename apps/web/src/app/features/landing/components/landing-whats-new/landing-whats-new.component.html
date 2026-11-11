@@ -10,7 +10,7 @@
           <p class="landing-whats-new__lead">{{ entry.textKey | transloco }}</p>
         </div>
         <time class="landing-whats-new__date" [attr.datetime]="entry.date">{{
-          entry.date | date: 'd MMM y'
+          entry.date | appDate
         }}</time>
       </li>
     }

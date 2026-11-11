@@ -60,7 +60,10 @@ import { BUTTON_TYPE } from './models/button-type.const';
   imports: [IconComponent, NgTemplateOutlet, RippleDirective, SpinnerComponent, TooltipDirective],
   providers: [{ provide: UI_FOCUS_TARGET, useExisting: ButtonComponent }],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '[class.ui-button-host--block]': 'block()' },
+  host: {
+    '[class.ui-button-host--block]': 'block()',
+    '[class.ui-button-host--wrap]': 'wrap()',
+  },
   templateUrl: './button.component.html',
   styleUrl: './button.component.scss',
 })
@@ -89,6 +92,11 @@ export class ButtonComponent implements UiFocusTarget {
   readonly iconSize = input<IconSize | undefined>(undefined);
   /** Full-width button: the host and the inner element take 100% of the inline size. */
   readonly block = input(false, { transform: booleanAttribute });
+  /**
+   * A long label wraps onto more lines and the button grows in height instead of being cut
+   * (translations run up to 40% longer); the button never gets wider than its container.
+   */
+  readonly wrap = input(false, { transform: booleanAttribute });
   /** Floating action button: 3.5rem square with the popover shadow; use with `iconOnly`. */
   readonly fab = input(false, { transform: booleanAttribute });
   /** Press ripple; `[ripple]="false"` opts out. */

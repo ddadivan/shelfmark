@@ -26,6 +26,11 @@ describe('TextareaComponent', () => {
     expect(q('.ui-field__control--textarea')).not.toBeNull();
   });
 
+  it('spell-checks by default and can turn it off', () => {
+    expect(setup().area().getAttribute('spellcheck')).toBe('true');
+    expect(setup({ spellcheck: false }).area().getAttribute('spellcheck')).toBe('false');
+  });
+
   it('takes rows and grows to at most 8 rows', () => {
     const { area } = setup({ rows: 5 });
     expect(area().rows).toBe(5);

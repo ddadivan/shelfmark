@@ -1,3 +1,4 @@
+import { activeLang } from '../../core/i18n/active-lang';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -101,20 +102,24 @@ export default class TrashPage {
     () => this.selectedCount() > 0 && !this.allVisibleSelected(),
   );
 
-  protected readonly filterOptions = computed<SegmentedOption[]>(() => [
-    {
-      value: TRASH_FILTER.All,
-      label: this.transloco.translate('trash.filter.all', { count: this.store.items().length }),
-    },
-    {
-      value: TRASH_FILTER.Links,
-      label: this.transloco.translate('trash.filter.links', { count: this.linkCount() }),
-    },
-    {
-      value: TRASH_FILTER.Folders,
-      label: this.transloco.translate('trash.filter.folders', { count: this.folderCount() }),
-    },
-  ]);
+  protected readonly filterOptions = computed<SegmentedOption[]>(() => {
+    // Re-runs on a language switch (`translate` itself is not reactive).
+    activeLang();
+    return [
+      {
+        value: TRASH_FILTER.All,
+        label: this.transloco.translate('trash.filter.all', { count: this.store.items().length }),
+      },
+      {
+        value: TRASH_FILTER.Links,
+        label: this.transloco.translate('trash.filter.links', { count: this.linkCount() }),
+      },
+      {
+        value: TRASH_FILTER.Folders,
+        label: this.transloco.translate('trash.filter.folders', { count: this.folderCount() }),
+      },
+    ];
+  });
 
   constructor() {
     void this.store.open();

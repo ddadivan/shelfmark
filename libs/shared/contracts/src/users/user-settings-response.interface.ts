@@ -1,12 +1,13 @@
 import type { TrashRetentionDays } from '../trash/trash-retention-days.type';
 import type { CustomTheme } from './custom-theme.interface';
+import type { LanguageSettings } from './language-settings.interface';
 import type { LayoutSettings } from './layout-settings.interface';
 import type { LibrarySettings } from './library-settings.interface';
 import type { MotionPreference } from './motion-preference.type';
 import type { ThemePreference } from './theme-preference.type';
 
 /** `GET /api/me/settings`: preferences kept on the account, so they follow the user to every device. */
-export interface UserSettingsResponse extends LibrarySettings, LayoutSettings {
+export interface UserSettingsResponse extends LibrarySettings, LayoutSettings, LanguageSettings {
   trashRetentionDays: TrashRetentionDays;
   /** Coloured folder icons; off shows every folder in graphite. Default on. */
   folderColours: boolean;
@@ -27,4 +28,9 @@ export interface UserSettingsResponse extends LibrarySettings, LayoutSettings {
    * already had.
    */
   appearanceSaved: boolean;
+  /**
+   * False until a `LanguageSettings` field is first written: they then hold the defaults, and the
+   * web app keeps (and saves once) a language the browser already had (a guest's choice).
+   */
+  languageSaved: boolean;
 }

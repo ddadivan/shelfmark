@@ -66,10 +66,10 @@ import type { AddLinkResult } from '../models/add-link-result.type';
 import { LINKS_API } from '../models/links-api.const';
 import { PREVIEW_STATE } from '../models/preview-state.const';
 import type { PreviewState } from '../models/preview-state.type';
+import { LocaleService } from '../../../core/i18n/locale.service';
 import { parsePastedLinks } from '../paste-many/parse-pasted-links';
 import type { ParsedPaste } from '../paste-many/models/parsed-paste.interface';
 import { PasteManyListComponent } from '../paste-many/paste-many-list.component';
-import { relativeTime } from '../relative-time';
 import { buildFolderOptions } from './folder-options';
 import { displayHost, urlWithoutScheme } from './http-url';
 import { saveErrorKey } from './save-error-key';
@@ -135,6 +135,9 @@ export class AddLinkDialogComponent {
   private readonly tagStore = inject(TagsStore);
   private readonly ref = inject<UiDialogRef<AddLinkResult>>(UiDialogRef);
   private readonly transloco = inject(TranslocoService);
+  private readonly localeService = inject(LocaleService);
+  /** Settings › Language › Spell-check notes. */
+  protected readonly spellcheck = this.localeService.spellcheck;
   private readonly data = injectDialogData<AddLinkDialogData>();
   /** Settings › Library › Saving: default folder, duplicate notice, whether pages are fetched. */
   private readonly library = inject(UserSettingsStore).libraryShown;
@@ -307,14 +310,13 @@ export class AddLinkDialogComponent {
     if (!link) {
       return null;
     }
-    const locale = this.transloco.getActiveLang();
     const now = Date.now();
-    const created = relativeTime(link.createdAt, now, locale);
+    const created = this.localeService.formatRelative(link.createdAt, now);
     return link.lastOpenedAt === null
       ? this.transloco.translate('links.edit.metaNever', { created })
       : this.transloco.translate('links.edit.meta', {
           created,
-          opened: relativeTime(link.lastOpenedAt, now, locale),
+          opened: this.localeService.formatRelative(link.lastOpenedAt, now),
         });
   });
 

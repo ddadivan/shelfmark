@@ -1,4 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { APP_PATH } from '../../../models/app-path.const';
+import { SETTINGS_PATH } from '../models/settings-path.const';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
@@ -79,6 +82,9 @@ const SYSTEM_THUMB = 'system';
 })
 export default class AppearancePage {
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
+  /** Settings › Language, where the language row leads. */
+  protected readonly languageHref = `/${APP_PATH.Settings}/${SETTINGS_PATH.Language}`;
+  private readonly router = inject(Router);
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   protected readonly SETTINGS_ROW_ALIGN = SETTINGS_ROW_ALIGN;
   protected readonly THEME_PICKER_KIND = THEME_PICKER_KIND;
@@ -327,5 +333,10 @@ export default class AppearancePage {
       value,
       label: this.transloco.translate(`${prefix}.${value}`),
     }));
+  }
+
+  protected async openLanguage(event: MouseEvent): Promise<void> {
+    event.preventDefault();
+    await this.router.navigateByUrl(this.languageHref);
   }
 }

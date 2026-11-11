@@ -20,6 +20,7 @@
     [value]="value()"
     [disabled]="disabled()"
     [attr.placeholder]="placeholder() || null"
+    [attr.spellcheck]="spellcheck() ? 'true' : 'false'"
     [attr.aria-required]="required() ? 'true' : null"
     [attr.aria-invalid]="showInvalid() ? 'true' : null"
     [attr.aria-describedby]="describedBy()"

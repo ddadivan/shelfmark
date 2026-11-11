@@ -20,6 +20,19 @@ const tree: SelectOption[] = [
 ];
 
 describe('selectRows', () => {
+  it('keeps the language of a name (a language list)', () => {
+    const rows = selectRows(
+      [
+        { id: 'de', name: 'Deutsch', lang: 'de' },
+        { id: 'browser', name: 'Match my browser' },
+      ],
+      '',
+      '',
+    );
+    expect(rows[0]?.lang).toBe('de');
+    expect(rows[1]).not.toHaveProperty('lang');
+  });
+
   it('flattens the tree in order with the depth and the path', () => {
     const rows = selectRows(tree, '', '');
     expect(rows.map((r) => [r.id, r.level])).toEqual([
