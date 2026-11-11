@@ -9,6 +9,12 @@ import {
   pickTagMenuItem,
 } from '../support/a11y-flows';
 import { NEW_USER, seedSession } from '../support/mock-session';
+import {
+  enablePublicLink,
+  openShareDialog,
+  SAMPLE_SHARE,
+  seedShares,
+} from '../support/public-collection';
 import { SEARCH_BUTTON } from '../support/search-button';
 import { openSidebar, openTags } from '../support/sidebar';
 import type { A11yScreen } from './a11y-screen.interface';
@@ -251,6 +257,32 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     },
     include: TITLED_DIALOG_SELECTOR,
     // Both projects: the confirmation is a sheet on a phone.
+  },
+  {
+    name: 'share folder dialog with the public link on',
+    open: async (page) => {
+      await openFeed(page);
+      await enablePublicLink(await openShareDialog(page, MOCK_FIXTURE.readingName));
+    },
+    // Both projects: a sheet on a phone, with the link field above the button.
+    ...SHEET,
+  },
+  {
+    name: 'public collection (guest)',
+    open: async (page) => {
+      await seedShares(page, JSON.stringify([SAMPLE_SHARE]));
+      await page.goto(`/c/${SAMPLE_SHARE.token}`);
+      await expect(page.locator('ui-card').first()).toBeVisible();
+    },
+  },
+  {
+    name: 'public collection not found',
+    open: async (page) => {
+      await page.goto(`/c/${SAMPLE_SHARE.token}`);
+      await expect(
+        page.getByRole('heading', { level: 1, name: "This collection isn't available" }),
+      ).toBeVisible();
+    },
   },
   {
     name: 'tag menu',
