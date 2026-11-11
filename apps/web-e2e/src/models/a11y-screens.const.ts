@@ -239,6 +239,31 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     ...OVERLAY,
   },
   {
+    name: 'paste many list',
+    open: async (page) => {
+      await openFeed(page);
+      await page.getByRole('button', { name: 'Add link' }).first().click();
+      const field = page
+        .getByRole('dialog', { name: 'Add link' })
+        .getByLabel('Link', { exact: true });
+      await field.focus();
+      // String script: this project has no DOM lib. A paste with two links and a note.
+      await page.evaluate(
+        `(() => {
+          const data = new DataTransfer();
+          data.setData('text/plain', 'https://example.org/a\\n${DUPLICATE_URL}\\nremember the RFC');
+          document.activeElement.dispatchEvent(
+            new ClipboardEvent('paste', { clipboardData: data, bubbles: true, cancelable: true }),
+          );
+        })()`,
+      );
+      const dialog = page.getByRole('dialog', { name: 'Add 1 link' });
+      await expect(dialog.getByText('Already saved')).toBeVisible();
+      await expect(dialog.getByText('Not a link, skipped')).toBeVisible();
+    },
+    ...SHEET,
+  },
+  {
     name: 'edit link dialog',
     open: async (page) => {
       await openFeed(page);

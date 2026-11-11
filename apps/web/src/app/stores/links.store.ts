@@ -44,7 +44,13 @@ const initialState: LinksState = {
   loadMoreFailed: false,
   recent: [],
   recentLoaded: false,
+  landed: {},
 };
+
+/** How long a just-saved link keeps its `landed` mark: the land, the 1.8 s ring and the stagger. */
+const LANDED_MS = 2600;
+/** At most this many cards are staggered; later ones land with the last of them. */
+const LANDED_STAGGER_MAX = 10;
 
 /**
  * Whether an edited link still belongs in the open feed. A favorite flag never removes it (an
@@ -165,7 +171,13 @@ export const LinksStore = signalStore(
         }
         const current = loaded(id);
         if (current?.updatedAt === asked.updatedAt && hasPendingImages(current)) {
-          const changes = { faviconUrl: saved.faviconUrl, imageUrl: saved.imageUrl };
+          // The capture also fills in the page title of a link saved without one (paste many);
+          // a title the user changed meanwhile is a newer `updatedAt` and never reaches here.
+          const changes = {
+            faviconUrl: saved.faviconUrl,
+            imageUrl: saved.imageUrl,
+            ...(current.title === asked.title && { title: saved.title }),
+          };
           patchState(store, updateEntity({ id, changes }), { recent: mapRecent(id, changes) });
         } else if (current !== undefined && hasPendingImages(current)) {
           // Edited to another page while the request ran: that version is pending in its own right.
@@ -177,6 +189,44 @@ export const LinksStore = signalStore(
       } catch {
         // No toast: the capture is a courtesy, the card falls back to the site letter.
       }
+    }
+
+    /** Marks just-saved links for the landing motion and drops the marks once it has played. */
+    function markLanded(ids: readonly string[]): void {
+      if (ids.length === 0) {
+        return;
+      }
+      const marks: Record<string, number> = { ...store.landed() };
+      ids.forEach((id, index) => {
+        marks[id] = Math.min(index, LANDED_STAGGER_MAX);
+      });
+      patchState(store, { landed: marks });
+      const started = epoch;
+      setTimeout(() => {
+        if (started !== epoch) {
+          return;
+        }
+        const rest: Record<string, number> = { ...store.landed() };
+        for (const id of ids) {
+          delete rest[id];
+        }
+        patchState(store, { landed: rest });
+      }, LANDED_MS);
+    }
+
+    /** Whether a new link goes on top of the open feed: loaded, newest first, in scope, not shown yet. */
+    function showsOnTop(link: LinkResponse): boolean {
+      const { sort, order } = store.filter();
+      // At the top only in the default order; other orders show it on the next load.
+      const newestFirst = (sort ?? LINK_SORT_FIELD.CreatedAt) === LINK_SORT_FIELD.CreatedAt;
+      const descending = (order ?? SORT_ORDER.Desc) === SORT_ORDER.Desc;
+      return (
+        store.loaded() &&
+        newestFirst &&
+        descending &&
+        inFilter(store.filter(), link) &&
+        !store.entityMap()[link.id]
+      );
     }
 
     /**
@@ -398,20 +448,33 @@ export const LinksStore = signalStore(
 
       /** Shows a link that was just saved at the top, when it belongs to the current scope. */
       addSaved(link: LinkResponse): void {
-        const { sort, order } = store.filter();
-        // At the top only in the default order; other orders show it on the next load.
-        const newestFirst = (sort ?? LINK_SORT_FIELD.CreatedAt) === LINK_SORT_FIELD.CreatedAt;
-        const descending = (order ?? SORT_ORDER.Desc) === SORT_ORDER.Desc;
-        if (
-          !store.loaded() ||
-          !newestFirst ||
-          !descending ||
-          !inFilter(store.filter(), link) ||
-          store.entityMap()[link.id]
-        ) {
+        if (!showsOnTop(link)) {
           return;
         }
         patchState(store, setAllEntities([link, ...store.entities()]));
+        markLanded([link.id]);
+      },
+
+      /**
+       * Shows links saved together (paste many) at the top in the order they were pasted, each
+       * landing a beat after the one before, and starts the capture of their pending images and
+       * titles.
+       */
+      addSavedMany(links: readonly LinkResponse[]): void {
+        const shown = links.filter((link) => showsOnTop(link));
+        if (shown.length > 0) {
+          patchState(store, setAllEntities([...shown, ...store.entities()]));
+          markLanded(shown.map((link) => link.id));
+        }
+        noteLinks(links);
+      },
+
+      /** Takes links out of the feed and the recent list at once (Undo of a batch save). */
+      dropSaved(ids: readonly string[]): void {
+        const gone = new Set(ids);
+        patchState(store, setAllEntities(store.entities().filter((link) => !gone.has(link.id))), {
+          recent: store.recent().filter((link) => !gone.has(link.id)),
+        });
       },
 
       /**

@@ -92,6 +92,29 @@ describe('tab-synced APIs', () => {
     expect(post).toHaveBeenCalledWith({ kind: TAB_SYNC_KIND.LibraryChanged });
   });
 
+  it('posts library-changed after a batch create or a batch delete', async () => {
+    const { post, service } = sync();
+    const api = tabSyncedLinksApi(
+      {
+        createBatch: vi.fn(() => of({ links: [], errors: [] })),
+        removeBatch: vi.fn(() => of({ deleted: 0 })),
+      } as unknown as LinksApi,
+      service,
+    );
+
+    await firstValueFrom(
+      api.createBatch({
+        items: [{ url: link.url, idempotencyKey: '019a0000-0000-7000-8000-0000000000aa' }],
+      }),
+    );
+    await firstValueFrom(api.removeBatch([link.id]));
+
+    expect(post.mock.calls).toEqual([
+      [{ kind: TAB_SYNC_KIND.LibraryChanged }],
+      [{ kind: TAB_SYNC_KIND.LibraryChanged }],
+    ]);
+  });
+
   it('posts library-changed for Trash restore, delete forever and empty, not for the list', async () => {
     const { post, service } = sync();
     const trash = tabSyncedTrashApi(

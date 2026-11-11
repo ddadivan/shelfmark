@@ -2,7 +2,9 @@ import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { compile, compileString } from 'sass';
 import { PHONE_MEDIA_QUERY } from '../lib/media';
-import { THEME, THEME_ATTRIBUTE } from '../lib/theme';
+import { encapsulateStyle } from '@angular/compiler';
+import { MOTION_ATTRIBUTE, MOTION_REDUCED } from '../lib/motion';
+import { CUSTOM_THEME_ATTRIBUTE, THEME, THEME_ATTRIBUTE, THEME_CUSTOM } from '../lib/theme';
 
 const STYLES_PATH = 'libs/ui/src/styles';
 
@@ -239,8 +241,26 @@ describe('motion mixins', () => {
       'ui-progress',
       'ui-ripple-grow',
       'ui-ripple-fade',
+      'ui-land',
+      'ui-land-ring',
     ]);
     expect(out).not.toMatch(/\d+px/);
+  });
+
+  it('landed drops the card in with the spring and fades the sage ring, staggered by --ui-land-delay', () => {
+    const out = css('.a { @include landed; }');
+    expect(out).toContain(
+      'ui-land var(--duration-slow) var(--ease-spring) var(--ui-land-delay, 0s) both',
+    );
+    expect(out).toContain('ui-land-ring 1.8s var(--ease-out) var(--ui-land-delay, 0s) both');
+    expect(out).not.toContain('infinite');
+  });
+
+  it('landed keeps only a fade and the ring under reduced motion', () => {
+    const reduced = reducedMotionBlock(css('.a { @include landed; }'));
+    expect(reduced).toContain('ui-reveal var(--duration-base)');
+    expect(reduced).toContain('ui-land-ring');
+    expect(reduced).not.toMatch(/(^|[\s,])ui-land\s/);
   });
 });
 
@@ -362,5 +382,56 @@ describe('themes', () => {
     for (const theme of Object.values(THEME)) {
       expect(output).toContain(`[${THEME_ATTRIBUTE}=${theme}]`);
     }
+  });
+
+  it('global.scss defines the Custom theme rules on the attributes ThemeService sets', () => {
+    const output = compile(resolve(STYLES_DIR, 'global.scss'), {
+      loadPaths: [resolve(STYLES_DIR, '../../../../node_modules')],
+    }).css;
+    const custom = `[${THEME_ATTRIBUTE}=${THEME_CUSTOM}]`;
+    expect(output).toContain(`${custom}[${CUSTOM_THEME_ATTRIBUTE.Base}=dark]`);
+    expect(output).toContain(
+      `${custom}[${CUSTOM_THEME_ATTRIBUTE.Base}=light][${CUSTOM_THEME_ATTRIBUTE.Accent}=ocean]`,
+    );
+    expect(output).toContain(
+      `${custom}[${CUSTOM_THEME_ATTRIBUTE.Base}=dark][${CUSTOM_THEME_ATTRIBUTE.Background}=ink]`,
+    );
+    expect(output).toContain(`${custom}[${CUSTOM_THEME_ATTRIBUTE.Corners}=square]`);
+  });
+});
+
+describe('reduced-motion mixin and the Animations setting', () => {
+  const reduced = `[${MOTION_ATTRIBUTE}=${MOTION_REDUCED}]`;
+
+  it('applies under the media query and under html[data-motion=reduced], in global and component styles', () => {
+    const out = css('.a { transition: x; @include reduced-motion { transition: none; } }');
+    expect(reducedMotionBlock(out)).toContain('transition: none');
+    expect(out).toMatch(
+      new RegExp(`:root\\[${MOTION_ATTRIBUTE}=${MOTION_REDUCED}\\] \\.a \\{\\s*transition: none;`),
+    );
+    expect(out).toContain(`:host-context(${reduced}) .a {`);
+  });
+
+  it('works at the top level of a stylesheet', () => {
+    const out = css('@include reduced-motion { .b { animation: none; } }');
+    expect(out).toContain(`:root${reduced} .b`);
+    expect(out).toContain(`:host-context(${reduced}) .b`);
+  });
+
+  it('survives Angular emulated encapsulation for plain, :host and nested selectors', () => {
+    const out = encapsulateStyle(
+      css(
+        ':host { @include reduced-motion { a: 1; } } .c { @include reduced-motion { &:active { b: 2; } } } @include reduced-motion { :host, .d { c: 3; } }',
+      ),
+      'c0',
+    );
+    expect(out).toContain(`${reduced}   [_nghost-c0]`);
+    expect(out).toMatch(
+      new RegExp(
+        `\\[${MOTION_ATTRIBUTE}=${MOTION_REDUCED}\\]\\s+\\[_nghost-c0\\]\\s+\\.c\\[_ngcontent-c0\\]:active`,
+      ),
+    );
+    expect(out).toMatch(new RegExp(`\\.d\\[_ngcontent-c0\\]`));
+    expect(out).not.toContain(':host');
   });
 });

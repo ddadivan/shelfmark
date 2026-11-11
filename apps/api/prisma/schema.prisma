@@ -39,6 +39,16 @@ model User {
   folderColours         Boolean       @default(true) @map("folder_colours")
   // "Pause history" on Recently opened (#269): while true, opens are not recorded.
   historyPaused         Boolean       @default(false) @map("history_paused")
+  // Settings › Appearance (#273): theme, the Custom theme and Animations. CHECKs in the migration
+  // keep each to its allow-list (contracts) and the background to the backgrounds of its base.
+  theme                 String        @default("system") @map("theme")
+  customThemeBase       String        @default("light") @map("custom_theme_base")
+  customThemeAccent     String        @default("ocean") @map("custom_theme_accent")
+  customThemeBackground String        @default("paper") @map("custom_theme_background")
+  customThemeCorners    String        @default("soft") @map("custom_theme_corners")
+  motion                String        @default("system") @map("motion")
+  // Set by the first write of theme, customTheme or motion; NULL = the appearance was never chosen.
+  appearanceSavedAt     DateTime?     @map("appearance_saved_at") @db.Timestamptz(3)
   createdAt             DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt             DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
   sessions              Session[]

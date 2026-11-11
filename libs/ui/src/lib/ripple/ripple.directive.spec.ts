@@ -1,4 +1,5 @@
 import { Component, signal } from '@angular/core';
+import { ReducedMotion } from '../motion';
 import { TestBed } from '@angular/core/testing';
 import { axeViolations } from '../../testing/axe';
 import { RippleDirective } from './ripple.directive';
@@ -242,10 +243,7 @@ describe('RippleDirective', () => {
   it('removes the span at once when reduced motion is on at release', async () => {
     const { row, spans } = await setup();
     row.dispatchEvent(pointer('pointerdown', 60, 30));
-    vi.stubGlobal('matchMedia', (query: string) => ({
-      matches: query.includes('reduce'),
-      media: query,
-    }));
+    TestBed.inject(ReducedMotion).setAppReduced(true);
     row.dispatchEvent(pointer('pointerup', 60, 30));
 
     expect(spans(row)).toHaveLength(0);

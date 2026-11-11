@@ -21,6 +21,16 @@ export type { RecentLinksResponse } from './links/recent-links-response.interfac
 export type { OpenLinkResponse } from './links/open-link-response.type';
 export type { CaptureLinkImagesResponse } from './links/capture-link-images-response.type';
 export type { GetLinkResponse } from './links/get-link-response.type';
+export type { CreateLinksBatchItem } from './links/create-links-batch-item.interface';
+export type { CreateLinksBatchRequest } from './links/create-links-batch-request.interface';
+export type { CreateLinksBatchResponse } from './links/create-links-batch-response.interface';
+export type { LinkBatchItemError } from './links/link-batch-item-error.interface';
+export type { LinkBatchErrorCode } from './links/link-batch-error-code.type';
+export type { DeleteLinksBatchRequest } from './links/delete-links-batch-request.interface';
+export type { DeleteLinksBatchResponse } from './links/delete-links-batch-response.interface';
+export { LINK_BATCH_ERROR_CODE } from './links/link-batch-error-code.const';
+export { LINKS_BATCH_ENDPOINT } from './links/links-batch-endpoint.const';
+export { linkLimitFit, linkLimitMessage } from './links/link-limit-message';
 export type { LinkSortField } from './links/link-sort-field.type';
 export type { LinkImageKind } from './links/link-image-kind.type';
 export { LINK_IMAGE_KIND } from './links/link-image-kind.const';
@@ -121,6 +131,27 @@ export type { TrashActionResponse } from './trash/trash-action-response.interfac
 export type { UserSettingsResponse } from './users/user-settings-response.interface';
 export type { UpdateUserSettingsRequest } from './users/update-user-settings-request.interface';
 export { USER_SETTINGS_ENDPOINT } from './users/user-settings-endpoint.const';
+export { THEME_PREFERENCE } from './users/theme-preference.const';
+export type { ThemePreference } from './users/theme-preference.type';
+export { MOTION_PREFERENCE } from './users/motion-preference.const';
+export type { MotionPreference } from './users/motion-preference.type';
+export { CUSTOM_THEME_BASE } from './users/custom-theme-base.const';
+export type { CustomThemeBase } from './users/custom-theme-base.type';
+export { CUSTOM_THEME_ACCENT } from './users/custom-theme-accent.const';
+export type { CustomThemeAccent } from './users/custom-theme-accent.type';
+export { CUSTOM_THEME_BACKGROUND } from './users/custom-theme-background.const';
+export type { CustomThemeBackground } from './users/custom-theme-background.type';
+export { CUSTOM_THEME_BACKGROUNDS } from './users/custom-theme-backgrounds.const';
+export { CUSTOM_THEME_CORNERS } from './users/custom-theme-corners.const';
+export type { CustomThemeCorners } from './users/custom-theme-corners.type';
+export type { CustomTheme } from './users/custom-theme.interface';
+export { CUSTOM_THEME_DEFAULT } from './users/custom-theme-default.const';
+export {
+  isBackgroundOfBase,
+  isCustomTheme,
+  isMotionPreference,
+  isThemePreference,
+} from './users/is-custom-theme';
 
 export { FOLDER_COLOUR } from './folders/folder-colour.const';
 export type { FolderColour } from './folders/folder-colour.type';

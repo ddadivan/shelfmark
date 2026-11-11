@@ -1,6 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { DestroyRef, Directive, effect, ElementRef, inject, input } from '@angular/core';
 import { KEYBOARD_KEY } from '../keyboard';
+import { ReducedMotion } from '../motion/reduced-motion.service';
 
 import { UI_RIPPLE_IGNORE } from './models/ui-ripple-ignore.const';
 
@@ -47,6 +48,7 @@ export class RippleDirective {
   private readonly ignoreToken = inject(UI_RIPPLE_IGNORE, { optional: true, self: true });
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly document = inject(DOCUMENT);
+  private readonly motion = inject(ReducedMotion);
   private readonly spans = new Set<HTMLElement>();
   private pointerRipple: HTMLElement | null = null;
   private keyRipple: HTMLElement | null = null;
@@ -188,8 +190,6 @@ export class RippleDirective {
   }
 
   private prefersReducedMotion(): boolean {
-    return (
-      this.document.defaultView?.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
-    );
+    return this.motion.reduced();
   }
 }

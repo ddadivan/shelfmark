@@ -1,6 +1,5 @@
 import { afterNextRender, type Injector } from '@angular/core';
-
-const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
+import { ReducedMotion } from '@shelfmark/ui';
 
 /** Turns the per-item `view-transition-name`s on for the duration of one transition. */
 export interface ViewTransitionNames {
@@ -8,12 +7,12 @@ export interface ViewTransitionNames {
   off(): void;
 }
 
-/** Whether the user asked for less motion; without `matchMedia` (jsdom, odd embeds) assume so. */
-export function prefersReducedMotion(doc: Document): boolean {
-  const win = doc.defaultView;
-  return typeof win?.matchMedia === 'function'
-    ? win.matchMedia(REDUCED_MOTION_QUERY).matches
-    : true;
+/**
+ * Whether motion should be left out: the device or the Animations setting asks for less
+ * (`ReducedMotion`); without `matchMedia` (jsdom, odd embeds) assume so.
+ */
+export function prefersReducedMotion(doc: Document, injector: Injector): boolean {
+  return typeof doc.defaultView?.matchMedia !== 'function' || injector.get(ReducedMotion).reduced();
 }
 
 /**
@@ -32,7 +31,7 @@ export function runViewTransition(
   update: () => void,
   names?: ViewTransitionNames,
 ): void {
-  if (prefersReducedMotion(doc) || !('startViewTransition' in doc)) {
+  if (prefersReducedMotion(doc, injector) || !('startViewTransition' in doc)) {
     update();
     return;
   }

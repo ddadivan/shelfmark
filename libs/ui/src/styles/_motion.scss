@@ -340,4 +340,47 @@ $leave-presets: (
       opacity: 0;
     }
   }
+
+  // "Save link" (Motion spec): the new card drops in with a light spring...
+  @keyframes ui-land {
+    from {
+      opacity: 0;
+      transform: translateY(#{rem(-12px)}) scale(0.97);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  // ...and a sage ring around it fades over 1.8 s, so it can be found.
+  @keyframes ui-land-ring {
+    from {
+      box-shadow: 0 0 0 #{rem(2px)} var(--accent);
+    }
+
+    to {
+      box-shadow: 0 0 0 #{rem(2px)} transparent;
+    }
+  }
+}
+
+// The sage ring of a landed card is the one moment longer than 320 ms (Motion principle 2).
+$land-ring-duration: 1.8s;
+
+// A link that was just saved lands in the feed: `ui-land` (320 ms `ease-spring`) plus the fading
+// sage ring. `--ui-land-delay` staggers several (a paste of many). Reduced motion: no movement, the
+// card fades in (200 ms) and the ring still fades, so the new card is findable. Finite, like the
+// presets. The element needs the radius of the card for the ring to follow its corners.
+@mixin landed {
+  animation:
+    ui-land var(--duration-slow) var(--ease-spring) var(--ui-land-delay, 0s) both,
+    ui-land-ring $land-ring-duration var(--ease-out) var(--ui-land-delay, 0s) both;
+
+  @include reduced-motion {
+    animation:
+      ui-reveal var(--duration-base) var(--ease-out) var(--ui-land-delay, 0s) both,
+      ui-land-ring $land-ring-duration var(--ease-out) var(--ui-land-delay, 0s) both;
+  }
 }

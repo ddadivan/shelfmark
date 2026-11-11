@@ -14,11 +14,15 @@ const HOUR_MS = 60 * MINUTE_MS;
  * anonymous collection page (strict: it is a capability lookup anyone can try);
  * `PublicCollectionImage` its images (a page shows up to 50 cards with two images each, and the
  * browser caches them for a year).
+ * `AddLinksBatch` (`POST /api/links/batch`, up to 100 links each) is stricter than `AddLink`;
+ * `DeleteLinksBatch` guards its Undo (`POST /api/links/batch/delete`).
  */
 export const RATE_LIMIT = {
   Default: { limit: 120, ttl: MINUTE_MS },
   Auth: { limit: 20, ttl: MINUTE_MS },
   AddLink: { limit: 30, ttl: MINUTE_MS },
+  AddLinksBatch: { limit: 5, ttl: MINUTE_MS },
+  DeleteLinksBatch: { limit: 10, ttl: MINUTE_MS },
   Preview: { limit: 20, ttl: MINUTE_MS },
   Demo: { limit: 5, ttl: HOUR_MS },
   Export: { limit: 5, ttl: MINUTE_MS },

@@ -2,6 +2,48 @@
 @use '../settings-page' as *;
 @include settings-page;
 
+.appearance__themes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-1) 0 var(--space-4);
+}
+
+.appearance__hint,
+.appearance__note {
+  @include type(body);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.appearance__note {
+  padding-bottom: var(--space-2);
+}
+
+// The Custom options sit on the page background, inset in the panel (Themes mockup).
+.appearance__custom {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-1) var(--space-4);
+  margin-bottom: rem(14px);
+  background: var(--bg);
+  border-radius: rem(18px);
+}
+
+.appearance__reset {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: var(--space-3);
+}
+
+.appearance__preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-1) 0 var(--space-2);
+}
+
 .appearance__language {
   @include type(body);
 

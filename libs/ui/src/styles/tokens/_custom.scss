@@ -1,0 +1,201 @@
+@use '../functions' as *;
+@use 'light' as *;
+@use 'dark' as *;
+
+// The Custom theme (BRAND.md, Colour; Themes mockup; issue #273). Light and Dark stay fixed; Custom
+// starts from one of them and only swaps token values, keyed on attributes that ThemeService sets
+// on `html` (or a story / preview sets on any wrapper, since custom properties inherit):
+//   data-theme="custom" data-custom-base="light|dark" data-custom-accent="<accent>"
+//   data-custom-background="<background>" data-custom-corners="round|soft|square".
+// The names are the allow-lists of the contracts (`CUSTOM_THEME_*`).
+// `custom-theme-contrast.spec.ts` compiles this file and checks every combination for WCAG AA from these values: text and muted text 4.5:1 on bg, surface,
+// surface-hover, surface-pressed and accent-bg; accent-text 4.5:1 on accent-bg, surface and bg;
+// accent 4.5:1 on bg and surface (links) and 3:1 on hover, pressed and accent-bg; focus-ring 3:1
+// on bg, surface, surface-hover and accent-bg; border-control 3:1 on bg and surface.
+
+// Accent family per base. Values from the Themes mockup; sage equals the fixed themes.
+$custom-accents: (
+  'light': (
+    'sage': (
+      'accent': #4f7a4b,
+      'accent-bg': #e3eedf,
+      'accent-text': #2f4a2c,
+      'focus-ring': #5e8a58,
+    ),
+    'ocean': (
+      'accent': #2e6a99,
+      'accent-bg': #ddeaf4,
+      'accent-text': #1f3f5a,
+      'focus-ring': #2e6a99,
+    ),
+    'plum': (
+      'accent': #7a4b8a,
+      'accent-bg': #efe3f3,
+      'accent-text': #4a2b55,
+      'focus-ring': #7a4b8a,
+    ),
+    'clay': (
+      'accent': #a8552f,
+      'accent-bg': #f6e4da,
+      'accent-text': #62301a,
+      'focus-ring': #a8552f,
+    ),
+    'amber': (
+      'accent': #8a6206,
+      'accent-bg': #f6ebcf,
+      'accent-text': #563d04,
+      'focus-ring': #8a6206,
+    ),
+    'rose': (
+      'accent': #a33a5b,
+      'accent-bg': #f7e0e7,
+      'accent-text': #5e1f33,
+      'focus-ring': #a33a5b,
+    ),
+    'teal': (
+      'accent': #23716c,
+      'accent-bg': #daefec,
+      'accent-text': #123f3c,
+      'focus-ring': #23716c,
+    ),
+    'graphite': (
+      'accent': #3a3a3f,
+      'accent-bg': #ececea,
+      'accent-text': #18181a,
+      'focus-ring': #3a3a3f,
+    ),
+  ),
+  'dark': (
+    'sage': (
+      'accent': #8dbb86,
+      'accent-bg': #21301e,
+      'accent-text': #c6dec0,
+      'focus-ring': #8dbb86,
+    ),
+    'ocean': (
+      'accent': #8cbce3,
+      'accent-bg': #1b2b3a,
+      'accent-text': #c7ddf0,
+      'focus-ring': #8cbce3,
+    ),
+    'plum': (
+      'accent': #c9a4d8,
+      'accent-bg': #2e2135,
+      'accent-text': #e4d0ec,
+      'focus-ring': #c9a4d8,
+    ),
+    'clay': (
+      'accent': #e8a584,
+      'accent-bg': #3a231a,
+      'accent-text': #f3cdb9,
+      'focus-ring': #e8a584,
+    ),
+    'amber': (
+      'accent': #e2bc6a,
+      'accent-bg': #332a12,
+      'accent-text': #f0dcaa,
+      'focus-ring': #e2bc6a,
+    ),
+    'rose': (
+      'accent': #e79ab2,
+      'accent-bg': #3a1e27,
+      'accent-text': #f4cad7,
+      'focus-ring': #e79ab2,
+    ),
+    'teal': (
+      'accent': #86cfc7,
+      'accent-bg': #16302e,
+      'accent-text': #c2e7e2,
+      'focus-ring': #86cfc7,
+    ),
+    'graphite': (
+      'accent': #c9c9ce,
+      'accent-bg': #2a2a2e,
+      'accent-text': #ededef,
+      'focus-ring': #c9c9ce,
+    ),
+  ),
+);
+
+// Page backgrounds per base (only `bg` changes; cards and panels keep `surface`). Paper is a
+// touch lighter than the mockup's #f6f3ec so sage links keep 4.5:1 on it.
+$custom-backgrounds: (
+  'light': (
+    'stone': #f4f4f1,
+    'paper': #f7f4ee,
+    'mist': #f1f4f7,
+    'white': #fff,
+  ),
+  'dark': (
+    'graphite': #111113,
+    'ink': #12141a,
+    'forest': #101411,
+    'black': #000,
+  ),
+);
+
+// Radius scales. `round` is the scale of the fixed themes; pills and
+// circles (`radius-full`) never change.
+$custom-corners: (
+  'round': (
+    'sm': rem(8px),
+    'md': rem(14px),
+    'lg': rem(22px),
+    'xl': rem(28px),
+    'fab': rem(18px),
+  ),
+  'soft': (
+    'sm': rem(6px),
+    'md': rem(10px),
+    'lg': rem(14px),
+    'xl': rem(18px),
+    'fab': rem(12px),
+  ),
+  'square': (
+    'sm': rem(2px),
+    'md': rem(3px),
+    'lg': rem(4px),
+    'xl': rem(6px),
+    'fab': rem(4px),
+  ),
+);
+
+// The Custom theme root selector.
+$-custom: "[data-theme='custom']";
+
+// Emits every Custom theme rule. Included once by `global.scss`.
+@mixin custom-themes {
+  #{$-custom} {
+    @include light;
+  }
+
+  #{$-custom}[data-custom-base='dark'] {
+    @include dark;
+  }
+
+  @each $base, $accents in $custom-accents {
+    @each $name, $tokens in $accents {
+      #{$-custom}[data-custom-base='#{$base}'][data-custom-accent='#{$name}'] {
+        @each $token, $value in $tokens {
+          --#{$token}: #{$value};
+        }
+      }
+    }
+  }
+
+  @each $base, $backgrounds in $custom-backgrounds {
+    @each $name, $value in $backgrounds {
+      #{$-custom}[data-custom-base='#{$base}'][data-custom-background='#{$name}'] {
+        --bg: #{$value};
+      }
+    }
+  }
+
+  @each $name, $radii in $custom-corners {
+    #{$-custom}[data-custom-corners='#{$name}'] {
+      @each $size, $value in $radii {
+        --radius-#{$size}: #{$value};
+      }
+    }
+  }
+}

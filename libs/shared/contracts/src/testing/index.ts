@@ -8,3 +8,4 @@ export { MOCK_TAGS } from './mock-tags.const';
 export { MOCK_LINKS } from './mock-links.const';
 export { MOCK_LINKS_PAGE } from './mock-links-page.const';
 export { MOCK_LINK_PREVIEW_DUPLICATE } from './mock-link-preview-duplicate.const';
+export { MOCK_APPEARANCE_DEFAULTS } from './mock-appearance-defaults.const';

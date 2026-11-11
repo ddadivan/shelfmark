@@ -498,7 +498,8 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
         await expect(page.getByText('Notes come from your own messages.')).toBeVisible();
         // The cards fade in while they land; axe reads the colours of a finished frame.
         await page.evaluate(
-          'Promise.all(document.getAnimations().map((animation) => animation.finished)).then(() => undefined)',
+          // A cancelled one (the shelf button's hover transition ends when the button goes) rejects.
+          'Promise.all(document.getAnimations().map((animation) => animation.finished.catch(() => undefined))).then(() => undefined)',
         );
         await page.evaluate('document.fonts.ready.then(() => undefined)');
 
