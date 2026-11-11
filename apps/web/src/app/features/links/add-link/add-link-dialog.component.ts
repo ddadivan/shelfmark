@@ -53,6 +53,7 @@ import {
 import { firstValueFrom, switchMap, tap, timer, type Observable } from 'rxjs';
 import { FoldersStore } from '../../../stores/folders.store';
 import { TagsStore } from '../../../stores/tags.store';
+import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { ViewportService } from '../../../core/layout/viewport.service';
 import { pluralKey } from '../../../core/i18n/plural-key';
 import { isMacPlatform } from '../../search/is-mac-platform';
@@ -135,6 +136,8 @@ export class AddLinkDialogComponent {
   private readonly ref = inject<UiDialogRef<AddLinkResult>>(UiDialogRef);
   private readonly transloco = inject(TranslocoService);
   private readonly data = injectDialogData<AddLinkDialogData>();
+  /** Settings › Library › Saving: default folder, duplicate notice, whether pages are fetched. */
+  private readonly library = inject(UserSettingsStore).libraryShown;
 
   /** Ticks when the active language or its translations change, so messages re-translate. */
   private readonly i18n = toSignal(this.transloco.events$, { initialValue: undefined });
@@ -150,7 +153,10 @@ export class AddLinkDialogComponent {
   private readonly model = signal<AddLinkFormModel>({
     url: this.original?.url ?? this.handedOver?.url ?? '',
     title: this.original?.title ?? '',
-    folderId: this.original ? this.original.folderId : (this.data.folderId ?? null),
+    // The folder of the page, else "New links go to" (null is Unsorted).
+    folderId: this.original
+      ? this.original.folderId
+      : (this.data.folderId ?? this.library().newLinksFolderId),
     tags: [...normalizeTagNames(this.original?.tags ?? [])],
     note: this.original?.note ?? '',
     isFavorite: this.original?.isFavorite ?? false,
@@ -204,12 +210,18 @@ export class AddLinkDialogComponent {
     },
   );
 
+  /** "Fetch titles and previews" is on: the preview loads the page (else it only checks duplicates). */
+  protected readonly fetchPages = computed(() => this.library().fetchPreviews);
+  private readonly warnDuplicates = computed(() => this.library().warnDuplicates);
+
   /** The typed URL once it is a valid http(s) URL; the preview follows it. */
   private readonly previewUrl = computed(() => {
     const url = this.form.url();
     const value = url.value().trim();
+    // Neither a page nor a duplicate to show (an edit only ever checks duplicates): no request.
+    const wanted = this.warnDuplicates() || (!this.editing && this.fetchPages());
     // Editing: the saved address needs no preview, only a changed one is checked for duplicates.
-    return url.valid() && value !== this.original?.url ? value : undefined;
+    return wanted && url.valid() && value !== this.original?.url ? value : undefined;
   });
 
   private readonly preview = rxResource({
@@ -255,13 +267,17 @@ export class AddLinkDialogComponent {
   /** What the template shows: an edit has no preview card, only the duplicate notice. */
   protected readonly shownState = computed<PreviewState>(() => {
     const state = this.previewState();
-    return this.editing && state !== PREVIEW_STATE.Ready ? PREVIEW_STATE.Idle : state;
+    // Without page fetches the request is only the duplicate check: no skeleton, no failure.
+    return (this.editing || !this.fetchPages()) && state !== PREVIEW_STATE.Ready
+      ? PREVIEW_STATE.Idle
+      : state;
   });
 
   /** The page could not be fetched: the preview only echoes the URL (the duplicate still counts). */
   protected readonly noPreview = computed(
     () =>
       !this.editing &&
+      this.fetchPages() &&
       this.previewState() === PREVIEW_STATE.Ready &&
       this.preview.hasValue() &&
       !this.preview.value().fetched,
@@ -279,7 +295,7 @@ export class AddLinkDialogComponent {
   protected readonly previewHost = computed(() => displayHost(this.previewUrl() ?? ''));
 
   protected readonly duplicate = computed(() =>
-    this.previewState() === PREVIEW_STATE.Ready && this.preview.hasValue()
+    this.warnDuplicates() && this.previewState() === PREVIEW_STATE.Ready && this.preview.hasValue()
       ? this.otherThanOriginal(this.preview.value().duplicate)
       : null,
   );

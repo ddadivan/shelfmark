@@ -1,10 +1,11 @@
 import type { TrashRetentionDays } from '../trash/trash-retention-days.type';
 import type { CustomTheme } from './custom-theme.interface';
+import type { LibrarySettings } from './library-settings.interface';
 import type { MotionPreference } from './motion-preference.type';
 import type { ThemePreference } from './theme-preference.type';
 
 /** `GET /api/me/settings`: preferences kept on the account, so they follow the user to every device. */
-export interface UserSettingsResponse {
+export interface UserSettingsResponse extends LibrarySettings {
   trashRetentionDays: TrashRetentionDays;
   /** Coloured folder icons; off shows every folder in graphite. Default on. */
   folderColours: boolean;

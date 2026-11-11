@@ -9,7 +9,16 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { PIN_LIMIT, TRASH_RETENTION_DAYS, type TrashRetentionDays } from '@shelfmark/contracts';
+import {
+  LINK_OPEN_TARGET,
+  PIN_LIMIT,
+  TRASH_RETENTION_DAYS,
+  isLibrarySort,
+  isLibraryView,
+  isLinkOpenTarget,
+  type LibrarySettings,
+  type TrashRetentionDays,
+} from '@shelfmark/contracts';
 import {
   BUTTON_SIZE,
   DIALOG_SIZE,
@@ -18,13 +27,23 @@ import {
   NOTICE_KIND,
   NoticeComponent,
   SegmentedControlComponent,
+  SelectComponent,
   SettingsRowComponent,
   SettingsSectionComponent,
   SwitchComponent,
   TOAST_KIND,
   ToastService,
   type SegmentedOption,
+  type SelectOption,
 } from '@shelfmark/ui';
+import { ViewportService } from '../../../core/layout/viewport.service';
+import { FoldersStore } from '../../../stores/folders.store';
+import { TagsStore } from '../../../stores/tags.store';
+import { buildFolderOptions } from '../../links/add-link/folder-options';
+import { FEED_SORT } from '../../links/models/feed-sort.const';
+import { SORT_OPTION_KEYS } from '../../library/models/sort-option-keys.const';
+import { VIEW_OPTION_KEYS } from '../../library/models/view-option-keys.const';
+import { UI_VIEW } from '../../../stores/models/ui-view.const';
 import { PinnedEditDialogComponent } from '../../pins/pinned-edit-dialog/pinned-edit-dialog.component';
 import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
 import { pluralKey } from '../../../core/i18n/plural-key';
@@ -35,7 +54,10 @@ import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { SettingsPageHeaderComponent } from '../settings-page-header/settings-page-header.component';
 
 /**
- * `/settings/library`: what happens to deleted items. "Keep deleted items for" (7, 30 or 90 days)
+ * `/settings/library` (SetLibrary mockup, #284): Viewing (default view and sort, where links
+ * open, sidebar counts) and Saving (default folder, duplicate notice, page fetch, tracking
+ * parameters) apply at once, are saved on the account and roll back with a toast when the request
+ * fails. Tags and folders: manage tags, folder colours, Pinned. Trash: what happens to deleted items. "Keep deleted items for" (7, 30 or 90 days)
  * saves at once and rolls back with a toast when the request fails; "Trash" shows how many items
  * wait there and opens the page.
  */
@@ -46,6 +68,7 @@ import { SettingsPageHeaderComponent } from '../settings-page-header/settings-pa
     ButtonComponent,
     NoticeComponent,
     SegmentedControlComponent,
+    SelectComponent,
     SettingsPageHeaderComponent,
     SettingsRowComponent,
     SettingsSectionComponent,
@@ -63,7 +86,10 @@ export default class LibrarySettingsPage {
   private readonly router = inject(Router);
   private readonly dialogs = inject(DialogService);
   private readonly injector = inject(Injector);
-  private readonly control = viewChild(SegmentedControlComponent);
+  private readonly folders = inject(FoldersStore);
+  protected readonly tags = inject(TagsStore);
+  private readonly phone = inject(ViewportService).phone;
+  private readonly control = viewChild<SegmentedControlComponent>('retention');
 
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
   protected readonly NOTICE_KIND = NOTICE_KIND;
@@ -80,10 +106,109 @@ export default class LibrarySettingsPage {
 
   protected readonly value = computed(() => String(this.settings.retentionDays()));
 
+  protected readonly library = this.settings.libraryShown;
+
+  protected readonly viewOptions = computed<SegmentedOption[]>(() =>
+    Object.values(UI_VIEW).map((view) => ({
+      value: view,
+      label: this.transloco.translate(VIEW_OPTION_KEYS[view]),
+    })),
+  );
+
+  protected readonly sortOptions = computed<SelectOption[]>(() =>
+    Object.values(FEED_SORT).map((sort) => ({
+      id: sort,
+      name: this.transloco.translate(SORT_OPTION_KEYS[sort]),
+    })),
+  );
+
+  protected readonly openOptions = computed<SegmentedOption[]>(() => [
+    {
+      value: LINK_OPEN_TARGET.NewTab,
+      label: this.transloco.translate('settings.library.viewing.open.newTab'),
+    },
+    {
+      value: LINK_OPEN_TARGET.SameTab,
+      label: this.transloco.translate('settings.library.viewing.open.sameTab'),
+    },
+  ]);
+
+  protected readonly folderOptions = computed(() => buildFolderOptions(this.folders.entities()));
+  /** The chosen folder while the folder list knows it; Unsorted otherwise. */
+  protected readonly newLinksFolder = computed(() => {
+    const id = this.library().newLinksFolderId;
+    return id !== null && this.folders.entityMap()[id] !== undefined ? id : null;
+  });
+
   constructor() {
     void this.settings.load();
     void this.trash.load();
     void inject(PinsStore).load();
+    void this.folders.load();
+    void this.tags.load();
+  }
+
+  protected setView(value: string): void {
+    if (isLibraryView(value)) {
+      void this.saveLibrary({ defaultView: value });
+    }
+  }
+
+  protected setSort(value: string | null): void {
+    if (isLibrarySort(value)) {
+      void this.saveLibrary({ defaultSort: value });
+    }
+  }
+
+  protected setOpenTarget(value: string): void {
+    if (isLinkOpenTarget(value)) {
+      void this.saveLibrary({ openLinksIn: value });
+    }
+  }
+
+  protected setNewLinksFolder(value: string | null): void {
+    void this.saveLibrary({ newLinksFolderId: value });
+  }
+
+  /** Saves a Library choice at once; a failed request puts it back and says so. */
+  protected async saveLibrary(change: Partial<LibrarySettings>): Promise<void> {
+    if (!(await this.settings.setLibrary(change))) {
+      this.toasts.show({
+        kind: TOAST_KIND.Danger,
+        title: this.transloco.translate('settings.library.failed'),
+        detail: this.transloco.translate('settings.library.failedDetail'),
+      });
+    }
+  }
+
+  /**
+   * "Manage tags": the phone has a Tags tab; from the tablet width the sidebar's tags section does
+   * the job, so the feed opens and the section's heading takes focus.
+   */
+  protected async manageTags(): Promise<void> {
+    if (this.phone()) {
+      await this.router.navigateByUrl(`/${APP_PATH.Tags}`);
+      return;
+    }
+    if (await this.router.navigateByUrl(`/${APP_PATH.Links}`)) {
+      afterNextRender(
+        () => {
+          const heading = globalThis.document?.getElementById('sidebar-tags-heading');
+          if (!heading) {
+            return;
+          }
+          // Focusable only for this move: a lasting tabindex would let a click on the heading
+          // take focus (the new tag field's outside click hands focus back to "+").
+          heading.tabIndex = -1;
+          heading.addEventListener('blur', () => heading.removeAttribute('tabindex'), {
+            once: true,
+          });
+          heading.focus();
+          heading.scrollIntoView({ block: 'nearest' });
+        },
+        { injector: this.injector },
+      );
+    }
   }
 
   protected retry(): void {

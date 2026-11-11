@@ -3,7 +3,115 @@
   [description]="'settings.description.library' | transloco"
 />
 
+<ui-settings-section [title]="'settings.library.viewing.title' | transloco">
+  <ui-settings-row
+    #viewRow
+    [title]="'settings.library.viewing.view.label' | transloco"
+    [description]="'settings.library.viewing.view.hint' | transloco"
+  >
+    <ui-segmented-control
+      [ariaLabelledby]="viewRow.titleId"
+      [options]="viewOptions()"
+      [value]="library().defaultView"
+      (valueChange)="setView($event)"
+    />
+  </ui-settings-row>
+  <ui-settings-row
+    [title]="'settings.library.viewing.sort.label' | transloco"
+    [description]="'settings.library.viewing.sort.hint' | transloco"
+  >
+    <ui-select
+      class="library__select"
+      compact
+      [label]="'settings.library.viewing.sort.label' | transloco"
+      [options]="sortOptions()"
+      [value]="library().defaultSort"
+      (valueChange)="setSort($event)"
+    />
+  </ui-settings-row>
+  <ui-settings-row #openRow [title]="'settings.library.viewing.open.label' | transloco">
+    <ui-segmented-control
+      [ariaLabelledby]="openRow.titleId"
+      [options]="openOptions()"
+      [value]="library().openLinksIn"
+      (valueChange)="setOpenTarget($event)"
+    />
+  </ui-settings-row>
+  <ui-settings-row
+    [title]="'settings.library.viewing.counts.label' | transloco"
+    [description]="'settings.library.viewing.counts.hint' | transloco"
+  >
+    <ui-switch
+      [label]="'settings.library.viewing.counts.label' | transloco"
+      [checked]="library().showFolderCounts"
+      (checkedChange)="saveLibrary({ showFolderCounts: $event })"
+    />
+  </ui-settings-row>
+</ui-settings-section>
+
+<ui-settings-section [title]="'settings.library.saving.title' | transloco">
+  <ui-settings-row
+    [title]="'settings.library.saving.folder.label' | transloco"
+    [description]="'settings.library.saving.folder.hint' | transloco"
+  >
+    <ui-select
+      class="library__select"
+      compact
+      searchable
+      [label]="'settings.library.saving.folder.label' | transloco"
+      [options]="folderOptions()"
+      [emptyLabel]="'links.add.folder.unsorted' | transloco"
+      [searchLabel]="'links.add.folder.searchLabel' | transloco"
+      [noResultsLabel]="'links.add.folder.noResults' | transloco"
+      [value]="newLinksFolder()"
+      (valueChange)="setNewLinksFolder($event)"
+    />
+  </ui-settings-row>
+  <ui-settings-row
+    [title]="'settings.library.saving.duplicates.label' | transloco"
+    [description]="'settings.library.saving.duplicates.hint' | transloco"
+  >
+    <ui-switch
+      [label]="'settings.library.saving.duplicates.label' | transloco"
+      [checked]="library().warnDuplicates"
+      (checkedChange)="saveLibrary({ warnDuplicates: $event })"
+    />
+  </ui-settings-row>
+  <ui-settings-row
+    [title]="'settings.library.saving.previews.label' | transloco"
+    [description]="'settings.library.saving.previews.hint' | transloco"
+  >
+    <ui-switch
+      [label]="'settings.library.saving.previews.label' | transloco"
+      [checked]="library().fetchPreviews"
+      (checkedChange)="saveLibrary({ fetchPreviews: $event })"
+    />
+  </ui-settings-row>
+  <ui-settings-row
+    [title]="'settings.library.saving.query.label' | transloco"
+    [description]="'settings.library.saving.query.hint' | transloco"
+  >
+    <ui-switch
+      [label]="'settings.library.saving.query.label' | transloco"
+      [checked]="library().keepQuery"
+      (checkedChange)="saveLibrary({ keepQuery: $event })"
+    />
+  </ui-settings-row>
+</ui-settings-section>
+
 <ui-settings-section [title]="'settings.library.folders.title' | transloco">
+  <ui-settings-row
+    [title]="'settings.library.tags.label' | transloco"
+    [description]="
+      tags.loaded()
+        ? (pluralKey('settings.library.tags.hint', tags.count()) | transloco: { count: tags.count() })
+        : ('settings.library.tags.hintPending' | transloco)
+    "
+  >
+    <ui-button [size]="BUTTON_SIZE.Sm" (click)="manageTags()">
+      {{ 'settings.library.tags.action' | transloco }}
+    </ui-button>
+  </ui-settings-row>
   <ui-settings-row
     [title]="'settings.library.folders.colours.label' | transloco"
     [description]="'settings.library.folders.colours.hint' | transloco"
@@ -31,6 +139,7 @@
     [description]="'settings.library.trash.retention.hint' | transloco"
   >
     <ui-segmented-control
+      #retention
       [ariaLabelledby]="row.titleId"
       [options]="options()"
       [disabled]="!settings.loaded()"
@@ -62,3 +171,5 @@
     </ui-button>
   </ui-settings-row>
 </ui-settings-section>
+
+<p class="library__note">{{ 'settings.library.note' | transloco }}</p>

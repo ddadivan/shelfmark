@@ -6,6 +6,7 @@ import {
   LINK_LIMIT,
   LINK_SORT_FIELD,
   normalizeUrl,
+  stripTrackingParams,
   PAGE_LIMIT,
   RECENT_LINKS_WINDOW_DAYS,
   SORT_ORDER,
@@ -65,8 +66,29 @@ export class MockLinksApi implements LinksApi {
     this.data.links = links;
   }
 
-  preview(url: string): Observable<LinkPreviewResponse> {
+  preview(sentUrl: string): Observable<LinkPreviewResponse> {
+    const url = this.savedUrl(sentUrl);
     const host = displayHost(url);
+    if (!this.data.library.fetchPreviews) {
+      // Like the API with "Fetch titles and previews" off: no page, only the duplicate check.
+      const duplicate =
+        normalizeUrl(url) === normalizeUrl(MOCK_LINK_PREVIEW_DUPLICATE.preview.url)
+          ? MOCK_LINK_PREVIEW_DUPLICATE.duplicate
+          : null;
+      const bare: LinkPreviewResponse = {
+        preview: {
+          kind: deriveLinkKind(url),
+          url,
+          title: url,
+          description: null,
+          imageUrl: null,
+          faviconUrl: null,
+        },
+        duplicate,
+        fetched: false,
+      };
+      return of(bare).pipe(delay(MOCK_LATENCY_MS.Preview));
+    }
     if (host === MOCK_HOST.Unreachable) {
       return throwError(() => new Error('Mock: preview failed')).pipe(
         delay(MOCK_LATENCY_MS.Preview),
@@ -115,12 +137,13 @@ export class MockLinksApi implements LinksApi {
         return of({ ...replay });
       }
       const now = new Date().toISOString();
+      const url = this.savedUrl(request.url);
       const link: LinkResponse = {
         id: globalThis.crypto.randomUUID(),
-        kind: request.kind ?? deriveLinkKind(request.url),
+        kind: request.kind ?? deriveLinkKind(url),
         folderId: request.folderId ?? null,
-        url: request.url,
-        title: request.title ?? request.url,
+        url,
+        title: request.title ?? url,
         note: request.note ?? null,
         faviconUrl: null,
         imageUrl: null,
@@ -139,6 +162,11 @@ export class MockLinksApi implements LinksApi {
       }
       return of({ ...link });
     }).pipe(delay(MOCK_LATENCY_MS.Create));
+  }
+
+  /** Like the API: tracking parameters go unless the account keeps the query part. */
+  private savedUrl(url: string): string {
+    return this.data.library.keepQuery ? url : stripTrackingParams(url);
   }
 
   list(query: ListLinksQuery = {}): Observable<ListLinksResponse> {

@@ -20,8 +20,9 @@ import type { UserSettingsApi } from '../models/user-settings-api.interface';
 /**
  * `UserSettingsApi` over the shared in-memory library, with simulated latency: the retention
  * lives next to the mock Trash, so a change shows in the days left of the mock entries. The
- * appearance (theme, custom theme, motion, whether it was ever saved) stands in for the account: it is kept in
- * `localStorage`, so a reload and another tab see it like they would see the server's.
+ * appearance (theme, custom theme, motion, whether it was ever saved) and the Settings › Library
+ * choices stand in for the account: they are kept in `localStorage`, so a reload and another tab
+ * see them like they would see the server's.
  */
 @Service()
 export class MockUserSettingsApi implements UserSettingsApi {
@@ -43,6 +44,13 @@ export class MockUserSettingsApi implements UserSettingsApi {
       if (request.pauseHistory !== undefined) {
         this.data.pauseHistory = request.pauseHistory;
       }
+      const library = { ...this.data.library };
+      for (const key of Object.keys(library) as (keyof typeof library)[]) {
+        if (request[key] !== undefined) {
+          Object.assign(library, { [key]: request[key] });
+        }
+      }
+      this.data.library = library;
       if (request.theme ?? request.customTheme ?? request.motion) {
         const appearance = this.readAppearance();
         this.writeAppearance({
@@ -62,6 +70,7 @@ export class MockUserSettingsApi implements UserSettingsApi {
       folderColours: this.data.folderColours,
       pauseHistory: this.data.pauseHistory,
       ...this.readAppearance(),
+      ...this.data.library,
     };
   }
 

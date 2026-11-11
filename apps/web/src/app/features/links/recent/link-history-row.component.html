@@ -1,10 +1,10 @@
 <ng-template #entry>
   <ui-history-row
-    newTab
+    [newTab]="newTab()"
     [attr.role]="viewport.phone() ? 'presentation' : 'listitem'"
     [href]="href()"
     [preview]="preview()"
-    [description]="href() ? ('links.item.opensInNewTab' | transloco) : undefined"
+    [description]="href() && newTab() ? ('links.item.opensInNewTab' | transloco) : undefined"
     (activated)="onActivated($event)"
   >
     <span slot="title">{{ link().title }}</span>

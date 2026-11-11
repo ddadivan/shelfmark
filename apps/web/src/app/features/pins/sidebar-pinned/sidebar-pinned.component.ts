@@ -58,6 +58,8 @@ export class SidebarPinnedComponent {
   protected readonly PIN_KIND = PIN_KIND;
   protected readonly pins = inject(PinsStore);
   protected readonly settings = inject(UserSettingsStore);
+  /** Settings › Library › Open links in. */
+  protected readonly newTab = this.settings.openInNewTab;
   private readonly actions = inject(PinActionsService);
   private readonly linkActions = inject(LinkActionsService);
   private readonly transloco = inject(TranslocoService);

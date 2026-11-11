@@ -1,3 +1,4 @@
+import { LIBRARY_SETTINGS_DEFAULT } from '@shelfmark/contracts';
 import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
 import { signal } from '@angular/core';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
@@ -64,6 +65,7 @@ async function setup(
     folderColours: true,
     pauseHistory: options.paused ?? false,
     ...MOCK_APPEARANCE_DEFAULTS,
+    ...LIBRARY_SETTINGS_DEFAULT,
   };
   const settingsApi = {
     get: vi.fn<UserSettingsApi['get']>(() => of(settings)),

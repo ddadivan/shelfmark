@@ -32,7 +32,7 @@ let nextId = 0;
  * tab stop and no interactive element is nested inside another. `favorite` and `actions`
  * sit above that layer, so using them never activates the card. `activated` emits the click
  * (the feature may `preventDefault()` an `href` click to route); `newTab` opens `href` in a
- * new tab with `noopener noreferrer`. The link sits in a heading of `headingLevel` (default
+ * new tab with `noopener noreferrer` (the same tab keeps `noreferrer`). The link sits in a heading of `headingLevel` (default
  * `h2`), so screen reader users can navigate cards by heading; the heading itself is not
  * positioned, so the stretched `::after` still covers the card.
  *

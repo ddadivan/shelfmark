@@ -12,10 +12,10 @@ import type { FoldersApi } from '../links/models/folders-api.interface';
 import { LINKS_API } from '../links/models/links-api.const';
 import type { LinksApi } from '../links/models/links-api.interface';
 import { LINKS_SCOPE } from '../links/models/links-scope.const';
-import { UI_STORAGE_KEY } from '../../stores/models/ui-storage-key.const';
+import { FEED_MEMORY_STORAGE_KEY } from './models/feed-memory-storage-key.const';
 import { UI_VIEW } from '../../stores/models/ui-view.const';
 import { LinksStore } from '../../stores/links.store';
-import { UiStore } from '../../stores/ui.store';
+import { FeedMemoryService } from './feed-memory.service';
 import { loadEnglish, provideTranslocoForTest } from '../../testing/transloco-testing';
 import LibraryPage from './library.page';
 
@@ -64,8 +64,8 @@ const text = (fixture: ComponentFixture<LibraryPage>) =>
   (fixture.nativeElement as HTMLElement).textContent ?? '';
 
 describe('LibraryPage', () => {
-  beforeEach(() => localStorage.removeItem(UI_STORAGE_KEY));
-  afterAll(() => localStorage.removeItem(UI_STORAGE_KEY));
+  beforeEach(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
+  afterAll(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
 
   it('shows a skeleton and no cards while the first page loads, but only after 300 ms', async () => {
     const { element, fixture } = await setup(new Subject<ListLinksResponse>());
@@ -116,7 +116,10 @@ describe('LibraryPage', () => {
   });
 
   it('shows rows when the list view is chosen', async () => {
-    localStorage.setItem(UI_STORAGE_KEY, JSON.stringify({ view: UI_VIEW.List }));
+    localStorage.setItem(
+      FEED_MEMORY_STORAGE_KEY,
+      JSON.stringify({ ['all']: { view: UI_VIEW.List } }),
+    );
     const { element } = await setup();
 
     expect(element.querySelectorAll('app-link-row')).toHaveLength(2);
@@ -129,7 +132,7 @@ describe('LibraryPage', () => {
     element.querySelector<HTMLInputElement>('input[type="radio"][value="list"]')?.click();
     await fixture.whenStable();
 
-    expect(TestBed.inject(UiStore).view()).toBe(UI_VIEW.List);
+    expect(TestBed.inject(FeedMemoryService).view('all')).toBe(UI_VIEW.List);
     expect(element.querySelectorAll('app-link-row')).toHaveLength(2);
   });
 

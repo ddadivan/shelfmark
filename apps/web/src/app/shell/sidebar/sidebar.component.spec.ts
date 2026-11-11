@@ -14,6 +14,10 @@ import { LINKS_API } from '../../features/links/models/links-api.const';
 import { TAGS_API } from '../../features/links/models/tags-api.const';
 import { MockTrashApi } from '../../features/trash/mock/mock-trash.api';
 import { TRASH_API } from '../../features/trash/models/trash-api.const';
+import { MockUserSettingsApi } from '../../features/settings/mock/mock-user-settings.api';
+import { MOCK_LIBRARY_SETTINGS_STORAGE_KEY } from '../../features/settings/models/mock-library-settings-storage-key.const';
+import { USER_SETTINGS_API } from '../../features/settings/models/user-settings-api.const';
+import { UserSettingsStore } from '../../stores/user-settings.store';
 import { SidebarComponent } from './sidebar.component';
 
 async function setup(url = '/links') {
@@ -32,6 +36,7 @@ async function setup(url = '/links') {
       { provide: LINKS_API, useClass: MockLinksApi },
       { provide: TAGS_API, useClass: MockTagsApi },
       { provide: TRASH_API, useClass: MockTrashApi },
+      { provide: USER_SETTINGS_API, useClass: MockUserSettingsApi },
     ],
   });
   await loadEnglish();
@@ -60,6 +65,23 @@ function row(element: HTMLElement, name: string): HTMLElement {
 }
 
 describe('SidebarComponent', () => {
+  afterEach(() => localStorage.removeItem(MOCK_LIBRARY_SETTINGS_STORAGE_KEY));
+
+  it('drops the link counts when "Show folder counts" is off (#284)', async () => {
+    localStorage.setItem(
+      MOCK_LIBRARY_SETTINGS_STORAGE_KEY,
+      JSON.stringify({ showFolderCounts: false }),
+    );
+    const { element, fixture } = await setup();
+    await vi.waitFor(async () => {
+      expect(TestBed.inject(UserSettingsStore).countsShown()).toBe(false);
+      await fixture.whenStable();
+      expect(row(element, 'All links').querySelector('.ui-tree__count')).toBeNull();
+    });
+    expect(row(element, MOCK_NAME.FolderReading).querySelector('.ui-tree__count')).toBeNull();
+    expect(element.querySelector('.ui-tree__count')).toBeNull();
+  });
+
   it('lists the fixed rows with their counts, then the folders', async () => {
     const { element } = await setup();
 

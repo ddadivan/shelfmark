@@ -44,6 +44,7 @@ Updated as work goes on — every session resumes from here.
   - Nov 11, 2026: #269 Recently opened extras on `feat/269-recent-extras` (stacked on #264): "Pause history" on the account (`users.history_paused`, opens not recorded while paused, `recorded: false`), in-page search, swipe to remove on phone rows (the swipe moved into the shared `SwipeReveal`). Waiting for review.
   - Nov 11, 2026: #273 Custom theme and Animations on `feat/273-custom-theme` (stacked on #269): `theme`, `customTheme`, `motion` on the account (columns with CHECKs), token overrides from SCSS maps with an AA test over all 64 combinations, `ui-theme-picker`, `ui-theme-preview`, `ReducedMotion`, the `reduced-motion` mixin also on `html[data-motion=reduced]`. Waiting for review.
   - Nov 11, 2026: #267 Select links and bulk actions on `feat/267-bulk-actions` (stacked on #273): `POST /api/links/batch/delete` (the route and contract of #265, here a Trash soft delete) and `POST /api/links/batch/update` (move, add / remove tags, favorite; up to 100 links, one transaction), `ui-bulk-bar`, the select slot on `ui-card` / `ui-list-item`, `LinkSelectionStore`, `BulkLinkActionsService`. Waiting for review; merge with #265 needs the overlap noted on the issue.
+  - Nov 11, 2026: #284 Settings › Library in full on `feat/284-library-settings` (stacked on #267): Viewing and Saving on the account (8 columns with CHECKs, `LibrarySettings` in the contracts), per-feed view and sort memory on the device, open target, sidebar counts, default folder, duplicate notice, no page fetch or image capture when previews are off, tracking parameters stripped on save (`stripTrackingParams`). Waiting for review.
 - [x] Motion in code (landing and app); promo video moved to stage 2
 
 ## 1. Problem and idea
@@ -262,7 +263,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 27. **Custom theme and Animations.** As a user, I want Shelfmark in my colours and with less movement when I prefer it, on every device (#273, screen `Themes`).
     - Settings › Appearance › Theme offers System, Light, Dark and Custom as thumbnails drawn in their real colours. Light and Dark are fixed; Custom starts from the light or the dark base ("Start from") and lets the person pick an accent colour (Sage, Ocean, Plum, Clay, Amber, Rose, Teal, Graphite), a background (Stone, Paper, Mist, White on light; Graphite, Ink, Forest, Black on dark) and corners (Round, Soft, Square). Only curated values, no free colour: a unit test computes WCAG AA for every combination from the token values. "Reset custom theme" goes back to Ocean on Paper with soft corners on the light base; switching the base takes the first background of the new base. Choosing Light or Dark keeps the custom theme for later.
     - Animations: System (follows the device), Full (the app's normal motion) or Reduced (fades and loaders stay, movement goes, scripted motion too: view transitions, the card and list morph, the landing, the sign-in tilt, the video autoplay). Full never overrides a device that asks for reduced motion.
-    - Every change applies to the whole app at once and is saved on the account (`theme`, `customTheme`, `motion` in `/api/me/settings`); a failed save puts the old appearance back with an error toast. A live preview (a sidebar and two cards in the current tokens) shows the result. The browser remembers the last appearance for the first paint before the account loads (no flash), the account value wins once it arrives, and another open tab follows. An account that never stored an appearance does not reset the browser: a theme kept there from before (`sm-theme`) stays and is saved to the account once, silently (a failure retries on the next load). Text size, font, density, card and sidebar options are the Appearance extras task.
+    - Every change applies to the whole app at once and is saved on the account (`theme`, `customTheme`, `motion` in `/api/me/settings`); a failed save puts the old appearance back with an error toast. A live preview (a sidebar and two cards in the current tokens) shows the result. The browser remembers the last appearance for the first paint before the account loads (no flash), the account value wins once it arrives, and another open tab follows. An account that never stored an appearance does not reset the browser: a theme kept there from before (`sm-theme`) stays and is saved to the account once, silently (a failure retries on the next load). Text size, font, density, card and sidebar options are the Appearance extras task (story 30).
 
 28. **Select links and bulk actions.** As a user, I want to pick several links and move, tag, favorite, open, copy or delete them at once (#267, screens `Bulk`, `MobileBulk`).
     - Desktop: a checkbox shows on a card or row on hover and keyboard focus, and on every link while a selection exists. Shift-click selects the range from the last link picked; ⌘A / Ctrl+A (focus not in a field) selects every loaded link; Space toggles the focused link; Esc or "Done" clears. While selecting, a click on a link toggles it instead of opening it. M opens "Move to folder…" for the focused link.
@@ -270,6 +271,12 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
     - A header over the top of the feed: "3 selected", "Select all 12" (the loaded links), the hints "Shift + click selects a range" and "Esc clears" (separate, desktop only) and "Done"; on the phone a Cancel button, the count and "Select all".
     - A glass bar at the bottom (above the phone tab bar; toasts move above it): Move (the folder picker, "Move 3 links"; Undo puts every link back into its own folder), Tags ("Add to all" and "Remove from all" with tag inputs), Favorite (on for all when any is off, else off), Open all (desktop; a new tab per link, a confirmation above 10, a toast when the browser blocked pop-ups), Copy links (the URLs, one per line), Share (phone, the system share sheet with the URLs; hidden without the Web Share API, Copy links shows instead) and Delete (confirmation, the links go to Trash at once, an Undo toast "3 links moved to Trash" with their titles restores them through Trash).
     - Every change shows at once and rolls back with an error toast when it fails; folder, tag and saved view counts refresh. The selection is cleared when the view, filter, sort or page changes, and after Move and Delete. "Remind" is not built (reminders are in the backlog).
+
+29. **Settings › Library in full.** As a user, I want to decide how my links are shown and how new ones are saved, on every device (#284, screen `SetLibrary`).
+    - Viewing: "Default view" (Cards or List) is how a feed opens the first time; "Sort links by" (Newest first, Oldest first, Title A–Z) is the sort it starts with. After the person switches the view or the sort of a feed, that feed (a folder by its id, or All links, Unsorted, Favorites) remembers its own choice on the device (`localStorage` `sm-feed-memory`, at most 300 feeds); the URL names a sort only when it differs from the default. "Open links in" a new tab (default) or the same tab: the links of cards, rows, Recently opened rows and pinned links, and the "Open" menu item, follow it (`rel` keeps `noreferrer`; "Open in new tab" in Recently opened stays a new tab). "Show folder counts" off drops the link counts of the sidebar entries, folders and pinned folders (Trash keeps its item count).
+    - Saving: "New links go to" Unsorted or a folder: the add-link dialog and the share page start there when the page has no folder of its own; the server accepts only a live folder of the user (404 otherwise) and answers Unsorted once that folder is in Trash or gone. "Warn about duplicates" off hides the duplicate notice. "Fetch titles and previews" off saves only the address: the dialog does not ask for a preview (with the duplicate notice on it asks only for the duplicate check, and the server then loads no page), and the server neither fetches the page nor captures images for this user's new links (image hints from the client are ignored); a changed address of an existing link follows ADR 0027 as before. "Keep the query part of links" off (the default) removes tracking parameters (`utm_*` and the `TRACKING_QUERY_PARAMS` deny list: `gclid`, `fbclid`, `mc_cid`, `msclkid`, …) from the address on save, create and edit alike, and before the duplicate check; every other parameter and the fragment stay exactly as written.
+    - Tags and folders: "Tags" (how many, "Manage tags" opens the Tags tab on a phone and the sidebar's tags elsewhere), "Folder colours" and "Pinned at the top" (story 25). Trash: "Keep deleted items for" and "Open Trash". A note under the sections: subfolders always come first, and changes apply at once and sync to other devices.
+    - Every change applies at once, is saved on the account (`/api/me/settings`) and rolls back with an error toast when the request fails.
 
 ### Navigation (left sidebar)
 
@@ -483,7 +490,6 @@ Not part of stage 1. Auto-tags, short descriptions and smart search are planned 
 Stage 1 runs for free on **Vercel (Hobby) + Neon** and is available at a public link; code, tasks and CI are on GitHub.
 
 | Component | Service | Details |
-| --- | --- | --- |
 | Code, tasks | GitHub | Public repository, GitHub Projects |
 | CI | GitHub Actions | Lint, tests, build on every PR |
 | Frontend + API | Vercel (Hobby) | Angular as static files; NestJS as one Vercel Function (zero-config). One `*.vercel.app` domain, so session cookies work without cross-domain issues |
@@ -513,7 +519,6 @@ Sources: [NestJS on Vercel](https://vercel.com/docs/frameworks/backend/nestjs), 
 Security is a mandatory requirement, not a wish: a task is not done until the items below that apply to it are met.
 
 | Risk | Mandatory measures |
-| --- | --- |
 | **SSRF** when fetching previews (the main risk of the service) | Only `http`/`https`; block private and reserved IPs (localhost, 10.x, 172.16–31.x, 192.168.x, 169.254.x, IPv6 equivalents) after DNS resolution; timeout; limits on response size and number of redirects; no cookie forwarding |
 | **Access to other users' data (IDOR)** | Every request to links, folders, tags is filtered by the session `userId`; dedicated tests "user A cannot see or change user B's data" |
 | **XSS** | Angular escaping by default; `innerHTML` and `bypassSecurityTrust…` are forbidden; links with a `javascript:` / `data:` scheme are rejected on the backend |
@@ -554,12 +559,13 @@ Own field on `User`: `folderColours` (boolean, default true): the "Folder colour
 
 Own field on `User`: `historyPaused` (column `history_paused`, boolean, default false): "Pause history" on Recently opened (#269); while true, opens do not update `lastOpenedAt`.
 
+Own fields on `User` for Settings › Library (#284, story 29): `defaultView` (`default_view`, text, default `cards`, CHECK `cards | list`), `defaultSort` (`default_sort`, default `newest`, CHECK `newest | oldest | title`), `openLinksIn` (`open_links_in`, default `new-tab`, CHECK `new-tab | same-tab`), `showFolderCounts` (boolean, default true), `newLinksFolderId` (uuid, null = Unsorted; no foreign key on purpose: the API checks on write that it is a live folder of the user and reads a trashed or deleted one as `null`), `warnDuplicates` (boolean, default true), `fetchPreviews` (boolean, default true), `keepQuery` (boolean, default false).
+
 Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, null). Demo data is created from the seed set in `apps/api/src/demo/seed.json`.
 
 **Folder**: a folder (nesting via `parentId`)
 
 | Field | Type | Note |
-| --- | --- | --- |
 | `id` | uuid | PK |
 | `userId` | uuid | FK → User |
 | `parentId` | uuid, null | FK → Folder; `null` = top-level folder |
@@ -571,10 +577,6 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 
 **Link**: a link
 
-| Field | Type | Note |
-| --- | --- | --- |
-| `id` | uuid | PK |
-| `userId` | uuid | FK → User |
 | `folderId` | uuid, null | FK → Folder; `null` = "Unsorted" |
 | `url` | string (≤ 2048) | As entered by the user |
 | `normalizedUrl` | string | For duplicate detection (see below) |
@@ -616,20 +618,17 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 All routes except `/api/auth/*` and the allow-listed public routes (`PUBLIC_ROUTES`: health, monitoring, demo, cron, public collections) require a session and work only with the current user's data. Contracts (DTOs) are in `libs/shared/contracts`; documentation is Swagger.
 
 | Method | Path | Purpose |
-| --- | --- | --- |
 | `*` | `/api/auth/*` | Sign-in / sign-out with Google and GitHub (Better Auth) |
 | GET | `/api/auth/get-session` | Current user and session (Better Auth); `null` when signed out |
 | DELETE | `/api/me` | Delete the account and all data |
-| POST | `/api/links/preview` | For a URL, return title, icon, image + the existing link if it is a duplicate (for form autofill) |
+| POST | `/api/links/preview` | For a URL, return title, icon, image + the existing link if it is a duplicate (for form autofill). With the account's `fetchPreviews` off no page is loaded (`fetched: false`, only the duplicate check); with `keepQuery` off the URL is checked and fetched without tracking parameters (#284) |
 | GET | `/api/links` | List with filters: `folderId`, `unsorted`, `favorite`, `tag` (repeated, `?tag=a&tag=b`: AND, case-insensitive, max 5, more is a 400; empty or absent = no filter), `q` (search in title, note and URL; every word must match, at most 5 words), `kind` (one of `video`, `article`, `shopping`, `other`; ADR 0038), `sort` (`createdAt` / `title`), `order`, `cursor`, `limit`. With `folderId` the first page also returns `pinned`: the links pinned to the top of that folder in pin order (same filters), not repeated in `items` or later pages (ADR 0037) |
 | GET | `/api/links/recent` | Recently opened (by `lastOpenedAt`, only the last 30 days, `RECENT_LINKS_WINDOW_DAYS`), `limit` |
 | DELETE | `/api/links/recent/:id` | Remove one link from the history (`lastOpenedAt` to null, the link stays); 204, idempotent, 404 for a foreign or missing link |
 | DELETE | `/api/links/recent` | Clear the whole history of the user (all own links' `lastOpenedAt` to null); 204 |
 | GET | `/api/links/:id` | One link |
-| POST | `/api/links` | Create: `url`, `title?`, `note?`, `folderId?`, `tags?` (names; new tags are created automatically) |
+| POST | `/api/links` | Create: `url`, `title?`, `note?`, `folderId?`, `tags?` (names; new tags are created automatically), `kind?` (from the preview; derived by the server when absent). `POST /api/links/preview` answers `preview.kind`. The account's `keepQuery` off strips tracking parameters from `url` (also on `PATCH`); `fetchPreviews` off means no page fetch and no image capture, image hints ignored (#284) |
 | POST | `/api/links/batch` | Paste many (#265): up to 100 `items` (`url`, `title?`, `idempotencyKey`, `faviconUrl?`, `imageUrl?`) with `folderId?` and `tags?` for all. One transaction under the ADR 0033 lock order, per-item idempotency keys (a replayed key returns its link; 200 when every key was replayed, else 201), the per-user link cap checked for the whole batch (409 whose message says how many more fit), a stricter rate limit (5 per minute). It fetches nothing: images, and the page title of links sent without one, come from the lazy capture (ADR 0027). Items whose normalised URL is too long or repeats an earlier item are skipped and listed in `errors` |
-| PATCH | `/api/links/:id` | Change any fields, including `isFavorite`, `folderId` and `pinnedInFolder` (pin to the top of the folder: 400 in Unsorted, 409 beyond 20 per folder; a move unpins) |
-| POST | `/api/links` | Create: `url`, `title?`, `note?`, `folderId?`, `tags?` (names; new tags are created automatically), `kind?` (from the preview; derived by the server when absent). `POST /api/links/preview` answers `preview.kind` |
 | PATCH | `/api/links/:id` | Change any fields, including `isFavorite`, `folderId`, `kind` (a new URL without `kind` recomputes it from the host) and `pinnedInFolder` (pin to the top of the folder: 400 in Unsorted, 409 beyond 20 per folder; a move unpins) |
 | POST | `/api/links/:id/open` | Record an open (updates `lastOpenedAt`); answers the link with `recorded: boolean`, `false` while the history is paused (nothing is written, #269) |
 | POST | `/api/links/:id/images/capture` | Re-capture favicon and preview image of a link whose URL changed (pending marker `?v=pending`); claims atomically with a 1 h cooldown, always 200 with the link, 404 for a foreign or missing one |
@@ -654,7 +653,7 @@ All routes except `/api/auth/*` and the allow-listed public routes (`PUBLIC_ROUT
 | PATCH | `/api/views/:id` | `{ name?, query? }`: rename or replace the query; 404 for a foreign or missing view |
 | PUT | `/api/views/order` | `{ ids }`: every view exactly once in the new order, else 400 |
 | DELETE | `/api/views/:id` | Delete a view (the links stay); 204, 404 for a foreign or missing one |
-| GET, PATCH | `/api/me/settings` | Account settings `{ trashRetentionDays: 7 \| 30 \| 90, folderColours: boolean, pauseHistory: boolean, theme: system \| light \| dark \| custom, customTheme: { base, accent, background, corners }, motion: system \| full \| reduced, appearanceSaved: boolean }` (`appearanceSaved` false until the appearance is first written, `users.appearance_saved_at`; allow-lists in the contracts; `customTheme` is always sent whole and its background must belong to its base, #273); PATCH sends only the fields to change (400 for another value or an extra field); demo users too |
+| GET, PATCH | `/api/me/settings` | Account settings `{ trashRetentionDays: 7 \| 30 \| 90, folderColours: boolean, pauseHistory: boolean, theme: system \| light \| dark \| custom, customTheme: { base, accent, background, corners }, motion: system \| full \| reduced, appearanceSaved: boolean, defaultView: cards \| list, defaultSort: newest \| oldest \| title, openLinksIn: new-tab \| same-tab, showFolderCounts: boolean, newLinksFolderId: uuid \| null, warnDuplicates: boolean, fetchPreviews: boolean, keepQuery: boolean }` (#284: `newLinksFolderId` must be a live own folder, else 404 and nothing is saved, and reads as `null` once it is gone; `fetchPreviews` off means no page fetch and no image capture for the user's new links and a preview answer without a page; `keepQuery` off strips tracking parameters on create, update and preview; `appearanceSaved` false until the appearance is first written, `users.appearance_saved_at`; allow-lists in the contracts; `customTheme` is always sent whole and its background must belong to its base, #273); PATCH sends only the fields to change (400 for another value or an extra field); demo users too |
 | GET | `/api/cron/trash-cleanup` | Vercel Cron only (`CRON_SECRET` bearer, 401 otherwise, no-store): deletes Trash rows past the owner's retention in batches of 500 within 5 s; answers `{ deleted, hasMore }` (ADR 0036) |
 | GET, POST, GET /:id, PATCH /:id, DELETE /:id, POST /:id/merge | `/api/tags` | The user's tags with link counts, sorted by link count descending, then name; read one tag with its count (404 if unknown or foreign); create an empty tag (409 if the name is taken or at the per-user cap of 1000), rename (409 if the name is taken; changing only the case of its own name is allowed), delete (links remain), merge with another tag (merging into itself is a 400). Names are normalized with `normalizeTagName` (trim, whitespace runs become one hyphen) on create and rename |
 | GET | `/api/feedback/prompt` | Which rating dialog to show now: `{ milestone }`, the latest reached milestone without a row, `null` for demo users and before onboarding (no-store) |
@@ -699,7 +698,6 @@ A minimalist, recognisable interface with light and dark themes on the own UI li
 **Palette: monochrome (graphite) + a "sage" accent.** Graphite for the background, text and primary buttons; sage only where colour carries meaning: favorites, active menu item, tags, focus. The dark theme is not pure black, text is not pure white. The values are a starting point; final ones are refined in Claude Design with a WCAG AA contrast check.
 
 | Token | Light | Dark |
-| --- | --- | --- |
 | `bg` (page background) | `#F7F7F6` | `#131315` |
 | `surface` (cards, panels) | `#FFFFFF` | `#1C1C1F` |
 | `border` | `#E5E5E2` | `#2C2C30` |
@@ -809,7 +807,6 @@ Buttons: "Skip" (on every step), "Next", and on the last step the primary button
 - every component has a Storybook story with all variants and both themes, unit tests and an accessibility check.
 
 | Component | Variants and states | Behaviour basis |
-| --- | --- | --- |
 | `ui-button` | `primary` / `secondary` / `ghost` / `danger`; sizes `sm` / `md` / `lg`; icon left/right; icon only; `loading`, `disabled` | native button |
 | `ui-input` | types `text` / `url` / `search`; label, hint, error, icon, clear button; `disabled` | Signal Forms |
 | `ui-textarea` | label, hint, error, character counter | Signal Forms |
@@ -845,7 +842,6 @@ Buttons: "Skip" (on every step), "Next", and on the last step the primary button
 Shelfmark's visual uniqueness rests on one geometric language: cards, tag "pills" and site-icon squares, the same motif as on the design-system cover.
 
 | What | Decision |
-| --- | --- |
 | **Logo** | Chosen: a card with a bookmark notch in the top-right corner (graphite + light sage), a "saved link", + the name in Onest 600. Files in the design system: mark for light and dark themes, monochrome, app icon (favicon, PWA) |
 | **Interface icons** | Shelfmark's own set: 44 icons, 24 px grid, 1.75 px stroke, 3 px corner radius, bookmark motif. In Angular, one `ui-icon` component with an SVG sprite |
 | **Illustrations** | Flat geometric scenes in colour tokens (work in both themes): 3 onboarding steps, empty states ("no links", "empty folder", "nothing found"), errors (404, no network), the sign-in screen. Format: SVG, colours via CSS variables |
@@ -861,7 +857,6 @@ Development is run by a "team" made of the main Claude Code session (tech lead) 
 Subagents are `.claude/agents/<name>.md` files in the repository. Subagents cannot launch other subagents, so only the tech lead distributes work.
 
 | Agent | Role | Constraints |
-| --- | --- | --- |
 | **Tech lead** (main session) | Takes a task, calls agents in turn, assembles the result, opens the PR | Does not merge PRs |
 | `project-manager` | Creates issues from this document, sorts them into GitHub Projects statuses, assigns the agent (label), moves the status as work progresses | GitHub only (`gh` CLI / GitHub MCP), does not touch code |
 | `architect` | Solution plan before code: files, contracts, risks | Read-only on code |
@@ -924,7 +919,6 @@ Detailed educational explanations are not written in PRs, except for the backlog
 Skills are `.claude/skills/<name>/SKILL.md` folders.
 
 | Skill | What it does |
-| --- | --- |
 | Angular Agent Skills (official) | Modern Angular context for agents |
 | `angular-v22-rules` | Our own v22 rules on top of the official ones; what is forbidden (NgModules, `*ngIf`, Reactive Forms, `@Injectable`) |
 | `create-ui-component` | Template for a new `libs/ui` component: variants via typed inputs, tokens, Storybook story, tests, a11y |
@@ -935,7 +929,6 @@ Skills are `.claude/skills/<name>/SKILL.md` folders.
 ### 8.5 Hooks and permissions
 
 | When | What happens |
-| --- | --- |
 | After a file edit (`PostToolUse`) | Prettier + ESLint on the changed file |
 | Before a tool call (`PreToolUse`) | Blocks reading and editing `.env*` and dangerous commands (`rm -rf`, `git push --force`, `prisma migrate reset` on a non-local database) |
 | Before finishing (`Stop`) | Typecheck and tests of affected projects (`nx affected`); on failure the agent keeps working |
@@ -957,7 +950,6 @@ Stage 1 is 8 stages (GitHub milestones), roughly 8–9 weeks at \~3 hours a day;
 ### 9.1 Stages
 
 | # | Stage | Contents | Estimate |
-| --- | --- | --- | --- |
 | 0 | Foundation | Nx monorepo, CI, Vercel, Neon, GitHub Projects, CLAUDE.md, agents, skills, hooks | 4–5 days |
 | 1 | Design system | Mockups in Claude Design, tokens, `libs/ui` + Storybook | \~2 weeks |
 | 2 | Authorisation | Google / GitHub, API protection, data isolation | 3–4 days |
@@ -1010,7 +1002,6 @@ The estimate assumes the bottleneck is PR review and fixes, not writing code. Hi
 ### 9.4 Testing
 
 | Level | Tool | Requirement |
-| --- | --- | --- |
 | Unit | Vitest | Coverage ≥ 80% for `apps/api` and `libs/ui` |
 | Components | Storybook | A story for every variant and both themes |
 | E2E | Playwright | Key scenarios: sign-in, adding a link, folders, search, account deletion; phone and desktop |
@@ -1090,7 +1081,6 @@ Stage 1 is considered successful when all acceptance criteria are met, the app p
 ### 10.1 Stage 1 completion criteria
 
 | Area | Criterion |
-| --- | --- |
 | Functionality | All 24 stories of section 4 (including "Onboarding") are done according to their acceptance criteria |
 | Tests | Coverage ≥ 80% (`apps/api`, `libs/ui`); e2e of key scenarios pass on desktop and phone |
 | Security | All 5.8 measures are in place; 0 critical and high vulnerabilities in `npm audit` and CodeQL |
@@ -1107,7 +1097,6 @@ Vercel Analytics (no personal data): number of registered users; share of users 
 Decided by the author on Nov 9, 2026; the full lists are in "Roadmap after stage 1" above.
 
 | Stage | Goal | Contents |
-| --- | --- | --- |
 | 2 | Daily use and polish | Redesign (2027 Refresh), Trash, folder colours, icons and pinning, saved views, paste several links, email and password sign-in, reminders, sharing, custom themes, feedback form, drag & drop, selection and bulk actions, "Move to folder", sync between tabs, interface languages (not Ukrainian for now), landing for signed-in users, Lighthouse ≥ 0.9, dev Dependabot alerts, promo video with a "How it works" button that plays it |
 | 3 | Save faster, smarter | Browser extension, AI tags and descriptions, smart search, demo data carried into a real account |
 | Backlog | Later | Import from Telegram, own authentication (learning format), subscriptions and monetisation, paid hosting, interactive guided tour |

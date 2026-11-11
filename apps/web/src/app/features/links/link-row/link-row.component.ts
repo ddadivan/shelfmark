@@ -24,6 +24,8 @@ import { linkHost, ownImageUrl, safeHref, siteLetter } from '../link-view';
 const MAX_TAGS = 2;
 
 /** One saved link in the list view. It only renders and emits; see `LinkActionsService`. */
+import { UserSettingsStore } from '../../../stores/user-settings.store';
+
 @Component({
   selector: 'app-link-row',
   imports: [
@@ -46,6 +48,8 @@ const MAX_TAGS = 2;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LinkRowComponent {
+  /** Settings › Library › Open links in: a new tab (default) or the same tab. */
+  protected readonly newTab = inject(UserSettingsStore).openInNewTab;
   /** The tags are left out on a phone: the row has no room for them. */
   protected readonly viewport = inject(ViewportService);
   protected readonly phone = this.viewport.phone;

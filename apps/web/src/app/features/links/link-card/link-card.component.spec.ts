@@ -3,6 +3,11 @@ import type { LinkResponse } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import axe from 'axe-core';
 import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
+import { LIBRARY_SETTINGS_DEFAULT, LINK_OPEN_TARGET } from '@shelfmark/contracts';
+import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
+import { of } from 'rxjs';
+import { USER_SETTINGS_API } from '../../settings/models/user-settings-api.const';
+import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { LinkCardComponent } from './link-card.component';
 
 const LINK: LinkResponse = {
@@ -36,6 +41,47 @@ function menuItem(label: string): HTMLElement {
 }
 
 describe('LinkCardComponent', () => {
+  it('opens in a new tab by default and in the same tab when the account says so (#284)', async () => {
+    const { element, fixture } = await setup();
+    const link = () => element.querySelector<HTMLAnchorElement>('a[href]');
+    expect(link()?.getAttribute('target')).toBe('_blank');
+    expect(link()?.getAttribute('rel')).toBe('noopener noreferrer');
+    expect(element.textContent).toContain('Opens in a new tab');
+
+    TestBed.resetTestingModule();
+    // A theme another spec left in this browser would make the load save it (an update).
+    localStorage.clear();
+    TestBed.configureTestingModule({
+      providers: [
+        provideTranslocoForTest(),
+        {
+          provide: USER_SETTINGS_API,
+          useValue: {
+            get: () =>
+              of({
+                trashRetentionDays: 30,
+                folderColours: true,
+                pauseHistory: false,
+                ...MOCK_APPEARANCE_DEFAULTS,
+                ...LIBRARY_SETTINGS_DEFAULT,
+                openLinksIn: LINK_OPEN_TARGET.SameTab,
+              }),
+          },
+        },
+      ],
+    });
+    await loadEnglish();
+    await TestBed.inject(UserSettingsStore).load();
+    const same = TestBed.createComponent(LinkCardComponent);
+    same.componentRef.setInput('link', LINK);
+    await same.whenStable();
+    const anchor = (same.nativeElement as HTMLElement).querySelector('a[href]');
+    expect(anchor?.hasAttribute('target')).toBe(false);
+    expect(anchor?.getAttribute('rel')).toBe('noreferrer');
+    expect((same.nativeElement as HTMLElement).textContent).not.toContain('Opens in a new tab');
+    fixture.destroy();
+  });
+
   it('readOnly drops the favorite button, the actions menu and the select box, and keeps the link', async () => {
     const { fixture, element } = await setup();
     fixture.componentRef.setInput('readOnly', true);

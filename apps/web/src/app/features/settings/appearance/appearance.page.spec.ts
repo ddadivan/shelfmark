@@ -1,3 +1,4 @@
+import { LIBRARY_SETTINGS_DEFAULT } from '@shelfmark/contracts';
 import { TestBed } from '@angular/core/testing';
 import {
   CUSTOM_THEME_DEFAULT,
@@ -43,6 +44,7 @@ const BASE: UserSettingsResponse = {
   folderColours: true,
   pauseHistory: false,
   ...MOCK_APPEARANCE_DEFAULTS,
+  ...LIBRARY_SETTINGS_DEFAULT,
 };
 
 async function setup({ fail = false } = {}) {

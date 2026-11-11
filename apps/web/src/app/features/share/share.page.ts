@@ -22,6 +22,7 @@ import { firstValueFrom } from 'rxjs';
 import { ViewportService } from '../../core/layout/viewport.service';
 import { APP_PATH } from '../../models/app-path.const';
 import { FoldersStore } from '../../stores/folders.store';
+import { UserSettingsStore } from '../../stores/user-settings.store';
 import { buildFolderOptions } from '../links/add-link/folder-options';
 import { displayHost, urlWithoutScheme } from '../links/add-link/http-url';
 import { LinkActionsService } from '../links/link-actions.service';
@@ -73,6 +74,7 @@ export default class SharePage {
   private readonly route = inject(ActivatedRoute);
   private readonly linksApi = inject(LINKS_API);
   private readonly folders = inject(FoldersStore);
+  private readonly settings = inject(UserSettingsStore);
   private readonly actions = inject(LinkActionsService);
   private readonly transloco = inject(TranslocoService);
 
@@ -154,6 +156,13 @@ export default class SharePage {
 
   constructor() {
     void this.folders.load();
+    // Settings › Library › New links go to: the folder the form starts with, unless already picked.
+    void this.settings.load().then(() => {
+      const folderId = this.settings.libraryShown().newLinksFolderId;
+      if (folderId !== null && !this.form.folderId().dirty()) {
+        this.model.update((model) => ({ ...model, folderId }));
+      }
+    });
   }
 
   /** Back to the library, saving nothing. */

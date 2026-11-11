@@ -7,16 +7,22 @@ import type {
   UserSettingsResponse,
 } from '@shelfmark/contracts';
 import type { Prisma } from '../generated/prisma/client';
+import { FoldersService } from '../folders/folders.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { toRetentionDays } from '../trash/trash.service';
 import { APPEARANCE_SELECT } from './models/appearance-select.const';
+import { LIBRARY_SELECT } from './models/library-select.const';
 import { customThemeColumns, toAppearanceSettings } from './to-appearance-settings';
+import { toLibrarySettings } from './to-library-settings';
 
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly folders: FoldersService,
+  ) {}
 
   /**
    * Deletes the session user and all their data in one transaction. The `User` delete cascades to
@@ -66,14 +72,22 @@ export class UsersService {
         folderColours: true,
         historyPaused: true,
         ...APPEARANCE_SELECT,
+        ...LIBRARY_SELECT,
       },
     });
     if (!row) throw new NotFoundException();
+    // "New links go to" reads as Unsorted once its folder is gone or in Trash (never another user's).
+    const liveFolder =
+      row.newLinksFolderId !== null &&
+      (await this.prisma.folder.count({
+        where: { id: row.newLinksFolderId, userId: user.id, deletedAt: null },
+      })) > 0;
     return {
       trashRetentionDays: toRetentionDays(row.trashRetentionDays),
       folderColours: row.folderColours,
       pauseHistory: row.historyPaused,
       ...toAppearanceSettings(row),
+      ...toLibrarySettings(row, liveFolder),
     };
   }
 
@@ -98,6 +112,20 @@ export class UsersService {
     }
     if (request.customTheme !== undefined)
       Object.assign(data, customThemeColumns(request.customTheme));
+    if (request.defaultView !== undefined) data.defaultView = request.defaultView;
+    if (request.defaultSort !== undefined) data.defaultSort = request.defaultSort;
+    if (request.openLinksIn !== undefined) data.openLinksIn = request.openLinksIn;
+    if (request.showFolderCounts !== undefined) data.showFolderCounts = request.showFolderCounts;
+    if (request.warnDuplicates !== undefined) data.warnDuplicates = request.warnDuplicates;
+    if (request.fetchPreviews !== undefined) data.fetchPreviews = request.fetchPreviews;
+    if (request.keepQuery !== undefined) data.keepQuery = request.keepQuery;
+    if (request.newLinksFolderId !== undefined) {
+      // A foreign, missing or trashed folder is a 404 (they look the same) and nothing is saved.
+      if (request.newLinksFolderId !== null) {
+        await this.folders.requireOwned(this.prisma, user.id, request.newLinksFolderId);
+      }
+      data.newLinksFolderId = request.newLinksFolderId;
+    }
     if (Object.keys(data).length > 0) {
       await this.prisma.user.updateMany({ where: { id: user.id }, data });
     }

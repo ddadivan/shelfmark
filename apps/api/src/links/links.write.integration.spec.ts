@@ -78,7 +78,8 @@ describe('links API: writes', () => {
         imageUrl: 'https://site.test/img.png',
       });
       expect(link).toMatchObject({
-        url: 'https://site.test/Page/?utm_source=x',
+        // "Keep the query part of links" is off by default (#284): tracking parameters go.
+        url: 'https://site.test/Page/',
         title: 'My title',
         note: 'why',
         folderId,
@@ -336,7 +337,8 @@ describe('links API: writes', () => {
       });
       await a.patch(`${BASE}/${id}`).send({ url: 'https://B.test/New/?utm_x=1' }).expect(200);
       expect(await row(id)).toMatchObject({
-        url: 'https://B.test/New/?utm_x=1',
+        // Tracking parameters go on update too (#284, default).
+        url: 'https://B.test/New/',
         normalizedUrl: 'https://b.test/New',
         faviconSourceUrl: null,
       });

@@ -110,7 +110,7 @@ describe('CardComponent', () => {
     expect(main().tagName).toBe('A');
     expect(main().getAttribute('href')).toBe('https://example.test/a');
     expect(main().hasAttribute('target')).toBe(false);
-    expect(main().hasAttribute('rel')).toBe(false);
+    expect(main().getAttribute('rel')).toBe('noreferrer');
     update((c) => c.newTab.set(true));
     expect(main().getAttribute('target')).toBe('_blank');
     expect(main().getAttribute('rel')).toBe('noopener noreferrer');

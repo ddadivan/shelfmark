@@ -1,3 +1,4 @@
+import { LIBRARY_SETTINGS_DEFAULT } from '@shelfmark/contracts';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
@@ -34,6 +35,7 @@ const settingsApi = {
       folderColours: true,
       pauseHistory: false,
       ...MOCK_APPEARANCE_DEFAULTS,
+      ...LIBRARY_SETTINGS_DEFAULT,
       ...request,
     }),
 };

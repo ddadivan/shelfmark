@@ -7,6 +7,7 @@ import {
   type FolderDeleteMode,
   type FolderResponse,
   type LibraryCounts,
+  type LibrarySettings,
   type LinkResponse,
   type ListLinksQuery,
   type ListPinsResponse,
@@ -25,8 +26,21 @@ import { matchesQuery } from '../search-query';
 import { generateMockLinks } from './generate-mock-links';
 import type { MockSavedView } from '../../views/mock/models/mock-saved-view.interface';
 import { mockStarterViews } from '../../views/mock/mock-starter-views';
+import {
+  readMockLibrarySettings,
+  writeMockLibrarySettings,
+} from '../../settings/mock/read-mock-library-settings';
 
 const SEEDED_OLD_LINKS = 2;
+
+/** `localStorage`, or `undefined` where it is missing or blocked (a spec without a DOM). */
+function mockStorage(): Storage | undefined {
+  try {
+    return globalThis.localStorage;
+  } catch {
+    return undefined;
+  }
+}
 const SEEDED_OLD_DAYS = 20;
 
 /**
@@ -59,6 +73,22 @@ export class MockLibraryData {
   views: MockSavedView[] = mockStarterViews();
 
   /** Stored folders without counts; mutate through `setFolders`. */
+  /**
+   * The mock account's Settings › Library choices, kept in `localStorage` so a reload sees them
+   * like the server's. Like the API, "New links go to" reads as Unsorted once its folder is gone.
+   */
+  get library(): LibrarySettings {
+    const settings = readMockLibrarySettings(mockStorage());
+    const id = settings.newLinksFolderId;
+    return id !== null && !this.folders.some((folder) => folder.id === id)
+      ? { ...settings, newLinksFolderId: null }
+      : settings;
+  }
+
+  set library(settings: LibrarySettings) {
+    writeMockLibrarySettings(mockStorage(), settings);
+  }
+
   get folderList(): readonly FolderResponse[] {
     return this.folders;
   }

@@ -1,3 +1,4 @@
+import { LIBRARY_SETTINGS_DEFAULT } from '@shelfmark/contracts';
 import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
 import { DOCUMENT } from '@angular/common';
 import { Injector, runInInjectionContext } from '@angular/core';
@@ -61,6 +62,7 @@ describe('MockUserSettingsApi', () => {
       folderColours: true,
       pauseHistory: false,
       ...MOCK_APPEARANCE_DEFAULTS,
+      ...LIBRARY_SETTINGS_DEFAULT,
     });
   });
 
@@ -72,6 +74,7 @@ describe('MockUserSettingsApi', () => {
       folderColours: true,
       pauseHistory: false,
       ...MOCK_APPEARANCE_DEFAULTS,
+      ...LIBRARY_SETTINGS_DEFAULT,
     });
     expect(data.trashRetentionDays).toBe(90);
     expect(await firstValueFrom(api.get())).toEqual({
@@ -79,6 +82,7 @@ describe('MockUserSettingsApi', () => {
       folderColours: true,
       pauseHistory: false,
       ...MOCK_APPEARANCE_DEFAULTS,
+      ...LIBRARY_SETTINGS_DEFAULT,
     });
   });
 
@@ -99,6 +103,7 @@ describe('MockUserSettingsApi', () => {
       folderColours: true,
       pauseHistory: false,
       ...MOCK_APPEARANCE_DEFAULTS,
+      ...LIBRARY_SETTINGS_DEFAULT,
     });
   });
 });
