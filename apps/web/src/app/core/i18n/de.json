@@ -571,7 +571,35 @@
         },
         "ramen": {
           "title": "Die besten Ramen für unter der Woche"
+        },
+        "zoneless": {
+          "title": "Zoneless Change Detection erklärt"
+        },
+        "lisbon": {
+          "title": "Lissabon im Mai: ein langes Wochenende"
+        },
+        "icons": {
+          "title": "Kostenlose Icon-Sets für Nebenprojekte"
+        },
+        "grid": {
+          "title": "Der komplette Guide zu CSS Grid"
+        },
+        "sourdough": {
+          "title": "Sauerteigbrot für Anfänger, Schritt für Schritt"
+        },
+        "sneakers": {
+          "title": "Minimalistische Ledersneaker"
         }
+      },
+      "tags": {
+        "video": "Video",
+        "angular": "Angular",
+        "shopping": "Einkauf",
+        "course": "Kurs",
+        "recipes": "Rezepte",
+        "travel": "Reisen",
+        "design": "Design",
+        "css": "CSS"
       },
       "privacyBefore": "Mit dem Fortfahren stimmst du der",
       "privacyLink": "Datenschutzerklärung",

@@ -1,3 +1,4 @@
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import axe from 'axe-core';
@@ -5,11 +6,15 @@ import { firstValueFrom } from 'rxjs';
 import { AppTranslocoLoader } from '../../../core/i18n/app-transloco.loader';
 import { APP_LANG } from '../../../core/i18n/models/app-lang.const';
 import { translocoConfig } from '../../../core/i18n/transloco.config';
+import { ViewportService } from '../../../core/layout/viewport.service';
 import { SignInDriftComponent } from './sign-in-drift.component';
 
-async function setup() {
+async function setup(wide = true) {
   TestBed.configureTestingModule({
-    providers: [provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader })],
+    providers: [
+      provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
+      { provide: ViewportService, useValue: { wideDesktop: signal(wide) } },
+    ],
   });
   await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
   const fixture = TestBed.createComponent(SignInDriftComponent);
@@ -18,22 +23,45 @@ async function setup() {
 }
 
 describe('SignInDriftComponent', () => {
-  it('is decorative: hidden from assistive technology with nothing focusable', async () => {
+  it('is decorative: hidden from assistive technology and inert, nothing in it can take focus', async () => {
     const root = await setup();
 
     expect(root.getAttribute('aria-hidden')).toBe('true');
-    expect(root.querySelectorAll('button, a, input, [tabindex]')).toHaveLength(0);
+    // The library card has a title button of its own: `inert` on the root takes it out of the
+    // tab order and of the accessibility tree, so no focusable element is reachable.
+    expect(root.hasAttribute('inert')).toBe(true);
+    for (const control of root.querySelectorAll('button, a, input, [tabindex]')) {
+      expect(control.closest('[inert]'), control.outerHTML).not.toBeNull();
+    }
+    expect(root.querySelectorAll('a[href]')).toHaveLength(0);
   });
 
-  it('renders the four translated example links, each with a landing ring', async () => {
-    const root = await setup();
+  it('draws ten library cards in two lanes and depth layers on a wide desktop, each with a landing ring', async () => {
+    const root = await setup(true);
     const text = root.textContent ?? '';
 
-    expect(root.querySelectorAll('.sd-card')).toHaveLength(4);
-    expect(root.querySelectorAll('.sd-ring')).toHaveLength(4);
+    expect(root.querySelectorAll('.sd-card')).toHaveLength(10);
+    expect(root.querySelectorAll('.sd-lane--start .sd-card')).toHaveLength(5);
+    expect(root.querySelectorAll('.sd-lane--end .sd-card')).toHaveLength(5);
+    expect(root.querySelectorAll('.sd-ring')).toHaveLength(10);
+    expect(root.querySelectorAll('ui-card .ui-card__placeholder')).toHaveLength(10);
+    expect(root.querySelectorAll('ui-card .ui-card__date').length).toBe(10);
+    expect(root.querySelectorAll('ui-chip').length).toBeGreaterThanOrEqual(10);
+    for (const layer of ['far', 'mid', 'near']) {
+      expect(root.querySelectorAll(`.sd-card--${layer}`).length).toBeGreaterThan(0);
+    }
     expect(text).toContain('youtube.com');
     expect(text).toContain('Signal Forms in 20 minutes');
     expect(text).toContain('NestJS for frontend developers');
+  });
+
+  it('draws six cards, three a side in one column, on a narrower desktop', async () => {
+    const root = await setup(false);
+
+    expect(root.querySelectorAll('.sd-card')).toHaveLength(6);
+    expect(root.querySelectorAll('.sd-lane--start .sd-card')).toHaveLength(3);
+    expect(root.querySelectorAll('.sd-lane--end .sd-card')).toHaveLength(3);
+    expect(root.querySelectorAll('.sd-lane--narrow')).toHaveLength(2);
   });
 
   it('has no axe violations', async () => {

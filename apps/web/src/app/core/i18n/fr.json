@@ -580,7 +580,35 @@
         },
         "ramen": {
           "title": "Les meilleurs ramen de la semaine"
+        },
+        "zoneless": {
+          "title": "La détection de changements sans zone, expliquée"
+        },
+        "lisbon": {
+          "title": "Lisbonne en mai : un long week-end"
+        },
+        "icons": {
+          "title": "Jeux d’icônes gratuits pour projets perso"
+        },
+        "grid": {
+          "title": "Le guide complet de CSS grid"
+        },
+        "sourdough": {
+          "title": "Pain au levain pour débutants, pas à pas"
+        },
+        "sneakers": {
+          "title": "Baskets minimalistes en cuir"
         }
+      },
+      "tags": {
+        "video": "vidéo",
+        "angular": "angular",
+        "shopping": "achats",
+        "course": "cours",
+        "recipes": "recettes",
+        "travel": "voyage",
+        "design": "design",
+        "css": "css"
       },
       "privacyBefore": "En continuant, vous acceptez la",
       "privacyLink": "Politique de confidentialité",

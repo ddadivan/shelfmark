@@ -23,6 +23,15 @@ describe('ViewportService', () => {
 
     expect(viewport.phone()).toBe(false);
     expect(viewport.desktop()).toBe(true);
+    expect(viewport.wideDesktop()).toBe(true);
+  });
+
+  it('tells a wide desktop (from 80em) from a narrow one', () => {
+    stubMatchMedia({ '(width < 64em)': false, '(width < 80em)': true });
+    const narrow = TestBed.inject(ViewportService);
+
+    expect(narrow.desktop()).toBe(true);
+    expect(narrow.wideDesktop()).toBe(false);
   });
 
   it('reads the breakpoints and follows changes', () => {

@@ -580,7 +580,35 @@
         },
         "ramen": {
           "title": "O melhor lámen para dias de semana"
+        },
+        "zoneless": {
+          "title": "Detecção de mudanças sem zonas, explicada"
+        },
+        "lisbon": {
+          "title": "Lisboa em maio: um fim de semana prolongado"
+        },
+        "icons": {
+          "title": "Conjuntos de ícones grátis para projetos pessoais"
+        },
+        "grid": {
+          "title": "O guia completo de CSS grid"
+        },
+        "sourdough": {
+          "title": "Pão de fermentação natural para iniciantes, passo a passo"
+        },
+        "sneakers": {
+          "title": "Tênis minimalistas de couro"
         }
+      },
+      "tags": {
+        "video": "vídeo",
+        "angular": "angular",
+        "shopping": "compras",
+        "course": "curso",
+        "recipes": "receitas",
+        "travel": "viagens",
+        "design": "design",
+        "css": "css"
       },
       "privacyBefore": "Ao continuar, você concorda com a",
       "privacyLink": "Política de privacidade",

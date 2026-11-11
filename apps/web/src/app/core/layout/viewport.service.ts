@@ -4,6 +4,9 @@ import { PHONE_MEDIA_QUERY, mediaMatch } from '@shelfmark/ui';
 /** Same breakpoint as the Sass mixin `desktop` (ADR 0015); the phone one is `PHONE_MEDIA_QUERY`. */
 const BELOW_DESKTOP_QUERY = '(width < 64em)';
 
+/** From 80em a desktop has room for the full set of sign-in cards; narrower ones show fewer. */
+const BELOW_WIDE_DESKTOP_QUERY = '(width < 80em)';
+
 /**
  * The layout breakpoint the viewport is in, for the few places where CSS alone is not enough:
  * what is not shown should not be rendered (and fetch its data), and phone controls use the
@@ -16,4 +19,7 @@ export class ViewportService {
   private readonly belowDesktop = mediaMatch(BELOW_DESKTOP_QUERY);
   /** From 64em. */
   readonly desktop = computed(() => !this.belowDesktop());
+  private readonly belowWideDesktop = mediaMatch(BELOW_WIDE_DESKTOP_QUERY);
+  /** From 80em. */
+  readonly wideDesktop = computed(() => !this.belowWideDesktop());
 }

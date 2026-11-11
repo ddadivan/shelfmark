@@ -571,7 +571,35 @@
         },
         "ramen": {
           "title": "The best weeknight ramen"
+        },
+        "zoneless": {
+          "title": "Zoneless change detection, explained"
+        },
+        "lisbon": {
+          "title": "Lisbon in May: a long weekend"
+        },
+        "icons": {
+          "title": "Free icon sets for side projects"
+        },
+        "grid": {
+          "title": "A complete guide to CSS grid"
+        },
+        "sourdough": {
+          "title": "Beginner sourdough, step by step"
+        },
+        "sneakers": {
+          "title": "Minimal leather sneakers"
         }
+      },
+      "tags": {
+        "video": "video",
+        "angular": "angular",
+        "shopping": "shopping",
+        "course": "course",
+        "recipes": "recipes",
+        "travel": "travel",
+        "design": "design",
+        "css": "css"
       },
       "privacyBefore": "By continuing you agree to the",
       "privacyLink": "Privacy policy",
