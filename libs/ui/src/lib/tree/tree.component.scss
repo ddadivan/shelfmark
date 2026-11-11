@@ -1,6 +1,6 @@
 @use '../../styles/ui' as *;
 
-// Sidebar navigation (Tree spec). Icons are 24px; folder rows have a 22px `ui-folder-icon` tile. Rows are 36px (44px on a phone), each level indents 16px
+// Sidebar navigation (Tree spec). Rows are 14 / 20 text, icons 20px in `text-muted`; folder rows have a 22px `ui-folder-icon` tile. Rows are 36px (44px on a phone), each level indents 16px
 // through `--ui-tree-level`, the active row is `accent-bg`, children open by `grid-template-rows`.
 
 :host {
@@ -26,12 +26,14 @@
   gap: rem(8px);
   align-items: center;
   min-height: rem(36px);
+  font-size: rem(14px);
+  line-height: rem(20px);
   padding-block: 0;
   padding-inline: calc(#{rem(10px)} + (var(--ui-tree-level, 1) - 1) * #{rem(16px)}) rem(10px);
   color: var(--text);
   cursor: pointer;
   user-select: none;
-  border-radius: var(--radius-md);
+  border-radius: calc(var(--radius-md) - #{rem(2px)}); // 12px with the default corners
   transition: background-color var(--duration-fast) var(--ease-out);
 
   &:focus-visible {

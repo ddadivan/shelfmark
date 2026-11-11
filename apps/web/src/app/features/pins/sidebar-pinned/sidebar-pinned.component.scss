@@ -31,7 +31,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  border-radius: var(--radius-md);
+  border-radius: calc(var(--radius-md) - #{rem(2px)});
 
   @include hover {
     background: var(--surface-hover);
@@ -59,11 +59,13 @@
   align-items: center;
   min-width: 0;
   min-height: rem(36px);
+  font-size: rem(14px);
+  line-height: rem(20px);
   padding-block: 0;
   padding-inline: rem(10px) rem(40px);
   color: var(--text);
   text-decoration: none;
-  border-radius: var(--radius-md);
+  border-radius: calc(var(--radius-md) - #{rem(2px)});
 
   &:focus-visible {
     @include focus-ring(-2px);

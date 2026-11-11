@@ -36,7 +36,7 @@
             (click)="onTwist($event, item.expanded)"
           >
             @if (node.children?.length) {
-              <ui-icon name="chevron-right" [size]="ICON_SIZE.Lg" />
+              <ui-icon name="chevron-right" [size]="ICON_SIZE.Sm" />
             }
           </span>
         }
@@ -47,7 +47,7 @@
             [colour]="node.colour ?? FOLDER_COLOUR.Graphite"
           />
         } @else if (node.icon) {
-          <ui-icon class="ui-tree__icon" [name]="node.icon" [size]="ICON_SIZE.Lg" />
+          <ui-icon class="ui-tree__icon" [name]="node.icon" [size]="ICON_SIZE.Md" />
         }
         <span class="ui-tree__name" [id]="item.id() + '-name'">{{ node.name }}</span>
         @if (dropTargetId() === node.id && dropLabel()) {
