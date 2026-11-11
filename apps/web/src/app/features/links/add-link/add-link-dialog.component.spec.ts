@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import {
   LINK_ERROR_MESSAGE,
+  LINK_KIND,
   type LinkPreviewResponse,
   type LinkResponse,
 } from '@shelfmark/contracts';
@@ -24,6 +25,7 @@ import { AddLinkDialogService } from './add-link-dialog.service';
 
 const PLAIN: LinkPreviewResponse = {
   preview: {
+    kind: LINK_KIND.Article,
     url: 'https://example.org/post',
     title: 'A fine post',
     description: 'About a thing.',
@@ -326,6 +328,7 @@ describe('AddLinkDialogComponent', () => {
       note: 'Read on the weekend',
       folderId: MOCK_ID.FolderAngular,
       tags: ['docs'],
+      kind: LINK_KIND.Article,
       idempotencyKey: expect.any(String),
     });
     expect(outcome?.action).toBe(ADD_LINK_ACTION.Saved);

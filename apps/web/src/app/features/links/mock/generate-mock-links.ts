@@ -1,4 +1,4 @@
-import type { LinkResponse } from '@shelfmark/contracts';
+import { LINK_KIND, type LinkKind, type LinkResponse } from '@shelfmark/contracts';
 import { MOCK_ID, MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { MOCK_LINKS_COUNT } from '../models/mock-links-count.const';
 
@@ -19,6 +19,7 @@ export function generateMockLinks(): LinkResponse[] {
     const created = new Date(BASE_TIME - i * HOURS_MS).toISOString();
     links.push({
       id: `00000000-0000-4000-8000-${String(1000 + i).padStart(12, '0')}`,
+      kind: mockKind(i),
       folderId: i % 3 === 0 ? null : MOCK_ID.FolderReading,
       url: `https://site${i % SITE_COUNT}.example.com/articles/${i}`,
       title: `Saved article ${i}`,
@@ -35,4 +36,15 @@ export function generateMockLinks(): LinkResponse[] {
     });
   }
   return links;
+}
+
+/** A spread of kinds: every fifth link (from the second) a video, every third an article, some shopping. */
+function mockKind(index: number): LinkKind {
+  if (index % 5 === 1) {
+    return LINK_KIND.Video;
+  }
+  if (index % 3 === 1) {
+    return LINK_KIND.Article;
+  }
+  return index % 7 === 2 ? LINK_KIND.Shopping : LINK_KIND.Other;
 }

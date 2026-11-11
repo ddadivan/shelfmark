@@ -1,4 +1,4 @@
-import type { LinkSortField, SortOrder } from '@shelfmark/contracts';
+import type { LinkKind, LinkSortField, SortOrder } from '@shelfmark/contracts';
 
 /** The query parameters of the library page, common to every scope. */
 export interface LinksFilterOptions {
@@ -6,6 +6,8 @@ export interface LinksFilterOptions {
   readonly tags?: readonly string[];
   /** Title search. */
   readonly q?: string;
+  /** Only links of this kind (`?kind=video`). */
+  readonly kind?: LinkKind;
   readonly sort?: LinkSortField;
   readonly order?: SortOrder;
 }

@@ -206,8 +206,9 @@ describe('LibraryPage', () => {
         'No links with these tags',
       );
       element.querySelector<HTMLButtonElement>('ui-empty-state button')?.click();
+      // The empty filtered state clears the kind too (a saved view may have set it).
       expect(navigate).toHaveBeenCalledWith([], {
-        queryParams: { tag: null },
+        queryParams: { tag: null, kind: null },
         queryParamsHandling: 'merge',
       });
     });
@@ -224,8 +225,9 @@ describe('LibraryPage', () => {
         'No links with these tags',
       );
       element.querySelector<HTMLButtonElement>('ui-empty-state button')?.click();
+      // The empty filtered state clears the kind too (a saved view may have set it).
       expect(navigate).toHaveBeenCalledWith([], {
-        queryParams: { tag: null },
+        queryParams: { tag: null, kind: null },
         queryParamsHandling: 'merge',
       });
     });
@@ -565,7 +567,7 @@ describe('LibraryPage of a folder', () => {
         ?.click();
 
       expect(navigate).toHaveBeenCalledWith([], {
-        queryParams: { q: null, tag: null },
+        queryParams: { q: null, tag: null, kind: null },
         queryParamsHandling: 'merge',
       });
     });

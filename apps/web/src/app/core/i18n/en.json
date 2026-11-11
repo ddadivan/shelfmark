@@ -376,7 +376,27 @@
         "confirm": "Clear history",
         "cancel": "Cancel",
         "close": "Close"
+      },
+      "filter": {
+        "label": "Filter by type",
+        "all": "All",
+        "emptyTitle": "Nothing of this type",
+        "emptyText": "No link of this type was opened in the last {{days}} days.",
+        "showAll": "Show all"
       }
+    },
+    "kind": {
+      "label": "Type",
+      "video": "Videos",
+      "article": "Articles",
+      "shopping": "Shopping",
+      "other": "Other"
+    },
+    "kindOption": {
+      "video": "Video",
+      "article": "Article",
+      "shopping": "Shopping",
+      "other": "Other"
     }
   },
   "privacy": {
@@ -790,6 +810,9 @@
     "pageTitle": {
       "page": "{{page}} · {{app}}",
       "search": "Search: {{query}} · {{app}}"
+    },
+    "kind": {
+      "remove": "Remove filter {{kind}}"
     }
   },
   "export": {
@@ -1344,6 +1367,71 @@
     "pinnedToTopFailed": {
       "title": "Couldn't change the pin",
       "detail": "It is back as it was."
+    }
+  },
+  "views": {
+    "label": "Saved views",
+    "all": "All",
+    "add": "Save this view",
+    "menu": {
+      "for": "Actions for {{name}}",
+      "rename": "Rename",
+      "moveLeft": "Move left",
+      "moveRight": "Move right",
+      "delete": "Delete view"
+    },
+    "name": {
+      "label": "Name",
+      "placeholder": "To read",
+      "required": "Enter a name",
+      "tooLong": "Use at most {{max}} characters"
+    },
+    "dialog": {
+      "close": "Close",
+      "cancel": "Cancel"
+    },
+    "create": {
+      "title": "Save this view",
+      "action": "Save view",
+      "saving": "Saving…",
+      "failed": "Couldn't save the view. Try again.",
+      "limit": "You already have the most views you can save. Delete one first.",
+      "missing": "The folder of this view is gone. Open another folder and try again."
+    },
+    "created": {
+      "title": "View saved"
+    },
+    "rename": {
+      "title": "Rename view",
+      "action": "Rename",
+      "saving": "Renaming…"
+    },
+    "renameFailed": {
+      "title": "Couldn't rename the view"
+    },
+    "deleteConfirm": {
+      "title": "Delete view {{name}}?",
+      "message": "Only the view goes. The links stay where they are.",
+      "confirm": "Delete view",
+      "cancel": "Cancel",
+      "close": "Close"
+    },
+    "deleted": {
+      "title": "View deleted"
+    },
+    "deleteFailed": {
+      "title": "Couldn't delete the view"
+    },
+    "moveFailed": {
+      "title": "Couldn't move the view"
+    },
+    "limit": {
+      "title": "Saved views are full",
+      "detail": "You can save up to {{max}} views. Delete one first."
+    },
+    "unavailable": {
+      "title": "This view is waiting for its folder",
+      "detail": "The folder of {{name}} is in Trash. Restore it to use the view."
     }
   }
 }

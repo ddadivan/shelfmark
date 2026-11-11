@@ -20,6 +20,7 @@ import {
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   isHttpUrl,
+  LINK_KIND,
   LINK_LIMIT,
   type CreateLinkRequest,
   type LinkDuplicate,
@@ -27,6 +28,7 @@ import {
   type LinkResponse,
   type UpdateLinkRequest,
 } from '@shelfmark/contracts';
+import { isLinkKind } from '../link-kind';
 import {
   ButtonComponent,
   CheckboxComponent,
@@ -140,6 +142,16 @@ export class AddLinkDialogComponent {
     tags: [...normalizeTagNames(this.original?.tags ?? [])],
     note: this.original?.note ?? '',
     isFavorite: this.original?.isFavorite ?? false,
+    kind: this.original?.kind ?? null,
+  });
+
+  /** Edit mode: the "Type" select (video, article, shopping, other). */
+  protected readonly kindOptions = computed(() => {
+    this.i18n();
+    return Object.values(LINK_KIND).map((kind) => ({
+      id: kind,
+      name: this.transloco.translate(`links.kindOption.${kind}`),
+    }));
   });
 
   protected readonly form = form(
@@ -361,6 +373,8 @@ export class AddLinkDialogComponent {
         ...(tags.length > 0 && { tags }),
         ...(fetched?.faviconUrl && { faviconUrl: fetched.faviconUrl }),
         ...(fetched?.imageUrl && { imageUrl: fetched.imageUrl }),
+        // The kind the server read from the page (og:type and host); without it the server uses the host.
+        ...(fetched && { kind: fetched.kind }),
       };
       request$ = this.linksApi.create({
         ...payload,
@@ -452,6 +466,9 @@ export class AddLinkDialogComponent {
     }
     if (value.isFavorite !== link.isFavorite) {
       changes.isFavorite = value.isFavorite;
+    }
+    if (value.kind !== link.kind && isLinkKind(value.kind)) {
+      changes.kind = value.kind;
     }
     if (tags.length !== link.tags.length || tags.some((tag, index) => tag !== link.tags[index])) {
       changes.tags = tags;
