@@ -11,4 +11,7 @@ export class UserSettingsResponseDto implements UserSettingsResponse {
 
   @ApiProperty({ example: true })
   folderColours!: boolean;
+
+  @ApiProperty({ example: false, description: 'Pause history: opens are not recorded' })
+  pauseHistory!: boolean;
 }

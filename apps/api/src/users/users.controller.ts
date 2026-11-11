@@ -77,7 +77,7 @@ export class UsersController {
   }
 
   @Get('settings')
-  @ApiOperation({ summary: 'Account settings (trash retention, folder colours)' })
+  @ApiOperation({ summary: 'Account settings (trash retention, folder colours, pause history)' })
   @ApiOkResponse({ type: UserSettingsResponseDto })
   @ApiUnauthorizedResponse({ type: ApiErrorResponseDto, description: 'No valid session' })
   getSettings(@CurrentUser() user: AuthUser): Promise<UserSettingsResponseDto> {

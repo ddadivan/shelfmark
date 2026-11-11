@@ -88,8 +88,8 @@
       class="trash-row__actions"
       role="group"
       [attr.aria-label]="item().title"
-      (focusin)="onActionsFocusIn()"
-      (focusout)="onActionsFocusOut($event)"
+      (focusin)="swipe.focusIn()"
+      (focusout)="swipe.focusOut($event)"
     >
       <ui-button
         size="lg"
@@ -113,13 +113,13 @@
       #surface
       class="trash-row__surface"
       uiLongPress
-      [class.trash-row__surface--dragging]="dragging()"
-      [style.translate.px]="offset()"
+      [class.trash-row__surface--dragging]="swipe.dragging()"
+      [style.translate.px]="swipe.offset()"
       (uiLongPress)="onLongPress()"
-      (pointerdown)="onPointerDown($event)"
-      (pointermove)="onPointerMove($event)"
-      (pointerup)="onPointerEnd()"
-      (pointercancel)="onPointerEnd()"
+      (pointerdown)="swipe.pointerDown($event)"
+      (pointermove)="swipe.pointerMove($event)"
+      (pointerup)="swipe.pointerEnd()"
+      (pointercancel)="swipe.pointerEnd()"
     >
       <ng-container [ngTemplateOutlet]="entry" />
     </div>

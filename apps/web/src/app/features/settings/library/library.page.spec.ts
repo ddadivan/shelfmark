@@ -18,7 +18,7 @@ async function setup(
     get: vi.fn<UserSettingsApi['get']>(() =>
       options.failGet
         ? throwError(() => new Error('down'))
-        : of({ trashRetentionDays: 30 as const, folderColours: true }),
+        : of({ trashRetentionDays: 30 as const, folderColours: true, pauseHistory: false }),
     ),
     update: vi.fn<UserSettingsApi['update']>((request) =>
       options.failUpdate
@@ -26,6 +26,7 @@ async function setup(
         : of({
             trashRetentionDays: request.trashRetentionDays ?? 30,
             folderColours: request.folderColours ?? true,
+            pauseHistory: request.pauseHistory ?? false,
           }),
     ),
   };

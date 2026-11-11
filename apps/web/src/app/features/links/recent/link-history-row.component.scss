@@ -4,6 +4,55 @@
   display: contents;
 }
 
+// Phone: the row sits in a swipe frame, so the library's line between rows (it looks for a next
+// sibling) cannot see its neighbours: the line is drawn here, as in Trash.
+:host(.link-history-row--phone) {
+  position: relative;
+  display: block;
+}
+
+:host(.link-history-row--phone:not(:last-child))::after {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline: var(--space-3);
+  content: '';
+  border-block-start: 1px solid var(--border);
+}
+
+// Phone: "Remove" waits behind the row; a swipe (or focus) slides the row aside.
+.link-history-row__swipe {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+}
+
+.link-history-row__actions {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  display: flex;
+  align-items: center;
+  padding-inline: var(--space-2);
+}
+
+.link-history-row__surface {
+  position: relative;
+  touch-action: pan-y;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  transition: translate var(--duration-fast) var(--ease-out);
+}
+
+.link-history-row__surface--dragging {
+  transition: none;
+}
+
+@include reduced-motion {
+  .link-history-row__surface {
+    transition: none;
+  }
+}
+
 .link-history-row__folder {
   display: inline-flex;
   gap: var(--space-2);

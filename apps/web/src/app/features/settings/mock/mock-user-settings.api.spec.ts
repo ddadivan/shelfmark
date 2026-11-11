@@ -18,6 +18,7 @@ describe('MockUserSettingsApi', () => {
     expect(await firstValueFrom(api.get())).toEqual({
       trashRetentionDays: 30,
       folderColours: true,
+      pauseHistory: false,
     });
   });
 
@@ -27,12 +28,23 @@ describe('MockUserSettingsApi', () => {
     expect(await firstValueFrom(api.update({ trashRetentionDays: 90 }))).toEqual({
       trashRetentionDays: 90,
       folderColours: true,
+      pauseHistory: false,
     });
     expect(data.trashRetentionDays).toBe(90);
     expect(await firstValueFrom(api.get())).toEqual({
       trashRetentionDays: 90,
       folderColours: true,
+      pauseHistory: false,
     });
+  });
+
+  it('pauses and resumes the history on the shared mock library', async () => {
+    const { api, data } = create();
+
+    expect((await firstValueFrom(api.update({ pauseHistory: true }))).pauseHistory).toBe(true);
+    expect(data.pauseHistory).toBe(true);
+    expect((await firstValueFrom(api.update({ pauseHistory: false }))).pauseHistory).toBe(false);
+    expect(data.pauseHistory).toBe(false);
   });
 
   it('keeps what is not sent', async () => {
@@ -41,6 +53,7 @@ describe('MockUserSettingsApi', () => {
     expect(await firstValueFrom(api.update({}))).toEqual({
       trashRetentionDays: 30,
       folderColours: true,
+      pauseHistory: false,
     });
   });
 });

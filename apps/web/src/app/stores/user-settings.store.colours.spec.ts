@@ -7,7 +7,11 @@ import { TRASH_API } from '../features/trash/models/trash-api.const';
 import { UserSettingsStore } from './user-settings.store';
 
 function setup(folderColours = true) {
-  const settings: UserSettingsResponse = { trashRetentionDays: 30, folderColours };
+  const settings: UserSettingsResponse = {
+    trashRetentionDays: 30,
+    folderColours,
+    pauseHistory: false,
+  };
   const api = {
     get: vi.fn<UserSettingsApi['get']>(() => of(settings)),
     update: vi.fn<UserSettingsApi['update']>((request) =>
