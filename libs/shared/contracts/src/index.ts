@@ -21,6 +21,16 @@ export type { RecentLinksResponse } from './links/recent-links-response.interfac
 export type { OpenLinkResponse } from './links/open-link-response.type';
 export type { CaptureLinkImagesResponse } from './links/capture-link-images-response.type';
 export type { GetLinkResponse } from './links/get-link-response.type';
+export type { CreateLinksBatchItem } from './links/create-links-batch-item.interface';
+export type { CreateLinksBatchRequest } from './links/create-links-batch-request.interface';
+export type { CreateLinksBatchResponse } from './links/create-links-batch-response.interface';
+export type { LinkBatchItemError } from './links/link-batch-item-error.interface';
+export type { LinkBatchErrorCode } from './links/link-batch-error-code.type';
+export type { DeleteLinksBatchRequest } from './links/delete-links-batch-request.interface';
+export type { DeleteLinksBatchResponse } from './links/delete-links-batch-response.interface';
+export { LINK_BATCH_ERROR_CODE } from './links/link-batch-error-code.const';
+export { LINKS_BATCH_ENDPOINT } from './links/links-batch-endpoint.const';
+export { linkLimitFit, linkLimitMessage } from './links/link-limit-message';
 export type { LinkSortField } from './links/link-sort-field.type';
 export type { LinkImageKind } from './links/link-image-kind.type';
 export { LINK_IMAGE_KIND } from './links/link-image-kind.const';
