@@ -46,6 +46,7 @@ model User {
   linkImages            LinkImage[]
   tags                  Tag[]
   feedback              Feedback[]
+  savedViews            SavedView[]
 
   @@map("users")
 }
@@ -157,6 +158,9 @@ model Link {
   // Client-generated UUID that makes a retried create return the first link (ADR 0033).
   idempotencyKey     String?     @map("idempotency_key") @db.Uuid
   isFavorite         Boolean     @default(false) @map("is_favorite")
+  // video | article | shopping | other (LINK_KIND, CHECK in the migration): derived at save time from
+  // og:type and the host, recomputed on a URL change, changeable by the user (ADR 0038).
+  kind               String      @default("other") @db.VarChar(16)
   // Pinned to the top of its folder (#263): the pin time orders pinned links; NULL = not pinned.
   pinnedInFolderAt   DateTime?   @map("pinned_in_folder_at") @db.Timestamptz(3)
   // Place in the user's sidebar pins (ADR 0037); NULL = not pinned. Cleared when the link goes to Trash.
@@ -177,6 +181,7 @@ model Link {
   @@index([userId, lastOpenedAt])
   @@index([userId, titleSortKey, id])
   @@index([folderId])
+  @@index([userId, kind])
   @@index([title(ops: raw("gin_trgm_ops"))], type: Gin, map: "links_title_trgm_idx")
   @@index([note(ops: raw("gin_trgm_ops"))], type: Gin, map: "links_note_trgm_idx")
   @@index([url(ops: raw("gin_trgm_ops"))], type: Gin, map: "links_url_trgm_idx")
@@ -245,4 +250,21 @@ model Feedback {
 
   @@unique([userId, milestone])
   @@map("feedback")
+}
+
+// A saved filter shown as a chip above the feed (#264, ADR 0038). `query` is the normalized
+// SavedViewQuery (validated by the API); at most SAVED_VIEW_LIMIT.PerUserMax per user. New users get
+// the starter views from a database trigger (see the migration).
+model SavedView {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  name      String   @db.VarChar(40)
+  query     Json     @db.JsonB
+  position  Int      @db.SmallInt
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, position])
+  @@map("saved_views")
 }

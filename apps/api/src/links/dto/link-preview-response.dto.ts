@@ -1,7 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type { LinkDuplicate, LinkPreview, LinkPreviewResponse } from '@shelfmark/contracts';
+import {
+  LINK_KIND,
+  type LinkDuplicate,
+  type LinkKind,
+  type LinkPreview,
+  type LinkPreviewResponse,
+} from '@shelfmark/contracts';
 
 export class LinkPreviewDto implements LinkPreview {
+  @ApiProperty({ enum: Object.values(LINK_KIND) }) kind!: LinkKind;
   @ApiProperty() url!: string;
   @ApiProperty() title!: string;
   @ApiProperty({ nullable: true, type: String }) description!: string | null;

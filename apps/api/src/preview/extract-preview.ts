@@ -1,4 +1,4 @@
-import type { LinkPreview } from '@shelfmark/contracts';
+import { deriveLinkKind, type LinkPreview } from '@shelfmark/contracts';
 import { parse } from 'parse5';
 import { ALLOWED_PROTOCOLS } from '../fetcher/models/allowed-protocols.const';
 import type { CollectedTags } from './models/collected-tags.interface';
@@ -130,6 +130,7 @@ function originFavicon(pageUrl: string): string | null {
 /** Preview for a page that could not be fetched: the URL is the title. */
 export function fallbackPreview(pageUrl: string): LinkPreview {
   return {
+    kind: deriveLinkKind(pageUrl),
     url: pageUrl,
     title: clean(pageUrl, PREVIEW_LIMITS.maxTitleLength) ?? pageUrl,
     description: null,
@@ -178,5 +179,6 @@ export function extractPreview(html: string, pageUrl: string): LinkPreview {
       .map((href) => absoluteHttpUrl(href, base))
       .find((href) => href !== null) ?? originFavicon(pageUrl);
 
-  return { url: pageUrl, title, description, imageUrl, faviconUrl };
+  const kind = deriveLinkKind(pageUrl, tags.meta.get(META_KEY.OgType));
+  return { kind, url: pageUrl, title, description, imageUrl, faviconUrl };
 }

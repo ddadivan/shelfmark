@@ -1,8 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type { GetLinkResponse, LinkResponse, OpenLinkResponse } from '@shelfmark/contracts';
+import {
+  LINK_KIND,
+  type GetLinkResponse,
+  type LinkKind,
+  type LinkResponse,
+  type OpenLinkResponse,
+} from '@shelfmark/contracts';
 
 export class LinkResponseDto implements LinkResponse, GetLinkResponse, OpenLinkResponse {
   @ApiProperty({ format: 'uuid' }) id!: string;
+  @ApiProperty({ enum: Object.values(LINK_KIND) }) kind!: LinkKind;
   @ApiProperty({ format: 'uuid', nullable: true, type: String }) folderId!: string | null;
   @ApiProperty() url!: string;
   @ApiProperty() title!: string;

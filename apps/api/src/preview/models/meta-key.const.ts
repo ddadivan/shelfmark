@@ -9,4 +9,5 @@ export const META_KEY = {
   OgImageUrl: 'og:image:url',
   TwitterImage: 'twitter:image',
   TwitterImageSrc: 'twitter:image:src',
+  OgType: 'og:type',
 } as const;

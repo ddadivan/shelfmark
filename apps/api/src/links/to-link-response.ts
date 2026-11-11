@@ -1,5 +1,6 @@
 import { LINK_IMAGE_KIND, type LinkImageKind, type LinkResponse } from '@shelfmark/contracts';
 import { linkImagePath } from './images/link-image-path';
+import { toLinkKind } from './to-link-kind';
 import type { LinkWithTags } from './models/link-with-tags.type';
 
 /**
@@ -23,6 +24,7 @@ export function imagePath(
 export function toLinkResponse(row: LinkWithTags): LinkResponse {
   return {
     id: row.id,
+    kind: toLinkKind(row.kind),
     folderId: row.folderId,
     url: row.url,
     title: row.title,
