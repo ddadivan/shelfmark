@@ -37,6 +37,7 @@ function tempRepo(branch) {
 
 const featureRepo = tempRepo('feat/test');
 const mainRepo = tempRepo('main');
+const stageRepo = tempRepo('stage');
 
 after(() => {
   for (const dir of tempRepos) rmSync(dir, { recursive: true, force: true });
@@ -223,6 +224,34 @@ test('blocks a push from a main checkout', () => {
   const result = run({ command: 'git push' }, 'Bash', mainRepo);
   assert.equal(result.status, 2, result.stderr);
   assert.match(result.stderr, /pushing to main is not allowed/);
+});
+
+test('blocks a commit and a push on stage, allows other git commands there', () => {
+  const commit = run({ command: 'git commit -m x' }, 'Bash', stageRepo);
+  assert.equal(commit.status, 2, commit.stderr);
+  assert.match(commit.stderr, /committing on stage is not allowed/);
+  const push = run({ command: 'git push' }, 'Bash', stageRepo);
+  assert.equal(push.status, 2, push.stderr);
+  assert.match(push.stderr, /pushing to stage is not allowed/);
+  const pull = run({ command: 'git pull origin stage' }, 'Bash', stageRepo);
+  assert.equal(pull.status, 0, pull.stderr);
+});
+
+for (const command of [
+  'git push origin stage',
+  'git push origin HEAD:stage',
+  'git push origin feat/x:stage',
+]) {
+  test(`blocks a push to stage from a feature branch: ${command}`, () => {
+    const result = run({ command });
+    assert.equal(result.status, 2, result.stderr);
+    assert.match(result.stderr, /pushing to stage is not allowed/);
+  });
+}
+
+test('allows a push of a feature branch whose name mentions stage', () => {
+  const result = run({ command: 'git push -u origin docs/260-stage-flow' });
+  assert.equal(result.status, 0, result.stderr);
 });
 
 test('allows a commit and push on a feature branch', () => {

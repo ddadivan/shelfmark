@@ -2,7 +2,9 @@
 
 <!-- One or two sentences: what changed and why. -->
 
-Closes #
+<!-- PRs into stage: Refs #N (the release PR stage → main lists Closes #N for every issue). -->
+
+Refs #
 
 ## How to verify
 

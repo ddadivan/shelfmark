@@ -35,6 +35,9 @@ Updated as work goes on — every session resumes from here.
   - Nov 10, 2026: the `stage` branch exists; the 2027 Refresh design is in `docs/design` (the stage 1 design in `docs/design-v1`), the migration plan in `docs/design/MIGRATION.md`; the work runs on `design/2027-refresh` from `stage`, one issue at a time, then one PR into `stage`.
   - First task of stage 2: switch to the release flow decided on Nov 9–10, 2026 (9.3 and 9.5): a `stage` integration branch without a staging environment, feature branches from `stage`, a To release column on the board, production changes only through a release PR at the end of a stage.
   - Then the redesign (an updated design with more convenient blocks, from the author's new mockups, which already cover the stage 2 screens), then the author reviews the redesigned app, and only then the stage 2 features start. Until then nothing from stage 2 is merged into `main`, so production stays as the author uses it.
+  - Nov 10, 2026: the 2027 Refresh redesign of everything stage 1 has is merged into `stage` (#259, issues #219–#258 in To release); the Storybook a11y follow-up #278 made the `stage` CI green. The author reviewed the redesign and started the features: milestone `Stage 2 · Features`, issues #260–#276, #195, #205.
+  - Nov 10, 2026: release flow recorded in [ADR 0035](adr/0035-stage-integration-branch-release-flow.md) (#260): branches from `stage`, PRs into `stage` with `Refs #N`, To release column, release PR `stage → main`; `CLAUDE.md`, the `github-workflow` skill, the agents, the PR template, Dependabot and the guard hook follow it.
+  - Nov 10, 2026, decisions of the author for the stage 2 features (recorded on each issue): work order #260, #205, #261, #266, #262, #263, #264, #265, #267, #268, #269, #195, #270, #272, #273, #274, #276, #271, then the Settings › Library and the Appearance extras issues; independent tasks run as parallel PRs from `stage`, dependent ones are stacked ("Merge after #N"). Trash: every delete of links and folders goes to Trash (account deletion and demo cleanup do not), retention 7 / 30 / 90 days, default 30. Saved views: a link `kind` (video, article, shopping, other) derived at save time; starter views All, Videos, Articles. Languages: English, French, German, Italian, Spanish, Portuguese. Feedback: statuses Received, Planned, In progress, Done, Not planned, set by the author on an admin page (`/admin/feedback`, allowed by the `ADMIN_EMAILS` setting); the screenshot is stored in Postgres. Reminders (#275) moved to the backlog as a whole. Sharing: public link only; invites and roles moved to the backlog. Email and password sign-in (#277) moved to the backlog.
 - [x] Motion in code (landing and app); promo video moved to stage 2
 
 ## 1. Problem and idea
@@ -747,7 +750,7 @@ Subagents are `.claude/agents/<name>.md` files in the repository. Subagents cann
 
 ### 8.2 Task flow
 
-GitHub Projects statuses: **Backlog → Todo → In progress → In review → Done**.
+GitHub Projects statuses: **Backlog → Todo → In progress → In review → To release → Done** (To release from stage 2, 9.3).
 
 1. `project-manager` creates issues from sections 3–7 (with acceptance criteria from section 4), status **Todo**.
 2. The tech lead takes a task; `project-manager` moves it to **In progress**.
@@ -756,7 +759,7 @@ GitHub Projects statuses: **Backlog → Todo → In progress → In review → D
 5. `test-engineer` writes tests; all checks must pass.
 6. `code-reviewer` and `security-reviewer` review the changes; findings go back to the dev agent until they are resolved.
 7. The tech lead opens a PR with a short description (what was done, how to verify); `project-manager` moves the task to **In review**.
-8. The project author reviews and merges the PR; after the merge `project-manager` moves the task to **Done**.
+8. The project author reviews and merges the PR. From stage 2 the PR targets `stage`, and after the merge the task moves to **To release**; the release PR `stage → main` closes it and it moves to **Done** (9.3). In stage 1 the merge moved it to **Done**.
 
 **Parallel work.** Independent tasks run at the same time, each in its own git worktree (a separate working folder for its branch), so agents do not get in each other's way. `project-manager` marks dependencies between tasks (blocked by), and only unblocked tasks from different areas are taken in parallel (for example, the links API and `libs/ui` components). Design in Claude Design runs in parallel with stage 0. The more parallel tasks, the faster subscription limits are used up (9.6).
 
@@ -870,9 +873,9 @@ The estimate assumes the bottleneck is PR review and fixes, not writing code. Hi
 - **No staging environment for now** (the author's choice): the stage is checked locally (`npm start`; on a real phone, `npm start -- --host 0.0.0.0` and the Mac's address on the same Wi-Fi). Nothing changes in Vercel or Neon: branch deployments stay off in `vercel.json`, production builds only from `main`, so production and its database migrations change only with a release. A staging URL can be switched on later with one line in `vercel.json` (allow the `stage` branch); the Neon integration then creates its database branch, and OAuth on that URL needs the callback set-up from ADR 0026 (the demo works without it). Worth it to test on a real phone without the local network, to share a stage by link, or to try database migrations in the cloud before a release.
 - **Board:** a **To release** column between In review and Done. `Closes #N` only acts on merges into the default branch, so an issue stays open when its PR merges into `stage`: the board workflow "Pull request merged" moves the card to To release. The release PR closes the issues, and "Item closed" moves them to Done.
 - **Hotfix** for production: a branch from `main`, a PR into `main`, then `main` is merged back into `stage`.
-- **Setup checklist:**
-  - the author: the `stage` ruleset (required checks, PR only); allow a merge commit for the release PR into `main`; the To release column and the board workflows;
-  - the agents: create `stage` from `main`; CI on PRs into `stage`; `CLAUDE.md`, the `github-workflow` skill and the agents' instructions say "branch from `stage`, PR into `stage`".
+- **Setup checklist** ([ADR 0035](adr/0035-stage-integration-branch-release-flow.md)):
+  - [ ] the author: the `stage` ruleset (required checks, PR only); allow a merge commit for the release PR into `main`; the To release column and the board workflows;
+  - [x] the agents: create `stage` from `main` (Nov 10, 2026); CI on PRs into `stage` (#219); `CLAUDE.md`, the `github-workflow` skill, the agents' instructions, the PR template, Dependabot and the guard hook say "branch from `stage`, PR into `stage`" (#260).
 
 **Stage 1 (until the switch):**
 
@@ -913,16 +916,16 @@ Chosen by the author on Nov 9, 2026. Stages 2 and 3 are planned; everything else
 
 ### Stage 2 (planned)
 
-- [ ] **First:** release flow with the `stage` integration branch (9.3): ADR, `stage` branch and ruleset, CI, To release column and board workflows, agent instructions; no staging environment for now
+- [x] **First:** release flow with the `stage` integration branch (9.3): ADR, `stage` branch and ruleset, CI, To release column and board workflows, agent instructions; no staging environment for now
 - [ ] **Second: redesign** (before the features below). An updated design rather than a new one: more convenient blocks and layouts on the existing design system. The author provides the new mockups in Claude Design, and they already include the screens of the stage 2 features, so those are built on the new design. Steps: update `docs/design` (screens, components, tokens if they change), then bring `libs/ui` and the existing screens up to it, keeping a11y, both themes, the phone and the e2e and Storybook suites green. Started Nov 10, 2026 with the "Shelfmark 2027 Refresh" design; plan and decisions in `docs/design/MIGRATION.md`
 - [ ] Trash: deleted links and folders go to Trash and are kept for a period set in settings; restore and delete forever (screens `TrashView`, `MobileTrash`). Added by the author on Nov 10, 2026 with the redesign, built after the redesign and the author's review of it
 - [ ] Folder colours and icons, pinned folders (screen `FolderStyle`). Added Nov 10, 2026, built after the redesign and the author's review of it
 - [ ] Saved views: chips above the feed with saved filters (All, Videos, Articles, To read, "Save this view"). Added Nov 10, 2026, built after the redesign and the author's review of it
 - [ ] Paste several links at once (screen `PasteMany`). Added Nov 10, 2026, built after the redesign and the author's review of it
 - [ ] Recently opened extras from the 2027 design (screen `RecentView`): "Pause history" (a setting that stops recording opens, needs an API field), filter chips and a search inside the history page, swipe actions on phone history rows. Added Nov 10, 2026 by the author's decision: large items go to stage 2
-- [ ] Email and password sign-in: email verification, password reset, an email sending service
-- [ ] Reminders: come back to a saved link later
-- [ ] Sharing: open a collection (folder) to other people
+- [ ] Sharing: open a collection (folder) to other people by a public link (on / off, reset, show notes). Invites by email and roles are in the backlog (decided Nov 10, 2026)
+- [ ] Settings › Library in full (screen `SetLibrary`): default view, sort, open links in, folder counts, where new links go, duplicate warning, fetching previews, keeping the query part; at the end of stage 2 (decided Nov 10, 2026)
+- [ ] Appearance extras (screen `Themes`): text size, readable font, density, card preview image, sidebar options; at the end of stage 2 (decided Nov 10, 2026; the Custom theme and the Animations setting are in the custom theme task)
 - [ ] Custom themes: choice of accent colour and palette in settings (by replacing the values of the token CSS variables from 7.1)
 - [ ] Feedback and suggestions at any time: a "Send feedback" item in the account menu → a form (type: idea, bug, other; text; optional screenshot), a feedback list for the author and statuses ("accepted", "done"); on the same `Feedback` table as the app rating (story 24). **Design is needed before development** in Claude Design: the form (desktop and phone), "sending / sent / error" states, screenshot attachment, the list with statuses and the account menu item
 - [ ] Drag & drop links into folders
@@ -944,6 +947,10 @@ Chosen by the author on Nov 9, 2026. Stages 2 and 3 are planned; everything else
 - [ ] Carrying data over from the demo sandbox into a real account on sign-in
 
 ### Backlog
+
+- [ ] Email and password sign-in: email verification, password reset, an email sending service (#277; moved from stage 2 on Nov 10, 2026, needs a domain and an email provider first)
+- [ ] Reminders: come back to a saved link later (#275; moved from stage 2 on Nov 10, 2026): "Remind me" with a date picker, the badge on cards, the Reminders list, delivery in the app, by Web Push (VAPID, an external scheduler, as Vercel Hobby crons run once a day) and by email, quiet hours, the weekly digest and `SetNotifications`
+- [ ] Sharing with people: invites by email, roles (can view, can add links), "Shared with me", "Save to my shelf" (moved from stage 2 on Nov 10, 2026)
 
 - [ ] Import of old links from Telegram "Saved Messages" (via Telegram Desktop export)
 - [ ] Own authentication implementation (NestJS + Passport + JWT: access token + refresh token in an httpOnly cookie) instead of Better Auth. **Learning format:** Claude Code does not write the code but explains step by step and reviews what the author writes

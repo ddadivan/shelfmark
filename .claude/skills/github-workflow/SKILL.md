@@ -17,7 +17,7 @@ Repository: `ddadivan/shelfmark`. Board: GitHub Project **Shelfmark** (number 2,
 
 ## Milestones
 
-`0 · Foundation`, `1 · Design system`, `2 · Authorisation`, `3 · Links`, `4 · Folders and tags`, `5 · Search and feed`, `6 · Polish`, `7 · Release` (PROJECT.md 9.1).
+Stage 1 (closed): `0 · Foundation`, `1 · Design system`, `2 · Authorisation`, `3 · Links`, `4 · Folders and tags`, `5 · Search and feed`, `6 · Polish`, `7 · Release` (PROJECT.md 9.1). Stage 2: `Stage 2 · Redesign`, `Stage 2 · Features`.
 
 ## Issues
 
@@ -38,7 +38,9 @@ gh api repos/ddadivan/shelfmark/issues/<issue>/dependencies/blocked_by --jq '.[]
 
 ## Board
 
-Statuses: **Backlog → Todo → In progress → In review → Done**.
+Statuses: **Backlog → Todo → In progress → In review → To release → Done** (PROJECT.md 9.3, ADR 0035).
+
+Cloud sessions cannot use GraphQL, so `gh project` commands fail there: list the moves in the final report and the author or a local session makes them.
 
 ```bash
 gh project list --owner ddadivan                                  # find project number
@@ -49,17 +51,22 @@ gh project item-edit --project-id <PROJECT_NODE_ID> --id <ITEM_ID> \
   --field-id <STATUS_FIELD_ID> --single-select-option-id <OPTION_ID>
 ```
 
-| Event                   | Status                                          |
-| ----------------------- | ----------------------------------------------- |
-| Issue created and ready | Todo (future stages: Backlog)                   |
-| Tech lead starts work   | In progress                                     |
-| PR opened               | In review                                       |
-| PR merged               | Done (the board workflow also does it on close) |
+| Event                    | Status                                                              |
+| ------------------------ | ------------------------------------------------------------------- |
+| Issue created and ready  | Todo (future stages: Backlog)                                       |
+| Tech lead starts work    | In progress                                                         |
+| PR opened (into `stage`) | In review                                                           |
+| PR merged into `stage`   | To release (board workflow "Pull request merged"); issue stays open |
+| Release PR merged        | Done (the release PR closes the issue; workflow "Item closed")      |
 
 ## Branches and commits
 
-- One branch per issue from fresh `main`: `feat/<N>-short-name`, `fix/<N>-…`, `chore/<N>-…`, `docs/<N>-…`, `ci/<N>-…`, `test/<N>-…`.
-- Never commit or push to `main`; never force-push shared branches (`--force-with-lease` on your own branch only after a rebase).
+- `main` is production, `stage` is the integration branch of the current stage (PROJECT.md 9.3, ADR 0035).
+- One branch per issue from fresh `stage` (`git fetch origin stage && git switch -c feat/<N>-short origin/stage`): `feat/<N>-short-name`, `fix/<N>-…`, `chore/<N>-…`, `docs/<N>-…`, `ci/<N>-…`, `test/<N>-…`.
+- A task that needs another task's unmerged branch starts from that branch; its PR still targets `stage` and says "Merge after #N" at the top.
+- To bring a branch up to date, merge `origin/stage` into it. Never rebase or force-push a branch that has a PR.
+- Never commit or push to `main` or `stage` (the guard hook blocks both).
+- Hotfix for production only: a branch from `main`, a PR into `main`, then `main` is merged back into `stage` through a PR.
 - Conventional Commits: `type(scope): imperative summary` (≤ 72 chars), scope = project or area (`web`, `api`, `ui`, `contracts`, `claude`, `ci`). Small commits after every finished step; push right away.
 - End every commit message with:
 
@@ -69,17 +76,19 @@ gh project item-edit --project-id <PROJECT_NODE_ID> --id <ITEM_ID> \
 
 ## Pull requests
 
-- One PR = one logical change = one issue. Body follows `.github/pull_request_template.md`: What, `Closes #N`, How to verify, checklist.
+- One PR = one logical change = one issue, into `stage`, squash merge. Body follows `.github/pull_request_template.md`: What, `Refs #N`, How to verify, checklist.
+- `Refs #N`, not `Closes #N`: closing keywords only act on the default branch, and the issue stays open until the release.
+- **Release PR** `stage → main` at the end of a stage (title "Release: stage N"): lists `Closes #N` for every issue of the stage, merged by the author with a merge commit.
 - Labels and milestone copied from the issue.
 - PR body ends with `🤖 Generated with [Claude Code](https://claude.com/claude-code)`.
 - Write issue / PR / comment bodies to a file with the Write tool and pass `-F <file>`. The guard hook scans Bash command text, so a heredoc that mentions env file names gets blocked.
 
 ```bash
-gh pr create -B main -t "feat(api): links CRUD" -F pr.md -l "type:feat,area:api" -m "3 · Links"
+gh pr create -B stage -t "feat(api): links CRUD" -F pr.md -l "type:feat,area:api" -m "Stage 2 · Features"
 gh pr checks <N> --watch
 ```
 
-The author reviews and merges (squash). Agents never merge, approve, or change branch protection.
+The author reviews and merges (squash into `stage`, merge commit for the release PR into `main`). Agents never merge, approve, or change branch protection.
 
 ## Progress comment (end of session / pause)
 
