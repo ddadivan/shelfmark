@@ -961,7 +961,8 @@ Stage 0 E2E: Chromium only, see ADR 0008.
 ### 9.5 CI/CD
 
 - **On every PR** (GitHub Actions, only affected projects via `nx affected`): lint, typecheck, unit tests with a coverage threshold, build, `npm audit`, CodeQL; Vercel creates a preview version.
-- **Merge to `stage`** (from stage 2) → CI only; no deployment while there is no staging environment (9.3).
+- **Browser tests on a PR into `stage`** (the required `e2e` check): only what the diff touches, so the check takes minutes, not twenty (`tools/ci/pr-browser-tests.sh`, decided Nov 11, 2026). Playwright runs a smoke set (smoke, sign-in, add-link, links-feed), the specs of each changed feature, the specs the diff changes and, for app-wide code, `mobile` and `api-error-toasts`; a change to the Playwright config or the dependencies runs every spec. The Storybook axe run checks only the stories of the changed `libs/ui` components, or all of them when the shared styles or the Storybook setup change. Every e2e spec and every story still runs on the push to `stage` after the merge and on the release PR into `main`, so a regression a PR skipped shows up on `stage` before any release.
+- **Merge to `stage`** (from stage 2) → CI only, with the full browser suites; no deployment while there is no staging environment (9.3).
 - **Merge to `main`** (a release, from stage 2; every merge in stage 1) → automatic deployment to Vercel production; Prisma migrations are applied to the production Neon database by the Vercel build (`prisma migrate deploy`, ADR 0025); every PR checks the migrations against a Postgres service (`scripts/db-check.mjs`; `nx run api:db-check` is the local PGlite equivalent).
 
 ### 9.6 Claude subscription
