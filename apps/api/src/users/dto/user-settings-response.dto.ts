@@ -1,5 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  DATE_FORMAT,
+  INTERFACE_LANGUAGE,
+  TIME_FORMAT,
+  WEEK_START,
+  type DateFormat,
+  type InterfaceLanguage,
+  type TimeFormat,
+  type WeekStart,
   APP_FONT,
   CARD_PREVIEW,
   DENSITY,
@@ -98,4 +106,25 @@ export class UserSettingsResponseDto implements UserSettingsResponse {
 
   @ApiProperty({ example: true })
   cardTags!: boolean;
+
+  @ApiProperty({ enum: Object.values(INTERFACE_LANGUAGE), example: INTERFACE_LANGUAGE.Browser })
+  language!: InterfaceLanguage;
+
+  @ApiProperty({ enum: Object.values(DATE_FORMAT), example: DATE_FORMAT.Default })
+  dateFormat!: DateFormat;
+
+  @ApiProperty({ enum: Object.values(TIME_FORMAT), example: TIME_FORMAT.Default })
+  timeFormat!: TimeFormat;
+
+  @ApiProperty({ enum: Object.values(WEEK_START), example: WEEK_START.Default })
+  weekStart!: WeekStart;
+
+  @ApiProperty({ example: true })
+  spellcheck!: boolean;
+
+  @ApiProperty({
+    example: false,
+    description: 'False until a language setting is first written (the web keeps a local choice)',
+  })
+  languageSaved!: boolean;
 }

@@ -11,8 +11,10 @@ import { FoldersService } from '../folders/folders.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { toRetentionDays } from '../trash/trash.service';
 import { APPEARANCE_SELECT } from './models/appearance-select.const';
+import { LANGUAGE_SELECT } from './models/language-select.const';
 import { LIBRARY_SELECT } from './models/library-select.const';
 import { customThemeColumns, toAppearanceSettings } from './to-appearance-settings';
+import { toLanguageSettings } from './to-language-settings';
 import { toLibrarySettings } from './to-library-settings';
 
 @Injectable()
@@ -73,6 +75,7 @@ export class UsersService {
         historyPaused: true,
         ...APPEARANCE_SELECT,
         ...LIBRARY_SELECT,
+        ...LANGUAGE_SELECT,
       },
     });
     if (!row) throw new NotFoundException();
@@ -88,6 +91,7 @@ export class UsersService {
       pauseHistory: row.historyPaused,
       ...toAppearanceSettings(row),
       ...toLibrarySettings(row, liveFolder),
+      ...toLanguageSettings(row),
     };
   }
 
@@ -122,6 +126,17 @@ export class UsersService {
       layoutSent
     ) {
       data.appearanceSavedAt = new Date();
+    }
+    const language = {
+      language: request.language,
+      dateFormat: request.dateFormat,
+      timeFormat: request.timeFormat,
+      weekStart: request.weekStart,
+      spellcheck: request.spellcheck,
+    };
+    if (Object.values(language).some((value) => value !== undefined)) {
+      // Only the fields sent are written (Prisma skips `undefined`); the first write marks them saved.
+      Object.assign(data, language, { languageSavedAt: new Date() });
     }
     if (request.customTheme !== undefined)
       Object.assign(data, customThemeColumns(request.customTheme));

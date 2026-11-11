@@ -1,5 +1,13 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  DATE_FORMAT,
+  INTERFACE_LANGUAGE,
+  TIME_FORMAT,
+  WEEK_START,
+  type DateFormat,
+  type InterfaceLanguage,
+  type TimeFormat,
+  type WeekStart,
   APP_FONT,
   CARD_PREVIEW,
   DENSITY,
@@ -156,4 +164,29 @@ export class UpdateUserSettingsDto implements UpdateUserSettingsRequest {
   @ValidateIf(present)
   @IsBoolean()
   cardTags?: boolean;
+
+  @ApiPropertyOptional({ enum: Object.values(INTERFACE_LANGUAGE), example: INTERFACE_LANGUAGE.Fr })
+  @ValidateIf(present)
+  @IsIn(Object.values(INTERFACE_LANGUAGE))
+  language?: InterfaceLanguage;
+
+  @ApiPropertyOptional({ enum: Object.values(DATE_FORMAT), example: DATE_FORMAT.Default })
+  @ValidateIf(present)
+  @IsIn(Object.values(DATE_FORMAT))
+  dateFormat?: DateFormat;
+
+  @ApiPropertyOptional({ enum: Object.values(TIME_FORMAT), example: TIME_FORMAT.H24 })
+  @ValidateIf(present)
+  @IsIn(Object.values(TIME_FORMAT))
+  timeFormat?: TimeFormat;
+
+  @ApiPropertyOptional({ enum: Object.values(WEEK_START), example: WEEK_START.Monday })
+  @ValidateIf(present)
+  @IsIn(Object.values(WEEK_START))
+  weekStart?: WeekStart;
+
+  @ApiPropertyOptional({ example: true, description: 'Spell-check in note fields' })
+  @ValidateIf(present)
+  @IsBoolean()
+  spellcheck?: boolean;
 }

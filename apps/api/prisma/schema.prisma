@@ -68,6 +68,14 @@ model User {
   cardSite              Boolean   @default(true) @map("card_site")
   cardNotes             Boolean   @default(true) @map("card_notes")
   cardTags              Boolean   @default(true) @map("card_tags")
+  // Settings › Language (#274). CHECKs in the migration keep the text columns to the contract
+  // allow-lists; languageSavedAt marks the first write (a guest's local choice is kept until then).
+  language              String    @default("browser") @map("language")
+  dateFormat            String    @default("default") @map("date_format")
+  timeFormat            String    @default("default") @map("time_format")
+  weekStart             String    @default("default") @map("week_start")
+  spellcheck            Boolean   @default(true) @map("spellcheck")
+  languageSavedAt       DateTime? @map("language_saved_at") @db.Timestamptz(3)
   createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
   sessions              Session[]
