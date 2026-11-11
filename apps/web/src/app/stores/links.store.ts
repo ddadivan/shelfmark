@@ -28,6 +28,7 @@ import type { LinksFilter } from '../features/links/models/links-filter.type';
 import { LINKS_SCOPE } from '../features/links/models/links-scope.const';
 import type { PendingRemoval } from '../features/links/models/pending-removal.interface';
 import { RECENT_LINKS_LIMIT } from '../features/links/models/recent-links-limit.const';
+import type { LinksSnapshot } from './models/links-snapshot.interface';
 import type { LinksState } from './models/links-state.interface';
 import { PinsStore } from './pins.store';
 
@@ -494,6 +495,52 @@ export const LinksStore = signalStore(
           }
           return false;
         }
+      },
+
+      /** The feed and the recent list as they are, before an optimistic bulk change (#267). */
+      snapshot(): LinksSnapshot {
+        return { entities: store.entities(), recent: store.recent(), generation, epoch };
+      },
+
+      /** Rolls a failed bulk change back, unless the view or the user changed meanwhile. */
+      restoreSnapshot(snapshot: LinksSnapshot): void {
+        if (snapshot.epoch !== epoch || snapshot.generation !== generation) {
+          return;
+        }
+        patchState(store, setAllEntities([...snapshot.entities]), {
+          recent: [...snapshot.recent],
+        });
+      },
+
+      /**
+       * Links a bulk change touched (optimistic copies or the server's answer): each loaded one is
+       * replaced, or leaves the feed when it no longer belongs to the open scope (moved out).
+       */
+      patchLinks(links: readonly LinkResponse[]): void {
+        const byId = new Map(links.map((link) => [link.id, link]));
+        const filter = store.filter();
+        patchState(
+          store,
+          setAllEntities(
+            store.entities().flatMap((link) => {
+              const next = byId.get(link.id);
+              if (!next) {
+                return [link];
+              }
+              return staysAfterEdit(filter, next) ? [next] : [];
+            }),
+          ),
+          { recent: store.recent().map((link) => byId.get(link.id) ?? link) },
+        );
+        noteLinks(links);
+      },
+
+      /** Takes links out of the feed and the recent list at once (bulk move to Trash). */
+      removeLinks(ids: readonly string[]): void {
+        const gone = new Set(ids);
+        patchState(store, setAllEntities(store.entities().filter((link) => !gone.has(link.id))), {
+          recent: store.recent().filter((link) => !gone.has(link.id)),
+        });
       },
 
       /** Hides a link while its Undo window is open. Returns false when it is not in the feed. */

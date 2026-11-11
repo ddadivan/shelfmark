@@ -2,6 +2,7 @@ import type { Observable } from 'rxjs';
 import type {
   CaptureLinkImagesResponse,
   CreateLinkRequest,
+  DeleteLinksBatchResponse,
   GetLinkResponse,
   LinkPreviewResponse,
   LinkResponse,
@@ -11,6 +12,8 @@ import type {
   RecentLinksQuery,
   RecentLinksResponse,
   UpdateLinkRequest,
+  UpdateLinksBatchRequest,
+  UpdateLinksBatchResponse,
 } from '@shelfmark/contracts';
 
 /**
@@ -43,4 +46,8 @@ export interface LinksApi {
    * (its image paths carry the pending marker). Answers with the link as it is afterwards.
    */
   captureImages(id: string): Observable<CaptureLinkImagesResponse>;
+  /** `POST /api/links/batch/delete`: moves several of the user's links to Trash (bulk delete). */
+  removeBatch(ids: readonly string[]): Observable<DeleteLinksBatchResponse>;
+  /** `POST /api/links/batch/update`: one change (move, tags, favorite) for several links. */
+  updateBatch(request: UpdateLinksBatchRequest): Observable<UpdateLinksBatchResponse>;
 }

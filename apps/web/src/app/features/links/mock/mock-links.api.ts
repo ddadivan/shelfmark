@@ -8,8 +8,12 @@ import {
   RECENT_LINKS_WINDOW_DAYS,
   SORT_ORDER,
   LINK_LIMIT,
+  normalizeTagName,
   type CaptureLinkImagesResponse,
   type CreateLinkRequest,
+  type DeleteLinksBatchResponse,
+  type UpdateLinksBatchRequest,
+  type UpdateLinksBatchResponse,
   type LinkPreviewResponse,
   type LinkResponse,
   type ListLinksQuery,
@@ -309,9 +313,82 @@ export class MockLinksApi implements LinksApi {
       : { ...link };
   }
 
+  /** Like the API: live links among `ids` go to the mock Trash; unknown ids count as nothing. */
+  removeBatch(ids: readonly string[]): Observable<DeleteLinksBatchResponse> {
+    return defer(() => {
+      const wanted = new Set(ids);
+      const hit = this.links.filter((link) => wanted.has(link.id));
+      if (hit.some((link) => displayHost(link.url) === MOCK_HOST.DeleteFails)) {
+        return throwError(() => new Error('Mock: delete failed'));
+      }
+      for (const link of hit) {
+        this.data.trashLink(link);
+      }
+      return of<DeleteLinksBatchResponse>({ deleted: hit.length });
+    }).pipe(delay(MOCK_LATENCY_MS.Create));
+  }
+
+  /**
+   * Like the API: one change for the live links among `ids`, all or nothing. An unknown folder is
+   * a 404, a link past `TagsMax` a 409, a `patch-fails.example` link fails the whole request.
+   */
+  updateBatch(request: UpdateLinksBatchRequest): Observable<UpdateLinksBatchResponse> {
+    return defer(() => {
+      const wanted = new Set(request.ids);
+      const hit = this.links.filter((link) => wanted.has(link.id));
+      if (hit.some((link) => displayHost(link.url) === MOCK_HOST.PatchFails)) {
+        return throwError(() => new Error('Mock: update failed'));
+      }
+      const { folderId } = request;
+      if (
+        typeof folderId === 'string' &&
+        !this.data.folderList.some((folder) => folder.id === folderId)
+      ) {
+        return throwError(() => httpError(HttpStatusCode.NotFound, 'Not Found'));
+      }
+      const add = (request.addTags ?? []).map(normalizeTagName).filter((name) => name !== '');
+      const remove = new Set(
+        (request.removeTags ?? []).map((name) => normalizeTagName(name).toLowerCase()),
+      );
+      const now = new Date().toISOString();
+      const changed = new Map<string, LinkResponse>();
+      for (const link of hit) {
+        let tags = link.tags.filter((name) => !remove.has(name.toLowerCase()));
+        for (const name of add) {
+          if (!tags.some((tag) => tag.toLowerCase() === name.toLowerCase())) {
+            tags = [...tags, name];
+          }
+        }
+        if (tags.length > LINK_LIMIT.TagsMax) {
+          return throwError(() => httpError(HttpStatusCode.Conflict, 'Conflict'));
+        }
+        const nextFolder = folderId === undefined ? link.folderId : folderId;
+        changed.set(link.id, {
+          ...link,
+          tags,
+          folderId: nextFolder,
+          pinnedInFolderAt: nextFolder === link.folderId ? link.pinnedInFolderAt : null,
+          isFavorite: request.isFavorite ?? link.isFavorite,
+          updatedAt: now,
+        });
+      }
+      this.links = this.links.map((link) => changed.get(link.id) ?? link);
+      this.data.ensureTags(add);
+      const links = request.ids
+        .map((id) => changed.get(id))
+        .filter((link): link is LinkResponse => link !== undefined)
+        .map((link) => this.data.linkView(link));
+      return of<UpdateLinksBatchResponse>({ updated: links.length, links });
+    }).pipe(delay(MOCK_LATENCY_MS.Create));
+  }
+
   private filter(query: ListLinksQuery): LinkResponse[] {
     return this.data.matching(query);
   }
+}
+
+function httpError(status: HttpStatusCode, statusText: string): HttpErrorResponse {
+  return new HttpErrorResponse({ status, statusText });
 }
 
 function badRequest(): HttpErrorResponse {

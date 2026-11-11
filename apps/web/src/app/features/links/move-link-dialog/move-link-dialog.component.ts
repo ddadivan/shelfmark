@@ -31,7 +31,7 @@ export class MoveLinkDialogComponent {
   protected readonly data = injectDialogData<MoveLinkDialogData>();
 
   private readonly model = signal<{ folderId: string | null }>({
-    folderId: this.data.link.folderId,
+    folderId: this.data.folderId,
   });
 
   protected readonly form = form(this.model, () => undefined, {
@@ -46,7 +46,7 @@ export class MoveLinkDialogComponent {
 
   private save(): Promise<undefined> {
     const { folderId } = this.model();
-    if (folderId !== this.data.link.folderId) {
+    if (this.data.submitUnchanged === true || folderId !== this.data.folderId) {
       this.data.submit(folderId);
     }
     this.ref.close(true);

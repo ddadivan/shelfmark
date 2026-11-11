@@ -1,6 +1,54 @@
 <ui-progress-bar [active]="refetching()" [label]="'library.loading' | transloco" />
 <section class="library" [attr.aria-busy]="store.loading()">
-  @if (!folderMissing()) { @if (crumbs(); as trail) {
+  @if (selecting()) {
+  <div
+    class="library__selection"
+    role="group"
+    [class.library__selection--phone]="phone()"
+    [attr.aria-label]="'bulk.header.label' | transloco"
+  >
+    @if (phone()) {
+    <ui-button
+      variant="ghost"
+      iconOnly
+      iconLeft="close"
+      [ariaLabel]="'bulk.header.cancel' | transloco"
+      (click)="clearSelection()"
+    />
+    } @else {
+    <ui-checkbox
+      hideLabel
+      [label]="pluralKey('bulk.header.selectAllBox', shownCount()) | transloco: { count: shownCount() }"
+      [checked]="allSelected()"
+      [indeterminate]="!allSelected()"
+      (checkedChange)="toggleAll($event)"
+    />
+    }
+    <p class="library__selected" aria-live="polite">
+      {{ pluralKey('bulk.header.selected', selectedCount()) | transloco: { count: selectedCount() }
+      }}
+    </p>
+    @if (!allSelected()) {
+    <ui-button variant="ghost" size="sm" (click)="selectAll()">
+      @if (phone()) { {{ 'bulk.header.selectAllShort' | transloco }} } @else { {{
+      'bulk.header.selectAll' | transloco: { count: shownCount() } }} }
+    </ui-button>
+    } @if (!phone()) {
+    <span class="library__selection-spacer"></span>
+    <span class="library__hint"
+      ><kbd class="library__kbd">{{ 'bulk.header.shift' | transloco }}</kbd> {{
+      'bulk.header.rangeHint' | transloco }}</span
+    >
+    <span class="library__hint"
+      ><kbd class="library__kbd">{{ 'bulk.header.esc' | transloco }}</kbd> {{
+      'bulk.header.clearHint' | transloco }}</span
+    >
+    <ui-button variant="ghost" size="sm" (click)="clearSelection()">
+      {{ 'bulk.header.done' | transloco }}
+    </ui-button>
+    }
+  </div>
+  } @if (!folderMissing()) { @if (crumbs(); as trail) {
   <ui-breadcrumbs
     class="library__crumbs"
     [items]="trail"
@@ -246,6 +294,9 @@
         <app-link-row
           [link]="link"
           [pinnable]="isFolder()"
+          [selecting]="selecting()"
+          [selected]="selection.has(link.id)"
+          (selectToggled)="toggleSelected(link, $event)"
           [pinnedToSidebar]="pins.has(PIN_KIND.Link, link.id)"
           (pinToTopToggled)="actions.togglePinInFolder(link)"
           (pinToSidebarToggled)="actions.togglePinToSidebar(link)"
@@ -273,6 +324,9 @@
         <app-link-card
           [link]="link"
           [pinnable]="isFolder()"
+          [selecting]="selecting()"
+          [selected]="selection.has(link.id)"
+          (selectToggled)="toggleSelected(link, $event)"
           [pinnedToSidebar]="pins.has(PIN_KIND.Link, link.id)"
           (pinToTopToggled)="actions.togglePinInFolder(link)"
           (pinToSidebarToggled)="actions.togglePinToSidebar(link)"
@@ -303,6 +357,16 @@
         {{ 'library.loadMore' | transloco }}
       </ui-button>
     </div>
-    } }
+    } } @if (selecting()) {
+    <ui-bulk-bar
+      class="library__bulk"
+      animate.enter="ui-bulk-bar--enter"
+      animate.leave="ui-bulk-bar--leave"
+      [actions]="barActions()"
+      [ariaLabel]="pluralKey('bulk.bar.label', selectedCount()) | transloco: { count: selectedCount() }"
+      [layout]="phone() ? BULK_BAR_LAYOUT.Stacked : BULK_BAR_LAYOUT.Inline"
+      (action)="runBulk($event)"
+    />
+    }
   </div>
 </section>
