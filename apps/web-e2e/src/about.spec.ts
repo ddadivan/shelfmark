@@ -1,8 +1,17 @@
 import { expect, test } from './support/test';
+import { E2E_PROJECT } from './models/e2e-project.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { openAccountMenu, seedSession } from './support/mock-session';
 import { settled } from './support/settled';
 import { isPhone, tabBar } from './support/sidebar';
+
+/** `HTMLMediaElement.HAVE_METADATA`: duration and size are known. */
+const HAVE_METADATA = 1;
+/**
+ * The dialog's `<video>` as a browser-side expression: the video checks read its state with
+ * string scripts (this project has no DOM lib, see `support/settled.ts`).
+ */
+const DIALOG_VIDEO = `document.querySelector('[role="dialog"] video')`;
 
 test.describe('About and "How it works" (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
@@ -39,7 +48,9 @@ test.describe('About and "How it works" (mock API)', () => {
     await expect(page).toHaveURL('/links');
   });
 
-  test('"How it works" opens the video dialog with its chapters', async ({ page }, testInfo) => {
+  test('"How it works" plays the promo video with captions, and chapters jump', async ({
+    page,
+  }, testInfo) => {
     await seedSession(page);
     await page.goto('/links');
     if (isPhone(page)) {
@@ -57,6 +68,55 @@ test.describe('About and "How it works" (mock API)', () => {
       /Folders and tags\s*0:18/,
       /Find it again\s*0:41/,
     ]);
+
+    // The recording of the device (light theme: the e2e default), served from our own origin.
+    // The recordings are named like the projects: `how-it-works-<theme>-<desktop|phone>`.
+    const device = isPhone(page) ? E2E_PROJECT.Phone : E2E_PROJECT.Desktop;
+    const video = dialog.locator('video');
+    await expect(video).toBeVisible();
+    await expect
+      .poll(() => page.evaluate<number>(`${DIALOG_VIDEO}.readyState`), {
+        message: 'the video loads its metadata',
+      })
+      .toBeGreaterThanOrEqual(HAVE_METADATA);
+    const state = await page.evaluate<{
+      src: string;
+      origin: string;
+      error: number | null;
+      muted: boolean;
+      duration: number;
+    }>(
+      `((el) => ({ src: new URL(el.currentSrc).pathname, origin: new URL(el.currentSrc).origin, error: el.error?.code ?? null, muted: el.muted, duration: el.duration }))(${DIALOG_VIDEO})`,
+    );
+    expect(state).toMatchObject({
+      src: expect.stringMatching(new RegExp(`^/media/how-it-works-light-${device}\\.(mp4|webm)$`)),
+      origin: new URL(page.url()).origin,
+      error: null,
+      muted: true,
+    });
+    expect(state.duration).toBeGreaterThan(41);
+
+    // English captions, on by default, with cues loaded.
+    await expect(video.locator('track')).toHaveAttribute(
+      'src',
+      `/media/how-it-works-light-${device}.vtt`,
+    );
+    await expect
+      .poll(() =>
+        page.evaluate(
+          `((track) => ({ kind: track?.kind, mode: track?.mode, cues: (track?.cues?.length ?? 0) > 0 }))(${DIALOG_VIDEO}.textTracks[0])`,
+        ),
+      )
+      .toEqual({ kind: 'captions', mode: 'showing', cues: true });
+
+    // A chapter jumps to its start and shows as the current one.
+    const chapter = dialog.getByRole('button', { name: /Folders and tags/ });
+    await chapter.click();
+    await expect(chapter).toHaveAttribute('aria-pressed', 'true');
+    const time = await page.evaluate<number>(`${DIALOG_VIDEO}.currentTime`);
+    expect(time).toBeGreaterThanOrEqual(18);
+    expect(time).toBeLessThan(41);
+
     await settled(page);
     await expectNoBlockingViolations(page, testInfo, { include: '[role="dialog"]' });
     await dialog.getByRole('button', { name: 'Close' }).click();
