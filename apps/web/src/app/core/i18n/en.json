@@ -267,6 +267,18 @@
         "save": "Save link",
         "saveAnyway": "Save anyway",
         "saving": "Saving…"
+      },
+      "several": {
+        "offer": "Have several links? Paste them all at once",
+        "open": "Add several links",
+        "title": "Add several links",
+        "label": "Paste links, one per line or inside any text",
+        "placeholder": "https://…",
+        "hint": "Up to {{max}} links at a time. You check the list before anything is saved.",
+        "required": "Paste or type some links",
+        "none": "No links found in this text",
+        "back": "One link",
+        "find": "Find links"
       }
     },
     "edit": {

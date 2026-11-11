@@ -267,6 +267,18 @@
         "save": "Salvar link",
         "saveAnyway": "Salvar mesmo assim",
         "saving": "Salvando…"
+      },
+      "several": {
+        "offer": "Tem vários links? Cole todos de uma vez",
+        "open": "Adicionar vários links",
+        "title": "Adicionar vários links",
+        "label": "Cole links, um por linha ou dentro de qualquer texto",
+        "placeholder": "https://…",
+        "hint": "Até {{max}} links por vez. Você confere a lista antes de salvar.",
+        "required": "Cole ou digite alguns links",
+        "none": "Nenhum link encontrado neste texto",
+        "back": "Um link",
+        "find": "Encontrar links"
       }
     },
     "edit": {

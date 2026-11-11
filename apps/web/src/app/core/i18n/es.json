@@ -267,6 +267,18 @@
         "save": "Guardar enlace",
         "saveAnyway": "Guardar de todos modos",
         "saving": "Guardando…"
+      },
+      "several": {
+        "offer": "¿Tienes varios enlaces? Pégalos todos a la vez",
+        "open": "Añadir varios enlaces",
+        "title": "Añadir varios enlaces",
+        "label": "Pega enlaces, uno por línea o dentro de cualquier texto",
+        "placeholder": "https://…",
+        "hint": "Hasta {{max}} enlaces a la vez. Revisas la lista antes de guardar nada.",
+        "required": "Pega o escribe algunos enlaces",
+        "none": "No se encontraron enlaces en este texto",
+        "back": "Un solo enlace",
+        "find": "Buscar enlaces"
       }
     },
     "edit": {

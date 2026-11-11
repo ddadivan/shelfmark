@@ -267,6 +267,18 @@
         "save": "Link speichern",
         "saveAnyway": "Trotzdem speichern",
         "saving": "Wird gespeichert…"
+      },
+      "several": {
+        "offer": "Mehrere Links? Füge alle auf einmal ein",
+        "open": "Mehrere Links hinzufügen",
+        "title": "Mehrere Links hinzufügen",
+        "label": "Links einfügen, einer pro Zeile oder in beliebigem Text",
+        "placeholder": "https://…",
+        "hint": "Bis zu {{max}} Links auf einmal. Du prüfst die Liste, bevor etwas gespeichert wird.",
+        "required": "Füge Links ein oder tippe sie ein",
+        "none": "In diesem Text wurden keine Links gefunden",
+        "back": "Ein Link",
+        "find": "Links finden"
       }
     },
     "edit": {

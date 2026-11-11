@@ -100,6 +100,53 @@ test.describe('paste several links (mock API)', () => {
     await expect(many.getByRole('button', { name: 'Save 3 links' })).toBeEnabled();
   });
 
+  test('"Add several links" in Add link switches to a text area that leads into the list (#315)', async ({
+    page,
+  }) => {
+    await openFeed(page);
+    await page.getByRole('button', { name: 'Add link' }).first().click();
+    const dialog = page.getByRole('dialog', { name: 'Add link' });
+    await expect(dialog.getByText('Have several links? Paste them all at once')).toBeVisible();
+
+    await dialog.getByRole('button', { name: 'Add several links' }).click();
+    const several = page.getByRole('dialog', { name: 'Add several links' });
+    const text = several.getByRole('textbox', {
+      name: 'Paste links, one per line or inside any text',
+    });
+    await expect(text).toBeFocused();
+
+    // Back to one link and in again: the address field gets focus back.
+    await several.getByRole('button', { name: 'One link' }).click();
+    await expect(dialog.getByLabel('Link', { exact: true })).toBeFocused();
+    await dialog.getByRole('button', { name: 'Add several links' }).click();
+
+    await text.fill('https://example.org/a\nexample.net/b\nsee www.example.com too');
+    await several.getByRole('button', { name: 'Find links' }).click();
+
+    const many = page.getByRole('dialog', { name: 'Add 3 links' });
+    await expect(many).toBeVisible();
+    await expect(many.locator('.paste-many__row')).toHaveCount(3);
+    await expect(many.getByRole('button', { name: 'Save 3 links' })).toBeEnabled();
+  });
+
+  test('a paste into the several-links text area opens the list at once', async ({ page }) => {
+    await openFeed(page);
+    await page.getByRole('button', { name: 'Add link' }).first().click();
+    await page
+      .getByRole('dialog', { name: 'Add link' })
+      .getByRole('button', { name: 'Add several links' })
+      .click();
+    const text = page
+      .getByRole('dialog', { name: 'Add several links' })
+      .getByRole('textbox', { name: 'Paste links, one per line or inside any text' });
+
+    await pasteInto(text, 'https://example.org/a https://example.org/b https://example.org/c');
+
+    await expect(
+      page.getByRole('dialog', { name: 'Add 3 links' }).locator('.paste-many__row'),
+    ).toHaveCount(3);
+  });
+
   test('more than 100 links: the first 100 are listed and a note points to Import', async ({
     page,
   }) => {

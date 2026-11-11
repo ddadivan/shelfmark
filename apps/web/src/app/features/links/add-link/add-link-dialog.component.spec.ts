@@ -197,6 +197,81 @@ describe('AddLinkDialogComponent', () => {
     });
   });
 
+  describe('Add several links (#315)', () => {
+    function textArea(): HTMLTextAreaElement {
+      return input('Paste links, one per line or inside any text') as HTMLTextAreaElement;
+    }
+
+    it('offers the several-links mode under the address, and not when editing', async () => {
+      await setup(fakeApi(() => of(PLAIN)));
+      expect(dialog().textContent).toContain('Have several links? Paste them all at once');
+      expect(button('Add several links')).toBeDefined();
+    });
+
+    it('switches to a text area with focus in it, and back to one link', async () => {
+      await setup(fakeApi(() => of(PLAIN)));
+      button('Add several links').click();
+      await until(() => {
+        expect(document.activeElement).toBe(textArea());
+      });
+      expect(dialog().textContent).toContain('Up to 100 links at a time.');
+      expect(dialog().querySelector('ui-tag-input')).toBeNull();
+
+      button('One link').click();
+      await until(() => {
+        expect(document.activeElement).toBe(input('Link'));
+      });
+    });
+
+    it('says when the text holds no links and stays in the text area', async () => {
+      await setup(fakeApi(() => of(PLAIN)));
+      button('Add several links').click();
+      await until(() => {
+        expect(textArea()).toBeDefined();
+      });
+      await type('Paste links, one per line or inside any text', 'nothing to see here');
+      button('Find links').click();
+      await until(() => {
+        expect(dialog().textContent).toContain('No links found in this text');
+      });
+      expect(dialog().querySelector('app-paste-many-list')).toBeNull();
+    });
+
+    it('opens the paste-many list for the links found in the text', async () => {
+      await setup(fakeApi(() => of(PLAIN)));
+      button('Add several links').click();
+      await until(() => {
+        expect(textArea()).toBeDefined();
+      });
+      await type(
+        'Paste links, one per line or inside any text',
+        'Read https://a.example.com/one and https://b.example.com/two\nhttps://c.example.com/three',
+      );
+      button('Find links').click();
+      await until(() => {
+        expect(dialog().querySelector('app-paste-many-list')).not.toBeNull();
+      });
+      expect(dialog().querySelectorAll('.paste-many__row')).toHaveLength(3);
+    });
+
+    it('goes straight to the list when links are pasted into the text area', async () => {
+      await setup(fakeApi(() => of(PLAIN)));
+      button('Add several links').click();
+      await until(() => {
+        expect(textArea()).toBeDefined();
+      });
+      const paste = new Event('paste', { bubbles: true, cancelable: true });
+      Object.defineProperty(paste, 'clipboardData', {
+        value: { getData: () => 'https://a.example.com/1\nhttps://b.example.com/2' },
+      });
+      textArea().dispatchEvent(paste);
+      await until(() => {
+        expect(dialog().querySelectorAll('.paste-many__row')).toHaveLength(2);
+      });
+      expect(paste.defaultPrevented).toBe(true);
+    });
+  });
+
   it('shows the required message when saving an empty form and does not save', async () => {
     const api = fakeApi(() => of(PLAIN));
     await setup(api);
@@ -832,6 +907,14 @@ describe('AddLinkDialogComponent', () => {
 
       await result;
       expect(api.update).toHaveBeenCalledWith(EDITED.id, { isFavorite: true });
+    });
+
+    it('has no "Add several links" in edit mode', async () => {
+      await setup(
+        fakeApi(() => of(PLAIN)),
+        { link: EDITED },
+      );
+      expect(dialog().textContent).not.toContain('Add several links');
     });
 
     it('has a Type select in edit mode that sends a changed kind', async () => {

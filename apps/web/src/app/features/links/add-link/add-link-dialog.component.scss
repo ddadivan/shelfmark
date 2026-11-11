@@ -113,6 +113,30 @@
   color: var(--text-muted);
 }
 
+// Under the address: "Have several links?" and the switch to the text area (#315), on one line
+// while it fits; the button keeps its whole label in every language.
+.add-link__several {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+  margin-block-start: calc(-1 * var(--space-2));
+}
+
+.add-link__several-hint {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+// The several-links mode: "One link" at the start of the footer, like Delete in edit mode.
+.add-link__back {
+  @include tablet-up {
+    margin-inline-end: auto;
+  }
+}
+
 // Edit mode: Delete sits at the start of the footer, away from the confirming actions. On the
 // phone the footer is a reversed column (`ui-dialog`): Save on top, Delete last (bottom).
 .add-link__delete {

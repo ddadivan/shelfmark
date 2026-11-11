@@ -267,6 +267,18 @@
         "save": "Enregistrer le lien",
         "saveAnyway": "Enregistrer quand même",
         "saving": "Enregistrement…"
+      },
+      "several": {
+        "offer": "Plusieurs liens ? Collez-les tous d’un coup",
+        "open": "Ajouter plusieurs liens",
+        "title": "Ajouter plusieurs liens",
+        "label": "Collez des liens, un par ligne ou dans n’importe quel texte",
+        "placeholder": "https://…",
+        "hint": "Jusqu’à {{max}} liens à la fois. Vous vérifiez la liste avant tout enregistrement.",
+        "required": "Collez ou saisissez des liens",
+        "none": "Aucun lien trouvé dans ce texte",
+        "back": "Un seul lien",
+        "find": "Trouver les liens"
       }
     },
     "edit": {
