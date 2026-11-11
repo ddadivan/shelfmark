@@ -43,7 +43,7 @@
     <div class="ui-card__fallback"><ng-content select="[slot=fallback]" /></div>
     <ui-icon class="ui-card__placeholder" name="image" [size]="ICON_SIZE.Lg" />
   }
-
+  <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -- decorative bar; it only forwards a pointer click to the title link, the keyboard path is the link itself -->
   <div class="ui-card__overlay" aria-hidden="true" (click)="forwardOverlayClick($event)">
     <ng-content select="[slot=overlay]" />
   </div>
