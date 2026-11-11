@@ -627,7 +627,8 @@ export const LinksStore = signalStore(
         const started = epoch;
         try {
           const opened = await firstValueFrom(api().open(id));
-          if (started !== epoch) {
+          // A paused history (`recorded: false`) leaves the link where it was.
+          if (started !== epoch || !opened.recorded) {
             return;
           }
           patchState(store, updateEntity({ id, changes: { lastOpenedAt: opened.lastOpenedAt } }), {

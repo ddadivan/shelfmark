@@ -4,10 +4,9 @@ import {
   type GetLinkResponse,
   type LinkKind,
   type LinkResponse,
-  type OpenLinkResponse,
 } from '@shelfmark/contracts';
 
-export class LinkResponseDto implements LinkResponse, GetLinkResponse, OpenLinkResponse {
+export class LinkResponseDto implements LinkResponse, GetLinkResponse {
   @ApiProperty({ format: 'uuid' }) id!: string;
   @ApiProperty({ enum: Object.values(LINK_KIND) }) kind!: LinkKind;
   @ApiProperty({ format: 'uuid', nullable: true, type: String }) folderId!: string | null;

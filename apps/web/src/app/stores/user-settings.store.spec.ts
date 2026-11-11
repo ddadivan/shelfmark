@@ -11,10 +11,14 @@ import { UserSettingsStore } from './user-settings.store';
 function setup() {
   const api = {
     get: vi.fn<UserSettingsApi['get']>(() =>
-      of({ trashRetentionDays: 7 as const, folderColours: true }),
+      of({ trashRetentionDays: 7 as const, folderColours: true, pauseHistory: false }),
     ),
     update: vi.fn<UserSettingsApi['update']>((request) =>
-      of({ trashRetentionDays: request.trashRetentionDays ?? 30, folderColours: true }),
+      of({
+        trashRetentionDays: request.trashRetentionDays ?? 30,
+        folderColours: true,
+        pauseHistory: false,
+      }),
     ),
   };
   TestBed.configureTestingModule({
@@ -89,7 +93,7 @@ describe('UserSettingsStore', () => {
 
       expect(store.retentionDays()).toBe(90);
       expect(api.update).toHaveBeenCalledWith({ trashRetentionDays: 90 });
-      gate.next({ trashRetentionDays: 90, folderColours: true });
+      gate.next({ trashRetentionDays: 90, folderColours: true, pauseHistory: false });
       gate.complete();
       expect(await done).toBe(true);
       expect(refresh).toHaveBeenCalledTimes(1);

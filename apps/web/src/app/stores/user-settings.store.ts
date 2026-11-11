@@ -15,20 +15,21 @@ import { TrashStore } from './trash.store';
 const initialState: UserSettingsState = {
   trashRetentionDays: null,
   folderColours: null,
+  pauseHistory: null,
   loading: false,
   error: false,
 };
 
 /**
  * The account preferences (`/api/me/settings`), cached for the whole app. Today: how long Trash
- * keeps deleted items. A change is optimistic and rolls back when the request fails; the Trash
+ * keeps deleted items, folder colours, and whether Recently opened records opens. A change is optimistic and rolls back when the request fails; the Trash
  * list is reloaded after it, because the days left of every entry change. The session end
  * forgets everything and drops responses still in flight.
  */
 export const UserSettingsStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
-  withComputed(({ trashRetentionDays, folderColours }) => ({
+  withComputed(({ trashRetentionDays, folderColours, pauseHistory }) => ({
     /** The retention to show: the account's, or the default until it is known. */
     retentionDays: computed<TrashRetentionDays>(
       () => trashRetentionDays() ?? TRASH_RETENTION_DEFAULT,
@@ -36,6 +37,8 @@ export const UserSettingsStore = signalStore(
     loaded: computed(() => trashRetentionDays() !== null),
     /** Folders show their colour (default until the settings say otherwise). */
     coloursOn: computed(() => folderColours() ?? true),
+    /** Opens are not recorded (off until the settings say otherwise). */
+    historyPaused: computed(() => pauseHistory() ?? false),
   })),
   withMethods((store) => {
     const injector = inject(Injector);
@@ -61,6 +64,7 @@ export const UserSettingsStore = signalStore(
             ? {
                 trashRetentionDays: settings.trashRetentionDays,
                 folderColours: settings.folderColours,
+                pauseHistory: settings.pauseHistory,
                 loading: false,
               }
             : { loading: false },
@@ -82,7 +86,7 @@ export const UserSettingsStore = signalStore(
     return {
       /** Loads the settings once; a failure can be retried by calling again. */
       load(): Promise<void> {
-        if (store.loaded() && store.folderColours() !== null) {
+        if (store.loaded() && store.folderColours() !== null && store.pauseHistory() !== null) {
           return Promise.resolve();
         }
         firstLoad ??= fetchSettings().finally(() => (firstLoad = null));
@@ -123,6 +127,32 @@ export const UserSettingsStore = signalStore(
         } catch {
           if (started === epoch && store.folderColours() === on) {
             patchState(store, { folderColours: previous });
+          }
+          return false;
+        }
+      },
+
+      /**
+       * Pauses or resumes the history at once (the server then skips or records opens); resolves
+       * false (and puts the old value back) when the request fails.
+       */
+      async setPauseHistory(paused: boolean): Promise<boolean> {
+        const previous = store.pauseHistory();
+        if ((previous ?? false) === paused) {
+          return true;
+        }
+        const started = epoch;
+        version++;
+        patchState(store, { pauseHistory: paused });
+        try {
+          const saved = await firstValueFrom(api().update({ pauseHistory: paused }));
+          if (started === epoch) {
+            patchState(store, { pauseHistory: saved.pauseHistory });
+          }
+          return true;
+        } catch {
+          if (started === epoch && store.pauseHistory() === paused) {
+            patchState(store, { pauseHistory: previous });
           }
           return false;
         }

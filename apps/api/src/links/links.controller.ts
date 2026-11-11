@@ -40,6 +40,7 @@ import { sendLinkImage } from './images/send-link-image';
 import { LinkPreviewRequestDto } from './dto/link-preview-request.dto';
 import { LinkPreviewResponseDto } from './dto/link-preview-response.dto';
 import { LinkResponseDto } from './dto/link-response.dto';
+import { OpenLinkResponseDto } from './dto/open-link-response.dto';
 import { ListLinksQueryDto } from './dto/list-links-query.dto';
 import { ListLinksResponseDto } from './dto/list-links-response.dto';
 import { RecentLinksQueryDto } from './dto/recent-links-query.dto';
@@ -261,13 +262,15 @@ export class LinksController {
 
   @Post(':id/open')
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ type: LinkResponseDto })
+  @ApiOkResponse({ type: OpenLinkResponseDto })
   @ApiNotFoundResponse({ description: 'Unknown or foreign link' })
-  @ApiOperation({ summary: 'Record an open (updates lastOpenedAt)' })
+  @ApiOperation({
+    summary: 'Record an open (updates lastOpenedAt; nothing is written while history is paused)',
+  })
   open(
     @CurrentUser() user: AuthUser,
     @Param('id', ParseUUIDPipe) id: string,
-  ): Promise<LinkResponseDto> {
+  ): Promise<OpenLinkResponseDto> {
     return this.writes.open(user.id, id);
   }
 

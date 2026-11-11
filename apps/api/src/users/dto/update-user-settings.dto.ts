@@ -17,4 +17,9 @@ export class UpdateUserSettingsDto implements UpdateUserSettingsRequest {
   @ValidateIf((_, value: unknown) => value !== undefined)
   @IsBoolean()
   folderColours?: boolean;
+
+  @ApiPropertyOptional({ example: false, description: 'Pause history: opens are not recorded' })
+  @ValidateIf((_, value: unknown) => value !== undefined)
+  @IsBoolean()
+  pauseHistory?: boolean;
 }

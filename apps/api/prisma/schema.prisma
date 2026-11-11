@@ -37,6 +37,8 @@ model User {
   trashRetentionDays    Int       @default(30) @map("trash_retention_days") @db.SmallInt
   // Account setting "Folder colours" (#263): off shows every folder in graphite.
   folderColours         Boolean   @default(true) @map("folder_colours")
+  // "Pause history" on Recently opened (#269): while true, opens are not recorded.
+  historyPaused         Boolean   @default(false) @map("history_paused")
   createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
   sessions              Session[]

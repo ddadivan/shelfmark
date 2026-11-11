@@ -25,6 +25,9 @@ export class MockUserSettingsApi implements UserSettingsApi {
       if (request.folderColours !== undefined) {
         this.data.folderColours = request.folderColours;
       }
+      if (request.pauseHistory !== undefined) {
+        this.data.pauseHistory = request.pauseHistory;
+      }
       return of(this.current());
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
@@ -33,6 +36,7 @@ export class MockUserSettingsApi implements UserSettingsApi {
     return {
       trashRetentionDays: this.data.trashRetentionDays,
       folderColours: this.data.folderColours,
+      pauseHistory: this.data.pauseHistory,
     };
   }
 }

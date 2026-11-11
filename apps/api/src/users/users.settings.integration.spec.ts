@@ -37,7 +37,7 @@ describe('account settings', () => {
 
   it('defaults to 30 days', async () => {
     const res = await asUser(t.app, users.owner).get(USER_SETTINGS_ENDPOINT).expect(200);
-    expect(res.body).toEqual({ trashRetentionDays: 30, folderColours: true });
+    expect(res.body).toEqual({ trashRetentionDays: 30, folderColours: true, pauseHistory: false });
   });
 
   it.each(TRASH_RETENTION_DAYS)('saves %i days and reads it back', async (days) => {
@@ -51,6 +51,7 @@ describe('account settings', () => {
     expect((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body).toEqual({
       trashRetentionDays: days,
       folderColours: true,
+      pauseHistory: false,
     });
   });
 
@@ -60,6 +61,7 @@ describe('account settings', () => {
     expect((await a.patch(USER_SETTINGS_ENDPOINT).send({}).expect(200)).body).toEqual({
       trashRetentionDays: 90,
       folderColours: true,
+      pauseHistory: false,
     });
   });
 
@@ -74,15 +76,19 @@ describe('account settings', () => {
 
   it('saves folderColours independently of the retention', async () => {
     const a = asUser(t.app, users.owner);
-    const off = await a.patch(USER_SETTINGS_ENDPOINT).send({ folderColours: false }).expect(200);
-    expect(off.body).toEqual({ trashRetentionDays: 30, folderColours: false });
+    const off = await a
+      .patch(USER_SETTINGS_ENDPOINT)
+      .send({ folderColours: false, pauseHistory: false })
+      .expect(200);
+    expect(off.body).toEqual({ trashRetentionDays: 30, folderColours: false, pauseHistory: false });
     const day = await a.patch(USER_SETTINGS_ENDPOINT).send({ trashRetentionDays: 7 }).expect(200);
-    expect(day.body).toEqual({ trashRetentionDays: 7, folderColours: false });
+    expect(day.body).toEqual({ trashRetentionDays: 7, folderColours: false, pauseHistory: false });
     expect((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body).toEqual(day.body);
     const other = asUser(t.app, users.intruder);
     expect((await other.get(USER_SETTINGS_ENDPOINT).expect(200)).body).toEqual({
       trashRetentionDays: 30,
       folderColours: true,
+      pauseHistory: false,
     });
   });
 
@@ -105,6 +111,7 @@ describe('account settings', () => {
     expect((await b.get(USER_SETTINGS_ENDPOINT).expect(200)).body).toEqual({
       trashRetentionDays: 30,
       folderColours: true,
+      pauseHistory: false,
     });
     await b.patch(USER_SETTINGS_ENDPOINT).send({ trashRetentionDays: 90 }).expect(200);
     expect(await stored(users.owner.userId)).toBe(7);
@@ -116,10 +123,11 @@ describe('account settings', () => {
     expect((await demo.get(USER_SETTINGS_ENDPOINT).expect(200)).body).toEqual({
       trashRetentionDays: 30,
       folderColours: true,
+      pauseHistory: false,
     });
     expect(
       (await demo.patch(USER_SETTINGS_ENDPOINT).send({ trashRetentionDays: 7 }).expect(200)).body,
-    ).toEqual({ trashRetentionDays: 7, folderColours: true });
+    ).toEqual({ trashRetentionDays: 7, folderColours: true, pauseHistory: false });
   });
 
   it('needs a session, a JSON body and the same origin', async () => {

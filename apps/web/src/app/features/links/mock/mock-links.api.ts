@@ -290,9 +290,13 @@ export class MockLinksApi implements LinksApi {
       if (!current) {
         return throwError(() => new Error('Mock: update failed'));
       }
+      // As the server: a paused history answers but records nothing.
+      if (this.data.pauseHistory) {
+        return of({ ...this.data.linkView(current), recorded: false });
+      }
       const opened: LinkResponse = { ...current, lastOpenedAt: new Date().toISOString() };
       this.links = this.links.map((link) => (link.id === id ? opened : link));
-      return of(this.data.linkView(opened));
+      return of({ ...this.data.linkView(opened), recorded: true });
     }).pipe(delay(MOCK_LATENCY_MS.List));
   }
 
