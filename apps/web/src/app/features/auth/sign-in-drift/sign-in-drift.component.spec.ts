@@ -36,17 +36,17 @@ describe('SignInDriftComponent', () => {
     expect(root.querySelectorAll('a[href]')).toHaveLength(0);
   });
 
-  it('draws ten library cards in two lanes and depth layers on a wide desktop, each with a landing ring', async () => {
+  it('draws sixteen library cards in two lanes and depth layers on a wide desktop, each with a landing ring', async () => {
     const root = await setup(true);
     const text = root.textContent ?? '';
 
-    expect(root.querySelectorAll('.sd-card')).toHaveLength(10);
-    expect(root.querySelectorAll('.sd-lane--start .sd-card')).toHaveLength(5);
-    expect(root.querySelectorAll('.sd-lane--end .sd-card')).toHaveLength(5);
-    expect(root.querySelectorAll('.sd-ring')).toHaveLength(10);
-    expect(root.querySelectorAll('ui-card .ui-card__placeholder')).toHaveLength(10);
-    expect(root.querySelectorAll('ui-card .ui-card__date').length).toBe(10);
-    expect(root.querySelectorAll('ui-chip').length).toBeGreaterThanOrEqual(10);
+    expect(root.querySelectorAll('.sd-card')).toHaveLength(16);
+    expect(root.querySelectorAll('.sd-lane--start .sd-card')).toHaveLength(8);
+    expect(root.querySelectorAll('.sd-lane--end .sd-card')).toHaveLength(8);
+    expect(root.querySelectorAll('.sd-ring')).toHaveLength(16);
+    expect(root.querySelectorAll('ui-card .ui-card__placeholder')).toHaveLength(16);
+    expect(root.querySelectorAll('ui-card .ui-card__date').length).toBe(16);
+    expect(root.querySelectorAll('ui-chip').length).toBeGreaterThanOrEqual(16);
     for (const layer of ['far', 'mid', 'near']) {
       expect(root.querySelectorAll(`.sd-card--${layer}`).length).toBeGreaterThan(0);
     }
@@ -55,12 +55,12 @@ describe('SignInDriftComponent', () => {
     expect(text).toContain('NestJS for frontend developers');
   });
 
-  it('draws six cards, three a side in one column, on a narrower desktop', async () => {
+  it('draws eight cards, four a side, on a narrower desktop', async () => {
     const root = await setup(false);
 
-    expect(root.querySelectorAll('.sd-card')).toHaveLength(6);
-    expect(root.querySelectorAll('.sd-lane--start .sd-card')).toHaveLength(3);
-    expect(root.querySelectorAll('.sd-lane--end .sd-card')).toHaveLength(3);
+    expect(root.querySelectorAll('.sd-card')).toHaveLength(8);
+    expect(root.querySelectorAll('.sd-lane--start .sd-card')).toHaveLength(4);
+    expect(root.querySelectorAll('.sd-lane--end .sd-card')).toHaveLength(4);
     expect(root.querySelectorAll('.sd-lane--narrow')).toHaveLength(2);
   });
 

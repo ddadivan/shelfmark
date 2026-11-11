@@ -6,9 +6,10 @@
 :host {
   --sd-pad: var(--space-6);
 
-  // Half of the sign-in card (420px) and the gap between it and a lane.
+  // Half of the sign-in card (420px); the lane's inner edge keeps `--sd-pad` from it.
   --sd-clear: #{rem(210px)};
   --sd-lane-w: calc(50cqw - var(--sd-clear) - var(--sd-pad) * 2);
+  --sd-lane-h: calc(100cqh - var(--sd-pad) * 2);
 
   position: absolute;
   inset: 0;
@@ -17,37 +18,25 @@
   container-type: size;
 }
 
-// One lane on each side: a grid of two columns by six rows (a card takes two rows, the inner
-// column sits half a card lower), or one column by three rows on a narrow desktop.
+// One lane on each side. The cards' spots (`--sd-x`, `--sd-y`) are shares of the lane, from the
+// seeded scatter computed for a reference lane (`--sd-ref-w` x `--sd-ref-h`, unitless pixels).
+// Every card is scaled by `--sd-k`, the smaller of the two ratios between the real lane and that
+// reference, so a scatter without overlaps there has none here: the other axis only spreads the
+// cards further apart. Capped, so a very large window does not blow the cards up.
 .sd-lane {
-  // Set here, not on the host: they depend on the lane's own column count.
-  --sd-cols: 2;
-  --sd-rows: 6;
-
-  // The room one card has: a column of the lane (width) and a third of the lane's height. The
-  // card is as wide as its column allows (minus a gutter for its tilt and float); when the window
-  // is too short for its height (about `9/16` of the drawing plus a fixed body) it is scaled down
-  // to fit (`--sd-fit`, below), not squeezed, so the text stays readable and the layout holds.
-  --sd-gutter: #{rem(40px)};
-  --sd-cell-w: calc(var(--sd-lane-w) / var(--sd-cols));
-  --sd-cell-h: calc((100cqh - var(--sd-pad) * 2) / 3);
-  --sd-card-w: clamp(#{rem(144px)}, var(--sd-cell-w) - var(--sd-gutter), #{rem(248px)});
-  --sd-card-h: calc((var(--sd-card-w) - #{rem(12px)}) * 0.5625 + #{rem(164px)});
-  --sd-room-h: calc(var(--sd-cell-h) - #{rem(32px)});
-
-  // A number from two lengths (`tan(atan2())` is their ratio): 1 when the card fits, less when not.
-  --sd-fit: 1;
+  --sd-k: 0.8;
 
   @supports (scale: calc(tan(atan2(1px, 1px)))) {
-    --sd-fit: min(1, tan(atan2(var(--sd-room-h), var(--sd-card-h))));
+    --sd-k: min(
+      1.3,
+      tan(atan2(var(--sd-lane-w), var(--sd-ref-w) * #{rem(1px)})),
+      tan(atan2(var(--sd-lane-h), var(--sd-ref-h) * #{rem(1px)}))
+    );
   }
 
   position: absolute;
   inset-block: var(--sd-pad);
   inline-size: var(--sd-lane-w);
-  display: grid;
-  grid-template-columns: repeat(var(--sd-cols), minmax(0, 1fr));
-  grid-template-rows: repeat(var(--sd-rows), minmax(0, 1fr));
 }
 
 .sd-lane--start {
@@ -58,58 +47,55 @@
   inset-inline-end: var(--sd-pad);
 }
 
-.sd-lane--narrow {
-  --sd-cols: 1;
-  --sd-rows: 3;
-}
-
-// A cell: centres its card. The depth layer sets how small, dim and slow the card is and how far
-// it follows the pointer.
+// A card, centred on its spot (`--sd-x` is measured from the lane's outer edge, at the window).
+// Its box is the 240px base card; size and depth are a `scale` further in. The depth layer sets
+// how dim it is and how far it follows the pointer; nearer layers paint over farther ones.
 .sd-card {
-  --sd-scale: 1;
   --sd-opacity: 1;
-  --sd-t: 8s;
-  --sd-amp: #{rem(10px)};
   --sd-shift: #{rem(14px)};
   --sd-lean: 1;
 
-  display: grid;
-  place-items: center;
-  min-width: 0;
+  position: absolute;
+  inset-block-start: calc(var(--sd-y) * 100%);
+  inset-inline-start: calc(var(--sd-x) * 100%);
+  z-index: 3;
+  inline-size: rem(240px);
+  translate: -50% -50%;
+}
+
+.sd-lane--end .sd-card {
+  inset-inline: auto calc(var(--sd-x) * 100%);
+  translate: 50% -50%;
 }
 
 .sd-card--mid {
-  --sd-scale: 0.86;
   --sd-opacity: 0.85;
-  --sd-t: 10s;
-  --sd-amp: #{rem(8px)};
   --sd-shift: #{rem(9px)};
   --sd-lean: 0.7;
+
+  z-index: 2;
 }
 
 .sd-card--far {
-  --sd-scale: 0.72;
   --sd-opacity: 0.6;
-  --sd-t: 13s;
-  --sd-amp: #{rem(5px)};
   --sd-shift: #{rem(4px)};
   --sd-lean: 0.4;
+
+  z-index: 1;
 }
 
-// Fly-in: from the middle of the window (behind the sign-in card) to the card's place, a wave
+// Fly-in: from the middle of the window (behind the sign-in card) to the card's spot, a wave
 // from the cards nearest the sign-in card outwards. `dx` / `dy` are the distance from the
 // card's centre to the window's centre, from the lane's geometry: the lane's outer edge is
-// `--sd-pad` from the window edge and the card's centre is `outer + 0.5` columns in.
+// `--sd-pad` from the window edge.
 .sd-fly {
   --sd-dir: 1;
-  --sd-from-edge: calc((var(--sd-outer) + 0.5) / var(--sd-cols) * var(--sd-lane-w));
-  --sd-dx: calc((50cqw - var(--sd-pad) - var(--sd-from-edge)) * var(--sd-dir));
-  --sd-dy: calc(50cqh - var(--sd-pad) - var(--sd-cy) * (100cqh - var(--sd-pad) * 2));
+  --sd-dx: calc((50cqw - var(--sd-pad) - var(--sd-x) * var(--sd-lane-w)) * var(--sd-dir));
+  --sd-dy: calc(50cqh - var(--sd-pad) - var(--sd-y) * var(--sd-lane-h));
 
-  inline-size: var(--sd-card-w);
   opacity: var(--sd-opacity);
   animation: sd-fly 1000ms var(--ease-out) backwards;
-  animation-delay: calc(var(--sd-wave) * 110ms + 80ms);
+  animation-delay: calc(var(--sd-wave) * 90ms + 80ms);
 
   @include reduced-motion {
     animation: none;
@@ -119,15 +105,15 @@
 .sd-lane--end .sd-fly {
   --sd-dir: -1;
 
-  animation-delay: calc(var(--sd-wave) * 110ms + 135ms);
+  animation-delay: calc(var(--sd-wave) * 90ms + 125ms);
 }
 
-// The float: its own slow loop per card (longer and smaller the further away). The rest tilt
-// `--sd-r` stays when the loop is off.
+// The float: its own loop per card (duration, phase, amplitude, sideways drift and extra tilt
+// all differ, so no two cards move in sync). The rest tilt `--sd-r` stays when the loop is off.
 .sd-float {
   transform: rotate(var(--sd-r));
   animation: sd-float var(--sd-t) ease-in-out infinite;
-  animation-delay: calc(var(--sd-n) * -1.7s);
+  animation-delay: var(--sd-d);
 
   @include reduced-motion {
     animation: none;
@@ -136,14 +122,14 @@
 
 // The pointer parallax lives here, on the inner element, so it composes with the float (`--tx` /
 // `--ty` are set from the component, -1 to 1: the pointer's side of this card). Near cards lean
-// and shift more than far ones (`--sd-lean`, `--sd-shift`); the layer's scale is its own property.
+// and shift more than far ones (`--sd-lean`, `--sd-shift`); the card's size is its own property.
 .sd-tilt {
   --tx: 0;
   --ty: 0;
 
   position: relative;
   border-radius: var(--radius-lg);
-  scale: calc(var(--sd-scale) * var(--sd-fit));
+  scale: calc(var(--sd-s) * var(--sd-k));
   transform: perspective(rem(700px)) rotateX(calc(var(--ty) * var(--sd-lean) * -7deg))
     rotateY(calc(var(--tx) * var(--sd-lean) * 9deg))
     translate(calc(var(--tx) * var(--sd-shift)), calc(var(--ty) * var(--sd-shift)));
@@ -156,7 +142,7 @@
 }
 
 // "Lands": an accent ring that pulses on one card at a time, a 24 s loop that starts once the
-// cards have settled.
+// cards have settled (the turns are set per card, `--sd-ring-d`).
 .sd-ring {
   position: absolute;
   inset: 0;
@@ -165,7 +151,7 @@
   box-shadow: inset 0 0 0 3px var(--accent);
   opacity: 0;
   animation: sd-ring 24s var(--ease-out) infinite;
-  animation-delay: calc(var(--sd-n) * 2.4s + 2.6s);
+  animation-delay: var(--sd-ring-d);
 
   @include reduced-motion {
     animation: none;
@@ -187,7 +173,8 @@
   }
 
   50% {
-    transform: translate3d(0, calc(var(--sd-amp) * -1), 0) rotate(calc(var(--sd-r) + 1.5deg));
+    transform: translate3d(calc(var(--sd-ax) * #{rem(1px)}), calc(var(--sd-ay) * #{rem(-1px)}), 0)
+      rotate(calc(var(--sd-r) + var(--sd-spin)));
   }
 }
 

@@ -104,7 +104,7 @@ describe('SignInPage', () => {
     );
   });
 
-  it('shows ten decorative, inert drifting cards on a desktop and no mosaic band', async () => {
+  it('shows sixteen decorative, inert drifting cards on a desktop and no mosaic band', async () => {
     const { harness } = await setup();
     await harness.navigateByUrl('/sign-in');
     const root = harness.routeNativeElement as HTMLElement;
@@ -112,7 +112,7 @@ describe('SignInPage', () => {
 
     expect(drift?.getAttribute('aria-hidden')).toBe('true');
     expect(drift?.hasAttribute('inert')).toBe(true);
-    expect(drift?.querySelectorAll('.sd-card')).toHaveLength(10);
+    expect(drift?.querySelectorAll('.sd-card')).toHaveLength(16);
     expect(drift?.textContent).toContain('Signal Forms in 20 minutes');
     expect(root.querySelector('.sign-in__art')).toBeNull();
   });

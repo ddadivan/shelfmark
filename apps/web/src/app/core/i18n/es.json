@@ -607,6 +607,24 @@
         },
         "sneakers": {
           "title": "Zapatillas de cuero minimalistas"
+        },
+        "typeScale": {
+          "title": "Escalas tipográficas que funcionan de verdad"
+        },
+        "kyoto": {
+          "title": "Kioto lejos de las multitudes"
+        },
+        "focaccia": {
+          "title": "Focaccia crujiente sin amasar"
+        },
+        "containerQueries": {
+          "title": "Container queries en la práctica"
+        },
+        "linenShirt": {
+          "title": "Camisa de lino verde salvia"
+        },
+        "madeira": {
+          "title": "Cinco rutas de un día en Madeira"
         }
       },
       "tags": {
