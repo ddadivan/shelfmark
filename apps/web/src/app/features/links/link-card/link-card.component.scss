@@ -4,10 +4,9 @@
   display: contents;
 }
 
-.link-card__letter {
-  @include type(title);
-
-  color: var(--accent-text);
+// A favorite keeps its star in sage, so favorites stay recognizable at rest.
+.link-card__star--on {
+  --ui-button-color: var(--accent-text);
 }
 
 .link-card__site {

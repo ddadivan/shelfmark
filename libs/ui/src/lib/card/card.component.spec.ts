@@ -18,6 +18,8 @@ import { CARD_STORY_IMAGE } from './stories/card-story-image.const';
       [description]="description()"
       [actionsPinned]="pinned()"
       [reveal]="reveal()"
+      [placeholderTone]="tone()"
+      [favorited]="favorited()"
       [headingLevel]="level()"
       (activated)="activated.push($event)"
     >
@@ -55,6 +57,8 @@ class HostComponent {
   readonly description = signal<string | undefined>(undefined);
   readonly pinned = signal(false);
   readonly reveal = signal(false);
+  readonly tone = signal(0);
+  readonly favorited = signal(false);
   readonly level = signal<HeadingLevel>(2);
   readonly activated: MouseEvent[] = [];
   readonly favorites: number[] = [];
@@ -155,7 +159,7 @@ describe('CardComponent', () => {
     const { card, instance } = setup();
     const main = card.querySelector('.ui-card__link') as HTMLElement;
     const favorite = card.querySelector('.ui-card__favorite button') as HTMLElement;
-    const more = card.querySelector('.ui-card__actions button') as HTMLElement;
+    const more = card.querySelector('.ui-card__more button') as HTMLElement;
     main.click();
     expect(instance.activated.length).toBe(1);
     favorite.click();
@@ -168,7 +172,7 @@ describe('CardComponent', () => {
   it('stretches the link over the card and lifts the nested controls above it', () => {
     const css = compileScss('lib/card/card.component.scss');
     expect(css).toMatch(/\.ui-card__link::after\s*{[^}]*inset: 0;[^}]*z-index: 1;/);
-    expect(css).toMatch(/\.ui-card__favorite\s*{[^}]*z-index: 2;/);
+    expect(css).toMatch(/\.ui-card__more\s*{[^}]*z-index: 2;/);
     expect(css).toMatch(/\.ui-card__actions\s*{[^}]*z-index: 2;/);
   });
 
@@ -195,6 +199,18 @@ describe('CardComponent', () => {
     expect(card.querySelector('.ui-card__fallback')?.textContent).toBe('Y');
     update((c) => c.image.set(CARD_STORY_IMAGE.Preview));
     expect(card.querySelector('img')).not.toBeNull();
+  });
+
+  it('draws the placeholder on a rotating tone and keeps a favorite visible', () => {
+    const { card, update } = setup();
+    const art = () => card.querySelector('.ui-card__placeholder');
+    expect(art()?.getAttribute('data-tone')).toBe('0');
+    expect(art()?.getAttribute('aria-hidden')).toBe('true');
+    expect(art()?.querySelectorAll('circle, rect').length).toBe(4);
+    update((c) => c.tone.set(5));
+    expect(art()?.getAttribute('data-tone')).toBe('2');
+    update((c) => c.favorited.set(true));
+    expect(card.classList).toContain('ui-card--favorited');
   });
 
   it('marks the selected card and sets aria-current on the control', () => {
@@ -234,12 +250,12 @@ describe('CardComponent', () => {
       expect(withoutMedia(css, /hover:\s*hover/)).not.toContain(':hover');
       const hover = mediaBlocks(css, HOVER_ONLY).join('\n');
       expect(hover).toContain('var(--shadow-card-spread)');
-      expect(hover).toContain('.ui-card__actions');
+      expect(hover).toContain('.ui-card__more');
     });
 
     it('shows the actions without hover on touch', () => {
       const touch = mediaBlocks(css, /hover:\s*none/).join('\n');
-      expect(touch).toMatch(/\.ui-card__actions\s*{[^}]*opacity: 1;/);
+      expect(touch).toMatch(/\.ui-card__more\s*{[^}]*opacity: 1;/);
     });
 
     it('drops the zoom and the slides under reduced motion but keeps colour and shadow', () => {

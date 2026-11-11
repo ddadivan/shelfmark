@@ -2,6 +2,8 @@
   uiPointerShadow
   [href]="href()"
   [image]="image()"
+  [placeholderTone]="tone()"
+  [favorited]="link().isFavorite"
   [newTab]="newTab()"
   [reveal]="reveal()"
   [description]="href() && newTab() ? ('links.item.opensInNewTab' | transloco) : undefined"
@@ -23,7 +25,6 @@
       (click)="onCheckboxClick($event)"
     />
   }
-  <span slot="fallback" class="link-card__letter" aria-hidden="true">{{ letter() }}</span>
   @if (href()) {
     <span slot="overlay" class="link-card__open">
       <span class="link-card__address">{{ address() }}</span>
@@ -38,9 +39,14 @@
     <ui-favicon [src]="favicon()" [letter]="letter()" />
     <span class="link-card__host">{{ host() }}</span>
   </span>
+  @if (saved()) {
+    <span slot="date">{{ saved() }}</span>
+  }
   @if (!readOnly()) {
     <ui-button
       slot="favorite"
+      class="link-card__star"
+      [class.link-card__star--on]="link().isFavorite"
       variant="ghost"
       size="sm"
       iconOnly

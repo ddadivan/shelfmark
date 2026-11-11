@@ -11,8 +11,6 @@ import {
   output,
 } from '@angular/core';
 import type { HeadingLevel } from '../heading';
-import { IconComponent } from '../icon/icon.component';
-import { ICON_SIZE } from '../icon/models/icon-size.const';
 
 let nextId = 0;
 
@@ -20,8 +18,9 @@ let nextId = 0;
  * Surface of a saved link in the cards view: a `surface` box with a `border` hairline and
  * `radius-lg`, flat at rest. Content comes in through slots (`slot="..."` attributes):
  * `title` (inside the link, so it names the card), `meta` (favicon and domain, left of the
- * meta row), `favorite` (a toggle at the end of the meta row), `actions` (the "..." menu
- * trigger, top right), `overlay` (the bar over the preview, for example the domain and
+ * meta row), `date` (the saved date, pushed to the end of the meta row), `favorite` (a toggle
+ * top right, left of `actions`; shown on hover, focus inside, always on touch and while
+ * `favorited`), `actions` (the "..." menu trigger, top right), `overlay` (the bar over the preview, for example the domain and
  * "Open"), `fallback` (shown instead of the image, for example the site letter on `accent-bg`;
  * without it a picture icon is shown), `select` (a `ui-checkbox` for bulk selection, top left
  * over the preview: shown on hover, focus inside, while `selecting` and always on touch); the
@@ -49,7 +48,7 @@ let nextId = 0;
  */
 @Component({
   selector: 'ui-card',
-  imports: [NgTemplateOutlet, IconComponent],
+  imports: [NgTemplateOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-card',
@@ -57,18 +56,26 @@ let nextId = 0;
     '[class.ui-card--checked]': 'checked()',
     '[class.ui-card--selecting]': 'selecting()',
     '[class.ui-card--pinned]': 'actionsPinned()',
+    '[class.ui-card--favorited]': 'favorited()',
     '[class.ui-card--reveal]': 'reveal()',
   },
   templateUrl: './card.component.html',
   styleUrl: './card.component.scss',
 })
 export class CardComponent {
-  protected readonly ICON_SIZE = ICON_SIZE;
   /** Id of the visually hidden description that the link points to. */
   protected readonly descriptionId = `ui-card-description-${nextId++}`;
 
   /** Preview image URL (16:9, cover). Without it, or when it fails, the `fallback` slot shows. */
   readonly image = input<string>();
+  /**
+   * Which soft background the drawing placeholder (no image, no `fallback` content) takes: the
+   * number is taken modulo 3 over `accent-bg`, `surface-hover` and `surface-pressed`. A feature
+   * passes the card's index or a hash of its id so neighbours differ.
+   */
+  readonly placeholderTone = input(0, {
+    transform: (value: number | null | undefined) => value ?? 0,
+  });
   /** Makes the activation target an `<a href>`; without it a `<button type="button">`. */
   readonly href = input<string>();
   /** Opens `href` in a new tab (`target="_blank"`, `rel="noopener noreferrer"`). */
@@ -84,6 +91,8 @@ export class CardComponent {
   readonly selecting = input(false, { transform: booleanAttribute });
   /** Extra text for screen readers after the title, for example "opens in a new tab". */
   readonly description = input<string>();
+  /** The `favorite` toggle stays visible at rest (not only on hover or focus) while it is on. */
+  readonly favorited = input(false, { transform: booleanAttribute });
   /** Keeps the actions visible without hover or focus, for example while their menu is open. */
   readonly actionsPinned = input(false, { transform: booleanAttribute });
   /**
@@ -122,6 +131,8 @@ export class CardComponent {
       }),
     );
   }
+
+  protected readonly tone = computed(() => ((this.placeholderTone() % 3) + 3) % 3);
 
   protected readonly imageSrc = computed(() => (this.failed() ? null : this.image() || null));
 }

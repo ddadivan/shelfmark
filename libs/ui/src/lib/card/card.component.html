@@ -41,7 +41,21 @@
     />
   } @else {
     <div class="ui-card__fallback"><ng-content select="[slot=fallback]" /></div>
-    <ui-icon class="ui-card__placeholder" name="image" [size]="ICON_SIZE.Lg" />
+    <div class="ui-card__placeholder" [attr.data-tone]="tone()" aria-hidden="true">
+      <svg viewBox="0 0 160 100" preserveAspectRatio="xMidYMid slice" focusable="false">
+        <circle class="ui-card__art-glow" cx="132" cy="16" r="38" />
+        <rect class="ui-card__art-card" x="18" y="26" width="88" height="54" rx="10" />
+        <rect class="ui-card__art-bar" x="30" y="38" width="44" height="7" rx="3.5" />
+        <rect
+          class="ui-card__art-bar ui-card__art-bar--short"
+          x="30"
+          y="52"
+          width="62"
+          height="5"
+          rx="2.5"
+        />
+      </svg>
+    </div>
   }
   <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -- decorative bar; it only forwards a pointer click to the title link, the keyboard path is the link itself -->
   <div class="ui-card__overlay" aria-hidden="true" (click)="forwardOverlayClick($event)">
@@ -51,7 +65,7 @@
 <div class="ui-card__body">
   <div class="ui-card__meta">
     <div class="ui-card__site"><ng-content select="[slot=meta]" /></div>
-    <div class="ui-card__favorite"><ng-content select="[slot=favorite]" /></div>
+    <div class="ui-card__date"><ng-content select="[slot=date]" /></div>
   </div>
   <!-- One branch per level: Angular templates cannot take a dynamic tag name. -->
   @switch (headingLevel()) {
@@ -76,7 +90,10 @@
   }
   <ng-content />
 </div>
-<div class="ui-card__actions"><ng-content select="[slot=actions]" /></div>
+<div class="ui-card__actions">
+  <div class="ui-card__favorite"><ng-content select="[slot=favorite]" /></div>
+  <div class="ui-card__more"><ng-content select="[slot=actions]" /></div>
+</div>
 <div class="ui-card__select"><ng-content select="[slot=select]" /></div>
 @if (description(); as text) {
   <span class="ui-card__description" [id]="descriptionId">{{ text }}</span>
