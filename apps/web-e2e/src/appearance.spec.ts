@@ -130,16 +130,18 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
       }
     })()`);
     const morphs = (): Promise<number> => page.evaluate<number>('window.__morphs');
-    const toggle = async (view: string): Promise<number> => {
+    const toggle = async (view: string): Promise<void> => {
       await page.evaluate('window.__morphs = 0');
       await page.getByRole('radio', { name: view, exact: true }).click();
       await expect(page.getByRole('radio', { name: view, exact: true })).toBeChecked();
-      return morphs();
     };
 
     await page.goto('/links');
     await expect(page.locator('ui-card').first()).toBeVisible();
-    expect(await toggle('List')).toBeGreaterThan(0);
+    await toggle('List');
+    // The morph starts after the render that sets the transition names, so it may come a frame
+    // after the radio is checked.
+    await expect.poll(morphs).toBeGreaterThan(0);
 
     await openAppearance(page);
     await pick(page, 'Animations', 'Reduced');
@@ -148,8 +150,9 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     await expect(page.locator('html')).toHaveAttribute('data-motion', 'reduced');
     await expect(page.locator('ui-list-item').first()).toBeVisible();
 
-    expect(await toggle('Cards')).toBe(0);
+    await toggle('Cards');
     await expect(page.locator('ui-card').first()).toBeVisible();
+    expect(await morphs()).toBe(0);
   });
 
   test('Animations: Reduced stills the landing even when the device allows motion', async ({
