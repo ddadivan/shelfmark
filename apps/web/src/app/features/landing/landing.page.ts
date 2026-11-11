@@ -16,6 +16,8 @@ import { LandingBeforeAfterComponent } from './components/landing-before-after/l
 import { LandingBuiltComponent } from './components/landing-built/landing-built.component';
 import { LandingFinaleComponent } from './components/landing-finale/landing-finale.component';
 import { LandingFooterComponent } from './components/landing-footer/landing-footer.component';
+import { LandingWhatsNewComponent } from './components/landing-whats-new/landing-whats-new.component';
+import { injectSignedIn } from './inject-signed-in';
 import { LandingHeaderComponent } from './components/landing-header/landing-header.component';
 import { LandingHeroComponent } from './components/landing-hero/landing-hero.component';
 import { LandingWhyComponent } from './components/landing-why/landing-why.component';
@@ -32,6 +34,7 @@ import { LandingWhyComponent } from './components/landing-why/landing-why.compon
     LandingBuiltComponent,
     LandingFinaleComponent,
     LandingFooterComponent,
+    LandingWhatsNewComponent,
   ],
   // Per page, so the motion listeners are removed when the visitor leaves the landing page.
   providers: [LandingMotionService],
@@ -42,6 +45,8 @@ import { LandingWhyComponent } from './components/landing-why/landing-why.compon
 export default class LandingPage {
   /** Set when the visitor jumps to a deferred section before the browser went idle. */
   protected readonly sectionsRequested = signal(false);
+  /** `/about` for a signed-in person: "What's new" shows under the hero. */
+  protected readonly signedIn = injectSignedIn();
   private readonly scrollPending = signal(false);
   private readonly document = inject(DOCUMENT);
   private readonly motion = inject(LandingMotionService);

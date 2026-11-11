@@ -1,3 +1,6 @@
+import { signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { AuthStore } from '../../../../core/auth/auth.store';
 import { axeViolations } from '../../../../../testing/axe';
 import { createTranslated } from '../../../../../testing/create-translated';
 import { LandingFinaleComponent } from './landing-finale.component';
@@ -20,5 +23,17 @@ describe('LandingFinaleComponent', () => {
     const fixture = await createTranslated(LandingFinaleComponent);
 
     expect(await axeViolations(fixture.nativeElement)).toEqual([]);
+  });
+
+  it('offers "Back to my shelf" and no demo or sign-in to a signed-in person (/about)', async () => {
+    TestBed.configureTestingModule({
+      providers: [{ provide: AuthStore, useValue: { user: signal({ id: 'u' }) } }],
+    });
+    const fixture = await createTranslated(LandingFinaleComponent);
+    const root = fixture.nativeElement as HTMLElement;
+
+    expect(root.querySelector('a[href="/links"]')?.textContent).toContain('Back to my shelf');
+    expect(root.querySelector('a[href="/sign-in"]')).toBeNull();
+    expect(root.querySelector('a[href="/demo"]')).toBeNull();
   });
 });

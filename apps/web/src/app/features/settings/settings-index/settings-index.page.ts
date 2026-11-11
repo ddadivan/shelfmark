@@ -15,6 +15,7 @@ import { AuthStore } from '../../../core/auth/auth.store';
 import { ViewportService } from '../../../core/layout/viewport.service';
 import { ThemeService } from '../../../core/theme/theme.service';
 import { APP_PATH } from '../../../models/app-path.const';
+import { HowItWorksService } from '../../how-it-works/how-it-works.service';
 import { SETTINGS_NAV_ENTRIES } from '../models/settings-nav-entries.const';
 import { SETTINGS_PATH } from '../models/settings-path.const';
 import { THEME_OPTION_KEYS } from '../models/theme-option-keys.const';
@@ -44,6 +45,8 @@ export default class SettingsIndexPage {
   protected readonly settingsPath = `/${APP_PATH.Settings}`;
   protected readonly adminFeedbackPath = ['/', APP_PATH.Admin, ADMIN_PATH.Feedback];
   protected readonly privacyHref = `/${APP_PATH.Privacy}`;
+  protected readonly aboutHref = `/${APP_PATH.About}`;
+  protected readonly howItWorks = inject(HowItWorksService);
   protected readonly rows = SETTINGS_NAV_ENTRIES.filter((entry) => entry.phone);
   /** The current theme, shown at the end of the Appearance row. */
   protected readonly themeKey = computed(() => THEME_OPTION_KEYS[this.theme.preference()]);

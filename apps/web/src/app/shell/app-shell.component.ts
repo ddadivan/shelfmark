@@ -44,6 +44,7 @@ import { isMacPlatform } from '../features/search/is-mac-platform';
 import { ViewportService } from '../core/layout/viewport.service';
 import { APP_PATH } from '../models/app-path.const';
 import { ADMIN_PATH } from '../features/admin/models/admin-path.const';
+import { HowItWorksService } from '../features/how-it-works/how-it-works.service';
 import { DemoBannerComponent } from './demo-banner/demo-banner.component';
 import { OfflineBannerComponent } from './offline-banner/offline-banner.component';
 import { PHONE_TAB } from './models/phone-tab.const';
@@ -93,6 +94,7 @@ export default class AppShellComponent {
   private readonly toasts = inject(ToastService);
 
   private readonly router = inject(Router);
+  protected readonly howItWorks = inject(HowItWorksService);
   private readonly url = toSignal(
     this.router.events.pipe(
       filter((event) => event instanceof NavigationEnd),
@@ -197,6 +199,11 @@ export default class AppShellComponent {
 
   protected async openFeedbackInbox(): Promise<void> {
     await this.router.navigateByUrl(`/${APP_PATH.Admin}/${ADMIN_PATH.Feedback}`);
+  }
+
+  /** "About Shelfmark": the landing page, with "Back to my shelf" and "What's new" (#270). */
+  protected async openAbout(): Promise<void> {
+    await this.router.navigateByUrl(`/${APP_PATH.About}`);
   }
 
   protected async exportAll(format: ExportFormat): Promise<void> {

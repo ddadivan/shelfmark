@@ -52,6 +52,9 @@ export const pageRoutes: Routes = [
       { path: APP_PATH.Admin, canActivate: [adminOnly], loadChildren: adminRoutes },
     ],
   },
+  // The landing for everyone (#270): "About Shelfmark" in the account menu; signed-in people see
+  // "Back to my shelf" and "What's new". Eager like `/`, the same component.
+  { path: APP_PATH.About, component: LandingPage },
   // Public on purpose (no guard): guests, signed-in users and the OAuth consent screen reach it.
   { path: APP_PATH.Privacy, loadComponent: () => import('./features/privacy/privacy.page') },
   // Starts a demo session (or goes to the library when already signed in).

@@ -209,7 +209,11 @@
         <ui-button variant="primary" iconLeft="add" (click)="actions.addLink(addLinkData())">
           {{ emptyKey() + '.action' | transloco }}
         </ui-button>
-        } @else {
+        @if (scope() === LINKS_SCOPE.All) {
+        <ui-button variant="ghost" iconLeft="play" (click)="howItWorks.open()">
+          {{ 'howItWorks.emptyLink' | transloco }}
+        </ui-button>
+        } } @else {
         <ui-button variant="primary" (click)="showAll()">
           {{ emptyKey() + '.action' | transloco }}
         </ui-button>
@@ -234,6 +238,7 @@
           (openRequested)="actions.openInNewTab(link)"
           (favoriteToggled)="actions.toggleFavorite(link)"
           (editRequested)="actions.edit(link)"
+          (moveRequested)="actions.move(link)"
           (deleteRequested)="actions.delete(link)"
         />
       </li>
@@ -256,6 +261,7 @@
           (openRequested)="actions.openInNewTab(link)"
           (favoriteToggled)="actions.toggleFavorite(link)"
           (editRequested)="actions.edit(link)"
+          (moveRequested)="actions.move(link)"
           (deleteRequested)="actions.delete(link)"
         />
       </li>

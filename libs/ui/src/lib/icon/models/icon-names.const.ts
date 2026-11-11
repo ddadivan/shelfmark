@@ -39,6 +39,7 @@ export const ICON_NAMES = [
   'more',
   'offline',
   'panel-right',
+  'play',
   'refresh',
   'saved-link',
   'search',
