@@ -31,13 +31,61 @@
   color: var(--text-muted);
 }
 
+.link-card__foot {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+
+  // The card body is a flex column: the row sits at the bottom of every card, so the star lines
+  // up across a row of cards.
+  padding: var(--space-2) 0 0;
+  margin: auto 0 0;
+}
+
 .link-card__tags {
   display: flex;
+  flex: 1;
   flex-wrap: wrap;
   gap: var(--space-1);
-  padding: var(--space-2) 0 0;
-  margin: auto 0 0; // the card body is a flex column: tags sit at the bottom of every card
+  min-width: 0;
+  padding: 0;
+  margin: 0;
   list-style: none;
+}
+
+// The favorite star: bottom right of the card, above the stretched link (z-index 2). A favorite
+// keeps it visible (sage); otherwise it shows on hover, keyboard focus and always on touch.
+.link-card__star {
+  position: relative;
+  z-index: 2;
+  flex: none;
+  margin-inline-start: auto;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+
+  &.link-card__star--on {
+    opacity: 1;
+  }
+
+  @media (hover: none) {
+    opacity: 1;
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+ui-card {
+  @include hover {
+    .link-card__star {
+      opacity: 1;
+    }
+  }
+
+  &:has(:focus-visible) .link-card__star {
+    opacity: 1;
+  }
 }
 
 ui-card {
