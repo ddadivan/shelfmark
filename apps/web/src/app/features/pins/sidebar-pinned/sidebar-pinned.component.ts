@@ -23,8 +23,6 @@ import {
   ButtonComponent,
   FaviconComponent,
   FolderIconComponent,
-  ICON_SIZE,
-  IconComponent,
   KEYBOARD_KEY,
   TooltipDirective,
 } from '@shelfmark/ui';
@@ -57,7 +55,6 @@ import { PinActionsService } from '../pin-actions.service';
     CdkDropList,
     FaviconComponent,
     FolderIconComponent,
-    IconComponent,
     RouterLink,
     TooltipDirective,
     TranslocoPipe,
@@ -69,7 +66,6 @@ import { PinActionsService } from '../pin-actions.service';
 })
 export class SidebarPinnedComponent {
   protected readonly PIN_KIND = PIN_KIND;
-  protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly pins = inject(PinsStore);
   protected readonly settings = inject(UserSettingsStore);
   /** Settings › Library › Open links in. */

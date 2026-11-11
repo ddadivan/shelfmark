@@ -70,8 +70,6 @@
               @if (href(link) && newTab()) {
                 <span class="pinned__hidden">{{ 'links.item.opensInNewTab' | transloco }}</span>
               }
-              <!-- Decorative: the section heading already says "Pinned". -->
-              <ui-icon class="pinned__pin" name="pin" [size]="ICON_SIZE.Sm" />
             </a>
           }
           <!-- Unpin is the row's only action, so no "…" menu (author, #314): shown on hover or

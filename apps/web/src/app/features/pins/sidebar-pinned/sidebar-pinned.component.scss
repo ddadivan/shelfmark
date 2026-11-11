@@ -101,18 +101,11 @@
   color: var(--text-muted);
 }
 
-// A pinned link ends with a small pin glyph where a folder shows its count (Main mockup).
-.pinned__pin {
-  flex: none;
-  margin-inline-start: auto;
-  color: var(--text-muted);
-}
-
 .pinned__hidden {
   @include visually-hidden;
 }
 
-// "Unpin" and "...": sit over the end of the row (on the row's own background, so they cover the
+// "Unpin": sits over the end of the row (on the row's own background, so they cover the
 // count), fade in on hover or focus, always there on touch.
 .pinned__actions {
   position: absolute;
