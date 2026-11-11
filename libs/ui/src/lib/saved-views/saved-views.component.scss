@@ -32,7 +32,7 @@
   display: inline-flex;
   flex: none;
   align-items: stretch;
-  height: rem(34px);
+  height: rem(40px); // the 2027 control height, level with buttons and the search field
   color: var(--text);
   white-space: nowrap;
   background: var(--surface);
@@ -138,7 +138,7 @@
   flex: none;
   gap: rem(6px);
   align-items: center;
-  height: rem(34px);
+  height: rem(40px);
   padding: 0 rem(14px);
   color: var(--text-muted);
   white-space: nowrap;

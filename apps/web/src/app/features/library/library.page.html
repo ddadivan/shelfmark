@@ -85,7 +85,6 @@
         <ui-button
           [uiMenuTrigger]="sortMenu"
           variant="ghost"
-          size="sm"
           iconRight="chevron-down"
           [iconSize]="ICON_SIZE.Sm"
           [ariaLabel]="'library.sort.label' | transloco: { sort: SORT_OPTION_KEYS[feedSort()] | transloco }"
@@ -115,7 +114,6 @@
       <ui-button
         [uiMenuTrigger]="exportMenu"
         [variant]="phone() ? 'ghost' : 'secondary'"
-        size="sm"
         iconLeft="download"
         [iconRight]="phone() ? undefined : 'chevron-down'"
         [iconOnly]="phone()"

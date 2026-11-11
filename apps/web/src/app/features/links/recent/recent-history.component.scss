@@ -25,6 +25,9 @@
 }
 
 .recent-history__search {
+  // Level with the 40px kind chips on its line.
+  --ui-field-compact-height: #{rem(40px)};
+
   flex: 0 1 rem(260px);
 
   @include phone {
