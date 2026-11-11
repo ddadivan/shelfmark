@@ -1,7 +1,10 @@
+import type { LinkKind } from '../links/link-kind.type';
+
 /** A link in the JSON export. `folderPath` is `null` for a link without a folder. */
 export interface ExportLink {
   url: string;
   title: string;
+  kind: LinkKind;
   note: string | null;
   isFavorite: boolean;
   folderPath: string[] | null;

@@ -1,6 +1,6 @@
 import { ApiPropertyOptional, ApiProperty } from '@nestjs/swagger';
-import { EXPORT_FORMAT, LINK_LIMIT, TAG_LIMIT } from '@shelfmark/contracts';
-import type { ExportFormat, ExportQuery } from '@shelfmark/contracts';
+import { EXPORT_FORMAT, LINK_KIND, LINK_LIMIT, TAG_LIMIT } from '@shelfmark/contracts';
+import type { ExportFormat, ExportQuery, LinkKind } from '@shelfmark/contracts';
 import { Transform } from 'class-transformer';
 import { ArrayMaxSize, IsIn, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
 
@@ -36,4 +36,9 @@ export class ExportQueryDto implements ExportQuery {
   @IsString()
   @MaxLength(LINK_LIMIT.QueryMax)
   q?: string;
+
+  @ApiPropertyOptional({ enum: Object.values(LINK_KIND), description: 'Only links of this kind.' })
+  @IsOptional()
+  @IsIn(Object.values(LINK_KIND))
+  kind?: LinkKind;
 }

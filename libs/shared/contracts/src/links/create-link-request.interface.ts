@@ -1,5 +1,12 @@
+import type { LinkKind } from './link-kind.type';
+
 /** `POST /api/links` body. Duplicates are allowed ("save anyway"). */
 export interface CreateLinkRequest {
+  /**
+   * Usually `LinkPreview.kind` (the client had the preview) or the user's choice. When absent the server
+   * derives it: from the page it fetched (no `title`) or else from the host (ADR 0038).
+   */
+  kind?: LinkKind;
   /** http(s) URL, at most `LINK_LIMIT.UrlMax` characters. */
   url: string;
   /** At most `LINK_LIMIT.TitleMax`; defaults to the page title (fetched by the server) or the URL. */

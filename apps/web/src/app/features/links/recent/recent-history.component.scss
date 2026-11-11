@@ -10,6 +10,10 @@
   gap: var(--space-6);
 }
 
+.recent-history__filter {
+  margin-bottom: var(--space-6);
+}
+
 .recent-history__skeleton {
   display: flex;
   flex-direction: column;

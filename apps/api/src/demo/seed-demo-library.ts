@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
-import { normalizeTagName, normalizeUrl } from '@shelfmark/contracts';
+import { deriveLinkKind, normalizeTagName, normalizeUrl } from '@shelfmark/contracts';
 import type { Prisma } from '../generated/prisma/client';
+import { toLinkKind } from '../links/to-link-kind';
 import type { DemoSeed } from './models/demo-seed.interface';
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -66,6 +67,7 @@ export async function seedDemoLibrary(
       normalizedUrl: normalizeUrl(link.url),
       title: link.title,
       titleSortKey: link.title.toLowerCase(),
+      kind: link.kind === undefined ? deriveLinkKind(link.url) : toLinkKind(link.kind),
       note: link.note ?? null,
       isFavorite: link.isFavorite,
       createdAt: daysAgo(now, link.createdDaysAgo, order),

@@ -1,3 +1,5 @@
+import type { LinkKind } from '@shelfmark/contracts';
+
 /** The filters shared by the list endpoint (and, later, the export): what narrows a user's links. */
 export interface LinkFilter {
   /** Direct children of this folder. */
@@ -9,4 +11,6 @@ export interface LinkFilter {
   tag?: readonly string[];
   /** Free text; split into words, every word must match the title, note or URL. */
   q?: string;
+  /** Only links of this kind (ADR 0038). */
+  kind?: LinkKind;
 }

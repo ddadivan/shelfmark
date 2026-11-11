@@ -21,24 +21,24 @@ datasource db {
 // Better Auth core models (users, sessions, linked OAuth accounts, verification tokens).
 
 model User {
-  id                    String    @id @default(uuid(7)) @db.Uuid
+  id                    String        @id @default(uuid(7)) @db.Uuid
   name                  String
-  email                 String    @unique
-  emailVerified         Boolean   @default(false) @map("email_verified")
+  email                 String        @unique
+  emailVerified         Boolean       @default(false) @map("email_verified")
   image                 String?
-  isDemo                Boolean   @default(false) @map("is_demo")
-  onboardingCompletedAt DateTime? @map("onboarding_completed_at") @db.Timestamptz(3)
-  demoExpiresAt         DateTime? @map("demo_expires_at") @db.Timestamptz(3)
+  isDemo                Boolean       @default(false) @map("is_demo")
+  onboardingCompletedAt DateTime?     @map("onboarding_completed_at") @db.Timestamptz(3)
+  demoExpiresAt         DateTime?     @map("demo_expires_at") @db.Timestamptz(3)
   // HMAC of the creating client IP for the per-IP demo quota (#67); never the raw address.
-  demoSourceHash        String?   @map("demo_source_hash")
+  demoSourceHash        String?       @map("demo_source_hash")
   // Same for the wider IPv6 /48 network (null for IPv4 clients).
-  demoNetworkHash       String?   @map("demo_network_hash")
+  demoNetworkHash       String?       @map("demo_network_hash")
   // How long deleted links and folders stay in Trash (ADR 0036); a CHECK in the migration keeps it to 7, 30, 90.
-  trashRetentionDays    Int       @default(30) @map("trash_retention_days") @db.SmallInt
+  trashRetentionDays    Int           @default(30) @map("trash_retention_days") @db.SmallInt
   // Account setting "Folder colours" (#263): off shows every folder in graphite.
-  folderColours         Boolean   @default(true) @map("folder_colours")
-  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  folderColours         Boolean       @default(true) @map("folder_colours")
+  createdAt             DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt             DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
   sessions              Session[]
   accounts              Account[]
   folders               Folder[]
@@ -47,6 +47,7 @@ model User {
   tags                  Tag[]
   feedback              Feedback[]
   folderShares          FolderShare[]
+  savedViews            SavedView[]
 
   @@map("users")
 }
@@ -113,24 +114,24 @@ model Verification {
 // - the image source URLs and captureAttemptedAt are set server-side only, never from client input.
 
 model Folder {
-  id        String   @id @default(uuid(7)) @db.Uuid
-  userId    String   @map("user_id") @db.Uuid
-  parentId  String?  @map("parent_id") @db.Uuid
-  name      String   @db.VarChar(100)
+  id             String       @id @default(uuid(7)) @db.Uuid
+  userId         String       @map("user_id") @db.Uuid
+  parentId       String?      @map("parent_id") @db.Uuid
+  name           String       @db.VarChar(100)
   // Style (#263, ADR 0037): one of FOLDER_COLOUR / FOLDER_ICON; a CHECK in the migration closes the colour set.
-  colour    String   @default("graphite") @db.VarChar(16)
-  icon      String   @default("folder") @db.VarChar(24)
+  colour         String       @default("graphite") @db.VarChar(16)
+  icon           String       @default("folder") @db.VarChar(24)
   // Place in the user's sidebar pins (ADR 0037); NULL = not pinned. Cleared when the folder goes to Trash.
-  pinnedPosition Int? @map("pinned_position") @db.SmallInt
+  pinnedPosition Int?         @map("pinned_position") @db.SmallInt
   // Set when the folder is in Trash (ADR 0036): one shared value for the folder and the subtree deleted with it.
-  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(3)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  parent    Folder?  @relation("FolderTree", fields: [parentId, userId], references: [id, userId], onDelete: Cascade)
-  children  Folder[] @relation("FolderTree")
-  links     Link[]
-  share     FolderShare?
+  deletedAt      DateTime?    @map("deleted_at") @db.Timestamptz(3)
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent         Folder?      @relation("FolderTree", fields: [parentId, userId], references: [id, userId], onDelete: Cascade)
+  children       Folder[]     @relation("FolderTree")
+  links          Link[]
+  share          FolderShare?
 
   @@unique([id, userId])
   @@index([userId, parentId])
@@ -159,6 +160,9 @@ model Link {
   // Client-generated UUID that makes a retried create return the first link (ADR 0033).
   idempotencyKey     String?     @map("idempotency_key") @db.Uuid
   isFavorite         Boolean     @default(false) @map("is_favorite")
+  // video | article | shopping | other (LINK_KIND, CHECK in the migration): derived at save time from
+  // og:type and the host, recomputed on a URL change, changeable by the user (ADR 0038).
+  kind               String      @default("other") @db.VarChar(16)
   // Pinned to the top of its folder (#263): the pin time orders pinned links; NULL = not pinned.
   pinnedInFolderAt   DateTime?   @map("pinned_in_folder_at") @db.Timestamptz(3)
   // Place in the user's sidebar pins (ADR 0037); NULL = not pinned. Cleared when the link goes to Trash.
@@ -179,6 +183,7 @@ model Link {
   @@index([userId, lastOpenedAt])
   @@index([userId, titleSortKey, id])
   @@index([folderId])
+  @@index([userId, kind])
   @@index([title(ops: raw("gin_trgm_ops"))], type: Gin, map: "links_title_trgm_idx")
   @@index([note(ops: raw("gin_trgm_ops"))], type: Gin, map: "links_note_trgm_idx")
   @@index([url(ops: raw("gin_trgm_ops"))], type: Gin, map: "links_url_trgm_idx")
@@ -270,20 +275,37 @@ model Feedback {
 // The composite FK keeps the share on a folder of the same user; deleting the folder (or the user)
 // deletes the share. A CHECK in the migration pins the token format.
 model FolderShare {
-  id        String   @id @default(uuid(7)) @db.Uuid
-  userId    String   @map("user_id") @db.Uuid
-  folderId  String   @unique @map("folder_id") @db.Uuid
-  token     String   @unique @db.VarChar(22)
-  showNotes Boolean  @default(false) @map("show_notes")
+  id             String   @id @default(uuid(7)) @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  folderId       String   @unique @map("folder_id") @db.Uuid
+  token          String   @unique @db.VarChar(22)
+  showNotes      Boolean  @default(false) @map("show_notes")
   // When the current token was created: enable, or the last reset.
   tokenCreatedAt DateTime @default(now()) @map("token_created_at") @db.Timestamptz(3)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  folder    Folder   @relation(fields: [folderId, userId], references: [id, userId], onDelete: Cascade)
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  folder         Folder   @relation(fields: [folderId, userId], references: [id, userId], onDelete: Cascade)
 
   // Required by Prisma for the one-to-one composite relation; folderId alone is already unique.
   @@unique([folderId, userId])
   @@index([userId])
   @@map("folder_shares")
+}
+
+// A saved filter shown as a chip above the feed (#264, ADR 0038). `query` is the normalized
+// SavedViewQuery (validated by the API); at most SAVED_VIEW_LIMIT.PerUserMax per user. New users get
+// the starter views from a database trigger (see the migration).
+model SavedView {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  name      String   @db.VarChar(40)
+  query     Json     @db.JsonB
+  position  Int      @db.SmallInt
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, position])
+  @@map("saved_views")
 }

@@ -1,3 +1,5 @@
+import type { LinkKind } from '@shelfmark/contracts';
+
 /** What an export covers; an empty scope is the whole library. The format is chosen separately. */
 export interface ExportScope {
   /** A folder and all its subfolders. */
@@ -6,4 +8,6 @@ export interface ExportScope {
   readonly tags?: readonly string[];
   /** Search text. */
   readonly q?: string;
+  /** Only links of this kind. */
+  readonly kind?: LinkKind;
 }

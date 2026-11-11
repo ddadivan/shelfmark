@@ -38,6 +38,8 @@
       "
       (click)="favoriteToggled.emit()"
     />
+  }
+  @if (!readOnly()) {
     <ui-button
       slot="actions"
       variant="ghost"

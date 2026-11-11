@@ -29,6 +29,7 @@ export function buildLinkWhere(userId: string, filter: LinkFilter): Prisma.LinkW
   if (filter.unsorted === true) and.push({ folderId: null });
   else if (filter.folderId !== undefined) and.push({ folderId: filter.folderId });
   if (filter.favorite !== undefined) and.push({ isFavorite: filter.favorite });
+  if (filter.kind !== undefined) and.push({ kind: filter.kind });
   for (const name of filter.tag ?? []) {
     and.push({
       tags: { some: { tag: { userId, name: { equals: escapeLike(name), mode: 'insensitive' } } } },

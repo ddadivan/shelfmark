@@ -57,6 +57,9 @@ import { FEED_SORT } from '../links/models/feed-sort.const';
 import type { FeedSort } from '../links/models/feed-sort.type';
 import { SEARCH_QUERY_PARAM } from '../links/models/search-query-param.const';
 import { SORT_QUERY_PARAM } from '../links/models/sort-query-param.const';
+import { KIND_QUERY_PARAM } from '../links/models/kind-query-param.const';
+import { parseLinkKind } from '../links/link-kind';
+import { SavedViewChipsComponent } from '../views/saved-view-chips/saved-view-chips.component';
 import { sameFilter } from '../links/links-filter';
 import { parseSearchQuery } from '../links/search-query';
 import { InViewDirective } from '../links/in-view/in-view.directive';
@@ -121,6 +124,7 @@ interface LastShown {
     MenuTriggerDirective,
     NoticeComponent,
     ProgressBarComponent,
+    SavedViewChipsComponent,
     SegmentedControlComponent,
     SkeletonComponent,
   ],
@@ -158,6 +162,8 @@ export default class LibraryPage {
   readonly q = input<unknown>();
   /** From the query (`?sort=oldest`): see `parseFeedSort`. */
   readonly sort = input<unknown>();
+  /** From the query (`?kind=video`): see `parseLinkKind`. */
+  readonly kind = input<unknown>();
 
   protected readonly UI_VIEW = UI_VIEW;
   protected readonly EXPORT_FORMAT = EXPORT_FORMAT;
@@ -174,8 +180,11 @@ export default class LibraryPage {
   /** The search text: normalized; empty for no search. */
   protected readonly query = computed(() => parseSearchQuery(this.q()));
   protected readonly feedSort = computed<FeedSort>(() => parseFeedSort(this.sort()));
+  protected readonly linkKind = computed(() => parseLinkKind(this.kind()));
   protected readonly searching = computed(() => this.query() !== '');
-  protected readonly filtered = computed(() => this.tags().length > 0 || this.searching());
+  protected readonly filtered = computed(
+    () => this.tags().length > 0 || this.searching() || this.linkKind() !== undefined,
+  );
 
   protected readonly isFolder = computed(() => this.scope() === LINKS_SCOPE.Folder);
   /** The folder of the page, once the folder list has it. */
@@ -200,15 +209,17 @@ export default class LibraryPage {
   );
   /** Favorites cannot be filled by adding a link, so its empty state points back to all links. */
   protected readonly canAddLink = computed(() => this.scope() !== LINKS_SCOPE.Favorites);
-  private readonly filter = computed<LinksFilter>(() => {
+  protected readonly filter = computed<LinksFilter>(() => {
     const scope = this.scope();
     const folderId = this.folderId();
     const tags = this.tags();
     const q = this.query();
     const sort = this.feedSort();
+    const kind = this.linkKind();
     const options = {
       ...(tags.length > 0 ? { tags } : {}),
       ...(q === '' ? {} : { q }),
+      ...(kind === undefined ? {} : { kind }),
       ...(sort === FEED_SORT.Newest ? {} : feedSortQuery(sort)),
     };
     if (scope !== LINKS_SCOPE.Folder) {
@@ -282,6 +293,10 @@ export default class LibraryPage {
   protected readonly failed = computed(() => this.ownError() && this.ownCount() === 0);
   protected readonly empty = computed(
     () => this.ownLoaded() && !this.store.loading() && this.ownCount() === 0,
+  );
+  /** A library without any link (the new-account state): no saved view chips, nothing to filter. */
+  protected readonly emptyLibrary = computed(
+    () => this.empty() && !this.filtered() && this.scope() === LINKS_SCOPE.All,
   );
   /** The 2px bar: a refetch and a view switch (the old content stays on screen meanwhile). */
   protected readonly refetching = computed(
@@ -475,9 +490,23 @@ export default class LibraryPage {
     await this.setQueryParams({ [SEARCH_QUERY_PARAM]: null });
   }
 
-  /** Clears everything the filter holds: the search and the tags. */
+  /** Clears everything the filter holds: the search, the tags and the kind. */
   protected async clearAll(): Promise<void> {
-    await this.setQueryParams({ [SEARCH_QUERY_PARAM]: null, [TAG_QUERY_PARAM]: null });
+    await this.setQueryParams({
+      [SEARCH_QUERY_PARAM]: null,
+      [TAG_QUERY_PARAM]: null,
+      [KIND_QUERY_PARAM]: null,
+    });
+  }
+
+  /** Takes the kind out of the filter. */
+  protected async clearKind(): Promise<void> {
+    await this.setQueryParams({ [KIND_QUERY_PARAM]: null });
+  }
+
+  /** The empty filtered state: drops the tags and the kind (the search has its own state). */
+  protected async clearFilters(): Promise<void> {
+    await this.setQueryParams({ [TAG_QUERY_PARAM]: null, [KIND_QUERY_PARAM]: null });
   }
 
   /** Repeats the search in all folders (the "all links" page keeps the query and sort, drops the tags). */
