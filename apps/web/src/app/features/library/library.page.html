@@ -85,7 +85,9 @@
       </ui-menu>
     </div>
   </header>
-  @if (filtered()) {
+  @if (!emptyLibrary()) {
+  <app-saved-view-chips class="library__views" [filter]="filter()" />
+  } @if (filtered()) {
   <div class="library__filter" role="group" [attr.aria-label]="'library.filter.label' | transloco">
     @if (searching()) {
     <ui-chip
@@ -96,6 +98,15 @@
       (removed)="clearSearch()"
     >
       {{ 'library.search.chip' | transloco: { query: query() } }}
+    </ui-chip>
+    } @if (linkKind(); as kind) {
+    <ui-chip
+      variant="neutral"
+      removable
+      [removeLabel]="'library.kind.remove' | transloco: { kind: ('links.kind.' + kind | transloco) }"
+      (removed)="clearKind()"
+    >
+      {{ 'links.kind.' + kind | transloco }}
     </ui-chip>
     } @for (name of tags(); track name) {
     <ui-chip
@@ -190,7 +201,7 @@
         [heading]="'library.emptyFiltered.title' | transloco"
         [text]="'library.emptyFiltered.text' | transloco"
       >
-        <ui-button variant="primary" (click)="clearTags()">
+        <ui-button variant="primary" (click)="clearFilters()">
           {{ 'library.emptyFiltered.clear' | transloco }}
         </ui-button>
       </ui-empty-state>

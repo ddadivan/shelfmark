@@ -1,5 +1,14 @@
 import { DOCUMENT } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
@@ -8,6 +17,7 @@ import {
   RECENT_LINKS_WINDOW_DAYS,
   type FolderColour,
   type FolderIcon,
+  type LinkKind,
   type LinkResponse,
 } from '@shelfmark/contracts';
 import {
@@ -16,6 +26,10 @@ import {
   HISTORY_HEADING_LEVEL,
   type HistoryHeadingLevel,
   HistoryGroupComponent,
+  ButtonComponent,
+  SAVED_VIEWS_LAYOUT,
+  SavedViewsComponent,
+  type SavedViewItem,
   SKELETON_SHAPE,
   SkeletonComponent,
   TOAST_KIND,
@@ -28,7 +42,11 @@ import { LinksStore } from '../../../stores/links.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { LinkActionsService } from '../link-actions.service';
 import { safeHref } from '../link-view';
+import { ViewportService } from '../../../core/layout/viewport.service';
+import { isLinkKind } from '../link-kind';
 import { groupByDay } from './history-days';
+import { ALL_KINDS } from './models/all-kinds.const';
+import { RECENT_FILTER_KINDS } from './models/recent-filter-kinds.const';
 import { LinkHistoryRowComponent } from './link-history-row.component';
 import { HISTORY_DAY_KIND } from './models/history-day-kind.const';
 import type { HistoryDay } from './models/history-day.interface';
@@ -49,6 +67,8 @@ const SKELETON_COUNT = 5;
     HistoryGroupComponent,
     LinkHistoryRowComponent,
     SkeletonComponent,
+    SavedViewsComponent,
+    ButtonComponent,
   ],
   templateUrl: './recent-history.component.html',
   styleUrl: './recent-history.component.scss',
@@ -64,6 +84,7 @@ export class RecentHistoryComponent {
   private readonly router = inject(Router);
   private readonly doc = inject(DOCUMENT);
   private readonly settings = inject(UserSettingsStore);
+  private readonly phone = inject(ViewportService).phone;
 
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly SKELETON_COUNT = SKELETON_COUNT;
@@ -72,14 +93,47 @@ export class RecentHistoryComponent {
   protected readonly windowDays = RECENT_LINKS_WINDOW_DAYS;
   protected readonly pluralKey = pluralKey;
 
+  /** The page shows the kind chips (All, Videos, Articles, Shopping); the phone sheet does not. */
+  readonly filterable = input(false, { transform: booleanAttribute });
+
   /** "Today" is the day the page was opened. */
   private readonly now = signal(new Date());
-  protected readonly days = computed(() => groupByDay(this.store.recent(), this.now()));
+  /** The kind chip that is pressed; `null` = All. Client-side over the loaded history. */
+  protected readonly kindFilter = signal<LinkKind | null>(null);
+  private readonly shown = computed(() => {
+    const kind = this.filterable() ? this.kindFilter() : null;
+    const recent = this.store.recent();
+    return kind === null ? recent : recent.filter((link) => link.kind === kind);
+  });
+  protected readonly days = computed(() => groupByDay(this.shown(), this.now()));
   protected readonly hasHistory = computed(() => this.store.recent().length > 0);
+  protected readonly filteredEmpty = computed(() => this.hasHistory() && this.shown().length === 0);
+  protected readonly kindLayout = computed(() =>
+    this.phone() ? SAVED_VIEWS_LAYOUT.Scroll : SAVED_VIEWS_LAYOUT.Wrap,
+  );
+  /** Ticks when the active language or its translations change. */
+  private readonly i18n = toSignal(this.transloco.events$, { initialValue: undefined });
+  protected readonly kindItems = computed<SavedViewItem[]>(() => {
+    this.i18n();
+    const recent = this.store.recent();
+    return [
+      { id: ALL_KINDS, label: this.t('links.recent.filter.all'), count: recent.length },
+      ...RECENT_FILTER_KINDS.map((kind) => ({
+        id: kind,
+        label: this.t(`links.kind.${kind}`),
+        count: recent.filter((link) => link.kind === kind).length,
+      })),
+    ];
+  });
+  protected readonly ALL_KINDS = ALL_KINDS;
 
   private readonly folderNames = computed(
     () => new Map(this.folders.entities().map((folder) => [folder.id, folder.name])),
   );
+
+  protected selectKind(id: string): void {
+    this.kindFilter.set(isLinkKind(id) ? id : null);
+  }
 
   constructor() {
     void this.store.loadRecent();

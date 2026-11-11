@@ -61,4 +61,5 @@ Routine features, bug fixes and choices already fully covered by an existing ADR
 | [0035](0035-stage-integration-branch-release-flow.md) | `stage` integration branch, release PR `stage → main` (merge commit), hotfix flow, no staging environment, To release column | Accepted | 2026-11-10 |
 | [0036](0036-trash-soft-delete.md) | Trash: soft delete with a shared timestamp per delete, per-account retention (7 / 30 / 90 days), daily purge cron, `/api/me/settings` | Accepted | 2026-11-10 |
 | [0037](0037-folder-style-and-pins.md) | Folder colours and icons, sidebar pins as columns (max 7, per user), pinned links in a folder as a separate `pinned` array | Accepted | 2026-11-10 |
+| [0038](0038-link-kind-and-saved-views.md) | Link kind derived at save time (og:type, then known hosts), saved views as validated JSON queries, counts in one grouped query, starter views from a database trigger | Accepted | 2026-11-11 |
 | [0039](0039-paste-many-batch-create.md) | Paste many: one batch create (lock order, cap for the whole batch, per-item keys) without page fetches, previews loaded by the client, batch delete for Undo | Proposed | 2026-11-11 |

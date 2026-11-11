@@ -8,6 +8,7 @@ import {
   DEMO_LIMIT,
   LINK_LIMIT,
   normalizeTagName,
+  deriveLinkKind,
   normalizeUrl,
   LINK_ERROR_MESSAGE,
   TAG_ERROR_MESSAGE,
@@ -72,6 +73,8 @@ export class LinksWriteService {
     }
 
     let title = request.title;
+    // The client's kind (from its preview or the user) wins; else the page fetched below, else the host.
+    let kind = request.kind ?? deriveLinkKind(request.url);
     let faviconSourceUrl = request.faviconUrl ?? null;
     let imageSourceUrl = request.imageUrl ?? null;
     if (title === undefined) {
@@ -80,6 +83,7 @@ export class LinksWriteService {
       await this.precheck(userId, request.folderId, isDemo);
       const { preview, fetched } = await this.previews.load(request.url);
       title = titleOrUrl(preview.title, request.url);
+      if (request.kind === undefined) kind = preview.kind;
       if (fetched) {
         faviconSourceUrl ??= preview.faviconUrl;
         imageSourceUrl ??= preview.imageUrl;
@@ -110,6 +114,7 @@ export class LinksWriteService {
             normalizedUrl,
             title: finalTitle,
             titleSortKey: finalTitle.toLowerCase(),
+            kind,
             note: noteOrNull(request.note),
             faviconSourceUrl,
             imageSourceUrl,
@@ -179,6 +184,10 @@ export class LinksWriteService {
           data.imageSourceUrl = null;
           // Pending: the first image request for the new page re-captures lazily (ADR 0027 note).
           data.captureAttemptedAt = null;
+          // Another page: its kind follows the new host unless the same request sets one (ADR 0038).
+          if (request.kind === undefined && request.url !== undefined) {
+            data.kind = deriveLinkKind(request.url);
+          }
         }
 
         if (request.tags !== undefined) {
@@ -288,6 +297,7 @@ export class LinksWriteService {
     if (request.note !== undefined) data.note = noteOrNull(request.note);
     if (request.folderId !== undefined) data.folderId = request.folderId;
     if (request.isFavorite !== undefined) data.isFavorite = request.isFavorite;
+    if (request.kind !== undefined) data.kind = request.kind;
     return data;
   }
 

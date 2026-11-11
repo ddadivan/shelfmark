@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import {
+  LINK_KIND,
   linkLimitMessage,
   type CreateLinksBatchRequest,
   type CreateLinksBatchResponse,
@@ -37,6 +38,7 @@ function preview(url: string): LinkPreviewResponse {
   const host = new URL(url).hostname;
   return {
     preview: {
+      kind: LINK_KIND.Other,
       url,
       title: `Page on ${host}`,
       description: null,

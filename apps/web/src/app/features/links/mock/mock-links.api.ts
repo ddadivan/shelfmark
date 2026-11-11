@@ -1,5 +1,6 @@
 import { inject, Service } from '@angular/core';
 import {
+  deriveLinkKind,
   LINK_BATCH_ERROR_CODE,
   LINK_IMAGE_PENDING_VERSION,
   LINK_LIMIT,
@@ -33,7 +34,6 @@ import { MOCK_LINKS_SCENARIO } from '../models/mock-links-scenario.const';
 import { MOCK_LINKS_SCENARIO_KEY } from '../models/mock-links-scenario-key.const';
 import type { LinksApi } from '../models/links-api.interface';
 import { MockLibraryData } from './mock-library-data';
-import { matchesQuery } from '../search-query';
 
 const DAY_MS = 86_400_000;
 
@@ -81,6 +81,7 @@ export class MockLinksApi implements LinksApi {
         : this.data.folderList.find((item) => item.id === saved.folderId);
     const response: LinkPreviewResponse = {
       preview: {
+        kind: deriveLinkKind(url),
         url,
         title: `Page on ${host}`,
         description: `A preview of ${host}.`,
@@ -113,6 +114,7 @@ export class MockLinksApi implements LinksApi {
       const now = new Date().toISOString();
       const link: LinkResponse = {
         id: globalThis.crypto.randomUUID(),
+        kind: request.kind ?? deriveLinkKind(request.url),
         folderId: request.folderId ?? null,
         url: request.url,
         title: request.title ?? request.url,
@@ -250,9 +252,16 @@ export class MockLinksApi implements LinksApi {
         }
         pinnedInFolderAt = current.pinnedInFolderAt ?? now;
       }
+      // Like the API: another page takes the kind of its host unless the request sets one.
+      const kind =
+        fields.kind ??
+        (fields.url !== undefined && normalizeUrl(fields.url) !== normalizeUrl(current.url)
+          ? deriveLinkKind(fields.url)
+          : current.kind);
       const updated: LinkResponse = {
         ...current,
         ...fields,
+        kind,
         pinnedInFolderAt,
         updatedAt: now,
       };
@@ -343,6 +352,7 @@ export class MockLinksApi implements LinksApi {
           folderId: request.folderId ?? null,
           url: item.url,
           title: item.title ?? item.url,
+          kind: deriveLinkKind(item.url),
           note: null,
           faviconUrl: null,
           imageUrl: null,
@@ -407,15 +417,7 @@ export class MockLinksApi implements LinksApi {
   }
 
   private filter(query: ListLinksQuery): LinkResponse[] {
-    const wanted = (query.tag ?? []).map((name) => name.toLowerCase());
-    return this.links.filter(
-      (link) =>
-        (query.folderId === undefined || link.folderId === query.folderId) &&
-        (!query.unsorted || link.folderId === null) &&
-        (query.favorite === undefined || link.isFavorite === query.favorite) &&
-        wanted.every((tag) => link.tags.some((name) => name.toLowerCase() === tag)) &&
-        (query.q === undefined || matchesQuery(link, query.q)),
-    );
+    return this.data.matching(query);
   }
 }
 

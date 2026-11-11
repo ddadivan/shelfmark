@@ -27,4 +27,6 @@ export const RATE_LIMIT = {
   DeleteAccount: { limit: 5, ttl: MINUTE_MS },
   // Irreversible Trash writes: delete forever and empty.
   TrashDelete: { limit: 10, ttl: MINUTE_MS },
+  // Saved view writes (create, rename, delete, reorder): generous for menus, tight against scripts.
+  ViewWrite: { limit: 30, ttl: MINUTE_MS },
 } as const satisfies Record<string, RateLimitPreset>;

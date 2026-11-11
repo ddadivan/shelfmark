@@ -12,6 +12,7 @@ import {
   type CreateLinksBatchRequest,
   type LinkBatchItemError,
   type LinkResponse,
+  deriveLinkKind,
 } from '@shelfmark/contracts';
 import { hasPrismaCode } from '../common/prisma/has-prisma-code';
 import { PRISMA_ERROR_CODE } from '../common/prisma/prisma-error-code.const';
@@ -153,6 +154,8 @@ export class LinksBatchService {
           normalizedUrl: entry.normalizedUrl,
           title,
           titleSortKey: title.toLowerCase(),
+          // Like a single save: the type comes from known hosts (no page is fetched here).
+          kind: deriveLinkKind(item.url),
           faviconSourceUrl: item.faviconUrl ?? null,
           imageSourceUrl: item.imageUrl ?? null,
           captureAttemptedAt: null,

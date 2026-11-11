@@ -1,12 +1,19 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import type { LinkPreviewResponse } from '@shelfmark/contracts';
+import { LINK_KIND, type LinkPreviewResponse } from '@shelfmark/contracts';
 import { Subject, throwError, type Observable } from 'rxjs';
 import { loadPreviews } from './load-previews';
 import type { PastePreviewResult } from './models/paste-preview-result.interface';
 
 function response(url: string): LinkPreviewResponse {
   return {
-    preview: { url, title: `Title of ${url}`, description: null, imageUrl: null, faviconUrl: null },
+    preview: {
+      kind: LINK_KIND.Other,
+      url,
+      title: `Title of ${url}`,
+      description: null,
+      imageUrl: null,
+      faviconUrl: null,
+    },
     duplicate: null,
     fetched: true,
   };

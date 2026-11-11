@@ -1,5 +1,12 @@
+import type { LinkKind } from './link-kind.type';
+
 /** `PATCH /api/links/:id` body; send only the fields to change. `null` clears note and folder. */
 export interface UpdateLinkRequest {
+  /**
+   * The user's choice. Without it, a new URL (another normalized URL) recomputes the kind from the host
+   * (no page fetch); the same URL keeps it (ADR 0038).
+   */
+  kind?: LinkKind;
   /** http(s) URL, at most `LINK_LIMIT.UrlMax` characters. */
   url?: string;
   /** At most `LINK_LIMIT.TitleMax`. */

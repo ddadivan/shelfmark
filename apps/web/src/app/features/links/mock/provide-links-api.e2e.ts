@@ -15,6 +15,10 @@ import { HttpTrashApi } from '../../trash/http/http-trash.api';
 import { MockTrashApi } from '../../trash/mock/mock-trash.api';
 import { TRASH_API } from '../../trash/models/trash-api.const';
 import type { TrashApi } from '../../trash/models/trash-api.interface';
+import { HttpSavedViewsApi } from '../../views/http/http-saved-views.api';
+import { MockSavedViewsApi } from '../../views/mock/mock-saved-views.api';
+import { SAVED_VIEWS_API } from '../../views/models/saved-views-api.const';
+import type { SavedViewsApi } from '../../views/models/saved-views-api.interface';
 import { HttpFoldersApi } from '../http/http-folders.api';
 import { HttpLinksApi } from '../http/http-links.api';
 import { HttpTagsApi } from '../http/http-tags.api';
@@ -93,6 +97,11 @@ export function provideLinksApi(): Provider[] {
       provide: USER_SETTINGS_API,
       useFactory: (): UserSettingsApi =>
         useRealApi() ? inject(HttpUserSettingsApi) : inject(MockUserSettingsApi),
+    },
+    {
+      provide: SAVED_VIEWS_API,
+      useFactory: (): SavedViewsApi =>
+        useRealApi() ? inject(HttpSavedViewsApi) : inject(MockSavedViewsApi),
     },
     { provide: EXPORT_API, useExisting: MockExportApi },
   ];

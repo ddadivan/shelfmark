@@ -8,6 +8,7 @@ import {
   type FolderResponse,
   type LibraryCounts,
   type LinkResponse,
+  type ListLinksQuery,
   type ListPinsResponse,
   type PinKind,
   type PinRef,
@@ -20,7 +21,10 @@ import type { MockTrashEntry } from '../../trash/mock/models/mock-trash-entry.in
 import { MOCK_TRASH_SCENARIO } from '../../trash/mock/models/mock-trash-scenario.const';
 import { MOCK_TRASH_SCENARIO_KEY } from '../../trash/mock/models/mock-trash-scenario-key.const';
 import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
+import { matchesQuery } from '../search-query';
 import { generateMockLinks } from './generate-mock-links';
+import type { MockSavedView } from '../../views/mock/models/mock-saved-view.interface';
+import { mockStarterViews } from '../../views/mock/mock-starter-views';
 
 const SEEDED_OLD_LINKS = 2;
 const SEEDED_OLD_DAYS = 20;
@@ -49,6 +53,8 @@ export class MockLibraryData {
   folderColours = true;
   /** The sidebar pins in order (folders and links together). */
   pins: PinRef[] = [];
+  /** The saved views in order; a new account starts with the starter views. */
+  views: MockSavedView[] = mockStarterViews();
 
   /** Stored folders without counts; mutate through `setFolders`. */
   get folderList(): readonly FolderResponse[] {
@@ -97,6 +103,20 @@ export class MockLibraryData {
   /** Pin writes and Trash drop pins of items that are gone. */
   unpin(kind: PinKind, ids: readonly string[]): void {
     this.pins = this.pins.filter((pin) => pin.kind !== kind || !ids.includes(pin.id));
+  }
+
+  /** The links a list query matches (the filters of `GET /api/links`, no sort, no paging). */
+  matching(query: ListLinksQuery): LinkResponse[] {
+    const wanted = (query.tag ?? []).map((name) => name.toLowerCase());
+    return this.links.filter(
+      (link) =>
+        (query.folderId === undefined || link.folderId === query.folderId) &&
+        (!query.unsorted || link.folderId === null) &&
+        (query.favorite === undefined || link.isFavorite === query.favorite) &&
+        (query.kind === undefined || link.kind === query.kind) &&
+        wanted.every((tag) => link.tags.some((name) => name.toLowerCase() === tag)) &&
+        (query.q === undefined || matchesQuery(link, query.q)),
+    );
   }
 
   counts(): LibraryCounts {

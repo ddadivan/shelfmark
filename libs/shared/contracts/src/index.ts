@@ -138,6 +138,25 @@ export type { CreatePinRequest } from './pins/create-pin-request.interface';
 export type { PinResponse } from './pins/pin-response.interface';
 export type { ListPinsResponse } from './pins/list-pins-response.interface';
 export type { ReorderPinsRequest } from './pins/reorder-pins-request.interface';
+
+export { LINK_KIND } from './links/link-kind.const';
+export type { LinkKind } from './links/link-kind.type';
+export { LINK_KIND_VIDEO_HOSTS } from './links/link-kind-video-hosts.const';
+export { LINK_KIND_SHOP_HOSTS } from './links/link-kind-shop-hosts.const';
+export { deriveLinkKind } from './links/derive-link-kind';
+
+export { SAVED_VIEW_SCOPE } from './views/saved-view-scope.const';
+export type { SavedViewScope } from './views/saved-view-scope.type';
+export { SAVED_VIEW_LIMIT } from './views/saved-view-limit.const';
+export { SAVED_VIEW_ENDPOINT } from './views/saved-view-endpoint.const';
+export { SAVED_VIEW_ERROR_MESSAGE } from './views/saved-view-error-message.const';
+export type { SavedViewQuery } from './views/saved-view-query.interface';
+export type { SavedViewQueryRequest } from './views/saved-view-query-request.interface';
+export type { SavedViewResponse } from './views/saved-view-response.interface';
+export type { ListSavedViewsResponse } from './views/list-saved-views-response.interface';
+export type { CreateSavedViewRequest } from './views/create-saved-view-request.interface';
+export type { UpdateSavedViewRequest } from './views/update-saved-view-request.interface';
+export type { ReorderSavedViewsRequest } from './views/reorder-saved-views-request.interface';
 export { FEEDBACK_MESSAGE_KIND } from './feedback/feedback-message-kind.const';
 export type { FeedbackMessageKind } from './feedback/feedback-message-kind.type';
 export { FEEDBACK_STATUS } from './feedback/feedback-status.const';
