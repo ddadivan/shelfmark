@@ -17,6 +17,7 @@
     "build": "nx run-many -t build -p web api",
     "test": "nx run-many -t test",
     "e2e": "nx e2e web-e2e",
+    "promo": "nx run web-e2e:promo",
     "storybook": "nx storybook ui",
     "prepare": "node scripts/prepare.mjs",
     "format": "prettier --write .",
