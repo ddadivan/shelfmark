@@ -1,5 +1,3 @@
-// `cursorScript` runs in the page, so this file needs the DOM types.
-/// <reference lib="dom" />
 import type { Locator, Page } from '@playwright/test';
 import { PROMO_CHAPTER_START_MS } from '../models/promo-chapter.const';
 import type { PromoChapter } from '../models/promo-chapter.type';
@@ -21,22 +19,25 @@ function sleep(ms: number): Promise<void> {
  * Draws a pointer for the recording only (it never ships in the app): a dot that follows the
  * mouse and pulses on press, or a tap ripple on touch. It is a manual popover, so it sits in the
  * top layer like the app's dialogs and menus, and is re-shown whenever another popover opens so
- * it stays in front. Styles go through the CSSOM, which the CSP allows.
+ * it stays in front. Styles go through the CSSOM, which the CSP allows. A string script: this
+ * project has no DOM lib, and the code runs in the browser anyway (see `src/support/settled.ts`).
  */
-function cursorScript(touch: boolean): void {
-  const install = (): void => {
+function cursorScript(touch: boolean): string {
+  return `(() => {
+  const touch = ${touch};
+  const install = () => {
     const dot = document.createElement('div');
     dot.setAttribute('popover', 'manual');
     dot.setAttribute('aria-hidden', 'true');
     dot.setAttribute('data-promo-cursor', '');
     const size = touch ? 44 : 22;
-    const css: Record<string, string> = {
+    const css = {
       position: 'fixed',
       inset: 'auto',
       left: '0',
       top: '0',
-      width: `${size}px`,
-      height: `${size}px`,
+      width: size + 'px',
+      height: size + 'px',
       margin: '0',
       padding: '0',
       border: '0',
@@ -52,7 +53,7 @@ function cursorScript(touch: boolean): void {
     Object.entries(css).forEach(([name, value]) => dot.style.setProperty(name, value));
     document.body.append(dot);
 
-    const raise = (): void => {
+    const raise = () => {
       try {
         if (dot.matches(':popover-open')) {
           dot.hidePopover();
@@ -66,7 +67,7 @@ function cursorScript(touch: boolean): void {
     document.addEventListener(
       'toggle',
       (event) => {
-        if (event.target !== dot && (event as ToggleEvent).newState === 'open') {
+        if (event.target !== dot && event.newState === 'open') {
           queueMicrotask(raise);
         }
       },
@@ -79,11 +80,10 @@ function cursorScript(touch: boolean): void {
       }
     }).observe(document.body, { childList: true });
 
-    const moveTo = (event: PointerEvent): void => {
-      dot.style.setProperty(
-        'transform',
-        `translate(${event.clientX - size / 2}px, ${event.clientY - size / 2}px)`,
-      );
+    const moveTo = (event) => {
+      const x = event.clientX - size / 2;
+      const y = event.clientY - size / 2;
+      dot.style.setProperty('transform', 'translate(' + x + 'px, ' + y + 'px)');
     };
     window.addEventListener('pointermove', moveTo, true);
     window.addEventListener(
@@ -111,6 +111,7 @@ function cursorScript(touch: boolean): void {
   } else {
     document.addEventListener('DOMContentLoaded', install, { once: true });
   }
+})();`;
 }
 
 /**
@@ -128,7 +129,7 @@ export class PromoDirector {
 
   /** Adds the recording pointer to every page of the context. */
   static async installCursor(page: Page, touch: boolean): Promise<void> {
-    await page.addInitScript(cursorScript, touch);
+    await page.addInitScript({ content: cursorScript(touch) });
   }
 
   start(): void {
