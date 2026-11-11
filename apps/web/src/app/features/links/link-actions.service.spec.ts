@@ -34,6 +34,7 @@ async function setup(confirmed = true) {
     ),
     remove: vi.fn<LinksApi['remove']>(() => of(undefined)),
     open: vi.fn<LinksApi['open']>((id) => of(link(Number(id.slice(3))))),
+    removeBatch: vi.fn<LinksApi['removeBatch']>((ids) => of({ deleted: ids.length })),
   };
   const confirm = vi.fn(() => Promise.resolve(confirmed));
   const dialogOpen = vi.fn<(component: unknown, config: unknown) => { result: Promise<undefined> }>(
@@ -365,6 +366,101 @@ describe('LinkActionsService', () => {
 
       expect(ids(store)).toEqual(['id-1', 'id-2']);
       expect(toasts).toEqual([]);
+    });
+
+    it('passes pasted text on to the dialog', async () => {
+      const { actions, addLinkOpen } = await setup();
+      addLinkOpen.mockResolvedValue(undefined);
+
+      await actions.addLink({ text: 'a.example/1 b.example/2' });
+
+      expect(addLinkOpen).toHaveBeenCalledWith({ text: 'a.example/1 b.example/2' });
+    });
+  });
+
+  describe('paste many', () => {
+    const savedMany = (errors = 0) => ({
+      action: ADD_LINK_ACTION.SavedMany,
+      links: [link(7), link(8), link(9)],
+      errors: Array.from({ length: errors }, (_, index) => ({
+        index,
+        url: `https://x.example/${index}`,
+        code: 'duplicate-in-batch' as const,
+      })),
+      folderId: null,
+    });
+
+    it('shows the links at the top and one summary toast with Undo', async () => {
+      const { actions, addLinkOpen, store, toasts } = await setup();
+      addLinkOpen.mockResolvedValue(savedMany());
+
+      await actions.addLink();
+
+      expect(ids(store)).toEqual(['id-7', 'id-8', 'id-9', 'id-1', 'id-2']);
+      expect(toasts).toHaveLength(1);
+      expect(toasts[0]).toMatchObject({
+        kind: TOAST_KIND.Success,
+        title: '3 links saved to Unsorted',
+        detail: 'Titles and previews are still loading',
+        duration: 8000,
+        action: { label: 'Undo' },
+      });
+    });
+
+    it('names the items the server skipped instead of the loading hint', async () => {
+      const { actions, addLinkOpen, toasts } = await setup();
+      addLinkOpen.mockResolvedValue(savedMany(1));
+
+      await actions.addLink();
+
+      expect(toasts[0]).toMatchObject({
+        kind: TOAST_KIND.Warn,
+        detail: '1 link was skipped: it was a repeat or too long',
+      });
+    });
+
+    it('says so when the server saved none of them', async () => {
+      const { actions, addLinkOpen, toasts } = await setup();
+      addLinkOpen.mockResolvedValue({ ...savedMany(2), links: [] });
+
+      await actions.addLink();
+
+      expect(toasts[0]).toMatchObject({
+        kind: TOAST_KIND.Danger,
+        title: 'No links were saved',
+        detail: '2 links were skipped: repeats or too long',
+      });
+    });
+
+    it('Undo takes the links out at once and deletes them in one request', async () => {
+      const { actions, addLinkOpen, api, store, toasts } = await setup();
+      addLinkOpen.mockResolvedValue(savedMany());
+      await actions.addLink();
+
+      toasts[0].action?.run();
+      await vi.waitFor(() =>
+        expect(api.removeBatch).toHaveBeenCalledWith(['id-7', 'id-8', 'id-9']),
+      );
+
+      expect(ids(store)).toEqual(['id-1', 'id-2']);
+    });
+
+    it('brings the links back and says so when the Undo fails', async () => {
+      const { actions, addLinkOpen, api, store, toasts } = await setup();
+      api.removeBatch.mockReturnValue(throwError(() => new Error('offline')));
+      addLinkOpen.mockResolvedValue(savedMany());
+      await actions.addLink();
+
+      toasts[0].action?.run();
+
+      await vi.waitFor(() =>
+        expect(toasts[1]).toMatchObject({
+          kind: TOAST_KIND.Danger,
+          title: "Couldn't undo",
+          detail: 'The links are still saved',
+        }),
+      );
+      expect(ids(store)).toEqual(['id-7', 'id-8', 'id-9', 'id-1', 'id-2']);
     });
   });
 });

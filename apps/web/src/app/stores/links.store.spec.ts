@@ -694,6 +694,86 @@ describe('LinksStore', () => {
       expect(ids(store)).toContain('id-2');
     });
 
+    it('marks a saved link as landed and clears the mark after the motion', () => {
+      vi.useFakeTimers();
+      try {
+        const { store } = setup();
+        store.setFilter({ scope: LINKS_SCOPE.All });
+
+        store.addSaved(link(9));
+        expect(store.landed()).toEqual({ 'id-9': 0 });
+
+        vi.advanceTimersByTime(3000);
+        expect(store.landed()).toEqual({});
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it('shows links saved together at the top in paste order, staggered', () => {
+      const { store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.All });
+
+      store.addSavedMany([link(7), link(8), link(9)]);
+
+      expect(ids(store)).toEqual(['id-7', 'id-8', 'id-9', 'id-1', 'id-2', 'id-3']);
+      expect(store.landed()).toEqual({ 'id-7': 0, 'id-8': 1, 'id-9': 2 });
+    });
+
+    it('caps the stagger of a long paste', () => {
+      const { store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.All });
+
+      store.addSavedMany(Array.from({ length: 15 }, (_, index) => link(100 + index)));
+
+      expect(store.landed()['id-114']).toBe(10);
+    });
+
+    it('leaves links saved together out of a scope they do not belong to', () => {
+      const { store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.Unsorted });
+
+      store.addSavedMany([link(7, { folderId: 'f1' }), link(8, { folderId: null })]);
+
+      expect(ids(store)).toContain('id-8');
+      expect(ids(store)).not.toContain('id-7');
+      expect(store.landed()).toEqual({ 'id-8': 0 });
+    });
+
+    it('starts the capture of links saved together with pending images', async () => {
+      const { api, store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      const pending = link(7, {
+        title: 'https://example.org/a',
+        faviconUrl: '/api/links/id-7/favicon?v=pending',
+        imageUrl: '/api/links/id-7/image?v=pending',
+      });
+      api.captureImages.mockReturnValueOnce(
+        of(
+          link(7, {
+            title: 'The page title',
+            faviconUrl: '/api/links/id-7/favicon?v=0123456789abcdef',
+            imageUrl: '/api/links/id-7/image?v=0123456789abcdef',
+          }),
+        ),
+      );
+
+      store.addSavedMany([pending]);
+
+      await vi.waitFor(() => expect(store.entityMap()['id-7']?.title).toBe('The page title'));
+      expect(store.entityMap()['id-7']?.imageUrl).toBe('/api/links/id-7/image?v=0123456789abcdef');
+    });
+
+    it('drops links saved together (Undo) from the feed', () => {
+      const { store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      store.addSavedMany([link(7), link(8)]);
+
+      store.dropSaved(['id-7', 'id-8']);
+
+      expect(ids(store)).toEqual(['id-1', 'id-2', 'id-3']);
+    });
+
     it('applies an edit from the server', () => {
       const { store } = setup();
       store.setFilter({ scope: LINKS_SCOPE.All });

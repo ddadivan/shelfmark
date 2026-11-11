@@ -143,6 +143,73 @@ describe('parsePastedLinks', () => {
     expect(parsePastedLinks('')).toEqual({ links: [], skipped: [], overflow: 0, found: 0 });
   });
 
+  it('ignores other schemes: javascript, data, ftp, mailto', () => {
+    const parsed = parsePastedLinks(
+      [
+        'javascript:alert(1)',
+        'data:text/html,<b>x</b>',
+        'ftp://files.example.org/a',
+        'mailto:me@example.org',
+      ].join('\n'),
+    );
+    expect(parsed.links).toEqual([]);
+    expect(parsed.skipped).toHaveLength(4);
+  });
+
+  it('does not take e-mail addresses, version numbers or file names for links', () => {
+    const parsed = parsePastedLinks('write to me@example.org, see v1.2 or readme.md, e.g. later');
+    expect(parsed.links).toEqual([]);
+    expect(parsed.skipped).toHaveLength(1);
+  });
+
+  it('reads links out of Markdown, angle brackets and quotes', () => {
+    expect(
+      parsePastedLinks(
+        '[docs](https://angular.dev/guide) <https://ngrx.io/guide> "https://nx.dev/docs"',
+      ).links,
+    ).toEqual(['https://angular.dev/guide', 'https://ngrx.io/guide', 'https://nx.dev/docs']);
+  });
+
+  it('reads bulleted and numbered lists', () => {
+    expect(
+      parsePastedLinks(
+        '- dev.to/a/b\n* https://example.org/c\n1. www.example.com\n2) example.net/d',
+      ).links,
+    ).toEqual([
+      'https://dev.to/a/b',
+      'https://example.org/c',
+      'https://www.example.com',
+      'https://example.net/d',
+    ]);
+  });
+
+  it('drops links with a user name or password', () => {
+    expect(parsePastedLinks('https://user:secret@example.org/a').links).toEqual([]);
+  });
+
+  it('takes an upper-case scheme as it is', () => {
+    expect(parsePastedLinks('HTTPS://Example.org/Path').links).toEqual([
+      'HTTPS://Example.org/Path',
+    ]);
+  });
+
+  it('drops a trailing ellipsis and question mark of the sentence', () => {
+    expect(
+      parsePastedLinks('have you read https://example.org/a? and example.org/b...').links,
+    ).toEqual(['https://example.org/a', 'https://example.org/b']);
+  });
+
+  it('keeps the first spelling of a link pasted twice and counts it once', () => {
+    const parsed = parsePastedLinks('example.org/a\nhttps://example.org/a\nhttp://example.org/a');
+    expect(parsed.links[0]).toBe('https://example.org/a');
+    expect(parsed.found).toBe(parsed.links.length);
+  });
+
+  it('reads only the start of a huge paste', () => {
+    const parsed = parsePastedLinks(`${' '.repeat(600_000)}https://late.example/a`);
+    expect(parsed.links).toEqual([]);
+  });
+
   it('finds several links on one line separated by commas or spaces', () => {
     expect(parsePastedLinks('https://a.test/1,https://a.test/2 dev.to/x/y').links).toEqual([
       'https://a.test/1',

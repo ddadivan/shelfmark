@@ -32,6 +32,82 @@ describe('MockLinksApi', () => {
     expect(response.preview.title).toContain('example.org');
   });
 
+  describe('paste many', () => {
+    it('saves a batch in paste order, pending, and replays known keys', async () => {
+      const batchApi = createApi();
+      const request = {
+        items: [
+          { url: 'https://batch.example/a', idempotencyKey: 'k-a', title: 'A' },
+          { url: 'https://batch.example/b', idempotencyKey: 'k-b' },
+          { url: 'https://batch.example/a/', idempotencyKey: 'k-c' },
+        ],
+        tags: ['pasted'],
+      };
+
+      const first = await firstValueFrom(batchApi.createBatch(request));
+      expect(first.links.map((link) => link.title)).toEqual(['A', 'https://batch.example/b']);
+      expect(first.links[0].tags).toEqual(['pasted']);
+      expect(first.links[0].imageUrl).toContain('pending');
+      expect(first.errors).toEqual([
+        { index: 2, url: 'https://batch.example/a/', code: 'duplicate-in-batch' },
+      ]);
+
+      const again = await firstValueFrom(batchApi.createBatch(request));
+      expect(again.links.map((link) => link.id)).toEqual(first.links.map((link) => link.id));
+    });
+
+    it('fills in the page title of a link saved without one when its images are captured', async () => {
+      const batchApi = createApi();
+      const { links } = await firstValueFrom(
+        batchApi.createBatch({ items: [{ url: 'https://batch.example/t', idempotencyKey: 'k' }] }),
+      );
+
+      const captured = await firstValueFrom(batchApi.captureImages(links[0].id));
+
+      expect(captured.title).toBe('Page on batch.example');
+    });
+
+    it('reports a saved link as a duplicate in the preview', async () => {
+      const batchApi = createApi();
+      const { links } = await firstValueFrom(
+        batchApi.createBatch({ items: [{ url: 'https://batch.example/d', idempotencyKey: 'k' }] }),
+      );
+
+      const response = await firstValueFrom(batchApi.preview('https://batch.example/d/'));
+
+      expect(response.duplicate).toMatchObject({ id: links[0].id, folderName: null });
+    });
+
+    it('deletes a batch (Undo) and fails it for the delete-fails host', async () => {
+      const batchApi = createApi();
+      const { links } = await firstValueFrom(
+        batchApi.createBatch({
+          items: [
+            { url: 'https://batch.example/x', idempotencyKey: 'x' },
+            { url: `https://${MOCK_HOST.DeleteFails}/y`, idempotencyKey: 'y' },
+          ],
+        }),
+      );
+
+      await expect(
+        firstValueFrom(batchApi.removeBatch(links.map((link) => link.id))),
+      ).rejects.toThrow();
+      expect(await firstValueFrom(batchApi.removeBatch([links[0].id, 'missing']))).toEqual({
+        deleted: 1,
+      });
+    });
+
+    it('fails a batch with a save-fails link as a whole', async () => {
+      await expect(
+        firstValueFrom(
+          createApi().createBatch({
+            items: [{ url: `https://${MOCK_HOST.SaveFails}/z`, idempotencyKey: 'z' }],
+          }),
+        ),
+      ).rejects.toThrow();
+    });
+  });
+
   it('fails the preview for the unreachable host', async () => {
     await expect(
       firstValueFrom(api.preview(`https://${MOCK_HOST.Unreachable}/doc`)),

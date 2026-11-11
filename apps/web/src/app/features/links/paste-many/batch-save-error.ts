@@ -13,8 +13,10 @@ import type { BatchSaveError } from './models/batch-save-error.interface';
 export function batchSaveError(error: unknown): BatchSaveError {
   const body = apiError(error);
   const fit = body?.statusCode === HttpStatusCode.Conflict ? linkLimitFit(body.message) : null;
-  if (fit !== null && fit > 0) {
-    return { key: pluralKey('links.many.saveFailedFit', fit), fit };
+  if (fit !== null) {
+    return fit > 0
+      ? { key: pluralKey('links.many.saveFailedFit', fit), fit }
+      : { key: 'links.add.saveFailedLimit', fit: null };
   }
   return { key: saveErrorKey(error), fit: null };
 }
