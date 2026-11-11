@@ -237,20 +237,34 @@ model LinkTag {
   @@map("link_tags")
 }
 
-// App rating (#100, PROJECT.md 4 story 24): one row per user and milestone ("day3", "week1", "month1",
-// "year1"). `score` null records "not now". Plain-SQL CHECKs (milestone set, score 1-10, comment
-// length, no comment without a score) live in the migration. The comment is user text: never logged.
+// Feedback (#100, #272), two kinds of row in one table. A rating (story 24) has a `milestone`
+// ("day3", "week1", "month1", "year1"), one row per user and milestone; `score` null records "not now";
+// `kind` is null. A message (story 25) has a `kind` ("idea", "problem", "other"), no milestone, no score,
+// and `comment` holds the text; `status` ("received", "planned", "in-progress", "done", "not-planned")
+// and `reply` are set by the author through the admin API; the optional screenshot (PNG, JPEG or WebP,
+// at most 2 MB) lives in `screenshot`. NULL milestones never collide in the unique index. Plain-SQL
+// CHECKs (sets, lengths, the rating-or-message shape) live in the migrations. The comment and reply
+// are user text: never logged. Reads that do not need the image never select `screenshot`.
 model Feedback {
-  id        String   @id @default(uuid(7)) @db.Uuid
-  userId    String   @map("user_id") @db.Uuid
-  milestone String   @db.VarChar(10)
-  score     Int?     @db.SmallInt
-  comment   String?
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id               String   @id @default(uuid(7)) @db.Uuid
+  userId           String   @map("user_id") @db.Uuid
+  milestone        String?  @db.VarChar(10)
+  score            Int?     @db.SmallInt
+  comment          String?
+  kind             String?
+  status           String   @default("received")
+  reply            String?
+  screenshot       Bytes?
+  screenshotType   String?  @map("screenshot_type")
+  clientAppVersion String?  @map("client_app_version") @db.VarChar(300)
+  clientUserAgent  String?  @map("client_user_agent") @db.VarChar(300)
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, milestone])
+  @@index([userId, createdAt])
+  @@index([createdAt(sort: Desc), id(sort: Desc)])
   @@map("feedback")
 }
 

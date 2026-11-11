@@ -1,0 +1,66 @@
+@use 'ui' as *;
+@use '../settings-page' as *;
+@include settings-page;
+
+.feedback-page__body {
+  display: flex;
+  flex-direction: column;
+}
+
+.feedback-page__list {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.feedback-page__item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: start;
+  padding-block: var(--space-3);
+  border-block-start: 1px solid var(--border);
+
+  &:first-child {
+    border-block-start: 0;
+  }
+
+  // Phone: the status moves under the text so the text keeps its width.
+  @include phone {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+}
+
+.feedback-page__status {
+  @include phone {
+    grid-column: 2;
+  }
+}
+
+.feedback-page__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.feedback-page__text {
+  @include type(body);
+
+  margin: 0;
+  color: var(--text);
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+.feedback-page__meta,
+.feedback-page__reply {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}

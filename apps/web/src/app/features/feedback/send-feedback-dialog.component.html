@@ -1,0 +1,121 @@
+<form [formRoot]="form">
+  <ui-dialog
+    [title]="(sent() ? 'feedback.thanks.title' : 'feedback.dialog.title') | transloco"
+    [closeLabel]="'feedback.dialog.close' | transloco"
+    [hideTitle]="sent()"
+  >
+    @if (sent()) {
+      <div class="feedback-dialog__thanks">
+        <span class="feedback-dialog__badge" aria-hidden="true"
+          ><ui-icon name="check" [size]="ICON_SIZE.Lg"
+        /></span>
+        <p class="feedback-dialog__thanks-title" aria-hidden="true">
+          {{ 'feedback.thanks.title' | transloco }}
+        </p>
+        <p class="feedback-dialog__text">{{ 'feedback.thanks.text' | transloco }}</p>
+      </div>
+    } @else {
+      <div class="feedback-dialog__fields">
+        <ui-segmented-control
+          [ariaLabel]="'feedback.dialog.kind' | transloco"
+          [options]="kindOptions()"
+          [value]="form.kind().value()"
+          (valueChange)="setKind($event)"
+        />
+
+        <ui-textarea
+          [label]="copy().fieldKey | transloco"
+          [placeholder]="copy().placeholderKey | transloco"
+          [hint]="'feedback.dialog.hint' | transloco"
+          [counterLabel]="'feedback.dialog.counter' | transloco"
+          [rows]="4"
+          [formField]="form.text"
+        />
+
+        <div class="feedback-dialog__shot" role="group" aria-labelledby="feedback-shot-label">
+          <span class="feedback-dialog__shot-label" id="feedback-shot-label">{{
+            'feedback.screenshot.label' | transloco
+          }}</span>
+          <input #fileInput type="file" hidden [accept]="accept" (change)="onFileChosen($event)" />
+          @if (screenshot(); as attached) {
+            <div class="feedback-dialog__file">
+              <img class="feedback-dialog__thumb" [src]="attached.previewUrl" alt="" />
+              <span class="feedback-dialog__file-text">
+                <span class="feedback-dialog__file-name">{{ attached.name }}</span>
+                <span class="feedback-dialog__file-size">{{ screenshotSize() }}</span>
+              </span>
+              <ui-button
+                variant="ghost"
+                size="sm"
+                iconOnly
+                iconLeft="close"
+                [ariaLabel]="'feedback.screenshot.remove' | transloco"
+                [disabled]="sending()"
+                (click)="removeScreenshot()"
+              />
+            </div>
+          } @else {
+            <div
+              class="feedback-dialog__drop"
+              [class.feedback-dialog__drop--over]="dragging()"
+              (dragover)="onDragOver($event)"
+              (dragleave)="onDragLeave()"
+              (drop)="onDrop($event)"
+            >
+              <span>{{ 'feedback.screenshot.drop' | transloco }}</span>
+              <ui-button
+                #chooseButton
+                variant="ghost"
+                size="sm"
+                ariaDescribedby="feedback-shot-hint"
+                (click)="chooseFile()"
+              >
+                {{ 'feedback.screenshot.choose' | transloco }}
+              </ui-button>
+            </div>
+            <span class="feedback-dialog__shot-hint" id="feedback-shot-hint">{{
+              'feedback.screenshot.hint' | transloco: { max: maxMb }
+            }}</span>
+          }
+          @if (screenshotErrorText(); as message) {
+            <ui-notice [kind]="NOTICE_KIND.Danger">{{ message }}</ui-notice>
+          }
+        </div>
+
+        <ui-checkbox
+          [label]="'feedback.dialog.attachClient' | transloco"
+          [formField]="form.attachClient"
+        />
+
+        @if (sendErrorText(); as message) {
+          <ui-notice [kind]="NOTICE_KIND.Danger">{{ message }}</ui-notice>
+        }
+      </div>
+    }
+
+    <div slot="footer" class="feedback-dialog__foot">
+      @if (sent()) {
+        <ui-button
+          #doneButton
+          [variant]="BUTTON_VARIANT.Primary"
+          [block]="phone()"
+          (click)="close()"
+        >
+          {{ 'feedback.thanks.done' | transloco }}
+        </ui-button>
+      } @else {
+        <ui-button [block]="phone()" [disabled]="sending()" (click)="close()">
+          {{ 'feedback.dialog.cancel' | transloco }}
+        </ui-button>
+        <ui-button
+          [type]="BUTTON_TYPE.Submit"
+          [variant]="BUTTON_VARIANT.Primary"
+          [block]="phone()"
+          [loading]="sending()"
+        >
+          {{ (sending() ? 'feedback.dialog.sending' : 'feedback.dialog.send') | transloco }}
+        </ui-button>
+      }
+    </div>
+  </ui-dialog>
+</form>
