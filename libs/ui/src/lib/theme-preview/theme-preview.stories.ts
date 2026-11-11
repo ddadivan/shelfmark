@@ -93,23 +93,32 @@ export const AllVariants: Story = {
  * compact density, small previews and no tags, with link counts and a Recently opened row; both
  * themes.
  */
-export const Layout: Story = {
+export const LayoutOptions: Story = {
+  // Its own page only: on the autodocs page this story sends Storybook's docs chrome into an
+  // endless selectionchange loop (seen in Storybook 10 docs, not in the app or the story page).
+  tags: ['!autodocs'],
   render: () => ({
     props: {
-      themes: Object.values(THEME),
+      panes: Object.values(THEME).map((theme) => ({
+        theme,
+        font: 'readable',
+        density: 'compact',
+        preview: 'small',
+        tags: LAYOUT_OFF,
+      })),
       folders: ['All links', 'Angular', 'Clothes'],
       counts: [248, 12, 7],
       cards: CARDS.slice(0, 2),
     },
     template: `
       <div class="ds-themes">
-        @for (theme of themes; track theme) {
+        @for (pane of panes; track $index) {
           <div
-            [attr.${THEME_ATTRIBUTE}]="theme"
-            ${LAYOUT_ATTRIBUTE.Font}="readable"
-            ${LAYOUT_ATTRIBUTE.Density}="compact"
-            ${LAYOUT_ATTRIBUTE.CardPreview}="small"
-            ${LAYOUT_ATTRIBUTE.CardTags}="${LAYOUT_OFF}"
+            [attr.${THEME_ATTRIBUTE}]="pane.theme"
+            [attr.${LAYOUT_ATTRIBUTE.Font}]="pane.font"
+            [attr.${LAYOUT_ATTRIBUTE.Density}]="pane.density"
+            [attr.${LAYOUT_ATTRIBUTE.CardPreview}]="pane.preview"
+            [attr.${LAYOUT_ATTRIBUTE.CardTags}]="pane.tags"
             class="ds-pane"
           >
             <ui-theme-preview
