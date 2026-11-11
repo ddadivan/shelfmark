@@ -108,13 +108,13 @@
 }
 
 .library__drag-preview .library__drag-stack--near {
-  translate: calc(var(--drag-x) + #{rem(6px)}) calc(var(--drag-y) + #{rem(7px)});
-  rotate: -1deg;
+  translate: calc(var(--drag-x) + #{rem(4px)}) calc(var(--drag-y) + #{rem(5px)});
+  rotate: -1.5deg;
 }
 
 .library__drag-preview .library__drag-stack--far {
-  translate: calc(var(--drag-x) + #{rem(12px)}) calc(var(--drag-y) + #{rem(12px)});
-  rotate: 2deg;
+  translate: calc(var(--drag-x) + #{rem(8px)}) calc(var(--drag-y) + #{rem(10px)});
+  rotate: 1deg;
 }
 
 .library__drag-badge {
