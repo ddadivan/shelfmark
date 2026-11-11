@@ -346,15 +346,14 @@
 }
 
 // Bulk selection checkbox, top left over the preview (above the stretched link, like the actions).
+// The wrapper draws nothing: the checkbox's own solid `surface` box and `border-control` outline are
+// the one frame, readable on every placeholder tone.
 // It fades in with the actions on hover and keyboard focus, and stays while a selection runs.
 .ui-card__select {
   position: absolute;
   inset: rem(14px) auto auto rem(14px);
   z-index: 2;
   display: flex;
-  padding: rem(4px);
-  background: var(--surface);
-  border-radius: var(--radius-sm);
   opacity: 0;
   transition: opacity var(--duration-fast) var(--ease-out);
 
