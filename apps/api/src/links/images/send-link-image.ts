@@ -10,15 +10,20 @@ const IMAGE_CACHE_CONTROL = 'private, max-age=31536000, immutable';
 /**
  * Writes a stored image with the headers of ADR 0027: the stored type, no sniffing, same-origin
  * only, inline, browser-only caching. The strong ETag lets Express answer a revalidation with 304.
+ * `cacheControl` overrides the caching (public collections revalidate, so a disabled share stops).
  */
-export function sendLinkImage(res: Response, image: StoredLinkImage): void {
+export function sendLinkImage(
+  res: Response,
+  image: StoredLinkImage,
+  cacheControl: string = IMAGE_CACHE_CONTROL,
+): void {
   res
     .status(200)
     .setHeader('Content-Type', image.contentType)
     .setHeader('X-Content-Type-Options', 'nosniff')
     .setHeader('Cross-Origin-Resource-Policy', 'same-origin')
     .setHeader('Content-Disposition', 'inline')
-    .setHeader('Cache-Control', IMAGE_CACHE_CONTROL)
+    .setHeader('Cache-Control', cacheControl)
     .setHeader('Vary', 'Cookie')
     .setHeader('ETag', `"${image.sha256}"`)
     .send(image.bytes);

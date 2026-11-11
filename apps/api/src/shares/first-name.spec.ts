@@ -12,6 +12,11 @@ describe('firstName', () => {
     expect(firstName('   ')).toBe('');
   });
 
+  it('never publishes a display name that is an email address', () => {
+    expect(firstName('me@example.com')).toBe('');
+    expect(firstName('me@example.com Lovelace')).toBe('');
+  });
+
   it('cuts a very long word at 50 characters without splitting a surrogate pair', () => {
     expect(firstName('x'.repeat(80))).toHaveLength(50);
     expect([...firstName('😀'.repeat(60))]).toHaveLength(50);

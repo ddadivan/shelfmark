@@ -409,6 +409,8 @@ describe('shares API (public collections)', () => {
       expect(res.headers['x-content-type-options']).toBe('nosniff');
       expect(res.headers['cross-origin-resource-policy']).toBe('same-origin');
       expect(res.headers['x-robots-tag']).toBe('noindex, nofollow');
+      // Revalidated each view, so a disabled share stops serving cached images too.
+      expect(res.headers['cache-control']).toBe('private, no-cache');
       expect(Buffer.from(res.body as Buffer)).toEqual(bytes);
 
       const missing = await guest.get(`/api/public/collections/${token}/links/${inside}/image`);

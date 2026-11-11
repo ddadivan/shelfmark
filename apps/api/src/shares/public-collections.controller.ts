@@ -25,6 +25,9 @@ function setPublicHeaders(res: Response): void {
   }
 }
 
+/** Browser-only, always revalidated with the image's ETag. */
+const PUBLIC_IMAGE_CACHE_CONTROL = 'private, no-cache';
+
 /**
  * The read-only public collection page data and its images (#276, ADR 0040). Every handler is
  * anonymous on purpose and listed in `PUBLIC_ROUTES`: the token in the path is the capability.
@@ -91,6 +94,12 @@ export class PublicCollectionsController {
     kind: LinkImageKind,
   ): Promise<void> {
     res.setHeader('X-Robots-Tag', PUBLIC_COLLECTION_HEADERS['X-Robots-Tag']);
-    sendLinkImage(res, await this.collections.image(token, linkId, kind));
+    // Revalidated on every view (ETag, 304): a disabled or reset share stops serving at once
+    // instead of living on in the browser cache for a year (ADR 0040).
+    sendLinkImage(
+      res,
+      await this.collections.image(token, linkId, kind),
+      PUBLIC_IMAGE_CACHE_CONTROL,
+    );
   }
 }
