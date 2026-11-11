@@ -21,8 +21,17 @@
     }
     <ui-icon class="settings-index__chevron" name="chevron-right" [size]="ICON_SIZE.Md" />
   </a>
+  } @if (admin.isAdmin()) {
+  <a class="settings-index__row" [routerLink]="adminFeedbackPath">
+    <span class="settings-index__label">{{ 'shell.feedbackInbox' | transloco }}</span>
+    <ui-icon class="settings-index__chevron" name="chevron-right" [size]="ICON_SIZE.Md" />
+  </a>
   }
 </nav>
+
+<ui-button block [size]="BUTTON_SIZE.Lg" ariaHaspopup="dialog" (click)="feedback.open()">
+  {{ 'shell.sendFeedback' | transloco }}
+</ui-button>
 
 <nav class="settings-index__list" [attr.aria-label]="'settings.help' | transloco">
   <a class="settings-index__row" [routerLink]="aboutHref">

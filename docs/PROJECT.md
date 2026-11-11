@@ -162,6 +162,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 6. **Open.** A click opens the link in a new tab and updates "Recently opened".
 7. **Edit.** URL, title, note, tags and folder can be changed.
    - **Move to folder** (stage 2, #261): "Move to folder…" in the ⋯ menu of a card and a row opens a folder picker with search (Unsorted is the empty value; a sheet on phones). The move shows at once, a `moved` toast offers Undo, and a failed request puts the link back with an error toast.
+   - **Drag and drop** (stage 2, #266): from the tablet width, drag a card or row (hold 150 ms on touch) onto a folder or Unsorted in the sidebar, or onto a subfolder tile. The preview lifts and shrinks with a "Move 1 link" badge, the slot stays as a dashed outline, the folder under the pointer is highlighted with "Move here", a closed folder opens after 600 ms, Esc cancels. The drop is the same optimistic move with Undo. Phones have no drag (long press is for selection, #267); "Move to folder…" is the way there and the keyboard path.
 8. **Delete.** Deletion requires confirmation and moves the link to Trash (story 19); it is not gone until the retention period passes. Undo for 8 s after the confirmation, then the toast says "Moved to Trash".
 9. **Favorites.** As a user, I want to mark important links.
    - Add to favorites or remove from them in one click.
@@ -226,14 +227,21 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
     - Score 1–7 → dialog 2, feedback: "What would make it better?", a text field (up to 2000 characters), "Send" and "Skip" buttons; the score is saved even on "Skip". After sending: the thank-you dialog.
     - Dialog 3, thank you: "Thank you" + one line (for feedback: "We read every message"), closed by a button or automatically after 4 s. The steps change inside one window with a smooth transition, as in onboarding.
     - "Not now" or Esc closes it until the next milestone (recorded as "skipped"). On phone: a bottom sheet.
-25. **Folder colours, icons and pins.** As a user, I want to tell folders apart at a glance and keep the few I use most within reach (ADR 0037, screen `FolderStyle`).
+25. **Send feedback (#272).** As a user, I want to tell the author an idea or a problem at any time and see what became of it; as the author, I want to read and answer every message.
+    - Where: "Send feedback" in the account menu (desktop), in the You list (phone) and on Settings › Your feedback. It opens one dialog (a bottom sheet on a phone).
+    - The form: a type control (Idea, Problem, Other), a message field (1–2000 characters, counter, a different question and placeholder per type), an optional screenshot, "Attach browser and app version" (on by default), Cancel and Send.
+    - Screenshot: a drop area and a "choose a file" button (the button is the keyboard and screen-reader route; dropping is only a shortcut). PNG, JPEG or WebP up to 2 MB; type and size are checked in the browser before anything is sent, with clear messages; the preview is a `data:` URL thumbnail (the CSP allows `data:`, not `blob:`); sent as base64 per the contract.
+    - States: Sending… (button loading); "Thank you" with "Done"; a failed send keeps the text and says "Couldn't send. Your text is kept — try again in a moment."; a 429 has its own message.
+    - Settings › Your feedback (`/settings/feedback`): a "Send feedback" button and the user's messages, newest first: type, text, sent date ("Sent today", "Sent 3 Nov"), the author's reply ("Reply: …") when there is one, and a status badge (Received, Planned, In progress, Done, Not planned). Loading, empty and error states. The "Ratings" block of the mockup is not part of this story.
+    - The author's inbox (`/admin/feedback`, only for the author; everyone else is sent to `/links` and the API answers 404): a "Feedback inbox" item in the account menu and the You list, shown only when `GET /api/admin/status` says so; every message with sender name and email, date, status badge and screenshot link; a status filter; per message a status select and a reply field with Save. Saving is optimistic: it rolls back with an error toast when the API refuses.
+26. **Folder colours, icons and pins.** As a user, I want to tell folders apart at a glance and keep the few I use most within reach (ADR 0037, screen `FolderStyle`).
     - The folder menu (sidebar row, phone Library) has "Colour and icon…": a dialog with a preview tile, eight colours and the icon set as two radio groups (arrow keys move inside a group), Reset (graphite folder icon), Cancel and Save. Save closes at once and the folder wears the style at once; a failed request puts the old style back with an error toast.
     - The chosen colour and icon show everywhere the folder does: sidebar rows, subfolder tiles, the phone Library list and the `moved` toast tile. Settings › Library › "Folder colours" off shows every folder in graphite (the choice is kept).
     - "Pin to sidebar" / "Unpin from sidebar" in the menu of a folder, a link card and a link row. A "Pinned" section above Folders lists the pinned folders and links in the chosen order (on a phone at the top of the Library page); a folder opens its page, a link opens in a new tab. At most 7 items: the eighth is refused with a toast that names the limit.
     - Reorder by dragging (desktop) or with "Move up" / "Move down" in the menu of a pinned item (also on a phone); Settings › Library has "Pinned at the top, up to 7 folders and links" with an "Edit pinned" dialog (move up, move down, unpin).
     - In a folder view a link menu also has "Pin to top" / "Unpin from top" (not in Unsorted, All links and other views): pinned links come first with a "Pinned" label, in the order they were pinned (at most 20 per folder); subfolders always come before links. A move or Trash unpins.
 
-26. **Saved views.** As a user, I want to come back to the filters I use often in one click (ADR 0038, screens `Main`, `RecentView`, component `SavedView`).
+27. **Saved views.** As a user, I want to come back to the filters I use often in one click (ADR 0038, screens `Main`, `RecentView`, component `SavedView`).
     - Every link has a type: video, article, shopping or other. It is set when the link is saved (from the page: `og:type`, then known video and shop sites), follows a changed address, and can be changed in the edit dialog ("Type").
     - Above the feed, chips: "All" with the number of links, then the saved views with their counts ("Videos 5", "Articles 4"), then a dashed "+ Save this view". A new account starts with Videos and Articles. The pressed chip (filled) is the view the feed shows now; "All" when nothing is narrowed. The chips wrap on a desktop and scroll sideways in one row on a phone; arrow keys move between them.
     - A view stores the place (all links, Unsorted, Favorites or a folder), tags, type, search and sort. Choosing it opens that place with that filter; the type shows as a removable chip in the filter row.
@@ -298,6 +306,7 @@ See ADR 0004.
   - `TrashStore`: what is in Trash (optimistic restore / delete forever / empty); `UserSettingsStore`: account preferences (the Trash retention, "Folder colours"); `PinsStore`: the sidebar pins (optimistic pin / unpin / reorder, limit 7);
   - `UiStore`: "cards / list" view; persisted in `localStorage`.
 - **Classic NgRx Store is not used**: it is overkill for this app.
+- **Tab sync** (stage 2, #268): the tabs of one browser share a `BroadcastChannel` (`TabSyncService`). The API seams post successful writes; other tabs of the same user apply them silently (a saved link lands with its animation; edits, moves and deletes show; folder and tag changes reload the sidebar and the feed). Signing out locks the other tabs with "You signed out in another tab" and clears their library; a sign-in anywhere reloads locked and signed-out tabs. The theme follows through the `storage` event.
 - **UI:** own component library `libs/ui` on SCSS and design tokens, behaviour from Angular Aria / CDK; Tailwind and Angular Material are not used (section 7).
 - **Rules for Claude Code:** the official Angular AI config (`ng generate ai-config --tool=claude`), the official Angular Agent Skills and Angular MCP + our own v22 rules; details in section 8.
 
@@ -312,8 +321,9 @@ CSR without SSR, zoneless, Transloco, strict-CSP build: ADR 0005; state: ADR 000
 | `/unsorted` | No folder | signed in | `features/library` |
 | `/favorites` | Favorites | signed in | `features/library` |
 | `/folders/:folderId` | Folder; nesting is shown in breadcrumbs, not in the URL | signed in | `features/library` |
-| `/settings` | Settings, one page per section: `/settings/account` (profile, sign out, welcome tour, deletion), `/appearance` (theme incl. Custom, animations, live preview, language), `/shortcuts` (the keyboard shortcut list), `/import-export` (export only), `/library` (Trash retention and the Trash row), `/privacy`; on tablet and desktop `/settings` goes to the first section, on a phone it is the You list | signed in | `features/settings` |
+| `/settings` | Settings, one page per section: `/settings/account` (profile, sign out, welcome tour, deletion), `/appearance` (theme incl. Custom, animations, live preview, language), `/feedback` (Your feedback: send form and the user's messages), `/shortcuts` (the keyboard shortcut list), `/import-export` (export only), `/library` (Trash retention and the Trash row), `/privacy`; on tablet and desktop `/settings` goes to the first section, on a phone it is the You list | signed in | `features/settings` |
 | `/trash` | Trash: deleted links and folders, restore, delete forever, empty (the phone reaches it from the Library tab) | signed in | `features/trash` |
+| `/admin/feedback` | The author's feedback inbox: all messages, status filter, status and reply per message; `adminOnly` asks `GET /api/admin/status`, a non-admin is sent to `/links` | signed in, author only | `features/admin` |
 | `/share?url=&title=&text=` | Quick save from "Share" | signed in; guest goes to sign-in and back | `features/share` |
 | `/sign-in?returnUrl=&reason=` | Sign in with Google / GitHub | guest only | `features/auth` |
 | `/demo` | Creates a demo sandbox and goes to `/links` | everyone | `features/auth` |
@@ -333,6 +343,7 @@ export const routes: Routes = [
     { path: 'favorites', loadComponent: libraryPage, data: { scope: 'favorites' }, title: 'Favorites' },
     { path: 'folders/:folderId', loadComponent: libraryPage, data: { scope: 'folder' }, title: folderTitle },
     { path: 'settings', loadChildren: () => import('./features/settings/settings.routes') },
+    { path: 'admin', canActivate: [adminOnly], loadChildren: () => import('./features/admin/admin.routes') },
     { path: 'share', loadComponent: () => import('./features/share/share.page'), title: 'Save to Shelfmark' },
   ]},
   { path: 'links', canActivate: [redirectToSignIn], children: [] },   // guest on a protected URL
@@ -495,6 +506,8 @@ Security is a mandatory requirement, not a wish: a task is not done until the it
 | **Secret leaks** | Secrets only in Vercel environment variables; `.env` in `.gitignore`; GitHub secret scanning + push protection; secrets and tokens are never written to logs |
 | **Vulnerable dependencies** | Dependabot; `npm audit` in CI; CodeQL (free for public repositories) |
 | **Privacy** | Account deletion with all data; a privacy policy page (required for the Google sign-in screen) |
+| **Admin routes** | `/api/admin/*` is for the author only: `AdminGuard` checks the session email against `ADMIN_EMAILS` (case-insensitive, unset or empty = nobody, demo users never); everyone else, guests included, gets 404 so the routes do not reveal themselves. Admin queries are the only ones not filtered by the session `userId`; they touch message rows only |
+| **Uploads** | Feedback screenshots: PNG/JPEG/WebP only, at most 2 MB, base64 canonical and magic bytes checked against the declared type, stored in Postgres, served with the stored type, `nosniff`, `inline`, `private, no-store` and the strict CSP; the larger body limit applies to that one route; per-user hourly message limit in Postgres |
 | **Test data** | Preview deployments run on a separate Neon database branch, not on production |
 
 **Security when working with Claude Code** (details in section 8): reading and editing `.env` is denied in the permission settings; a hook blocks committing secrets; the **security-reviewer** subagent checks every PR against this table.
@@ -568,6 +581,8 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 
 **Feedback**: ratings and feedback: `id`, `userId`, `milestone` (`day3` | `week1` | `month1` | `year1`), `score` (1–10, `null` = skipped), `comment` (≤ 2000, optional), `createdAt`, `updatedAt`; unique on `userId + milestone`; DB CHECKs: milestone in the set, score null or 1–10, comment ≤ 2000 characters, no comment without a score. The presence of a row means the milestone is answered; the frontend does not read the table but asks `GET /api/feedback/prompt`.
 
+**Feedback messages (#272)** live in the same `feedback` table; a row is either a rating or a message (CHECK). A message row has `kind` (`idea` | `problem` | `other`; `null` on a rating row), `comment` (the text, 1–2000 characters, `milestone` and `score` are `null`), `status` (`received` default | `planned` | `in-progress` | `done` | `not-planned`), `reply` (≤ 2000, set by the author), an optional screenshot (`screenshot` bytea ≤ 2 MB, `screenshot_type` `image/png` | `image/jpeg` | `image/webp`, both or neither) and `client_app_version` / `client_user_agent` (≤ 300, optional). `milestone` is nullable, so the unique index on `userId + milestone` only constrains ratings. Indexes: `(user_id, created_at)` for the user's list, `(created_at desc, id desc)` for the admin list. Reads never select the `screenshot` bytes except in the two screenshot routes. Rating reads filter `kind IS NULL`, message reads `kind IS NOT NULL`.
+
 **URL normalisation** (for duplicates): lowercase host, no `#fragment`, no `utm_*` params and no trailing `/`. Duplicates are allowed (the user can "save anyway"), so the index is non-unique.
 
 **Indexes:** `Link(userId, createdAt)`, `Link(userId, normalizedUrl)`, `Link(userId, lastOpenedAt)`, `Link.title`, `Link.note` and `Link.url` (`pg_trgm` GIN for search), `Folder(userId, parentId)`; partial indexes on `pinnedPosition` (`Folder`, `Link`) and `Link(folderId, pinnedInFolderAt)`; `Link(userId, kind)`, `SavedView(userId, position)`; partial indexes `Link(userId, deletedAt)` and `Folder(userId, deletedAt)` `WHERE deletedAt IS NOT NULL` for the Trash list and the purge.
@@ -617,6 +632,13 @@ All routes except `/api/auth/*` require a session and work only with the current
 | GET, POST, GET /:id, PATCH /:id, DELETE /:id, POST /:id/merge | `/api/tags` | The user's tags with link counts, sorted by link count descending, then name; read one tag with its count (404 if unknown or foreign); create an empty tag (409 if the name is taken or at the per-user cap of 1000), rename (409 if the name is taken; changing only the case of its own name is allowed), delete (links remain), merge with another tag (merging into itself is a 400). Names are normalized with `normalizeTagName` (trim, whitespace runs become one hyphen) on create and rename |
 | GET | `/api/feedback/prompt` | Which rating dialog to show now: `{ milestone }`, the latest reached milestone without a row, `null` for demo users and before onboarding (no-store) |
 | POST | `/api/feedback` | Save a rating, feedback or a skip `{ milestone, score \| null, comment? }` (204; 403 demo, 409 onboarding pending / milestone not reached / different score stored; same score appends the comment) |
+| POST | `/api/feedback/messages` | Send a feedback message `{ kind, text, screenshot?: { type, data (base64) }, client?: { appVersion, userAgent } }` (201 `FeedbackMessage`; 400 invalid body, wrong magic bytes or over 2 MB; 429 with `Retry-After` after 10 messages in a rolling hour, counted in Postgres, demo users included). The JSON body limit of this route alone is 3 MB (100 kB elsewhere) |
+| GET | `/api/feedback/messages` | The user's own messages, newest first, at most 100, with `status` and `reply` (no-store) |
+| GET | `/api/feedback/messages/:id/screenshot` | The screenshot bytes of an own message (404 if foreign, missing or none); stored type, `nosniff`, `inline`, `Cache-Control: private, no-store` |
+| GET | `/api/admin/status` | `{ admin: true }` for a user whose email is in `ADMIN_EMAILS`; 404 for everyone else, guests and demo users included |
+| GET | `/api/admin/feedback` | All users' feedback messages with `user: { name, email }`, newest first, keyset `cursor` / `limit` (≤ 100), optional `status` filter; `{ items, nextCursor }` |
+| PATCH | `/api/admin/feedback/:id` | `{ status?, reply? }` (reply ≤ 2000, `null` or blank clears; at least one key); answers the updated item; rate-limited, CSRF-guarded |
+| GET | `/api/admin/feedback/:id/screenshot` | Screenshot of any message, same safe headers |
 
 **General API rules:**
 
@@ -722,8 +744,9 @@ In CI: `@axe-core/playwright` on the key screens in both themes; the build fails
 8. Settings, a page per section (account with deletion and "Show onboarding again", appearance, library with the Trash retention, export, privacy and data); the settings nav replaces the sidebar on tablet and desktop, the You list opens the pages on a phone
 9. Privacy policy
 10. Trash (desktop and phone, with the empty state, selection and the "Empty trash" confirmation)
-11. Folder style (the "Colour and icon" dialog, the Pinned section, "Pin to top" in a folder, "Folder colours" and "Pinned at the top" in Settings › Library)
-12. Saved views (the chips above the feed with counts and "+ Save this view", the name dialog, the view menu, the type chips on Recently opened, the "Type" select in the edit dialog)
+11. Send feedback dialog (form, sending, thank you, error) and Settings › Your feedback (SendFeedback, SetFeedback); the author's feedback inbox is built from the same parts and has no mockup
+12. Folder style (the "Colour and icon" dialog, the Pinned section, "Pin to top" in a folder, "Folder colours" and "Pinned at the top" in Settings › Library)
+13. Saved views (the chips above the feed with counts and "+ Save this view", the name dialog, the view menu, the type chips on Recently opened, the "Type" select in the edit dialog)
 
 Every screen in light and dark themes, in desktop and phone layouts, with loading and error states.
 
