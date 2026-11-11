@@ -61,6 +61,11 @@ export class InputComponent extends UiFieldControl implements FormValueControl<s
   readonly loading = input(false, { transform: booleanAttribute });
   /** Announced while `loading` ("Searching", "Loading preview"); without it the spinner stays silent. */
   readonly loadingLabel = input('');
+  /**
+   * The value can be read, selected and copied but not changed (a share link). Unlike `disabled`
+   * it stays focusable and keeps full contrast.
+   */
+  readonly readonly = input(false, { transform: booleanAttribute });
 
   private readonly native = viewChild.required<ElementRef<HTMLInputElement>>('native');
 
@@ -75,7 +80,12 @@ export class InputComponent extends UiFieldControl implements FormValueControl<s
     () => this.type() !== INPUT_TYPE.Search && this.loading(),
   );
   protected readonly showClear = computed(
-    () => this.clearable() && !!this.clearLabel() && !this.disabled() && this.value() !== '',
+    () =>
+      this.clearable() &&
+      !!this.clearLabel() &&
+      !this.disabled() &&
+      !this.readonly() &&
+      this.value() !== '',
   );
   /** True after the first spinner: only then the returning icon animates in. */
   protected readonly iconReturns = signal(false);
@@ -92,6 +102,13 @@ export class InputComponent extends UiFieldControl implements FormValueControl<s
   /** Focuses the native input (Signal Forms calls this to focus the first invalid field). */
   focus(options?: FocusOptions): void {
     this.native().nativeElement.focus(options);
+  }
+
+  /** Focuses the field and selects its whole value (a fallback when the clipboard is refused). */
+  select(): void {
+    const native = this.native().nativeElement;
+    native.focus();
+    native.select();
   }
 
   protected onInput(event: Event): void {

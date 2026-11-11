@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import type { LinkResponse } from '@shelfmark/contracts';
 import {
   BadgeComponent,
   ButtonComponent,
@@ -16,6 +15,7 @@ import {
   PointerShadowDirective,
   TooltipDirective,
 } from '@shelfmark/ui';
+import type { LinkCardItem } from '../models/link-card-item.type';
 import { ViewportService } from '../../../core/layout/viewport.service';
 import { linkKeyIntent } from '../selection/link-select-keys';
 import { LINK_KEY_INTENT } from '../selection/models/link-key-intent.const';
@@ -57,7 +57,9 @@ export class LinkCardComponent {
   protected readonly newTab = inject(UserSettingsStore).openInNewTab;
   protected readonly viewport = inject(ViewportService);
 
-  readonly link = input.required<LinkResponse>();
+  readonly link = input.required<LinkCardItem>();
+  /** No favorite button and no actions menu: a guest looks at someone else's link (#276). */
+  readonly readOnly = input(false);
   /** Plays the fade-in of cards that replace the skeleton. */
   readonly reveal = input(false);
 
@@ -91,7 +93,9 @@ export class LinkCardComponent {
   readonly selectToggled = output<LinkSelectToggle>();
 
   /** Phone: the checkbox shows only while selecting (a long press starts it). */
-  protected readonly showCheckbox = computed(() => !this.viewport.phone() || this.selecting());
+  protected readonly showCheckbox = computed(
+    () => !this.readOnly() && (!this.viewport.phone() || this.selecting()),
+  );
 
   /** The checkbox is drawn from `selected`; the native toggle is cancelled and the page decides. */
   protected onCheckboxClick(event: MouseEvent): void {
@@ -101,13 +105,16 @@ export class LinkCardComponent {
   }
 
   protected onLongPress(): void {
-    if (this.viewport.phone()) {
+    if (this.viewport.phone() && !this.readOnly()) {
       this.selectToggled.emit({ range: false });
     }
   }
 
   /** Space toggles the selection, M moves the link (keys pressed on the link itself). */
   protected onKeydown(event: KeyboardEvent): void {
+    if (this.readOnly()) {
+      return;
+    }
     const intent = linkKeyIntent(event);
     if (intent === LINK_KEY_INTENT.Toggle) {
       event.preventDefault();

@@ -89,6 +89,9 @@
     <ui-menu-item icon="folder-move" (activated)="move()">
       {{ 'shell.sidebar.menu.move' | transloco }}
     </ui-menu-item>
+    <ui-menu-item icon="share" (activated)="share()">
+      {{ 'shell.sidebar.menu.share' | transloco }}
+    </ui-menu-item>
     <ui-menu-separator />
     <ui-menu-item icon="trash" danger (activated)="remove()">
       {{ 'shell.sidebar.menu.delete' | transloco }}

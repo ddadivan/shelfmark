@@ -27,12 +27,17 @@ export function siteLetter(url: string): string {
   return displayHost(url).charAt(0).toUpperCase();
 }
 
-/** Image paths of our own API, as built by `linkImagePath` (ADR 0027). */
-const OWN_IMAGE_PATH = /^\/api\/links\/[0-9a-f-]{36}\/(favicon|image)\?v=[0-9a-f]{16}$/;
+/**
+ * Image paths of our own API: `linkImagePath` (ADR 0027) and the images of a public collection,
+ * keyed by its 22-character token (ADR 0040).
+ */
+const OWN_IMAGE_PATH =
+  /^\/api\/(?:links|public\/collections\/[A-Za-z0-9_-]{22}\/links)\/[0-9a-f-]{36}\/(favicon|image)\?v=[0-9a-f]{16}$/;
 
 /**
- * The image URL when it is exactly a path of our own API (`/api/links/{id}/image?v=...`), else
- * `undefined`. A remote URL is never bound: the CSP would block it and it would leak the user.
+ * The image URL when it is exactly a path of our own API (`/api/links/{id}/image?v=...` or
+ * `/api/public/collections/{token}/links/{id}/image?v=...`), else `undefined`. A remote URL is
+ * never bound: the CSP would block it and it would leak the user.
  */
 export function ownImageUrl(url: string | null): string | undefined {
   return url !== null && OWN_IMAGE_PATH.test(url) ? url : undefined;

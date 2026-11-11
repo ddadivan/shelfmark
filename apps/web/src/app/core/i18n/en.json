@@ -669,6 +669,7 @@
         "addLink": "Add link here",
         "rename": "Rename",
         "move": "Move to…",
+        "share": "Share…",
         "delete": "Delete folder…",
         "pin": "Pin to sidebar",
         "unpin": "Unpin from sidebar",
@@ -1813,6 +1814,82 @@
       "length": "1 minute",
       "hide": "Hide"
     }
+  },
+  "sharing": {
+    "dialog": {
+      "title": "Share “{{name}}”",
+      "close": "Close",
+      "done": "Done",
+      "count": {
+        "one": "{{count}} link, subfolders included",
+        "other": "{{count}} links, subfolders included"
+      },
+      "loading": "Loading the sharing settings…",
+      "loadFailed": "Couldn't load the sharing settings.",
+      "retry": "Try again",
+      "public": "Public link",
+      "publicHint": "Anyone with the link can view. No account needed.",
+      "linkLabel": "Public link address",
+      "copy": "Copy link",
+      "copied": "Link copied",
+      "copyFallback": "Copying isn't allowed here. The link is selected: press Ctrl+C or ⌘C to copy it.",
+      "settings": "Link settings",
+      "notes": "Show my notes",
+      "notesHint": "Guests see why you saved each link",
+      "reset": "Reset link",
+      "resetHint": "The old link stops working at once",
+      "resetAction": "Reset",
+      "privateNotes": "Notes stay private unless you turn them on.",
+      "limit": "You can share up to {{max}} folders. Turn off another public link first.",
+      "demo": "Demo accounts can't share folders. Sign in to share yours.",
+      "saveFailed": "Couldn't save the change. Try again."
+    },
+    "reset": {
+      "title": "Reset the public link?",
+      "message": "The old link stops working at once. Anyone who should still see the folder needs the new link.",
+      "confirm": "Reset link",
+      "cancel": "Cancel",
+      "done": "Link reset",
+      "doneDetail": "The old link no longer works"
+    }
+  },
+  "publicCollection": {
+    "home": "Shelfmark home",
+    "signIn": "Sign in",
+    "backToShelf": "Back to my shelf",
+    "sharedBy": "Shared by {{name}}",
+    "sharedAnonymous": "Shared on Shelfmark",
+    "count": {
+      "one": "{{count}} link",
+      "other": "{{count}} links"
+    },
+    "updated": "Updated {{time}}",
+    "copy": "Copy link",
+    "copied": "Link copied",
+    "copyFailed": "Couldn't copy the link",
+    "copyFailedDetail": "Copy it from the address bar",
+    "filterLabel": "Subfolders",
+    "all": "All",
+    "loading": "Loading the collection…",
+    "more": "Show more",
+    "capped": "This page shows the newest {{max}} links.",
+    "empty": {
+      "title": "No links here yet",
+      "text": "The owner hasn't saved anything in this folder."
+    },
+    "notFound": {
+      "title": "This collection isn't available",
+      "text": "The link may be mistyped, or the owner turned it off or reset it.",
+      "action": "Go to Shelfmark"
+    },
+    "failed": "Couldn't load the collection.",
+    "retry": "Try again",
+    "cta": {
+      "title": "Keep your own links like this",
+      "text": "Shelfmark saves videos, articles, things to buy and courses on one calm shelf.",
+      "action": "Start your shelf"
+    },
+    "madeWith": "Made with Shelfmark"
   },
   "bulk": {
     "bar": {

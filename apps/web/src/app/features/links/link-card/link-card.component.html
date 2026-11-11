@@ -9,7 +9,7 @@
   [checked]="selected()"
   [selecting]="selecting()"
   uiLongPress
-  [uiLongPressDisabled]="!viewport.phone()"
+  [uiLongPressDisabled]="!viewport.phone() || readOnly()"
   (uiLongPress)="onLongPress()"
   (activated)="open($event)"
   (keydown)="onKeydown($event)"
@@ -38,30 +38,34 @@
     <ui-favicon [src]="favicon()" [letter]="letter()" />
     <span class="link-card__host">{{ host() }}</span>
   </span>
-  <ui-button
-    slot="favorite"
-    variant="ghost"
-    size="sm"
-    iconOnly
-    hitArea="overlay"
-    [iconLeft]="link().isFavorite ? 'star-filled' : 'star'"
-    [ariaPressed]="link().isFavorite"
-    [ariaLabel]="'links.item.favorite' | transloco: { title: link().title }"
-    [uiTooltip]="
-      (link().isFavorite ? 'links.item.removeFavorite' : 'links.item.addFavorite') | transloco
-    "
-    (click)="favoriteToggled.emit()"
-  />
-  <ui-button
-    slot="actions"
-    variant="ghost"
-    size="sm"
-    iconOnly
-    iconLeft="more"
-    [uiMenuTrigger]="menu"
-    [ariaLabel]="'links.item.actions' | transloco: { title: link().title }"
-    [uiTooltip]="'links.item.moreActions' | transloco"
-  />
+  @if (!readOnly()) {
+    <ui-button
+      slot="favorite"
+      variant="ghost"
+      size="sm"
+      iconOnly
+      hitArea="overlay"
+      [iconLeft]="link().isFavorite ? 'star-filled' : 'star'"
+      [ariaPressed]="link().isFavorite"
+      [ariaLabel]="'links.item.favorite' | transloco: { title: link().title }"
+      [uiTooltip]="
+        (link().isFavorite ? 'links.item.removeFavorite' : 'links.item.addFavorite') | transloco
+      "
+      (click)="favoriteToggled.emit()"
+    />
+  }
+  @if (!readOnly()) {
+    <ui-button
+      slot="actions"
+      variant="ghost"
+      size="sm"
+      iconOnly
+      iconLeft="more"
+      [uiMenuTrigger]="menu"
+      [ariaLabel]="'links.item.actions' | transloco: { title: link().title }"
+      [uiTooltip]="'links.item.moreActions' | transloco"
+    />
+  }
   @if (pinnedToTop()) {
     <ui-badge class="link-card__pinned" icon="bookmark">{{
       'links.item.pinned' | transloco
