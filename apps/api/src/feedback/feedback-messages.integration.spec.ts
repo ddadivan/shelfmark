@@ -204,7 +204,14 @@ describe('feedback messages API', () => {
         expect(malformed.status).toBe(401);
         expect(malformed.body).toMatchObject({ statusCode: 401, error: 'Unauthorized' });
         expect(malformed.body).toHaveProperty('requestId');
-        await send(anonymous(t.app), { ...valid, text: 'x'.repeat(2_000_000) }).expect(401);
+        // The guard answers 401 without reading the 2 MB body and the connection closes; a client
+        // still writing may see that as ECONNRESET / EPIPE instead of the response. Either way the
+        // body was never parsed; anything else (2xx, 400, 413) fails.
+        const large = await send(anonymous(t.app), { ...valid, text: 'x'.repeat(2_000_000) }).then(
+          (res) => res.status,
+          (error: unknown) => (error as { code?: string }).code,
+        );
+        expect([401, 'ECONNRESET', 'EPIPE']).toContain(large);
         // A cookie of another name is no session cookie.
         await anonymous(t.app)
           .post(MESSAGES)
