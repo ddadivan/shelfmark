@@ -205,8 +205,17 @@ export default class LibrarySettingsPage {
       afterNextRender(
         () => {
           const heading = globalThis.document?.getElementById('sidebar-tags-heading');
-          heading?.focus();
-          heading?.scrollIntoView({ block: 'nearest' });
+          if (!heading) {
+            return;
+          }
+          // Focusable only for this move: a lasting tabindex would let a click on the heading
+          // take focus (the new tag field's outside click hands focus back to "+").
+          heading.tabIndex = -1;
+          heading.addEventListener('blur', () => heading.removeAttribute('tabindex'), {
+            once: true,
+          });
+          heading.focus();
+          heading.scrollIntoView({ block: 'nearest' });
         },
         { injector: this.injector },
       );
