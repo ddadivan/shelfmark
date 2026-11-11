@@ -140,9 +140,32 @@ describe('extractPreview', () => {
   });
 });
 
+describe('extractPreview kind (ADR 0038)', () => {
+  it('reads og:type', () => {
+    expect(extractPreview(page('<meta property="og:type" content="video.other">'), PAGE).kind).toBe(
+      'video',
+    );
+    expect(extractPreview(page('<meta property="og:type" content="article">'), PAGE).kind).toBe(
+      'article',
+    );
+    expect(extractPreview(page('<meta property="og:type" content="product">'), PAGE).kind).toBe(
+      'shopping',
+    );
+  });
+
+  it('falls back to the final URL host, then other', () => {
+    expect(extractPreview(page(''), 'https://youtu.be/x').kind).toBe('video');
+    expect(extractPreview(page('<meta property="og:type" content="website">'), PAGE).kind).toBe(
+      'other',
+    );
+    expect(fallbackPreview('https://www.etsy.com/x').kind).toBe('shopping');
+  });
+});
+
 describe('fallbackPreview', () => {
   it('uses the URL as title', () => {
     expect(fallbackPreview(PAGE)).toEqual({
+      kind: 'other',
       url: PAGE,
       title: PAGE,
       description: null,
@@ -153,6 +176,7 @@ describe('fallbackPreview', () => {
 
   it('handles a value that is not a URL', () => {
     expect(fallbackPreview('nope')).toEqual({
+      kind: 'other',
       url: 'nope',
       title: 'nope',
       description: null,

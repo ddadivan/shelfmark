@@ -61,6 +61,7 @@ describe('POST /api/links/preview', () => {
     const body = await preview(a, 'https://hello.test/start');
     expect(body).toEqual({
       preview: {
+        kind: 'other',
         url: 'https://hello.test/final',
         title: 'Hello page',
         description: 'About hello',

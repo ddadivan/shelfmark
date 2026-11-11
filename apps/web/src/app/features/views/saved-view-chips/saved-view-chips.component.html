@@ -1,0 +1,29 @@
+<ui-saved-views
+  [items]="items()"
+  [activeId]="activeId()"
+  [ariaLabel]="'views.label' | transloco"
+  [addLabel]="'views.add' | transloco"
+  [layout]="layout()"
+  (selected)="select($event)"
+  (add)="add()"
+  (menuRequested)="openMenu($event)"
+/>
+<ui-menu [ariaLabel]="menuLabel()">
+  <ui-menu-item icon="edit" (activated)="rename()">
+    {{ 'views.menu.rename' | transloco }}
+  </ui-menu-item>
+  <ui-menu-item icon="chevron-left" [disabled]="menuIndex() <= 0" (activated)="move(-1)">
+    {{ 'views.menu.moveLeft' | transloco }}
+  </ui-menu-item>
+  <ui-menu-item
+    icon="chevron-right"
+    [disabled]="menuIndex() < 0 || menuIndex() >= store.items().length - 1"
+    (activated)="move(1)"
+  >
+    {{ 'views.menu.moveRight' | transloco }}
+  </ui-menu-item>
+  <ui-menu-separator />
+  <ui-menu-item icon="trash" danger (activated)="remove()">
+    {{ 'views.menu.delete' | transloco }}
+  </ui-menu-item>
+</ui-menu>

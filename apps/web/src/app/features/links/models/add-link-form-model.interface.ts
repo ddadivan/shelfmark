@@ -8,4 +8,6 @@ export interface AddLinkFormModel {
   note: string;
   /** Edit mode only: "Add to favorites". */
   isFavorite: boolean;
+  /** Edit mode only: the link kind (one of `LINK_KIND`); `null` only before a choice exists. */
+  kind: string | null;
 }

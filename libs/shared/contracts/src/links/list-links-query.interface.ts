@@ -1,5 +1,6 @@
 import type { CursorQuery } from '../pagination/cursor-query.interface';
 import type { SortOrder } from '../pagination/sort-order.type';
+import type { LinkKind } from './link-kind.type';
 import type { LinkSortField } from './link-sort-field.type';
 
 /** `GET /api/links` query. The handler sees the parsed values: booleans and numbers, not strings. */
@@ -21,6 +22,8 @@ export interface ListLinksQuery extends CursorQuery {
    * the words are separated by white space, every word must match (AND), at most 5 words.
    */
   q?: string;
+  /** Only links of this kind (one value). */
+  kind?: LinkKind;
   /** Defaults to `LINK_SORT_FIELD.CreatedAt`. */
   sort?: LinkSortField;
   /** Defaults to `SORT_ORDER.Desc`. */

@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
-import type { LinkPreviewResponse, LinkResponse } from '@shelfmark/contracts';
+import { LINK_KIND, type LinkPreviewResponse, type LinkResponse } from '@shelfmark/contracts';
 import { MOCK_LINK_PREVIEW_DUPLICATE, MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { delay, of, throwError, type Observable } from 'rxjs';
 import { AppTranslocoLoader } from '../../core/i18n/app-transloco.loader';
@@ -18,6 +18,7 @@ import SharePage from './share.page';
 
 const PREVIEW: LinkPreviewResponse = {
   preview: {
+    kind: LINK_KIND.Article,
     url: 'https://example.com/a',
     title: 'A fine page',
     description: 'About a thing.',

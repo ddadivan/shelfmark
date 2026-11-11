@@ -1,6 +1,6 @@
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import type { FolderResponse, LinkResponse } from '@shelfmark/contracts';
+import { LINK_KIND, type FolderResponse, type LinkResponse } from '@shelfmark/contracts';
 import { MOCK_FOLDERS, MOCK_LIBRARY_COUNTS, MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import axe from 'axe-core';
@@ -84,6 +84,43 @@ const titles = (element: HTMLElement) =>
   [...element.querySelectorAll('ui-history-group h2')].map((h) => h.textContent?.trim());
 
 describe('RecentPage', () => {
+  it('filters the history by kind with chips that count each kind', async () => {
+    const { element, fixture } = await setup([
+      opened(1, 0, { kind: LINK_KIND.Video }),
+      opened(2, 0, { kind: LINK_KIND.Article }),
+      opened(3, 1, { kind: LINK_KIND.Article }),
+      opened(4, 1, { kind: LINK_KIND.Other }),
+    ]);
+    const toolbar = element.querySelector('[role="toolbar"]');
+    expect(toolbar?.getAttribute('aria-label')).toBe('Filter by type');
+    const chips = () => [...element.querySelectorAll<HTMLButtonElement>('.ui-saved-views__body')];
+    expect(chips().map((chip) => chip.textContent?.replace(/\s+/g, ' ').trim())).toEqual([
+      'All 4',
+      'Videos 1',
+      'Articles 2',
+      'Shopping 0',
+    ]);
+    expect(chips()[0]?.getAttribute('aria-pressed')).toBe('true');
+    const rows = () => element.querySelectorAll('app-link-history-row').length;
+    expect(rows()).toBe(4);
+
+    chips()[2]?.click();
+    await fixture.whenStable();
+    expect(chips()[2]?.getAttribute('aria-pressed')).toBe('true');
+    expect(rows()).toBe(2);
+
+    chips()[3]?.click();
+    await fixture.whenStable();
+    expect(rows()).toBe(0);
+    expect(element.textContent).toContain('Nothing of this type');
+    [...element.querySelectorAll<HTMLButtonElement>('ui-empty-state button')]
+      .find((button) => button.textContent?.includes('Show all'))
+      ?.click();
+    await fixture.whenStable();
+    expect(rows()).toBe(4);
+    expect(element.querySelector('.ui-saved-views__add')).toBeNull();
+  });
+
   it('shows a skeleton and the heading while the history loads', async () => {
     const { element } = await setup([], { recent: new Subject() });
 

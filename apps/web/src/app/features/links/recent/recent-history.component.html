@@ -10,6 +10,28 @@
     [text]="'links.recent.empty.text' | transloco: { days: windowDays }"
   />
 } @else {
+  @if (filterable()) {
+    <ui-saved-views
+      class="recent-history__filter"
+      [items]="kindItems()"
+      [activeId]="kindFilter() ?? ALL_KINDS"
+      [ariaLabel]="'links.recent.filter.label' | transloco"
+      [layout]="kindLayout()"
+      (selected)="selectKind($event)"
+    />
+  }
+  @if (filteredEmpty()) {
+    <ui-empty-state
+      class="recent-history__empty"
+      illustration="not-found"
+      [heading]="'links.recent.filter.emptyTitle' | transloco"
+      [text]="'links.recent.filter.emptyText' | transloco: { days: windowDays }"
+    >
+      <ui-button (click)="selectKind(ALL_KINDS)">{{
+        'links.recent.filter.showAll' | transloco
+      }}</ui-button>
+    </ui-empty-state>
+  }
   <div class="recent-history__groups">
     @for (day of days(); track day.key) {
       <ui-history-group [title]="dayTitle(day)" [headingLevel]="headingLevel()">
