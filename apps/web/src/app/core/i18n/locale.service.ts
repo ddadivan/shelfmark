@@ -83,6 +83,10 @@ export class LocaleService {
   private switches = 0;
 
   constructor() {
+    // A new instance starts from the bundled English, as the app does before `init()`; a switch
+    // still loading when the injector goes away (a test, a destroyed app) never lands.
+    setActiveLang(APP_LANG.En);
+    this.destroyRef.onDestroy(() => this.switches++);
     effect(() => {
       const wanted = this.wantedLang();
       if (this.initialized && wanted !== activeLang()) {

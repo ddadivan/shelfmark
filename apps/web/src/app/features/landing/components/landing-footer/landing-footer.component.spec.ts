@@ -22,6 +22,8 @@ describe('LandingFooterComponent', () => {
     }),
   );
 
+  beforeEach(() => localStorage.clear());
+
   afterEach(() => {
     setActiveLang('en');
     localStorage.clear();

@@ -45,6 +45,8 @@ function setup(account: Partial<UserSettingsResponse> = {}) {
 }
 
 describe('UserSettingsStore language', () => {
+  // Nothing from an earlier spec file: a stored appearance or language would be saved once.
+  beforeEach(() => localStorage.clear());
   afterEach(() => localStorage.clear());
 
   it('applies the account language when the settings load (the account wins)', async () => {

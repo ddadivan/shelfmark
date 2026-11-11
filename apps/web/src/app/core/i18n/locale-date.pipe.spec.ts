@@ -5,6 +5,7 @@ import { LocaleDatePipe } from './locale-date.pipe';
 import { LocaleService } from './locale.service';
 
 describe('LocaleDatePipe', () => {
+  beforeEach(() => localStorage.clear());
   afterEach(() => localStorage.clear());
 
   it('formats with the active locale and date format, and is empty for no value', () => {
