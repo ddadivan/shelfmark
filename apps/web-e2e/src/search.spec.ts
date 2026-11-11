@@ -29,8 +29,8 @@ test.describe('search (mock API)', () => {
     test('filters the feed by the query, in the note too, with a Search chip', async ({ page }) => {
       await page.goto(`/links?q=${NOTE_WORD}`);
 
-      await expect(page.getByRole('main').getByText(ANGULAR_TITLE)).toBeVisible();
-      await expect(page.getByRole('main').getByText(PASTA_TITLE)).toHaveCount(0);
+      await expect(page.getByRole('main').getByText(ANGULAR_TITLE, { exact: true })).toBeVisible();
+      await expect(page.getByRole('main').getByText(PASTA_TITLE, { exact: true })).toHaveCount(0);
       await expect(page.getByRole('group', { name: 'Active filters' })).toContainText(
         `Search: ${NOTE_WORD}`,
       );
@@ -44,12 +44,12 @@ test.describe('search (mock API)', () => {
 
       await page.getByRole('button', { name: 'Clear search' }).click();
       await expect(page).toHaveURL(/\/links$/);
-      await expect(page.getByRole('main').getByText(ANGULAR_TITLE)).toBeVisible();
+      await expect(page.getByRole('main').getByText(ANGULAR_TITLE, { exact: true })).toBeVisible();
     });
 
     test('sorts by title from the menu and keeps it in the URL', async ({ page }) => {
       await page.goto('/links');
-      await expect(page.getByRole('main').getByText(ANGULAR_TITLE)).toBeVisible();
+      await expect(page.getByRole('main').getByText(ANGULAR_TITLE, { exact: true })).toBeVisible();
 
       await page.getByRole('button', { name: /^Sort: / }).click();
       await page.getByRole('menuitemradio', { name: 'Title A–Z' }).click();
