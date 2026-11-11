@@ -277,12 +277,15 @@ test.describe('mobile layout (mock API)', () => {
 
     const undo = page.getByRole('button', { name: 'Undo' });
     await expect(undo).toBeVisible();
-    // Measure after the toast's rise-in animation, not halfway through it.
-    await settled(page);
-    const toast = await page.locator('ui-toast').first().boundingBox();
-    const bar = await tabBar(page).boundingBox();
-    // 12px above the bar (no safe area in the test browser).
-    expect((bar?.y ?? 0) - ((toast?.y ?? 0) + (toast?.height ?? 0))).toBeGreaterThanOrEqual(11);
+    // 12px above the bar (no safe area in the test browser). Polled: the toast rises in for 320 ms
+    // (and its Undo countdown never "finishes" while touched, so `settled` cannot be used here).
+    await expect
+      .poll(async () => {
+        const toast = await page.locator('ui-toast').first().boundingBox();
+        const bar = await tabBar(page).boundingBox();
+        return (bar?.y ?? 0) - ((toast?.y ?? 0) + (toast?.height ?? 0));
+      })
+      .toBeGreaterThanOrEqual(11);
     await undo.click();
 
     await expect(page.getByRole('button', { name: DOCS, exact: true })).toBeVisible();
