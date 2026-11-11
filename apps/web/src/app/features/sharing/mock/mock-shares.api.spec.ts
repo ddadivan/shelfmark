@@ -1,7 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { SHARE_LIMIT, SHARE_TOKEN_PATTERN, type FolderResponse } from '@shelfmark/contracts';
+import {
+  FOLDER_DEFAULT_COLOUR,
+  FOLDER_DEFAULT_ICON,
+  SHARE_LIMIT,
+  SHARE_TOKEN_PATTERN,
+  type FolderResponse,
+} from '@shelfmark/contracts';
 import { MOCK_ID } from '@shelfmark/contracts/testing';
 import { firstValueFrom } from 'rxjs';
 import { AuthStore } from '../../../core/auth/auth.store';
@@ -90,6 +96,9 @@ describe('MockSharesApi', () => {
       id: `00000000-0000-4000-8000-0000000009${String(i).padStart(2, '0')}`,
       parentId: null,
       name: `Extra ${i}`,
+      colour: FOLDER_DEFAULT_COLOUR,
+      icon: FOLDER_DEFAULT_ICON,
+      pinned: false,
       linkCount: 0,
       createdAt: now,
       updatedAt: now,

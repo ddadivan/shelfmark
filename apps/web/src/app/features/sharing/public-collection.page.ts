@@ -86,7 +86,9 @@ export default class PublicCollectionPage {
   });
 
   protected readonly cards = computed<(LinkCardItem & { id: string })[]>(() =>
-    this.store.items().map((link) => ({ ...link, tags: [], isFavorite: false })),
+    this.store
+      .items()
+      .map((link) => ({ ...link, tags: [], isFavorite: false, pinnedInFolderAt: null })),
   );
   protected readonly countKey = computed(() =>
     pluralKey('publicCollection.count', this.store.collection()?.linkCount ?? 0),
