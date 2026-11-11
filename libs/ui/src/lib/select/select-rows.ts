@@ -21,7 +21,13 @@ function visit(
     return [];
   }
   return [
-    { id: option.id, name: option.name, path: names.join(SELECT_PATH_SEPARATOR), level },
+    {
+      id: option.id,
+      name: option.name,
+      path: names.join(SELECT_PATH_SEPARATOR),
+      level,
+      ...(option.lang ? { lang: option.lang } : {}),
+    },
     ...nested,
   ];
 }

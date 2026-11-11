@@ -48,6 +48,7 @@ import { ViewportService } from '../../../core/layout/viewport.service';
 import { isLinkKind } from '../link-kind';
 import { debounce, timer } from 'rxjs';
 import { groupByDay } from './history-days';
+import { LocaleService } from '../../../core/i18n/locale.service';
 import { matchesHistorySearch, searchWords } from './history-search';
 import { HISTORY_SEARCH_DEBOUNCE_MS } from './models/history-search-debounce-ms.const';
 import { ALL_KINDS } from './models/all-kinds.const';
@@ -87,6 +88,7 @@ export class RecentHistoryComponent {
   private readonly dialogs = inject(DialogService);
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
+  private readonly localeService = inject(LocaleService);
   private readonly router = inject(Router);
   private readonly doc = inject(DOCUMENT);
   private readonly settings = inject(UserSettingsStore);
@@ -131,7 +133,9 @@ export class RecentHistoryComponent {
     const words = this.words();
     return this.byKind().filter((link) => matchesHistorySearch(link, words));
   });
-  protected readonly days = computed(() => groupByDay(this.shown(), this.now()));
+  protected readonly days = computed(() =>
+    groupByDay(this.shown(), this.now(), this.localeService.firstDay()),
+  );
   protected readonly hasHistory = computed(() => this.store.recent().length > 0);
   /** The search found nothing (in the chosen kind). */
   protected readonly searchEmpty = computed(
@@ -187,12 +191,14 @@ export class RecentHistoryComponent {
       case HISTORY_DAY_KIND.Week:
         return this.t('links.recent.day.week');
       default:
-        return new Intl.DateTimeFormat(this.locale(), {
-          weekday: 'long',
-          day: 'numeric',
-          month: 'long',
-          year: day.date.getFullYear() === this.now().getFullYear() ? undefined : 'numeric',
-        }).format(day.date);
+        return this.localeService
+          .dateTimeFormat({
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: day.date.getFullYear() === this.now().getFullYear() ? undefined : 'numeric',
+          })
+          .format(day.date);
     }
   }
 
@@ -215,7 +221,7 @@ export class RecentHistoryComponent {
   private readonly times = computed(() => {
     const times = new Map<string, string>();
     for (const day of this.days()) {
-      const format = new Intl.DateTimeFormat(this.locale(), {
+      const format = this.localeService.dateTimeFormat({
         weekday: day.kind === HISTORY_DAY_KIND.Week ? 'short' : undefined,
         hour: 'numeric',
         minute: '2-digit',
@@ -296,10 +302,6 @@ export class RecentHistoryComponent {
     } else {
       this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('links.recent.clearFailed') });
     }
-  }
-
-  private locale(): string {
-    return this.transloco.getActiveLang();
   }
 
   private t(key: string): string {

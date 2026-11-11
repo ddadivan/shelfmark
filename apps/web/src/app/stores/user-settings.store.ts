@@ -6,6 +6,7 @@ import {
   LINK_OPEN_TARGET,
   TRASH_RETENTION_DEFAULT,
   type FolderColour,
+  type LanguageSettings,
   type LibrarySettings,
   type TrashRetentionDays,
   type UserSettingsResponse,
@@ -13,12 +14,12 @@ import {
 import { firstValueFrom } from 'rxjs';
 import type { Appearance } from '../core/theme/models/appearance.type';
 import { ThemeService } from '../core/theme/theme.service';
+import { LocaleService } from '../core/i18n/locale.service';
 import { SessionScope } from '../core/auth/session-scope.service';
 import { USER_SETTINGS_API } from '../features/settings/models/user-settings-api.const';
 import type { UserSettingsState } from './models/user-settings-state.interface';
 import { TrashStore } from './trash.store';
 
-/** The Settings › Library part of a settings response. */
 /** The appearance part of a settings response. */
 function appearanceOf(settings: UserSettingsResponse): Appearance {
   return {
@@ -35,6 +36,28 @@ function appearanceOf(settings: UserSettingsResponse): Appearance {
   };
 }
 
+/** The Settings › Language part of a settings response. */
+function languageOf(settings: UserSettingsResponse): LanguageSettings {
+  return {
+    language: settings.language,
+    dateFormat: settings.dateFormat,
+    timeFormat: settings.timeFormat,
+    weekStart: settings.weekStart,
+    spellcheck: settings.spellcheck,
+  };
+}
+
+function sameLanguage(a: LanguageSettings, b: LanguageSettings): boolean {
+  return (
+    a.language === b.language &&
+    a.dateFormat === b.dateFormat &&
+    a.timeFormat === b.timeFormat &&
+    a.weekStart === b.weekStart &&
+    a.spellcheck === b.spellcheck
+  );
+}
+
+/** The Settings › Library part of a settings response. */
 function libraryOf(settings: UserSettingsResponse): LibrarySettings {
   return {
     defaultView: settings.defaultView,
@@ -113,6 +136,7 @@ export const UserSettingsStore = signalStore(
     const api = () => injector.get(USER_SETTINGS_API);
     const scope = inject(SessionScope);
     const theme = inject(ThemeService);
+    const locale = inject(LocaleService);
     let epoch = 0;
     // Bumped by every change: a settings read that started before it must not overwrite it.
     let version = 0;
@@ -137,6 +161,13 @@ export const UserSettingsStore = signalStore(
             firstValueFrom(api().update(theme.appearance())).catch(() => undefined);
           }
           // Neither has one: the defaults already show, and nothing is written to the browser.
+          if (settings.languageSaved) {
+            locale.apply(languageOf(settings));
+          } else if (locale.hasStoredLanguage()) {
+            // A language chosen in this browser (as a guest, or before the account kept it): keep
+            // it and save it once, silently. Otherwise "Match my browser" already applies.
+            firstValueFrom(api().update(locale.settings())).catch(() => undefined);
+          }
         }
         patchState(
           store,
@@ -268,6 +299,35 @@ export const UserSettingsStore = signalStore(
         } catch {
           if (started === epoch && sameAppearance(theme.appearance(), next)) {
             theme.apply(previous);
+          }
+          return false;
+        }
+      },
+
+      /**
+       * Changes the interface language, date format, clock, week start or spell-check at once
+       * (LocaleService switches the whole app without a reload) and saves it on the account;
+       * resolves false (and puts the old settings back, unless a later change replaced them) when
+       * the request fails.
+       */
+      async setLanguage(change: Partial<LanguageSettings>): Promise<boolean> {
+        const previous = locale.settings();
+        const next: LanguageSettings = { ...previous, ...change };
+        if (sameLanguage(previous, next)) {
+          return true;
+        }
+        const started = epoch;
+        version++;
+        locale.apply(next);
+        try {
+          const saved = await firstValueFrom(api().update(change));
+          if (started === epoch && sameLanguage(locale.settings(), next)) {
+            locale.apply(languageOf(saved));
+          }
+          return true;
+        } catch {
+          if (started === epoch && sameLanguage(locale.settings(), next)) {
+            locale.apply(previous);
           }
           return false;
         }

@@ -1,4 +1,3 @@
-import { firstValueFrom } from 'rxjs';
 import {
   ApplicationConfig,
   inject,
@@ -24,7 +23,7 @@ import { errorInterceptor } from './core/api/error.interceptor';
 import { provideAuthApi } from './core/auth/provide-auth-api';
 import { appRoutes } from './app.routes';
 import { translocoConfig } from './core/i18n/transloco.config';
-import { APP_LANG } from './core/i18n/models/app-lang.const';
+import { LocaleService } from './core/i18n/locale.service';
 import { AppTranslocoLoader } from './core/i18n/app-transloco.loader';
 import { LibraryRouteReuseStrategy } from './core/routing/library-route-reuse.strategy';
 import { skipViewTransitionOnReducedMotion } from './core/routing/skip-view-transition-on-reduced-motion';
@@ -61,9 +60,9 @@ export const appConfig: ApplicationConfig = {
     // Only apiBase and error exist so far; requestId, retry and loading go between them, devLogging last.
     provideHttpClient(withFetch(), withInterceptors([apiBaseInterceptor, errorInterceptor])),
     provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
-    // Load the default language before the first render: a lazy `en.json` arriving later fills
-    // in empty text and shifts the layout (CLS).
-    provideAppInitializer(() => firstValueFrom(inject(TranslocoService).load(APP_LANG.En))),
+    // Load the language before the first render (English is in the bundle, the others are lazy
+    // chunks): text arriving later fills in empty strings and shifts the layout (CLS).
+    provideAppInitializer(() => inject(LocaleService).init()),
     // The close button of a toast is named in the active language.
     {
       provide: TOAST_DISMISS_LABEL,

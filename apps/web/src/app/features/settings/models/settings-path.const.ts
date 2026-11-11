@@ -4,6 +4,8 @@ export const SETTINGS_PATH = {
   Appearance: 'appearance',
   /** What happens to deleted items (Trash); the other Library settings of the design are not built yet. */
   Library: 'library',
+  /** Interface language, date format, clock, week start and spell-check (#274). */
+  Language: 'language',
   /** Only export exists today; the path is the one an import would join. */
   ImportExport: 'import-export',
   Privacy: 'privacy',

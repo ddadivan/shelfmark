@@ -2,7 +2,9 @@ import { DOCUMENT } from '@angular/common';
 import { inject, Service } from '@angular/core';
 import {
   CUSTOM_THEME_DEFAULT,
+  LANGUAGE_SETTINGS_DEFAULT,
   LAYOUT_SETTINGS_DEFAULT,
+  type LanguageSettings,
   type LayoutSettings,
   MOTION_PREFERENCE,
   THEME_PREFERENCE,
@@ -22,6 +24,7 @@ import { MOCK_LATENCY_MS } from '../../links/models/mock-latency.const';
 import { MOCK_APPEARANCE_STORAGE_KEY } from '../models/mock-appearance-storage-key.const';
 import type { MockAppearance } from '../models/mock-appearance.type';
 import type { UserSettingsApi } from '../models/user-settings-api.interface';
+import { readMockLanguageSettings, writeMockLanguageSettings } from './read-mock-language-settings';
 
 /**
  * `UserSettingsApi` over the shared in-memory library, with simulated latency: the retention
@@ -75,6 +78,16 @@ export class MockUserSettingsApi implements UserSettingsApi {
           appearanceSaved: true,
         });
       }
+      const languageKeys = Object.keys(LANGUAGE_SETTINGS_DEFAULT) as (keyof LanguageSettings)[];
+      if (languageKeys.some((key) => request[key] !== undefined)) {
+        const language = readMockLanguageSettings(this.storage).settings;
+        for (const key of languageKeys) {
+          if (request[key] !== undefined) {
+            Object.assign(language, { [key]: request[key] });
+          }
+        }
+        writeMockLanguageSettings(this.storage, language);
+      }
       return of(this.current());
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
@@ -86,7 +99,13 @@ export class MockUserSettingsApi implements UserSettingsApi {
       pauseHistory: this.data.pauseHistory,
       ...this.readAppearance(),
       ...this.data.library,
+      ...this.readLanguage(),
     };
+  }
+
+  private readLanguage(): LanguageSettings & Pick<UserSettingsResponse, 'languageSaved'> {
+    const { settings, saved } = readMockLanguageSettings(this.storage);
+    return { ...settings, languageSaved: saved };
   }
 
   private readAppearance(): MockAppearance {

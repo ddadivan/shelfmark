@@ -11,6 +11,9 @@ import {
 import { AuthStore } from '../../../core/auth/auth.store';
 import { ViewportService } from '../../../core/layout/viewport.service';
 import { ThemeService } from '../../../core/theme/theme.service';
+import { LocaleService } from '../../../core/i18n/locale.service';
+import { LANGUAGE_NAMES } from '../../../core/i18n/models/language-names.const';
+import { INTERFACE_LANGUAGE } from '@shelfmark/contracts';
 import { APP_PATH } from '../../../models/app-path.const';
 import { HowItWorksService } from '../../how-it-works/how-it-works.service';
 import { SETTINGS_NAV_ENTRIES } from '../models/settings-nav-entries.const';
@@ -44,6 +47,14 @@ export default class SettingsIndexPage {
   protected readonly rows = SETTINGS_NAV_ENTRIES.filter((entry) => entry.phone);
   /** The current theme, shown at the end of the Appearance row. */
   protected readonly themeKey = computed(() => THEME_OPTION_KEYS[this.theme.preference()]);
+  private readonly locale = inject(LocaleService);
+  /** The chosen language in its own name, shown at the end of the Language row; `null` is "Match my browser". */
+  protected readonly languageName = computed(() => {
+    const language = this.locale.settings().language;
+    return language === INTERFACE_LANGUAGE.Browser
+      ? null
+      : { text: LANGUAGE_NAMES[language], lang: language };
+  });
 
   /** The viewport grew past the phone: the list has no place here, the first section does. */
   private readonly leaveWhenWide = effect(() => {

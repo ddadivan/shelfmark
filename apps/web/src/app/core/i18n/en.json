@@ -893,6 +893,7 @@
       "account": "Account",
       "appearance": "Appearance",
       "library": "Library",
+      "language": "Language",
       "export": "Export",
       "privacy": "Privacy and data",
       "shortcuts": "Keyboard shortcuts"
@@ -901,6 +902,7 @@
       "account": "Your profile and your account.",
       "appearance": "Saved as you go and synced to all your devices.",
       "library": "How links are shown, saved and kept.",
+      "language": "Interface language and how dates look.",
       "export": "Take everything you saved with you.",
       "privacy": "What we keep, and how to take it with you.",
       "shortcuts": "Work without the mouse."
@@ -1240,6 +1242,42 @@
         "moveDown": "Move {{name}} down",
         "unpin": "Unpin {{name}} from the sidebar"
       }
+    },
+    "language": {
+      "title": "Language",
+      "interface": {
+        "label": "Interface language",
+        "hint": "Your links and notes stay as they are",
+        "browser": "Match my browser"
+      },
+      "spellcheck": {
+        "label": "Spell-check notes",
+        "hint": "Uses your browser’s dictionary"
+      },
+      "dates": {
+        "title": "Dates and numbers"
+      },
+      "date": {
+        "label": "Date format",
+        "default": "Language default ({{example}})"
+      },
+      "time": {
+        "label": "Time",
+        "default": "Auto",
+        "h24": "24-hour",
+        "h12": "12-hour"
+      },
+      "week": {
+        "label": "Week starts on",
+        "hint": "Groups this week in Recently opened",
+        "default": "Auto"
+      },
+      "preview": {
+        "label": "Preview",
+        "value": "{{weekday}}, {{date}}, {{time}}"
+      },
+      "failed": "Couldn’t save the setting",
+      "failedDetail": "It is back to how it was."
     },
     "help": "Help"
   },

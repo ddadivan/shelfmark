@@ -4,5 +4,7 @@ export interface SelectOption {
   readonly id: string;
   /** Visible name. */
   readonly name: string;
+  /** Language of `name` when it differs from the page (a language list: `Deutsch` is `de`). */
+  readonly lang?: string;
   readonly children?: readonly SelectOption[];
 }
