@@ -123,13 +123,14 @@ export class LinkActionsService {
     if (!confirmed || !this.store.remove(link.id)) {
       return;
     }
-    this.undoToast.show({
+    const toast = this.undoToast.show({
       title: this.t('links.item.deleted'),
       detail: link.title,
       actionLabel: this.t('links.item.undo'),
       onUndo: () => this.store.undoRemove(link.id),
       onExpire: () => void this.commitDelete(link.id),
     });
+    this.store.attachUndo(link.id, () => toast.dismiss());
   }
 
   /** "Move to folder…": picks a folder in a dialog (a sheet on phones), then moves the link. */

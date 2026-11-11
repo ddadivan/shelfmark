@@ -9,4 +9,6 @@ export interface PendingRemoval {
   readonly recentIndex: number;
   /** The delete request is on its way. */
   committing: boolean;
+  /** Closes the Undo toast once the delete was sent without it (Trash opened, sign-out). */
+  dismissUndo?: () => void;
 }

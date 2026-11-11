@@ -662,11 +662,29 @@ export const LinksStore = signalStore(
       /** Sends the delete; resolves false (and brings the link back) when it fails. */
       commitRemove,
 
-      /** Sends every delete still waiting (page hide, sign-out). */
+      /** Ties the Undo toast of a hidden link to it, so a flush can close it. */
+      attachUndo(id: string, dismiss: () => void): void {
+        const removal = pending.get(id);
+        if (removal) {
+          removal.dismissUndo = dismiss;
+        }
+      },
+
+      /**
+       * Sends every delete still waiting (opening Trash, page hide, sign-out). Each delete that went
+       * through closes its Undo toast: Undo can no longer bring the link back, and the toast must
+       * not linger over the next page until its countdown ends.
+       */
       // A delete that is already committing is not awaited: its request went out while the
       // session was valid.
       async flushPending(): Promise<void> {
-        await Promise.all([...pending.keys()].map((id) => commitRemove(id)));
+        await Promise.all(
+          [...pending.entries()].map(async ([id, removal]) => {
+            if ((await commitRemove(id)) && !pending.has(id)) {
+              removal.dismissUndo?.();
+            }
+          }),
+        );
       },
 
       /** Records an open: the link moves to the top of "Recently opened". Failures are ignored. */
