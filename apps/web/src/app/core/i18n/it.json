@@ -474,6 +474,11 @@
         "one": "{{count}} link",
         "many": "{{count}} link",
         "other": "{{count}} link"
+      },
+      "started": {
+        "one": "Spostamento di {{count}} link. Rilascialo su una cartella o premi Esc per annullare.",
+        "many": "Spostamento di {{count}} link. Rilasciali su una cartella o premi Esc per annullare.",
+        "other": "Spostamento di {{count}} link. Rilasciali su una cartella o premi Esc per annullare."
       }
     }
   },

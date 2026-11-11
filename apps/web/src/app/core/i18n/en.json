@@ -464,6 +464,10 @@
       "count": {
         "one": "{{count}} link",
         "other": "{{count}} links"
+      },
+      "started": {
+        "one": "Moving {{count}} link. Drop it on a folder, or press Escape to cancel.",
+        "other": "Moving {{count}} links. Drop them on a folder, or press Escape to cancel."
       }
     }
   },

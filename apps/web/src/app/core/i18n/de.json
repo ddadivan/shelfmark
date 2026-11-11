@@ -464,6 +464,10 @@
       "count": {
         "one": "{{count}} Link",
         "other": "{{count}} Links"
+      },
+      "started": {
+        "one": "{{count}} Link wird verschoben. Auf einen Ordner ziehen oder mit Esc abbrechen.",
+        "other": "{{count}} Links werden verschoben. Auf einen Ordner ziehen oder mit Esc abbrechen."
       }
     }
   },

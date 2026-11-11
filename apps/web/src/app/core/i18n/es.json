@@ -474,6 +474,11 @@
         "one": "{{count}} enlace",
         "many": "{{count}} enlaces",
         "other": "{{count}} enlaces"
+      },
+      "started": {
+        "one": "Moviendo {{count}} enlace. Suéltalo sobre una carpeta o pulsa Esc para cancelar.",
+        "many": "Moviendo {{count}} enlaces. Suéltalos sobre una carpeta o pulsa Esc para cancelar.",
+        "other": "Moviendo {{count}} enlaces. Suéltalos sobre una carpeta o pulsa Esc para cancelar."
       }
     }
   },

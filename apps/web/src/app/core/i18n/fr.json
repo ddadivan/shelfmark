@@ -474,6 +474,11 @@
         "one": "{{count}} lien",
         "many": "{{count}} liens",
         "other": "{{count}} liens"
+      },
+      "started": {
+        "one": "Déplacement de {{count}} lien. Déposez-le sur un dossier ou appuyez sur Échap pour annuler.",
+        "many": "Déplacement de {{count}} liens. Déposez-les sur un dossier ou appuyez sur Échap pour annuler.",
+        "other": "Déplacement de {{count}} liens. Déposez-les sur un dossier ou appuyez sur Échap pour annuler."
       }
     }
   },

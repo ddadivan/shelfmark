@@ -609,6 +609,21 @@ export default class LibraryPage {
   protected readonly modeAnnouncement = signal('');
   private announcedSelecting = false;
 
+  /** A drag began: the drag service takes the links along and a screen reader hears what moves. */
+  protected onDragStarted(link: LinkResponse): void {
+    this.drag.start(link, this.selectedLinks());
+    const count = this.bundled(link) ? this.selectedCount() : 1;
+    this.modeAnnouncement.set(
+      this.transloco.translate(pluralKey('links.drag.started', count), { count }),
+    );
+  }
+
+  /** The drag ended (drop or Esc): clears the spoken text, the toast tells what moved. */
+  protected onDragEnded(): void {
+    this.modeAnnouncement.set('');
+    this.drag.drop();
+  }
+
   /** Dragging a picked link (with others picked) carries the whole selection. */
   protected bundled(link: LinkResponse): boolean {
     return this.selectedCount() > 1 && this.selection.has(link.id);

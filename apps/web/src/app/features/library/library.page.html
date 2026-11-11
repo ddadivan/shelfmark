@@ -314,9 +314,9 @@
         [class.library__landed]="store.landed()[link.id] !== undefined"
         [style.--ui-land-delay]="landDelay(link.id)"
         (pointerdown)="drag.grab($event)"
-        (cdkDragStarted)="drag.start(link, selectedLinks())"
+        (cdkDragStarted)="onDragStarted(link)"
         (cdkDragMoved)="onDragMoved($event)"
-        (cdkDragEnded)="drag.drop()"
+        (cdkDragEnded)="onDragEnded()"
       >
         <div *cdkDragPlaceholder class="library__drag-slot" aria-hidden="true">
           {{ 'links.drag.wasHere' | transloco: { title: link.title } }}
@@ -376,9 +376,9 @@
         [class.library__landed]="store.landed()[link.id] !== undefined"
         [style.--ui-land-delay]="landDelay(link.id)"
         (pointerdown)="drag.grab($event)"
-        (cdkDragStarted)="drag.start(link, selectedLinks())"
+        (cdkDragStarted)="onDragStarted(link)"
         (cdkDragMoved)="onDragMoved($event)"
-        (cdkDragEnded)="drag.drop()"
+        (cdkDragEnded)="onDragEnded()"
       >
         <div *cdkDragPlaceholder class="library__drag-slot" aria-hidden="true">
           {{ 'links.drag.wasHere' | transloco: { title: link.title } }}

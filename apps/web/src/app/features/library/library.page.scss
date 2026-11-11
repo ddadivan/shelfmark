@@ -396,11 +396,33 @@
   }
 }
 
-// The other picked links while a selection is dragged: they stay in place, dimmed, so it is clear
-// they travel with the one under the pointer. No transition (nothing to animate under reduced
-// motion either).
+// Every link that travels with a drag (the grabbed one leaves its dashed slot, see below) gets the
+// same state: a faded scrim over the recognisable card and the same dashed outline. It is back on
+// drop or Esc. A state, not a transition, so reduced motion needs nothing special.
 .library__item--carried {
-  opacity: 0.5;
+  position: relative;
+
+  // The picked card's 2px ring is a shadow outside its box; clipping to the item leaves one frame.
+  clip-path: inset(0 round var(--radius-lg));
+
+  &::after {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+    content: '';
+    background: color-mix(in srgb, var(--bg) 60%, transparent);
+    border: 2px dashed var(--border-control);
+    border-radius: var(--radius-lg);
+  }
+}
+
+.library__rows > .library__item--carried {
+  clip-path: inset(0 round var(--radius-md));
+
+  &::after {
+    border-radius: var(--radius-md);
+  }
 }
 
 // The slot a dragged link leaves behind (DragDrop spec): a dashed outline with the link's name.
