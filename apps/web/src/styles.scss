@@ -66,7 +66,7 @@
 
 // Drag a link to a folder (DragDrop spec). The CDK appends the preview (a clone of the feed item)
 // to <body>, outside the library page's styles. It lifts and shrinks (rotate and scale are their
-// own properties, so the CDK's translate keeps working) and carries a "Move 1 link" badge read
+// own properties, so the CDK's translate keeps working) and carries a "Move 1 link" (or "Move 3 links") badge read
 // from `data-drag-label`. The CDK's settle animation is skipped under reduced motion.
 .library__item.cdk-drag-preview {
   z-index: 1100;
@@ -90,6 +90,14 @@
     content: attr(data-drag-label);
     background: var(--primary);
     border-radius: var(--radius-full);
+  }
+
+  // A selection travels together: the preview looks like a small stack.
+  &.library__item--bundle {
+    box-shadow:
+      var(--shadow-float),
+      rem(8px) rem(8px) 0 rem(-2px) var(--surface-pressed),
+      rem(14px) rem(14px) 0 rem(-4px) var(--surface-hover);
   }
 
   @include reduced-motion {

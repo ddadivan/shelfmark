@@ -585,6 +585,18 @@ export default class LibraryPage {
     void this.actions.addLink({ ...this.addLinkData(), text });
   }
 
+  /** Dragging a picked link (with others picked) carries the whole selection. */
+  protected bundled(link: LinkResponse): boolean {
+    return this.selectedCount() > 1 && this.selection.has(link.id);
+  }
+
+  /** Label of the drag preview: "Move 1 link" or, for a selection, "Move 3 links". */
+  protected dragLabelKey(link: LinkResponse): string {
+    return this.bundled(link)
+      ? pluralKey('bulk.move.title', this.selectedCount())
+      : 'links.drag.moveOne';
+  }
+
   /** Hit-tests the folders under the pointer while a link is dragged. */
   protected onDragMoved(event: CdkDragMove<unknown>): void {
     this.drag.move(event.pointerPosition.x, event.pointerPosition.y);

@@ -3,6 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import type { FolderResponse, LinkResponse } from '@shelfmark/contracts';
 import { MOCK_FOLDERS, MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { FoldersStore } from '../../../stores/folders.store';
+import { LinkSelectionStore } from '../../../stores/link-selection.store';
+import { BulkLinkActionsService } from '../bulk/bulk-link-actions.service';
 import { LinkActionsService } from '../link-actions.service';
 import { LINKS_SCOPE } from '../models/links-scope.const';
 import { LINK_DROP_ATTRIBUTE } from '../models/link-drop-attribute.const';
@@ -17,9 +19,11 @@ function link(folderId: string | null): LinkResponse {
 
 function setup() {
   const moveTo = vi.fn(() => Promise.resolve());
+  const bulkMoveTo = vi.fn(() => Promise.resolve(true));
   TestBed.configureTestingModule({
     providers: [
       { provide: LinkActionsService, useValue: { moveTo } },
+      { provide: BulkLinkActionsService, useValue: { moveTo: bulkMoveTo } },
       {
         provide: FoldersStore,
         useValue: { entityMap: () => ({ [FOLDER_A.id]: FOLDER_A, [FOLDER_B.id]: FOLDER_B }) },
@@ -39,7 +43,7 @@ function setup() {
   };
   const under = vi.fn<(x: number, y: number) => Element | null>(() => null);
   doc.elementFromPoint = under;
-  return { drag: TestBed.inject(LinkDragService), moveTo, element, under, doc };
+  return { drag: TestBed.inject(LinkDragService), moveTo, bulkMoveTo, element, under, doc };
 }
 
 describe('LinkDragService', () => {
@@ -127,5 +131,57 @@ describe('LinkDragService', () => {
     doc.dispatchEvent(event);
 
     expect(event.defaultPrevented).toBe(false);
+  });
+
+  describe('with a selection', () => {
+    const picked = (): LinkResponse[] => [
+      { ...MOCK_LINKS[0], id: 'a', folderId: FOLDER_A.id },
+      { ...MOCK_LINKS[0], id: 'b', folderId: null },
+      { ...MOCK_LINKS[0], id: 'c', folderId: FOLDER_A.id },
+    ];
+
+    it('dragging a picked link moves all picked links with one batch and clears the selection', async () => {
+      const { drag, moveTo, bulkMoveTo, element, under } = setup();
+      const selection = TestBed.inject(LinkSelectionStore);
+      selection.selectAll(['a', 'b', 'c']);
+      const links = picked();
+      under.mockReturnValue(element({ 'data-ui-tree-id': FOLDER_B.id }));
+
+      drag.start(links[1] as LinkResponse, links);
+      expect([...drag.carriedIds()]).toEqual(['a', 'b', 'c']);
+      drag.move(1, 1);
+      drag.drop();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(bulkMoveTo).toHaveBeenCalledWith(links, FOLDER_B.id);
+      expect(moveTo).not.toHaveBeenCalled();
+      expect(selection.count()).toBe(0);
+    });
+
+    it('dragging an unselected link moves just that link', () => {
+      const { drag, moveTo, bulkMoveTo, element, under } = setup();
+      const links = picked();
+      const other = { ...MOCK_LINKS[0], id: 'z', folderId: null } as LinkResponse;
+      under.mockReturnValue(element({ 'data-ui-tree-id': FOLDER_B.id }));
+
+      drag.start(other, links);
+      drag.move(1, 1);
+      drag.drop();
+
+      expect(moveTo).toHaveBeenCalledWith(other, FOLDER_B.id);
+      expect(bulkMoveTo).not.toHaveBeenCalled();
+    });
+
+    it('is no target when every carried link is already in the folder', () => {
+      const { drag, element, under } = setup();
+      const links = picked().map((item) => ({ ...item, folderId: FOLDER_A.id }));
+      under.mockReturnValue(element({ 'data-ui-tree-id': FOLDER_A.id }));
+
+      drag.start(links[0] as LinkResponse, links);
+      drag.move(1, 1);
+
+      expect(drag.treeTargetId()).toBeNull();
+    });
   });
 });

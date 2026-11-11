@@ -61,6 +61,59 @@ test.describe('drag a link to a folder (mock API)', () => {
     await expect(page.getByRole('heading', { name: PASTA, exact: true })).toBeVisible();
   });
 
+  test('dragging a picked card carries every picked card, with one toast and Undo', async ({
+    page,
+  }) => {
+    test.skip(isPhone(page), 'phones have no sidebar; "Move to folder" is the way there');
+    await page.goto('/links');
+    const items = page.locator('li.library__item');
+    await expect(items.first()).toBeVisible();
+    const reading = treeRow(page, READING);
+    for (const index of [0, 1, 2]) {
+      const card = items.nth(index).locator('ui-card');
+      await card.hover();
+      await card.locator('.ui-checkbox__box').click();
+    }
+    await settled(page);
+
+    await dragOver(page, items.nth(1), reading);
+    await expect(reading).toHaveClass(/ui-tree__row--drop/);
+    await expect(page.locator('.cdk-drag-preview')).toHaveAttribute(
+      'data-drag-label',
+      'Move 3 links',
+    );
+    await page.mouse.up();
+
+    // Some of the picked links may already live in Reading; only the others move.
+    const toast = page
+      .getByRole('status')
+      .filter({ hasText: new RegExp(`\\d links? moved to ${READING}`) });
+    await expect(toast).toBeVisible();
+    await expect(page.getByRole('group', { name: 'Selection' })).toHaveCount(0);
+    await toast.getByRole('button', { name: 'Undo' }).click();
+    await expect(toast).toHaveCount(0);
+  });
+
+  test('dragging an unselected card moves just that card', async ({ page }) => {
+    test.skip(isPhone(page), 'phones have no sidebar');
+    await page.goto('/links');
+    const items = page.locator('li.library__item');
+    await expect(items.first()).toBeVisible();
+    const first = items.nth(0).locator('ui-card');
+    await first.hover();
+    await first.locator('.ui-checkbox__box').click();
+    await settled(page);
+
+    await dragOver(page, items.nth(1), treeRow(page, READING));
+    await expect(page.locator('.cdk-drag-preview')).toHaveAttribute(
+      'data-drag-label',
+      'Move 1 link',
+    );
+    await page.mouse.up();
+
+    await expect(page.getByRole('status').filter({ hasText: `Moved to ${READING}` })).toBeVisible();
+  });
+
   test('Esc cancels the drag and nothing moves', async ({ page }) => {
     test.skip(isPhone(page), 'phones have no sidebar');
     const card = page.locator('li.library__item').filter({ hasText: PASTA });

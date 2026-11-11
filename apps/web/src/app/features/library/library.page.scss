@@ -391,6 +391,13 @@
   }
 }
 
+// The other picked links while a selection is dragged: they stay in place, dimmed, so it is clear
+// they travel with the one under the pointer. No transition (nothing to animate under reduced
+// motion either).
+.library__item--carried {
+  opacity: 0.5;
+}
+
 // The slot a dragged link leaves behind (DragDrop spec): a dashed outline with the link's name.
 .library__drag-slot {
   @include type(caption);
