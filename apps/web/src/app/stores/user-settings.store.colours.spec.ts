@@ -1,3 +1,4 @@
+import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
 import { TestBed } from '@angular/core/testing';
 import { FOLDER_COLOUR, type UserSettingsResponse } from '@shelfmark/contracts';
 import { of, throwError } from 'rxjs';
@@ -11,6 +12,7 @@ function setup(folderColours = true) {
     trashRetentionDays: 30,
     folderColours,
     pauseHistory: false,
+    ...MOCK_APPEARANCE_DEFAULTS,
   };
   const api = {
     get: vi.fn<UserSettingsApi['get']>(() => of(settings)),

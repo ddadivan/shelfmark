@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { FOLDER_DELETE_MODE, TRASH_ITEM_KIND, TRASH_LIMIT } from '@shelfmark/contracts';
 import { MOCK_ID } from '@shelfmark/contracts/testing';
@@ -9,7 +10,9 @@ import { MockLinksApi } from '../../links/mock/mock-links.api';
 import { MockTrashApi } from './mock-trash.api';
 
 function create() {
-  const injector = Injector.create({ providers: [MockLibraryData] });
+  const injector = Injector.create({
+    providers: [MockLibraryData, { provide: DOCUMENT, useValue: document }],
+  });
   return runInInjectionContext(injector, () => ({
     trash: new MockTrashApi(),
     links: new MockLinksApi(),

@@ -2,7 +2,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
-import { firstValueFrom } from 'rxjs';
+import { NEVER, firstValueFrom, of } from 'rxjs';
+import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
+import type { UpdateUserSettingsRequest } from '@shelfmark/contracts';
+import { USER_SETTINGS_API } from '../features/settings/models/user-settings-api.const';
 import { ToastService } from '@shelfmark/ui';
 import { AUTH_API } from '../core/auth/auth-api.token';
 import { ONBOARDING_API } from '../features/onboarding/models/onboarding-api.const';
@@ -15,12 +18,25 @@ import type { AuthUser } from '@shelfmark/contracts';
 import { APP_LANG } from '../core/i18n/models/app-lang.const';
 import { AppTranslocoLoader } from '../core/i18n/app-transloco.loader';
 import { translocoConfig } from '../core/i18n/transloco.config';
-import { THEME_PREFERENCE } from '../core/theme/models/theme-preference.const';
+import { THEME_PREFERENCE } from '@shelfmark/contracts';
 import { ThemeService } from '../core/theme/theme.service';
 import { LinkActionsService } from '../features/links/link-actions.service';
 import { SearchDialogService } from '../features/search/search-dialog.service';
 import { ShortcutsDialogService } from '../features/shortcuts/shortcuts-dialog.service';
 import AppShellComponent from './app-shell.component';
+
+/** The account settings never load here; a change is saved and answered as sent. */
+const settingsApi = {
+  get: () => NEVER,
+  update: (request: UpdateUserSettingsRequest) =>
+    of({
+      trashRetentionDays: 30 as const,
+      folderColours: true,
+      pauseHistory: false,
+      ...MOCK_APPEARANCE_DEFAULTS,
+      ...request,
+    }),
+};
 
 const USER: AuthUser = {
   id: 'u1',
@@ -65,6 +81,7 @@ describe('AppShellComponent', () => {
         { provide: AUTH_API, useValue: api },
         { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
         { provide: RATING_API, useValue: { prompt: vi.fn(), record: vi.fn() } },
+        { provide: USER_SETTINGS_API, useValue: settingsApi },
         { provide: ADMIN_API, useValue: adminApiStub() },
       ],
     });
@@ -103,6 +120,7 @@ describe('AppShellComponent', () => {
         { provide: AUTH_API, useValue: api },
         { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
         { provide: RATING_API, useValue: { prompt: vi.fn(), record: vi.fn() } },
+        { provide: USER_SETTINGS_API, useValue: settingsApi },
         { provide: ADMIN_API, useValue: adminApiStub() },
       ],
     });
@@ -254,6 +272,7 @@ describe('AppShellComponent', () => {
           { provide: AUTH_API, useValue: api },
           { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
           { provide: RATING_API, useValue: { prompt: vi.fn(), record: vi.fn() } },
+          { provide: USER_SETTINGS_API, useValue: settingsApi },
           { provide: ADMIN_API, useValue: adminApiStub() },
         ],
       });
@@ -416,6 +435,7 @@ describe('AppShellComponent styles', () => {
         },
         { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
         { provide: RATING_API, useValue: { prompt: vi.fn(), record: vi.fn() } },
+        { provide: USER_SETTINGS_API, useValue: settingsApi },
         { provide: ADMIN_API, useValue: adminApiStub() },
       ],
     });

@@ -1,3 +1,4 @@
+import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
 import { signal } from '@angular/core';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { Router } from '@angular/router';
@@ -62,6 +63,7 @@ async function setup(
     trashRetentionDays: 30,
     folderColours: true,
     pauseHistory: options.paused ?? false,
+    ...MOCK_APPEARANCE_DEFAULTS,
   };
   const settingsApi = {
     get: vi.fn<UserSettingsApi['get']>(() => of(settings)),

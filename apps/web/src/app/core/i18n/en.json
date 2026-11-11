@@ -960,7 +960,7 @@
     },
     "description": {
       "account": "Your profile and your account.",
-      "appearance": "How Shelfmark looks.",
+      "appearance": "Saved as you go and synced to all your devices.",
       "library": "What happens to deleted items.",
       "export": "Take everything you saved with you.",
       "privacy": "What we keep, and how to take it with you.",
@@ -992,11 +992,85 @@
       "title": "Appearance",
       "theme": {
         "label": "Theme",
-        "hint": "System follows your device",
+        "hint": "Light and Dark are tuned by us and always stay the same. Custom is yours to change.",
         "system": "System",
         "light": "Light",
-        "dark": "Dark"
+        "dark": "Dark",
+        "custom": "Custom",
+        "note": "Want other colours or corners? Choose Custom. Light and Dark won’t change."
       },
+      "custom": {
+        "base": {
+          "label": "Start from",
+          "hint": "Your colours sit on the light or the dark base",
+          "light": "Light",
+          "dark": "Dark"
+        },
+        "accent": {
+          "label": "Accent colour",
+          "hint": "Active folder, tags, favourites and focus. Every option keeps 4.5:1 contrast in light and dark.",
+          "sage": "Sage",
+          "ocean": "Ocean",
+          "plum": "Plum",
+          "clay": "Clay",
+          "amber": "Amber",
+          "rose": "Rose",
+          "teal": "Teal",
+          "graphite": "Graphite"
+        },
+        "background": {
+          "label": "Background",
+          "hint": "The page behind cards and panels",
+          "stone": "Stone",
+          "paper": "Paper",
+          "mist": "Mist",
+          "white": "White",
+          "graphite": "Graphite",
+          "ink": "Ink",
+          "forest": "Forest",
+          "black": "Black"
+        },
+        "corners": {
+          "label": "Corners",
+          "hint": "Cards, panels and buttons",
+          "round": "Round",
+          "soft": "Soft",
+          "square": "Square"
+        },
+        "reset": "Reset custom theme"
+      },
+      "motion": {
+        "title": "Motion",
+        "label": "Animations",
+        "hint": "Reduced keeps fades and loaders, removes movement",
+        "system": "System",
+        "full": "Full",
+        "reduced": "Reduced"
+      },
+      "preview": {
+        "title": "Live preview",
+        "label": "Preview of your settings",
+        "hint": "Changes apply to the whole app at once.",
+        "folders": {
+          "angular": "Angular",
+          "clothes": "Clothes",
+          "recipes": "Recipes"
+        },
+        "cards": {
+          "one": {
+            "site": "youtube.com",
+            "title": "Signal Forms in 20 minutes",
+            "tag": "angular"
+          },
+          "two": {
+            "site": "cos.com",
+            "title": "Wool coat, straight cut",
+            "tag": "clothes"
+          }
+        }
+      },
+      "failed": "Couldn't save the appearance",
+      "failedDetail": "It is back to how it was.",
       "language": {
         "label": "Language",
         "hint": "More languages are coming",

@@ -1,4 +1,12 @@
 import {
+  CUSTOM_THEME_ACCENT,
+  CUSTOM_THEME_BACKGROUND,
+  CUSTOM_THEME_BASE,
+  CUSTOM_THEME_CORNERS,
+  CUSTOM_THEME_DEFAULT,
+  type CustomTheme,
+  MOTION_PREFERENCE,
+  THEME_PREFERENCE,
   TRASH_RETENTION_DAYS,
   USER_SETTINGS_ENDPOINT,
   type UserSettingsResponse,
@@ -10,6 +18,13 @@ import type { AuthTestApp } from '../../test-utils/models/auth-test-app.interfac
 import type { IsolationUsers } from '../../test-utils/models/isolation-users.interface';
 import { resetRateLimits } from '../../test-utils/reset-rate-limits';
 import { signInDemo } from '../../test-utils/sign-in-demo';
+
+const APPEARANCE_DEFAULTS = {
+  theme: THEME_PREFERENCE.System,
+  customTheme: CUSTOM_THEME_DEFAULT,
+  motion: MOTION_PREFERENCE.System,
+  appearanceSaved: false,
+};
 
 describe('account settings', () => {
   let t: AuthTestApp;
@@ -37,7 +52,12 @@ describe('account settings', () => {
 
   it('defaults to 30 days', async () => {
     const res = await asUser(t.app, users.owner).get(USER_SETTINGS_ENDPOINT).expect(200);
-    expect(res.body).toEqual({ trashRetentionDays: 30, folderColours: true, pauseHistory: false });
+    expect(res.body).toEqual({
+      trashRetentionDays: 30,
+      folderColours: true,
+      pauseHistory: false,
+      ...APPEARANCE_DEFAULTS,
+    });
   });
 
   it.each(TRASH_RETENTION_DAYS)('saves %i days and reads it back', async (days) => {
@@ -52,6 +72,7 @@ describe('account settings', () => {
       trashRetentionDays: days,
       folderColours: true,
       pauseHistory: false,
+      ...APPEARANCE_DEFAULTS,
     });
   });
 
@@ -62,6 +83,7 @@ describe('account settings', () => {
       trashRetentionDays: 90,
       folderColours: true,
       pauseHistory: false,
+      ...APPEARANCE_DEFAULTS,
     });
   });
 
@@ -80,15 +102,26 @@ describe('account settings', () => {
       .patch(USER_SETTINGS_ENDPOINT)
       .send({ folderColours: false, pauseHistory: false })
       .expect(200);
-    expect(off.body).toEqual({ trashRetentionDays: 30, folderColours: false, pauseHistory: false });
+    expect(off.body).toEqual({
+      trashRetentionDays: 30,
+      folderColours: false,
+      pauseHistory: false,
+      ...APPEARANCE_DEFAULTS,
+    });
     const day = await a.patch(USER_SETTINGS_ENDPOINT).send({ trashRetentionDays: 7 }).expect(200);
-    expect(day.body).toEqual({ trashRetentionDays: 7, folderColours: false, pauseHistory: false });
+    expect(day.body).toEqual({
+      trashRetentionDays: 7,
+      folderColours: false,
+      pauseHistory: false,
+      ...APPEARANCE_DEFAULTS,
+    });
     expect((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body).toEqual(day.body);
     const other = asUser(t.app, users.intruder);
     expect((await other.get(USER_SETTINGS_ENDPOINT).expect(200)).body).toEqual({
       trashRetentionDays: 30,
       folderColours: true,
       pauseHistory: false,
+      ...APPEARANCE_DEFAULTS,
     });
   });
 
@@ -112,6 +145,7 @@ describe('account settings', () => {
       trashRetentionDays: 30,
       folderColours: true,
       pauseHistory: false,
+      ...APPEARANCE_DEFAULTS,
     });
     await b.patch(USER_SETTINGS_ENDPOINT).send({ trashRetentionDays: 90 }).expect(200);
     expect(await stored(users.owner.userId)).toBe(7);
@@ -124,10 +158,16 @@ describe('account settings', () => {
       trashRetentionDays: 30,
       folderColours: true,
       pauseHistory: false,
+      ...APPEARANCE_DEFAULTS,
     });
     expect(
       (await demo.patch(USER_SETTINGS_ENDPOINT).send({ trashRetentionDays: 7 }).expect(200)).body,
-    ).toEqual({ trashRetentionDays: 7, folderColours: true, pauseHistory: false });
+    ).toEqual({
+      trashRetentionDays: 7,
+      folderColours: true,
+      pauseHistory: false,
+      ...APPEARANCE_DEFAULTS,
+    });
   });
 
   it('needs a session, a JSON body and the same origin', async () => {
@@ -152,5 +192,145 @@ describe('account settings', () => {
         data: { trashRetentionDays: 15 },
       }),
     ).rejects.toThrow();
+  });
+
+  describe('appearance (#273)', () => {
+    const dark: CustomTheme = {
+      base: CUSTOM_THEME_BASE.Dark,
+      accent: CUSTOM_THEME_ACCENT.Rose,
+      background: CUSTOM_THEME_BACKGROUND.Ink,
+      corners: CUSTOM_THEME_CORNERS.Square,
+    };
+
+    it.each(Object.values(THEME_PREFERENCE))('saves theme %s', async (theme) => {
+      const a = asUser(t.app, users.owner);
+      const res = await a.patch(USER_SETTINGS_ENDPOINT).send({ theme }).expect(200);
+      expect((res.body as UserSettingsResponse).theme).toBe(theme);
+      expect(
+        ((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse).theme,
+      ).toBe(theme);
+    });
+
+    it('marks the appearance saved on its first write only, not on other settings', async () => {
+      const a = asUser(t.app, users.owner);
+      const other = await a
+        .patch(USER_SETTINGS_ENDPOINT)
+        .send({ trashRetentionDays: 7 })
+        .expect(200);
+      expect((other.body as UserSettingsResponse).appearanceSaved).toBe(false);
+      const motion = await a
+        .patch(USER_SETTINGS_ENDPOINT)
+        .send({ motion: MOTION_PREFERENCE.Full })
+        .expect(200);
+      expect((motion.body as UserSettingsResponse).appearanceSaved).toBe(true);
+      const saved = await t.db.prisma.user.findUniqueOrThrow({ where: { id: users.owner.userId } });
+      expect(saved.appearanceSavedAt).toBeInstanceOf(Date);
+      // Saving the defaults explicitly still counts as chosen.
+      const b = asUser(t.app, users.intruder);
+      const chosen = await b
+        .patch(USER_SETTINGS_ENDPOINT)
+        .send({ theme: THEME_PREFERENCE.System })
+        .expect(200);
+      expect((chosen.body as UserSettingsResponse).appearanceSaved).toBe(true);
+    });
+
+    it.each(Object.values(MOTION_PREFERENCE))('saves motion %s', async (motion) => {
+      const a = asUser(t.app, users.owner);
+      const res = await a.patch(USER_SETTINGS_ENDPOINT).send({ motion }).expect(200);
+      expect((res.body as UserSettingsResponse).motion).toBe(motion);
+    });
+
+    it('saves the whole custom theme with the theme, and keeps the other settings', async () => {
+      const a = asUser(t.app, users.owner);
+      await a.patch(USER_SETTINGS_ENDPOINT).send({ trashRetentionDays: 7 }).expect(200);
+      const res = await a
+        .patch(USER_SETTINGS_ENDPOINT)
+        .send({ theme: THEME_PREFERENCE.Custom, customTheme: dark })
+        .expect(200);
+      expect(res.body).toEqual({
+        trashRetentionDays: 7,
+        folderColours: true,
+        pauseHistory: false,
+        theme: THEME_PREFERENCE.Custom,
+        customTheme: dark,
+        motion: MOTION_PREFERENCE.System,
+        appearanceSaved: true,
+      });
+      // Choosing another theme keeps the custom one for later.
+      const light = await a
+        .patch(USER_SETTINGS_ENDPOINT)
+        .send({ theme: THEME_PREFERENCE.Light })
+        .expect(200);
+      expect((light.body as UserSettingsResponse).customTheme).toEqual(dark);
+    });
+
+    it.each([
+      [{ theme: 'sepia' }],
+      [{ theme: null }],
+      [{ theme: 1 }],
+      [{ motion: 'none' }],
+      [{ motion: null }],
+      [{ customTheme: null }],
+      [{ customTheme: 'dark' }],
+      [{ customTheme: [] }],
+      [{ customTheme: { ...CUSTOM_THEME_DEFAULT, accent: '#ff0000' } }],
+      [{ customTheme: { ...CUSTOM_THEME_DEFAULT, accent: 'red' } }],
+      [{ customTheme: { ...CUSTOM_THEME_DEFAULT, corners: 'pill' } }],
+      [{ customTheme: { ...CUSTOM_THEME_DEFAULT, base: 'sepia' } }],
+      // A background of the other base.
+      [{ customTheme: { ...CUSTOM_THEME_DEFAULT, background: CUSTOM_THEME_BACKGROUND.Black } }],
+      [{ customTheme: { ...dark, background: CUSTOM_THEME_BACKGROUND.Paper } }],
+      // Partial or padded objects.
+      [{ customTheme: { base: 'light', accent: 'ocean', background: 'paper' } }],
+      [{ customTheme: { ...CUSTOM_THEME_DEFAULT, userId: 'x' } }],
+      [{ customTheme: { ...CUSTOM_THEME_DEFAULT, style: 'color: red' } }],
+    ])('rejects %j with 400 and changes nothing', async (body) => {
+      const a = asUser(t.app, users.owner);
+      await a.patch(USER_SETTINGS_ENDPOINT).send(body).expect(400);
+      expect((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body).toEqual({
+        trashRetentionDays: 30,
+        folderColours: true,
+        pauseHistory: false,
+        ...APPEARANCE_DEFAULTS,
+      });
+    });
+
+    it('is isolated: one user’s theme never reaches another', async () => {
+      const a = asUser(t.app, users.owner);
+      const b = asUser(t.app, users.intruder);
+      await a
+        .patch(USER_SETTINGS_ENDPOINT)
+        .send({
+          theme: THEME_PREFERENCE.Custom,
+          customTheme: dark,
+          motion: MOTION_PREFERENCE.Reduced,
+        })
+        .expect(200);
+      expect((await b.get(USER_SETTINGS_ENDPOINT).expect(200)).body).toEqual({
+        trashRetentionDays: 30,
+        folderColours: true,
+        pauseHistory: false,
+        ...APPEARANCE_DEFAULTS,
+      });
+      await b.patch(USER_SETTINGS_ENDPOINT).send({ theme: THEME_PREFERENCE.Dark }).expect(200);
+      const owner = (await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse;
+      expect(owner.theme).toBe(THEME_PREFERENCE.Custom);
+      expect(owner.customTheme).toEqual(dark);
+      expect(owner.motion).toBe(MOTION_PREFERENCE.Reduced);
+    });
+
+    it('is enforced by the database CHECKs', async () => {
+      const id = users.owner.userId;
+      for (const data of [
+        { theme: 'sepia' },
+        { motion: 'none' },
+        { customThemeAccent: 'red' },
+        { customThemeCorners: 'pill' },
+        { customThemeBackground: 'black' },
+        { customThemeBase: 'dark' },
+      ]) {
+        await expect(t.db.prisma.user.update({ where: { id }, data })).rejects.toThrow();
+      }
+    });
   });
 });

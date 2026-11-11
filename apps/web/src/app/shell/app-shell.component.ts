@@ -38,7 +38,7 @@ import { OnboardingStore } from '../features/onboarding/onboarding.store';
 import { RatingStore } from '../features/rating/rating.store';
 import { SearchDialogService } from '../features/search/search-dialog.service';
 import { ShortcutsDialogService } from '../features/shortcuts/shortcuts-dialog.service';
-import { THEME_PREFERENCE } from '../core/theme/models/theme-preference.const';
+import { THEME_PREFERENCE } from '@shelfmark/contracts';
 import { ThemeService } from '../core/theme/theme.service';
 import { isMacPlatform } from '../features/search/is-mac-platform';
 import { ViewportService } from '../core/layout/viewport.service';
@@ -184,10 +184,11 @@ export default class AppShellComponent {
     });
   });
 
+  /** Switches between the fixed Light and Dark themes and saves the choice on the account. */
   protected toggleTheme(): void {
-    this.theme.setPreference(
-      this.theme.resolved() === THEME.Dark ? THEME_PREFERENCE.Light : THEME_PREFERENCE.Dark,
-    );
+    void this.userSettings.setAppearance({
+      theme: this.theme.resolved() === THEME.Dark ? THEME_PREFERENCE.Light : THEME_PREFERENCE.Dark,
+    });
   }
 
   /** A tab was chosen: the pages route (the links are real `href`s), Search opens over the page. */

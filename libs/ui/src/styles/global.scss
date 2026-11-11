@@ -35,6 +35,9 @@
   }
 }
 
+// Custom theme: a fixed base plus curated accent, background and corners (tokens/_custom.scss).
+@include custom-themes;
+
 html {
   font-size: 100%;
 

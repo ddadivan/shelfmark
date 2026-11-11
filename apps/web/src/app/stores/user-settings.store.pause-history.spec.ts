@@ -1,3 +1,4 @@
+import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
 import { TestBed } from '@angular/core/testing';
 import type { UserSettingsResponse } from '@shelfmark/contracts';
 import { of, Subject, throwError } from 'rxjs';
@@ -12,6 +13,7 @@ function setup(pauseHistory = false) {
     trashRetentionDays: 30,
     folderColours: true,
     pauseHistory,
+    ...MOCK_APPEARANCE_DEFAULTS,
   };
   const api = {
     get: vi.fn<UserSettingsApi['get']>(() => of(settings)),
@@ -46,7 +48,12 @@ describe('UserSettingsStore pause history', () => {
 
     const done = store.setPauseHistory(true);
     expect(store.historyPaused()).toBe(true);
-    gate.next({ trashRetentionDays: 30, folderColours: true, pauseHistory: true });
+    gate.next({
+      trashRetentionDays: 30,
+      folderColours: true,
+      pauseHistory: true,
+      ...MOCK_APPEARANCE_DEFAULTS,
+    });
     gate.complete();
 
     expect(await done).toBe(true);

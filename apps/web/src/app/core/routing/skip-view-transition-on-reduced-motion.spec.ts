@@ -1,11 +1,21 @@
 import { DOCUMENT } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import type { ViewTransitionInfo } from '@angular/router';
+import { ReducedMotion } from '@shelfmark/ui';
 import { skipViewTransitionOnReducedMotion } from './skip-view-transition-on-reduced-motion';
 
 function setup(reduced: boolean | null) {
   const doc = {
-    defaultView: reduced === null ? {} : { matchMedia: () => ({ matches: reduced }) },
+    defaultView:
+      reduced === null
+        ? {}
+        : {
+            matchMedia: () => ({
+              matches: reduced,
+              addEventListener: () => undefined,
+              removeEventListener: () => undefined,
+            }),
+          },
   } as unknown as Document;
   TestBed.configureTestingModule({ providers: [{ provide: DOCUMENT, useValue: doc }] });
   const skipTransition = vi.fn();
@@ -15,6 +25,24 @@ function setup(reduced: boolean | null) {
 }
 
 describe('skipViewTransitionOnReducedMotion', () => {
+  it('skips it under the Animations setting Reduced too', () => {
+    const doc = {
+      defaultView: {
+        matchMedia: () => ({
+          matches: false,
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+        }),
+      },
+    } as unknown as Document;
+    TestBed.configureTestingModule({ providers: [{ provide: DOCUMENT, useValue: doc }] });
+    TestBed.inject(ReducedMotion).setAppReduced(true);
+    const skipTransition = vi.fn();
+    const info = { transition: { skipTransition } } as unknown as ViewTransitionInfo;
+    TestBed.runInInjectionContext(() => skipViewTransitionOnReducedMotion(info));
+    expect(skipTransition).toHaveBeenCalledTimes(1);
+  });
+
   it('skips the page transition with prefers-reduced-motion', () => {
     expect(setup(true)).toHaveBeenCalledTimes(1);
   });

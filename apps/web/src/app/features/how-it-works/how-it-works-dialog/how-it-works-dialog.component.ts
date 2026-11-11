@@ -7,17 +7,14 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { ButtonComponent, DialogComponent, type Theme } from '@shelfmark/ui';
+import { ButtonComponent, DialogComponent, ReducedMotion, type Theme } from '@shelfmark/ui';
 import { ViewportService } from '../../../core/layout/viewport.service';
 import { ThemeService } from '../../../core/theme/theme.service';
 import { HOW_IT_WORKS_CHAPTERS } from '../models/how-it-works-chapters.const';
 import { HOW_IT_WORKS_VIDEO } from '../models/how-it-works-video.const';
 import type { HowItWorksChapter } from '../models/how-it-works-chapter.interface';
 import type { HowItWorksMedia } from '../models/how-it-works-media.interface';
-
-const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 
 /** `/media/how-it-works-dark-phone.mp4` (and `.webm`) with its poster and captions. */
 function mediaFor(theme: Theme, phone: boolean): HowItWorksMedia {
@@ -52,8 +49,7 @@ export class HowItWorksDialogComponent {
   );
   protected readonly video = HOW_IT_WORKS_VIDEO;
   protected readonly chapters = HOW_IT_WORKS_CHAPTERS;
-  protected readonly autoplay =
-    !inject(DOCUMENT).defaultView?.matchMedia?.(REDUCED_MOTION_QUERY).matches;
+  protected readonly autoplay = !inject(ReducedMotion).reduced();
   private readonly player = viewChild<ElementRef<HTMLVideoElement>>('player');
   private readonly time = signal(0);
   /** The chapter that is playing (the last one whose start has passed). */

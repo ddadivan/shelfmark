@@ -1,3 +1,4 @@
+import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
 import { TestBed } from '@angular/core/testing';
 import { TRASH_RETENTION_DEFAULT, type UserSettingsResponse } from '@shelfmark/contracts';
 import { of, Subject, throwError } from 'rxjs';
@@ -11,13 +12,19 @@ import { UserSettingsStore } from './user-settings.store';
 function setup() {
   const api = {
     get: vi.fn<UserSettingsApi['get']>(() =>
-      of({ trashRetentionDays: 7 as const, folderColours: true, pauseHistory: false }),
+      of({
+        trashRetentionDays: 7 as const,
+        folderColours: true,
+        pauseHistory: false,
+        ...MOCK_APPEARANCE_DEFAULTS,
+      }),
     ),
     update: vi.fn<UserSettingsApi['update']>((request) =>
       of({
         trashRetentionDays: request.trashRetentionDays ?? 30,
         folderColours: true,
         pauseHistory: false,
+        ...MOCK_APPEARANCE_DEFAULTS,
       }),
     ),
   };
@@ -93,7 +100,12 @@ describe('UserSettingsStore', () => {
 
       expect(store.retentionDays()).toBe(90);
       expect(api.update).toHaveBeenCalledWith({ trashRetentionDays: 90 });
-      gate.next({ trashRetentionDays: 90, folderColours: true, pauseHistory: false });
+      gate.next({
+        trashRetentionDays: 90,
+        folderColours: true,
+        pauseHistory: false,
+        ...MOCK_APPEARANCE_DEFAULTS,
+      });
       gate.complete();
       expect(await done).toBe(true);
       expect(refresh).toHaveBeenCalledTimes(1);

@@ -120,6 +120,27 @@ export type { TrashActionResponse } from './trash/trash-action-response.interfac
 export type { UserSettingsResponse } from './users/user-settings-response.interface';
 export type { UpdateUserSettingsRequest } from './users/update-user-settings-request.interface';
 export { USER_SETTINGS_ENDPOINT } from './users/user-settings-endpoint.const';
+export { THEME_PREFERENCE } from './users/theme-preference.const';
+export type { ThemePreference } from './users/theme-preference.type';
+export { MOTION_PREFERENCE } from './users/motion-preference.const';
+export type { MotionPreference } from './users/motion-preference.type';
+export { CUSTOM_THEME_BASE } from './users/custom-theme-base.const';
+export type { CustomThemeBase } from './users/custom-theme-base.type';
+export { CUSTOM_THEME_ACCENT } from './users/custom-theme-accent.const';
+export type { CustomThemeAccent } from './users/custom-theme-accent.type';
+export { CUSTOM_THEME_BACKGROUND } from './users/custom-theme-background.const';
+export type { CustomThemeBackground } from './users/custom-theme-background.type';
+export { CUSTOM_THEME_BACKGROUNDS } from './users/custom-theme-backgrounds.const';
+export { CUSTOM_THEME_CORNERS } from './users/custom-theme-corners.const';
+export type { CustomThemeCorners } from './users/custom-theme-corners.type';
+export type { CustomTheme } from './users/custom-theme.interface';
+export { CUSTOM_THEME_DEFAULT } from './users/custom-theme-default.const';
+export {
+  isBackgroundOfBase,
+  isCustomTheme,
+  isMotionPreference,
+  isThemePreference,
+} from './users/is-custom-theme';
 
 export { FOLDER_COLOUR } from './folders/folder-colour.const';
 export type { FolderColour } from './folders/folder-colour.type';
