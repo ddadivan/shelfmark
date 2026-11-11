@@ -23,5 +23,6 @@ export const RATE_LIMIT = {
   Demo: { limit: 5, ttl: HOUR_MS },
   Export: { limit: 5, ttl: MINUTE_MS },
   Feedback: { limit: 10, ttl: MINUTE_MS },
+  Admin: { limit: 60, ttl: MINUTE_MS },
   DeleteAccount: { limit: 5, ttl: MINUTE_MS },
 } as const satisfies Record<string, RateLimitPreset>;
