@@ -9,6 +9,7 @@ import { DIALOG_FIRST_FIELD } from '../../models/dialog-first-field.const';
 import { sidebarActiveId } from '../../shell/sidebar/sidebar-active-id';
 import { SidebarTreeFocusService } from '../../shell/sidebar/sidebar-tree-focus.service';
 import { FoldersStore } from '../../stores/folders.store';
+import { TrashStore } from '../../stores/trash.store';
 import { LinkActionsService } from '../links/link-actions.service';
 import { DeleteFolderDialogComponent } from './delete-folder-dialog/delete-folder-dialog.component';
 import { FolderNameDialogComponent } from './folder-name-dialog/folder-name-dialog.component';
@@ -29,6 +30,7 @@ import { ShareFolderDialogComponent } from '../sharing/share-folder-dialog/share
 @Service()
 export class FolderActionsService {
   private readonly folders = inject(FoldersStore);
+  private readonly trash = inject(TrashStore);
   private readonly dialogs = inject(DialogService);
   private readonly toasts = inject(ToastService);
   private readonly router = inject(Router);
@@ -152,6 +154,7 @@ export class FolderActionsService {
       },
     ).result;
     if (outcome.deleted) {
+      void this.trash.refresh();
       this.toasts.show({
         kind: TOAST_KIND.Success,
         title: this.t('folders.delete.done'),

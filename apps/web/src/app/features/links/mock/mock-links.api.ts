@@ -32,7 +32,7 @@ const DAY_MS = 86_400_000;
 
 /**
  * `LinksApi` over generated data with simulated latency, until the real API (#72). State is
- * in memory, so create / update / remove show up in later lists. `angular.dev/overview` answers
+ * in memory, so create / update / remove show up in later lists; a removed link waits in the mock Trash. `angular.dev/overview` answers
  * with the duplicate fixture, `unreachable.example` fails the preview, `save-fails.example` the
  * save, `patch-fails.example` an update and `delete-fails.example` a delete or a remove from history; the
  * `sessionStorage` key `sm-mock-links-scenario` (`empty` | `error`) changes what the feed lists.
@@ -209,7 +209,9 @@ export class MockLinksApi implements LinksApi {
       if (current && displayHost(current.url) === MOCK_HOST.DeleteFails) {
         return throwError(() => new Error('Mock: delete failed'));
       }
-      this.links = this.links.filter((link) => link.id !== id);
+      if (current) {
+        this.data.trashLink(current);
+      }
       return of(undefined);
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }

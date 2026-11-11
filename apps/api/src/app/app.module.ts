@@ -22,6 +22,7 @@ import { MonitoringModule } from '../monitoring/monitoring.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { SharesModule } from '../shares/shares.module';
 import { TagsModule } from '../tags/tags.module';
+import { TrashModule } from '../trash/trash.module';
 import { UsersModule } from '../users/users.module';
 
 @Module({
@@ -39,6 +40,7 @@ import { UsersModule } from '../users/users.module';
     UsersModule,
     ExportModule,
     SharesModule,
+    TrashModule,
     // Async so the environment is read at DI time, not at import time.
     ThrottlerModule.forRootAsync({
       useFactory: () => createRateLimitOptions(shouldTrustProxyHeaders()),

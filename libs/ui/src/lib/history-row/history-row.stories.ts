@@ -92,6 +92,22 @@ export const BadgeInTimeSlot: Story = {
   }),
 };
 
+/** Trash: a checkbox before the preview (`select` slot) and a folder tile as the preview fallback (`preview` slot). */
+export const SelectAndPreviewSlots: Story = {
+  render: () => ({
+    template: `<div class="hst-pane"><ui-history-group title="Recently deleted">
+      <ui-history-row previewSlot>
+        <input slot="select" type="checkbox" aria-label="Select Old courses" />
+        <ui-folder-icon slot="preview" size="md" colour="plum" />
+        <span slot="title">Old courses</span>
+        <ng-container slot="meta">From Work</ng-container>
+        <span slot="time">27 days left</span>
+        <ui-button slot="actions" size="sm">Restore</ui-button>
+      </ui-history-row>
+    </ui-history-group></div>`,
+  }),
+};
+
 const frame = (theme: Theme) => `
   <div ${THEME_ATTRIBUTE}="${theme}" class="hst-pane">
     <p class="hst-hint">${theme} theme: desktop width, then a phone-width column</p>

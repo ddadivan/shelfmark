@@ -37,7 +37,7 @@ export class LinkImageRecaptureService {
     const startedAt = Date.now();
     if (await this.claim(userId, linkId)) await this.run(userId, linkId, startedAt);
     const row = await this.prisma.link.findFirst({
-      where: { id: linkId, userId },
+      where: { id: linkId, userId, deletedAt: null },
       include: LINK_INCLUDE,
     });
     if (!row) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
@@ -47,7 +47,7 @@ export class LinkImageRecaptureService {
   private async run(userId: string, linkId: string, startedAt: number): Promise<void> {
     try {
       const link = await this.prisma.link.findFirst({
-        where: { id: linkId, userId },
+        where: { id: linkId, userId, deletedAt: null },
         select: { url: true, normalizedUrl: true, faviconSourceUrl: true, imageSourceUrl: true },
       });
       if (!link) return;
@@ -83,7 +83,7 @@ export class LinkImageRecaptureService {
     const cutoff = new Date(Date.now() - RECAPTURE_COOLDOWN_MS);
     const claimed = await this.prisma.$executeRaw`
       UPDATE links SET capture_attempted_at = date_trunc('milliseconds', now())
-      WHERE id = ${linkId}::uuid AND user_id = ${userId}::uuid
+      WHERE id = ${linkId}::uuid AND user_id = ${userId}::uuid AND deleted_at IS NULL
         AND (capture_attempted_at IS NULL OR capture_attempted_at < ${cutoff})`;
     return claimed > 0;
   }

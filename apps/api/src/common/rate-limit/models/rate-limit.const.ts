@@ -28,4 +28,6 @@ export const RATE_LIMIT = {
   Share: { limit: 20, ttl: MINUTE_MS },
   PublicCollection: { limit: 30, ttl: MINUTE_MS },
   PublicCollectionImage: { limit: 240, ttl: MINUTE_MS },
+  // Irreversible Trash writes: delete forever and empty.
+  TrashDelete: { limit: 10, ttl: MINUTE_MS },
 } as const satisfies Record<string, RateLimitPreset>;

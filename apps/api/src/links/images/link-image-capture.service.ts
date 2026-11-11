@@ -58,7 +58,9 @@ export class LinkImageCaptureService {
   ): Promise<boolean> {
     try {
       // The images are written with the owner's id: confirm the link is theirs first.
-      const owned = await this.prisma.link.count({ where: { id: linkId, userId } });
+      const owned = await this.prisma.link.count({
+        where: { id: linkId, userId, deletedAt: null },
+      });
       if (owned === 0) return false;
       const wanted: [LinkImageKind, string][] = [];
       if (sources.faviconSourceUrl !== null) {

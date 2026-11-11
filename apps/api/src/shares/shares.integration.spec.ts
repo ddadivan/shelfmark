@@ -280,9 +280,43 @@ describe('shares API (public collections)', () => {
     await a.patch(`/api/links/${link}`).send({ folderId: other }).expect(200);
     expect((await open(token)).items).toHaveLength(0);
 
+    // Trash (ADR 0036): a folder in Trash ends the public page at once; the share row only goes
+    // with the folder itself, when it is deleted for good.
     await a.delete(`${FOLDERS}/${shared}?mode=delete-links`).expect(204);
     expect((await guest.get(publicUrl(token))).status).toBe(404);
+    await a
+      .post('/api/trash/delete')
+      .send({ items: [{ kind: 'folder', id: shared }] })
+      .expect(200);
     expect(await t.db.prisma.folderShare.count()).toBe(0);
+  });
+
+  it('never shows links or subfolders that are in Trash', async () => {
+    const shared = await createFolder(a, 'Recipes');
+    const kept = await createFolder(a, 'Kept', shared);
+    const trashed = await createFolder(a, 'Trashed', shared);
+    const live = await seedLink(t.db.prisma, users.owner.userId, {
+      folderId: shared,
+      title: 'Live',
+    });
+    const gone = await seedLink(t.db.prisma, users.owner.userId, {
+      folderId: shared,
+      title: 'Gone',
+    });
+    await seedLink(t.db.prisma, users.owner.userId, { folderId: trashed, title: 'In trashed' });
+    await seedLink(t.db.prisma, users.owner.userId, { folderId: kept, title: 'In kept' });
+    const token = await enable(a, shared);
+
+    await a.delete(`/api/links/${gone}`).expect(204);
+    await a.delete(`${FOLDERS}/${trashed}?mode=delete-links`).expect(204);
+
+    const body = await open(token);
+    expect(body.items.map((link) => link.title).sort()).toEqual(['In kept', 'Live']);
+    expect(body.linkCount).toBe(2);
+    expect(body.subfolders.map((folder) => folder.name)).toEqual(['Kept']);
+    expect(JSON.stringify(body)).not.toContain('Trashed');
+    expect((await guest.get(`${publicUrl(token)}?folder=${trashed}`)).status).toBe(404);
+    expect(live).toBeTruthy();
   });
 
   it('demo users cannot share', async () => {

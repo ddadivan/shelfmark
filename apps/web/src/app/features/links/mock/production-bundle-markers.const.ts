@@ -47,4 +47,5 @@ export const PRODUCTION_BUNDLE_MARKERS = [
   'mock-fail',
   'sm-mock-account-deletion',
   'sm-mock-shares',
+  'sm-mock-trash-scenario',
 ] as const;

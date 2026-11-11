@@ -16,6 +16,12 @@ export const SETTINGS_NAV_ENTRIES: readonly SettingsNavEntry[] = [
     phone: true,
   },
   {
+    path: SETTINGS_PATH.Library,
+    labelKey: 'settings.nav.library',
+    descriptionKey: 'settings.description.library',
+    phone: true,
+  },
+  {
     path: SETTINGS_PATH.Shortcuts,
     labelKey: 'settings.nav.shortcuts',
     descriptionKey: 'settings.description.shortcuts',

@@ -19,6 +19,10 @@ export default [
     loadComponent: () => import('./appearance/appearance.page'),
   },
   {
+    path: SETTINGS_PATH.Library,
+    loadComponent: () => import('./library/library.page'),
+  },
+  {
     path: SETTINGS_PATH.Shortcuts,
     loadComponent: () => import('./shortcuts/shortcuts.page'),
   },

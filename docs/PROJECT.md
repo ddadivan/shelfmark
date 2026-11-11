@@ -161,7 +161,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 7. **Edit.** URL, title, note, tags and folder can be changed.
    - **Move to folder** (stage 2, #261): "Move to folder…" in the ⋯ menu of a card and a row opens a folder picker with search (Unsorted is the empty value; a sheet on phones). The move shows at once, a `moved` toast offers Undo, and a failed request puts the link back with an error toast.
    - **Drag and drop** (stage 2, #266): from the tablet width, drag a card or row (hold 150 ms on touch) onto a folder or Unsorted in the sidebar, or onto a subfolder tile. The preview lifts and shrinks with a "Move 1 link" badge, the slot stays as a dashed outline, the folder under the pointer is highlighted with "Move here", a closed folder opens after 600 ms, Esc cancels. The drop is the same optimistic move with Undo. Phones have no drag (long press is for selection, #267); "Move to folder…" is the way there and the keyboard path.
-8. **Delete.** Deletion requires confirmation.
+8. **Delete.** Deletion requires confirmation and moves the link to Trash (story 19); it is not gone until the retention period passes. Undo for 8 s after the confirmation, then the toast says "Moved to Trash".
 9. **Favorites.** As a user, I want to mark important links.
    - Add to favorites or remove from them in one click.
    - The "Favorites" section shows all marked links.
@@ -171,7 +171,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 10. **Nested folders.** As a user, I want to organise links into folders of any depth.
     - Create, rename, move a folder (including into another folder).
     - A folder cannot be moved into itself or into its own subfolder.
-11. **Deleting a folder.** When deleting a folder that contains links, the user chooses: delete everything together or move the links to "Unsorted".
+11. **Deleting a folder.** When deleting a folder that contains links, the user chooses: delete everything together or move the links to "Unsorted". The folder (with its subfolders and, if chosen, its links) goes to Trash as one entry (story 19).
 12. **Links without a folder.** A folder is optional: links without a folder go to the "Unsorted" section and to the common feed.
 13. **Tags.** As a user, I want to tag links and filter by tags.
     - Several tags per link; autocomplete from existing tags.
@@ -188,6 +188,14 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 16. **Sorting.** By date added (newest first, the default) and by title.
 17. **View.** A "cards / list" toggle; the choice is remembered.
 18. **Recently opened.** A page (`/recent`, opened from the sidebar; the same list in a sheet from the Library tab on a phone) with the links opened in the last 30 days, in day groups (Today, Yesterday, Earlier this week, then by date), each with its folder and the time of the open. A link can be removed from the history, and "Clear history" (after a confirmation) empties it; the saved links are not touched.
+19. **Trash.** As a user, I want to get back what I deleted by mistake (ADR 0036, screens `TrashView`, `MobileTrash`).
+    - Every deleted link and folder waits in Trash for the period set in Settings › Library (7, 30 or 90 days, 30 by default); then it is removed for good. A folder is one entry that says how many links went with it.
+    - The page `/trash` (a row at the very bottom of the sidebar under a divider, with the count; a tile on the phone Library page) shows the entries as "Recently deleted" rows: preview, title, where it came from ("From Clothes", "From Unsorted"), when it was deleted and a days-left badge (warning at 3 days or fewer). Chips All / Links / Folders with counts filter them.
+    - Restore puts a link back in its folder, or in Unsorted if the folder is gone; a folder comes back with its subfolders and links, at the top level if its parent is gone. If the library is full the answer is "Couldn't restore".
+    - "Delete forever" (a confirmation) removes one entry; "Empty trash" (a confirmation that counts the items and the links inside folders) removes all.
+    - Selection: checkboxes on desktop, a long press on a phone, "Select all", and a bar with Restore and Delete forever. On a phone a row swipes left to Restore / Delete; both buttons are also reachable without the swipe (keyboard, screen reader).
+    - Settings › Library has "Keep deleted items for" (saved at once; a shorter value asks first when items in Trash are older than it, because the nightly cleanup deletes them) and a "Trash" row with the item count and "Open Trash".
+    - Empty state "Trash is empty". Entries are removed for good at the nightly cleanup (the API job); account deletion and the demo cleanup delete for good.
 
 ### Demo, install, export
 
@@ -279,6 +287,7 @@ See ADR 0004.
   - `LinksStore`: links, filters, sorting (`withEntities`);
   - `FoldersStore`: folder tree;
   - `TagsStore`: tags;
+  - `TrashStore`: what is in Trash (optimistic restore / delete forever / empty); `UserSettingsStore`: account preferences (the Trash retention);
   - `UiStore`: "cards / list" view; persisted in `localStorage`.
 - **Classic NgRx Store is not used**: it is overkill for this app.
 - **Tab sync** (stage 2, #268): the tabs of one browser share a `BroadcastChannel` (`TabSyncService`). The API seams post successful writes; other tabs of the same user apply them silently (a saved link lands with its animation; edits, moves and deletes show; folder and tag changes reload the sidebar and the feed). Signing out locks the other tabs with "You signed out in another tab" and clears their library; a sign-in anywhere reloads locked and signed-out tabs. The theme follows through the `storage` event.
@@ -296,7 +305,8 @@ CSR without SSR, zoneless, Transloco, strict-CSP build: ADR 0005; state: ADR 000
 | `/unsorted` | No folder | signed in | `features/library` |
 | `/favorites` | Favorites | signed in | `features/library` |
 | `/folders/:folderId` | Folder; nesting is shown in breadcrumbs, not in the URL | signed in | `features/library` |
-| `/settings` | Settings, one page per section: `/settings/account` (profile, sign out, welcome tour, deletion), `/appearance` (theme, language), `/feedback` (Your feedback: send form and the user's messages), `/shortcuts` (the keyboard shortcut list), `/import-export` (export only), `/privacy`; on tablet and desktop `/settings` goes to the first section, on a phone it is the You list | signed in | `features/settings` |
+| `/settings` | Settings, one page per section: `/settings/account` (profile, sign out, welcome tour, deletion), `/appearance` (theme, language), `/feedback` (Your feedback: send form and the user's messages), `/shortcuts` (the keyboard shortcut list), `/import-export` (export only), `/library` (Trash retention and the Trash row), `/privacy`; on tablet and desktop `/settings` goes to the first section, on a phone it is the You list | signed in | `features/settings` |
+| `/trash` | Trash: deleted links and folders, restore, delete forever, empty (the phone reaches it from the Library tab) | signed in | `features/trash` |
 | `/admin/feedback` | The author's feedback inbox: all messages, status filter, status and reply per message; `adminOnly` asks `GET /api/admin/status`, a non-admin is sent to `/links` | signed in, author only | `features/admin` |
 | `/share?url=&title=&text=` | Quick save from "Share" | signed in; guest goes to sign-in and back | `features/share` |
 | `/sign-in?returnUrl=&reason=` | Sign in with Google / GitHub | guest only | `features/auth` |
@@ -504,6 +514,8 @@ All ids are UUIDs; all tables have `createdAt`, `updatedAt`. Every record (excep
 
 Own field on `User`: `onboardingCompletedAt` (timestamp, null): when the user closed the onboarding dialog; `null` = show on sign-in.
 
+Own field on `User`: `trashRetentionDays` (smallint, default 30, CHECK in 7, 30, 90): how long Trash keeps deleted items (ADR 0036).
+
 Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, null). Demo data is created from the seed set in `apps/api/src/demo/seed.json`.
 
 **Folder**: a folder (nesting via `parentId`)
@@ -514,6 +526,7 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 | `userId` | uuid | FK → User |
 | `parentId` | uuid, null | FK → Folder; `null` = top-level folder |
 | `name` | string (≤ 100) |  |
+| `deletedAt` | timestamp, null | `null` = live; set = in Trash. One shared value for the folder and the live subfolders and links deleted with it (ADR 0036) |
 
 **Link**: a link
 
@@ -532,6 +545,7 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 | `captureAttemptedAt` | timestamp, null | Server only: time of the last image capture attempt, defaults to the insert time; `null` = pending (the URL changed), claimed atomically by `POST /api/links/{id}/images/capture`, which is also its cooldown (ADR 0027 note, #189) |
 | `isFavorite` | boolean | Defaults to `false` |
 | `lastOpenedAt` | timestamp, null | For the "Recently opened" page |
+| `deletedAt` | timestamp, null | `null` = live; set = in Trash (ADR 0036). Every live read filters `deletedAt IS NULL`; only the link image routes still serve a trashed link to its owner |
 
 **LinkImage** (ADR 0027): re-encoded copy of a link's favicon or preview image: `id`, `userId`, `linkId` (cascade), `kind` (`favicon` | `preview`), `contentType` (always `image/webp`), `bytes` (≤ 64 KB), `width`, `height`, `sha256`; unique per `linkId + kind`.
 
@@ -545,7 +559,7 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 
 **URL normalisation** (for duplicates): lowercase host, no `#fragment`, no `utm_*` params and no trailing `/`. Duplicates are allowed (the user can "save anyway"), so the index is non-unique.
 
-**Indexes:** `Link(userId, createdAt)`, `Link(userId, normalizedUrl)`, `Link(userId, lastOpenedAt)`, `Link.title`, `Link.note` and `Link.url` (`pg_trgm` GIN for search), `Folder(userId, parentId)`.
+**Indexes:** `Link(userId, createdAt)`, `Link(userId, normalizedUrl)`, `Link(userId, lastOpenedAt)`, `Link.title`, `Link.note` and `Link.url` (`pg_trgm` GIN for search), `Folder(userId, parentId)`; partial indexes `Link(userId, deletedAt)` and `Folder(userId, deletedAt)` `WHERE deletedAt IS NOT NULL` for the Trash list and the purge.
 
 **FolderShare** (#276, ADR 0040): the public link of a folder: `id`, `userId`, `folderId` (unique; composite FK to the user's folder, cascade), `token` (22 base64url characters, unique, CHECK on the format; stored as is so the owner can copy the link again), `showNotes` (default `false`), `tokenCreatedAt`. A row exists only while the folder is shared; turning it off deletes the row.
 
@@ -570,12 +584,18 @@ All routes except `/api/auth/*` and the allow-listed public routes (`PUBLIC_ROUT
 | PATCH | `/api/links/:id` | Change any fields, including `isFavorite` and `folderId` |
 | POST | `/api/links/:id/open` | Record an open (updates `lastOpenedAt`) |
 | POST | `/api/links/:id/images/capture` | Re-capture favicon and preview image of a link whose URL changed (pending marker `?v=pending`); claims atomically with a 1 h cooldown, always 200 with the link, 404 for a foreign or missing one |
-| DELETE | `/api/links/:id` | Delete |
+| DELETE | `/api/links/:id` | Move to Trash (soft delete: sets `deletedAt`); 404 for a foreign, missing or already trashed link |
 | GET | `/api/folders` | All folders as a flat list ordered by name (`parentId` + direct link count) plus `counts` (`all`, `unsorted`, `favorites`) for the fixed sidebar rows; the frontend builds the tree |
 | GET | `/api/folders/:id` | Read one folder (`GetFolderResponse` = `FolderResponse`, with its direct link count); 404 if unknown or foreign |
 | POST | `/api/folders` | Create: `name`, `parentId?`; 409 at the per-user cap (500 folders) |
 | PATCH | `/api/folders/:id` | Rename / move; moving into itself or its own subfolder is forbidden |
-| DELETE | `/api/folders/:id?mode=` | Delete a folder with all subfolders; `mode=delete-links` also deletes the links, `mode=move-to-unsorted` moves them to "Unsorted" |
+| DELETE | `/api/folders/:id?mode=` | Move a folder with all subfolders to Trash (one shared `deletedAt`); `mode=delete-links` also trashes the links, `mode=move-to-unsorted` moves them to "Unsorted" |
+| GET | `/api/trash` | Trash entries, newest first (at most 500) with `total` and `retentionDays`: a link deleted on its own, or a folder standing for its subtree (`linkCount`); each has `deletedAt`, `expiresAt`, `fromFolderName` |
+| POST | `/api/trash/restore` | `{ items: [{ kind: 'link' \| 'folder', id }] }` (1 to 100): puts entries back (a link whose folder is not live goes to Unsorted, a folder whose parent is not live to the top level); entries not in Trash or foreign are skipped; answers `{ count }` |
+| POST | `/api/trash/delete` | Same body: deletes entries for good (a folder takes its subtree and the links deleted with it); answers `{ count }` |
+| DELETE | `/api/trash` | Empty Trash: deletes every entry for good; answers `{ count }` |
+| GET, PATCH | `/api/me/settings` | Account settings `{ trashRetentionDays: 7 \| 30 \| 90 }`; PATCH sends only the fields to change (400 for another value or an extra field); demo users too |
+| GET | `/api/cron/trash-cleanup` | Vercel Cron only (`CRON_SECRET` bearer, 401 otherwise, no-store): deletes Trash rows past the owner's retention in batches of 500 within 5 s; answers `{ deleted, hasMore }` (ADR 0036) |
 | GET, POST, GET /:id, PATCH /:id, DELETE /:id, POST /:id/merge | `/api/tags` | The user's tags with link counts, sorted by link count descending, then name; read one tag with its count (404 if unknown or foreign); create an empty tag (409 if the name is taken or at the per-user cap of 1000), rename (409 if the name is taken; changing only the case of its own name is allowed), delete (links remain), merge with another tag (merging into itself is a 400). Names are normalized with `normalizeTagName` (trim, whitespace runs become one hyphen) on create and rename |
 | GET | `/api/feedback/prompt` | Which rating dialog to show now: `{ milestone }`, the latest reached milestone without a row, `null` for demo users and before onboarding (no-store) |
 | GET, POST, PATCH, DELETE | `/api/folders/:id/share` | The public link of a folder (#276): read (`enabled: false` when not shared), turn on (idempotent, 200; 403 demo, 409 at 10 public folders), `{ showNotes }`, turn off (204, idempotent); 404 for a foreign or missing folder |
@@ -692,9 +712,10 @@ In CI: `@axe-core/playwright` on the key screens in both themes; the build fails
 5. Editing a link
 6. Deleting a folder (choice: delete links / move to "Unsorted")
 7. Empty states (no links, empty folder, nothing found)
-8. Settings, a page per section (account with deletion and "Show onboarding again", appearance, export, privacy and data); the settings nav replaces the sidebar on tablet and desktop, the You list opens the pages on a phone
+8. Settings, a page per section (account with deletion and "Show onboarding again", appearance, library with the Trash retention, export, privacy and data); the settings nav replaces the sidebar on tablet and desktop, the You list opens the pages on a phone
 9. Privacy policy
-10. Send feedback dialog (form, sending, thank you, error) and Settings › Your feedback (SendFeedback, SetFeedback); the author's feedback inbox is built from the same parts and has no mockup
+10. Trash (desktop and phone, with the empty state, selection and the "Empty trash" confirmation)
+11. Send feedback dialog (form, sending, thank you, error) and Settings › Your feedback (SendFeedback, SetFeedback); the author's feedback inbox is built from the same parts and has no mockup
 
 Every screen in light and dark themes, in desktop and phone layouts, with loading and error states.
 

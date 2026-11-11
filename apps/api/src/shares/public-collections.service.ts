@@ -42,17 +42,18 @@ export class PublicCollectionsService {
     const page = query.page ?? 1;
     const skip = (page - 1) * SHARE_LIMIT.PageSize;
     const take = Math.max(0, Math.min(SHARE_LIMIT.PageSize, SHARE_LIMIT.MaxLinks - skip));
-    const where = { userId: share.userId, folderId: { in: scopeIds } };
+    // Trash (ADR 0036): a deleted link or folder never shows on a public page.
+    const where = { userId: share.userId, folderId: { in: scopeIds }, deletedAt: null };
 
     const [perFolder, latest, scopeTotal, rows] = await this.prisma.$transaction([
       this.prisma.link.groupBy({
         by: ['folderId'],
-        where: { userId: share.userId, folderId: { in: ids } },
+        where: { userId: share.userId, folderId: { in: ids }, deletedAt: null },
         _count: { _all: true },
         orderBy: { folderId: 'asc' },
       }),
       this.prisma.link.aggregate({
-        where: { userId: share.userId, folderId: { in: ids } },
+        where: { userId: share.userId, folderId: { in: ids }, deletedAt: null },
         _max: { updatedAt: true },
       }),
       this.prisma.link.count({ where }),
@@ -116,7 +117,11 @@ export class PublicCollectionsService {
         linkId,
         kind,
         userId: share.userId,
-        link: { userId: share.userId, folderId: { in: share.folders.map((folder) => folder.id) } },
+        link: {
+          userId: share.userId,
+          folderId: { in: share.folders.map((folder) => folder.id) },
+          deletedAt: null,
+        },
       },
       select: { contentType: true, bytes: true, sha256: true },
     });
@@ -141,11 +146,12 @@ export class PublicCollectionsService {
         SELECT f.id, f.parent_id, f.name, f.updated_at, 0
           FROM folders f
          WHERE f.id = ${share.folderId}::uuid AND f.user_id = ${share.userId}::uuid
+           AND f.deleted_at IS NULL
         UNION ALL
         SELECT c.id, c.parent_id, c.name, c.updated_at, s.depth + 1
           FROM folders c
           JOIN subtree s ON c.parent_id = s.id
-         WHERE c.user_id = ${share.userId}::uuid
+         WHERE c.user_id = ${share.userId}::uuid AND c.deleted_at IS NULL
       )
       SELECT id::text AS "id", parent_id::text AS "parentId", name AS "name",
              updated_at AS "updatedAt"

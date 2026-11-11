@@ -6,6 +6,7 @@ import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { FoldersStore } from '../../stores/folders.store';
 import { LinksStore } from '../../stores/links.store';
 import { TagsStore } from '../../stores/tags.store';
+import { TrashStore } from '../../stores/trash.store';
 import { AuthStore } from '../auth/auth.store';
 import { TAB_SYNC_KIND } from './models/tab-sync-kind.const';
 import { SignedOutLockService } from './signed-out-lock.service';
@@ -46,6 +47,7 @@ function setup(user: AuthUser | null = USER) {
   const links = { addSaved: vi.fn(), applyEdit: vi.fn(), applyRemoval: vi.fn(), refresh: vi.fn() };
   const folders = { refresh: vi.fn(() => Promise.resolve()) };
   const tags = { refresh: vi.fn(() => Promise.resolve()) };
+  const trash = { refresh: vi.fn(() => Promise.resolve()) };
   const lock = { lock: vi.fn(() => Promise.resolve()) };
   const reload = vi.fn();
   TestBed.configureTestingModule({
@@ -54,6 +56,7 @@ function setup(user: AuthUser | null = USER) {
       { provide: LinksStore, useValue: links },
       { provide: FoldersStore, useValue: folders },
       { provide: TagsStore, useValue: tags },
+      { provide: TrashStore, useValue: trash },
       { provide: SignedOutLockService, useValue: lock },
     ],
   });
@@ -67,7 +70,7 @@ function setup(user: AuthUser | null = USER) {
   if (!channel) {
     throw new Error('no channel opened');
   }
-  return { sync, channel, auth, links, folders, tags, lock, reload };
+  return { sync, channel, auth, links, folders, tags, trash, lock, reload };
 }
 
 describe('TabSyncService', () => {
@@ -114,12 +117,13 @@ describe('TabSyncService', () => {
     expect(links.applyRemoval).toHaveBeenCalledWith(link.id);
   });
 
-  it('reloads the feed when folders or tags changed', () => {
-    const { channel, links } = setup();
+  it('reloads the feed and Trash when folders, tags or Trash changed', () => {
+    const { channel, links, trash } = setup();
 
     channel.deliver({ kind: TAB_SYNC_KIND.LibraryChanged, userId: USER.id });
 
     expect(links.refresh).toHaveBeenCalled();
+    expect(trash.refresh).toHaveBeenCalled();
   });
 
   it('ignores messages about another account and malformed ones', () => {

@@ -5,4 +5,6 @@ export const CRON_ROUTE = {
   Controller: 'cron',
   DemoCleanup: 'demo-cleanup',
   Path: CRON_ENDPOINT.DemoCleanup,
+  TrashCleanup: 'trash-cleanup',
+  TrashCleanupPath: CRON_ENDPOINT.TrashCleanup,
 } as const;

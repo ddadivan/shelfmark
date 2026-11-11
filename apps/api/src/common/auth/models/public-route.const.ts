@@ -60,4 +60,10 @@ export const PUBLIC_ROUTES: readonly PublicRoute[] = [
     reason:
       'the preview images on a public collection page; only links inside the shared subtree of a live token (ADR 0040)',
   },
+  {
+    method: HTTP_METHOD.Get,
+    path: CRON_ENDPOINT.TrashCleanup,
+    reason:
+      'Vercel Cron cannot send a session: authenticated by the CRON_SECRET bearer guard on the handler, fails closed (ADR 0036)',
+  },
 ];

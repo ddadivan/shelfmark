@@ -340,14 +340,14 @@
       "open": "Open",
       "favoriteFailed": "Couldn't update the favorite",
       "retry": "Retry",
-      "deleted": "Link deleted",
+      "deleted": "Moved to Trash",
       "undo": "Undo",
       "deleteFailed": "Couldn't delete the link",
       "deleteFailedDetail": "It is back in your list",
       "savedTo": "Saved to {{folder}}",
       "confirm": {
         "title": "Delete this link?",
-        "message": "“{{title}}” will be removed. You can undo right after.",
+        "message": "“{{title}}” moves to Trash. You can restore it for {{days}} days.",
         "confirm": "Delete link",
         "cancel": "Cancel",
         "close": "Close"
@@ -649,7 +649,7 @@
       },
       "remove": {
         "title": "Delete links too",
-        "desc": "This can't be undone"
+        "desc": "They wait in Trash with the folder"
       },
       "action": "Delete folder",
       "actionWithLinks": {
@@ -657,14 +657,18 @@
         "other": "Delete folder and {{count}} links"
       },
       "failed": "Couldn't delete the folder. Nothing was changed.",
-      "done": "Folder deleted"
+      "done": "Folder moved to Trash"
     }
   },
   "library": {
     "title": "All links",
     "phone": {
       "title": "Library",
-      "openedToday": "{{count}} today"
+      "openedToday": "{{count}} today",
+      "trashCount": {
+        "one": "{{count}} item",
+        "other": "{{count}} items"
+      }
     },
     "scope": {
       "all": "All links",
@@ -798,6 +802,7 @@
     "nav": {
       "account": "Account",
       "appearance": "Appearance",
+      "library": "Library",
       "export": "Export",
       "privacy": "Privacy and data",
       "shortcuts": "Keyboard shortcuts",
@@ -806,6 +811,7 @@
     "description": {
       "account": "Your profile and your account.",
       "appearance": "How Shelfmark looks.",
+      "library": "What happens to deleted items.",
       "export": "Take everything you saved with you.",
       "privacy": "What we keep, and how to take it with you.",
       "shortcuts": "Work without the mouse.",
@@ -893,6 +899,38 @@
         "mismatch": "That email does not match your account. Check it and try again.",
         "rateLimited": "Too many attempts. Try again in a minute.",
         "failed": "We could not delete your account. Nothing was deleted. Try again."
+      }
+    },
+    "library": {
+      "trash": {
+        "title": "Trash",
+        "retention": {
+          "label": "Keep deleted items for",
+          "hint": "Then they’re removed for good",
+          "days": "{{count}} days",
+          "failed": "Couldn't save the setting",
+          "failedDetail": "It is back to {{days}} days.",
+          "loadFailed": "Couldn't load the setting."
+        },
+        "open": {
+          "label": "Trash",
+          "count": {
+            "one": "{{count}} item",
+            "other": "{{count}} items"
+          },
+          "none": "Nothing in Trash",
+          "action": "Open Trash"
+        },
+        "shorten": {
+          "title": "Shorten how long Trash keeps items?",
+          "message": {
+            "one": "{{count}} item in Trash is older than {{days}} days and will be deleted for good tonight.",
+            "other": "{{count}} items in Trash are older than {{days}} days and will be deleted for good tonight."
+          },
+          "confirm": "Keep for {{days}} days",
+          "cancel": "Cancel",
+          "close": "Close"
+        }
       }
     },
     "help": "Help"
@@ -1134,6 +1172,123 @@
   "toast": {
     "actionHint": "Press {{shortcut}} to reach {{action}}",
     "dismiss": "Dismiss"
+  },
+  "trash": {
+    "title": "Trash",
+    "count": {
+      "one": "{{count}} item, kept for {{days}} days",
+      "other": "{{count}} items, kept for {{days}} days"
+    },
+    "nothing": "Nothing here",
+    "emptyAction": "Empty trash",
+    "loading": "Loading Trash",
+    "loadFailed": {
+      "title": "Couldn't load Trash",
+      "text": "Check your connection and try again.",
+      "retry": "Try again"
+    },
+    "filter": {
+      "label": "Show",
+      "all": "All {{count}}",
+      "links": "Links {{count}}",
+      "folders": "Folders {{count}}",
+      "emptyTitle": "Nothing of this kind in Trash",
+      "emptyText": "Show everything to see what else is waiting here.",
+      "showAll": "Show all"
+    },
+    "selectAll": "Select all",
+    "selected": {
+      "one": "{{count}} selected",
+      "other": "{{count}} selected"
+    },
+    "group": "Recently deleted",
+    "row": {
+      "from": "From {{folder}}",
+      "fromUnsorted": "From Unsorted",
+      "deleted": "Deleted {{when}}",
+      "links": {
+        "one": "{{count}} link",
+        "other": "{{count}} links"
+      },
+      "daysLeft": {
+        "one": "{{count}} day left",
+        "other": "{{count}} days left"
+      },
+      "lastDay": "Less than a day left",
+      "select": "Select {{title}}",
+      "selectHint": "Selects this entry",
+      "restore": "Restore",
+      "restoreItem": "Restore {{title}}",
+      "deleteItem": "Delete {{title}} forever",
+      "more": "More for {{title}}",
+      "moreTooltip": "More actions",
+      "deleteForever": "Delete forever",
+      "actionsHint": "Shows Restore and Delete",
+      "delete": "Delete"
+    },
+    "footer": "Items are deleted for good after {{days}} days. Restore puts a link back in its folder, or in Unsorted if the folder is gone.",
+    "swipeHint": "Swipe left to restore or delete for good. Long-press to select several.",
+    "emptyState": {
+      "title": "Trash is empty",
+      "text": "Deleted links and folders wait here for {{days}} days, so nothing is gone by accident."
+    },
+    "bar": {
+      "label": "Actions for selected items",
+      "restore": "Restore",
+      "deleteForever": "Delete forever",
+      "clear": "Clear selection"
+    },
+    "emptyConfirm": {
+      "title": "Empty trash?",
+      "message": "{{items}} will be deleted for good. This can’t be undone.",
+      "messageFolder": "{{items}} will be deleted for good, including the folder “{{name}}” and its {{links}}. This can’t be undone.",
+      "messageFolders": "{{items}} will be deleted for good, including {{folders}} and their {{links}}. This can’t be undone.",
+      "folders": {
+        "one": "{{count}} folder",
+        "other": "{{count}} folders"
+      },
+      "items": {
+        "one": "{{count}} item",
+        "other": "{{count}} items"
+      },
+      "confirm": {
+        "one": "Delete {{count}} item",
+        "other": "Delete {{count}} items"
+      },
+      "cancel": "Cancel",
+      "close": "Close"
+    },
+    "deleteConfirm": {
+      "title": "Delete forever?",
+      "message": "“{{title}}” will be deleted for good. This can’t be undone.",
+      "messageFolder": "The folder “{{title}}” and its {{links}} will be deleted for good. This can’t be undone.",
+      "messageMany": "{{items}} will be deleted for good. This can’t be undone.",
+      "confirm": "Delete forever",
+      "cancel": "Cancel",
+      "close": "Close"
+    },
+    "toast": {
+      "restored": "Restored",
+      "restoredMany": {
+        "one": "{{count}} item is back",
+        "other": "{{count}} items are back"
+      },
+      "restoreFailed": "Couldn't restore",
+      "restoreFailedDetail": "Nothing was changed.",
+      "restoreFull": "Couldn't restore",
+      "restoreFullDetail": "Your library is full. Delete something and try again.",
+      "deleted": "Deleted for good",
+      "deletedMany": {
+        "one": "{{count}} item deleted for good",
+        "other": "{{count}} items deleted for good"
+      },
+      "deleteFailed": "Couldn't delete",
+      "deleteFailedDetail": "It is back in Trash.",
+      "emptied": "Trash emptied",
+      "emptyFailed": "Couldn't empty Trash",
+      "emptyFailedDetail": "Nothing was deleted."
+    },
+    "emptyShort": "Empty"
   },
   "feedback": {
     "kind": {

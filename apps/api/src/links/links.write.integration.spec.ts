@@ -462,12 +462,14 @@ describe('links API: writes', () => {
   });
 
   describe('delete', () => {
-    it('deletes an own link with its tag rows and keeps the tags', async () => {
+    it('moves an own link to Trash and keeps its tag rows and the tags', async () => {
       const id = await seedLink(t.db.prisma, users.owner.userId, { tags: ['t'] });
       await a.delete(`${BASE}/${id}`).expect(204);
       await a.get(`${BASE}/${id}`).expect(404);
       await a.delete(`${BASE}/${id}`).expect(404);
-      expect(await t.db.prisma.linkTag.count()).toBe(0);
+      const trashed = await t.db.prisma.link.findUniqueOrThrow({ where: { id } });
+      expect(trashed.deletedAt).not.toBeNull();
+      expect(await t.db.prisma.linkTag.count()).toBe(1);
       expect(await t.db.prisma.tag.count()).toBe(1);
     });
 
