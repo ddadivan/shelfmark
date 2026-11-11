@@ -26,6 +26,7 @@ import {
   ICON_SIZE,
   CHIP_VARIANT,
   ChipComponent,
+  EmptyStateComponent,
   InputComponent,
   KEYBOARD_KEY,
   LongPressDirective,
@@ -55,6 +56,7 @@ import { splitTags } from '../tag-split';
   imports: [
     ButtonComponent,
     ChipComponent,
+    EmptyStateComponent,
     FormField,
     FormRoot,
     InputComponent,

@@ -106,6 +106,10 @@ import type { UiView } from '../../stores/models/ui-view.type';
 import { UserSettingsStore } from '../../stores/user-settings.store';
 import { FeedMemoryService } from './feed-memory.service';
 import { EMPTY_KEYS } from './models/empty-keys.const';
+import { EMPTY_ILLUSTRATIONS } from './models/empty-illustrations.const';
+import { FILTERED_EMPTY_KEY } from './models/filtered-empty-key.const';
+import { SavedViewsStore } from '../../stores/saved-views.store';
+import { sameViewQuery } from '../views/saved-view-query';
 import { FolderTileComponent } from './folder-tile/folder-tile.component';
 import { runViewTransition, type ViewTransitionNames } from './view-transition';
 import { scrollFeedForKey } from './feed-keyboard-scroll';
@@ -187,6 +191,7 @@ export default class LibraryPage {
   protected readonly DRAG_START_DELAY = { touch: 150, mouse: 0 };
   private readonly exporter = inject(ExportActionsService);
   private readonly folders = inject(FoldersStore);
+  private readonly views = inject(SavedViewsStore);
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
   private readonly title = inject(Title);
@@ -265,6 +270,20 @@ export default class LibraryPage {
   protected readonly emptyKey = computed(() =>
     this.isFolder() ? 'library.emptyFolder' : EMPTY_KEYS[this.scope()],
   );
+  /** Scene of the empty feed: one per scope (#315). */
+  protected readonly emptyIllustration = computed(() => EMPTY_ILLUSTRATIONS[this.scope()]);
+  /** The saved view whose filters the page shows, if any (its empty state names it). */
+  protected readonly activeView = computed(() => {
+    const filter = this.filter();
+    return this.views.items().find((view) => sameViewQuery(view.query, filter));
+  });
+  /** Empty state of a filtered feed: a saved view, tags only, or other filters. */
+  protected readonly filteredEmptyKey = computed(() => {
+    if (this.activeView()) {
+      return FILTERED_EMPTY_KEY.View;
+    }
+    return this.linkKind() === undefined ? FILTERED_EMPTY_KEY.Tags : FILTERED_EMPTY_KEY.Filters;
+  });
   /** Favorites cannot be filled by adding a link, so its empty state points back to all links. */
   protected readonly canAddLink = computed(() => this.scope() !== LINKS_SCOPE.Favorites);
   protected readonly filter = computed<LinksFilter>(() => {

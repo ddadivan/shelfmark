@@ -950,6 +950,16 @@
       "text": "Nada de lo que guardaste tiene todas las etiquetas seleccionadas.",
       "clear": "Borrar filtro"
     },
+    "emptyView": {
+      "title": "Todavía no hay nada en «{{name}}»",
+      "text": "Los enlaces que encajen con esta vista aparecerán aquí a medida que los guardes.",
+      "clear": "Mostrar todos los enlaces"
+    },
+    "emptyFilters": {
+      "title": "Nada coincide con estos filtros",
+      "text": "Ningún enlace guardado coincide con todos los filtros elegidos.",
+      "clear": "Quitar filtros"
+    },
     "filter": {
       "label": "Filtros activos"
     },
@@ -1489,6 +1499,12 @@
         "rename": "Cambiar nombre",
         "merge": "Combinar con otra etiqueta…",
         "delete": "Eliminar etiqueta"
+      }
+    },
+    "page": {
+      "empty": {
+        "title": "Todavía no hay etiquetas",
+        "text": "Las etiquetas agrupan enlaces de distintas carpetas. Añade una aquí o al guardar un enlace."
       }
     },
     "add": {

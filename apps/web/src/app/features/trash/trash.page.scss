@@ -1,8 +1,17 @@
 @use 'ui' as *;
 
+// The page fills the column of the shell, so an empty state can take the free height (#315).
+:host {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+}
+
 .trash-page {
   display: flex;
+  flex: 1 0 auto;
   flex-direction: column;
+  width: 100%;
   gap: var(--space-6);
   max-width: rem(960px);
   padding-block: var(--space-2) var(--space-8);
@@ -54,10 +63,6 @@
 
 .trash-page__filter {
   margin-inline-start: auto;
-}
-
-.trash-page__empty {
-  padding-block: var(--space-8);
 }
 
 .trash-page__note {

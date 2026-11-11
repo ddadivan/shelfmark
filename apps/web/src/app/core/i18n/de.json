@@ -929,6 +929,16 @@
       "text": "Nichts, was du gespeichert hast, hat alle ausgewählten Tags.",
       "clear": "Filter löschen"
     },
+    "emptyView": {
+      "title": "Noch nichts in „{{name}}“",
+      "text": "Links, die zu dieser Ansicht passen, erscheinen hier, sobald du sie speicherst.",
+      "clear": "Alle Links anzeigen"
+    },
+    "emptyFilters": {
+      "title": "Nichts passt zu diesen Filtern",
+      "text": "Kein gespeicherter Link passt zu allen gewählten Filtern.",
+      "clear": "Filter zurücksetzen"
+    },
     "filter": {
       "label": "Aktive Filter"
     },
@@ -1465,6 +1475,12 @@
         "rename": "Umbenennen",
         "merge": "Mit anderem Tag zusammenführen…",
         "delete": "Tag löschen"
+      }
+    },
+    "page": {
+      "empty": {
+        "title": "Noch keine Tags",
+        "text": "Tags fassen Links über Ordner hinweg zusammen. Füge hier einen hinzu oder beim Speichern eines Links."
       }
     },
     "add": {

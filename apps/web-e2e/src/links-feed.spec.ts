@@ -295,13 +295,20 @@ test.describe('links feed (mock API)', () => {
     }
     expect(await page.evaluate('document.documentElement.scrollHeight')).toBeLessThanOrEqual(900);
 
+    // The state is the page card (#315): it fills the free space under the toolbar down to the
+    // bottom padding of the column, and its content sits in the middle of it.
     const state = await box('ui-empty-state');
     const toolbar = await box('.library__toolbar');
     const freeTop = toolbar.y + toolbar.height;
     const freeBottom = main.y + main.height;
-    const gapAbove = state.y - freeTop;
-    const gapBelow = freeBottom - (state.y + state.height);
-    expect(Math.abs(gapAbove - gapBelow)).toBeLessThanOrEqual(40);
+    expect(state.y).toBeGreaterThanOrEqual(freeTop);
+    expect(freeBottom - (state.y + state.height)).toBeLessThanOrEqual(32);
+    expect(state.height).toBeGreaterThan((freeBottom - freeTop) * 0.7);
+    const art = await box('ui-empty-state .ui-empty-state__stage');
+    const actions = await box('ui-empty-state .ui-empty-state__actions');
+    const gapAbove = art.y - state.y;
+    const gapBelow = state.y + state.height - (actions.y + actions.height);
+    expect(Math.abs(gapAbove - gapBelow)).toBeLessThanOrEqual(24);
     expect(gapAbove).toBeGreaterThan(40);
   });
 

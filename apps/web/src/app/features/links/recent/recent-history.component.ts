@@ -22,6 +22,7 @@ import {
 } from '@shelfmark/contracts';
 import {
   DialogService,
+  EMPTY_STATE_LAYOUT,
   EmptyStateComponent,
   HISTORY_HEADING_LEVEL,
   type HistoryHeadingLevel,
@@ -106,6 +107,11 @@ export class RecentHistoryComponent {
    * phone sheet does not.
    */
   readonly filterable = input(false, { transform: booleanAttribute });
+  /** On the Recently opened page: the empty states are the page card that fills the column. */
+  readonly page = input(false, { transform: booleanAttribute });
+  protected readonly emptyLayout = computed(() =>
+    this.page() ? EMPTY_STATE_LAYOUT.Page : EMPTY_STATE_LAYOUT.Inline,
+  );
   protected readonly INPUT_TYPE = INPUT_TYPE;
 
   /** "Today" is the day the page was opened. */

@@ -8,6 +8,8 @@ import { ILLUSTRATION_MOTION } from '../illustration/models/illustration-motion.
 import type { IllustrationMotion } from '../illustration/models/illustration-motion.type';
 import type { IllustrationName } from '../illustration/models/illustration-name.type';
 import { EmptyStateComponent } from './empty-state.component';
+import { EMPTY_STATE_LAYOUT } from './models/empty-state-layout.const';
+import type { EmptyStateLayout } from './models/empty-state-layout.type';
 
 @Component({
   imports: [EmptyStateComponent, ButtonComponent],
@@ -19,6 +21,7 @@ import { EmptyStateComponent } from './empty-state.component';
       [illustration]="illustration()"
       [illustrationMotion]="motion()"
       [headingLevel]="level()"
+      [layout]="layout()"
     >
       @if (withAction()) {
         <ui-button variant="primary" (click)="clicks.set(clicks() + 1)">Add link</ui-button>
@@ -33,6 +36,7 @@ class HostComponent {
   readonly illustration = signal<IllustrationName | undefined>(undefined);
   readonly motion = signal<IllustrationMotion | undefined>(undefined);
   readonly level = signal<HeadingLevel>(2);
+  readonly layout = signal<EmptyStateLayout>(EMPTY_STATE_LAYOUT.Inline);
   readonly withAction = signal(true);
   readonly clicks = signal(0);
 }
@@ -99,6 +103,20 @@ describe('EmptyStateComponent', () => {
     update((c) => c.level.set(level));
     expect(host.querySelectorAll('h1, h2, h3, h4, h5, h6')).toHaveLength(1);
     expect(host.querySelector(`h${level}`)?.textContent).toBe('Your links will appear here');
+  });
+
+  it('is inline by default and the page card with layout="page" (#315)', async () => {
+    const { host, update } = setup();
+    const state = host.querySelector('ui-empty-state');
+    expect(state?.classList.contains('ui-empty-state--page')).toBe(false);
+    update((c) => {
+      c.layout.set(EMPTY_STATE_LAYOUT.Page);
+      c.illustration.set('empty-trash');
+    });
+    expect(state?.classList.contains('ui-empty-state--page')).toBe(true);
+    // The scene stands on its stage (the soft disc of the page layout).
+    expect(host.querySelector('.ui-empty-state__stage ui-illustration')).not.toBeNull();
+    expect(await axeViolations(host)).toEqual([]);
   });
 
   it('does not put a title attribute on the host', () => {

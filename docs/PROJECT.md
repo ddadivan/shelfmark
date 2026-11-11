@@ -786,7 +786,7 @@ In CI: `@axe-core/playwright` on the key screens in both themes; the build fails
 4. Adding a link (with autofill and a duplicate warning)
 5. Editing a link
 6. Deleting a folder (choice: delete links / move to "Unsorted")
-7. Empty states (no links, empty folder, nothing found)
+7. Empty states (no links, empty folder, nothing found; #315 adds Unsorted, Favorites, Trash, Recently opened, a tag or type filter, an empty saved view, the phone Tags tab and an empty public collection in the same style: the page-level card centred in the content area with a play-once scene)
 8. Settings, a page per section (account with deletion and "Show onboarding again", appearance, library with the Trash retention, export, privacy and data); the settings nav replaces the sidebar on tablet and desktop, the You list opens the pages on a phone
 9. Privacy policy
 10. Trash (desktop and phone, with the empty state, selection and the "Empty trash" confirmation)
@@ -861,7 +861,7 @@ Shelfmark's visual uniqueness rests on one geometric language: cards, tag "pills
 | What | Decision |
 | **Logo** | Chosen: a card with a bookmark notch in the top-right corner (graphite + light sage), a "saved link", + the name in Onest 600. Files in the design system: mark for light and dark themes, monochrome, app icon (favicon, PWA) |
 | **Interface icons** | Shelfmark's own set: 44 icons, 24 px grid, 1.75 px stroke, 3 px corner radius, bookmark motif. In Angular, one `ui-icon` component with an SVG sprite |
-| **Illustrations** | Flat geometric scenes in colour tokens (work in both themes): 3 onboarding steps, empty states ("no links", "empty folder", "nothing found"), errors (404, no network), the sign-in screen. Format: SVG, colours via CSS variables |
+| **Illustrations** | Flat geometric scenes in colour tokens (work in both themes): 3 onboarding steps, empty states ("no links", "empty folder", "nothing found", plus the #315 scenes for Trash, Recently opened, Favorites, Unsorted, Tags and filters), errors (404, no network), the sign-in screen. Format: SVG, colours via CSS variables |
 | **Motion** | CSS animations on duration and easing tokens, no libraries; full spec in the Motion component in the design system. One signature moment, saving a link: the card "lands" in the feed, the others shift (FLIP), the sage ring fades. The logo animates only on first sign-in. Illustrations pick one of three modes by where they are shown: `loop` (slow, 3–5 s cycle) on the landing page, the onboarding welcome steps and the sign-in screen; `once` (plays on appearance, then holds the final frame) for in-app empty states and errors; `none` is static; all are static under `prefers-reduced-motion`. Rules: "in fast, out even faster" (200 / 120 ms, press 80 ms); `ease-out` for entering, `ease-in` only for leaving the screen, `ease-in-out` for movement, `ease-drawer` for sheets; menus grow from their button, all overlays have an exit animation; hover only on devices with a mouse; themes switch via View Transitions. With `prefers-reduced-motion` movement is removed; fade and slow loaders remain. |
 | **Promo video** | About 50 s, recorded from the real interface by a script (#271, `npx nx run web-e2e:promo`): how a link goes from a paste onto the "shelf" and is found again; captions, three chapters; used in the "How it works" dialog, the README and the portfolio |
 

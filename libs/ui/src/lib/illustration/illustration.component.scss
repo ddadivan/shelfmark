@@ -58,6 +58,11 @@
   stroke: var(--text-muted);
 }
 
+.ui-illustration__halo {
+  fill: var(--accent-bg);
+  opacity: 0.7;
+}
+
 .ui-illustration__lens {
   fill: var(--surface);
   stroke: var(--primary);
@@ -105,11 +110,25 @@
   --ill-delay: 0.36s;
 }
 
+// The minute hand sweeps round the clock face (its box is centred on the axis).
+.ui-illustration__fly--sweep {
+  --ill-x: 0%;
+  --ill-y: 0%;
+  --ill-r: -140deg;
+}
+
 .ui-illustration__dim {
   --ill-from: 1;
   --ill-to: 0.35;
 
   opacity: 0.35;
+}
+
+// A softer fade for dashed placeholders, which would vanish at 35%.
+.ui-illustration__dim--soft {
+  --ill-to: 0.55;
+
+  opacity: 0.55;
 }
 
 .ui-illustration__pick {
@@ -119,6 +138,14 @@
 
 .ui-illustration__shift--bob {
   --ill-dy: -23%;
+}
+
+.ui-illustration__shift--lift {
+  --ill-dy: -45%;
+}
+
+.ui-illustration__shift--dip {
+  --ill-dy: 30%;
 }
 
 .ui-illustration__shift--scan {

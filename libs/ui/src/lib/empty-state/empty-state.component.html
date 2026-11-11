@@ -1,9 +1,11 @@
 @if (illustration(); as scene) {
-  <ui-illustration
-    class="ui-empty-state__illustration"
-    [name]="scene"
-    [motion]="illustrationMotion()"
-  />
+  <div class="ui-empty-state__stage">
+    <ui-illustration
+      class="ui-empty-state__illustration"
+      [name]="scene"
+      [motion]="illustrationMotion()"
+    />
+  </div>
 } @else if (icon(); as name) {
   <div class="ui-empty-state__art">
     <ui-icon [name]="name" [size]="ICON_SIZE.Lg" />

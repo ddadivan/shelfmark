@@ -950,6 +950,16 @@
       "text": "Nessun link salvato ha tutti i tag selezionati.",
       "clear": "Cancella filtro"
     },
+    "emptyView": {
+      "title": "Ancora niente in “{{name}}”",
+      "text": "I link che corrispondono a questa vista compariranno qui man mano che li salvi.",
+      "clear": "Mostra tutti i link"
+    },
+    "emptyFilters": {
+      "title": "Nessun link corrisponde a questi filtri",
+      "text": "Nessun link salvato corrisponde a tutti i filtri selezionati.",
+      "clear": "Cancella filtri"
+    },
     "filter": {
       "label": "Filtri attivi"
     },
@@ -1489,6 +1499,12 @@
         "rename": "Rinomina",
         "merge": "Unisci a un altro tag…",
         "delete": "Elimina tag"
+      }
+    },
+    "page": {
+      "empty": {
+        "title": "Ancora nessun tag",
+        "text": "I tag raggruppano link di cartelle diverse. Aggiungine uno qui o mentre salvi un link."
       }
     },
     "add": {

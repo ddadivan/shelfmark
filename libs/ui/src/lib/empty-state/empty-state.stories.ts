@@ -5,6 +5,7 @@ import { ILLUSTRATION_MOTION } from '../illustration/models/illustration-motion.
 import { ILLUSTRATION_NAMES } from '../illustration/models/illustration-names.const';
 import { THEME, THEME_ATTRIBUTE } from '../theme';
 import { EmptyStateComponent } from './empty-state.component';
+import { EMPTY_STATE_LAYOUT } from './models/empty-state-layout.const';
 
 const meta: Meta<EmptyStateComponent> = {
   title: 'Components/EmptyState',
@@ -15,6 +16,7 @@ const meta: Meta<EmptyStateComponent> = {
     text: 'Paste a link to a video, an article or something to buy. The title and preview fill in by themselves.',
     illustration: 'empty-feed',
     headingLevel: 2,
+    layout: EMPTY_STATE_LAYOUT.Inline,
   },
   argTypes: {
     icon: { control: 'select', options: [undefined, ...ICON_NAMES] },
@@ -24,6 +26,7 @@ const meta: Meta<EmptyStateComponent> = {
       options: [undefined, ...Object.values(ILLUSTRATION_MOTION)],
     },
     headingLevel: { control: 'inline-radio', options: [1, 2, 3, 4, 5, 6] },
+    layout: { control: 'inline-radio', options: Object.values(EMPTY_STATE_LAYOUT) },
   },
   render: (args) => ({
     props: args,
@@ -36,6 +39,7 @@ const meta: Meta<EmptyStateComponent> = {
         [illustration]="illustration"
         [illustrationMotion]="illustrationMotion"
         [headingLevel]="headingLevel"
+        [layout]="layout"
       >
         <ui-button variant="primary" iconLeft="add">Add link</ui-button>
       </ui-empty-state>`,
@@ -78,6 +82,58 @@ export const TwoActions: Story = {
         <ui-button>Open Unsorted</ui-button>
         <ui-button variant="primary" iconLeft="add">Add link</ui-button>
       </ui-empty-state>`,
+  }),
+};
+
+/**
+ * Page layout (#315): the page-level state of Trash, Recently opened and the library feeds. A
+ * surface card that fills the free height of the page column, the scene on a soft disc.
+ */
+export const Page: Story = {
+  args: {
+    layout: EMPTY_STATE_LAYOUT.Page,
+    heading: 'Trash is empty',
+    text: 'Deleted links and folders wait here for 30 days, so nothing is gone by accident.',
+    illustration: 'empty-trash',
+  },
+  render: (args) => ({
+    props: args,
+    template: `
+      <ui-empty-state
+        [heading]="heading"
+        [text]="text"
+        [illustration]="illustration"
+        [illustrationMotion]="illustrationMotion"
+        [layout]="layout"
+      />`,
+  }),
+};
+
+/** The #315 page scenes in both themes: Trash, Recently opened, Favorites, Unsorted, Tags, filters. */
+export const PageScenes: Story = {
+  parameters: { layout: 'padded' },
+  render: () => ({
+    props: {
+      cases: [
+        { heading: 'Trash is empty', scene: 'empty-trash' },
+        { heading: 'Nothing opened yet', scene: 'empty-recent' },
+        { heading: 'Your favorites will live here', scene: 'empty-favorites' },
+        { heading: 'Unsorted is empty', scene: 'empty-unsorted' },
+        { heading: 'No tags yet', scene: 'empty-tags' },
+        { heading: 'Nothing matches these filters', scene: 'empty-filter' },
+      ],
+      themes: Object.values(THEME),
+    },
+    template: `
+      <div class="story-themes">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="story-theme-pane story-theme-pane--empty">
+            @for (c of cases; track c.scene) {
+              <ui-empty-state layout="page" [heading]="c.heading" [illustration]="c.scene" illustrationMotion="none" />
+            }
+          </div>
+        }
+      </div>`,
   }),
 };
 

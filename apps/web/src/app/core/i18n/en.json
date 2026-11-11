@@ -929,6 +929,16 @@
       "text": "Nothing you saved has all of the selected tags.",
       "clear": "Clear filter"
     },
+    "emptyView": {
+      "title": "Nothing in “{{name}}” yet",
+      "text": "Links that match this view show up here as you save them.",
+      "clear": "Show all links"
+    },
+    "emptyFilters": {
+      "title": "Nothing matches these filters",
+      "text": "No saved link matches all of the selected filters.",
+      "clear": "Clear filters"
+    },
     "filter": {
       "label": "Active filters"
     },
@@ -1465,6 +1475,12 @@
         "rename": "Rename",
         "merge": "Merge into another tag…",
         "delete": "Delete tag"
+      }
+    },
+    "page": {
+      "empty": {
+        "title": "No tags yet",
+        "text": "Tags group links across folders. Add one here, or while you save a link."
       }
     },
     "add": {
