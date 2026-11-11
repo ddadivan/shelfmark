@@ -4,9 +4,9 @@ import {
   POINTER_SHADOW_FINE_QUERY,
   POINTER_SHADOW_MAX_OFFSET_PX,
   POINTER_SHADOW_PROPERTY,
-  POINTER_SHADOW_REDUCED_MOTION_QUERY,
 } from './models/pointer-shadow.const';
 import { POINTER_TYPE } from '../long-press/models/pointer-type.const';
+import { ReducedMotion } from '../motion/reduced-motion.service';
 
 /**
  * The hover shadow of a card leans away from the pointer, as if the pointer were a light: the
@@ -28,6 +28,7 @@ export class PointerShadowDirective {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly renderer = inject(Renderer2);
   private readonly view = inject(DOCUMENT).defaultView;
+  private readonly motion = inject(ReducedMotion);
 
   private stopMove: (() => void) | null = null;
   private frame: number | null = null;
@@ -55,11 +56,7 @@ export class PointerShadowDirective {
   }
 
   private onEnter(event: PointerEvent): void {
-    if (
-      event.pointerType === POINTER_TYPE.Touch ||
-      this.matches(POINTER_SHADOW_REDUCED_MOTION_QUERY) ||
-      this.stopMove
-    ) {
+    if (event.pointerType === POINTER_TYPE.Touch || this.motion.reduced() || this.stopMove) {
       return;
     }
     this.rect = this.host.getBoundingClientRect();
