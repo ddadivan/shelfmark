@@ -808,6 +808,33 @@ describe('AddLinkDialogComponent', () => {
       expect(api.update).toHaveBeenCalledWith(EDITED.id, { isFavorite: true });
     });
 
+    it('has a Type select in edit mode that sends a changed kind', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      const { result } = await setup(api, { link: { ...EDITED, kind: LINK_KIND.Article } });
+
+      const selects = [...dialog().querySelectorAll('ui-select')];
+      const type = selects.find((select) => select.textContent?.includes('Type'));
+      expect(type?.textContent).toContain('Article');
+      type?.querySelector<HTMLButtonElement>('button')?.click();
+      await until(() => {
+        expect(document.querySelectorAll('[role="option"]').length).toBeGreaterThan(0);
+      });
+      [...document.querySelectorAll<HTMLElement>('[role="option"]')]
+        .find((option) => option.textContent?.trim() === 'Shopping')
+        ?.click();
+      TestBed.tick();
+      button('Save changes').click();
+
+      await result;
+      expect(api.update).toHaveBeenCalledWith(EDITED.id, { kind: LINK_KIND.Shopping });
+    });
+
+    it('has no Type select when adding', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      await setup(api);
+      expect(dialog().textContent).not.toContain('Type');
+    });
+
     it('closes without a request when nothing changed', async () => {
       const api = fakeApi(() => of(PLAIN));
       const { result } = await setup(api, { link: EDITED });
