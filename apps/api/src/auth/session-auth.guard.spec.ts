@@ -1,5 +1,6 @@
 import {
   type ExecutionContext,
+  NotFoundException,
   ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -50,6 +51,19 @@ describe('SessionAuthGuard', () => {
     await expect(guard.canActivate(context)).resolves.toBe(true);
     expect(getSession).not.toHaveBeenCalled();
     expect(request.auth).toBeUndefined();
+  });
+
+  it.each([
+    ['/api/admin', true],
+    ['/api/admin/feedback', true],
+    ['/api/administrator', false],
+    ['/api/feedback', false],
+  ])('answers a missing session on %s with 404 only below /api/admin', async (path, hidden) => {
+    const { guard, context, request } = setup({ getSession: () => Promise.resolve(null) });
+    Object.assign(request, { path });
+    await expect(guard.canActivate(context)).rejects.toBeInstanceOf(
+      hidden ? NotFoundException : UnauthorizedException,
+    );
   });
 
   it('reads the PUBLIC key from the handler only', async () => {

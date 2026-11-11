@@ -1,0 +1,6 @@
+<ui-dialog [title]="'tabSync.signedOut.title' | transloco">
+  <p class="signed-out__text">{{ 'tabSync.signedOut.text' | transloco }}</p>
+  <ui-button slot="footer" [variant]="BUTTON_VARIANT.Primary" (click)="signInAgain()">{{
+    'tabSync.signedOut.signIn' | transloco
+  }}</ui-button>
+</ui-dialog>

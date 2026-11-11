@@ -49,6 +49,8 @@ describe('LinkCardComponent', () => {
     expect(element.textContent).toContain('Opens in a new tab');
 
     TestBed.resetTestingModule();
+    // A theme another spec left in this browser would make the load save it (an update).
+    localStorage.clear();
     TestBed.configureTestingModule({
       providers: [
         provideTranslocoForTest(),

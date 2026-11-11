@@ -23,6 +23,8 @@
     [ariaLabel]="'shell.sidebar.foldersTree' | transloco"
     [menuLabel]="menuLabel()"
     [menuNodeId]="menuNodeId()"
+    [dropTargetId]="drag.treeTargetId()"
+    [dropLabel]="'links.drag.moveHere' | transloco"
     (selected)="select($event)"
     (contextMenu)="openMenu($event)"
   >

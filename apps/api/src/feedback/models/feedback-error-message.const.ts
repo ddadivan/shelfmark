@@ -5,4 +5,5 @@ export const FEEDBACK_ERROR_MESSAGE = {
   MilestoneNotReached: 'This milestone has not been reached yet',
   ScoreMismatch: 'This milestone already has a different score',
   CommentTooLong: 'The combined comment is too long',
+  MessageLimit: 'Too many messages, try again later',
 } as const;
