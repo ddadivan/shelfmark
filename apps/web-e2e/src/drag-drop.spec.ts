@@ -46,10 +46,19 @@ test.describe('drag a link to a folder (mock API)', () => {
     test.skip(isPhone(page), 'phones have no sidebar; "Move to folder" is the way there');
     const card = page.locator('li.library__item').filter({ hasText: PASTA });
     const reading = treeRow(page, READING);
+    const tags = page.locator('app-sidebar-tags');
+    await expect(tags).toBeVisible();
+    const tagsTop = (await tags.boundingBox())?.y ?? 0;
+    const readingHeight = (await reading.boundingBox())?.height ?? 0;
 
     await dragOver(page, card, reading);
     await expect(reading).toHaveClass(/ui-tree__row--drop/);
     await expect(reading).toContainText('Move here');
+    // The "Move here" hint fits in the row: neither the row nor the Tags section below moves.
+    expect(Math.abs(((await tags.boundingBox())?.y ?? 0) - tagsTop)).toBeLessThanOrEqual(0.5);
+    expect(
+      Math.abs(((await reading.boundingBox())?.height ?? 0) - readingHeight),
+    ).toBeLessThanOrEqual(0.5);
     const slot = page.locator('.library__drag-slot');
     await expect(slot).toContainText('Moving');
     await expect(slot).toContainText(PASTA);
