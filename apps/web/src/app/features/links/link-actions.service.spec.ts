@@ -35,7 +35,7 @@ async function setup(confirmed = true) {
       of({ ...link(Number(id.slice(3))), isFavorite: true }),
     ),
     remove: vi.fn<LinksApi['remove']>(() => of(undefined)),
-    open: vi.fn<LinksApi['open']>((id) => of(link(Number(id.slice(3))))),
+    open: vi.fn<LinksApi['open']>((id) => of({ ...link(Number(id.slice(3))), recorded: true })),
   };
   const confirm = vi.fn(() => Promise.resolve(confirmed));
   const dialogOpen = vi.fn<(component: unknown, config: unknown) => { result: Promise<undefined> }>(

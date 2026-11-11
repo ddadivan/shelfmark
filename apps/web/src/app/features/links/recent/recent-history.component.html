@@ -11,16 +11,37 @@
   />
 } @else {
   @if (filterable()) {
-    <ui-saved-views
-      class="recent-history__filter"
-      [items]="kindItems()"
-      [activeId]="kindFilter() ?? ALL_KINDS"
-      [ariaLabel]="'links.recent.filter.label' | transloco"
-      [layout]="kindLayout()"
-      (selected)="selectKind($event)"
-    />
+    <div class="recent-history__tools">
+      <ui-saved-views
+        class="recent-history__filter"
+        [items]="kindItems()"
+        [activeId]="kindFilter() ?? ALL_KINDS"
+        [ariaLabel]="'links.recent.filter.label' | transloco"
+        [layout]="kindLayout()"
+        (selected)="selectKind($event)"
+      />
+      <ui-input
+        class="recent-history__search"
+        compact
+        clearable
+        [type]="INPUT_TYPE.Search"
+        [label]="'links.recent.search.label' | transloco"
+        [placeholder]="'links.recent.search.label' | transloco"
+        [clearLabel]="'links.recent.search.clear' | transloco"
+        [(value)]="query"
+      />
+    </div>
   }
-  @if (filteredEmpty()) {
+  @if (searchEmpty()) {
+    <ui-empty-state
+      class="recent-history__empty"
+      illustration="not-found"
+      [heading]="'links.recent.search.emptyTitle' | transloco"
+      [text]="'links.recent.search.emptyText' | transloco: { query: appliedSearch() }"
+    >
+      <ui-button (click)="clearSearch()">{{ 'links.recent.search.clear' | transloco }}</ui-button>
+    </ui-empty-state>
+  } @else if (filteredEmpty()) {
     <ui-empty-state
       class="recent-history__empty"
       illustration="not-found"
@@ -52,6 +73,11 @@
         }
       </ui-history-group>
     }
-    <p class="recent-history__note">{{ 'links.recent.note' | transloco }}</p>
+    <p class="recent-history__note">
+      @if (phone()) {
+        {{ 'links.recent.swipe.hint' | transloco }}
+      }
+      {{ 'links.recent.note' | transloco }}
+    </p>
   </div>
 }

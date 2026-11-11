@@ -165,6 +165,24 @@ describe('MockLinksApi', () => {
       expect(rest.items.some((link) => link.id === target.id)).toBe(false);
     });
 
+    it('answers but records nothing while the history is paused, as the server', async () => {
+      const injector = Injector.create({ providers: [MockLibraryData] });
+      const feed = runInInjectionContext(injector, () => new MockLinksApi());
+      const data = injector.get(MockLibraryData);
+      const [target] = (await firstValueFrom(feed.list({ limit: 1 }))).items;
+      const before = target.lastOpenedAt;
+
+      data.pauseHistory = true;
+      const paused = await firstValueFrom(feed.open(target.id));
+      expect(paused.recorded).toBe(false);
+      expect(paused.lastOpenedAt).toBe(before);
+
+      data.pauseHistory = false;
+      const recorded = await firstValueFrom(feed.open(target.id));
+      expect(recorded.recorded).toBe(true);
+      expect(recorded.lastOpenedAt).not.toBe(before);
+    });
+
     it('marks the first link pending in the pending-images scenario until it is captured', async () => {
       globalThis.sessionStorage.setItem(MOCK_LINKS_SCENARIO_KEY, MOCK_LINKS_SCENARIO.PendingImages);
       try {

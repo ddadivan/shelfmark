@@ -406,6 +406,24 @@
         "emptyTitle": "Nothing of this type",
         "emptyText": "No link of this type was opened in the last {{days}} days.",
         "showAll": "Show all"
+      },
+      "pause": {
+        "pause": "Pause history",
+        "resume": "Resume history",
+        "notice": "History is paused. Links you open now aren't added.",
+        "noticeResume": "Resume",
+        "pauseFailed": "Couldn't pause history",
+        "resumeFailed": "Couldn't resume history"
+      },
+      "search": {
+        "label": "Search history",
+        "clear": "Clear search",
+        "emptyTitle": "Nothing matches",
+        "emptyText": "No link in your history matches “{{query}}”."
+      },
+      "swipe": {
+        "remove": "Remove",
+        "hint": "Swipe a row left to remove it from history."
       }
     },
     "kind": {

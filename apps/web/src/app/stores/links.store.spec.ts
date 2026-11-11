@@ -3,6 +3,7 @@ import {
   FOLDER_DELETE_MODE,
   type LinkResponse,
   type ListLinksResponse,
+  type OpenLinkResponse,
 } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { NEVER, of, Subject, throwError } from 'rxjs';
@@ -31,7 +32,10 @@ function setup({ items = [link(1), link(2), link(3)] }: { items?: LinkResponse[]
     removeRecent: vi.fn<LinksApi['removeRecent']>(() => of(undefined)),
     clearRecent: vi.fn<LinksApi['clearRecent']>(() => of(undefined)),
     open: vi.fn<LinksApi['open']>((id) =>
-      of(link(Number(id.slice(3)), { lastOpenedAt: '2026-11-07T10:00:00.000Z' })),
+      of({
+        ...link(Number(id.slice(3)), { lastOpenedAt: '2026-11-07T10:00:00.000Z' }),
+        recorded: true,
+      }),
     ),
     captureImages: vi.fn<LinksApi['captureImages']>((id) =>
       of(
@@ -446,6 +450,20 @@ describe('LinksStore', () => {
       expect(api.open).toHaveBeenCalledWith('id-1');
       expect(store.recent().map((item) => item.id)).toEqual(['id-1', 'id-2']);
       expect(store.entityMap()['id-1']?.lastOpenedAt).toBe('2026-11-07T10:00:00.000Z');
+    });
+
+    it('leaves the history alone when the open was not recorded (paused)', async () => {
+      const { api, store } = setup();
+      api.open.mockReturnValue(of({ ...link(2), recorded: false }));
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      await store.loadRecent();
+      const before = store.recent().map((item) => item.id);
+
+      await store.recordOpen('id-2');
+
+      expect(api.open).toHaveBeenCalledWith('id-2');
+      expect(store.recent().map((item) => item.id)).toEqual(before);
+      expect(store.entityMap()['id-2']?.lastOpenedAt).toBe(link(2).lastOpenedAt);
     });
 
     describe('history', () => {
@@ -920,7 +938,7 @@ describe('LinksStore', () => {
     it('drops a first page, a recent list and an open that arrive after the reset', async () => {
       const list = new Subject<ListLinksResponse>();
       const recent = new Subject<{ items: LinkResponse[] }>();
-      const open = new Subject<LinkResponse>();
+      const open = new Subject<OpenLinkResponse>();
       const { api, store } = setup();
       api.list.mockReturnValueOnce(list);
       api.recent.mockReturnValueOnce(recent);
@@ -933,7 +951,7 @@ describe('LinksStore', () => {
       list.next(page([link(1)]));
       recent.next({ items: [link(1)] });
       recent.complete();
-      open.next(link(1));
+      open.next({ ...link(1), recorded: true });
       open.complete();
       await Promise.all([loadingRecent, opening]);
 
