@@ -38,7 +38,7 @@ test.describe('sync between browser tabs (mock API)', () => {
     // The delete is sent when its Undo window ends; dismissing the toast ends it now.
     await page
       .getByRole('status')
-      .filter({ hasText: 'Link deleted' })
+      .filter({ hasText: 'Moved to Trash' })
       .getByRole('button', { name: 'Dismiss' })
       .click();
 
