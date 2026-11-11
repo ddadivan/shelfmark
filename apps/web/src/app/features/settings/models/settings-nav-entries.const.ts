@@ -45,4 +45,10 @@ export const SETTINGS_NAV_ENTRIES: readonly SettingsNavEntry[] = [
     descriptionKey: 'settings.description.privacy',
     phone: true,
   },
+  {
+    path: SETTINGS_PATH.Feedback,
+    labelKey: 'settings.nav.feedback',
+    descriptionKey: 'settings.description.feedback',
+    phone: true,
+  },
 ];

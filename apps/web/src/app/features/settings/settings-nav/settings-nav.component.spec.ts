@@ -34,6 +34,7 @@ describe('SettingsNavComponent', () => {
       'Keyboard shortcuts',
       'Export',
       'Privacy and data',
+      'Your feedback',
     ]);
     expect(rows.map((row) => row.getAttribute('href'))).toEqual([
       '/settings/account',
@@ -43,6 +44,7 @@ describe('SettingsNavComponent', () => {
       '/settings/shortcuts',
       '/settings/import-export',
       '/settings/privacy',
+      '/settings/feedback',
     ]);
   });
 

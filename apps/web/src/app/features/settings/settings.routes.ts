@@ -38,4 +38,8 @@ export default [
     path: SETTINGS_PATH.Privacy,
     loadComponent: () => import('./privacy-data/privacy-data.page'),
   },
+  {
+    path: SETTINGS_PATH.Feedback,
+    loadComponent: () => import('./your-feedback/your-feedback.page'),
+  },
 ] satisfies Routes;
