@@ -102,10 +102,12 @@ export class LinkCardComponent {
   /** The checkbox, a click while selecting, Space or a long press (phone) asks to toggle. */
   readonly selectToggled = output<LinkSelectToggle>();
 
-  /** Phone: the checkbox shows only while selecting (a long press starts it). */
-  protected readonly showCheckbox = computed(
-    () => !this.readOnly() && (!this.viewport.phone() || this.selecting()),
-  );
+  /**
+   * The checkbox is in the DOM for every editable card. Hover devices reveal it on hover and
+   * focus; touch devices (`hover: none`, drawn by `ui-card`) see it at rest, so a link can be
+   * picked without a long press (which still works).
+   */
+  protected readonly showCheckbox = computed(() => !this.readOnly());
 
   /** The checkbox is drawn from `selected`; the native toggle is cancelled and the page decides. */
   protected onCheckboxClick(event: MouseEvent): void {

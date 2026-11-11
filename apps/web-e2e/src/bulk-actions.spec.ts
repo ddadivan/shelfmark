@@ -264,7 +264,6 @@ test.describe('select links and bulk actions (mock API)', () => {
 
     test('a long press starts the selection, taps add to it, Cancel clears', async ({ page }) => {
       await openFeed(page);
-      await expect(cards(page).first().locator('ui-checkbox')).toHaveCount(0);
       await longPress(page, cards(page).nth(0));
       await expect(selectedText(page)).toHaveText('1 selected');
       await expect(cards(page).nth(1).locator('ui-checkbox')).toHaveCount(1);
@@ -276,6 +275,17 @@ test.describe('select links and bulk actions (mock API)', () => {
 
       await header(page).getByRole('button', { name: 'Cancel selection' }).click();
       await expect(header(page)).toHaveCount(0);
+    });
+
+    test('the checkboxes are visible at rest and a tap on one starts the selection', async ({
+      page,
+    }) => {
+      await openFeed(page);
+      const box = cards(page).first().locator('ui-checkbox .ui-checkbox__box');
+      await expect(cards(page).first().locator('.ui-card__select')).toHaveCSS('opacity', '1');
+      await expect(box).toBeVisible();
+      await box.tap();
+      await expect(selectedText(page)).toHaveText('1 selected');
     });
 
     test('Share is hidden without the Web Share API (Copy links instead)', async ({ page }) => {

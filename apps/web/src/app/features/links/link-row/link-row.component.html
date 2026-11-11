@@ -11,15 +11,14 @@
   (activated)="open($event)"
   (keydown)="onKeydown($event)"
 >
-  @if (showCheckbox()) {
-    <ui-checkbox
-      slot="select"
-      hideLabel
-      [label]="'bulk.item.select' | transloco: { title: link().title }"
-      [checked]="selected()"
-      (click)="onCheckboxClick($event)"
-    />
-  }
+  <!-- Hover devices reveal it on hover and focus; touch devices (hover: none) see it at rest. -->
+  <ui-checkbox
+    slot="select"
+    hideLabel
+    [label]="'bulk.item.select' | transloco: { title: link().title }"
+    [checked]="selected()"
+    (click)="onCheckboxClick($event)"
+  />
   <ui-favicon slot="leading" [src]="favicon()" [letter]="letter()" />
   <span slot="title">{{ link().title }}</span>
   <span slot="meta" class="link-row__meta">
