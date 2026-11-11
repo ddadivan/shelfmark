@@ -167,7 +167,7 @@ test.describe('mobile polish (mock API)', () => {
       await expect(page.getByRole('radio', { name: 'List' })).toHaveCount(0);
       await expect(page.getByRole('button', { name: 'Export' })).toHaveCount(0);
 
-      await page.getByRole('button', { name: 'View options' }).click();
+      await page.getByRole('button', { name: 'View', exact: true }).click();
       const menu = page.getByRole('menu');
       await expect(menu.getByText('Sort by', { exact: true })).toBeVisible();
       await expect(menu.getByText('View', { exact: true })).toBeVisible();

@@ -8,7 +8,7 @@ export type LibraryView = 'Cards' | 'List';
  * button; a phone has one "View" menu with all of them (Sort by, View, Export).
  */
 async function openViewMenu(page: Page): Promise<void> {
-  await page.getByRole('button', { name: 'View options' }).click();
+  await page.getByRole('button', { name: 'View', exact: true }).click();
 }
 
 /** Switches the feed to Cards or List. */
