@@ -313,6 +313,7 @@
         [style.view-transition-name]="morphing() ? 'link-' + link.id : null"
         [class.library__landed]="store.landed()[link.id] !== undefined"
         [style.--ui-land-delay]="landDelay(link.id)"
+        (pointerdown)="drag.grab($event)"
         (cdkDragStarted)="drag.start(link, selectedLinks())"
         (cdkDragMoved)="onDragMoved($event)"
         (cdkDragEnded)="drag.drop()"
@@ -320,16 +321,18 @@
         <div *cdkDragPlaceholder class="library__drag-slot" aria-hidden="true">
           {{ 'links.drag.wasHere' | transloco: { title: link.title } }}
         </div>
-        <app-link-drag-chip
-          *cdkDragPreview
-          [link]="link"
-          [count]="
-            bundled(link)
-              ? (pluralKey('links.drag.count', selectedCount())
-                | transloco: { count: selectedCount() })
-              : ''
-          "
-        />
+        <ng-template cdkDragPreview matchSize>
+          <div class="library__drag-preview" aria-hidden="true">
+            @if (bundled(link)) {
+            <span class="library__drag-stack library__drag-stack--far"></span>
+            <span class="library__drag-stack library__drag-stack--near"></span>
+            }
+            <app-link-row [link]="link" />
+            <span class="library__drag-badge"
+              >{{ dragLabelKey(link) | transloco: { count: selectedCount() } }}</span
+            >
+          </div>
+        </ng-template>
         <app-link-row
           [link]="link"
           [pinnable]="isFolder()"
@@ -372,6 +375,7 @@
         [style.view-transition-name]="morphing() ? 'link-' + link.id : null"
         [class.library__landed]="store.landed()[link.id] !== undefined"
         [style.--ui-land-delay]="landDelay(link.id)"
+        (pointerdown)="drag.grab($event)"
         (cdkDragStarted)="drag.start(link, selectedLinks())"
         (cdkDragMoved)="onDragMoved($event)"
         (cdkDragEnded)="drag.drop()"
@@ -379,16 +383,18 @@
         <div *cdkDragPlaceholder class="library__drag-slot" aria-hidden="true">
           {{ 'links.drag.wasHere' | transloco: { title: link.title } }}
         </div>
-        <app-link-drag-chip
-          *cdkDragPreview
-          [link]="link"
-          [count]="
-            bundled(link)
-              ? (pluralKey('links.drag.count', selectedCount())
-                | transloco: { count: selectedCount() })
-              : ''
-          "
-        />
+        <ng-template cdkDragPreview matchSize>
+          <div class="library__drag-preview" aria-hidden="true">
+            @if (bundled(link)) {
+            <span class="library__drag-stack library__drag-stack--far"></span>
+            <span class="library__drag-stack library__drag-stack--near"></span>
+            }
+            <app-link-card [link]="link" [readOnly]="true" />
+            <span class="library__drag-badge"
+              >{{ dragLabelKey(link) | transloco: { count: selectedCount() } }}</span
+            >
+          </div>
+        </ng-template>
         <app-link-card
           [link]="link"
           [pinnable]="isFolder()"

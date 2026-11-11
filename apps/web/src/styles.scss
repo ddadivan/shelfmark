@@ -64,10 +64,80 @@
   }
 }
 
-// Drag a link to a folder (DragDrop spec). The preview is `app-link-drag-chip` (a compact glass
-// chip with its own styles); the CDK puts it in <body>, above the sidebar.
-.cdk-drag-preview {
+// Drag a link to a folder (DragDrop spec). The CDK appends the preview to <body>, outside the
+// library page's styles. It is the real card (or row), tilted and shrunk to about 0.65, and sits
+// down-right of the pointer (`--drag-grab-x|y` from `LinkDragService.grab`, the grab point in the
+// item), so the folder under the pointer stays visible. Rotate, scale and translate are their own
+// properties on the inner card, so the CDK's `transform` on the root keeps following the pointer.
+// A badge (read from the template) names "Move 1 link" or "3 links"; a selection of several adds
+// two silhouettes behind the card, a small fanned deck (never more than two). Reduced motion: no
+// tilt; the deck stays, static.
+.library__drag-preview {
+  --drag-x: calc(var(--drag-grab-x, 0rem) + 1.25rem);
+  --drag-y: calc(var(--drag-grab-y, 0rem) + 1.5rem);
+
   z-index: 1100;
+  pointer-events: none;
+  list-style: none;
+
+  :is(ui-card, ui-list-item, .library__drag-stack) {
+    translate: var(--drag-x) var(--drag-y);
+    rotate: -4deg;
+    scale: 0.65;
+    transform-origin: top left;
+  }
+
+  ui-card,
+  ui-list-item {
+    box-shadow: var(--shadow-float);
+  }
+
+  ui-list-item {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+  }
+}
+
+// The deck behind a dragged selection: card silhouettes, in the card's own surface.
+.library__drag-stack {
+  position: absolute;
+  inset: 0;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.library__drag-preview .library__drag-stack--near {
+  translate: calc(var(--drag-x) + #{rem(6px)}) calc(var(--drag-y) + #{rem(7px)});
+  rotate: -1deg;
+}
+
+.library__drag-preview .library__drag-stack--far {
+  translate: calc(var(--drag-x) + #{rem(12px)}) calc(var(--drag-y) + #{rem(12px)});
+  rotate: 2deg;
+}
+
+.library__drag-badge {
+  @include type(caption);
+
+  position: absolute;
+  inset-block-start: calc(var(--drag-y) - #{rem(12px)});
+  inset-inline-start: calc(var(--drag-x) + 65% - #{rem(24px)});
+  z-index: 1;
+  padding: rem(4px) rem(10px);
+  font-weight: 500;
+  color: var(--on-primary);
+  white-space: nowrap;
+  background: var(--primary);
+  border-radius: var(--radius-full);
+}
+
+@include reduced-motion {
+  .library__drag-preview {
+    :is(ui-card, ui-list-item, .library__drag-stack) {
+      rotate: none;
+    }
+  }
 }
 
 .library__item.cdk-drag-animating {

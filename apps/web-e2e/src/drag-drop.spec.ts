@@ -78,7 +78,8 @@ test.describe('drag a link to a folder (mock API)', () => {
 
     await dragOver(page, items.nth(1), reading);
     await expect(reading).toHaveClass(/ui-tree__row--drop/);
-    await expect(page.locator('.cdk-drag-preview')).toContainText('3 links');
+    await expect(page.locator('.cdk-drag-preview .library__drag-badge')).toHaveText('3 links');
+    await expect(page.locator('.cdk-drag-preview .library__drag-stack')).toHaveCount(2);
     await page.mouse.up();
 
     // Some of the picked links may already live in Reading; only the others move.
@@ -102,7 +103,8 @@ test.describe('drag a link to a folder (mock API)', () => {
     await settled(page);
 
     await dragOver(page, items.nth(1), treeRow(page, READING));
-    await expect(page.locator('.cdk-drag-preview')).not.toContainText('links');
+    await expect(page.locator('.cdk-drag-preview .library__drag-badge')).toHaveText('Move 1 link');
+    await expect(page.locator('.cdk-drag-preview .library__drag-stack')).toHaveCount(0);
     await page.mouse.up();
 
     await expect(page.getByRole('status').filter({ hasText: `Moved to ${READING}` })).toBeVisible();

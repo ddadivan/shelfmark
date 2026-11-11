@@ -58,6 +58,22 @@ export class LinkDragService {
   private cancelled = false;
 
   /**
+   * The pointer went down on a draggable item: remembers where in the item it grabbed (CSS
+   * variables on the root, read by the drag preview), so the shrunk preview can sit down-right of
+   * the pointer instead of around it. Cleared when the drag ends.
+   */
+  grab(event: PointerEvent): void {
+    const item = event.currentTarget;
+    if (!(item instanceof HTMLElement)) {
+      return;
+    }
+    const box = item.getBoundingClientRect();
+    const root = this.doc.documentElement.style;
+    root.setProperty('--drag-grab-x', `${event.clientX - box.left}px`);
+    root.setProperty('--drag-grab-y', `${event.clientY - box.top}px`);
+  }
+
+  /**
    * A drag began on `link`. `selected` are the picked links on screen: when `link` is one of
    * them (and there are several) all of them travel together.
    */
@@ -105,6 +121,8 @@ export class LinkDragService {
   private finish(): void {
     this.link.set(null);
     this.links.set([]);
+    this.doc.documentElement.style.removeProperty('--drag-grab-x');
+    this.doc.documentElement.style.removeProperty('--drag-grab-y');
     this.target.set(undefined);
     this.doc.removeEventListener('keydown', this.onKeydown, true);
   }
