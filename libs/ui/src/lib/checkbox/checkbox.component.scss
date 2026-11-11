@@ -51,6 +51,19 @@
   }
 }
 
+// An unchecked box may take a hover and pressed fill of its own (`--ui-checkbox-hover-bg`,
+// `--ui-checkbox-pressed-bg`; the card's checkbox matches its "..." button). A checked box keeps
+// its fill.
+.ui-checkbox__input:not(:checked, :indeterminate) + .ui-checkbox__box {
+  @include hover {
+    background: var(--ui-checkbox-hover-bg, var(--surface));
+  }
+}
+
+.ui-checkbox__label:active .ui-checkbox__input:not(:checked, :indeterminate) + .ui-checkbox__box {
+  background: var(--ui-checkbox-pressed-bg, var(--surface));
+}
+
 // Pressed feedback on touch (there is no tap highlight).
 .ui-checkbox__label:active .ui-checkbox__box {
   border-color: var(--ui-checkbox-fill, var(--primary));

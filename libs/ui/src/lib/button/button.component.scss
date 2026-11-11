@@ -42,7 +42,11 @@
   cursor: pointer;
   background: transparent;
   border: 1px solid transparent;
-  border-radius: var(--radius-full);
+  border-radius: var(
+    --ui-button-radius,
+    var(--radius-full)
+  ); // a feature may ask for a round square
+
   transition:
     background-color var(--duration-fast) var(--ease-out),
     border-color var(--duration-fast) var(--ease-out),

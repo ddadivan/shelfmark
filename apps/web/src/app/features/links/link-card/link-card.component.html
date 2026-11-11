@@ -46,10 +46,11 @@
   @if (!readOnly()) {
     <ui-button
       slot="actions"
-      variant="ghost"
+      variant="secondary"
       size="sm"
       iconOnly
       iconLeft="more"
+      [iconSize]="ICON_SIZE.Lg"
       hitArea="overlay"
       [uiMenuTrigger]="menu"
       [ariaLabel]="'links.item.actions' | transloco: { title: link().title }"

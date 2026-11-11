@@ -314,6 +314,7 @@
   position: absolute;
 
   --ui-button-sm-size: #{rem(32px)};
+  --ui-button-radius: #{rem(10px)};
 
   inset: rem(10px) rem(10px) auto auto;
   z-index: 2;
@@ -372,6 +373,8 @@
   --ui-checkbox-radius: #{rem(10px)};
   --ui-checkbox-tick: #{rem(20px)};
   --ui-checkbox-fill: var(--accent);
+  --ui-checkbox-hover-bg: var(--surface-hover);
+  --ui-checkbox-pressed-bg: var(--surface-pressed);
 
   inset: rem(10px) auto auto rem(10px);
   z-index: 2;
@@ -414,5 +417,6 @@
 
   .ui-card__actions {
     --ui-button-sm-size: #{rem(40px)};
+    --ui-button-radius: #{rem(12px)};
   }
 }

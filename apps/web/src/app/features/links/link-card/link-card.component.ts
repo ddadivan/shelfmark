@@ -7,6 +7,7 @@ import {
   CardComponent,
   ChipComponent,
   FaviconComponent,
+  ICON_SIZE,
   LongPressDirective,
   MenuComponent,
   MenuItemComponent,
@@ -64,6 +65,7 @@ export class LinkCardComponent {
   /** Settings › Library › Open links in: a new tab (default) or the same tab. */
   protected readonly newTab = inject(UserSettingsStore).openInNewTab;
   protected readonly viewport = inject(ViewportService);
+  protected readonly ICON_SIZE = ICON_SIZE;
   private readonly locale = inject(LocaleService);
   private readonly now = Date.now();
 
