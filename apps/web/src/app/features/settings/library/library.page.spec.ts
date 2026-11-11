@@ -1,3 +1,8 @@
+import {
+  LIBRARY_SETTINGS_DEFAULT,
+  type LibrarySettings,
+  type UpdateUserSettingsRequest,
+} from '@shelfmark/contracts';
 import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
@@ -12,6 +17,27 @@ import { USER_SETTINGS_API } from '../models/user-settings-api.const';
 import type { UserSettingsApi } from '../models/user-settings-api.interface';
 import LibrarySettingsPage from './library.page';
 
+/** The Settings › Library fields of a request, as the server would answer them. */
+function libraryPart(request: UpdateUserSettingsRequest): Partial<LibrarySettings> {
+  const part: Partial<LibrarySettings> = {};
+  for (const key of Object.keys(LIBRARY_SETTINGS_DEFAULT) as (keyof LibrarySettings)[]) {
+    if (request[key] !== undefined) {
+      Object.assign(part, { [key]: request[key] });
+    }
+  }
+  return part;
+}
+
+function switchNamed(root: HTMLElement, name: string): HTMLButtonElement {
+  const found = root.querySelector<HTMLButtonElement>(
+    `button[role="switch"][aria-label="${name}"]`,
+  );
+  if (!found) {
+    throw new Error(`No switch "${name}"`);
+  }
+  return found;
+}
+
 async function setup(
   options: { total?: number; failUpdate?: boolean; failGet?: boolean; confirm?: boolean } = {},
 ) {
@@ -24,6 +50,7 @@ async function setup(
             folderColours: true,
             pauseHistory: false,
             ...MOCK_APPEARANCE_DEFAULTS,
+            ...LIBRARY_SETTINGS_DEFAULT,
           }),
     ),
     update: vi.fn<UserSettingsApi['update']>((request) =>
@@ -34,6 +61,8 @@ async function setup(
             folderColours: request.folderColours ?? true,
             pauseHistory: request.pauseHistory ?? false,
             ...MOCK_APPEARANCE_DEFAULTS,
+            ...LIBRARY_SETTINGS_DEFAULT,
+            ...libraryPart(request),
           }),
     ),
   };
@@ -96,7 +125,9 @@ describe('LibrarySettingsPage', () => {
 
     expect(root.querySelector('h1')?.textContent).toContain('Library');
     expect([...root.querySelectorAll('h2')].map((h) => h.textContent?.trim())).toEqual([
-      'Folders',
+      'Viewing',
+      'Saving',
+      'Tags and folders',
       'Trash',
     ]);
     expect(root.textContent).toContain('Keep deleted items for');
@@ -104,7 +135,7 @@ describe('LibrarySettingsPage', () => {
       Array.from(root.querySelectorAll('input[type="radio"]')).map((input) =>
         input.closest('label')?.textContent?.trim(),
       ),
-    ).toEqual(['7 days', '30 days', '90 days']);
+    ).toEqual(['Cards', 'List', 'New tab', 'Same tab', '7 days', '30 days', '90 days']);
     expect(radio(root, '30 days').checked).toBe(true);
   });
 
@@ -210,7 +241,7 @@ describe('LibrarySettingsPage', () => {
 
   it('turns folder colours off at once with the switch, and back on', async () => {
     const { root, settingsApi, harness } = await setup();
-    const colours = root.querySelector<HTMLButtonElement>('button[role="switch"]');
+    const colours = switchNamed(root, 'Folder colours');
     expect(colours?.getAttribute('aria-checked')).toBe('true');
 
     colours?.click();
@@ -229,7 +260,7 @@ describe('LibrarySettingsPage', () => {
 
   it('puts the switch back with an error toast when saving the colours fails', async () => {
     const { root, toasts, harness } = await setup({ failUpdate: true });
-    const colours = root.querySelector<HTMLButtonElement>('button[role="switch"]');
+    const colours = switchNamed(root, 'Folder colours');
 
     colours?.click();
     await vi.waitFor(() => {
@@ -249,6 +280,83 @@ describe('LibrarySettingsPage', () => {
     edit?.click();
 
     expect(open).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows the Viewing and Saving choices of the account, then the footer note', async () => {
+    const { root } = await setup();
+
+    expect(radio(root, 'Cards').checked).toBe(true);
+    expect(radio(root, 'New tab').checked).toBe(true);
+    expect(switchNamed(root, 'Show folder counts').getAttribute('aria-checked')).toBe('true');
+    expect(switchNamed(root, 'Warn about duplicates').getAttribute('aria-checked')).toBe('true');
+    expect(switchNamed(root, 'Fetch titles and previews').getAttribute('aria-checked')).toBe(
+      'true',
+    );
+    expect(switchNamed(root, 'Keep the query part of links').getAttribute('aria-checked')).toBe(
+      'false',
+    );
+    expect(root.textContent).toContain('Newest first');
+    expect(root.textContent).toContain('Unsorted');
+    expect(root.textContent).toContain('Each folder remembers its own choice after you change it');
+    expect(root.textContent).toContain('Subfolders are always shown first in a folder');
+    expect(root.textContent).not.toContain('·');
+  });
+
+  it('saves the default view and where links open at once', async () => {
+    const { root, settingsApi, harness } = await setup();
+
+    radio(root, 'List').click();
+    await harness.fixture.whenStable();
+    expect(settingsApi.update).toHaveBeenCalledWith({ defaultView: 'list' });
+
+    radio(root, 'Same tab').click();
+    await harness.fixture.whenStable();
+    expect(settingsApi.update).toHaveBeenLastCalledWith({ openLinksIn: 'same-tab' });
+    expect(radio(root, 'Same tab').checked).toBe(true);
+  });
+
+  it.each([
+    ['Show folder counts', 'showFolderCounts', false],
+    ['Warn about duplicates', 'warnDuplicates', false],
+    ['Fetch titles and previews', 'fetchPreviews', false],
+    ['Keep the query part of links', 'keepQuery', true],
+  ] as const)('switches "%s" at once', async (name, key, value) => {
+    const { root, settingsApi, harness } = await setup();
+    const control = switchNamed(root, name);
+
+    control.click();
+    await vi.waitFor(() => {
+      harness.fixture.detectChanges();
+      expect(settingsApi.update).toHaveBeenCalledWith({ [key]: value });
+      expect(control.getAttribute('aria-checked')).toBe(String(value));
+    });
+  });
+
+  it('puts a Library switch back with an error toast when saving fails', async () => {
+    const { root, toasts, harness } = await setup({ failUpdate: true });
+    const control = switchNamed(root, 'Fetch titles and previews');
+
+    control.click();
+    await vi.waitFor(() => {
+      harness.fixture.detectChanges();
+      expect(toasts.at(-1)).toMatchObject({
+        kind: TOAST_KIND.Danger,
+        title: "Couldn't save the setting",
+      });
+      expect(control.getAttribute('aria-checked')).toBe('true');
+    });
+  });
+
+  it('opens the sidebar tags from "Manage tags" on a wide screen', async () => {
+    const { root } = await setup();
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+    const manage = Array.from(root.querySelectorAll('button')).find((b) =>
+      b.textContent?.includes('Manage tags'),
+    );
+
+    manage?.click();
+
+    expect(navigate).toHaveBeenCalledWith('/links');
   });
 
   it('has no axe violations', async () => {

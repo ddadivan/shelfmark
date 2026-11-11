@@ -8,6 +8,13 @@ export function parseFeedSort(raw: unknown): FeedSort {
   return raw === FEED_SORT.Oldest || raw === FEED_SORT.Title ? raw : FEED_SORT.Newest;
 }
 
+/** The sort a `?sort=` names, or `undefined` when it names none (absent, repeated or unknown). */
+export function explicitFeedSort(raw: unknown): FeedSort | undefined {
+  return raw === FEED_SORT.Newest || raw === FEED_SORT.Oldest || raw === FEED_SORT.Title
+    ? raw
+    : undefined;
+}
+
 /** The API's `sort` and `order` of a feed sort. */
 export function feedSortQuery(sort: FeedSort): FeedSortQuery {
   switch (sort) {

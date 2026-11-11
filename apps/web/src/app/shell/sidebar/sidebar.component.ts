@@ -160,7 +160,9 @@ export class SidebarComponent {
     if (!labels || this.foldersOnly()) {
       return [];
     }
-    const counts = this.folders.loaded() ? this.folders.counts() : null;
+    // Settings › Library › Show folder counts: off drops the link counts (Trash keeps its own).
+    const counts =
+      this.folders.loaded() && this.settings.countsShown() ? this.folders.counts() : null;
     return [
       { id: LINKS_SCOPE.All, name: labels.all, icon: 'bookmark', ...count(counts?.all) },
       {
@@ -210,7 +212,7 @@ export class SidebarComponent {
     const toNode = ({ folder, children }: FolderNode): UiTreeNode => ({
       id: folder.id,
       name: folder.name,
-      count: folder.linkCount,
+      ...(this.settings.countsShown() && { count: folder.linkCount }),
       icon: folder.icon,
       colour: this.settings.shownColour(folder.colour),
       ...(open.has(folder.id) && { expanded: true }),

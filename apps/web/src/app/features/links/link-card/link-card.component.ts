@@ -28,6 +28,8 @@ const MAX_TAGS = 3;
  * One saved link in the cards view. It only renders and emits; the favorite and delete flows
  * live in `LinkActionsService`. The title opens the link in a new tab (http and https only).
  */
+import { UserSettingsStore } from '../../../stores/user-settings.store';
+
 @Component({
   selector: 'app-link-card',
   imports: [
@@ -51,6 +53,8 @@ const MAX_TAGS = 3;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LinkCardComponent {
+  /** Settings › Library › Open links in: a new tab (default) or the same tab. */
+  protected readonly newTab = inject(UserSettingsStore).openInNewTab;
   protected readonly viewport = inject(ViewportService);
 
   readonly link = input.required<LinkResponse>();

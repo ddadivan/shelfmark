@@ -97,7 +97,7 @@
         <ui-segmented-control
           iconOnly
           [options]="options"
-          [value]="ui.view()"
+          [value]="view()"
           [ariaLabel]="'library.view.label' | transloco"
           (valueChange)="setView($event)"
         />
@@ -179,7 +179,7 @@
     } @if (subfolders().length > 0) {
     <ul
       class="library__folders"
-      [class.library__folders--rows]="ui.view() === UI_VIEW.List"
+      [class.library__folders--rows]="view() === UI_VIEW.List"
       [class.library__folders--stale]="stale()"
       [attr.inert]="stale() ? '' : null"
       [attr.aria-label]="'library.subfolders.label' | transloco"
@@ -189,7 +189,7 @@
         <app-folder-tile
           [folder]="item.folder"
           [childCount]="item.childCount"
-          [row]="ui.view() === UI_VIEW.List"
+          [row]="view() === UI_VIEW.List"
         />
       </li>
       }
@@ -218,7 +218,7 @@
         </ui-button>
       </ui-empty-state>
     </div>
-    } @else if (skeletonVisible()) { @if (ui.view() === UI_VIEW.List) {
+    } @else if (skeletonVisible()) { @if (view() === UI_VIEW.List) {
     <div class="library__rows">
       <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="SKELETON_COUNT" />
     </div>
@@ -279,7 +279,7 @@
         }
       </ui-empty-state>
     </div>
-    } @else if (showLinks()) { @for (batch of batches(); track batch) { @if (ui.view() ===
+    } @else if (showLinks()) { @for (batch of batches(); track batch) { @if (view() ===
     UI_VIEW.List) {
     <ul
       class="library__rows library__list"
@@ -301,7 +301,7 @@
           (pinToTopToggled)="actions.togglePinInFolder(link)"
           (pinToSidebarToggled)="actions.togglePinToSidebar(link)"
           (opened)="actions.open(link)"
-          (openRequested)="actions.openInNewTab(link)"
+          (openRequested)="actions.openFromMenu(link)"
           (favoriteToggled)="actions.toggleFavorite(link)"
           (editRequested)="actions.edit(link)"
           (moveRequested)="actions.move(link)"
@@ -331,7 +331,7 @@
           (pinToTopToggled)="actions.togglePinInFolder(link)"
           (pinToSidebarToggled)="actions.togglePinToSidebar(link)"
           (opened)="actions.open(link)"
-          (openRequested)="actions.openInNewTab(link)"
+          (openRequested)="actions.openFromMenu(link)"
           (favoriteToggled)="actions.toggleFavorite(link)"
           (editRequested)="actions.edit(link)"
           (moveRequested)="actions.move(link)"

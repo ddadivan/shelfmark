@@ -1,3 +1,4 @@
+import { LIBRARY_SETTINGS_DEFAULT } from '@shelfmark/contracts';
 import { TestBed } from '@angular/core/testing';
 import {
   CUSTOM_THEME_DEFAULT,
@@ -25,6 +26,7 @@ function setup(account: Partial<UserSettingsResponse> = {}) {
     folderColours: true,
     pauseHistory: false,
     ...MOCK_APPEARANCE_DEFAULTS,
+    ...LIBRARY_SETTINGS_DEFAULT,
     ...account,
   };
   const api = {
@@ -129,6 +131,7 @@ describe('UserSettingsStore appearance', () => {
       folderColours: true,
       pauseHistory: false,
       ...MOCK_APPEARANCE_DEFAULTS,
+      ...LIBRARY_SETTINGS_DEFAULT,
       theme: THEME_PREFERENCE.Dark,
       appearanceSaved: true,
     });

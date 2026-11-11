@@ -1,4 +1,4 @@
-import type { TrashRetentionDays } from '@shelfmark/contracts';
+import type { LibrarySettings, TrashRetentionDays } from '@shelfmark/contracts';
 
 /** State of `UserSettingsStore`. */
 export interface UserSettingsState {
@@ -8,6 +8,8 @@ export interface UserSettingsState {
   folderColours: boolean | null;
   /** "Pause history" on Recently opened; `null` until the settings told it (shown as off). */
   pauseHistory: boolean | null;
+  /** Settings › Library › Viewing and Saving; `null` until the settings told it (the defaults show). */
+  library: LibrarySettings | null;
   /** The settings request is running. */
   loading: boolean;
   /** The first settings request failed; the Library settings offer a retry. */

@@ -2,9 +2,9 @@
   uiPointerShadow
   [href]="href()"
   [image]="image()"
-  newTab
+  [newTab]="newTab()"
   [reveal]="reveal()"
-  [description]="href() ? ('links.item.opensInNewTab' | transloco) : undefined"
+  [description]="href() && newTab() ? ('links.item.opensInNewTab' | transloco) : undefined"
   [actionsPinned]="menu.isOpen()"
   [checked]="selected()"
   [selecting]="selecting()"

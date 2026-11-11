@@ -41,6 +41,8 @@ import { ownImageUrl, safeHref } from '../link-view';
  * always in the DOM behind the row, so keyboard and screen reader users never need the swipe
  * (focusing it slides the row aside), and the menu stays on the row as well.
  */
+import { UserSettingsStore } from '../../../stores/user-settings.store';
+
 @Component({
   selector: 'app-link-history-row',
   imports: [
@@ -61,6 +63,8 @@ import { ownImageUrl, safeHref } from '../link-view';
   host: { '[class.link-history-row--phone]': 'viewport.phone()' },
 })
 export class LinkHistoryRowComponent {
+  /** Settings › Library › Open links in: a new tab (default) or the same tab. */
+  protected readonly newTab = inject(UserSettingsStore).openInNewTab;
   protected readonly viewport = inject(ViewportService);
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
 

@@ -1,3 +1,4 @@
+import { LIBRARY_SETTINGS_DEFAULT } from '@shelfmark/contracts';
 import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
 import { TestBed } from '@angular/core/testing';
 import type { UserSettingsResponse } from '@shelfmark/contracts';
@@ -14,6 +15,7 @@ function setup(pauseHistory = false) {
     folderColours: true,
     pauseHistory,
     ...MOCK_APPEARANCE_DEFAULTS,
+    ...LIBRARY_SETTINGS_DEFAULT,
   };
   const api = {
     get: vi.fn<UserSettingsApi['get']>(() => of(settings)),
@@ -53,6 +55,7 @@ describe('UserSettingsStore pause history', () => {
       folderColours: true,
       pauseHistory: true,
       ...MOCK_APPEARANCE_DEFAULTS,
+      ...LIBRARY_SETTINGS_DEFAULT,
     });
     gate.complete();
 

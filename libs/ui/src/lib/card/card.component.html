@@ -8,7 +8,7 @@
       class="ui-card__link"
       [attr.href]="url"
       [attr.target]="newTab() ? '_blank' : null"
-      [attr.rel]="newTab() ? 'noopener noreferrer' : null"
+      [attr.rel]="newTab() ? 'noopener noreferrer' : 'noreferrer'"
       [attr.aria-current]="selected() ? 'true' : null"
       [attr.aria-describedby]="description() ? descriptionId : null"
       (click)="activated.emit($event)"

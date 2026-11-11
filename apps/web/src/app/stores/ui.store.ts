@@ -1,11 +1,8 @@
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
-import { isUiView } from './is-ui-view';
 import { UI_STORAGE_KEY } from './models/ui-storage-key.const';
 import type { UiState } from './models/ui-state.interface';
-import { UI_VIEW } from './models/ui-view.const';
-import type { UiView } from './models/ui-view.type';
 
-const defaults: UiState = { view: UI_VIEW.Cards, singleKeyShortcuts: true };
+const defaults: UiState = { singleKeyShortcuts: true };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -18,9 +15,9 @@ function readState(): UiState {
     if (!isRecord(parsed)) {
       return defaults;
     }
-    const { view, singleKeyShortcuts } = parsed;
+    // An older version also kept the feed view here; each feed remembers its own now (#284).
+    const { singleKeyShortcuts } = parsed;
     return {
-      view: isUiView(view) ? view : defaults.view,
       singleKeyShortcuts:
         typeof singleKeyShortcuts === 'boolean' ? singleKeyShortcuts : defaults.singleKeyShortcuts,
     };
@@ -37,19 +34,15 @@ function persist(state: UiState): void {
   }
 }
 
-/** Layout and input preferences (feed view, single-key shortcuts), persisted in `localStorage`. */
+/** Input preferences (single-key shortcuts), persisted in `localStorage`. The feed view is per feed (`FeedMemoryService`). */
 export const UiStore = signalStore(
   { providedIn: 'root' },
   withState<UiState>(readState),
   withMethods((store) => ({
-    setView(view: UiView): void {
-      patchState(store, { view });
-      persist({ view, singleKeyShortcuts: store.singleKeyShortcuts() });
-    },
     /** Turns the single-character shortcuts on or off; applies at once and is kept per device. */
     setSingleKeyShortcuts(singleKeyShortcuts: boolean): void {
       patchState(store, { singleKeyShortcuts });
-      persist({ view: store.view(), singleKeyShortcuts });
+      persist({ singleKeyShortcuts });
     },
   })),
 );

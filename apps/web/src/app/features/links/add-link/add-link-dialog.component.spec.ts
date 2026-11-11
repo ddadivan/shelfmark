@@ -2,12 +2,20 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import {
+  LIBRARY_SETTINGS_DEFAULT,
   LINK_ERROR_MESSAGE,
+  type LibrarySettings,
+  type UserSettingsResponse,
   LINK_KIND,
   type LinkPreviewResponse,
   type LinkResponse,
 } from '@shelfmark/contracts';
-import { MOCK_ID, MOCK_LINK_PREVIEW_DUPLICATE, MOCK_LINKS } from '@shelfmark/contracts/testing';
+import {
+  MOCK_APPEARANCE_DEFAULTS,
+  MOCK_ID,
+  MOCK_LINK_PREVIEW_DUPLICATE,
+  MOCK_LINKS,
+} from '@shelfmark/contracts/testing';
 import axe from 'axe-core';
 import { delay, of, tap, throwError, type Observable } from 'rxjs';
 import { APP_LANG } from '../../../core/i18n/models/app-lang.const';
@@ -22,6 +30,8 @@ import { TAGS_API } from '../models/tags-api.const';
 import { MockFoldersApi } from '../mock/mock-folders.api';
 import { MockTagsApi } from '../mock/mock-tags.api';
 import { AddLinkDialogService } from './add-link-dialog.service';
+import { UserSettingsStore } from '../../../stores/user-settings.store';
+import { USER_SETTINGS_API } from '../../settings/models/user-settings-api.const';
 
 const PLAIN: LinkPreviewResponse = {
   preview: {
@@ -65,15 +75,31 @@ function fakeApi(preview: () => Observable<LinkPreviewResponse>): FakeApi {
   };
 }
 
-async function setup(api: FakeApi, data?: Parameters<AddLinkDialogService['open']>[0]) {
+async function setup(
+  api: FakeApi,
+  data?: Parameters<AddLinkDialogService['open']>[0],
+  library?: Partial<LibrarySettings>,
+) {
+  const account: UserSettingsResponse = {
+    trashRetentionDays: 30,
+    folderColours: true,
+    pauseHistory: false,
+    ...MOCK_APPEARANCE_DEFAULTS,
+    ...LIBRARY_SETTINGS_DEFAULT,
+    ...library,
+  };
   TestBed.configureTestingModule({
     providers: [
       provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
       { provide: LINKS_API, useValue: api },
       { provide: FOLDERS_API, useClass: MockFoldersApi },
       { provide: TAGS_API, useClass: MockTagsApi },
+      ...(library ? [{ provide: USER_SETTINGS_API, useValue: { get: () => of(account) } }] : []),
     ],
   });
+  if (library) {
+    await TestBed.inject(UserSettingsStore).load();
+  }
   await new Promise<void>((resolve) => {
     TestBed.inject(TranslocoService)
       .load(APP_LANG.En)
@@ -925,6 +951,88 @@ describe('AddLinkDialogComponent', () => {
 
       const results = await axe.run(dialog(), { rules: { 'color-contrast': { enabled: false } } });
       expect(results.violations.map((v) => `${v.id}: ${v.help}`)).toEqual([]);
+    });
+  });
+
+  describe('Settings › Library › Saving (#284)', () => {
+    it('starts in "New links go to" when the page has no folder', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      const { result } = await setup(api, {}, { newLinksFolderId: MOCK_ID.FolderAngular });
+
+      await type('Link', 'https://example.org/post');
+      await until(() => {
+        expect(input('Title').value).toBe('A fine post');
+      });
+      button('Save link').click();
+      await result;
+      expect(api.create).toHaveBeenCalledWith(
+        expect.objectContaining({ folderId: MOCK_ID.FolderAngular }),
+      );
+    });
+
+    it('keeps the folder of the page over "New links go to"', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      const { result } = await setup(
+        api,
+        { folderId: MOCK_ID.FolderReading },
+        { newLinksFolderId: MOCK_ID.FolderAngular },
+      );
+
+      await type('Link', 'https://example.org/post');
+      await until(() => {
+        expect(input('Title').value).toBe('A fine post');
+      });
+      button('Save link').click();
+      await result;
+      expect(api.create).toHaveBeenCalledWith(
+        expect.objectContaining({ folderId: MOCK_ID.FolderReading }),
+      );
+    });
+
+    it('shows no duplicate notice when "Warn about duplicates" is off', async () => {
+      const api = fakeApi(() => of(MOCK_LINK_PREVIEW_DUPLICATE));
+      await setup(api, {}, { warnDuplicates: false });
+
+      await type('Link', MOCK_LINK_PREVIEW_DUPLICATE.preview.url);
+      await until(() => {
+        expect(api.preview).toHaveBeenCalled();
+        expect(input('Title').value).not.toBe('');
+      });
+      expect(dialog().textContent).not.toContain('You already saved this link');
+      button('Save link');
+    });
+
+    it('skips the preview request when previews and the duplicate notice are both off', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      const { result } = await setup(api, {}, { fetchPreviews: false, warnDuplicates: false });
+
+      await type('Link', 'https://example.org/post');
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      TestBed.tick();
+      expect(api.preview).not.toHaveBeenCalled();
+      expect(input('Title').value).toBe('');
+      button('Save link').click();
+      await result;
+      expect(api.create).toHaveBeenCalledWith(
+        expect.not.objectContaining({ title: expect.anything() }),
+      );
+    });
+
+    it('with previews off only checks duplicates: no skeleton, no "no preview" notice', async () => {
+      const api = fakeApi(() =>
+        of({ ...MOCK_LINK_PREVIEW_DUPLICATE, fetched: false }).pipe(delay(50)),
+      );
+      await setup(api, {}, { fetchPreviews: false });
+
+      await type('Link', MOCK_LINK_PREVIEW_DUPLICATE.preview.url);
+      expect(dialog().querySelector('ui-skeleton')).toBeNull();
+      await until(() => {
+        expect(dialog().querySelector('ui-notice')?.textContent).toContain(
+          'You already saved this link',
+        );
+      });
+      expect(dialog().querySelectorAll('ui-notice')).toHaveLength(1);
+      expect(input('Title').value).toBe('');
     });
   });
 

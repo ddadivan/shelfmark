@@ -1,3 +1,4 @@
+import { LIBRARY_SETTINGS_DEFAULT } from '@shelfmark/contracts';
 import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
 import { TestBed } from '@angular/core/testing';
 import { TRASH_RETENTION_DEFAULT, type UserSettingsResponse } from '@shelfmark/contracts';
@@ -17,6 +18,7 @@ function setup() {
         folderColours: true,
         pauseHistory: false,
         ...MOCK_APPEARANCE_DEFAULTS,
+        ...LIBRARY_SETTINGS_DEFAULT,
       }),
     ),
     update: vi.fn<UserSettingsApi['update']>((request) =>
@@ -25,6 +27,7 @@ function setup() {
         folderColours: true,
         pauseHistory: false,
         ...MOCK_APPEARANCE_DEFAULTS,
+        ...LIBRARY_SETTINGS_DEFAULT,
       }),
     ),
   };
@@ -105,6 +108,7 @@ describe('UserSettingsStore', () => {
         folderColours: true,
         pauseHistory: false,
         ...MOCK_APPEARANCE_DEFAULTS,
+        ...LIBRARY_SETTINGS_DEFAULT,
       });
       gate.complete();
       expect(await done).toBe(true);

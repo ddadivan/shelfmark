@@ -57,12 +57,20 @@ export class LinkActionsService {
     void this.store.recordOpen(link.id);
   }
 
-  /** "Open" from a menu: a new tab (http and https only), and the open is recorded. */
-  openInNewTab(link: LinkResponse): void {
+  /**
+   * "Open" from a menu (http and https only), and the open is recorded: a new tab, or this tab
+   * when Settings › Library › Open links in says so.
+   */
+  openFromMenu(link: LinkResponse): void {
     const href = safeHref(link.url);
-    if (href) {
+    if (!href) {
+      return;
+    }
+    this.open(link);
+    if (this.settings.openInNewTab()) {
       this.doc.defaultView?.open(href, '_blank', 'noopener,noreferrer');
-      this.open(link);
+    } else {
+      this.doc.defaultView?.location.assign(href);
     }
   }
 

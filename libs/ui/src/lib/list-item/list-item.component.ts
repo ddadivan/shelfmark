@@ -27,7 +27,7 @@ let nextId = 0;
  * `<button>` (without) whose `::after` is stretched over the row, so the row has one tab stop
  * and no interactive element is nested inside another. `trailing` sits above that layer and
  * never activates the row. `activated` emits the click (the feature may `preventDefault()` an
- * `href` click to route); `newTab` opens `href` in a new tab with `noopener noreferrer`.
+ * `href` click to route); `newTab` opens `href` in a new tab with `noopener noreferrer`; in the same tab it keeps `noreferrer`.
  *
  * Images: the app CSP is `img-src 'self' data:`, so external preview images and favicons
  * are blocked and the fallbacks show until stage 3 decides on an image proxy or a CSP change

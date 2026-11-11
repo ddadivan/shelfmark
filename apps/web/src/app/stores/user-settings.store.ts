@@ -2,9 +2,13 @@ import { computed, inject, Injector } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import {
   FOLDER_DEFAULT_COLOUR,
+  LIBRARY_SETTINGS_DEFAULT,
+  LINK_OPEN_TARGET,
   TRASH_RETENTION_DEFAULT,
   type FolderColour,
+  type LibrarySettings,
   type TrashRetentionDays,
+  type UserSettingsResponse,
 } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
 import type { Appearance } from '../core/theme/models/appearance.type';
@@ -13,6 +17,20 @@ import { SessionScope } from '../core/auth/session-scope.service';
 import { USER_SETTINGS_API } from '../features/settings/models/user-settings-api.const';
 import type { UserSettingsState } from './models/user-settings-state.interface';
 import { TrashStore } from './trash.store';
+
+/** The Settings › Library part of a settings response. */
+function libraryOf(settings: UserSettingsResponse): LibrarySettings {
+  return {
+    defaultView: settings.defaultView,
+    defaultSort: settings.defaultSort,
+    openLinksIn: settings.openLinksIn,
+    showFolderCounts: settings.showFolderCounts,
+    newLinksFolderId: settings.newLinksFolderId,
+    warnDuplicates: settings.warnDuplicates,
+    fetchPreviews: settings.fetchPreviews,
+    keepQuery: settings.keepQuery,
+  };
+}
 
 function sameAppearance(a: Appearance, b: Appearance): boolean {
   return (
@@ -29,6 +47,7 @@ const initialState: UserSettingsState = {
   trashRetentionDays: null,
   folderColours: null,
   pauseHistory: null,
+  library: null,
   loading: false,
   error: false,
 };
@@ -43,7 +62,7 @@ const initialState: UserSettingsState = {
 export const UserSettingsStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
-  withComputed(({ trashRetentionDays, folderColours, pauseHistory }) => ({
+  withComputed(({ trashRetentionDays, folderColours, pauseHistory, library }) => ({
     /** The retention to show: the account's, or the default until it is known. */
     retentionDays: computed<TrashRetentionDays>(
       () => trashRetentionDays() ?? TRASH_RETENTION_DEFAULT,
@@ -53,6 +72,18 @@ export const UserSettingsStore = signalStore(
     coloursOn: computed(() => folderColours() ?? true),
     /** Opens are not recorded (off until the settings say otherwise). */
     historyPaused: computed(() => pauseHistory() ?? false),
+    /** Settings › Library › Viewing and Saving: the account's, or the defaults until they are known. */
+    libraryShown: computed<LibrarySettings>(() => library() ?? LIBRARY_SETTINGS_DEFAULT),
+    /** Links of cards and rows open in a new tab (default) or the same tab. */
+    openInNewTab: computed(
+      () =>
+        (library()?.openLinksIn ?? LIBRARY_SETTINGS_DEFAULT.openLinksIn) ===
+        LINK_OPEN_TARGET.NewTab,
+    ),
+    /** Link counts next to the sidebar entries and folders. */
+    countsShown: computed(
+      () => library()?.showFolderCounts ?? LIBRARY_SETTINGS_DEFAULT.showFolderCounts,
+    ),
   })),
   withMethods((store) => {
     const injector = inject(Injector);
@@ -95,6 +126,7 @@ export const UserSettingsStore = signalStore(
                 trashRetentionDays: settings.trashRetentionDays,
                 folderColours: settings.folderColours,
                 pauseHistory: settings.pauseHistory,
+                library: libraryOf(settings),
                 loading: false,
               }
             : { loading: false },
@@ -116,7 +148,12 @@ export const UserSettingsStore = signalStore(
     return {
       /** Loads the settings once; a failure can be retried by calling again. */
       load(): Promise<void> {
-        if (store.loaded() && store.folderColours() !== null && store.pauseHistory() !== null) {
+        if (
+          store.loaded() &&
+          store.folderColours() !== null &&
+          store.pauseHistory() !== null &&
+          store.library() !== null
+        ) {
           return Promise.resolve();
         }
         firstLoad ??= fetchSettings().finally(() => (firstLoad = null));
@@ -215,6 +252,45 @@ export const UserSettingsStore = signalStore(
         } catch {
           if (started === epoch && sameAppearance(theme.appearance(), next)) {
             theme.apply(previous);
+          }
+          return false;
+        }
+      },
+
+      /**
+       * Changes Settings › Library choices at once (the feed, the sidebar and the add-link dialog
+       * follow) and saves them on the account; resolves false (and puts the changed fields back,
+       * unless a later change replaced them) when the request fails.
+       */
+      async setLibrary(change: Partial<LibrarySettings>): Promise<boolean> {
+        const previous = store.libraryShown();
+        const keys = (Object.keys(change) as (keyof LibrarySettings)[]).filter(
+          (key) => change[key] !== undefined && change[key] !== previous[key],
+        );
+        if (keys.length === 0) {
+          return true;
+        }
+        const next: LibrarySettings = { ...previous, ...change };
+        const started = epoch;
+        version++;
+        patchState(store, { library: next });
+        const unchangedSince = (): boolean => {
+          const current = store.libraryShown();
+          return keys.every((key) => current[key] === next[key]);
+        };
+        try {
+          const saved = await firstValueFrom(api().update(change));
+          if (started === epoch && unchangedSince()) {
+            patchState(store, { library: libraryOf(saved) });
+          }
+          return true;
+        } catch {
+          if (started === epoch && unchangedSince()) {
+            const restored: Partial<LibrarySettings> = {};
+            for (const key of keys) {
+              Object.assign(restored, { [key]: previous[key] });
+            }
+            patchState(store, { library: { ...store.libraryShown(), ...restored } });
           }
           return false;
         }

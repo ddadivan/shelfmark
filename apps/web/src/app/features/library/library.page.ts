@@ -56,7 +56,7 @@ import { ExportActionsService } from '../export/export-actions.service';
 import { exportScopeOf } from '../export/export-url';
 import { TAG_QUERY_PARAM } from '../tags/models/tag-query-param.const';
 import { parseTagFilter } from '../tags/tag-filter';
-import { feedSortQuery, parseFeedSort } from '../links/feed-sort';
+import { explicitFeedSort, feedSortQuery } from '../links/feed-sort';
 import { FEED_SORT } from '../links/models/feed-sort.const';
 import type { FeedSort } from '../links/models/feed-sort.type';
 import { SEARCH_QUERY_PARAM } from '../links/models/search-query-param.const';
@@ -89,7 +89,9 @@ import { LinksStore } from '../../stores/links.store';
 import { PinsStore } from '../../stores/pins.store';
 import { UI_VIEW } from '../../stores/models/ui-view.const';
 import { isUiView } from '../../stores/is-ui-view';
-import { UiStore } from '../../stores/ui.store';
+import type { UiView } from '../../stores/models/ui-view.type';
+import { UserSettingsStore } from '../../stores/user-settings.store';
+import { FeedMemoryService } from './feed-memory.service';
 import { EMPTY_KEYS } from './models/empty-keys.const';
 import { FolderTileComponent } from './folder-tile/folder-tile.component';
 import { runViewTransition, type ViewTransitionNames } from './view-transition';
@@ -144,7 +146,8 @@ interface LastShown {
 })
 export default class LibraryPage {
   protected readonly store = inject(LinksStore);
-  protected readonly ui = inject(UiStore);
+  private readonly settings = inject(UserSettingsStore);
+  private readonly memory = inject(FeedMemoryService);
   protected readonly actions = inject(LinkActionsService);
   protected readonly pins = inject(PinsStore);
   protected readonly PIN_KIND = PIN_KIND;
@@ -187,7 +190,22 @@ export default class LibraryPage {
   protected readonly tags = computed(() => parseTagFilter(this.tag()));
   /** The search text: normalized; empty for no search. */
   protected readonly query = computed(() => parseSearchQuery(this.q()));
-  protected readonly feedSort = computed<FeedSort>(() => parseFeedSort(this.sort()));
+  /** What the feed remembers its view and sort by: the folder, or the fixed list. */
+  private readonly feedKey = computed(() => {
+    const id = this.folderId();
+    return this.isFolder() && id !== undefined ? `folder:${id}` : this.scope();
+  });
+  /** `?sort=` when it names one, else the feed's own last choice, else the account's default. */
+  protected readonly feedSort = computed<FeedSort>(
+    () =>
+      explicitFeedSort(this.sort()) ??
+      this.memory.sort(this.feedKey()) ??
+      this.settings.libraryShown().defaultSort,
+  );
+  /** The feed's own last view, else the account's Default view. */
+  protected readonly view = computed<UiView>(
+    () => this.memory.view(this.feedKey()) ?? this.settings.libraryShown().defaultView,
+  );
   protected readonly linkKind = computed(() => parseLinkKind(this.kind()));
   protected readonly searching = computed(() => this.query() !== '');
   protected readonly filtered = computed(
@@ -450,6 +468,7 @@ export default class LibraryPage {
   private readonly scroller = viewChild<ElementRef<HTMLElement>>('scroller');
 
   constructor() {
+    void this.settings.load();
     // Remember the last settled list (for stale-while-loading), and build the list again when a
     // new first page replaces the old one.
     let wasLoading = false;
@@ -665,13 +684,20 @@ export default class LibraryPage {
     await this.router.navigate(['/', APP_PATH.Links], {
       queryParams: {
         [SEARCH_QUERY_PARAM]: this.query(),
-        [SORT_QUERY_PARAM]: this.feedSort() === FEED_SORT.Newest ? null : this.feedSort(),
+        [SORT_QUERY_PARAM]: this.sortParam(this.feedSort()),
       },
     });
   }
 
+  /** Remembers the sort for this feed; the URL names it only when it differs from the default. */
   protected async setSort(sort: FeedSort): Promise<void> {
-    await this.setQueryParams({ [SORT_QUERY_PARAM]: sort === FEED_SORT.Newest ? null : sort });
+    this.memory.remember(this.feedKey(), { sort });
+    await this.setQueryParams({ [SORT_QUERY_PARAM]: this.sortParam(sort) });
+  }
+
+  /** `?sort=` for a sort: left out for the account's default (the URL stays short). */
+  private sortParam(sort: FeedSort): FeedSort | null {
+    return sort === this.settings.libraryShown().defaultSort ? null : sort;
   }
 
   protected async openCrumb(click: BreadcrumbClick): Promise<void> {
@@ -693,7 +719,13 @@ export default class LibraryPage {
     if (isUiView(view)) {
       // The new list is the same links: no fade-in on top of the morph.
       this.reveal.set(false);
-      runViewTransition(this.doc, this.injector, () => this.ui.setView(view), this.morphNames);
+      const feed = this.feedKey();
+      runViewTransition(
+        this.doc,
+        this.injector,
+        () => this.memory.remember(feed, { view }),
+        this.morphNames,
+      );
     }
   }
 

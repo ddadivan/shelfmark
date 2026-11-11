@@ -900,7 +900,7 @@
     "description": {
       "account": "Your profile and your account.",
       "appearance": "Saved as you go and synced to all your devices.",
-      "library": "What happens to deleted items.",
+      "library": "How links are shown, saved and kept.",
       "export": "Take everything you saved with you.",
       "privacy": "What we keep, and how to take it with you.",
       "shortcuts": "Work without the mouse."
@@ -1064,6 +1064,57 @@
       }
     },
     "library": {
+      "viewing": {
+        "title": "Viewing",
+        "view": {
+          "label": "Default view",
+          "hint": "How folders open the first time"
+        },
+        "sort": {
+          "label": "Sort links by",
+          "hint": "Each folder remembers its own choice after you change it"
+        },
+        "open": {
+          "label": "Open links in",
+          "newTab": "New tab",
+          "sameTab": "Same tab"
+        },
+        "counts": {
+          "label": "Show folder counts",
+          "hint": "Numbers next to folders in the sidebar"
+        }
+      },
+      "saving": {
+        "title": "Saving",
+        "folder": {
+          "label": "New links go to",
+          "hint": "When you paste a link without picking a folder"
+        },
+        "duplicates": {
+          "label": "Warn about duplicates",
+          "hint": "Shows where you already saved the same link"
+        },
+        "previews": {
+          "label": "Fetch titles and previews",
+          "hint": "Turn off to save only the address"
+        },
+        "query": {
+          "label": "Keep the query part of links",
+          "hint": "Removes tracking like ?utm_source when off"
+        }
+      },
+      "tags": {
+        "label": "Tags",
+        "hint": {
+          "one": "{{count}} tag. Rename, merge or delete it.",
+          "other": "{{count}} tags. Rename, merge or delete them."
+        },
+        "hintPending": "Rename, merge or delete them",
+        "action": "Manage tags"
+      },
+      "failed": "Couldn't save the setting",
+      "failedDetail": "It is back to how it was.",
+      "note": "Subfolders are always shown first in a folder; it isn’t a setting. Changes apply at once and sync to your other devices.",
       "trash": {
         "title": "Trash",
         "retention": {
@@ -1095,7 +1146,7 @@
         }
       },
       "folders": {
-        "title": "Folders",
+        "title": "Tags and folders",
         "colours": {
           "label": "Folder colours",
           "hint": "Coloured folder icons in the sidebar and tiles",
