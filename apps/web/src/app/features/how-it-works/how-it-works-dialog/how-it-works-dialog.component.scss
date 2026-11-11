@@ -8,6 +8,13 @@
   border-radius: var(--radius-md);
 }
 
+/* The phone recording is portrait (390 x 844): keep it whole and leave room for the chapters. */
+.how-it-works__video--phone {
+  width: min(100%, 60dvh * 390 / 844);
+  margin-inline: auto;
+  aspect-ratio: 390 / 844;
+}
+
 .how-it-works__chapters {
   display: flex;
   flex-wrap: wrap;

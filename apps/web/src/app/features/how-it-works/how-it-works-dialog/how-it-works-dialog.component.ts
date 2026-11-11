@@ -9,26 +9,47 @@ import {
 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { ButtonComponent, DialogComponent, NoticeComponent } from '@shelfmark/ui';
+import { ButtonComponent, DialogComponent, type Theme } from '@shelfmark/ui';
+import { ViewportService } from '../../../core/layout/viewport.service';
+import { ThemeService } from '../../../core/theme/theme.service';
 import { HOW_IT_WORKS_CHAPTERS } from '../models/how-it-works-chapters.const';
 import { HOW_IT_WORKS_VIDEO } from '../models/how-it-works-video.const';
 import type { HowItWorksChapter } from '../models/how-it-works-chapter.interface';
+import type { HowItWorksMedia } from '../models/how-it-works-media.interface';
 
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
+
+/** `/media/how-it-works-dark-phone.mp4` (and `.webm`) with its poster and captions. */
+function mediaFor(theme: Theme, phone: boolean): HowItWorksMedia {
+  const device = phone ? HOW_IT_WORKS_VIDEO.Phone : HOW_IT_WORKS_VIDEO.Desktop;
+  const base = `${HOW_IT_WORKS_VIDEO.Base}-${theme}-${device}`;
+  return {
+    mp4: `${base}.${HOW_IT_WORKS_VIDEO.Mp4}`,
+    webm: `${base}.${HOW_IT_WORKS_VIDEO.Webm}`,
+    poster: `${base}.${HOW_IT_WORKS_VIDEO.Poster}`,
+    captions: `${base}.${HOW_IT_WORKS_VIDEO.Captions}`,
+    phone,
+  };
+}
 
 /**
  * "Shelfmark in 60 seconds" (HowItWorks.dc.html, board 1): the promo video with native controls,
  * captions on by default (it starts muted), and chapters that jump to their start. It plays at
- * once, except with reduced motion. Until the recording exists (#271) a note replaces the player.
+ * once, except with reduced motion. The recording matches the theme and device at the moment
+ * the dialog opens (a later theme switch does not restart it).
  */
 @Component({
   selector: 'app-how-it-works-dialog',
-  imports: [ButtonComponent, DialogComponent, NoticeComponent, TranslocoPipe],
+  imports: [ButtonComponent, DialogComponent, TranslocoPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './how-it-works-dialog.component.html',
   styleUrl: './how-it-works-dialog.component.scss',
 })
 export class HowItWorksDialogComponent {
+  protected readonly media = mediaFor(
+    inject(ThemeService).resolved(),
+    inject(ViewportService).phone(),
+  );
   protected readonly video = HOW_IT_WORKS_VIDEO;
   protected readonly chapters = HOW_IT_WORKS_CHAPTERS;
   protected readonly autoplay =
