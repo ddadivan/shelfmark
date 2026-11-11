@@ -20,7 +20,7 @@ import { USER_SETTINGS_API } from '../../features/settings/models/user-settings-
 import { UserSettingsStore } from '../../stores/user-settings.store';
 import { SidebarComponent } from './sidebar.component';
 
-async function setup(url = '/links') {
+async function setup(url = '/links', waitForFolders = true) {
   TestBed.configureTestingModule({
     providers: [
       provideTranslocoForTest(),
@@ -43,6 +43,10 @@ async function setup(url = '/links') {
   const router = TestBed.inject(Router);
   await router.navigateByUrl(url);
   const fixture = TestBed.createComponent(SidebarComponent);
+  if (!waitForFolders) {
+    fixture.detectChanges();
+    return { fixture, router, element: fixture.nativeElement as HTMLElement };
+  }
   await fixture.whenStable();
   await vi.waitFor(() => {
     TestBed.tick();
@@ -80,6 +84,17 @@ describe('SidebarComponent', () => {
     });
     expect(row(element, MOCK_NAME.FolderReading).querySelector('.ui-tree__count')).toBeNull();
     expect(element.querySelector('.ui-tree__count')).toBeNull();
+  });
+
+  it('shows no empty Folders or Tags section before the first answer', async () => {
+    const { element, fixture } = await setup('/links', false);
+    expect(element.querySelector('.ui-tree__section')).toBeNull();
+    expect(element.querySelector('app-sidebar-tags')).toBeNull();
+    await vi.waitFor(async () => {
+      await fixture.whenStable();
+      expect(element.querySelector('.ui-tree__section')?.textContent?.trim()).toBe('Folders');
+      expect(element.querySelector('app-sidebar-tags')).not.toBeNull();
+    });
   });
 
   it('lists the fixed rows with their counts, then the folders', async () => {

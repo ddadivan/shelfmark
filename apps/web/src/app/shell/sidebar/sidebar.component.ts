@@ -17,10 +17,13 @@ import {
   BUTTON_SIZE,
   ButtonComponent,
   ICON_SIZE,
+  loaderVisible,
   LogoComponent,
   MenuComponent,
   MenuItemComponent,
   MenuSeparatorComponent,
+  SKELETON_SHAPE,
+  SkeletonComponent,
   TooltipDirective,
   TreeComponent,
   UI_TREE_CONTEXT_MENU_TRIGGER,
@@ -38,6 +41,7 @@ import { APP_PATH } from '../../models/app-path.const';
 import type { FolderNode } from '../../stores/models/folder-node.interface';
 import { FoldersStore } from '../../stores/folders.store';
 import { PinsStore } from '../../stores/pins.store';
+import { TagsStore } from '../../stores/tags.store';
 import { TrashStore } from '../../stores/trash.store';
 import { UserSettingsStore } from '../../stores/user-settings.store';
 import { LinkDragService } from '../../features/links/drag/link-drag.service';
@@ -76,6 +80,7 @@ const FIXED_ROUTES: Readonly<Record<string, string>> = {
     RouterLink,
     SidebarPinnedComponent,
     SidebarTagsComponent,
+    SkeletonComponent,
     TooltipDirective,
     TranslocoPipe,
     TreeComponent,
@@ -92,7 +97,14 @@ export class SidebarComponent {
   private readonly pinActions = inject(PinActionsService);
   protected readonly drag = inject(LinkDragService);
   protected readonly howItWorks = inject(HowItWorksService);
+  private readonly tagsStore = inject(TagsStore);
   protected readonly ICON_SIZE = ICON_SIZE;
+  protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
+  /** The folder list answered (or failed): before that the section stays out, not empty. */
+  protected readonly foldersReady = computed(() => this.folders.loaded() || this.folders.error());
+  protected readonly tagsReady = computed(() => this.tagsStore.loaded() || this.tagsStore.error());
+  /** Rows of the first load show after 300 ms (Loading spec), never a flash for a fast answer. */
+  protected readonly loaderShown = loaderVisible(computed(() => !this.foldersReady()));
   /** The logo heads the card (the desktop shell); the phone drawer has its own header. */
   readonly showLogo = input(false, { transform: booleanAttribute });
   /**
@@ -110,7 +122,7 @@ export class SidebarComponent {
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
   private readonly menu = viewChild.required(MenuComponent);
-  private readonly tree = viewChild.required<TreeComponent>('folderTree');
+  private readonly tree = viewChild<TreeComponent>('folderTree');
   private readonly treeFocus = inject(SidebarTreeFocusService);
 
   private readonly url = toSignal(
@@ -228,8 +240,14 @@ export class SidebarComponent {
     void this.folders.load();
     void this.trash.load();
     void this.pins.load();
+    void this.tagsStore.load();
     void this.settings.load();
-    effect((onCleanup) => onCleanup(this.treeFocus.register(this.tree())));
+    effect((onCleanup) => {
+      const tree = this.tree();
+      if (tree) {
+        onCleanup(this.treeFocus.register(tree));
+      }
+    });
   }
 
   protected retry(): void {

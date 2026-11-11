@@ -53,3 +53,8 @@
   margin: var(--space-3) 0 0;
   color: var(--text-muted);
 }
+
+// First load of the folder list: skeleton rows with a 'Folders' heading's worth of room above.
+.sidebar__loading {
+  padding-block-start: var(--space-6);
+}
