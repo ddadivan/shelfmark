@@ -51,6 +51,8 @@ export class MockLibraryData {
   trashRetentionDays: TrashRetentionDays = TRASH_RETENTION_DEFAULT;
   /** The mock account setting "Folder colours". */
   folderColours = true;
+  /** The mock account setting "Pause history": while on, the mock open records nothing. */
+  pauseHistory = false;
   /** The sidebar pins in order (folders and links together). */
   pins: PinRef[] = [];
   /** The saved views in order; a new account starts with the starter views. */

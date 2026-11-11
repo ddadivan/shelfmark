@@ -8,7 +8,7 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
@@ -27,6 +27,8 @@ import {
   type HistoryHeadingLevel,
   HistoryGroupComponent,
   ButtonComponent,
+  InputComponent,
+  INPUT_TYPE,
   SAVED_VIEWS_LAYOUT,
   SavedViewsComponent,
   type SavedViewItem,
@@ -44,7 +46,10 @@ import { LinkActionsService } from '../link-actions.service';
 import { safeHref } from '../link-view';
 import { ViewportService } from '../../../core/layout/viewport.service';
 import { isLinkKind } from '../link-kind';
+import { debounce, timer } from 'rxjs';
 import { groupByDay } from './history-days';
+import { matchesHistorySearch, searchWords } from './history-search';
+import { HISTORY_SEARCH_DEBOUNCE_MS } from './models/history-search-debounce-ms.const';
 import { ALL_KINDS } from './models/all-kinds.const';
 import { RECENT_FILTER_KINDS } from './models/recent-filter-kinds.const';
 import { LinkHistoryRowComponent } from './link-history-row.component';
@@ -69,6 +74,7 @@ const SKELETON_COUNT = 5;
     SkeletonComponent,
     SavedViewsComponent,
     ButtonComponent,
+    InputComponent,
   ],
   templateUrl: './recent-history.component.html',
   styleUrl: './recent-history.component.scss',
@@ -84,7 +90,7 @@ export class RecentHistoryComponent {
   private readonly router = inject(Router);
   private readonly doc = inject(DOCUMENT);
   private readonly settings = inject(UserSettingsStore);
-  private readonly phone = inject(ViewportService).phone;
+  protected readonly phone = inject(ViewportService).phone;
 
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly SKELETON_COUNT = SKELETON_COUNT;
@@ -93,21 +99,49 @@ export class RecentHistoryComponent {
   protected readonly windowDays = RECENT_LINKS_WINDOW_DAYS;
   protected readonly pluralKey = pluralKey;
 
-  /** The page shows the kind chips (All, Videos, Articles, Shopping); the phone sheet does not. */
+  /**
+   * The page shows the kind chips (All, Videos, Articles, Shopping) and the search field; the
+   * phone sheet does not.
+   */
   readonly filterable = input(false, { transform: booleanAttribute });
+  protected readonly INPUT_TYPE = INPUT_TYPE;
 
   /** "Today" is the day the page was opened. */
   private readonly now = signal(new Date());
   /** The kind chip that is pressed; `null` = All. Client-side over the loaded history. */
   protected readonly kindFilter = signal<LinkKind | null>(null);
-  private readonly shown = computed(() => {
+  /** What is typed in the search field. */
+  readonly query = signal('');
+  /** The search words, applied a moment after typing stops (at once when the field is emptied). */
+  private readonly appliedQuery = toSignal(
+    toObservable(this.query).pipe(
+      debounce((query) => timer(query.trim() === '' ? 0 : HISTORY_SEARCH_DEBOUNCE_MS)),
+    ),
+    { initialValue: '' },
+  );
+  private readonly words = computed(() =>
+    this.filterable() ? searchWords(this.appliedQuery()) : [],
+  );
+  private readonly byKind = computed(() => {
     const kind = this.filterable() ? this.kindFilter() : null;
     const recent = this.store.recent();
     return kind === null ? recent : recent.filter((link) => link.kind === kind);
   });
+  private readonly shown = computed(() => {
+    const words = this.words();
+    return this.byKind().filter((link) => matchesHistorySearch(link, words));
+  });
   protected readonly days = computed(() => groupByDay(this.shown(), this.now()));
   protected readonly hasHistory = computed(() => this.store.recent().length > 0);
-  protected readonly filteredEmpty = computed(() => this.hasHistory() && this.shown().length === 0);
+  /** The search found nothing (in the chosen kind). */
+  protected readonly searchEmpty = computed(
+    () => this.hasHistory() && this.words().length > 0 && this.shown().length === 0,
+  );
+  /** The kind chip alone found nothing. */
+  protected readonly filteredEmpty = computed(
+    () => this.hasHistory() && this.words().length === 0 && this.shown().length === 0,
+  );
+  protected readonly appliedSearch = computed(() => this.appliedQuery().trim());
   protected readonly kindLayout = computed(() =>
     this.phone() ? SAVED_VIEWS_LAYOUT.Scroll : SAVED_VIEWS_LAYOUT.Wrap,
   );
@@ -133,6 +167,10 @@ export class RecentHistoryComponent {
 
   protected selectKind(id: string): void {
     this.kindFilter.set(isLinkKind(id) ? id : null);
+  }
+
+  protected clearSearch(): void {
+    this.query.set('');
   }
 
   constructor() {

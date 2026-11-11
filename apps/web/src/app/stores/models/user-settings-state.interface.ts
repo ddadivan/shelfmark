@@ -6,6 +6,8 @@ export interface UserSettingsState {
   trashRetentionDays: TrashRetentionDays | null;
   /** "Folder colours"; `null` until the settings told it (shown as on). */
   folderColours: boolean | null;
+  /** "Pause history" on Recently opened; `null` until the settings told it (shown as off). */
+  pauseHistory: boolean | null;
   /** The settings request is running. */
   loading: boolean;
   /** The first settings request failed; the Library settings offer a retry. */
