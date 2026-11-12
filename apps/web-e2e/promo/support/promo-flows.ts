@@ -1,5 +1,4 @@
-import { expect, type Locator, type Page } from '@playwright/test';
-import { PROMO_SHARE } from '../models/promo-share.const';
+import { expect, type Locator } from '@playwright/test';
 import { tabBar } from '../../src/support/sidebar';
 import { Finger } from '../../src/support/touch';
 import type { PromoContext } from '../models/promo-context.interface';
@@ -105,22 +104,4 @@ export async function backToAllLinks(context: PromoContext): Promise<void> {
   }
   await director.press(await libraryEntry(context, /^All links\b/));
   await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
-}
-
-/**
- * Signs the made-up regular mock account in (demo accounts cannot share) under the `showcase`
- * scenario, so it gets the demo's mockup library, and opens All links (#326).
- */
-export async function useShareAccount(page: Page): Promise<void> {
-  await page.evaluate((share) => {
-    localStorage.setItem(share.SessionKey, JSON.stringify(share.User));
-    sessionStorage.setItem(share.ScenarioKey, share.Scenario);
-  }, PROMO_SHARE);
-  await page.goto('/links');
-}
-
-/** Opens a public collection as a guest: the same tab without the session (#326). */
-export async function openAsGuest(page: Page, path: string): Promise<void> {
-  await page.evaluate((key) => localStorage.removeItem(key), PROMO_SHARE.SessionKey);
-  await page.goto(path);
 }

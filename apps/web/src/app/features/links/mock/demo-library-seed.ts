@@ -2,8 +2,6 @@ import type { FolderResponse, LinkResponse, PinRef } from '@shelfmark/contracts'
 import { PIN_KIND } from '@shelfmark/contracts';
 import { MOCK_SESSION_STORAGE_KEY } from '../../../core/auth/models/mock-session-storage-key.const';
 import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
-import { MOCK_LINKS_SCENARIO } from '../models/mock-links-scenario.const';
-import { MOCK_LINKS_SCENARIO_KEY } from '../models/mock-links-scenario-key.const';
 import type { DemoFolderKey } from './models/demo-folder-key.type';
 import { DEMO_SEED_FOLDERS } from './models/demo-seed-folders.const';
 import { DEMO_SEED_LINKS } from './models/demo-seed-links.const';
@@ -27,23 +25,6 @@ export function isDemoMockSession(): boolean {
       parsed !== null &&
       'isDemo' in parsed &&
       (parsed as { isDemo: unknown }).isDemo === true
-    );
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Whether this mock session starts from the mockup library: the demo sandbox, or any session
- * (an account or a guest) under the `showcase` scenario (`sm-mock-links-scenario`, #326).
- */
-export function usesDemoLibrary(): boolean {
-  if (isDemoMockSession()) {
-    return true;
-  }
-  try {
-    return (
-      globalThis.sessionStorage.getItem(MOCK_LINKS_SCENARIO_KEY) === MOCK_LINKS_SCENARIO.Showcase
     );
   } catch {
     return false;

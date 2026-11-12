@@ -2,18 +2,14 @@
 
 A scripted Playwright run on the mock demo that records the "How it works" video
 (`HowItWorks.dc.html`, "Shelfmark in 2 minutes", rewritten for #315) through the features of
-today, in six chapters: **Save a link** (landing → "Open the demo" → paste a link, the preview
+today, in five chapters: **Save a link** (landing → "Open the demo" → paste a link, the preview
 fills in, folder and tag, save; "Add several links" with a pasted list), **Folders and tags**
 (colour and icon, pin to the sidebar, filter by a tag), **Find it again** (⌘K / Search, a saved
 view, favorites, Recently opened, delete and restore from Trash), **Many at once** (select two
-cards and move them; drag a card onto a folder on desktop, Move to folder on the phone), **Make it
-yours** (dark theme and an own accent colour, a language switch, export, Send feedback; on the
-phone the share target too) and **Share a collection** (#326: a folder's menu → Share… → the
-public link on → Copy link → the `/c/…` page as a guest). The phone recording shows the tab bar
-throughout. Demo accounts cannot share, so the last chapter switches to a made-up regular mock
-account (`PROMO_SHARE`, no personal data) under the mock `showcase` scenario
-(`sm-mock-links-scenario`), which starts every mock session, the guest's too, from the demo's
-mockup library; the guest is the same tab without the session. It never runs with the e2e suite: it has
+cards and move them; drag a card onto a folder on desktop, Move to folder on the phone) and
+**Make it yours** (dark theme and an own accent colour, a language switch, export, Send
+feedback; on the phone the share target too). The phone recording shows the tab bar throughout.
+Sharing a folder is not in the video: demo accounts cannot share. It never runs with the e2e suite: it has
 its own config (`playwright.promo.config.mts`) and file pattern.
 
 ## Re-record
@@ -36,8 +32,8 @@ reused), then writes to `apps/web/public/media/`, per variant
 | `.vtt`  | English captions, one cue per step, times measured during the run   |
 
 Two recordings (#315): the desktop at 1440 × 900 (H.264 level 4.0) and the phone at 390 × 844
-(touch, the tab bar), both starting in the light theme. Each video is about 1–2.5 MB for two
-and a half minutes (CRF 34 / VP9 46). Commit the files after checking them; the dialog plays the one that
+(touch, the tab bar), both starting in the light theme. Each video is about 1–2 MB for two
+minutes (CRF 34 / VP9 46). Commit the files after checking them; the dialog plays the one that
 fits the layout (`ViewportService.phone`), shows only the poster under reduced motion and starts
 playing on request.
 
@@ -50,7 +46,7 @@ script checks for the encoders first and stops with the fix.
 - `models/promo-steps.const.ts` is the script: each step has a caption and an action; the
   recorder measures when each step starts and writes the captions from those times.
 - Chapters: a step with `chapter` waits until that chapter's start (`PROMO_CHAPTER_START_MS`:
-  0:00, 0:34, 0:52, 1:19, 1:39, 2:06), so the captions line up with the dialog's chapter buttons
+  0:00, 0:34, 0:52, 1:19, 1:39), so the captions line up with the dialog's chapter buttons
   (`HOW_IT_WORKS_CHAPTERS` in `apps/web`). If a chapter starts more than 0.5 s late, the run
   fails: shorten the steps before it, or move both constants to the new time (a `PROMO_MEASURE=1`
   run prints where each chapter would start with no holds). A step with `only` runs on one device.
@@ -58,11 +54,10 @@ script checks for the encoders first and stops with the fix.
   pointer dot (and the tap ripple on the phone) is injected by the recorder only, as a manual
   popover so it stays above the app's dialogs; it is hidden in the poster.
 - Both recordings start in the light system colour scheme; the video switches to dark and an own
-  accent in its "Make it yours" chapter through Settings › Appearance.
+  accent in its last chapter through Settings › Appearance.
   The desktop uses a Mac user agent, so the app shows ⌘ and answers ⌘K.
 - Everything happens inside the app (no reloads), since a reload starts a fresh demo library;
-  the exceptions come at the end: the phone's share-target step and the share chapter (the switch
-  to the account, then the guest page) use `page.goto`.
+  the phone's share-target step at the end is the one `page.goto`.
 - The raw recording starts when the page opens; ffmpeg cuts it from the first frame of the
   loaded landing.
 

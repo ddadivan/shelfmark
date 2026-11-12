@@ -46,8 +46,6 @@ for (const variant of PROMO_VARIANTS) {
       colorScheme: variant.theme,
       reducedMotion: 'no-preference',
       locale: 'en-US',
-      // "Copy link" of the share chapter (#326) writes to the clipboard.
-      permissions: ['clipboard-read', 'clipboard-write'],
       recordVideo: { dir: testInfo.outputPath('raw'), size },
     });
     // A step that cannot find its target fails fast instead of recording a minute of nothing.

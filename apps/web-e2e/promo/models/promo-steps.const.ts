@@ -6,13 +6,10 @@ import {
   backToAllLinks,
   folderMenu,
   libraryEntry,
-  openAsGuest,
   openSettings,
   pressTab,
-  useShareAccount,
 } from '../support/promo-flows';
 import { PROMO_DEVICE } from './promo-device.const';
-import { PROMO_SHARE } from './promo-share.const';
 import type { PromoStep } from './promo-step.interface';
 
 /** The link the video saves; the mock preview API answers "Page on <host>" for any new link. */
@@ -42,13 +39,11 @@ const SHARED_URL = 'https://css-tricks.com/snippets/css/a-guide-to-flexbox/';
 /** The cards of the feed in the order shown. */
 const cards = (page: Page) => page.locator('ui-card');
 const addDialog = (page: Page) => page.getByRole('dialog', { name: 'Add link' });
-const shareDialog = (page: Page) =>
-  page.getByRole('dialog', { name: `Share “${PROMO_SHARE.Folder}”` });
 
 /**
  * The promo video, step by step (HowItWorks.dc.html, "Shelfmark in 2 minutes", #315: the features
- * of today). Six chapters match the dialog: Save a link 0:00, Folders and tags 0:34, Find it again
- * 0:52, Many at once 1:19, Make it yours 1:39, Share a collection 2:06 (#326). Pauses are tuned so each chapter's last
+ * of today). Five chapters match the dialog: Save a link 0:00, Folders and tags 0:34, Find it again
+ * 0:52, Many at once 1:19, Make it yours 1:39. Pauses are tuned so each chapter's last
  * step ends a little before the next start; the recorder holds the rest. A step with `only` runs
  * on that device only (drag and drop needs a mouse; the share sheet is the phone's).
  */
@@ -482,53 +477,6 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       await director.press(page.getByRole('button', { name: 'Save', exact: true }));
       await expect(page).toHaveURL(/\/links$/);
       await director.pause(1400);
-    },
-  },
-  {
-    id: 'share-folder',
-    chapter: 'Share',
-    caption: { desktop: 'With an account, share a folder as a public collection.' },
-    run: async (context) => {
-      const { page, director } = context;
-      // Demo accounts cannot share: switch to a regular mock account on the same mockup library.
-      await useShareAccount(page);
-      await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
-      await director.pause(700);
-      await folderMenu(context, PROMO_SHARE.Folder, 'Share…');
-      await expect(shareDialog(page)).toBeVisible();
-      await director.pause(1200);
-    },
-  },
-  {
-    id: 'share-link',
-    caption: { desktop: 'Turn the public link on and copy it.' },
-    run: async ({ page, director }) => {
-      const dialog = shareDialog(page);
-      await director.press(dialog.getByRole('switch', { name: 'Public link' }));
-      await expect(dialog.getByLabel('Public link address')).toHaveValue(/\/c\/[\w-]{22}$/);
-      await director.pause(700);
-      await director.press(dialog.getByRole('button', { name: 'Copy link' }));
-      await expect(page.getByText('Link copied')).toBeVisible();
-      await director.parkPointer();
-      await director.pause(1600);
-    },
-  },
-  {
-    id: 'share-guest',
-    caption: { desktop: 'Anyone with the link sees a read-only page, no account needed.' },
-    run: async ({ page, director }) => {
-      const dialog = shareDialog(page);
-      const path = new URL(await dialog.getByLabel('Public link address').inputValue()).pathname;
-      await openAsGuest(page, path);
-      await expect(page.getByRole('heading', { level: 1, name: PROMO_SHARE.Folder })).toBeVisible();
-      await expect(page.getByText(`Shared by ${PROMO_SHARE.OwnerFirstName}`)).toBeVisible();
-      await expect(cards(page).first()).toBeVisible();
-      await expect(page.getByRole('button', { name: /^Actions for / })).toHaveCount(0);
-      await director.pause(1800);
-      await director.reveal(cards(page).last());
-      await director.pause(1400);
-      await director.reveal(page.getByRole('link', { name: 'Start your shelf' }).first());
-      await director.pause(800);
     },
   },
   {

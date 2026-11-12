@@ -6,9 +6,4 @@ export const MOCK_LINKS_SCENARIO = {
   Error: 'error',
   /** The first link of the feed has a pending image capture until `captureImages` runs. */
   PendingImages: 'pending-images',
-  /**
-   * Any mock session (a signed-in account or a guest) starts from the demo's mockup library, so
-   * a regular account can share one of its folders on video (the promo recorder, #326).
-   */
-  Showcase: 'showcase',
 } as const;
