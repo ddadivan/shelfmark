@@ -699,7 +699,9 @@
         "moveUp": "Nach oben",
         "moveDown": "Nach unten",
         "unpin": "Von Seitenleiste lösen",
-        "unpinButton": "{{name}} lösen"
+        "unpinButton": "{{name}} lösen",
+        "empty": "Noch nichts angeheftet",
+        "emptyHint": "Noch nichts angeheftet – nutze „An Seitenleiste anheften“ im Menü eines Ordners oder Links"
       },
       "reorder": {
         "movedUp": "Nach oben verschoben, Position {{position}} von {{total}}",

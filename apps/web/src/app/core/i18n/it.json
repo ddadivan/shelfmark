@@ -711,7 +711,9 @@
         "moveUp": "Sposta su",
         "moveDown": "Sposta giù",
         "unpin": "Togli dalla barra laterale",
-        "unpinButton": "Togli {{name}}"
+        "unpinButton": "Togli {{name}}",
+        "empty": "Ancora niente di fissato",
+        "emptyHint": "Ancora niente di fissato: usa “Fissa nella barra laterale” nel menu di una cartella o di un link"
       },
       "reorder": {
         "movedUp": "Spostato in alto, posizione {{position}} di {{total}}",

@@ -26,6 +26,13 @@
   list-style: none;
 }
 
+// The phone Library page with nothing pinned (#315): one quiet row, muted, a pin glyph, the tree
+// row's corners; a tap explains how to pin.
+.pinned__empty {
+  --ui-button-color: var(--text-muted);
+  --ui-button-radius: calc(var(--radius-md) - #{rem(2px)});
+}
+
 // A row like a tree row: 36px (44px on touch), `radius-md`, hover tint, the "..." button at the end.
 .pinned__item {
   position: relative;

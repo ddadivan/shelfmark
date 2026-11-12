@@ -378,6 +378,25 @@ test.describe('mobile layout (mock API)', () => {
     expect(newTag?.height).toBeGreaterThanOrEqual(44);
   });
 
+  test('the Library tab keeps an empty Pinned section that says how to pin (#315)', async ({
+    page,
+  }) => {
+    await page.goto('/library');
+    const pinned = page.locator('app-sidebar-pinned section.pinned');
+
+    await expect(pinned.getByRole('heading', { name: 'Pinned' })).toBeVisible();
+    await expect(pinned.locator('.pinned__item')).toHaveCount(0);
+    const empty = pinned.getByRole('button', { name: 'Nothing pinned yet' });
+    await expect(empty).toBeVisible();
+
+    await empty.click();
+    await expect(
+      page
+        .locator('ui-toast')
+        .filter({ hasText: 'Nothing pinned yet — use “Pin to sidebar” in a folder or link menu' }),
+    ).toBeVisible();
+  });
+
   test('the tab bar gives way to the sidebar past 40em and the phone pages leave', async ({
     page,
   }) => {

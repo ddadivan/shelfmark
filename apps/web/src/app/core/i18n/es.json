@@ -711,7 +711,9 @@
         "moveUp": "Subir",
         "moveDown": "Bajar",
         "unpin": "Quitar de la barra lateral",
-        "unpinButton": "Quitar {{name}}"
+        "unpinButton": "Quitar {{name}}",
+        "empty": "Aún no hay nada fijado",
+        "emptyHint": "Aún no hay nada fijado: usa «Fijar en la barra lateral» en el menú de una carpeta o un enlace"
       },
       "reorder": {
         "movedUp": "Movido hacia arriba, posición {{position}} de {{total}}",

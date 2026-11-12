@@ -711,7 +711,9 @@
         "moveUp": "Monter",
         "moveDown": "Descendre",
         "unpin": "Désépingler de la barre latérale",
-        "unpinButton": "Désépingler {{name}}"
+        "unpinButton": "Désépingler {{name}}",
+        "empty": "Rien d’épinglé pour l’instant",
+        "emptyHint": "Rien d’épinglé pour l’instant — utilisez « Épingler dans la barre latérale » dans le menu d’un dossier ou d’un lien"
       },
       "reorder": {
         "movedUp": "Déplacé vers le haut, position {{position}} sur {{total}}",

@@ -711,7 +711,9 @@
         "moveUp": "Mover para cima",
         "moveDown": "Mover para baixo",
         "unpin": "Desafixar da barra lateral",
-        "unpinButton": "Desafixar {{name}}"
+        "unpinButton": "Desafixar {{name}}",
+        "empty": "Nada fixado ainda",
+        "emptyHint": "Nada fixado ainda — use “Fixar na barra lateral” no menu de uma pasta ou de um link"
       },
       "reorder": {
         "movedUp": "Movido para cima, posição {{position}} de {{total}}",
