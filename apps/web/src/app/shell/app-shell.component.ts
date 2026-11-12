@@ -34,7 +34,7 @@ import { FeedbackDialogService } from '../features/feedback/services/feedback-di
 import { ExportActionsService } from '../features/export/services/export-actions.service';
 import { AuthStore } from '../core/auth/auth.store';
 import { LinkActionsService } from '../features/links/services/link-actions.service';
-import { OnboardingStore } from '../features/onboarding/onboarding.store';
+import { OnboardingStore } from '../features/onboarding/services/onboarding.store';
 import { RatingStore } from '../features/rating/rating.store';
 import { SearchDialogService } from '../features/search/search-dialog.service';
 import { ShortcutsDialogService } from '../features/shortcuts/shortcuts-dialog.service';

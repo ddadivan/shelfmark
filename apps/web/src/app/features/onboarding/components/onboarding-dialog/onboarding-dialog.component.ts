@@ -18,10 +18,10 @@ import {
   StepsComponent,
   UiDialogRef,
 } from '@shelfmark/ui';
-import { ViewportService } from '../../core/layout/viewport.service';
-import { ONBOARDING_RESULT } from './models/onboarding-result.const';
-import type { OnboardingResult } from './models/onboarding-result.type';
-import { ONBOARDING_STEPS } from './models/onboarding-steps.const';
+import { ViewportService } from '../../../../core/layout/viewport.service';
+import { ONBOARDING_RESULT } from '../../models/onboarding-result.const';
+import type { OnboardingResult } from '../../models/onboarding-result.type';
+import { ONBOARDING_STEPS } from '../../models/onboarding-steps.const';
 
 /**
  * The welcome tour (opened by `OnboardingStore`): three steps with a scene each, Skip, Back and

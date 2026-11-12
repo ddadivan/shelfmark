@@ -1,14 +1,14 @@
 import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
-import { AuthStore } from '../../core/auth/auth.store';
-import { SessionScope } from '../../core/auth/session-scope.service';
-import { LinkActionsService } from '../links/services/link-actions.service';
-import { OnboardingDialogComponent } from './onboarding-dialog.component';
-import { ONBOARDING_API } from './models/onboarding-api.const';
-import { ONBOARDING_RESULT } from './models/onboarding-result.const';
-import type { OnboardingResult } from './models/onboarding-result.type';
-import type { OnboardingState } from './models/onboarding-state.interface';
+import { AuthStore } from '../../../core/auth/auth.store';
+import { SessionScope } from '../../../core/auth/session-scope.service';
+import { LinkActionsService } from '../../links/services/link-actions.service';
+import { OnboardingDialogComponent } from '../components/onboarding-dialog/onboarding-dialog.component';
+import { ONBOARDING_API } from '../models/onboarding-api.const';
+import { ONBOARDING_RESULT } from '../models/onboarding-result.const';
+import type { OnboardingResult } from '../models/onboarding-result.type';
+import type { OnboardingState } from '../models/onboarding-state.interface';
 
 const initialState: OnboardingState = { open: false };
 

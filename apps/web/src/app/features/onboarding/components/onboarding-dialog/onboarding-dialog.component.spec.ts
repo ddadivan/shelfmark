@@ -3,11 +3,11 @@ import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
 import axe from 'axe-core';
 import { firstValueFrom } from 'rxjs';
-import { AppTranslocoLoader } from '../../core/i18n/app-transloco.loader';
-import { APP_LANG } from '../../core/i18n/models/app-lang.const';
-import { translocoConfig } from '../../core/i18n/transloco.config';
-import { ONBOARDING_RESULT } from './models/onboarding-result.const';
-import type { OnboardingResult } from './models/onboarding-result.type';
+import { AppTranslocoLoader } from '../../../../core/i18n/app-transloco.loader';
+import { APP_LANG } from '../../../../core/i18n/models/app-lang.const';
+import { translocoConfig } from '../../../../core/i18n/transloco.config';
+import { ONBOARDING_RESULT } from '../../models/onboarding-result.const';
+import type { OnboardingResult } from '../../models/onboarding-result.type';
 import { OnboardingDialogComponent } from './onboarding-dialog.component';
 
 async function setup() {
