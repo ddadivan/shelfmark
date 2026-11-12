@@ -1,0 +1,198 @@
+@use '../../../styles/ui' as *;
+
+// Whole-row activation: the title link's ::after covers the row (z-index 1); the trailing
+// controls sit above it (z-index 2), so they never activate the row.
+
+:host {
+  position: relative;
+  display: flex;
+  gap: rem(12px);
+  align-items: center;
+  padding: var(--density-row-padding);
+  color: var(--text);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+:host(.ui-list-item--compact) {
+  padding: rem(8px);
+}
+
+:host {
+  @include coarse {
+    min-height: rem(44px);
+  }
+}
+
+:host(.ui-list-item--reveal) {
+  @include enter(fade);
+}
+
+:host {
+  @include hover {
+    background: var(--surface-hover);
+  }
+}
+
+:host(.ui-list-item--selected) {
+  background: var(--accent-bg);
+}
+
+:host(:has(.ui-list-item__link:focus-visible)) {
+  @include focus-ring;
+}
+
+// Reduced motion has no ripple, so the row itself shows the press.
+:host(:has(.ui-list-item__link:active)) {
+  @include reduced-motion {
+    background: var(--surface-pressed);
+  }
+}
+
+:host(.ui-list-item--checked) {
+  --ui-chip-bg: var(--surface);
+
+  background: var(--accent-bg);
+}
+
+// Bulk selection checkbox: above the stretched link, keeps its place (no shift on hover).
+.ui-list-item__select {
+  // The checked box is filled with the sage `accent` (like the card's), on the `accent-bg` row.
+  --ui-checkbox-fill: var(--accent);
+
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: none;
+  align-items: center;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+
+  &:empty {
+    display: none;
+  }
+}
+
+:host {
+  @include hover {
+    .ui-list-item__select {
+      opacity: 1;
+    }
+  }
+}
+
+:host(:has(:focus-visible)) .ui-list-item__select,
+:host(.ui-list-item--selecting) .ui-list-item__select,
+:host(.ui-list-item--checked) .ui-list-item__select {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .ui-list-item__select {
+    opacity: 1;
+  }
+}
+
+.ui-list-item__leading {
+  display: flex;
+  flex: none;
+  align-items: center;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.ui-list-item__thumb {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: rem(56px);
+  height: rem(40px);
+  overflow: hidden;
+  color: var(--text-muted);
+  background: var(--surface-hover);
+  border-radius: rem(10px);
+}
+
+.ui-list-item__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+// The one activation target: a native link or button reset to look like text.
+.ui-list-item__link {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: rem(2px);
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: 0;
+
+  // The row's ring replaces the one on the text.
+  &:focus-visible {
+    outline: none;
+  }
+
+  &::after {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    content: '';
+    border-radius: inherit;
+  }
+}
+
+.ui-list-item__title {
+  @include type(body);
+
+  overflow: hidden;
+  font-weight: 500;
+  color: var(--text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:host(.ui-list-item--compact) .ui-list-item__title {
+  @include type(label);
+}
+
+.ui-list-item__meta {
+  @include type(caption);
+
+  overflow: hidden;
+  color: var(--text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.ui-list-item__description {
+  @include visually-hidden;
+}
+
+.ui-list-item__trailing {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: none;
+  gap: rem(8px);
+  align-items: center;
+
+  &:empty {
+    display: none;
+  }
+}

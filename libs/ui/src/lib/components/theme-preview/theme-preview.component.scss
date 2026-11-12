@@ -1,0 +1,158 @@
+@use '../../../styles/ui' as *;
+
+// Tokens only, so the sample follows the theme (and a Custom theme's accent, background and
+// corners) of whatever it sits in.
+
+:host {
+  display: flex;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: rem(14px);
+  color: var(--text);
+  background: var(--bg);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  transition: background-color var(--duration-base) var(--ease-out);
+}
+
+.ui-theme-preview__sidebar {
+  display: flex;
+  flex: 0 0 34%;
+  flex-direction: column;
+  gap: rem(2px);
+  min-width: 0;
+  padding: rem(10px);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+
+  @include phone {
+    display: none;
+  }
+}
+
+.ui-theme-preview__row {
+  @include type(caption);
+
+  display: flex;
+  gap: rem(6px);
+  align-items: center;
+  min-width: 0;
+  padding: rem(6px) rem(8px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-radius: var(--radius-sm);
+}
+
+.ui-theme-preview__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ui-theme-preview__count {
+  flex: none;
+  color: var(--text-muted);
+}
+
+.ui-theme-preview__row--recent {
+  color: var(--text-muted);
+}
+
+.ui-theme-preview__row--active {
+  font-weight: 600;
+  color: var(--accent-text);
+  background: var(--accent-bg);
+}
+
+.ui-theme-preview__glyph {
+  flex: none;
+  inline-size: rem(12px);
+  block-size: rem(12px);
+  background: var(--text-muted);
+  border-radius: rem(3px);
+}
+
+.ui-theme-preview__row--active .ui-theme-preview__glyph {
+  background: var(--accent);
+}
+
+.ui-theme-preview__cards {
+  display: grid;
+  flex: 1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--density-feed-gap);
+  align-content: start;
+  min-width: 0;
+}
+
+.ui-theme-preview__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--density-card-gap);
+  min-width: 0;
+  padding: var(--density-card-padding);
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.ui-theme-preview__media {
+  block-size: rem(48px);
+  background: var(--accent-bg);
+  border-radius: var(--radius-sm);
+}
+
+.ui-theme-preview__card--alt .ui-theme-preview__media {
+  background: var(--surface-pressed);
+}
+
+.ui-theme-preview__note {
+  @include type(caption);
+  @include line-clamp(2);
+
+  color: var(--text-muted);
+}
+
+// Settings › Appearance › Cards (#285): the same options as the real cards.
+:host-context([data-card-preview='small']) .ui-theme-preview__media {
+  block-size: rem(24px);
+}
+
+:host-context([data-card-preview='off']) .ui-theme-preview__media,
+:host-context([data-card-site='off']) .ui-theme-preview__site,
+:host-context([data-card-notes='off']) .ui-theme-preview__note,
+:host-context([data-card-tags='off']) .ui-theme-preview__tag {
+  display: none;
+}
+
+.ui-theme-preview__site {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+.ui-theme-preview__title {
+  @include type(label);
+  @include line-clamp(2);
+
+  font-weight: 600;
+}
+
+.ui-theme-preview__tag {
+  @include type(caption);
+
+  align-self: flex-start;
+  padding: 0 var(--space-2);
+  color: var(--accent-text);
+  background: var(--accent-bg);
+  border-radius: var(--radius-full);
+}
+
+@include reduced-motion {
+  :host {
+    transition: none;
+  }
+}

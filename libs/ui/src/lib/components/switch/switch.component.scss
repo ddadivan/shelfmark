@@ -1,0 +1,72 @@
+@use '../../../styles/ui' as *;
+
+$track-width: rem(44px);
+$track-height: rem(26px);
+$knob-size: rem(20px);
+$knob-inset: rem(3px);
+
+:host {
+  display: inline-flex;
+  flex: none;
+}
+
+.ui-switch__track {
+  position: relative;
+  flex: none;
+  width: $track-width;
+  height: $track-height;
+  padding: 0;
+  cursor: pointer;
+  background: var(--border-control);
+  border: 0;
+  border-radius: var(--radius-full);
+  transition: background-color var(--duration-base) var(--ease-out);
+
+  // The knob.
+  &::before {
+    position: absolute;
+    inset-block-start: $knob-inset;
+    inset-inline-start: $knob-inset;
+    width: $knob-size;
+    height: $knob-size;
+    content: '';
+    background: var(--surface);
+    border-radius: var(--radius-full);
+    box-shadow: 0 1px 3px color-mix(in srgb, var(--text) 25%, transparent);
+    transition: transform var(--duration-base) var(--ease-spring);
+  }
+
+  // 26px is above the 24px minimum; touch grows the target to 44px without changing the look.
+  @include hit-area(0, -9px 0);
+
+  // Only the off track darkens on hover; an on switch keeps its accent.
+  @include hover {
+    &:not(:disabled, [aria-checked='true']) {
+      background: var(--text-muted);
+    }
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &[aria-checked='true'] {
+    background: var(--accent);
+
+    &::before {
+      transform: translateX($track-width - $knob-size - 2 * $knob-inset);
+    }
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+@include reduced-motion {
+  .ui-switch__track,
+  .ui-switch__track::before {
+    transition: none;
+  }
+}

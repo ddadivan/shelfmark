@@ -1,0 +1,30 @@
+@use '../../../../styles/ui' as *;
+
+:host {
+  display: block;
+}
+
+// The rows carry their own padding and separators, so the panel gap is off.
+.ui-settings-section__panel {
+  gap: 0;
+}
+
+.ui-settings-section__title {
+  @include type(heading);
+
+  margin: 0 0 var(--space-2);
+  color: var(--text);
+}
+
+// Destructive group (SetAccount.dc.html): a danger-bg ring over the card shadow, red title.
+:host(.ui-settings-section--danger) {
+  .ui-settings-section__panel {
+    box-shadow:
+      0 0 0 1px var(--danger-bg),
+      var(--shadow-card);
+  }
+
+  .ui-settings-section__title {
+    color: var(--danger);
+  }
+}

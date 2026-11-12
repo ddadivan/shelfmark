@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { RADIUS_TOKENS } from './models/radius-tokens.const';
 import { SHADOW_TOKENS } from './models/shadow-tokens.const';
 import { SPACING_TOKENS } from './models/spacing-tokens.const';
-import { THEME, THEME_ATTRIBUTE } from '../lib/theme';
+import { THEME, THEME_ATTRIBUTE } from '../lib/models/theme';
 
 const meta: Meta = {
   title: 'Foundations/Spacing, radii and shadows',

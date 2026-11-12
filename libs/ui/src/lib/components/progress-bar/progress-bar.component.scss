@@ -1,0 +1,54 @@
+@use '../../../styles/ui' as *;
+
+:host {
+  display: block;
+}
+
+.ui-progress {
+  position: relative;
+  overflow: hidden;
+  pointer-events: none;
+
+  @include enter(fade);
+
+  // The bar itself: 40% of the track, sliding across (indeterminate).
+  &::before {
+    position: absolute;
+    inset: 0 auto;
+    left: 0;
+    width: 40%;
+    content: '';
+    background: var(--accent);
+    border-radius: 0 rem(2px) rem(2px) 0;
+
+    @include loop(progress);
+  }
+}
+
+// The top bar: 2px across the viewport, above the page and below dialogs and menus (1000+).
+.ui-progress--fixed {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 900;
+
+  /* stylelint-disable-next-line unit-disallowed-list -- 2px progress bar per spec */
+  height: 2px;
+}
+
+.ui-progress--inline {
+  width: 100%;
+  height: rem(3px);
+  background: var(--surface-hover);
+  border-radius: rem(2px);
+}
+
+// Finished: fill to 100%, then fade after a short hold. A fade, so reduced motion keeps it.
+.ui-progress--done {
+  animation: ui-fade-out var(--duration-base) var(--ease-out) 150ms both;
+
+  &::before {
+    width: 100%;
+    transition: width var(--duration-base) var(--ease-out);
+    animation: none;
+  }
+}

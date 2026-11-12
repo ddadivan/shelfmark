@@ -1,0 +1,89 @@
+@use '../../../../styles/ui' as *;
+
+:host {
+  display: block;
+}
+
+.ui-menu-item {
+  @include type(body);
+
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  padding: rem(9px) rem(12px);
+  text-align: start;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+  border-radius: rem(12px);
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  @include coarse {
+    min-height: rem(44px);
+  }
+
+  &:focus-visible {
+    @include focus-ring(-2px);
+  }
+
+  @include hover {
+    background: var(--surface-hover);
+  }
+
+  &:active {
+    background: var(--surface-pressed);
+  }
+
+  &[aria-disabled='true'] {
+    cursor: not-allowed;
+    background: transparent;
+    opacity: 0.45;
+  }
+
+  &.is-selected {
+    color: var(--accent-text);
+    background: var(--accent-bg);
+  }
+
+  &--danger {
+    color: var(--danger);
+  }
+
+  &__icon {
+    flex: none;
+    color: var(--text-muted);
+  }
+
+  &.is-selected &__icon {
+    color: var(--accent-text);
+  }
+
+  &--danger &__icon {
+    color: var(--danger);
+  }
+
+  &__label {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-align: start;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__hint {
+    @include type(mono);
+
+    flex: none;
+    padding: 0 rem(5px);
+    margin-inline-start: auto;
+    font-size: rem(11px);
+    line-height: rem(16px);
+    color: var(--text-muted);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+  }
+}

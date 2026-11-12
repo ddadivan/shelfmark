@@ -821,7 +821,8 @@ Buttons: "Skip" (on every step), "Next", and on the last step the primary button
 - styles in SCSS only through tokens, no `::ng-deep` and no hard-coded colours;
 - input fields are integrated with Signal Forms;
 - behaviour (keyboard, focus, ARIA, overlays) from Angular Aria / CDK;
-- every component has a Storybook story with all variants and both themes, unit tests and an accessibility check.
+- every component has a Storybook story with all variants and both themes, unit tests and an accessibility check;
+- folders by kind (ADR 0042, #318): `libs/ui/src/lib/components/<name>/` (sub-components in sub-folders), `directives/`, `services/`, `utils/` (pure functions shared by several components) and `models/` (constants and types without a component); `@shelfmark/ui` stays the one public entry.
 
 | Component | Variants and states | Behaviour basis |
 | `ui-button` | `primary` / `secondary` / `ghost` / `danger`; sizes `sm` / `md` / `lg`; icon left/right; icon only; `loading`, `disabled` | native button |

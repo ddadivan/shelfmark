@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import type { Meta, StoryObj } from '@storybook/angular-vite';
-import { ButtonComponent } from '../lib/button/button.component';
+import { ButtonComponent } from '../lib/components/button/button.component';
 import { EASING_TOKENS } from './models/easing-tokens.const';
 import { MOTION_PRESET_DEMOS } from './models/motion-preset-demos.const';
 import { MOTION_TIMINGS } from './models/motion-timings.const';
