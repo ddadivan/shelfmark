@@ -11,8 +11,7 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { PIN_KIND } from '@shelfmark/contracts';
+import { TranslocoPipe } from '@jsverse/transloco';
 import {
   BUTTON_SIZE,
   ButtonComponent,
@@ -29,13 +28,9 @@ import {
   UI_TREE_CONTEXT_MENU_TRIGGER,
   type UiTreeContextMenuEvent,
   type UiTreeNode,
-  type UiTreeReorderEvent,
 } from '@shelfmark/ui';
-import { ReorderAnnouncer } from '../../core/a11y/reorder-announcer.service';
-import { combineLatest, filter, map } from 'rxjs';
+import { filter, map } from 'rxjs';
 import { ViewportService } from '../../core/layout/viewport.service';
-import { FolderActionsService } from '../../features/folders/services/folder-actions.service';
-import { PinActionsService } from '../../features/pins/services/pin-actions.service';
 import { SidebarPinnedComponent } from '../../features/pins/components/sidebar-pinned/sidebar-pinned.component';
 import { SidebarTagsComponent } from '../../features/tags/components/sidebar-tags/sidebar-tags.component';
 import { APP_PATH } from '../../models/app-path.const';
@@ -50,10 +45,12 @@ import { FeedbackDialogService } from '../../features/feedback/services/feedback
 import { HowItWorksCardComponent } from '../../features/how-it-works/components/how-it-works-card/how-it-works-card.component';
 import { SIDEBAR_FEEDBACK_ID } from './models/sidebar-feedback-id.const';
 import { folderTreeNodes } from './utils/folder-tree-nodes';
+import { injectSidebarLabels } from './utils/inject-sidebar-labels';
 import { latched } from './utils/latched';
 import { sidebarActiveId } from './utils/sidebar-active-id';
 import { feedbackNodes, fixedNodes, trashNodes } from './utils/sidebar-nodes';
 import { sidebarRoute } from './utils/sidebar-route';
+import { SidebarFoldersService } from './services/sidebar-folders.service';
 import { SidebarTreeFocusService } from './services/sidebar-tree-focus.service';
 
 /**
@@ -84,14 +81,15 @@ import { SidebarTreeFocusService } from './services/sidebar-tree-focus.service';
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
+  providers: [SidebarFoldersService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {
   protected readonly folders = inject(FoldersStore);
   private readonly trash = inject(TrashStore);
   private readonly pins = inject(PinsStore);
+  protected readonly folderMenu = inject(SidebarFoldersService);
   private readonly settings = inject(UserSettingsStore);
-  private readonly pinActions = inject(PinActionsService);
   protected readonly drag = inject(LinkDragService);
   protected readonly howItWorks = inject(HowItWorksService);
   /** "Send feedback" in the sidebar footer opens the same dialog as the account menu (#315). */
@@ -112,7 +110,6 @@ export class SidebarComponent {
    */
   readonly foldersOnly = input(false, { transform: booleanAttribute });
 
-  private readonly actions = inject(FolderActionsService);
   private readonly viewport = inject(ViewportService);
   /** Wide-screen-only blocks of the sidebar (the phone drawer and Library leave them out). */
   protected readonly phone = this.viewport.compact;
@@ -121,11 +118,9 @@ export class SidebarComponent {
     this.viewport.compact() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm,
   );
   private readonly router = inject(Router);
-  private readonly transloco = inject(TranslocoService);
   private readonly menu = viewChild.required(MenuComponent);
   private readonly tree = viewChild<TreeComponent>('folderTree');
   private readonly treeFocus = inject(SidebarTreeFocusService);
-  private readonly announcer = inject(ReorderAnnouncer);
 
   private readonly url = toSignal(
     this.router.events.pipe(
@@ -139,39 +134,9 @@ export class SidebarComponent {
     this.foldersOnly() ? 'shell.sidebar.foldersNav' : 'shell.sidebar.nav',
   );
 
-  private readonly labels = toSignal(
-    combineLatest([
-      this.transloco.selectTranslate('library.scope.all'),
-      this.transloco.selectTranslate('library.scope.unsorted'),
-      this.transloco.selectTranslate('library.scope.favorites'),
-      this.transloco.selectTranslate('shell.sidebar.folderActions', { name: '{name}' }),
-      this.transloco.selectTranslate('links.recent.title'),
-      this.transloco.selectTranslate('trash.title'),
-      this.transloco.selectTranslate('shell.sendFeedback'),
-    ]).pipe(
-      map(([all, unsorted, favorites, actions, recent, trash, feedback]) => ({
-        all,
-        unsorted,
-        favorites,
-        actions,
-        recent,
-        trash,
-        feedback,
-      })),
-    ),
-  );
+  private readonly labels = injectSidebarLabels();
   /** The "..." button name with its `{name}` placeholder; `ui-tree` fills in the folder. */
   protected readonly menuLabel = computed(() => this.labels()?.actions);
-
-  /** `id` of the folder whose menu is open (the tree shows its button as pressed). */
-  protected readonly menuNodeId = signal<string | null>(null);
-  /** The folder of the open menu is pinned to the sidebar (the menu offers Unpin). */
-  protected readonly menuPinned = computed(() => {
-    const id = this.menuNodeId();
-    return id !== null && this.pins.has(PIN_KIND.Folder, id);
-  });
-  /** The folder the menu was opened for; kept while an item is chosen and the menu closes. */
-  private menuFolderId: string | null = null;
 
   /** Counts show once the list has loaded; before that the rows have none. */
   protected readonly fixedNodes = computed<UiTreeNode[]>(() => {
@@ -250,8 +215,7 @@ export class SidebarComponent {
   }
 
   protected openMenu(event: UiTreeContextMenuEvent): void {
-    this.menuFolderId = event.node.id;
-    this.menuNodeId.set(event.node.id);
+    this.folderMenu.openMenuFor(event.node.id);
     if (event.trigger === UI_TREE_CONTEXT_MENU_TRIGGER.Pointer && event.position) {
       this.menu().openAt(event.position);
     } else {
@@ -267,81 +231,5 @@ export class SidebarComponent {
     if (this.menu().isOpen()) {
       this.menu().close({ restoreFocus: false });
     }
-  }
-
-  /** A folder row moved among its siblings (drag or Alt+Up / Alt+Down): said, then saved. */
-  protected reorder(event: UiTreeReorderEvent): void {
-    this.announcer.announce(event.fromIndex, event.toIndex, event.total);
-    void this.actions.reorder(event.node.id, event.toIndex);
-  }
-
-  protected menuClosed(): void {
-    this.menuNodeId.set(null);
-  }
-
-  protected createTopLevel(): void {
-    void this.actions.create();
-  }
-
-  protected togglePin(): void {
-    const folder = this.menuFolder();
-    if (folder) {
-      void (this.pins.has(PIN_KIND.Folder, folder.id)
-        ? this.pinActions.unpinFolder(folder)
-        : this.pinActions.pinFolder(folder));
-    }
-  }
-
-  protected style(): void {
-    const folder = this.menuFolder();
-    if (folder) {
-      void this.actions.style(folder);
-    }
-  }
-
-  protected createSubfolder(): void {
-    const folder = this.menuFolder();
-    if (folder) {
-      void this.actions.create(folder);
-    }
-  }
-
-  protected addLinkHere(): void {
-    const folder = this.menuFolder();
-    if (folder) {
-      void this.actions.addLinkHere(folder);
-    }
-  }
-
-  protected rename(): void {
-    const folder = this.menuFolder();
-    if (folder) {
-      void this.actions.rename(folder);
-    }
-  }
-
-  protected move(): void {
-    const folder = this.menuFolder();
-    if (folder) {
-      void this.actions.move(folder);
-    }
-  }
-
-  protected share(): void {
-    const folder = this.menuFolder();
-    if (folder) {
-      void this.actions.share(folder);
-    }
-  }
-
-  protected remove(): void {
-    const folder = this.menuFolder();
-    if (folder) {
-      void this.actions.delete(folder);
-    }
-  }
-
-  private menuFolder() {
-    return this.menuFolderId === null ? undefined : this.folders.entityMap()[this.menuFolderId];
   }
 }
