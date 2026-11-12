@@ -6,7 +6,7 @@ Angular 22 client (CSR only, zoneless). Read `docs/PROJECT.md` 5.1 and 7 first. 
 
 - `app.ts`, `app.html` (only `<router-outlet />`), `app.config.ts`, `app.routes.ts`
 - `core/` — app-wide singletons: `i18n/`, `theme/`, `api/`, later guards, interceptors, `AuthStore`
-- `features/<name>/` — `<name>.page.ts` (default export, lazy via `loadComponent`) plus local components
+- `features/<name>/` (ADR 0042) — `<name>.page.ts|html|scss|spec.ts` (default export, lazy via `loadComponent`) at the root with `*.routes.ts`, guards and `provide-*-api.ts`; `components/<sub>/` sub-components (own `models/` and private helpers stay with them); `pages/<sub>/` further routed pages; `directives/`; `services/` (`*.service.ts`, `*.store.ts`); `utils/` pure helpers with their specs; `http/`, `mock/`, `models/`. A feature of one page and at most one component stays flat. `core/`, `shell/` and `stores/` keep their own layout
 - `shell/` — layout around pages; `stores/` — NgRx SignalStore stores
 - `src/testing/` — spec-only helpers (axe runner, translated component factory); excluded from the app build
 - File names `kebab-case.<type>.ts`. Types live one per file in a `models/` folder next to their use (`<name>.type.ts`, `.interface.ts`, `.const.ts`); no TS `enum` (fixed value sets are `as const` objects, ADR 0024); no `any`, no `@ts-ignore`.

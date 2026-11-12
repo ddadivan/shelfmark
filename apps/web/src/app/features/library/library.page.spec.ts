@@ -6,7 +6,7 @@ import { MOCK_FOLDERS, MOCK_LIBRARY_COUNTS, MOCK_LINKS } from '@shelfmark/contra
 import { DialogService } from '@shelfmark/ui';
 import axe from 'axe-core';
 import { of, Subject, throwError, type Observable } from 'rxjs';
-import { AddLinkDialogService } from '../links/add-link/add-link-dialog.service';
+import { AddLinkDialogService } from '../links/services/add-link-dialog.service';
 import { FOLDERS_API } from '../links/models/folders-api.const';
 import type { FoldersApi } from '../links/models/folders-api.interface';
 import { LINKS_API } from '../links/models/links-api.const';
@@ -18,7 +18,7 @@ import { LinksStore } from '../../stores/links.store';
 import { SavedViewsStore } from '../../stores/saved-views.store';
 import { MockSavedViewsApi } from '../views/mock/mock-saved-views.api';
 import { SAVED_VIEWS_API } from '../views/models/saved-views-api.const';
-import { FeedMemoryService } from './feed-memory.service';
+import { FeedMemoryService } from './services/feed-memory.service';
 import { loadEnglish, provideTranslocoForTest } from '../../testing/transloco-testing';
 import LibraryPage from './library.page';
 

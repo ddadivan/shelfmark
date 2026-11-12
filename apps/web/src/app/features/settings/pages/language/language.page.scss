@@ -1,0 +1,15 @@
+@use 'ui' as *;
+@use '../../settings-page' as *;
+@include settings-page;
+
+.language__hint {
+  @include type(body);
+
+  margin: 0 0 var(--space-3);
+  color: var(--text-muted);
+}
+
+// One plain list: the languages stack, at most as wide as a comfortable reading column.
+.language__list {
+  max-width: rem(440px);
+}

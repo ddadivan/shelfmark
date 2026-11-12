@@ -4,7 +4,7 @@ import { LINK_KIND, SAVED_VIEW_LIMIT, SAVED_VIEW_SCOPE } from '@shelfmark/contra
 import { MOCK_ID } from '@shelfmark/contracts/testing';
 import { firstValueFrom } from 'rxjs';
 import { MockLibraryData } from '../../links/mock/mock-library-data';
-import { normalizeViewQuery } from '../saved-view-query';
+import { normalizeViewQuery } from '../utils/saved-view-query';
 import { MockSavedViewsApi } from './mock-saved-views.api';
 
 function setup() {

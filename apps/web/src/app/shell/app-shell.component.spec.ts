@@ -21,9 +21,9 @@ import { AppTranslocoLoader } from '../core/i18n/app-transloco.loader';
 import { translocoConfig } from '../core/i18n/transloco.config';
 import { THEME_PREFERENCE } from '@shelfmark/contracts';
 import { ThemeService } from '../core/theme/theme.service';
-import { LinkActionsService } from '../features/links/link-actions.service';
-import { SearchDialogService } from '../features/search/search-dialog.service';
-import { ShortcutsDialogService } from '../features/shortcuts/shortcuts-dialog.service';
+import { LinkActionsService } from '../features/links/services/link-actions.service';
+import { SearchDialogService } from '../features/search/services/search-dialog.service';
+import { ShortcutsDialogService } from '../features/shortcuts/services/shortcuts-dialog.service';
 import AppShellComponent from './app-shell.component';
 
 /** The account settings never load here; a change is saved and answered as sent. */

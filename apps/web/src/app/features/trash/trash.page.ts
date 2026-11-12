@@ -20,9 +20,9 @@ import { TrashStore } from '../../stores/trash.store';
 import { UserSettingsStore } from '../../stores/user-settings.store';
 import { TRASH_FILTER } from './models/trash-filter.const';
 import type { TrashFilter } from './models/trash-filter.type';
-import { TrashActionsService } from './trash-actions.service';
-import { trashKey } from './trash-key';
-import { TrashRowComponent } from './trash-row/trash-row.component';
+import { TrashActionsService } from './services/trash-actions.service';
+import { trashKey } from './utils/trash-key';
+import { TrashRowComponent } from './components/trash-row/trash-row.component';
 
 /** Placeholders shown while Trash loads. */
 const SKELETON_COUNT = 5;

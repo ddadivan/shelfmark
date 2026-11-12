@@ -16,7 +16,7 @@ import { PIN_OUTCOME } from '../features/pins/models/pin-outcome.const';
 import type { PinOutcome } from '../features/pins/models/pin-outcome.type';
 import type { PinRow } from '../features/pins/models/pin-row.interface';
 import { PINS_API } from '../features/pins/models/pins-api.const';
-import { pinKey } from '../features/pins/pin-key';
+import { pinKey } from '../features/pins/utils/pin-key';
 import { FoldersStore } from './folders.store';
 import { LinksStore } from './links.store';
 import type { PinsState } from './models/pins-state.interface';

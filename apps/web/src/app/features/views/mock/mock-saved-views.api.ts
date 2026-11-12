@@ -13,7 +13,7 @@ import { defer, delay, type Observable, of, throwError } from 'rxjs';
 import { MockLibraryData } from '../../links/mock/mock-library-data';
 import { MOCK_LATENCY_MS } from '../../links/models/mock-latency.const';
 import type { SavedViewsApi } from '../models/saved-views-api.interface';
-import { listQueryOf, normalizeViewQuery } from '../saved-view-query';
+import { listQueryOf, normalizeViewQuery } from '../utils/saved-view-query';
 import type { MockSavedView } from './models/mock-saved-view.interface';
 
 function failure(status: number, statusText: string): Observable<never> {

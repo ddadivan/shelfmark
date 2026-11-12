@@ -1,9 +1,9 @@
-import { AppLinkDirective } from '../../app-link.directive';
+import { AppLinkDirective } from '../../directives/app-link.directive';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { BUTTON_SIZE, BUTTON_VARIANT, ButtonComponent } from '@shelfmark/ui';
 import { LANDING_LINKS } from '../../models/landing-links.const';
-import { injectSignedIn } from '../../inject-signed-in';
+import { injectSignedIn } from '../../utils/inject-signed-in';
 import { LandingRevealDirective } from '../../directives/landing-reveal.directive';
 
 /** Closing call to action: open the demo or sign in. */

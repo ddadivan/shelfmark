@@ -8,8 +8,8 @@ import {
   type AdminFeedbackItem,
   FEEDBACK_ENDPOINT,
 } from '@shelfmark/contracts';
-import { feedbackScreenshotType } from '../feedback-screenshot-problem';
-import { FeedbackSendError } from '../feedback-send-error';
+import { feedbackScreenshotType } from '../utils/feedback-screenshot-problem';
+import { FeedbackSendError } from '../utils/feedback-send-error';
 import type { FeedbackApi } from '../models/feedback-api.interface';
 import { FEEDBACK_SEND_ERROR_REASON } from '../models/feedback-send-error-reason.const';
 import { MockFeedbackData } from './mock-feedback-data.service';

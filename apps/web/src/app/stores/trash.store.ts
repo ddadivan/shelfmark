@@ -13,7 +13,7 @@ import { SessionScope } from '../core/auth/session-scope.service';
 import { TRASH_API } from '../features/trash/models/trash-api.const';
 import { TRASH_OUTCOME } from '../features/trash/models/trash-outcome.const';
 import type { TrashOutcome } from '../features/trash/models/trash-outcome.type';
-import { toRef, trashKey } from '../features/trash/trash-key';
+import { toRef, trashKey } from '../features/trash/utils/trash-key';
 import { FoldersStore } from './folders.store';
 import { LinksStore } from './links.store';
 import type { TrashState } from './models/trash-state.interface';

@@ -1,6 +1,6 @@
 import { computed } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-import { selectRange } from '../features/links/selection/select-range';
+import { selectRange } from '../features/links/utils/select-range';
 import type { LinkSelectionState } from './models/link-selection-state.interface';
 
 const initialState: LinkSelectionState = { ids: [], anchor: null };

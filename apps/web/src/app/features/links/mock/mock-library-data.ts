@@ -22,7 +22,7 @@ import type { MockTrashEntry } from '../../trash/mock/models/mock-trash-entry.in
 import { MOCK_TRASH_SCENARIO } from '../../trash/mock/models/mock-trash-scenario.const';
 import { MOCK_TRASH_SCENARIO_KEY } from '../../trash/mock/models/mock-trash-scenario-key.const';
 import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
-import { matchesQuery } from '../search-query';
+import { matchesQuery } from '../utils/search-query';
 import { buildDemoLibrarySeed, isDemoMockSession } from './demo-library-seed';
 import { generateMockLinks } from './generate-mock-links';
 import type { MockSavedView } from '../../views/mock/models/mock-saved-view.interface';

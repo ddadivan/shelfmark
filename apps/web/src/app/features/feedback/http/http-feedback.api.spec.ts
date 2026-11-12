@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import type { SendFeedbackRequest } from '@shelfmark/contracts';
 import { feedbackMessage } from '../../../../testing/feedback-message';
 import { SKIP_ERROR_TOAST } from '../../../core/api/models/skip-error-toast.const';
-import { FeedbackSendError } from '../feedback-send-error';
+import { FeedbackSendError } from '../utils/feedback-send-error';
 import { FEEDBACK_SEND_ERROR_REASON } from '../models/feedback-send-error-reason.const';
 import { HttpFeedbackApi } from './http-feedback.api';
 

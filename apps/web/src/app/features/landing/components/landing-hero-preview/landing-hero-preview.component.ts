@@ -10,9 +10,9 @@ import {
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { SegmentedControlComponent, ToastComponent, TOAST_KIND } from '@shelfmark/ui';
 import { activeLang } from '../../../../core/i18n/active-lang';
-import { LinkPreviewCardComponent } from '../../../links/link-preview-card/link-preview-card.component';
+import { LinkPreviewCardComponent } from '../../../links/components/link-preview-card/link-preview-card.component';
 import { LandingLoopGateDirective } from '../../directives/landing-loop-gate.directive';
-import { LandingMotionService } from '../../landing-motion.service';
+import { LandingMotionService } from '../../services/landing-motion.service';
 import { LANDING_LOOP } from '../../models/landing-loop.const';
 import { LANDING_PREVIEW_CARDS } from '../../models/landing-preview-cards.const';
 import { LANDING_PREVIEW_FILTER } from '../../models/landing-preview-filter.const';

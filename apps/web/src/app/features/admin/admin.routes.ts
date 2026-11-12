@@ -5,6 +5,6 @@ import { ADMIN_PATH } from './models/admin-path.const';
 export default [
   {
     path: ADMIN_PATH.Feedback,
-    loadComponent: () => import('./admin-feedback/admin-feedback.page'),
+    loadComponent: () => import('./pages/admin-feedback/admin-feedback.page'),
   },
 ] satisfies Routes;

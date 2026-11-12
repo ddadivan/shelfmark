@@ -21,7 +21,7 @@ import { MOCK_LIBRARY_SETTINGS_STORAGE_KEY } from '../../features/settings/model
 import { USER_SETTINGS_API } from '../../features/settings/models/user-settings-api.const';
 import { UserSettingsStore } from '../../stores/user-settings.store';
 import { ViewportService } from '../../core/layout/viewport.service';
-import { FeedbackDialogService } from '../../features/feedback/feedback-dialog.service';
+import { FeedbackDialogService } from '../../features/feedback/services/feedback-dialog.service';
 import { SidebarComponent } from './sidebar.component';
 
 async function setup(url = '/links', waitForFolders = true) {
