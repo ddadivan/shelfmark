@@ -7,10 +7,10 @@ export interface UiTreeNode {
   readonly id: string;
   /** Visible name; a long one is cut with an ellipsis. */
   readonly name: string;
-  /** Icon before the name. Fixed rows show none; folder rows draw it in a graphite `ui-folder-icon` tile (default `folder`). */
-  readonly icon?: IconName;
+  /** Icon before the name. Fixed rows show none; folder rows draw it in a `ui-folder-icon` tile (default `folder`; an icon name or one emoji). */
+  readonly icon?: IconName | string;
   /** Colour of the folder tile; graphite when unset. Fixed rows ignore it. */
-  readonly colour?: FolderColour;
+  readonly colour?: FolderColour | string;
   /** Number shown on the right. */
   readonly count?: number;
   /** Starts expanded (folders with children only). Later changes by the user are kept. */

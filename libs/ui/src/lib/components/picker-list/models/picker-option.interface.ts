@@ -8,8 +8,8 @@ export interface PickerOption {
   /** Visible name. */
   readonly name: string;
   /** Glyph of the coloured tile before the name (default `folder`). */
-  readonly icon?: IconName;
+  readonly icon?: IconName | string;
   /** Colour of the tile; graphite when unset. */
-  readonly colour?: FolderColour;
+  readonly colour?: FolderColour | string;
   readonly children?: readonly PickerOption[];
 }

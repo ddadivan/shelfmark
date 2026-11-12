@@ -37,6 +37,7 @@ import { signInDemo } from '../../test-utils/sign-in-demo';
 const APPEARANCE_DEFAULTS = {
   theme: THEME_PREFERENCE.System,
   customTheme: CUSTOM_THEME_DEFAULT,
+  customColours: [],
   motion: MOTION_PREFERENCE.System,
   appearanceSaved: false,
   ...LAYOUT_SETTINGS_DEFAULT,
@@ -281,6 +282,7 @@ describe('account settings', () => {
         pauseHistory: false,
         theme: THEME_PREFERENCE.Custom,
         customTheme: dark,
+        customColours: [],
         motion: MOTION_PREFERENCE.System,
         appearanceSaved: true,
         ...LAYOUT_SETTINGS_DEFAULT,
@@ -324,6 +326,93 @@ describe('account settings', () => {
         t.db.prisma.user.update({
           where: { id: users.owner.userId },
           data: { customThemeAccent: '#ABCDEF' },
+        }),
+      ).rejects.toThrow();
+    });
+
+    it('saves an own page background (#335) on either base and the database keeps only #rrggbb', async () => {
+      const a = asUser(t.app, users.owner);
+      for (const own of [
+        { ...CUSTOM_THEME_DEFAULT, background: '#fdf6e3' },
+        { ...dark, background: '#0b1d2a' },
+      ] satisfies CustomTheme[]) {
+        const res = await a
+          .patch(USER_SETTINGS_ENDPOINT)
+          .send({ theme: THEME_PREFERENCE.Custom, customTheme: own })
+          .expect(200);
+        expect((res.body as UserSettingsResponse).customTheme).toEqual(own);
+      }
+      for (const background of ['#FDF6E3', '#fff', 'fdf6e3', '#fdf6e3; x', 'rgb(0 0 0)', 7]) {
+        await a
+          .patch(USER_SETTINGS_ENDPOINT)
+          .send({ customTheme: { ...CUSTOM_THEME_DEFAULT, background } })
+          .expect(400);
+      }
+      await expect(
+        t.db.prisma.user.update({
+          where: { id: users.owner.userId },
+          data: { customThemeBackground: '#ABCDEF' },
+        }),
+      ).rejects.toThrow();
+    });
+
+    it('keeps the own colours (#335) per account, validated, at most 12', async () => {
+      const a = asUser(t.app, users.owner);
+      const b = asUser(t.app, users.intruder);
+      const colours = ['#3a7bd5', '#e5484d'];
+      const res = await a
+        .patch(USER_SETTINGS_ENDPOINT)
+        .send({ customColours: colours })
+        .expect(200);
+      expect((res.body as UserSettingsResponse).customColours).toEqual(colours);
+      expect(
+        ((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse)
+          .customColours,
+      ).toEqual(colours);
+      // Another user never sees them.
+      expect(
+        ((await b.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse)
+          .customColours,
+      ).toEqual([]);
+      // Other settings leave the list alone; an empty list clears it.
+      await a.patch(USER_SETTINGS_ENDPOINT).send({ folderColours: false }).expect(200);
+      expect(
+        ((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse)
+          .customColours,
+      ).toEqual(colours);
+      const twelve = Array.from(
+        { length: 12 },
+        (_, i) => `#0000${i.toString(16).padStart(2, '0')}`,
+      );
+      await a.patch(USER_SETTINGS_ENDPOINT).send({ customColours: twelve }).expect(200);
+      for (const bad of [
+        [...twelve, '#ffffff'],
+        ['#ABCDEF'],
+        ['#fff'],
+        ['red'],
+        ['#3a7bd5', '#3a7bd5'],
+        [7],
+        'nope',
+        null,
+        ['#3a7bd5; color: red'],
+      ]) {
+        await a.patch(USER_SETTINGS_ENDPOINT).send({ customColours: bad }).expect(400);
+      }
+      expect(
+        ((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse)
+          .customColours,
+      ).toEqual(twelve);
+      await a.patch(USER_SETTINGS_ENDPOINT).send({ customColours: [] }).expect(200);
+      await expect(
+        t.db.prisma.user.update({
+          where: { id: users.owner.userId },
+          data: { customColours: ['#ABCDEF'] },
+        }),
+      ).rejects.toThrow();
+      await expect(
+        t.db.prisma.user.update({
+          where: { id: users.owner.userId },
+          data: { customColours: twelve.concat('#ffffff') },
         }),
       ).rejects.toThrow();
     });

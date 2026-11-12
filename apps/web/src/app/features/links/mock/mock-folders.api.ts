@@ -3,6 +3,8 @@ import {
   FOLDER_DEFAULT_COLOUR,
   FOLDER_DEFAULT_ICON,
   FOLDER_LIMIT,
+  isFolderColourValue,
+  isFolderIconValue,
   type CreateFolderRequest,
   type FolderDeleteMode,
   type FolderResponse,
@@ -66,6 +68,9 @@ export class MockFoldersApi implements FoldersApi {
       if (
         !current ||
         current.name === MOCK_FOLDER_NAME.UpdateFails ||
+        // Like the API: a colour is a name or #rrggbb, an icon a name or exactly one emoji.
+        (request.colour !== undefined && !isFolderColourValue(request.colour)) ||
+        (request.icon !== undefined && !isFolderIconValue(request.icon)) ||
         parentId === undefined ||
         (parentId !== null && (!this.find(parentId) || this.data.subtreeIds(id).includes(parentId)))
       ) {

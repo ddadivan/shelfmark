@@ -20,6 +20,7 @@ import {
   LIBRARY_VIEW,
   LINK_OPEN_TARGET,
   MOTION_PREFERENCE,
+  type HexColour,
   THEME_PREFERENCE,
   TRASH_RETENTION_DAYS,
   type LibrarySort,
@@ -47,6 +48,13 @@ export class UserSettingsResponseDto implements UserSettingsResponse {
 
   @ApiProperty({ type: CustomThemeDto })
   customTheme!: CustomThemeDto;
+
+  @ApiProperty({
+    type: [String],
+    example: ['#3a7bd5'],
+    description: 'Own colours (lower-case #rrggbb, at most 12): swatches for folders and the theme',
+  })
+  customColours!: HexColour[];
 
   @ApiProperty({ enum: Object.values(MOTION_PREFERENCE), example: MOTION_PREFERENCE.System })
   motion!: MotionPreference;

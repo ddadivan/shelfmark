@@ -16,6 +16,7 @@ import {
   type PinResponse,
   type TagResponse,
   type TrashRetentionDays,
+  type HexColour,
 } from '@shelfmark/contracts';
 import { MOCK_FOLDERS, MOCK_TAGS } from '@shelfmark/contracts/testing';
 import type { MockTrashEntry } from '../../trash/mock/models/mock-trash-entry.interface';
@@ -72,6 +73,8 @@ export class MockLibraryData {
   trashRetentionDays: TrashRetentionDays = TRASH_RETENTION_DEFAULT;
   /** The mock account setting "Folder colours". */
   folderColours = true;
+  /** Own colours (#335), in the order they were added. */
+  customColours: HexColour[] = [];
   /** The mock account setting "Pause history": while on, the mock open records nothing. */
   pauseHistory = false;
   /** The sidebar pins in order (folders and links together). */

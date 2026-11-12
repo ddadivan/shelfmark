@@ -846,7 +846,55 @@
         "user": "Usuário",
         "settings": "Configurações",
         "download": "Download",
-        "share": "Compartilhar"
+        "share": "Compartilhar",
+        "ball": "Bola",
+        "bike": "Bicicleta",
+        "book": "Livro",
+        "bulb": "Lâmpada",
+        "calendar": "Calendário",
+        "camera": "Câmara",
+        "car": "Carro",
+        "chart": "Gráfico",
+        "cloud": "Nuvem",
+        "coffee": "Café",
+        "dumbbell": "Haltere",
+        "film": "Filme",
+        "flag": "Bandeira",
+        "gamepad": "Comando",
+        "gift": "Presente",
+        "globe": "Globo",
+        "hammer": "Martelo",
+        "health": "Saúde",
+        "heart": "Coração",
+        "home": "Casa",
+        "kids": "Crianças",
+        "leaf": "Folha",
+        "map-pin": "Marcador",
+        "mountain": "Montanha",
+        "music": "Música",
+        "palette": "Paleta",
+        "paw": "Pata",
+        "plane": "Avião",
+        "rocket": "Foguete",
+        "shopping-bag": "Sacola de compras",
+        "sun": "Sol",
+        "tree": "Árvore",
+        "trophy": "Troféu",
+        "umbrella": "Guarda-chuva",
+        "utensils": "Comida",
+        "wallet": "Carteira"
+      },
+      "own": {
+        "group": "Suas cores",
+        "add": "Adicionar sua cor",
+        "picker": "Escolher uma cor"
+      },
+      "ownSwatch": "Sua cor {{colour}}",
+      "emoji": {
+        "label": "Emoji",
+        "hint": "Use um emoji em vez de um ícone",
+        "placeholder": "🍕",
+        "invalid": "Digite exatamente um emoji."
       }
     }
   },
@@ -1110,7 +1158,15 @@
           "invalid": "Digite # e seis dígitos ou letras a–f, como #2e6a99.",
           "hint": "O Shelfmark mantém contraste de 4,5:1: na outra base, usa um tom mais escuro ou mais claro da sua cor.",
           "warning": "Esta cor fica difícil de ler no seu fundo ({{ratio}}:1, precisa de 4,5:1).",
-          "use": "Usar {{colour}}"
+          "use": "Usar {{colour}}",
+          "saturation": "Saturação",
+          "brightness": "Brilho",
+          "hue": "Matiz"
+        },
+        "ownBackground": {
+          "label": "Sua cor de fundo",
+          "hint": "O texto deve continuar legível (4,5:1): se preciso, o Shelfmark usa um tom mais claro ou mais escuro da sua cor.",
+          "warning": "O texto é difícil de ler neste fundo ({{ratio}}:1, são precisos 4,5:1)."
         }
       },
       "layout": {

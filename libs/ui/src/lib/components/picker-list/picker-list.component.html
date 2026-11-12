@@ -47,7 +47,7 @@
       [style.--ui-picker-level]="row.level"
     >
       @if (row.id === null) {
-        <ui-icon class="ui-picker-list__empty-icon" [name]="row.icon" [size]="ICON_SIZE.Md" />
+        <ui-icon class="ui-picker-list__empty-icon" name="inbox" [size]="ICON_SIZE.Md" />
       } @else {
         <ui-folder-icon [icon]="row.icon" [colour]="row.colour" [size]="FOLDER_ICON_SIZE.Sm" />
       }

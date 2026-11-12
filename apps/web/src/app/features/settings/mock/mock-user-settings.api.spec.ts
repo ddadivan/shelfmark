@@ -65,6 +65,7 @@ describe('MockUserSettingsApi', () => {
       trashRetentionDays: 30,
       folderColours: true,
       pauseHistory: false,
+      customColours: [],
       ...MOCK_APPEARANCE_DEFAULTS,
       ...LIBRARY_SETTINGS_DEFAULT,
     });
@@ -77,6 +78,7 @@ describe('MockUserSettingsApi', () => {
       trashRetentionDays: 90,
       folderColours: true,
       pauseHistory: false,
+      customColours: [],
       ...MOCK_APPEARANCE_DEFAULTS,
       ...LIBRARY_SETTINGS_DEFAULT,
     });
@@ -85,6 +87,7 @@ describe('MockUserSettingsApi', () => {
       trashRetentionDays: 90,
       folderColours: true,
       pauseHistory: false,
+      customColours: [],
       ...MOCK_APPEARANCE_DEFAULTS,
       ...LIBRARY_SETTINGS_DEFAULT,
     });
@@ -106,6 +109,7 @@ describe('MockUserSettingsApi', () => {
       trashRetentionDays: 30,
       folderColours: true,
       pauseHistory: false,
+      customColours: [],
       ...MOCK_APPEARANCE_DEFAULTS,
       ...LIBRARY_SETTINGS_DEFAULT,
     });

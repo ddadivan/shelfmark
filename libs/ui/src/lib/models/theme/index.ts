@@ -6,5 +6,6 @@ export { CUSTOM_THEME_ATTRIBUTE } from './models/custom-theme-attribute.const';
 export { LAYOUT_ATTRIBUTE } from './models/layout-attribute.const';
 export { LAYOUT_OFF } from './models/layout-off.const';
 export { CUSTOM_ACCENT_OWN } from './models/custom-accent-own.const';
+export { CUSTOM_BACKGROUND_OWN } from './models/custom-background-own.const';
 export { CUSTOM_THEME_SURFACES } from './models/custom-theme-surfaces.const';
 export type { CustomThemeSurfaces } from './models/custom-theme-surfaces.interface';

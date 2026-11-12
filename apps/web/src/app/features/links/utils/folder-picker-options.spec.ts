@@ -3,7 +3,7 @@ import { FOLDER_COLOUR, FOLDER_ICON } from '@shelfmark/contracts';
 import { MOCK_FOLDERS, MOCK_ID, MOCK_NAME } from '@shelfmark/contracts/testing';
 import { buildFolderPickerOptions } from './folder-picker-options';
 
-const same = (colour: FolderResponse['colour']) => colour;
+const same = (colour: string) => colour;
 
 describe('buildFolderPickerOptions', () => {
   it('nests folders under their parent with the icon and the colour', () => {

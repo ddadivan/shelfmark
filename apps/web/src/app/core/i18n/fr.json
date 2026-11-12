@@ -846,7 +846,55 @@
         "user": "Utilisateur",
         "settings": "Paramètres",
         "download": "Téléchargement",
-        "share": "Partage"
+        "share": "Partage",
+        "ball": "Ballon",
+        "bike": "Vélo",
+        "book": "Livre",
+        "bulb": "Ampoule",
+        "calendar": "Calendrier",
+        "camera": "Appareil photo",
+        "car": "Voiture",
+        "chart": "Graphique",
+        "cloud": "Nuage",
+        "coffee": "Café",
+        "dumbbell": "Haltère",
+        "film": "Film",
+        "flag": "Drapeau",
+        "gamepad": "Manette",
+        "gift": "Cadeau",
+        "globe": "Globe",
+        "hammer": "Marteau",
+        "health": "Santé",
+        "heart": "Cœur",
+        "home": "Maison",
+        "kids": "Enfants",
+        "leaf": "Feuille",
+        "map-pin": "Repère",
+        "mountain": "Montagne",
+        "music": "Musique",
+        "palette": "Palette",
+        "paw": "Patte",
+        "plane": "Avion",
+        "rocket": "Fusée",
+        "shopping-bag": "Sac de courses",
+        "sun": "Soleil",
+        "tree": "Arbre",
+        "trophy": "Trophée",
+        "umbrella": "Parapluie",
+        "utensils": "Repas",
+        "wallet": "Portefeuille"
+      },
+      "own": {
+        "group": "Vos couleurs",
+        "add": "Ajouter votre couleur",
+        "picker": "Choisir une couleur"
+      },
+      "ownSwatch": "Votre couleur {{colour}}",
+      "emoji": {
+        "label": "Émoji",
+        "hint": "Utilisez un émoji à la place d'une icône",
+        "placeholder": "🍕",
+        "invalid": "Saisissez un seul émoji."
       }
     }
   },
@@ -1110,7 +1158,15 @@
           "invalid": "Saisissez # suivi de six chiffres ou lettres a–f, par exemple #2e6a99.",
           "hint": "Shelfmark garde un contraste de 4,5:1 : sur l’autre base, il utilise une nuance plus foncée ou plus claire de votre couleur.",
           "warning": "Cette couleur est difficile à lire sur votre fond ({{ratio}}:1, il faut 4,5:1).",
-          "use": "Utiliser {{colour}}"
+          "use": "Utiliser {{colour}}",
+          "saturation": "Saturation",
+          "brightness": "Luminosité",
+          "hue": "Teinte"
+        },
+        "ownBackground": {
+          "label": "Votre couleur d'arrière-plan",
+          "hint": "Le texte doit rester lisible (4,5:1) : si besoin, Shelfmark utilise une teinte plus claire ou plus foncée de votre couleur.",
+          "warning": "Le texte est difficile à lire sur cet arrière-plan ({{ratio}}:1, il faut 4,5:1)."
         }
       },
       "layout": {

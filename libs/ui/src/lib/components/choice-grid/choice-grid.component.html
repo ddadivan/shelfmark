@@ -3,6 +3,8 @@
     class="ui-choice"
     [class]="'ui-choice ui-choice--' + tone(option)"
     [class.ui-choice--checked]="value() === option.value"
+    [style.--ui-choice-glyph]="ownGlyph(option)"
+    [style.--ui-choice-tile]="ownTile(option)"
   >
     <input
       type="radio"

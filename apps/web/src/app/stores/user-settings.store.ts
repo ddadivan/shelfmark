@@ -5,7 +5,9 @@ import {
   LIBRARY_SETTINGS_DEFAULT,
   LINK_OPEN_TARGET,
   TRASH_RETENTION_DEFAULT,
+  USER_LIMIT,
   type FolderColour,
+  type HexColour,
   type LanguageSettings,
   type LibrarySettings,
   type TrashRetentionDays,
@@ -89,6 +91,7 @@ const initialState: UserSettingsState = {
   trashRetentionDays: null,
   folderColours: null,
   pauseHistory: null,
+  customColours: [],
   library: null,
   loading: false,
   error: false,
@@ -172,6 +175,7 @@ export const UserSettingsStore = signalStore(
                 trashRetentionDays: settings.trashRetentionDays,
                 folderColours: settings.folderColours,
                 pauseHistory: settings.pauseHistory,
+                customColours: settings.customColours,
                 library: libraryOf(settings),
                 loading: false,
               }
@@ -181,6 +185,27 @@ export const UserSettingsStore = signalStore(
         if (started === epoch) {
           patchState(store, { loading: false, error: store.trashRetentionDays() === null });
         }
+      }
+    }
+
+    async function saveColours(previous: HexColour[], next: HexColour[]): Promise<boolean> {
+      if (previous.length === next.length && previous.every((item, i) => item === next[i])) {
+        return true;
+      }
+      const started = epoch;
+      version++;
+      patchState(store, { customColours: next });
+      try {
+        const saved = await firstValueFrom(api().update({ customColours: next }));
+        if (started === epoch) {
+          patchState(store, { customColours: saved.customColours });
+        }
+        return true;
+      } catch {
+        if (started === epoch) {
+          patchState(store, { customColours: previous });
+        }
+        return false;
       }
     }
 
@@ -218,8 +243,30 @@ export const UserSettingsStore = signalStore(
       },
 
       /** The colour a folder tile is drawn in: its own, or graphite when "Folder colours" is off. */
-      shownColour(colour: FolderColour): FolderColour {
+      shownColour(colour: FolderColour | string): FolderColour | string {
         return (store.folderColours() ?? true) ? colour : FOLDER_DEFAULT_COLOUR;
+      },
+
+      /**
+       * Keeps an own colour as a swatch (#335): at the end, once (an old copy moves to the end), at
+       * most `USER_LIMIT.CustomColoursMax` (the oldest goes). Saved at once; resolves false (and
+       * puts the list back) when the request fails.
+       */
+      async addCustomColour(colour: HexColour): Promise<boolean> {
+        const previous = store.customColours();
+        const next = [...previous.filter((item) => item !== colour), colour].slice(
+          -USER_LIMIT.CustomColoursMax,
+        );
+        return saveColours(previous, next);
+      },
+
+      /** Forgets an own colour (folders and themes that wear it keep it). */
+      async removeCustomColour(colour: HexColour): Promise<boolean> {
+        const previous = store.customColours();
+        return saveColours(
+          previous,
+          previous.filter((item) => item !== colour),
+        );
       },
 
       /** Switches "Folder colours" at once; resolves false (and puts the old value back) when the request fails. */

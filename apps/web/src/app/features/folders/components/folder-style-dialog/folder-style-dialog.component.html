@@ -14,22 +14,57 @@
           'folders.style.colour' | transloco
         }}</span>
         <ui-choice-grid
+          singleLine
           [options]="colourOptions"
           ariaLabelledby="folder-style-colour"
-          [formField]="form.colour"
+          [value]="colourValue()"
+          (valueChange)="chooseColour($event)"
         />
+        <!-- Own colours: the account's swatches and the "+" swatch that opens the picker. -->
+        <div class="folder-style__own">
+          @if (ownOptions().length > 0) {
+            <ui-choice-grid
+              [options]="ownOptions()"
+              [ariaLabel]="'folders.style.own.group' | transloco"
+              [value]="ownChecked()"
+              (valueChange)="chooseColour($event)"
+            />
+          }
+          <ui-color-picker
+            [label]="'folders.style.own.add' | transloco"
+            [pickerLabel]="'folders.style.own.picker' | transloco"
+            [saturationLabel]="'settings.appearance.custom.own.saturation' | transloco"
+            [brightnessLabel]="'settings.appearance.custom.own.brightness' | transloco"
+            [hueLabel]="'settings.appearance.custom.own.hue' | transloco"
+            [hexLabel]="'settings.appearance.custom.own.hex' | transloco"
+            [invalidMessage]="'settings.appearance.custom.own.invalid' | transloco"
+            [value]="picked()"
+            (valueChange)="picked.set($event)"
+            (committed)="addColour($event)"
+          />
+        </div>
       </div>
 
       <div class="folder-style__group">
         <span class="folder-style__label" id="folder-style-icon">{{
           'folders.style.icon' | transloco
         }}</span>
-        <ui-choice-grid
-          kind="icon"
-          [colour]="previewColour()"
-          [options]="iconOptions"
-          ariaLabelledby="folder-style-icon"
-          [formField]="form.icon"
+        <div class="folder-style__icons">
+          <ui-choice-grid
+            kind="icon"
+            [colour]="previewColour()"
+            [options]="iconOptions"
+            ariaLabelledby="folder-style-icon"
+            [value]="iconChecked()"
+            (valueChange)="chooseIcon($event)"
+          />
+        </div>
+        <ui-input
+          class="folder-style__emoji"
+          [label]="'folders.style.emoji.label' | transloco"
+          [hint]="'folders.style.emoji.hint' | transloco"
+          [placeholder]="'folders.style.emoji.placeholder' | transloco"
+          [formField]="form.emoji"
         />
       </div>
     </div>

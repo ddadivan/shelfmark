@@ -1,5 +1,6 @@
 import type { TrashRetentionDays } from '../trash/trash-retention-days.type';
 import type { CustomTheme } from './custom-theme.interface';
+import type { HexColour } from './hex-colour.type';
 import type { LanguageSettings } from './language-settings.interface';
 import type { LayoutSettings } from './layout-settings.interface';
 import type { LibrarySettings } from './library-settings.interface';
@@ -17,6 +18,8 @@ export interface UpdateUserSettingsRequest
   theme?: ThemePreference;
   /** Always the whole custom theme (all four fields); `background` must belong to `base`. */
   customTheme?: CustomTheme;
+  /** The whole list of own colours (`#rrggbb`, no duplicates, at most `USER_LIMIT.CustomColoursMax`). */
+  customColours?: HexColour[];
   /** One of `MOTION_PREFERENCE`. */
   motion?: MotionPreference;
   /**

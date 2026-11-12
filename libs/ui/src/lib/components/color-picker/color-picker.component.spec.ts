@@ -1,13 +1,16 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { form, FormField } from '@angular/forms/signals';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../../../testing/axe';
 import { ColorPickerComponent } from './color-picker.component';
 
 const LABELS = {
   label: 'Your own colour',
-  pickerLabel: 'Choose a colour',
+  pickerLabel: 'Colour',
+  saturationLabel: 'Saturation',
+  brightnessLabel: 'Brightness',
+  hueLabel: 'Hue',
   hexLabel: 'Hex code',
   invalidMessage: 'Enter a colour like #2e6a99',
 };
@@ -24,13 +27,15 @@ function setup(inputs: Record<string, unknown> = {}) {
   const swatch = () => host.querySelector('.ui-color-picker__swatch') as HTMLButtonElement;
   const panel = () => host.querySelector<HTMLElement>('.ui-color-picker__panel');
   const hex = () => host.querySelector('.ui-color-picker__hex-input') as HTMLInputElement;
-  const native = () => host.querySelector('input[type="color"]') as HTMLInputElement;
+  const slider = (label: string) =>
+    host.querySelector(`input[type="range"][aria-label="${label}"]`) as HTMLInputElement;
+  const area = () => host.querySelector('.ui-color-picker__area') as HTMLElement;
   const open = async () => {
     swatch().click();
     fixture.detectChanges();
     await fixture.whenStable();
   };
-  return { fixture, host, swatch, panel, hex, native, open, committed };
+  return { fixture, host, swatch, panel, hex, slider, area, open, committed };
 }
 
 function type(input: HTMLInputElement, text: string): void {
@@ -44,6 +49,9 @@ function type(input: HTMLInputElement, text: string): void {
   template: `<ui-color-picker
     label="Own"
     pickerLabel="Pick"
+    saturationLabel="Sat"
+    brightnessLabel="Bright"
+    hueLabel="Hue"
     hexLabel="Hex"
     invalidMessage="Bad"
     [formField]="f.colour"
@@ -81,31 +89,91 @@ describe('ColorPickerComponent', () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(panel()).toBeNull();
+    await vi.waitFor(() => {
+      expect(panel()).toBeNull();
+    });
     expect(document.activeElement).toBe(swatch());
     (fixture.nativeElement as HTMLElement).remove();
   });
 
-  it('labels the system picker and the hex field', async () => {
-    const { host, hex, native, open } = setup();
+  it('labels the area, the three sliders and the hex field, with a value text each', async () => {
+    const { host, hex, slider, open } = setup({ value: '#ff0000' });
     await open();
-    expect(native().closest('label')?.textContent).toContain('Choose a colour');
+    expect(host.querySelector('.ui-color-picker__area')?.getAttribute('aria-label')).toBe('Colour');
+    expect(slider('Hue').getAttribute('aria-valuetext')).toBe('0°');
+    expect(slider('Saturation').getAttribute('aria-valuetext')).toBe('100%');
+    expect(slider('Brightness').getAttribute('aria-valuetext')).toBe('100%');
     const label = host.querySelector(`label[for="${hex().id}"]`);
     expect(label?.textContent).toContain('Hex code');
   });
 
-  it('follows the system picker live and commits when it closes', async () => {
-    const { fixture, native, open, committed } = setup();
+  it('the hue slider and the area sliders move the colour live and commit when let go', async () => {
+    const { fixture, slider, open, committed } = setup({ value: '#ff0000' });
     await open();
-    expect(native().value).toBe('#2e6a99');
 
-    type(native(), '#AA3300');
+    const hue = slider('Hue');
+    hue.value = '120';
+    hue.dispatchEvent(new Event('input'));
     fixture.detectChanges();
-    expect(fixture.componentInstance.value()).toBe('#aa3300');
+    expect(fixture.componentInstance.value()).toBe('#00ff00');
     expect(committed).toEqual([]);
+    hue.dispatchEvent(new Event('change'));
+    expect(committed).toEqual(['#00ff00']);
 
-    native().dispatchEvent(new Event('change'));
-    expect(committed).toEqual(['#aa3300']);
+    const brightness = slider('Brightness');
+    brightness.value = '50';
+    brightness.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(fixture.componentInstance.value()).toBe('#008000');
+    brightness.dispatchEvent(new Event('blur'));
+    expect(committed).toEqual(['#00ff00', '#008000']);
+    // Nothing changed since: letting go again commits nothing more.
+    brightness.dispatchEvent(new Event('blur'));
+    expect(committed).toHaveLength(2);
+  });
+
+  it('keeps the hue while the colour is grey (the hex cannot hold it)', async () => {
+    const { fixture, slider, open } = setup({ value: '#ff0000' });
+    await open();
+    const saturation = slider('Saturation');
+    saturation.value = '0';
+    saturation.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(fixture.componentInstance.value()).toBe('#ffffff');
+    expect(slider('Hue').value).toBe('0');
+    const hue = slider('Hue');
+    hue.value = '200';
+    hue.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    saturation.value = '0';
+    saturation.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(slider('Hue').value).toBe('200');
+  });
+
+  it('a pointer in the area sets saturation and brightness and commits on release', async () => {
+    const { fixture, area, open, committed } = setup({ value: '#ff0000' });
+    await open();
+    const box = area();
+    box.getBoundingClientRect = () => new DOMRect(0, 0, 200, 100);
+    box.setPointerCapture = () => undefined;
+    box.releasePointerCapture = () => undefined;
+    const fire = (type: string, x: number, y: number) =>
+      box.dispatchEvent(
+        new PointerEvent(type, { clientX: x, clientY: y, pointerId: 1, bubbles: true }),
+      );
+    fire('pointerdown', 100, 50);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.value()).toBe('#804040');
+    expect(committed).toEqual([]);
+    fire('pointermove', 200, 0);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.value()).toBe('#ff0000');
+    fire('pointermove', 0, 100);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.value()).toBe('#000000');
+    fire('pointerup', 0, 100);
+    expect(committed).toEqual(['#000000']);
   });
 
   it('commits a typed hex on Enter or blur, with or without #, in lower case', async () => {
@@ -151,7 +219,9 @@ describe('ColorPickerComponent', () => {
     const { fixture, swatch, panel, open } = setup();
     await open();
     await open();
-    expect(panel()).toBeNull();
+    await vi.waitFor(() => {
+      expect(panel()).toBeNull();
+    });
     fixture.componentRef.setInput('disabled', true);
     fixture.detectChanges();
     expect(swatch().disabled).toBe(true);
