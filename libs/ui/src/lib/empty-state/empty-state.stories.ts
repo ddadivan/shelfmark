@@ -109,18 +109,26 @@ export const Page: Story = {
   }),
 };
 
-/** The #315 page scenes in both themes: Trash, Recently opened, Favorites, Unsorted, Tags, filters. */
+/**
+ * Every page-level scene in both themes (#315): the library feeds, a folder, Trash, Recently
+ * opened, Favorites, Unsorted, Tags, filters, not found and offline. Each scene keeps 3:1 edges on
+ * its disc (WCAG 1.4.11).
+ */
 export const PageScenes: Story = {
   parameters: { layout: 'padded' },
   render: () => ({
     props: {
       cases: [
+        { heading: 'No links yet', scene: 'empty-feed' },
+        { heading: 'This folder is empty', scene: 'empty-folder' },
         { heading: 'Trash is empty', scene: 'empty-trash' },
         { heading: 'Nothing opened yet', scene: 'empty-recent' },
         { heading: 'Your favorites will live here', scene: 'empty-favorites' },
         { heading: 'Unsorted is empty', scene: 'empty-unsorted' },
         { heading: 'No tags yet', scene: 'empty-tags' },
         { heading: 'Nothing matches these filters', scene: 'empty-filter' },
+        { heading: 'Nothing found', scene: 'not-found' },
+        { heading: 'You are offline', scene: 'offline' },
       ],
       themes: Object.values(THEME),
     },
