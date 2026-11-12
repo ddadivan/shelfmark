@@ -208,6 +208,11 @@ export {
 } from './users/is-custom-theme';
 
 export { FOLDER_COLOUR } from './folders/folder-colour.const';
+export type { FolderEmoji } from './folders/folder-emoji.type';
+export { FOLDER_EMOJI_MAX_CODE_POINTS } from './folders/folder-emoji-max.const';
+export { isFolderEmoji } from './folders/is-folder-emoji';
+export { isFolderIconName, isFolderIconValue } from './folders/is-folder-icon';
+export { isFolderColourName, isFolderColourValue } from './folders/is-folder-colour';
 export type { FolderColour } from './folders/folder-colour.type';
 export { FOLDER_DEFAULT_COLOUR } from './folders/folder-default-colour.const';
 export { FOLDER_ICON } from './folders/folder-icon.const';
@@ -239,6 +244,7 @@ export { SAVED_VIEW_ERROR_MESSAGE } from './views/saved-view-error-message.const
 export type { SavedViewQuery } from './views/saved-view-query.interface';
 export type { SavedViewQueryRequest } from './views/saved-view-query-request.interface';
 export type { SavedViewResponse } from './views/saved-view-response.interface';
+export type { ListSavedViewsQuery } from './views/list-saved-views-query.interface';
 export type { ListSavedViewsResponse } from './views/list-saved-views-response.interface';
 export type { CreateSavedViewRequest } from './views/create-saved-view-request.interface';
 export type { UpdateSavedViewRequest } from './views/update-saved-view-request.interface';

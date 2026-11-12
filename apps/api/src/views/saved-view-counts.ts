@@ -37,13 +37,19 @@ export function viewCondition(userId: string, query: SavedViewQuery): Prisma.Sql
 
 /**
  * Live link counts of every view plus the total, in one grouped query (`COUNT(*) FILTER`) over the
- * user's live links. `null` entries (views that cannot be applied) count 0 without SQL.
+ * user's live links, narrowed to a feed (scope, folder, tags: #335) when one is given, so a view
+ * counts what it adds inside that feed. `null` entries (views that cannot be applied) count 0 without SQL.
  */
 export async function countViews(
   db: LinkDbClient,
   userId: string,
   queries: readonly (SavedViewQuery | null)[],
+  feed?: SavedViewQuery,
 ): Promise<SavedViewCounts> {
+  const feedCondition = feed === undefined ? Prisma.sql`TRUE` : viewCondition(userId, feed);
+  if (feedCondition === null) {
+    return { total: 0, counts: queries.map(() => 0) };
+  }
   const conditions = queries.map((query) => (query === null ? null : viewCondition(userId, query)));
   const filters = conditions.map((condition) =>
     condition === null ? Prisma.sql`0` : Prisma.sql`(COUNT(*) FILTER (WHERE ${condition}))::int`,
@@ -55,7 +61,7 @@ export async function countViews(
   const rows = await db.$queryRaw<{ total: number; counts: number[] }[]>`
     SELECT COUNT(*)::int AS "total", ${counts} AS "counts"
     FROM "links" l
-    WHERE l."user_id" = ${userId}::uuid AND l."deleted_at" IS NULL
+    WHERE l."user_id" = ${userId}::uuid AND l."deleted_at" IS NULL AND (${feedCondition})
   `;
   const row = rows[0];
   return { total: row?.total ?? 0, counts: queries.map((_, index) => row?.counts[index] ?? 0) };

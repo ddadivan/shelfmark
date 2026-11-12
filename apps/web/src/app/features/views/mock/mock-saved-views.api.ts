@@ -4,6 +4,7 @@ import {
   SAVED_VIEW_LIMIT,
   SAVED_VIEW_SCOPE,
   type CreateSavedViewRequest,
+  type ListSavedViewsQuery,
   type ListSavedViewsResponse,
   type SavedViewQueryRequest,
   type SavedViewResponse,
@@ -13,7 +14,7 @@ import { defer, delay, type Observable, of, throwError } from 'rxjs';
 import { MockLibraryData } from '../../links/mock/mock-library-data';
 import { MOCK_LATENCY_MS } from '../../links/models/mock-latency.const';
 import type { SavedViewsApi } from '../models/saved-views-api.interface';
-import { listQueryOf, normalizeViewQuery } from '../utils/saved-view-query';
+import { feedListQuery, listQueryOf, normalizeViewQuery } from '../utils/saved-view-query';
 import type { MockSavedView } from './models/mock-saved-view.interface';
 
 function failure(status: number, statusText: string): Observable<never> {
@@ -34,8 +35,8 @@ const FAILING_NAME = 'Fails to save';
 export class MockSavedViewsApi implements SavedViewsApi {
   private readonly data = inject(MockLibraryData);
 
-  list(): Observable<ListSavedViewsResponse> {
-    return defer(() => of(this.view())).pipe(delay(MOCK_LATENCY_MS.List));
+  list(feed?: ListSavedViewsQuery): Observable<ListSavedViewsResponse> {
+    return defer(() => of(this.view(feed))).pipe(delay(MOCK_LATENCY_MS.List));
   }
 
   create(request: CreateSavedViewRequest): Observable<SavedViewResponse> {
@@ -129,9 +130,15 @@ export class MockSavedViewsApi implements SavedViewsApi {
     return found;
   }
 
-  private view(): ListSavedViewsResponse {
+  private view(feed?: ListSavedViewsQuery): ListSavedViewsResponse {
+    // A feed (#335): the total and every count are taken inside it, like the API's grouped query.
+    const inFeed = feed
+      ? new Set(this.data.matching(feedListQuery(feed)).map((link) => link.id))
+      : null;
+    const within = (links: readonly { id: string }[]): number =>
+      inFeed ? links.filter((link) => inFeed.has(link.id)).length : links.length;
     return {
-      total: this.data.links.length,
+      total: inFeed ? inFeed.size : this.data.links.length,
       items: this.data.views.map((view, position) => {
         const available =
           view.query.scope !== SAVED_VIEW_SCOPE.Folder ||
@@ -142,7 +149,7 @@ export class MockSavedViewsApi implements SavedViewsApi {
           query: { ...view.query, tags: [...view.query.tags] },
           position,
           available,
-          count: available ? this.data.matching(listQueryOf(view.query)).length : 0,
+          count: available ? within(this.data.matching(listQueryOf(view.query))) : 0,
         };
       }),
     };

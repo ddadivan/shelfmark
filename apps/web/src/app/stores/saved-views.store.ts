@@ -3,6 +3,7 @@ import { computed, inject, Injector } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import {
   SAVED_VIEW_LIMIT,
+  type ListSavedViewsQuery,
   type SavedViewQueryRequest,
   type SavedViewResponse,
 } from '@shelfmark/contracts';
@@ -18,9 +19,15 @@ const initialState: SavedViewsState = {
   items: [],
   total: null,
   loaded: false,
+  feedKey: '',
   loading: false,
   error: false,
 };
+
+/** Stable key of a feed, `''` for none. */
+export function feedKeyOf(feed: ListSavedViewsQuery | undefined): string {
+  return feed ? JSON.stringify([feed.scope ?? '', feed.folderId ?? '', feed.tag ?? []]) : '';
+}
 
 function renumber(items: readonly SavedViewResponse[]): SavedViewResponse[] {
   return items.map((item, position) => ({ ...item, position }));
@@ -56,29 +63,35 @@ export const SavedViewsStore = signalStore(
     // Bumped by every change: a list that started before it must not overwrite it.
     let version = 0;
     let firstLoad: Promise<void> | null = null;
+    // The feed the chips sit on (#335); bumped when it changes so a late answer is dropped.
+    let feed: ListSavedViewsQuery | undefined;
+    let feedSeq = 0;
 
-    async function fetchList(): Promise<void> {
+    async function fetchList(force = false): Promise<void> {
       const started = epoch;
       const startedVersion = version;
+      const startedFeed = feedSeq;
+      const startedKey = feedKeyOf(feed);
       if (!store.loaded()) {
         patchState(store, { loading: true, error: false });
       }
       try {
-        const response = await firstValueFrom(api().list());
-        if (started !== epoch) {
+        const response = await firstValueFrom(api().list(feed));
+        if (started !== epoch || startedFeed !== feedSeq) {
           return;
         }
         patchState(
           store,
-          startedVersion === version
+          force || startedVersion === version
             ? {
                 items: response.items,
                 total: response.total,
                 loaded: true,
+                feedKey: startedKey,
                 loading: false,
                 error: false,
               }
-            : { loading: false, total: response.total },
+            : { loading: false, total: response.total, feedKey: startedKey },
         );
       } catch {
         if (started === epoch) {
@@ -97,12 +110,21 @@ export const SavedViewsStore = signalStore(
       epoch++;
       version++;
       firstLoad = null;
+      feed = undefined;
+      feedSeq++;
       patchState(store, initialState);
     });
 
     return {
-      /** Loads the views once; a failure can be retried by calling again. */
-      load(): Promise<void> {
+      /** Loads the views once (and again with the counts of another feed); a failure can be retried by calling again. */
+      load(next?: ListSavedViewsQuery): Promise<void> {
+        if (feedKeyOf(next) !== feedKeyOf(feed)) {
+          // Another feed: the counts are read again for it (the views themselves stay).
+          feed = next;
+          feedSeq++;
+          firstLoad = null;
+          return fetchList(true);
+        }
         if (store.loaded()) {
           return Promise.resolve();
         }
@@ -201,7 +223,11 @@ export const SavedViewsStore = signalStore(
           const response = await firstValueFrom(api().reorder(next.map((item) => item.id)));
           if (started === epoch && version === mine) {
             version++;
-            patchState(store, { items: response.items, total: response.total });
+            // The answer counts the whole library: inside a feed the order is already shown.
+            patchState(
+              store,
+              feed === undefined ? { items: response.items, total: response.total } : {},
+            );
           }
           return true;
         } catch {

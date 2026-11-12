@@ -15,7 +15,6 @@
       <div class="add-link__fields">
         <ui-textarea
           class="add-link__several-text"
-          (paste)="onSeveralPaste($event)"
           [label]="'links.add.several.label' | transloco"
           [placeholder]="'links.add.several.placeholder' | transloco"
           [hint]="'links.add.several.hint' | transloco: { max: LINK_LIMIT.BatchMax }"

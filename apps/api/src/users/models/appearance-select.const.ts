@@ -6,6 +6,7 @@ export const APPEARANCE_SELECT = {
   customThemeBackground: true,
   customThemeCorners: true,
   motion: true,
+  customColours: true,
   appearanceSavedAt: true,
   textSize: true,
   font: true,

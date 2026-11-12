@@ -1,4 +1,10 @@
-import type { FolderColour, FolderIcon, FolderResponse } from '@shelfmark/contracts';
+import type {
+  FolderColour,
+  FolderEmoji,
+  FolderIcon,
+  FolderResponse,
+  HexColour,
+} from '@shelfmark/contracts';
 import type { FolderRow } from './models/folder-row.interface';
 
 // The columns only ever hold values the API validated (the colour also has a CHECK), so the
@@ -8,8 +14,8 @@ export function toFolderResponse(row: FolderRow, linkCount: number): FolderRespo
     id: row.id,
     parentId: row.parentId,
     name: row.name,
-    colour: row.colour as FolderColour,
-    icon: row.icon as FolderIcon,
+    colour: row.colour as FolderColour | HexColour,
+    icon: row.icon as FolderIcon | FolderEmoji,
     position: row.position,
     pinned: row.pinnedPosition !== null,
     linkCount,

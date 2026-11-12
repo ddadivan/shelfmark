@@ -72,6 +72,21 @@ describe('SavedViewsComponent', () => {
     expect(host.querySelectorAll('b.ui-saved-views__count')).toHaveLength(2);
   });
 
+  it('pads a one-digit count with a figure space so every count of two digits or less has one width', () => {
+    const { host, update } = setup();
+    update((c) =>
+      c.items.set([
+        { id: 'a', label: 'A', count: 7 },
+        { id: 'b', label: 'B', count: 39 },
+        { id: 'c', label: 'C', count: 120 },
+      ]),
+    );
+    const counts = [...host.querySelectorAll('.ui-saved-views__count')].map(
+      (node) => node.textContent,
+    );
+    expect(counts).toEqual(['7\u2007', '39', '120']);
+  });
+
   it('presses the chip of activeId, and none when it matches nothing', () => {
     const { update, bodies } = setup();
     update((c) => c.activeId.set('v'));

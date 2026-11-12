@@ -9,6 +9,7 @@ import {
   MOTION_PREFERENCE,
   THEME_PREFERENCE,
   isCustomTheme,
+  isHexColour,
   isMotionPreference,
   isThemePreference,
   type CustomTheme,
@@ -22,7 +23,10 @@ import type { AppearanceRow } from './models/appearance-row.interface';
  */
 export function toAppearanceSettings(
   row: AppearanceRow,
-): Pick<UserSettingsResponse, 'theme' | 'customTheme' | 'motion' | 'appearanceSaved'> &
+): Pick<
+  UserSettingsResponse,
+  'theme' | 'customTheme' | 'motion' | 'appearanceSaved' | 'customColours'
+> &
   LayoutSettings {
   const d = LAYOUT_SETTINGS_DEFAULT;
   const customTheme: unknown = {
@@ -36,6 +40,7 @@ export function toAppearanceSettings(
     customTheme: isCustomTheme(customTheme) ? customTheme : { ...CUSTOM_THEME_DEFAULT },
     motion: isMotionPreference(row.motion) ? row.motion : MOTION_PREFERENCE.System,
     appearanceSaved: row.appearanceSavedAt !== null,
+    customColours: row.customColours.filter(isHexColour),
     textSize: isTextSize(row.textSize) ? row.textSize : d.textSize,
     font: isAppFont(row.font) ? row.font : d.font,
     density: isDensity(row.density) ? row.density : d.density,

@@ -103,6 +103,8 @@
 
 // "Lighter" count: muted on a plain chip, regular weight on the filled one (no opacity on text).
 .ui-saved-views__count {
+  // A one-digit count is padded with a figure space (`countText`) so 7 and 39 are the same width:
+  // a count that changes width while another feed's numbers arrive would count as a layout shift.
   font-weight: 400;
   font-variant-numeric: tabular-nums;
   color: var(--text-muted);

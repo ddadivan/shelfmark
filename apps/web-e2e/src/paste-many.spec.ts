@@ -129,7 +129,9 @@ test.describe('paste several links (mock API)', () => {
     await expect(many.getByRole('button', { name: 'Save 3 links' })).toBeEnabled();
   });
 
-  test('a paste into the several-links text area opens the list at once', async ({ page }) => {
+  test('pastes into the several-links text area stay in it until Find links (#335)', async ({
+    page,
+  }) => {
     await openFeed(page);
     await page.getByRole('button', { name: 'Add link' }).first().click();
     await page
@@ -140,8 +142,19 @@ test.describe('paste several links (mock API)', () => {
       .getByRole('dialog', { name: 'Add several links' })
       .getByRole('textbox', { name: 'Paste links, one per line or inside any text' });
 
-    await pasteInto(text, 'https://example.org/a https://example.org/b https://example.org/c');
+    await pasteInto(text, 'https://example.org/a https://example.org/b');
+    await expect(text).toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Add 2 links' })).toHaveCount(0);
+    // A synthetic paste inserts nothing, so type the text like several pastes and edits would.
+    await text.fill('https://example.org/a https://example.org/b');
+    await text.press('Enter');
+    await text.pressSequentially('https://example.org/c');
+    await expect(text).toBeFocused();
 
+    await page
+      .getByRole('dialog', { name: 'Add several links' })
+      .getByRole('button', { name: 'Find links' })
+      .click();
     await expect(
       page.getByRole('dialog', { name: 'Add 3 links' }).locator('.paste-many__row'),
     ).toHaveCount(3);

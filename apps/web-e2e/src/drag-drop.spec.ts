@@ -1,4 +1,5 @@
 import { type Locator, type Page } from '@playwright/test';
+import { pickFolderMenuItem } from './support/a11y-flows';
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
 import { settled } from './support/settled';
@@ -73,6 +74,32 @@ test.describe('drag a link to a folder (mock API)', () => {
     await expect(page.getByRole('heading', { name: PASTA, exact: true })).toBeVisible();
   });
 
+  test('a pinned folder takes the card like the folder tree; rows that cannot take it are muted (#335)', async ({
+    page,
+  }) => {
+    test.skip(isCompact(page), 'phones have no sidebar; "Move to folder" is the way there');
+    await pickFolderMenuItem(page, READING, 'Pin to sidebar');
+    const pinned = page.locator('app-sidebar-pinned .pinned__item').filter({ hasText: READING });
+    await expect(pinned).toBeVisible();
+    const card = page.locator('li.library__item').filter({ hasText: PASTA });
+    const allLinks = treeRow(page, 'All links');
+
+    await dragOver(page, card, pinned);
+    await expect(pinned).toHaveClass(/pinned__item--drop/);
+    await expect(pinned).toContainText('Move here');
+    // All links, Favorites and Recently opened cannot take a link: muted, no-drop cursor, no highlight.
+    await expect(allLinks).toHaveClass(/ui-tree__row--no-drop/);
+    await expect(allLinks).not.toHaveClass(/ui-tree__row--drop\b/);
+    await expect(allLinks).toHaveCSS('cursor', 'no-drop');
+    await expect(treeRow(page, 'Favorites')).toHaveClass(/ui-tree__row--no-drop/);
+    await expect(treeRow(page, 'Unsorted')).not.toHaveClass(/ui-tree__row--no-drop/);
+    await page.mouse.up();
+
+    await expect(page.getByRole('heading', { name: PASTA, exact: true })).toHaveCount(0);
+    await expect(page.getByRole('status').filter({ hasText: `Moved to ${READING}` })).toBeVisible();
+    await expect(allLinks).not.toHaveClass(/ui-tree__row--no-drop/);
+  });
+
   test('dragging a picked card carries every picked card, with one toast and Undo', async ({
     page,
   }) => {
@@ -86,6 +113,9 @@ test.describe('drag a link to a folder (mock API)', () => {
       await card.hover();
       await card.locator('.ui-checkbox__box').click();
     }
+    await settled(page);
+    // The cards are tall and few per row (#335): picking the third scrolled the grabbed one away.
+    await items.nth(1).scrollIntoViewIfNeeded();
     await settled(page);
     const boxes = await Promise.all([0, 1, 2].map((index) => items.nth(index).boundingBox()));
 

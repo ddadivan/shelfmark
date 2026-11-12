@@ -15,7 +15,10 @@
     <!-- Mobile shell: no header; every page has its own title and the tab bar is the navigation. -->
     @if (!viewport.compact()) {
       <header class="shell__header">
-        <app-header-search />
+        <!-- Settings pages have nothing to search: no field, no button (#335). -->
+        @if (!inSettings()) {
+          <app-header-search />
+        }
         <span class="shell__spacer"></span>
         <ui-button
           variant="ghost"
@@ -64,10 +67,10 @@
               <ui-menu-item icon="settings" (activated)="openSettings()">
                 {{ 'shell.settings' | transloco }}
               </ui-menu-item>
-              <ui-menu-item icon="download" (activated)="exportAll(EXPORT_FORMAT.Json)">
+              <ui-menu-item icon="code" (activated)="exportAll(EXPORT_FORMAT.Json)">
                 {{ 'export.all.json' | transloco }}
               </ui-menu-item>
-              <ui-menu-item icon="bookmark" (activated)="exportAll(EXPORT_FORMAT.Html)">
+              <ui-menu-item icon="globe" (activated)="exportAll(EXPORT_FORMAT.Html)">
                 {{ 'export.all.html' | transloco }}
               </ui-menu-item>
               <ui-menu-item icon="message" (activated)="feedback.open()">

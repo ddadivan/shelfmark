@@ -20,7 +20,10 @@ const meta: Meta<ColorPickerComponent> = {
   },
   args: {
     label: 'Your own colour',
-    pickerLabel: 'Choose a colour',
+    pickerLabel: 'Colour',
+    saturationLabel: 'Saturation',
+    brightnessLabel: 'Brightness',
+    hueLabel: 'Hue',
     hexLabel: 'Hex code',
     invalidMessage: 'Enter a colour as # and six digits or letters a–f, like #2e6a99',
     value: '',
@@ -35,6 +38,9 @@ const meta: Meta<ColorPickerComponent> = {
         <ui-color-picker
           [label]="label"
           [pickerLabel]="pickerLabel"
+          [saturationLabel]="saturationLabel"
+          [brightnessLabel]="brightnessLabel"
+          [hueLabel]="hueLabel"
           [hexLabel]="hexLabel"
           [invalidMessage]="invalidMessage"
           [selected]="selected"
@@ -67,9 +73,9 @@ export const AllVariants: Story = {
         @for (theme of themes; track theme) {
           <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane">
             <div style="display: flex; flex-wrap: wrap; gap: 0.625rem; max-width: 22rem">
-              <ui-color-picker label="Own colour" pickerLabel="Choose a colour" hexLabel="Hex code" invalidMessage="Not a colour" />
-              <ui-color-picker label="Own colour, chosen" pickerLabel="Choose a colour" hexLabel="Hex code" invalidMessage="Not a colour" value="#23716c" selected />
-              <ui-color-picker label="Own colour, open" pickerLabel="Choose a colour" hexLabel="Hex code" invalidMessage="Not a colour" value="#7a4b8a" [open]="true" />
+              <ui-color-picker label="Own colour" pickerLabel="Colour" saturationLabel="Saturation" brightnessLabel="Brightness" hueLabel="Hue" hexLabel="Hex code" invalidMessage="Not a colour" />
+              <ui-color-picker label="Own colour, chosen" pickerLabel="Colour" saturationLabel="Saturation" brightnessLabel="Brightness" hueLabel="Hue" hexLabel="Hex code" invalidMessage="Not a colour" value="#23716c" selected />
+              <ui-color-picker label="Own colour, open" pickerLabel="Colour" saturationLabel="Saturation" brightnessLabel="Brightness" hueLabel="Hue" hexLabel="Hex code" invalidMessage="Not a colour" value="#7a4b8a" [open]="true" />
             </div>
           </div>
         }

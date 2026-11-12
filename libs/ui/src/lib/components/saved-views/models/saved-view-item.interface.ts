@@ -6,4 +6,6 @@ export interface SavedViewItem {
   count: number | null;
   /** Accessible name of the chip's "…" button ("Actions for Videos"); the button renders only when set. */
   menuLabel?: string;
+  /** Tooltip (and description) of the chip: what it filters, for example "Links detected as videos". */
+  hint?: string;
 }

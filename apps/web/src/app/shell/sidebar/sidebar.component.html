@@ -6,93 +6,92 @@
   @if (showLogo()) {
     <a class="sidebar__logo" routerLink="/links"><ui-logo /></a>
   }
-  @if (!foldersOnly()) {
-    <ui-tree
-      [fixedNodes]="fixedNodes()"
-      [activeId]="activeId()"
-      [ariaLabel]="'shell.sidebar.views' | transloco"
-      (selected)="select($event)"
-    />
-    <app-sidebar-pinned [activeId]="activeId()" />
-  }
-  @if (foldersReady()) {
-    <ui-tree
-      #folderTree
-      [nodes]="nodes()"
-      [activeId]="activeId()"
-      [heading]="'shell.sidebar.folders' | transloco"
-      [ariaLabel]="'shell.sidebar.foldersTree' | transloco"
-      [menuLabel]="menuLabel()"
-      [menuNodeId]="menuNodeId()"
-      [dropTargetId]="drag.treeTargetId()"
-      [dropLabel]="'links.drag.moveHere' | transloco"
-      reorderable
-      (selected)="select($event)"
-      (contextMenu)="openMenu($event)"
-      (reordered)="reorder($event)"
-      (reorderStarted)="reorderStarted()"
-    >
-      <ui-button
-        uiTreeHeadingAction
-        variant="ghost"
-        size="sm"
-        iconOnly
-        iconLeft="add"
-        [iconSize]="ICON_SIZE.Md"
-        [ariaLabel]="'shell.sidebar.newFolder' | transloco"
-        [uiTooltip]="'shell.sidebar.newFolder' | transloco"
-        (click)="createTopLevel()"
-      />
-    </ui-tree>
-  } @else if (loaderShown()) {
-    <!-- The first load: nothing before 300 ms, then rows of the right height; never empty sections. -->
-    <div class="sidebar__loading" aria-hidden="true">
-      <ui-skeleton [shape]="SKELETON_SHAPE.Tree" [count]="foldersOnly() ? 5 : 4" />
-    </div>
-  }
-
-  @if (folders.error()) {
-    <p class="sidebar__error">
-      {{ 'shell.sidebar.loadFailed' | transloco }}
-      <ui-button [size]="buttonSize()" (click)="retry()">{{
-        'shell.sidebar.retry' | transloco
-      }}</ui-button>
-    </p>
-  }
-
-  @if (!foldersOnly() && tagsReady()) {
-    <app-sidebar-tags />
-  }
-
-  @if (!foldersOnly() && howItWorks.cardVisible()) {
-    <app-how-it-works-card class="sidebar__how-it-works" />
-  }
-
-  @if (!foldersOnly()) {
-    <!-- Trash sits under a divider at the very bottom (Main spec); a quiet "Send feedback" icon
-      button shares its row on wide screens (#315; the phone has it in the You list). -->
-    <div class="sidebar__trash">
+  <div class="sidebar__scroll">
+    @if (!foldersOnly()) {
       <ui-tree
-        class="sidebar__trash-tree"
-        [fixedNodes]="trashNodes()"
+        [fixedNodes]="fixedNodes()"
         [activeId]="activeId()"
-        [ariaLabel]="'trash.title' | transloco"
-        (selected)="openTrash()"
+        [noDropIds]="drag.treeNoDropIds()"
+        [ariaLabel]="'shell.sidebar.views' | transloco"
+        (selected)="select($event)"
       />
-      @if (!phone()) {
+      <app-sidebar-pinned [activeId]="activeId()" />
+    }
+    @if (foldersReady()) {
+      <ui-tree
+        #folderTree
+        [nodes]="nodes()"
+        [activeId]="activeId()"
+        [heading]="'shell.sidebar.folders' | transloco"
+        [ariaLabel]="'shell.sidebar.foldersTree' | transloco"
+        [menuLabel]="menuLabel()"
+        [menuNodeId]="menuNodeId()"
+        [dropTargetId]="drag.treeTargetId()"
+        [dropLabel]="'links.drag.moveHere' | transloco"
+        reorderable
+        (selected)="select($event)"
+        (contextMenu)="openMenu($event)"
+        (reordered)="reorder($event)"
+        (reorderStarted)="reorderStarted()"
+      >
         <ui-button
-          class="sidebar__feedback"
+          uiTreeHeadingAction
           variant="ghost"
           size="sm"
           iconOnly
-          iconLeft="message"
-          ariaHaspopup="dialog"
+          iconLeft="add"
           [iconSize]="ICON_SIZE.Md"
-          [ariaLabel]="'shell.sendFeedback' | transloco"
-          [uiTooltip]="'shell.sendFeedback' | transloco"
-          (click)="feedback.open()"
+          [ariaLabel]="'shell.sidebar.newFolder' | transloco"
+          [uiTooltip]="'shell.sidebar.newFolder' | transloco"
+          (click)="createTopLevel()"
+        />
+      </ui-tree>
+    } @else if (loaderShown()) {
+      <!-- The first load: nothing before 300 ms, then rows of the right height; never empty sections. -->
+      <div class="sidebar__loading" aria-hidden="true">
+        <ui-skeleton [shape]="SKELETON_SHAPE.Tree" [count]="foldersOnly() ? 5 : 4" />
+      </div>
+    }
+
+    @if (folders.error()) {
+      <p class="sidebar__error">
+        {{ 'shell.sidebar.loadFailed' | transloco }}
+        <ui-button [size]="buttonSize()" (click)="retry()">{{
+          'shell.sidebar.retry' | transloco
+        }}</ui-button>
+      </p>
+    }
+
+    @if (!foldersOnly() && tagsReady()) {
+      <app-sidebar-tags />
+    }
+
+    @if (!foldersOnly() && howItWorks.cardVisible()) {
+      <app-how-it-works-card class="sidebar__how-it-works" />
+    }
+  </div>
+
+  @if (!foldersOnly()) {
+    <!-- The footer stays put (#335): "Send feedback" (desktop only; the phone has it in the You list),
+      then Trash under its divider (Main spec). -->
+    <div class="sidebar__footer">
+      @if (feedbackNodes().length) {
+        <ui-tree
+          [fixedNodes]="feedbackNodes()"
+          [activeId]="activeId()"
+          [noDropIds]="drag.treeNoDropIds()"
+          [ariaLabel]="'shell.sidebar.footer' | transloco"
+          (selected)="footerSelected($event)"
         />
       }
+      <ui-tree
+        class="sidebar__trash"
+        [fixedNodes]="trashNodes()"
+        [activeId]="activeId()"
+        [noDropIds]="drag.treeNoDropIds()"
+        [ariaLabel]="'trash.title' | transloco"
+        (selected)="footerSelected($event)"
+      />
     </div>
   }
 

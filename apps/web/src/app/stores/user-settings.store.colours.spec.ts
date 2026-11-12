@@ -13,6 +13,7 @@ function setup(folderColours = true) {
     trashRetentionDays: 30,
     folderColours,
     pauseHistory: false,
+    customColours: [],
     ...MOCK_APPEARANCE_DEFAULTS,
     ...LIBRARY_SETTINGS_DEFAULT,
   };

@@ -151,11 +151,13 @@ describe('utility mixins', () => {
 describe('motion mixins', () => {
   it.each([
     ['enter(pop)', 'ui-pop-in var(--duration-base) var(--ease-out) both'],
+    ['enter(disclose)', 'ui-disclose-in var(--duration-base) var(--ease-in-out) both'],
     ['enter(fade)', 'ui-reveal var(--duration-base) var(--ease-out) both'],
     ['enter(toast)', 'ui-toast-in var(--duration-slow) var(--ease-spring) both'],
     ['enter(sheet)', 'ui-sheet-in var(--duration-slow) var(--ease-drawer) both'],
     ['enter(drawer)', 'ui-drawer-in var(--duration-slow) var(--ease-drawer) both'],
     ['leave(drawer)', 'ui-drawer-out var(--duration-base) var(--ease-in) both'],
+    ['leave(disclose)', 'ui-disclose-out var(--duration-fast) var(--ease-in-out) both'],
     ['leave(pop)', 'ui-pop-out var(--duration-fast) var(--ease-out) both'],
     ['leave(toast)', 'ui-toast-out var(--duration-fast) var(--ease-in) both'],
     ['leave(sheet)', 'ui-sheet-out var(--duration-base) var(--ease-in) both'],
@@ -234,6 +236,8 @@ describe('motion mixins', () => {
     const names = [...out.matchAll(/@keyframes (\S+)/g)].map((m) => m[1]);
     expect(names).toEqual([
       'ui-pop-in',
+      'ui-disclose-in',
+      'ui-disclose-out',
       'ui-pop-out',
       'ui-fade-out',
       'ui-reveal',

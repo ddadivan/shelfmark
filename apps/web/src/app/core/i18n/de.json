@@ -670,6 +670,7 @@
       "you": "Du"
     },
     "sidebar": {
+      "footer": "Hilfe und Papierkorb",
       "nav": "Bibliothek",
       "foldersNav": "Ordner",
       "tree": "Ansichten und Ordner",
@@ -830,8 +831,58 @@
         "user": "Person",
         "settings": "Einstellungen",
         "download": "Download",
-        "share": "Teilen"
-      }
+        "share": "Teilen",
+        "ball": "Ball",
+        "bike": "Fahrrad",
+        "book": "Buch",
+        "bulb": "Glühbirne",
+        "calendar": "Kalender",
+        "camera": "Kamera",
+        "car": "Auto",
+        "chart": "Diagramm",
+        "cloud": "Wolke",
+        "coffee": "Kaffee",
+        "dumbbell": "Hantel",
+        "film": "Film",
+        "flag": "Flagge",
+        "gamepad": "Spielcontroller",
+        "gift": "Geschenk",
+        "globe": "Globus",
+        "hammer": "Hammer",
+        "health": "Gesundheit",
+        "heart": "Herz",
+        "home": "Zuhause",
+        "kids": "Kinder",
+        "leaf": "Blatt",
+        "map-pin": "Kartenmarkierung",
+        "mountain": "Berg",
+        "music": "Musik",
+        "palette": "Palette",
+        "paw": "Pfote",
+        "plane": "Flugzeug",
+        "rocket": "Rakete",
+        "shopping-bag": "Einkaufstasche",
+        "sun": "Sonne",
+        "tree": "Baum",
+        "trophy": "Pokal",
+        "umbrella": "Regenschirm",
+        "utensils": "Essen",
+        "wallet": "Geldbörse"
+      },
+      "own": {
+        "group": "Deine eigenen Farben",
+        "add": "Eigene Farbe hinzufügen",
+        "picker": "Farbe wählen"
+      },
+      "ownSwatch": "Deine Farbe {{colour}}",
+      "emoji": {
+        "label": "Emoji",
+        "hint": "Ein Emoji statt eines Symbols verwenden",
+        "placeholder": "🍕",
+        "invalid": "Gib genau ein Emoji ein."
+      },
+      "iconsShowAll": "Alle Symbole anzeigen ({{count}})",
+      "iconsShowFewer": "Weniger anzeigen"
     }
   },
   "library": {
@@ -1089,7 +1140,15 @@
           "invalid": "Gib # und sechs Ziffern oder Buchstaben a–f ein, z. B. #2e6a99.",
           "hint": "Shelfmark hält einen Kontrast von 4,5:1: Auf der anderen Basis nutzt es einen dunkleren oder helleren Ton deiner Farbe.",
           "warning": "Diese Farbe ist auf deinem Hintergrund schwer lesbar ({{ratio}}:1, nötig sind 4,5:1).",
-          "use": "{{colour}} verwenden"
+          "use": "{{colour}} verwenden",
+          "saturation": "Sättigung",
+          "brightness": "Helligkeit",
+          "hue": "Farbton"
+        },
+        "ownBackground": {
+          "label": "Deine eigene Hintergrundfarbe",
+          "hint": "Text muss lesbar bleiben (4,5:1): Falls nötig, nutzt Shelfmark einen helleren oder dunkleren Ton deiner Farbe.",
+          "warning": "Text ist auf diesem Hintergrund schwer lesbar ({{ratio}}:1, nötig sind 4,5:1)."
         }
       },
       "layout": {
@@ -1790,6 +1849,11 @@
     "unavailable": {
       "title": "Diese Ansicht wartet auf ihren Ordner",
       "detail": "Der Ordner von {{name}} liegt im Papierkorb. Stell ihn wieder her, um die Ansicht zu nutzen."
+    },
+    "kindHint": {
+      "video": "Links, die als Videos erkannt wurden",
+      "article": "Links, die als Artikel erkannt wurden",
+      "shopping": "Links, die als Shopping erkannt wurden"
     }
   },
   "feedback": {

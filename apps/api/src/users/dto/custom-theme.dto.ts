@@ -16,14 +16,15 @@ import {
 } from '@shelfmark/contracts';
 import { IsIn, ValidateBy, type ValidationArguments } from 'class-validator';
 
-/** `background` must be one of the backgrounds of `base` (`CUSTOM_THEME_BACKGROUNDS`). */
+/** `background` is one of the backgrounds of `base` (`CUSTOM_THEME_BACKGROUNDS`) or an own `#rrggbb` (#335). */
 function BelongsToBase(): PropertyDecorator {
   return ValidateBy({
     name: 'belongsToBase',
     validator: {
       validate: (value: unknown, args?: ValidationArguments): boolean =>
         isBackgroundOfBase((args?.object as Partial<CustomTheme> | undefined)?.base, value),
-      defaultMessage: (): string => 'customTheme.background must be a background of its base',
+      defaultMessage: (): string =>
+        'customTheme.background must be a background of its base or a lower-case #rrggbb colour',
     },
   });
 }
@@ -63,13 +64,15 @@ export class CustomThemeDto implements CustomTheme {
   accent!: CustomThemeAccent | HexColour;
 
   @ApiProperty({
-    enum: Object.values(CUSTOM_THEME_BACKGROUND),
+    oneOf: [
+      { type: 'string', enum: Object.values(CUSTOM_THEME_BACKGROUND) },
+      { type: 'string', pattern: HEX_COLOUR_PATTERN.source },
+    ],
     example: CUSTOM_THEME_BACKGROUND.Paper,
-    description: 'One of the backgrounds of `base`',
+    description: 'One of the backgrounds of `base`, or an own colour as lower-case `#rrggbb`',
   })
-  @IsIn(Object.values(CUSTOM_THEME_BACKGROUND))
   @BelongsToBase()
-  background!: CustomThemeBackground;
+  background!: CustomThemeBackground | HexColour;
 
   @ApiProperty({ enum: Object.values(CUSTOM_THEME_CORNERS), example: CUSTOM_THEME_CORNERS.Soft })
   @IsIn(Object.values(CUSTOM_THEME_CORNERS))

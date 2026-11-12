@@ -52,6 +52,7 @@ import { HowItWorksService } from '../../features/how-it-works/services/how-it-w
 import { FeedbackDialogService } from '../../features/feedback/services/feedback-dialog.service';
 import { HowItWorksCardComponent } from '../../features/how-it-works/components/how-it-works-card/how-it-works-card.component';
 import { SIDEBAR_RECENT_ID } from './models/sidebar-recent-id.const';
+import { SIDEBAR_FEEDBACK_ID } from './models/sidebar-feedback-id.const';
 import { SIDEBAR_TRASH_ID } from './models/sidebar-trash-id.const';
 import { sidebarActiveId } from './sidebar-active-id';
 import { SidebarTreeFocusService } from './sidebar-tree-focus.service';
@@ -155,14 +156,16 @@ export class SidebarComponent {
       this.transloco.selectTranslate('shell.sidebar.folderActions', { name: '{name}' }),
       this.transloco.selectTranslate('links.recent.title'),
       this.transloco.selectTranslate('trash.title'),
+      this.transloco.selectTranslate('shell.sendFeedback'),
     ]).pipe(
-      map(([all, unsorted, favorites, actions, recent, trash]) => ({
+      map(([all, unsorted, favorites, actions, recent, trash, feedback]) => ({
         all,
         unsorted,
         favorites,
         actions,
         recent,
         trash,
+        feedback,
       })),
     ),
   );
@@ -206,17 +209,26 @@ export class SidebarComponent {
     ];
   });
 
-  /** The Trash row; its count shows once the list has loaded and only while Trash is not empty. */
+  /** "Send feedback" above the divider (not on the phone, which has it in the You list). */
+  protected readonly feedbackNodes = computed<UiTreeNode[]>(() => {
+    const labels = this.labels();
+    if (!labels || this.phone()) {
+      return [];
+    }
+    return [{ id: SIDEBAR_FEEDBACK_ID, name: labels.feedback, icon: 'message' }];
+  });
+
+  /** Trash under the divider; its count shows once the list has loaded and only while not empty. */
   protected readonly trashNodes = computed<UiTreeNode[]>(() => {
-    const label = this.labels()?.trash;
-    if (!label) {
+    const labels = this.labels();
+    if (!labels) {
       return [];
     }
     const total = this.trash.total();
     return [
       {
         id: SIDEBAR_TRASH_ID,
-        name: label,
+        name: labels.trash,
         icon: 'trash',
         ...count(this.trash.loaded() && total > 0 ? total : undefined),
       },
@@ -269,7 +281,11 @@ export class SidebarComponent {
     await this.router.navigate(fixed ? [`/${fixed}`] : [`/${APP_PATH.Folders}`, node.id]);
   }
 
-  protected async openTrash(): Promise<void> {
+  protected async footerSelected(node: UiTreeNode): Promise<void> {
+    if (node.id === SIDEBAR_FEEDBACK_ID) {
+      this.feedback.open();
+      return;
+    }
     await this.router.navigate([`/${APP_PATH.Trash}`]);
   }
 

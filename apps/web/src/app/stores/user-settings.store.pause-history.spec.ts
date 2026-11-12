@@ -14,6 +14,7 @@ function setup(pauseHistory = false) {
     trashRetentionDays: 30,
     folderColours: true,
     pauseHistory,
+    customColours: [],
     ...MOCK_APPEARANCE_DEFAULTS,
     ...LIBRARY_SETTINGS_DEFAULT,
   };
@@ -57,6 +58,7 @@ describe('UserSettingsStore pause history', () => {
       trashRetentionDays: 30,
       folderColours: true,
       pauseHistory: true,
+      customColours: [],
       ...MOCK_APPEARANCE_DEFAULTS,
       ...LIBRARY_SETTINGS_DEFAULT,
     });

@@ -210,12 +210,12 @@ export class RecentHistoryComponent {
     }
   }
 
-  protected folderColour(link: LinkResponse): FolderColour {
+  protected folderColour(link: LinkResponse): FolderColour | string {
     const folder = link.folderId === null ? undefined : this.folders.entityMap()[link.folderId];
     return this.settings.shownColour(folder?.colour ?? FOLDER_DEFAULT_COLOUR);
   }
 
-  protected folderIcon(link: LinkResponse): FolderIcon {
+  protected folderIcon(link: LinkResponse): FolderIcon | string {
     const folder = link.folderId === null ? undefined : this.folders.entityMap()[link.folderId];
     return folder?.icon ?? FOLDER_DEFAULT_ICON;
   }

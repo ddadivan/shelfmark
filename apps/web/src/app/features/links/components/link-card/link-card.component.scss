@@ -27,6 +27,8 @@
   @include type(body);
   @include line-clamp(2);
 
+  // Two lines are always reserved, a note or not: every card has the same height (#335).
+  min-block-size: calc(2 * 1lh);
   margin: var(--space-1) 0 0;
   color: var(--text-muted);
 }
@@ -38,6 +40,8 @@
 
   // The card body is a flex column: the row sits at the bottom of every card, so the star lines
   // up across a row of cards.
+  // The row keeps the height of the star (32px) even when it has neither star nor tags.
+  min-block-size: calc(var(--space-2) + #{rem(32px)});
   padding: var(--space-2) 0 0;
   margin: auto 0 0;
 }
@@ -45,9 +49,12 @@
 .link-card__tags {
   display: flex;
   flex: 1;
-  flex-wrap: wrap;
+
+  // One line of chips (up to three and "+N"): a long tag is cut, the row never grows.
+  flex-wrap: nowrap;
   gap: var(--space-1);
   min-width: 0;
+  overflow: hidden;
   padding: 0;
   margin: 0;
   list-style: none;

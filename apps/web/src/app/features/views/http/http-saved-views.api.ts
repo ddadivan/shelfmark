@@ -1,8 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import {
   SAVED_VIEW_ENDPOINT,
   type CreateSavedViewRequest,
+  type ListSavedViewsQuery,
   type ListSavedViewsResponse,
   type ReorderSavedViewsRequest,
   type SavedViewResponse,
@@ -17,8 +18,19 @@ import type { SavedViewsApi } from '../models/saved-views-api.interface';
 export class HttpSavedViewsApi implements SavedViewsApi {
   private readonly http = inject(HttpClient);
 
-  list(): Observable<ListSavedViewsResponse> {
+  list(feed?: ListSavedViewsQuery): Observable<ListSavedViewsResponse> {
+    let params = new HttpParams();
+    if (feed?.scope !== undefined) {
+      params = params.set('scope', feed.scope);
+    }
+    if (feed?.folderId !== undefined) {
+      params = params.set('folderId', feed.folderId);
+    }
+    for (const name of feed?.tag ?? []) {
+      params = params.append('tag', name);
+    }
     return this.http.get<ListSavedViewsResponse>(SAVED_VIEW_ENDPOINT, {
+      params,
       context: skipErrorToast(),
     });
   }

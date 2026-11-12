@@ -193,6 +193,42 @@ describe('AppShellComponent', () => {
     expect(search.handleShortcut).toHaveBeenCalledTimes(1);
   });
 
+  it('leaves the header search out on the settings pages (#335)', async () => {
+    const api: AuthApi = {
+      getSession: () => Promise.resolve(USER),
+      signIn: vi.fn(),
+      signInDemo: vi.fn(),
+      signOut: vi.fn(() => Promise.resolve()),
+    };
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: '',
+            component: AppShellComponent,
+            children: [{ path: 'settings', children: [] }],
+          },
+        ]),
+        provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
+        { provide: AUTH_API, useValue: api },
+        { provide: ONBOARDING_API, useValue: { complete: vi.fn() } },
+        { provide: RATING_API, useValue: { prompt: vi.fn(), record: vi.fn() } },
+        { provide: USER_SETTINGS_API, useValue: settingsApi },
+        { provide: ADMIN_API, useValue: adminApiStub() },
+      ],
+    });
+    await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
+    await TestBed.inject(AuthStore).ensureLoaded();
+    const harness = await RouterTestingHarness.create('/');
+    const element = harness.routeNativeElement as HTMLElement;
+    expect(element.querySelector('app-header-search')).not.toBeNull();
+
+    await TestBed.inject(Router).navigateByUrl('/settings');
+    await harness.fixture.whenStable();
+
+    expect(element.querySelector('app-header-search')).toBeNull();
+  });
+
   it('opens the shortcuts from the top bar button and from the ? key', async () => {
     const api: AuthApi = {
       getSession: () => Promise.resolve(USER),

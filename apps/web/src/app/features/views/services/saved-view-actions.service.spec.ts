@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { LINK_KIND, SAVED_VIEW_LIMIT, SAVED_VIEW_SCOPE } from '@shelfmark/contracts';
 import { MOCK_ID } from '@shelfmark/contracts/testing';
+import { VIEW_OUTCOME } from '../../../stores/models/view-outcome.const';
 import { SavedViewsStore } from '../../../stores/saved-views.store';
 import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
 import { MockLibraryData } from '../../links/mock/mock-library-data';
@@ -18,6 +19,7 @@ async function setup() {
       provideRouter([
         { path: 'links', children: [] },
         { path: 'unsorted', children: [] },
+        { path: 'favorites', children: [] },
         { path: 'folders/:folderId', children: [] },
       ]),
       { provide: SAVED_VIEWS_API, useClass: MockSavedViewsApi },
@@ -105,6 +107,17 @@ describe('SavedViewActionsService', () => {
     expect(router.url).toBe('/links');
   });
 
+  it('applies a view and All inside the feed it is opened on (#335)', async () => {
+    const { actions, store, router } = await setup();
+    const folder = { scope: LINKS_SCOPE.Folder, folderId: 'f1' } as const;
+    await actions.apply(store.items()[0], folder, store.items());
+    expect(router.url).toBe('/folders/f1?kind=video');
+    await actions.applyAll({ ...folder, kind: 'video' }, store.items());
+    expect(router.url).toBe('/folders/f1');
+    await actions.apply(store.items()[1], { scope: LINKS_SCOPE.Favorites }, store.items());
+    expect(router.url).toBe('/favorites?kind=article');
+  });
+
   it('does not apply a view whose folder is gone, and says why', async () => {
     const { actions, store, router, data } = await setup();
     data.views = [
@@ -140,7 +153,8 @@ describe('SavedViewActionsService', () => {
     await done;
     expect(store.items().at(-1)).toMatchObject({
       name: 'Inbox articles',
-      query: { scope: SAVED_VIEW_SCOPE.Unsorted, kind: LINK_KIND.Article },
+      // Saved on a feed other than All links: only the type, so it works on every feed (#335).
+      query: { scope: SAVED_VIEW_SCOPE.All, tags: [], q: '', kind: LINK_KIND.Article },
     });
     await until(() => {
       expect(document.body.textContent).toContain('View saved');
@@ -163,8 +177,9 @@ describe('SavedViewActionsService', () => {
   });
 
   it('explains a missing folder in the dialog', async () => {
-    const { actions } = await setup();
-    const done = actions.saveCurrent({ scope: LINKS_SCOPE.Folder, folderId: 'missing' });
+    const { actions, store } = await setup();
+    vi.spyOn(store, 'create').mockResolvedValue(VIEW_OUTCOME.Missing);
+    const done = actions.saveCurrent({ scope: LINKS_SCOPE.All });
     await opened();
     type('Gone');
     button('Save view').click();

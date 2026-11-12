@@ -27,6 +27,25 @@
   }
 }
 
+// Library cards (#335): the title always takes two lines (the card clamps it at two), so a one-line
+// title does not make its card shorter than the others.
+app-link-card .ui-card__heading {
+  min-block-size: calc(2 * #{rem(22px)});
+}
+
+// Narrow cards (a fluid grid of about 200px cards): below 15rem the date leaves the top row so the
+// site name is not cut against it. It stays in the DOM for screen readers (and in the site's
+// `title`), and the row keeps its height, so every card stays the same height.
+app-link-card ui-card {
+  container: link-card / inline-size;
+}
+
+@container link-card (width < #{rem(240px)}) {
+  .ui-card__date {
+    @include visually-hidden;
+  }
+}
+
 // Cards <-> list morph (View Transitions, started by the library page): every link has a
 // `view-transition-name`, so each card glides into its row. The pseudo-elements live on the
 // document, so these rules must stay global. Reduced motion never starts a transition.
@@ -55,7 +74,7 @@
 // item), so the folder under the pointer stays visible. Rotate, scale and translate are their own
 // properties on the inner card, so the CDK's `transform` on the root keeps following the pointer.
 // A badge (read from the template) names "Move 1 link" or "3 links"; a selection of several adds
-// two silhouettes behind the card, a small fanned deck (never more than two). Reduced motion: no
+// two silhouettes right behind the card, a tight deck (2px and 4px apart, never more than two). Reduced motion: no
 // tilt; the deck stays, static.
 .library__drag-preview {
   --drag-x: calc(var(--drag-grab-x, 0rem) + 1.25rem);
@@ -93,13 +112,13 @@
 }
 
 .library__drag-preview .library__drag-stack--near {
-  translate: calc(var(--drag-x) + #{rem(4px)}) calc(var(--drag-y) + #{rem(5px)});
-  rotate: -1.5deg;
+  translate: calc(var(--drag-x) + #{rem(2px)}) calc(var(--drag-y) + #{rem(2px)});
+  rotate: -3.5deg;
 }
 
 .library__drag-preview .library__drag-stack--far {
-  translate: calc(var(--drag-x) + #{rem(8px)}) calc(var(--drag-y) + #{rem(10px)});
-  rotate: 1deg;
+  translate: calc(var(--drag-x) + #{rem(4px)}) calc(var(--drag-y) + #{rem(4px)});
+  rotate: -3deg;
 }
 
 .library__drag-badge {

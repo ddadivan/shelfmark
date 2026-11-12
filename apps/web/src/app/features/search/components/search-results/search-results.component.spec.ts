@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import type { LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
 import { MOCK_FOLDERS, MOCK_LIBRARY_COUNTS, MOCK_LINKS } from '@shelfmark/contracts/testing';
 import axe from 'axe-core';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { LinkActionsService } from '../../../links/services/link-actions.service';
 import { FOLDERS_API } from '../../../links/models/folders-api.const';
 import { LINKS_API } from '../../../links/models/links-api.const';
@@ -80,7 +80,11 @@ const options = (): HTMLElement[] => [
   ...document.querySelectorAll<HTMLElement>('.ui-command-list__panel [role="option"]'),
 ];
 
-async function type(fixture: ComponentFixture<unknown>, text: string): Promise<void> {
+async function type(
+  fixture: ComponentFixture<unknown>,
+  text: string,
+  { waitForResults = true } = {},
+): Promise<void> {
   const input = field(fixture.nativeElement as HTMLElement);
   input.focus();
   input.value = text;
@@ -88,6 +92,21 @@ async function type(fixture: ComponentFixture<unknown>, text: string): Promise<v
   await fixture.whenStable();
   await new Promise((resolve) => setTimeout(resolve, SEARCH_DEBOUNCE_MS + 60));
   await fixture.whenStable();
+  if (!waitForResults) {
+    return;
+  }
+  // The results (or "nothing found") are in the panel: a request that answers after the next
+  // step is what made these tests depend on the speed of the machine.
+  await vi.waitFor(
+    () => {
+      TestBed.tick();
+      expect(
+        document.querySelector('.ui-command-list__panel [role="status"]')?.textContent?.trim() ??
+          '',
+      ).not.toBe('');
+    },
+    { timeout: PANEL_GONE_TIMEOUT_MS },
+  );
 }
 
 async function key(
@@ -107,7 +126,13 @@ async function key(
 }
 
 describe('SearchResultsComponent as the header field (popup)', { timeout: 30_000 }, () => {
-  afterEach(() => document.querySelector('app-search-results')?.remove());
+  afterEach(() => {
+    document.querySelector('app-search-results')?.remove();
+    // A panel left open by a test lives in the overlay pane: it must not be the next test's panel.
+    document.querySelectorAll('.cdk-overlay-container > *').forEach((node) => {
+      node.remove();
+    });
+  });
 
   it('is a closed combobox until the first character, then lists the results in a panel', async () => {
     const { element, fixture } = await setup();
@@ -175,6 +200,37 @@ describe('SearchResultsComponent as the header field (popup)', { timeout: 30_000
 
     await key(fixture, 'Escape');
     expect(field(element).value).toBe('');
+  });
+
+  it('results that arrive after Esc do not open the closed panel again', async () => {
+    const answer = new Subject<ListLinksResponse>();
+    const { element, fixture } = await setup(() => answer);
+
+    await type(fixture, 'signal', { waitForResults: false });
+    expect(panel()).not.toBeNull();
+    await key(fixture, 'Escape');
+    await panelGone();
+
+    // The request answers only now (a slow runner or network): the panel stays shut.
+    answer.next(page([link(1), link(2)]));
+    answer.complete();
+    await fixture.whenStable();
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    TestBed.tick();
+    expect(panel()).toBeNull();
+    expect(field(element).getAttribute('aria-expanded')).toBe('false');
+    expect(field(element).value).toBe('signal');
+  });
+
+  it('leaves nothing of the open panel in the page when the field is destroyed', async () => {
+    const { fixture } = await setup();
+    await type(fixture, 'signal');
+    expect(panel()).not.toBeNull();
+
+    fixture.destroy();
+
+    expect(document.querySelector('.ui-command-list__popup')).toBeNull();
+    expect(panel()).toBeNull();
   });
 
   it('focus() puts the caret in the field', async () => {

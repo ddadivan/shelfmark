@@ -24,6 +24,7 @@ function setup(account: Partial<UserSettingsResponse> = {}) {
     trashRetentionDays: 30,
     folderColours: true,
     pauseHistory: false,
+    customColours: [],
     ...MOCK_APPEARANCE_DEFAULTS,
     ...LIBRARY_SETTINGS_DEFAULT,
     ...account,

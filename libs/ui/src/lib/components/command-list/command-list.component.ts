@@ -261,6 +261,9 @@ export class CommandListComponent {
       event.preventDefault();
       event.stopImmediatePropagation();
       this.open.set(false);
+      // Close Aria's popup in the same step: the panel must not wait for the next effect flush
+      // (a slow runner flushes late) and nothing between the key and that flush may reopen it.
+      this.collapseAria();
     } else if (this.query() !== '') {
       event.preventDefault();
       event.stopImmediatePropagation();
@@ -339,6 +342,16 @@ export class CommandListComponent {
     this.selected.emit({ value: item.value(), background });
     if (!background) {
       this.open.set(false);
+    }
+  }
+
+  /** Collapses the Aria combobox without our own `expandedChange` handler reading it as a user action. */
+  private collapseAria(): void {
+    const aria = this.combo();
+    if (aria?.expanded()) {
+      this.syncing = true;
+      aria.expanded.set(false);
+      this.syncing = false;
     }
   }
 

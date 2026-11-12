@@ -66,6 +66,8 @@ export * from './lib/services/toast';
 
 export * from './lib/utils/colour-contrast';
 export * from './lib/utils/custom-accent';
+export * from './lib/utils/custom-background';
+export * from './lib/utils/folder-colour';
 export * from './lib/utils/loader-timing';
 export * from './lib/utils/media';
 export * from './lib/utils/reorder-drop-line';

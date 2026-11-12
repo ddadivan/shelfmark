@@ -4,11 +4,14 @@ import {
   Component,
   ElementRef,
   inject,
+  numberAttribute,
   input,
   model,
   output,
 } from '@angular/core';
 import type { FormValueControl } from '@angular/forms/signals';
+import { folderColourShades } from '../../utils/folder-colour/folder-colour';
+import { parseHex } from '../../utils/colour-contrast/colour-contrast';
 import { nextFieldId } from '../field/field-ids';
 import { FOLDER_COLOUR } from '../folder-icon/models/folder-colour.const';
 import type { FolderColour } from '../folder-icon/models/folder-colour.type';
@@ -35,6 +38,9 @@ import type { ChoiceOption } from './models/choice-option.interface';
     '[class.ui-choice-grid--swatch]': 'kind() === CHOICE_GRID_KIND.Swatch',
     '[class.ui-choice-grid--icon]': 'kind() === CHOICE_GRID_KIND.Icon',
     '[class.ui-choice-grid--disabled]': 'disabled()',
+    '[class.ui-choice-grid--single-line]': 'singleLine()',
+    '[class.ui-choice-grid--columns]': 'columns() > 0',
+    '[style.--ui-choice-columns]': 'columns() > 0 ? columns() : null',
     role: 'radiogroup',
     '[attr.aria-label]': 'ariaLabel() || null',
     '[attr.aria-labelledby]': 'ariaLabelledby() || null',
@@ -55,7 +61,11 @@ export class ChoiceGridComponent implements FormValueControl<string> {
   readonly options = input.required<readonly ChoiceOption[]>();
   readonly kind = input<ChoiceGridKind>(CHOICE_GRID_KIND.Swatch);
   /** Icons only: the colour of every icon tile. */
-  readonly colour = input<FolderColour>(FOLDER_COLOUR.Graphite);
+  readonly colour = input<FolderColour | string>(FOLDER_COLOUR.Graphite);
+  /** Swatches: all options stay on one line, each shrinking from 36px (24px at the least) to fit. */
+  readonly singleLine = input(false, { transform: booleanAttribute });
+  /** Icons: a fixed number of equal columns instead of as many 40px tiles as fit (0 = automatic). */
+  readonly columns = input(0, { transform: numberAttribute });
   readonly disabled = input(false, { transform: booleanAttribute });
   /** Form field name; the native radios share it. Generated when empty. */
   readonly name = input('');
@@ -80,8 +90,34 @@ export class ChoiceGridComponent implements FormValueControl<string> {
     this.value.set(option.value);
   }
 
-  protected tone(option: ChoiceOption): FolderColour {
-    return option.colour ?? this.colour();
+  /** The built-in colour name that styles the option; an own `#rrggbb` has none (`own`). */
+  protected tone(option: ChoiceOption): string {
+    const colour = option.colour ?? this.colour();
+    return parseHex(colour) ? 'own' : colour;
+  }
+
+  /**
+   * An own colour (`#rrggbb`) as the option's glyph colour (CSSOM, no style attribute): a swatch
+   * paints the colour itself, an icon tile its readable shade (`light-dark()` by the theme).
+   */
+  protected ownGlyph(option: ChoiceOption): string | null {
+    const colour = option.colour ?? this.colour();
+    if (!parseHex(colour)) {
+      return null;
+    }
+    if (this.kind() === CHOICE_GRID_KIND.Swatch) {
+      return colour;
+    }
+    const shades = folderColourShades(colour);
+    return shades ? `light-dark(${shades.light.glyph}, ${shades.dark.glyph})` : null;
+  }
+
+  /** The tint behind an icon of an own colour, light and dark. */
+  protected ownTile(option: ChoiceOption): string | null {
+    const shades = folderColourShades(option.colour ?? this.colour());
+    return shades && this.kind() !== CHOICE_GRID_KIND.Swatch
+      ? `light-dark(${shades.light.tile}, ${shades.dark.tile})`
+      : null;
   }
 
   protected onFocusOut(event: FocusEvent): void {

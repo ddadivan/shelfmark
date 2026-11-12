@@ -100,8 +100,15 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     await expect(html).toHaveAttribute('data-custom-accent', 'own');
     expect(await token(page, '--accent')).toBe('#23716c');
     await expect(choice(page, 'Accent colour', 'Ocean')).not.toBeChecked();
+    // The colour is a swatch of the account now (#335) and the "+" panel closed.
+    await expect(choice(page, 'Accent colour', '#23716c')).toBeChecked();
+    await expect(swatch).toHaveAttribute('aria-expanded', 'false');
+    await expect(swatch.locator('.ui-color-picker__plus')).toBeVisible();
+    await expect(hex).toHaveCount(0);
 
     // Too faint: not applied, a warning offers the nearest shade that keeps 4.5:1.
+    await swatch.click();
+    await expect(hex).toBeFocused();
     await hex.fill('#f5d0e0');
     await hex.press('Enter');
     await expect(page.getByText(/hard to read on your background/u)).toBeVisible();
@@ -114,6 +121,9 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     await expectNoBlockingViolations(page, test.info());
 
     // Esc closes the panel and returns to the swatch; a reload keeps the colour.
+    await expect(hex).toHaveCount(0);
+    await swatch.click();
+    await expect(hex).toBeFocused();
     await hex.press('Escape');
     await expect(swatch).toBeFocused();
     await expect(swatch).toHaveAttribute('aria-expanded', 'false');
@@ -245,9 +255,9 @@ test.describe('appearance width (mock API, #315)', () => {
     [1440, 900],
     [1920, 1080],
   ] as const) {
-    test(`at ${width}px Appearance is wider than the 880px pages, options beside the preview`, async ({
-      page,
-    }, testInfo) => {
+    test(`at ${width}px Appearance is wider than the 880px pages and ${
+      width >= 1440 ? 'puts the options beside the preview' : 'stacks the preview above the options'
+    }`, async ({ page }, testInfo) => {
       test.skip(testInfo.project.name !== E2E_PROJECT.Desktop, 'a desktop layout check');
       await page.setViewportSize({ width, height });
       await seedSession(page);
@@ -259,18 +269,22 @@ test.describe('appearance width (mock API, #315)', () => {
       const options = await page.locator('.appearance__options').boundingBox();
       const preview = await page.locator('.appearance__preview').boundingBox();
 
-      // The other pages keep the 880px column; Appearance takes up to the mockup's 1224px.
+      // The other pages keep the 880px column; Appearance takes up to 100rem (#335).
       expect(library?.width).toBeLessThanOrEqual(880.5);
-      expect(host?.width).toBeLessThanOrEqual(1224.5);
+      expect(host?.width).toBeLessThanOrEqual(1600.5);
       expect(host?.width ?? 0).toBeGreaterThan(library?.width ?? 0);
-      if (width >= 1920) {
-        expect(host?.width).toBeGreaterThan(1223.5);
+      if (width >= 1440) {
+        // From 90em: two columns, the preview right of the options, about 680 : 520.
+        expect(preview?.x ?? 0).toBeGreaterThan((options?.x ?? 0) + (options?.width ?? 0));
+        const ratio = (options?.width ?? 0) / (preview?.width ?? 1);
+        expect(ratio).toBeGreaterThan(1.2);
+        expect(ratio).toBeLessThan(1.4);
+      } else {
+        // Below 90em: one column, the preview on top, the options never squeezed.
+        expect(preview?.y ?? 0).toBeLessThan(options?.y ?? 0);
+        expect(options?.x).toBeCloseTo(preview?.x ?? 0, 0);
+        expect(options?.width ?? 0).toBeGreaterThan(600);
       }
-      // Two columns: the preview on the right of the options, about 680 : 520.
-      expect(preview?.x ?? 0).toBeGreaterThan((options?.x ?? 0) + (options?.width ?? 0));
-      const ratio = (options?.width ?? 0) / (preview?.width ?? 1);
-      expect(ratio).toBeGreaterThan(1.2);
-      expect(ratio).toBeLessThan(1.4);
     });
   }
 });

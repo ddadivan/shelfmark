@@ -19,7 +19,10 @@ import {
   LIBRARY_SORT,
   LIBRARY_VIEW,
   LINK_OPEN_TARGET,
+  HEX_COLOUR_PATTERN,
   MOTION_PREFERENCE,
+  USER_LIMIT,
+  type HexColour,
   THEME_PREFERENCE,
   TRASH_RETENTION_DAYS,
   type LibrarySort,
@@ -31,7 +34,18 @@ import {
   type UpdateUserSettingsRequest,
 } from '@shelfmark/contracts';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsIn, IsObject, IsUUID, ValidateIf, ValidateNested } from 'class-validator';
+import {
+  ArrayMaxSize,
+  ArrayUnique,
+  IsArray,
+  IsBoolean,
+  IsIn,
+  IsObject,
+  IsUUID,
+  Matches,
+  ValidateIf,
+  ValidateNested,
+} from 'class-validator';
 import { CustomThemeDto } from './custom-theme.dto';
 
 // Absent is fine, but an explicit null is not (IsOptional would let it through).
@@ -66,6 +80,19 @@ export class UpdateUserSettingsDto implements UpdateUserSettingsRequest {
   @ValidateNested()
   @Type(() => CustomThemeDto)
   customTheme?: CustomThemeDto;
+
+  @ApiPropertyOptional({
+    type: [String],
+    maxItems: USER_LIMIT.CustomColoursMax,
+    example: ['#3a7bd5'],
+    description: 'The whole list of own colours: lower-case #rrggbb, no duplicates, at most 12',
+  })
+  @ValidateIf(present)
+  @IsArray()
+  @ArrayMaxSize(USER_LIMIT.CustomColoursMax)
+  @ArrayUnique()
+  @Matches(HEX_COLOUR_PATTERN, { each: true, message: 'each colour must be a lower-case #rrggbb' })
+  customColours?: HexColour[];
 
   @ApiPropertyOptional({
     enum: Object.values(MOTION_PREFERENCE),

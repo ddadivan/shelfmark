@@ -75,23 +75,20 @@ function row(element: HTMLElement, name: string): HTMLElement {
 describe('SidebarComponent', () => {
   afterEach(() => localStorage.removeItem(MOCK_LIBRARY_SETTINGS_STORAGE_KEY));
 
-  it('has a quiet "Send feedback" icon button next to Trash that opens the dialog (#315)', async () => {
+  it('has a "Send feedback" row above Trash that opens the dialog (#335)', async () => {
     const { element, fixture } = await setup();
     const open = vi.spyOn(TestBed.inject(FeedbackDialogService), 'open').mockImplementation(() => {
       // The dialog itself is covered by the feedback specs.
     });
-    const button = element.querySelector<HTMLButtonElement>(
-      '.sidebar__trash .sidebar__feedback button',
-    );
+    const names = rows(element).map((item) => item.querySelector('.ui-tree__name')?.textContent);
 
-    expect(button?.getAttribute('aria-label')).toBe('Send feedback');
-    expect(button?.getAttribute('aria-haspopup')).toBe('dialog');
-    button?.click();
+    expect(names.slice(-2)).toEqual(['Send feedback', 'Trash']);
+    row(element, 'Send feedback').click();
     await fixture.whenStable();
     expect(open).toHaveBeenCalledTimes(1);
   });
 
-  it('leaves the "Send feedback" button out on a phone (it is in the You list)', async () => {
+  it('leaves the "Send feedback" row out on a phone (it is in the You list)', async () => {
     TestBed.configureTestingModule({
       providers: [
         {
@@ -107,7 +104,8 @@ describe('SidebarComponent', () => {
     });
     const { element } = await setup();
 
-    expect(element.querySelector('.sidebar__feedback')).toBeNull();
+    expect(rows(element).map((item) => item.textContent)).not.toContain('Send feedback');
+    expect(element.textContent).not.toContain('Send feedback');
   });
 
   it('drops the link counts when "Show folder counts" is off (#284)', async () => {
@@ -143,7 +141,7 @@ describe('SidebarComponent', () => {
     expect(names.slice(0, 4)).toEqual(['All links', 'Unsorted', 'Favorites', 'Recently opened']);
     // Trash is the last row, alone under a divider (its own tree), and has no count while empty.
     expect(names.at(-1)).toBe('Trash');
-    expect(element.querySelector('.sidebar__trash [role="tree"]')).not.toBeNull();
+    expect(element.querySelector('.sidebar__footer [role="tree"]')).not.toBeNull();
     expect(element.textContent).not.toContain('Pinned');
     expect(names).toContain(MOCK_NAME.FolderReading);
     const counts = rows(element)

@@ -1,8 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { FOLDER_COLOUR, FOLDER_DEFAULT_COLOUR, FOLDER_DEFAULT_ICON } from '@shelfmark/contracts';
+import {
+  FOLDER_COLOUR,
+  FOLDER_DEFAULT_COLOUR,
+  FOLDER_DEFAULT_ICON,
+  FOLDER_ICON,
+} from '@shelfmark/contracts';
 import { MOCK_ID, MOCK_NAME } from '@shelfmark/contracts/testing';
 import axe from 'axe-core';
+import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { FoldersStore } from '../../../stores/folders.store';
 import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
 import { MockFoldersApi } from '../../links/mock/mock-folders.api';
@@ -11,6 +17,8 @@ import { MockTagsApi } from '../../links/mock/mock-tags.api';
 import { FOLDERS_API } from '../../links/models/folders-api.const';
 import { LINKS_API } from '../../links/models/links-api.const';
 import { TAGS_API } from '../../links/models/tags-api.const';
+import { MockUserSettingsApi } from '../../settings/mock/mock-user-settings.api';
+import { USER_SETTINGS_API } from '../../settings/models/user-settings-api.const';
 import { FolderActionsService } from './folder-actions.service';
 
 async function setup() {
@@ -21,6 +29,7 @@ async function setup() {
       { provide: FOLDERS_API, useClass: MockFoldersApi },
       { provide: LINKS_API, useClass: MockLinksApi },
       { provide: TAGS_API, useClass: MockTagsApi },
+      { provide: USER_SETTINGS_API, useClass: MockUserSettingsApi },
     ],
   });
   await loadEnglish();
@@ -98,7 +107,9 @@ describe('FolderActionsService style', () => {
     expect(colours).toEqual(['Graphite', 'Sage', 'Ocean', 'Plum', 'Clay', 'Amber', 'Rose', 'Teal']);
     expect(radio('colour', 'Graphite').checked).toBe(true);
     expect(radio('icon', 'Folder').checked).toBe(true);
-    expect(root.querySelectorAll('[aria-labelledby="folder-style-icon"] input')).toHaveLength(21);
+    expect(root.querySelectorAll('[aria-labelledby="folder-style-icon"] input')).toHaveLength(
+      Object.values(FOLDER_ICON).length,
+    );
     button('Cancel').click();
     await closed();
   });
@@ -142,6 +153,100 @@ describe('FolderActionsService style', () => {
         icon: FOLDER_DEFAULT_ICON,
       });
     });
+  });
+
+  it('shows 28 common icons, a toggle opens all of them, and opens expanded for a later icon (#335)', async () => {
+    const { actions, store } = await setup();
+
+    void actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    const root = await opened();
+    const toggle = () =>
+      [...root.querySelectorAll('button')].find((candidate) =>
+        /^Show (all icons|fewer)/.test(candidate.textContent?.trim() ?? ''),
+      ) as HTMLButtonElement;
+    const more = root.querySelector('.folder-style__more') as HTMLElement;
+    const total = Object.values(FOLDER_ICON).length;
+
+    expect(root.querySelectorAll('.folder-style__more input')).toHaveLength(total - 28);
+    expect(root.querySelectorAll('[aria-labelledby="folder-style-icon"] input')).toHaveLength(
+      total,
+    );
+    expect(toggle().textContent?.trim()).toBe(`Show all icons (${total})`);
+    expect(toggle().getAttribute('aria-expanded')).toBe('false');
+    expect(toggle().getAttribute('aria-controls')).toBe(more.id);
+    expect(more.classList).not.toContain('is-open');
+
+    toggle().click();
+    TestBed.tick();
+    expect(toggle().textContent?.trim()).toBe('Show fewer');
+    expect(toggle().getAttribute('aria-expanded')).toBe('true');
+    expect(more.classList).toContain('is-open');
+    button('Cancel').click();
+    await closed();
+
+    // An icon behind the toggle: the dialog opens expanded.
+    await store.setStyle(MOCK_ID.FolderReading, { icon: FOLDER_ICON.Trophy });
+    void actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    const again = await opened();
+    expect(again.querySelector('.folder-style__more')?.classList).toContain('is-open');
+    expect(radio('icon', 'Trophy').checked).toBe(true);
+    button('Cancel').click();
+    await closed();
+  });
+
+  it('adds an own colour from the "+" swatch, keeps it as a swatch and saves it (#335)', async () => {
+    const { actions, store } = await setup();
+    const settings = TestBed.inject(UserSettingsStore);
+
+    const done = actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    const root = await opened();
+    // The eight built-in swatches are one line; the "+" swatch is the picker's.
+    expect(root.querySelector('.ui-choice-grid--single-line')).not.toBeNull();
+    (root.querySelector('.ui-color-picker__swatch') as HTMLButtonElement).click();
+    await until(() => {
+      expect(root.querySelector('.ui-color-picker__hex-input')).not.toBeNull();
+    });
+    const hex = root.querySelector('.ui-color-picker__hex-input') as HTMLInputElement;
+    hex.value = '#3A7BD5';
+    hex.dispatchEvent(new Event('input'));
+    hex.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    await until(() => {
+      expect(settings.customColours()).toEqual(['#3a7bd5']);
+      expect(root.querySelector('input[aria-label="Your colour #3a7bd5"]')).not.toBeNull();
+    });
+    expect(
+      (root.querySelector('input[aria-label="Your colour #3a7bd5"]') as HTMLInputElement).checked,
+    ).toBe(true);
+    button('Save').click();
+    await closed();
+    await done;
+
+    expect(store.entityMap()[MOCK_ID.FolderReading].colour).toBe('#3a7bd5');
+  });
+
+  it('takes exactly one emoji as the icon and refuses anything else (#335)', async () => {
+    const { actions, store } = await setup();
+
+    void actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    const root = await opened();
+    const field = root.querySelector('.folder-style__emoji input') as HTMLInputElement;
+
+    field.value = 'pizza';
+    field.dispatchEvent(new Event('input'));
+    button('Save').click();
+    await until(() => {
+      expect(root.textContent).toContain('Enter exactly one emoji');
+    });
+    expect(dialog()).not.toBeNull();
+
+    field.value = '🍕';
+    field.dispatchEvent(new Event('input'));
+    TestBed.tick();
+    expect(root.querySelector('.ui-folder-icon__emoji')?.textContent).toBe('🍕');
+    button('Save').click();
+    await closed();
+
+    expect(store.entityMap()[MOCK_ID.FolderReading].icon).toBe('🍕');
   });
 
   it('changes nothing on Cancel', async () => {

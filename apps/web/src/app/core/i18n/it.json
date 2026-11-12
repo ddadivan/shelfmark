@@ -682,6 +682,7 @@
       "you": "Tu"
     },
     "sidebar": {
+      "footer": "Aiuto e cestino",
       "nav": "Libreria",
       "foldersNav": "Cartelle",
       "tree": "Viste e cartelle",
@@ -846,8 +847,58 @@
         "user": "Utente",
         "settings": "Impostazioni",
         "download": "Download",
-        "share": "Condividi"
-      }
+        "share": "Condividi",
+        "ball": "Palla",
+        "bike": "Bicicletta",
+        "book": "Libro",
+        "bulb": "Lampadina",
+        "calendar": "Calendario",
+        "camera": "Fotocamera",
+        "car": "Auto",
+        "chart": "Grafico",
+        "cloud": "Nuvola",
+        "coffee": "Caffè",
+        "dumbbell": "Manubrio",
+        "film": "Film",
+        "flag": "Bandiera",
+        "gamepad": "Controller",
+        "gift": "Regalo",
+        "globe": "Globo",
+        "hammer": "Martello",
+        "health": "Salute",
+        "heart": "Cuore",
+        "home": "Casa",
+        "kids": "Bambini",
+        "leaf": "Foglia",
+        "map-pin": "Segnaposto",
+        "mountain": "Montagna",
+        "music": "Musica",
+        "palette": "Tavolozza",
+        "paw": "Zampa",
+        "plane": "Aereo",
+        "rocket": "Razzo",
+        "shopping-bag": "Borsa della spesa",
+        "sun": "Sole",
+        "tree": "Albero",
+        "trophy": "Trofeo",
+        "umbrella": "Ombrello",
+        "utensils": "Cibo",
+        "wallet": "Portafoglio"
+      },
+      "own": {
+        "group": "I tuoi colori",
+        "add": "Aggiungi un tuo colore",
+        "picker": "Scegli un colore"
+      },
+      "ownSwatch": "Il tuo colore {{colour}}",
+      "emoji": {
+        "label": "Emoji",
+        "hint": "Usa un emoji al posto di un'icona",
+        "placeholder": "🍕",
+        "invalid": "Inserisci un solo emoji."
+      },
+      "iconsShowAll": "Mostra tutte le icone ({{count}})",
+      "iconsShowFewer": "Mostra meno"
     }
   },
   "library": {
@@ -1110,7 +1161,15 @@
           "invalid": "Inserisci # e sei cifre o lettere a–f, ad esempio #2e6a99.",
           "hint": "Shelfmark mantiene un contrasto di 4,5:1: sull’altra base usa una tonalità più scura o più chiara del tuo colore.",
           "warning": "Questo colore è difficile da leggere sul tuo sfondo ({{ratio}}:1, serve 4,5:1).",
-          "use": "Usa {{colour}}"
+          "use": "Usa {{colour}}",
+          "saturation": "Saturazione",
+          "brightness": "Luminosità",
+          "hue": "Tonalità"
+        },
+        "ownBackground": {
+          "label": "Il tuo colore di sfondo",
+          "hint": "Il testo deve restare leggibile (4,5:1): se serve, Shelfmark usa una tonalità più chiara o più scura del tuo colore.",
+          "warning": "Il testo è difficile da leggere su questo sfondo ({{ratio}}:1, servono 4,5:1)."
         }
       },
       "layout": {
@@ -1827,6 +1886,11 @@
     "unavailable": {
       "title": "Questa vista aspetta la sua cartella",
       "detail": "La cartella di {{name}} è nel cestino. Ripristinala per usare la vista."
+    },
+    "kindHint": {
+      "video": "Link riconosciuti come video",
+      "article": "Link riconosciuti come articoli",
+      "shopping": "Link riconosciuti come acquisti"
     }
   },
   "feedback": {
