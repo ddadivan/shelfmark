@@ -20,9 +20,9 @@ import {
   UiDialogRef,
   type ChoiceOption,
 } from '@shelfmark/ui';
-import { pluralKey } from '../../../core/i18n/plural-key';
-import type { FolderStyleDialogData } from '../models/folder-style-dialog-data.interface';
-import type { FolderStyleFormModel } from '../models/folder-style-form-model.interface';
+import { pluralKey } from '../../../../core/i18n/plural-key';
+import type { FolderStyleDialogData } from '../../models/folder-style-dialog-data.interface';
+import type { FolderStyleFormModel } from '../../models/folder-style-form-model.interface';
 
 const COLOURS: readonly FolderColour[] = Object.values(FOLDER_COLOUR);
 const ICONS: readonly FolderIcon[] = Object.values(FOLDER_ICON);

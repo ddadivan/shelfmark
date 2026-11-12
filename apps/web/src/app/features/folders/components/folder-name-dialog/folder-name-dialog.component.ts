@@ -23,11 +23,11 @@ import {
   NoticeComponent,
   UiDialogRef,
 } from '@shelfmark/ui';
-import { FoldersStore } from '../../../stores/folders.store';
-import { buildFolderOptions } from '../../links/add-link/folder-options';
-import { FOLDER_NAME_ERROR } from '../models/folder-name-error.const';
-import { FOLDER_NAME_MODE } from '../models/folder-name-mode.const';
-import type { FolderNameDialogData } from '../models/folder-name-dialog-data.interface';
+import { FoldersStore } from '../../../../stores/folders.store';
+import { buildFolderOptions } from '../../../links/add-link/folder-options';
+import { FOLDER_NAME_ERROR } from '../../models/folder-name-error.const';
+import { FOLDER_NAME_MODE } from '../../models/folder-name-mode.const';
+import type { FolderNameDialogData } from '../../models/folder-name-dialog-data.interface';
 
 /**
  * Create or rename a folder: one name field. The dialog stays open with an error notice when

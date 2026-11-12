@@ -3,21 +3,21 @@ import { provideRouter, Router } from '@angular/router';
 import { FOLDER_DELETE_MODE } from '@shelfmark/contracts';
 import { MOCK_ID, MOCK_NAME } from '@shelfmark/contracts/testing';
 import { DialogService, type SelectOption } from '@shelfmark/ui';
-import { FoldersStore } from '../../stores/folders.store';
-import { loadEnglish, provideTranslocoForTest } from '../../testing/transloco-testing';
-import { FOLDERS_API } from '../links/models/folders-api.const';
-import { LINKS_API } from '../links/models/links-api.const';
-import { MOCK_FOLDER_NAME } from '../links/models/mock-folder-name.const';
-import { TAGS_API } from '../links/models/tags-api.const';
-import { MockFoldersApi } from '../links/mock/mock-folders.api';
-import { MockLibraryData } from '../links/mock/mock-library-data';
-import { MockLinksApi } from '../links/mock/mock-links.api';
-import { MockTagsApi } from '../links/mock/mock-tags.api';
+import { FoldersStore } from '../../../stores/folders.store';
+import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
+import { FOLDERS_API } from '../../links/models/folders-api.const';
+import { LINKS_API } from '../../links/models/links-api.const';
+import { MOCK_FOLDER_NAME } from '../../links/models/mock-folder-name.const';
+import { TAGS_API } from '../../links/models/tags-api.const';
+import { MockFoldersApi } from '../../links/mock/mock-folders.api';
+import { MockLibraryData } from '../../links/mock/mock-library-data';
+import { MockLinksApi } from '../../links/mock/mock-links.api';
+import { MockTagsApi } from '../../links/mock/mock-tags.api';
 import { FolderActionsService } from './folder-actions.service';
-import type { MoveFolderDialogData } from './models/move-folder-dialog-data.interface';
+import type { MoveFolderDialogData } from '../models/move-folder-dialog-data.interface';
 import type { TreeComponent } from '@shelfmark/ui';
-import { SidebarTreeFocusService } from '../../shell/sidebar/sidebar-tree-focus.service';
-import { MoveFolderDialogComponent } from './move-folder-dialog/move-folder-dialog.component';
+import { SidebarTreeFocusService } from '../../../shell/sidebar/sidebar-tree-focus.service';
+import { MoveFolderDialogComponent } from '../components/move-folder-dialog/move-folder-dialog.component';
 
 async function setup() {
   TestBed.configureTestingModule({

@@ -10,9 +10,9 @@ import {
   SelectComponent,
   UiDialogRef,
 } from '@shelfmark/ui';
-import { FoldersStore } from '../../../stores/folders.store';
-import { buildFolderOptions } from '../../links/add-link/folder-options';
-import type { MoveFolderDialogData } from '../models/move-folder-dialog-data.interface';
+import { FoldersStore } from '../../../../stores/folders.store';
+import { buildFolderOptions } from '../../../links/add-link/folder-options';
+import type { MoveFolderDialogData } from '../../models/move-folder-dialog-data.interface';
 
 /**
  * Pick the new parent of a folder (or the top level). The folder itself and everything below it

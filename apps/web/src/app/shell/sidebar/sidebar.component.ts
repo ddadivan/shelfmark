@@ -35,7 +35,7 @@ import {
 import { ReorderAnnouncer } from '../../core/a11y/reorder-announcer.service';
 import { combineLatest, filter, map } from 'rxjs';
 import { ViewportService } from '../../core/layout/viewport.service';
-import { FolderActionsService } from '../../features/folders/folder-actions.service';
+import { FolderActionsService } from '../../features/folders/services/folder-actions.service';
 import { PinActionsService } from '../../features/pins/pin-actions.service';
 import { SidebarPinnedComponent } from '../../features/pins/sidebar-pinned/sidebar-pinned.component';
 import { SidebarTagsComponent } from '../../features/tags/sidebar-tags/sidebar-tags.component';

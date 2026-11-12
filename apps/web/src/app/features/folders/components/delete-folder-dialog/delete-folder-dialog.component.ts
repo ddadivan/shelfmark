@@ -16,8 +16,8 @@ import {
   type RadioOption,
 } from '@shelfmark/ui';
 import { combineLatest, map } from 'rxjs';
-import type { DeleteFolderDialogData } from '../models/delete-folder-dialog-data.interface';
-import { pluralKey } from '../../../core/i18n/plural-key';
+import type { DeleteFolderDialogData } from '../../models/delete-folder-dialog-data.interface';
+import { pluralKey } from '../../../../core/i18n/plural-key';
 
 /**
  * Delete a folder and its subfolders. When the subtree holds links the user chooses what happens

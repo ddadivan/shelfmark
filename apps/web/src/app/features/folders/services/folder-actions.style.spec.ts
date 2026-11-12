@@ -3,14 +3,14 @@ import { provideRouter } from '@angular/router';
 import { FOLDER_COLOUR, FOLDER_DEFAULT_COLOUR, FOLDER_DEFAULT_ICON } from '@shelfmark/contracts';
 import { MOCK_ID, MOCK_NAME } from '@shelfmark/contracts/testing';
 import axe from 'axe-core';
-import { FoldersStore } from '../../stores/folders.store';
-import { loadEnglish, provideTranslocoForTest } from '../../testing/transloco-testing';
-import { MockFoldersApi } from '../links/mock/mock-folders.api';
-import { MockLinksApi } from '../links/mock/mock-links.api';
-import { MockTagsApi } from '../links/mock/mock-tags.api';
-import { FOLDERS_API } from '../links/models/folders-api.const';
-import { LINKS_API } from '../links/models/links-api.const';
-import { TAGS_API } from '../links/models/tags-api.const';
+import { FoldersStore } from '../../../stores/folders.store';
+import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
+import { MockFoldersApi } from '../../links/mock/mock-folders.api';
+import { MockLinksApi } from '../../links/mock/mock-links.api';
+import { MockTagsApi } from '../../links/mock/mock-tags.api';
+import { FOLDERS_API } from '../../links/models/folders-api.const';
+import { LINKS_API } from '../../links/models/links-api.const';
+import { TAGS_API } from '../../links/models/tags-api.const';
 import { FolderActionsService } from './folder-actions.service';
 
 async function setup() {
