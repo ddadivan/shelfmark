@@ -355,7 +355,7 @@ CSR without SSR, zoneless, Transloco, strict-CSP build: ADR 0005; state: ADR 000
 | `/unsorted` | No folder | signed in | `features/library` |
 | `/favorites` | Favorites | signed in | `features/library` |
 | `/folders/:folderId` | Folder; nesting is shown in breadcrumbs, not in the URL | signed in | `features/library` |
-| `/settings` | Settings, one page per section: `/settings/account` (profile, sign out, deletion), `/appearance` (theme incl. Custom, text and layout, cards, folder colours, animations, live preview), `/feedback` (Your feedback: send form and the user's messages), `/shortcuts` (the keyboard shortcut list), `/import-export` (export only), `/library` (viewing, saving, Trash retention and the Trash row), `/privacy` (Remember recently opened, the link to Export, the policy); on tablet and desktop `/settings` goes to the first section, on a phone it is the You list | signed in | `features/settings` |
+| `/settings` | Settings, one page per section: `/settings/account` (profile, sign out, deletion), `/appearance` (theme incl. Custom, text and layout, cards, folder colours, animations, live preview), `/feedback` (Your feedback: send form and the user's messages), `/shortcuts` (the keyboard shortcut list), `/import-export` (export only), `/library` (viewing, saving, Trash retention and the Trash row), `/privacy` (Remember recently opened, the link to Export, the policy); from 1024px `/settings` goes to the first section, below it (phones and iPad portrait, #316) it is the You list | signed in | `features/settings` |
 | `/trash` | Trash: deleted links and folders, restore, delete forever, empty (the phone reaches it from the Library tab) | signed in | `features/trash` |
 | `/admin/feedback` | The author's feedback inbox: all messages, status filter, status and reply per message; `adminOnly` asks `GET /api/admin/status`, a non-admin is sent to `/links` | signed in, author only | `features/admin` |
 | `/share?url=&title=&text=` | Quick save from "Share" | signed in; guest goes to sign-in and back | `features/share` |
@@ -707,7 +707,7 @@ A minimalist, recognisable interface with light and dark themes on the own UI li
 
 - Minimalism, high-quality UI/UX, beginner-friendly; its own character, but grounded in the practices of Linear, Notion, Raindrop.
 - Light and dark theme in stage 1: system default, plus a manual toggle. Stage 2 (#273): a Custom theme on the light or dark base with a curated accent, background and corner scale (it only swaps token values: `html[data-theme=custom][data-custom-*]`, rules generated from SCSS maps in `libs/ui/src/styles/tokens/_custom.scss`); an own accent colour (#315, ADR 0041) is drawn in its nearest WCAG AA shade as custom properties on `html` (`customAccentTokens` in `libs/ui`) and the Animations setting (System, Full, Reduced; `html[data-motion=reduced]` joins `prefers-reduced-motion` in the `reduced-motion` mixin and in `ReducedMotion`). Both are account settings.
-- Responsive interface in stage 1: desktop, tablet and phone (from 360 px). On phone a floating tab bar (Library, Search, Add, Tags, You) replaces the sidebar: Library holds tiles (All links, Unsorted, Favorites, Recently opened as a bottom sheet) and the folders, Tags lists the tags, You holds the settings; the feed is one column.
+- Responsive interface in stage 1: desktop, tablet and phone (from 360 px). Navigation switches at 1024px (64em, #316): below it (phones and iPad portrait) a floating tab bar (Library, Search, Add, Tags, You) replaces the sidebar and the top bar, from 1024px up (iPad landscape, desktop) the sidebar layout; content stays fluid (the card grid keeps `auto-fill` columns, 1 on a phone, 2–3 on an iPad). `phone` (below 640px) is only for small-screen details: bottom sheets, one column, stacked buttons. On an iPad (640–1023px) forms (add / edit link, new folder, confirmations) open as centred dialogs, quick lists (Recently opened from Library) as a bottom sheet centred at about 560px with rounded top corners and swipe-to-close, menus stay popovers at their trigger; hover-only controls (checkboxes, the star, "…") are always visible on touch at any width. In the mobile shell: Library holds tiles (All links, Unsorted, Favorites, Recently opened as a bottom sheet) and the folders, Tags lists the tags, You holds the settings; the feed is one column.
 - Uniqueness comes not from bright colour but from micro-interactions, typography, empty-state illustrations and the logo.
 
 **The interface language is English.** Mockups, copy, onboarding and empty states are written in English. Translations (uk) come at the end of stage 1 or after it (see 5.1).
@@ -772,7 +772,7 @@ In CI: `@axe-core/playwright` on the key screens in both themes; the build fails
 - **Header:** logo on the left · global search in the centre (Ctrl/⌘+K) · on the right the "Add link" button, theme toggle, avatar menu (settings, sign out).
 - **Left sidebar:** All links · Unsorted · Favorites · folder tree · tags.
 - **Content:** breadcrumbs ("All links › Work › Angular", every level clickable) · toolbar (sorting, "cards / list" toggle) · feed.
-- **Recently opened:** its own page (`/recent`) reached from the sidebar row; on a phone a sheet from the Library tab (tab bar, #243).
+- **Recently opened:** its own page (`/recent`) reached from the sidebar row; in the mobile shell (below 1024px) a sheet from the Library tab (tab bar, #243, #316).
 
 **Tooltips** (`uiTooltip`, appear after 400 ms on hover or keyboard focus, not shown on touch screens): on every icon button (theme, avatar, new folder, view toggle, card actions, star), on titles truncated with "…" (full title), on relative dates ("2 days ago" → exact date). The tooltip shows the keyboard shortcut if there is one. A tooltip is never the only place where information is available.
 
@@ -787,7 +787,7 @@ In CI: `@axe-core/playwright` on the key screens in both themes; the build fails
 5. Editing a link
 6. Deleting a folder (choice: delete links / move to "Unsorted")
 7. Empty states (no links, empty folder, nothing found; #315 adds Unsorted, Favorites, Trash, Recently opened, a tag or type filter, an empty saved view, the phone Tags tab and an empty public collection in the same style: the page-level card centred in the content area with a play-once scene)
-8. Settings, a page per section (account with deletion, appearance, library with the Trash retention, export, privacy and data); the settings nav replaces the sidebar on tablet and desktop, the You list opens the pages on a phone
+8. Settings, a page per section (account with deletion, appearance, library with the Trash retention, export, privacy and data); the settings nav replaces the sidebar from 1024px, the You list opens the pages below it (#316)
 9. Privacy policy
 10. Trash (desktop and phone, with the empty state, selection and the "Empty trash" confirmation)
 11. Send feedback dialog (form, sending, thank you, error) and Settings › Your feedback (SendFeedback, SetFeedback); the author's feedback inbox is built from the same parts and has no mockup
