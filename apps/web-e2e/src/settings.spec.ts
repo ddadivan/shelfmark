@@ -69,16 +69,13 @@ test.describe('settings (mock auth)', () => {
     await expect(section).not.toHaveCSS('padding-left', '0px');
   });
 
-  test('appearance holds the theme and the language, privacy the policy link', async ({ page }) => {
+  test('appearance has no language row (#315), privacy the policy link', async ({ page }) => {
     await seedSession(page);
     await page.goto('/settings/appearance');
     const main = page.getByRole('main');
 
-    await expect(main.getByText('Interface language, date format and spell-check')).toBeVisible();
-    await expect(main.getByRole('link', { name: 'Change language' })).toHaveAttribute(
-      'href',
-      '/settings/language',
-    );
+    await expect(main.getByRole('heading', { level: 2, name: 'Theme' })).toBeVisible();
+    await expect(main.getByRole('link', { name: 'Change language' })).toHaveCount(0);
 
     await openSettingsSection(page, 'Privacy and data');
     await expect(page).toHaveURL(/\/settings\/privacy$/);

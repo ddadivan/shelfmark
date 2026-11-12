@@ -65,9 +65,7 @@ function libraryOf(settings: UserSettingsResponse): LibrarySettings {
     openLinksIn: settings.openLinksIn,
     showFolderCounts: settings.showFolderCounts,
     newLinksFolderId: settings.newLinksFolderId,
-    warnDuplicates: settings.warnDuplicates,
     fetchPreviews: settings.fetchPreviews,
-    keepQuery: settings.keepQuery,
   };
 }
 

@@ -173,6 +173,13 @@
           [spellcheck]="spellcheck()"
           [formField]="form.note"
         />
+        <ui-checkbox
+          #spellcheckBox
+          class="add-link__spellcheck"
+          [label]="'links.add.note.spellcheck' | transloco"
+          [checked]="spellcheck()"
+          (checkedChange)="setSpellcheck($event, spellcheckBox)"
+        />
 
         @if (editing) {
           <ui-select

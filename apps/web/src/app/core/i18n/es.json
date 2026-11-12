@@ -251,6 +251,7 @@
         "placeholder": "¿Por qué lo guardas?",
         "hint": "Te ayuda a encontrarlo después",
         "counter": "caracteres",
+        "spellcheck": "Revisar ortografía",
         "tooLong": "La nota es demasiado larga (máximo {{max}} caracteres)"
       },
       "duplicate": {
@@ -1158,21 +1159,6 @@
         }
       },
       "sidebar": {
-        "counts": {
-          "label": "Número de enlaces",
-          "hint": "Los números junto a las carpetas"
-        },
-        "recent": {
-          "label": "Recordar abiertos recientemente",
-          "hint": "Mantiene la lista Abiertos recientemente. Desactivado la borra y deja de registrar.",
-          "confirm": {
-            "title": "¿Dejar de recordar los abiertos recientemente?",
-            "message": "La lista Abiertos recientemente se borra y los enlaces que abras no se añaden hasta que vuelvas a activarlo. Tus enlaces siguen guardados.",
-            "confirm": "Borrar y detener",
-            "cancel": "Cancelar",
-            "close": "Cerrar"
-          }
-        },
         "colours": {
           "label": "Colores de carpeta",
           "hint": "Desactivado muestra todas las carpetas en grafito"
@@ -1212,12 +1198,7 @@
         "recent": "Abiertos recientemente"
       },
       "failed": "No se pudo guardar la apariencia",
-      "failedDetail": "Ha vuelto a como estaba.",
-      "language": {
-        "label": "Idioma",
-        "hint": "Idioma de la interfaz, formato de fecha y corrector ortográfico",
-        "value": "Cambiar idioma"
-      }
+      "failedDetail": "Ha vuelto a como estaba."
     },
     "privacy": {
       "policy": {
@@ -1226,8 +1207,18 @@
         "action": "Leer",
         "actionLabel": "Leer la política de privacidad"
       },
+      "recent": {
+        "label": "Recordar abiertos recientemente",
+        "hint": "Mantiene la lista Abiertos recientemente. Desactivado la borra y deja de registrar.",
+        "confirm": {
+          "title": "¿Dejar de recordar los abiertos recientemente?",
+          "message": "La lista Abiertos recientemente se borra y los enlaces que abras no se añaden hasta que vuelvas a activarlo. Tus enlaces siguen guardados.",
+          "confirm": "Borrar y detener",
+          "cancel": "Cancelar",
+          "close": "Cerrar"
+        }
+      },
       "data": {
-        "label": "Descarga tus datos",
         "hint": "Todo lo que has guardado, en JSON o HTML de marcadores",
         "action": "Abrir exportación"
       },
@@ -1294,28 +1285,10 @@
           "label": "Los enlaces nuevos van a",
           "hint": "Cuando pegas un enlace sin elegir carpeta"
         },
-        "duplicates": {
-          "label": "Avisar de duplicados",
-          "hint": "Muestra dónde guardaste ya el mismo enlace"
-        },
         "previews": {
           "label": "Obtener títulos y vistas previas",
           "hint": "Desactívalo para guardar solo la dirección"
-        },
-        "query": {
-          "label": "Conservar los parámetros de los enlaces",
-          "hint": "Desactivado quita el seguimiento como ?utm_source"
         }
-      },
-      "tags": {
-        "label": "Etiquetas",
-        "hint": {
-          "one": "{{count}} etiqueta. Cámbiale el nombre, combínala o elimínala.",
-          "many": "{{count}} etiquetas. Cámbiales el nombre, combínalas o elimínalas.",
-          "other": "{{count}} etiquetas. Cámbiales el nombre, combínalas o elimínalas."
-        },
-        "hintPending": "Cámbiales el nombre, combínalas o elimínalas",
-        "action": "Gestionar etiquetas"
       },
       "failed": "No se pudo guardar el ajuste",
       "failedDetail": "Ha vuelto a como estaba.",
@@ -1351,31 +1324,6 @@
           "cancel": "Cancelar",
           "close": "Cerrar"
         }
-      },
-      "folders": {
-        "title": "Etiquetas y carpetas",
-        "colours": {
-          "label": "Colores de carpeta",
-          "hint": "Iconos de carpeta en color en la barra lateral y los mosaicos",
-          "failed": "No se pudo guardar el ajuste",
-          "failedDetail": "Ha vuelto a como estaba."
-        },
-        "pinned": {
-          "label": "Fijados arriba",
-          "hint": "Hasta {{max}} carpetas y enlaces",
-          "action": "Editar fijados"
-        }
-      },
-      "pinnedDialog": {
-        "title": "Fijados",
-        "description": "El orden de la sección Fijados en la barra lateral.",
-        "empty": "No hay nada fijado. Usa «Fijar en la barra lateral» en el menú de una carpeta o un enlace.",
-        "list": "Elementos fijados",
-        "close": "Cerrar",
-        "done": "Listo",
-        "moveUp": "Subir {{name}}",
-        "moveDown": "Bajar {{name}}",
-        "unpin": "Quitar {{name}} de la barra lateral"
       }
     },
     "language": {
@@ -1384,10 +1332,6 @@
         "label": "Idioma de la interfaz",
         "hint": "Tus enlaces y notas se quedan como están",
         "browser": "Como mi navegador"
-      },
-      "spellcheck": {
-        "label": "Corrector ortográfico en notas",
-        "hint": "Usa el diccionario de tu navegador"
       },
       "dates": {
         "title": "Fechas y números"

@@ -2,7 +2,12 @@ import type { LibrarySort } from './library-sort.type';
 import type { LibraryView } from './library-view.type';
 import type { LinkOpenTarget } from './link-open-target.type';
 
-/** Settings › Library › Viewing and Saving (#284), part of `UserSettingsResponse`. */
+/**
+ * Settings › Library › Viewing and Saving (#284), part of `UserSettingsResponse`. The duplicate
+ * notice is always on and tracking parameters are always stripped (#315): the former
+ * `warnDuplicates` and `keepQuery` settings are gone; their columns are dropped by a later
+ * migration.
+ */
 export interface LibrarySettings {
   /** How a feed opens the first time. Default `cards`. */
   defaultView: LibraryView;
@@ -17,16 +22,9 @@ export interface LibrarySettings {
    * `null` is Unsorted. The server answers `null` once that folder is gone or in Trash.
    */
   newLinksFolderId: string | null;
-  /** The add-link dialog shows where the same link is saved already. Default on. */
-  warnDuplicates: boolean;
   /**
    * Off: a new link keeps only its address. The web app skips the preview fetch and the server
    * neither loads the page nor captures images for this user's new links. Default on.
    */
   fetchPreviews: boolean;
-  /**
-   * Off: tracking parameters (`TRACKING_QUERY_PARAMS`, `utm_*`) are removed from the address of a
-   * link when it is saved; every other parameter stays as written. Default off.
-   */
-  keepQuery: boolean;
 }

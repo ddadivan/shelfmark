@@ -18,16 +18,6 @@
       (valueChange)="setLanguage($event)"
     />
   </ui-settings-row>
-  <ui-settings-row
-    [title]="'settings.language.spellcheck.label' | transloco"
-    [description]="'settings.language.spellcheck.hint' | transloco"
-  >
-    <ui-switch
-      [label]="'settings.language.spellcheck.label' | transloco"
-      [checked]="language().spellcheck"
-      (checkedChange)="save({ spellcheck: $event })"
-    />
-  </ui-settings-row>
 </ui-settings-section>
 
 <ui-settings-section [title]="'settings.language.dates.title' | transloco">

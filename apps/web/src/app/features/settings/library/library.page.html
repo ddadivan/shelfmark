@@ -68,16 +68,6 @@
     />
   </ui-settings-row>
   <ui-settings-row
-    [title]="'settings.library.saving.duplicates.label' | transloco"
-    [description]="'settings.library.saving.duplicates.hint' | transloco"
-  >
-    <ui-switch
-      [label]="'settings.library.saving.duplicates.label' | transloco"
-      [checked]="library().warnDuplicates"
-      (checkedChange)="saveLibrary({ warnDuplicates: $event })"
-    />
-  </ui-settings-row>
-  <ui-settings-row
     [title]="'settings.library.saving.previews.label' | transloco"
     [description]="'settings.library.saving.previews.hint' | transloco"
   >
@@ -86,49 +76,6 @@
       [checked]="library().fetchPreviews"
       (checkedChange)="saveLibrary({ fetchPreviews: $event })"
     />
-  </ui-settings-row>
-  <ui-settings-row
-    [title]="'settings.library.saving.query.label' | transloco"
-    [description]="'settings.library.saving.query.hint' | transloco"
-  >
-    <ui-switch
-      [label]="'settings.library.saving.query.label' | transloco"
-      [checked]="library().keepQuery"
-      (checkedChange)="saveLibrary({ keepQuery: $event })"
-    />
-  </ui-settings-row>
-</ui-settings-section>
-
-<ui-settings-section [title]="'settings.library.folders.title' | transloco">
-  <ui-settings-row
-    [title]="'settings.library.tags.label' | transloco"
-    [description]="
-      tags.loaded()
-        ? (pluralKey('settings.library.tags.hint', tags.count()) | transloco: { count: tags.count() })
-        : ('settings.library.tags.hintPending' | transloco)
-    "
-  >
-    <ui-button [size]="BUTTON_SIZE.Sm" (click)="manageTags()">
-      {{ 'settings.library.tags.action' | transloco }}
-    </ui-button>
-  </ui-settings-row>
-  <ui-settings-row
-    [title]="'settings.library.folders.colours.label' | transloco"
-    [description]="'settings.library.folders.colours.hint' | transloco"
-  >
-    <ui-switch
-      [label]="'settings.library.folders.colours.label' | transloco"
-      [checked]="settings.coloursOn()"
-      (checkedChange)="setColours($event)"
-    />
-  </ui-settings-row>
-  <ui-settings-row
-    [title]="'settings.library.folders.pinned.label' | transloco"
-    [description]="'settings.library.folders.pinned.hint' | transloco: { max: PIN_LIMIT.Max }"
-  >
-    <ui-button [size]="BUTTON_SIZE.Sm" ariaHaspopup="dialog" (click)="editPinned()">
-      {{ 'settings.library.folders.pinned.action' | transloco }}
-    </ui-button>
   </ui-settings-row>
 </ui-settings-section>
 

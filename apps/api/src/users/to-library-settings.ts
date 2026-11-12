@@ -25,8 +25,6 @@ export function toLibrarySettings(row: LibraryRow, liveFolder: boolean): Library
       : LIBRARY_SETTINGS_DEFAULT.openLinksIn,
     showFolderCounts: row.showFolderCounts,
     newLinksFolderId: liveFolder ? row.newLinksFolderId : null,
-    warnDuplicates: row.warnDuplicates,
     fetchPreviews: row.fetchPreviews,
-    keepQuery: row.keepQuery,
   };
 }

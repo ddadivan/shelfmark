@@ -50,6 +50,8 @@ import {
   BUTTON_TYPE,
   INPUT_TYPE,
   SKELETON_SHAPE,
+  TOAST_KIND,
+  ToastService,
   type TagSuggestion,
 } from '@shelfmark/ui';
 import { firstValueFrom, switchMap, tap, timer, type Observable } from 'rxjs';
@@ -139,11 +141,13 @@ export class AddLinkDialogComponent {
   private readonly ref = inject<UiDialogRef<AddLinkResult>>(UiDialogRef);
   private readonly transloco = inject(TranslocoService);
   private readonly localeService = inject(LocaleService);
-  /** Settings › Language › Spell-check notes. */
+  /** "Check spelling" under the note (#315: moved here from Settings › Language). */
   protected readonly spellcheck = this.localeService.spellcheck;
   private readonly data = injectDialogData<AddLinkDialogData>();
-  /** Settings › Library › Saving: default folder, duplicate notice, whether pages are fetched. */
-  private readonly library = inject(UserSettingsStore).libraryShown;
+  private readonly settings = inject(UserSettingsStore);
+  private readonly toasts = inject(ToastService);
+  /** Settings › Library › Saving: the default folder and whether pages are fetched. */
+  private readonly library = this.settings.libraryShown;
 
   /** Ticks when the active language or its translations change, so messages re-translate. */
   private readonly i18n = toSignal(this.transloco.events$, { initialValue: undefined });
@@ -248,16 +252,14 @@ export class AddLinkDialogComponent {
 
   /** "Fetch titles and previews" is on: the preview loads the page (else it only checks duplicates). */
   protected readonly fetchPages = computed(() => this.library().fetchPreviews);
-  private readonly warnDuplicates = computed(() => this.library().warnDuplicates);
 
   /** The typed URL once it is a valid http(s) URL; the preview follows it. */
   private readonly previewUrl = computed(() => {
     const url = this.form.url();
     const value = url.value().trim();
-    // Neither a page nor a duplicate to show (an edit only ever checks duplicates): no request.
-    const wanted = this.warnDuplicates() || (!this.editing && this.fetchPages());
-    // Editing: the saved address needs no preview, only a changed one is checked for duplicates.
-    return wanted && url.valid() && value !== this.original?.url ? value : undefined;
+    // The duplicate check always runs (#315), so a valid new address always asks the server; an
+    // edit only checks a changed address for duplicates (the saved one needs no preview).
+    return url.valid() && value !== this.original?.url ? value : undefined;
   });
 
   private readonly preview = rxResource({
@@ -331,7 +333,7 @@ export class AddLinkDialogComponent {
   protected readonly previewHost = computed(() => displayHost(this.previewUrl() ?? ''));
 
   protected readonly duplicate = computed(() =>
-    this.warnDuplicates() && this.previewState() === PREVIEW_STATE.Ready && this.preview.hasValue()
+    this.previewState() === PREVIEW_STATE.Ready && this.preview.hasValue()
       ? this.otherThanOriginal(this.preview.value().duplicate)
       : null,
   );
@@ -632,5 +634,20 @@ export class AddLinkDialogComponent {
   private text(key: string, params?: Record<string, unknown>): string {
     this.i18n();
     return this.transloco.translate(key, params);
+  }
+
+  /**
+   * "Check spelling" next to the note: an account preference (`spellcheck`), saved at once and
+   * not part of the link; a failed save puts it back (the store rolls back) and says so.
+   */
+  protected async setSpellcheck(on: boolean, control: CheckboxComponent): Promise<void> {
+    if (!(await this.settings.setLanguage({ spellcheck: on }))) {
+      control.checked.set(!on);
+      this.toasts.show({
+        kind: TOAST_KIND.Danger,
+        title: this.transloco.translate('settings.language.failed'),
+        detail: this.transloco.translate('settings.language.failedDetail'),
+      });
+    }
   }
 }

@@ -421,9 +421,7 @@ describe('account settings', () => {
         openLinksIn: LINK_OPEN_TARGET.SameTab,
         showFolderCounts: false,
         newLinksFolderId: id,
-        warnDuplicates: false,
         fetchPreviews: false,
-        keepQuery: true,
       };
       const res = await a.patch(USER_SETTINGS_ENDPOINT).send(change).expect(200);
       expect(res.body).toEqual({
@@ -465,12 +463,12 @@ describe('account settings', () => {
       for (const id of [foreign, trashed, '0190a000-0000-7000-8000-000000000001']) {
         await a
           .patch(USER_SETTINGS_ENDPOINT)
-          .send({ newLinksFolderId: id, keepQuery: true })
+          .send({ newLinksFolderId: id, fetchPreviews: false })
           .expect(404);
       }
       const row = await library(users.owner.userId);
       expect(row.newLinksFolderId).toBeNull();
-      expect(row.keepQuery).toBe(false);
+      expect(row.fetchPreviews).toBe(true);
     });
 
     it('reads as Unsorted once the folder goes to Trash or is deleted for good', async () => {
@@ -498,9 +496,10 @@ describe('account settings', () => {
       [{ openLinksIn: true }],
       [{ showFolderCounts: 'false' }],
       [{ showFolderCounts: null }],
-      [{ warnDuplicates: 0 }],
       [{ fetchPreviews: 'yes' }],
-      [{ keepQuery: null }],
+      // Retired in #315 (always on / always stripped): unknown fields now.
+      [{ warnDuplicates: false }],
+      [{ keepQuery: true }],
       [{ newLinksFolderId: 'unsorted' }],
       [{ newLinksFolderId: 7 }],
       [{ newLinksFolderId: '' }],

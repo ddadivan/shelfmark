@@ -251,6 +251,7 @@
         "placeholder": "Why are you saving this?",
         "hint": "Helps you find it later",
         "counter": "characters",
+        "spellcheck": "Check spelling",
         "tooLong": "The note is too long (at most {{max}} characters)"
       },
       "duplicate": {
@@ -1137,21 +1138,6 @@
         }
       },
       "sidebar": {
-        "counts": {
-          "label": "Link counts",
-          "hint": "Numbers next to folders"
-        },
-        "recent": {
-          "label": "Remember recently opened",
-          "hint": "Keeps the Recently opened list. Off clears it and stops recording.",
-          "confirm": {
-            "title": "Stop remembering recently opened?",
-            "message": "The Recently opened list is cleared, and links you open are not added until you turn this back on. Your links stay saved.",
-            "confirm": "Clear and stop",
-            "cancel": "Cancel",
-            "close": "Close"
-          }
-        },
         "colours": {
           "label": "Folder colours",
           "hint": "Off shows every folder in plain graphite"
@@ -1191,12 +1177,7 @@
         "recent": "Recently opened"
       },
       "failed": "Couldn't save the appearance",
-      "failedDetail": "It is back to how it was.",
-      "language": {
-        "label": "Language",
-        "hint": "Interface language, date format and spell-check",
-        "value": "Change language"
-      }
+      "failedDetail": "It is back to how it was."
     },
     "privacy": {
       "policy": {
@@ -1205,8 +1186,18 @@
         "action": "Read",
         "actionLabel": "Read the privacy policy"
       },
+      "recent": {
+        "label": "Remember recently opened",
+        "hint": "Keeps the Recently opened list. Off clears it and stops recording.",
+        "confirm": {
+          "title": "Stop remembering recently opened?",
+          "message": "The Recently opened list is cleared, and links you open are not added until you turn this back on. Your links stay saved.",
+          "confirm": "Clear and stop",
+          "cancel": "Cancel",
+          "close": "Close"
+        }
+      },
       "data": {
-        "label": "Download your data",
         "hint": "Everything you saved, as JSON or bookmarks HTML",
         "action": "Open export"
       },
@@ -1273,27 +1264,10 @@
           "label": "New links go to",
           "hint": "When you paste a link without picking a folder"
         },
-        "duplicates": {
-          "label": "Warn about duplicates",
-          "hint": "Shows where you already saved the same link"
-        },
         "previews": {
           "label": "Fetch titles and previews",
           "hint": "Turn off to save only the address"
-        },
-        "query": {
-          "label": "Keep the query part of links",
-          "hint": "Removes tracking like ?utm_source when off"
         }
-      },
-      "tags": {
-        "label": "Tags",
-        "hint": {
-          "one": "{{count}} tag. Rename, merge or delete it.",
-          "other": "{{count}} tags. Rename, merge or delete them."
-        },
-        "hintPending": "Rename, merge or delete them",
-        "action": "Manage tags"
       },
       "failed": "Couldn't save the setting",
       "failedDetail": "It is back to how it was.",
@@ -1327,31 +1301,6 @@
           "cancel": "Cancel",
           "close": "Close"
         }
-      },
-      "folders": {
-        "title": "Tags and folders",
-        "colours": {
-          "label": "Folder colours",
-          "hint": "Coloured folder icons in the sidebar and tiles",
-          "failed": "Couldn't save the setting",
-          "failedDetail": "It is back to how it was."
-        },
-        "pinned": {
-          "label": "Pinned at the top",
-          "hint": "Up to {{max}} folders and links",
-          "action": "Edit pinned"
-        }
-      },
-      "pinnedDialog": {
-        "title": "Pinned",
-        "description": "The order of the Pinned section in the sidebar.",
-        "empty": "Nothing is pinned. Use “Pin to sidebar” in the menu of a folder or link.",
-        "list": "Pinned items",
-        "close": "Close",
-        "done": "Done",
-        "moveUp": "Move {{name}} up",
-        "moveDown": "Move {{name}} down",
-        "unpin": "Unpin {{name}} from the sidebar"
       }
     },
     "language": {
@@ -1360,10 +1309,6 @@
         "label": "Interface language",
         "hint": "Your links and notes stay as they are",
         "browser": "Match my browser"
-      },
-      "spellcheck": {
-        "label": "Spell-check notes",
-        "hint": "Uses your browser’s dictionary"
       },
       "dates": {
         "title": "Dates and numbers"

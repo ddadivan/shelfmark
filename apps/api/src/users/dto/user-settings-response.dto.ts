@@ -78,13 +78,7 @@ export class UserSettingsResponseDto implements UserSettingsResponse {
   newLinksFolderId!: string | null;
 
   @ApiProperty({ example: true })
-  warnDuplicates!: boolean;
-
-  @ApiProperty({ example: true })
   fetchPreviews!: boolean;
-
-  @ApiProperty({ example: false })
-  keepQuery!: boolean;
 
   @ApiProperty({ enum: Object.values(TEXT_SIZE), example: TEXT_SIZE.M })
   textSize!: TextSize;

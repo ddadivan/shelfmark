@@ -251,6 +251,7 @@
         "placeholder": "Warum speicherst du das?",
         "hint": "Hilft dir, es später zu finden",
         "counter": "Zeichen",
+        "spellcheck": "Rechtschreibung prüfen",
         "tooLong": "Die Notiz ist zu lang (höchstens {{max}} Zeichen)"
       },
       "duplicate": {
@@ -1137,21 +1138,6 @@
         }
       },
       "sidebar": {
-        "counts": {
-          "label": "Anzahl der Links",
-          "hint": "Zahlen neben den Ordnern"
-        },
-        "recent": {
-          "label": "Zuletzt geöffnete merken",
-          "hint": "Behält die Liste „Zuletzt geöffnet“. Aus löscht sie und zeichnet nichts mehr auf.",
-          "confirm": {
-            "title": "Zuletzt geöffnete nicht mehr merken?",
-            "message": "Die Liste „Zuletzt geöffnet“ wird gelöscht, und geöffnete Links werden erst wieder hinzugefügt, wenn du das wieder einschaltest. Deine Links bleiben gespeichert.",
-            "confirm": "Löschen und beenden",
-            "cancel": "Abbrechen",
-            "close": "Schließen"
-          }
-        },
         "colours": {
           "label": "Ordnerfarben",
           "hint": "Aus zeigt jeden Ordner in schlichtem Graphit"
@@ -1191,12 +1177,7 @@
         "recent": "Zuletzt geöffnet"
       },
       "failed": "Darstellung konnte nicht gespeichert werden",
-      "failedDetail": "Sie ist wieder wie vorher.",
-      "language": {
-        "label": "Sprache",
-        "hint": "Sprache der Oberfläche, Datumsformat und Rechtschreibprüfung",
-        "value": "Sprache ändern"
-      }
+      "failedDetail": "Sie ist wieder wie vorher."
     },
     "privacy": {
       "policy": {
@@ -1205,8 +1186,18 @@
         "action": "Lesen",
         "actionLabel": "Datenschutzerklärung lesen"
       },
+      "recent": {
+        "label": "Zuletzt geöffnete merken",
+        "hint": "Behält die Liste „Zuletzt geöffnet“. Aus löscht sie und zeichnet nichts mehr auf.",
+        "confirm": {
+          "title": "Zuletzt geöffnete nicht mehr merken?",
+          "message": "Die Liste „Zuletzt geöffnet“ wird gelöscht, und geöffnete Links werden erst wieder hinzugefügt, wenn du das wieder einschaltest. Deine Links bleiben gespeichert.",
+          "confirm": "Löschen und beenden",
+          "cancel": "Abbrechen",
+          "close": "Schließen"
+        }
+      },
       "data": {
-        "label": "Deine Daten herunterladen",
         "hint": "Alles, was du gespeichert hast, als JSON oder Lesezeichen-HTML",
         "action": "Export öffnen"
       },
@@ -1273,27 +1264,10 @@
           "label": "Neue Links landen in",
           "hint": "Wenn du einen Link einfügst, ohne einen Ordner zu wählen"
         },
-        "duplicates": {
-          "label": "Vor Duplikaten warnen",
-          "hint": "Zeigt, wo du denselben Link schon gespeichert hast"
-        },
         "previews": {
           "label": "Titel und Vorschauen abrufen",
           "hint": "Aus speichert nur die Adresse"
-        },
-        "query": {
-          "label": "Abfrageteil von Links behalten",
-          "hint": "Aus entfernt Tracking wie ?utm_source"
         }
-      },
-      "tags": {
-        "label": "Tags",
-        "hint": {
-          "one": "{{count}} Tag. Umbenennen, zusammenführen oder löschen.",
-          "other": "{{count}} Tags. Umbenennen, zusammenführen oder löschen."
-        },
-        "hintPending": "Umbenennen, zusammenführen oder löschen",
-        "action": "Tags verwalten"
       },
       "failed": "Einstellung konnte nicht gespeichert werden",
       "failedDetail": "Sie ist wieder wie vorher.",
@@ -1327,31 +1301,6 @@
           "cancel": "Abbrechen",
           "close": "Schließen"
         }
-      },
-      "folders": {
-        "title": "Tags und Ordner",
-        "colours": {
-          "label": "Ordnerfarben",
-          "hint": "Farbige Ordnersymbole in der Seitenleiste und den Kacheln",
-          "failed": "Einstellung konnte nicht gespeichert werden",
-          "failedDetail": "Sie ist wieder wie vorher."
-        },
-        "pinned": {
-          "label": "Oben angeheftet",
-          "hint": "Bis zu {{max}} Ordner und Links",
-          "action": "Angeheftete bearbeiten"
-        }
-      },
-      "pinnedDialog": {
-        "title": "Angeheftet",
-        "description": "Die Reihenfolge des Bereichs „Angeheftet“ in der Seitenleiste.",
-        "empty": "Nichts ist angeheftet. Nutze „An Seitenleiste anheften“ im Menü eines Ordners oder Links.",
-        "list": "Angeheftete Elemente",
-        "close": "Schließen",
-        "done": "Fertig",
-        "moveUp": "{{name}} nach oben",
-        "moveDown": "{{name}} nach unten",
-        "unpin": "{{name}} von der Seitenleiste lösen"
       }
     },
     "language": {
@@ -1360,10 +1309,6 @@
         "label": "Sprache der Oberfläche",
         "hint": "Deine Links und Notizen bleiben, wie sie sind",
         "browser": "Wie mein Browser"
-      },
-      "spellcheck": {
-        "label": "Rechtschreibprüfung in Notizen",
-        "hint": "Nutzt das Wörterbuch deines Browsers"
       },
       "dates": {
         "title": "Datum und Zahlen"

@@ -5,7 +5,5 @@ export const LIBRARY_SELECT = {
   openLinksIn: true,
   showFolderCounts: true,
   newLinksFolderId: true,
-  warnDuplicates: true,
   fetchPreviews: true,
-  keepQuery: true,
 } as const;

@@ -12,7 +12,6 @@ import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   LINK_OPEN_TARGET,
-  PIN_LIMIT,
   TRASH_RETENTION_DAYS,
   isLibrarySort,
   isLibraryView,
@@ -22,7 +21,6 @@ import {
 } from '@shelfmark/contracts';
 import {
   BUTTON_SIZE,
-  DIALOG_SIZE,
   DialogService,
   ButtonComponent,
   NOTICE_KIND,
@@ -37,30 +35,27 @@ import {
   type SegmentedOption,
   type SelectOption,
 } from '@shelfmark/ui';
-import { ViewportService } from '../../../core/layout/viewport.service';
 import { FoldersStore } from '../../../stores/folders.store';
-import { TagsStore } from '../../../stores/tags.store';
 import { buildFolderOptions } from '../../links/add-link/folder-options';
 import { FEED_SORT } from '../../links/models/feed-sort.const';
 import { SORT_OPTION_KEYS } from '../../library/models/sort-option-keys.const';
 import { VIEW_OPTION_KEYS } from '../../library/models/view-option-keys.const';
 import { UI_VIEW } from '../../../stores/models/ui-view.const';
-import { PinnedEditDialogComponent } from '../../pins/pinned-edit-dialog/pinned-edit-dialog.component';
 import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
 import { pluralKey } from '../../../core/i18n/plural-key';
 import { APP_PATH } from '../../../models/app-path.const';
-import { PinsStore } from '../../../stores/pins.store';
 import { TrashStore } from '../../../stores/trash.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { SettingsPageHeaderComponent } from '../settings-page-header/settings-page-header.component';
 
 /**
  * `/settings/library` (SetLibrary mockup, #284): Viewing (default view and sort, where links
- * open, sidebar counts) and Saving (default folder, duplicate notice, page fetch, tracking
- * parameters) apply at once, are saved on the account and roll back with a toast when the request
- * fails. Tags and folders: manage tags, folder colours, Pinned. Trash: what happens to deleted items. "Keep deleted items for" (7, 30 or 90 days)
- * saves at once and rolls back with a toast when the request fails; "Trash" shows how many items
- * wait there and opens the page.
+ * open, sidebar counts) and Saving (default folder, page fetch) apply at once, are saved on the
+ * account and roll back with a toast when the request fails. Trash: "Keep deleted items for"
+ * (7, 30 or 90 days) saves at once and rolls back with a toast when the request fails; "Trash"
+ * shows how many items wait there and opens the page. Since #315 the duplicate notice is always
+ * on, tracking parameters are always stripped, folder colours live in Appearance, and tags and
+ * pins are managed where they are shown (sidebar, phone Library and Tags tab).
  */
 @Component({
   selector: 'app-settings-library-page',
@@ -88,13 +83,10 @@ export default class LibrarySettingsPage {
   private readonly dialogs = inject(DialogService);
   private readonly injector = inject(Injector);
   private readonly folders = inject(FoldersStore);
-  protected readonly tags = inject(TagsStore);
-  private readonly phone = inject(ViewportService).phone;
   private readonly control = viewChild<SegmentedControlComponent>('retention');
 
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
   protected readonly NOTICE_KIND = NOTICE_KIND;
-  protected readonly PIN_LIMIT = PIN_LIMIT;
   protected readonly pluralKey = pluralKey;
   protected readonly trashHref = `/${APP_PATH.Trash}`;
 
@@ -154,9 +146,7 @@ export default class LibrarySettingsPage {
   constructor() {
     void this.settings.load();
     void this.trash.load();
-    void inject(PinsStore).load();
     void this.folders.load();
-    void this.tags.load();
   }
 
   protected setView(value: string): void {
@@ -192,52 +182,8 @@ export default class LibrarySettingsPage {
     }
   }
 
-  /**
-   * "Manage tags": the phone has a Tags tab; from the tablet width the sidebar's tags section does
-   * the job, so the feed opens and the section's heading takes focus.
-   */
-  protected async manageTags(): Promise<void> {
-    if (this.phone()) {
-      await this.router.navigateByUrl(`/${APP_PATH.Tags}`);
-      return;
-    }
-    if (await this.router.navigateByUrl(`/${APP_PATH.Links}`)) {
-      afterNextRender(
-        () => {
-          const heading = globalThis.document?.getElementById('sidebar-tags-heading');
-          if (!heading) {
-            return;
-          }
-          // Focusable only for this move: a lasting tabindex would let a click on the heading
-          // take focus (the new tag field's outside click hands focus back to "+").
-          heading.tabIndex = -1;
-          heading.addEventListener('blur', () => heading.removeAttribute('tabindex'), {
-            once: true,
-          });
-          heading.focus();
-          heading.scrollIntoView({ block: 'nearest' });
-        },
-        { injector: this.injector },
-      );
-    }
-  }
-
   protected retry(): void {
     void this.settings.load();
-  }
-
-  protected async setColours(on: boolean): Promise<void> {
-    if (!(await this.settings.setFolderColours(on))) {
-      this.toasts.show({
-        kind: TOAST_KIND.Danger,
-        title: this.transloco.translate('settings.library.folders.colours.failed'),
-        detail: this.transloco.translate('settings.library.folders.colours.failedDetail'),
-      });
-    }
-  }
-
-  protected async editPinned(): Promise<void> {
-    await this.dialogs.open(PinnedEditDialogComponent, { size: DIALOG_SIZE.Md }).result;
   }
 
   protected async setRetention(value: string): Promise<void> {

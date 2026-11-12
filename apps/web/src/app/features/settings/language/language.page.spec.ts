@@ -100,8 +100,6 @@ describe('LanguageSettingsPage', () => {
     for (const text of [
       'Interface language',
       'Your links and notes stay as they are',
-      'Spell-check notes',
-      'Uses your browser’s dictionary',
       'Date format',
       'Week starts on',
       'Preview',
@@ -180,15 +178,11 @@ describe('LanguageSettingsPage', () => {
     expect(settingsApi.update).toHaveBeenLastCalledWith({ weekStart: 'sunday' });
   });
 
-  it('switches spell-check', async () => {
-    const { root, settingsApi, harness } = await setup();
-    const control = root.querySelector<HTMLButtonElement>(
-      'button[role="switch"][aria-label="Spell-check notes"]',
-    );
+  it('has no spell-check row: it sits next to the note field since #315', async () => {
+    const { root } = await setup();
 
-    control?.click();
-    await harness.fixture.whenStable();
-    expect(settingsApi.update).toHaveBeenCalledWith({ spellcheck: false });
+    expect(root.textContent).not.toContain('Spell-check');
+    expect(root.querySelector('button[role="switch"]')).toBeNull();
   });
 
   it('puts a choice back and says so when saving fails', async () => {

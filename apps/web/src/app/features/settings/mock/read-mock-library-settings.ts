@@ -33,9 +33,7 @@ export function readMockLibrarySettings(storage: Storage | undefined): LibrarySe
     showFolderCounts: flag(stored.showFolderCounts, d.showFolderCounts),
     newLinksFolderId:
       typeof stored.newLinksFolderId === 'string' ? stored.newLinksFolderId : d.newLinksFolderId,
-    warnDuplicates: flag(stored.warnDuplicates, d.warnDuplicates),
     fetchPreviews: flag(stored.fetchPreviews, d.fetchPreviews),
-    keepQuery: flag(stored.keepQuery, d.keepQuery),
   };
 }
 

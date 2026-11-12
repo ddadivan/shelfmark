@@ -38,10 +38,10 @@ export class LinksService {
    * final URL after redirects). The page is fetched without any database work around it.
    */
   async preview(userId: string, sentUrl: string): Promise<LinkPreviewResponse> {
-    // Settings › Library (#284): the address as it would be saved; with "Fetch titles and
+    // Settings › Library (#284): the address as it would be saved (no tracking parameters); with "Fetch titles and
     // previews" off the page is not loaded at all, and only the duplicate check runs.
     const prefs = await readLinkSavePrefs(this.prisma, userId);
-    const url = savedUrl(sentUrl, prefs);
+    const url = savedUrl(sentUrl);
     const { preview, fetched } = prefs.fetchPreviews
       ? await this.previews.load(url)
       : { preview: fallbackPreview(url), fetched: false };

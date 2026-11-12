@@ -215,34 +215,14 @@
 
     <ui-settings-section [title]="'settings.appearance.motion.title' | transloco">
       <ui-settings-row
-        [title]="'settings.appearance.sidebar.counts.label' | transloco"
-        [description]="'settings.appearance.sidebar.counts.hint' | transloco"
-      >
-        <ui-switch
-          [label]="'settings.appearance.sidebar.counts.label' | transloco"
-          [checked]="settings.countsShown()"
-          (checkedChange)="setCounts($event)"
-        />
-      </ui-settings-row>
-      <ui-settings-row
-        [title]="'settings.appearance.sidebar.recent.label' | transloco"
-        [description]="'settings.appearance.sidebar.recent.hint' | transloco"
-      >
-        <ui-switch
-          #rememberSwitch
-          [label]="'settings.appearance.sidebar.recent.label' | transloco"
-          [checked]="!settings.historyPaused()"
-          (checkedChange)="setRemember($event, rememberSwitch)"
-        />
-      </ui-settings-row>
-      <ui-settings-row
         [title]="'settings.appearance.sidebar.colours.label' | transloco"
         [description]="'settings.appearance.sidebar.colours.hint' | transloco"
       >
         <ui-switch
+          #coloursSwitch
           [label]="'settings.appearance.sidebar.colours.label' | transloco"
           [checked]="settings.coloursOn()"
-          (checkedChange)="setFolderColours($event)"
+          (checkedChange)="setFolderColours($event, coloursSwitch)"
         />
       </ui-settings-row>
       <ui-settings-row
@@ -256,17 +236,6 @@
           [value]="theme.motion()"
           (valueChange)="setMotion($event)"
         />
-      </ui-settings-row>
-    </ui-settings-section>
-
-    <ui-settings-section [title]="'settings.appearance.language.label' | transloco">
-      <ui-settings-row
-        [title]="'settings.appearance.language.label' | transloco"
-        [description]="'settings.appearance.language.hint' | transloco"
-      >
-        <ui-button [size]="BUTTON_SIZE.Sm" [href]="languageHref" (linkClick)="openLanguage($event)">
-          {{ 'settings.appearance.language.value' | transloco }}
-        </ui-button>
       </ui-settings-row>
     </ui-settings-section>
   </div>

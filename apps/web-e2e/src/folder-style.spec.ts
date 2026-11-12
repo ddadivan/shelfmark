@@ -453,7 +453,8 @@ test.describe('folder style and pins (mock API)', () => {
     await openSidebar(page);
     await expect(coloured(page, 'clay').first()).toBeVisible();
 
-    await openSettingsSection(page, 'Library');
+    // Folder colours live only in Appearance since #315.
+    await openSettingsSection(page, 'Appearance');
     await settled(page);
     await page.getByRole('switch', { name: 'Folder colours' }).click();
     await expect(page.getByRole('switch', { name: 'Folder colours' })).not.toBeChecked();
@@ -463,22 +464,14 @@ test.describe('folder style and pins (mock API)', () => {
     await expect(coloured(page, 'graphite').first()).toBeVisible();
   });
 
-  test('Settings › Library edits the pinned items', async ({ page }) => {
-    await createNotes(page);
-    await pickFolderMenuItem(page, READING, 'Pin to sidebar');
-    await pickFolderMenuItem(page, NOTES, 'Pin to sidebar');
-
+  test('Settings › Library has no pinned or tags rows: they are managed in place (#315)', async ({
+    page,
+  }) => {
     await openSettingsSection(page, 'Library');
-    await expect(page.getByText('Up to 7 folders and links')).toBeVisible();
-    await page.getByRole('button', { name: 'Edit pinned' }).click();
-    const dialog = page.getByRole('dialog', { name: 'Pinned' });
-    await dialog.getByRole('button', { name: `Move ${READING} down` }).click();
-    await dialog.getByRole('button', { name: `Unpin ${NOTES} from the sidebar` }).click();
-    await expect(dialog.getByRole('listitem')).toHaveCount(1);
-    await dialog.getByRole('button', { name: 'Done' }).click();
-
-    await backToTree(page);
-    await expect(pinnedItems(page)).toHaveCount(1);
-    await expect(pinnedItems(page).first()).toContainText(READING);
+    await settled(page);
+    await expect(page.getByRole('heading', { name: 'Trash', level: 2 })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Edit pinned' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Manage tags' })).toHaveCount(0);
+    await expect(page.getByRole('switch', { name: 'Folder colours' })).toHaveCount(0);
   });
 });

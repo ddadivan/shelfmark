@@ -109,11 +109,6 @@ export class UpdateUserSettingsDto implements UpdateUserSettingsRequest {
   @IsUUID()
   newLinksFolderId?: string | null;
 
-  @ApiPropertyOptional({ example: true, description: 'The add-link duplicate notice' })
-  @ValidateIf(present)
-  @IsBoolean()
-  warnDuplicates?: boolean;
-
   @ApiPropertyOptional({
     example: true,
     description: 'Off: new links keep only their address (no page fetch, no images)',
@@ -121,14 +116,6 @@ export class UpdateUserSettingsDto implements UpdateUserSettingsRequest {
   @ValidateIf(present)
   @IsBoolean()
   fetchPreviews?: boolean;
-
-  @ApiPropertyOptional({
-    example: false,
-    description: 'Off: tracking parameters (utm_*, fbclid, gclid, …) are removed on save',
-  })
-  @ValidateIf(present)
-  @IsBoolean()
-  keepQuery?: boolean;
 
   @ApiPropertyOptional({ enum: Object.values(TEXT_SIZE), example: TEXT_SIZE.M })
   @ValidateIf(present)

@@ -64,10 +64,13 @@ describe('UserSettingsStore library settings', () => {
     const { store, api } = setup();
     await store.load();
 
-    const done = store.setLibrary({ defaultSort: LIBRARY_SORT.Title, keepQuery: false });
+    const done = store.setLibrary({ defaultSort: LIBRARY_SORT.Title, fetchPreviews: true });
     expect(store.libraryShown().defaultSort).toBe(LIBRARY_SORT.Title);
     expect(await done).toBe(true);
-    expect(api.update).toHaveBeenCalledWith({ defaultSort: LIBRARY_SORT.Title, keepQuery: false });
+    expect(api.update).toHaveBeenCalledWith({
+      defaultSort: LIBRARY_SORT.Title,
+      fetchPreviews: true,
+    });
   });
 
   it('sends nothing for a choice that is already set', async () => {
@@ -92,12 +95,12 @@ describe('UserSettingsStore library settings', () => {
     const first = new Subject<UserSettingsResponse>();
     api.update.mockReturnValueOnce(first as Observable<UserSettingsResponse>);
 
-    const failing = store.setLibrary({ warnDuplicates: false });
-    await store.setLibrary({ warnDuplicates: true });
+    const failing = store.setLibrary({ showFolderCounts: false });
+    await store.setLibrary({ showFolderCounts: true });
     first.error(new Error('offline'));
 
     expect(await failing).toBe(false);
-    expect(store.libraryShown().warnDuplicates).toBe(true);
+    expect(store.libraryShown().showFolderCounts).toBe(true);
   });
 
   it('takes the folder the server answers (Unsorted when it is gone)', async () => {

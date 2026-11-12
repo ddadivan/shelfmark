@@ -5,6 +5,7 @@ import {
   LIBRARY_SETTINGS_DEFAULT,
   LINK_ERROR_MESSAGE,
   type LibrarySettings,
+  type UpdateUserSettingsRequest,
   type UserSettingsResponse,
   LINK_KIND,
   type LinkPreviewResponse,
@@ -19,6 +20,7 @@ import {
 import axe from 'axe-core';
 import { delay, of, tap, throwError, type Observable } from 'rxjs';
 import { APP_LANG } from '../../../core/i18n/models/app-lang.const';
+import { LANGUAGE_STORAGE_KEY } from '../../../core/i18n/models/language-storage-key.const';
 import { AppTranslocoLoader } from '../../../core/i18n/app-transloco.loader';
 import { translocoConfig } from '../../../core/i18n/transloco.config';
 import { ADD_LINK_ACTION } from '../models/add-link-action.const';
@@ -79,6 +81,7 @@ async function setup(
   api: FakeApi,
   data?: Parameters<AddLinkDialogService['open']>[0],
   library?: Partial<LibrarySettings>,
+  update?: (request: UpdateUserSettingsRequest) => Observable<UserSettingsResponse>,
 ) {
   const account: UserSettingsResponse = {
     trashRetentionDays: 30,
@@ -94,7 +97,9 @@ async function setup(
       { provide: LINKS_API, useValue: api },
       { provide: FOLDERS_API, useClass: MockFoldersApi },
       { provide: TAGS_API, useClass: MockTagsApi },
-      ...(library ? [{ provide: USER_SETTINGS_API, useValue: { get: () => of(account) } }] : []),
+      ...(library
+        ? [{ provide: USER_SETTINGS_API, useValue: { get: () => of(account), update } }]
+        : []),
     ],
   });
   if (library) {
@@ -113,6 +118,25 @@ async function setup(
     expect(root()).not.toBeNull();
   });
   return { result };
+}
+
+/** The account the "Check spelling" tests answer with after a save. */
+const ACCOUNT_FOR_SPELLING: UserSettingsResponse = {
+  trashRetentionDays: 30,
+  folderColours: true,
+  pauseHistory: false,
+  ...MOCK_APPEARANCE_DEFAULTS,
+  ...LIBRARY_SETTINGS_DEFAULT,
+};
+
+function checkbox(label: string): HTMLInputElement {
+  const found = [...dialog().querySelectorAll<HTMLInputElement>('input[type="checkbox"]')].find(
+    (box) => box.closest('label')?.textContent?.trim() === label,
+  );
+  if (!found) {
+    throw new Error(`no checkbox ${label}`);
+  }
+  return found;
 }
 
 function root(): HTMLElement | null {
@@ -176,7 +200,9 @@ describe('AddLinkDialogComponent', () => {
   it('has no favorites checkbox when adding', async () => {
     await setup(fakeApi(() => of(PLAIN)));
 
-    expect(dialog().querySelector('ui-checkbox')).toBeNull();
+    expect(dialog().textContent).not.toContain('Add to favorites');
+    // The only checkbox when adding is "Check spelling" under the note (#315).
+    expect(dialog().querySelectorAll('ui-checkbox')).toHaveLength(1);
   });
 
   it('starts empty with the hint and no preview', async () => {
@@ -898,10 +924,9 @@ describe('AddLinkDialogComponent', () => {
       const api = fakeApi(() => of(PLAIN));
       const { result } = await setup(api, { link: { ...EDITED, isFavorite: false } });
 
-      const box = dialog().querySelector<HTMLInputElement>('ui-checkbox input[type="checkbox"]');
-      expect(box?.checked).toBe(false);
-      expect(dialog().textContent).toContain('Add to favorites');
-      box?.click();
+      const box = checkbox('Add to favorites');
+      expect(box.checked).toBe(false);
+      box.click();
       TestBed.tick();
       button('Save changes').click();
 
@@ -1072,33 +1097,63 @@ describe('AddLinkDialogComponent', () => {
       );
     });
 
-    it('shows no duplicate notice when "Warn about duplicates" is off', async () => {
-      const api = fakeApi(() => of(MOCK_LINK_PREVIEW_DUPLICATE));
-      await setup(api, {}, { warnDuplicates: false });
-
-      await type('Link', MOCK_LINK_PREVIEW_DUPLICATE.preview.url);
-      await until(() => {
-        expect(api.preview).toHaveBeenCalled();
-        expect(input('Title').value).not.toBe('');
-      });
-      expect(dialog().textContent).not.toContain('You already saved this link');
-      button('Save link');
-    });
-
-    it('skips the preview request when previews and the duplicate notice are both off', async () => {
-      const api = fakeApi(() => of(PLAIN));
-      const { result } = await setup(api, {}, { fetchPreviews: false, warnDuplicates: false });
+    it('always checks duplicates, even with previews off (#315: no longer a setting)', async () => {
+      const api = fakeApi(() => of({ ...PLAIN, fetched: false }));
+      await setup(api, {}, { fetchPreviews: false });
 
       await type('Link', 'https://example.org/post');
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      TestBed.tick();
-      expect(api.preview).not.toHaveBeenCalled();
+      await until(() => {
+        expect(api.preview).toHaveBeenCalledWith('https://example.org/post');
+      });
       expect(input('Title').value).toBe('');
-      button('Save link').click();
-      await result;
-      expect(api.create).toHaveBeenCalledWith(
-        expect.not.objectContaining({ title: expect.anything() }),
-      );
+    });
+
+    describe('"Check spelling" next to the note (#315)', () => {
+      // A saved language choice is remembered in the browser; the next spec must not see it.
+      afterEach(() => {
+        localStorage.removeItem(LANGUAGE_STORAGE_KEY);
+      });
+
+      it('saves "Check spelling" under the note on the account at once (#315)', async () => {
+        const update = vi.fn((request: UpdateUserSettingsRequest) =>
+          of({ ...ACCOUNT_FOR_SPELLING, ...request }),
+        );
+        await setup(
+          fakeApi(() => of(PLAIN)),
+          {},
+          {},
+          update,
+        );
+        const box = checkbox('Check spelling');
+        expect(box.checked).toBe(true);
+        expect(input('Note').getAttribute('spellcheck')).toBe('true');
+
+        box.click();
+        await vi.waitFor(() => {
+          TestBed.tick();
+          expect(update).toHaveBeenCalledWith({ spellcheck: false });
+          expect(input('Note').getAttribute('spellcheck')).toBe('false');
+        });
+      });
+
+      it('puts "Check spelling" back when saving it fails', async () => {
+        const update = vi.fn(() => throwError(() => new Error('down')));
+        await setup(
+          fakeApi(() => of(PLAIN)),
+          {},
+          {},
+          update,
+        );
+        const box = checkbox('Check spelling');
+
+        box.click();
+        await vi.waitFor(() => {
+          TestBed.tick();
+          expect(update).toHaveBeenCalled();
+          expect(checkbox('Check spelling').checked).toBe(true);
+          expect(input('Note').getAttribute('spellcheck')).toBe('true');
+        });
+      });
     });
 
     it('with previews off only checks duplicates: no skeleton, no "no preview" notice', async () => {

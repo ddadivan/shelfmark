@@ -144,9 +144,7 @@ export class UsersService {
     if (request.defaultSort !== undefined) data.defaultSort = request.defaultSort;
     if (request.openLinksIn !== undefined) data.openLinksIn = request.openLinksIn;
     if (request.showFolderCounts !== undefined) data.showFolderCounts = request.showFolderCounts;
-    if (request.warnDuplicates !== undefined) data.warnDuplicates = request.warnDuplicates;
     if (request.fetchPreviews !== undefined) data.fetchPreviews = request.fetchPreviews;
-    if (request.keepQuery !== undefined) data.keepQuery = request.keepQuery;
     if (request.newLinksFolderId !== undefined) {
       // A foreign, missing or trashed folder is a 404 (they look the same) and nothing is saved.
       if (request.newLinksFolderId !== null) {

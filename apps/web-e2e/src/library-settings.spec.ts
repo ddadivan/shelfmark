@@ -64,20 +64,18 @@ test.describe('settings › library (mock API)', () => {
     await seedSession(page);
   });
 
-  test('shows the Viewing, Saving, Tags and folders and Trash sections with the note', async ({
-    page,
-  }) => {
+  test('shows the Viewing, Saving and Trash sections with the note', async ({ page }) => {
     await openLibrarySettings(page);
     const main = page.getByRole('main');
-    for (const title of ['Viewing', 'Saving', 'Tags and folders', 'Trash']) {
+    for (const title of ['Viewing', 'Saving', 'Trash']) {
       await expect(main.getByRole('heading', { level: 2, name: title })).toBeVisible();
     }
+    await expect(main.getByRole('heading', { level: 2, name: 'Tags and folders' })).toHaveCount(0);
     await expect(choice(page, 'Default view', 'Cards')).toBeChecked();
     await expect(choice(page, 'Open links in', 'New tab')).toBeChecked();
-    await expect(toggle(page, 'Keep the query part of links')).toHaveAttribute(
-      'aria-checked',
-      'false',
-    );
+    // Retired in #315: always on / always stripped.
+    await expect(toggle(page, 'Keep the query part of links')).toHaveCount(0);
+    await expect(toggle(page, 'Warn about duplicates')).toHaveCount(0);
     await expect(main.getByText('Subfolders are always shown first in a folder')).toBeVisible();
     await expect(main.getByText('·')).toHaveCount(0);
   });
@@ -174,16 +172,16 @@ test.describe('settings › library (mock API)', () => {
     );
   });
 
-  test('Warn about duplicates off hides the duplicate notice', async ({ page }) => {
+  test('the duplicate notice always shows, even with previews off (#315)', async ({ page }) => {
     await openLibrarySettings(page);
-    await flip(page, 'Warn about duplicates', false);
+    await flip(page, 'Fetch titles and previews', false);
 
     await openFeed(page, '/links');
     const dialog = await openAddLink(page);
     await dialog.getByLabel('Link', { exact: true }).fill('https://angular.dev/overview');
-    await expect(dialog.getByLabel('Title', { exact: true })).not.toHaveValue('');
-    await expect(dialog.getByText('You already saved this link')).toHaveCount(0);
-    await expect(dialog.getByRole('button', { name: 'Save link' })).toBeVisible();
+    await expect(
+      dialog.locator('ui-notice').getByText('You already saved this link'),
+    ).toBeVisible();
   });
 
   test('Fetch titles and previews off saves only the address', async ({ page }) => {
@@ -208,9 +206,9 @@ test.describe('settings › library (mock API)', () => {
     ).toBeVisible();
   });
 
-  test('tracking parameters go on save unless the query part is kept', async ({ page }) => {
+  test('tracking parameters always go on save, other parameters stay (#315)', async ({ page }) => {
     await openFeed(page, '/links');
-    let dialog = await openAddLink(page);
+    const dialog = await openAddLink(page);
     await dialog
       .getByLabel('Link', { exact: true })
       .fill('https://example.org/coat?utm_source=news&id=7&fbclid=abc');
@@ -218,20 +216,6 @@ test.describe('settings › library (mock API)', () => {
     await dialog.getByRole('button', { name: 'Save link' }).click();
     await expect(dialog).toBeHidden();
     await expect(page.locator('ui-card a[href="https://example.org/coat?id=7"]')).toHaveCount(1);
-
-    await openLibrarySettings(page);
-    await flip(page, 'Keep the query part of links', true);
-    await openFeed(page, '/links');
-    dialog = await openAddLink(page);
-    await dialog
-      .getByLabel('Link', { exact: true })
-      .fill('https://example.org/hat?utm_source=news');
-    await expect(dialog.getByLabel('Title', { exact: true })).toHaveValue('Page on example.org');
-    await dialog.getByRole('button', { name: 'Save link' }).click();
-    await expect(dialog).toBeHidden();
-    await expect(
-      page.locator('ui-card a[href="https://example.org/hat?utm_source=news"]'),
-    ).toHaveCount(1);
   });
 
   test('has no axe violations', async ({ page }, testInfo) => {

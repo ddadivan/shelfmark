@@ -251,6 +251,7 @@
         "placeholder": "Pourquoi enregistrez-vous ce lien ?",
         "hint": "Pour le retrouver plus tard",
         "counter": "caractères",
+        "spellcheck": "Vérifier l’orthographe",
         "tooLong": "La note est trop longue ({{max}} caractères au maximum)"
       },
       "duplicate": {
@@ -1158,21 +1159,6 @@
         }
       },
       "sidebar": {
-        "counts": {
-          "label": "Nombre de liens",
-          "hint": "Les chiffres à côté des dossiers"
-        },
-        "recent": {
-          "label": "Mémoriser les liens ouverts récemment",
-          "hint": "Garde la liste Ouverts récemment. Désactivé, la liste est effacée et plus rien n’est enregistré.",
-          "confirm": {
-            "title": "Ne plus mémoriser les liens ouverts récemment ?",
-            "message": "La liste Ouverts récemment est effacée, et les liens que vous ouvrez ne sont plus ajoutés tant que vous ne réactivez pas l’option. Vos liens restent enregistrés.",
-            "confirm": "Effacer et arrêter",
-            "cancel": "Annuler",
-            "close": "Fermer"
-          }
-        },
         "colours": {
           "label": "Couleurs des dossiers",
           "hint": "Désactivé, tous les dossiers sont en graphite"
@@ -1212,12 +1198,7 @@
         "recent": "Ouverts récemment"
       },
       "failed": "Impossible d’enregistrer l’apparence",
-      "failedDetail": "Elle est revenue comme avant.",
-      "language": {
-        "label": "Langue",
-        "hint": "Langue de l’interface, format de date et correcteur orthographique",
-        "value": "Changer de langue"
-      }
+      "failedDetail": "Elle est revenue comme avant."
     },
     "privacy": {
       "policy": {
@@ -1226,8 +1207,18 @@
         "action": "Lire",
         "actionLabel": "Lire la politique de confidentialité"
       },
+      "recent": {
+        "label": "Mémoriser les liens ouverts récemment",
+        "hint": "Garde la liste Ouverts récemment. Désactivé, la liste est effacée et plus rien n’est enregistré.",
+        "confirm": {
+          "title": "Ne plus mémoriser les liens ouverts récemment ?",
+          "message": "La liste Ouverts récemment est effacée, et les liens que vous ouvrez ne sont plus ajoutés tant que vous ne réactivez pas l’option. Vos liens restent enregistrés.",
+          "confirm": "Effacer et arrêter",
+          "cancel": "Annuler",
+          "close": "Fermer"
+        }
+      },
       "data": {
-        "label": "Télécharger vos données",
         "hint": "Tout ce que vous avez enregistré, en JSON ou en favoris HTML",
         "action": "Ouvrir l’export"
       },
@@ -1294,28 +1285,10 @@
           "label": "Les nouveaux liens vont dans",
           "hint": "Quand vous collez un lien sans choisir de dossier"
         },
-        "duplicates": {
-          "label": "Signaler les doublons",
-          "hint": "Indique où vous avez déjà enregistré le même lien"
-        },
         "previews": {
           "label": "Récupérer titres et aperçus",
           "hint": "Désactivez pour n’enregistrer que l’adresse"
-        },
-        "query": {
-          "label": "Garder les paramètres des liens",
-          "hint": "Désactivé, retire le suivi comme ?utm_source"
         }
-      },
-      "tags": {
-        "label": "Tags",
-        "hint": {
-          "one": "{{count}} tag. Renommez-le, fusionnez-le ou supprimez-le.",
-          "many": "{{count}} tags. Renommez-les, fusionnez-les ou supprimez-les.",
-          "other": "{{count}} tags. Renommez-les, fusionnez-les ou supprimez-les."
-        },
-        "hintPending": "Renommez-les, fusionnez-les ou supprimez-les",
-        "action": "Gérer les tags"
       },
       "failed": "Impossible d’enregistrer le paramètre",
       "failedDetail": "Il est revenu comme avant.",
@@ -1351,31 +1324,6 @@
           "cancel": "Annuler",
           "close": "Fermer"
         }
-      },
-      "folders": {
-        "title": "Tags et dossiers",
-        "colours": {
-          "label": "Couleurs des dossiers",
-          "hint": "Icônes de dossier en couleur dans la barre latérale et les tuiles",
-          "failed": "Impossible d’enregistrer le paramètre",
-          "failedDetail": "Il est revenu comme avant."
-        },
-        "pinned": {
-          "label": "Épinglés en haut",
-          "hint": "Jusqu’à {{max}} dossiers et liens",
-          "action": "Modifier les épinglés"
-        }
-      },
-      "pinnedDialog": {
-        "title": "Épinglés",
-        "description": "L’ordre de la section Épinglés dans la barre latérale.",
-        "empty": "Rien n’est épinglé. Utilisez « Épingler dans la barre latérale » dans le menu d’un dossier ou d’un lien.",
-        "list": "Éléments épinglés",
-        "close": "Fermer",
-        "done": "Terminé",
-        "moveUp": "Monter {{name}}",
-        "moveDown": "Descendre {{name}}",
-        "unpin": "Désépingler {{name}} de la barre latérale"
       }
     },
     "language": {
@@ -1384,10 +1332,6 @@
         "label": "Langue de l’interface",
         "hint": "Vos liens et vos notes restent tels quels",
         "browser": "Comme mon navigateur"
-      },
-      "spellcheck": {
-        "label": "Correcteur orthographique des notes",
-        "hint": "Utilise le dictionnaire de votre navigateur"
       },
       "dates": {
         "title": "Dates et nombres"

@@ -123,20 +123,27 @@ test.describe('interface languages (mock API)', () => {
     await expect(dates.first()).toHaveText(/^\d{4}-\d{2}-\d{2}$/);
   });
 
-  test('spell-check notes follows the setting in the add-link dialog', async ({ page }) => {
+  test('"Check spelling" next to the note field turns spell-check off and stays off (#315)', async ({
+    page,
+  }) => {
     await seedSession(page);
     await page.goto('/settings/language');
-    await page.getByRole('switch', { name: 'Spell-check notes' }).click();
-    await expect(page.getByRole('switch', { name: 'Spell-check notes' })).toHaveAttribute(
-      'aria-checked',
-      'false',
-    );
+    await expect(page.getByRole('switch', { name: 'Spell-check notes' })).toHaveCount(0);
     await page.goto('/links');
     await page.getByRole('button', { name: 'Add link' }).first().click();
-    await expect(page.getByRole('dialog').getByLabel('Note')).toHaveAttribute(
-      'spellcheck',
-      'false',
-    );
+    let dialog = page.getByRole('dialog');
+    await expect(dialog.getByLabel('Note')).toHaveAttribute('spellcheck', 'true');
+    // The native input is visually hidden: click the drawn box, like the other checkbox specs.
+    await dialog.locator('ui-checkbox.add-link__spellcheck .ui-checkbox__box').click();
+    await expect(dialog.getByRole('checkbox', { name: 'Check spelling' })).not.toBeChecked();
+    await expect(dialog.getByLabel('Note')).toHaveAttribute('spellcheck', 'false');
+    await dialog.getByRole('button', { name: 'Close' }).first().click();
+    await expect(dialog).toBeHidden();
+
+    await page.getByRole('button', { name: 'Add link' }).first().click();
+    dialog = page.getByRole('dialog');
+    await expect(dialog.getByRole('checkbox', { name: 'Check spelling' })).not.toBeChecked();
+    await expect(dialog.getByLabel('Note')).toHaveAttribute('spellcheck', 'false');
   });
 
   test.describe('with a German browser', () => {

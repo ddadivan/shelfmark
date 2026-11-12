@@ -11,7 +11,7 @@ import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
 import {
   CUSTOM_ACCENT_OWN,
   CUSTOM_THEME_ATTRIBUTE,
-  DialogService,
+  TOAST_KIND,
   LAYOUT_ATTRIBUTE,
   LAYOUT_OFF,
   THEME_ATTRIBUTE,
@@ -19,7 +19,6 @@ import {
   ToastService,
   nearestAccessibleAccent,
 } from '@shelfmark/ui';
-import { LinksStore } from '../../../stores/links.store';
 import { LAYOUT_STORAGE_KEY } from '../../../core/theme/models/layout-storage-key.const';
 import { of, throwError } from 'rxjs';
 import { axeViolations } from '../../../../testing/axe';
@@ -108,7 +107,7 @@ describe('AppearancePage', () => {
     }
   });
 
-  it('shows the theme choice, animations, the preview and the language', async () => {
+  it('shows the theme choice, animations and the preview, without the moved rows (#315)', async () => {
     const { root: page } = await setup();
 
     expect(page.querySelector('h1')?.textContent).toContain('Appearance');
@@ -116,10 +115,11 @@ describe('AppearancePage', () => {
     expect(page.textContent).toContain('Light and Dark are tuned by us');
     expect(page.textContent).toContain('Want other colours or corners? Choose Custom.');
     expect(page.textContent).toContain('Animations');
-    expect(page.textContent).toContain('Interface language, date format and spell-check');
-    expect(page.querySelector('a[href="/settings/language"]')?.textContent).toContain(
-      'Change language',
-    );
+    // Language has its own page, link counts live in Library, recently opened in Privacy.
+    expect(page.querySelector('a[href="/settings/language"]')).toBeNull();
+    for (const gone of ['Change language', 'Link counts', 'Remember recently opened']) {
+      expect(page.textContent).not.toContain(gone);
+    }
     expect(page.querySelector('ui-theme-preview')?.getAttribute('aria-label')).toBe(
       'Preview of your settings',
     );
@@ -359,57 +359,35 @@ describe('AppearancePage', () => {
       );
     });
 
-    it('turns link counts and folder colours off through the same account settings as Library', async () => {
+    it('turns folder colours off and on here, the only place for them (#315)', async () => {
       const { root: page, settingsApi, stable } = await setup();
       await vi.waitFor(async () => {
         await stable();
-        expect(switchNamed(page, 'Link counts').getAttribute('aria-checked')).toBe('true');
+        expect(switchNamed(page, 'Folder colours').getAttribute('aria-checked')).toBe('true');
       });
 
-      switchNamed(page, 'Link counts').click();
-      await stable();
       switchNamed(page, 'Folder colours').click();
       await stable();
-
-      expect(settingsApi.update).toHaveBeenCalledWith({ showFolderCounts: false });
       expect(settingsApi.update).toHaveBeenCalledWith({ folderColours: false });
-      const preview = page.querySelector('ui-theme-preview');
-      expect(preview?.querySelector('.ui-theme-preview__count')).toBeNull();
+      expect(switchNamed(page, 'Folder colours').getAttribute('aria-checked')).toBe('false');
+
+      switchNamed(page, 'Folder colours').click();
+      await stable();
+      expect(settingsApi.update).toHaveBeenLastCalledWith({ folderColours: true });
     });
 
-    it('asks before it stops remembering recently opened, then pauses and clears', async () => {
-      const { root: page, settingsApi, stable } = await setup();
-      const confirm = vi.spyOn(TestBed.inject(DialogService), 'confirm');
-      const clear = vi.spyOn(TestBed.inject(LinksStore), 'clearHistory').mockResolvedValue(true);
+    it('puts folder colours back with a toast when saving fails', async () => {
+      const { root: page, show, stable } = await setup({ fail: true });
       await vi.waitFor(async () => {
         await stable();
-        expect(page.querySelector('.ui-theme-preview__row--recent')).not.toBeNull();
+        expect(switchNamed(page, 'Folder colours').getAttribute('aria-checked')).toBe('true');
       });
-      const remember = () => switchNamed(page, 'Remember recently opened');
 
-      confirm.mockResolvedValueOnce(false);
-      remember().click();
+      switchNamed(page, 'Folder colours').click();
       await vi.waitFor(async () => {
         await stable();
-        expect(confirm).toHaveBeenCalledTimes(1);
-        expect(remember().getAttribute('aria-checked')).toBe('true');
-      });
-      expect(settingsApi.update).not.toHaveBeenCalledWith({ pauseHistory: true });
-
-      confirm.mockResolvedValueOnce(true);
-      remember().click();
-      await vi.waitFor(async () => {
-        await stable();
-        expect(settingsApi.update).toHaveBeenCalledWith({ pauseHistory: true });
-        expect(clear).toHaveBeenCalledTimes(1);
-        expect(remember().getAttribute('aria-checked')).toBe('false');
-      });
-      expect(page.querySelector('.ui-theme-preview__row--recent')).toBeNull();
-
-      remember().click();
-      await vi.waitFor(async () => {
-        await stable();
-        expect(settingsApi.update).toHaveBeenLastCalledWith({ pauseHistory: false });
+        expect(show).toHaveBeenCalledWith(expect.objectContaining({ kind: TOAST_KIND.Danger }));
+        expect(switchNamed(page, 'Folder colours').getAttribute('aria-checked')).toBe('true');
       });
     });
   });

@@ -1,7 +1,4 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
-import { APP_PATH } from '../../../models/app-path.const';
-import { SETTINGS_PATH } from '../models/settings-path.const';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
@@ -31,7 +28,6 @@ import {
   ButtonComponent,
   ColorPickerComponent,
   CUSTOM_ACCENT_OWN,
-  DialogService,
   NOTICE_KIND,
   NoticeComponent,
   SegmentedControlComponent,
@@ -56,7 +52,6 @@ import {
 import type { Appearance } from '../../../core/theme/models/appearance.type';
 import { LocaleService } from '../../../core/i18n/locale.service';
 import { ThemeService } from '../../../core/theme/theme.service';
-import { LinksStore } from '../../../stores/links.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import type { AccentWarning } from '../models/accent-warning.interface';
 import { THEME_OPTION_KEYS } from '../models/theme-option-keys.const';
@@ -69,8 +64,8 @@ const SYSTEM_THUMB = 'system';
  * `/settings/appearance` (Themes mockup, issues #273 and #285): Theme (System, Light, Dark,
  * Custom); for Custom the base, accent, background and corners and "Reset custom theme"; a live
  * preview; Text and layout (text size, font, density); Cards (preview image, site, notes, tags);
- * Sidebar and motion (link counts, remember recently opened, folder colours, Animations); the
- * language. Every change applies to the whole app at once (ThemeService) and is
+ * Sidebar and motion (folder colours, Animations). Link counts live in Library, "Remember
+ * recently opened" in Privacy and data (#315). Every change applies to the whole app at once (ThemeService) and is
  * saved on the account right away, so the preview simply shows a sample in the current tokens;
  * a failed save puts the old appearance back and says so. Light and Dark never change.
  */
@@ -95,9 +90,6 @@ const SYSTEM_THUMB = 'system';
 })
 export default class AppearancePage {
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
-  /** Settings › Language, where the language row leads. */
-  protected readonly languageHref = `/${APP_PATH.Settings}/${SETTINGS_PATH.Language}`;
-  private readonly router = inject(Router);
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   protected readonly NOTICE_KIND = NOTICE_KIND;
   protected readonly SETTINGS_ROW_ALIGN = SETTINGS_ROW_ALIGN;
@@ -106,8 +98,6 @@ export default class AppearancePage {
 
   protected readonly theme = inject(ThemeService);
   protected readonly settings = inject(UserSettingsStore);
-  private readonly links = inject(LinksStore);
-  private readonly dialogs = inject(DialogService);
   private readonly transloco = inject(TranslocoService);
   private readonly toasts = inject(ToastService);
   private readonly locale = inject(LocaleService);
@@ -343,52 +333,11 @@ export default class AppearancePage {
     void this.save(change);
   }
 
-  /** "Link counts" is the Library setting "Show folder counts" (one value on the account). */
-  protected async setCounts(on: boolean): Promise<void> {
-    if (!(await this.settings.setLibrary({ showFolderCounts: on }))) {
-      this.failed();
-    }
-  }
-
-  protected async setFolderColours(on: boolean): Promise<void> {
+  /** A failed save puts the switch back (the account value never changed, so no binding does). */
+  protected async setFolderColours(on: boolean, control: SwitchComponent): Promise<void> {
     if (!(await this.settings.setFolderColours(on))) {
+      control.checked.set(!on);
       this.failed();
-    }
-  }
-
-  /**
-   * "Remember recently opened": on resumes recording opens; off asks first, then clears the list
-   * and stops recording (the account's "Pause history"). A switch that was not confirmed, or a
-   * failed save, stays or goes back on.
-   */
-  protected async setRemember(on: boolean, control: SwitchComponent): Promise<void> {
-    if (on) {
-      if (!(await this.settings.setPauseHistory(false))) {
-        this.failed();
-      }
-      return;
-    }
-    const confirmed = await this.dialogs.confirm({
-      title: this.transloco.translate(`${KEY}.sidebar.recent.confirm.title`),
-      message: this.transloco.translate(`${KEY}.sidebar.recent.confirm.message`),
-      confirmLabel: this.transloco.translate(`${KEY}.sidebar.recent.confirm.confirm`),
-      cancelLabel: this.transloco.translate(`${KEY}.sidebar.recent.confirm.cancel`),
-      closeLabel: this.transloco.translate(`${KEY}.sidebar.recent.confirm.close`),
-      destructive: true,
-    });
-    if (!confirmed) {
-      control.checked.set(true);
-      return;
-    }
-    if (!(await this.settings.setPauseHistory(true))) {
-      this.failed();
-      return;
-    }
-    if (!(await this.links.clearHistory())) {
-      this.toasts.show({
-        kind: TOAST_KIND.Danger,
-        title: this.transloco.translate('links.recent.clearFailed'),
-      });
     }
   }
 
@@ -417,10 +366,5 @@ export default class AppearancePage {
       value,
       label: this.transloco.translate(`${prefix}.${value}`),
     }));
-  }
-
-  protected async openLanguage(event: MouseEvent): Promise<void> {
-    event.preventDefault();
-    await this.router.navigateByUrl(this.languageHref);
   }
 }
