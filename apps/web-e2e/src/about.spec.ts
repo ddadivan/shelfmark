@@ -180,7 +180,7 @@ test.describe('About and "How it works" (mock API)', () => {
     await expect(page.getByRole('region', { name: 'How it works' })).toHaveCount(0);
   });
 
-  test('the sidebar card keeps a section gap under Tags and above Trash (#315)', async ({
+  test('the sidebar card keeps a section gap under Tags and sits right above the footer (#315, #335)', async ({
     page,
   }) => {
     test.skip(isCompact(page), 'the card lives in the desktop sidebar');
@@ -192,12 +192,15 @@ test.describe('About and "How it works" (mock API)', () => {
 
     const tags = await page.locator('app-sidebar-tags').boundingBox();
     const box = await card.boundingBox();
-    const trash = await page.locator('.sidebar__trash').boundingBox();
-    expect(tags && box && trash).toBeTruthy();
+    const footer = await page.locator('.sidebar__footer').boundingBox();
+    expect(tags && box && footer).toBeTruthy();
     const tagsBottom = (tags?.y ?? 0) + (tags?.height ?? 0);
-    // 24px (space-6) under the last row of tags, at least 12px above the Trash divider.
+    // 24px (space-6) under the last row of tags; the card is the last block of the scrolling
+    // middle, 12px above the footer divider (not under Tags with empty space below).
     expect(Math.round((box?.y ?? 0) - tagsBottom)).toBeGreaterThanOrEqual(24);
-    expect((trash?.y ?? 0) - ((box?.y ?? 0) + (box?.height ?? 0))).toBeGreaterThanOrEqual(12);
+    const gap = (footer?.y ?? 0) - ((box?.y ?? 0) + (box?.height ?? 0));
+    expect(gap).toBeGreaterThanOrEqual(12);
+    expect(gap).toBeLessThanOrEqual(16);
   });
 
   test('opening the video from the card also retires the card', async ({ page }) => {

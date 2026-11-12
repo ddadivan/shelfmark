@@ -87,6 +87,9 @@ test.describe('drag a link to a folder (mock API)', () => {
       await card.locator('.ui-checkbox__box').click();
     }
     await settled(page);
+    // The cards are tall and few per row (#335): picking the third scrolled the grabbed one away.
+    await items.nth(1).scrollIntoViewIfNeeded();
+    await settled(page);
     const boxes = await Promise.all([0, 1, 2].map((index) => items.nth(index).boundingBox()));
 
     await dragOver(page, items.nth(1), reading);

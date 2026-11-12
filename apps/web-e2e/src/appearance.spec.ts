@@ -245,9 +245,9 @@ test.describe('appearance width (mock API, #315)', () => {
     [1440, 900],
     [1920, 1080],
   ] as const) {
-    test(`at ${width}px Appearance is wider than the 880px pages, options beside the preview`, async ({
-      page,
-    }, testInfo) => {
+    test(`at ${width}px Appearance is wider than the 880px pages and ${
+      width >= 1440 ? 'puts the options beside the preview' : 'stacks the preview above the options'
+    }`, async ({ page }, testInfo) => {
       test.skip(testInfo.project.name !== E2E_PROJECT.Desktop, 'a desktop layout check');
       await page.setViewportSize({ width, height });
       await seedSession(page);
@@ -259,18 +259,22 @@ test.describe('appearance width (mock API, #315)', () => {
       const options = await page.locator('.appearance__options').boundingBox();
       const preview = await page.locator('.appearance__preview').boundingBox();
 
-      // The other pages keep the 880px column; Appearance takes up to the mockup's 1224px.
+      // The other pages keep the 880px column; Appearance takes up to 100rem (#335).
       expect(library?.width).toBeLessThanOrEqual(880.5);
-      expect(host?.width).toBeLessThanOrEqual(1224.5);
+      expect(host?.width).toBeLessThanOrEqual(1600.5);
       expect(host?.width ?? 0).toBeGreaterThan(library?.width ?? 0);
-      if (width >= 1920) {
-        expect(host?.width).toBeGreaterThan(1223.5);
+      if (width >= 1440) {
+        // From 90em: two columns, the preview right of the options, about 680 : 520.
+        expect(preview?.x ?? 0).toBeGreaterThan((options?.x ?? 0) + (options?.width ?? 0));
+        const ratio = (options?.width ?? 0) / (preview?.width ?? 1);
+        expect(ratio).toBeGreaterThan(1.2);
+        expect(ratio).toBeLessThan(1.4);
+      } else {
+        // Below 90em: one column, the preview on top, the options never squeezed.
+        expect(preview?.y ?? 0).toBeLessThan(options?.y ?? 0);
+        expect(options?.x).toBeCloseTo(preview?.x ?? 0, 0);
+        expect(options?.width ?? 0).toBeGreaterThan(600);
       }
-      // Two columns: the preview on the right of the options, about 680 : 520.
-      expect(preview?.x ?? 0).toBeGreaterThan((options?.x ?? 0) + (options?.width ?? 0));
-      const ratio = (options?.width ?? 0) / (preview?.width ?? 1);
-      expect(ratio).toBeGreaterThan(1.2);
-      expect(ratio).toBeLessThan(1.4);
     });
   }
 });
