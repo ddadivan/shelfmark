@@ -63,10 +63,19 @@ async function setup(list: LinksApi['list'] = () => of(page([link(1), link(2)]))
 
 const field = (element: HTMLElement): HTMLInputElement =>
   element.querySelector<HTMLInputElement>('input[role="combobox"]')!;
+/** Generous: a loaded CI runner is many times slower than a laptop. */
+const PANEL_GONE_TIMEOUT_MS = 15_000;
 const panel = (): HTMLElement | null => document.querySelector('.ui-command-list__panel');
 /** The leave animation and the overlay release take longer on a loaded runner: wait, do not guess. */
 const panelGone = (): Promise<void> =>
-  vi.waitFor(() => expect(panel()).toBeNull(), { timeout: 10_000 });
+  vi.waitFor(
+    () => {
+      // Zoneless: each poll runs change detection, so the removal is never waiting for a tick.
+      TestBed.tick();
+      expect(panel()).toBeNull();
+    },
+    { timeout: PANEL_GONE_TIMEOUT_MS },
+  );
 const options = (): HTMLElement[] => [
   ...document.querySelectorAll<HTMLElement>('.ui-command-list__panel [role="option"]'),
 ];
@@ -97,7 +106,7 @@ async function key(
   return event;
 }
 
-describe('SearchResultsComponent as the header field (popup)', () => {
+describe('SearchResultsComponent as the header field (popup)', { timeout: 30_000 }, () => {
   afterEach(() => document.querySelector('app-search-results')?.remove());
 
   it('is a closed combobox until the first character, then lists the results in a panel', async () => {

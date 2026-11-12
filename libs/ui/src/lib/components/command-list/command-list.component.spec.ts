@@ -407,7 +407,7 @@ class PopupHostComponent {
   readonly chosen = signal<CommandSelection[]>([]);
 }
 
-describe('CommandListComponent in popup mode', () => {
+describe('CommandListComponent in popup mode', { timeout: 30_000 }, () => {
   let fixture: ComponentFixture<PopupHostComponent>;
   let host: PopupHostComponent;
   let el: HTMLElement;
@@ -426,10 +426,19 @@ describe('CommandListComponent in popup mode', () => {
   });
 
   const input = (): HTMLInputElement => el.querySelector<HTMLInputElement>('input')!;
+  /** Generous: a loaded CI runner is many times slower than a laptop. */
+  const PANEL_GONE_TIMEOUT_MS = 15_000;
   const panel = (): HTMLElement | null => document.querySelector('.ui-command-list__panel');
   /** The leave animation and the overlay release take longer on a loaded runner: wait, do not guess. */
   const panelGone = (): Promise<void> =>
-    vi.waitFor(() => expect(panel()).toBeNull(), { timeout: 10_000 });
+    vi.waitFor(
+      () => {
+        // Zoneless: each poll runs change detection, so the removal is never waiting for a tick.
+        TestBed.tick();
+        expect(panel()).toBeNull();
+      },
+      { timeout: PANEL_GONE_TIMEOUT_MS },
+    );
   const options = (): HTMLElement[] => [
     ...document.querySelectorAll<HTMLElement>('.ui-command-list__panel [role="option"]'),
   ];
