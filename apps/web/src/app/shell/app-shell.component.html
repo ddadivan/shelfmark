@@ -15,7 +15,10 @@
     <!-- Mobile shell: no header; every page has its own title and the tab bar is the navigation. -->
     @if (!viewport.compact()) {
       <header class="shell__header">
-        <app-header-search />
+        <!-- Settings pages have nothing to search: no field, no button (#335). -->
+        @if (!inSettings()) {
+          <app-header-search />
+        }
         <span class="shell__spacer"></span>
         <ui-button
           variant="ghost"
