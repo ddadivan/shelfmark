@@ -1,9 +1,9 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { inject, Service } from '@angular/core';
 import { DIALOG_VARIANT, DialogService } from '@shelfmark/ui';
-import { SEARCH_SHORTCUT_CODE } from './models/search-shortcut-code.const';
-import { SEARCH_SHORTCUT_KEY } from './models/search-shortcut-key.const';
-import { SearchDialogComponent } from './search-dialog/search-dialog.component';
+import { SEARCH_SHORTCUT_CODE } from '../models/search-shortcut-code.const';
+import { SEARCH_SHORTCUT_KEY } from '../models/search-shortcut-key.const';
+import { SearchDialogComponent } from '../components/search-dialog/search-dialog.component';
 
 /** Selector of the search field; it gets focus when the dialog opens. */
 const SEARCH_FIELD = 'input[role="combobox"]';

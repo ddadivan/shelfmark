@@ -60,7 +60,7 @@ import { TagsStore } from '../../../../stores/tags.store';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { pluralKey } from '../../../../core/i18n/plural-key';
-import { isMacPlatform } from '../../../search/is-mac-platform';
+import { isMacPlatform } from '../../../search/utils/is-mac-platform';
 import { normalizeTagNames } from '../../../tags/normalize-tag-names';
 import { ADD_LINK_ACTION } from '../../models/add-link-action.const';
 import type { AddLinkDialogData } from '../../models/add-link-dialog-data.interface';

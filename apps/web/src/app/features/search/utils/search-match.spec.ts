@@ -1,6 +1,6 @@
 import type { FolderResponse, TagResponse } from '@shelfmark/contracts';
 import { MOCK_FOLDERS } from '@shelfmark/contracts/testing';
-import { SEARCH_LOCAL_LIMIT } from './models/search-local-limit.const';
+import { SEARCH_LOCAL_LIMIT } from '../models/search-local-limit.const';
 import { matchFolders, matchTags } from './search-match';
 
 const ROOT: FolderResponse = { ...MOCK_FOLDERS[0], id: 'a', name: 'Work', parentId: null };

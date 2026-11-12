@@ -1,5 +1,5 @@
 import { Service } from '@angular/core';
-import { isMacPlatform } from './is-mac-platform';
+import { isMacPlatform } from '../utils/is-mac-platform';
 
 /** Opens a saved link in a new tab. */
 @Service()

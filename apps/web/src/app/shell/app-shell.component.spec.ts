@@ -22,7 +22,7 @@ import { translocoConfig } from '../core/i18n/transloco.config';
 import { THEME_PREFERENCE } from '@shelfmark/contracts';
 import { ThemeService } from '../core/theme/theme.service';
 import { LinkActionsService } from '../features/links/services/link-actions.service';
-import { SearchDialogService } from '../features/search/search-dialog.service';
+import { SearchDialogService } from '../features/search/services/search-dialog.service';
 import { ShortcutsDialogService } from '../features/shortcuts/shortcuts-dialog.service';
 import AppShellComponent from './app-shell.component';
 

@@ -4,11 +4,11 @@ import { Router } from '@angular/router';
 import { MOCK_LIBRARY_COUNTS } from '@shelfmark/contracts/testing';
 import { DialogService } from '@shelfmark/ui';
 import { of } from 'rxjs';
-import { loadEnglish, provideTranslocoForTest } from '../../testing/transloco-testing';
-import { LinkActionsService } from '../links/services/link-actions.service';
-import { FOLDERS_API } from '../links/models/folders-api.const';
-import { LINKS_API } from '../links/models/links-api.const';
-import { TAGS_API } from '../links/models/tags-api.const';
+import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
+import { LinkActionsService } from '../../links/services/link-actions.service';
+import { FOLDERS_API } from '../../links/models/folders-api.const';
+import { LINKS_API } from '../../links/models/links-api.const';
+import { TAGS_API } from '../../links/models/tags-api.const';
 import { SearchDialogService } from './search-dialog.service';
 
 function keydown(init: KeyboardEventInit): KeyboardEvent {

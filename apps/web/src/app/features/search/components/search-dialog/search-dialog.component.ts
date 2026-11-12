@@ -32,23 +32,23 @@ import {
   timer,
   type Observable,
 } from 'rxjs';
-import { FoldersStore } from '../../../stores/folders.store';
-import { TagsStore } from '../../../stores/tags.store';
-import { APP_PATH } from '../../../models/app-path.const';
-import { LinkActionsService } from '../../links/services/link-actions.service';
-import { linkHost, safeHref, siteLetter } from '../../links/utils/link-view';
-import { LINKS_API } from '../../links/models/links-api.const';
-import { SEARCH_QUERY_PARAM } from '../../links/models/search-query-param.const';
-import { parseSearchQuery, splitQuery } from '../../links/utils/search-query';
-import { TAG_QUERY_PARAM } from '../../tags/models/tag-query-param.const';
-import { SEARCH_DEBOUNCE_MS } from '../models/search-debounce-ms.const';
-import { SEARCH_LINK_LIMIT } from '../models/search-link-limit.const';
-import { SEARCH_RESULT_KIND } from '../models/search-result-kind.const';
-import type { SearchState } from '../models/search-state.interface';
-import { LinkOpener } from '../link-opener.service';
-import { matchFolders, matchTags } from '../search-match';
-import { isMacPlatform } from '../is-mac-platform';
-import { pluralKey } from '../../../core/i18n/plural-key';
+import { FoldersStore } from '../../../../stores/folders.store';
+import { TagsStore } from '../../../../stores/tags.store';
+import { APP_PATH } from '../../../../models/app-path.const';
+import { LinkActionsService } from '../../../links/services/link-actions.service';
+import { linkHost, safeHref, siteLetter } from '../../../links/utils/link-view';
+import { LINKS_API } from '../../../links/models/links-api.const';
+import { SEARCH_QUERY_PARAM } from '../../../links/models/search-query-param.const';
+import { parseSearchQuery, splitQuery } from '../../../links/utils/search-query';
+import { TAG_QUERY_PARAM } from '../../../tags/models/tag-query-param.const';
+import { SEARCH_DEBOUNCE_MS } from '../../models/search-debounce-ms.const';
+import { SEARCH_LINK_LIMIT } from '../../models/search-link-limit.const';
+import { SEARCH_RESULT_KIND } from '../../models/search-result-kind.const';
+import type { SearchState } from '../../models/search-state.interface';
+import { LinkOpener } from '../../services/link-opener.service';
+import { matchFolders, matchTags } from '../../utils/search-match';
+import { isMacPlatform } from '../../utils/is-mac-platform';
+import { pluralKey } from '../../../../core/i18n/plural-key';
 
 const IDLE: SearchState = { query: '', links: [], more: false, failed: false };
 

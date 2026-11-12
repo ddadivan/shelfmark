@@ -5,14 +5,14 @@ import { MOCK_FOLDERS, MOCK_LIBRARY_COUNTS, MOCK_LINKS } from '@shelfmark/contra
 import { UiDialogRef } from '@shelfmark/ui';
 import axe from 'axe-core';
 import { of, Subject } from 'rxjs';
-import { LinkActionsService } from '../../links/services/link-actions.service';
-import { FOLDERS_API } from '../../links/models/folders-api.const';
-import { LINKS_API } from '../../links/models/links-api.const';
-import type { LinksApi } from '../../links/models/links-api.interface';
-import { TAGS_API } from '../../links/models/tags-api.const';
-import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
-import { SEARCH_DEBOUNCE_MS } from '../models/search-debounce-ms.const';
-import { LinkOpener } from '../link-opener.service';
+import { LinkActionsService } from '../../../links/services/link-actions.service';
+import { FOLDERS_API } from '../../../links/models/folders-api.const';
+import { LINKS_API } from '../../../links/models/links-api.const';
+import type { LinksApi } from '../../../links/models/links-api.interface';
+import { TAGS_API } from '../../../links/models/tags-api.const';
+import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
+import { SEARCH_DEBOUNCE_MS } from '../../models/search-debounce-ms.const';
+import { LinkOpener } from '../../services/link-opener.service';
 import { SearchDialogComponent } from './search-dialog.component';
 
 function link(n: number, changes: Partial<LinkResponse> = {}): LinkResponse {

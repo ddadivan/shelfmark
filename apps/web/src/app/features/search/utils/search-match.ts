@@ -1,7 +1,7 @@
 import type { FolderResponse, TagResponse } from '@shelfmark/contracts';
-import { splitQuery } from '../links/utils/search-query';
-import { SEARCH_LOCAL_LIMIT } from './models/search-local-limit.const';
-import type { FolderMatch } from './models/folder-match.interface';
+import { splitQuery } from '../../links/utils/search-query';
+import { SEARCH_LOCAL_LIMIT } from '../models/search-local-limit.const';
+import type { FolderMatch } from '../models/folder-match.interface';
 
 function includesAll(text: string, query: string): boolean {
   const lower = text.toLowerCase();
