@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process';
+import type { PromoCut } from '../models/promo-cut.interface';
 import { PROMO_MEDIA } from '../models/promo-media.const';
 
 /** Encoders the promo needs; Playwright's bundled ffmpeg only has VP8, so a full build is required. */
@@ -38,16 +39,49 @@ function seconds(ms: number): string {
 }
 
 /**
- * Cuts the raw Playwright WebM to `[startMs, startMs + durationMs]` and writes the MP4
- * (H.264, no audio, faststart) and a smaller VP9 WebM.
+ * The video filter that keeps `[0, durationMs]` of the input without the `cuts` (page loads,
+ * #330): one trimmed piece per kept stretch, joined with no gap.
+ */
+function keepFilter(durationMs: number, cuts: readonly PromoCut[]): string {
+  const pieces: { start: number; end: number }[] = [];
+  let from = 0;
+  for (const gap of cuts) {
+    pieces.push({ start: from, end: gap.start });
+    from = gap.end;
+  }
+  pieces.push({ start: from, end: durationMs });
+  const kept = pieces.filter((piece) => piece.end > piece.start);
+  const trims = kept.map(
+    (piece, index) =>
+      `[0:v]trim=start=${seconds(piece.start)}:end=${seconds(piece.end)},setpts=PTS-STARTPTS[v${index}]`,
+  );
+  const inputs = kept.map((_, index) => `[v${index}]`).join('');
+  return `${trims.join(';')};${inputs}concat=n=${kept.length}:v=1:a=0[out]`;
+}
+
+/**
+ * Cuts the raw Playwright WebM to `[startMs, startMs + durationMs]` without the `cuts` (raw
+ * times from `startMs`), and writes the MP4 (H.264, no audio, faststart) and a smaller VP9 WebM.
  */
 export function encodeVideo(
   raw: string,
   startMs: number,
   durationMs: number,
+  cuts: readonly PromoCut[],
   out: { readonly mp4: string; readonly webm: string },
 ): void {
-  const cut = ['-y', '-ss', seconds(startMs), '-i', raw, '-t', seconds(durationMs), '-an'];
+  const cut = [
+    '-y',
+    '-ss',
+    seconds(startMs),
+    '-i',
+    raw,
+    '-filter_complex',
+    keepFilter(durationMs, cuts),
+    '-map',
+    '[out]',
+    '-an',
+  ];
   run([
     ...cut,
     '-c:v',

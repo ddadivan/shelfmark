@@ -29,6 +29,7 @@ import { pluralKey } from '../../../../core/i18n/plural-key';
 import { FolderShareStore } from '../../services/folder-share.store';
 import { SHARE_ERROR } from '../../models/share-error.const';
 import type { ShareFolderDialogData } from '../../models/share-folder-dialog-data.interface';
+import { PUBLIC_COLLECTION_ORIGIN } from '../../models/public-collection-origin.const';
 import { publicCollectionUrl } from '../../utils/public-collection-url';
 
 /**
@@ -66,6 +67,7 @@ export class ShareFolderDialogComponent {
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
   private readonly doc = inject(DOCUMENT);
+  private readonly publicOrigin = inject(PUBLIC_COLLECTION_ORIGIN);
 
   private readonly linkField = viewChild<InputComponent>('linkField');
 
@@ -77,8 +79,7 @@ export class ShareFolderDialogComponent {
 
   protected readonly url = computed(() => {
     const token = this.store.token();
-    const origin = this.doc.location?.origin ?? '';
-    return token === null ? '' : publicCollectionUrl(origin, token);
+    return token === null ? '' : publicCollectionUrl(this.publicOrigin, token);
   });
 
   /** The clipboard refused: the field is selected and a hint says how to copy. */

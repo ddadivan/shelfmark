@@ -1911,7 +1911,7 @@
   },
   "howItWorks": {
     "menu": "So funktioniert’s",
-    "title": "Shelfmark in 2 Minuten",
+    "title": "Shelfmark in 3 Minuten",
     "close": "Schließen",
     "captions": "Englisch",
     "chaptersLabel": "Kapitel",
@@ -1920,13 +1920,15 @@
       "organise": "Ordner und Tags",
       "find": "Wiederfinden",
       "many": "Mehrere auf einmal",
-      "yours": "Ganz nach deinem Geschmack"
+      "yours": "Ganz nach deinem Geschmack",
+      "safety": "Rückgängig und Papierkorb",
+      "share": "Teilen und exportieren"
     },
     "emptyLink": "Ansehen, wie es funktioniert",
     "card": {
       "label": "So funktioniert’s",
       "title": "Neu hier? Sieh dir an, wie es funktioniert",
-      "length": "2 Minuten",
+      "length": "3 Minuten",
       "hide": "Ausblenden"
     }
   },

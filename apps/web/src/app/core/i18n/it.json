@@ -1948,7 +1948,7 @@
   },
   "howItWorks": {
     "menu": "Come funziona",
-    "title": "Shelfmark in 2 minuti",
+    "title": "Shelfmark in 3 minuti",
     "close": "Chiudi",
     "captions": "Inglese",
     "chaptersLabel": "Capitoli",
@@ -1957,13 +1957,15 @@
       "organise": "Cartelle e tag",
       "find": "Ritrovalo",
       "many": "Più link insieme",
-      "yours": "Personalizza"
+      "yours": "Personalizza",
+      "safety": "Annulla e Cestino",
+      "share": "Condividi ed esporta"
     },
     "emptyLink": "Guarda come funziona",
     "card": {
       "label": "Come funziona",
       "title": "Nuovo qui? Guarda come funziona",
-      "length": "2 minuti",
+      "length": "3 minuti",
       "hide": "Nascondi"
     }
   },

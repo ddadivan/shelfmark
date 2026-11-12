@@ -1,5 +1,6 @@
 import { expect, test } from './support/test';
 import { E2E_PROJECT } from './models/e2e-project.const';
+import { HOW_IT_WORKS_CHAPTERS } from './models/how-it-works-chapters.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { openAccountMenu, seedSession } from './support/mock-session';
 import { settled } from './support/settled';
@@ -86,15 +87,19 @@ test.describe('About and "How it works" (mock API)', () => {
       await page.getByRole('menuitem', { name: 'How it works' }).click();
     }
 
-    const dialog = page.getByRole('dialog', { name: 'Shelfmark in 2 minutes' });
+    const dialog = page.getByRole('dialog', { name: 'Shelfmark in 3 minutes' });
     await expect(dialog).toBeVisible();
-    await expect(dialog.getByRole('list', { name: 'Chapters' }).getByRole('listitem')).toHaveText([
-      /Save a link\s*0:00/,
-      /Folders and tags\s*0:34/,
-      /Find it again\s*0:52/,
-      /Many at once\s*1:19/,
-      /Make it yours\s*1:39/,
-    ]);
+    // Each recording has its own chapter times (#330); a tablet plays the desktop one (#316).
+    const times = isPhone(page) ? 'phone' : 'desktop';
+    const seconds = (clock: string): number => {
+      const [minutes = 0, rest = 0] = clock.split(':').map(Number);
+      return minutes * 60 + rest;
+    };
+    await expect(dialog.getByRole('list', { name: 'Chapters' }).getByRole('listitem')).toHaveText(
+      HOW_IT_WORKS_CHAPTERS.map((chapter) => new RegExp(`${chapter.title}\\s*${chapter[times]}`)),
+    );
+    const last = HOW_IT_WORKS_CHAPTERS[HOW_IT_WORKS_CHAPTERS.length - 1];
+    const lastStart = seconds(last?.[times] ?? '0:00');
 
     // The recording of the layout, served from our own origin. The two recordings (#315) are named
     // like the projects: `how-it-works-<desktop|phone>`.
@@ -122,7 +127,8 @@ test.describe('About and "How it works" (mock API)', () => {
       error: null,
       muted: true,
     });
-    expect(state.duration).toBeGreaterThan(99);
+    // The recording runs past the start of its last chapter (Share and export).
+    expect(state.duration).toBeGreaterThan(lastStart);
 
     // English captions, on by default, with cues loaded.
     await expect(video.locator('track')).toHaveAttribute(
@@ -142,8 +148,16 @@ test.describe('About and "How it works" (mock API)', () => {
     await chapter.click();
     await expect(chapter).toHaveAttribute('aria-pressed', 'true');
     const time = await page.evaluate<number>(`${DIALOG_VIDEO}.currentTime`);
-    expect(time).toBeGreaterThanOrEqual(18);
-    expect(time).toBeLessThan(41);
+    const organise = seconds(HOW_IT_WORKS_CHAPTERS[1]?.[times] ?? '0:00');
+    expect(time).toBeGreaterThanOrEqual(organise);
+    expect(time).toBeLessThan(organise + 5);
+    // The last chapter jumps into the share scene of the same recording.
+    const share = dialog.getByRole('button', { name: /Share and export/ });
+    await share.click();
+    await expect(share).toHaveAttribute('aria-pressed', 'true');
+    expect(await page.evaluate<number>(`${DIALOG_VIDEO}.currentTime`)).toBeGreaterThanOrEqual(
+      lastStart,
+    );
 
     await settled(page);
     await expectNoBlockingViolations(page, testInfo, { include: '[role="dialog"]' });
@@ -193,7 +207,7 @@ test.describe('About and "How it works" (mock API)', () => {
     const card = page.getByRole('region', { name: 'How it works' });
 
     await card.getByRole('button', { name: 'New here? Watch how it works' }).click();
-    await expect(page.getByRole('dialog', { name: 'Shelfmark in 2 minutes' })).toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Shelfmark in 3 minutes' })).toBeVisible();
     await expect(card).toHaveCount(0);
   });
 });

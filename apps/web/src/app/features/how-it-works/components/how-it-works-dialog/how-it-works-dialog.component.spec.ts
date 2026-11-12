@@ -45,7 +45,7 @@ describe('HowItWorksDialogComponent', () => {
   }
 
   it(
-    'plays the desktop recording, muted, with English captions on and five chapters',
+    'plays the desktop recording, muted, with English captions on and seven chapters',
     async () => {
       const { root, video } = await render();
 
@@ -68,10 +68,12 @@ describe('HowItWorksDialogComponent', () => {
         ),
       ).toEqual([
         'Save a link 0:00',
-        'Folders and tags 0:34',
-        'Find it again 0:52',
-        'Many at once 1:19',
-        'Make it yours 1:39',
+        'Folders and tags 0:33',
+        'Many at once 1:09',
+        'Find it again 1:40',
+        'Undo and Trash 2:09',
+        'Make it yours 2:26',
+        'Share and export 2:55',
       ]);
       expect(await axeViolations(root)).toEqual([]);
     },
@@ -91,6 +93,21 @@ describe('HowItWorksDialogComponent', () => {
     expect(video.classList).toContain('how-it-works__video--phone');
   });
 
+  it('shows the chapter times of the phone recording on a phone (#330)', async () => {
+    phone.set(true);
+    const { fixture, root, video } = await render();
+
+    expect(
+      Array.from(root.querySelectorAll('.how-it-works__time')).map((time) => time.textContent),
+    ).toEqual(['0:00', '0:27', '0:58', '1:21', '1:42', '1:56', '2:15']);
+    const buttons = Array.from(
+      root.querySelectorAll<HTMLButtonElement>('.how-it-works__chapters button'),
+    );
+    buttons[6].click();
+    await fixture.whenStable();
+    expect(video.currentTime).toBe(135);
+  });
+
   it('jumps to a chapter start, plays and marks that chapter as pressed', async () => {
     const { fixture, root, video } = await render();
     const buttons = Array.from(
@@ -100,7 +117,7 @@ describe('HowItWorksDialogComponent', () => {
     buttons[1].click();
     await fixture.whenStable();
 
-    expect(video.currentTime).toBe(34);
+    expect(video.currentTime).toBe(33);
     expect(HTMLMediaElement.prototype.play).toHaveBeenCalled();
     expect(buttons.map((button) => button.getAttribute('aria-pressed'))).toEqual([
       'false',
@@ -108,13 +125,29 @@ describe('HowItWorksDialogComponent', () => {
       'false',
       'false',
       'false',
+      'false',
+      'false',
     ]);
+  });
+
+  it('jumps to the share scene from the last chapter (#326, #330)', async () => {
+    const { fixture, root, video } = await render();
+    const buttons = Array.from(
+      root.querySelectorAll<HTMLButtonElement>('.how-it-works__chapters button'),
+    );
+
+    buttons[6].click();
+    await fixture.whenStable();
+
+    expect(video.currentTime).toBe(175);
+    expect(buttons[6].getAttribute('aria-pressed')).toBe('true');
+    expect(buttons[6].textContent).toContain('Share and export');
   });
 
   it('follows the playing chapter as the video time moves', async () => {
     const { fixture, root, video } = await render();
 
-    video.currentTime = 60;
+    video.currentTime = 110;
     video.dispatchEvent(new Event('timeupdate'));
     await fixture.whenStable();
 

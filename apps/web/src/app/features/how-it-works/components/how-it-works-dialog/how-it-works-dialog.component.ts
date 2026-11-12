@@ -29,7 +29,7 @@ function mediaFor(phone: boolean): HowItWorksMedia {
 }
 
 /**
- * "Shelfmark in 2 minutes" (HowItWorks.dc.html, board 1): the promo video with native controls,
+ * "Shelfmark in 3 minutes" (HowItWorks.dc.html, board 1): the promo video with native controls,
  * captions on by default (it starts muted), and chapters that jump to their start. It plays at
  * once, except with reduced motion: then only the poster shows until the person presses play.
  * Two recordings (#315): the desktop one (1440 x 900) and the phone one (390 x 844), picked by
@@ -51,8 +51,13 @@ export class HowItWorksDialogComponent {
   private readonly time = signal(0);
   /** The chapter that is playing (the last one whose start has passed). */
   protected readonly current = computed(
-    () => [...this.chapters].reverse().find((chapter) => this.time() >= chapter.start)?.id,
+    () => [...this.chapters].reverse().find((chapter) => this.time() >= this.start(chapter))?.id,
   );
+
+  /** Where the chapter starts in the recording that plays (#330: one set of times each). */
+  protected start(chapter: HowItWorksChapter): number {
+    return this.media.phone ? chapter.phone : chapter.desktop;
+  }
 
   protected onTime(event: Event): void {
     this.time.set((event.target as HTMLVideoElement).currentTime);
@@ -61,8 +66,8 @@ export class HowItWorksDialogComponent {
   protected jump(chapter: HowItWorksChapter): void {
     const player = this.player()?.nativeElement;
     if (player) {
-      player.currentTime = chapter.start;
-      this.time.set(chapter.start);
+      player.currentTime = this.start(chapter);
+      this.time.set(this.start(chapter));
       void player.play().catch(() => undefined);
     }
   }

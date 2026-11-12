@@ -1,11 +1,16 @@
 import { FOLDER_ICON, PIN_KIND } from '@shelfmark/contracts';
 import { MOCK_SESSION_STORAGE_KEY } from '../../../core/auth/models/mock-session-storage-key.const';
-import { buildDemoLibrarySeed, isDemoMockSession } from './demo-library-seed';
+import { MOCK_LINKS_SCENARIO } from '../models/mock-links-scenario.const';
+import { MOCK_LINKS_SCENARIO_KEY } from '../models/mock-links-scenario-key.const';
+import { buildDemoLibrarySeed, isDemoMockSession, usesDemoLibrary } from './demo-library-seed';
 
 const NOW = Date.UTC(2026, 10, 11, 12);
 
 describe('demo library seed', () => {
-  afterEach(() => localStorage.clear());
+  afterEach(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+  });
 
   it('builds the mockup folders: Work > Angular > Signals, Forms; Courses; Clothes; Recipes', () => {
     const { folders } = buildDemoLibrarySeed(NOW);
@@ -61,5 +66,19 @@ describe('demo library seed', () => {
     expect(isDemoMockSession()).toBe(false);
     localStorage.setItem(MOCK_SESSION_STORAGE_KEY, JSON.stringify({ isDemo: true }));
     expect(isDemoMockSession()).toBe(true);
+  });
+
+  it('uses the mockup library for the demo, or for any session under the showcase scenario (#326)', () => {
+    expect(usesDemoLibrary()).toBe(false);
+    localStorage.setItem(MOCK_SESSION_STORAGE_KEY, JSON.stringify({ isDemo: false }));
+    expect(usesDemoLibrary()).toBe(false);
+    sessionStorage.setItem(MOCK_LINKS_SCENARIO_KEY, MOCK_LINKS_SCENARIO.Showcase);
+    expect(usesDemoLibrary()).toBe(true);
+    localStorage.clear();
+    expect(usesDemoLibrary()).toBe(true);
+    sessionStorage.setItem(MOCK_LINKS_SCENARIO_KEY, MOCK_LINKS_SCENARIO.Empty);
+    expect(usesDemoLibrary()).toBe(false);
+    localStorage.setItem(MOCK_SESSION_STORAGE_KEY, JSON.stringify({ isDemo: true }));
+    expect(usesDemoLibrary()).toBe(true);
   });
 });

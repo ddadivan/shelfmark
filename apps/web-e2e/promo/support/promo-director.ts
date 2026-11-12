@@ -1,15 +1,22 @@
 import type { Locator, Page } from '@playwright/test';
 import { PROMO_CHAPTER_START_MS } from '../models/promo-chapter.const';
 import type { PromoChapter } from '../models/promo-chapter.type';
+import type { PromoCut } from '../models/promo-cut.interface';
+import { PROMO_DEVICE } from '../models/promo-device.const';
 
 /** Screenshot CSS that leaves the recording pointer out of the poster. */
 export const HIDE_CURSOR_CSS = '[data-promo-cursor] { visibility: hidden !important; }';
 
-/** Pointer steps of a glide: about 0.4 s at 60 Hz, slow enough to follow. */
-const GLIDE_STEPS = 24;
+/** Pointer steps of a glide: about 0.3 s at 60 Hz, slow enough to follow. */
+const GLIDE_STEPS = 18;
 /** Delay between typed characters, human-paced. */
-const TYPE_DELAY_MS = 70;
-const BEFORE_PRESS_MS = 180;
+const TYPE_DELAY_MS = 50;
+const BEFORE_PRESS_MS = 150;
+/**
+ * The recording's clock and the page's differ by a frame or two: a cut starts this much before
+ * its action (the old page, still) and ends this much after it.
+ */
+const CUT_MARGIN_MS = 300;
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -121,6 +128,7 @@ function cursorScript(touch: boolean): string {
  */
 export class PromoDirector {
   private startedAt = Date.now();
+  private readonly gaps: PromoCut[] = [];
 
   constructor(
     private readonly page: Page,
@@ -136,9 +144,31 @@ export class PromoDirector {
     this.startedAt = Date.now();
   }
 
-  /** Milliseconds since `start()`. */
+  /** Milliseconds of the final video so far: the time since `start()` without the cuts. */
   elapsed(): number {
+    return this.raw() - this.gaps.reduce((sum, gap) => sum + gap.end - gap.start, 0);
+  }
+
+  /** Milliseconds of the raw recording since `start()`. */
+  raw(): number {
     return Date.now() - this.startedAt;
+  }
+
+  /** The stretches of the raw recording the encoder leaves out, in order. */
+  cuts(): readonly PromoCut[] {
+    return this.gaps;
+  }
+
+  /**
+   * Runs a page load that the video must not show (#330: a reload paints a blank page for a
+   * moment): everything recorded while `action` runs, with a short margin on both sides, is cut
+   * from the final video, and the captions and chapters after it move up.
+   */
+  async cut(action: () => Promise<void>): Promise<void> {
+    const start = Math.max(0, this.raw() - CUT_MARGIN_MS);
+    await action();
+    await sleep(CUT_MARGIN_MS);
+    this.gaps.push({ start, end: this.raw() });
   }
 
   pause(ms: number): Promise<void> {
@@ -150,7 +180,8 @@ export class PromoDirector {
    * `PROMO_MEASURE=1` it never waits, so a run reports where each chapter would start on its own.
    */
   async holdUntil(chapter: PromoChapter): Promise<number> {
-    const wait = PROMO_CHAPTER_START_MS[chapter] - this.elapsed();
+    const device = this.phone ? PROMO_DEVICE.Phone : PROMO_DEVICE.Desktop;
+    const wait = PROMO_CHAPTER_START_MS[device][chapter] - this.elapsed();
     if (wait > 0 && !process.env['PROMO_MEASURE']) {
       await sleep(wait);
     }

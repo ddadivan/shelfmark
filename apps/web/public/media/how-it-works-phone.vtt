@@ -1,85 +1,141 @@
 WEBVTT
 
 1
-00:00:00.001 --> 00:00:01.803
+00:00:00.000 --> 00:00:01.401
 Shelfmark keeps every link you save in one place.
 
 2
-00:00:01.803 --> 00:00:05.590
-Open the demo: the tab bar keeps everything in reach.
+00:00:01.401 --> 00:00:06.027
+Open the demo: the tab bar keeps Library, Search, Add, Tags and You in reach.
 
 3
-00:00:05.590 --> 00:00:12.029
+00:00:06.027 --> 00:00:11.087
 Paste a link: the preview fills in by itself.
 
 4
-00:00:12.029 --> 00:00:18.121
-Pick a folder and a tag, then save.
+00:00:11.087 --> 00:00:15.235
+Pick a folder, add a tag and a note.
 
 5
-00:00:18.121 --> 00:00:34.003
-A pile of links? Paste them all at once.
+00:00:15.235 --> 00:00:18.415
+Save, and the card lands in your feed.
 
 6
-00:00:34.003 --> 00:00:40.821
-Folders get a colour and an icon…
+00:00:18.415 --> 00:00:27.000
+Saved it before? Shelfmark tells you where.
 
 7
-00:00:40.821 --> 00:00:44.965
-…and the ones you use most stay pinned on top.
+00:00:27.000 --> 00:00:33.428
+Folders nest inside folders; a new one starts empty.
 
 8
-00:00:44.965 --> 00:00:52.003
-A tag gathers its links from every folder.
+00:00:33.428 --> 00:00:39.606
+Hold a folder for its menu: a colour and an icon.
 
 9
-00:00:52.003 --> 00:00:55.709
-Need it again? Tap Search.
+00:00:39.606 --> 00:00:42.366
+Pin the folders you use most.
 
 10
-00:00:55.709 --> 00:01:00.320
-Saved views keep the filters you use often.
+00:00:42.366 --> 00:00:46.365
+Hold and drag to reorder: a line shows where it lands.
 
 11
-00:01:00.320 --> 00:01:04.228
-Star the keepers; Favorites gathers them.
+00:00:46.365 --> 00:00:48.916
+Unpin with one tap, Undo if you change your mind.
 
 12
-00:01:04.228 --> 00:01:08.374
-Recently opened brings back what you read.
+00:00:48.916 --> 00:00:51.631
+A tag gathers its links from every folder.
 
 13
-00:01:08.374 --> 00:01:19.000
-Deleted by mistake? Trash keeps it for 30 days.
+00:00:51.631 --> 00:00:58.002
+Star the keepers; Favorites gathers them.
 
 14
-00:01:19.000 --> 00:01:28.847
-Select several links and act on all of them at once.
+00:00:58.002 --> 00:01:03.736
+Move to folder opens a sheet: search it, the current folder is marked.
 
 15
-00:01:28.847 --> 00:01:39.000
-Or move one link from its menu.
+00:01:03.736 --> 00:01:05.711
+The toast has Undo, in case it was the wrong folder.
 
 16
-00:01:39.000 --> 00:01:45.235
-Light, dark, or your own accent colour.
+00:01:05.711 --> 00:01:12.587
+Hold a card to select, tap to add more…
 
 17
-00:01:45.235 --> 00:01:49.658
-In six languages.
+00:01:12.587 --> 00:01:21.000
+…favorite, copy, share or move them together.
 
 18
-00:01:49.658 --> 00:01:52.824
-Export everything, any time.
+00:01:21.000 --> 00:01:24.721
+Need it again? Tap Search and type.
 
 19
-00:01:52.824 --> 00:02:00.525
-And tell us what you think: we read every message.
+00:01:24.721 --> 00:01:29.114
+Saved views sit above the feed: All, Videos, Articles…
 
 20
-00:02:00.525 --> 00:02:05.032
-On the phone, share a link from any app straight to Shelfmark.
+00:01:29.114 --> 00:01:36.506
+Sort it your way, and switch between cards and a list.
 
 21
-00:02:05.032 --> 00:02:08.036
+00:01:36.506 --> 00:01:42.001
+Recently opened: filter, search, or pause the history.
+
+22
+00:01:42.001 --> 00:01:47.726
+Deleted by mistake? Undo brings it right back.
+
+23
+00:01:47.726 --> 00:01:56.001
+Trash keeps what you delete; restore it any time.
+
+24
+00:01:56.001 --> 00:01:59.635
+Light, dark, or Custom with your own accent colour…
+
+25
+00:01:59.635 --> 00:02:03.455
+…and Shelfmark keeps it readable: 4.5:1 contrast, always.
+
+26
+00:02:03.455 --> 00:02:07.159
+In six languages.
+
+27
+00:02:07.159 --> 00:02:15.001
+And tell us what you think: we read every message.
+
+28
+00:02:15.001 --> 00:02:17.680
+Export everything as JSON or a bookmarks file, any time.
+
+29
+00:02:17.680 --> 00:02:19.474
+Install Shelfmark from the browser menu and it joins your Share menu.
+
+30
+00:02:19.474 --> 00:02:22.439
+Share a page from any app, and it lands on your shelf.
+
+31
+00:02:22.439 --> 00:02:25.209
+With an account, share a folder as a public page.
+
+32
+00:02:25.209 --> 00:02:28.544
+Make it public and copy its link.
+
+33
+00:02:28.544 --> 00:02:35.544
+Now and then Shelfmark asks how you like it: one tap.
+
+34
+00:02:35.544 --> 00:02:38.602
+Anyone with the link sees a read-only page, no account needed.
+
+35
+00:02:38.602 --> 00:02:40.605
 Shelfmark. Every link, back within reach.
