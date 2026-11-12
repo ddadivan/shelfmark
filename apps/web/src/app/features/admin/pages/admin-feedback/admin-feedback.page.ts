@@ -16,7 +16,7 @@ import {
 } from '@shelfmark/ui';
 import { FEEDBACK_LOAD_STATE } from '../../../feedback/models/feedback-load-state.const';
 import { FEEDBACK_STATUS_VIEW } from '../../../feedback/models/feedback-status-view.const';
-import { SettingsPageHeaderComponent } from '../../../settings/settings-page-header/settings-page-header.component';
+import { SettingsPageHeaderComponent } from '../../../settings/components/settings-page-header/settings-page-header.component';
 import { AdminFeedbackItemComponent } from '../../components/admin-feedback-item/admin-feedback-item.component';
 import { AdminFeedbackStore } from '../../services/admin-feedback.store';
 

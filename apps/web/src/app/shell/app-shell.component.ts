@@ -51,7 +51,7 @@ import { DemoBannerComponent } from './demo-banner/demo-banner.component';
 import { OfflineBannerComponent } from './offline-banner/offline-banner.component';
 import { PHONE_TAB } from './models/phone-tab.const';
 import { phoneTabForUrl } from './phone-tab-for-url';
-import { SettingsNavComponent } from '../features/settings/settings-nav/settings-nav.component';
+import { SettingsNavComponent } from '../features/settings/components/settings-nav/settings-nav.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 
 /**

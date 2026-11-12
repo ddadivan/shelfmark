@@ -1,6 +1,6 @@
 import type { Routes } from '@angular/router';
 import { SETTINGS_PATH } from './models/settings-path.const';
-import { settingsIndexGuard } from './settings-index/settings-index.guard';
+import { settingsIndexGuard } from './pages/settings-index/settings-index.guard';
 
 /** Children of `/settings`: the You list (phone) and one page per section. */
 export default [
@@ -8,38 +8,38 @@ export default [
     path: '',
     pathMatch: 'full',
     canActivate: [settingsIndexGuard],
-    loadComponent: () => import('./settings-index/settings-index.page'),
+    loadComponent: () => import('./pages/settings-index/settings-index.page'),
   },
   {
     path: SETTINGS_PATH.Account,
-    loadComponent: () => import('./account/account.page'),
+    loadComponent: () => import('./pages/account/account.page'),
   },
   {
     path: SETTINGS_PATH.Appearance,
-    loadComponent: () => import('./appearance/appearance.page'),
+    loadComponent: () => import('./pages/appearance/appearance.page'),
   },
   {
     path: SETTINGS_PATH.Library,
-    loadComponent: () => import('./library/library.page'),
+    loadComponent: () => import('./pages/library/library.page'),
   },
   {
     path: SETTINGS_PATH.Language,
-    loadComponent: () => import('./language/language.page'),
+    loadComponent: () => import('./pages/language/language.page'),
   },
   {
     path: SETTINGS_PATH.Shortcuts,
-    loadComponent: () => import('./shortcuts/shortcuts.page'),
+    loadComponent: () => import('./pages/shortcuts/shortcuts.page'),
   },
   {
     path: SETTINGS_PATH.ImportExport,
-    loadComponent: () => import('./import-export/import-export.page'),
+    loadComponent: () => import('./pages/import-export/import-export.page'),
   },
   {
     path: SETTINGS_PATH.Privacy,
-    loadComponent: () => import('./privacy-data/privacy-data.page'),
+    loadComponent: () => import('./pages/privacy-data/privacy-data.page'),
   },
   {
     path: SETTINGS_PATH.Feedback,
-    loadComponent: () => import('./your-feedback/your-feedback.page'),
+    loadComponent: () => import('./pages/your-feedback/your-feedback.page'),
   },
 ] satisfies Routes;
