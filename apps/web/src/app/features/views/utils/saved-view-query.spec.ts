@@ -1,5 +1,5 @@
 import { LINK_KIND, LINK_SORT_FIELD, SORT_ORDER, type SavedViewQuery } from '@shelfmark/contracts';
-import { LINKS_SCOPE } from '../links/models/links-scope.const';
+import { LINKS_SCOPE } from '../../links/models/links-scope.const';
 import {
   isAllFilter,
   listQueryOf,

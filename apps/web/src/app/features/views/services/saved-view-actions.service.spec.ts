@@ -2,14 +2,14 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { LINK_KIND, SAVED_VIEW_LIMIT, SAVED_VIEW_SCOPE } from '@shelfmark/contracts';
 import { MOCK_ID } from '@shelfmark/contracts/testing';
-import { SavedViewsStore } from '../../stores/saved-views.store';
-import { loadEnglish, provideTranslocoForTest } from '../../testing/transloco-testing';
-import { MockLibraryData } from '../links/mock/mock-library-data';
-import { LINKS_SCOPE } from '../links/models/links-scope.const';
-import { MockSavedViewsApi } from './mock/mock-saved-views.api';
-import { SAVED_VIEWS_API } from './models/saved-views-api.const';
+import { SavedViewsStore } from '../../../stores/saved-views.store';
+import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
+import { MockLibraryData } from '../../links/mock/mock-library-data';
+import { LINKS_SCOPE } from '../../links/models/links-scope.const';
+import { MockSavedViewsApi } from '../mock/mock-saved-views.api';
+import { SAVED_VIEWS_API } from '../models/saved-views-api.const';
 import { SavedViewActionsService } from './saved-view-actions.service';
-import { normalizeViewQuery } from './saved-view-query';
+import { normalizeViewQuery } from '../utils/saved-view-query';
 
 async function setup() {
   TestBed.configureTestingModule({

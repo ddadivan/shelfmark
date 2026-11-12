@@ -2,17 +2,17 @@ import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { LINK_KIND } from '@shelfmark/contracts';
-import { axeViolations } from '../../../../testing/axe';
-import { SavedViewsStore } from '../../../stores/saved-views.store';
-import { FoldersStore } from '../../../stores/folders.store';
-import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
-import { FOLDERS_API } from '../../links/models/folders-api.const';
-import { MockFoldersApi } from '../../links/mock/mock-folders.api';
-import type { LinksFilter } from '../../links/models/links-filter.type';
-import { LINKS_SCOPE } from '../../links/models/links-scope.const';
-import { MockSavedViewsApi } from '../mock/mock-saved-views.api';
-import { SAVED_VIEWS_API } from '../models/saved-views-api.const';
-import { SavedViewActionsService } from '../saved-view-actions.service';
+import { axeViolations } from '../../../../../testing/axe';
+import { SavedViewsStore } from '../../../../stores/saved-views.store';
+import { FoldersStore } from '../../../../stores/folders.store';
+import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
+import { FOLDERS_API } from '../../../links/models/folders-api.const';
+import { MockFoldersApi } from '../../../links/mock/mock-folders.api';
+import type { LinksFilter } from '../../../links/models/links-filter.type';
+import { LINKS_SCOPE } from '../../../links/models/links-scope.const';
+import { MockSavedViewsApi } from '../../mock/mock-saved-views.api';
+import { SAVED_VIEWS_API } from '../../models/saved-views-api.const';
+import { SavedViewActionsService } from '../../services/saved-view-actions.service';
 import { SavedViewChipsComponent } from './saved-view-chips.component';
 
 @Component({

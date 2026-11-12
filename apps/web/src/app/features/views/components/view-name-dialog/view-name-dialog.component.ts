@@ -22,9 +22,9 @@ import {
   NoticeComponent,
   UiDialogRef,
 } from '@shelfmark/ui';
-import type { ViewNameDialogData } from '../models/view-name-dialog-data.interface';
-import { VIEW_NAME_ERROR } from '../models/view-name-error.const';
-import { VIEW_NAME_MODE } from '../models/view-name-mode.const';
+import type { ViewNameDialogData } from '../../models/view-name-dialog-data.interface';
+import { VIEW_NAME_ERROR } from '../../models/view-name-error.const';
+import { VIEW_NAME_MODE } from '../../models/view-name-mode.const';
 
 /**
  * Names a saved view: "Save this view" (the current filter) or "Rename". One field; the dialog

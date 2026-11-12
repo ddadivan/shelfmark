@@ -21,13 +21,13 @@ import {
   type SavedViewItem,
   type SavedViewMenuRequest,
 } from '@shelfmark/ui';
-import { ViewportService } from '../../../core/layout/viewport.service';
-import { FoldersStore } from '../../../stores/folders.store';
-import { SavedViewsStore } from '../../../stores/saved-views.store';
-import type { LinksFilter } from '../../links/models/links-filter.type';
-import { ALL_VIEW_ID } from '../models/all-view-id.const';
-import { SavedViewActionsService } from '../saved-view-actions.service';
-import { isAllFilter, sameViewQuery } from '../saved-view-query';
+import { ViewportService } from '../../../../core/layout/viewport.service';
+import { FoldersStore } from '../../../../stores/folders.store';
+import { SavedViewsStore } from '../../../../stores/saved-views.store';
+import type { LinksFilter } from '../../../links/models/links-filter.type';
+import { ALL_VIEW_ID } from '../../models/all-view-id.const';
+import { SavedViewActionsService } from '../../services/saved-view-actions.service';
+import { isAllFilter, sameViewQuery } from '../../utils/saved-view-query';
 
 /**
  * The saved view chips above the feed: "All" (the whole library), the user's views with their

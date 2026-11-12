@@ -3,15 +3,15 @@ import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { SAVED_VIEW_LIMIT, type SavedViewResponse } from '@shelfmark/contracts';
 import { DIALOG_SIZE, DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
-import { APP_PATH } from '../../models/app-path.const';
-import { DIALOG_FIRST_FIELD } from '../../models/dialog-first-field.const';
-import { VIEW_OUTCOME } from '../../stores/models/view-outcome.const';
-import { SavedViewsStore } from '../../stores/saved-views.store';
-import type { LinksFilter } from '../links/models/links-filter.type';
-import type { ViewNameDialogData } from './models/view-name-dialog-data.interface';
-import { VIEW_NAME_MODE } from './models/view-name-mode.const';
-import { viewNavigation, viewQueryOf } from './saved-view-query';
-import { ViewNameDialogComponent } from './view-name-dialog/view-name-dialog.component';
+import { APP_PATH } from '../../../models/app-path.const';
+import { DIALOG_FIRST_FIELD } from '../../../models/dialog-first-field.const';
+import { VIEW_OUTCOME } from '../../../stores/models/view-outcome.const';
+import { SavedViewsStore } from '../../../stores/saved-views.store';
+import type { LinksFilter } from '../../links/models/links-filter.type';
+import type { ViewNameDialogData } from '../models/view-name-dialog-data.interface';
+import { VIEW_NAME_MODE } from '../models/view-name-mode.const';
+import { viewNavigation, viewQueryOf } from '../utils/saved-view-query';
+import { ViewNameDialogComponent } from '../components/view-name-dialog/view-name-dialog.component';
 
 /**
  * What a user can do with saved views: apply one (or "All"), save the current filter as a view,
