@@ -25,14 +25,12 @@ import {
 } from '@shelfmark/ui';
 import { FoldersStore } from '../../../../stores/folders.store';
 import { TagsStore } from '../../../../stores/tags.store';
-import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { pluralKey } from '../../../../core/i18n/plural-key';
 import { isMacPlatform } from '../../../search/utils/is-mac-platform';
 import { ADD_LINK_ACTION } from '../../models/add-link-action.const';
 import type { AddLinkDialogData } from '../../models/add-link-dialog-data.interface';
 import type { AddLinkResult } from '../../models/add-link-result.type';
-import { LINKS_API } from '../../models/links-api.const';
 import { PREVIEW_STATE } from '../../models/preview-state.const';
 import { LocaleService } from '../../../../core/i18n/locale.service';
 import { PasteManyListComponent } from '../paste-many/paste-many-list.component';
@@ -102,16 +100,12 @@ export class AddLinkDialogComponent {
   /** The phone sheet has no Cancel in add mode and no shortcut hint: not rendered there. */
   protected readonly phone = inject(ViewportService).phone;
   private readonly formState = inject(AddLinkFormService);
-  private readonly linksApi = inject(LINKS_API);
   private readonly folders = inject(FoldersStore);
   private readonly tagStore = inject(TagsStore);
   private readonly ref = inject<UiDialogRef<AddLinkResult>>(UiDialogRef);
   private readonly transloco = inject(TranslocoService);
   private readonly localeService = inject(LocaleService);
   private readonly data = injectDialogData<AddLinkDialogData>();
-  private readonly settings = inject(UserSettingsStore);
-  /** Settings › Library › Saving: the default folder and whether pages are fetched. */
-  private readonly library = this.settings.libraryShown;
 
   /** The link being edited; `undefined` when adding. */
   protected readonly original = this.formState.original;
@@ -132,7 +126,6 @@ export class AddLinkDialogComponent {
   });
 
   protected readonly form = this.formState.form;
-  private readonly model = this.formState.model;
 
   private readonly previewService = inject(AddLinkPreviewService);
   protected readonly fetchPages = this.previewService.fetchPages;

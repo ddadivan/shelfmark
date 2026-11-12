@@ -50,7 +50,11 @@ export class LibraryFilterService {
   private readonly router = inject(Router);
   private readonly inputs = signal<LibraryRouteInputs>(NO_INPUTS);
 
-  /** Binds the route inputs of the page (call once, in its constructor). */
+  /**
+   * Binds the route inputs of the page (call once, in its constructor). Until then every signal
+   * reads `NO_INPUTS`, so consumers read these signals lazily (in a `computed` or `effect`), never
+   * in their own constructor.
+   */
   connect(inputs: LibraryRouteInputs): void {
     this.inputs.set(inputs);
   }

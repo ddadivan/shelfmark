@@ -45,15 +45,15 @@ export class LibraryFeedService {
    * The store is app-wide: when the page opens (back from another page) it can still hold the
    * links of another view for a moment. Those never show, and never become the "previous view".
    */
-  readonly synced = computed(() => sameFilter(this.store.filter(), this.filters.filter()));
-  readonly ownCount = computed(() => (this.synced() ? this.store.count() : 0));
-  readonly ownError = computed(() => this.synced() && this.store.error());
-  readonly ownLoaded = computed(() => this.synced() && this.store.loaded());
-  readonly ownLinks = computed(() =>
+  private readonly synced = computed(() => sameFilter(this.store.filter(), this.filters.filter()));
+  private readonly ownCount = computed(() => (this.synced() ? this.store.count() : 0));
+  private readonly ownError = computed(() => this.synced() && this.store.error());
+  private readonly ownLoaded = computed(() => this.synced() && this.store.loaded());
+  private readonly ownLinks = computed(() =>
     this.synced() ? pinnedFirst(this.store.entities(), this.filters.isFolder()) : [],
   );
   /** The last list that was fully loaded; it stays on screen while the next view loads. */
-  readonly lastShown = signal<LastShown>({ items: [], hasMore: false });
+  private readonly lastShown = signal<LastShown>({ items: [], hasMore: false });
   /**
    * The view changed and its first page is on the way: the store has no links yet, the cards of
    * the previous view stay (inert, no skeleton, no dimming) under the progress bar.
@@ -111,7 +111,7 @@ export class LibraryFeedService {
   /** Sort and view switch: with links, and while the first page loads (so the toolbar keeps its size). */
   readonly showControls = computed(() => this.showLinks() || this.firstLoad());
 
-  readonly labels = toSignal(
+  private readonly labels = toSignal(
     combineLatest([
       this.transloco.selectTranslate(VIEW_OPTION_KEYS[UI_VIEW.Cards]),
       this.transloco.selectTranslate(VIEW_OPTION_KEYS[UI_VIEW.List]),
@@ -132,7 +132,7 @@ export class LibraryFeedService {
    * The direct subfolders of the folder of the page, in the sidebar order (#314), with the number of folders inside
    * each. Hidden while a search or tag filter is on (they do not filter) and for a missing folder.
    */
-  readonly currentSubfolders = computed<readonly SubfolderItem[]>(() => {
+  private readonly currentSubfolders = computed<readonly SubfolderItem[]>(() => {
     const id = this.filters.folderId();
     if (
       !this.filters.isFolder() ||
@@ -151,7 +151,7 @@ export class LibraryFeedService {
       }));
   });
   /** The subfolders of the last settled view; they stay with its cards while the next view loads. */
-  readonly lastSubfolders = signal<readonly SubfolderItem[]>([]);
+  private readonly lastSubfolders = signal<readonly SubfolderItem[]>([]);
   readonly subfolders = computed(() =>
     this.stale() ? this.lastSubfolders() : this.currentSubfolders(),
   );
