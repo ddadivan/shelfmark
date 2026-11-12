@@ -362,15 +362,15 @@
         [cdkDragData]="link"
         [attr.data-link-id]="link.id"
         [cdkDragDisabled]="compact()"
-        [cdkDragStartDelay]="DRAG_START_DELAY"
+        [cdkDragStartDelay]="dnd.DRAG_START_DELAY"
         [class.library__item--carried]="drag.dragging() && drag.carriedIds().has(link.id)"
         [style.view-transition-name]="feed.morphing() ? 'link-' + link.id : null"
         [class.library__landed]="store.landed()[link.id] !== undefined"
         [style.--ui-land-delay]="feed.landDelay(link.id)"
         (pointerdown)="drag.grab($event)"
-        (cdkDragStarted)="onDragStarted(link)"
-        (cdkDragMoved)="onDragMoved($event)"
-        (cdkDragEnded)="onDragEnded()"
+        (cdkDragStarted)="dnd.started(link)"
+        (cdkDragMoved)="dnd.moved($event)"
+        (cdkDragEnded)="dnd.ended()"
       >
         <app-drag-slot
           *cdkDragPlaceholder
@@ -383,13 +383,13 @@
         }
         <ng-template cdkDragPreview matchSize>
           <div class="library__drag-preview" aria-hidden="true">
-            @if (bundled(link)) {
+            @if (dnd.bundled(link)) {
             <span class="library__drag-stack library__drag-stack--far"></span>
             <span class="library__drag-stack library__drag-stack--near"></span>
             }
             <app-link-row [link]="link" />
             <span class="library__drag-badge"
-              >{{ dragLabelKey(link) | transloco: { count: dragCount(link) } }}</span
+              >{{ dnd.dragLabelKey(link) | transloco: { count: dnd.dragCount(link) } }}</span
             >
           </div>
         </ng-template>
@@ -431,15 +431,15 @@
         [cdkDragData]="link"
         [attr.data-link-id]="link.id"
         [cdkDragDisabled]="compact()"
-        [cdkDragStartDelay]="DRAG_START_DELAY"
+        [cdkDragStartDelay]="dnd.DRAG_START_DELAY"
         [class.library__item--carried]="drag.dragging() && drag.carriedIds().has(link.id)"
         [style.view-transition-name]="feed.morphing() ? 'link-' + link.id : null"
         [class.library__landed]="store.landed()[link.id] !== undefined"
         [style.--ui-land-delay]="feed.landDelay(link.id)"
         (pointerdown)="drag.grab($event)"
-        (cdkDragStarted)="onDragStarted(link)"
-        (cdkDragMoved)="onDragMoved($event)"
-        (cdkDragEnded)="onDragEnded()"
+        (cdkDragStarted)="dnd.started(link)"
+        (cdkDragMoved)="dnd.moved($event)"
+        (cdkDragEnded)="dnd.ended()"
       >
         <app-drag-slot *cdkDragPlaceholder class="library__drag-slot" [title]="link.title" />
         @if (drag.dragging() && drag.carriedIds().has(link.id)) {
@@ -447,13 +447,13 @@
         }
         <ng-template cdkDragPreview matchSize>
           <div class="library__drag-preview" aria-hidden="true">
-            @if (bundled(link)) {
+            @if (dnd.bundled(link)) {
             <span class="library__drag-stack library__drag-stack--far"></span>
             <span class="library__drag-stack library__drag-stack--near"></span>
             }
             <app-link-card [link]="link" [readOnly]="true" />
             <span class="library__drag-badge"
-              >{{ dragLabelKey(link) | transloco: { count: dragCount(link) } }}</span
+              >{{ dnd.dragLabelKey(link) | transloco: { count: dnd.dragCount(link) } }}</span
             >
           </div>
         </ng-template>

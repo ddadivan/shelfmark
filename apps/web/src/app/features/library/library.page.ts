@@ -1,11 +1,5 @@
 import { Dialog } from '@angular/cdk/dialog';
-import {
-  CdkDrag,
-  type CdkDragMove,
-  CdkDragPlaceholder,
-  CdkDragPreview,
-  CdkDropList,
-} from '@angular/cdk/drag-drop';
+import { CdkDrag, CdkDragPlaceholder, CdkDragPreview, CdkDropList } from '@angular/cdk/drag-drop';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -40,12 +34,7 @@ import {
   SkeletonComponent,
   type BreadcrumbClick,
 } from '@shelfmark/ui';
-import {
-  EXPORT_FORMAT,
-  PIN_KIND,
-  type ExportFormat,
-  type LinkResponse,
-} from '@shelfmark/contracts';
+import { EXPORT_FORMAT, PIN_KIND, type ExportFormat } from '@shelfmark/contracts';
 import { Router } from '@angular/router';
 import { pluralKey } from '../../core/i18n/plural-key';
 import { ViewportService } from '../../core/layout/viewport.service';
@@ -72,6 +61,7 @@ import { UI_VIEW } from '../../stores/models/ui-view.const';
 import { UserSettingsStore } from '../../stores/user-settings.store';
 import { LibraryFeedService } from './services/library-feed.service';
 import { LibraryHeadService } from './services/library-head.service';
+import { LibraryDragService } from './services/library-drag.service';
 import { LibraryBulkService } from './services/library-bulk.service';
 import { LibrarySelectionService } from './services/library-selection.service';
 import { LibraryFilterService } from './services/library-filter.service';
@@ -128,6 +118,7 @@ const SKELETON_COUNT = 8;
     LibraryHeadService,
     LibrarySelectionService,
     LibraryBulkService,
+    LibraryDragService,
   ],
   host: {
     '(document:keydown)': 'onKeydown($event)',
@@ -154,8 +145,7 @@ export default class LibraryPage {
   protected readonly selection = inject(LibrarySelectionService);
   protected readonly bulk = inject(LibraryBulkService);
   protected readonly drag = inject(LinkDragService);
-  /** Touch holds 150 ms before a drag starts (DragDrop spec), so a swipe still scrolls. */
-  protected readonly DRAG_START_DELAY = { touch: 150, mouse: 0 };
+  protected readonly dnd = inject(LibraryDragService);
   private readonly exporter = inject(ExportActionsService);
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
@@ -232,41 +222,6 @@ export default class LibraryPage {
     }
     event.preventDefault();
     void this.actions.addLink({ ...this.filters.addLinkData(), text });
-  }
-
-  /** A drag began: the drag service takes the links along and a screen reader hears what moves. */
-  protected onDragStarted(link: LinkResponse): void {
-    this.drag.start(link, this.selection.selectedLinks());
-    const count = this.bundled(link) ? this.selection.selectedCount() : 1;
-    this.selection.announce(
-      this.transloco.translate(pluralKey('links.drag.started', count), { count }),
-    );
-  }
-
-  /** The drag ended (drop or Esc): clears the spoken text, the toast tells what moved. */
-  protected onDragEnded(): void {
-    this.selection.announce('');
-    this.drag.drop();
-  }
-
-  /** Dragging a picked link (with others picked) carries the whole selection. */
-  protected bundled(link: LinkResponse): boolean {
-    return this.selection.selectedCount() > 1 && this.selection.has(link.id);
-  }
-
-  /** How many links a drag of `link` carries: the whole selection when it travels, else 1. */
-  protected dragCount(link: LinkResponse): number {
-    return this.bundled(link) ? this.selection.selectedCount() : 1;
-  }
-
-  /** Label key of the drag preview badge: "Move 1 link" / "Move 3 links" (plural per language). */
-  protected dragLabelKey(link: LinkResponse): string {
-    return pluralKey('links.drag.move', this.dragCount(link));
-  }
-
-  /** Hit-tests the folders under the pointer while a link is dragged. */
-  protected onDragMoved(event: CdkDragMove<unknown>): void {
-    this.drag.move(event.pointerPosition.x, event.pointerPosition.y);
   }
 
   /**
