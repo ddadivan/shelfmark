@@ -61,7 +61,7 @@ const template = `
         [activeId]="activeId"
         [dropTargetId]="dropTargetId"
         [dropLabel]="dropLabel"
-        [noDropIds]="noDropIds"
+        [noDropIds]="noDropIds ?? []"
       />
     </div>
   </div>`;

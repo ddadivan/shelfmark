@@ -257,7 +257,10 @@
 }
 
 .pinned__item--no-drop {
-  opacity: 0.55;
+  // The text stays text-muted (no opacity on text, 4.5:1); the favicon is dimmed.
+  ui-favicon {
+    opacity: 0.55;
+  }
 
   &:hover {
     background: transparent;
