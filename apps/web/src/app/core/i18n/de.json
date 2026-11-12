@@ -709,6 +709,7 @@
       }
     },
     "searchHint": "Deine Links durchsuchen",
+    "searchButton": "Suchen",
     "theme": {
       "toLight": "Zum hellen Design wechseln",
       "toDark": "Zum dunklen Design wechseln"

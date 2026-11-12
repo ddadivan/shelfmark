@@ -1,0 +1,25 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+// The field takes the room the other controls leave, up to 40rem (Main spec).
+:host(.header-search--field) {
+  flex: 1 1 rem(192px);
+  max-width: rem(640px);
+}
+
+// The shortcut cap in the button, small like the one in the field.
+.header-search__kbd {
+  @include type(caption);
+
+  padding: 0 rem(5px);
+  margin-inline-start: var(--space-1);
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: rem(5px);
+}

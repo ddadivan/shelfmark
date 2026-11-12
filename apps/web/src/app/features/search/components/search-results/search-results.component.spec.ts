@@ -1,0 +1,194 @@
+import { TestBed, type ComponentFixture } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import type { LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
+import { MOCK_FOLDERS, MOCK_LIBRARY_COUNTS, MOCK_LINKS } from '@shelfmark/contracts/testing';
+import axe from 'axe-core';
+import { of } from 'rxjs';
+import { LinkActionsService } from '../../../links/services/link-actions.service';
+import { FOLDERS_API } from '../../../links/models/folders-api.const';
+import { LINKS_API } from '../../../links/models/links-api.const';
+import type { LinksApi } from '../../../links/models/links-api.interface';
+import { TAGS_API } from '../../../links/models/tags-api.const';
+import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
+import { SEARCH_DEBOUNCE_MS } from '../../models/search-debounce-ms.const';
+import { LinkOpener } from '../../services/link-opener.service';
+import { SearchResultsComponent } from './search-results.component';
+
+function link(n: number): LinkResponse {
+  return {
+    ...MOCK_LINKS[0],
+    id: `id-${n}`,
+    title: `Signal ${n}`,
+    url: `https://site${n}.example.com/a`,
+    folderId: null,
+    note: null,
+  };
+}
+
+function page(items: LinkResponse[], nextCursor: string | null = null): ListLinksResponse {
+  return { items, nextCursor, pinned: [] };
+}
+
+async function setup(list: LinksApi['list'] = () => of(page([link(1), link(2)]))) {
+  const opener = { open: vi.fn() };
+  TestBed.configureTestingModule({
+    providers: [
+      provideTranslocoForTest(),
+      { provide: LINKS_API, useValue: { list: vi.fn<LinksApi['list']>(list) } },
+      {
+        provide: FOLDERS_API,
+        useValue: {
+          list: () =>
+            of({
+              items: [{ ...MOCK_FOLDERS[0], id: 'f1', name: 'Signals club', parentId: null }],
+              counts: MOCK_LIBRARY_COUNTS,
+            }),
+        },
+      },
+      { provide: TAGS_API, useValue: { list: () => of([]) } },
+      { provide: LinkActionsService, useValue: { open: vi.fn() } },
+      { provide: LinkOpener, useValue: opener },
+    ],
+  });
+  await loadEnglish();
+  const fixture = TestBed.createComponent(SearchResultsComponent);
+  fixture.componentRef.setInput('popup', true);
+  document.body.append(fixture.nativeElement as HTMLElement);
+  const done = vi.fn();
+  fixture.componentInstance.done.subscribe(done);
+  await fixture.whenStable();
+  const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+  return { fixture, done, navigate, opener, element: fixture.nativeElement as HTMLElement };
+}
+
+const field = (element: HTMLElement): HTMLInputElement =>
+  element.querySelector<HTMLInputElement>('input[role="combobox"]')!;
+const panel = (): HTMLElement | null => document.querySelector('.ui-command-list__panel');
+const options = (): HTMLElement[] => [
+  ...document.querySelectorAll<HTMLElement>('.ui-command-list__panel [role="option"]'),
+];
+
+async function type(fixture: ComponentFixture<unknown>, text: string): Promise<void> {
+  const input = field(fixture.nativeElement as HTMLElement);
+  input.focus();
+  input.value = text;
+  input.dispatchEvent(new Event('input', { bubbles: true }));
+  await fixture.whenStable();
+  await new Promise((resolve) => setTimeout(resolve, SEARCH_DEBOUNCE_MS + 60));
+  await fixture.whenStable();
+}
+
+async function key(
+  fixture: ComponentFixture<unknown>,
+  name: string,
+  init: KeyboardEventInit = {},
+): Promise<KeyboardEvent> {
+  const event = new KeyboardEvent('keydown', {
+    key: name,
+    bubbles: true,
+    cancelable: true,
+    ...init,
+  });
+  field(fixture.nativeElement as HTMLElement).dispatchEvent(event);
+  await fixture.whenStable();
+  return event;
+}
+
+describe('SearchResultsComponent as the header field (popup)', () => {
+  afterEach(() => document.querySelector('app-search-results')?.remove());
+
+  it('is a closed combobox until the first character, then lists the results in a panel', async () => {
+    const { element, fixture } = await setup();
+
+    expect(field(element).getAttribute('aria-expanded')).toBe('false');
+    expect(panel()).toBeNull();
+    expect(element.querySelector('.ui-command-list__field kbd')?.textContent).toMatch(/K$/u);
+
+    await type(fixture, 'signal');
+
+    expect(field(element).getAttribute('aria-expanded')).toBe('true');
+    expect(panel()).not.toBeNull();
+    const texts = options().map((option) => option.textContent);
+    expect(texts.some((text) => text?.includes('Signal 1'))).toBe(true);
+    expect(texts.some((text) => text?.includes('Signals club'))).toBe(true);
+    expect(options().map((option) => option.id)).toContain(
+      field(element).getAttribute('aria-activedescendant'),
+    );
+  });
+
+  it('opens a link in a new tab with Enter and closes the panel, keeping the text', async () => {
+    const { done, element, fixture, opener } = await setup();
+
+    await type(fixture, 'signal');
+    await key(fixture, 'Enter');
+
+    expect(opener.open).toHaveBeenCalledWith(expect.stringContaining('https://'), false);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(panel()).toBeNull();
+    expect(field(element).value).toBe('signal');
+  });
+
+  it('keeps the panel for Cmd+Enter (background tab)', async () => {
+    const { done, fixture, opener } = await setup();
+
+    await type(fixture, 'signal');
+    await key(fixture, 'Enter', { metaKey: true });
+
+    expect(opener.open).toHaveBeenCalledWith(expect.stringContaining('https://'), true);
+    expect(done).not.toHaveBeenCalled();
+    expect(panel()).not.toBeNull();
+  });
+
+  it('navigates to "Show all results" and clears the field', async () => {
+    const { done, element, fixture, navigate } = await setup(() => of(page([link(1)], 'next')));
+
+    await type(fixture, 'signal');
+    options()
+      .find((option) => option.textContent?.includes('Show all results'))
+      ?.click();
+    await vi.waitFor(() => expect(done).toHaveBeenCalled());
+
+    expect(navigate).toHaveBeenCalledWith(['/links'], { queryParams: { q: 'signal' } });
+    expect(field(element).value).toBe('');
+    expect(panel()).toBeNull();
+  });
+
+  it('Esc closes the panel and keeps the text, a second Esc clears it', async () => {
+    const { element, fixture } = await setup();
+
+    await type(fixture, 'signal');
+    await key(fixture, 'Escape');
+    expect(panel()).toBeNull();
+    expect(field(element).value).toBe('signal');
+
+    await key(fixture, 'Escape');
+    expect(field(element).value).toBe('');
+  });
+
+  it('focus() puts the caret in the field', async () => {
+    const { element, fixture } = await setup();
+
+    fixture.componentInstance.focus();
+
+    expect(document.activeElement).toBe(field(element));
+  });
+
+  it('says so in the panel when nothing matches', async () => {
+    const { fixture } = await setup(() => of(page([])));
+
+    await type(fixture, 'zzzz');
+
+    expect(panel()?.textContent).toContain('Nothing found for “zzzz”');
+  });
+
+  it('has no axe violations with the panel open', async () => {
+    const { element, fixture } = await setup();
+    await type(fixture, 'signal');
+
+    const { violations } = await axe.run([element, panel()!], {
+      rules: { 'color-contrast': { enabled: false }, region: { enabled: false } },
+    });
+
+    expect(violations.map((violation) => violation.id)).toEqual([]);
+  });
+});

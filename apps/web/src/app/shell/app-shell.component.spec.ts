@@ -1,4 +1,5 @@
 import { LIBRARY_SETTINGS_DEFAULT } from '@shelfmark/contracts';
+import { Component, inject } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
@@ -22,6 +23,7 @@ import { translocoConfig } from '../core/i18n/transloco.config';
 import { THEME_PREFERENCE } from '@shelfmark/contracts';
 import { ThemeService } from '../core/theme/theme.service';
 import { LinkActionsService } from '../features/links/services/link-actions.service';
+import { HeaderSearchComponent } from '../features/search/components/header-search/header-search.component';
 import { SearchDialogService } from '../features/search/services/search-dialog.service';
 import { ShortcutsDialogService } from '../features/shortcuts/services/shortcuts-dialog.service';
 import AppShellComponent from './app-shell.component';
@@ -49,6 +51,22 @@ const USER: AuthUser = {
   demoExpiresAt: null,
   onboardingCompletedAt: '2020-01-01T00:00:00.000Z',
 };
+
+/** The header search has its own spec; here it is a button that starts the search. */
+@Component({
+  selector: 'app-header-search',
+  template: '<button type="button" class="stub-search" (click)="search.open()">Search</button>',
+})
+class StubHeaderSearchComponent {
+  protected readonly search = inject(SearchDialogService);
+}
+
+beforeEach(() => {
+  TestBed.overrideComponent(AppShellComponent, {
+    remove: { imports: [HeaderSearchComponent] },
+    add: { imports: [StubHeaderSearchComponent] },
+  });
+});
 
 function menuItem(label: string): HTMLElement | undefined {
   return Array.from(document.querySelectorAll<HTMLElement>('[role="menuitem"]')).find((item) =>
@@ -140,7 +158,7 @@ describe('AppShellComponent', () => {
     expect(TestBed.inject(Router).url).toBe('/settings');
   });
 
-  it('opens the search from the header pill and from Cmd+K', async () => {
+  it('opens the search from the header search and from Cmd+K', async () => {
     const api: AuthApi = {
       getSession: () => Promise.resolve(USER),
       signIn: vi.fn(),
@@ -167,7 +185,7 @@ describe('AppShellComponent', () => {
     const harness = await RouterTestingHarness.create('/');
 
     (harness.routeNativeElement as HTMLElement)
-      .querySelector<HTMLButtonElement>('ui-search-trigger button')
+      .querySelector<HTMLButtonElement>('app-header-search button')
       ?.click();
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', code: 'KeyK', metaKey: true }));
 
@@ -322,14 +340,12 @@ describe('AppShellComponent', () => {
       expect(root.querySelector('.shell__sidebar app-sidebar')).not.toBeNull();
     });
 
-    it('puts the logo in the sidebar card and the pill, theme switch and Add link in the top bar', async () => {
+    it('puts the logo in the sidebar card and the search, theme switch and Add link in the top bar', async () => {
       const { root } = await setup(false);
 
       expect(root.querySelector('.shell__sidebar .sidebar__logo ui-logo')).not.toBeNull();
       expect(root.querySelector('.shell__header ui-logo')).toBeNull();
-      const pill = root.querySelector('.shell__header ui-search-trigger button');
-      expect(pill?.textContent).toContain('Search your links');
-      expect(byLabel(root, 'Search')).toBeNull();
+      expect(root.querySelector('.shell__header app-header-search')).not.toBeNull();
       expect(
         byLabel(root, 'Switch to dark theme') ?? byLabel(root, 'Switch to light theme'),
       ).not.toBeNull();

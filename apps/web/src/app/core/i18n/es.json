@@ -721,6 +721,7 @@
       }
     },
     "searchHint": "Busca en tus enlaces",
+    "searchButton": "Buscar",
     "theme": {
       "toLight": "Cambiar al tema claro",
       "toDark": "Cambiar al tema oscuro"

@@ -64,12 +64,6 @@
   white-space: nowrap;
 }
 
-// The search pill takes the room the other controls leave, up to 40rem (Main spec).
-.shell__pill {
-  flex: 1 1 rem(192px);
-  max-width: rem(640px);
-}
-
 .shell__spacer {
   flex: 1 1 0;
 }

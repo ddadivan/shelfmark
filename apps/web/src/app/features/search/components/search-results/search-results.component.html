@@ -1,0 +1,127 @@
+<ui-command-list
+  [popup]="popup()"
+  [(query)]="query"
+  [busy]="busy()"
+  [inputLabel]="'search.label' | transloco"
+  [placeholder]="'search.placeholder' | transloco"
+  [listLabel]="'search.results' | transloco"
+  (selected)="choose($event)"
+>
+  <span slot="status">
+    @if (settled()) {
+      {{ pluralKey('search.status', resultCount()) | transloco: { count: resultCount() } }}
+    }
+  </span>
+  <kbd slot="input-end">{{ popup() ? shortcut : ('search.esc' | transloco) }}</kbd>
+
+  @if (linkCount() > 0) {
+    <ui-command-group
+      [heading]="
+        pluralKey(state().more ? 'library.countMore' : 'library.count', linkCount())
+          | transloco: { count: linkCount() }
+      "
+    >
+      @for (link of state().links; track link.id) {
+        <ui-command-item [value]="SEARCH_RESULT_KIND.Link + ':' + link.id">
+          <ui-favicon
+            slot="leading"
+            [src]="link.faviconUrl ?? undefined"
+            [letter]="siteLetter(link.url)"
+          />
+          <ui-highlight [text]="link.title" [query]="state().query" />
+          <span slot="meta">
+            {{ linkHost(link.url) }}
+            @if (folderName(link.folderId); as folder) {
+              {{ 'search.inFolder' | transloco: { folder: folder } }}
+            }
+            @if (noteMatch(link); as note) {
+              {{ 'search.noteMatches' | transloco }}
+              <ui-highlight [text]="note" [query]="state().query" />
+            }
+          </span>
+        </ui-command-item>
+      }
+      @if (state().more) {
+        <ui-command-item [value]="SEARCH_RESULT_KIND.All">
+          <ui-icon slot="leading" name="search" />
+          {{ 'search.showAll' | transloco: { query: state().query } }}
+        </ui-command-item>
+      }
+    </ui-command-group>
+  }
+
+  @if (hasLocal()) {
+    <ui-command-group [heading]="'search.foldersAndTags' | transloco">
+      @for (match of folderMatches(); track match.folder.id) {
+        <ui-command-item [value]="SEARCH_RESULT_KIND.Folder + ':' + match.folder.id">
+          <ui-icon slot="leading" name="folder" />
+          <ui-highlight [text]="match.path" [query]="parsed()" />
+          <span slot="trailing">{{
+            pluralKey('search.linkCount', match.folder.linkCount)
+              | transloco: { count: match.folder.linkCount }
+          }}</span>
+        </ui-command-item>
+      }
+      @for (tag of tagMatches(); track tag.id) {
+        <ui-command-item [value]="SEARCH_RESULT_KIND.Tag + ':' + tag.name">
+          <ui-icon slot="leading" name="tag" />
+          <ui-highlight [text]="tag.name" [query]="parsed()" />
+          <span slot="meta">{{
+            pluralKey('search.tagMeta', tag.linkCount) | transloco: { count: tag.linkCount }
+          }}</span>
+        </ui-command-item>
+      }
+    </ui-command-group>
+  }
+
+  <div slot="empty" class="search-results__empty">
+    @if (parsed() === '') {
+      <span class="search-results__empty-text">{{ 'search.hint' | transloco }}</span>
+    } @else if (busy()) {
+      <span class="search-results__empty-text">{{ 'search.searching' | transloco }}</span>
+    } @else if (state().failed) {
+      <span class="search-results__empty-title">{{ 'search.failed' | transloco }}</span>
+    } @else {
+      <span class="search-results__empty-title">{{
+        'library.emptySearch.title' | transloco: { query: parsed() }
+      }}</span>
+      <span class="search-results__empty-text">{{ 'search.emptyText' | transloco }}</span>
+    }
+  </div>
+
+  <span slot="footer"
+    ><kbd
+      ><span aria-hidden="true">↑</span
+      ><span class="ui-command-list__sr">{{ 'search.hints.up' | transloco }}</span></kbd
+    ><kbd
+      ><span aria-hidden="true">↓</span
+      ><span class="ui-command-list__sr">{{ 'search.hints.down' | transloco }}</span></kbd
+    >
+    {{ 'search.hints.move' | transloco }}</span
+  >
+  <span slot="footer"
+    ><kbd
+      ><ui-icon name="key-enter" [size]="16" /><span class="ui-command-list__sr">{{
+        'search.hints.enter' | transloco
+      }}</span></kbd
+    >
+    {{ 'search.hints.open' | transloco }}</span
+  >
+  <span slot="footer"
+    ><kbd>
+      @if (mac) {
+        <ui-icon name="key-command" [size]="16" /><span class="ui-command-list__sr">{{
+          'search.hints.command' | transloco
+        }}</span>
+      } @else {
+        {{ 'search.hints.ctrl' | transloco }}
+      }
+    </kbd>
+    <kbd
+      ><ui-icon name="key-enter" [size]="16" /><span class="ui-command-list__sr">{{
+        'search.hints.enter' | transloco
+      }}</span></kbd
+    >
+    {{ 'search.hints.background' | transloco }}</span
+  >
+</ui-command-list>
