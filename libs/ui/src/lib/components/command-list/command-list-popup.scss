@@ -16,6 +16,9 @@
 
 .ui-command-list__popup--floating.ui-command-list__popup--shown {
   display: block;
+
+  // The overlay pane is a flex container: fill it instead of shrinking to the content.
+  flex: 1 1 100%;
   min-width: 0;
 }
 
@@ -26,9 +29,9 @@
 
   display: flex;
   flex-direction: column;
-  width: max-content;
-  min-width: var(--ui-command-popup-min-width, 100%);
-  max-width: min(rem(720px), calc(100vw - #{rem(16px)}));
+
+  // Exactly the field's width: the pane gets it in pixels and follows resizes.
+  width: 100%;
   max-height: min(60vh, calc(100vh - #{rem(96px)}));
   margin: var(--space-1) 0;
   overflow: hidden;
@@ -50,7 +53,7 @@
 // body size, the shortcut cap small, no divider (the panel is a separate surface).
 .ui-command-list--popup .ui-command-list__field {
   gap: var(--space-2);
-  min-height: rem(48px);
+  min-height: rem(44px);
   padding: 0 rem(10px) 0 rem(18px);
   background: var(--surface);
   border-bottom: 0;
@@ -84,4 +87,9 @@
 
 .ui-command-list--popup .ui-command-list__input {
   @include type(body);
+}
+
+// Nothing found: the key hints have nothing to act on, so the panel ends with the message.
+.ui-command-list__panel--floating .ui-command-list__status--empty + .ui-command-list__footer {
+  display: none;
 }

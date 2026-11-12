@@ -18,12 +18,30 @@ ui-command-list {
   min-height: 0;
 }
 
-// The empty state sits in the status region of the command list, which already pads it.
+// The empty state sits in the status region of the command list, which pads it (space-8 and
+// space-6): a centred block, a round icon tile, the heading and the hint.
 .search-results__empty {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
   align-items: center;
+}
+
+.search-results__empty-icon {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: rem(40px);
+  height: rem(40px);
+  margin-bottom: var(--space-2);
+  color: var(--text-muted);
+  background: var(--surface-hover);
+  border-radius: var(--radius-full);
+}
+
+// "0 results" stays for screen readers; the heading says it on screen.
+.search-results__sr {
+  @include visually-hidden;
 }
 
 .search-results__empty-title {

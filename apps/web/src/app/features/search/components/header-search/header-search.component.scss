@@ -5,9 +5,11 @@
   min-width: 0;
 }
 
-// The field takes the room the other controls leave, up to 40rem (Main spec).
+// The field takes the room the other controls leave, up to 40rem; the spacer after it only gets
+// what is left, so the buttons on the right are never pushed.
 :host(.header-search--field) {
-  flex: 1 1 rem(192px);
+  flex: 100 1 rem(640px);
+  min-width: rem(240px);
   max-width: rem(640px);
 }
 

@@ -396,12 +396,10 @@ export class CommandListComponent {
     );
   }
 
-  /** The pane is at least as wide as the field (measured px on purpose, as in `ui-select`). */
+  /** The pane is exactly as wide as the field (measured px on purpose, as in `ui-select`). */
   private syncWidth(): void {
     const width = `${this.host.offsetWidth}px`;
-    this.overlay?.pane.style.setProperty('min-width', width);
-    // The panel's own percentage would resolve against a shrink-to-fit pane.
-    this.overlay?.pane.style.setProperty('--ui-command-popup-min-width', width);
+    this.overlay?.pane.style.setProperty('width', width);
   }
 
   private watchWidth(): void {

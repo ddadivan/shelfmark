@@ -7,7 +7,7 @@
   [listLabel]="'search.results' | transloco"
   (selected)="choose($event)"
 >
-  <span slot="status">
+  <span slot="status" [class.search-results__sr]="resultCount() === 0">
     @if (settled()) {
       {{ pluralKey('search.status', resultCount()) | transloco: { count: resultCount() } }}
     }
@@ -75,6 +75,9 @@
   }
 
   <div slot="empty" class="search-results__empty">
+    <span class="search-results__empty-icon" aria-hidden="true"
+      ><ui-icon name="search" [size]="20"
+    /></span>
     @if (parsed() === '') {
       <span class="search-results__empty-text">{{ 'search.hint' | transloco }}</span>
     } @else if (busy()) {

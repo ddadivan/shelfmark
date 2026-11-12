@@ -53,15 +53,40 @@ test.describe('inline search (mock API)', () => {
       await expect(listbox).not.toHaveAttribute('aria-busy', 'true');
 
       const panel = page.locator('.ui-command-list__panel');
-      const fieldBox = await field(page).boundingBox();
+      const fieldBox = await page.locator('app-header-search ui-command-list').boundingBox();
       const panelBox = await panel.boundingBox();
       expect(fieldBox).not.toBeNull();
       expect(panelBox).not.toBeNull();
       expect(panelBox?.y ?? 0).toBeGreaterThanOrEqual((fieldBox?.y ?? 0) + (fieldBox?.height ?? 0));
-      expect(panelBox?.width ?? 0).toBeGreaterThanOrEqual((fieldBox?.width ?? 0) - 1);
+      expect(panelBox?.width ?? 0).toBeCloseTo(fieldBox?.width ?? 0, 0);
+      expect(panelBox?.x ?? 0).toBeCloseTo(fieldBox?.x ?? 0, 0);
       expect(panelBox?.height ?? 0).toBeLessThanOrEqual(WIDE.height * 0.6 + 1);
       // The dialog is not involved.
       await expect(page.getByRole('dialog')).toHaveCount(0);
+    });
+
+    test('the panel is exactly as wide as the field, also after a resize', async ({ page }) => {
+      await page.goto('/links');
+      await field(page).fill(NOTE_WORD);
+      await expect(page.getByRole('option').first()).toBeVisible();
+      const edges = async () => {
+        const host = await page.locator('app-header-search ui-command-list').boundingBox();
+        const panel = await page.locator('.ui-command-list__panel').boundingBox();
+        return { host, panel };
+      };
+
+      await page.setViewportSize({ width: 1300, height: WIDE.height });
+      await expect
+        .poll(async () => {
+          const { host, panel } = await edges();
+          return (
+            [panel?.x ?? 0, panel?.width ?? 0].map((n) => Math.round(n)).join() ===
+            [host?.x ?? 0, host?.width ?? 0].map((n) => Math.round(n)).join()
+          );
+        })
+        .toBe(true);
+      const { host } = await edges();
+      expect(host?.width ?? 0).toBeGreaterThan(300);
     });
 
     test('the results scroll inside the panel and the panel stays within 60% of the height', async ({
