@@ -3,6 +3,7 @@ import { COLOR_SCHEME } from './models/color-scheme.const';
 import { settled } from './support/settled';
 import { expectNoBlockingViolations } from './support/axe';
 import { demoUser, MOCK_USER, NEW_USER, seedSession } from './support/mock-session';
+import { useSearchDialogWidth } from './support/search-button';
 import { expect, test } from './support/test';
 
 // Same value as MOCK_RATING_STORAGE_KEY in the rating feature's mock.
@@ -207,6 +208,8 @@ test.describe('app rating (mock API)', () => {
   });
 
   test('waits while another dialog is open and comes once it is closed', async ({ page }) => {
+    // Below 80em Ctrl+K opens the search dialog (from 80em it focuses the header field).
+    await useSearchDialogWidth(page);
     await openLibrary(page, 9);
     await page.keyboard.press('Control+k');
     const search = page.getByRole('dialog');

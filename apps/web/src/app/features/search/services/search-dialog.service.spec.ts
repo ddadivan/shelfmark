@@ -137,8 +137,20 @@ describe('SearchDialogService dialog', () => {
         () => expect(document.activeElement?.getAttribute('role')).toBe('combobox'),
         { timeout: CLOSE_TIMEOUT_MS },
       );
-      document.activeElement?.dispatchEvent(
-        new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }),
+      // Esc is sent until the dialog starts closing, so a key that lands before the dialog is
+      // ready on a slow runner is not lost; what is proved stays the same: Esc closes it.
+      await vi.waitFor(
+        () => {
+          if (!ref.isClosing) {
+            document
+              .querySelector('input[role="combobox"]')
+              ?.dispatchEvent(
+                new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }),
+              );
+          }
+          expect(ref.isClosing).toBe(true);
+        },
+        { timeout: CLOSE_TIMEOUT_MS, interval: 100 },
       );
 
       // The CDK gives focus back while it removes the overlay, before `result` resolves.

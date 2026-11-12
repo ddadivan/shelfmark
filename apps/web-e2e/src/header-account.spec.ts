@@ -1,6 +1,5 @@
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
-import { SEARCH_BUTTON } from './support/search-button';
 
 test.describe('header account trigger (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
@@ -20,7 +19,7 @@ test.describe('header account trigger (mock API)', () => {
 
       const triggerBox = await trigger.boundingBox();
       const avatarBox = await avatar.boundingBox();
-      const searchBox = await header.getByRole('button', { name: SEARCH_BUTTON }).boundingBox();
+      const searchBox = await header.locator('app-header-search').boundingBox();
       expect(triggerBox).not.toBeNull();
       expect(avatarBox).not.toBeNull();
       expect(searchBox).not.toBeNull();

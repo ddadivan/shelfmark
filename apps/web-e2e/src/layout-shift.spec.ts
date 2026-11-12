@@ -93,7 +93,7 @@ test.describe('library view switch (mock API)', () => {
 
     await page.goto('/links');
     await expect(page.locator('app-link-card').first()).toBeVisible();
-    const pill = await top('.shell__pill');
+    const pill = await top('app-header-search');
     const titleAll = await top('.library__title');
     await expect(page.locator('.library__crumbs')).toHaveCount(0);
 

@@ -154,8 +154,18 @@ describe('OnboardingDialogComponent', () => {
   it('resolves undefined on Esc (the store treats it as Skip)', { timeout: 30_000 }, async () => {
     const { ref } = await setup();
 
-    container()?.dispatchEvent(
-      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }),
+    // Esc is sent until the dialog starts closing, so a key that lands before it is ready on a
+    // slow runner is not lost.
+    await vi.waitFor(
+      () => {
+        if (!ref.isClosing) {
+          container()?.dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }),
+          );
+        }
+        expect(ref.isClosing).toBe(true);
+      },
+      { timeout: 20_000, interval: 100 },
     );
 
     await expect(ref.result).resolves.toBeUndefined();

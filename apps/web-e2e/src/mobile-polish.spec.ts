@@ -1,7 +1,7 @@
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
 import { settled } from './support/settled';
-import { SEARCH_BUTTON } from './support/search-button';
+import { SEARCH_BUTTON, useSearchDialogWidth } from './support/search-button';
 import { openSidebar, tabBar } from './support/sidebar';
 import { switchView } from './support/library-toolbar';
 
@@ -194,6 +194,7 @@ test.describe('mobile polish (mock API)', () => {
     test.skip(({ hasTouch }) => hasTouch, 'the desktop project covers the keyboard hints');
 
     test('the search dialog keeps the keyboard hints', async ({ page }) => {
+      await useSearchDialogWidth(page);
       await page.goto('/links');
       await page.getByRole('button', { name: SEARCH_BUTTON }).click();
       const dialog = page.getByRole('dialog', { name: 'Search' });

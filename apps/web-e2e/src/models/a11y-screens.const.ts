@@ -16,7 +16,7 @@ import {
   SAMPLE_SHARE,
   seedShares,
 } from '../support/public-collection';
-import { SEARCH_BUTTON } from '../support/search-button';
+import { SEARCH_BUTTON, SEARCH_FIELD_NAME, useSearchDialogWidth } from '../support/search-button';
 import { openSidebar, openTags } from '../support/sidebar';
 import { deleteFirstLink, deleteReadingFolderWithLinks, openTrash } from '../support/trash';
 import type { A11yScreen } from './a11y-screen.interface';
@@ -136,6 +136,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
   {
     name: 'search dialog',
     open: async (page) => {
+      await useSearchDialogWidth(page);
       await openFeed(page);
       await page.getByRole('button', { name: SEARCH_BUTTON }).click();
       await page
@@ -145,6 +146,18 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
       await expect(page.getByRole('listbox')).not.toHaveAttribute('aria-busy', 'true');
     },
     ...SHEET,
+  },
+  {
+    // From 80em (the desktop project's 1280px) the header field opens a results panel (#329).
+    name: 'search panel (header field)',
+    open: async (page) => {
+      await openFeed(page);
+      await page.getByRole('combobox', { name: SEARCH_FIELD_NAME }).fill(MOCK_FIXTURE.searchWord);
+      await expect(page.getByRole('option').first()).toBeVisible();
+      await expect(page.getByRole('listbox')).not.toHaveAttribute('aria-busy', 'true');
+    },
+    include: 'app-header-search, .ui-command-list__panel',
+    only: E2E_PROJECT.Desktop,
   },
   {
     name: 'settings (You list on a phone, the account on desktop)',
