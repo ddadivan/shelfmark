@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { DialogComponent } from '@shelfmark/ui';
-import { SHORTCUT_GROUP_HEADING_PREFIX } from '../models/shortcut-group-heading-id.const';
-import { SHORTCUT_GROUPS } from '../models/shortcut-groups.const';
+import { SHORTCUT_GROUP_HEADING_PREFIX } from '../../models/shortcut-group-heading-id.const';
+import { SHORTCUT_GROUPS } from '../../models/shortcut-groups.const';
 import { ShortcutListComponent } from '../shortcut-list/shortcut-list.component';
 
 /** The "?" dialog: every shortcut the app has, grouped (Trash.dc "Keyboard shortcuts"). */

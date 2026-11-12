@@ -1,10 +1,10 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { inject, Service } from '@angular/core';
 import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
-import { UiStore } from '../../stores/ui.store';
-import { isEditableTarget } from './is-editable-target';
-import { SHORTCUTS_HELP_KEY } from './models/shortcuts-help-key.const';
-import { ShortcutsDialogComponent } from './shortcuts-dialog/shortcuts-dialog.component';
+import { UiStore } from '../../../stores/ui.store';
+import { isEditableTarget } from '../utils/is-editable-target';
+import { SHORTCUTS_HELP_KEY } from '../models/shortcuts-help-key.const';
+import { ShortcutsDialogComponent } from '../components/shortcuts-dialog/shortcuts-dialog.component';
 
 /** Opens the keyboard shortcuts list from the top bar button, the "?" key and the settings page. */
 @Service()

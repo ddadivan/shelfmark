@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { axeViolations } from '../../../../testing/axe';
-import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
-import { SHORTCUT_GROUPS } from '../models/shortcut-groups.const';
+import { axeViolations } from '../../../../../testing/axe';
+import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
+import { SHORTCUT_GROUPS } from '../../models/shortcut-groups.const';
 import { ShortcutListComponent } from './shortcut-list.component';
 
 async function setup(id: string): Promise<ComponentFixture<ShortcutListComponent>> {

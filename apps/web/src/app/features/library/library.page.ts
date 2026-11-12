@@ -77,7 +77,7 @@ import { sameFilter } from '../links/utils/links-filter';
 import { parseSearchQuery } from '../links/utils/search-query';
 import { InViewDirective } from '../links/directives/in-view.directive';
 import { parsePastedLinks } from '../links/components/paste-many/parse-pasted-links';
-import { isEditableTarget } from '../shortcuts/is-editable-target';
+import { isEditableTarget } from '../shortcuts/utils/is-editable-target';
 import { pinnedFirst } from '../links/utils/pinned-first';
 import { BulkLinkActionsService } from '../links/services/bulk-link-actions.service';
 import { BULK_ACTION } from '../links/models/bulk-action.const';

@@ -37,7 +37,7 @@ import { LinkActionsService } from '../features/links/services/link-actions.serv
 import { OnboardingStore } from '../features/onboarding/services/onboarding.store';
 import { RatingStore } from '../features/rating/services/rating.store';
 import { SearchDialogService } from '../features/search/services/search-dialog.service';
-import { ShortcutsDialogService } from '../features/shortcuts/shortcuts-dialog.service';
+import { ShortcutsDialogService } from '../features/shortcuts/services/shortcuts-dialog.service';
 import { THEME_PREFERENCE } from '@shelfmark/contracts';
 import { ThemeService } from '../core/theme/theme.service';
 import { isMacPlatform } from '../features/search/utils/is-mac-platform';

@@ -1,10 +1,10 @@
 import { TOAST_SHORTCUT } from '@shelfmark/ui';
-import { LINK_SELECT_SHORTCUT } from '../links/models/link-select-shortcut.const';
-import { SEARCH_SHORTCUT_KEY } from '../search/models/search-shortcut-key.const';
-import { SHORTCUT_GROUPS } from './models/shortcut-groups.const';
-import { SHORTCUT_KEY } from './models/shortcut-key.const';
-import type { ShortcutKey } from './models/shortcut-key.type';
-import { SHORTCUTS_HELP_KEY } from './models/shortcuts-help-key.const';
+import { LINK_SELECT_SHORTCUT } from '../../links/models/link-select-shortcut.const';
+import { SEARCH_SHORTCUT_KEY } from '../../search/models/search-shortcut-key.const';
+import { SHORTCUT_GROUPS } from '../models/shortcut-groups.const';
+import { SHORTCUT_KEY } from '../models/shortcut-key.const';
+import type { ShortcutKey } from '../models/shortcut-key.type';
+import { SHORTCUTS_HELP_KEY } from '../models/shortcuts-help-key.const';
 
 /** The list key of a letter the handlers match (`'k'`, or the `code` `'KeyT'`). */
 function letterKey(letter: string): ShortcutKey {

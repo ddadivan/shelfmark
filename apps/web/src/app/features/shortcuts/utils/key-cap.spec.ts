@@ -1,6 +1,6 @@
 import { keyCap } from './key-cap';
-import { SHORTCUT_GROUPS } from './models/shortcut-groups.const';
-import { SHORTCUT_KEY } from './models/shortcut-key.const';
+import { SHORTCUT_GROUPS } from '../models/shortcut-groups.const';
+import { SHORTCUT_KEY } from '../models/shortcut-key.const';
 
 describe('keyCap', () => {
   it('draws the modifier glyphs as icons on Apple devices', () => {

@@ -1,9 +1,9 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { TestBed } from '@angular/core/testing';
 import { DialogService } from '@shelfmark/ui';
-import { UiStore } from '../../stores/ui.store';
+import { UiStore } from '../../../stores/ui.store';
 import { ShortcutsDialogService } from './shortcuts-dialog.service';
-import { ShortcutsDialogComponent } from './shortcuts-dialog/shortcuts-dialog.component';
+import { ShortcutsDialogComponent } from '../components/shortcuts-dialog/shortcuts-dialog.component';
 
 function keydown(init: KeyboardEventInit, target?: Element): KeyboardEvent {
   const event = new KeyboardEvent('keydown', { cancelable: true, bubbles: true, ...init });

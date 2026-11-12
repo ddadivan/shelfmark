@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { ICON_SIZE, IconComponent } from '@shelfmark/ui';
-import { isMacPlatform } from '../../search/utils/is-mac-platform';
-import { keyCap } from '../key-cap';
-import type { KeyCap } from '../models/key-cap.interface';
-import type { ShortcutGroup } from '../models/shortcut-group.interface';
+import { isMacPlatform } from '../../../search/utils/is-mac-platform';
+import { keyCap } from '../../utils/key-cap';
+import type { KeyCap } from '../../models/key-cap.interface';
+import type { ShortcutGroup } from '../../models/shortcut-group.interface';
 
 interface ShortcutRow {
   labelKey: string;

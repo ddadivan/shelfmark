@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
-import { axeViolations } from '../../../../testing/axe';
-import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
-import { SHORTCUT_GROUPS } from '../models/shortcut-groups.const';
+import { axeViolations } from '../../../../../testing/axe';
+import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
+import { SHORTCUT_GROUPS } from '../../models/shortcut-groups.const';
 import { ShortcutsDialogComponent } from './shortcuts-dialog.component';
 
 async function open(): Promise<HTMLElement> {

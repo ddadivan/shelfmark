@@ -8,8 +8,8 @@ import {
 } from '@shelfmark/ui';
 import { UiStore } from '../../../../stores/ui.store';
 import { SHORTCUT_GROUPS } from '../../../shortcuts/models/shortcut-groups.const';
-import { ShortcutsDialogService } from '../../../shortcuts/shortcuts-dialog.service';
-import { ShortcutListComponent } from '../../../shortcuts/shortcut-list/shortcut-list.component';
+import { ShortcutsDialogService } from '../../../shortcuts/services/shortcuts-dialog.service';
+import { ShortcutListComponent } from '../../../shortcuts/components/shortcut-list/shortcut-list.component';
 import { SettingsPageHeaderComponent } from '../../components/settings-page-header/settings-page-header.component';
 
 /** `/settings/shortcuts`: the same list as the "?" dialog. */

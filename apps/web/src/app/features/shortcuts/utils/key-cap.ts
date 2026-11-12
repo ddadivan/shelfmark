@@ -1,6 +1,6 @@
-import type { KeyCap } from './models/key-cap.interface';
-import { SHORTCUT_KEY } from './models/shortcut-key.const';
-import type { ShortcutKey } from './models/shortcut-key.type';
+import type { KeyCap } from '../models/key-cap.interface';
+import { SHORTCUT_KEY } from '../models/shortcut-key.const';
+import type { ShortcutKey } from '../models/shortcut-key.type';
 
 const word = (nameKey: string): KeyCap => ({ icon: null, text: null, nameKey });
 const symbol = (text: string, nameKey: string): KeyCap => ({ icon: null, text, nameKey });
