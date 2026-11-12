@@ -27,6 +27,12 @@
   }
 }
 
+// Library cards (#335): the title always takes two lines (the card clamps it at two), so a one-line
+// title does not make its card shorter than the others.
+app-link-card .ui-card__heading {
+  min-block-size: calc(2 * #{rem(22px)});
+}
+
 // Cards <-> list morph (View Transitions, started by the library page): every link has a
 // `view-transition-name`, so each card glides into its row. The pseudo-elements live on the
 // document, so these rules must stay global. Reduced motion never starts a transition.

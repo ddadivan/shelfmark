@@ -60,47 +60,48 @@
   @if (pinnedToTop()) {
     <ui-badge class="link-card__pinned" icon="pin">{{ 'links.item.pinned' | transloco }}</ui-badge>
   }
+  <!-- The note and the bottom row always take their room, so every card is the same height (#335). -->
   @if (link().note; as note) {
     <p class="link-card__note">{{ note }}</p>
+  } @else {
+    <p class="link-card__note" aria-hidden="true"></p>
   }
   <!-- Tags and the favorite star share the bottom row; the star sits right whether or not there are tags. -->
-  @if (tags().length > 0 || !readOnly()) {
-    <div class="link-card__foot">
-      @if (tags().length > 0) {
-        <ul class="link-card__tags">
-          @for (tag of tags(); track tag) {
-            <li>
-              <ui-chip>{{ tag }}</ui-chip>
-            </li>
-          }
-          @if (hiddenTags() > 0) {
-            <li>
-              <ui-chip variant="neutral">{{
-                'links.card.moreTags' | transloco: { count: hiddenTags() }
-              }}</ui-chip>
-            </li>
-          }
-        </ul>
-      }
-      @if (!readOnly()) {
-        <ui-button
-          class="link-card__star"
-          [class.link-card__star--on]="link().isFavorite"
-          variant="ghost"
-          size="sm"
-          iconOnly
-          hitArea="overlay"
-          [iconLeft]="link().isFavorite ? 'star-filled' : 'star'"
-          [ariaPressed]="link().isFavorite"
-          [ariaLabel]="'links.item.favorite' | transloco: { title: link().title }"
-          [uiTooltip]="
-            (link().isFavorite ? 'links.item.removeFavorite' : 'links.item.addFavorite') | transloco
-          "
-          (click)="favoriteToggled.emit()"
-        />
-      }
-    </div>
-  }
+  <div class="link-card__foot">
+    @if (tags().length > 0) {
+      <ul class="link-card__tags">
+        @for (tag of tags(); track tag) {
+          <li>
+            <ui-chip>{{ tag }}</ui-chip>
+          </li>
+        }
+        @if (hiddenTags() > 0) {
+          <li>
+            <ui-chip variant="neutral">{{
+              'links.card.moreTags' | transloco: { count: hiddenTags() }
+            }}</ui-chip>
+          </li>
+        }
+      </ul>
+    }
+    @if (!readOnly()) {
+      <ui-button
+        class="link-card__star"
+        [class.link-card__star--on]="link().isFavorite"
+        variant="ghost"
+        size="sm"
+        iconOnly
+        hitArea="overlay"
+        [iconLeft]="link().isFavorite ? 'star-filled' : 'star'"
+        [ariaPressed]="link().isFavorite"
+        [ariaLabel]="'links.item.favorite' | transloco: { title: link().title }"
+        [uiTooltip]="
+          (link().isFavorite ? 'links.item.removeFavorite' : 'links.item.addFavorite') | transloco
+        "
+        (click)="favoriteToggled.emit()"
+      />
+    }
+  </div>
   <ui-menu
     #menu
     align="end"
