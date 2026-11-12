@@ -1,4 +1,4 @@
-<ui-progress-bar [active]="refetching()" [label]="'library.loading' | transloco" />
+<ui-progress-bar [active]="feed.refetching()" [label]="'library.loading' | transloco" />
 <section
   class="library"
   [class.library--selecting]="selecting()"
@@ -23,7 +23,7 @@
     } @else {
     <ui-checkbox
       hideLabel
-      [label]="pluralKey('bulk.header.selectAllBox', shownCount()) | transloco: { count: shownCount() }"
+      [label]="pluralKey('bulk.header.selectAllBox', feed.shownCount()) | transloco: { count: feed.shownCount() }"
       [checked]="allSelected()"
       [indeterminate]="!allSelected()"
       (checkedChange)="toggleAll($event)"
@@ -36,7 +36,7 @@
     @if (!allSelected()) {
     <ui-button variant="ghost" size="sm" (click)="selectAll()">
       @if (phone()) { {{ 'bulk.header.selectAllShort' | transloco }} } @else { {{
-      'bulk.header.selectAll' | transloco: { count: shownCount() } }} }
+      'bulk.header.selectAll' | transloco: { count: feed.shownCount() } }} }
     </ui-button>
     } @if (!compact()) {
     <span class="library__selection-spacer"></span>
@@ -68,16 +68,17 @@
       <h1 class="library__title">{{ filters.folder()?.name ?? (filters.titleKey() | transloco) }}</h1>
       <!-- Always there (empty while the list loads) so the title block keeps its height. -->
       <p class="library__count">
-        @if (skeletonVisible() && !showLinks()) {
+        @if (feed.skeletonVisible() && !feed.showLinks()) {
         <span class="library__count-skeleton" aria-hidden="true">
           <ui-skeleton [shape]="SKELETON_SHAPE.Line" />
         </span>
-        } @if (showLinks()) { @if (subfolders().length > 0) { {{ 'library.countWithFolders' |
-        transloco : { links: (pluralKey(shownHasMore() ? 'library.countMore' : 'library.count',
-        shownCount()) | transloco: { count: shownCount() }), folders:
-        (pluralKey('library.subfolders.folders', subfolders().length) | transloco: { count:
-        subfolders().length }) } }} } @else { {{ pluralKey(shownHasMore() ? 'library.countMore' :
-        'library.count', shownCount()) | transloco: { count: shownCount() } }} } }
+        } @if (feed.showLinks()) { @if (feed.subfolders().length > 0) { {{
+        'library.countWithFolders' | transloco : { links: (pluralKey(feed.shownHasMore() ?
+        'library.countMore' : 'library.count', feed.shownCount()) | transloco: { count:
+        feed.shownCount() }), folders: (pluralKey('library.subfolders.folders',
+        feed.subfolders().length) | transloco: { count: feed.subfolders().length }) } }} } @else {
+        {{ pluralKey(feed.shownHasMore() ? 'library.countMore' : 'library.count', feed.shownCount())
+        | transloco: { count: feed.shownCount() } }} } }
       </p>
     </div>
     @if (phone()) {
@@ -92,7 +93,7 @@
         {{ 'library.viewMenu.button' | transloco }}
       </ui-button>
       <ui-menu #viewMenu align="end" [ariaLabel]="'library.viewMenu.label' | transloco">
-        @if (showControls() && viewOptions(); as options) {
+        @if (feed.showControls() && feed.viewOptions(); as options) {
         <ui-menu-label>{{ 'library.viewMenu.sortBy' | transloco }}</ui-menu-label>
         @for (option of SORT_OPTIONS; track option) {
         <ui-menu-item
@@ -110,7 +111,7 @@
           type="radio"
           [icon]="option.icon"
           [selected]="option.value === filters.view()"
-          (activated)="setView(option.value)"
+          (activated)="feed.setView(option.value)"
         >
           {{ option.label }}
         </ui-menu-item>
@@ -137,7 +138,7 @@
     </div>
     } @else {
     <div class="library__tools">
-      @if (showControls() && viewOptions(); as options) {
+      @if (feed.showControls() && feed.viewOptions(); as options) {
       <div class="library__controls">
         <ui-button
           [uiMenuTrigger]="sortMenu"
@@ -164,7 +165,7 @@
           [options]="options"
           [value]="filters.view()"
           [ariaLabel]="'library.view.label' | transloco"
-          (valueChange)="setView($event)"
+          (valueChange)="feed.setView($event)"
         />
       </div>
       }
@@ -197,7 +198,7 @@
     </div>
     }
   </header>
-  @if (!emptyLibrary()) {
+  @if (!feed.emptyLibrary()) {
   <app-saved-view-chips class="library__views" [filter]="filters.filter()" />
   } @if (filters.filtered()) {
   <div class="library__filter" role="group" [attr.aria-label]="'library.filter.label' | transloco">
@@ -240,15 +241,15 @@
       {{ 'library.refetchFailed' | transloco }}
       <ui-button size="sm" (click)="retry()">{{ 'library.error.retry' | transloco }}</ui-button>
     </ui-notice>
-    } @if (subfolders().length > 0) {
+    } @if (feed.subfolders().length > 0) {
     <ul
       class="library__folders"
       [class.library__folders--rows]="filters.view() === UI_VIEW.List"
-      [class.library__folders--stale]="stale()"
-      [attr.inert]="stale() ? '' : null"
+      [class.library__folders--stale]="feed.stale()"
+      [attr.inert]="feed.stale() ? '' : null"
       [attr.aria-label]="'library.subfolders.label' | transloco"
     >
-      @for (item of subfolders(); track item.folder.id) {
+      @for (item of feed.subfolders(); track item.folder.id) {
       <li>
         <app-folder-tile
           [folder]="item.folder"
@@ -270,7 +271,7 @@
         {{ 'library.folderNotFound.action' | transloco }}
       </ui-button>
     </ui-empty-state>
-    } @else if (failed()) {
+    } @else if (feed.failed()) {
     <ui-empty-state
       layout="page"
       illustration="offline"
@@ -281,7 +282,7 @@
         {{ 'library.error.retry' | transloco }}
       </ui-button>
     </ui-empty-state>
-    } @else if (skeletonVisible()) { @if (filters.view() === UI_VIEW.List) {
+    } @else if (feed.skeletonVisible()) { @if (filters.view() === UI_VIEW.List) {
     <div class="library__rows">
       <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="SKELETON_COUNT" />
     </div>
@@ -289,7 +290,7 @@
     <div class="library__grid">
       <ui-skeleton [shape]="SKELETON_SHAPE.Card" [count]="SKELETON_COUNT" />
     </div>
-    } } @else if (empty() && filters.searching()) {
+    } } @else if (feed.empty() && filters.searching()) {
     <ui-empty-state
       layout="page"
       illustration="not-found"
@@ -305,7 +306,7 @@
       </ui-button>
       }
     </ui-empty-state>
-    } @else if (empty() && filters.filtered()) {
+    } @else if (feed.empty() && filters.filtered()) {
     <ui-empty-state
       layout="page"
       illustration="empty-filter"
@@ -316,7 +317,7 @@
         {{ filters.filteredEmptyKey() + '.clear' | transloco }}
       </ui-button>
     </ui-empty-state>
-    } @else if (empty()) {
+    } @else if (feed.empty()) {
     <ui-empty-state
       layout="page"
       [illustration]="emptyIllustration()"
@@ -341,20 +342,20 @@
       </ui-button>
       }
     </ui-empty-state>
-    } @else if (showLinks()) { @for (batch of batches(); track batch) { @if (filters.view() ===
-    UI_VIEW.List) {
+    } @else if (feed.showLinks()) { @for (batch of feed.batches(); track batch) { @if
+    (filters.view() === UI_VIEW.List) {
     <ul
       class="library__rows library__list"
       cdkDropList
       cdkDropListSortingDisabled
       [cdkDropListDisabled]="compact()"
-      [class.library__list--reveal]="reveal()"
-      [class.library__list--stale]="stale()"
-      [attr.aria-busy]="stale() ? 'true' : null"
-      [attr.inert]="stale() ? '' : null"
+      [class.library__list--reveal]="feed.reveal()"
+      [class.library__list--stale]="feed.stale()"
+      [attr.aria-busy]="feed.stale() ? 'true' : null"
+      [attr.inert]="feed.stale() ? '' : null"
       [attr.aria-label]="'library.list.label' | transloco"
     >
-      @for (link of shownLinks(); track link.id) {
+      @for (link of feed.shownLinks(); track link.id) {
       <li
         class="library__item"
         cdkDrag
@@ -363,9 +364,9 @@
         [cdkDragDisabled]="compact()"
         [cdkDragStartDelay]="DRAG_START_DELAY"
         [class.library__item--carried]="drag.dragging() && drag.carriedIds().has(link.id)"
-        [style.view-transition-name]="morphing() ? 'link-' + link.id : null"
+        [style.view-transition-name]="feed.morphing() ? 'link-' + link.id : null"
         [class.library__landed]="store.landed()[link.id] !== undefined"
-        [style.--ui-land-delay]="landDelay(link.id)"
+        [style.--ui-land-delay]="feed.landDelay(link.id)"
         (pointerdown)="drag.grab($event)"
         (cdkDragStarted)="onDragStarted(link)"
         (cdkDragMoved)="onDragMoved($event)"
@@ -417,13 +418,13 @@
       cdkDropList
       cdkDropListSortingDisabled
       [cdkDropListDisabled]="compact()"
-      [class.library__list--reveal]="reveal()"
-      [class.library__list--stale]="stale()"
-      [attr.aria-busy]="stale() ? 'true' : null"
-      [attr.inert]="stale() ? '' : null"
+      [class.library__list--reveal]="feed.reveal()"
+      [class.library__list--stale]="feed.stale()"
+      [attr.aria-busy]="feed.stale() ? 'true' : null"
+      [attr.inert]="feed.stale() ? '' : null"
       [attr.aria-label]="'library.list.label' | transloco"
     >
-      @for (link of shownLinks(); track link.id) {
+      @for (link of feed.shownLinks(); track link.id) {
       <li
         class="library__item"
         cdkDrag
@@ -432,9 +433,9 @@
         [cdkDragDisabled]="compact()"
         [cdkDragStartDelay]="DRAG_START_DELAY"
         [class.library__item--carried]="drag.dragging() && drag.carriedIds().has(link.id)"
-        [style.view-transition-name]="morphing() ? 'link-' + link.id : null"
+        [style.view-transition-name]="feed.morphing() ? 'link-' + link.id : null"
         [class.library__landed]="store.landed()[link.id] !== undefined"
-        [style.--ui-land-delay]="landDelay(link.id)"
+        [style.--ui-land-delay]="feed.landDelay(link.id)"
         (pointerdown)="drag.grab($event)"
         (cdkDragStarted)="onDragStarted(link)"
         (cdkDragMoved)="onDragMoved($event)"
@@ -478,7 +479,7 @@
     } }
 
     <ui-load-more [loading]="store.loadingMore()" [text]="'library.loadingMore' | transloco" />
-    @if (store.hasMore() && !stale()) {
+    @if (store.hasMore() && !feed.stale()) {
     <div
       class="library__more"
       appInView

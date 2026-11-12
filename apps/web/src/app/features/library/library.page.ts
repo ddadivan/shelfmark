@@ -24,7 +24,7 @@ import {
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { combineLatest, map, switchMap } from 'rxjs';
+import { switchMap } from 'rxjs';
 import {
   BreadcrumbsComponent,
   BULK_BAR_LAYOUT,
@@ -35,7 +35,6 @@ import {
   ChipComponent,
   EmptyStateComponent,
   ICON_SIZE,
-  loaderVisible,
   LoadMoreComponent,
   MenuComponent,
   MenuItemComponent,
@@ -50,7 +49,6 @@ import {
   type BreadcrumbClick,
   type BulkBarAction,
   type BreadcrumbItem,
-  type SegmentedOption,
 } from '@shelfmark/ui';
 import {
   EXPORT_FORMAT,
@@ -63,11 +61,9 @@ import { pluralKey } from '../../core/i18n/plural-key';
 import { ViewportService } from '../../core/layout/viewport.service';
 import { ExportActionsService } from '../export/services/export-actions.service';
 import { SavedViewChipsComponent } from '../views/components/saved-view-chips/saved-view-chips.component';
-import { sameFilter } from '../links/utils/links-filter';
 import { InViewDirective } from '../links/directives/in-view.directive';
 import { parsePastedLinks } from '../links/components/paste-many/parse-pasted-links';
 import { isEditableTarget } from '../shortcuts/utils/is-editable-target';
-import { pinnedFirst } from '../links/utils/pinned-first';
 import { BulkLinkActionsService } from '../links/services/bulk-link-actions.service';
 import { BULK_ACTION } from '../links/models/bulk-action.const';
 import { isTypingTarget } from '../links/utils/is-typing-target';
@@ -88,30 +84,20 @@ import { FoldersStore } from '../../stores/folders.store';
 import { LinksStore } from '../../stores/links.store';
 import { PinsStore } from '../../stores/pins.store';
 import { UI_VIEW } from '../../stores/models/ui-view.const';
-import { isUiView } from '../../stores/is-ui-view';
 import { UserSettingsStore } from '../../stores/user-settings.store';
+import { LibraryFeedService } from './services/library-feed.service';
 import { LibraryFilterService } from './services/library-filter.service';
 import { SavedViewsStore } from '../../stores/saved-views.store';
 import { FolderTileComponent } from './components/folder-tile/folder-tile.component';
-import { runViewTransition, type ViewTransitionNames } from './utils/view-transition';
 import { scrollFeedForKey } from './utils/feed-keyboard-scroll';
-import type { SubfolderItem } from './models/subfolder-item.interface';
 import { SORT_OPTION_KEYS } from './models/sort-option-keys.const';
 import { SORT_OPTIONS } from './models/sort-options.const';
-import { VIEW_OPTION_KEYS } from './models/view-option-keys.const';
 
 /** Number of placeholders shown while the first page loads. */
 const SKELETON_COUNT = 8;
-/** Beat between two cards of a paste of many landing in the feed. */
-const LAND_STAGGER_MS = 50;
 /** A link of the feed (card or row) and the control that takes focus in it (its stretched link). */
 const FEED_ITEM_SELECTOR = 'li.library__item[data-link-id]';
 const FEED_ITEM_FOCUS_SELECTOR = '.ui-card__link, .ui-list-item__link';
-
-interface LastShown {
-  items: readonly LinkResponse[];
-  hasMore: boolean;
-}
 
 /**
  * The links feed of one scope (all, unsorted, favorites; the route data sets `scope`): a toolbar
@@ -152,7 +138,7 @@ interface LastShown {
   templateUrl: './library.page.html',
   styleUrl: './library.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [LibraryFilterService],
+  providers: [LibraryFilterService, LibraryFeedService],
   host: {
     '(document:keydown)': 'onKeydown($event)',
     '(document:paste)': 'onPaste($event)',
@@ -162,6 +148,7 @@ export default class LibraryPage {
   protected readonly store = inject(LinksStore);
   private readonly settings = inject(UserSettingsStore);
   protected readonly filters = inject(LibraryFilterService);
+  protected readonly feed = inject(LibraryFeedService);
   protected readonly actions = inject(LinkActionsService);
   protected readonly pins = inject(PinsStore);
   protected readonly PIN_KIND = PIN_KIND;
@@ -213,97 +200,6 @@ export default class LibraryPage {
   protected readonly SORT_OPTIONS = SORT_OPTIONS;
   protected readonly SORT_OPTION_KEYS = SORT_OPTION_KEYS;
 
-  /**
-   * The store is app-wide: when the page opens (back from another page) it can still hold the
-   * links of another view for a moment. Those never show, and never become the "previous view".
-   */
-  private readonly synced = computed(() => sameFilter(this.store.filter(), this.filters.filter()));
-  private readonly ownCount = computed(() => (this.synced() ? this.store.count() : 0));
-  private readonly ownError = computed(() => this.synced() && this.store.error());
-  private readonly ownLoaded = computed(() => this.synced() && this.store.loaded());
-  private readonly ownLinks = computed(() =>
-    this.synced() ? pinnedFirst(this.store.entities(), this.filters.isFolder()) : [],
-  );
-  /** The last list that was fully loaded; it stays on screen while the next view loads. */
-  private readonly lastShown = signal<LastShown>({ items: [], hasMore: false });
-  /**
-   * The view changed and its first page is on the way: the store has no links yet, the cards of
-   * the previous view stay (inert, no skeleton, no dimming) under the progress bar.
-   */
-  protected readonly stale = computed(
-    () =>
-      // Not synced: the route changed, the store has not been told yet (the next effect run).
-      (this.store.loading() || !this.synced()) &&
-      !this.ownLoaded() &&
-      !this.ownError() &&
-      this.ownCount() === 0 &&
-      this.lastShown().items.length > 0,
-  );
-  /**
-   * Bumped when a new first page arrives: the list is built again (fresh elements, so cards that
-   * survive a view switch do not hop to a new place) instead of being patched in place.
-   */
-  protected readonly batch = signal(0);
-  protected readonly batches = computed(() => [this.batch()]);
-  /** The new list fades in only when it replaces a skeleton; on a view switch it just swaps. */
-  protected readonly reveal = signal(false);
-  /**
-   * The cards <-> list switch is running: the links carry their `view-transition-name`. Only then,
-   * so the names never take part in the router's page transition (cards would fly between pages).
-   */
-  protected readonly morphing = signal(false);
-  protected readonly morphNames: ViewTransitionNames = {
-    on: () => this.morphing.set(true),
-    off: () => this.morphing.set(false),
-  };
-  protected readonly shownLinks = computed(() =>
-    this.stale() ? this.lastShown().items : this.ownLinks(),
-  );
-  protected readonly shownCount = computed(() => this.shownLinks().length);
-  protected readonly shownHasMore = computed(() =>
-    this.stale() ? this.lastShown().hasMore : this.store.hasMore(),
-  );
-  protected readonly firstLoad = computed(
-    () => !this.ownLoaded() && !this.ownError() && this.ownCount() === 0 && !this.stale(),
-  );
-  /**
-   * The skeleton of the first load: nothing shows before 300 ms (a fast response never flashes
-   * it) and, once shown, it stays at least 400 ms (Loading spec).
-   */
-  protected readonly skeletonVisible = loaderVisible(this.firstLoad);
-  protected readonly failed = computed(() => this.ownError() && this.ownCount() === 0);
-  protected readonly empty = computed(
-    () => this.ownLoaded() && !this.store.loading() && this.ownCount() === 0,
-  );
-  /** A library without any link (the new-account state): no saved view chips, nothing to filter. */
-  protected readonly emptyLibrary = computed(
-    () => this.empty() && !this.filters.filtered() && this.filters.scope() === LINKS_SCOPE.All,
-  );
-  /** The 2px bar: a refetch and a view switch (the old content stays on screen meanwhile). */
-  protected readonly refetching = computed(
-    () => this.store.loading() && (this.ownLoaded() || this.stale()),
-  );
-  protected readonly showLinks = computed(() => this.ownCount() > 0 || this.stale());
-  /** Sort and view switch: with links, and while the first page loads (so the toolbar keeps its size). */
-  protected readonly showControls = computed(() => this.showLinks() || this.firstLoad());
-
-  private readonly labels = toSignal(
-    combineLatest([
-      this.transloco.selectTranslate(VIEW_OPTION_KEYS[UI_VIEW.Cards]),
-      this.transloco.selectTranslate(VIEW_OPTION_KEYS[UI_VIEW.List]),
-    ]).pipe(map(([cards, list]) => ({ cards, list }))),
-  );
-  /** Icon-only switch; `null` until the translations are loaded. */
-  protected readonly viewOptions = computed<SegmentedOption[] | null>(() => {
-    const labels = this.labels();
-    return labels
-      ? [
-          { value: UI_VIEW.Cards, label: labels.cards, icon: 'cards' },
-          { value: UI_VIEW.List, label: labels.list, icon: 'list' },
-        ]
-      : null;
-  });
-
   /** The document title the app started with (the brand), the suffix of every page title. */
   private readonly appName = this.title.getTitle();
   private readonly rootLabel = toSignal(this.transloco.selectTranslate('library.scope.all'));
@@ -311,33 +207,6 @@ export default class LibraryPage {
     toObservable(this.filters.titleKey).pipe(
       switchMap((key) => this.transloco.selectTranslate(key)),
     ),
-  );
-  /**
-   * The direct subfolders of the folder of the page, in the sidebar order (#314), with the number of folders inside
-   * each. Hidden while a search or tag filter is on (they do not filter) and for a missing folder.
-   */
-  private readonly currentSubfolders = computed<readonly SubfolderItem[]>(() => {
-    const id = this.filters.folderId();
-    if (
-      !this.filters.isFolder() ||
-      id === undefined ||
-      this.filters.folderMissing() ||
-      this.filters.filtered()
-    ) {
-      return [];
-    }
-    const all = this.folders.entities();
-    return all
-      .filter((folder) => folder.parentId === id)
-      .map((folder) => ({
-        folder,
-        childCount: all.filter((child) => child.parentId === folder.id).length,
-      }));
-  });
-  /** The subfolders of the last settled view; they stay with its cards while the next view loads. */
-  private readonly lastSubfolders = signal<readonly SubfolderItem[]>([]);
-  protected readonly subfolders = computed(() =>
-    this.stale() ? this.lastSubfolders() : this.currentSubfolders(),
   );
   /** The heading of the page; `undefined` until translated. */
   private readonly heading = computed(() => this.filters.folder()?.name ?? this.scopeLabel());
@@ -380,17 +249,17 @@ export default class LibraryPage {
     ),
   );
   /** Ids of the links on screen, in order: the range and "select all" of the selection. */
-  protected readonly order = computed(() => this.shownLinks().map((link) => link.id));
+  protected readonly order = computed(() => this.feed.shownLinks().map((link) => link.id));
   /** The picked links that are on screen (a link that left the view drops out by itself). */
   protected readonly selectedLinks = computed(() => {
     const ids = this.selection.idSet();
-    return this.shownLinks().filter((link) => ids.has(link.id));
+    return this.feed.shownLinks().filter((link) => ids.has(link.id));
   });
   protected readonly selectedCount = computed(() => this.selectedLinks().length);
   /** A selection is in progress: checkboxes everywhere, the header and the bulk bar show. */
   protected readonly selecting = computed(() => this.selectedCount() > 0);
   protected readonly allSelected = computed(
-    () => this.selecting() && this.selectedCount() === this.shownCount(),
+    () => this.selecting() && this.selectedCount() === this.feed.shownCount(),
   );
   private readonly i18n = toSignal(this.transloco.selectTranslation());
   /** The bulk bar: desktop Move, Tags, Favorite, Open all, Copy links, Delete; the phone shares instead of opening. */
@@ -443,38 +312,6 @@ export default class LibraryPage {
       kind: this.kind,
     });
     void this.settings.load();
-    // Remember the last settled list (for stale-while-loading), and build the list again when a
-    // new first page replaces the old one.
-    let wasLoading = false;
-    let sawSkeleton = false;
-    effect(() => {
-      const settled = this.ownLoaded() && !this.store.loading();
-      const items = this.store.entities();
-      const hasMore = this.store.hasMore();
-      const loading = this.store.loading();
-      if (this.skeletonVisible()) {
-        sawSkeleton = true;
-      }
-      // Tracked: the folder list changes (rename, create). The folder of the page is read
-      // untracked: it changes before the next view starts loading, while `settled` is still true,
-      // and the previous view must not take over the subfolders of the next one.
-      this.folders.entities();
-      untracked(() => {
-        if (settled) {
-          this.lastShown.set({ items, hasMore });
-          this.lastSubfolders.set(this.currentSubfolders());
-        }
-        if (wasLoading && !loading) {
-          this.reveal.set(sawSkeleton);
-          sawSkeleton = false;
-          this.batch.update((value) => value + 1);
-        }
-        wasLoading = loading;
-        if (settled) {
-          sawSkeleton = false;
-        }
-      });
-    });
     // A new view, sort or filter starts at the top of its list (the page scroll is reset by the
     // router; this area is not the page).
     effect(() => {
@@ -514,7 +351,7 @@ export default class LibraryPage {
     effect(() => {
       const order = this.order();
       untracked(() => {
-        if (!this.stale()) {
+        if (!this.feed.stale()) {
           this.selection.keep(order);
         }
       });
@@ -523,15 +360,6 @@ export default class LibraryPage {
       this.title.setTitle(this.appName);
       this.selection.clear();
     });
-    // The sidebar loads the folders too (the phone has none yet); the call is shared.
-    void this.folders.load();
-    this.store.setFilter(this.filters.filter);
-  }
-
-  /** The stagger of a link that is landing: each card of a paste lands a beat after the one before. */
-  protected landDelay(id: string): string | null {
-    const position = this.store.landed()[id];
-    return position === undefined || position === 0 ? null : `${position * LAND_STAGGER_MS}ms`;
   }
 
   /**
@@ -621,7 +449,7 @@ export default class LibraryPage {
       !event.altKey &&
       !event.shiftKey &&
       isLetter(event, LINK_SELECT_SHORTCUT.SelectAllKey, LINK_SELECT_SHORTCUT.SelectAllCode);
-    if (selectAll && this.showLinks() && !this.stale() && this.shownCount() > 0) {
+    if (selectAll && this.feed.showLinks() && !this.feed.stale() && this.feed.shownCount() > 0) {
       event.preventDefault();
       this.selectAll();
       return true;
@@ -723,21 +551,7 @@ export default class LibraryPage {
     }
   }
 
-  protected setView(view: string): void {
-    if (isUiView(view)) {
-      // The new list is the same links: no fade-in on top of the morph.
-      this.reveal.set(false);
-      const feed = this.filters.feedKey();
-      runViewTransition(
-        this.doc,
-        this.injector,
-        () => this.filters.rememberView(view, feed),
-        this.morphNames,
-      );
-    }
-  }
-
   protected retry(): void {
-    this.store.setFilter(this.filters.filter());
+    this.feed.retry();
   }
 }
