@@ -116,6 +116,36 @@ describe('IllustrationComponent', () => {
     });
   });
 
+  describe('edges on the empty-state disc (#315, WCAG 1.4.11)', () => {
+    const css = compiledCss();
+
+    it.each([
+      ['empty-folder', 1],
+      ['empty-unsorted', 1],
+      ['empty-filter', 1],
+    ] as const)('%s marks its pale sage body as a key shape', (name, count) => {
+      const { host } = render({ name });
+      expect(host.querySelectorAll('.ui-illustration__tint--key')).toHaveLength(count);
+    });
+
+    it('the offline break marks stand on the ground', () => {
+      const { host } = render({ name: 'offline' });
+      expect(host.querySelectorAll('.ui-illustration__line--ground')).toHaveLength(2);
+    });
+
+    it('takes the caller edges and keeps the soft look without them', () => {
+      expect(css).toMatch(
+        /\.ui-illustration__surface\s*\{[^}]*stroke:\s*var\(--ui-illustration-edge,\s*var\(--border\)\)/,
+      );
+      expect(css).toMatch(
+        /\.ui-illustration__tint--key\s*\{[^}]*stroke:\s*var\(--ui-illustration-key-edge,\s*none\)/,
+      );
+      expect(css).toMatch(
+        /\.ui-illustration__line--ground\s*\{[^}]*fill:\s*var\(--ui-illustration-edge,\s*var\(--surface-pressed\)\)/,
+      );
+    });
+  });
+
   describe('motion styles', () => {
     const css = compiledCss();
 

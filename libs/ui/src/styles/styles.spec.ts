@@ -353,6 +353,33 @@ describe('folder colour contrast (WCAG AA 4.5:1)', () => {
   });
 });
 
+/** The hex behind `--illustration-disc`, an alias of another colour token. */
+function discHex(theme: 'light' | 'dark'): string {
+  const out = css(`:root { @include ${theme}; }`);
+  const alias = /--illustration-disc:\s*var\(--([a-z-]+)\)/.exec(out);
+  if (!alias) {
+    throw new Error(`token --illustration-disc is not an alias in ${theme}`);
+  }
+  return tokenHex(theme, alias[1]);
+}
+
+describe('empty-state scene disc (#315, WCAG 1.4.11 3:1)', () => {
+  it('is a step stronger than the page in light, the page itself in dark', () => {
+    expect(discHex('light')).toBe(tokenHex('light', 'surface-hover'));
+    expect(discHex('dark')).toBe(tokenHex('dark', 'bg'));
+  });
+
+  it.each(['light', 'dark'] as const)(
+    'keeps the scene edges and accent shapes at 3:1 on the disc in %s',
+    (theme) => {
+      for (const edge of ['border-control', 'accent', 'primary']) {
+        const ratio = contrast(tokenHex(theme, edge), discHex(theme));
+        expect(ratio, `${theme} ${edge}`).toBeGreaterThanOrEqual(3);
+      }
+    },
+  );
+});
+
 describe('text-muted contrast (WCAG AA 4.5:1)', () => {
   it.each(['light', 'dark'] as const)('holds on every surface in %s', (theme) => {
     expect(tokenHex(theme, 'text-muted')).toBe(theme === 'light' ? '#636368' : '#9a9aa0');

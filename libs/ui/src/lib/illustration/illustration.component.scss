@@ -16,9 +16,11 @@
 }
 
 // Fills are classes bound to tokens. Resting styles are the final frame of every scene.
+// `--ui-illustration-edge` / `--ui-illustration-key-edge`: stronger edges set by the caller (the
+// page-level empty state, whose disc needs 3:1 edges); unset, the soft look of the design.
 .ui-illustration__surface {
   fill: var(--surface);
-  stroke: var(--border);
+  stroke: var(--ui-illustration-edge, var(--border));
   stroke-width: 1;
 }
 
@@ -38,8 +40,19 @@
   fill: var(--accent-bg);
 }
 
+// A pale sage body that carries the scene (a folder, a tray, a filter chip).
+.ui-illustration__tint--key {
+  stroke: var(--ui-illustration-key-edge, none);
+  stroke-width: 1.5;
+}
+
 .ui-illustration__line {
   fill: var(--surface-pressed);
+}
+
+// A mark that stands on the ground, not on a white part (the offline break marks).
+.ui-illustration__line--ground {
+  fill: var(--ui-illustration-edge, var(--surface-pressed));
 }
 
 .ui-illustration__mark {

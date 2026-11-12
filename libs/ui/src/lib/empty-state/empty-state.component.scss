@@ -35,7 +35,8 @@
   }
 }
 
-// The scene stands on a soft disc of the page background, so it reads as one object on the card.
+// The scene stands on a soft disc (`illustration-disc`: a step stronger than the page background
+// in light, the page background in dark), so it reads as one object on the card.
 .ui-empty-state__stage {
   display: grid;
   place-items: center;
@@ -52,7 +53,7 @@
     width: 72%;
     aspect-ratio: 1;
     content: '';
-    background: var(--bg);
+    background: var(--illustration-disc);
     border-radius: var(--radius-full);
   }
 }
@@ -62,7 +63,11 @@
 }
 
 :host(.ui-empty-state--page) .ui-empty-state__illustration {
+  // On the disc the key shapes need edges of 3:1 (WCAG 1.4.11, #315): white parts take the
+  // control border, the pale sage bodies (folder, tray, filter chip) an accent outline.
   --ui-illustration-width: inherit;
+  --ui-illustration-edge: var(--border-control);
+  --ui-illustration-key-edge: var(--accent);
 }
 
 .ui-empty-state__art {
