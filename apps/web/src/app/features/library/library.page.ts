@@ -1,15 +1,5 @@
-import { Dialog } from '@angular/cdk/dialog';
 import { CdkDrag, CdkDragPlaceholder, CdkDragPreview, CdkDropList } from '@angular/cdk/drag-drop';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  effect,
-  ElementRef,
-  inject,
-  input,
-  untracked,
-  viewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   BreadcrumbsComponent,
@@ -17,7 +7,6 @@ import {
   BulkBarComponent,
   ButtonComponent,
   CheckboxComponent,
-  KEYBOARD_KEY,
   ChipComponent,
   EmptyStateComponent,
   ICON_SIZE,
@@ -41,11 +30,6 @@ import { ViewportService } from '../../core/layout/viewport.service';
 import { ExportActionsService } from '../export/services/export-actions.service';
 import { SavedViewChipsComponent } from '../views/components/saved-view-chips/saved-view-chips.component';
 import { InViewDirective } from '../links/directives/in-view.directive';
-import { parsePastedLinks } from '../links/components/paste-many/parse-pasted-links';
-import { isEditableTarget } from '../shortcuts/utils/is-editable-target';
-import { isTypingTarget } from '../links/utils/is-typing-target';
-import { isLetter } from '../links/utils/link-select-keys';
-import { LINK_SELECT_SHORTCUT } from '../links/models/link-select-shortcut.const';
 import { LinkActionsService } from '../links/services/link-actions.service';
 import { DragSlotComponent } from '../links/components/drag-slot/drag-slot.component';
 import { LinkDragService } from '../links/services/link-drag.service';
@@ -61,12 +45,12 @@ import { UI_VIEW } from '../../stores/models/ui-view.const';
 import { UserSettingsStore } from '../../stores/user-settings.store';
 import { LibraryFeedService } from './services/library-feed.service';
 import { LibraryHeadService } from './services/library-head.service';
+import { LibraryHotkeysDirective } from './directives/library-hotkeys.directive';
 import { LibraryDragService } from './services/library-drag.service';
 import { LibraryBulkService } from './services/library-bulk.service';
 import { LibrarySelectionService } from './services/library-selection.service';
 import { LibraryFilterService } from './services/library-filter.service';
 import { FolderTileComponent } from './components/folder-tile/folder-tile.component';
-import { scrollFeedForKey } from './utils/feed-keyboard-scroll';
 import { SORT_OPTION_KEYS } from './models/sort-option-keys.const';
 import { SORT_OPTIONS } from './models/sort-options.const';
 
@@ -94,6 +78,7 @@ const SKELETON_COUNT = 8;
     EmptyStateComponent,
     FolderTileComponent,
     InViewDirective,
+    LibraryHotkeysDirective,
     LinkCardComponent,
     LinkRowComponent,
     DragSlotComponent,
@@ -120,10 +105,6 @@ const SKELETON_COUNT = 8;
     LibraryBulkService,
     LibraryDragService,
   ],
-  host: {
-    '(document:keydown)': 'onKeydown($event)',
-    '(document:paste)': 'onPaste($event)',
-  },
 })
 export default class LibraryPage {
   protected readonly store = inject(LinksStore);
@@ -149,7 +130,6 @@ export default class LibraryPage {
   private readonly exporter = inject(ExportActionsService);
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
-  private readonly cdkDialogs = inject(Dialog);
 
   /** From the route data. */
   readonly scope = input<LinksScope>(LINKS_SCOPE.All);
@@ -177,9 +157,6 @@ export default class LibraryPage {
 
   protected readonly BULK_BAR_LAYOUT = BULK_BAR_LAYOUT;
 
-  /** The scroll area of the feed (the page itself scrolls on a phone). */
-  private readonly scroller = viewChild<ElementRef<HTMLElement>>('scroller');
-
   constructor() {
     this.filters.connect({
       scope: this.scope,
@@ -190,73 +167,6 @@ export default class LibraryPage {
       kind: this.kind,
     });
     void this.settings.load();
-    // A new view, sort or filter starts at the top of its list (the page scroll is reset by the
-    // router; this area is not the page).
-    effect(() => {
-      this.filters.filter();
-      untracked(() => {
-        const area = this.scroller()?.nativeElement;
-        if (area) {
-          area.scrollTop = 0;
-        }
-      });
-    });
-  }
-
-  /**
-   * ⌘V / Ctrl+V in the library, outside any field and while no dialog is open: text with a link
-   * opens Add link with it (one link fills the address, several turn the dialog into the list).
-   * Text without a link is left alone.
-   */
-  protected onPaste(event: ClipboardEvent): void {
-    if (
-      event.defaultPrevented ||
-      isEditableTarget(event.target) ||
-      this.cdkDialogs.openDialogs.length > 0
-    ) {
-      return;
-    }
-    const text = event.clipboardData?.getData('text/plain') ?? '';
-    if (parsePastedLinks(text).links.length === 0) {
-      return;
-    }
-    event.preventDefault();
-    void this.actions.addLink({ ...this.filters.addLinkData(), text });
-  }
-
-  /**
-   * Page keys: Esc clears the selection, Cmd/Ctrl+A selects every link on screen (not in a field,
-   * dialog or menu); with nothing focused the paging keys scroll the feed area.
-   */
-  protected onKeydown(event: KeyboardEvent): void {
-    if (this.selectionKey(event)) {
-      return;
-    }
-    const area = this.scroller()?.nativeElement;
-    if (area) {
-      scrollFeedForKey(area, event);
-    }
-  }
-
-  private selectionKey(event: KeyboardEvent): boolean {
-    if (event.defaultPrevented || event.isComposing || isTypingTarget(event.target)) {
-      return false;
-    }
-    if (event.key === KEYBOARD_KEY.Escape && this.selection.selecting()) {
-      this.selection.endSelection();
-      return true;
-    }
-    const selectAll =
-      (event.metaKey || event.ctrlKey) &&
-      !event.altKey &&
-      !event.shiftKey &&
-      isLetter(event, LINK_SELECT_SHORTCUT.SelectAllKey, LINK_SELECT_SHORTCUT.SelectAllCode);
-    if (selectAll && this.feed.showLinks() && !this.feed.stale() && this.feed.shownCount() > 0) {
-      event.preventDefault();
-      this.selection.selectAll();
-      return true;
-    }
-    return false;
   }
 
   protected async openUnsorted(): Promise<void> {
