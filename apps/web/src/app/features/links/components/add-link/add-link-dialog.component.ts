@@ -1,21 +1,10 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  signal,
-  untracked,
-} from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormField, FormRoot } from '@angular/forms/signals';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   LINK_KIND,
   LINK_LIMIT,
   type CreateLinkRequest,
-  type LinkDuplicate,
-  type LinkPreview,
   type LinkResponse,
   type UpdateLinkRequest,
 } from '@shelfmark/contracts';
@@ -41,7 +30,7 @@ import {
   SKELETON_SHAPE,
   type TagSuggestion,
 } from '@shelfmark/ui';
-import { firstValueFrom, switchMap, tap, timer, type Observable } from 'rxjs';
+import { firstValueFrom, type Observable } from 'rxjs';
 import { FoldersStore } from '../../../../stores/folders.store';
 import { TagsStore } from '../../../../stores/tags.store';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
@@ -55,17 +44,13 @@ import type { AddLinkSaved } from '../../models/add-link-saved.interface';
 import type { AddLinkResult } from '../../models/add-link-result.type';
 import { LINKS_API } from '../../models/links-api.const';
 import { PREVIEW_STATE } from '../../models/preview-state.const';
-import type { PreviewState } from '../../models/preview-state.type';
 import { LocaleService } from '../../../../core/i18n/locale.service';
 import { PasteManyListComponent } from '../paste-many/paste-many-list.component';
 import { AddLinkFormService } from '../../services/add-link-form.service';
+import { AddLinkPreviewService } from '../../services/add-link-preview.service';
 import { AddSeveralLinksService } from '../../services/add-several-links.service';
 import { buildFolderOptions } from '../../utils/folder-options';
-import { displayHost, urlWithoutScheme } from '../../utils/http-url';
 import { saveErrorKey } from '../../utils/save-error-key';
-
-/** Wait after the last keystroke before the preview is requested (a paste is instant to the eye). */
-const PREVIEW_DEBOUNCE_MS = 350;
 
 /**
  * Content of the add-link dialog (`openAddLinkDialog()`): paste a URL, the preview fills the
@@ -104,7 +89,7 @@ const PREVIEW_DEBOUNCE_MS = 350;
     TranslocoPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [AddLinkFormService, AddSeveralLinksService],
+  providers: [AddLinkFormService, AddSeveralLinksService, AddLinkPreviewService],
   templateUrl: './add-link-dialog.component.html',
   styleUrl: './add-link-dialog.component.scss',
 })
@@ -154,36 +139,14 @@ export class AddLinkDialogComponent {
   protected readonly form = this.formState.form;
   private readonly model = this.formState.model;
 
-  /** "Fetch titles and previews" is on: the preview loads the page (else it only checks duplicates). */
-  protected readonly fetchPages = computed(() => this.library().fetchPreviews);
-
-  /** The typed URL once it is a valid http(s) URL; the preview follows it. */
-  private readonly previewUrl = computed(() => {
-    const url = this.form.url();
-    const value = url.value().trim();
-    // The duplicate check always runs (#315), so a valid new address always asks the server; an
-    // edit only checks a changed address for duplicates (the saved one needs no preview).
-    return url.valid() && value !== this.original?.url ? value : undefined;
-  });
-
-  private readonly preview = rxResource({
-    params: () => this.previewUrl(),
-    stream: ({ params: url }) =>
-      timer(PREVIEW_DEBOUNCE_MS).pipe(
-        switchMap(() => this.linksApi.preview(url)),
-        tap({
-          next: (response) => {
-            // Not fetched: `preview.title` is only the URL; the server defaults the title itself.
-            if (response.fetched) {
-              this.autofillTitle(response.preview.title);
-            }
-          },
-          error: () => {
-            this.autofillTitle(urlWithoutScheme(url));
-          },
-        }),
-      ),
-  });
+  private readonly previewService = inject(AddLinkPreviewService);
+  protected readonly fetchPages = this.previewService.fetchPages;
+  protected readonly previewState = this.previewService.previewState;
+  protected readonly shownState = this.previewService.shownState;
+  protected readonly noPreview = this.previewService.noPreview;
+  protected readonly previewData = this.previewService.previewData;
+  protected readonly previewHost = this.previewService.previewHost;
+  protected readonly duplicate = this.previewService.duplicate;
 
   protected readonly folderOptions = computed(() => buildFolderOptions(this.folders.entities()));
   protected readonly tagSuggestions = computed<TagSuggestion[]>(() => {
@@ -195,52 +158,6 @@ export class AddLinkDialogComponent {
       }),
     }));
   });
-
-  protected readonly previewState = computed<PreviewState>(() => {
-    if (this.previewUrl() === undefined) {
-      return PREVIEW_STATE.Idle;
-    }
-    if (this.preview.error()) {
-      return PREVIEW_STATE.Failed;
-    }
-    return this.preview.hasValue() ? PREVIEW_STATE.Ready : PREVIEW_STATE.Loading;
-  });
-
-  /** What the template shows: an edit has no preview card, only the duplicate notice. */
-  protected readonly shownState = computed<PreviewState>(() => {
-    const state = this.previewState();
-    // Without page fetches the request is only the duplicate check: no skeleton, no failure.
-    return (this.editing || !this.fetchPages()) && state !== PREVIEW_STATE.Ready
-      ? PREVIEW_STATE.Idle
-      : state;
-  });
-
-  /** The page could not be fetched: the preview only echoes the URL (the duplicate still counts). */
-  protected readonly noPreview = computed(
-    () =>
-      !this.editing &&
-      this.fetchPages() &&
-      this.previewState() === PREVIEW_STATE.Ready &&
-      this.preview.hasValue() &&
-      !this.preview.value().fetched,
-  );
-
-  protected readonly previewData = computed(() =>
-    !this.editing &&
-    this.previewState() === PREVIEW_STATE.Ready &&
-    this.preview.hasValue() &&
-    this.preview.value().fetched
-      ? this.preview.value().preview
-      : null,
-  );
-
-  protected readonly previewHost = computed(() => displayHost(this.previewUrl() ?? ''));
-
-  protected readonly duplicate = computed(() =>
-    this.previewState() === PREVIEW_STATE.Ready && this.preview.hasValue()
-      ? this.otherThanOriginal(this.preview.value().duplicate)
-      : null,
-  );
 
   /** "Saved X, last opened Y" under the form (edit mode). */
   protected readonly meta = computed(() => {
@@ -264,19 +181,6 @@ export class AddLinkDialogComponent {
     void this.folders.load();
     void this.tagStore.load();
     this.formState.onSubmit(() => this.save());
-    // The preview is gone (URL emptied or no longer valid): drop a title it filled in.
-    // An `effect` because the field tree exposes `dirty()` but has no value-change hook, and the
-    // form model is a plain signal, so a `linkedSignal` could not see whether the user typed.
-    effect(() => {
-      if (!this.editing && this.previewUrl() === undefined) {
-        untracked(() => {
-          const title = this.form.title();
-          if (!title.dirty()) {
-            title.value.set('');
-          }
-        });
-      }
-    });
   }
 
   protected readonly saving = signal(false);
@@ -341,7 +245,7 @@ export class AddLinkDialogComponent {
       }
       request$ = this.linksApi.update(this.original.id, changes);
     } else {
-      const fetched = this.fetchedPreview();
+      const fetched = this.previewService.fetchedPreview();
       const payload: CreateLinkRequest = {
         url: value.url.trim(),
         ...(title && { title }),
@@ -374,15 +278,6 @@ export class AddLinkDialogComponent {
       this.saving.set(false);
       this.saveError.set(saveErrorKey(error));
     }
-  }
-
-  /** The loaded preview of the current URL when the server could fetch the page. */
-  private fetchedPreview(): LinkPreview | null {
-    return this.previewState() === PREVIEW_STATE.Ready &&
-      this.preview.hasValue() &&
-      this.preview.value().fetched
-      ? this.preview.value().preview
-      : null;
   }
 
   /**
@@ -451,17 +346,5 @@ export class AddLinkDialogComponent {
       changes.tags = tags;
     }
     return changes;
-  }
-
-  private otherThanOriginal(duplicate: LinkDuplicate | null): LinkDuplicate | null {
-    return duplicate && duplicate.id !== this.original?.id ? duplicate : null;
-  }
-
-  /** Fills the title from the preview, unless the user has typed in it. */
-  private autofillTitle(title: string): void {
-    const field = this.form.title();
-    if (!this.editing && !field.dirty()) {
-      field.value.set(title.slice(0, LINK_LIMIT.TitleMax));
-    }
   }
 }
