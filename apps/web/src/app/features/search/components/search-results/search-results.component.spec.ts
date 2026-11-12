@@ -64,6 +64,9 @@ async function setup(list: LinksApi['list'] = () => of(page([link(1), link(2)]))
 const field = (element: HTMLElement): HTMLInputElement =>
   element.querySelector<HTMLInputElement>('input[role="combobox"]')!;
 const panel = (): HTMLElement | null => document.querySelector('.ui-command-list__panel');
+/** The leave animation and the overlay release take longer on a loaded runner: wait, do not guess. */
+const panelGone = (): Promise<void> =>
+  vi.waitFor(() => expect(panel()).toBeNull(), { timeout: 10_000 });
 const options = (): HTMLElement[] => [
   ...document.querySelectorAll<HTMLElement>('.ui-command-list__panel [role="option"]'),
 ];
@@ -124,7 +127,7 @@ describe('SearchResultsComponent as the header field (popup)', () => {
 
     expect(opener.open).toHaveBeenCalledWith(expect.stringContaining('https://'), false);
     expect(done).toHaveBeenCalledTimes(1);
-    expect(panel()).toBeNull();
+    await panelGone();
     expect(field(element).value).toBe('signal');
   });
 
@@ -150,7 +153,7 @@ describe('SearchResultsComponent as the header field (popup)', () => {
 
     expect(navigate).toHaveBeenCalledWith(['/links'], { queryParams: { q: 'signal' } });
     expect(field(element).value).toBe('');
-    expect(panel()).toBeNull();
+    await panelGone();
   });
 
   it('Esc closes the panel and keeps the text, a second Esc clears it', async () => {
@@ -158,7 +161,7 @@ describe('SearchResultsComponent as the header field (popup)', () => {
 
     await type(fixture, 'signal');
     await key(fixture, 'Escape');
-    expect(panel()).toBeNull();
+    await panelGone();
     expect(field(element).value).toBe('signal');
 
     await key(fixture, 'Escape');

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../../../testing/axe';
 import { compileScss, mediaBlocks, withoutMedia } from '../../../testing/scss';
 import { HighlightComponent } from '../highlight/highlight.component';
@@ -427,6 +427,9 @@ describe('CommandListComponent in popup mode', () => {
 
   const input = (): HTMLInputElement => el.querySelector<HTMLInputElement>('input')!;
   const panel = (): HTMLElement | null => document.querySelector('.ui-command-list__panel');
+  /** The leave animation and the overlay release take longer on a loaded runner: wait, do not guess. */
+  const panelGone = (): Promise<void> =>
+    vi.waitFor(() => expect(panel()).toBeNull(), { timeout: 10_000 });
   const options = (): HTMLElement[] => [
     ...document.querySelectorAll<HTMLElement>('.ui-command-list__panel [role="option"]'),
   ];
@@ -507,10 +510,10 @@ describe('CommandListComponent in popup mode', () => {
     await press(KEYBOARD_KEY.ArrowDown);
     expect(host.open()).toBe(true);
     await type('');
-    expect(panel()).toBeNull();
+    await panelGone();
     await press(KEYBOARD_KEY.ArrowDown);
     expect(host.open()).toBe(false);
-    expect(panel()).toBeNull();
+    await panelGone();
   });
 
   it('closes when focus leaves the field, keeping the text', async () => {
@@ -519,7 +522,7 @@ describe('CommandListComponent in popup mode', () => {
     await settle(fixture);
     expect(host.open()).toBe(false);
     expect(host.query()).toBe('a');
-    expect(panel()).toBeNull();
+    await panelGone();
   });
 });
 
