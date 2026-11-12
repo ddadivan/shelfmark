@@ -9,8 +9,6 @@ export const PROMO_SHARE = {
   SessionKey: 'sm-mock-session',
   ScenarioKey: 'sm-mock-links-scenario',
   Scenario: 'showcase',
-  /** What the share dialog shows under the scenario (MOCK_PUBLIC_ORIGIN in apps/web). */
-  PublicOrigin: 'https://shelfmark-app.vercel.app',
   /** The folder of the mockup library that gets a public link. */
   Folder: 'Recipes',
   /** The public page names the owner by the first name. */

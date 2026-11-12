@@ -33,7 +33,6 @@ import { MockLinksApi } from './mock-links.api';
 import { MockTagsApi } from './mock-tags.api';
 import { HttpSharesApi } from '../../sharing/http/http-shares.api';
 import { MockSharesApi } from '../../sharing/mock/mock-shares.api';
-import { PUBLIC_COLLECTION_ORIGIN } from '../../sharing/models/public-collection-origin.const';
 import { SHARES_API } from '../../sharing/models/shares-api.const';
 import type { SharesApi } from '../../sharing/models/shares-api.interface';
 import {
@@ -85,13 +84,6 @@ export function provideLinksApi(): Provider[] {
     {
       provide: SHARES_API,
       useFactory: (): SharesApi => (useRealApi() ? inject(HttpSharesApi) : inject(MockSharesApi)),
-    },
-    {
-      provide: PUBLIC_COLLECTION_ORIGIN,
-      useFactory: (): string =>
-        useRealApi()
-          ? (inject(DOCUMENT).location?.origin ?? '')
-          : inject(MockSharesApi).publicOrigin(),
     },
     {
       provide: TRASH_API,

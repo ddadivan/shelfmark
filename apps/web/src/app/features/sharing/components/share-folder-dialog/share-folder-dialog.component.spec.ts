@@ -8,19 +8,17 @@ import { axeViolations } from '../../../../../testing/axe';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
 import { MockSharesApi } from '../../mock/mock-shares.api';
 import { MOCK_SHARES_STORAGE_KEY } from '../../models/mock-shares-storage-key.const';
-import { PUBLIC_COLLECTION_ORIGIN } from '../../models/public-collection-origin.const';
 import type { ShareFolderDialogData } from '../../models/share-folder-dialog-data.interface';
 import { SHARES_API } from '../../models/shares-api.const';
 import { ShareFolderDialogComponent } from './share-folder-dialog.component';
 
 const FOLDER = MOCK_FOLDERS[0];
 
-async function open(data: Partial<ShareFolderDialogData> = {}, origin?: string) {
+async function open(data: Partial<ShareFolderDialogData> = {}) {
   localStorage.removeItem(MOCK_SHARES_STORAGE_KEY);
   TestBed.configureTestingModule({
     providers: [
       provideTranslocoForTest(),
-      ...(origin === undefined ? [] : [{ provide: PUBLIC_COLLECTION_ORIGIN, useValue: origin }]),
       { provide: SHARES_API, useClass: MockSharesApi },
       { provide: AuthStore, useValue: { user: signal({ name: 'Ada', isDemo: false }) } },
     ],
@@ -96,26 +94,6 @@ describe('ShareFolderDialogComponent', () => {
     await until(() => expect(writeText).toHaveBeenCalledWith(field?.value));
     expect(await axeViolations(dialog() as HTMLElement)).toEqual([]);
     vi.unstubAllGlobals();
-  });
-
-  it('builds the link on the page origin by default, or on the provided one (#326)', async () => {
-    await open();
-    await until(() => expect(switchNamed('Public folder')).not.toBeNull());
-    switchNamed('Public folder')?.click();
-    await until(() => expect(q<HTMLInputElement>('input[readonly]')).not.toBeNull());
-    expect(q<HTMLInputElement>('input[readonly]')?.value.startsWith(`${location.origin}/c/`)).toBe(
-      true,
-    );
-  });
-
-  it('shows the provided public origin in the link', async () => {
-    await open({}, 'https://links.example.org');
-    await until(() => expect(switchNamed('Public folder')).not.toBeNull());
-    switchNamed('Public folder')?.click();
-    await until(() => expect(q<HTMLInputElement>('input[readonly]')).not.toBeNull());
-    expect(q<HTMLInputElement>('input[readonly]')?.value).toMatch(
-      /^https:\/\/links\.example\.org\/c\/[\w-]{22}$/,
-    );
   });
 
   it('selects the link and explains when the clipboard is refused', async () => {

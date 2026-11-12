@@ -38,11 +38,9 @@ export function isDemoMockSession(): boolean {
  * (an account or a guest) under the `showcase` scenario (`sm-mock-links-scenario`, #326).
  */
 export function usesDemoLibrary(): boolean {
-  return isDemoMockSession() || isShowcaseScenario();
-}
-
-/** Whether the mock `showcase` scenario is on in this tab (`sm-mock-links-scenario`, #326). */
-export function isShowcaseScenario(): boolean {
+  if (isDemoMockSession()) {
+    return true;
+  }
   try {
     return (
       globalThis.sessionStorage.getItem(MOCK_LINKS_SCENARIO_KEY) === MOCK_LINKS_SCENARIO.Showcase

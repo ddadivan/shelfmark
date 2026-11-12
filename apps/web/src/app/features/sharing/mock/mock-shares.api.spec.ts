@@ -12,9 +12,6 @@ import { MOCK_ID } from '@shelfmark/contracts/testing';
 import { firstValueFrom } from 'rxjs';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { MockLibraryData } from '../../links/mock/mock-library-data';
-import { MOCK_LINKS_SCENARIO } from '../../links/models/mock-links-scenario.const';
-import { MOCK_LINKS_SCENARIO_KEY } from '../../links/models/mock-links-scenario-key.const';
-import { MOCK_PUBLIC_ORIGIN } from '../models/mock-public-origin.const';
 import { MOCK_SHARES_STORAGE_KEY } from '../models/mock-shares-storage-key.const';
 import { MockSharesApi } from './mock-shares.api';
 
@@ -39,17 +36,6 @@ async function status(promise: Promise<unknown>): Promise<number> {
 
 describe('MockSharesApi', () => {
   afterEach(() => localStorage.removeItem(MOCK_SHARES_STORAGE_KEY));
-
-  it('hands out links on the page origin, or the production origin under showcase (#326)', () => {
-    const { api } = setup();
-    expect(api.publicOrigin()).toBe(location.origin);
-    sessionStorage.setItem(MOCK_LINKS_SCENARIO_KEY, MOCK_LINKS_SCENARIO.Showcase);
-    try {
-      expect(api.publicOrigin()).toBe(MOCK_PUBLIC_ORIGIN);
-    } finally {
-      sessionStorage.removeItem(MOCK_LINKS_SCENARIO_KEY);
-    }
-  });
 
   it('enables, keeps the token, changes notes, resets and disables like the API', async () => {
     const { api } = setup();

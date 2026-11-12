@@ -9,12 +9,11 @@ view, favorites, Recently opened, delete and restore from Trash), **Many at once
 cards and move them; drag a card onto a folder on desktop, Move to folder on the phone), **Make it
 yours** (dark theme and an own accent colour, a language switch, export, Send feedback; on the
 phone the share target too) and **Share a collection** (#326: a folder's menu → Share… → the
-"Public folder" on → Copy link → the `/c/…` page as a guest). The phone recording shows the tab bar
+public link on → Copy link → the `/c/…` page as a guest). The phone recording shows the tab bar
 throughout. Demo accounts cannot share, so the last chapter switches to a made-up regular mock
 account (`PROMO_SHARE`, no personal data) under the mock `showcase` scenario
 (`sm-mock-links-scenario`), which starts every mock session, the guest's too, from the demo's
-mockup library; under it the share dialog shows the production origin
-(`MOCK_PUBLIC_ORIGIN`), never the local server; the guest is the same tab without the session. It never runs with the e2e suite: it has
+mockup library; the guest is the same tab without the session. It never runs with the e2e suite: it has
 its own config (`playwright.promo.config.mts`) and file pattern.
 
 ## Re-record
@@ -59,8 +58,7 @@ script checks for the encoders first and stops with the fix.
   pointer dot (and the tap ripple on the phone) is injected by the recorder only, as a manual
   popover so it stays above the app's dialogs; it is hidden in the poster.
 - Both recordings start in the light system colour scheme; the video switches to dark and an own
-  accent (Custom on the dark base) in its "Make it yours" chapter through Settings › Appearance;
-  the share chapter keeps that look (the mock appearance stays in the browser).
+  accent in its "Make it yours" chapter through Settings › Appearance.
   The desktop uses a Mac user agent, so the app shows ⌘ and answers ⌘K.
 - Everything happens inside the app (no reloads), since a reload starts a fresh demo library;
   the exceptions come at the end: the phone's share-target step and the share chapter (the switch
