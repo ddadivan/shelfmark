@@ -498,10 +498,10 @@
       class="library__bulk"
       animate.enter="ui-bulk-bar--enter"
       animate.leave="ui-bulk-bar--leave"
-      [actions]="barActions()"
+      [actions]="bulk.barActions()"
       [ariaLabel]="pluralKey('bulk.bar.label', selection.selectedCount()) | transloco: { count: selection.selectedCount() }"
       [layout]="compact() ? BULK_BAR_LAYOUT.Stacked : BULK_BAR_LAYOUT.Inline"
-      (action)="runBulk($event)"
+      (action)="bulk.run($event)"
     />
     }
   </div>

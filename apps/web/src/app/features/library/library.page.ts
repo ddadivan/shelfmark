@@ -9,7 +9,6 @@ import {
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   effect,
   ElementRef,
   inject,
@@ -17,7 +16,6 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   BreadcrumbsComponent,
@@ -41,7 +39,6 @@ import {
   SKELETON_SHAPE,
   SkeletonComponent,
   type BreadcrumbClick,
-  type BulkBarAction,
 } from '@shelfmark/ui';
 import {
   EXPORT_FORMAT,
@@ -57,8 +54,6 @@ import { SavedViewChipsComponent } from '../views/components/saved-view-chips/sa
 import { InViewDirective } from '../links/directives/in-view.directive';
 import { parsePastedLinks } from '../links/components/paste-many/parse-pasted-links';
 import { isEditableTarget } from '../shortcuts/utils/is-editable-target';
-import { BulkLinkActionsService } from '../links/services/bulk-link-actions.service';
-import { BULK_ACTION } from '../links/models/bulk-action.const';
 import { isTypingTarget } from '../links/utils/is-typing-target';
 import { isLetter } from '../links/utils/link-select-keys';
 import { LINK_SELECT_SHORTCUT } from '../links/models/link-select-shortcut.const';
@@ -77,6 +72,7 @@ import { UI_VIEW } from '../../stores/models/ui-view.const';
 import { UserSettingsStore } from '../../stores/user-settings.store';
 import { LibraryFeedService } from './services/library-feed.service';
 import { LibraryHeadService } from './services/library-head.service';
+import { LibraryBulkService } from './services/library-bulk.service';
 import { LibrarySelectionService } from './services/library-selection.service';
 import { LibraryFilterService } from './services/library-filter.service';
 import { FolderTileComponent } from './components/folder-tile/folder-tile.component';
@@ -131,6 +127,7 @@ const SKELETON_COUNT = 8;
     LibraryFeedService,
     LibraryHeadService,
     LibrarySelectionService,
+    LibraryBulkService,
   ],
   host: {
     '(document:keydown)': 'onKeydown($event)',
@@ -155,7 +152,7 @@ export default class LibraryPage {
    */
   protected readonly compact = inject(ViewportService).compact;
   protected readonly selection = inject(LibrarySelectionService);
-  private readonly bulk = inject(BulkLinkActionsService);
+  protected readonly bulk = inject(LibraryBulkService);
   protected readonly drag = inject(LinkDragService);
   /** Touch holds 150 ms before a drag starts (DragDrop spec), so a swipe still scrolls. */
   protected readonly DRAG_START_DELAY = { touch: 150, mouse: 0 };
@@ -188,43 +185,6 @@ export default class LibraryPage {
   protected readonly SORT_OPTIONS = SORT_OPTIONS;
   protected readonly SORT_OPTION_KEYS = SORT_OPTION_KEYS;
 
-  private readonly i18n = toSignal(this.transloco.selectTranslation());
-  /** The bulk bar: desktop Move, Tags, Favorite, Open all, Copy links, Delete; the phone shares instead of opening. */
-  protected readonly barActions = computed<BulkBarAction[]>(() => {
-    this.i18n();
-    const t = (key: string): string => this.transloco.translate(key);
-    const favorite =
-      this.selection.selecting() && this.selection.selectedLinks().every((link) => link.isFavorite);
-    const actions: BulkBarAction[] = [
-      { id: BULK_ACTION.Move, label: t('bulk.bar.move'), icon: 'folder-move' },
-      { id: BULK_ACTION.Tags, label: t('bulk.bar.tags'), icon: 'tag' },
-      {
-        id: BULK_ACTION.Favorite,
-        label: t('bulk.bar.favorite'),
-        icon: favorite ? 'star-filled' : 'star',
-        pressed: favorite,
-      },
-    ];
-    if (this.compact()) {
-      actions.push(
-        this.bulk.canShare()
-          ? { id: BULK_ACTION.Share, label: t('bulk.bar.share'), icon: 'share' }
-          : { id: BULK_ACTION.Copy, label: t('bulk.bar.copy'), icon: 'copy' },
-      );
-    } else {
-      actions.push(
-        { id: BULK_ACTION.OpenAll, label: t('bulk.bar.openAll'), icon: 'external' },
-        { id: BULK_ACTION.Copy, label: t('bulk.bar.copy'), icon: 'copy' },
-      );
-    }
-    actions.push({
-      id: BULK_ACTION.Delete,
-      label: t('bulk.bar.delete'),
-      icon: 'trash',
-      danger: true,
-    });
-    return actions;
-  });
   protected readonly BULK_BAR_LAYOUT = BULK_BAR_LAYOUT;
 
   /** The scroll area of the feed (the page itself scrolls on a phone). */
@@ -342,38 +302,6 @@ export default class LibraryPage {
       return true;
     }
     return false;
-  }
-
-  /** A bulk bar button: runs the action on the picked links; some clear the selection afterwards. */
-  protected async runBulk(id: string): Promise<void> {
-    const links = this.selection.selectedLinks();
-    let clear = false;
-    switch (id) {
-      case BULK_ACTION.Move:
-        clear = await this.bulk.move(links);
-        break;
-      case BULK_ACTION.Tags:
-        clear = await this.bulk.editTags(links);
-        break;
-      case BULK_ACTION.Favorite:
-        clear = await this.bulk.toggleFavorite(links);
-        break;
-      case BULK_ACTION.OpenAll:
-        clear = await this.bulk.openAll(links);
-        break;
-      case BULK_ACTION.Copy:
-        clear = await this.bulk.copy(links);
-        break;
-      case BULK_ACTION.Share:
-        clear = await this.bulk.share(links);
-        break;
-      case BULK_ACTION.Delete:
-        clear = await this.bulk.delete(links);
-        break;
-    }
-    if (clear) {
-      this.selection.clear();
-    }
   }
 
   protected async openUnsorted(): Promise<void> {
