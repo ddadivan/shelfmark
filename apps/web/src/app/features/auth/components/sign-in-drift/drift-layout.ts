@@ -30,10 +30,12 @@ const LAYER_SECONDS: Record<SignInDriftLayer, readonly [number, number]> = {
   far: [11, 15],
 };
 
+// How far a card floats (px at scale 1): a longer path than the first cut (#335, the author asked
+// for more movement), still inside the gap kept between cards.
 const LAYER_AMP: Record<SignInDriftLayer, readonly [number, number]> = {
-  near: [9, 13],
-  mid: [6, 9],
-  far: [4, 6],
+  near: [16, 24],
+  mid: [11, 16],
+  far: [7, 10],
 };
 
 const LAYER_ORDER: Record<SignInDriftLayer, number> = { near: 0, mid: 1, far: 2 };
@@ -158,8 +160,8 @@ export function layoutDriftLane(
       duration: round(duration),
       delay: round(-duration * random()),
       ampY: round(between(LAYER_AMP[layer])),
-      ampX: round((random() * 2 - 1) * 5),
-      spin: round((random() < 0.5 ? -1 : 1) * (0.8 + random() * 1.2)),
+      ampX: round((random() * 2 - 1) * 10),
+      spin: round((random() < 0.5 ? -1 : 1) * (1.2 + random() * 1.6)),
     };
   }
 
