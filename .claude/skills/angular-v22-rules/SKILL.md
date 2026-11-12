@@ -42,7 +42,7 @@ Applies to `apps/web` and `libs/ui`. Official Angular guidance (AI config, Agent
 
 ## File layout (apps/web)
 
-`src/app/` → `app.routes.ts`, `app.config.ts`, `shell/`, `core/` (guards, interceptors, `AuthStore`, `TitleStrategy`, `DialogService`), `features/<name>/` (`<name>.page.ts` + local components), `stores/`. File names `kebab-case.<type>.ts`; pages export a default component for `loadComponent`.
+`src/app/` → `app.routes.ts`, `app.config.ts`, `shell/`, `core/` (guards, interceptors, `AuthStore`, `TitleStrategy`, `DialogService`), `features/<name>/` (`<name>.page.ts` at the root; `components/`, `pages/`, `directives/`, `services/`, `utils/`, `http/`, `mock/`, `models/`, ADR 0042), `stores/`. File names `kebab-case.<type>.ts`; pages export a default component for `loadComponent`.
 
 Types (PROJECT.md 5.0): no `any` / `as any` (use `unknown` + narrowing or generics), no `@ts-ignore`. One interface / type / array-of-objects constant per file — `<kebab-name>.interface.ts`, `.type.ts`, `.const.ts` — in a `models/` folder next to its users (e.g. `core/theme/models/theme-preference.type.ts`, `features/links/models/link-sort.const.ts`). No dump files (`types.ts`, `models.ts`, `constants.ts`); `index.ts` only re-exports. API shapes come from `@shelfmark/contracts`, never redeclared.
 
