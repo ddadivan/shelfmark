@@ -19,7 +19,7 @@ async function setup(link: LinkResponse = LINK, phone = false) {
   TestBed.configureTestingModule({
     providers: [
       provideTranslocoForTest(),
-      { provide: ViewportService, useValue: { phone: signal(phone) } },
+      { provide: ViewportService, useValue: { phone: signal(phone), compact: signal(phone) } },
     ],
   });
   await loadEnglish();

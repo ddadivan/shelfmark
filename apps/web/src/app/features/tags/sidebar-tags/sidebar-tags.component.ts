@@ -84,7 +84,7 @@ export class SidebarTagsComponent {
   private readonly viewport = inject(ViewportService);
   /** Text buttons reach the 44px touch target on a phone. */
   protected readonly buttonSize = computed(() =>
-    this.viewport.phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm,
+    this.viewport.compact() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm,
   );
   private readonly actions = inject(TagActionsService);
   private readonly toasts = inject(ToastService);

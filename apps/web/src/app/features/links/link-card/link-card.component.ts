@@ -119,7 +119,7 @@ export class LinkCardComponent {
   }
 
   protected onLongPress(): void {
-    if (this.viewport.phone() && !this.readOnly()) {
+    if (this.viewport.compact() && !this.readOnly()) {
       this.selectToggled.emit({ range: false });
     }
   }

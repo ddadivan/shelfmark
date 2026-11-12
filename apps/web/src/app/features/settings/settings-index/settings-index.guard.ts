@@ -10,7 +10,7 @@ import { SETTINGS_PATH } from '../models/settings-path.const';
  * page, so there it goes to the first section.
  */
 export const settingsIndexGuard: CanActivateFn = () => {
-  if (inject(ViewportService).phone()) {
+  if (inject(ViewportService).compact()) {
     return true;
   }
   return inject(Router).createUrlTree(['/', APP_PATH.Settings, SETTINGS_PATH.Account]);

@@ -1,5 +1,5 @@
 <div class="trash-page" [attr.aria-busy]="store.loading()">
-  @if (viewport.phone()) {
+  @if (viewport.compact()) {
   <div class="trash-page__top">
     <ui-button
       class="trash-page__back"
@@ -27,7 +27,7 @@
         'trash.nothing' | transloco }} } }
       </p>
     </div>
-    @if (!viewport.phone() && store.total() > 0) {
+    @if (!viewport.compact() && store.total() > 0) {
     <ui-button iconLeft="trash" (click)="actions.empty()">
       {{ 'trash.emptyAction' | transloco }}
     </ui-button>
@@ -105,7 +105,7 @@
   <p class="trash-page__note">
     {{ 'trash.footer' | transloco: { days: settings.retentionDays() } }}
   </p>
-  @if (viewport.phone()) {
+  @if (viewport.compact()) {
   <p class="trash-page__note">{{ 'trash.swipeHint' | transloco }}</p>
   } @if (selectedCount() > 0) {
   <div class="trash-page__bar" role="toolbar" [attr.aria-label]="'trash.bar.label' | transloco">

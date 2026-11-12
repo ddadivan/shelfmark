@@ -73,7 +73,10 @@ export async function setupSettingsPage(
       { provide: ONBOARDING_API, useValue: onboardingApi },
       { provide: ACCOUNT_DELETION_API, useValue: { delete: vi.fn() } },
       { provide: EXPORT_API, useValue: exportApi },
-      { provide: ViewportService, useValue: { phone: signal(phone), desktop: signal(!phone) } },
+      {
+        provide: ViewportService,
+        useValue: { phone: signal(phone), compact: signal(phone), desktop: signal(!phone) },
+      },
     ],
   });
   await loadEnglish();

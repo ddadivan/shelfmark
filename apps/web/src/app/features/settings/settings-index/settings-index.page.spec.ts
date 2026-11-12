@@ -36,7 +36,7 @@ async function setup(phone: boolean) {
       { provide: ONBOARDING_API, useValue: { complete: vi.fn() } },
       { provide: ADMIN_API, useValue: adminApiStub() },
       { provide: ACCOUNT_DELETION_API, useValue: { delete: vi.fn() } },
-      { provide: ViewportService, useValue: { phone: phoneSignal } },
+      { provide: ViewportService, useValue: { phone: phoneSignal, compact: phoneSignal } },
     ],
   });
   await loadEnglish();

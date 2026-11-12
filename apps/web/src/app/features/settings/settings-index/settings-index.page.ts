@@ -64,7 +64,7 @@ export default class SettingsIndexPage {
 
   /** The viewport grew past the phone: the list has no place here, the first section does. */
   private readonly leaveWhenWide = effect(() => {
-    if (!this.viewport.phone()) {
+    if (!this.viewport.compact()) {
       void this.router.navigate(['/', APP_PATH.Settings, SETTINGS_PATH.Account], {
         replaceUrl: true,
       });

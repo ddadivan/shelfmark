@@ -99,7 +99,7 @@ export class SidebarPinnedComponent {
    */
   protected readonly shown = computed(
     () =>
-      this.pins.rows().length > 0 || (this.card() && this.viewport.phone() && this.pins.loaded()),
+      this.pins.rows().length > 0 || (this.card() && this.viewport.compact() && this.pins.loaded()),
   );
 
   /**

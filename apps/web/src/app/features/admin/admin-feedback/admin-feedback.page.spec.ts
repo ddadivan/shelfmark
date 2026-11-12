@@ -44,7 +44,10 @@ async function setup(overrides: Partial<AdminApi> = {}) {
       provideRouter([{ path: 'admin/feedback', component: AdminFeedbackPage }]),
       provideTranslocoForTest(),
       { provide: ADMIN_API, useValue: api },
-      { provide: ViewportService, useValue: { phone: signal(false), desktop: signal(true) } },
+      {
+        provide: ViewportService,
+        useValue: { phone: signal(false), compact: signal(false), desktop: signal(true) },
+      },
     ],
   });
   await loadEnglish();

@@ -21,7 +21,7 @@ export default class TagsPage {
 
   constructor() {
     effect(() => {
-      if (!this.viewport.phone()) {
+      if (!this.viewport.compact()) {
         void this.router.navigateByUrl(`/${APP_PATH.Links}`, { replaceUrl: true });
       }
     });

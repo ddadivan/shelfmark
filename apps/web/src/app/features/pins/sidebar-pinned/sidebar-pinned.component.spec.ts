@@ -36,7 +36,7 @@ async function setup(
       { provide: LINKS_API, useClass: MockLinksApi },
       { provide: TAGS_API, useClass: MockTagsApi },
       { provide: ToastService, useValue: { show: toastShow } },
-      { provide: ViewportService, useValue: { phone: signal(phone) } },
+      { provide: ViewportService, useValue: { phone: signal(phone), compact: signal(phone) } },
     ],
   });
   await loadEnglish();

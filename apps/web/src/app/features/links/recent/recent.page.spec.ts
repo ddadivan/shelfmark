@@ -89,7 +89,11 @@ async function setup(
       { provide: USER_SETTINGS_API, useValue: settingsApi },
       {
         provide: ViewportService,
-        useValue: { phone: signal(options.phone ?? false), desktop: signal(!options.phone) },
+        useValue: {
+          phone: signal(options.phone ?? false),
+          compact: signal(options.phone ?? false),
+          desktop: signal(!options.phone),
+        },
       },
     ],
   });

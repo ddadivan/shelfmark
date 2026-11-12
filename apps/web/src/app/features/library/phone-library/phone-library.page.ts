@@ -73,7 +73,7 @@ export default class PhoneLibraryPage {
     void this.links.loadRecent();
     void this.trash.load();
     effect(() => {
-      if (!this.viewport.phone()) {
+      if (!this.viewport.compact()) {
         void this.router.navigateByUrl(`/${APP_PATH.Links}`, { replaceUrl: true });
       }
     });

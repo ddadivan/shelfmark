@@ -102,7 +102,7 @@ export class TrashRowComponent {
     this.locale.formatRelative(this.item().deletedAt, this.now()),
   );
 
-  protected readonly swipeable = computed(() => this.viewport.phone() && !this.selecting());
+  protected readonly swipeable = computed(() => this.viewport.compact() && !this.selecting());
   /** Swipe state of the phone row (Restore and Delete wait behind it). */
   protected readonly swipe = new SwipeReveal(
     () => this.swipeable(),

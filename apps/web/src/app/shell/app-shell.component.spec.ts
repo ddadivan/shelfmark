@@ -244,12 +244,14 @@ describe('AppShellComponent', () => {
 
   describe('layout by width', () => {
     const PHONE_QUERY = '(width < 40em)';
+    const COMPACT_QUERY = '(width < 64em)';
     const listeners = new Map<string, (event: MediaQueryListEvent) => void>();
 
-    async function setup(phone: boolean) {
+    /** `phone`: below 40em (and so below 64em); `tablet`: 40em to 64em, the mobile shell too. */
+    async function setup(phone: boolean, tablet = false) {
       listeners.clear();
       vi.stubGlobal('matchMedia', (query: string) => ({
-        matches: phone && query === PHONE_QUERY,
+        matches: (phone && query === PHONE_QUERY) || ((phone || tablet) && query === COMPACT_QUERY),
         addEventListener: (_type: string, listener: (event: MediaQueryListEvent) => void) =>
           listeners.set(query, listener),
         removeEventListener: () => listeners.delete(query),
@@ -368,10 +370,19 @@ describe('AppShellComponent', () => {
       expect(byLabel(root, 'Add link')).not.toBeNull();
     });
 
-    it('has no tab bar from the tablet width', async () => {
+    it('has no tab bar from the desktop width (64em)', async () => {
       const { root } = await setup(false);
 
       expect(bar(root)).toBeNull();
+      expect(root.querySelector('.shell__sidebar')).not.toBeNull();
+    });
+
+    it('keeps the mobile shell on a tablet below 64em: tab bar, no sidebar or header (#316)', async () => {
+      const { root } = await setup(false, true);
+
+      expect(bar(root)?.querySelector('nav[aria-label="Main"]')).not.toBeNull();
+      expect(root.querySelector('.shell__sidebar')).toBeNull();
+      expect(root.querySelector('.shell__header')).toBeNull();
     });
 
     it('marks the tab of the current route with aria-current', async () => {
@@ -454,11 +465,11 @@ describe('AppShellComponent styles', () => {
       .join('\n');
   }
 
-  it('leaves 110px under the page on a phone for the floating tab bar', async () => {
+  it('leaves 110px under the page in the mobile shell (below 64em) for the floating tab bar', async () => {
     const css = await shellStyles();
 
     expect(css).toMatch(
-      /\(width\s*<\s*40em\)[^{]*\{[^}]*shell__main[^}]*padding-block-end:\s*calc\(6\.875rem/,
+      /\(width\s*<\s*64em\)[^{]*\{[^}]*shell__main[^}]*padding-block-end:\s*calc\(6\.875rem/,
     );
     expect(css).not.toContain('position: sticky');
   });

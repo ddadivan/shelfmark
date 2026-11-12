@@ -5,18 +5,18 @@
   flex-direction: column;
   min-height: 100dvh;
 
-  // From the tablet width the shell is exactly the viewport (banner and header included) and the
-  // page itself never scrolls: the sidebar and the main column scroll on their
-  // own. A phone keeps the natural page scroll under the tab bar.
-  @include tablet-up {
+  // From the desktop width (64em, #316) the shell is exactly the viewport (banner and header
+  // included) and the page itself never scrolls: the sidebar and the main column scroll on their
+  // own. The mobile shell (phones and tablets) keeps the natural page scroll under the tab bar.
+  @include desktop {
     height: 100dvh;
     min-height: 0;
     overflow: hidden;
   }
 }
 
-// The top bar of tablet and desktop sits in the content column, above the page, with no rule under
-// it (the sidebar card and the page carry the layout). The phone has none.
+// The top bar of the desktop sits in the content column, above the page, with no rule under it
+// (the sidebar card and the page carry the layout). The mobile shell has none.
 .shell__header {
   display: flex;
   gap: var(--space-3);
@@ -80,22 +80,18 @@
   display: block;
   flex: none;
   align-self: stretch;
-  width: rem(248px);
+  width: rem(272px);
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
   background: var(--surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
-
-  @include desktop {
-    width: rem(272px);
-  }
 }
 
-// The body takes the height left under the banner. Tablet and up: the sidebar card and the content
-// column side by side, 12px from the window edges and from each other. Phone: the header and the
-// page in a column (the content wrappers vanish), the page scrolls naturally.
+// The body takes the height left under the banner. Desktop: the sidebar card and the content
+// column side by side, 12px from the window edges and from each other. Mobile shell (below 64em):
+// the page in a column (the content wrappers vanish), the page scrolls naturally.
 .shell__body {
   display: flex;
   flex: 1;
@@ -103,7 +99,7 @@
   align-items: stretch;
   min-height: 0;
 
-  @include tablet-up {
+  @include desktop {
     flex-direction: row;
     gap: var(--space-3);
     padding: var(--space-3);
@@ -114,7 +110,7 @@
 .shell__row {
   display: contents;
 
-  @include tablet-up {
+  @include desktop {
     display: flex;
     min-width: 0;
     min-height: 0;
@@ -122,14 +118,14 @@
 }
 
 .shell__content {
-  @include tablet-up {
+  @include desktop {
     flex: 1;
     flex-direction: column;
   }
 }
 
 .shell__row {
-  @include tablet-up {
+  @include desktop {
     flex: 1;
     align-items: stretch;
   }
@@ -143,11 +139,16 @@
   padding: var(--space-6) var(--space-4);
 
   // Room below the last row for the floating tab bar (110px, TabBar spec).
-  @include phone {
+  @include compact {
     padding-block-end: calc(rem(110px) + env(safe-area-inset-bottom));
   }
 
-  @include tablet-up {
+  // A tablet in the mobile shell keeps the wider page gutter.
+  @include tablet {
+    padding-inline: var(--space-6);
+  }
+
+  @include desktop {
     min-height: 0;
     padding: var(--space-4) var(--space-6) var(--space-6);
 

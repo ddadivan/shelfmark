@@ -80,7 +80,7 @@
     @include focus-ring(-2px);
   }
 
-  @include phone {
+  @include compact {
     min-height: rem(44px);
   }
 
@@ -187,7 +187,7 @@
   color: var(--text-muted);
   opacity: 0.45;
 
-  @include phone {
+  @include compact {
     min-height: rem(44px);
   }
 

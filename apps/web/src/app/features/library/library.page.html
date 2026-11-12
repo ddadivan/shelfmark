@@ -9,10 +9,10 @@
   <div
     class="library__selection"
     role="group"
-    [class.library__selection--phone]="phone()"
+    [class.library__selection--phone]="compact()"
     [attr.aria-label]="'bulk.header.label' | transloco"
   >
-    @if (phone()) {
+    @if (compact()) {
     <ui-button
       variant="ghost"
       iconOnly
@@ -38,7 +38,7 @@
       @if (phone()) { {{ 'bulk.header.selectAllShort' | transloco }} } @else { {{
       'bulk.header.selectAll' | transloco: { count: shownCount() } }} }
     </ui-button>
-    } @if (!phone()) {
+    } @if (!compact()) {
     <span class="library__selection-spacer"></span>
     <span class="library__hint"
       ><kbd class="library__kbd">{{ 'bulk.header.shift' | transloco }}</kbd> {{
@@ -340,7 +340,7 @@
       class="library__rows library__list"
       cdkDropList
       cdkDropListSortingDisabled
-      [cdkDropListDisabled]="phone()"
+      [cdkDropListDisabled]="compact()"
       [class.library__list--reveal]="reveal()"
       [class.library__list--stale]="stale()"
       [attr.aria-busy]="stale() ? 'true' : null"
@@ -353,7 +353,7 @@
         cdkDrag
         [cdkDragData]="link"
         [attr.data-link-id]="link.id"
-        [cdkDragDisabled]="phone()"
+        [cdkDragDisabled]="compact()"
         [cdkDragStartDelay]="DRAG_START_DELAY"
         [class.library__item--carried]="drag.dragging() && drag.carriedIds().has(link.id)"
         [style.view-transition-name]="morphing() ? 'link-' + link.id : null"
@@ -409,7 +409,7 @@
       class="library__grid library__list"
       cdkDropList
       cdkDropListSortingDisabled
-      [cdkDropListDisabled]="phone()"
+      [cdkDropListDisabled]="compact()"
       [class.library__list--reveal]="reveal()"
       [class.library__list--stale]="stale()"
       [attr.aria-busy]="stale() ? 'true' : null"
@@ -422,7 +422,7 @@
         cdkDrag
         [cdkDragData]="link"
         [attr.data-link-id]="link.id"
-        [cdkDragDisabled]="phone()"
+        [cdkDragDisabled]="compact()"
         [cdkDragStartDelay]="DRAG_START_DELAY"
         [class.library__item--carried]="drag.dragging() && drag.carriedIds().has(link.id)"
         [style.view-transition-name]="morphing() ? 'link-' + link.id : null"
@@ -492,7 +492,7 @@
       animate.leave="ui-bulk-bar--leave"
       [actions]="barActions()"
       [ariaLabel]="pluralKey('bulk.bar.label', selectedCount()) | transloco: { count: selectedCount() }"
-      [layout]="phone() ? BULK_BAR_LAYOUT.Stacked : BULK_BAR_LAYOUT.Inline"
+      [layout]="compact() ? BULK_BAR_LAYOUT.Stacked : BULK_BAR_LAYOUT.Inline"
       (action)="runBulk($event)"
     />
     }
