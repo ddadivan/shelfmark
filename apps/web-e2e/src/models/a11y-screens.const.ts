@@ -1,6 +1,7 @@
 import { expect, type Page } from '@playwright/test';
 import {
   openCardEdit,
+  openCardMove,
   openEmptyFeed,
   openFeed,
   openSignedIn,
@@ -272,6 +273,25 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     open: async (page) => {
       await openFeed(page);
       await openCardEdit(page);
+    },
+    ...SHEET,
+  },
+  {
+    name: 'move link picker',
+    open: async (page) => {
+      await openFeed(page);
+      const picker = await openCardMove(page);
+      await expect(picker.getByRole('option').first()).toBeVisible();
+    },
+    ...SHEET,
+  },
+  {
+    name: 'move link picker, filtered',
+    open: async (page) => {
+      await openFeed(page);
+      const picker = await openCardMove(page);
+      await picker.getByRole('combobox', { name: 'Search folders' }).fill('angul');
+      await expect(picker.getByRole('option')).toHaveCount(2);
     },
     ...SHEET,
   },

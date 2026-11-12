@@ -135,26 +135,44 @@ test.describe('select links and bulk actions (mock API)', () => {
       await expect(page.getByRole('dialog', { name: `Move “${title}”` })).toBeVisible();
     });
 
-    test('moves the selection to a folder, and Undo puts it back', async ({ page }) => {
+    test('moves the selection to a folder with one choice in the picker, and Undo puts it back', async ({
+      page,
+    }) => {
       await openFeed(page, '/unsorted');
       const before = await cards(page).count();
-      const titles = [await cardTitle(cards(page).nth(0)), await cardTitle(cards(page).nth(1))];
-      await pick(page, 0);
-      await pick(page, 1);
+      const titles = [0, 1, 2].map((index) => cardTitle(cards(page).nth(index)));
+      const names = await Promise.all(titles);
+      for (const index of [0, 1, 2]) {
+        await pick(page, index);
+      }
       await barButton(page, 'Move').click();
-      const dialog = page.getByRole('dialog', { name: 'Move 2 links' });
-      await dialog.getByRole('combobox', { name: 'Folder' }).click();
-      await page.getByRole('option').filter({ hasText: READING }).click();
-      await dialog.getByRole('button', { name: 'Move' }).click();
+      const picker = page.getByRole('dialog', { name: 'Move 3 links' });
+      await expect(picker.getByRole('button', { name: 'Move', exact: true })).toHaveCount(0);
+      await picker.getByRole('option', { name: READING, exact: true }).click();
 
-      await expect(page.getByText(`2 links moved to ${READING}`)).toBeVisible();
-      await expect(cards(page)).toHaveCount(before - 2);
+      await expect(picker).toHaveCount(0);
+      await expect(page.getByText(`3 links moved to ${READING}`)).toBeVisible();
+      await expect(cards(page)).toHaveCount(before - 3);
       await expect(header(page)).toHaveCount(0);
-      for (const title of titles) {
+      for (const title of names) {
         await expect(page.getByRole('heading', { name: title, exact: true })).toHaveCount(0);
       }
       await page.getByRole('button', { name: 'Undo' }).click();
       await expect(cards(page)).toHaveCount(before);
+    });
+
+    test('a selection from several folders has no current folder, and Esc closes the picker', async ({
+      page,
+    }) => {
+      await openFeed(page);
+      await page.locator('.library__scroll').focus();
+      await page.keyboard.press('ControlOrMeta+a');
+      await barButton(page, 'Move').click();
+      const picker = page.getByRole('dialog', { name: /^Move \d+ links$/ });
+      await expect(picker.getByRole('option', { name: READING, exact: true })).toBeVisible();
+      await expect(picker.getByText('Current folder')).toHaveCount(0);
+      await page.keyboard.press('Escape');
+      await expect(picker).toHaveCount(0);
     });
 
     test('adds a tag to every selected link and removes it again', async ({ page }) => {
@@ -343,6 +361,29 @@ test.describe('select links and bulk actions (mock API)', () => {
       await expect(box).toBeVisible();
       await box.tap();
       await expect(selectedText(page)).toHaveText('1 selected');
+    });
+
+    test('moves three selected links from the bar with one tap in the sheet, and Undo puts them back', async ({
+      page,
+    }) => {
+      await openFeed(page, '/unsorted');
+      const before = await cards(page).count();
+      await longPress(page, cards(page).nth(0));
+      await cards(page).nth(1).locator('.ui-card__link').tap();
+      await cards(page).nth(2).locator('.ui-card__link').tap();
+      await expect(selectedText(page)).toHaveText('3 selected');
+      await barButton(page, 'Move').click();
+      const sheet = page.getByRole('dialog', { name: 'Move 3 links' });
+      await expect(sheet.locator('.ui-dialog--sheet')).toHaveCount(1);
+      await settled(page);
+      await sheet.getByRole('option', { name: READING, exact: true }).tap();
+
+      await expect(sheet).toHaveCount(0);
+      await expect(page.getByText(`3 links moved to ${READING}`)).toBeVisible();
+      await expect(cards(page)).toHaveCount(before - 3);
+      await expect(header(page)).toHaveCount(0);
+      await page.getByRole('button', { name: 'Undo' }).click();
+      await expect(cards(page)).toHaveCount(before);
     });
 
     test('Share is hidden without the Web Share API (Copy links instead)', async ({ page }) => {

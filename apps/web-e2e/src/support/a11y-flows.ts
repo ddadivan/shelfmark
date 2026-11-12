@@ -59,3 +59,16 @@ export async function openCardEdit(page: Page): Promise<Locator> {
   await expect(dialog).toBeVisible();
   return dialog;
 }
+
+/** Opens "Move to folder…" from the menu of the first card and returns the picker. */
+export async function openCardMove(page: Page): Promise<Locator> {
+  await page
+    .locator('ui-card')
+    .first()
+    .getByRole('button', { name: /^Actions for / })
+    .click();
+  await page.getByRole('menuitem', { name: 'Move to folder…' }).click();
+  const picker = page.getByRole('dialog', { name: /^Move “/ });
+  await expect(picker).toBeVisible();
+  return picker;
+}

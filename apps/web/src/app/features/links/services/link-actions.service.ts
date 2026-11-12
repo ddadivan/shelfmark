@@ -136,7 +136,9 @@ export class LinkActionsService {
   /** "Move to folder…": a folder picker (a sheet below 64em); choosing a folder moves the link at once. */
   async move(link: LinkResponse): Promise<void> {
     await this.dialogs.open<MovePickerComponent, boolean, MovePickerData>(MovePickerComponent, {
-      size: DIALOG_SIZE.Sm,
+      // 560px: the width of a tablet sheet; the picker focuses its own search box.
+      size: DIALOG_SIZE.Md,
+      autoFocus: false,
       data: {
         heading: this.t('links.move.title', { title: link.title }),
         currentIds: [link.folderId],

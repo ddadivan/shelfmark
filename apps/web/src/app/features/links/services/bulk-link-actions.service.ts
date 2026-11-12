@@ -80,7 +80,9 @@ export class BulkLinkActionsService {
     const folders = new Set(links.map((link) => link.folderId));
     const pick: { folderId?: string | null } = {};
     await this.dialogs.open<MovePickerComponent, boolean, MovePickerData>(MovePickerComponent, {
-      size: DIALOG_SIZE.Sm,
+      // 560px: the width of a tablet sheet; the picker focuses its own search box.
+      size: DIALOG_SIZE.Md,
+      autoFocus: false,
       data: {
         heading: this.plural('bulk.move.title', links.length),
         // One shared folder is the current one; a mixed selection has none.

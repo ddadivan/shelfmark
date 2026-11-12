@@ -31,12 +31,14 @@ const TREE: PickerOption[] = [
     searchLabel="Find a folder"
     listLabel="Folders"
     noResultsLabel="No folders found"
+    [autoFocus]="autoFocus()"
     (chosen)="picked.push($event)"
   />`,
 })
 class HostComponent {
   readonly options = TREE;
   readonly current = signal<readonly (string | null)[]>(['angular']);
+  readonly autoFocus = signal(true);
   readonly picked: (string | null)[] = [];
 }
 
@@ -201,7 +203,7 @@ describe('PickerListComponent', () => {
     expect(outer).toHaveBeenCalledTimes(1);
   });
 
-  it('does not take focus on a touch screen', async () => {
+  it('focuses the dialog around it instead of the search box on a touch screen', async () => {
     vi.stubGlobal(
       'matchMedia',
       vi.fn().mockReturnValue({
@@ -210,9 +212,23 @@ describe('PickerListComponent', () => {
         removeEventListener: vi.fn(),
       }),
     );
-    const { search } = await setup();
-    expect(document.activeElement).not.toBe(search);
+    const fixture = TestBed.createComponent(HostComponent);
+    const dialog = document.createElement('div');
+    dialog.setAttribute('role', 'dialog');
+    dialog.tabIndex = -1;
+    document.body.append(dialog);
+    dialog.append(fixture.nativeElement as HTMLElement);
+    await settle(fixture);
+    expect(document.activeElement).toBe(dialog);
     vi.unstubAllGlobals();
+  });
+
+  it('leaves focus alone without autoFocus', async () => {
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.componentInstance.autoFocus.set(false);
+    document.body.append(fixture.nativeElement as HTMLElement);
+    await settle(fixture);
+    expect(document.activeElement).toBe(document.body);
   });
 
   it('is axe clean, also while filtering', async () => {

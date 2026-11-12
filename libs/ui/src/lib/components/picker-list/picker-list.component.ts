@@ -34,8 +34,8 @@ const NO_SELECTION: (string | null)[] = [];
  * select and no confirm button. It lives in a `ui-dialog` / `ui-sheet`, which owns Esc and the
  * focus return.
  *
- * Keyboard: focus starts in the search box (not on touch screens, where it would open the
- * keyboard over the list); DOM focus stays there while ArrowDown / ArrowUp, Home / End (while
+ * Keyboard: focus starts in the search box (on touch screens the surrounding dialog, so the
+ * keyboard does not cover the list); DOM focus stays there while ArrowDown / ArrowUp, Home / End (while
  * the box is empty, or with Ctrl / Cmd) and Enter drive the listbox through
  * `aria-activedescendant`. Typing filters by name and keeps the ancestors of a match, so a match
  * keeps its place in the tree.
@@ -71,7 +71,12 @@ export class PickerListComponent {
   readonly listLabel = input.required<string>();
   /** Text shown (and announced) when the search finds nothing. */
   readonly noResultsLabel = input('');
-  /** Focus the search box on open; skipped on touch screens either way. */
+  /**
+   * Take focus on open: the search box, or on touch screens (where it would open the keyboard
+   * over the list) the dialog or sheet around the list. Turn it off when the list is not in a
+   * modal and should not steal focus. A dialog that opens it should not move focus itself
+   * (`autoFocus: false`).
+   */
   readonly autoFocus = input(true, { transform: booleanAttribute });
 
   /** A row was chosen: its option id, or `null` for the empty row. */
@@ -94,9 +99,15 @@ export class PickerListComponent {
 
   constructor() {
     afterNextRender(() => {
-      const touch = this.document.defaultView?.matchMedia?.(COARSE_POINTER).matches ?? false;
-      if (this.autoFocus() && !touch) {
-        this.searchField().nativeElement.focus({ preventScroll: true });
+      if (!this.autoFocus()) {
+        return;
+      }
+      const search = this.searchField().nativeElement;
+      if (this.document.defaultView?.matchMedia?.(COARSE_POINTER).matches) {
+        // No keyboard over the list: focus the dialog or sheet around it, so focus is inside it.
+        search.closest<HTMLElement>('[role="dialog"]')?.focus({ preventScroll: true });
+      } else {
+        search.focus({ preventScroll: true });
       }
     });
     // Keep the active row visible while the arrows move through a long list.
