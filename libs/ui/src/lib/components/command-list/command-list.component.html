@@ -4,7 +4,7 @@
     #field
     ngCombobox
     #combobox="ngCombobox"
-    alwaysExpanded
+    [alwaysExpanded]="!popup()"
     type="text"
     class="ui-command-list__input"
     autocomplete="off"
@@ -15,7 +15,8 @@
     [value]="query()"
     [attr.aria-label]="inputLabel()"
     [attr.placeholder]="placeholder() || null"
-    (valueChange)="query.set($event)"
+    (valueChange)="onValue($event)"
+    (expandedChange)="onExpandedChange($event)"
     (keydown)="onKeydown($event)"
   />
   <ng-content select="[slot=input-end]" />
@@ -26,70 +27,96 @@
   `activeDescendant` feeds `aria-activedescendant` of the input; `liveActive` clears it when the
   row is gone.
 -->
-<ng-template ngComboboxPopup [combobox]="combobox">
-  <div
-    ngComboboxWidget
-    ngListbox
-    #list="ngListbox"
-    class="ui-command-list__list"
-    focusMode="activedescendant"
-    selectionMode="explicit"
-    [softDisabled]="false"
-    tabindex="-1"
-    [hidden]="empty()"
-    [attr.aria-label]="listLabel()"
-    [attr.aria-busy]="busy() ? 'true' : null"
-    [activeDescendant]="liveActive(list.activeDescendant())"
-    [value]="noSelection"
-    (valueChange)="onListValue()"
-    (mousedown)="onListMousedown($event)"
-  >
-    <ng-template #option let-item>
-      <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events -- the keyboard path is Enter in the combobox input (Aria relays the arrows, `onKeydown` chooses) -->
+<div
+  #popupEl
+  class="ui-command-list__popup"
+  [class.ui-command-list__popup--floating]="popup()"
+  [class.ui-command-list__popup--shown]="attached()"
+  (mousedown)="onPopupMousedown($event)"
+>
+  <ng-template ngComboboxPopup [combobox]="combobox">
+    <div
+      class="ui-command-list__panel"
+      [class.ui-command-list__panel--floating]="popup()"
+      animate.enter="ui-command-list--enter"
+      animate.leave="ui-command-list--leave"
+    >
       <div
-        ngOption
-        class="ui-command-list__option"
-        [id]="item.id"
-        [value]="item.value()"
-        [disabled]="item.disabled()"
-        (click)="onOptionClick(item, $event)"
+        ngComboboxWidget
+        ngListbox
+        #list="ngListbox"
+        class="ui-command-list__list"
+        focusMode="activedescendant"
+        selectionMode="explicit"
+        [softDisabled]="false"
+        tabindex="-1"
+        [hidden]="empty()"
+        [attr.aria-label]="listLabel()"
+        [attr.aria-busy]="busy() ? 'true' : null"
+        [activeDescendant]="liveActive(list.activeDescendant())"
+        [value]="noSelection"
+        (valueChange)="onListValue()"
+        (mousedown)="onListMousedown($event)"
       >
-        <ng-container [ngTemplateOutlet]="item.body()" />
-        <kbd class="ui-command-list__enter" aria-hidden="true"
-          ><ui-icon name="key-enter" [size]="ICON_SIZE.Sm"
-        /></kbd>
-      </div>
-    </ng-template>
+        <ng-template #option let-item>
+          <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events -- the keyboard path is Enter in the combobox input (Aria relays the arrows, `onKeydown` chooses) -->
+          <div
+            ngOption
+            class="ui-command-list__option"
+            [id]="item.id"
+            [value]="item.value()"
+            [disabled]="item.disabled()"
+            (click)="onOptionClick(item, $event)"
+          >
+            <ng-container [ngTemplateOutlet]="item.body()" />
+            <kbd class="ui-command-list__enter" aria-hidden="true"
+              ><ui-icon name="key-enter" [size]="ICON_SIZE.Sm"
+            /></kbd>
+          </div>
+        </ng-template>
 
-    @for (section of sections(); track $index) {
-      @if (section.group; as group) {
-        <div class="ui-command-list__group" role="group" [attr.aria-labelledby]="group.headingId">
-          <div class="ui-command-list__heading" [id]="group.headingId">{{ group.heading() }}</div>
-          @for (item of section.items; track item.id) {
-            <ng-container
-              [ngTemplateOutlet]="option"
-              [ngTemplateOutletContext]="{ $implicit: item }"
-            />
+        @for (section of sections(); track $index) {
+          @if (section.group; as group) {
+            <div
+              class="ui-command-list__group"
+              role="group"
+              [attr.aria-labelledby]="group.headingId"
+            >
+              <div
+                class="ui-command-list__heading"
+                [id]="group.headingId"
+                [textContent]="group.heading()"
+              ></div>
+              @for (item of section.items; track item.id) {
+                <ng-container
+                  [ngTemplateOutlet]="option"
+                  [ngTemplateOutletContext]="{ $implicit: item }"
+                />
+              }
+            </div>
+          } @else {
+            @for (item of section.items; track item.id) {
+              <ng-container
+                [ngTemplateOutlet]="option"
+                [ngTemplateOutletContext]="{ $implicit: item }"
+              />
+            }
           }
-        </div>
-      } @else {
-        @for (item of section.items; track item.id) {
-          <ng-container
-            [ngTemplateOutlet]="option"
-            [ngTemplateOutletContext]="{ $implicit: item }"
-          />
         }
-      }
-    }
-  </div>
-</ng-template>
+      </div>
+      <!-- Always rendered, so a change of its content is announced; visible only for the empty state. -->
+      <div
+        class="ui-command-list__status"
+        [class.ui-command-list__status--empty]="empty()"
+        role="status"
+      >
+        <ng-content select="[slot=status]" />
+        @if (empty()) {
+          <ng-content select="[slot=empty]" />
+        }
+      </div>
 
-<!-- Always rendered, so a change of its content is announced; visible only for the empty state. -->
-<div class="ui-command-list__status" [class.ui-command-list__status--empty]="empty()" role="status">
-  <ng-content select="[slot=status]" />
-  @if (empty()) {
-    <ng-content select="[slot=empty]" />
-  }
+      <div class="ui-command-list__footer"><ng-content select="[slot=footer]" /></div>
+    </div>
+  </ng-template>
 </div>
-
-<div class="ui-command-list__footer"><ng-content select="[slot=footer]" /></div>

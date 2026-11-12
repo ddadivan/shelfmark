@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { axeViolations } from '../../../testing/axe';
 import { compileScss, mediaBlocks, withoutMedia } from '../../../testing/scss';
 import { HighlightComponent } from '../highlight/highlight.component';
@@ -375,6 +375,151 @@ describe('CommandListComponent', () => {
     host.busy.set(true);
     await settle(fixture);
     expect(await axeViolations(el)).toEqual([]);
+  });
+});
+
+@Component({
+  imports: [CommandListComponent, CommandGroupComponent, CommandItemComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <button id="outside" type="button">Outside</button>
+    <ui-command-list
+      popup
+      inputLabel="Search"
+      listLabel="Search results"
+      [(query)]="query"
+      [(open)]="open"
+      (selected)="chosen.update((list) => [...list, $event])"
+    >
+      <kbd slot="input-end">Ctrl K</kbd>
+      <ui-command-group heading="Links">
+        <ui-command-item value="a">Alpha</ui-command-item>
+        <ui-command-item value="b">Beta</ui-command-item>
+      </ui-command-group>
+      <p slot="empty">Nothing found</p>
+      <span slot="footer"><kbd>↵</kbd> open</span>
+    </ui-command-list>
+  `,
+})
+class PopupHostComponent {
+  readonly query = signal('');
+  readonly open = signal(false);
+  readonly chosen = signal<CommandSelection[]>([]);
+}
+
+describe('CommandListComponent in popup mode', () => {
+  let fixture: ComponentFixture<PopupHostComponent>;
+  let host: PopupHostComponent;
+  let el: HTMLElement;
+
+  beforeEach(async () => {
+    fixture = TestBed.createComponent(PopupHostComponent);
+    host = fixture.componentInstance;
+    el = fixture.nativeElement;
+    document.body.appendChild(el);
+    await settle(fixture);
+  });
+
+  afterEach(() => {
+    fixture.destroy();
+    el.remove();
+  });
+
+  const input = (): HTMLInputElement => el.querySelector<HTMLInputElement>('input')!;
+  const panel = (): HTMLElement | null => document.querySelector('.ui-command-list__panel');
+  const options = (): HTMLElement[] => [
+    ...document.querySelectorAll<HTMLElement>('.ui-command-list__panel [role="option"]'),
+  ];
+
+  async function type(text: string): Promise<void> {
+    input().focus();
+    input().value = text;
+    input().dispatchEvent(new InputEvent('input', { bubbles: true, data: text }));
+    await settle(fixture);
+  }
+
+  async function press(key: string, init: KeyboardEventInit = {}): Promise<KeyboardEvent> {
+    input().focus();
+    const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, ...init });
+    input().dispatchEvent(event);
+    await settle(fixture);
+    return event;
+  }
+
+  it('is a closed combobox on the field with no panel until there is text', () => {
+    expect(input().getAttribute('role')).toBe('combobox');
+    expect(input().getAttribute('aria-expanded')).toBe('false');
+    expect(panel()).toBeNull();
+    expect(el.querySelector('.ui-command-list--popup')).not.toBeNull();
+    expect(el.querySelector('.ui-command-list__field kbd')?.textContent).toBe('Ctrl K');
+  });
+
+  it('opens the panel on the first character and wires the combobox to it', async () => {
+    await type('a');
+    expect(host.query()).toBe('a');
+    expect(host.open()).toBe(true);
+    expect(panel()).not.toBeNull();
+    expect(input().getAttribute('aria-expanded')).toBe('true');
+    const list = document.querySelector('[role="listbox"]')!;
+    expect(input().getAttribute('aria-controls')).toBe(list.id);
+    expect(options()).toHaveLength(2);
+    expect(options().map((o) => o.id)).toContain(input().getAttribute('aria-activedescendant'));
+    // The panel sits in an overlay pane, not in the host.
+    expect(el.contains(panel())).toBe(false);
+  });
+
+  it('moves with the arrows and chooses with Enter, then closes and keeps the text', async () => {
+    await type('a');
+    await press(KEYBOARD_KEY.ArrowDown);
+    await press(KEYBOARD_KEY.Enter);
+    expect(host.chosen()).toEqual([{ value: 'b', background: false }]);
+    expect(host.open()).toBe(false);
+    expect(host.query()).toBe('a');
+  });
+
+  it('keeps the panel open after a background choice', async () => {
+    await type('a');
+    await press(KEYBOARD_KEY.Enter, { ctrlKey: true });
+    expect(host.chosen()).toEqual([{ value: 'a', background: true }]);
+    expect(host.open()).toBe(true);
+  });
+
+  it('Esc closes the panel and keeps the text, a second Esc clears it', async () => {
+    await type('al');
+    const first = await press(KEYBOARD_KEY.Escape);
+    expect(first.defaultPrevented).toBe(true);
+    expect(host.open()).toBe(false);
+    expect(host.query()).toBe('al');
+    expect(input().getAttribute('aria-expanded')).toBe('false');
+    const second = await press(KEYBOARD_KEY.Escape);
+    expect(second.defaultPrevented).toBe(true);
+    expect(host.query()).toBe('');
+    expect(input().value).toBe('');
+    // Nothing left to clear: Esc goes on to whatever is around the field.
+    const third = await press(KEYBOARD_KEY.Escape);
+    expect(third.defaultPrevented).toBe(false);
+  });
+
+  it('ArrowDown reopens a closed panel when there is text, and does nothing without text', async () => {
+    await type('a');
+    await press(KEYBOARD_KEY.Escape);
+    expect(host.open()).toBe(false);
+    await press(KEYBOARD_KEY.ArrowDown);
+    expect(host.open()).toBe(true);
+    await type('');
+    expect(panel()).toBeNull();
+    await press(KEYBOARD_KEY.ArrowDown);
+    expect(host.open()).toBe(false);
+    expect(panel()).toBeNull();
+  });
+
+  it('closes when focus leaves the field, keeping the text', async () => {
+    await type('a');
+    el.querySelector<HTMLElement>('#outside')!.focus();
+    await settle(fixture);
+    expect(host.open()).toBe(false);
+    expect(host.query()).toBe('a');
+    expect(panel()).toBeNull();
   });
 });
 

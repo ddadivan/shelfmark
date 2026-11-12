@@ -123,6 +123,48 @@ class StoryResultsComponent {
   protected readonly showFolders = computed(() => this.query().toLowerCase().includes('signal'));
 }
 
+/** Popup mode: only the field stays here, the results are a glass panel under it. */
+@Component({
+  selector: 'ui-command-list-story-popup',
+  imports: [CommandListComponent, CommandGroupComponent, CommandItemComponent, HighlightComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <div class="cls-popup">
+      <ui-command-list
+        popup
+        listLabel="Search results"
+        inputLabel="Search links, folders and tags"
+        placeholder="Search links, folders and tags"
+        [(query)]="query"
+      >
+        <kbd slot="input-end">⌘K</kbd>
+        <span slot="status">{{ links().length }} results</span>
+        @if (links().length) {
+          <ui-command-group [heading]="links().length + ' links'">
+            @for (link of links(); track link.id) {
+              <ui-command-item [value]="link.id">
+                <ui-highlight [text]="link.title" [query]="query()" />
+                <span slot="meta">{{ link.meta }}</span>
+              </ui-command-item>
+            }
+          </ui-command-group>
+        }
+        <p slot="empty">Nothing found for “{{ query() }}”</p>
+        <span slot="footer"><kbd>Esc</kbd> close</span>
+      </ui-command-list>
+    </div>
+  `,
+})
+class StoryPopupComponent {
+  protected readonly query = signal('');
+  protected readonly links = computed(() => {
+    const terms = this.query().toLowerCase().split(/\s+/).filter(Boolean);
+    return terms.length === 0
+      ? []
+      : LINKS.filter((l) => terms.every((t) => `${l.title} ${l.meta}`.toLowerCase().includes(t)));
+  });
+}
+
 /** The list inside a `ui-dialog`: live through `DialogService`, so focus lands in the input. */
 @Component({
   selector: 'ui-command-list-story-dialog',
@@ -230,6 +272,7 @@ type Story = StoryObj<CommandListComponent>;
 const box = (inner: string): string => `<div class="cls-box">${inner}</div>`;
 const imports = [
   StoryResultsComponent,
+  StoryPopupComponent,
   StoryDemoComponent,
   CommandListComponent,
   CommandGroupComponent,
@@ -244,6 +287,14 @@ export const Results: Story = {
   render: () => ({
     moduleMetadata: { imports },
     template: box('<ui-command-list-story-results />'),
+  }),
+};
+
+/** `popup`: a header search field; typing opens the panel, Esc closes it, a second Esc clears. */
+export const Popup: Story = {
+  render: () => ({
+    moduleMetadata: { imports },
+    template: '<ui-command-list-story-popup />',
   }),
 };
 
