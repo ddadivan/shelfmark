@@ -52,7 +52,7 @@
   // Sheet (`ui-sheet`): 28px top corners, never closer than 150px to the top of the page; `tall`
   // fills that height. On a tablet (40em to 64em, #316) it stays a bottom sheet, centred and 560px
   // wide; the desktop keeps the dialog.
-  .ui-dialog--sheet {
+  &--sheet {
     @include tablet {
       width: min(#{rem(560px)}, 100vw);
       max-height: calc(100dvh - #{rem(150px)});
@@ -69,13 +69,13 @@
     }
   }
 
-  .ui-dialog--sheet-tall {
+  &--sheet-tall {
     @include compact {
       height: calc(100dvh - #{rem(150px)});
     }
   }
 
-  .ui-dialog--sheet .ui-dialog__grip {
+  &--sheet .ui-dialog__grip {
     @include compact {
       width: rem(40px);
       height: rem(5px);
@@ -83,7 +83,7 @@
     }
   }
 
-  .ui-dialog--sheet-tall .ui-dialog__body {
+  &--sheet-tall .ui-dialog__body {
     @include compact {
       flex: 1;
     }

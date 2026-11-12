@@ -1,0 +1,124 @@
+@use '../../../styles/ui' as *;
+@use '../field/field-parts' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.ui-picker-list__search {
+  // Room for the focus halo of the field at the edge of the scrolling body.
+  padding: rem(2px);
+}
+
+.ui-picker-list__search-box {
+  @include field-focus;
+
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-height: rem(42px);
+  padding: 0 var(--space-3);
+  color: var(--text-muted);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-md);
+}
+
+.ui-picker-list__search-icon {
+  flex: none;
+}
+
+.ui-picker-list__search-input {
+  @include field-native;
+}
+
+// Long lists scroll in the list itself; the search box stays above.
+.ui-picker-list__list {
+  max-height: min(50dvh, #{rem(360px)});
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+// Item look of `ui-menu-item`, plus the indent: 16px per nesting level.
+.ui-picker-list__option {
+  @include type(body);
+
+  display: flex;
+  gap: rem(10px);
+  align-items: center;
+  min-height: rem(44px);
+  padding: rem(6px) rem(12px);
+  padding-inline-start: calc(#{rem(12px)} + var(--ui-picker-level, 0) * #{rem(16px)});
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+  border-radius: rem(12px);
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  @include hover {
+    background: var(--surface-hover);
+  }
+
+  &:active {
+    background: var(--surface-pressed);
+  }
+
+  // The row under the arrow keys (DOM focus stays in the search box).
+  .is-engaged &[data-active='true'] {
+    background: var(--surface-hover);
+
+    @include focus-ring(-2px);
+  }
+
+  &.is-current {
+    color: var(--text-muted);
+    cursor: default;
+    background: transparent;
+  }
+}
+
+.ui-picker-list__empty-icon {
+  flex: none;
+
+  // Same footprint as the folder tile, so the names line up.
+  inline-size: rem(22px);
+  color: var(--text-muted);
+}
+
+.ui-picker-list__label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-picker-list__current {
+  @include type(caption);
+
+  display: inline-flex;
+  flex: none;
+  gap: var(--space-1);
+  align-items: center;
+  margin-inline-start: auto;
+  color: var(--accent-text);
+}
+
+.ui-picker-list__status {
+  @include type(body);
+
+  color: var(--text-muted);
+
+  &:empty {
+    display: none;
+  }
+
+  padding: rem(7px) rem(10px);
+}

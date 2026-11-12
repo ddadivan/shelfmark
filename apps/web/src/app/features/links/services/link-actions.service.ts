@@ -27,8 +27,8 @@ import type { AddLinkData } from '../models/add-link-data.interface';
 import { ownImageUrl, safeHref } from '../utils/link-view';
 import { LINKS_API } from '../models/links-api.const';
 import { UndoToastService } from '../../../core/undo/undo-toast.service';
-import type { MoveLinkDialogData } from '../models/move-link-dialog-data.interface';
-import { MoveLinkDialogComponent } from '../components/move-link-dialog/move-link-dialog.component';
+import type { MovePickerData } from '../models/move-picker-data.interface';
+import { MovePickerComponent } from '../components/move-picker/move-picker.component';
 
 /**
  * What a user can do with a link from the feed, the recent panel and the header: open, favorite,
@@ -133,19 +133,18 @@ export class LinkActionsService {
     this.store.attachUndo(link.id, () => toast.dismiss());
   }
 
-  /** "Move to folder…": picks a folder in a dialog (a sheet on phones), then moves the link. */
+  /** "Move to folder…": a folder picker (a sheet below 64em); choosing a folder moves the link at once. */
   async move(link: LinkResponse): Promise<void> {
-    await this.dialogs.open<MoveLinkDialogComponent, boolean, MoveLinkDialogData>(
-      MoveLinkDialogComponent,
-      {
-        size: DIALOG_SIZE.Sm,
-        data: {
-          heading: this.t('links.move.title', { title: link.title }),
-          folderId: link.folderId,
-          submit: (folderId) => void this.moveTo(link, folderId),
-        },
+    await this.dialogs.open<MovePickerComponent, boolean, MovePickerData>(MovePickerComponent, {
+      // 560px: the width of a tablet sheet; the picker focuses its own search box.
+      size: DIALOG_SIZE.Md,
+      autoFocus: false,
+      data: {
+        heading: this.t('links.move.title', { title: link.title }),
+        currentIds: [link.folderId],
+        submit: (folderId) => void this.moveTo(link, folderId),
       },
-    ).result;
+    }).result;
   }
 
   /**

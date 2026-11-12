@@ -28,6 +28,7 @@ export * from './lib/components/menu';
 export * from './lib/components/meter';
 export * from './lib/components/notice';
 export * from './lib/components/panel';
+export * from './lib/components/picker-list';
 export * from './lib/components/progress-bar';
 export * from './lib/components/radio-group';
 export * from './lib/components/rating-scale';

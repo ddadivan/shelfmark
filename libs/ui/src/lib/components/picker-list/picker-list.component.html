@@ -1,0 +1,68 @@
+<div class="ui-picker-list__search">
+  <div class="ui-picker-list__search-box">
+    <ui-icon class="ui-picker-list__search-icon" name="search" [size]="ICON_SIZE.Md" />
+    <input
+      #search
+      class="ui-picker-list__search-input"
+      type="text"
+      role="combobox"
+      aria-expanded="true"
+      aria-haspopup="listbox"
+      aria-autocomplete="list"
+      autocomplete="off"
+      spellcheck="false"
+      [attr.aria-label]="searchLabel()"
+      [attr.placeholder]="searchLabel()"
+      [attr.aria-controls]="list.id()"
+      [attr.aria-activedescendant]="engaged() ? (list.activeDescendant() ?? null) : null"
+      [value]="query()"
+      (input)="onSearch($event)"
+      (keydown)="onSearchKeydown($event)"
+    />
+  </div>
+</div>
+<div
+  ngListbox
+  #list="ngListbox"
+  class="ui-picker-list__list"
+  [class.is-engaged]="engaged()"
+  focusMode="activedescendant"
+  selectionMode="explicit"
+  tabindex="-1"
+  [attr.aria-label]="listLabel()"
+  [value]="NO_SELECTION"
+  [hidden]="rows().length === 0"
+  (valueChange)="onValue($event)"
+>
+  @for (row of rows(); track row.id) {
+    <div
+      ngOption
+      uiRipple
+      class="ui-picker-list__option"
+      [class.is-current]="row.current"
+      [value]="row.id"
+      [label]="row.name"
+      [disabled]="row.current"
+      [attr.aria-label]="ariaName(row)"
+      [style.--ui-picker-level]="row.level"
+    >
+      @if (row.id === null) {
+        <ui-icon class="ui-picker-list__empty-icon" [name]="row.icon" [size]="ICON_SIZE.Md" />
+      } @else {
+        <ui-folder-icon [icon]="row.icon" [colour]="row.colour" [size]="FOLDER_ICON_SIZE.Sm" />
+      }
+      <span class="ui-picker-list__label">{{ row.name }}</span>
+      @if (row.current) {
+        <span class="ui-picker-list__current" aria-hidden="true">
+          <ui-icon name="check" [size]="ICON_SIZE.Md" />
+          {{ currentLabel() }}
+        </span>
+      }
+    </div>
+  }
+</div>
+<div class="ui-picker-list__status" role="status">
+  @if (rows().length === 0) {
+    {{ noResultsLabel() }}
+  }
+</div>
