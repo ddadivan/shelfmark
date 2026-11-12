@@ -32,6 +32,15 @@ import type { SavedViewsLayout } from './models/saved-views-layout.type';
   styleUrl: './saved-views.component.scss',
 })
 export class SavedViewsComponent {
+  /**
+   * The count with a figure space after a one-digit number: 7 and 39 are then the same width, so
+   * another feed's numbers arriving never change the width of the text (Chrome counts that as a
+   * layout shift). The figure space is as wide as a tabular digit.
+   */
+  protected countText(count: number): string {
+    return count < 10 ? `${count}\u2007` : String(count);
+  }
+
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly SAVED_VIEWS_LAYOUT = SAVED_VIEWS_LAYOUT;
 

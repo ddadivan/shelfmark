@@ -23,7 +23,7 @@ import {
 } from '@shelfmark/ui';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { FoldersStore } from '../../../../stores/folders.store';
-import { feedKeyOf, SavedViewsStore } from '../../../../stores/saved-views.store';
+import { SavedViewsStore } from '../../../../stores/saved-views.store';
 import type { LinksFilter } from '../../../links/models/links-filter.type';
 import { ALL_VIEW_ID } from '../../models/all-view-id.const';
 import { SavedViewActionsService } from '../../services/saved-view-actions.service';
@@ -73,8 +73,9 @@ export class SavedViewChipsComponent {
   );
   protected readonly items = computed<SavedViewItem[]>(() => {
     this.i18n();
-    // Counts of another feed are not shown while the right ones load.
-    const counted = this.store.loaded() && this.store.feedKey() === feedKeyOf(this.feed());
+    // While the counts of another feed load, the chips keep the numbers they have: hiding them
+    // would change every chip's width (and move the chips after it) twice per feed switch.
+    const counted = this.store.loaded();
     return [
       {
         id: ALL_VIEW_ID,
