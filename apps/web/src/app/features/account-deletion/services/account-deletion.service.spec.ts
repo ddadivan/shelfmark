@@ -6,16 +6,16 @@ import type { AuthUser } from '@shelfmark/contracts';
 import { DialogService } from '@shelfmark/ui';
 import axe from 'axe-core';
 import { firstValueFrom } from 'rxjs';
-import { AUTH_API } from '../../core/auth/auth-api.token';
-import { AuthStore } from '../../core/auth/auth.store';
-import type { AuthApi } from '../../core/auth/models/auth-api.interface';
-import { AppTranslocoLoader } from '../../core/i18n/app-transloco.loader';
-import { APP_LANG } from '../../core/i18n/models/app-lang.const';
-import { translocoConfig } from '../../core/i18n/transloco.config';
-import { LinksStore } from '../../stores/links.store';
+import { AUTH_API } from '../../../core/auth/auth-api.token';
+import { AuthStore } from '../../../core/auth/auth.store';
+import type { AuthApi } from '../../../core/auth/models/auth-api.interface';
+import { AppTranslocoLoader } from '../../../core/i18n/app-transloco.loader';
+import { APP_LANG } from '../../../core/i18n/models/app-lang.const';
+import { translocoConfig } from '../../../core/i18n/transloco.config';
+import { LinksStore } from '../../../stores/links.store';
 import { AccountDeletionService } from './account-deletion.service';
-import { ACCOUNT_DELETION_API } from './models/account-deletion-api.const';
-import type { AccountDeletionApi } from './models/account-deletion-api.interface';
+import { ACCOUNT_DELETION_API } from '../models/account-deletion-api.const';
+import type { AccountDeletionApi } from '../models/account-deletion-api.interface';
 
 const USER: AuthUser = {
   id: 'u1',

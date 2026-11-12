@@ -10,7 +10,7 @@ import {
 } from '@shelfmark/ui';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { ViewportService } from '../../../core/layout/viewport.service';
-import { AccountDeletionService } from '../../account-deletion/account-deletion.service';
+import { AccountDeletionService } from '../../account-deletion/services/account-deletion.service';
 import { SettingsPageHeaderComponent } from '../settings-page-header/settings-page-header.component';
 
 /** `/settings/account`: who is signed in, sign out and deleting the account. */

@@ -3,15 +3,15 @@ import { inject, Service } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { DIALOG_ROLE, DIALOG_SIZE, DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
-import { AuthStore } from '../../core/auth/auth.store';
-import { AUTH_ROUTE } from '../../core/auth/models/auth-routes.const';
-import { DIALOG_FIRST_FIELD } from '../../models/dialog-first-field.const';
-import { DeleteAccountDialogComponent } from './delete-account-dialog.component';
-import { DELETE_ACCOUNT_TEXT_ID } from './models/delete-account-text-id.const';
-import { ACCOUNT_DELETION_API } from './models/account-deletion-api.const';
-import { ACCOUNT_DELETION_OUTCOME } from './models/account-deletion-outcome.const';
-import type { AccountDeletionOutcome } from './models/account-deletion-outcome.type';
-import type { DeleteAccountDialogData } from './models/delete-account-dialog-data.interface';
+import { AuthStore } from '../../../core/auth/auth.store';
+import { AUTH_ROUTE } from '../../../core/auth/models/auth-routes.const';
+import { DIALOG_FIRST_FIELD } from '../../../models/dialog-first-field.const';
+import { DeleteAccountDialogComponent } from '../components/delete-account-dialog/delete-account-dialog.component';
+import { DELETE_ACCOUNT_TEXT_ID } from '../models/delete-account-text-id.const';
+import { ACCOUNT_DELETION_API } from '../models/account-deletion-api.const';
+import { ACCOUNT_DELETION_OUTCOME } from '../models/account-deletion-outcome.const';
+import type { AccountDeletionOutcome } from '../models/account-deletion-outcome.type';
+import type { DeleteAccountDialogData } from '../models/delete-account-dialog-data.interface';
 
 /**
  * Settings, "Delete account": opens the typed-email confirmation, sends `DELETE /api/me` from

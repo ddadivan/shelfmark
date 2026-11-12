@@ -20,10 +20,10 @@ import {
   NoticeComponent,
   UiDialogRef,
 } from '@shelfmark/ui';
-import { ACCOUNT_DELETION_ERROR_KEY } from './models/account-deletion-error-key.const';
-import { ACCOUNT_DELETION_OUTCOME } from './models/account-deletion-outcome.const';
-import { DELETE_ACCOUNT_TEXT_ID } from './models/delete-account-text-id.const';
-import type { DeleteAccountDialogData } from './models/delete-account-dialog-data.interface';
+import { ACCOUNT_DELETION_ERROR_KEY } from '../../models/account-deletion-error-key.const';
+import { ACCOUNT_DELETION_OUTCOME } from '../../models/account-deletion-outcome.const';
+import { DELETE_ACCOUNT_TEXT_ID } from '../../models/delete-account-text-id.const';
+import type { DeleteAccountDialogData } from '../../models/delete-account-dialog-data.interface';
 
 /**
  * Typed confirmation of the account deletion: the delete button stays disabled until the typed
