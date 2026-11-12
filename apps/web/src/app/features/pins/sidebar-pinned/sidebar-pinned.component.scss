@@ -18,6 +18,8 @@
 }
 
 .pinned__list {
+  @include reorder-drop-line;
+
   display: flex;
   flex-direction: column;
   gap: rem(1px);
@@ -164,13 +166,14 @@
   }
 }
 
-// Drag and drop (a mouse at once, a finger after a short rest, #315): the row lands in a reserved
-// slot, the same as the folder tree's: one row tall, the row's width and corners, a soft sage tint, a thin dashed sage outline and a faint
-// ghost of the row (icon at low opacity, the name muted). It sits where the row was, so the
-// section keeps its height; the other rows glide apart. Reduced motion: no glide, no fade.
+// Drag and drop (a mouse at once, a finger after a short rest, #315): the folder tree's look. The
+// rows hold still and the list's reorder line marks where the row lands (`reorder-drop-line`).
+// CDK's sort offsets (inline transforms) are removed after each sort step (`holdRowsStill`), so
+// its placeholder stays where the row was as a faint ghost of it: one row tall, the section keeps
+// its height and nothing below moves.
+
 .pinned__drop-slot {
   @include type(body);
-  @include enter(fade);
 
   display: flex;
   gap: rem(8px);
@@ -182,33 +185,13 @@
   font-size: rem(14px);
   line-height: rem(20px);
   color: var(--text-muted);
-  background: var(--accent-bg);
-  border: 1px dashed var(--accent);
-  border-radius: calc(var(--radius-md) - #{rem(2px)});
-
-  ui-folder-icon,
-  ui-favicon {
-    opacity: 0.5;
-  }
+  opacity: 0.45;
 
   @include phone {
     min-height: rem(44px);
   }
 
   @include touch-target;
-
-  @include reduced-motion {
-    animation: none;
-  }
-}
-
-.cdk-drop-list-dragging .pinned__item:not(.cdk-drag-placeholder),
-.pinned__item.cdk-drag-animating {
-  transition: transform var(--duration-base) var(--ease-in-out);
-
-  @include reduced-motion {
-    transition: none;
-  }
 }
 
 // The row being dragged follows the pointer as a small floating card (the folder tree's look):

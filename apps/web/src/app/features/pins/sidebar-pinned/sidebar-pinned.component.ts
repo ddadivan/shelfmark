@@ -4,6 +4,7 @@ import {
   CdkDragPreview,
   CdkDropList,
   type CdkDragDrop,
+  type CdkDragSortEvent,
 } from '@angular/cdk/drag-drop';
 import {
   afterNextRender,
@@ -23,7 +24,10 @@ import {
   ButtonComponent,
   FaviconComponent,
   FolderIconComponent,
+  holdRowsStill,
   KEYBOARD_KEY,
+  reorderDropLine,
+  setReorderDropLine,
   TOAST_KIND,
   ToastService,
   TREE_REORDER_TOUCH_DELAY_MS,
@@ -42,13 +46,13 @@ import { PinActionsService } from '../pin-actions.service';
 /**
  * The "Pinned" section of the sidebar and of the phone Library page: up to seven folders and
  * links in the order the user chose, a folder with its colour, icon and count, a link with its
- * favicon letter. A folder opens its page, a link opens in a new tab. Reorder by dragging (desktop,
- * a reserved slot marks the place) or with Alt+Up / Alt+Down on the focused row (announced). Unpin is
- * the row's only action: an icon button (hover / focus, always on touch) with Undo, no "…" menu
- * (#314). Settings ›
- * Library › Edit pinned keeps its buttons. While nothing is pinned the sidebar renders nothing; the
- * phone Library page (`card`) keeps the section with one quiet "Nothing pinned yet" row whose tap
- * explains in a toast how to pin (#315), so people know where pins live.
+ * favicon letter. A folder opens its page, a link opens in a new tab. Reorder by dragging (a
+ * mouse, or a finger after a short rest; the rows hold still and a line marks the place, #315) or
+ * with Alt+Up / Alt+Down on the focused row (announced). Unpin is the row's only action: an icon
+ * button (hover / focus, always on touch) with Undo, no "…" menu (#314). While nothing is pinned
+ * the sidebar renders nothing; the phone Library page (`card`) keeps the section with one quiet
+ * "Nothing pinned yet" row whose tap explains in a toast how to pin (#315), so people know where
+ * pins live.
  */
 @Component({
   selector: 'app-sidebar-pinned',
@@ -141,7 +145,17 @@ export class SidebarPinnedComponent {
     this.linkActions.open(link);
   }
 
+  /** The reorder line (#315) where the row would land; the rows hold still. */
+  protected sorted(event: CdkDragSortEvent<unknown>): void {
+    const list = event.container.element.nativeElement;
+    const placeholder = event.item.getPlaceholderElement();
+    const items = [...list.children].filter((child) => child instanceof HTMLElement);
+    holdRowsStill(items);
+    setReorderDropLine(list, reorderDropLine(list, items, placeholder, event.currentIndex));
+  }
+
   protected dropped(event: CdkDragDrop<unknown>): void {
+    setReorderDropLine(event.container.element.nativeElement, null);
     this.announcer.announce(event.previousIndex, event.currentIndex, this.pins.rows().length);
     void this.actions.move(event.previousIndex, event.currentIndex);
   }
