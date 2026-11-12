@@ -1,5 +1,6 @@
 import { test } from '@playwright/test';
 import type { PromoChapter } from '../models/promo-chapter.type';
+import { PROMO_DEVICE } from '../models/promo-device.const';
 import type { PromoContext } from '../models/promo-context.interface';
 import type { PromoRun } from '../models/promo-run.interface';
 import { PROMO_STEPS } from '../models/promo-steps.const';
@@ -14,7 +15,8 @@ export async function runPromoSteps(context: PromoContext, posterPath: string): 
   const starts: { readonly start: number; readonly text: string }[] = [];
   const chapters: Partial<Record<PromoChapter, number>> = {};
 
-  for (const step of PROMO_STEPS) {
+  const device = phone ? PROMO_DEVICE.Phone : PROMO_DEVICE.Desktop;
+  for (const step of PROMO_STEPS.filter((candidate) => (candidate.only ?? device) === device)) {
     if (step.chapter) {
       chapters[step.chapter] = await director.holdUntil(step.chapter);
     }

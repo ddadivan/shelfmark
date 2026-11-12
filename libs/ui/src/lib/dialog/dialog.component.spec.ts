@@ -107,13 +107,17 @@ describe('DialogComponent', () => {
     expect(root.querySelector('ui-dialog')?.hasAttribute('title')).toBe(false);
   });
 
-  it('is sm by default and md with size', async () => {
+  it('is sm by default, md or lg with size', async () => {
     stubMatchMedia(false);
     const { fixture, root } = await setup();
     expect(root.querySelector('.ui-dialog--md')).toBeNull();
     fixture.componentInstance.size.set(DIALOG_SIZE.Md);
     fixture.detectChanges();
     expect(root.querySelector('.ui-dialog--md')).not.toBeNull();
+    fixture.componentInstance.size.set(DIALOG_SIZE.Lg);
+    fixture.detectChanges();
+    expect(root.querySelector('.ui-dialog--md')).toBeNull();
+    expect(root.querySelector('.ui-dialog--lg')).not.toBeNull();
   });
 
   it('has a close button only with closeLabel, named by it', async () => {
@@ -338,6 +342,13 @@ describe('DialogComponent', () => {
 
 describe('DialogComponent command variant styles', () => {
   const css = compileScss('lib/dialog/dialog.component.scss');
+
+  it('sizes the panel 440, 560 or 860px wide (#315: lg for the How it works video)', () => {
+    const block = withoutMedia(css, /./u);
+    expect(block).toMatch(/\.ui-dialog\s*\{[^}]*--ui-dialog-width:\s*27\.5rem/);
+    expect(block).toMatch(/\.ui-dialog--md\s*\{\s*--ui-dialog-width:\s*35rem/);
+    expect(block).toMatch(/\.ui-dialog--lg\s*\{\s*--ui-dialog-width:\s*53\.75rem/);
+  });
 
   it('is a glass panel 680px wide, 96px from the top, with the dialog corners', () => {
     const block = withoutMedia(css, /./u);

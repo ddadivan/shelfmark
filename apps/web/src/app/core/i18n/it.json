@@ -1948,20 +1948,22 @@
   },
   "howItWorks": {
     "menu": "Come funziona",
-    "title": "Shelfmark in 60 secondi",
+    "title": "Shelfmark in 2 minuti",
     "close": "Chiudi",
     "captions": "Inglese",
     "chaptersLabel": "Capitoli",
     "chapters": {
       "save": "Salva un link",
       "organise": "Cartelle e tag",
-      "find": "Ritrovalo"
+      "find": "Ritrovalo",
+      "many": "Più link insieme",
+      "yours": "Personalizza"
     },
     "emptyLink": "Guarda come funziona",
     "card": {
       "label": "Come funziona",
       "title": "Nuovo qui? Guarda come funziona",
-      "length": "1 minuto",
+      "length": "2 minuti",
       "hide": "Nascondi"
     }
   },

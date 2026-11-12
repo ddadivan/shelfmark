@@ -86,16 +86,18 @@ test.describe('About and "How it works" (mock API)', () => {
       await page.getByRole('menuitem', { name: 'How it works' }).click();
     }
 
-    const dialog = page.getByRole('dialog', { name: 'Shelfmark in 60 seconds' });
+    const dialog = page.getByRole('dialog', { name: 'Shelfmark in 2 minutes' });
     await expect(dialog).toBeVisible();
     await expect(dialog.getByRole('list', { name: 'Chapters' }).getByRole('listitem')).toHaveText([
       /Save a link\s*0:00/,
-      /Folders and tags\s*0:18/,
-      /Find it again\s*0:41/,
+      /Folders and tags\s*0:34/,
+      /Find it again\s*0:52/,
+      /Many at once\s*1:19/,
+      /Make it yours\s*1:39/,
     ]);
 
-    // The recording of the device (light theme: the e2e default), served from our own origin.
-    // The recordings are named like the projects: `how-it-works-<theme>-<desktop|phone>`.
+    // The recording of the layout, served from our own origin. The two recordings (#315) are named
+    // like the projects: `how-it-works-<desktop|phone>`.
     const device = isPhone(page) ? E2E_PROJECT.Phone : E2E_PROJECT.Desktop;
     const video = dialog.locator('video');
     await expect(video).toBeVisible();
@@ -114,17 +116,17 @@ test.describe('About and "How it works" (mock API)', () => {
       `((el) => ({ src: new URL(el.currentSrc).pathname, origin: new URL(el.currentSrc).origin, error: el.error?.code ?? null, muted: el.muted, duration: el.duration }))(${DIALOG_VIDEO})`,
     );
     expect(state).toMatchObject({
-      src: expect.stringMatching(new RegExp(`^/media/how-it-works-light-${device}\\.(mp4|webm)$`)),
+      src: expect.stringMatching(new RegExp(`^/media/how-it-works-${device}\\.(mp4|webm)$`)),
       origin: new URL(page.url()).origin,
       error: null,
       muted: true,
     });
-    expect(state.duration).toBeGreaterThan(41);
+    expect(state.duration).toBeGreaterThan(99);
 
     // English captions, on by default, with cues loaded.
     await expect(video.locator('track')).toHaveAttribute(
       'src',
-      `/media/how-it-works-light-${device}.vtt`,
+      `/media/how-it-works-${device}.vtt`,
     );
     await expect
       .poll(() =>
@@ -190,7 +192,7 @@ test.describe('About and "How it works" (mock API)', () => {
     const card = page.getByRole('region', { name: 'How it works' });
 
     await card.getByRole('button', { name: 'New here? Watch how it works' }).click();
-    await expect(page.getByRole('dialog', { name: 'Shelfmark in 60 seconds' })).toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Shelfmark in 2 minutes' })).toBeVisible();
     await expect(card).toHaveCount(0);
   });
 });

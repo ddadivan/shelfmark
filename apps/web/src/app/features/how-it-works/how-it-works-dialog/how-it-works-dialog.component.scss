@@ -1,17 +1,21 @@
 @use 'ui' as *;
 
+/*
+ * The desktop recording is 1440 x 900 (16:10), as wide as the dialog body (HowItWorks.dc.html: an
+ * 860px dialog, 20px corners); on a short window it shrinks so the chapters stay in view.
+ */
 .how-it-works__video {
   display: block;
-  width: 100%;
-  aspect-ratio: 16 / 9;
+  width: min(100%, (100dvh - #{rem(240px)}) * 1440 / 900);
+  margin-inline: auto;
+  aspect-ratio: 1440 / 900;
   background: var(--surface-pressed);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
 }
 
-/* The phone recording is portrait (390 x 844): keep it whole and leave room for the chapters. */
+/* The phone recording is portrait (390 x 844): as tall as the sheet allows with the chapters. */
 .how-it-works__video--phone {
-  width: min(100%, 60dvh * 390 / 844);
-  margin-inline: auto;
+  width: min(100%, (100dvh - #{rem(260px)}) * 390 / 844);
   aspect-ratio: 390 / 844;
 }
 
@@ -19,6 +23,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
+  justify-content: center;
   padding: 0;
   margin: var(--space-4) 0 0;
   list-style: none;

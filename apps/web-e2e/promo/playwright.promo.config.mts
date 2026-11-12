@@ -17,7 +17,7 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   retries: 0,
-  timeout: 240_000,
+  timeout: 480_000,
   reporter: 'list',
   use: { baseURL: origin, browserName: 'chromium' },
   webServer: {

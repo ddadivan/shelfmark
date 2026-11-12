@@ -8,18 +8,17 @@ import {
   viewChild,
 } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { ButtonComponent, DialogComponent, ReducedMotion, type Theme } from '@shelfmark/ui';
+import { ButtonComponent, DialogComponent, ReducedMotion } from '@shelfmark/ui';
 import { ViewportService } from '../../../core/layout/viewport.service';
-import { ThemeService } from '../../../core/theme/theme.service';
 import { HOW_IT_WORKS_CHAPTERS } from '../models/how-it-works-chapters.const';
 import { HOW_IT_WORKS_VIDEO } from '../models/how-it-works-video.const';
 import type { HowItWorksChapter } from '../models/how-it-works-chapter.interface';
 import type { HowItWorksMedia } from '../models/how-it-works-media.interface';
 
-/** `/media/how-it-works-dark-phone.mp4` (and `.webm`) with its poster and captions. */
-function mediaFor(theme: Theme, phone: boolean): HowItWorksMedia {
+/** `/media/how-it-works-phone.mp4` (and `.webm`) with its poster and captions. */
+function mediaFor(phone: boolean): HowItWorksMedia {
   const device = phone ? HOW_IT_WORKS_VIDEO.Phone : HOW_IT_WORKS_VIDEO.Desktop;
-  const base = `${HOW_IT_WORKS_VIDEO.Base}-${theme}-${device}`;
+  const base = `${HOW_IT_WORKS_VIDEO.Base}-${device}`;
   return {
     mp4: `${base}.${HOW_IT_WORKS_VIDEO.Mp4}`,
     webm: `${base}.${HOW_IT_WORKS_VIDEO.Webm}`,
@@ -30,10 +29,11 @@ function mediaFor(theme: Theme, phone: boolean): HowItWorksMedia {
 }
 
 /**
- * "Shelfmark in 60 seconds" (HowItWorks.dc.html, board 1): the promo video with native controls,
+ * "Shelfmark in 2 minutes" (HowItWorks.dc.html, board 1): the promo video with native controls,
  * captions on by default (it starts muted), and chapters that jump to their start. It plays at
- * once, except with reduced motion. The recording matches the theme and device at the moment
- * the dialog opens (a later theme switch does not restart it).
+ * once, except with reduced motion: then only the poster shows until the person presses play.
+ * Two recordings (#315): the desktop one (1440 x 900) and the phone one (390 x 844), picked by
+ * the layout at the moment the dialog opens.
  */
 @Component({
   selector: 'app-how-it-works-dialog',
@@ -43,10 +43,7 @@ function mediaFor(theme: Theme, phone: boolean): HowItWorksMedia {
   styleUrl: './how-it-works-dialog.component.scss',
 })
 export class HowItWorksDialogComponent {
-  protected readonly media = mediaFor(
-    inject(ThemeService).resolved(),
-    inject(ViewportService).phone(),
-  );
+  protected readonly media = mediaFor(inject(ViewportService).phone());
   protected readonly video = HOW_IT_WORKS_VIDEO;
   protected readonly chapters = HOW_IT_WORKS_CHAPTERS;
   protected readonly autoplay = !inject(ReducedMotion).reduced();
