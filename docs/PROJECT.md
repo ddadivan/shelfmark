@@ -141,7 +141,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
 - After the first sign-in, a 3-step onboarding dialog opens (section 7.3).
 - It can be skipped at any step; once closed it never appears again, neither on this device nor on another.
 - The last step opens the add-link form.
-- Settings have "Show onboarding again".
+- It shows once. Settings and the account menu had "Show welcome again"; it was removed in #315 (the tour is a one-time thing).
 
 ### Adding a link
 
@@ -355,7 +355,7 @@ CSR without SSR, zoneless, Transloco, strict-CSP build: ADR 0005; state: ADR 000
 | `/unsorted` | No folder | signed in | `features/library` |
 | `/favorites` | Favorites | signed in | `features/library` |
 | `/folders/:folderId` | Folder; nesting is shown in breadcrumbs, not in the URL | signed in | `features/library` |
-| `/settings` | Settings, one page per section: `/settings/account` (profile, sign out, welcome tour, deletion), `/appearance` (theme incl. Custom, text and layout, cards, folder colours, animations, live preview), `/feedback` (Your feedback: send form and the user's messages), `/shortcuts` (the keyboard shortcut list), `/import-export` (export only), `/library` (viewing, saving, Trash retention and the Trash row), `/privacy` (Remember recently opened, the link to Export, the policy); on tablet and desktop `/settings` goes to the first section, on a phone it is the You list | signed in | `features/settings` |
+| `/settings` | Settings, one page per section: `/settings/account` (profile, sign out, deletion), `/appearance` (theme incl. Custom, text and layout, cards, folder colours, animations, live preview), `/feedback` (Your feedback: send form and the user's messages), `/shortcuts` (the keyboard shortcut list), `/import-export` (export only), `/library` (viewing, saving, Trash retention and the Trash row), `/privacy` (Remember recently opened, the link to Export, the policy); on tablet and desktop `/settings` goes to the first section, on a phone it is the You list | signed in | `features/settings` |
 | `/trash` | Trash: deleted links and folders, restore, delete forever, empty (the phone reaches it from the Library tab) | signed in | `features/trash` |
 | `/admin/feedback` | The author's feedback inbox: all messages, status filter, status and reply per message; `adminOnly` asks `GET /api/admin/status`, a non-admin is sent to `/links` | signed in, author only | `features/admin` |
 | `/share?url=&title=&text=` | Quick save from "Share" | signed in; guest goes to sign-in and back | `features/share` |
@@ -693,7 +693,7 @@ All routes except `/api/auth/*` and the allow-listed public routes (`PUBLIC_ROUT
 - one error format: `{ statusCode, error, message, requestId }` (as in 5.2);
 - someone else's or a non-existent object → `404` (not `403`, so as not to reveal that it exists).
 
-**Additionally:** `POST /api/me/onboarding` marks onboarding as completed and `DELETE /api/me/onboarding` resets it ("Show welcome again" in Settings); the user from `GET /api/auth/get-session` carries `onboardingCompletedAt` (#151).
+**Additionally:** `POST /api/me/onboarding` marks onboarding as completed (one-way: `DELETE /api/me/onboarding` and "Show welcome again" were removed in #315); the user from `GET /api/auth/get-session` carries `onboardingCompletedAt` (#151).
 
 **Demo, export, PWA:** `POST /api/demo` creates a demo sandbox and session (strict per-IP rate limit); `GET /api/export?format=json|html` (+ optional `folderId`, `tag` (repeated, same AND semantics as the list), `q`, `kind`, the same filters as the list; each JSON link carries its `kind`) downloads the current folder (with its subfolders) or all data; `q` searches title, note and URL; the HTML file omits links whose URL is not http(s); receiving a link from the "Share" menu (Web Share Target) needs no separate endpoint: the manifest opens the `/share?url=…` route (GET), and the page saves via `POST /api/links`.
 
@@ -787,7 +787,7 @@ In CI: `@axe-core/playwright` on the key screens in both themes; the build fails
 5. Editing a link
 6. Deleting a folder (choice: delete links / move to "Unsorted")
 7. Empty states (no links, empty folder, nothing found; #315 adds Unsorted, Favorites, Trash, Recently opened, a tag or type filter, an empty saved view, the phone Tags tab and an empty public collection in the same style: the page-level card centred in the content area with a play-once scene)
-8. Settings, a page per section (account with deletion and "Show onboarding again", appearance, library with the Trash retention, export, privacy and data); the settings nav replaces the sidebar on tablet and desktop, the You list opens the pages on a phone
+8. Settings, a page per section (account with deletion, appearance, library with the Trash retention, export, privacy and data); the settings nav replaces the sidebar on tablet and desktop, the You list opens the pages on a phone
 9. Privacy policy
 10. Trash (desktop and phone, with the empty state, selection and the "Empty trash" confirmation)
 11. Send feedback dialog (form, sending, thank you, error) and Settings › Your feedback (SendFeedback, SetFeedback); the author's feedback inbox is built from the same parts and has no mockup

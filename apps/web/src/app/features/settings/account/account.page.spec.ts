@@ -20,12 +20,11 @@ describe('AccountPage', () => {
     expect(root.querySelector('input')).toBeNull();
   });
 
-  it('groups the page: profile, sign out, welcome tour and the danger section', async () => {
+  it('groups the page: profile, sign out and the danger section', async () => {
     const { root } = await setup();
     const headings = Array.from(root.querySelectorAll('h2')).map((h) => h.textContent?.trim());
 
-    expect(headings).toEqual(['Profile', 'Sign out', 'Welcome tour', 'Delete account']);
-    expect(root.textContent?.match(/Welcome tour/g)).toHaveLength(1);
+    expect(headings).toEqual(['Profile', 'Sign out', 'Delete account']);
   });
 
   it('signs out to the sign-in screen', async () => {
@@ -39,18 +38,11 @@ describe('AccountPage', () => {
     expect(TestBed.inject(Router).url).toBe('/sign-in');
   });
 
-  it('resets the welcome tour, one request at a time', async () => {
-    const { onboardingApi, store, root, harness } = await setup();
-    const button = buttonWith(root, 'Show welcome again');
+  it('has no welcome tour section: the tour shows once (#315)', async () => {
+    const { root } = await setup();
 
-    expect(root.textContent).toContain('See the 3-step introduction again');
-    button?.click();
-    button?.click();
-    await harness.fixture.whenStable();
-
-    expect(onboardingApi.reset).toHaveBeenCalledTimes(1);
-    expect(store.user()?.onboardingCompletedAt).toBeNull();
-    expect(button?.disabled).toBe(false);
+    expect(root.textContent).not.toContain('Welcome tour');
+    expect(buttonWith(root, 'Show welcome again')).toBeFalsy();
   });
 
   it('offers "Delete account" in a danger section and opens the confirmation', async () => {

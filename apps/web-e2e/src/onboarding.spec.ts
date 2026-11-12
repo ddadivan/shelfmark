@@ -79,20 +79,19 @@ test.describe('onboarding (mock API)', () => {
     await expect(page.getByRole('dialog')).toHaveCount(0);
   });
 
-  test('"Show welcome again" in Settings reopens the dialog', async ({ page }) => {
+  test('shows once: neither Settings nor the account menu bring it back (#315)', async ({
+    page,
+  }) => {
     await signInAsNewUser(page);
     await dismissOnboarding(page);
 
     await openSettingsSection(page, 'Account');
     await expect(page.getByRole('heading', { level: 1, name: 'Account' })).toBeVisible();
-    await expect(page.getByText('See the 3-step introduction again')).toBeVisible();
-
-    await page.getByRole('button', { name: 'Show welcome again' }).click();
-    const dialog = page.getByRole('dialog', { name: FIRST_TITLE });
-    await expect(dialog).toBeVisible();
-
-    await dialog.getByRole('button', { name: 'Skip' }).click();
-    await expect(page.getByRole('dialog')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Show welcome again' })).toHaveCount(0);
+    await expect(page.getByText('Welcome tour')).toHaveCount(0);
+    await page.reload();
+    await expect(page.getByRole('heading', { level: 1, name: 'Account' })).toBeVisible();
+    await expect(page.getByRole('dialog', { name: FIRST_TITLE })).toHaveCount(0);
   });
 
   test('the dialog fits a 360px phone without horizontal scroll', async ({ page }) => {

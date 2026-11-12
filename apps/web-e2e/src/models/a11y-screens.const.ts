@@ -157,7 +157,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     open: async (page) => {
       await openSignedIn(page, '/settings/account');
       await expect(page.getByRole('heading', { level: 1, name: 'Account' })).toBeVisible();
-      await expect(page.getByText('See the 3-step introduction again')).toBeVisible();
+      await expect(page.getByText('Sign out of Shelfmark')).toBeVisible();
     },
   },
   {

@@ -157,12 +157,4 @@ export class UsersService {
     }
     return this.getSettings(user);
   }
-
-  /** Clears the flag so the onboarding shows again. Idempotent. */
-  async resetOnboarding(user: AuthUser): Promise<void> {
-    await this.prisma.user.updateMany({
-      where: { id: user.id },
-      data: { onboardingCompletedAt: null },
-    });
-  }
 }

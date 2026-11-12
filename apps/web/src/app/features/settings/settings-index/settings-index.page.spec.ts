@@ -33,7 +33,7 @@ async function setup(phone: boolean) {
       ]),
       provideTranslocoForTest(),
       { provide: AUTH_API, useValue: api },
-      { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
+      { provide: ONBOARDING_API, useValue: { complete: vi.fn() } },
       { provide: ADMIN_API, useValue: adminApiStub() },
       { provide: ACCOUNT_DELETION_API, useValue: { delete: vi.fn() } },
       { provide: ViewportService, useValue: { phone: phoneSignal } },

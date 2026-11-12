@@ -52,7 +52,6 @@ async function setup(session: AuthUser | null = user()) {
   };
   const api = {
     complete: vi.fn(() => Promise.resolve({ onboardingCompletedAt: SERVER_TIME })),
-    reset: vi.fn(() => Promise.resolve()),
   } satisfies OnboardingApi;
   const dialogs = { open: vi.fn(() => ({ result: closed.promise })) };
   const toasts = { show: vi.fn() };
@@ -85,7 +84,6 @@ describe('OnboardingStore', () => {
     auth.expireSession();
 
     expect(store.open()).toBe(false);
-    expect(store.resetting()).toBe(false);
     closed.resolve(undefined);
   });
 
@@ -176,63 +174,11 @@ describe('OnboardingStore', () => {
     expect(auth.user()?.onboardingCompletedAt).not.toBeNull();
   });
 
-  it('resets on the server, clears the flag and is due again', async () => {
-    const { store, auth, api } = await setup(user({ onboardingCompletedAt: SERVER_TIME }));
+  it('has no way to make the tour due again once it is done (#315)', async () => {
+    const { store } = await setup(user({ onboardingCompletedAt: SERVER_TIME }));
 
-    await store.reset();
-
-    expect(api.reset).toHaveBeenCalledTimes(1);
-    expect(auth.user()?.onboardingCompletedAt).toBeNull();
-    expect(store.due()).toBe(true);
-    expect(store.resetting()).toBe(false);
-  });
-
-  it('ignores a second reset while one runs', async () => {
-    const { store, api } = await setup(user({ onboardingCompletedAt: SERVER_TIME }));
-    const pending = deferred<void>();
-    api.reset.mockReturnValueOnce(pending.promise);
-
-    const first = store.reset();
-    void store.reset();
-
-    expect(store.resetting()).toBe(true);
-    expect(api.reset).toHaveBeenCalledTimes(1);
-    pending.resolve();
-    await first;
-    expect(store.resetting()).toBe(false);
-  });
-
-  it('keeps the flag and shows an error toast when the reset fails', async () => {
-    const { store, auth, api, toasts } = await setup(user({ onboardingCompletedAt: SERVER_TIME }));
-    api.reset.mockRejectedValueOnce(new Error('offline'));
-
-    await store.reset();
-
-    expect(auth.user()?.onboardingCompletedAt).toBe(SERVER_TIME);
-    expect(store.resetting()).toBe(false);
-    expect(toasts.show).toHaveBeenCalledWith(
-      expect.objectContaining({
-        title: "Couldn't reset the welcome tour",
-        detail: 'Try again',
-      }),
-    );
-  });
-
-  it('lets a reset win over a slower completion answer', async () => {
-    const { store, auth, api, closed } = await setup();
-    const pending = deferred<{ onboardingCompletedAt: string }>();
-    api.complete.mockReturnValueOnce(pending.promise);
-
-    store.openIfDue();
-    closed.resolve(ONBOARDING_RESULT.Skipped);
-    await flush();
-    await store.reset();
-    expect(auth.user()?.onboardingCompletedAt).toBeNull();
-
-    pending.resolve({ onboardingCompletedAt: SERVER_TIME });
-    await flush();
-
-    expect(auth.user()?.onboardingCompletedAt).toBeNull();
+    expect(store.due()).toBe(false);
+    expect('reset' in store).toBe(false);
   });
 
   it('resets open when the dialog cannot be opened', async () => {

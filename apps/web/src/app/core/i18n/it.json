@@ -1230,13 +1230,6 @@
       "privacy": "Informativa sulla privacy",
       "version": "Shelfmark v1.0"
     },
-    "welcome": {
-      "title": "Tour di benvenuto",
-      "hint": "Rivedi l’introduzione in 3 passi",
-      "action": "Mostra di nuovo il benvenuto",
-      "error": "Impossibile reimpostare il tour di benvenuto",
-      "errorDetail": "Riprova"
-    },
     "delete": {
       "title": "Elimina account",
       "hint": "Rimuove per sempre il tuo account e tutti i tuoi link, cartelle e tag. Non si può annullare.",

@@ -81,7 +81,7 @@ describe('AppShellComponent', () => {
         ]),
         provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
         { provide: AUTH_API, useValue: api },
-        { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
+        { provide: ONBOARDING_API, useValue: { complete: vi.fn() } },
         { provide: RATING_API, useValue: { prompt: vi.fn(), record: vi.fn() } },
         { provide: USER_SETTINGS_API, useValue: settingsApi },
         { provide: ADMIN_API, useValue: adminApiStub() },
@@ -97,6 +97,9 @@ describe('AppShellComponent', () => {
     expect(root.querySelector('button[aria-label="Account menu"] ui-avatar')).not.toBeNull();
     expect(root.querySelector('.shell__header')?.textContent).not.toContain('Ada Lovelace');
     await openAccountMenu(harness.fixture, root);
+    // The welcome tour shows once; the menu has no way to bring it back (#315).
+    expect(menuItem('Settings')).toBeDefined();
+    expect(menuItem('Show welcome again')).toBeUndefined();
     menuItem('Sign out')?.click();
     await harness.fixture.whenStable();
 
@@ -120,7 +123,7 @@ describe('AppShellComponent', () => {
         ]),
         provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
         { provide: AUTH_API, useValue: api },
-        { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
+        { provide: ONBOARDING_API, useValue: { complete: vi.fn() } },
         { provide: RATING_API, useValue: { prompt: vi.fn(), record: vi.fn() } },
         { provide: USER_SETTINGS_API, useValue: settingsApi },
         { provide: ADMIN_API, useValue: adminApiStub() },
@@ -153,7 +156,7 @@ describe('AppShellComponent', () => {
         provideRouter([{ path: '', component: AppShellComponent }]),
         provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
         { provide: AUTH_API, useValue: api },
-        { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
+        { provide: ONBOARDING_API, useValue: { complete: vi.fn() } },
         { provide: RATING_API, useValue: { prompt: vi.fn(), record: vi.fn() } },
         { provide: ADMIN_API, useValue: adminApiStub() },
         { provide: SearchDialogService, useValue: search },
@@ -185,7 +188,7 @@ describe('AppShellComponent', () => {
         provideRouter([{ path: '', component: AppShellComponent }]),
         provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
         { provide: AUTH_API, useValue: api },
-        { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
+        { provide: ONBOARDING_API, useValue: { complete: vi.fn() } },
         { provide: RATING_API, useValue: { prompt: vi.fn(), record: vi.fn() } },
         { provide: ADMIN_API, useValue: adminApiStub() },
         { provide: ShortcutsDialogService, useValue: shortcuts },
@@ -220,7 +223,7 @@ describe('AppShellComponent', () => {
         provideRouter([{ path: '', component: AppShellComponent }]),
         provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
         { provide: AUTH_API, useValue: api },
-        { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
+        { provide: ONBOARDING_API, useValue: { complete: vi.fn() } },
         { provide: RATING_API, useValue: { prompt: vi.fn(), record: vi.fn() } },
         { provide: ADMIN_API, useValue: adminApiStub() },
         { provide: SearchDialogService, useValue: search },
@@ -272,7 +275,7 @@ describe('AppShellComponent', () => {
           ]),
           provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
           { provide: AUTH_API, useValue: api },
-          { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
+          { provide: ONBOARDING_API, useValue: { complete: vi.fn() } },
           { provide: RATING_API, useValue: { prompt: vi.fn(), record: vi.fn() } },
           { provide: USER_SETTINGS_API, useValue: settingsApi },
           { provide: ADMIN_API, useValue: adminApiStub() },
@@ -435,7 +438,7 @@ describe('AppShellComponent styles', () => {
             signOut: vi.fn(),
           },
         },
-        { provide: ONBOARDING_API, useValue: { complete: vi.fn(), reset: vi.fn() } },
+        { provide: ONBOARDING_API, useValue: { complete: vi.fn() } },
         { provide: RATING_API, useValue: { prompt: vi.fn(), record: vi.fn() } },
         { provide: USER_SETTINGS_API, useValue: settingsApi },
         { provide: ADMIN_API, useValue: adminApiStub() },

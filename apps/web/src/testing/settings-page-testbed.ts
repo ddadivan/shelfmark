@@ -51,7 +51,7 @@ export async function setupSettingsPage(
   ]) {
     localStorage.removeItem(key);
   }
-  const onboardingApi = { complete: vi.fn(), reset: vi.fn(() => Promise.resolve()) };
+  const onboardingApi = { complete: vi.fn() };
   const exportApi = { download: vi.fn() };
   const api: AuthApi = {
     getSession: () => Promise.resolve(user),

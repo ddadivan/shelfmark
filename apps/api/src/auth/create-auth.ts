@@ -48,7 +48,7 @@ export function createAuth(
         isDemo: { type: 'boolean', input: false, defaultValue: false },
         // Set by `DemoService` only; the demo session and `get-session` end at this time.
         demoExpiresAt: { type: 'date', required: false, input: false },
-        // Same: only `POST|DELETE /api/me/onboarding` change it. Read through get-session.
+        // Same: only `POST /api/me/onboarding` changes it (one-way since #315). Read through get-session.
         onboardingCompletedAt: { type: 'date', required: false, input: false },
       },
     },

@@ -1230,13 +1230,6 @@
       "privacy": "Política de privacidade",
       "version": "Shelfmark v1.0"
     },
-    "welcome": {
-      "title": "Tour de boas-vindas",
-      "hint": "Ver de novo a introdução em 3 passos",
-      "action": "Mostrar boas-vindas de novo",
-      "error": "Não foi possível redefinir o tour de boas-vindas",
-      "errorDetail": "Tente de novo"
-    },
     "delete": {
       "title": "Excluir conta",
       "hint": "Remove para sempre sua conta e todos os seus links, pastas e tags. Isso não pode ser desfeito.",

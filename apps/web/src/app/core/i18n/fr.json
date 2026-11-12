@@ -1230,13 +1230,6 @@
       "privacy": "Politique de confidentialité",
       "version": "Shelfmark v1.0"
     },
-    "welcome": {
-      "title": "Visite guidée",
-      "hint": "Revoir l’introduction en 3 étapes",
-      "action": "Revoir la bienvenue",
-      "error": "Impossible de réinitialiser la visite guidée",
-      "errorDetail": "Réessayez"
-    },
     "delete": {
       "title": "Supprimer le compte",
       "hint": "Supprime définitivement votre compte et tous vos liens, dossiers et tags. Action irréversible.",

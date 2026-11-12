@@ -1230,13 +1230,6 @@
       "privacy": "Política de privacidad",
       "version": "Shelfmark v1.0"
     },
-    "welcome": {
-      "title": "Recorrido de bienvenida",
-      "hint": "Vuelve a ver la introducción en 3 pasos",
-      "action": "Mostrar la bienvenida otra vez",
-      "error": "No se pudo restablecer el recorrido de bienvenida",
-      "errorDetail": "Inténtalo de nuevo"
-    },
     "delete": {
       "title": "Eliminar cuenta",
       "hint": "Elimina para siempre tu cuenta y todos tus enlaces, carpetas y etiquetas. No se puede deshacer.",

@@ -26,18 +26,6 @@
   </ui-settings-row>
 </ui-settings-section>
 
-<ui-settings-section [title]="'settings.welcome.title' | transloco">
-  <ui-settings-row [title]="'settings.welcome.hint' | transloco">
-    <ui-button
-      [size]="buttonSize()"
-      [disabled]="onboarding.resetting()"
-      (click)="onboarding.reset()"
-    >
-      {{ 'settings.welcome.action' | transloco }}
-    </ui-button>
-  </ui-settings-row>
-</ui-settings-section>
-
 @if (canDeleteAccount()) {
 <ui-settings-section danger [title]="'settings.delete.title' | transloco">
   <ui-settings-row [title]="'settings.delete.hint' | transloco">

@@ -1209,13 +1209,6 @@
       "privacy": "Privacy policy",
       "version": "Shelfmark v1.0"
     },
-    "welcome": {
-      "title": "Welcome tour",
-      "hint": "See the 3-step introduction again",
-      "action": "Show welcome again",
-      "error": "Couldn't reset the welcome tour",
-      "errorDetail": "Try again"
-    },
     "delete": {
       "title": "Delete account",
       "hint": "Removes your account and all your links, folders and tags for good. This can't be undone.",

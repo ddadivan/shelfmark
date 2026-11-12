@@ -48,9 +48,7 @@ test.describe('settings (mock auth)', () => {
     await expect(main.getByText(MOCK_USER.email)).toBeVisible();
   });
 
-  test('the account page groups profile, sign out, welcome tour and the danger section', async ({
-    page,
-  }) => {
+  test('the account page groups profile, sign out and the danger section', async ({ page }) => {
     await seedSession(page);
     await page.goto('/settings/account');
     const main = page.getByRole('main');
@@ -58,13 +56,14 @@ test.describe('settings (mock auth)', () => {
     await expect(
       main.getByRole('heading', {
         level: 2,
-        name: /^(Profile|Sign out|Welcome tour|Delete account)$/,
+        name: /^(Profile|Sign out|Delete account)$/,
       }),
-    ).toHaveCount(4);
-    await expect(main.getByText('Welcome tour', { exact: true })).toHaveCount(1);
+    ).toHaveCount(3);
+    // The welcome tour shows once; there is no section to bring it back (#315).
+    await expect(main.getByText('Welcome tour', { exact: true })).toHaveCount(0);
     const section = main
       .locator('ui-settings-section')
-      .filter({ hasText: 'Welcome tour' })
+      .filter({ hasText: 'Sign out of Shelfmark' })
       .locator('ui-panel');
     await expect(section).not.toHaveCSS('padding-left', '0px');
   });

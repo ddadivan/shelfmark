@@ -1209,13 +1209,6 @@
       "privacy": "Datenschutzerklärung",
       "version": "Shelfmark v1.0"
     },
-    "welcome": {
-      "title": "Einführung",
-      "hint": "Die Einführung in 3 Schritten noch einmal ansehen",
-      "action": "Einführung erneut zeigen",
-      "error": "Einführung konnte nicht zurückgesetzt werden",
-      "errorDetail": "Versuch es noch einmal"
-    },
     "delete": {
       "title": "Konto löschen",
       "hint": "Entfernt dein Konto und alle deine Links, Ordner und Tags endgültig. Das lässt sich nicht rückgängig machen.",
