@@ -237,6 +237,44 @@ async function scanSettled(page: Page, testInfo: TestInfo): Promise<void> {
   await expectNoBlockingViolations(page, testInfo);
 }
 
+test.describe('appearance width (mock API, #315)', () => {
+  test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
+
+  for (const [width, height] of [
+    [1280, 800],
+    [1440, 900],
+    [1920, 1080],
+  ] as const) {
+    test(`at ${width}px Appearance is wider than the 880px pages, options beside the preview`, async ({
+      page,
+    }, testInfo) => {
+      test.skip(testInfo.project.name !== E2E_PROJECT.Desktop, 'a desktop layout check');
+      await page.setViewportSize({ width, height });
+      await seedSession(page);
+      await page.goto('/settings/library');
+      await expect(page.getByRole('heading', { level: 1, name: 'Library' })).toBeVisible();
+      const library = await page.locator('app-settings-library-page').boundingBox();
+      await openAppearance(page);
+      const host = await page.locator('app-settings-appearance-page').boundingBox();
+      const options = await page.locator('.appearance__options').boundingBox();
+      const preview = await page.locator('.appearance__preview').boundingBox();
+
+      // The other pages keep the 880px column; Appearance takes up to the mockup's 1224px.
+      expect(library?.width).toBeLessThanOrEqual(880.5);
+      expect(host?.width).toBeLessThanOrEqual(1224.5);
+      expect(host?.width ?? 0).toBeGreaterThan(library?.width ?? 0);
+      if (width >= 1920) {
+        expect(host?.width).toBeGreaterThan(1223.5);
+      }
+      // Two columns: the preview on the right of the options, about 680 : 520.
+      expect(preview?.x ?? 0).toBeGreaterThan((options?.x ?? 0) + (options?.width ?? 0));
+      const ratio = (options?.width ?? 0) / (preview?.width ?? 1);
+      expect(ratio).toBeGreaterThan(1.2);
+      expect(ratio).toBeLessThan(1.4);
+    });
+  }
+});
+
 test.describe('appearance accessibility (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
 
