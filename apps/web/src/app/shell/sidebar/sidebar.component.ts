@@ -6,7 +6,6 @@ import {
   effect,
   inject,
   input,
-  linkedSignal,
   signal,
   viewChild,
 } from '@angular/core';
@@ -39,9 +38,7 @@ import { FolderActionsService } from '../../features/folders/services/folder-act
 import { PinActionsService } from '../../features/pins/services/pin-actions.service';
 import { SidebarPinnedComponent } from '../../features/pins/components/sidebar-pinned/sidebar-pinned.component';
 import { SidebarTagsComponent } from '../../features/tags/components/sidebar-tags/sidebar-tags.component';
-import { LINKS_SCOPE } from '../../features/links/models/links-scope.const';
 import { APP_PATH } from '../../models/app-path.const';
-import type { FolderNode } from '../../stores/models/folder-node.interface';
 import { FoldersStore } from '../../stores/folders.store';
 import { PinsStore } from '../../stores/pins.store';
 import { TagsStore } from '../../stores/tags.store';
@@ -51,19 +48,13 @@ import { LinkDragService } from '../../features/links/services/link-drag.service
 import { HowItWorksService } from '../../features/how-it-works/services/how-it-works.service';
 import { FeedbackDialogService } from '../../features/feedback/services/feedback-dialog.service';
 import { HowItWorksCardComponent } from '../../features/how-it-works/components/how-it-works-card/how-it-works-card.component';
-import { SIDEBAR_RECENT_ID } from './models/sidebar-recent-id.const';
 import { SIDEBAR_FEEDBACK_ID } from './models/sidebar-feedback-id.const';
-import { SIDEBAR_TRASH_ID } from './models/sidebar-trash-id.const';
+import { folderTreeNodes } from './utils/folder-tree-nodes';
+import { latched } from './utils/latched';
 import { sidebarActiveId } from './utils/sidebar-active-id';
+import { feedbackNodes, fixedNodes, trashNodes } from './utils/sidebar-nodes';
+import { sidebarRoute } from './utils/sidebar-route';
 import { SidebarTreeFocusService } from './services/sidebar-tree-focus.service';
-
-/** The fixed rows and their routes. */
-const FIXED_ROUTES: Readonly<Record<string, string>> = {
-  [LINKS_SCOPE.All]: APP_PATH.Links,
-  [LINKS_SCOPE.Unsorted]: APP_PATH.Unsorted,
-  [LINKS_SCOPE.Favorites]: APP_PATH.Favorites,
-  [SIDEBAR_RECENT_ID]: APP_PATH.Recent,
-};
 
 /**
  * The library sidebar, an inset card that only navigates: the logo, "All links", "Unsorted",
@@ -191,31 +182,13 @@ export class SidebarComponent {
     // Settings › Library › Show folder counts: off drops the link counts (Trash keeps its own).
     const counts =
       this.folders.loaded() && this.settings.countsShown() ? this.folders.counts() : null;
-    return [
-      { id: LINKS_SCOPE.All, name: labels.all, icon: 'bookmark', ...count(counts?.all) },
-      {
-        id: LINKS_SCOPE.Unsorted,
-        name: labels.unsorted,
-        icon: 'inbox',
-        ...count(counts?.unsorted),
-      },
-      {
-        id: LINKS_SCOPE.Favorites,
-        name: labels.favorites,
-        icon: 'star',
-        ...count(counts?.favorites),
-      },
-      { id: SIDEBAR_RECENT_ID, name: labels.recent, icon: 'clock' },
-    ];
+    return fixedNodes(labels, counts);
   });
 
   /** "Send feedback" above the divider (not on the phone, which has it in the You list). */
   protected readonly feedbackNodes = computed<UiTreeNode[]>(() => {
     const labels = this.labels();
-    if (!labels || this.phone()) {
-      return [];
-    }
-    return [{ id: SIDEBAR_FEEDBACK_ID, name: labels.feedback, icon: 'message' }];
+    return !labels || this.phone() ? [] : feedbackNodes(labels);
   });
 
   /** Trash under the divider; its count shows once the list has loaded and only while not empty. */
@@ -225,14 +198,7 @@ export class SidebarComponent {
       return [];
     }
     const total = this.trash.total();
-    return [
-      {
-        id: SIDEBAR_TRASH_ID,
-        name: labels.trash,
-        icon: 'trash',
-        ...count(this.trash.loaded() && total > 0 ? total : undefined),
-      },
-    ];
+    return trashNodes(labels, this.trash.loaded() && total > 0 ? total : undefined);
   });
 
   /** The folder tree; the folders above the active one start open. */
@@ -246,16 +212,11 @@ export class SidebarComponent {
             .slice(0, -1)
             .map((folder) => folder.id),
     );
-    const toNode = ({ folder, children }: FolderNode): UiTreeNode => ({
-      id: folder.id,
-      name: folder.name,
-      ...(this.settings.countsShown() && { count: folder.linkCount }),
-      icon: folder.icon,
-      colour: this.settings.shownColour(folder.colour),
-      ...(open.has(folder.id) && { expanded: true }),
-      ...(children.length > 0 && { children: children.map(toNode) }),
+    return folderTreeNodes(this.folders.tree(), {
+      open,
+      countsShown: this.settings.countsShown(),
+      shownColour: (colour) => this.settings.shownColour(colour),
     });
-    return this.folders.tree().map(toNode);
   });
 
   constructor() {
@@ -277,8 +238,7 @@ export class SidebarComponent {
   }
 
   protected async select(node: UiTreeNode): Promise<void> {
-    const fixed = FIXED_ROUTES[node.id];
-    await this.router.navigate(fixed ? [`/${fixed}`] : [`/${APP_PATH.Folders}`, node.id]);
+    await this.router.navigate(sidebarRoute(node.id));
   }
 
   protected async footerSelected(node: UiTreeNode): Promise<void> {
@@ -384,19 +344,4 @@ export class SidebarComponent {
   private menuFolder() {
     return this.menuFolderId === null ? undefined : this.folders.entityMap()[this.menuFolderId];
   }
-}
-
-/**
- * True once `ready` has been true: a reload (Retry) flips `error` off for a moment and must not
- * remove a section that is already on screen (its component loads its own data when created).
- */
-function latched(ready: () => boolean) {
-  return linkedSignal<boolean, boolean>({
-    source: ready,
-    computation: (now, previous) => now || (previous?.value ?? false),
-  });
-}
-
-function count(value: number | undefined): { count: number } | Record<string, never> {
-  return value === undefined ? {} : { count: value };
 }
