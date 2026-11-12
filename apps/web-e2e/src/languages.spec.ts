@@ -80,7 +80,7 @@ test.describe('interface languages (mock API)', () => {
     await page.goto('/settings/language');
     await expect(page.getByRole('heading', { level: 1, name: 'Language' })).toBeVisible();
     // Only the language here: a plain list with flags, no dropdown and no dates.
-    await expect(page.getByRole('combobox')).toHaveCount(0);
+    await expect(page.getByRole('main').getByRole('combobox')).toHaveCount(0);
     await expect(preview(page)).toHaveCount(0);
     await expect(page.locator('ui-flag')).toHaveCount(6);
     await page.evaluate('window.__noReload = true');

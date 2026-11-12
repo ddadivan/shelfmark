@@ -127,7 +127,8 @@ test.describe('inline search (mock API)', () => {
       await field(page).fill('pasta');
       await expect(page.getByRole('option').first()).toBeVisible();
 
-      await page.getByRole('heading', { level: 1 }).click();
+      // The empty part of the header bar (the panel covers the page below the field).
+      await page.getByRole('banner').click({ position: { x: 760, y: 24 } });
 
       await expect(page.getByRole('option')).toHaveCount(0);
       await expect(field(page)).toHaveValue('pasta');
