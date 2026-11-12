@@ -1,6 +1,6 @@
 import { CdkDrag, CdkDragPlaceholder, CdkDragPreview, CdkDropList } from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { TranslocoPipe } from '@jsverse/transloco';
 import {
   BreadcrumbsComponent,
   BULK_BAR_LAYOUT,
@@ -129,7 +129,6 @@ export default class LibraryPage {
   protected readonly dnd = inject(LibraryDragService);
   private readonly exporter = inject(ExportActionsService);
   private readonly router = inject(Router);
-  private readonly transloco = inject(TranslocoService);
 
   /** From the route data. */
   readonly scope = input<LinksScope>(LINKS_SCOPE.All);
