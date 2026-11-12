@@ -1,4 +1,3 @@
-import { activeLang } from '../../../../core/i18n/active-lang';
 import { NgTemplateOutlet } from '@angular/common';
 import {
   afterNextRender,
@@ -18,7 +17,7 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { form, FormField, FormRoot } from '@angular/forms/signals';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { TAG_LIMIT, normalizeTagName, type TagResponse } from '@shelfmark/contracts';
+import { normalizeTagName, type TagResponse } from '@shelfmark/contracts';
 import {
   BUTTON_SIZE,
   BUTTON_VARIANT,
@@ -41,9 +40,12 @@ import {
 import { TAG_OUTCOME } from '../../../../stores/models/tag-outcome.const';
 import { TagsStore } from '../../../../stores/tags.store';
 import { ViewportService } from '../../../../core/layout/viewport.service';
-import { pluralKey } from '../../../../core/i18n/plural-key';
 import { TagActionsService } from '../../services/tag-actions.service';
+import { TagMenuService } from '../../services/tag-menu.service';
+import type { TagFieldError } from '../../models/tag-field-error.interface';
 import { splitTags } from '../../utils/tag-split';
+import { tagSaveError } from '../../utils/tag-save-error';
+import { validateTagName } from '../../utils/validate-tag-name';
 
 /**
  * The tags section of the sidebar: the most used tags as chips ("+N more" shows the rest), an
@@ -70,6 +72,7 @@ import { splitTags } from '../../utils/tag-split';
   ],
   templateUrl: './sidebar-tags.component.html',
   styleUrl: './sidebar-tags.component.scss',
+  providers: [TagMenuService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarTagsComponent {
@@ -112,10 +115,7 @@ export class SidebarTagsComponent {
     submission: { action: () => this.save() },
   });
   protected readonly saving = signal(false);
-  private readonly errorState = signal<{
-    key: string;
-    params?: Record<string, unknown>;
-  } | null>(null);
+  private readonly errorState = signal<TagFieldError | null>(null);
   /** The message under the field, translated again when the language changes. */
   protected readonly fieldError = computed(() => {
     this.i18n();
@@ -130,30 +130,7 @@ export class SidebarTagsComponent {
     () => this.conflict() !== null || this.fieldError() !== '',
   );
 
-  /** `id` of the tag whose menu is open. */
-  protected readonly menuTagId = signal<string | null>(null);
-  protected readonly menuLabel = computed(() => {
-    // Re-runs on a language switch (`translate` itself is not reactive).
-    activeLang();
-    const tag = this.menuTag();
-    return tag ? this.transloco.translate('tags.sidebar.menuFor', { name: tag.name }) : undefined;
-  });
-  /** "winter, 12 links": the first line of the menu says whose menu it is. */
-  protected readonly menuSummary = computed(() => {
-    const tag = this.menuTag();
-    if (!tag) {
-      return '';
-    }
-    this.i18n();
-    return this.transloco.translate('tags.sidebar.menu.summary', {
-      name: tag.name,
-      links: this.transloco.translate(pluralKey('tags.count', tag.linkCount), {
-        count: tag.linkCount,
-      }),
-    });
-  });
-  /** The tag the menu was opened for; kept while an item is chosen and the menu closes. */
-  private menuTargetId: string | null = null;
+  protected readonly menuState = inject(TagMenuService);
 
   constructor() {
     void this.tags.load();
@@ -276,18 +253,18 @@ export class SidebarTagsComponent {
   }
 
   protected openMenuFrom(tag: TagResponse, origin: HTMLElement): void {
-    this.setMenuTag(tag);
+    this.menuState.open(tag);
     this.menu().openFrom(origin);
   }
 
   protected openMenuAt(tag: TagResponse, event: MouseEvent): void {
     event.preventDefault();
-    this.setMenuTag(tag);
+    this.menuState.open(tag);
     this.menu().openAt({ x: event.clientX, y: event.clientY });
   }
 
   protected openMenuFromLongPress(tag: TagResponse, event: UiLongPressEvent): void {
-    this.setMenuTag(tag);
+    this.menuState.open(tag);
     this.menu().openAt({ x: event.x, y: event.y });
   }
 
@@ -303,46 +280,11 @@ export class SidebarTagsComponent {
     }
   }
 
-  protected menuClosed(): void {
-    this.menuTagId.set(null);
-  }
-
-  protected showFromMenu(): void {
-    const tag = this.menuTag();
-    if (tag) {
-      this.show(tag);
-    }
-  }
-
   protected renameFromMenu(): void {
-    const tag = this.menuTag();
+    const tag = this.menuState.tag();
     if (tag) {
       this.startRename(tag);
     }
-  }
-
-  protected mergeFromMenu(): void {
-    const tag = this.menuTag();
-    if (tag) {
-      void this.actions.merge(tag);
-    }
-  }
-
-  protected deleteFromMenu(): void {
-    const tag = this.menuTag();
-    if (tag) {
-      void this.actions.delete(tag);
-    }
-  }
-
-  private menuTag(): TagResponse | undefined {
-    const id = this.menuTagId() ?? this.menuTargetId;
-    return id === null ? undefined : this.tags.entityMap()[id];
-  }
-
-  private setMenuTag(tag: TagResponse): void {
-    this.menuTargetId = tag.id;
-    this.menuTagId.set(tag.id);
   }
 
   private openEditor(name: string, renamingId: string | null, adding: boolean): void {
@@ -359,9 +301,9 @@ export class SidebarTagsComponent {
       return;
     }
     const name = normalizeTagName(this.model().name);
-    const error = this.validate(name);
+    const error = validateTagName(name, this.renamingId() !== null, this.tags.atLimit());
     if (error) {
-      this.errorState.set({ key: error.key, params: { max: error.max } });
+      this.errorState.set(error);
       return;
     }
     const renamingId = this.renamingId();
@@ -377,46 +319,24 @@ export class SidebarTagsComponent {
       ? await this.tags.rename(previous.id, name)
       : await this.tags.create(name);
     this.saving.set(false);
-    switch (result.outcome) {
-      case TAG_OUTCOME.Done:
-        if (previous) {
-          this.actions.renamed(previous.name, name);
-        } else {
-          this.toasts.show({
-            kind: TOAST_KIND.Success,
-            title: this.transloco.translate('tags.add.done', { name }),
-          });
-        }
-        this.cancel();
-        break;
-      case TAG_OUTCOME.Conflict:
-        if (previous && result.tag) {
-          this.conflict.set(result.tag);
-        } else {
-          this.errorState.set({ key: 'tags.name.exists', params: { name } });
-        }
-        break;
-      case TAG_OUTCOME.LimitReached:
-        this.errorState.set({ key: 'tags.add.limit', params: { max: TAG_LIMIT.PerUserMax } });
-        break;
-      default:
-        this.errorState.set({ key: previous ? 'tags.rename.failed' : 'tags.add.failed' });
-        break;
+    if (result.outcome === TAG_OUTCOME.Done) {
+      if (previous) {
+        this.actions.renamed(previous.name, name);
+      } else {
+        this.toasts.show({
+          kind: TOAST_KIND.Success,
+          title: this.transloco.translate('tags.add.done', { name }),
+        });
+      }
+      this.cancel();
+      return;
+    }
+    const failure = tagSaveError(result, previous !== undefined, name);
+    if (failure) {
+      this.errorState.set(failure);
+    } else if (result.tag) {
+      this.conflict.set(result.tag);
     }
     return;
-  }
-
-  /** The translation key (and its limit) of what is wrong with a new name, if anything. */
-  private validate(name: string): { key: string; max: number } | null {
-    if (name === '') {
-      return { key: 'tags.name.required', max: TAG_LIMIT.NameMax };
-    }
-    if (name.length > TAG_LIMIT.NameMax) {
-      return { key: 'tags.name.tooLong', max: TAG_LIMIT.NameMax };
-    }
-    if (!this.renamingId() && this.tags.atLimit()) {
-      return { key: 'tags.add.limit', max: TAG_LIMIT.PerUserMax };
-    }
-    return null;
   }
 }
