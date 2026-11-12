@@ -4,57 +4,14 @@
 />
 
 <ui-settings-section [title]="'settings.language.title' | transloco">
-  <ui-settings-row
-    [title]="'settings.language.interface.label' | transloco"
-    [description]="'settings.language.interface.hint' | transloco"
-  >
-    <ui-select
-      class="language__select"
-      compact
-      data-testid="interface-language"
-      [label]="'settings.language.interface.label' | transloco"
-      [options]="languageOptions()"
-      [value]="language().language"
-      (valueChange)="setLanguage($event)"
-    />
-  </ui-settings-row>
-</ui-settings-section>
-
-<ui-settings-section [title]="'settings.language.dates.title' | transloco">
-  <ui-settings-row [title]="'settings.language.date.label' | transloco">
-    <ui-select
-      class="language__select"
-      compact
-      data-testid="date-format"
-      [label]="'settings.language.date.label' | transloco"
-      [options]="dateOptions()"
-      [value]="language().dateFormat"
-      (valueChange)="setDateFormat($event)"
-    />
-  </ui-settings-row>
-  <ui-settings-row #timeRow [title]="'settings.language.time.label' | transloco">
-    <ui-segmented-control
-      [ariaLabelledby]="timeRow.titleId"
-      [options]="timeOptions()"
-      [value]="language().timeFormat"
-      (valueChange)="setTimeFormat($event)"
-    />
-  </ui-settings-row>
-  <ui-settings-row
-    #weekRow
-    [title]="'settings.language.week.label' | transloco"
-    [description]="'settings.language.week.hint' | transloco"
-  >
-    <ui-segmented-control
-      [ariaLabelledby]="weekRow.titleId"
-      [options]="weekOptions()"
-      [value]="language().weekStart"
-      (valueChange)="setWeekStart($event)"
-    />
-  </ui-settings-row>
-  <ui-settings-row [title]="'settings.language.preview.label' | transloco">
-    <output class="language__preview" data-testid="language-preview" aria-live="polite"
-      >{{ preview() }}</output
-    >
-  </ui-settings-row>
+  <p class="language__hint">{{ 'settings.language.interface.hint' | transloco }}</p>
+  <ui-radio-group
+    class="language__list"
+    data-testid="interface-language"
+    name="interface-language"
+    [ariaLabel]="'settings.language.interface.label' | transloco"
+    [options]="languageOptions()"
+    [value]="language().language"
+    (valueChange)="setLanguage($event)"
+  />
 </ui-settings-section>

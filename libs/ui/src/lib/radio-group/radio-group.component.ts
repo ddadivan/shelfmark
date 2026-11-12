@@ -10,12 +10,16 @@ import {
 } from '@angular/core';
 import type { FormValueControl } from '@angular/forms/signals';
 import { nextFieldId } from '../field/field-ids';
+import { FlagComponent } from '../flag/flag.component';
+import { IconComponent } from '../icon/icon.component';
+import { ICON_SIZE } from '../icon/models/icon-size.const';
 import type { RadioOption } from './models/radio-option.interface';
 import type { RadioOrientation } from './models/radio-orientation.type';
 import { RADIO_ORIENTATION } from './models/radio-orientation.const';
 
 /**
- * Choose one of a few options, each with a title and an explanation (the delete-folder dialog).
+ * Choose one of a few options, each with a title and an explanation (the delete-folder dialog),
+ * optionally led by a flag or an icon (the language list of Settings › Language, #315).
  * Built on native `<input type="radio">` (Angular Aria 22 has no radio group): the arrow keys
  * move and select, Tab enters the checked option (or the first when none is checked), all
  * for free and in every browser. The safe option comes first and the feature selects it.
@@ -25,6 +29,7 @@ import { RADIO_ORIENTATION } from './models/radio-orientation.const';
  */
 @Component({
   selector: 'ui-radio-group',
+  imports: [FlagComponent, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-radio-group',
@@ -41,6 +46,7 @@ import { RADIO_ORIENTATION } from './models/radio-orientation.const';
 })
 export class RadioGroupComponent implements FormValueControl<string> {
   protected readonly RADIO_ORIENTATION = RADIO_ORIENTATION;
+  protected readonly ICON_SIZE = ICON_SIZE;
 
   private readonly host: HTMLElement = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 

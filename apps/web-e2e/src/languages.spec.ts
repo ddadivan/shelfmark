@@ -32,6 +32,15 @@ async function seedLanguage(page: Page, language: string): Promise<void> {
   );
 }
 
+/** Picks a language in the list of Settings › Language (#315: flags and names, no dropdown). */
+async function chooseLanguage(page: Page, list: string, language: string): Promise<void> {
+  // The native radio is visually hidden under its drawing: click it like the other radio specs.
+  await page
+    .getByRole('radiogroup', { name: list })
+    .getByRole('radio', { name: language, exact: true })
+    .dispatchEvent('click');
+}
+
 async function chooseOption(page: Page, field: string, option: string): Promise<void> {
   await page.getByRole('combobox', { name: field }).click();
   await page.getByRole('option', { name: option, exact: true }).click();
@@ -64,26 +73,36 @@ test.describe('interface languages (mock API)', () => {
     page,
   }) => {
     await seedSession(page);
-    await page.goto('/settings/language');
-    await expect(page.getByRole('heading', { level: 1, name: 'Language' })).toBeVisible();
+    // The date preview lives in Appearance since #315.
+    await page.goto('/settings/appearance');
     await expect(preview(page)).toContainText(/\d/);
     const english = (await preview(page).textContent()) ?? '';
+    await page.goto('/settings/language');
+    await expect(page.getByRole('heading', { level: 1, name: 'Language' })).toBeVisible();
+    // Only the language here: a plain list with flags, no dropdown and no dates.
+    await expect(page.getByRole('combobox')).toHaveCount(0);
+    await expect(preview(page)).toHaveCount(0);
+    await expect(page.locator('ui-flag')).toHaveCount(6);
     await page.evaluate('window.__noReload = true');
 
-    await chooseOption(page, 'Interface language', 'Français');
+    await chooseLanguage(page, 'Interface language', 'Français');
 
     await expect(page.getByRole('heading', { level: 1, name: 'Langue' })).toBeVisible();
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
-    await expect(page.getByRole('combobox', { name: 'Langue de l’interface' })).toContainText(
-      'Français',
-    );
+    await expect(
+      page
+        .getByRole('radiogroup', { name: 'Langue de l’interface' })
+        .getByRole('radio', { name: 'Français' }),
+    ).toBeChecked();
+    expect(await page.evaluate('window.__noReload === true')).toBe(true);
+    await page.goto('/settings/appearance');
     await expect(preview(page)).not.toHaveText(english);
     await expect(preview(page)).toContainText(
       /(janv|févr|mars|avr|mai|juin|juil|août|sept|oct|nov|déc)/,
     );
-    expect(await page.evaluate('window.__noReload === true')).toBe(true);
 
-    await page.reload();
+    // A full load (the dates page above was one) keeps French.
+    await page.goto('/settings/language');
     await expect(page.getByRole('heading', { level: 1, name: 'Langue' })).toBeVisible();
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
 
@@ -91,11 +110,11 @@ test.describe('interface languages (mock API)', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Tous les liens' })).toBeVisible();
   });
 
-  test('date format, clock and week start apply to the preview and the dates of the app', async ({
+  test('date format, clock and week start (Appearance, #315) apply to the preview and the app', async ({
     page,
   }) => {
     await seedSession(page);
-    await page.goto('/settings/language');
+    await page.goto('/settings/appearance');
     await expect(preview(page)).toContainText(/\d/);
 
     await chooseOption(page, 'Date format', await isoSample(page));
@@ -156,9 +175,11 @@ test.describe('interface languages (mock API)', () => {
       await expect(page.getByRole('heading', { level: 1, name: 'Alle Links' })).toBeVisible();
 
       await page.goto('/settings/language');
-      await expect(page.getByRole('combobox', { name: 'Sprache der Oberfläche' })).toContainText(
-        'Wie mein Browser',
-      );
+      await expect(
+        page
+          .getByRole('radiogroup', { name: 'Sprache der Oberfläche' })
+          .getByRole('radio', { name: 'Wie mein Browser' }),
+      ).toBeChecked();
     });
 
     test('a guest sees the landing in German and can switch it in the footer', async ({ page }) => {
@@ -181,7 +202,13 @@ test.describe('interface languages (mock API)', () => {
     }, testInfo: TestInfo) => {
       await seedLanguage(page, language);
       await seedSession(page);
-      for (const path of ['/links', '/settings/language', '/trash', '/settings/library']) {
+      for (const path of [
+        '/links',
+        '/settings/language',
+        '/settings/appearance',
+        '/trash',
+        '/settings/library',
+      ]) {
         await page.goto(path);
         await expect(page.locator('html')).toHaveAttribute('lang', language);
         await settled(page);
@@ -236,7 +263,7 @@ test.describe('interface languages: axe', () => {
 
         test('settings › language', async ({ page }, testInfo) => {
           await page.goto('/settings/language');
-          await expect(page.getByTestId('language-preview')).toContainText(/\d/);
+          await expect(page.locator('ui-flag')).toHaveCount(6);
           await settled(page);
           await expectNoBlockingViolations(page, testInfo);
           if (isPhone(page)) {

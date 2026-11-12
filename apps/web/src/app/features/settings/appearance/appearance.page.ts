@@ -55,6 +55,7 @@ import { ThemeService } from '../../../core/theme/theme.service';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import type { AccentWarning } from '../models/accent-warning.interface';
 import { THEME_OPTION_KEYS } from '../models/theme-option-keys.const';
+import { DateTimeSettingsComponent } from './date-time-settings/date-time-settings.component';
 import { SettingsPageHeaderComponent } from '../settings-page-header/settings-page-header.component';
 
 const KEY = 'settings.appearance';
@@ -64,9 +65,10 @@ const SYSTEM_THUMB = 'system';
  * `/settings/appearance` (Themes mockup, issues #273 and #285): Theme (System, Light, Dark,
  * Custom); for Custom the base, accent, background and corners and "Reset custom theme"; a live
  * preview; Text and layout (text size, font, density); Cards (preview image, site, notes, tags);
+ * Dates and numbers (date format, clock, week start, preview; moved from Language in #315);
  * Sidebar and motion (folder colours, Animations). Link counts live in Library, "Remember
- * recently opened" in Privacy and data (#315). Every change applies to the whole app at once (ThemeService) and is
- * saved on the account right away, so the preview simply shows a sample in the current tokens;
+ * recently opened" in Privacy and data (#315). Every change applies to the whole app at once
+ * (ThemeService) and is saved on the account right away, so the preview simply shows a sample in the current tokens;
  * a failed save puts the old appearance back and says so. Light and Dark never change.
  */
 @Component({
@@ -75,6 +77,7 @@ const SYSTEM_THUMB = 'system';
     TranslocoPipe,
     ButtonComponent,
     ColorPickerComponent,
+    DateTimeSettingsComponent,
     NoticeComponent,
     SegmentedControlComponent,
     SettingsPageHeaderComponent,

@@ -53,6 +53,16 @@
   @include visually-hidden;
 }
 
+// A flag or an icon between the dot and the title, centred on the first line (20px).
+.ui-radio__flag {
+  margin-top: rem(3px);
+}
+
+.ui-radio__icon {
+  flex: none;
+  color: var(--text-muted);
+}
+
 .ui-radio__dot {
   display: grid;
   flex: none;

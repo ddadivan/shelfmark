@@ -1006,7 +1006,7 @@
       "account": "Your profile and your account.",
       "appearance": "Saved as you go and synced to all your devices.",
       "library": "How links are shown, saved and kept.",
-      "language": "Interface language and how dates look.",
+      "language": "The language of the interface. Date and time formats are in Appearance.",
       "export": "Take everything you saved with you.",
       "privacy": "What we keep, and how to take it with you.",
       "shortcuts": "Work without the mouse.",

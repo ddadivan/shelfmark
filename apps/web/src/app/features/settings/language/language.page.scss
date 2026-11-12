@@ -2,18 +2,14 @@
 @use '../settings-page' as *;
 @include settings-page;
 
-// Sized for the longest language and date sample (Languages mockup: fixed-width controls fit the
-// longest language), so the field never jumps when the language changes.
-.language__select {
-  display: block;
-  min-width: rem(232px);
-}
-
-.language__preview {
+.language__hint {
   @include type(body);
 
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
-  text-align: end;
-  overflow-wrap: anywhere;
+  margin: 0 0 var(--space-3);
+  color: var(--text-muted);
+}
+
+// One plain list: the languages stack, at most as wide as a comfortable reading column.
+.language__list {
+  max-width: rem(440px);
 }

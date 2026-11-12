@@ -1027,7 +1027,7 @@
       "account": "Votre profil et votre compte.",
       "appearance": "Enregistré au fur et à mesure et synchronisé sur tous vos appareils.",
       "library": "Comment les liens sont affichés, enregistrés et conservés.",
-      "language": "Langue de l’interface et affichage des dates.",
+      "language": "La langue de l’interface. Les formats de date et d’heure sont dans Apparence.",
       "export": "Emportez tout ce que vous avez enregistré.",
       "privacy": "Ce que nous conservons, et comment le récupérer.",
       "shortcuts": "Travaillez sans la souris.",
