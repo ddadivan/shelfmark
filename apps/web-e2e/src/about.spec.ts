@@ -94,6 +94,7 @@ test.describe('About and "How it works" (mock API)', () => {
       /Find it again\s*0:52/,
       /Many at once\s*1:19/,
       /Make it yours\s*1:39/,
+      /Share a collection\s*2:06/,
     ]);
 
     // The recording of the layout, served from our own origin. The two recordings (#315) are named
@@ -122,7 +123,8 @@ test.describe('About and "How it works" (mock API)', () => {
       error: null,
       muted: true,
     });
-    expect(state.duration).toBeGreaterThan(99);
+    // The last chapter (Share a collection, #326) starts at 2:06.
+    expect(state.duration).toBeGreaterThan(126);
 
     // English captions, on by default, with cues loaded.
     await expect(video.locator('track')).toHaveAttribute(
@@ -144,6 +146,11 @@ test.describe('About and "How it works" (mock API)', () => {
     const time = await page.evaluate<number>(`${DIALOG_VIDEO}.currentTime`);
     expect(time).toBeGreaterThanOrEqual(18);
     expect(time).toBeLessThan(41);
+    // The last chapter (#326) jumps into the share scene of the same recording.
+    const share = dialog.getByRole('button', { name: /Share a collection/ });
+    await share.click();
+    await expect(share).toHaveAttribute('aria-pressed', 'true');
+    expect(await page.evaluate<number>(`${DIALOG_VIDEO}.currentTime`)).toBeGreaterThanOrEqual(126);
 
     await settled(page);
     await expectNoBlockingViolations(page, testInfo, { include: '[role="dialog"]' });
