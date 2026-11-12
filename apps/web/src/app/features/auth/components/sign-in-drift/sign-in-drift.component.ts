@@ -71,7 +71,7 @@ function cachedLayout(wide: boolean): SignInDriftLane[] {
 /**
  * Saved-link cards that drift around the glass sign-in card on a desktop
  * (docs/design/screens/SignIn.dc.html): fourteen on a wide screen (#315), eight on a narrower desktop
- * (from 64em, `ViewportService.wideDesktop`). They are drawn by `LinkPreviewCardComponent`, so
+ * (from 64em, `ViewportService.wide`). They are drawn by `LinkPreviewCardComponent`, so
  * they look like the library's cards. Each lane is a seeded scatter (`layoutDriftLane`): every
  * card has its own spot, size, tilt and float, some hang over the window edge, small far cards
  * fill the gaps and may tuck slightly behind nearer ones, and none ever reaches under the sign-in
@@ -96,7 +96,7 @@ function cachedLayout(wide: boolean): SignInDriftLane[] {
 })
 export class SignInDriftComponent {
   /** Fourteen cards from 80em, eight on the narrower desktops. */
-  protected readonly wide = inject(ViewportService).wideDesktop;
+  protected readonly wide = inject(ViewportService).wide;
 
   private readonly transloco = inject(TranslocoService);
 

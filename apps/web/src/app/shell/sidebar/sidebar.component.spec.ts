@@ -100,7 +100,7 @@ describe('SidebarComponent', () => {
             phone: signal(true),
             compact: signal(true),
             desktop: signal(false),
-            wideDesktop: signal(false),
+            wide: signal(false),
           },
         },
       ],

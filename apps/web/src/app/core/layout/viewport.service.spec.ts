@@ -24,7 +24,7 @@ describe('ViewportService', () => {
     expect(viewport.phone()).toBe(false);
     expect(viewport.compact()).toBe(false);
     expect(viewport.desktop()).toBe(true);
-    expect(viewport.wideDesktop()).toBe(true);
+    expect(viewport.wide()).toBe(true);
   });
 
   it('is compact but not a phone on a tablet (40em to 64em, #316)', () => {
@@ -41,7 +41,7 @@ describe('ViewportService', () => {
     const narrow = TestBed.inject(ViewportService);
 
     expect(narrow.desktop()).toBe(true);
-    expect(narrow.wideDesktop()).toBe(false);
+    expect(narrow.wide()).toBe(false);
   });
 
   it('reads the breakpoints and follows changes', () => {
