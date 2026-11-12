@@ -9,14 +9,14 @@ import {
   seedSession,
 } from './support/mock-session';
 import { settled } from './support/settled';
-import { isPhone, tabBar } from './support/sidebar';
+import { isCompact, tabBar } from './support/sidebar';
 import { expect, test } from './support/test';
 
 const IDEA = 'Sort a folder by when I last opened a link';
 
 /** Opens the inbox the way each device has it: the account menu, or the You list. */
 async function openInbox(page: Page): Promise<void> {
-  if (isPhone(page)) {
+  if (isCompact(page)) {
     await tabBar(page).getByRole('link', { name: 'You' }).click();
     await page.getByRole('main').getByRole('link', { name: 'Feedback inbox' }).click();
   } else {
@@ -110,7 +110,7 @@ test.describe('admin feedback inbox (mock API)', () => {
     await page.goto('/links');
     await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
 
-    if (isPhone(page)) {
+    if (isCompact(page)) {
       await tabBar(page).getByRole('link', { name: 'You' }).click();
       await expect(
         page.getByRole('main').getByRole('link', { name: 'Your feedback' }),

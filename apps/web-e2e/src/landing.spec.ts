@@ -4,7 +4,7 @@ import { COLOR_SCHEME } from './models/color-scheme.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { LANDING_HEADLINE } from './models/landing-headline.const';
 import { gotoLandingLoaded } from './support/landing';
-import { isPhone } from './support/sidebar';
+import { isCompact } from './support/sidebar';
 
 test.describe('landing', () => {
   test('a guest sees the headline and the sections in order', async ({ page }) => {
@@ -449,7 +449,7 @@ test.describe('landing app preview motion', () => {
   test('then the switch loops: All, Articles (the video leaves, the next article comes in), back to All', async ({
     page,
   }) => {
-    test.skip(isPhone(page), 'one card on a phone row: covered by the unit tests');
+    test.skip(isCompact(page), 'one card on a phone row: covered by the unit tests');
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
     await expect(toast(page)).toHaveCSS('opacity', '1', { timeout: 5000 });

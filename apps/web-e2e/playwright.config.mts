@@ -34,6 +34,18 @@ export default defineConfig({
       },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'] } },
+    // iPad portrait (#316): below 64em, so the mobile shell with the tab bar, at a width that
+    // shows two to three columns; touch, so hover-only controls are always visible.
+    {
+      name: 'tablet',
+      use: {
+        ...devices['iPad (gen 7)'],
+        defaultBrowserType: 'chromium',
+        viewport: { width: 820, height: 1180 },
+        isMobile: true,
+        hasTouch: true,
+      },
+    },
     {
       name: 'phone',
       use: {

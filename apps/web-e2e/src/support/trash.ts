@@ -1,6 +1,6 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 import { pickFolderMenuItem } from './a11y-flows';
-import { isPhone, openSidebar, viewEntry } from './sidebar';
+import { isCompact, openSidebar, viewEntry } from './sidebar';
 
 /**
  * Deletes the first link of the feed through its card menu and the confirmation; resolves with its
@@ -51,7 +51,7 @@ export function trashRow(page: Page, title: string): Locator {
  */
 export async function pressRowButton(page: Page, name: string): Promise<void> {
   const button = page.getByRole('button', { name, exact: true });
-  if (isPhone(page)) {
+  if (isCompact(page)) {
     await button.focus();
   }
   await button.click();
@@ -64,7 +64,7 @@ export async function restoreRow(page: Page, title: string): Promise<void> {
 
 /** Deletes one entry for good: the row menu on desktop, the swipe button on a phone, then the confirmation. */
 export async function deleteRowForever(page: Page, title: string): Promise<void> {
-  if (isPhone(page)) {
+  if (isCompact(page)) {
     await pressRowButton(page, `Delete ${title} forever`);
   } else {
     await page.getByRole('button', { name: `More for ${title}`, exact: true }).click();
@@ -78,7 +78,7 @@ export async function deleteRowForever(page: Page, title: string): Promise<void>
 
 /** Selects a row: its checkbox on desktop, a long press on a phone (the first one; then the checkbox). */
 export async function selectRow(page: Page, title: string, first: boolean): Promise<void> {
-  if (isPhone(page) && first) {
+  if (isCompact(page) && first) {
     await trashRow(page, title).locator('.trash-row__surface').dispatchEvent('pointerdown', {
       bubbles: true,
       isPrimary: true,

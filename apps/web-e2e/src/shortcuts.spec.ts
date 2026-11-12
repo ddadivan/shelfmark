@@ -1,6 +1,6 @@
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
-import { isPhone } from './support/sidebar';
+import { isCompact } from './support/sidebar';
 
 const DIALOG = 'Keyboard shortcuts';
 
@@ -16,7 +16,7 @@ test.describe('keyboard shortcuts (mock API)', () => {
   test('the top bar button opens the list and Esc closes it, focus returns to the button', async ({
     page,
   }) => {
-    test.skip(isPhone(page), 'the top bar belongs to tablet and desktop');
+    test.skip(isCompact(page), 'the top bar belongs to tablet and desktop');
     const button = page.getByRole('banner').getByRole('button', { name: DIALOG });
 
     await button.click();
@@ -46,7 +46,7 @@ test.describe('keyboard shortcuts (mock API)', () => {
   });
 
   test('the ? key is only a character while typing in a field', async ({ page }) => {
-    test.skip(isPhone(page), 'the tags are on their own tab on a phone');
+    test.skip(isCompact(page), 'the tags are on their own tab on a phone');
     const tags = page.locator('app-sidebar-tags');
     await tags.getByRole('button', { name: 'New tag' }).click();
     const field = tags.getByRole('textbox', { name: 'New tag' });
@@ -60,7 +60,7 @@ test.describe('keyboard shortcuts (mock API)', () => {
   test('the single-key switch turns "?" off at once, keeps the button and survives a reload', async ({
     page,
   }) => {
-    test.skip(isPhone(page), 'the shortcuts page is part of the tablet and desktop settings');
+    test.skip(isCompact(page), 'the shortcuts page is part of the tablet and desktop settings');
     await page.goto('/settings/shortcuts');
     const main = page.getByRole('main');
     const toggle = main.getByRole('switch', { name: 'Use single-key shortcuts' });
@@ -108,7 +108,7 @@ test.describe('keyboard shortcuts (mock API)', () => {
   test('the settings page lists the shortcuts and opens the dialog from its row', async ({
     page,
   }) => {
-    test.skip(isPhone(page), 'the shortcuts page is part of the tablet and desktop settings');
+    test.skip(isCompact(page), 'the shortcuts page is part of the tablet and desktop settings');
     await page.goto('/settings/shortcuts');
 
     const main = page.getByRole('main');

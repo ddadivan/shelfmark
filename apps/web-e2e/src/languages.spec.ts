@@ -3,7 +3,7 @@ import { COLOR_SCHEME } from './models/color-scheme.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { seedSession } from './support/mock-session';
 import { settled } from './support/settled';
-import { isPhone } from './support/sidebar';
+import { isCompact } from './support/sidebar';
 import { expect, test } from './support/test';
 
 // Interface languages (issue #274). In the mock build the account settings live in localStorage
@@ -266,7 +266,7 @@ test.describe('interface languages: axe', () => {
           await expect(page.locator('ui-flag')).toHaveCount(6);
           await settled(page);
           await expectNoBlockingViolations(page, testInfo);
-          if (isPhone(page)) {
+          if (isCompact(page)) {
             await expectNoSideScroll(page);
           }
         });

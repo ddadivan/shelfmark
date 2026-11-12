@@ -1,5 +1,5 @@
 import { expect, type Page } from '@playwright/test';
-import { isPhone } from './sidebar';
+import { isCompact } from './sidebar';
 
 export type LibraryView = 'Cards' | 'List';
 
@@ -13,7 +13,7 @@ async function openViewMenu(page: Page): Promise<void> {
 
 /** Switches the feed to Cards or List. */
 export async function switchView(page: Page, view: LibraryView): Promise<void> {
-  if (isPhone(page)) {
+  if (isCompact(page)) {
     await openViewMenu(page);
     await page.getByRole('menuitemradio', { name: view }).click();
   } else {
@@ -23,7 +23,7 @@ export async function switchView(page: Page, view: LibraryView): Promise<void> {
 
 /** Opens the menu that holds the export items (the Export button, or the phone's View menu). */
 export async function openExportMenu(page: Page): Promise<void> {
-  if (isPhone(page)) {
+  if (isCompact(page)) {
     await openViewMenu(page);
   } else {
     await page.getByRole('button', { name: 'Export' }).click();
@@ -32,7 +32,7 @@ export async function openExportMenu(page: Page): Promise<void> {
 
 /** Picks a sort order from the sort menu. */
 export async function chooseSort(page: Page, name: string): Promise<void> {
-  if (isPhone(page)) {
+  if (isCompact(page)) {
     await openViewMenu(page);
   } else {
     await page.getByRole('button', { name: /^Sort: / }).click();
@@ -42,7 +42,7 @@ export async function chooseSort(page: Page, name: string): Promise<void> {
 
 /** The feed is sorted as `name` (the sort button's label, or the checked item of the phone menu). */
 export async function expectSort(page: Page, name: string): Promise<void> {
-  if (isPhone(page)) {
+  if (isCompact(page)) {
     await openViewMenu(page);
     await expect(page.getByRole('menuitemradio', { name })).toHaveAttribute('aria-checked', 'true');
     await page.keyboard.press('Escape');

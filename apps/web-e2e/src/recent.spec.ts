@@ -1,7 +1,7 @@
 import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
-import { isPhone } from './support/sidebar';
+import { isCompact } from './support/sidebar';
 
 test.describe('Recently opened page (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
@@ -13,7 +13,7 @@ test.describe('Recently opened page (mock API)', () => {
   const rows = (page: Page) => page.locator('app-link-history-row');
 
   async function openRecent(page: Page) {
-    if (isPhone(page)) {
+    if (isCompact(page)) {
       // The Library tile opens a sheet on a phone (see mobile.spec); the page stays at its URL.
       await page.goto('/recent');
     } else {

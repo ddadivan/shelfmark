@@ -3,7 +3,7 @@ import { MOCK_FIXTURE } from './models/mock-fixture.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { seedSession } from './support/mock-session';
 import { settled } from './support/settled';
-import { isPhone } from './support/sidebar';
+import { isCompact } from './support/sidebar';
 import { expect, test } from './support/test';
 import { chooseSort, expectSort, switchView } from './support/library-toolbar';
 
@@ -143,7 +143,7 @@ test.describe('settings › library (mock API)', () => {
   });
 
   test('Show folder counts off drops the numbers in the sidebar', async ({ page }) => {
-    test.skip(isPhone(page), 'the phone has no sidebar tree');
+    test.skip(isCompact(page), 'the phone has no sidebar tree');
     await openFeed(page, '/links');
     await expect(page.locator('.ui-tree__count').first()).toBeVisible();
 

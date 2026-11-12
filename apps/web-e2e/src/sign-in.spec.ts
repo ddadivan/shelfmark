@@ -1,5 +1,5 @@
 import { expect, test } from './support/test';
-import { isPhone, tabBar } from './support/sidebar';
+import { isCompact, tabBar } from './support/sidebar';
 import { dismissOnboarding, MOCK_USER, seedSession, signOutFromUi } from './support/mock-session';
 
 const GITHUB_BUTTON = 'Continue with GitHub';
@@ -27,7 +27,7 @@ test.describe('sign-in flow (mock auth)', () => {
     await page.goto('/');
 
     await expect(page).toHaveURL(/\/links$/);
-    if (isPhone(page)) {
+    if (isCompact(page)) {
       // The account is on the You tab, where the name is printed.
       await tabBar(page).getByRole('link', { name: 'You' }).click();
       await expect(page.getByText(MOCK_USER.name)).toHaveCount(1);
@@ -227,7 +227,7 @@ test.describe('sign-in flow (mock auth)', () => {
   test('with a mouse the cards lean toward the pointer while they keep drifting', async ({
     page,
   }) => {
-    test.skip(isPhone(page), 'the phone project is touch: no hover, no tilt');
+    test.skip(isCompact(page), 'the phone project is touch: no hover, no tilt');
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/sign-in');
     const tilt = page.locator('.sd-tilt').first();

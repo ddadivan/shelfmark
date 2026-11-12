@@ -1,7 +1,7 @@
 import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { AUTH_PROVIDER } from '@shelfmark/contracts';
-import { isPhone } from './support/sidebar';
+import { isCompact } from './support/sidebar';
 import { MOCK_USER, signOutFromUi } from './support/mock-session';
 
 // Same value as REAL_AUTH_API_STORAGE_KEY in apps/web/src/app/core/auth/models/real-auth-api-storage-key.const.ts.
@@ -87,7 +87,7 @@ test.describe('sign-in flow (real auth client, routed API)', () => {
 
     await expect(page.getByText("Couldn't sign you out")).toBeVisible();
     // A phone signs out from the You tab, which is Settings.
-    await expect(page).toHaveURL(isPhone(page) ? /\/settings$/ : /\/links$/);
+    await expect(page).toHaveURL(isCompact(page) ? /\/settings$/ : /\/links$/);
   });
 
   test('a confirmed sign-out returns to sign-in', async ({ page }) => {

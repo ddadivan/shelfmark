@@ -3,7 +3,7 @@ import { E2E_PROJECT } from './models/e2e-project.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { openAccountMenu, seedSession } from './support/mock-session';
 import { settled } from './support/settled';
-import { isPhone, tabBar } from './support/sidebar';
+import { isCompact, tabBar } from './support/sidebar';
 
 /** `HTMLMediaElement.HAVE_METADATA`: duration and size are known. */
 const HAVE_METADATA = 1;
@@ -29,7 +29,7 @@ test.describe('About and "How it works" (mock API)', () => {
   }, testInfo) => {
     await seedSession(page);
     await page.goto('/links');
-    if (isPhone(page)) {
+    if (isCompact(page)) {
       await tabBar(page).getByRole('link', { name: 'You' }).click();
       await page.getByRole('link', { name: 'About Shelfmark' }).click();
     } else {
@@ -78,7 +78,7 @@ test.describe('About and "How it works" (mock API)', () => {
   }, testInfo) => {
     await seedSession(page);
     await page.goto('/links');
-    if (isPhone(page)) {
+    if (isCompact(page)) {
       await tabBar(page).getByRole('link', { name: 'You' }).click();
       await page.getByRole('button', { name: 'How it works' }).click();
     } else {
@@ -98,7 +98,7 @@ test.describe('About and "How it works" (mock API)', () => {
 
     // The recording of the layout, served from our own origin. The two recordings (#315) are named
     // like the projects: `how-it-works-<desktop|phone>`.
-    const device = isPhone(page) ? E2E_PROJECT.Phone : E2E_PROJECT.Desktop;
+    const device = isCompact(page) ? E2E_PROJECT.Phone : E2E_PROJECT.Desktop;
     const video = dialog.locator('video');
     await expect(video).toBeVisible();
     await expect
@@ -151,7 +151,7 @@ test.describe('About and "How it works" (mock API)', () => {
   });
 
   test('the sidebar card shows for a new account until it is hidden', async ({ page }) => {
-    test.skip(isPhone(page), 'the card lives in the desktop sidebar');
+    test.skip(isCompact(page), 'the card lives in the desktop sidebar');
     await seedSession(page);
     await page.goto('/links');
     const card = page.getByRole('region', { name: 'How it works' });
@@ -168,7 +168,7 @@ test.describe('About and "How it works" (mock API)', () => {
   test('the sidebar card keeps a section gap under Tags and above Trash (#315)', async ({
     page,
   }) => {
-    test.skip(isPhone(page), 'the card lives in the desktop sidebar');
+    test.skip(isCompact(page), 'the card lives in the desktop sidebar');
     await seedSession(page);
     await page.goto('/links');
     const card = page.getByRole('region', { name: 'How it works' });
@@ -186,7 +186,7 @@ test.describe('About and "How it works" (mock API)', () => {
   });
 
   test('opening the video from the card also retires the card', async ({ page }) => {
-    test.skip(isPhone(page), 'the card lives in the desktop sidebar');
+    test.skip(isCompact(page), 'the card lives in the desktop sidebar');
     await seedSession(page);
     await page.goto('/links');
     const card = page.getByRole('region', { name: 'How it works' });
