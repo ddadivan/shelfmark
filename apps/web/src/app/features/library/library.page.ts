@@ -62,19 +62,8 @@ import { Router } from '@angular/router';
 import { pluralKey } from '../../core/i18n/plural-key';
 import { ViewportService } from '../../core/layout/viewport.service';
 import { ExportActionsService } from '../export/services/export-actions.service';
-import { exportScopeOf } from '../export/utils/export-url';
-import { TAG_QUERY_PARAM } from '../tags/models/tag-query-param.const';
-import { parseTagFilter } from '../tags/utils/tag-filter';
-import { explicitFeedSort, feedSortQuery } from '../links/utils/feed-sort';
-import { FEED_SORT } from '../links/models/feed-sort.const';
-import type { FeedSort } from '../links/models/feed-sort.type';
-import { SEARCH_QUERY_PARAM } from '../links/models/search-query-param.const';
-import { SORT_QUERY_PARAM } from '../links/models/sort-query-param.const';
-import { KIND_QUERY_PARAM } from '../links/models/kind-query-param.const';
-import { parseLinkKind } from '../links/utils/link-kind';
 import { SavedViewChipsComponent } from '../views/components/saved-view-chips/saved-view-chips.component';
 import { sameFilter } from '../links/utils/links-filter';
-import { parseSearchQuery } from '../links/utils/search-query';
 import { InViewDirective } from '../links/directives/in-view.directive';
 import { parsePastedLinks } from '../links/components/paste-many/parse-pasted-links';
 import { isEditableTarget } from '../shortcuts/utils/is-editable-target';
@@ -92,8 +81,6 @@ import { LinkDragService } from '../links/services/link-drag.service';
 import { HowItWorksService } from '../how-it-works/services/how-it-works.service';
 import { LinkCardComponent } from '../links/components/link-card/link-card.component';
 import { LinkRowComponent } from '../links/components/link-row/link-row.component';
-import type { AddLinkData } from '../links/models/add-link-data.interface';
-import type { LinksFilter } from '../links/models/links-filter.type';
 import { LINKS_SCOPE } from '../links/models/links-scope.const';
 import type { LinksScope } from '../links/models/links-scope.type';
 import { APP_PATH } from '../../models/app-path.const';
@@ -102,14 +89,9 @@ import { LinksStore } from '../../stores/links.store';
 import { PinsStore } from '../../stores/pins.store';
 import { UI_VIEW } from '../../stores/models/ui-view.const';
 import { isUiView } from '../../stores/is-ui-view';
-import type { UiView } from '../../stores/models/ui-view.type';
 import { UserSettingsStore } from '../../stores/user-settings.store';
-import { FeedMemoryService } from './services/feed-memory.service';
-import { EMPTY_KEYS } from './models/empty-keys.const';
-import { EMPTY_ILLUSTRATIONS } from './models/empty-illustrations.const';
-import { FILTERED_EMPTY_KEY } from './models/filtered-empty-key.const';
+import { LibraryFilterService } from './services/library-filter.service';
 import { SavedViewsStore } from '../../stores/saved-views.store';
-import { sameViewQuery } from '../views/utils/saved-view-query';
 import { FolderTileComponent } from './components/folder-tile/folder-tile.component';
 import { runViewTransition, type ViewTransitionNames } from './utils/view-transition';
 import { scrollFeedForKey } from './utils/feed-keyboard-scroll';
@@ -170,6 +152,7 @@ interface LastShown {
   templateUrl: './library.page.html',
   styleUrl: './library.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [LibraryFilterService],
   host: {
     '(document:keydown)': 'onKeydown($event)',
     '(document:paste)': 'onPaste($event)',
@@ -178,7 +161,7 @@ interface LastShown {
 export default class LibraryPage {
   protected readonly store = inject(LinksStore);
   private readonly settings = inject(UserSettingsStore);
-  private readonly memory = inject(FeedMemoryService);
+  protected readonly filters = inject(LibraryFilterService);
   protected readonly actions = inject(LinkActionsService);
   protected readonly pins = inject(PinsStore);
   protected readonly PIN_KIND = PIN_KIND;
@@ -219,6 +202,7 @@ export default class LibraryPage {
   /** From the query (`?kind=video`): see `parseLinkKind`. */
   readonly kind = input<unknown>();
 
+  protected readonly emptyIllustration = this.filters.emptyIllustration;
   protected readonly UI_VIEW = UI_VIEW;
   protected readonly EXPORT_FORMAT = EXPORT_FORMAT;
   protected readonly LINKS_SCOPE = LINKS_SCOPE;
@@ -229,102 +213,16 @@ export default class LibraryPage {
   protected readonly SORT_OPTIONS = SORT_OPTIONS;
   protected readonly SORT_OPTION_KEYS = SORT_OPTION_KEYS;
 
-  /** The tags of the filter: normalized, deduplicated, at most `LINK_LIMIT.TagFilterMax`. */
-  protected readonly tags = computed(() => parseTagFilter(this.tag()));
-  /** The search text: normalized; empty for no search. */
-  protected readonly query = computed(() => parseSearchQuery(this.q()));
-  /** What the feed remembers its view and sort by: the folder, or the fixed list. */
-  private readonly feedKey = computed(() => {
-    const id = this.folderId();
-    return this.isFolder() && id !== undefined ? `folder:${id}` : this.scope();
-  });
-  /** `?sort=` when it names one, else the feed's own last choice, else the account's default. */
-  protected readonly feedSort = computed<FeedSort>(
-    () =>
-      explicitFeedSort(this.sort()) ??
-      this.memory.sort(this.feedKey()) ??
-      this.settings.libraryShown().defaultSort,
-  );
-  /** The feed's own last view, else the account's Default view. */
-  protected readonly view = computed<UiView>(
-    () => this.memory.view(this.feedKey()) ?? this.settings.libraryShown().defaultView,
-  );
-  protected readonly linkKind = computed(() => parseLinkKind(this.kind()));
-  protected readonly searching = computed(() => this.query() !== '');
-  protected readonly filtered = computed(
-    () => this.tags().length > 0 || this.searching() || this.linkKind() !== undefined,
-  );
-
-  protected readonly isFolder = computed(() => this.scope() === LINKS_SCOPE.Folder);
-  /** The folder of the page, once the folder list has it. */
-  protected readonly folder = computed(() => {
-    const id = this.folderId();
-    return this.isFolder() && id !== undefined ? this.folders.entityMap()[id] : undefined;
-  });
-  /** An unknown or foreign folder id: the page shows "not found" instead of the content. */
-  protected readonly folderMissing = computed(
-    () =>
-      this.isFolder() &&
-      (this.folderId() === undefined || (this.folders.loaded() && this.folder() === undefined)),
-  );
-  /** Data of the add-link dialog: the folder of the page is preselected. */
-  protected readonly addLinkData = computed<AddLinkData>(() => {
-    const id = this.folderId();
-    return this.isFolder() && id !== undefined ? { folderId: id } : {};
-  });
-  protected readonly titleKey = computed(() => `library.scope.${this.scope()}`);
-  protected readonly emptyKey = computed(() =>
-    this.isFolder() ? 'library.emptyFolder' : EMPTY_KEYS[this.scope()],
-  );
-  /** Scene of the empty feed: one per scope (#315). */
-  protected readonly emptyIllustration = computed(() => EMPTY_ILLUSTRATIONS[this.scope()]);
-  /** The saved view whose filters the page shows, if any (its empty state names it). */
-  protected readonly activeView = computed(() => {
-    const filter = this.filter();
-    return this.views.items().find((view) => sameViewQuery(view.query, filter));
-  });
-  /** Empty state of a filtered feed: a saved view, tags only, or other filters. */
-  protected readonly filteredEmptyKey = computed(() => {
-    if (this.activeView()) {
-      return FILTERED_EMPTY_KEY.View;
-    }
-    return this.linkKind() === undefined ? FILTERED_EMPTY_KEY.Tags : FILTERED_EMPTY_KEY.Filters;
-  });
-  /** Favorites cannot be filled by adding a link, so its empty state points back to all links. */
-  protected readonly canAddLink = computed(() => this.scope() !== LINKS_SCOPE.Favorites);
-  protected readonly filter = computed<LinksFilter>(() => {
-    const scope = this.scope();
-    const folderId = this.folderId();
-    const tags = this.tags();
-    const q = this.query();
-    const sort = this.feedSort();
-    const kind = this.linkKind();
-    const options = {
-      ...(tags.length > 0 ? { tags } : {}),
-      ...(q === '' ? {} : { q }),
-      ...(kind === undefined ? {} : { kind }),
-      ...(sort === FEED_SORT.Newest ? {} : feedSortQuery(sort)),
-    };
-    if (scope !== LINKS_SCOPE.Folder) {
-      return { scope, ...options };
-    }
-    // A folder page without an id cannot happen through the router; it shows "not found".
-    return folderId === undefined
-      ? { scope: LINKS_SCOPE.All, ...options }
-      : { scope, folderId, ...options };
-  });
-  /** What "This view" exports; `undefined` when the view has no export equivalent. */
-  protected readonly viewScope = computed(() => exportScopeOf(this.filter()));
   /**
    * The store is app-wide: when the page opens (back from another page) it can still hold the
    * links of another view for a moment. Those never show, and never become the "previous view".
    */
-  private readonly synced = computed(() => sameFilter(this.store.filter(), this.filter()));
+  private readonly synced = computed(() => sameFilter(this.store.filter(), this.filters.filter()));
   private readonly ownCount = computed(() => (this.synced() ? this.store.count() : 0));
   private readonly ownError = computed(() => this.synced() && this.store.error());
   private readonly ownLoaded = computed(() => this.synced() && this.store.loaded());
   private readonly ownLinks = computed(() =>
-    this.synced() ? pinnedFirst(this.store.entities(), this.isFolder()) : [],
+    this.synced() ? pinnedFirst(this.store.entities(), this.filters.isFolder()) : [],
   );
   /** The last list that was fully loaded; it stays on screen while the next view loads. */
   private readonly lastShown = signal<LastShown>({ items: [], hasMore: false });
@@ -379,7 +277,7 @@ export default class LibraryPage {
   );
   /** A library without any link (the new-account state): no saved view chips, nothing to filter. */
   protected readonly emptyLibrary = computed(
-    () => this.empty() && !this.filtered() && this.scope() === LINKS_SCOPE.All,
+    () => this.empty() && !this.filters.filtered() && this.filters.scope() === LINKS_SCOPE.All,
   );
   /** The 2px bar: a refetch and a view switch (the old content stays on screen meanwhile). */
   protected readonly refetching = computed(
@@ -410,15 +308,22 @@ export default class LibraryPage {
   private readonly appName = this.title.getTitle();
   private readonly rootLabel = toSignal(this.transloco.selectTranslate('library.scope.all'));
   private readonly scopeLabel = toSignal(
-    toObservable(this.titleKey).pipe(switchMap((key) => this.transloco.selectTranslate(key))),
+    toObservable(this.filters.titleKey).pipe(
+      switchMap((key) => this.transloco.selectTranslate(key)),
+    ),
   );
   /**
    * The direct subfolders of the folder of the page, in the sidebar order (#314), with the number of folders inside
    * each. Hidden while a search or tag filter is on (they do not filter) and for a missing folder.
    */
   private readonly currentSubfolders = computed<readonly SubfolderItem[]>(() => {
-    const id = this.folderId();
-    if (!this.isFolder() || id === undefined || this.folderMissing() || this.filtered()) {
+    const id = this.filters.folderId();
+    if (
+      !this.filters.isFolder() ||
+      id === undefined ||
+      this.filters.folderMissing() ||
+      this.filters.filtered()
+    ) {
       return [];
     }
     const all = this.folders.entities();
@@ -435,12 +340,17 @@ export default class LibraryPage {
     this.stale() ? this.lastSubfolders() : this.currentSubfolders(),
   );
   /** The heading of the page; `undefined` until translated. */
-  private readonly heading = computed(() => this.folder()?.name ?? this.scopeLabel());
+  private readonly heading = computed(() => this.filters.folder()?.name ?? this.scopeLabel());
   /** The trail of a folder page: "All links", the ancestors (links) and the folder itself. */
   protected readonly crumbs = computed<BreadcrumbItem[] | null>(() => {
-    const id = this.folderId();
+    const id = this.filters.folderId();
     const root = this.rootLabel();
-    if (!this.isFolder() || id === undefined || root === undefined || !this.folder()) {
+    if (
+      !this.filters.isFolder() ||
+      id === undefined ||
+      root === undefined ||
+      !this.filters.folder()
+    ) {
       return null;
     }
     const path = this.folders.pathTo(id);
@@ -455,7 +365,7 @@ export default class LibraryPage {
   });
   /** The tab title: "<heading> · <app>", or "Search: <query> · <app>" while searching. */
   private readonly pageTitle = toSignal(
-    toObservable(computed(() => ({ query: this.query(), heading: this.heading() }))).pipe(
+    toObservable(computed(() => ({ query: this.filters.query(), heading: this.heading() }))).pipe(
       switchMap(({ query, heading }) =>
         query === ''
           ? this.transloco.selectTranslate('library.pageTitle.page', {
@@ -524,6 +434,14 @@ export default class LibraryPage {
   private readonly scroller = viewChild<ElementRef<HTMLElement>>('scroller');
 
   constructor() {
+    this.filters.connect({
+      scope: this.scope,
+      folderId: this.folderId,
+      tag: this.tag,
+      q: this.q,
+      sort: this.sort,
+      kind: this.kind,
+    });
     void this.settings.load();
     // Remember the last settled list (for stale-while-loading), and build the list again when a
     // new first page replaces the old one.
@@ -560,7 +478,7 @@ export default class LibraryPage {
     // A new view, sort or filter starts at the top of its list (the page scroll is reset by the
     // router; this area is not the page).
     effect(() => {
-      this.filter();
+      this.filters.filter();
       untracked(() => {
         const area = this.scroller()?.nativeElement;
         if (area) {
@@ -590,7 +508,7 @@ export default class LibraryPage {
     // A new view, filter, sort or route starts without a selection; links that left the view
     // (deleted, moved out) leave the selection too.
     effect(() => {
-      this.filter();
+      this.filters.filter();
       untracked(() => this.selection.clear());
     });
     effect(() => {
@@ -607,7 +525,7 @@ export default class LibraryPage {
     });
     // The sidebar loads the folders too (the phone has none yet); the call is shared.
     void this.folders.load();
-    this.store.setFilter(this.filter);
+    this.store.setFilter(this.filters.filter);
   }
 
   /** The stagger of a link that is landing: each card of a paste lands a beat after the one before. */
@@ -634,7 +552,7 @@ export default class LibraryPage {
       return;
     }
     event.preventDefault();
-    void this.actions.addLink({ ...this.addLinkData(), text });
+    void this.actions.addLink({ ...this.filters.addLinkData(), text });
   }
 
   /** Polite live text for entering / leaving selection mode (empty until the first change). */
@@ -787,7 +705,7 @@ export default class LibraryPage {
   }
 
   protected async exportView(format: ExportFormat): Promise<void> {
-    await this.exporter.download(format, this.viewScope());
+    await this.exporter.download(format, this.filters.viewScope());
   }
 
   protected async exportAll(format: ExportFormat): Promise<void> {
@@ -798,61 +716,6 @@ export default class LibraryPage {
     await this.router.navigateByUrl(`/${APP_PATH.Links}`);
   }
 
-  /** Takes one tag out of the filter. */
-  protected async removeTag(name: string): Promise<void> {
-    const rest = this.tags().filter((tag) => tag !== name);
-    await this.setTags(rest);
-  }
-
-  protected async clearTags(): Promise<void> {
-    await this.setTags([]);
-  }
-
-  /** Takes the search out of the filter. */
-  protected async clearSearch(): Promise<void> {
-    await this.setQueryParams({ [SEARCH_QUERY_PARAM]: null });
-  }
-
-  /** Clears everything the filter holds: the search, the tags and the kind. */
-  protected async clearAll(): Promise<void> {
-    await this.setQueryParams({
-      [SEARCH_QUERY_PARAM]: null,
-      [TAG_QUERY_PARAM]: null,
-      [KIND_QUERY_PARAM]: null,
-    });
-  }
-
-  /** Takes the kind out of the filter. */
-  protected async clearKind(): Promise<void> {
-    await this.setQueryParams({ [KIND_QUERY_PARAM]: null });
-  }
-
-  /** The empty filtered state: drops the tags and the kind (the search has its own state). */
-  protected async clearFilters(): Promise<void> {
-    await this.setQueryParams({ [TAG_QUERY_PARAM]: null, [KIND_QUERY_PARAM]: null });
-  }
-
-  /** Repeats the search in all folders (the "all links" page keeps the query and sort, drops the tags). */
-  protected async searchEverywhere(): Promise<void> {
-    await this.router.navigate(['/', APP_PATH.Links], {
-      queryParams: {
-        [SEARCH_QUERY_PARAM]: this.query(),
-        [SORT_QUERY_PARAM]: this.sortParam(this.feedSort()),
-      },
-    });
-  }
-
-  /** Remembers the sort for this feed; the URL names it only when it differs from the default. */
-  protected async setSort(sort: FeedSort): Promise<void> {
-    this.memory.remember(this.feedKey(), { sort });
-    await this.setQueryParams({ [SORT_QUERY_PARAM]: this.sortParam(sort) });
-  }
-
-  /** `?sort=` for a sort: left out for the account's default (the URL stays short). */
-  private sortParam(sort: FeedSort): FeedSort | null {
-    return sort === this.settings.libraryShown().defaultSort ? null : sort;
-  }
-
   protected async openCrumb(click: BreadcrumbClick): Promise<void> {
     click.event?.preventDefault();
     if (click.item.href) {
@@ -860,29 +723,21 @@ export default class LibraryPage {
     }
   }
 
-  private async setQueryParams(params: Record<string, unknown>): Promise<void> {
-    await this.router.navigate([], { queryParams: params, queryParamsHandling: 'merge' });
-  }
-
-  private async setTags(tags: readonly string[]): Promise<void> {
-    await this.setQueryParams({ [TAG_QUERY_PARAM]: tags.length > 0 ? tags : null });
-  }
-
   protected setView(view: string): void {
     if (isUiView(view)) {
       // The new list is the same links: no fade-in on top of the morph.
       this.reveal.set(false);
-      const feed = this.feedKey();
+      const feed = this.filters.feedKey();
       runViewTransition(
         this.doc,
         this.injector,
-        () => this.memory.remember(feed, { view }),
+        () => this.filters.rememberView(view, feed),
         this.morphNames,
       );
     }
   }
 
   protected retry(): void {
-    this.store.setFilter(this.filter());
+    this.store.setFilter(this.filters.filter());
   }
 }
