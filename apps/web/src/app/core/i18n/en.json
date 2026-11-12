@@ -700,7 +700,9 @@
         "moveUp": "Move up",
         "moveDown": "Move down",
         "unpin": "Unpin from sidebar",
-        "unpinButton": "Unpin {{name}}"
+        "unpinButton": "Unpin {{name}}",
+        "empty": "Nothing pinned yet",
+        "emptyHint": "Nothing pinned yet — use “Pin to sidebar” in a folder or link menu"
       },
       "reorder": {
         "movedUp": "Moved up, position {{position}} of {{total}}",

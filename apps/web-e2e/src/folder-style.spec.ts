@@ -17,6 +17,19 @@ test.describe('folder style and pins (mock API)', () => {
 
   const pinned = (page: Page): Locator => page.locator('app-sidebar-pinned section.pinned');
   const pinnedItems = (page: Page): Locator => pinned(page).locator('.pinned__item');
+
+  /**
+   * Nothing pinned: the sidebar drops the section; the phone Library page keeps it with its
+   * "Nothing pinned yet" row (#315).
+   */
+  async function expectNoPins(page: Page): Promise<void> {
+    if (isPhone(page) && new URL(page.url()).pathname === '/library') {
+      await expect(pinnedItems(page)).toHaveCount(0);
+      await expect(pinned(page).getByRole('button', { name: 'Nothing pinned yet' })).toBeVisible();
+    } else {
+      await expect(pinned(page)).toHaveCount(0);
+    }
+  }
   const coloured = (page: Page, colour: string): Locator =>
     page.locator(`ui-folder-icon.ui-folder-icon--${colour}`);
 
@@ -106,7 +119,7 @@ test.describe('folder style and pins (mock API)', () => {
   });
 
   test('pins and unpins a folder from its menu', async ({ page }) => {
-    await expect(pinned(page)).toHaveCount(0);
+    await expectNoPins(page);
 
     await pickFolderMenuItem(page, READING, 'Pin to sidebar');
     await expect(pinned(page).getByRole('heading', { name: 'Pinned' })).toBeVisible();
@@ -114,7 +127,7 @@ test.describe('folder style and pins (mock API)', () => {
     await expect(pinnedItems(page).first()).toContainText(READING);
 
     await pickFolderMenuItem(page, READING, 'Unpin from sidebar');
-    await expect(pinned(page)).toHaveCount(0);
+    await expectNoPins(page);
   });
 
   test("unpins from the row's Unpin button (hover on desktop, always on touch) with Undo", async ({
@@ -131,7 +144,7 @@ test.describe('folder style and pins (mock API)', () => {
     }
     await expect(actions).toHaveCSS('opacity', '1');
     await unpin.click();
-    await expect(pinned(page)).toHaveCount(0);
+    await expectNoPins(page);
 
     const toast = page.locator('ui-toast').filter({ hasText: 'Unpinned from sidebar' });
     await expect(toast).toContainText(READING);
@@ -154,7 +167,7 @@ test.describe('folder style and pins (mock API)', () => {
       await row.hover();
     }
     await row.getByRole('button', { name: `Unpin ${title}` }).click();
-    await expect(pinned(page)).toHaveCount(0);
+    await expectNoPins(page);
   });
 
   test('reorders pinned items with Alt+ArrowDown / Alt+ArrowUp; rows have no "…" menu', async ({
@@ -298,6 +311,14 @@ test.describe('folder style and pins (mock API)', () => {
     expect(box).not.toBeNull();
     return { x: (box?.x ?? 0) + (box?.width ?? 0) / 2, y: (box?.y ?? 0) + (box?.height ?? 0) / 2 };
   };
+  /**
+   * With the Pinned card always on the Library page (#315) the last folder sits where the
+   * "Folder created" toast floats: dismiss it before a finger goes down.
+   */
+  async function dismissToast(page: Page): Promise<void> {
+    await page.locator('ui-toast').getByRole('button', { name: 'Dismiss' }).click();
+    await expect(page.locator('ui-toast')).toHaveCount(0);
+  }
   /** Rest longer than the touch drag delay (400 ms), shorter than the long press (500 ms). */
   const DRAG_REST_MS = 440;
 
@@ -315,6 +336,7 @@ test.describe('folder style and pins (mock API)', () => {
       page,
     }) => {
       await createNotes(page);
+      await dismissToast(page);
       await settled(page);
       const from = await centre(notesRow(page));
       const to = await readingRow(page).boundingBox();
@@ -350,6 +372,7 @@ test.describe('folder style and pins (mock API)', () => {
 
     test('a long press without moving still opens the folder menu', async ({ page }) => {
       await createNotes(page);
+      await dismissToast(page);
       await settled(page);
       const finger = await Finger.down(page, await centre(notesRow(page)));
       await finger.hold(800);
@@ -365,11 +388,12 @@ test.describe('folder style and pins (mock API)', () => {
       await createNotes(page);
       await settled(page);
       // Room to scroll: a shorter phone screen than the Library page.
-      await page.setViewportSize({ width: 360, height: 620 });
+      await page.setViewportSize({ width: 360, height: 700 });
       await page.evaluate('window.scrollTo(0, 0)');
       const before = await folderNames(page);
       const start = await centre(readingRow(page));
-      expect(start.y).toBeLessThan(600);
+      expect(await page.evaluate('window.scrollY')).toBe(0);
+      expect(start.y).toBeLessThan(680);
 
       const finger = await Finger.down(page, start);
       await finger.move({ x: start.x, y: start.y - 240 }, 8);

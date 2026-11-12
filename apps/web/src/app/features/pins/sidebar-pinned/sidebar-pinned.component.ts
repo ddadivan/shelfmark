@@ -10,6 +10,7 @@ import {
   booleanAttribute,
   ChangeDetectionStrategy,
   Component,
+  computed,
   ElementRef,
   inject,
   Injector,
@@ -23,10 +24,13 @@ import {
   FaviconComponent,
   FolderIconComponent,
   KEYBOARD_KEY,
+  TOAST_KIND,
+  ToastService,
   TREE_REORDER_TOUCH_DELAY_MS,
   TooltipDirective,
 } from '@shelfmark/ui';
 import { ReorderAnnouncer } from '../../../core/a11y/reorder-announcer.service';
+import { ViewportService } from '../../../core/layout/viewport.service';
 import { PinsStore } from '../../../stores/pins.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { APP_PATH } from '../../../models/app-path.const';
@@ -42,7 +46,9 @@ import { PinActionsService } from '../pin-actions.service';
  * a reserved slot marks the place) or with Alt+Up / Alt+Down on the focused row (announced). Unpin is
  * the row's only action: an icon button (hover / focus, always on touch) with Undo, no "…" menu
  * (#314). Settings ›
- * Library › Edit pinned keeps its buttons. Nothing is rendered while nothing is pinned.
+ * Library › Edit pinned keeps its buttons. While nothing is pinned the sidebar renders nothing; the
+ * phone Library page (`card`) keeps the section with one quiet "Nothing pinned yet" row whose tap
+ * explains in a toast how to pin (#315), so people know where pins live.
  */
 @Component({
   selector: 'app-sidebar-pinned',
@@ -61,8 +67,7 @@ import { PinActionsService } from '../pin-actions.service';
   templateUrl: './sidebar-pinned.component.html',
   styleUrl: './sidebar-pinned.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  // No pins: no section, so no empty card on the phone Library page either.
-  host: { '[class.pinned--card]': 'card() && pins.rows().length > 0' },
+  host: { '[class.pinned--card]': 'card() && shown()' },
 })
 export class SidebarPinnedComponent {
   protected readonly PIN_KIND = PIN_KIND;
@@ -76,11 +81,22 @@ export class SidebarPinnedComponent {
   private readonly announcer = inject(ReorderAnnouncer);
   private readonly injector = inject(Injector);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+  private readonly toasts = inject(ToastService);
+  private readonly viewport = inject(ViewportService);
 
   /** The id of the open page's row (a folder id), to mark the folder you are in. */
   readonly activeId = input<string | null>(null);
   /** Its own card with a page-sized heading: the phone Library page. */
   readonly card = input(false, { transform: booleanAttribute });
+
+  /**
+   * The section is drawn while something is pinned; empty, only on the phone Library page once the
+   * pins have loaded (no flash of the empty row before), the desktop sidebar hides it.
+   */
+  protected readonly shown = computed(
+    () =>
+      this.pins.rows().length > 0 || (this.card() && this.viewport.phone() && this.pins.loaded()),
+  );
 
   /**
    * Touch reorder like iOS (#315): the finger rests `TREE_REORDER_TOUCH_DELAY_MS` (the folder
@@ -164,6 +180,14 @@ export class SidebarPinnedComponent {
           ?.focus(),
       { injector: this.injector },
     );
+  }
+
+  /** The empty row's tap: how to pin something. */
+  protected explainEmpty(): void {
+    this.toasts.show({
+      kind: TOAST_KIND.Info,
+      title: this.transloco.translate('shell.sidebar.pinned.emptyHint'),
+    });
   }
 
   protected unpinLabel(name: string): string {
