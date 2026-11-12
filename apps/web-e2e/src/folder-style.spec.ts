@@ -100,6 +100,46 @@ test.describe('folder style and pins (mock API)', () => {
     await expect(coloured(page, 'clay').first()).toBeVisible();
   });
 
+  test('own colours and an emoji: the swatches stay on one line, a "+" swatch adds a colour, one emoji replaces the icon (#335)', async ({
+    page,
+  }) => {
+    await pickFolderMenuItem(page, READING, 'Colour and icon…');
+    const dialog = page.getByRole('dialog', { name: READING });
+    await expect(dialog).toBeVisible();
+
+    // The eight built-in swatches share one line.
+    const swatches = dialog.locator('.ui-choice-grid--single-line .ui-choice__swatch');
+    await expect(swatches).toHaveCount(8);
+    const tops = await swatches.evaluateAll((nodes) =>
+      nodes.map((node) => Math.round(node.getBoundingClientRect().top)),
+    );
+    expect(new Set(tops).size).toBe(1);
+
+    // "+" opens the colour picker; a finished colour is kept as a swatch and chosen.
+    await dialog.getByRole('button', { name: 'Add your own colour' }).click();
+    const hex = dialog.getByRole('textbox', { name: 'Hex code' });
+    await expect(hex).toBeFocused();
+    await expect(dialog.getByRole('slider', { name: 'Hue' })).toBeVisible();
+    await hex.fill('#3a7bd5');
+    await hex.press('Enter');
+    await expect(dialog.getByRole('radio', { name: 'Your colour #3a7bd5' })).toBeChecked();
+    await expect(hex).toHaveCount(0);
+
+    // One emoji replaces the icon; anything else is refused.
+    const emoji = dialog.getByRole('textbox', { name: 'Emoji' });
+    await emoji.fill('pizza');
+    await dialog.getByRole('button', { name: 'Save' }).click();
+    await expect(dialog.getByText('Enter exactly one emoji.')).toBeVisible();
+    await emoji.fill('🍕');
+    await expect(dialog.locator('.ui-folder-icon__emoji').first()).toHaveText('🍕');
+    await dialog.getByRole('button', { name: 'Save' }).click();
+    await expect(dialog).toHaveCount(0);
+
+    await openSidebar(page);
+    await expect(page.locator('.ui-folder-icon--own').first()).toBeVisible();
+    await expect(page.locator('.ui-folder-icon__emoji').first()).toHaveText('🍕');
+  });
+
   test('the dialog radio groups move with the arrow keys, Reset goes back to graphite', async ({
     page,
   }) => {

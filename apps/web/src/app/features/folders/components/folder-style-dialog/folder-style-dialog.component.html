@@ -38,8 +38,8 @@
             [hueLabel]="'settings.appearance.custom.own.hue' | transloco"
             [hexLabel]="'settings.appearance.custom.own.hex' | transloco"
             [invalidMessage]="'settings.appearance.custom.own.invalid' | transloco"
-            [value]="picked()"
-            (valueChange)="picked.set($event)"
+            [(open)]="pickerOpen"
+            [(value)]="picked"
             (committed)="addColour($event)"
           />
         </div>

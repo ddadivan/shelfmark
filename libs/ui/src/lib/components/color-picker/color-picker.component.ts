@@ -115,6 +115,14 @@ export class ColorPickerComponent implements FormValueControl<string> {
   private hexEdited = false;
   private dragging = false;
 
+  /** Forgets the colour: the swatch is the wheel with "+" again and the fields start empty. */
+  clear(): void {
+    this.value.set('');
+    this.draft.set('');
+    this.changed = false;
+    this.hexEdited = false;
+  }
+
   /** Focuses the swatch. */
   focus(options?: FocusOptions): void {
     this.swatch()?.focus(options);

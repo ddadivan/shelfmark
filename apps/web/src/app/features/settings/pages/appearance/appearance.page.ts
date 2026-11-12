@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
@@ -164,9 +171,12 @@ export default class AppearancePage {
   /** The checked accent swatch: the curated name or the own colour. */
   protected readonly checkedAccent = computed(() => this.theme.customTheme().accent);
 
-  /** What the colour picker shows: the last colour picked here, else the saved own colour. */
+  /** What the colour pickers show while open: the colour being picked (empty again once it is a swatch). */
   protected readonly pickedColour = signal('');
-  protected readonly shownColour = computed(() => this.pickedColour() || (this.ownAccent() ?? ''));
+  protected readonly accentPickerOpen = signal(false);
+  private readonly accentPicker = viewChild<ColorPickerComponent>('accentPicker');
+  private readonly backgroundPicker = viewChild<ColorPickerComponent>('backgroundPicker');
+  protected readonly backgroundPickerOpen = signal(false);
 
   /** A picked colour that would not keep 4.5:1, with the nearest shade that does. */
   protected readonly accentWarning = signal<AccentWarning | null>(null);
@@ -182,10 +192,6 @@ export default class AppearancePage {
 
   /** What the background colour picker shows: the last colour picked, else the saved own one. */
   protected readonly pickedBackground = signal('');
-  protected readonly shownBackground = computed(
-    () => this.pickedBackground() || (this.ownBackground() ?? ''),
-  );
-
   /** A picked background that would not keep text at 4.5:1, with the nearest shade that does. */
   protected readonly backgroundWarning = signal<AccentWarning | null>(null);
 
@@ -306,6 +312,7 @@ export default class AppearancePage {
       }
       this.accentWarning.set(null);
       this.setCustom({ accent: colour });
+      this.closeAccentPicker();
       return;
     }
     this.accentWarning.set({
@@ -326,6 +333,7 @@ export default class AppearancePage {
     this.accentWarning.set(null);
     void this.settings.addCustomColour(shade);
     this.setCustom({ accent: shade });
+    this.closeAccentPicker();
   }
 
   /**
@@ -345,6 +353,7 @@ export default class AppearancePage {
       }
       this.backgroundWarning.set(null);
       this.setCustom({ background: colour });
+      this.closeBackgroundPicker();
       return;
     }
     this.backgroundWarning.set({
@@ -362,6 +371,7 @@ export default class AppearancePage {
     this.backgroundWarning.set(null);
     void this.settings.addCustomColour(shade);
     this.setCustom({ background: shade });
+    this.closeBackgroundPicker();
   }
 
   protected setBackground(value: string): void {
@@ -389,6 +399,17 @@ export default class AppearancePage {
     this.accentWarning.set(null);
     this.backgroundWarning.set(null);
     void this.save({ customTheme: { ...CUSTOM_THEME_DEFAULT } });
+  }
+
+  /** The colour is a swatch now: the "+" swatch closes and starts empty again. */
+  private closeAccentPicker(): void {
+    this.accentPickerOpen.set(false);
+    this.accentPicker()?.clear();
+  }
+
+  private closeBackgroundPicker(): void {
+    this.backgroundPickerOpen.set(false);
+    this.backgroundPicker()?.clear();
   }
 
   /** The own colours, with the chosen one added when the account does not list it (yet). */

@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { form, FormField, FormRoot, validate } from '@angular/forms/signals';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -141,6 +148,8 @@ export class FolderStyleDialogComponent {
 
   /** The colour in the picker while it is open: the last one picked there. */
   protected readonly picked = signal('');
+  protected readonly pickerOpen = signal(false);
+  private readonly picker = viewChild(ColorPickerComponent);
 
   protected readonly iconOptions: readonly ChoiceOption[] = ICONS.map((icon) => ({
     value: icon,
@@ -186,6 +195,9 @@ export class FolderStyleDialogComponent {
     }
     this.chooseColour(colour);
     void this.settings.addCustomColour(colour);
+    // The colour is a swatch now: the "+" swatch closes and starts empty again.
+    this.pickerOpen.set(false);
+    this.picker()?.clear();
   }
 
   protected reset(): void {

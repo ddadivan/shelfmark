@@ -260,7 +260,8 @@ describe('AppearancePage', () => {
       customTheme: { ...CUSTOM_THEME_DEFAULT, accent: shade },
     });
     expect(page.querySelector('ui-notice')).toBeNull();
-    expect(hex.value).toBe(shade);
+    // The shade is a swatch of its own now, checked; the "+" panel closed.
+    expect(radioIn(page, 'Accent colour', shade).checked).toBe(true);
   });
 
   it('saves an own background colour that keeps text at 4.5:1 and draws it as a swatch (#335)', async () => {

@@ -215,6 +215,17 @@ describe('ColorPickerComponent', () => {
     expect(paint.style.backgroundColor).toBe('rgb(46, 106, 153)');
   });
 
+  it('clear() empties the value and the field, and the swatch is the wheel again', async () => {
+    const { fixture, host, hex, open } = setup({ value: '#2e6a99' });
+    await open();
+    expect(host.querySelector('.ui-color-picker__plus')).toBeNull();
+    fixture.componentInstance.clear();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.value()).toBe('');
+    expect(hex().value).toBe('');
+    expect(host.querySelector('.ui-color-picker__plus')).not.toBeNull();
+  });
+
   it('toggles closed from the swatch and stays shut when disabled', async () => {
     const { fixture, swatch, panel, open } = setup();
     await open();

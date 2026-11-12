@@ -263,3 +263,8 @@
     background: transparent;
   }
 }
+
+// While a link is over the row the "Move here" badge has the end of the row to itself.
+.pinned__item--drop .pinned__actions {
+  opacity: 0;
+}

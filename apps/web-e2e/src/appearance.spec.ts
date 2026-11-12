@@ -100,8 +100,15 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     await expect(html).toHaveAttribute('data-custom-accent', 'own');
     expect(await token(page, '--accent')).toBe('#23716c');
     await expect(choice(page, 'Accent colour', 'Ocean')).not.toBeChecked();
+    // The colour is a swatch of the account now (#335) and the "+" panel closed.
+    await expect(choice(page, 'Accent colour', '#23716c')).toBeChecked();
+    await expect(swatch).toHaveAttribute('aria-expanded', 'false');
+    await expect(swatch.locator('.ui-color-picker__plus')).toBeVisible();
+    await expect(hex).toHaveCount(0);
 
     // Too faint: not applied, a warning offers the nearest shade that keeps 4.5:1.
+    await swatch.click();
+    await expect(hex).toBeFocused();
     await hex.fill('#f5d0e0');
     await hex.press('Enter');
     await expect(page.getByText(/hard to read on your background/u)).toBeVisible();
@@ -114,6 +121,9 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     await expectNoBlockingViolations(page, test.info());
 
     // Esc closes the panel and returns to the swatch; a reload keeps the colour.
+    await expect(hex).toHaveCount(0);
+    await swatch.click();
+    await expect(hex).toBeFocused();
     await hex.press('Escape');
     await expect(swatch).toBeFocused();
     await expect(swatch).toHaveAttribute('aria-expanded', 'false');

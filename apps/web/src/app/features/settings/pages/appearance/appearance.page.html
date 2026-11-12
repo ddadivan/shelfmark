@@ -72,8 +72,9 @@
               [hueLabel]="'settings.appearance.custom.own.hue' | transloco"
               [hexLabel]="'settings.appearance.custom.own.hex' | transloco"
               [invalidMessage]="'settings.appearance.custom.own.invalid' | transloco"
-              [value]="shownColour()"
-              (valueChange)="pickedColour.set($event)"
+              #accentPicker
+              [(open)]="accentPickerOpen"
+              [(value)]="pickedColour"
               (committed)="pickOwnAccent($event)"
             >
               <p class="appearance__own-hint">
@@ -113,8 +114,9 @@
               [hueLabel]="'settings.appearance.custom.own.hue' | transloco"
               [hexLabel]="'settings.appearance.custom.own.hex' | transloco"
               [invalidMessage]="'settings.appearance.custom.own.invalid' | transloco"
-              [value]="shownBackground()"
-              (valueChange)="pickedBackground.set($event)"
+              #backgroundPicker
+              [(open)]="backgroundPickerOpen"
+              [(value)]="pickedBackground"
               (committed)="pickOwnBackground($event)"
             >
               <p class="appearance__own-hint">
