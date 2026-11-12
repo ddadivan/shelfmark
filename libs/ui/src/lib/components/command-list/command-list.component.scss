@@ -48,9 +48,12 @@
   padding: rem(18px) rem(20px);
   border-bottom: 1px solid var(--ui-command-divider, var(--border));
 
-  // The bare input has no outline of its own, so the row shows the keyboard focus.
+  // The dialog's row is bare (Search.dc.html): no box ring. Focus shows as the caret and as the
+  // divider below turning `focus-ring`, 2px (a 1px border plus an inset line), so a visible
+  // indicator stays (WCAG 2.4.7) without a rectangle around the row.
   &:has(.ui-command-list__input:focus-visible) {
-    @include focus-ring(-2px);
+    border-bottom-color: var(--focus-ring);
+    box-shadow: inset 0 -1px 0 var(--focus-ring);
   }
 
   // The ring follows the rounded top corners of the dialog panel it sits in.
@@ -67,6 +70,13 @@
     border-bottom: 0;
     border-radius: var(--radius-full);
     box-shadow: var(--shadow-card);
+
+    // The pill shows focus with its own border, no offset ring.
+    &:has(.ui-command-list__input:focus-visible) {
+      box-shadow:
+        var(--shadow-card),
+        inset 0 0 0 2px var(--focus-ring);
+    }
 
     > kbd {
       display: none;

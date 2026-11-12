@@ -33,7 +33,7 @@
   // Exactly the field's width: the pane gets it in pixels and follows resizes.
   width: 100%;
   max-height: min(60vh, calc(100vh - #{rem(96px)}));
-  margin: var(--space-1) 0;
+  margin: var(--space-2) 0;
   overflow: hidden;
   border-radius: rem(18px);
 }
@@ -56,13 +56,21 @@
   min-height: rem(44px);
   padding: 0 rem(10px) 0 rem(18px);
   background: var(--surface);
-  border-bottom: 0;
+  border: 1px solid transparent;
   border-radius: var(--radius-full);
   box-shadow: var(--shadow-card);
-  transition: background-color var(--duration-fast) var(--ease-out);
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
 
+  // Focus: the pill's own border turns `focus-ring` with the soft halo (the `field-focus` pattern,
+  // no outline and no offset gap).
   &:has(.ui-command-list__input:focus-visible) {
-    @include focus-ring;
+    border-color: var(--focus-ring);
+    box-shadow:
+      var(--shadow-card),
+      0 0 0 3px color-mix(in srgb, var(--focus-ring) 22%, transparent);
   }
 
   @include hover {
