@@ -13,7 +13,6 @@ import {
   AvatarComponent,
   BUTTON_SIZE,
   type IconName,
-  SearchTriggerComponent,
   TabBarComponent,
   type TabBarItem,
   type TabBarSelection,
@@ -36,11 +35,11 @@ import { AuthStore } from '../core/auth/auth.store';
 import { LinkActionsService } from '../features/links/services/link-actions.service';
 import { OnboardingStore } from '../features/onboarding/services/onboarding.store';
 import { RatingStore } from '../features/rating/services/rating.store';
+import { HeaderSearchComponent } from '../features/search/components/header-search/header-search.component';
 import { SearchDialogService } from '../features/search/services/search-dialog.service';
 import { ShortcutsDialogService } from '../features/shortcuts/services/shortcuts-dialog.service';
 import { THEME_PREFERENCE } from '@shelfmark/contracts';
 import { ThemeService } from '../core/theme/theme.service';
-import { isMacPlatform } from '../features/search/utils/is-mac-platform';
 import { ViewportService } from '../core/layout/viewport.service';
 import { APP_PATH } from '../models/app-path.const';
 import { PinsStore } from '../stores/pins.store';
@@ -72,7 +71,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     MenuItemComponent,
     MenuSeparatorComponent,
     MenuTriggerDirective,
-    SearchTriggerComponent,
+    HeaderSearchComponent,
     SettingsNavComponent,
     SidebarComponent,
     TabBarComponent,
@@ -134,8 +133,6 @@ export default class AppShellComponent {
   protected readonly themeIcon = computed<IconName>(() =>
     this.theme.resolved() === THEME.Dark ? 'sun' : 'moon',
   );
-  /** Shortcut caps of the search pill (the key is Cmd on Apple devices, else Ctrl). */
-  protected readonly searchShortcut = isMacPlatform() ? '⌘K' : 'Ctrl K';
 
   protected readonly onboarding = inject(OnboardingStore);
   protected readonly feedback = inject(FeedbackDialogService);

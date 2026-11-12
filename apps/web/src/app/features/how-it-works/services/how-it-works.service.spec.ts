@@ -58,10 +58,21 @@ describe('HowItWorksService', () => {
     expect(second.service.cardVisible()).toBe(false);
   });
 
-  it('never shows the card to a guest or a demo user', () => {
+  it('never shows the card to a guest', () => {
     expect(setup(null).service.cardVisible()).toBe(false);
-    TestBed.resetTestingModule();
-    expect(setup({ ...USER, isDemo: true }).service.cardVisible()).toBe(false);
+  });
+
+  it('shows the card to a demo visitor past two weeks, until the video was opened or hidden', async () => {
+    const demo = { ...USER, id: 'demo-1', isDemo: true } as AuthUser;
+    localStorage.setItem(
+      HOW_IT_WORKS_STORAGE_PREFIX + demo.id,
+      JSON.stringify({ firstSeen: '2020-01-01T00:00:00.000Z', done: false }),
+    );
+    const first = setup(demo);
+    expect(first.service.cardVisible()).toBe(true);
+
+    first.service.hideCard();
+    expect(first.service.cardVisible()).toBe(false);
   });
 
   it('treats broken stored state as a fresh start', () => {

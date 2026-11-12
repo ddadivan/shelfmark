@@ -708,6 +708,7 @@
       }
     },
     "searchHint": "Deine Links durchsuchen",
+    "searchButton": "Suchen",
     "theme": {
       "toLight": "Zum hellen Design wechseln",
       "toDark": "Zum dunklen Design wechseln"
@@ -1493,7 +1494,8 @@
       "one": "{{count}} Ergebnis",
       "other": "{{count}} Ergebnisse"
     },
-    "hint": "Ergebnisse erscheinen beim Tippen: Titel, Notizen, Tags und Websites. Zuletzt geöffnete Links findest du in der Bibliothek.",
+    "hintTitle": "Durchsuche dein Regal",
+    "hint": "Titel, Notizen, Tags und Websites erscheinen beim Tippen.",
     "emptyText": "Versuch ein anderes Wort. Die Suche durchsucht Titel, Notizen, Tags und Websites.",
     "searching": "Suche läuft…",
     "failed": "Suche fehlgeschlagen. Versuch es noch einmal.",

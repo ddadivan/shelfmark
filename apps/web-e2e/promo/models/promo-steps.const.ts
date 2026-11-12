@@ -206,7 +206,15 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       await director.point(hit);
       await director.pause(1600);
       await page.keyboard.press('Escape');
-      await expect(field).toBeHidden();
+      if (phone) {
+        await expect(field).toBeHidden();
+      } else {
+        // From 80em the header field takes the shortcut (#329): the first Esc closes the results
+        // panel, the second clears the text; the field stays in the header.
+        await expect(hit).toBeHidden();
+        await page.keyboard.press('Escape');
+        await expect(field).toHaveValue('');
+      }
     },
   },
   {

@@ -720,6 +720,7 @@
       }
     },
     "searchHint": "Rechercher dans vos liens",
+    "searchButton": "Rechercher",
     "theme": {
       "toLight": "Passer au thème clair",
       "toDark": "Passer au thème sombre"
@@ -1521,7 +1522,8 @@
       "many": "{{count}} résultats",
       "other": "{{count}} résultats"
     },
-    "hint": "Les résultats s’affichent pendant la saisie : titres, notes, tags et sites. Les liens ouverts récemment sont dans la Bibliothèque.",
+    "hintTitle": "Cherchez dans votre étagère",
+    "hint": "Titres, notes, tags et sites apparaissent pendant la saisie.",
     "emptyText": "Essayez un autre mot. La recherche porte sur les titres, notes, tags et sites.",
     "searching": "Recherche…",
     "failed": "La recherche a échoué. Réessayez.",

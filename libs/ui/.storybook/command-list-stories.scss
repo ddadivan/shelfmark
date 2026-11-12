@@ -69,3 +69,8 @@
   color: var(--accent-text);
   background: var(--accent-bg);
 }
+
+.cls-popup {
+  width: min(100vw - rem(48px), rem(560px));
+  min-height: rem(420px);
+}

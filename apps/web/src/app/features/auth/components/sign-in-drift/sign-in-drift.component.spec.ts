@@ -13,7 +13,7 @@ async function setup(wide = true) {
   TestBed.configureTestingModule({
     providers: [
       provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
-      { provide: ViewportService, useValue: { wideDesktop: signal(wide) } },
+      { provide: ViewportService, useValue: { wide: signal(wide) } },
     ],
   });
   await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));

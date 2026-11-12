@@ -1,7 +1,7 @@
 import { type Locator, type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
-import { SEARCH_BUTTON } from './support/search-button';
+import { SEARCH_BUTTON, useSearchDialogWidth } from './support/search-button';
 import { chooseSort, expectSort } from './support/library-toolbar';
 
 // Mirror the contract mock links (libs/shared/contracts/src/testing); the e2e project cannot
@@ -60,6 +60,11 @@ test.describe('search (mock API)', () => {
   });
 
   test.describe('search dialog', () => {
+    // The dialog opens from the button, which the header shows below 80em (#329).
+    test.beforeEach(async ({ page }) => {
+      await useSearchDialogWidth(page);
+    });
+
     test('opens from the header, finds links, folders and tags, and returns focus on Esc', async ({
       page,
     }) => {

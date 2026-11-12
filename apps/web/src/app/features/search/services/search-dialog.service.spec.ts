@@ -1,4 +1,5 @@
 import { Dialog } from '@angular/cdk/dialog';
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { MOCK_LIBRARY_COUNTS } from '@shelfmark/contracts/testing';
@@ -9,7 +10,9 @@ import { LinkActionsService } from '../../links/services/link-actions.service';
 import { FOLDERS_API } from '../../links/models/folders-api.const';
 import { LINKS_API } from '../../links/models/links-api.const';
 import { TAGS_API } from '../../links/models/tags-api.const';
+import { ViewportService } from '../../../core/layout/viewport.service';
 import { SearchDialogService } from './search-dialog.service';
+import { SearchFieldService } from './search-field.service';
 
 function keydown(init: KeyboardEventInit): KeyboardEvent {
   return new KeyboardEvent('keydown', { cancelable: true, ...init });
@@ -164,5 +167,49 @@ describe('SearchDialogService dialog', () => {
     service.open();
 
     await vi.waitFor(() => expect(document.querySelectorAll('[role="dialog"]')).toHaveLength(1));
+  });
+});
+
+describe('SearchDialogService on a wide screen (#329)', () => {
+  function setup(wide: boolean) {
+    const dialogs = { open: vi.fn() };
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: DialogService, useValue: dialogs },
+        { provide: Dialog, useValue: { openDialogs: [] } },
+        { provide: ViewportService, useValue: { wide: signal(wide) } },
+      ],
+    });
+    return { dialogs, service: TestBed.inject(SearchDialogService) };
+  }
+
+  it('focuses the header field instead of opening the dialog', () => {
+    const { dialogs, service } = setup(true);
+    const focus = vi.fn(() => true);
+    TestBed.inject(SearchFieldService).register(focus);
+
+    expect(service.handleShortcut(keydown({ key: 'k', code: 'KeyK', ctrlKey: true }))).toBe(true);
+
+    expect(focus).toHaveBeenCalledTimes(1);
+    expect(dialogs.open).not.toHaveBeenCalled();
+  });
+
+  it('opens the dialog when no field is there', () => {
+    const { dialogs, service } = setup(true);
+
+    service.open();
+
+    expect(dialogs.open).toHaveBeenCalledTimes(1);
+  });
+
+  it('opens the dialog below 80em even if a field is registered', () => {
+    const { dialogs, service } = setup(false);
+    const focus = vi.fn(() => true);
+    TestBed.inject(SearchFieldService).register(focus);
+
+    service.open();
+
+    expect(focus).not.toHaveBeenCalled();
+    expect(dialogs.open).toHaveBeenCalledTimes(1);
   });
 });

@@ -5,6 +5,7 @@
 // only (bottom sheets, one column, stacked buttons).
 $tablet-min: 40em;
 $desktop-min: 64em;
+$wide-min: 80em;
 
 @mixin phone {
   @media (width < #{$tablet-min}) {
@@ -34,6 +35,14 @@ $desktop-min: 64em;
 
 @mixin desktop {
   @media (width >= #{$desktop-min}) {
+    @content;
+  }
+}
+
+// From 80em: a wide desktop (the header search is a real field with a results panel, #329; the
+// sign-in screen has room for the full set of cards). `ViewportService.wide` in the app.
+@mixin wide {
+  @media (width >= #{$wide-min}) {
     @content;
   }
 }

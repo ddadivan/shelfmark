@@ -54,7 +54,7 @@ async function setup(
       { provide: AUTH_API, useValue: api },
       {
         provide: ViewportService,
-        useValue: { desktop: signal(desktop), wideDesktop: signal(true) },
+        useValue: { desktop: signal(desktop), wide: signal(true) },
       },
     ],
   });

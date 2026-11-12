@@ -15,14 +15,7 @@
     <!-- Mobile shell: no header; every page has its own title and the tab bar is the navigation. -->
     @if (!viewport.compact()) {
       <header class="shell__header">
-        <ui-search-trigger
-          class="shell__pill"
-          ariaHaspopup="dialog"
-          ariaKeyshortcuts="Meta+K Control+K"
-          [label]="'shell.searchHint' | transloco"
-          [shortcut]="searchShortcut"
-          (click)="search.open()"
-        />
+        <app-header-search />
         <span class="shell__spacer"></span>
         <ui-button
           variant="ghost"
