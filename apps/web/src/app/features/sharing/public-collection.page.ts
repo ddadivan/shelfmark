@@ -33,6 +33,7 @@ import { LinkCardComponent } from '../links/components/link-card/link-card.compo
 import type { LinkCardItem } from '../links/models/link-card-item.type';
 import { relativeTime } from '../../core/i18n/relative-time';
 import { PublicCollectionStore } from './services/public-collection.store';
+import { PUBLIC_COLLECTION_ORIGIN } from './models/public-collection-origin.const';
 import { publicCollectionUrl } from './utils/public-collection-url';
 
 const ROBOTS = { name: 'robots', content: 'noindex, nofollow' } as const;
@@ -77,6 +78,7 @@ export default class PublicCollectionPage {
   private readonly transloco = inject(TranslocoService);
   private readonly toasts = inject(ToastService);
   private readonly doc = inject(DOCUMENT);
+  private readonly publicOrigin = inject(PUBLIC_COLLECTION_ORIGIN);
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
 
@@ -133,7 +135,7 @@ export default class PublicCollectionPage {
   }
 
   protected async copy(): Promise<void> {
-    const url = publicCollectionUrl(this.doc.location?.origin ?? '', this.token());
+    const url = publicCollectionUrl(this.publicOrigin, this.token());
     try {
       const clipboard = this.doc.defaultView?.navigator.clipboard;
       if (!clipboard) throw new Error('No clipboard');

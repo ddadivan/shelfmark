@@ -10,8 +10,10 @@ import {
 } from '@shelfmark/contracts';
 import { defer, delay, type Observable, of, throwError } from 'rxjs';
 import { AuthStore } from '../../../core/auth/auth.store';
+import { isShowcaseScenario } from '../../links/mock/demo-library-seed';
 import { MockLibraryData } from '../../links/mock/mock-library-data';
 import { MOCK_LATENCY_MS } from '../../links/models/mock-latency.const';
+import { MOCK_PUBLIC_ORIGIN } from '../models/mock-public-origin.const';
 import type { MockShareRecord } from '../models/mock-share-record.interface';
 import { MOCK_SHARES_STORAGE_KEY } from '../models/mock-shares-storage-key.const';
 import type { SharesApi } from '../models/shares-api.interface';
@@ -49,7 +51,16 @@ function httpError(status: number, message: string): HttpErrorResponse {
 export class MockSharesApi implements SharesApi {
   private readonly data = inject(MockLibraryData);
   private readonly auth = inject(AuthStore);
-  private readonly storage = inject(DOCUMENT).defaultView?.localStorage ?? null;
+  private readonly doc = inject(DOCUMENT);
+  private readonly storage = this.doc.defaultView?.localStorage ?? null;
+
+  /**
+   * The origin of the public links it hands out: the page's own, or the production origin under
+   * the `showcase` scenario, so the promo video shows a real address, not a local one (#326).
+   */
+  publicOrigin(): string {
+    return isShowcaseScenario() ? MOCK_PUBLIC_ORIGIN : (this.doc.location?.origin ?? '');
+  }
 
   get(folderId: string): Observable<FolderShareResponse> {
     return this.answer(() => this.response(folderId));

@@ -34,8 +34,8 @@ const TAG_FILTER = 'angular';
 /** Typed into the search: finds "Cacio e pepe, the easy way" of the demo. */
 const QUERY = 'pepe';
 const SEARCH_HIT = 'Cacio e pepe';
-/** The own accent colour the video picks (a deep teal that passes the 4.5:1 guard). */
-const OWN_ACCENT = '#23716c';
+/** The own accent colour the video picks (a light teal that passes the 4.5:1 guard on the dark base). */
+const OWN_ACCENT = '#5cc2b5';
 /** The link the phone shares into the app from another app (the PWA share target). */
 const SHARED_URL = 'https://css-tricks.com/snippets/css/a-guide-to-flexbox/';
 
@@ -43,7 +43,7 @@ const SHARED_URL = 'https://css-tricks.com/snippets/css/a-guide-to-flexbox/';
 const cards = (page: Page) => page.locator('ui-card');
 const addDialog = (page: Page) => page.getByRole('dialog', { name: 'Add link' });
 const shareDialog = (page: Page) =>
-  page.getByRole('dialog', { name: `Share “${PROMO_SHARE.Folder}”` });
+  page.getByRole('dialog', { name: `Share folder “${PROMO_SHARE.Folder}”` });
 
 /**
  * The promo video, step by step (HowItWorks.dc.html, "Shelfmark in 2 minutes", #315: the features
@@ -406,6 +406,13 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
       await director.pause(900);
       await director.press(choice('Custom'));
+      // The own accent on the dark base, so the video stays dark to the end (#326).
+      await director.press(
+        page
+          .getByRole('radiogroup', { name: 'Start from' })
+          .locator('label', { has: page.getByRole('radio', { name: 'Dark', exact: true }) }),
+      );
+      await expect(page.locator('html')).toHaveAttribute('data-custom-base', 'dark');
       const swatch = page.getByRole('button', { name: 'Your own colour' });
       await director.press(swatch);
       const hex = page.getByRole('textbox', { name: 'Hex code' });
@@ -501,6 +508,9 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       // Demo accounts cannot share: switch to a regular mock account on the same mockup library.
       await useShareAccount(page);
       await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
+      // The look of "Make it yours" carries over (the mock appearance lives in this browser).
+      await expect(page.locator('html')).toHaveAttribute('data-custom-base', 'dark');
+      await expect(page.locator('html')).toHaveAttribute('data-custom-accent', 'own');
       await director.pause(700);
       await folderMenu(context, PROMO_SHARE.Folder, 'Share…');
       await expect(shareDialog(page)).toBeVisible();
@@ -509,14 +519,17 @@ export const PROMO_STEPS: readonly PromoStep[] = [
   },
   {
     id: 'share-link',
-    caption: { desktop: 'Turn the public link on and copy it.' },
+    caption: { desktop: 'Make the folder public and copy its link.' },
     run: async ({ page, director }) => {
       const dialog = shareDialog(page);
-      await director.press(dialog.getByRole('switch', { name: 'Public link' }));
-      await expect(dialog.getByLabel('Public link address')).toHaveValue(/\/c\/[\w-]{22}$/);
+      await director.press(dialog.getByRole('switch', { name: 'Public folder' }));
+      // The mock shows the production origin under the showcase scenario, never localhost.
+      await expect(dialog.getByLabel('Folder page address')).toHaveValue(
+        new RegExp(`^${PROMO_SHARE.PublicOrigin.replaceAll('.', '\\.')}/c/[\\w-]{22}$`),
+      );
       await director.pause(700);
       await director.press(dialog.getByRole('button', { name: 'Copy link' }));
-      await expect(page.getByText('Link copied')).toBeVisible();
+      await expect(page.getByText('Folder link copied')).toBeVisible();
       await director.parkPointer();
       await director.pause(1600);
     },
@@ -526,7 +539,7 @@ export const PROMO_STEPS: readonly PromoStep[] = [
     caption: { desktop: 'Anyone with the link sees a read-only page, no account needed.' },
     run: async ({ page, director }) => {
       const dialog = shareDialog(page);
-      const path = new URL(await dialog.getByLabel('Public link address').inputValue()).pathname;
+      const path = new URL(await dialog.getByLabel('Folder page address').inputValue()).pathname;
       await openAsGuest(page, path);
       await expect(page.getByRole('heading', { level: 1, name: PROMO_SHARE.Folder })).toBeVisible();
       await expect(page.getByText(`Shared by ${PROMO_SHARE.OwnerFirstName}`)).toBeVisible();
