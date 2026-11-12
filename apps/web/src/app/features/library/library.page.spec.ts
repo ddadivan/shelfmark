@@ -18,7 +18,7 @@ import { LinksStore } from '../../stores/links.store';
 import { SavedViewsStore } from '../../stores/saved-views.store';
 import { MockSavedViewsApi } from '../views/mock/mock-saved-views.api';
 import { SAVED_VIEWS_API } from '../views/models/saved-views-api.const';
-import { FeedMemoryService } from './feed-memory.service';
+import { FeedMemoryService } from './services/feed-memory.service';
 import { loadEnglish, provideTranslocoForTest } from '../../testing/transloco-testing';
 import LibraryPage from './library.page';
 

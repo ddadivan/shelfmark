@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { LIBRARY_SORT, LIBRARY_VIEW } from '@shelfmark/contracts';
 import { FeedMemoryService } from './feed-memory.service';
-import { FEED_MEMORY_LIMIT } from './models/feed-memory-limit.const';
-import { FEED_MEMORY_STORAGE_KEY } from './models/feed-memory-storage-key.const';
+import { FEED_MEMORY_LIMIT } from '../models/feed-memory-limit.const';
+import { FEED_MEMORY_STORAGE_KEY } from '../models/feed-memory-storage-key.const';
 
 function create(): FeedMemoryService {
   TestBed.resetTestingModule();

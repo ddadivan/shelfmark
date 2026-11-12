@@ -10,7 +10,7 @@ const libraryPage = loadLibraryPage;
 const settingsRoutes = () => import('./features/settings/settings.routes');
 const adminRoutes = () => import('./features/admin/admin.routes');
 const recentPage = () => import('./features/links/recent/recent.page');
-const phoneLibraryPage = () => import('./features/library/phone-library/phone-library.page');
+const phoneLibraryPage = () => import('./features/library/pages/phone-library/phone-library.page');
 const trashPage = () => import('./features/trash/trash.page');
 const tagsPage = () => import('./features/tags/tags-page/tags.page');
 const sharePage = () => import('./features/share/share.page');

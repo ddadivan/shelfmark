@@ -1,5 +1,5 @@
 import { KEYBOARD_KEY } from '@shelfmark/ui';
-import { PAGE_SCROLL_KEY } from './models/page-scroll-key.const';
+import { PAGE_SCROLL_KEY } from '../models/page-scroll-key.const';
 
 /** Share of the visible height that Page Down and Space move (the browsers keep a little overlap). */
 const PAGE_SHARE = 0.9;

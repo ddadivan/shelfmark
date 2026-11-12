@@ -3,17 +3,17 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { DialogService } from '@shelfmark/ui';
 import axe from 'axe-core';
-import { ViewportService } from '../../../core/layout/viewport.service';
-import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
-import { MockFoldersApi } from '../../links/mock/mock-folders.api';
-import { MockLinksApi } from '../../links/mock/mock-links.api';
-import { MockTagsApi } from '../../links/mock/mock-tags.api';
-import { FOLDERS_API } from '../../links/models/folders-api.const';
-import { LINKS_API } from '../../links/models/links-api.const';
-import { TAGS_API } from '../../links/models/tags-api.const';
-import { MockTrashApi } from '../../trash/mock/mock-trash.api';
-import { TRASH_API } from '../../trash/models/trash-api.const';
-import { RecentSheetComponent } from '../../links/recent/recent-sheet.component';
+import { ViewportService } from '../../../../core/layout/viewport.service';
+import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
+import { MockFoldersApi } from '../../../links/mock/mock-folders.api';
+import { MockLinksApi } from '../../../links/mock/mock-links.api';
+import { MockTagsApi } from '../../../links/mock/mock-tags.api';
+import { FOLDERS_API } from '../../../links/models/folders-api.const';
+import { LINKS_API } from '../../../links/models/links-api.const';
+import { TAGS_API } from '../../../links/models/tags-api.const';
+import { MockTrashApi } from '../../../trash/mock/mock-trash.api';
+import { TRASH_API } from '../../../trash/models/trash-api.const';
+import { RecentSheetComponent } from '../../../links/recent/recent-sheet.component';
 import PhoneLibraryPage from './phone-library.page';
 
 async function setup(phone = true) {

@@ -3,9 +3,9 @@ import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import type { FolderResponse } from '@shelfmark/contracts';
 import { FolderIconComponent, ICON_SIZE, IconComponent } from '@shelfmark/ui';
-import { pluralKey } from '../../../core/i18n/plural-key';
-import { UserSettingsStore } from '../../../stores/user-settings.store';
-import { APP_PATH } from '../../../models/app-path.const';
+import { pluralKey } from '../../../../core/i18n/plural-key';
+import { UserSettingsStore } from '../../../../stores/user-settings.store';
+import { APP_PATH } from '../../../../models/app-path.const';
 
 /**
  * A subfolder in the content of a folder view: a compact tile (cards) or a full-width row (list)

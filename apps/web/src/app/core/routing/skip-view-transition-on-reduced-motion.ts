@@ -5,7 +5,7 @@ import {
   canRunViewTransition,
   prefersReducedMotion,
   settleViewTransition,
-} from '../../features/library/view-transition';
+} from '../../features/library/utils/view-transition';
 
 /**
  * `onViewTransitionCreated` of the router's page cross-fade (`withViewTransitions`): with

@@ -8,18 +8,18 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { pluralKey } from '../../../core/i18n/plural-key';
+import { pluralKey } from '../../../../core/i18n/plural-key';
 import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
-import { ViewportService } from '../../../core/layout/viewport.service';
-import { APP_PATH } from '../../../models/app-path.const';
-import { SidebarPinnedComponent } from '../../pins/sidebar-pinned/sidebar-pinned.component';
-import { SidebarComponent } from '../../../shell/sidebar/sidebar.component';
-import { FoldersStore } from '../../../stores/folders.store';
-import { LinksStore } from '../../../stores/links.store';
-import { TrashStore } from '../../../stores/trash.store';
-import { groupByDay } from '../../links/recent/history-days';
-import { HISTORY_DAY_KIND } from '../../links/recent/models/history-day-kind.const';
-import { RecentSheetComponent } from '../../links/recent/recent-sheet.component';
+import { ViewportService } from '../../../../core/layout/viewport.service';
+import { APP_PATH } from '../../../../models/app-path.const';
+import { SidebarPinnedComponent } from '../../../pins/sidebar-pinned/sidebar-pinned.component';
+import { SidebarComponent } from '../../../../shell/sidebar/sidebar.component';
+import { FoldersStore } from '../../../../stores/folders.store';
+import { LinksStore } from '../../../../stores/links.store';
+import { TrashStore } from '../../../../stores/trash.store';
+import { groupByDay } from '../../../links/recent/history-days';
+import { HISTORY_DAY_KIND } from '../../../links/recent/models/history-day-kind.const';
+import { RecentSheetComponent } from '../../../links/recent/recent-sheet.component';
 import { LibraryTileComponent } from './library-tile.component';
 
 /**

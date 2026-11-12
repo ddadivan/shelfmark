@@ -3,7 +3,7 @@ import { provideRouter } from '@angular/router';
 import type { FolderResponse } from '@shelfmark/contracts';
 import { MOCK_FOLDERS } from '@shelfmark/contracts/testing';
 import axe from 'axe-core';
-import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
+import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
 import { FolderTileComponent } from './folder-tile.component';
 
 const FOLDER: FolderResponse = { ...MOCK_FOLDERS[0], id: 'f2', name: 'Angular', linkCount: 12 };

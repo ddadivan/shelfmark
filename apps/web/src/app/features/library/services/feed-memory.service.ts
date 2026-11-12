@@ -5,9 +5,9 @@ import {
   type LibrarySort,
   type LibraryView,
 } from '@shelfmark/contracts';
-import { FEED_MEMORY_LIMIT } from './models/feed-memory-limit.const';
-import { FEED_MEMORY_STORAGE_KEY } from './models/feed-memory-storage-key.const';
-import type { FeedMemoryEntry } from './models/feed-memory-entry.interface';
+import { FEED_MEMORY_LIMIT } from '../models/feed-memory-limit.const';
+import { FEED_MEMORY_STORAGE_KEY } from '../models/feed-memory-storage-key.const';
+import type { FeedMemoryEntry } from '../models/feed-memory-entry.interface';
 
 type FeedMemoryMap = Readonly<Record<string, FeedMemoryEntry>>;
 
