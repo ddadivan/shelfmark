@@ -33,7 +33,7 @@
           (click)="jump(chapter)"
         >
           {{ chapter.titleKey | transloco }}
-          <span class="how-it-works__time">{{ clock(chapter.start) }}</span>
+          <span class="how-it-works__time">{{ clock(start(chapter)) }}</span>
         </ui-button>
       </li>
     }

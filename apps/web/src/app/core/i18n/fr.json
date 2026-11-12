@@ -1948,7 +1948,7 @@
   },
   "howItWorks": {
     "menu": "Comment ça marche",
-    "title": "Shelfmark en 2 minutes",
+    "title": "Shelfmark en 3 minutes",
     "close": "Fermer",
     "captions": "Anglais",
     "chaptersLabel": "Chapitres",
@@ -1958,13 +1958,14 @@
       "find": "Le retrouver",
       "many": "Plusieurs à la fois",
       "yours": "Personnaliser",
-      "share": "Partager une collection"
+      "safety": "Annuler et Corbeille",
+      "share": "Partager et exporter"
     },
     "emptyLink": "Voir comment ça marche",
     "card": {
       "label": "Comment ça marche",
       "title": "Nouveau ici ? Découvrez comment ça marche",
-      "length": "2 minutes",
+      "length": "3 minutes",
       "hide": "Masquer"
     }
   },

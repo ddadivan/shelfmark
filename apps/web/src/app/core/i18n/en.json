@@ -1911,7 +1911,7 @@
   },
   "howItWorks": {
     "menu": "How it works",
-    "title": "Shelfmark in 2 minutes",
+    "title": "Shelfmark in 3 minutes",
     "close": "Close",
     "captions": "English",
     "chaptersLabel": "Chapters",
@@ -1921,13 +1921,14 @@
       "find": "Find it again",
       "many": "Many at once",
       "yours": "Make it yours",
-      "share": "Share a collection"
+      "safety": "Undo and Trash",
+      "share": "Share and export"
     },
     "emptyLink": "Watch how it works",
     "card": {
       "label": "How it works",
       "title": "New here? Watch how it works",
-      "length": "2 minutes",
+      "length": "3 minutes",
       "hide": "Hide"
     }
   },
