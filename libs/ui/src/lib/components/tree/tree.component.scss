@@ -181,23 +181,23 @@ $more-column: rem(30px);
 
 // A row that cannot take what is dragged: a no-drop cursor and a muted state (no hover tint, never
 // the highlight) while the drag lasts; the feature sets `noDropIds` only then.
-.ui-tree__row.ui-tree__row--no-drop {
+.ui-tree__row--no-drop {
   // Text stays `text-muted` (4.5:1: no opacity on text); only the glyph is dimmed.
   color: var(--text-muted);
-  cursor: no-drop;
+
+  &,
+  * {
+    cursor: no-drop;
+  }
 
   .ui-tree__icon,
   .ui-tree__twist {
     opacity: 0.55;
   }
 
-  &:not([aria-current]),
-  &:not([aria-current]):hover {
+  // After the hover rule in the file, so it wins at the same specificity.
+  &:not([aria-current]) {
     background: transparent;
-  }
-
-  * {
-    cursor: no-drop;
   }
 }
 
