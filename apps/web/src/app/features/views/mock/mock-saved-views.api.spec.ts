@@ -31,6 +31,16 @@ describe('MockSavedViewsApi', () => {
     );
   });
 
+  it('counts inside a feed (#335)', async () => {
+    const { api, data } = setup();
+    const unsorted = data.links.filter((link) => link.folderId === null);
+    const body = await firstValueFrom(api.list({ scope: SAVED_VIEW_SCOPE.Unsorted }));
+    expect(body.total).toBe(unsorted.length);
+    expect(body.items[0]?.count).toBe(
+      unsorted.filter((link) => link.kind === LINK_KIND.Video).length,
+    );
+  });
+
   it('creates normalized views and refuses like the API', async () => {
     const { api, data } = setup();
     const view = await firstValueFrom(

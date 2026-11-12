@@ -847,7 +847,55 @@
         "user": "Usuario",
         "settings": "Ajustes",
         "download": "Descarga",
-        "share": "Compartir"
+        "share": "Compartir",
+        "ball": "Balón",
+        "bike": "Bicicleta",
+        "book": "Libro",
+        "bulb": "Bombilla",
+        "calendar": "Calendario",
+        "camera": "Cámara",
+        "car": "Coche",
+        "chart": "Gráfico",
+        "cloud": "Nube",
+        "coffee": "Café",
+        "dumbbell": "Mancuerna",
+        "film": "Película",
+        "flag": "Bandera",
+        "gamepad": "Mando",
+        "gift": "Regalo",
+        "globe": "Globo",
+        "hammer": "Martillo",
+        "health": "Salud",
+        "heart": "Corazón",
+        "home": "Casa",
+        "kids": "Niños",
+        "leaf": "Hoja",
+        "map-pin": "Marcador",
+        "mountain": "Montaña",
+        "music": "Música",
+        "palette": "Paleta",
+        "paw": "Huella",
+        "plane": "Avión",
+        "rocket": "Cohete",
+        "shopping-bag": "Bolsa de compras",
+        "sun": "Sol",
+        "tree": "Árbol",
+        "trophy": "Trofeo",
+        "umbrella": "Paraguas",
+        "utensils": "Comida",
+        "wallet": "Cartera"
+      },
+      "own": {
+        "group": "Tus colores",
+        "add": "Añadir tu propio color",
+        "picker": "Elegir un color"
+      },
+      "ownSwatch": "Tu color {{colour}}",
+      "emoji": {
+        "label": "Emoji",
+        "hint": "Usa un emoji en lugar de un icono",
+        "placeholder": "🍕",
+        "invalid": "Introduce un solo emoji."
       }
     }
   },
@@ -1111,7 +1159,15 @@
           "invalid": "Escribe # y seis dígitos o letras a–f, por ejemplo #2e6a99.",
           "hint": "Shelfmark mantiene un contraste de 4,5:1: en la otra base usa un tono más oscuro o más claro de tu color.",
           "warning": "Este color se lee mal sobre tu fondo ({{ratio}}:1; necesita 4,5:1).",
-          "use": "Usar {{colour}}"
+          "use": "Usar {{colour}}",
+          "saturation": "Saturación",
+          "brightness": "Brillo",
+          "hue": "Tono"
+        },
+        "ownBackground": {
+          "label": "Tu color de fondo",
+          "hint": "El texto debe seguir siendo legible (4,5:1): si hace falta, Shelfmark usa un tono más claro u oscuro de tu color.",
+          "warning": "El texto es difícil de leer sobre este fondo ({{ratio}}:1, hacen falta 4,5:1)."
         }
       },
       "layout": {
@@ -1828,6 +1884,11 @@
     "unavailable": {
       "title": "Esta vista espera a su carpeta",
       "detail": "La carpeta de {{name}} está en la papelera. Restáurala para usar la vista."
+    },
+    "kindHint": {
+      "video": "Enlaces detectados como vídeos",
+      "article": "Enlaces detectados como artículos",
+      "shopping": "Enlaces detectados como compras"
     }
   },
   "feedback": {

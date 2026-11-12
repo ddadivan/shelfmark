@@ -76,3 +76,25 @@ export function hslToHex(h: number, s: number, l: number): string {
   const f = (n: number): number => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
   return toHex([f(0) * 255, f(8) * 255, f(4) * 255]);
 }
+
+/** Hue (0 to 360), saturation and brightness (value), both 0 to 1: the model of a colour picker. */
+export function hexToHsv(hex: string): readonly [number, number, number] {
+  const [r, g, b] = rgbOf(hex).map((channel) => channel / 255);
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const d = max - min;
+  if (d === 0) {
+    return [0, 0, max];
+  }
+  const h =
+    max === r ? (g - b) / d + (g < b ? 6 : 0) : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return [h * 60, d / max, max];
+}
+
+export function hsvToHex(h: number, s: number, v: number): string {
+  const f = (n: number): number => {
+    const k = (n + h / 60) % 6;
+    return (v - v * s * Math.max(0, Math.min(k, 4 - k, 1))) * 255;
+  };
+  return toHex([f(5), f(3), f(1)]);
+}

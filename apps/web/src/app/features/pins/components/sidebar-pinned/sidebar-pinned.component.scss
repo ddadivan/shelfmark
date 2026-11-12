@@ -222,3 +222,49 @@
     transform: translate(rem(-12px), -50%);
   }
 }
+
+// A dragged link over a pinned folder: the tree's drop look (sage fill, 2px ring, "Move here"
+// instead of the count). The row keeps its height.
+.pinned__item--drop,
+.pinned__item--drop:hover {
+  background: var(--accent-bg);
+  box-shadow: inset 0 0 0 2px var(--accent);
+
+  .pinned__link {
+    font-weight: 500;
+    color: var(--accent-text);
+  }
+}
+
+.pinned__drop-badge {
+  @include type(caption);
+
+  flex: none;
+  padding: rem(2px) rem(8px);
+  margin-inline-start: auto;
+  font-weight: 500;
+  color: var(--accent-text);
+  white-space: nowrap;
+  background: var(--surface);
+  border-radius: var(--radius-full);
+}
+
+// A pinned link cannot take a link: muted, no-drop cursor, never the highlight.
+.pinned__item--no-drop,
+.pinned__item--no-drop .pinned__link {
+  color: var(--text-muted);
+  cursor: no-drop;
+}
+
+.pinned__item--no-drop {
+  opacity: 0.55;
+
+  &:hover {
+    background: transparent;
+  }
+}
+
+// While a link is over the row the "Move here" badge has the end of the row to itself.
+.pinned__item--drop .pinned__actions {
+  opacity: 0;
+}

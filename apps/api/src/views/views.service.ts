@@ -9,6 +9,7 @@ import {
   SAVED_VIEW_LIMIT,
   SAVED_VIEW_SCOPE,
   type CreateSavedViewRequest,
+  type ListSavedViewsQuery,
   type ListSavedViewsResponse,
   type SavedViewQuery,
   type SavedViewResponse,
@@ -17,10 +18,32 @@ import {
 import type { Prisma } from '../generated/prisma/client';
 import type { LinkDbClient } from '../links/models/link-db-client.type';
 import { PrismaService } from '../prisma/prisma.service';
+import { DEFAULT_SAVED_VIEW_QUERY } from './models/default-saved-view-query.const';
 import { SAVED_VIEW_LOCK_PREFIX } from './models/saved-view-lock.const';
 import type { SavedViewRow } from './models/saved-view-row.interface';
 import { countViews } from './saved-view-counts';
 import { normalizeSavedViewQuery, parseStoredQuery } from './saved-view-query';
+
+/** The feed of a list request as a view query (kind, search and sort left out), or none. */
+function feedOf(query: ListSavedViewsQuery): SavedViewQuery | undefined {
+  if (query.scope === undefined && query.folderId === undefined && !query.tag?.length) {
+    return undefined;
+  }
+  const scope =
+    query.scope ?? (query.folderId === undefined ? SAVED_VIEW_SCOPE.All : SAVED_VIEW_SCOPE.Folder);
+  if (scope === SAVED_VIEW_SCOPE.Folder && query.folderId === undefined) {
+    throw new BadRequestException(SAVED_VIEW_ERROR_MESSAGE.FeedFolderRequired);
+  }
+  if (scope !== SAVED_VIEW_SCOPE.Folder && query.folderId !== undefined) {
+    throw new BadRequestException(SAVED_VIEW_ERROR_MESSAGE.FolderNotAllowed);
+  }
+  return {
+    ...DEFAULT_SAVED_VIEW_QUERY,
+    scope,
+    folderId: query.folderId?.toLowerCase() ?? null,
+    tags: [...(query.tag ?? [])],
+  };
+}
 
 const VIEW_SELECT = { id: true, name: true, query: true, position: true } as const;
 
@@ -35,8 +58,13 @@ const VIEW_SELECT = { id: true, name: true, query: true, position: true } as con
 export class ViewsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async list(userId: string): Promise<ListSavedViewsResponse> {
-    return this.load(this.prisma, userId);
+  /**
+   * The views with their counts. A feed (`scope`, `folderId`, `tag`, #335) narrows `total` and
+   * every count to that feed; the folder of a folder feed needs no ownership check, because the
+   * count only reads the caller's own links.
+   */
+  async list(userId: string, query: ListSavedViewsQuery = {}): Promise<ListSavedViewsResponse> {
+    return this.load(this.prisma, userId, feedOf(query));
   }
 
   async create(userId: string, request: CreateSavedViewRequest): Promise<SavedViewResponse> {
@@ -121,13 +149,17 @@ export class ViewsService {
     if (!folder) throw new NotFoundException(SAVED_VIEW_ERROR_MESSAGE.FolderNotFound);
   }
 
-  private async load(db: LinkDbClient, userId: string): Promise<ListSavedViewsResponse> {
+  private async load(
+    db: LinkDbClient,
+    userId: string,
+    feed?: SavedViewQuery,
+  ): Promise<ListSavedViewsResponse> {
     const rows = await db.savedView.findMany({
       where: { userId },
       orderBy: [{ position: 'asc' }, { id: 'asc' }],
       select: VIEW_SELECT,
     });
-    return this.respond(db, userId, rows);
+    return this.respond(db, userId, rows, feed);
   }
 
   private async one(
@@ -145,6 +177,7 @@ export class ViewsService {
     db: LinkDbClient,
     userId: string,
     rows: readonly SavedViewRow[],
+    feed?: SavedViewQuery,
   ): Promise<ListSavedViewsResponse> {
     const queries = rows.map((row) => parseStoredQuery(row.query));
     const folderIds = [
@@ -170,6 +203,7 @@ export class ViewsService {
       db,
       userId,
       queries.map((query, index) => (available[index] ? query : null)),
+      feed,
     );
     return {
       total,

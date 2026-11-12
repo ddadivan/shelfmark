@@ -72,8 +72,8 @@ export class LinkHistoryRowComponent {
   /** Name of the link's folder, or `null` for an unsorted link (the row says "Unsorted"). */
   readonly folderName = input<string | null>(null);
   /** Colour and icon of the folder tile (graphite and the folder glyph by default). */
-  readonly folderColour = input<FolderColour>(FOLDER_DEFAULT_COLOUR);
-  readonly folderIcon = input<FolderIcon>(FOLDER_DEFAULT_ICON);
+  readonly folderColour = input<FolderColour | string>(FOLDER_DEFAULT_COLOUR);
+  readonly folderIcon = input<FolderIcon | string>(FOLDER_DEFAULT_ICON);
   /** Already formatted local time of the open. */
   readonly time = input.required<string>();
   /** Machine-readable time for the `<time>` element. */

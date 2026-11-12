@@ -84,7 +84,14 @@ describe('SavedViewChipsComponent', () => {
     fixture.componentInstance.filter.set({ scope: LINKS_SCOPE.All, kind: LINK_KIND.Article });
     await fixture.whenStable();
     expect(pressed()).toEqual(['false', 'false', 'true']);
+    // Inside another feed "All" is the feed itself, and a view works on top of it (#335).
     fixture.componentInstance.filter.set({ scope: LINKS_SCOPE.Unsorted });
+    await fixture.whenStable();
+    expect(pressed()).toEqual(['true', 'false', 'false']);
+    fixture.componentInstance.filter.set({ scope: LINKS_SCOPE.Unsorted, kind: LINK_KIND.Article });
+    await fixture.whenStable();
+    expect(pressed()).toEqual(['false', 'false', 'true']);
+    fixture.componentInstance.filter.set({ scope: LINKS_SCOPE.All, q: 'zzz' });
     await fixture.whenStable();
     expect(pressed()).toEqual(['false', 'false', 'false']);
   });
@@ -92,9 +99,13 @@ describe('SavedViewChipsComponent', () => {
   it('applies All or a view, and saves the current filter', async () => {
     const { fixture, chips, actions, store, element } = await setup();
     chips()[0]?.click();
-    expect(actions.applyAll).toHaveBeenCalled();
+    expect(actions.applyAll).toHaveBeenCalledWith({ scope: LINKS_SCOPE.All }, store.items());
     chips()[1]?.click();
-    expect(actions.apply).toHaveBeenCalledWith(store.items()[0]);
+    expect(actions.apply).toHaveBeenCalledWith(
+      store.items()[0],
+      { scope: LINKS_SCOPE.All },
+      store.items(),
+    );
     fixture.componentInstance.filter.set({ scope: LINKS_SCOPE.Favorites });
     await fixture.whenStable();
     element.querySelector<HTMLButtonElement>('.ui-saved-views__add')?.click();

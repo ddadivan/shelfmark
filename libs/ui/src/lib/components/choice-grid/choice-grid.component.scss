@@ -20,6 +20,27 @@
   }
 }
 
+:host(.ui-choice-grid--single-line) {
+  flex-wrap: nowrap;
+  gap: var(--space-2);
+  justify-content: space-between;
+
+  .ui-choice {
+    flex: 0 1 rem(36px);
+    min-inline-size: rem(24px);
+
+    @include coarse {
+      flex-basis: rem(44px);
+    }
+  }
+
+  .ui-choice__swatch {
+    inline-size: 100%;
+    block-size: auto;
+    aspect-ratio: 1;
+  }
+}
+
 .ui-choice {
   position: relative;
   display: grid;

@@ -46,6 +46,8 @@ model User {
   customThemeAccent     String        @default("ocean") @map("custom_theme_accent")
   customThemeBackground String        @default("paper") @map("custom_theme_background")
   customThemeCorners    String        @default("soft") @map("custom_theme_corners")
+  // Own colours (#335): up to 12 lower-case #rrggbb, offered as swatches; a CHECK in the migration keeps the list valid.
+  customColours         String[]      @default([]) @map("custom_colours")
   motion                String        @default("system") @map("motion")
   // Set by the first write of theme, customTheme or motion; NULL = the appearance was never chosen.
   appearanceSavedAt     DateTime?     @map("appearance_saved_at") @db.Timestamptz(3)

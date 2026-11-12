@@ -18,6 +18,7 @@ import {
   THEME_CUSTOM,
   ToastService,
   nearestAccessibleAccent,
+  nearestReadableBackground,
 } from '@shelfmark/ui';
 import { LAYOUT_STORAGE_KEY } from '../../../../core/theme/models/layout-storage-key.const';
 import { of, throwError } from 'rxjs';
@@ -54,6 +55,7 @@ const BASE: UserSettingsResponse = {
   trashRetentionDays: 30,
   folderColours: true,
   pauseHistory: false,
+  customColours: [],
   ...MOCK_APPEARANCE_DEFAULTS,
   ...LIBRARY_SETTINGS_DEFAULT,
 };
@@ -212,9 +214,9 @@ describe('AppearancePage', () => {
     });
     expect(root.getAttribute(CUSTOM_THEME_ATTRIBUTE.Accent)).toBe(CUSTOM_ACCENT_OWN);
     expect(root.style.getPropertyValue('--accent')).toBe('#23716c');
-    // No curated swatch is checked; the own swatch carries the ring.
+    // No curated swatch is checked; the own colour is a swatch of its own and is checked (#335).
     expect(radioIn(page, 'Accent colour', 'Ocean').checked).toBe(false);
-    expect(swatch.classList).toContain('ui-color-picker__swatch--selected');
+    expect(radioIn(page, 'Accent colour', '#23716c').checked).toBe(true);
     expect(page.querySelector('ui-notice')).toBeNull();
 
     // A curated accent takes over again and drops the custom properties.
@@ -258,7 +260,65 @@ describe('AppearancePage', () => {
       customTheme: { ...CUSTOM_THEME_DEFAULT, accent: shade },
     });
     expect(page.querySelector('ui-notice')).toBeNull();
-    expect(hex.value).toBe(shade);
+    // The shade is a swatch of its own now, checked; the "+" panel closed.
+    expect(radioIn(page, 'Accent colour', shade).checked).toBe(true);
+  });
+
+  it('saves an own background colour that keeps text at 4.5:1 and draws it as a swatch (#335)', async () => {
+    const { root: page, theme, settingsApi, stable } = await setup();
+    radioIn(page, 'Theme', 'Custom').click();
+    await stable();
+
+    const swatch = page.querySelectorAll<HTMLButtonElement>('.ui-color-picker__swatch')[1];
+    expect(swatch.getAttribute('aria-label')).toBe('Your own background colour');
+    swatch.click();
+    await stable();
+    const hex = page.querySelector('.ui-color-picker__hex-input') as HTMLInputElement;
+    hex.value = '#FDF6E3';
+    hex.dispatchEvent(new Event('input'));
+    hex.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    await stable();
+
+    expect(theme.customTheme().background).toBe('#fdf6e3');
+    expect(settingsApi.update).toHaveBeenLastCalledWith({
+      customTheme: { ...CUSTOM_THEME_DEFAULT, background: '#fdf6e3' },
+    });
+    expect(root.getAttribute(CUSTOM_THEME_ATTRIBUTE.Background)).toBe('own');
+    expect(root.style.getPropertyValue('--bg')).toBe('#fdf6e3');
+    expect(radioIn(page, 'Background', '#fdf6e3').checked).toBe(true);
+
+    // A curated background takes over and drops the custom property.
+    radioIn(page, 'Background', 'Mist').click();
+    await stable();
+    expect(root.style.getPropertyValue('--bg')).toBe('');
+  });
+
+  it('warns about a background that hides the text and offers the nearest readable shade (#335)', async () => {
+    const { root: page, theme, settingsApi, stable } = await setup();
+    radioIn(page, 'Theme', 'Custom').click();
+    await stable();
+    settingsApi.update.mockClear();
+
+    page.querySelectorAll<HTMLButtonElement>('.ui-color-picker__swatch')[1].click();
+    await stable();
+    const hex = page.querySelector('.ui-color-picker__hex-input') as HTMLInputElement;
+    hex.value = '#808080';
+    hex.dispatchEvent(new Event('input'));
+    hex.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    await stable();
+
+    expect(theme.customTheme().background).toBe(CUSTOM_THEME_DEFAULT.background);
+    expect(settingsApi.update).not.toHaveBeenCalled();
+    const notice = page.querySelector('ui-notice');
+    expect(notice?.textContent).toMatch(/Text is hard to read on this background/u);
+    const shade = nearestReadableBackground('#808080', 'light');
+    const use = Array.from(notice?.querySelectorAll('button') ?? []).find((b) =>
+      b.textContent?.includes(`Use ${shade}`),
+    );
+    expect(use).toBeDefined();
+    use?.click();
+    await stable();
+    expect(theme.customTheme().background).toBe(shade);
   });
 
   it('sets Animations', async () => {

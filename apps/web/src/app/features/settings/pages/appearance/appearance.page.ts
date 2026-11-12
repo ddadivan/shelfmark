@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
@@ -28,6 +35,7 @@ import {
   ButtonComponent,
   ColorPickerComponent,
   CUSTOM_ACCENT_OWN,
+  CUSTOM_BACKGROUND_OWN,
   NOTICE_KIND,
   NoticeComponent,
   SegmentedControlComponent,
@@ -45,6 +53,10 @@ import {
   type ThemePickerOption,
   type ThemePreviewCard,
   accentContrast,
+  backgroundContrast,
+  customBackgroundTokens,
+  isReadableBackground,
+  nearestReadableBackground,
   customAccentTokens,
   isAccessibleAccent,
   nearestAccessibleAccent,
@@ -128,11 +140,26 @@ export default class AppearancePage {
     this.labels(Object.values(CUSTOM_THEME_BASE), `${KEY}.custom.base`),
   );
 
+  /**
+   * The curated accents, then the own colours of the account (#335) as swatches, each drawn in the
+   * shade it gets on the current base and background; a chosen own colour is always among them.
+   */
   protected readonly accentOptions = computed<ThemePickerOption[]>(() => {
-    const base = this.theme.customTheme().base;
-    return this.labels(Object.values(CUSTOM_THEME_ACCENT), `${KEY}.custom.accent`).map(
+    const { base, background } = this.theme.customTheme();
+    const curated = this.labels(Object.values(CUSTOM_THEME_ACCENT), `${KEY}.custom.accent`).map(
       (option) => ({ ...option, theme: THEME_CUSTOM, base, accent: option.value }),
     );
+    const own = this.withChosen(this.settings.customColours(), this.ownAccent()).map(
+      (colour): ThemePickerOption => ({
+        value: colour,
+        label: colour,
+        theme: THEME_CUSTOM,
+        base,
+        accent: CUSTOM_ACCENT_OWN,
+        tokens: { ...customAccentTokens(colour, base, background) },
+      }),
+    );
+    return [...curated, ...own];
   });
 
   /** The own accent colour of the Custom theme (#315), or null for a curated accent. */
@@ -141,23 +168,50 @@ export default class AppearancePage {
     return isHexColour(accent) ? accent : null;
   });
 
-  /** The curated accent that is checked; none while an own colour is the accent. */
-  protected readonly curatedAccent = computed(() =>
-    this.ownAccent() === null ? this.theme.customTheme().accent : '',
-  );
+  /** The checked accent swatch: the curated name or the own colour. */
+  protected readonly checkedAccent = computed(() => this.theme.customTheme().accent);
 
-  /** What the colour picker shows: the last colour picked here, else the saved own colour. */
+  /** What the colour pickers show while open: the colour being picked (empty again once it is a swatch). */
   protected readonly pickedColour = signal('');
-  protected readonly shownColour = computed(() => this.pickedColour() || (this.ownAccent() ?? ''));
+  protected readonly accentPickerOpen = signal(false);
+  private readonly accentPicker = viewChild<ColorPickerComponent>('accentPicker');
+  private readonly backgroundPicker = viewChild<ColorPickerComponent>('backgroundPicker');
+  protected readonly backgroundPickerOpen = signal(false);
 
   /** A picked colour that would not keep 4.5:1, with the nearest shade that does. */
   protected readonly accentWarning = signal<AccentWarning | null>(null);
 
+  /** The own page background of the Custom theme (#335), or null for a curated one. */
+  protected readonly ownBackground = computed(() => {
+    const background = this.theme.customTheme().background;
+    return isHexColour(background) ? background : null;
+  });
+
+  /** The checked background swatch: the curated name or the own colour. */
+  protected readonly checkedBackground = computed(() => this.theme.customTheme().background);
+
+  /** What the background colour picker shows: the last colour picked, else the saved own one. */
+  protected readonly pickedBackground = signal('');
+  /** A picked background that would not keep text at 4.5:1, with the nearest shade that does. */
+  protected readonly backgroundWarning = signal<AccentWarning | null>(null);
+
+  /** The curated backgrounds of the base, then the own colours (#335) drawn in their readable shade. */
   protected readonly backgroundOptions = computed<ThemePickerOption[]>(() => {
     const base = this.theme.customTheme().base;
-    return this.labels(CUSTOM_THEME_BACKGROUNDS[base], `${KEY}.custom.background`).map(
+    const curated = this.labels(CUSTOM_THEME_BACKGROUNDS[base], `${KEY}.custom.background`).map(
       (option) => ({ ...option, theme: THEME_CUSTOM, base, background: option.value }),
     );
+    const own = this.withChosen(this.settings.customColours(), this.ownBackground()).map(
+      (colour): ThemePickerOption => ({
+        value: colour,
+        label: colour,
+        theme: THEME_CUSTOM,
+        base,
+        background: CUSTOM_BACKGROUND_OWN,
+        tokens: { ...customBackgroundTokens(colour, base) },
+      }),
+    );
+    return [...curated, ...own];
   });
 
   protected readonly cornerOptions = computed<SegmentedOption[]>(() =>
@@ -219,11 +273,20 @@ export default class AppearancePage {
     }
     const base =
       value === CUSTOM_THEME_BASE.Dark ? CUSTOM_THEME_BASE.Dark : CUSTOM_THEME_BASE.Light;
-    // A background belongs to one base: switching takes the first background of the new base.
-    this.setCustom({ base, background: CUSTOM_THEME_BACKGROUNDS[base][0] });
+    // A curated background belongs to one base: switching takes the first one of the new base. An
+    // own background colour fits both (it is drawn in its readable shade for the new base).
+    this.setCustom({
+      base,
+      background: this.ownBackground() ?? CUSTOM_THEME_BACKGROUNDS[base][0],
+    });
   }
 
   protected setAccent(value: string): void {
+    if (isHexColour(value)) {
+      // An own colour swatch of the account: applied when it keeps 4.5:1, else the warning.
+      this.pickOwnAccent(value, false);
+      return;
+    }
     const accent = Object.values(CUSTOM_THEME_ACCENT).find((name) => name === value);
     if (accent) {
       this.accentWarning.set(null);
@@ -236,15 +299,20 @@ export default class AppearancePage {
    * background becomes the accent at once; one that does not is not applied, a warning offers the
    * nearest shade that passes instead.
    */
-  protected pickOwnAccent(colour: string): void {
+  protected pickOwnAccent(colour: string, remember = true): void {
     if (!isHexColour(colour)) {
       return;
     }
     const { base, background } = this.theme.customTheme();
     this.pickedColour.set(colour);
     if (isAccessibleAccent(colour, base, background)) {
+      // Kept as a swatch only once it is the accent (a refused colour is not remembered).
+      if (remember) {
+        void this.settings.addCustomColour(colour);
+      }
       this.accentWarning.set(null);
       this.setCustom({ accent: colour });
+      this.closeAccentPicker();
       return;
     }
     this.accentWarning.set({
@@ -263,10 +331,54 @@ export default class AppearancePage {
     }
     this.pickedColour.set(shade);
     this.accentWarning.set(null);
+    void this.settings.addCustomColour(shade);
     this.setCustom({ accent: shade });
+    this.closeAccentPicker();
+  }
+
+  /**
+   * A background colour finished in the picker (#335): one that keeps text and muted text at
+   * 4.5:1 becomes the background at once; one that does not is not applied, a warning offers the
+   * nearest shade that passes.
+   */
+  protected pickOwnBackground(colour: string, remember = true): void {
+    if (!isHexColour(colour)) {
+      return;
+    }
+    const base = this.theme.customTheme().base;
+    this.pickedBackground.set(colour);
+    if (isReadableBackground(colour, base)) {
+      if (remember) {
+        void this.settings.addCustomColour(colour);
+      }
+      this.backgroundWarning.set(null);
+      this.setCustom({ background: colour });
+      this.closeBackgroundPicker();
+      return;
+    }
+    this.backgroundWarning.set({
+      colour,
+      ratio: this.locale.formatNumber(Math.floor(backgroundContrast(colour, base) * 10) / 10),
+      shade: nearestReadableBackground(colour, base),
+    });
+  }
+
+  protected useBackgroundShade(shade: string): void {
+    if (!isHexColour(shade)) {
+      return;
+    }
+    this.pickedBackground.set(shade);
+    this.backgroundWarning.set(null);
+    void this.settings.addCustomColour(shade);
+    this.setCustom({ background: shade });
+    this.closeBackgroundPicker();
   }
 
   protected setBackground(value: string): void {
+    if (isHexColour(value)) {
+      this.pickOwnBackground(value, false);
+      return;
+    }
     const base = this.theme.customTheme().base;
     const background = CUSTOM_THEME_BACKGROUNDS[base].find((name) => name === value);
     if (background) {
@@ -283,8 +395,26 @@ export default class AppearancePage {
 
   protected resetCustom(): void {
     this.pickedColour.set('');
+    this.pickedBackground.set('');
     this.accentWarning.set(null);
+    this.backgroundWarning.set(null);
     void this.save({ customTheme: { ...CUSTOM_THEME_DEFAULT } });
+  }
+
+  /** The colour is a swatch now: the "+" swatch closes and starts empty again. */
+  private closeAccentPicker(): void {
+    this.accentPickerOpen.set(false);
+    this.accentPicker()?.clear();
+  }
+
+  private closeBackgroundPicker(): void {
+    this.backgroundPickerOpen.set(false);
+    this.backgroundPicker()?.clear();
+  }
+
+  /** The own colours, with the chosen one added when the account does not list it (yet). */
+  private withChosen(colours: readonly string[], chosen: string | null): string[] {
+    return chosen === null || colours.includes(chosen) ? [...colours] : [...colours, chosen];
   }
 
   /** The Custom thumbnail of an own accent: no Sass rule, the derived tokens instead. */

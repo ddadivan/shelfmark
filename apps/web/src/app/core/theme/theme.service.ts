@@ -21,6 +21,7 @@ import {
 } from '@shelfmark/contracts';
 import {
   CUSTOM_ACCENT_OWN,
+  CUSTOM_BACKGROUND_OWN,
   CUSTOM_THEME_ATTRIBUTE,
   LAYOUT_ATTRIBUTE,
   LAYOUT_OFF,
@@ -30,6 +31,7 @@ import {
   THEME_ATTRIBUTE,
   THEME_CUSTOM,
   customAccentTokens,
+  customBackgroundTokens,
   type CustomAccentTokens,
   type Theme,
 } from '@shelfmark/ui';
@@ -115,10 +117,13 @@ export class ThemeService {
       root.style.colorScheme = theme;
       const customTheme = this.customThemeState();
       const own = custom && isHexColour(customTheme.accent);
+      const ownBackground = custom && isHexColour(customTheme.background);
       const values: Record<string, string> = {
         [CUSTOM_THEME_ATTRIBUTE.Base]: customTheme.base,
         [CUSTOM_THEME_ATTRIBUTE.Accent]: own ? CUSTOM_ACCENT_OWN : customTheme.accent,
-        [CUSTOM_THEME_ATTRIBUTE.Background]: customTheme.background,
+        [CUSTOM_THEME_ATTRIBUTE.Background]: ownBackground
+          ? CUSTOM_BACKGROUND_OWN
+          : customTheme.background,
         [CUSTOM_THEME_ATTRIBUTE.Corners]: customTheme.corners,
       };
       for (const [name, value] of Object.entries(values)) {
@@ -137,6 +142,15 @@ export class ThemeService {
         } else {
           root.style.removeProperty(name);
         }
+      }
+      // An own page background (#335): its nearest readable shade as `--bg` (CSSOM).
+      if (ownBackground && isHexColour(customTheme.background)) {
+        root.style.setProperty(
+          '--bg',
+          customBackgroundTokens(customTheme.background, customTheme.base)['--bg'],
+        );
+      } else {
+        root.style.removeProperty('--bg');
       }
     });
     effect(() => {

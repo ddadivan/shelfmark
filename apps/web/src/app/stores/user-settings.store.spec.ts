@@ -17,6 +17,7 @@ function setup() {
         trashRetentionDays: 7 as const,
         folderColours: true,
         pauseHistory: false,
+        customColours: [],
         ...MOCK_APPEARANCE_DEFAULTS,
         ...LIBRARY_SETTINGS_DEFAULT,
       }),
@@ -26,6 +27,7 @@ function setup() {
         trashRetentionDays: request.trashRetentionDays ?? 30,
         folderColours: true,
         pauseHistory: false,
+        customColours: [],
         ...MOCK_APPEARANCE_DEFAULTS,
         ...LIBRARY_SETTINGS_DEFAULT,
       }),
@@ -110,6 +112,7 @@ describe('UserSettingsStore', () => {
         trashRetentionDays: 90,
         folderColours: true,
         pauseHistory: false,
+        customColours: [],
         ...MOCK_APPEARANCE_DEFAULTS,
         ...LIBRARY_SETTINGS_DEFAULT,
       });

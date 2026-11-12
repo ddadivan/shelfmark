@@ -9,7 +9,7 @@ import type { FolderNode } from '../../../stores/models/folder-node.interface';
  */
 export function buildFolderPickerOptions(
   folders: readonly FolderResponse[],
-  shownColour: (colour: FolderColour) => FolderColour,
+  shownColour: (colour: FolderColour | string) => FolderColour | string,
 ): PickerOption[] {
   const toOption = ({ folder, children }: FolderNode): PickerOption => ({
     id: folder.id,

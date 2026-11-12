@@ -52,6 +52,23 @@
   @include type(label);
 }
 
+// Own colours: the account's swatches and the "+" swatch share a wrapping row; the open picker
+// panel takes a line of its own under them.
+.folder-style__own {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+// ~57 icons: the grid scrolls inside the dialog (room at the edges for the focus ring).
+.folder-style__icons {
+  max-block-size: rem(220px);
+  padding: var(--space-1);
+  margin: calc(var(--space-1) * -1);
+  overflow-y: auto;
+}
+
 // Reset sits at the start of the footer, away from Cancel and Save.
 .folder-style__reset {
   margin-inline-end: auto;

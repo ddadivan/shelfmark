@@ -53,6 +53,9 @@ export class MockUserSettingsApi implements UserSettingsApi {
       if (request.pauseHistory !== undefined) {
         this.data.pauseHistory = request.pauseHistory;
       }
+      if (request.customColours !== undefined) {
+        this.data.customColours = [...request.customColours];
+      }
       const library = { ...this.data.library };
       for (const key of Object.keys(library) as (keyof typeof library)[]) {
         if (request[key] !== undefined) {
@@ -97,6 +100,7 @@ export class MockUserSettingsApi implements UserSettingsApi {
       trashRetentionDays: this.data.trashRetentionDays,
       folderColours: this.data.folderColours,
       pauseHistory: this.data.pauseHistory,
+      customColours: [...this.data.customColours],
       ...this.readAppearance(),
       ...this.data.library,
       ...this.readLanguage(),

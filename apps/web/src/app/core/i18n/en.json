@@ -831,7 +831,55 @@
         "user": "User",
         "settings": "Settings",
         "download": "Download",
-        "share": "Share"
+        "share": "Share",
+        "ball": "Ball",
+        "bike": "Bike",
+        "book": "Book",
+        "bulb": "Light bulb",
+        "calendar": "Calendar",
+        "camera": "Camera",
+        "car": "Car",
+        "chart": "Chart",
+        "cloud": "Cloud",
+        "coffee": "Coffee",
+        "dumbbell": "Dumbbell",
+        "film": "Film",
+        "flag": "Flag",
+        "gamepad": "Game controller",
+        "gift": "Gift",
+        "globe": "Globe",
+        "hammer": "Hammer",
+        "health": "Health",
+        "heart": "Heart",
+        "home": "Home",
+        "kids": "Kids",
+        "leaf": "Leaf",
+        "map-pin": "Map pin",
+        "mountain": "Mountain",
+        "music": "Music",
+        "palette": "Palette",
+        "paw": "Paw",
+        "plane": "Plane",
+        "rocket": "Rocket",
+        "shopping-bag": "Shopping bag",
+        "sun": "Sun",
+        "tree": "Tree",
+        "trophy": "Trophy",
+        "umbrella": "Umbrella",
+        "utensils": "Food",
+        "wallet": "Wallet"
+      },
+      "own": {
+        "group": "Your own colours",
+        "add": "Add your own colour",
+        "picker": "Choose a colour"
+      },
+      "ownSwatch": "Your colour {{colour}}",
+      "emoji": {
+        "label": "Emoji",
+        "hint": "Use one emoji instead of an icon",
+        "placeholder": "🍕",
+        "invalid": "Enter exactly one emoji."
       }
     }
   },
@@ -1090,7 +1138,15 @@
           "invalid": "Enter # and six digits or letters a–f, like #2e6a99.",
           "hint": "Shelfmark keeps 4.5:1 contrast: on the other base it uses a darker or lighter shade of your colour.",
           "warning": "This colour is hard to read on your background ({{ratio}}:1, it needs 4.5:1).",
-          "use": "Use {{colour}}"
+          "use": "Use {{colour}}",
+          "saturation": "Saturation",
+          "brightness": "Brightness",
+          "hue": "Hue"
+        },
+        "ownBackground": {
+          "label": "Your own background colour",
+          "hint": "Text must stay readable (4.5:1): if needed, Shelfmark uses a lighter or darker shade of your colour.",
+          "warning": "Text is hard to read on this background ({{ratio}}:1, it needs 4.5:1)."
         }
       },
       "layout": {
@@ -1791,6 +1847,11 @@
     "unavailable": {
       "title": "This view is waiting for its folder",
       "detail": "The folder of {{name}} is in Trash. Restore it to use the view."
+    },
+    "kindHint": {
+      "video": "Links detected as videos",
+      "article": "Links detected as articles",
+      "shopping": "Links detected as shopping"
     }
   },
   "feedback": {

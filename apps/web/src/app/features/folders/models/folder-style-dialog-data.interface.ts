@@ -1,4 +1,10 @@
-import type { FolderColour, FolderIcon, FolderResponse } from '@shelfmark/contracts';
+import type {
+  FolderColour,
+  FolderEmoji,
+  FolderIcon,
+  FolderResponse,
+  HexColour,
+} from '@shelfmark/contracts';
 
 /** What `FolderActionsService` hands to the colour and icon dialog. */
 export interface FolderStyleDialogData {
@@ -7,5 +13,8 @@ export interface FolderStyleDialogData {
   readonly linkCount: number;
   readonly subfolderCount: number;
   /** Called with the chosen style when it differs from the current one; the dialog closes at once. */
-  readonly submit: (style: { colour: FolderColour; icon: FolderIcon }) => void;
+  readonly submit: (style: {
+    colour: FolderColour | HexColour;
+    icon: FolderIcon | FolderEmoji;
+  }) => void;
 }

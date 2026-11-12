@@ -1,4 +1,4 @@
-import type { LibrarySettings, TrashRetentionDays } from '@shelfmark/contracts';
+import type { HexColour, LibrarySettings, TrashRetentionDays } from '@shelfmark/contracts';
 
 /** State of `UserSettingsStore`. */
 export interface UserSettingsState {
@@ -10,6 +10,8 @@ export interface UserSettingsState {
   pauseHistory: boolean | null;
   /** Settings › Library › Viewing and Saving; `null` until the settings told it (the defaults show). */
   library: LibrarySettings | null;
+  /** Own colours (`#rrggbb`) the account keeps as swatches (#335); empty until the settings told. */
+  customColours: HexColour[];
   /** The settings request is running. */
   loading: boolean;
   /** The first settings request failed; the Library settings offer a retry. */

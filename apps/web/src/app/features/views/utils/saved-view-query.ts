@@ -5,6 +5,7 @@ import {
   SAVED_VIEW_SCOPE,
   SORT_ORDER,
   type ListLinksQuery,
+  type ListSavedViewsQuery,
   type SavedViewQuery,
   type SavedViewQueryRequest,
 } from '@shelfmark/contracts';
@@ -142,4 +143,20 @@ export function viewNavigation(query: SavedViewQuery): ViewNavigation {
     queryParams[SORT_QUERY_PARAM] = sort;
   }
   return { commands, queryParams };
+}
+
+/** The `GET /api/links` filters of a feed (`ListSavedViewsQuery`): scope, folder and tags. */
+export function feedListQuery(feed: ListSavedViewsQuery): ListLinksQuery {
+  const list: ListLinksQuery = {};
+  if (feed.scope === SAVED_VIEW_SCOPE.Unsorted) {
+    list.unsorted = true;
+  } else if (feed.scope === SAVED_VIEW_SCOPE.Favorites) {
+    list.favorite = true;
+  } else if (feed.scope === SAVED_VIEW_SCOPE.Folder && feed.folderId !== undefined) {
+    list.folderId = feed.folderId;
+  }
+  if (feed.tag?.length) {
+    list.tag = [...feed.tag];
+  }
+  return list;
 }

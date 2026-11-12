@@ -5,6 +5,7 @@ import {
   mixHex,
   parseHex,
 } from '../colour-contrast/colour-contrast';
+import { nearestReadableBackground } from '../custom-background/custom-background';
 import type { CustomAccentTokens } from './models/custom-accent-tokens.interface';
 import { CUSTOM_THEME_SURFACES } from '../../models/theme/models/custom-theme-surfaces.const';
 import type { CustomThemeSurfaces } from '../../models/theme/models/custom-theme-surfaces.interface';
@@ -28,8 +29,11 @@ interface Ground {
 function groundOf(base: string, background: string): Ground {
   const dark = base === 'dark';
   const surfaces = dark ? CUSTOM_THEME_SURFACES.dark : CUSTOM_THEME_SURFACES.light;
+  // An own background colour (#335) counts as the shade the app draws: the nearest readable one.
   const bg =
-    surfaces.backgrounds[background] ?? Object.values(surfaces.backgrounds)[0] ?? '#ffffff';
+    parseHex(background) !== null
+      ? nearestReadableBackground(background, base)
+      : (surfaces.backgrounds[background] ?? Object.values(surfaces.backgrounds)[0] ?? '#ffffff');
   return { surfaces, bg, dark };
 }
 

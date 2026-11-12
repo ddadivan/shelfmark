@@ -7,7 +7,7 @@ export interface ChoiceOption {
   readonly value: string;
   readonly label: string;
   /** Swatches: the colour drawn. */
-  readonly colour?: FolderColour;
+  readonly colour?: FolderColour | string;
   /** Icons: the glyph drawn. */
   readonly icon?: IconName;
 }

@@ -1,1 +1,1 @@
-export { contrastRatio, parseHex } from './colour-contrast';
+export { contrastRatio, hexToHsv, hsvToHex, parseHex } from './colour-contrast';

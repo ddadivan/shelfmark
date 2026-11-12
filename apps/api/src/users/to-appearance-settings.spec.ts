@@ -10,6 +10,7 @@ describe('toAppearanceSettings', () => {
         customThemeAccent: 'teal',
         customThemeBackground: 'forest',
         customThemeCorners: 'round',
+        customColours: ['#3a7bd5', 'red'],
         motion: 'reduced',
         appearanceSavedAt: new Date(0),
         textSize: 'xl',
@@ -23,6 +24,7 @@ describe('toAppearanceSettings', () => {
     ).toEqual({
       theme: 'custom',
       customTheme: { base: 'dark', accent: 'teal', background: 'forest', corners: 'round' },
+      customColours: ['#3a7bd5'],
       motion: 'reduced',
       appearanceSaved: true,
       textSize: 'xl',
@@ -43,6 +45,7 @@ describe('toAppearanceSettings', () => {
         customThemeAccent: 'red',
         customThemeBackground: 'paper',
         customThemeCorners: 'soft',
+        customColours: [],
         motion: 'none',
         appearanceSavedAt: null,
         textSize: 'huge',
@@ -56,6 +59,7 @@ describe('toAppearanceSettings', () => {
     ).toEqual({
       theme: 'system',
       customTheme: CUSTOM_THEME_DEFAULT,
+      customColours: [],
       motion: 'system',
       appearanceSaved: false,
       ...LAYOUT_SETTINGS_DEFAULT,

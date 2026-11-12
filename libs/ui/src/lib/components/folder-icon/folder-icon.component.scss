@@ -36,3 +36,24 @@
     --ui-folder-icon-tile: var(--folder-#{$name}-bg);
   }
 }
+
+// An own colour (#335): `ui-folder-icon` sets both bases' shades (CSSOM) and `light-dark()` picks
+// by the page's `color-scheme`, which the app sets from the theme (the Custom base too).
+:host(.ui-folder-icon--own) {
+  --ui-folder-icon-glyph: light-dark(
+    var(--ui-folder-icon-glyph-light),
+    var(--ui-folder-icon-glyph-dark)
+  );
+  --ui-folder-icon-tile: light-dark(
+    var(--ui-folder-icon-tile-light),
+    var(--ui-folder-icon-tile-dark)
+  );
+}
+
+// An emoji in place of the glyph: sized to the tile, never wider than it.
+.ui-folder-icon__emoji {
+  font-size: calc(var(--ui-folder-icon-size) * 0.55);
+  line-height: 1;
+  text-align: center;
+  user-select: none;
+}

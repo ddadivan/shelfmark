@@ -1,54 +1,67 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { form, FormField, FormRoot } from '@angular/forms/signals';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { form, FormField, FormRoot, validate } from '@angular/forms/signals';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   FOLDER_COLOUR,
   FOLDER_DEFAULT_COLOUR,
   FOLDER_DEFAULT_ICON,
   FOLDER_ICON,
+  isFolderColourName,
+  isFolderEmoji,
+  isFolderIconName,
+  isHexColour,
   type FolderColour,
+  type FolderEmoji,
   type FolderIcon,
+  type HexColour,
 } from '@shelfmark/contracts';
 import {
   BUTTON_TYPE,
   BUTTON_VARIANT,
   ButtonComponent,
   ChoiceGridComponent,
+  ColorPickerComponent,
   DialogComponent,
   FolderIconComponent,
+  InputComponent,
   injectDialogData,
   UiDialogRef,
   type ChoiceOption,
 } from '@shelfmark/ui';
 import { pluralKey } from '../../../../core/i18n/plural-key';
+import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import type { FolderStyleDialogData } from '../../models/folder-style-dialog-data.interface';
 import type { FolderStyleFormModel } from '../../models/folder-style-form-model.interface';
 
 const COLOURS: readonly FolderColour[] = Object.values(FOLDER_COLOUR);
 const ICONS: readonly FolderIcon[] = Object.values(FOLDER_ICON);
 
-function isColour(value: string): value is FolderColour {
-  return COLOURS.some((colour) => colour === value);
-}
-
-function isIcon(value: string): value is FolderIcon {
-  return ICONS.some((icon) => icon === value);
-}
-
 /**
  * "Colour and icon" of a folder (FolderStyle spec): a preview tile with the name and counts, the
- * eight colours and the icon allow-list as two radio groups (arrows move within a group), Reset
- * (graphite folder), Cancel and Save. Save closes at once; the service saves optimistically.
+ * eight built-in colours on one line, the account's own colours and a "+" swatch that opens the
+ * colour picker to add one (#335), the icon set as a radio group in a scrolling grid, and an Emoji
+ * field that takes exactly one emoji instead of an icon. Reset (graphite folder), Cancel and Save.
+ * Save closes at once; the service saves optimistically.
  */
 @Component({
   selector: 'app-folder-style-dialog',
   imports: [
     ButtonComponent,
     ChoiceGridComponent,
+    ColorPickerComponent,
     DialogComponent,
     FolderIconComponent,
     FormField,
     FormRoot,
+    InputComponent,
     TranslocoPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -61,24 +74,48 @@ export class FolderStyleDialogComponent {
 
   private readonly ref = inject<UiDialogRef<boolean>>(UiDialogRef);
   private readonly transloco = inject(TranslocoService);
+  protected readonly settings = inject(UserSettingsStore);
   protected readonly data = injectDialogData<FolderStyleDialogData>();
+  /** Ticks when the language or its translations change, so messages re-translate. */
+  private readonly i18n = toSignal(this.transloco.events$, { initialValue: undefined });
 
   private readonly model = signal<FolderStyleFormModel>({
     colour: this.data.folder.colour,
-    icon: this.data.folder.icon,
+    icon: isFolderIconName(this.data.folder.icon) ? this.data.folder.icon : FOLDER_DEFAULT_ICON,
+    emoji: isFolderIconName(this.data.folder.icon) ? '' : this.data.folder.icon,
   });
 
-  protected readonly form = form(this.model, () => undefined, {
-    submission: { action: () => this.save() },
+  protected readonly form = form(
+    this.model,
+    (path) => {
+      validate(path.emoji, ({ value }) => {
+        this.i18n();
+        const text = value().trim();
+        return text === '' || isFolderEmoji(text)
+          ? undefined
+          : { kind: 'emoji', message: this.transloco.translate('folders.style.emoji.invalid') };
+      });
+    },
+    { submission: { action: () => this.save() } },
+  );
+
+  /** The emoji typed so far, when it is one emoji; it replaces the icon. */
+  private readonly chosenEmoji = computed(() => {
+    const text = this.model().emoji.trim();
+    return isFolderEmoji(text) ? text : null;
   });
 
-  protected readonly previewColour = computed<FolderColour>(() => {
+  protected readonly previewColour = computed<FolderColour | HexColour>(() => {
     const value = this.model().colour;
-    return isColour(value) ? value : FOLDER_DEFAULT_COLOUR;
+    return isFolderColourName(value) || isHexColour(value) ? value : FOLDER_DEFAULT_COLOUR;
   });
-  protected readonly previewIcon = computed<FolderIcon>(() => {
+  protected readonly previewIcon = computed<FolderIcon | FolderEmoji>(() => {
+    const emoji = this.chosenEmoji();
+    if (emoji !== null) {
+      return emoji;
+    }
     const value = this.model().icon;
-    return isIcon(value) ? value : FOLDER_DEFAULT_ICON;
+    return isFolderIconName(value) ? value : FOLDER_DEFAULT_ICON;
   });
 
   protected readonly colourOptions: readonly ChoiceOption[] = COLOURS.map((colour) => ({
@@ -87,11 +124,43 @@ export class FolderStyleDialogComponent {
     label: this.transloco.translate(`folders.style.colours.${colour}`),
   }));
 
+  /** The account's own colours, plus the folder's own colour when the list lacks it. */
+  protected readonly ownOptions = computed<ChoiceOption[]>(() => {
+    this.i18n();
+    const current = this.model().colour;
+    const colours = this.settings.customColours();
+    const all =
+      isHexColour(current) && !colours.includes(current) ? [...colours, current] : colours;
+    return all.map((colour) => ({
+      value: colour,
+      colour,
+      label: this.transloco.translate('folders.style.ownSwatch', { colour }),
+    }));
+  });
+
+  /** Which own colour is the folder's colour (empty while it is a built-in one). */
+  protected readonly ownChecked = computed(() => {
+    const value = this.model().colour;
+    return isHexColour(value) ? value : '';
+  });
+
+  protected readonly colourValue = computed(() => this.model().colour);
+
+  /** The colour in the picker while it is open: the last one picked there. */
+  protected readonly picked = signal('');
+  protected readonly pickerOpen = signal(false);
+  private readonly picker = viewChild(ColorPickerComponent);
+
   protected readonly iconOptions: readonly ChoiceOption[] = ICONS.map((icon) => ({
     value: icon,
     icon,
     label: this.transloco.translate(`folders.style.icons.${icon}`),
   }));
+
+  /** The icon grid checks nothing while an emoji is the icon. */
+  protected readonly iconChecked = computed(() =>
+    this.chosenEmoji() === null ? this.model().icon : '',
+  );
 
   /** "12 links, 2 subfolders" (the counts of the folder itself, as on the folder tile). */
   protected readonly meta = computed(() => {
@@ -109,8 +178,31 @@ export class FolderStyleDialogComponent {
     return this.transloco.translate('library.subfolders.metaWithFolders', { links, folders });
   });
 
+  /** A built-in colour or an own one was chosen. */
+  protected chooseColour(value: string): void {
+    this.model.update((model) => ({ ...model, colour: value }));
+  }
+
+  /** An icon of the grid was chosen: the emoji field empties. */
+  protected chooseIcon(value: string): void {
+    this.model.update((model) => ({ ...model, icon: value, emoji: '' }));
+  }
+
+  /** A colour finished in the picker: kept as a swatch of the account and chosen. */
+  protected addColour(colour: string): void {
+    if (!isHexColour(colour)) {
+      return;
+    }
+    this.chooseColour(colour);
+    void this.settings.addCustomColour(colour);
+    // The colour is a swatch now: the "+" swatch closes and starts empty again.
+    this.pickerOpen.set(false);
+    this.picker()?.clear();
+  }
+
   protected reset(): void {
-    this.model.set({ colour: FOLDER_DEFAULT_COLOUR, icon: FOLDER_DEFAULT_ICON });
+    this.picked.set('');
+    this.model.set({ colour: FOLDER_DEFAULT_COLOUR, icon: FOLDER_DEFAULT_ICON, emoji: '' });
   }
 
   protected cancel(): void {
@@ -118,11 +210,12 @@ export class FolderStyleDialogComponent {
   }
 
   private save(): Promise<undefined> {
-    const { colour, icon } = this.model();
-    if (isColour(colour) && isIcon(icon)) {
+    const { colour } = this.model();
+    const icon = this.previewIcon();
+    if ((isFolderColourName(colour) || isHexColour(colour)) && this.form.emoji().valid()) {
       this.data.submit({ colour, icon });
+      this.ref.close(true);
     }
-    this.ref.close(true);
     return Promise.resolve(undefined);
   }
 }

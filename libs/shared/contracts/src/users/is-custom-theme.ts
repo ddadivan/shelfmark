@@ -23,11 +23,13 @@ export function isMotionPreference(value: unknown): value is MotionPreference {
   return isOneOf(Object.values(MOTION_PREFERENCE), value);
 }
 
-/** True when `background` is one of the backgrounds of `base` (`CUSTOM_THEME_BACKGROUNDS`). */
+/** True when `background` is one of the backgrounds of `base` (`CUSTOM_THEME_BACKGROUNDS`) or an own `#rrggbb`. */
 export function isBackgroundOfBase(base: unknown, background: unknown): boolean {
+  // An own background colour (#335) fits any base; the app draws a readable shade of it.
   return (
-    isOneOf(Object.values(CUSTOM_THEME_BASE), base) &&
-    isOneOf(CUSTOM_THEME_BACKGROUNDS[base], background)
+    (isOneOf(Object.values(CUSTOM_THEME_BASE), base) && isHexColour(background)) ||
+    (isOneOf(Object.values(CUSTOM_THEME_BASE), base) &&
+      isOneOf(CUSTOM_THEME_BACKGROUNDS[base], background))
   );
 }
 

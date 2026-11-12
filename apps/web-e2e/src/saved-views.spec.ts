@@ -59,9 +59,10 @@ test.describe('saved views (mock API)', () => {
   });
 
   test('saves the current filter, renames, reorders and deletes a view', async ({ page }) => {
-    await openFeed(page, '/unsorted');
+    await openFeed(page, '/unsorted?kind=shopping');
     await expect(chip(page, /^All \d+$/)).toHaveAttribute('aria-pressed', 'false');
 
+    // On a feed other than All links "Save this view" stores the type only (#335).
     await views(page).getByRole('button', { name: 'Save this view' }).click();
     const dialog = page.getByRole('dialog', { name: 'Save this view' });
     await expect(dialog.getByRole('textbox', { name: 'Name' })).toBeFocused();
@@ -74,11 +75,11 @@ test.describe('saved views (mock API)', () => {
     await expect(chip(page, /^Inbox \d+$/)).toHaveAttribute('aria-pressed', 'true');
     expect(await chipNames(page)).toEqual(['All', 'Videos', 'Articles', 'Inbox']);
 
-    // Applying it again from another page leads back to Unsorted.
+    // The chips work inside the feed they are on: All is the feed, a view filters it.
     await chip(page, /^All \d+$/).click();
-    await expect(page).toHaveURL('/links');
-    await chip(page, /^Inbox \d+$/).click();
     await expect(page).toHaveURL('/unsorted');
+    await chip(page, /^Inbox \d+$/).click();
+    await expect(page).toHaveURL('/unsorted?kind=shopping');
 
     await viewMenuItem(page, 'Inbox', 'Rename');
     const rename = page.getByRole('dialog', { name: 'Rename view' });
@@ -96,6 +97,32 @@ test.describe('saved views (mock API)', () => {
     await confirm.getByRole('button', { name: 'Delete view' }).click();
     await expect(page.getByText('View deleted')).toBeVisible();
     expect(await chipNames(page)).toEqual(['All', 'Videos', 'Articles']);
+  });
+
+  test('the chips work inside a folder: its own counts, the type filter stays there, tooltips say what they filter (#335)', async ({
+    page,
+  }) => {
+    await openFeed(page, '/folders/00000000-0000-4000-8000-000000000101');
+    const all = chip(page, /^All \d+$/);
+    await expect(all).toHaveAttribute('aria-pressed', 'true');
+    const countOf = async (locator: Locator): Promise<number> =>
+      Number(/(\d+)$/.exec((await locator.textContent())?.trim() ?? '')?.[1]);
+    const inFolder = await countOf(all);
+    // Reading holds 39 of the 60 links: the counts are the folder's, not the library's.
+    expect(inFolder).toBeLessThan(60);
+    const videos = chip(page, /^Videos \d+$/);
+    expect(await countOf(videos)).toBeLessThanOrEqual(inFolder);
+    await expect(videos).toHaveAttribute('aria-description', 'Links detected as videos');
+    await expect(chip(page, /^Articles \d+$/)).toHaveAttribute(
+      'aria-description',
+      'Links detected as articles',
+    );
+
+    await videos.click();
+    await expect(page).toHaveURL(/\/folders\/00000000-0000-4000-8000-000000000101\?kind=video$/u);
+    await expect(videos).toHaveAttribute('aria-pressed', 'true');
+    await all.click();
+    await expect(page).toHaveURL(/\/folders\/00000000-0000-4000-8000-000000000101$/u);
   });
 
   test('a failed rename puts the old name back with a toast', async ({ page }) => {

@@ -28,6 +28,9 @@
             cdkDrag
             [cdkDragStartDelay]="DRAG_START_DELAY"
             [attr.data-pin]="row.key"
+            [attr.data-link-drop-folder]="row.folder?.id ?? null"
+            [class.pinned__item--drop]="!!row.folder && drag.folderTargetId() === row.folder.id"
+            [class.pinned__item--no-drop]="!row.folder && linkDragging()"
             (cdkDragStarted)="dragStarted()"
             (cdkDragEnded)="dragEnded()"
             (contextmenu)="onContextMenu($event)"
@@ -78,7 +81,11 @@
                   [colour]="settings.shownColour(folder.colour)"
                 />
                 <span class="pinned__name">{{ folder.name }}</span>
-                @if (settings.countsShown()) {
+                @if (drag.folderTargetId() === folder.id) {
+                  <span class="pinned__drop-badge"
+                    >&ngsp;{{ 'links.drag.moveHere' | transloco }}</span
+                  >
+                } @else if (settings.countsShown()) {
                   <span class="pinned__count">&ngsp;{{ folder.linkCount }}</span>
                 }
               </a>

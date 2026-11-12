@@ -10,8 +10,8 @@ export interface PickerRow {
   readonly path: string;
   /** Depth; 0 for the root and the empty-value row. */
   readonly level: number;
-  readonly icon: IconName;
-  readonly colour: FolderColour;
+  readonly icon: IconName | string;
+  readonly colour: FolderColour | string;
   /** The row is in `currentIds`: marked and not choosable. */
   readonly current: boolean;
 }

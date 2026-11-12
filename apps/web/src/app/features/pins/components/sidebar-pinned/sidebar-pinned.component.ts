@@ -38,6 +38,7 @@ import { ViewportService } from '../../../../core/layout/viewport.service';
 import { PinsStore } from '../../../../stores/pins.store';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { APP_PATH } from '../../../../models/app-path.const';
+import { LinkDragService } from '../../../links/services/link-drag.service';
 import { LinkActionsService } from '../../../links/services/link-actions.service';
 import { ownImageUrl, safeHref, siteLetter } from '../../../links/utils/link-view';
 import type { PinRow } from '../../models/pin-row.interface';
@@ -79,6 +80,9 @@ export class SidebarPinnedComponent {
   protected readonly settings = inject(UserSettingsStore);
   /** Settings › Library › Open links in. */
   protected readonly newTab = this.settings.openInNewTab;
+  /** Folder rows are drop targets of a dragged link (#335); link rows show that they are not. */
+  protected readonly drag = inject(LinkDragService);
+  protected readonly linkDragging = this.drag.dragging;
   private readonly actions = inject(PinActionsService);
   private readonly linkActions = inject(LinkActionsService);
   private readonly transloco = inject(TranslocoService);

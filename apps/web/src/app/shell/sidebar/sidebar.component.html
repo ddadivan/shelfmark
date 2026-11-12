@@ -11,6 +11,7 @@
       <ui-tree
         [fixedNodes]="fixedNodes()"
         [activeId]="activeId()"
+        [noDropIds]="drag.treeNoDropIds()"
         [ariaLabel]="'shell.sidebar.views' | transloco"
         (selected)="select($event)"
       />
@@ -77,6 +78,7 @@
       <ui-tree
         [fixedNodes]="footerNodes()"
         [activeId]="activeId()"
+        [noDropIds]="drag.treeNoDropIds()"
         [ariaLabel]="'shell.sidebar.footer' | transloco"
         (selected)="footerSelected($event)"
       />

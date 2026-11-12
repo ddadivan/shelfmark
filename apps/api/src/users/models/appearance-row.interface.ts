@@ -5,6 +5,7 @@ export interface AppearanceRow {
   customThemeAccent: string;
   customThemeBackground: string;
   customThemeCorners: string;
+  customColours: string[];
   motion: string;
   appearanceSavedAt: Date | null;
   textSize: string;

@@ -25,6 +25,23 @@ describe('FolderIconComponent', () => {
     expect(host.querySelector('use')?.getAttribute('href')).toContain('#sm-folder');
   });
 
+  it('draws an own #rrggbb colour with readable shades set through CSSOM (#335)', () => {
+    const host = render({ colour: '#3a7bd5' });
+    expect(host.classList).toContain('ui-folder-icon--own');
+    for (const name of ['tile-light', 'glyph-light', 'tile-dark', 'glyph-dark']) {
+      expect(host.style.getPropertyValue(`--ui-folder-icon-${name}`)).toMatch(/^#[0-9a-f]{6}$/);
+    }
+  });
+
+  it('draws an emoji as decorative text instead of a sprite icon (#335)', () => {
+    const host = render({ icon: '🍕' });
+    expect(host.querySelector('use')).toBeNull();
+    const emoji = host.querySelector('.ui-folder-icon__emoji');
+    expect(emoji?.textContent).toBe('🍕');
+    expect(emoji?.getAttribute('aria-hidden')).toBe('true');
+    expect(host.getAttribute('aria-hidden')).toBe('true');
+  });
+
   it.each(Object.values(FOLDER_COLOUR))('applies the %s colour class', (colour) => {
     expect(render({ colour }).classList).toContain(`ui-folder-icon--${colour}`);
   });

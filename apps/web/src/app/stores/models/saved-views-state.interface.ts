@@ -8,6 +8,8 @@ export interface SavedViewsState {
   total: number | null;
   /** The first list has arrived. */
   loaded: boolean;
+  /** Key of the feed the counts and `total` belong to (`''` = the whole library). */
+  feedKey: string;
   loading: boolean;
   /** The first list failed. */
   error: boolean;

@@ -5,8 +5,10 @@ import {
   FOLDER_LIMIT,
   type FolderColour,
   type FolderDeleteMode,
+  type FolderEmoji,
   type FolderIcon,
   type FolderResponse,
+  type HexColour,
 } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
 import { FOLDERS_API } from '../features/links/models/folders-api.const';
@@ -218,7 +220,7 @@ export const FoldersStore = signalStore(
        */
       async setStyle(
         id: string,
-        style: { colour?: FolderColour; icon?: FolderIcon },
+        style: { colour?: FolderColour | HexColour; icon?: FolderIcon | FolderEmoji },
       ): Promise<boolean> {
         const previous = store.entityMap()[id];
         if (!previous) {

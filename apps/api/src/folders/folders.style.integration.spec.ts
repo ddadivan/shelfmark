@@ -66,6 +66,35 @@ describe('folder colour and icon', () => {
     expect((res.body as FolderResponse).icon).toBe(icon);
   });
 
+  it.each(['#3a7bd5', '#000000', '#ffffff'])('saves the own colour %s (#335)', async (colour) => {
+    const folder = await create();
+    const a = asUser(t.app, users.owner);
+    const res = await a.patch(`${FOLDERS}/${folder.id}`).send({ colour }).expect(200);
+    expect((res.body as FolderResponse).colour).toBe(colour);
+    expect((await a.get(`${FOLDERS}/${folder.id}`).expect(200)).body).toMatchObject({ colour });
+  });
+
+  it.each(['🍕', '🧑‍🍳', '👨‍👩‍👧‍👦', '👍🏽', '🇺🇦', '❤️'])(
+    'saves the emoji %s as the icon (#335)',
+    async (icon) => {
+      const folder = await create();
+      const a = asUser(t.app, users.owner);
+      const res = await a.patch(`${FOLDERS}/${folder.id}`).send({ icon }).expect(200);
+      expect((res.body as FolderResponse).icon).toBe(icon);
+      const list = (await a.get(FOLDERS).expect(200)).body as { items: FolderResponse[] };
+      expect(list.items[0]).toMatchObject({ icon });
+    },
+  );
+
+  it('the database keeps the colour to a name or #rrggbb', async () => {
+    const folder = await create();
+    for (const colour of ['#ABCDEF', 'purple', '#abc']) {
+      await expect(
+        t.db.prisma.folder.update({ where: { id: folder.id }, data: { colour } }),
+      ).rejects.toThrow();
+    }
+  });
+
   it('saves both together, keeps them across reads and lists them', async () => {
     const folder = await create();
     const a = asUser(t.app, users.owner);
@@ -87,7 +116,17 @@ describe('folder colour and icon', () => {
     [{ colour: 'GRAPHITE' }],
     [{ colour: null }],
     [{ colour: 1 }],
-    [{ icon: 'rocket' }],
+    [{ icon: 'rockets' }],
+    [{ icon: 'a' }],
+    [{ icon: '🍕🍕' }],
+    [{ icon: '🍕 ' }],
+    [{ icon: '<script>' }],
+    [{ icon: '🍕'.repeat(20) }],
+    [{ icon: '' }],
+    [{ colour: '#ABCDEF' }],
+    [{ colour: '#abc' }],
+    [{ colour: 'abcdef' }],
+    [{ colour: '#abcdef; color: red' }],
     [{ icon: 'chevron-down' }],
     [{ icon: null }],
     [{ icon: ['folder'] }],
