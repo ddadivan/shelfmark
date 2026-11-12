@@ -5,12 +5,12 @@ ui-dialog {
   --ui-dialog-custom-width: #{rem(880px)};
 }
 
-// Groups in columns while the panel is wide enough, one in the phone sheet; the space between them
-// is the container's `gap`, not a margin on the groups.
+// Two columns while the panel is wide enough (three made the labels wrap onto two or three lines),
+// one in the phone sheet; the space between groups is the container's `gap`, not a margin.
 .shortcuts-dialog__groups {
   display: grid;
   gap: var(--space-8);
-  grid-template-columns: repeat(auto-fit, minmax(rem(220px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, rem(340px)), 1fr));
 }
 
 .shortcuts-dialog__heading {
