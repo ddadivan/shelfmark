@@ -17,9 +17,9 @@
   // line plus the 8px the trail keeps from the top edge of the main column (phone: no top bar).
   padding-block-start: calc(var(--space-3) + var(--space-2));
 
-  // Tablet and up (Main.dc.html): a gap under the top bar (24px ~ the mockup's 22px), the 24px
+  // Desktop (Main.dc.html, from 64em since #316): a gap under the top bar (24px ~ the mockup's 22px), the 24px
   // trail line, a 12px gap, the title. The main column pads its top by 16px, so 44px here.
-  @include tablet-up {
+  @include desktop {
     padding-block-start: calc(var(--space-8) + var(--space-3));
   }
 
@@ -27,10 +27,10 @@
   flex-direction: column;
   min-height: 0;
 
-  // Phone: the selection bar needs a line of its own over the title. The page pushes the title
+  // Mobile shell (below 64em): the selection bar needs a line of its own over the title. The page pushes the title
   // (and the feed) down by the bar's room while a selection runs, with a short ease; there is no
   // room to keep free at rest on a phone. Reduced motion: the change is instant.
-  @include phone {
+  @include compact {
     transition: padding-block-start var(--duration-base) var(--ease-out);
 
     &.library--selecting {
@@ -44,13 +44,13 @@
 }
 
 // The feed (or the empty state) under the fixed title, count and toolbar. From the tablet width
-// it is the one scroll area of the page; a phone scrolls the page itself.
+// it is the one scroll area of the page on desktop; the mobile shell scrolls the page itself.
 .library__scroll {
   display: flex;
   flex: 1;
   flex-direction: column;
 
-  @include tablet-up {
+  @include desktop {
     min-height: 0;
 
     // Room for the focus ring and a lifted card, which the clip of the scroll area would cut.
@@ -102,8 +102,8 @@
   margin: 0;
   overflow-wrap: anywhere;
 
-  // Phone: the title of the view is large (MobileHome: 34 / 38).
-  @include phone {
+  // Mobile shell: the title of the view is large (MobileHome: 34 / 38).
+  @include compact {
     @include type(display);
 
     font-size: rem(34px);
@@ -119,7 +119,7 @@
   margin: calc(var(--space-1) + var(--space-1) / 2) 0 0;
   color: var(--text-muted);
 
-  @include phone {
+  @include compact {
     margin-block-start: var(--space-1);
     font-size: rem(13px);
   }
@@ -277,11 +277,11 @@
 .library__crumbs {
   // Over the top padding of the main column (24px on a phone) and the room above the title: 8px
   // from the top edge, a 24px line, then the 12px gap above the title. The same space in every
-  // view. Tablet and up: 8px under the main column's 16px padding, so 24px under the top bar.
+  // view. Desktop: 8px under the main column's 16px padding, so 24px under the top bar.
   position: absolute;
   inset-block-start: calc(var(--space-2) - var(--space-6));
 
-  @include tablet-up {
+  @include desktop {
     inset-block-start: var(--space-2);
   }
 
@@ -311,10 +311,10 @@
   border-radius: var(--radius-full);
   box-shadow: var(--shadow-card);
 
-  // Tablet and up: the bar starts 8px above the trail line (it covers the trail) and its 48px end
+  // Desktop: the bar starts 8px above the trail line (it covers the trail) and its 48px end
   // 4px above the title box (the 44px room under the main column's padding); the title's line box
   // has 10px of leading, so the text keeps a clear gap and nothing moves when the bar appears.
-  @include tablet-up {
+  @include desktop {
     inset-block-start: calc(var(--space-2) * -1);
   }
 }
@@ -352,7 +352,7 @@
     display: none;
   }
 
-  @include tablet {
+  @include compact {
     display: none;
   }
 }
@@ -370,7 +370,7 @@
   border-radius: var(--radius-sm);
 }
 
-// The bulk bar floats at the bottom of the feed (glass); on a phone above the floating tab bar.
+// The bulk bar floats at the bottom of the feed (glass); in the mobile shell above the tab bar.
 .library__bulk {
   position: sticky;
   inset-block-end: var(--space-4);
@@ -379,9 +379,15 @@
   max-width: 100%;
   margin-block-start: var(--space-4);
 
-  @include phone {
+  @include compact {
     inset-block-end: calc(#{rem(20px + 68px + 12px)} + env(safe-area-inset-bottom, 0rem));
     align-self: stretch;
+  }
+
+  // A tablet keeps the stacked bar as wide as the centred tab bar under it (560px, #316).
+  @include tablet {
+    align-self: center;
+    inline-size: min(100%, #{rem(560px)});
   }
 }
 

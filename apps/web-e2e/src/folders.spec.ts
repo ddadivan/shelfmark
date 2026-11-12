@@ -2,7 +2,7 @@ import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { pickFolderMenuItem } from './support/a11y-flows';
 import { seedSession } from './support/mock-session';
-import { gotoWithSidebar, isPhone, openSidebar, tabBar, viewEntry } from './support/sidebar';
+import { gotoWithSidebar, isCompact, openSidebar, tabBar, viewEntry } from './support/sidebar';
 
 // Mirror MOCK_ID.FolderReading, MOCK_NAME.FolderReading / FolderAngular and MOCK_FOLDER_NAME
 // (apps/web and libs/shared/contracts); the e2e project cannot import from them.
@@ -41,7 +41,7 @@ test.describe('folders (mock API)', () => {
 
       await expect(page).toHaveURL(`/folders/${READING.id}`);
       await expect(page.getByRole('heading', { level: 1, name: READING.name })).toBeVisible();
-      if (isPhone(page)) {
+      if (isCompact(page)) {
         // The folder is not on screen: the Library tab is the current place.
         await expect(tabBar(page).getByRole('link', { name: 'Library' })).toHaveAttribute(
           'aria-current',
@@ -56,7 +56,7 @@ test.describe('folders (mock API)', () => {
     test('is keyboard accessible: arrows move, Enter opens', async ({ page }) => {
       await gotoWithSidebar(page, '/links');
 
-      if (isPhone(page)) {
+      if (isCompact(page)) {
         // The tiles are links: Tab reaches each one and Enter opens it.
         await viewEntry(page, 'All links').focus();
         await page.keyboard.press('Tab');
@@ -75,7 +75,7 @@ test.describe('folders (mock API)', () => {
     test('opens the folders above a deep link', async ({ page }) => {
       await page.goto(`/folders/${ANGULAR.id}`);
 
-      if (isPhone(page)) {
+      if (isCompact(page)) {
         // The tree is on the Library page, which does not follow the folder: the page itself
         // and the Library tab show where you are.
         await expect(page.getByRole('heading', { level: 1, name: ANGULAR.name })).toBeVisible();
@@ -112,7 +112,7 @@ test.describe('folders (mock API)', () => {
 
       await expect(page.getByRole('heading', { level: 1, name: 'Essays' })).toBeVisible();
       await openSidebar(page);
-      if (isPhone(page)) {
+      if (isCompact(page)) {
         // The Library page does not follow the open folder: expand the parent to see the child.
         await row(page, READING.name).locator('.ui-tree__twist').first().click();
       }
@@ -179,7 +179,7 @@ test.describe('folders (mock API)', () => {
 
       await expect(dialog).toHaveCount(0);
       await expect(row(page, 'Renamed shelf')).toBeVisible();
-      if (isPhone(page)) {
+      if (isCompact(page)) {
         // The tree is on the Library page: open the renamed folder to see its title.
         await row(page, 'Renamed shelf').click();
       }
@@ -259,7 +259,7 @@ test.describe('folders (mock API)', () => {
 
       await expect(page.getByText('Folder moved to Trash')).toBeVisible();
       // Deleting the folder on screen leaves for All links; the phone is on the Library page.
-      await expect(page).toHaveURL(isPhone(page) ? '/library' : '/links');
+      await expect(page).toHaveURL(isCompact(page) ? '/library' : '/links');
       await openSidebar(page);
       await expect(row(page, READING.name)).toHaveCount(0);
     });

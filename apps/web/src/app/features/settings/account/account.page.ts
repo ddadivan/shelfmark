@@ -36,7 +36,7 @@ export default class AccountPage {
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   /** Thumb-sized buttons on a phone. */
   protected readonly buttonSize = computed(() =>
-    this.viewport.phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Md,
+    this.viewport.compact() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Md,
   );
   /** Demo sandboxes expire by themselves, so only real accounts can be deleted. */
   protected readonly canDeleteAccount = computed(() => {

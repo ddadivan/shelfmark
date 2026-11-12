@@ -2,7 +2,7 @@ import { type Locator, type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
 import { settled } from './support/settled';
-import { openSidebar, openTags, tabBar } from './support/sidebar';
+import { isPhone, openSidebar, openTags, tabBar } from './support/sidebar';
 import { SEARCH_BUTTON } from './support/search-button';
 
 // Mirror MOCK_ID.FolderReading and its name, and the mock tag (apps/web and libs/shared/contracts);
@@ -180,7 +180,12 @@ test.describe('mobile layout (mock API)', () => {
       page.getByRole('combobox', { name: 'Search links, folders and tags' }),
     ).toBeFocused();
     const box = await dialog.boundingBox();
-    expect(box?.width).toBe(page.viewportSize()?.width);
+    if (isPhone(page)) {
+      expect(box?.width).toBe(page.viewportSize()?.width);
+    } else {
+      // A tablet in the mobile shell keeps the centred search dialog (680px, #316).
+      expect(box?.width).toBeLessThanOrEqual(680);
+    }
     expect(await overflow(page)).toBeLessThanOrEqual(0);
     await page.keyboard.press('Escape');
     await expect(dialog).toHaveCount(0);
@@ -316,7 +321,7 @@ test.describe('mobile layout (mock API)', () => {
     await expect(page.getByRole('button', { name: 'Account menu' })).toHaveCount(0);
   });
 
-  test('the tab bar floats 16px from the sides and 20px from the bottom and does not cover the last row', async ({
+  test('the tab bar floats 16px from the sides (centred, at most 560px on a tablet) and 20px from the bottom and does not cover the last row', async ({
     page,
   }) => {
     await page.goto('/links');
@@ -324,8 +329,10 @@ test.describe('mobile layout (mock API)', () => {
 
     const box = await tabBar(page).boundingBox();
     const view = page.viewportSize();
-    expect(box?.x).toBeCloseTo(16, 0);
-    expect((view?.width ?? 0) - ((box?.x ?? 0) + (box?.width ?? 0))).toBeCloseTo(16, 0);
+    // 16px from each side on a phone; centred and at most 560px wide on a tablet (#316).
+    const side = Math.max(16, ((view?.width ?? 0) - 560) / 2);
+    expect(box?.x).toBeCloseTo(side, 0);
+    expect((view?.width ?? 0) - ((box?.x ?? 0) + (box?.width ?? 0))).toBeCloseTo(side, 0);
     expect((view?.height ?? 0) - ((box?.y ?? 0) + (box?.height ?? 0))).toBeCloseTo(20, 0);
     await page.mouse.wheel(0, 100000);
     await expect
@@ -397,13 +404,13 @@ test.describe('mobile layout (mock API)', () => {
     ).toBeVisible();
   });
 
-  test('the tab bar gives way to the sidebar past 40em and the phone pages leave', async ({
+  test('the tab bar gives way to the sidebar past 64em and the phone pages leave', async ({
     page,
   }) => {
     await page.goto('/library');
     await expect(page.locator('app-library-tile').first()).toBeVisible();
 
-    await page.setViewportSize({ width: 700, height: 780 });
+    await page.setViewportSize({ width: 1100, height: 780 });
 
     await expect(page).toHaveURL('/links');
     await expect(tabBar(page)).toHaveCount(0);
@@ -451,8 +458,8 @@ test.describe('mobile layout (mock API)', () => {
     test(`the Library page, its sheet and the tab bar fit ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 780 });
       await page.goto('/links');
-      if (width >= 640) {
-        // From the tablet breakpoint the sidebar is inline and there is no tab bar.
+      if (width >= 1024) {
+        // From the desktop breakpoint (64em, #316) the sidebar is inline and there is no tab bar.
         await expect(tabBar(page)).toHaveCount(0);
         await expect(page.getByRole('navigation', { name: 'Library' })).toBeVisible();
       } else {

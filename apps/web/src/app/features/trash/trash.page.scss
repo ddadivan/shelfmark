@@ -89,7 +89,7 @@
   padding: var(--space-2);
   border-radius: var(--radius-lg);
 
-  @include phone {
+  @include compact {
     inset-block-end: calc(rem(96px) + env(safe-area-inset-bottom));
     align-self: stretch;
   }

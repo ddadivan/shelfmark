@@ -22,7 +22,7 @@ TypeScript 6.0 everywhere · Nx monorepo · Angular 22 (standalone, zoneless, si
 | Project                 | What                                                        | Rules                                      |
 | ----------------------- | ----------------------------------------------------------- | ------------------------------------------ |
 | `apps/web`              | Angular app; features live in `apps/web/src/app/features/*` | [`apps/web/CLAUDE.md`](apps/web/CLAUDE.md) |
-| `apps/web-e2e`          | Playwright e2e (desktop + phone)                            |                                            |
+| `apps/web-e2e`          | Playwright e2e (desktop, tablet, phone)                     |                                            |
 | `apps/api`              | NestJS REST API under `/api`                                | [`apps/api/CLAUDE.md`](apps/api/CLAUDE.md) |
 | `libs/ui`               | Own component library, tokens, Storybook                    | [`libs/ui/CLAUDE.md`](libs/ui/CLAUDE.md)   |
 | `libs/shared/contracts` | DTOs and types shared by web and api                        | contract first: change here before code    |

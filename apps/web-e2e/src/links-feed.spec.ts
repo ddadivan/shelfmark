@@ -26,7 +26,7 @@ test.describe('links feed (mock API)', () => {
   }
 
   test('hovering a card slides up the open bar with the address', async ({ page }, testInfo) => {
-    test.skip(testInfo.project.name === E2E_PROJECT.Phone, 'touch has no hover');
+    test.skip(testInfo.project.use.hasTouch === true, 'touch has no hover');
     await openFeed(page);
     const card = page.locator('ui-card').first();
     const bar = card.locator('.ui-card__overlay');
@@ -42,7 +42,7 @@ test.describe('links feed (mock API)', () => {
   test('the open arrow moves only while the pointer is over the bar, and a click opens', async ({
     page,
   }, testInfo) => {
-    test.skip(testInfo.project.name === E2E_PROJECT.Phone, 'touch has no hover');
+    test.skip(testInfo.project.use.hasTouch === true, 'touch has no hover');
     await page.context().route('https://**/*', (route) => route.abort());
     await openFeed(page);
     const card = page.locator('ui-card').first();

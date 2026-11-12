@@ -1,8 +1,8 @@
 <app-demo-banner />
 <app-offline-banner />
 <div class="shell__body">
-  <!-- Below the phone breakpoint (40em) the tab bar replaces the sidebar. -->
-  @if (!viewport.phone()) {
+  <!-- Below 64em (phones and iPad portrait, #316) the tab bar replaces the sidebar. -->
+  @if (!viewport.compact()) {
     <div class="shell__sidebar">
       @if (inSettings()) {
         <app-settings-nav />
@@ -12,8 +12,8 @@
     </div>
   }
   <div class="shell__content">
-    <!-- Phone: no header; every page has its own title and the tab bar is the navigation. -->
-    @if (!viewport.phone()) {
+    <!-- Mobile shell: no header; every page has its own title and the tab bar is the navigation. -->
+    @if (!viewport.compact()) {
       <header class="shell__header">
         <ui-search-trigger
           class="shell__pill"
@@ -108,7 +108,7 @@
     </div>
   </div>
 </div>
-@if (viewport.phone()) {
+@if (viewport.compact()) {
   <ui-tab-bar
     [items]="tabs()"
     [active]="activeTab()"

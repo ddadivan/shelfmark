@@ -14,10 +14,19 @@
 #   ui axe:  the Storybook stories of the changed libs/ui components; a change to the shared
 #            styles, the Storybook setup or the a11y runner checks every story.
 #
-# Usage: tools/ci/pr-browser-tests.sh <base-ref>   (for example origin/stage)
+# Usage: tools/ci/pr-browser-tests.sh <base-ref> [web|ui|all]   (for example origin/stage web)
+#   web: only the web-e2e part, ui: only the Storybook axe part, all (default): both.
+#   PR_SHARD / PR_SHARDS (for example 2 and 4) split the web-e2e part into Playwright shards, so a
+#   PR that runs many specs (a Playwright config change runs all of them) spreads over the CI
+#   matrix like the full run does (#313).
 set -euo pipefail
 
 base="${1:?base ref, for example origin/stage}"
+part="${2:-all}"
+shard_args=()
+if [ -n "${PR_SHARD:-}" ] && [ -n "${PR_SHARDS:-}" ]; then
+  shard_args=(--shard="${PR_SHARD}/${PR_SHARDS}")
+fi
 e2e_dir=apps/web-e2e/src
 config=apps/web-e2e/playwright.config.mts
 changed="$(git diff --name-only "${base}...HEAD")"
@@ -45,11 +54,13 @@ declare -A FEATURE_SPECS=(
 )
 
 # --- web-e2e -------------------------------------------------------------------------------------
-if ! has '^(apps/web|apps/web-e2e|libs)/' && ! has '^(package\.json|package-lock\.json)$'; then
+if [ "${part}" = "ui" ]; then
+  echo "::notice::web-e2e: not in this entry"
+elif ! has '^(apps/web|apps/web-e2e|libs)/' && ! has '^(package\.json|package-lock\.json)$'; then
   echo "::notice::web-e2e: nothing in the web app, its e2e or its libraries changed"
 elif has "^${config//./\\.}$"; then
   echo "::notice::web-e2e: the Playwright config changed, running every spec"
-  npx playwright test -c "${config}"
+  npx playwright test -c "${config}" "${shard_args[@]}"
 else
   names=("${SMOKE_SPECS[@]}")
   if has '^(apps/web/src/(app/(core|shell|stores)/|app/app\.|index\.html|styles)|libs/)'; then
@@ -73,18 +84,21 @@ else
   done
   echo "::notice::web-e2e: ${#specs[@]} specs for the changed features, plus specs changed in the diff"
   # Two runs: Playwright intersects file filters with --only-changed, it does not add them up.
-  npx playwright test -c "${config}" --only-changed="${base}" --pass-with-no-tests
-  npx playwright test -c "${config}" "${specs[@]}"
+  npx playwright test -c "${config}" --only-changed="${base}" --pass-with-no-tests "${shard_args[@]}"
+  npx playwright test -c "${config}" --pass-with-no-tests "${shard_args[@]}" "${specs[@]}"
 fi
 
 # --- libs/ui Storybook axe -----------------------------------------------------------------------
-if has '^libs/ui/(src/styles|\.storybook|a11y)/' || has '^libs/ui/(project|package)\.json$'; then
+if [ "${part}" = "web" ]; then
+  echo "::notice::ui axe: not in this entry"
+elif has '^libs/ui/(src/styles|\.storybook|a11y)/' || has '^libs/ui/(project|package)\.json$'; then
   echo "::notice::ui axe: shared styles or the Storybook setup changed, checking every story"
   npx nx run ui:test-storybook --output-style=static
 else
   titles=()
-  for component in $(echo "${changed}" | sed -n 's#^libs/ui/src/lib/\([^/]*\)/.*#\1#p' | sort -u); do
-    for story in libs/ui/src/lib/"${component}"/*.stories.ts; do
+  # libs/ui/src/lib/<kind>/<name>/… (ADR 0042: components, directives, services, utils, models).
+  for component in $(echo "${changed}" | sed -n 's#^libs/ui/src/lib/[^/]*/\([^/]*\)/.*#\1#p' | sort -u); do
+    for story in libs/ui/src/lib/*/"${component}"/*.stories.ts; do
       [ -f "${story}" ] || continue
       title="$(sed -n "s/^[[:space:]]*title: '\([^']*\)'.*/\1/p" "${story}" | head -n 1)"
       [ -n "${title}" ] && titles+=("${title}")

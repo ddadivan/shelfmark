@@ -96,7 +96,12 @@ describe('SidebarComponent', () => {
       providers: [
         {
           provide: ViewportService,
-          useValue: { phone: signal(true), desktop: signal(false), wideDesktop: signal(false) },
+          useValue: {
+            phone: signal(true),
+            compact: signal(true),
+            desktop: signal(false),
+            wideDesktop: signal(false),
+          },
         },
       ],
     });

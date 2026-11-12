@@ -4,8 +4,8 @@ import { isPhone } from './sidebar';
 export type LibraryView = 'Cards' | 'List';
 
 /**
- * The library toolbar. Tablet and up has a sort button, a Cards / List switch and an Export
- * button; a phone has one "View" menu with all of them (Sort by, View, Export).
+ * The library toolbar. From 40em (tablet and desktop) it has a sort button, a Cards / List switch
+ * and an Export button; a phone has one "View" menu with all of them (Sort by, View, Export).
  */
 async function openViewMenu(page: Page): Promise<void> {
   await page.getByRole('button', { name: 'View', exact: true }).click();

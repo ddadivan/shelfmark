@@ -15,7 +15,7 @@ import {
 import { ButtonComponent } from '../button/button.component';
 import { nextDialogId } from '../../services/dialog/dialog-id';
 import { UiDialogRef } from '../../services/dialog/dialog-ref';
-import { PHONE_MEDIA_QUERY } from '../../utils/media';
+import { COMPACT_MEDIA_QUERY, PHONE_MEDIA_QUERY } from '../../utils/media';
 import type { DialogSize } from './models/dialog-size.type';
 import { SHEET_HEIGHT } from '../sheet/models/sheet-height.const';
 import type { SheetHeight } from '../sheet/models/sheet-height.type';
@@ -109,6 +109,12 @@ export class DialogComponent {
   );
   protected readonly leaving = computed(() => this.context?.leaving() ?? false);
   protected readonly phone = signal(false);
+  /** Below 64em (#316): a `ui-sheet` stays a bottom sheet on a tablet too (centred, 560px). */
+  protected readonly compact = signal(false);
+  /** The panel is a bottom sheet you can drag down: every dialog on a phone, a sheet below 64em. */
+  protected readonly sheetMode = computed(
+    () => this.phone() || (this.sheetHeight() !== undefined && this.compact()),
+  );
   protected readonly dragging = signal(false);
   protected readonly snapping = signal(false);
   /** The body overflows: it becomes a focusable region so the keyboard can scroll it. */
@@ -119,16 +125,21 @@ export class DialogComponent {
   constructor() {
     const destroyRef = inject(DestroyRef);
     afterNextRender(() => {
-      const query = globalThis.matchMedia?.(PHONE_MEDIA_QUERY);
-      if (query) {
-        this.phone.set(query.matches);
-        const onChange = (event: MediaQueryListEvent): void => {
-          this.phone.set(event.matches);
-        };
-        query.addEventListener('change', onChange);
-        destroyRef.onDestroy(() => {
-          query.removeEventListener('change', onChange);
-        });
+      for (const [media, state] of [
+        [PHONE_MEDIA_QUERY, this.phone],
+        [COMPACT_MEDIA_QUERY, this.compact],
+      ] as const) {
+        const query = globalThis.matchMedia?.(media);
+        if (query) {
+          state.set(query.matches);
+          const onChange = (event: MediaQueryListEvent): void => {
+            state.set(event.matches);
+          };
+          query.addEventListener('change', onChange);
+          destroyRef.onDestroy(() => {
+            query.removeEventListener('change', onChange);
+          });
+        }
       }
       if (typeof ResizeObserver !== 'undefined') {
         const body = this.body().nativeElement;
@@ -151,7 +162,7 @@ export class DialogComponent {
   protected onPointerDown(event: PointerEvent): void {
     const target = event.target;
     if (
-      !this.phone() ||
+      !this.sheetMode() ||
       this.phoneFullscreen() ||
       this.leaving() ||
       this.drag ||

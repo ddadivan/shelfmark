@@ -2,7 +2,7 @@ import { type Locator, type Page } from '@playwright/test';
 import { MOCK_FIXTURE } from './models/mock-fixture.const';
 import { openFeed, pickFolderMenuItem } from './support/a11y-flows';
 import { openSettingsSection } from './support/mock-session';
-import { gotoWithSidebar, isPhone, openSidebar, tabBar } from './support/sidebar';
+import { gotoWithSidebar, isCompact, openSidebar, tabBar } from './support/sidebar';
 import { settled } from './support/settled';
 import { expect, test } from './support/test';
 import { Finger } from './support/touch';
@@ -23,7 +23,7 @@ test.describe('folder style and pins (mock API)', () => {
    * "Nothing pinned yet" row (#315).
    */
   async function expectNoPins(page: Page): Promise<void> {
-    if (isPhone(page) && new URL(page.url()).pathname === '/library') {
+    if (isCompact(page) && new URL(page.url()).pathname === '/library') {
       await expect(pinnedItems(page)).toHaveCount(0);
       await expect(pinned(page).getByRole('button', { name: 'Nothing pinned yet' })).toBeVisible();
     } else {
@@ -52,7 +52,7 @@ test.describe('folder style and pins (mock API)', () => {
 
   // From a folder page or Settings back to a place with the folder tree (the Library tab on a phone).
   async function backToTree(page: Page): Promise<void> {
-    if (isPhone(page)) {
+    if (isCompact(page)) {
       await tabBar(page).getByRole('link', { name: 'Library' }).click();
       await expect(page).toHaveURL('/library');
       await expect(page.locator('app-library-tile').first()).toBeVisible();
@@ -138,7 +138,7 @@ test.describe('folder style and pins (mock API)', () => {
     const row = pinnedItems(page).first();
     const unpin = row.getByRole('button', { name: `Unpin ${READING}` });
     const actions = row.locator('.pinned__actions');
-    if (!isPhone(page)) {
+    if (!isCompact(page)) {
       await expect(actions).toHaveCSS('opacity', '0');
       await row.hover();
     }
@@ -163,7 +163,7 @@ test.describe('folder style and pins (mock API)', () => {
     await expect(pinnedItems(page).first()).toContainText(title);
 
     const row = pinnedItems(page).first();
-    if (!isPhone(page)) {
+    if (!isCompact(page)) {
       await row.hover();
     }
     await row.getByRole('button', { name: `Unpin ${title}` }).click();
@@ -289,7 +289,7 @@ test.describe('folder style and pins (mock API)', () => {
   test('reorders folders by dragging inside the Folders section (desktop, #314)', async ({
     page,
   }) => {
-    test.skip(isPhone(page), 'the touch drag has its own tests below');
+    test.skip(isCompact(page), 'the touch drag has its own tests below');
     await createNotes(page);
     await settled(page);
     const notes = page.getByRole('treeitem', { name: new RegExp(`^${NOTES}\\b`) });
@@ -331,7 +331,7 @@ test.describe('folder style and pins (mock API)', () => {
   });
 
   test('reorders pinned items by dragging (desktop)', async ({ page }) => {
-    test.skip(isPhone(page), 'the touch drag has its own test below');
+    test.skip(isCompact(page), 'the touch drag has its own test below');
     await createNotes(page);
     await pickFolderMenuItem(page, READING, 'Pin to sidebar');
     await pickFolderMenuItem(page, NOTES, 'Pin to sidebar');
@@ -383,7 +383,7 @@ test.describe('folder style and pins (mock API)', () => {
 
   test.describe('touch reorder on a phone (#315)', () => {
     test.beforeEach(({ page }) => {
-      test.skip(!isPhone(page), 'touch screens only; a mouse drags at once');
+      test.skip(!isCompact(page), 'touch screens only; a mouse drags at once');
     });
 
     const notesRow = (page: Page) =>

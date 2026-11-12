@@ -2,7 +2,7 @@ import { type Locator, type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
 import { settled } from './support/settled';
-import { isPhone } from './support/sidebar';
+import { isCompact } from './support/sidebar';
 import { switchView } from './support/library-toolbar';
 
 // Mirror MOCK_LINKS ("Simple pasta" is unsorted, "Angular overview" is in Angular) and the
@@ -43,7 +43,7 @@ test.describe('drag a link to a folder (mock API)', () => {
   test('dropping a card on a sidebar folder moves it, and Undo brings it back', async ({
     page,
   }) => {
-    test.skip(isPhone(page), 'phones have no sidebar; "Move to folder" is the way there');
+    test.skip(isCompact(page), 'phones have no sidebar; "Move to folder" is the way there');
     const card = page.locator('li.library__item').filter({ hasText: PASTA });
     const reading = treeRow(page, READING);
     const tags = page.locator('app-sidebar-tags');
@@ -76,7 +76,7 @@ test.describe('drag a link to a folder (mock API)', () => {
   test('dragging a picked card carries every picked card, with one toast and Undo', async ({
     page,
   }) => {
-    test.skip(isPhone(page), 'phones have no sidebar; "Move to folder" is the way there');
+    test.skip(isCompact(page), 'phones have no sidebar; "Move to folder" is the way there');
     await page.goto('/links');
     const items = page.locator('li.library__item');
     await expect(items.first()).toBeVisible();
@@ -120,7 +120,7 @@ test.describe('drag a link to a folder (mock API)', () => {
   });
 
   test('dragging an unselected card moves just that card', async ({ page }) => {
-    test.skip(isPhone(page), 'phones have no sidebar');
+    test.skip(isCompact(page), 'phones have no sidebar');
     await page.goto('/links');
     const items = page.locator('li.library__item');
     await expect(items.first()).toBeVisible();
@@ -138,7 +138,7 @@ test.describe('drag a link to a folder (mock API)', () => {
   });
 
   test('Esc cancels the drag and nothing moves', async ({ page }) => {
-    test.skip(isPhone(page), 'phones have no sidebar');
+    test.skip(isCompact(page), 'phones have no sidebar');
     const card = page.locator('li.library__item').filter({ hasText: PASTA });
     const reading = treeRow(page, READING);
 
@@ -156,7 +156,7 @@ test.describe('drag a link to a folder (mock API)', () => {
   test('works from a row in the list view, dropped on a subfolder-free folder row', async ({
     page,
   }) => {
-    test.skip(isPhone(page), 'phones have no sidebar');
+    test.skip(isCompact(page), 'phones have no sidebar');
     await switchView(page, 'List');
     const row = page.locator('li.library__item').filter({ hasText: PASTA });
     await expect(row.locator('ui-list-item')).toBeVisible();
@@ -178,14 +178,14 @@ test.describe('drag a link to a folder (mock API)', () => {
   });
 
   test('a link cannot be dragged on a phone', async ({ page }) => {
-    test.skip(!isPhone(page), 'phone only');
+    test.skip(!isCompact(page), 'phone only');
     const card = page.locator('li.library__item').filter({ hasText: PASTA });
 
     await expect(card).toHaveClass(/cdk-drag-disabled/);
   });
 
   test('dropping on the folder the link is in does nothing', async ({ page }) => {
-    test.skip(isPhone(page), 'phones have no sidebar');
+    test.skip(isCompact(page), 'phones have no sidebar');
     await page.goto(`/folders/${ANGULAR_ID}`);
     const card = page.locator('li.library__item').first();
     await expect(card).toBeVisible();

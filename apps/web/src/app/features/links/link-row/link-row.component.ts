@@ -95,7 +95,7 @@ export class LinkRowComponent {
   }
 
   protected onLongPress(): void {
-    if (this.viewport.phone()) {
+    if (this.viewport.compact()) {
       this.selectToggled.emit({ range: false });
     }
   }

@@ -15,7 +15,7 @@
   font-size: rem(34px);
   line-height: rem(40px);
 
-  @include phone {
+  @include compact {
     padding-block-start: var(--space-2);
   }
 }

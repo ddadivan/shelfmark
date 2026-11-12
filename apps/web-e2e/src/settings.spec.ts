@@ -6,7 +6,7 @@ import {
   openSettingsSection,
   seedSession,
 } from './support/mock-session';
-import { isPhone } from './support/sidebar';
+import { isCompact } from './support/sidebar';
 
 /** What `/settings` shows: the You list on a phone, the first section (Account) elsewhere. */
 const LANDING_HEADING = /^(Account|You)$/;
@@ -19,7 +19,7 @@ test.describe('settings (mock auth)', () => {
     await page.getByRole('button', { name: 'Continue with GitHub' }).click();
 
     await dismissOnboarding(page);
-    await expect(page).toHaveURL(isPhone(page) ? /\/settings$/ : /\/settings\/account$/);
+    await expect(page).toHaveURL(isCompact(page) ? /\/settings$/ : /\/settings\/account$/);
     await expect(page.getByRole('heading', { level: 1, name: LANDING_HEADING })).toBeVisible();
   });
 
@@ -85,7 +85,7 @@ test.describe('settings (mock auth)', () => {
   });
 
   test('the desktop nav lists the sections and marks the open one', async ({ page }) => {
-    test.skip(isPhone(page), 'the phone has the You list instead of the nav');
+    test.skip(isCompact(page), 'the phone has the You list instead of the nav');
     await seedSession(page);
     await page.goto('/settings');
     const nav = page.getByRole('navigation', { name: 'Settings' });
@@ -128,7 +128,7 @@ test.describe('settings (mock auth)', () => {
   test('the phone lists the sections in the You tab, each opens a page with a way back', async ({
     page,
   }) => {
-    test.skip(!isPhone(page), 'tablet and desktop have the nav instead of the list');
+    test.skip(!isCompact(page), 'tablet and desktop have the nav instead of the list');
     await seedSession(page);
     await page.goto('/links');
 

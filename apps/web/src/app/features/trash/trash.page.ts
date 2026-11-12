@@ -92,7 +92,9 @@ export default class TrashPage {
   });
   protected readonly selectedCount = computed(() => this.selected().length);
   /** Phone: checkboxes only show while something is selected. */
-  protected readonly selecting = computed(() => !this.viewport.phone() || this.selectedCount() > 0);
+  protected readonly selecting = computed(
+    () => !this.viewport.compact() || this.selectedCount() > 0,
+  );
   protected readonly allVisibleSelected = computed(() => {
     const visible = this.visible();
     const keys = this.selection();

@@ -5,9 +5,10 @@
 }
 
 // Pinned over the content: 16px from the sides, 20px above the bottom edge and the home indicator.
+// On a wider screen (a tablet in the mobile shell, #316) it stays a centred bar of at most 560px.
 :host(.ui-tab-bar--fixed) {
   position: fixed;
-  inset-inline: var(--space-4);
+  inset-inline: max(var(--space-4), calc((100vw - #{rem(560px)}) / 2));
   inset-block-end: calc(#{rem(20px)} + env(safe-area-inset-bottom, 0rem));
   z-index: 10;
 }

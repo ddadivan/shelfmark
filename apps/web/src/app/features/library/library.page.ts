@@ -183,7 +183,13 @@ export default class LibraryPage {
   protected readonly pins = inject(PinsStore);
   protected readonly PIN_KIND = PIN_KIND;
   protected readonly howItWorks = inject(HowItWorksService);
+  /** Below 40em: the toolbar folds into one View menu and the short labels. */
   protected readonly phone = inject(ViewportService).phone;
+  /**
+   * The mobile shell (below 64em, #316): no sidebar to drop on, the touch selection header and
+   * the stacked bulk bar over the tab bar, the share action.
+   */
+  protected readonly compact = inject(ViewportService).compact;
   protected readonly selection = inject(LinkSelectionStore);
   private readonly bulk = inject(BulkLinkActionsService);
   protected readonly drag = inject(LinkDragService);
@@ -492,7 +498,7 @@ export default class LibraryPage {
         pressed: favorite,
       },
     ];
-    if (this.phone()) {
+    if (this.compact()) {
       actions.push(
         this.bulk.canShare()
           ? { id: BULK_ACTION.Share, label: t('bulk.bar.share'), icon: 'share' }

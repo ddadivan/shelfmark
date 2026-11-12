@@ -102,7 +102,8 @@ jobs:
 
   # Browser tests, sharded (#313): four web-e2e shards and Storybook axe run side by side, so the
   # full run (pushes to `stage`, release PRs into `main`) stays well under the job limit. A PR into
-  # `stage` keeps the short diff-based run in the first entry; the others finish at once.
+  # `stage` runs the diff-based set, sharded the same way (a Playwright config change runs every
+  # spec, so it must not land on one runner).
   e2e-shard:
     name: e2e ${{ matrix.name }}
     runs-on: ubuntu-latest
@@ -148,13 +149,7 @@ jobs:
       - name: Detect what this entry runs
         id: browser
         run: |
-          if [ "$PR_INTO_STAGE" = "true" ]; then
-            if [ "${{ matrix.kind }}-${{ matrix.shard }}" != "web-1" ]; then
-              echo "::notice::PR into stage: the diff-based run is in the first entry"
-              echo "needed=false" >> "$GITHUB_OUTPUT"; exit 0
-            fi
-            target="e2e,test-storybook"
-          elif [ "${{ matrix.kind }}" = "web" ]; then
+          if [ "${{ matrix.kind }}" = "web" ]; then
             target="e2e"
           else
             target="test-storybook"
@@ -173,11 +168,18 @@ jobs:
             npx playwright install chromium
           }
       # A PR into `stage` runs only the browser tests its diff touches plus a smoke set
-      # (tools/ci/pr-browser-tests.sh), so the required check stays short. Pushes to `stage` and
+      # (tools/ci/pr-browser-tests.sh), so the required check stays short; the web part is split
+      # into the same four shards, the Storybook part runs in its own entry. Pushes to `stage` and
       # release PRs into `main` run every affected suite, so nothing skipped on a PR goes unchecked.
-      - name: Run e2e and Storybook a11y tests for the diff
-        if: steps.browser.outputs.needed == 'true' && env.PR_INTO_STAGE == 'true'
-        run: tools/ci/pr-browser-tests.sh origin/stage
+      - name: Run the web-e2e tests for the diff, shard ${{ matrix.shard }}/${{ env.SHARDS }}
+        if: steps.browser.outputs.needed == 'true' && env.PR_INTO_STAGE == 'true' && matrix.kind == 'web'
+        env:
+          PR_SHARD: ${{ matrix.shard }}
+          PR_SHARDS: ${{ env.SHARDS }}
+        run: tools/ci/pr-browser-tests.sh origin/stage web
+      - name: Run the Storybook a11y tests for the diff
+        if: steps.browser.outputs.needed == 'true' && env.PR_INTO_STAGE == 'true' && matrix.kind == 'storybook'
+        run: tools/ci/pr-browser-tests.sh origin/stage ui
       # One shard of every web-e2e spec (desktop and phone); each shard writes a blob report that
       # the `e2e` job merges into one HTML report when something failed.
       - name: Run web-e2e shard ${{ matrix.shard }}/${{ env.SHARDS }}

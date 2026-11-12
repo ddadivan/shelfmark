@@ -1,7 +1,7 @@
 <ng-template #entry>
   <ui-history-row
     [newTab]="newTab()"
-    [attr.role]="viewport.phone() ? 'presentation' : 'listitem'"
+    [attr.role]="viewport.compact() ? 'presentation' : 'listitem'"
     [href]="href()"
     [preview]="preview()"
     [description]="href() && newTab() ? ('links.item.opensInNewTab' | transloco) : undefined"
@@ -52,7 +52,7 @@
   </ui-history-row>
 </ng-template>
 
-@if (viewport.phone()) {
+@if (viewport.compact()) {
   <!-- Phone: the swipe frame is the list item (it holds "Remove" too); the row inside is not. -->
   <div class="link-history-row__swipe" role="listitem">
     <div

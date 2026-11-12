@@ -31,7 +31,7 @@ async function setup(phone = true) {
       { provide: TAGS_API, useClass: MockTagsApi },
       { provide: TRASH_API, useClass: MockTrashApi },
       { provide: DialogService, useValue: { open } },
-      { provide: ViewportService, useValue: { phone: signal(phone) } },
+      { provide: ViewportService, useValue: { phone: signal(phone), compact: signal(phone) } },
     ],
   });
   await loadEnglish();

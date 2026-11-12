@@ -6,7 +6,7 @@
   [checked]="selected()"
   [selecting]="selecting()"
   uiLongPress
-  [uiLongPressDisabled]="!viewport.phone()"
+  [uiLongPressDisabled]="!viewport.compact()"
   (uiLongPress)="onLongPress()"
   (activated)="open($event)"
   (keydown)="onKeydown($event)"

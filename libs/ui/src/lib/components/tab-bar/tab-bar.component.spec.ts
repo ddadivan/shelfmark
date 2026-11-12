@@ -152,13 +152,14 @@ describe('TabBarComponent', () => {
     }).toThrow(/at most 4 items/);
   });
 
-  it('draws a glass bar, 68px tall with 26px corners, fixed 16px / 20px plus the safe area', () => {
+  it('draws a glass bar, 68px tall with 26px corners, fixed 16px / 20px plus the safe area, at most 560px wide', () => {
     const css = compileScss('lib/components/tab-bar/tab-bar.component.scss');
     expect(css).toContain('background: var(--glass)');
     expect(css).toContain('border: 1px solid var(--glass-line)');
     expect(css).toContain('block-size: 4.25rem');
     expect(css).toContain('border-radius: 1.625rem');
-    expect(css).toContain('inset-inline: var(--space-4)');
+    // 16px from the sides on a phone; centred and at most 560px wide on a tablet (#316).
+    expect(css).toContain('inset-inline: max(var(--space-4), (100vw - 35rem) / 2)');
     expect(css).toContain('env(safe-area-inset-bottom, 0rem)');
     expect(css).toContain('inline-size: 3.5rem');
     expect(css).toContain('border-radius: 1.25rem');

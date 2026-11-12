@@ -16,7 +16,7 @@ async function setup(phone: boolean) {
       provideRouter([{ path: 'links', children: [] }]),
       { provide: LINKS_API, useClass: MockLinksApi },
       { provide: TAGS_API, useClass: MockTagsApi },
-      { provide: ViewportService, useValue: { phone: signal(phone) } },
+      { provide: ViewportService, useValue: { phone: signal(phone), compact: signal(phone) } },
     ],
   });
   await loadEnglish();

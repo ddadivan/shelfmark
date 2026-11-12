@@ -2,7 +2,7 @@ import { type Locator, type Page } from '@playwright/test';
 import { COLOR_SCHEME } from './models/color-scheme.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { seedSession } from './support/mock-session';
-import { isPhone } from './support/sidebar';
+import { isCompact } from './support/sidebar';
 import { settled } from './support/settled';
 import { expect, test } from './support/test';
 
@@ -108,7 +108,7 @@ test.describe('Recently opened extras (mock API)', () => {
   });
 
   test('phone: swiping a row left reveals Remove', async ({ page }) => {
-    test.skip(!isPhone(page), 'the swipe is the phone pattern');
+    test.skip(!isCompact(page), 'the swipe is the phone pattern');
     await openRecent(page);
     const before = await rows(page).count();
     const first = rows(page).first();

@@ -3,7 +3,7 @@ import { COLOR_SCHEME } from './models/color-scheme.const';
 import { openFeed } from './support/a11y-flows';
 import { expectNoBlockingViolations } from './support/axe';
 import { seedSession } from './support/mock-session';
-import { isPhone } from './support/sidebar';
+import { isCompact } from './support/sidebar';
 import { settled } from './support/settled';
 import { expect, test } from './support/test';
 
@@ -22,7 +22,7 @@ test.describe('saved views (mock API)', () => {
   /** The menu of a view; on a mouse the "..." button shows on hover. */
   async function viewMenuItem(page: Page, name: string, item: string): Promise<void> {
     const trigger = views(page).getByRole('button', { name: `Actions for ${name}` });
-    if (!isPhone(page)) {
+    if (!isCompact(page)) {
       await chip(page, new RegExp(`^${name} \\d+$`)).hover();
     }
     await trigger.click();
@@ -109,7 +109,7 @@ test.describe('saved views (mock API)', () => {
   });
 
   test('the arrow keys move between the chips', async ({ page }) => {
-    test.skip(isPhone(page), 'keyboard path, desktop');
+    test.skip(isCompact(page), 'keyboard path, desktop');
     await openFeed(page);
     await chip(page, /^All \d+$/).focus();
     await page.keyboard.press('ArrowRight');

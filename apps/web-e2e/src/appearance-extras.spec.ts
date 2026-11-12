@@ -2,7 +2,7 @@ import { type Locator, type Page, type TestInfo } from '@playwright/test';
 import { expectNoBlockingViolations } from './support/axe';
 import { seedSession } from './support/mock-session';
 import { settled } from './support/settled';
-import { isPhone } from './support/sidebar';
+import { isCompact } from './support/sidebar';
 import { expect, test } from './support/test';
 
 // Settings › Appearance extras (issue #285): text size, font, density, card and sidebar options.
@@ -164,7 +164,7 @@ test.describe('appearance extras (mock API)', () => {
     await expect(toggle(page, 'Link counts')).toHaveCount(0);
     await expect(toggle(page, 'Remember recently opened')).toHaveCount(0);
     // The preview draws its sidebar from the tablet width on.
-    const sidebar = isPhone(page) ? null : page.locator('ui-theme-preview');
+    const sidebar = isCompact(page) ? null : page.locator('ui-theme-preview');
     if (sidebar) {
       await expect(sidebar.locator('.ui-theme-preview__count').first()).toBeVisible();
       await expect(sidebar.getByText('Recently opened')).toBeVisible();
@@ -200,7 +200,7 @@ test.describe('appearance extras (mock API)', () => {
   test('the phone keeps every option reachable at 125% text without side scroll', async ({
     page,
   }) => {
-    test.skip(!isPhone(page), 'phone layout');
+    test.skip(!isCompact(page), 'phone layout');
     await openAppearance(page);
     await pick(page, 'Text size', '125%');
     await pick(page, 'Density', 'Compact');

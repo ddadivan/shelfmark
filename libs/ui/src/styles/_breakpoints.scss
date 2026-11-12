@@ -1,5 +1,8 @@
 // Layout breakpoints (author decision, ADR 0015): phone < 40em, tablet 40em to 63.99em,
 // desktop from 64em. Range syntax leaves no gap and no overlap between the three ranges.
+// Navigation switches at 64em (#316): below it (phones and iPad portrait) the mobile shell with
+// the tab bar (`compact`), from 64em the sidebar (`desktop`). `phone` is for small-screen details
+// only (bottom sheets, one column, stacked buttons).
 $tablet-min: 40em;
 $desktop-min: 64em;
 
@@ -18,6 +21,13 @@ $desktop-min: 64em;
 // Tablet and desktop (40em and wider): the usual "not a phone" switch.
 @mixin tablet-up {
   @media (width >= #{$tablet-min}) {
+    @content;
+  }
+}
+
+// Below 64em: the mobile shell (tab bar, no sidebar) on phones and tablets.
+@mixin compact {
+  @media (width < #{$desktop-min}) {
     @content;
   }
 }

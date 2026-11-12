@@ -9,7 +9,9 @@ import { LandingHeaderComponent } from './landing-header.component';
 describe('LandingHeaderComponent', () => {
   it('leaves the section links and "Get started" out of the DOM on a phone; sign-in stays', async () => {
     TestBed.configureTestingModule({
-      providers: [{ provide: ViewportService, useValue: { phone: signal(true) } }],
+      providers: [
+        { provide: ViewportService, useValue: { phone: signal(true), compact: signal(true) } },
+      ],
     });
     const fixture = await createTranslated(LandingHeaderComponent);
     const root = fixture.nativeElement as HTMLElement;

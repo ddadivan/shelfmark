@@ -94,6 +94,8 @@ export class RecentHistoryComponent {
   private readonly doc = inject(DOCUMENT);
   private readonly settings = inject(UserSettingsStore);
   protected readonly phone = inject(ViewportService).phone;
+  /** The mobile shell (#316): rows swipe, so the note names the swipe. */
+  protected readonly compact = inject(ViewportService).compact;
 
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly SKELETON_COUNT = SKELETON_COUNT;

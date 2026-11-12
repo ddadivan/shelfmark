@@ -123,10 +123,10 @@ export class SidebarComponent {
   private readonly actions = inject(FolderActionsService);
   private readonly viewport = inject(ViewportService);
   /** Wide-screen-only blocks of the sidebar (the phone drawer and Library leave them out). */
-  protected readonly phone = this.viewport.phone;
+  protected readonly phone = this.viewport.compact;
   /** Text buttons reach the 44px touch target on a phone. */
   protected readonly buttonSize = computed(() =>
-    this.viewport.phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm,
+    this.viewport.compact() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm,
   );
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);

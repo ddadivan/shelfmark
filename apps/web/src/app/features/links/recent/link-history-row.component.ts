@@ -60,7 +60,7 @@ import { UserSettingsStore } from '../../../stores/user-settings.store';
   templateUrl: './link-history-row.component.html',
   styleUrl: './link-history-row.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '[class.link-history-row--phone]': 'viewport.phone()' },
+  host: { '[class.link-history-row--phone]': 'viewport.compact()' },
 })
 export class LinkHistoryRowComponent {
   /** Settings › Library › Open links in: a new tab (default) or the same tab. */
@@ -95,7 +95,7 @@ export class LinkHistoryRowComponent {
   private readonly surface = viewChild<ElementRef<HTMLElement>>('surface');
   /** Swipe state of the phone row ("Remove" waits behind it). */
   protected readonly swipe = new SwipeReveal(
-    () => this.viewport.phone(),
+    () => this.viewport.compact(),
     () => this.actions()?.nativeElement,
     () => this.surface()?.nativeElement,
   );

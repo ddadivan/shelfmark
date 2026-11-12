@@ -22,8 +22,18 @@ describe('ViewportService', () => {
     const viewport = TestBed.inject(ViewportService);
 
     expect(viewport.phone()).toBe(false);
+    expect(viewport.compact()).toBe(false);
     expect(viewport.desktop()).toBe(true);
     expect(viewport.wideDesktop()).toBe(true);
+  });
+
+  it('is compact but not a phone on a tablet (40em to 64em, #316)', () => {
+    stubMatchMedia({ '(width < 40em)': false, '(width < 64em)': true });
+    const tablet = TestBed.inject(ViewportService);
+
+    expect(tablet.phone()).toBe(false);
+    expect(tablet.compact()).toBe(true);
+    expect(tablet.desktop()).toBe(false);
   });
 
   it('tells a wide desktop (from 80em) from a narrow one', () => {

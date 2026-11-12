@@ -1,6 +1,6 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 import { openAccountMenu } from './mock-session';
-import { isPhone, tabBar } from './sidebar';
+import { isCompact, tabBar } from './sidebar';
 
 // Same values as the mock constants in apps/web/src/app/features/feedback/mock/models.
 export const MOCK_FEEDBACK_SCENARIO_KEY = 'sm-mock-feedback-scenario';
@@ -32,7 +32,7 @@ export async function seedMockKey(page: Page, key: string, value: string): Promi
 
 /** Opens the "Send feedback" dialog the way each device has it: the account menu, or the You list. */
 export async function openSendFeedback(page: Page): Promise<Locator> {
-  if (isPhone(page)) {
+  if (isCompact(page)) {
     await tabBar(page).getByRole('link', { name: 'You' }).click();
     await page.getByRole('main').getByRole('button', { name: 'Send feedback' }).click();
   } else {

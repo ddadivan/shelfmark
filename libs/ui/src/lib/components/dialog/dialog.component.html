@@ -28,7 +28,7 @@
         @if (closeLabel(); as label) {
           <ui-button
             variant="ghost"
-            [size]="phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm"
+            [size]="sheetMode() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm"
             iconOnly
             iconLeft="close"
             [ariaLabel]="label"

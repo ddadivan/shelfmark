@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { type Download } from '@playwright/test';
 import { expect, test } from './support/test';
 import { openAccountMenu, openSettingsSection, seedSession } from './support/mock-session';
-import { isPhone } from './support/sidebar';
+import { isCompact } from './support/sidebar';
 import { openExportMenu } from './support/library-toolbar';
 
 // Mirrors EXPORT_MOCK_MARKER (apps/web); this project cannot import it.
@@ -90,7 +90,7 @@ test.describe('export (mock API)', () => {
     await page.setViewportSize({ width: 360, height: 780 });
     await page.goto('/links?tag=docs');
     await expect(
-      page.getByRole('button', { name: isPhone(page) ? 'View' : 'Export', exact: true }),
+      page.getByRole('button', { name: isCompact(page) ? 'View' : 'Export', exact: true }),
     ).toBeVisible();
 
     const overflow = await page.evaluate<number>(
@@ -102,7 +102,7 @@ test.describe('export (mock API)', () => {
   test('the account menu (the You tab on a phone) exports everything', async ({ page }) => {
     await page.goto('/links');
     const download = page.waitForEvent('download');
-    if (isPhone(page)) {
+    if (isCompact(page)) {
       await openSettingsSection(page, 'Export');
       await page.getByRole('button', { name: 'JSON' }).click();
     } else {

@@ -20,6 +20,7 @@ Angular 22 client (CSR only, zoneless). Read `docs/PROJECT.md` 5.1 and 7 first. 
 - Appearance only through `ThemeService` (`core/theme`), which owns `html[data-theme]` (`light` | `dark` | `custom`), `html[data-custom-base|accent|background|corners]`, `html[data-motion]`, the layout attributes of #285 (`LAYOUT_ATTRIBUTE`: `data-text-size`, `data-font`, `data-density`, `data-card-preview|site|notes|tags`, left out for the defaults) and `color-scheme` (from the base), and calls `ReducedMotion.setAppReduced`. Never set them elsewhere. API: `init()` (idempotent, app initializer: reads `localStorage` `sm-theme`, `sm-custom-theme`, `sm-motion`, `sm-layout` for the first paint, follows the system scheme and other tabs through the `storage` event), `setPreference` / `setCustomTheme` / `setMotion` / `setLayout` / `apply(appearance)` (apply and remember locally), signals `preference`, `customTheme`, `motion`, `layout`, `resolved` (the base) and `appearance`. The account is the source of truth: `UserSettingsStore` applies `/api/me/settings` when it loads (only when `appearanceSaved`; otherwise a valid local appearance, `hasStoredAppearance()`, is kept and saved once, silently) and `setAppearance(change)` saves a change optimistically (rollback on failure); UI changes go through the store. Script-driven motion checks `ReducedMotion` from `@shelfmark/ui`, never `matchMedia` directly.
 - Settings › Library (#284): `UserSettingsStore.libraryShown` / `setLibrary(change)` (optimistic, rollback). The feed's view and sort come from `FeedMemoryService` (per feed on the device, `sm-feed-memory`) and fall back to the account's `defaultView` / `defaultSort`; `?sort=` wins and is written only when it differs from the default. `UiStore` no longer keeps the view.
 - Styles: tokens only, `rem` / `em` (breakpoints in `em`), both themes, phone from 360px, honour `prefers-reduced-motion`.
+- Breakpoints (#316): navigation switches at 64em. `ViewportService.compact` (and the Sass `compact` mixin) is the mobile shell below it: the tab bar, no sidebar or top bar, the Library / Tags / You pages, touch sizes, long press to select, swipe rows, the stacked bulk bar; `desktop` from 64em is the sidebar layout. `ViewportService.phone` (and `phone`) is only for small-screen details: bottom-sheet dialogs, the one View menu, short labels, block buttons. Touch affordances (checkboxes, the star, "…") follow the input (`hover: none` / `pointer: coarse`), not the width. Content stays fluid (the card grid keeps `auto-fill` columns).
 - Build UI from `libs/ui` components; no bare styled `<button>` / `<input>` in features.
 - HTTP: relative `/api` URLs (`API_BASE_URL`); the dev server proxies `/api` to `http://localhost:3000` (`proxy.conf.json`).
 - Security: no `innerHTML` / `bypassSecurityTrust*`; nothing inline in `index.html` (strict CSP: `optimization.styles.inlineCritical` is `false` in `project.json`; keep it that way).
@@ -33,14 +34,14 @@ npx nx test web [--configuration=coverage]
 npx nx run web:typecheck              # ngc, includes template checks
 npx nx lint web
 npx playwright install chromium       # once per machine
-npx nx e2e web-e2e                    # desktop + phone; E2E_PORT=4210 npx nx e2e web-e2e if 4200 is busy
+npx nx e2e web-e2e                    # desktop, tablet and phone; E2E_PORT=4210 npx nx e2e web-e2e if 4200 is busy
 CI=1 npx nx e2e web-e2e               # CI mode: serves the production build, retries 2
 ```
 
 ## Tests
 
 - A `*.spec.ts` next to every service and page (Vitest via `@angular/build:unit-test`).
-- e2e in `apps/web-e2e` runs on the `desktop` and `phone` (360px) projects.
+- e2e in `apps/web-e2e` runs on the `desktop`, `tablet` (820 x 1180, touch, #316) and `phone` (360px) projects. `isCompact(page)` (below 64em) picks the mobile-shell path (tab bar, Library / Tags / You pages), `isPhone(page)` (below 40em) only small-screen details (bottom-sheet dialogs, the one View menu).
 
 ## Official Angular AI config
 

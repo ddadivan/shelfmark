@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { compile, compileString } from 'sass';
-import { PHONE_MEDIA_QUERY } from '../lib/utils/media';
+import { COMPACT_MEDIA_QUERY, PHONE_MEDIA_QUERY } from '../lib/utils/media';
 import { encapsulateStyle } from '@angular/compiler';
 import { MOTION_ATTRIBUTE, MOTION_REDUCED } from '../lib/services/motion';
 import {
@@ -74,6 +74,11 @@ describe('breakpoint mixins', () => {
 
   it('tablet-up starts exactly where phone ends', () => {
     expect(css('.a { @include tablet-up { x: 1; } }')).toContain('@media (width >= 40em)');
+  });
+
+  it('compact (the mobile shell, #316) ends exactly where desktop starts', () => {
+    expect(css('.a { @include compact { x: 1; } }')).toContain(`@media ${COMPACT_MEDIA_QUERY}`);
+    expect(COMPACT_MEDIA_QUERY).toBe('(width < 64em)');
   });
 });
 

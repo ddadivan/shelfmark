@@ -9,7 +9,8 @@
 //   (the CDK removes the "showing" class when the dialog starts to close). Opacity only, so it
 //   is the same under reduced motion.
 // The wrapper is the global-position host element: a centred dialog on tablet and desktop,
-//   a panel stuck to the bottom edge (bottom sheet) on a phone.
+//   a panel stuck to the bottom edge (bottom sheet) on a phone, and for a `ui-sheet` also on a
+//   tablet (#316: quick lists are centred bottom sheets on an iPad, forms stay dialogs).
 @mixin dialog-layout {
   .ui-dialog-scrim {
     background: var(--overlay);
@@ -26,6 +27,13 @@
 
     @include phone {
       align-items: flex-end;
+    }
+
+    // A `ui-sheet` (quick lists) stays at the bottom edge on a tablet too (#316).
+    &:has(.ui-dialog--sheet) {
+      @include tablet {
+        align-items: flex-end;
+      }
     }
   }
 
