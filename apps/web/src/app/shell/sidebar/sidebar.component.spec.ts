@@ -1,4 +1,5 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { MOCK_ID, MOCK_NAME } from '@shelfmark/contracts/testing';
@@ -19,6 +20,8 @@ import { MockUserSettingsApi } from '../../features/settings/mock/mock-user-sett
 import { MOCK_LIBRARY_SETTINGS_STORAGE_KEY } from '../../features/settings/models/mock-library-settings-storage-key.const';
 import { USER_SETTINGS_API } from '../../features/settings/models/user-settings-api.const';
 import { UserSettingsStore } from '../../stores/user-settings.store';
+import { ViewportService } from '../../core/layout/viewport.service';
+import { FeedbackDialogService } from '../../features/feedback/feedback-dialog.service';
 import { SidebarComponent } from './sidebar.component';
 
 async function setup(url = '/links', waitForFolders = true) {
@@ -71,6 +74,36 @@ function row(element: HTMLElement, name: string): HTMLElement {
 
 describe('SidebarComponent', () => {
   afterEach(() => localStorage.removeItem(MOCK_LIBRARY_SETTINGS_STORAGE_KEY));
+
+  it('has a quiet "Send feedback" icon button next to Trash that opens the dialog (#315)', async () => {
+    const { element, fixture } = await setup();
+    const open = vi.spyOn(TestBed.inject(FeedbackDialogService), 'open').mockImplementation(() => {
+      // The dialog itself is covered by the feedback specs.
+    });
+    const button = element.querySelector<HTMLButtonElement>(
+      '.sidebar__trash .sidebar__feedback button',
+    );
+
+    expect(button?.getAttribute('aria-label')).toBe('Send feedback');
+    expect(button?.getAttribute('aria-haspopup')).toBe('dialog');
+    button?.click();
+    await fixture.whenStable();
+    expect(open).toHaveBeenCalledTimes(1);
+  });
+
+  it('leaves the "Send feedback" button out on a phone (it is in the You list)', async () => {
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: ViewportService,
+          useValue: { phone: signal(true), desktop: signal(false), wideDesktop: signal(false) },
+        },
+      ],
+    });
+    const { element } = await setup();
+
+    expect(element.querySelector('.sidebar__feedback')).toBeNull();
+  });
 
   it('drops the link counts when "Show folder counts" is off (#284)', async () => {
     localStorage.setItem(

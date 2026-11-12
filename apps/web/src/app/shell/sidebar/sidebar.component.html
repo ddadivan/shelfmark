@@ -69,14 +69,30 @@
   }
 
   @if (!foldersOnly()) {
-    <!-- Trash sits alone under a divider at the very bottom (Main spec). -->
+    <!-- Trash sits under a divider at the very bottom (Main spec); a quiet "Send feedback" icon
+      button shares its row on wide screens (#315; the phone has it in the You list). -->
     <div class="sidebar__trash">
       <ui-tree
+        class="sidebar__trash-tree"
         [fixedNodes]="trashNodes()"
         [activeId]="activeId()"
         [ariaLabel]="'trash.title' | transloco"
         (selected)="openTrash()"
       />
+      @if (!phone()) {
+        <ui-button
+          class="sidebar__feedback"
+          variant="ghost"
+          size="sm"
+          iconOnly
+          iconLeft="message"
+          ariaHaspopup="dialog"
+          [iconSize]="ICON_SIZE.Md"
+          [ariaLabel]="'shell.sendFeedback' | transloco"
+          [uiTooltip]="'shell.sendFeedback' | transloco"
+          (click)="feedback.open()"
+        />
+      }
     </div>
   }
 
