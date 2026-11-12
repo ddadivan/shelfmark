@@ -209,23 +209,23 @@ export class SidebarComponent {
     ];
   });
 
-  /**
-   * The footer rows: "Send feedback" (not on the phone, which has it in the You list) above Trash.
-   * The Trash count shows once the list has loaded and only while Trash is not empty.
-   */
-  protected readonly footerNodes = computed<UiTreeNode[]>(() => {
+  /** "Send feedback" above the divider (not on the phone, which has it in the You list). */
+  protected readonly feedbackNodes = computed<UiTreeNode[]>(() => {
+    const labels = this.labels();
+    if (!labels || this.phone()) {
+      return [];
+    }
+    return [{ id: SIDEBAR_FEEDBACK_ID, name: labels.feedback, icon: 'message' }];
+  });
+
+  /** Trash under the divider; its count shows once the list has loaded and only while not empty. */
+  protected readonly trashNodes = computed<UiTreeNode[]>(() => {
     const labels = this.labels();
     if (!labels) {
       return [];
     }
     const total = this.trash.total();
-    const feedback: UiTreeNode = {
-      id: SIDEBAR_FEEDBACK_ID,
-      name: labels.feedback,
-      icon: 'message',
-    };
     return [
-      ...(this.phone() ? [] : [feedback]),
       {
         id: SIDEBAR_TRASH_ID,
         name: labels.trash,

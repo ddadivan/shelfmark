@@ -72,14 +72,24 @@
   </div>
 
   @if (!foldersOnly()) {
-    <!-- The footer stays put under a divider (Main spec): "Send feedback" (desktop only; the phone
-      has it in the You list) above Trash, both rows of one tree (#335). -->
+    <!-- The footer stays put (#335): "Send feedback" (desktop only; the phone has it in the You list),
+      then Trash under its divider (Main spec). -->
     <div class="sidebar__footer">
+      @if (feedbackNodes().length) {
+        <ui-tree
+          [fixedNodes]="feedbackNodes()"
+          [activeId]="activeId()"
+          [noDropIds]="drag.treeNoDropIds()"
+          [ariaLabel]="'shell.sidebar.footer' | transloco"
+          (selected)="footerSelected($event)"
+        />
+      }
       <ui-tree
-        [fixedNodes]="footerNodes()"
+        class="sidebar__trash"
+        [fixedNodes]="trashNodes()"
         [activeId]="activeId()"
         [noDropIds]="drag.treeNoDropIds()"
-        [ariaLabel]="'shell.sidebar.footer' | transloco"
+        [ariaLabel]="'trash.title' | transloco"
         (selected)="footerSelected($event)"
       />
     </div>

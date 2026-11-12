@@ -65,10 +65,16 @@
   padding-block-start: var(--space-6);
 }
 
-// Footer: "Send feedback" and Trash, under a divider, fixed at the bottom of the card.
+// Footer, fixed at the bottom of the card: "Send feedback", then Trash under a divider (#335).
 .sidebar__footer {
   flex: none;
-  padding-block: var(--space-2) var(--space-3);
+  padding-block: var(--space-1) var(--space-3);
+}
+
+.sidebar__trash {
+  display: block;
+  margin-block-start: var(--space-2);
+  padding-block-start: var(--space-2);
   border-block-start: 1px solid var(--border);
 }
 
