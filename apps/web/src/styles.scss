@@ -33,6 +33,19 @@ app-link-card .ui-card__heading {
   min-block-size: calc(2 * #{rem(22px)});
 }
 
+// Narrow cards (a fluid grid of about 200px cards): below 15rem the date leaves the top row so the
+// site name is not cut against it. It stays in the DOM for screen readers (and in the site's
+// `title`), and the row keeps its height, so every card stays the same height.
+app-link-card ui-card {
+  container: link-card / inline-size;
+}
+
+@container link-card (width < #{rem(240px)}) {
+  .ui-card__date {
+    @include visually-hidden;
+  }
+}
+
 // Cards <-> list morph (View Transitions, started by the library page): every link has a
 // `view-transition-name`, so each card glides into its row. The pseudo-elements live on the
 // document, so these rules must stay global. Reduced motion never starts a transition.

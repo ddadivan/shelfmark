@@ -36,7 +36,11 @@
     </span>
   }
   <span slot="title">{{ link().title }}</span>
-  <span slot="meta" class="link-card__site">
+  <span
+    slot="meta"
+    class="link-card__site"
+    [attr.title]="saved() ? host() + ' · ' + saved() : null"
+  >
     <ui-favicon [src]="favicon()" [letter]="letter()" />
     <span class="link-card__host">{{ host() }}</span>
   </span>

@@ -143,21 +143,11 @@
 }
 
 .library__grid {
-  // Minimum card width, by window width (#335): 19rem keeps two columns from 820px to 1280px and
-  // three at 1440px; wider windows get more, smaller cards (7 at 1920px).
-  --library-card-min: #{rem(304px)};
-
+  // One fluid minimum card width (#335): the number of columns grows with the window, about 3 at
+  // 1024px, 4 at 1280px, 5 at 1440px and 7 at 1920px; a phone keeps one column (`min(100%, …)`).
   display: grid;
   gap: var(--density-feed-gap);
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--library-card-min)), 1fr));
-
-  @media (min-width: 100em) {
-    --library-card-min: #{rem(272px)};
-  }
-
-  @media (min-width: 120em) {
-    --library-card-min: #{rem(200px)};
-  }
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, #{rem(196px)}), 1fr));
 
   // The list items hold the cards; stretch them to the row height.
   > li {
@@ -172,7 +162,7 @@
   > li {
     overflow-clip-margin: #{rem(48px)};
     content-visibility: auto;
-    contain-intrinsic-size: auto 0 auto #{rem(416px)};
+    contain-intrinsic-size: auto 0 auto #{rem(336px)};
   }
 }
 
