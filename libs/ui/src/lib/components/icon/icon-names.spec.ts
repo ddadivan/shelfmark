@@ -23,6 +23,7 @@ const APP_ICONS = [
   'briefcase',
   'code',
   'cooking-pot',
+  'globe',
   'graduation-cap',
   'message',
   'pin',

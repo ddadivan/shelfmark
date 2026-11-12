@@ -114,18 +114,18 @@
         }
         <ui-menu-label>{{ 'export.menu' | transloco }}</ui-menu-label>
         @if (viewScope()) {
-        <ui-menu-item icon="download" (activated)="exportView(EXPORT_FORMAT.Json)">
+        <ui-menu-item icon="code" (activated)="exportView(EXPORT_FORMAT.Json)">
           {{ 'export.view.json' | transloco }}
         </ui-menu-item>
-        <ui-menu-item icon="bookmark" (activated)="exportView(EXPORT_FORMAT.Html)">
+        <ui-menu-item icon="globe" (activated)="exportView(EXPORT_FORMAT.Html)">
           {{ 'export.view.html' | transloco }}
         </ui-menu-item>
         <ui-menu-separator />
         }
-        <ui-menu-item icon="download" (activated)="exportAll(EXPORT_FORMAT.Json)">
+        <ui-menu-item icon="code" (activated)="exportAll(EXPORT_FORMAT.Json)">
           {{ 'export.all.json' | transloco }}
         </ui-menu-item>
-        <ui-menu-item icon="bookmark" (activated)="exportAll(EXPORT_FORMAT.Html)">
+        <ui-menu-item icon="globe" (activated)="exportAll(EXPORT_FORMAT.Html)">
           {{ 'export.all.html' | transloco }}
         </ui-menu-item>
       </ui-menu>
@@ -174,18 +174,18 @@
       </ui-button>
       <ui-menu #exportMenu align="end" [ariaLabel]="'export.menu' | transloco">
         @if (viewScope()) {
-        <ui-menu-item icon="download" (activated)="exportView(EXPORT_FORMAT.Json)">
+        <ui-menu-item icon="code" (activated)="exportView(EXPORT_FORMAT.Json)">
           {{ 'export.view.json' | transloco }}
         </ui-menu-item>
-        <ui-menu-item icon="bookmark" (activated)="exportView(EXPORT_FORMAT.Html)">
+        <ui-menu-item icon="globe" (activated)="exportView(EXPORT_FORMAT.Html)">
           {{ 'export.view.html' | transloco }}
         </ui-menu-item>
         <ui-menu-separator />
         }
-        <ui-menu-item icon="download" (activated)="exportAll(EXPORT_FORMAT.Json)">
+        <ui-menu-item icon="code" (activated)="exportAll(EXPORT_FORMAT.Json)">
           {{ 'export.all.json' | transloco }}
         </ui-menu-item>
-        <ui-menu-item icon="bookmark" (activated)="exportAll(EXPORT_FORMAT.Html)">
+        <ui-menu-item icon="globe" (activated)="exportAll(EXPORT_FORMAT.Html)">
           {{ 'export.all.html' | transloco }}
         </ui-menu-item>
       </ui-menu>

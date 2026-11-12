@@ -24,6 +24,7 @@ export const ICON_NAMES = [
   'folder-move',
   'folder-plus',
   'github',
+  'globe',
   'google',
   'graduation-cap',
   'image',
