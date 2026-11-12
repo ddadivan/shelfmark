@@ -71,16 +71,22 @@
 // The sidebar is an inset card (Main spec): `surface`, `shadow-card`, `radius-lg`, set in from the
 // window edges by the body padding. It scrolls on its own.
 .shell__sidebar {
-  display: block;
+  display: flex;
   flex: none;
+  flex-direction: column;
   align-self: stretch;
   width: rem(272px);
   min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  overflow: hidden;
   background: var(--surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
+}
+
+// The sidebar and the settings menu fill the card; the sidebar scrolls only its middle part (#335).
+.shell__sidebar > * {
+  flex: 1 1 0;
+  min-height: 0;
 }
 
 // The body takes the height left under the banner. Desktop: the sidebar card and the content

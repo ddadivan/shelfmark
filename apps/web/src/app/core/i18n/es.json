@@ -682,6 +682,7 @@
       "you": "Tú"
     },
     "sidebar": {
+      "footer": "Ayuda y papelera",
       "nav": "Biblioteca",
       "foldersNav": "Carpetas",
       "tree": "Vistas y carpetas",

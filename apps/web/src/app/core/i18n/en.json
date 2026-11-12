@@ -670,6 +670,7 @@
       "you": "You"
     },
     "sidebar": {
+      "footer": "Help and trash",
       "nav": "Library",
       "foldersNav": "Folders",
       "tree": "Views and folders",

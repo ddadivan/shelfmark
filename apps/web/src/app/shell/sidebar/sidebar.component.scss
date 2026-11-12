@@ -10,6 +10,7 @@
   display: flex;
   flex: 1;
   flex-direction: column;
+  min-height: 0;
   padding: var(--space-3) var(--space-2) 0;
 }
 
@@ -24,6 +25,7 @@
 // Logo row heading the card on the desktop (Main spec): 26px mark, wordmark, 4 / 10 / 14 padding.
 .sidebar__logo {
   display: flex;
+  flex: none;
   align-items: center;
   padding: var(--space-1) rem(10px) rem(14px);
   color: var(--text);
@@ -35,36 +37,39 @@
   }
 }
 
-// "New here? Watch how it works": its own block, a section gap under Tags (#315) and room above
-// the Trash divider even when the sidebar scrolls (the divider's auto margin is then 0).
-.sidebar__how-it-works {
-  margin-block: var(--space-6) var(--space-3);
-}
-
-// Trash: the last row, under a divider, kept at the bottom of the card (it stays in view when the
-// folders scroll).
-.sidebar__trash {
-  position: sticky;
-  inset-block-end: 0;
-  z-index: 1;
+// The middle scrolls (nav, Pinned, Folders, Tags, the how-it-works card); the logo above and the
+// footer below stay put, so the scrollbar never runs under them (#335). The how-it-works card is
+// pushed to the bottom of this part, right above the footer.
+.sidebar__scroll {
   display: flex;
-  gap: var(--space-1);
-  align-items: center;
-  padding-block: var(--space-2) var(--space-3);
-  margin-block-start: auto;
-  background: var(--surface);
-  border-block-start: 1px solid var(--border);
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  > * {
+    flex: none;
+  }
 }
 
-.sidebar__trash-tree {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-// Quiet: muted until hovered or focused, like the other icon actions of the sidebar.
-.sidebar__feedback {
+// The phone Library page shows the folders in a card and lets the page scroll.
+.sidebar--folders .sidebar__scroll {
   flex: none;
-  color: var(--text-muted);
+  overflow: visible;
+}
+
+// "New here? Watch how it works": a section gap under Tags (#315), at the bottom of the middle.
+.sidebar__how-it-works {
+  margin-block: auto var(--space-3);
+  padding-block-start: var(--space-6);
+}
+
+// Footer: "Send feedback" and Trash, under a divider, fixed at the bottom of the card.
+.sidebar__footer {
+  flex: none;
+  padding-block: var(--space-2) var(--space-3);
+  border-block-start: 1px solid var(--border);
 }
 
 .sidebar__error {

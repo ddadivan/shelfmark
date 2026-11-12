@@ -2,6 +2,8 @@
 
 :host {
   display: block;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 // SetAccount nav: rows of the sidebar tree, 2px apart, in the sidebar card.

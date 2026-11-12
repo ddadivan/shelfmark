@@ -682,6 +682,7 @@
       "you": "Vous"
     },
     "sidebar": {
+      "footer": "Aide et corbeille",
       "nav": "Bibliothèque",
       "foldersNav": "Dossiers",
       "tree": "Vues et dossiers",

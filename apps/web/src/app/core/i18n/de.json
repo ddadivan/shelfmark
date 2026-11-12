@@ -670,6 +670,7 @@
       "you": "Du"
     },
     "sidebar": {
+      "footer": "Hilfe und Papierkorb",
       "nav": "Bibliothek",
       "foldersNav": "Ordner",
       "tree": "Ansichten und Ordner",
