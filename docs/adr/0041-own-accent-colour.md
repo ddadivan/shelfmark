@@ -1,8 +1,8 @@
 # 0041. Own accent colour of the Custom theme, drawn in its nearest WCAG AA shade
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-12
-- Source: issue #315 (author review of `stage`); `docs/PROJECT.md` 4 (story 27), 5.8, 6.1, 6.2, 7.1; screen `Themes` (the "+" swatch); builds on the Custom theme of #273
+- Source: issue #315 (author review of `stage`); accepted by the author on Nov 12, 2026 (#326); `docs/PROJECT.md` 4 (story 27), 5.8, 6.1, 6.2, 7.1; screen `Themes` (the "+" swatch); builds on the Custom theme of #273
 
 ## Context
 
