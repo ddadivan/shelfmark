@@ -880,7 +880,9 @@
         "hint": "Ein Emoji statt eines Symbols verwenden",
         "placeholder": "🍕",
         "invalid": "Gib genau ein Emoji ein."
-      }
+      },
+      "iconsShowAll": "Alle Symbole anzeigen ({{count}})",
+      "iconsShowFewer": "Weniger anzeigen"
     }
   },
   "library": {

@@ -61,12 +61,39 @@
   align-items: center;
 }
 
-// ~57 icons: the grid scrolls inside the dialog (room at the edges for the focus ring).
-.folder-style__icons {
-  max-block-size: rem(220px);
+// The icons behind "Show all icons" open by height (a one-row grid, like the tree); closed they are
+// hidden from the tab order. Padding with a negative margin leaves room for the focus rings the
+// clipping would cut. No animation under reduced motion.
+.folder-style__more {
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition:
+    grid-template-rows var(--duration-base) var(--ease-in-out),
+    visibility 0s var(--duration-base);
+
+  &.is-open {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition:
+      grid-template-rows var(--duration-base) var(--ease-in-out),
+      visibility 0s;
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+.folder-style__more-inner {
+  min-height: 0;
   padding: var(--space-1);
   margin: calc(var(--space-1) * -1);
-  overflow-y: auto;
+  overflow: hidden;
+}
+
+.folder-style__toggle {
+  align-self: flex-start;
 }
 
 // Reset sits at the start of the footer, away from Cancel and Save.

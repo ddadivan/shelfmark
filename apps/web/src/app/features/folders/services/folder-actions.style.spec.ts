@@ -155,6 +155,45 @@ describe('FolderActionsService style', () => {
     });
   });
 
+  it('shows 28 common icons, a toggle opens all of them, and opens expanded for a later icon (#335)', async () => {
+    const { actions, store } = await setup();
+
+    void actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    const root = await opened();
+    const toggle = () =>
+      [...root.querySelectorAll('button')].find((candidate) =>
+        /^Show (all icons|fewer)/.test(candidate.textContent?.trim() ?? ''),
+      ) as HTMLButtonElement;
+    const more = root.querySelector('.folder-style__more') as HTMLElement;
+    const total = Object.values(FOLDER_ICON).length;
+
+    expect(root.querySelectorAll('.folder-style__more input')).toHaveLength(total - 28);
+    expect(root.querySelectorAll('[aria-labelledby="folder-style-icon"] input')).toHaveLength(
+      total,
+    );
+    expect(toggle().textContent?.trim()).toBe(`Show all icons (${total})`);
+    expect(toggle().getAttribute('aria-expanded')).toBe('false');
+    expect(toggle().getAttribute('aria-controls')).toBe(more.id);
+    expect(more.classList).not.toContain('is-open');
+
+    toggle().click();
+    TestBed.tick();
+    expect(toggle().textContent?.trim()).toBe('Show fewer');
+    expect(toggle().getAttribute('aria-expanded')).toBe('true');
+    expect(more.classList).toContain('is-open');
+    button('Cancel').click();
+    await closed();
+
+    // An icon behind the toggle: the dialog opens expanded.
+    await store.setStyle(MOCK_ID.FolderReading, { icon: FOLDER_ICON.Trophy });
+    void actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    const again = await opened();
+    expect(again.querySelector('.folder-style__more')?.classList).toContain('is-open');
+    expect(radio('icon', 'Trophy').checked).toBe(true);
+    button('Cancel').click();
+    await closed();
+  });
+
   it('adds an own colour from the "+" swatch, keeps it as a swatch and saves it (#335)', async () => {
     const { actions, store } = await setup();
     const settings = TestBed.inject(UserSettingsStore);

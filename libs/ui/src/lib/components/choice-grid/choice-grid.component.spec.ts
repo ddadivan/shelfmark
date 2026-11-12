@@ -37,6 +37,20 @@ describe('ChoiceGridComponent', () => {
     expect(new Set(radios().map((r) => r.name)).size).toBe(1);
   });
 
+  it('keeps a fixed number of columns for icons through columns (#335)', () => {
+    const { host } = setup({ kind: 'icon', columns: 7 });
+    expect(host.classList).toContain('ui-choice-grid--columns');
+    expect(host.style.getPropertyValue('--ui-choice-columns')).toBe('7');
+    const plain = setup({ kind: 'icon' }).host;
+    expect(plain.classList).not.toContain('ui-choice-grid--columns');
+  });
+
+  it('shares one radio name between grids that are given the same name (#335)', () => {
+    const a = setup({ name: 'icons' }).radios();
+    const b = setup({ name: 'icons' }).radios();
+    expect(new Set([...a, ...b].map((r) => r.name))).toEqual(new Set(['icons']));
+  });
+
   it('checks the option equal to the value and marks it', () => {
     const { fixture, host, radios } = setup({ value: 'clay' });
     expect(radios().map((r) => r.checked)).toEqual([false, true, false]);

@@ -880,7 +880,9 @@
         "hint": "Use one emoji instead of an icon",
         "placeholder": "🍕",
         "invalid": "Enter exactly one emoji."
-      }
+      },
+      "iconsShowAll": "Show all icons ({{count}})",
+      "iconsShowFewer": "Show fewer"
     }
   },
   "library": {

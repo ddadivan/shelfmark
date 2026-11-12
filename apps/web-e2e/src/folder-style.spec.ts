@@ -140,6 +140,40 @@ test.describe('folder style and pins (mock API)', () => {
     await expect(page.locator('.ui-folder-icon__emoji').first()).toHaveText('🍕');
   });
 
+  test('the icon grid shows four full rows, a toggle expands every icon, no inner scroll (#335)', async ({
+    page,
+  }) => {
+    await pickFolderMenuItem(page, READING, 'Colour and icon…');
+    const dialog = page.getByRole('dialog', { name: READING });
+    await expect(dialog).toBeVisible();
+    const toggle = dialog.getByRole('button', { name: /^Show all icons \(\d+\)$/ });
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    const more = dialog.locator('.folder-style__more');
+    // Collapsed: the rest of the icons are out of the tab order and take no room.
+    await expect(more).toHaveCSS('visibility', 'hidden');
+    expect((await more.boundingBox())?.height ?? 0).toBeLessThan(2);
+    await expect(
+      dialog
+        .locator('[role="radiogroup"][aria-labelledby="folder-style-icon"]')
+        .first()
+        .locator('input'),
+    ).toHaveCount(28);
+
+    await toggle.click();
+    await expect(dialog.getByRole('button', { name: 'Show fewer' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    );
+    await expect(more).toHaveCSS('visibility', 'visible');
+    await expect.poll(async () => (await more.boundingBox())?.height ?? 0).toBeGreaterThan(80);
+    // The arrow keys run on through the expanded icons (one radio name).
+    await dialog.getByRole('radio', { name: 'Leaf', exact: true }).focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(dialog.getByRole('radio', { name: 'Bookmark', exact: true })).toBeFocused();
+    await dialog.getByRole('button', { name: 'Show fewer' }).click();
+    await expect(more).toHaveCSS('visibility', 'hidden');
+  });
+
   test('the dialog radio groups move with the arrow keys, Reset goes back to graphite', async ({
     page,
   }) => {

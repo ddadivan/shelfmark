@@ -4,6 +4,7 @@ import {
   Component,
   ElementRef,
   inject,
+  numberAttribute,
   input,
   model,
   output,
@@ -38,6 +39,8 @@ import type { ChoiceOption } from './models/choice-option.interface';
     '[class.ui-choice-grid--icon]': 'kind() === CHOICE_GRID_KIND.Icon',
     '[class.ui-choice-grid--disabled]': 'disabled()',
     '[class.ui-choice-grid--single-line]': 'singleLine()',
+    '[class.ui-choice-grid--columns]': 'columns() > 0',
+    '[style.--ui-choice-columns]': 'columns() > 0 ? columns() : null',
     role: 'radiogroup',
     '[attr.aria-label]': 'ariaLabel() || null',
     '[attr.aria-labelledby]': 'ariaLabelledby() || null',
@@ -61,6 +64,8 @@ export class ChoiceGridComponent implements FormValueControl<string> {
   readonly colour = input<FolderColour | string>(FOLDER_COLOUR.Graphite);
   /** Swatches: all options stay on one line, each shrinking from 36px (24px at the least) to fit. */
   readonly singleLine = input(false, { transform: booleanAttribute });
+  /** Icons: a fixed number of equal columns instead of as many 40px tiles as fit (0 = automatic). */
+  readonly columns = input(0, { transform: numberAttribute });
   readonly disabled = input(false, { transform: booleanAttribute });
   /** Form field name; the native radios share it. Generated when empty. */
   readonly name = input('');

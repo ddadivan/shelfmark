@@ -896,7 +896,9 @@
         "hint": "Usa un emoji al posto di un'icona",
         "placeholder": "🍕",
         "invalid": "Inserisci un solo emoji."
-      }
+      },
+      "iconsShowAll": "Mostra tutte le icone ({{count}})",
+      "iconsShowFewer": "Mostra meno"
     }
   },
   "library": {

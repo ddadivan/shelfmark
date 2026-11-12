@@ -36,6 +36,8 @@ import {
   UiDialogRef,
   type ChoiceOption,
 } from '@shelfmark/ui';
+import { FOLDER_ICON_COMMON } from '../../models/folder-icon-common.const';
+import { FOLDER_ICON_GRID } from '../../models/folder-icon-rows-shown.const';
 import { pluralKey } from '../../../../core/i18n/plural-key';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import type { FolderStyleDialogData } from '../../models/folder-style-dialog-data.interface';
@@ -151,11 +153,29 @@ export class FolderStyleDialogComponent {
   protected readonly pickerOpen = signal(false);
   private readonly picker = viewChild(ColorPickerComponent);
 
-  protected readonly iconOptions: readonly ChoiceOption[] = ICONS.map((icon) => ({
+  /** Every icon, the common ones first (`FOLDER_ICON_COMMON`), then the rest. */
+  private readonly allIconOptions: readonly ChoiceOption[] = [
+    ...FOLDER_ICON_COMMON,
+    ...ICONS.filter((icon) => !FOLDER_ICON_COMMON.includes(icon)),
+  ].map((icon) => ({
     value: icon,
     icon,
     label: this.transloco.translate(`folders.style.icons.${icon}`),
   }));
+  private readonly shownCount = FOLDER_ICON_GRID.Columns * FOLDER_ICON_GRID.RowsShown;
+  protected readonly FOLDER_ICON_GRID = FOLDER_ICON_GRID;
+  protected readonly firstIcons = this.allIconOptions.slice(0, this.shownCount);
+  protected readonly moreIcons = this.allIconOptions.slice(this.shownCount);
+  protected readonly iconCount = this.allIconOptions.length;
+  protected readonly moreId = 'folder-style-more-icons';
+  /** Opens expanded when the folder's own icon is behind "Show all icons". */
+  protected readonly iconsOpen = signal(
+    this.moreIcons.some((option) => option.value === this.data.folder.icon),
+  );
+
+  protected toggleIcons(): void {
+    this.iconsOpen.update((open) => !open);
+  }
 
   /** The icon grid checks nothing while an emoji is the icon. */
   protected readonly iconChecked = computed(() =>
