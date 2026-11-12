@@ -7,6 +7,7 @@ import {
   dragTo,
   folderMenu,
   libraryEntry,
+  loadPage,
   openAsGuest,
   openContextMenu,
   openSettings,
@@ -935,9 +936,10 @@ export const PROMO_STEPS: readonly PromoStep[] = [
     id: 'install',
     only: PROMO_DEVICE.Phone,
     caption: { desktop: 'Install Shelfmark from the browser menu and it joins your Share menu.' },
-    run: async ({ page, director }) => {
-      await page.goto('/about');
+    run: async (context) => {
+      const { page, director } = context;
       const heading = page.getByRole('heading', { name: 'Save from your phone' });
+      await loadPage(context, '/about', heading);
       await director.reveal(heading);
       await director.pause(1800);
     },
@@ -946,12 +948,14 @@ export const PROMO_STEPS: readonly PromoStep[] = [
     id: 'share-target',
     only: PROMO_DEVICE.Phone,
     caption: { desktop: 'Share a page from any app, and it lands on your shelf.' },
-    run: async ({ page, director }) => {
+    run: async (context) => {
+      const { page, director } = context;
       // The installed app is a share target: the system share sheet opens this address.
-      await page.goto(`/share?url=${encodeURIComponent(SHARED_URL)}`);
-      await expect(
+      await loadPage(
+        context,
+        `/share?url=${encodeURIComponent(SHARED_URL)}`,
         page.getByRole('heading', { level: 1, name: 'Save to Shelfmark' }),
-      ).toBeVisible();
+      );
       await director.pause(1000);
       await director.press(page.getByRole('button', { name: 'Save', exact: true }));
       await expect(page).toHaveURL(/\/links$/);
@@ -964,7 +968,7 @@ export const PROMO_STEPS: readonly PromoStep[] = [
     run: async (context) => {
       const { page, director } = context;
       // Demo accounts cannot share: switch to a regular mock account on the same mockup library.
-      await useShareAccount(page);
+      await useShareAccount(context);
       await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
       // The look of "Make it yours" carries over (the mock appearance lives in this browser).
       await expect(page.locator('html')).toHaveAttribute('data-custom-base', 'dark');
@@ -1016,9 +1020,13 @@ export const PROMO_STEPS: readonly PromoStep[] = [
   {
     id: 'share-guest',
     caption: { desktop: 'Anyone with the link sees a read-only page, no account needed.' },
-    run: async ({ page, director }) => {
-      await openAsGuest(page, sharedPath(page));
-      await expect(page.getByRole('heading', { level: 1, name: PROMO_SHARE.Folder })).toBeVisible();
+    run: async (context) => {
+      const { page, director } = context;
+      await openAsGuest(
+        context,
+        sharedPath(page),
+        page.getByRole('heading', { level: 1, name: PROMO_SHARE.Folder }),
+      );
       await expect(page.getByText(`Shared by ${PROMO_SHARE.OwnerFirstName}`)).toBeVisible();
       await expect(cards(page).first()).toBeVisible();
       await expect(page.getByRole('button', { name: /^Actions for / })).toHaveCount(0);

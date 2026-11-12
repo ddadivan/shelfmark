@@ -68,12 +68,15 @@ for (const variant of PROMO_VARIANTS) {
     const trimStart = Date.now() - recordingStartedAt;
 
     const posterPng = testInfo.outputPath('poster.png');
-    const { cues, chapters, duration } = await runPromoSteps({ page, phone, director }, posterPng);
+    const { cues, chapters, duration, rawDuration, cuts } = await runPromoSteps(
+      { page, phone, director },
+      posterPng,
+    );
 
     if (process.env['PROMO_MEASURE']) {
       // A measuring run only reports where each chapter would start; nothing is encoded.
       console.log(
-        JSON.stringify({ variant: name, durationMs: duration, chapterStartsMs: chapters }),
+        JSON.stringify({ variant: name, durationMs: duration, chapterStartsMs: chapters, cuts }),
       );
       await context.close();
       return;
@@ -91,7 +94,7 @@ for (const variant of PROMO_VARIANTS) {
     const outDir = join(workspaceRoot, PROMO_MEDIA.OutDir);
     mkdirSync(outDir, { recursive: true });
     const file = (extension: string): string => join(outDir, `${name}.${extension}`);
-    encodeVideo(raw, trimStart, duration, { mp4: file('mp4'), webm: file('webm') });
+    encodeVideo(raw, trimStart, rawDuration, cuts, { mp4: file('mp4'), webm: file('webm') });
     encodePoster(posterPng, variant.width, variant.height, file('webp'));
     writeFileSync(file('vtt'), toWebVtt(cues));
 
@@ -99,6 +102,7 @@ for (const variant of PROMO_VARIANTS) {
       variant: name,
       durationMs: duration,
       chapterStartsMs: chapters,
+      cuts,
       sizesKb: Object.fromEntries(
         ['mp4', 'webm', 'webp', 'vtt'].map((ext) => [
           ext,

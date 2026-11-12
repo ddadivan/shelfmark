@@ -37,5 +37,5 @@ export async function runPromoSteps(context: PromoContext, posterPath: string): 
     ...cue,
     end: starts[index + 1]?.start ?? duration,
   }));
-  return { cues, chapters, duration };
+  return { cues, chapters, duration, rawDuration: director.raw(), cuts: director.cuts() };
 }

@@ -1,4 +1,4 @@
-import { expect, type Locator, type Page } from '@playwright/test';
+import { expect, type Locator } from '@playwright/test';
 import { PROMO_SHARE } from '../models/promo-share.const';
 import { tabBar } from '../../src/support/sidebar';
 import { settled } from '../../src/support/settled';
@@ -212,7 +212,7 @@ export async function backToAllLinks(context: PromoContext): Promise<void> {
  * Signs the made-up regular mock account in (demo accounts cannot share) under the `showcase`
  * scenario, so it gets the demo's mockup library, and opens All links (#326).
  */
-export async function useShareAccount(page: Page): Promise<void> {
+export async function useShareAccount({ page, director }: PromoContext): Promise<void> {
   await page.evaluate((share) => {
     localStorage.setItem(share.SessionKey, JSON.stringify(share.User));
     sessionStorage.setItem(share.ScenarioKey, share.Scenario);
@@ -220,11 +220,40 @@ export async function useShareAccount(page: Page): Promise<void> {
     const createdAt = new Date(Date.now() - share.RatingAgeDays * 86_400_000).toISOString();
     localStorage.setItem(share.RatingKey, JSON.stringify({ createdAt }));
   }, PROMO_SHARE);
-  await page.goto('/links');
+  // The new page boots on the dark scheme, and the load itself is cut from the video.
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await director.cut(async () => {
+    await page.goto('/links');
+    await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
+    await expect(page.locator('html')).toHaveAttribute('data-custom-accent', 'own');
+    await expect(page.locator('ui-card').first()).toBeVisible();
+  });
 }
 
 /** Opens a public collection as a guest: the same tab without the session (#326). */
-export async function openAsGuest(page: Page, path: string): Promise<void> {
+export async function openAsGuest(
+  { page, director }: PromoContext,
+  path: string,
+  ready: Locator,
+): Promise<void> {
   await page.evaluate((key) => localStorage.removeItem(key), PROMO_SHARE.SessionKey);
-  await page.goto(path);
+  await director.cut(async () => {
+    await page.goto(path);
+    await expect(ready).toBeVisible();
+    await expect(page.locator('ui-card').first()).toBeVisible();
+  });
+}
+
+/** Opens another address of the app; the load is cut from the video, up to `ready` showing. */
+export async function loadPage(
+  { page, director }: PromoContext,
+  path: string,
+  ready: Locator,
+): Promise<void> {
+  // The video is dark by now: a new page boots on the dark scheme too.
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await director.cut(async () => {
+    await page.goto(path);
+    await expect(ready).toBeVisible();
+  });
 }

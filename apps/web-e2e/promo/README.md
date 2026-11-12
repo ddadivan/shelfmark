@@ -54,7 +54,7 @@ reused), then writes to `apps/web/public/media/`, per variant
 
 Two recordings (#315): the desktop at 1440 × 900 (H.264 level 4.0) and the phone at 390 × 844
 (touch, the tab bar), both starting in the light theme. The desktop runs about 3:15, the phone
-about 2:45; the MP4s stay near 4 MB and 2.5 MB (CRF 34 / VP9 46). Commit the files after checking them; the dialog plays the one that
+about 2:40; the MP4s stay near 4 MB and 2.5 MB (CRF 34 / VP9 46). Commit the files after checking them; the dialog plays the one that
 fits the layout (`ViewportService.phone`), shows only the poster under reduced motion and starts
 playing on request.
 
@@ -82,7 +82,11 @@ script checks for the encoders first and stops with the fix.
   The desktop uses a Mac user agent, so the app shows ⌘ and answers ⌘K.
 - Everything happens inside the app (no reloads), since a reload starts a fresh demo library;
   the exceptions come in the last chapter: the phone's install and share-target steps and the
-  share scenes (the switch to the account, then the guest page) use `page.goto`.
+  share scenes (the switch to the account, then the guest page) use `page.goto`. Each load runs
+  in `director.cut()`: the stretch from the navigation until the new page shows is left out of
+  the final video (ffmpeg joins the kept pieces), so no blank frame appears, and the captions
+  after it move up with it. The switch to the account also boots on the dark scheme
+  (`emulateMedia`), the look the video keeps from "Make it yours".
 - "Open all" opens real tabs: the recorder closes them as they come, behind the recorded page.
 - The raw recording starts when the page opens; ffmpeg cuts it from the first frame of the
   loaded landing.
