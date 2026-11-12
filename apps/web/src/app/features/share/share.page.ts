@@ -29,7 +29,7 @@ import { LinkActionsService } from '../links/services/link-actions.service';
 import { LINKS_API } from '../links/models/links-api.const';
 import { PREVIEW_STATE } from '../links/models/preview-state.const';
 import type { PreviewState } from '../links/models/preview-state.type';
-import { extractSharedLink } from './extract-shared-link';
+import { extractSharedLink } from './utils/extract-shared-link';
 import { SHARE_STATE } from './models/share-state.const';
 import type { ShareState } from './models/share-state.type';
 import type { ShareFormModel } from './models/share-form-model.interface';

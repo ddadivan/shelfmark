@@ -1,7 +1,7 @@
 import { LINK_LIMIT } from '@shelfmark/contracts';
-import { SHARE_INPUT_LIMIT } from './models/share-input-limit.const';
-import type { SharedLink } from './models/shared-link.interface';
-import type { SharedLinkParams } from './models/shared-link-params.interface';
+import { SHARE_INPUT_LIMIT } from '../models/share-input-limit.const';
+import type { SharedLink } from '../models/shared-link.interface';
+import type { SharedLinkParams } from '../models/shared-link-params.interface';
 
 // Control characters, line / paragraph separators, zero-width and bidi override characters:
 // invisible text that could disguise a URL or a title.
