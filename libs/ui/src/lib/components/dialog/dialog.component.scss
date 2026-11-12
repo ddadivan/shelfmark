@@ -5,6 +5,7 @@
 }
 
 // Panel: 440 / 560 / 860 px wide (`lg`: the How it works video, HowItWorks.dc.html), never wider than the viewport minus the scrim padding.
+// A feature may set `--ui-dialog-custom-width` on the `ui-dialog` element for a width the three sizes do not have.
 // Below 40em it is a bottom sheet: full width, top corners rounded, safe-area padding.
 .ui-dialog {
   --ui-dialog-width: #{rem(440px)};
@@ -15,7 +16,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  width: min(var(--ui-dialog-width), calc(100vw - #{rem(48px)}));
+  width: min(var(--ui-dialog-custom-width, var(--ui-dialog-width)), calc(100vw - #{rem(48px)}));
   max-height: calc(100dvh - #{rem(48px)});
   padding: rem(28px);
   color: var(--text);

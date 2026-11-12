@@ -1,12 +1,16 @@
 @use 'ui' as *;
 
 /*
- * The desktop recording is 1440 x 900 (16:10), as wide as the dialog body (HowItWorks.dc.html: an
- * 860px dialog, 20px corners); on a short window it shrinks so the chapters stay in view.
+ * The desktop recording is 1440 x 900 (16:10), 70rem wide at most (#335: a 73.5rem dialog with its
+ * 28px padding, 20px corners); on a short window it shrinks so the chapters stay in view.
  */
+ui-dialog {
+  --ui-dialog-custom-width: #{rem(1176px)};
+}
+
 .how-it-works__video {
   display: block;
-  width: min(100%, (100dvh - #{rem(240px)}) * 1440 / 900);
+  width: min(100%, #{rem(1120px)}, (100dvh - #{rem(240px)}) * 1440 / 900);
   margin-inline: auto;
   aspect-ratio: 1440 / 900;
   background: var(--surface-pressed);

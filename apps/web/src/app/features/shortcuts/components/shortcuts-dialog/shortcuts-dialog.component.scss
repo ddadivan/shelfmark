@@ -1,17 +1,16 @@
 @use 'ui' as *;
 
-// Two columns while the panel is wide enough, one in the phone sheet; a group never splits.
-.shortcuts-dialog__groups {
-  columns: rem(220px) 2;
-  column-gap: var(--space-6);
+// 55rem wide (#335), through the dialog's own width property; the phone sheet stays full width.
+ui-dialog {
+  --ui-dialog-custom-width: #{rem(880px)};
 }
 
-.shortcuts-dialog__group {
-  break-inside: avoid;
-
-  & + & {
-    margin-block-start: var(--space-4);
-  }
+// Groups in columns while the panel is wide enough, one in the phone sheet; the space between them
+// is the container's `gap`, not a margin on the groups.
+.shortcuts-dialog__groups {
+  display: grid;
+  gap: var(--space-8);
+  grid-template-columns: repeat(auto-fit, minmax(rem(220px), 1fr));
 }
 
 .shortcuts-dialog__heading {
