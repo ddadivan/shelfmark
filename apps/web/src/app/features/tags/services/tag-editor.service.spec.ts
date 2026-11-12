@@ -82,4 +82,44 @@ describe('TagEditorService', () => {
     await vi.waitFor(() => expect(settled).toHaveBeenCalledOnce());
     expect(store.entities().some((tag) => tag.name === 'brand-new-tag')).toBe(true);
   });
+
+  it('offers to merge when a rename runs into an existing name', async () => {
+    const { editor, store, settled } = await setup();
+    const [source, target] = store.entities();
+    editor.open(source.name, source.id, false);
+    editor.form.name().value.set(target.name);
+
+    await submit(editor.form);
+
+    expect(editor.conflict()?.id).toBe(target.id);
+    expect(editor.editorWide()).toBe(true);
+    expect(settled).not.toHaveBeenCalled();
+    expect(store.entityMap()[source.id]?.name).toBe(source.name);
+  });
+
+  it('merges into the conflicting tag and settles', async () => {
+    const { editor, store, settled } = await setup();
+    const [source, target] = store.entities();
+    editor.open(source.name, source.id, false);
+    editor.form.name().value.set(target.name);
+    await submit(editor.form);
+
+    await editor.mergeIntoConflict();
+
+    expect(settled).toHaveBeenCalledOnce();
+    expect(editor.saving()).toBe(false);
+    expect(store.entityMap()[source.id]).toBeUndefined();
+    expect(store.entityMap()[target.id]).toBeDefined();
+  });
+
+  it('does nothing when there is no conflict to merge into', async () => {
+    const { editor, store, settled } = await setup();
+    const [source] = store.entities();
+    editor.open(source.name, source.id, false);
+
+    await editor.mergeIntoConflict();
+
+    expect(settled).not.toHaveBeenCalled();
+    expect(store.entityMap()[source.id]).toBeDefined();
+  });
 });
