@@ -50,8 +50,17 @@
   }
 
   // Sheet (`ui-sheet`): 28px top corners, never closer than 150px to the top of the page; `tall`
-  // fills that height. Larger screens keep the dialog.
+  // fills that height. On a tablet (40em to 64em, #316) it stays a bottom sheet, centred and 560px
+  // wide; the desktop keeps the dialog.
   .ui-dialog--sheet {
+    @include tablet {
+      width: min(#{rem(560px)}, 100vw);
+      max-height: calc(100dvh - #{rem(150px)});
+      padding: var(--space-3) rem(20px) calc(#{rem(28px)} + env(safe-area-inset-bottom));
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      transform: translateY(var(--ui-sheet-drag, 0));
+    }
+
     @include phone {
       max-height: calc(100dvh - #{rem(150px)});
       padding-inline: rem(20px);
@@ -61,13 +70,13 @@
   }
 
   .ui-dialog--sheet-tall {
-    @include phone {
+    @include compact {
       height: calc(100dvh - #{rem(150px)});
     }
   }
 
   .ui-dialog--sheet .ui-dialog__grip {
-    @include phone {
+    @include compact {
       width: rem(40px);
       height: rem(5px);
       border-radius: rem(3px);
@@ -75,14 +84,14 @@
   }
 
   .ui-dialog--sheet-tall .ui-dialog__body {
-    @include phone {
+    @include compact {
       flex: 1;
     }
   }
 
   // The drag moves the sheet one to one: no transition while the finger is down.
   &--snapping {
-    @include phone {
+    @include compact {
       transition: transform var(--duration-base) var(--ease-out);
 
       @include reduced-motion {
@@ -159,6 +168,19 @@
   }
 }
 
+// A tablet sheet slides up like the phone's.
+.ui-dialog--sheet.ui-dialog--enter {
+  @include tablet {
+    @include enter(sheet);
+  }
+}
+
+.ui-dialog--sheet.ui-dialog--leave {
+  @include tablet {
+    @include leave(sheet);
+  }
+}
+
 .ui-dialog--leave {
   @include leave(pop);
 
@@ -174,6 +196,12 @@
 
   @include phone {
     touch-action: none;
+  }
+
+  .ui-dialog--sheet & {
+    @include tablet {
+      touch-action: none;
+    }
   }
 }
 
@@ -193,6 +221,12 @@
 
   @include phone {
     display: block;
+  }
+
+  .ui-dialog--sheet & {
+    @include tablet {
+      display: block;
+    }
   }
 }
 

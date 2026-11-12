@@ -87,7 +87,20 @@ describe('SheetComponent', () => {
     const phone = mediaBlocks(css, /width\s*<\s*40em/).join('\n');
     expect(phone).toMatch(/\.ui-dialog--sheet\s*\{[^}]*calc\(100dvh - 9\.375rem\)/);
     expect(phone).toMatch(/\.ui-dialog--sheet\s*\{[^}]*var\(--radius-xl\) var\(--radius-xl\) 0 0/);
-    expect(phone).toMatch(/\.ui-dialog--sheet-tall\s*\{[^}]*height: calc\(100dvh - 9\.375rem\)/);
+    // `tall` holds below 64em: on a phone and as the centred tablet sheet (#316).
+    const compact = mediaBlocks(css, /width\s*<\s*64em/).join('\n');
+    expect(compact).toMatch(/\.ui-dialog--sheet-tall\s*\{[^}]*height: calc\(100dvh - 9\.375rem\)/);
+  });
+
+  it('stays a bottom sheet on a tablet: centred, 560px wide, 28px top corners (#316)', () => {
+    const css = compileScss('lib/components/dialog/dialog.component.scss');
+    const tablet = mediaBlocks(css, /40em\s*<=\s*width\s*<\s*64em/).join('\n');
+    expect(tablet).toMatch(/\.ui-dialog--sheet\s*\{[^}]*width: min\(35rem, 100vw\)/);
+    expect(tablet).toMatch(/\.ui-dialog--sheet\s*\{[^}]*var\(--radius-xl\) var\(--radius-xl\) 0 0/);
+    expect(tablet).toMatch(/\.ui-dialog--sheet\s*\{[^}]*translateY\(var\(--ui-sheet-drag, 0\)\)/);
+    expect(tablet).toMatch(/\.ui-dialog--sheet \.ui-dialog__grip\s*\{[^}]*display: block/);
+    // Plain dialogs stay centred dialogs on a tablet: no bottom-sheet rule without the sheet class.
+    expect(tablet).not.toMatch(/(^|\})\s*\.ui-dialog\s*\{[^}]*width: 100vw/);
   });
 
   describe('opened through DialogService', () => {
