@@ -5,13 +5,13 @@ import type { FeedbackMilestone } from '@shelfmark/contracts';
 import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
 import axe from 'axe-core';
 import { firstValueFrom } from 'rxjs';
-import { AppTranslocoLoader } from '../../core/i18n/app-transloco.loader';
-import { APP_LANG } from '../../core/i18n/models/app-lang.const';
-import { translocoConfig } from '../../core/i18n/transloco.config';
-import { RATING_API } from './models/rating-api.const';
-import type { RatingApi } from './models/rating-api.interface';
-import { RATING_DELAY } from './models/rating-delay.const';
-import type { RatingDialogData } from './models/rating-dialog-data.interface';
+import { AppTranslocoLoader } from '../../../../core/i18n/app-transloco.loader';
+import { APP_LANG } from '../../../../core/i18n/models/app-lang.const';
+import { translocoConfig } from '../../../../core/i18n/transloco.config';
+import { RATING_API } from '../../models/rating-api.const';
+import type { RatingApi } from '../../models/rating-api.interface';
+import { RATING_DELAY } from '../../models/rating-delay.const';
+import type { RatingDialogData } from '../../models/rating-dialog-data.interface';
 import { RatingDialogComponent } from './rating-dialog.component';
 
 async function setup(record: RatingApi['record'] = () => Promise.resolve()) {

@@ -1,5 +1,5 @@
 import type { FeedbackScore } from '@shelfmark/contracts';
-import { RATING_SCORES } from './models/rating-scores.const';
+import { RATING_SCORES } from '../models/rating-scores.const';
 
 /** `1`–`9` are their own score and `0` is 10; any other key is not a score. */
 export function scoreForKey(key: string): FeedbackScore | null {

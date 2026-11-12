@@ -28,16 +28,16 @@ import {
   TextareaComponent,
   UiDialogRef,
 } from '@shelfmark/ui';
-import { ViewportService } from '../../core/layout/viewport.service';
-import { RATING_SCORES } from './models/rating-scores.const';
-import { RATING_API } from './models/rating-api.const';
-import { RATING_DELAY } from './models/rating-delay.const';
-import type { RatingDialogData } from './models/rating-dialog-data.interface';
-import { RATING_STEP } from './models/rating-step.const';
-import type { RatingStep } from './models/rating-step.type';
-import { RATING_THANKS_FROM_SCORE } from './models/rating-thanks-from-score.const';
-import { isEditableTarget } from './rating-blockers';
-import { scoreForKey } from './score-for-key';
+import { ViewportService } from '../../../../core/layout/viewport.service';
+import { RATING_SCORES } from '../../models/rating-scores.const';
+import { RATING_API } from '../../models/rating-api.const';
+import { RATING_DELAY } from '../../models/rating-delay.const';
+import type { RatingDialogData } from '../../models/rating-dialog-data.interface';
+import { RATING_STEP } from '../../models/rating-step.const';
+import type { RatingStep } from '../../models/rating-step.type';
+import { RATING_THANKS_FROM_SCORE } from '../../models/rating-thanks-from-score.const';
+import { isEditableTarget } from '../../utils/rating-blockers';
+import { scoreForKey } from '../../utils/score-for-key';
 
 /**
  * The rating dialog (opened by `RatingStore`), three steps in one window: the score, then

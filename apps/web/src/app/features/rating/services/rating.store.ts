@@ -3,14 +3,14 @@ import { computed, inject, signal } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import type { FeedbackMilestone } from '@shelfmark/contracts';
 import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
-import { AuthStore } from '../../core/auth/auth.store';
-import { SessionScope } from '../../core/auth/session-scope.service';
-import { RATING_API } from './models/rating-api.const';
-import { RATING_DELAY } from './models/rating-delay.const';
-import type { RatingDialogData } from './models/rating-dialog-data.interface';
-import type { RatingState } from './models/rating-state.interface';
-import { isRatingBlocked } from './rating-blockers';
-import { RatingDialogComponent } from './rating-dialog.component';
+import { AuthStore } from '../../../core/auth/auth.store';
+import { SessionScope } from '../../../core/auth/session-scope.service';
+import { RATING_API } from '../models/rating-api.const';
+import { RATING_DELAY } from '../models/rating-delay.const';
+import type { RatingDialogData } from '../models/rating-dialog-data.interface';
+import type { RatingState } from '../models/rating-state.interface';
+import { isRatingBlocked } from '../utils/rating-blockers';
+import { RatingDialogComponent } from '../components/rating-dialog/rating-dialog.component';
 
 const initialState: RatingState = { open: false };
 

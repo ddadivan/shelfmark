@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { DialogService } from '@shelfmark/ui';
 import { AUTH_PROVIDER, type AuthUser, type FeedbackMilestone } from '@shelfmark/contracts';
-import { AUTH_API } from '../../core/auth/auth-api.token';
-import { AuthStore } from '../../core/auth/auth.store';
-import type { AuthApi } from '../../core/auth/models/auth-api.interface';
-import { RATING_API } from './models/rating-api.const';
-import type { RatingApi } from './models/rating-api.interface';
-import { RATING_DELAY } from './models/rating-delay.const';
-import type { RatingDialogData } from './models/rating-dialog-data.interface';
+import { AUTH_API } from '../../../core/auth/auth-api.token';
+import { AuthStore } from '../../../core/auth/auth.store';
+import type { AuthApi } from '../../../core/auth/models/auth-api.interface';
+import { RATING_API } from '../models/rating-api.const';
+import type { RatingApi } from '../models/rating-api.interface';
+import { RATING_DELAY } from '../models/rating-delay.const';
+import type { RatingDialogData } from '../models/rating-dialog-data.interface';
 import { RatingStore } from './rating.store';
 
 function user(overrides: Partial<AuthUser> = {}): AuthUser {
