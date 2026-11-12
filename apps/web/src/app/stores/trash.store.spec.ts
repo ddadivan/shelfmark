@@ -14,7 +14,7 @@ import { TAGS_API } from '../features/links/models/tags-api.const';
 import { TRASH_API } from '../features/trash/models/trash-api.const';
 import type { TrashApi } from '../features/trash/models/trash-api.interface';
 import { TRASH_OUTCOME } from '../features/trash/models/trash-outcome.const';
-import { toRef } from '../features/trash/trash-key';
+import { toRef } from '../features/trash/utils/trash-key';
 import { FoldersStore } from './folders.store';
 import { LinksStore } from './links.store';
 import { TrashStore } from './trash.store';

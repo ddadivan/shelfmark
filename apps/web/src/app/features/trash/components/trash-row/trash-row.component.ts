@@ -25,13 +25,13 @@ import {
   MenuTriggerDirective,
   TooltipDirective,
 } from '@shelfmark/ui';
-import { pluralKey } from '../../../core/i18n/plural-key';
-import { SwipeReveal } from '../../../core/layout/swipe-reveal';
-import { ViewportService } from '../../../core/layout/viewport.service';
-import { ownImageUrl, siteLetter } from '../../links/utils/link-view';
-import { LocaleService } from '../../../core/i18n/locale.service';
-import { TRASH_EXPIRING_SOON_DAYS } from '../models/trash-expiring-soon-days.const';
-import { daysLeft } from '../trash-days-left';
+import { pluralKey } from '../../../../core/i18n/plural-key';
+import { SwipeReveal } from '../../../../core/layout/swipe-reveal';
+import { ViewportService } from '../../../../core/layout/viewport.service';
+import { ownImageUrl, siteLetter } from '../../../links/utils/link-view';
+import { LocaleService } from '../../../../core/i18n/locale.service';
+import { TRASH_EXPIRING_SOON_DAYS } from '../../models/trash-expiring-soon-days.const';
+import { daysLeft } from '../../utils/trash-days-left';
 
 /**
  * One entry of Trash as a `ui-history-row`: preview (the link's image, else its letter; a folder

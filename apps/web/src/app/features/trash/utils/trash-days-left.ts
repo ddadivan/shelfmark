@@ -1,5 +1,5 @@
-import { MS_PER_DAY } from '../../core/models/ms-per-day.const';
-import { CLOCK_SKEW_TOLERANCE_MS } from './models/clock-skew-tolerance-ms.const';
+import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
+import { CLOCK_SKEW_TOLERANCE_MS } from '../models/clock-skew-tolerance-ms.const';
 
 /**
  * Whole days until `expiresAt`, rounded up: "1 day left" up to the last moment. The server stamps

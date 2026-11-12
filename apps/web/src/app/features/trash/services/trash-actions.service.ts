@@ -2,10 +2,10 @@ import { inject, Service } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { TRASH_ITEM_KIND, type TrashItem } from '@shelfmark/contracts';
 import { DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
-import { pluralKey } from '../../core/i18n/plural-key';
-import { TrashStore } from '../../stores/trash.store';
-import { TRASH_OUTCOME } from './models/trash-outcome.const';
-import { toRef } from './trash-key';
+import { pluralKey } from '../../../core/i18n/plural-key';
+import { TrashStore } from '../../../stores/trash.store';
+import { TRASH_OUTCOME } from '../models/trash-outcome.const';
+import { toRef } from '../utils/trash-key';
 
 /**
  * What a user can do in Trash: restore, delete forever (confirmed) and empty (confirmed). Texts

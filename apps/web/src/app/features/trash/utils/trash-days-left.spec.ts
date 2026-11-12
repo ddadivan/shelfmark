@@ -1,4 +1,4 @@
-import { MS_PER_DAY } from '../../core/models/ms-per-day.const';
+import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
 import { daysLeft } from './trash-days-left';
 
 const NOW = Date.parse('2026-11-10T12:00:00.000Z');
