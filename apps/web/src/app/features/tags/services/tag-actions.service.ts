@@ -3,14 +3,14 @@ import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { normalizeTagName, type TagResponse } from '@shelfmark/contracts';
 import { DIALOG_SIZE, DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
-import { APP_PATH } from '../../models/app-path.const';
-import { TAG_OUTCOME } from '../../stores/models/tag-outcome.const';
-import { TagsStore } from '../../stores/tags.store';
-import { pluralKey } from '../../core/i18n/plural-key';
-import { UndoToastService } from '../../core/undo/undo-toast.service';
-import type { MergeTagDialogData } from './models/merge-tag-dialog-data.interface';
-import { TAG_QUERY_PARAM } from './models/tag-query-param.const';
-import { MergeTagDialogComponent } from './merge-tag-dialog/merge-tag-dialog.component';
+import { APP_PATH } from '../../../models/app-path.const';
+import { TAG_OUTCOME } from '../../../stores/models/tag-outcome.const';
+import { TagsStore } from '../../../stores/tags.store';
+import { pluralKey } from '../../../core/i18n/plural-key';
+import { UndoToastService } from '../../../core/undo/undo-toast.service';
+import type { MergeTagDialogData } from '../models/merge-tag-dialog-data.interface';
+import { TAG_QUERY_PARAM } from '../models/tag-query-param.const';
+import { MergeTagDialogComponent } from '../components/merge-tag-dialog/merge-tag-dialog.component';
 
 /**
  * What a user can do with a tag from the sidebar and the filter row: show its links, merge,

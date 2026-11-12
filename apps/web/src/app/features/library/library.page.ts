@@ -64,7 +64,7 @@ import { ViewportService } from '../../core/layout/viewport.service';
 import { ExportActionsService } from '../export/services/export-actions.service';
 import { exportScopeOf } from '../export/utils/export-url';
 import { TAG_QUERY_PARAM } from '../tags/models/tag-query-param.const';
-import { parseTagFilter } from '../tags/tag-filter';
+import { parseTagFilter } from '../tags/utils/tag-filter';
 import { explicitFeedSort, feedSortQuery } from '../links/utils/feed-sort';
 import { FEED_SORT } from '../links/models/feed-sort.const';
 import type { FeedSort } from '../links/models/feed-sort.type';

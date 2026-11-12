@@ -14,8 +14,8 @@ import {
   SelectComponent,
   UiDialogRef,
 } from '@shelfmark/ui';
-import { TagsStore } from '../../../stores/tags.store';
-import type { MergeTagDialogData } from '../models/merge-tag-dialog-data.interface';
+import { TagsStore } from '../../../../stores/tags.store';
+import type { MergeTagDialogData } from '../../models/merge-tag-dialog-data.interface';
 
 /** Pick the tag to merge into: its links move over and the source tag is deleted. */
 @Component({

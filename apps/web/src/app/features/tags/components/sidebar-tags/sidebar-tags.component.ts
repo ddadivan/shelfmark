@@ -1,4 +1,4 @@
-import { activeLang } from '../../../core/i18n/active-lang';
+import { activeLang } from '../../../../core/i18n/active-lang';
 import { NgTemplateOutlet } from '@angular/common';
 import {
   afterNextRender,
@@ -38,12 +38,12 @@ import {
   ToastService,
   type UiLongPressEvent,
 } from '@shelfmark/ui';
-import { TAG_OUTCOME } from '../../../stores/models/tag-outcome.const';
-import { TagsStore } from '../../../stores/tags.store';
-import { ViewportService } from '../../../core/layout/viewport.service';
-import { pluralKey } from '../../../core/i18n/plural-key';
-import { TagActionsService } from '../tag-actions.service';
-import { splitTags } from '../tag-split';
+import { TAG_OUTCOME } from '../../../../stores/models/tag-outcome.const';
+import { TagsStore } from '../../../../stores/tags.store';
+import { ViewportService } from '../../../../core/layout/viewport.service';
+import { pluralKey } from '../../../../core/i18n/plural-key';
+import { TagActionsService } from '../../services/tag-actions.service';
+import { splitTags } from '../../utils/tag-split';
 
 /**
  * The tags section of the sidebar: the most used tags as chips ("+N more" shows the rest), an

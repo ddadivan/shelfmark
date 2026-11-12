@@ -44,7 +44,7 @@ import { pluralKey } from '../../../../core/i18n/plural-key';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { FoldersStore } from '../../../../stores/folders.store';
 import { TagsStore } from '../../../../stores/tags.store';
-import { normalizeTagNames } from '../../../tags/normalize-tag-names';
+import { normalizeTagNames } from '../../../tags/utils/normalize-tag-names';
 import { buildFolderOptions } from '../add-link/folder-options';
 import { displayHost, urlWithoutScheme } from '../add-link/http-url';
 import { ADD_LINK_ACTION } from '../../models/add-link-action.const';

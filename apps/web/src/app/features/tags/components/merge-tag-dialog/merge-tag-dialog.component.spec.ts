@@ -2,13 +2,13 @@ import { TestBed } from '@angular/core/testing';
 import { MOCK_ID, MOCK_NAME } from '@shelfmark/contracts/testing';
 import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
 import axe from 'axe-core';
-import { TagsStore } from '../../../stores/tags.store';
-import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
-import { LINKS_API } from '../../links/models/links-api.const';
-import { TAGS_API } from '../../links/models/tags-api.const';
-import { MockLinksApi } from '../../links/mock/mock-links.api';
-import { MockTagsApi } from '../../links/mock/mock-tags.api';
-import type { MergeTagDialogData } from '../models/merge-tag-dialog-data.interface';
+import { TagsStore } from '../../../../stores/tags.store';
+import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
+import { LINKS_API } from '../../../links/models/links-api.const';
+import { TAGS_API } from '../../../links/models/tags-api.const';
+import { MockLinksApi } from '../../../links/mock/mock-links.api';
+import { MockTagsApi } from '../../../links/mock/mock-tags.api';
+import type { MergeTagDialogData } from '../../models/merge-tag-dialog-data.interface';
 import { MergeTagDialogComponent } from './merge-tag-dialog.component';
 
 async function setup(submit: MergeTagDialogData['submit'] = () => Promise.resolve(true)) {

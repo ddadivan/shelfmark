@@ -4,13 +4,13 @@ import type { TagResponse } from '@shelfmark/contracts';
 import { MOCK_ID, MOCK_NAME, MOCK_TAGS } from '@shelfmark/contracts/testing';
 import axe from 'axe-core';
 import { of } from 'rxjs';
-import { TagsStore } from '../../../stores/tags.store';
-import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
-import { LINKS_API } from '../../links/models/links-api.const';
-import { TAGS_API } from '../../links/models/tags-api.const';
-import type { TagsApi } from '../../links/models/tags-api.interface';
-import { MockLinksApi } from '../../links/mock/mock-links.api';
-import { MockTagsApi } from '../../links/mock/mock-tags.api';
+import { TagsStore } from '../../../../stores/tags.store';
+import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
+import { LINKS_API } from '../../../links/models/links-api.const';
+import { TAGS_API } from '../../../links/models/tags-api.const';
+import type { TagsApi } from '../../../links/models/tags-api.interface';
+import { MockLinksApi } from '../../../links/mock/mock-links.api';
+import { MockTagsApi } from '../../../links/mock/mock-tags.api';
 import { SidebarTagsComponent } from './sidebar-tags.component';
 
 async function setup(api?: TagsApi) {

@@ -1,12 +1,12 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { ViewportService } from '../../../core/layout/viewport.service';
-import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
-import { MockLinksApi } from '../../links/mock/mock-links.api';
-import { MockTagsApi } from '../../links/mock/mock-tags.api';
-import { LINKS_API } from '../../links/models/links-api.const';
-import { TAGS_API } from '../../links/models/tags-api.const';
+import { ViewportService } from '../../../../core/layout/viewport.service';
+import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
+import { MockLinksApi } from '../../../links/mock/mock-links.api';
+import { MockTagsApi } from '../../../links/mock/mock-tags.api';
+import { LINKS_API } from '../../../links/models/links-api.const';
+import { TAGS_API } from '../../../links/models/tags-api.const';
 import TagsPage from './tags.page';
 
 async function setup(phone: boolean) {

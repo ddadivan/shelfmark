@@ -1,6 +1,6 @@
 import type { TagResponse } from '@shelfmark/contracts';
-import { TAGS_TOP_COUNT } from './models/tags-top-count.const';
-import type { TagSplit } from './models/tag-split.interface';
+import { TAGS_TOP_COUNT } from '../models/tags-top-count.const';
+import type { TagSplit } from '../models/tag-split.interface';
 
 /** Top `TAGS_TOP_COUNT` tags (the list is already most-used first) unless `expanded`. */
 export function splitTags(tags: readonly TagResponse[], expanded: boolean): TagSplit {

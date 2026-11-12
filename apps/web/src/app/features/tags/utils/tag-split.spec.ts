@@ -1,6 +1,6 @@
 import type { TagResponse } from '@shelfmark/contracts';
 import { MOCK_TAGS } from '@shelfmark/contracts/testing';
-import { TAGS_TOP_COUNT } from './models/tags-top-count.const';
+import { TAGS_TOP_COUNT } from '../models/tags-top-count.const';
 import { splitTags } from './tag-split';
 
 function tags(count: number): TagResponse[] {

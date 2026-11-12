@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { ViewportService } from '../../../core/layout/viewport.service';
-import { APP_PATH } from '../../../models/app-path.const';
-import { SidebarTagsComponent } from '../sidebar-tags/sidebar-tags.component';
+import { ViewportService } from '../../../../core/layout/viewport.service';
+import { APP_PATH } from '../../../../models/app-path.const';
+import { SidebarTagsComponent } from '../../components/sidebar-tags/sidebar-tags.component';
 
 /**
  * The Tags tab of the phone: the sidebar's tags section as a page (chips filter the feed through

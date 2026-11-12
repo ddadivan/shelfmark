@@ -38,7 +38,7 @@ import { ViewportService } from '../../core/layout/viewport.service';
 import { FolderActionsService } from '../../features/folders/services/folder-actions.service';
 import { PinActionsService } from '../../features/pins/services/pin-actions.service';
 import { SidebarPinnedComponent } from '../../features/pins/components/sidebar-pinned/sidebar-pinned.component';
-import { SidebarTagsComponent } from '../../features/tags/sidebar-tags/sidebar-tags.component';
+import { SidebarTagsComponent } from '../../features/tags/components/sidebar-tags/sidebar-tags.component';
 import { LINKS_SCOPE } from '../../features/links/models/links-scope.const';
 import { APP_PATH } from '../../models/app-path.const';
 import type { FolderNode } from '../../stores/models/folder-node.interface';
