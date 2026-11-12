@@ -238,7 +238,15 @@ describe('feedback messages API', () => {
       });
 
       it('answers 413 above 3mb on this route', async () => {
-        await send(a, { ...valid, text: 'x'.repeat(3 * 1024 * 1024 + 10) }).expect(413);
+        // The server answers 413 and closes the connection while the client may still be writing
+        // the 3 MB body; supertest then reports ECONNRESET / EPIPE instead of the response. Both
+        // mean "rejected"; anything else (2xx, 400, …) fails, and nothing may be stored.
+        const outcome = await send(a, { ...valid, text: 'x'.repeat(3 * 1024 * 1024 + 10) }).then(
+          (res) => res.status,
+          (error: unknown) => (error as { code?: string }).code,
+        );
+        expect([413, 'ECONNRESET', 'EPIPE']).toContain(outcome);
+        expect(await t.db.prisma.feedback.count()).toBe(0);
       });
 
       it('keeps 100kb on every other route', async () => {
