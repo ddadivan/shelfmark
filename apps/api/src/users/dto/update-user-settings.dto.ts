@@ -171,9 +171,4 @@ export class UpdateUserSettingsDto implements UpdateUserSettingsRequest {
   @ValidateIf(present)
   @IsIn(Object.values(WEEK_START))
   weekStart?: WeekStart;
-
-  @ApiPropertyOptional({ example: true, description: 'Spell-check in note fields' })
-  @ValidateIf(present)
-  @IsBoolean()
-  spellcheck?: boolean;
 }

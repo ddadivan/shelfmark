@@ -5,7 +5,8 @@ import type { WeekStart } from './week-start.type';
 
 /**
  * Settings › Language (#274), part of `UserSettingsResponse`. The first write of any of them marks
- * them saved (`languageSaved`).
+ * them saved (`languageSaved`). Spell-check in the note field is always on (#326): the former
+ * `spellcheck` setting is gone; its column is dropped by a later migration.
  */
 export interface LanguageSettings {
   /** Default `browser`. */
@@ -16,6 +17,4 @@ export interface LanguageSettings {
   timeFormat: TimeFormat;
   /** Default `default`. */
   weekStart: WeekStart;
-  /** Spell-check in the note fields (the browser's dictionary). Default on. */
-  spellcheck: boolean;
 }

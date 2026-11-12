@@ -50,8 +50,6 @@ import {
   BUTTON_TYPE,
   INPUT_TYPE,
   SKELETON_SHAPE,
-  TOAST_KIND,
-  ToastService,
   type TagSuggestion,
 } from '@shelfmark/ui';
 import { firstValueFrom, switchMap, tap, timer, type Observable } from 'rxjs';
@@ -141,11 +139,8 @@ export class AddLinkDialogComponent {
   private readonly ref = inject<UiDialogRef<AddLinkResult>>(UiDialogRef);
   private readonly transloco = inject(TranslocoService);
   private readonly localeService = inject(LocaleService);
-  /** "Check spelling" under the note (#315: moved here from Settings › Language). */
-  protected readonly spellcheck = this.localeService.spellcheck;
   private readonly data = injectDialogData<AddLinkDialogData>();
   private readonly settings = inject(UserSettingsStore);
-  private readonly toasts = inject(ToastService);
   /** Settings › Library › Saving: the default folder and whether pages are fetched. */
   private readonly library = this.settings.libraryShown;
 
@@ -634,20 +629,5 @@ export class AddLinkDialogComponent {
   private text(key: string, params?: Record<string, unknown>): string {
     this.i18n();
     return this.transloco.translate(key, params);
-  }
-
-  /**
-   * "Check spelling" next to the note: an account preference (`spellcheck`), saved at once and
-   * not part of the link; a failed save puts it back (the store rolls back) and says so.
-   */
-  protected async setSpellcheck(on: boolean, control: CheckboxComponent): Promise<void> {
-    if (!(await this.settings.setLanguage({ spellcheck: on }))) {
-      control.checked.set(!on);
-      this.toasts.show({
-        kind: TOAST_KIND.Danger,
-        title: this.transloco.translate('settings.language.failed'),
-        detail: this.transloco.translate('settings.language.failedDetail'),
-      });
-    }
   }
 }

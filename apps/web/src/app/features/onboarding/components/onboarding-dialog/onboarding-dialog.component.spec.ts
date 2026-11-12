@@ -149,11 +149,23 @@ describe('OnboardingDialogComponent', () => {
     await expect(ref.result).resolves.toBe(ONBOARDING_RESULT.AddLink);
   });
 
-  it('resolves undefined on Esc (the store treats it as Skip)', async () => {
+  // `ref.result` settles once the dialog is gone (a render, the leave animation, the CDK teardown),
+  // which takes long on a loaded CI runner: the wait is generous instead of the 5 s default.
+  it('resolves undefined on Esc (the store treats it as Skip)', { timeout: 30_000 }, async () => {
     const { ref } = await setup();
 
-    container()?.dispatchEvent(
-      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }),
+    // Esc is sent until the dialog starts closing, so a key that lands before it is ready on a
+    // slow runner is not lost.
+    await vi.waitFor(
+      () => {
+        if (!ref.isClosing) {
+          container()?.dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }),
+          );
+        }
+        expect(ref.isClosing).toBe(true);
+      },
+      { timeout: 20_000, interval: 100 },
     );
 
     await expect(ref.result).resolves.toBeUndefined();

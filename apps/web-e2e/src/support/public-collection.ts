@@ -33,17 +33,17 @@ export function readShares(page: Page): Promise<string> {
 /** Opens "Share…" from the folder menu and returns the dialog. */
 export async function openShareDialog(page: Page, folder: string): Promise<Locator> {
   await pickFolderMenuItem(page, folder, 'Share…');
-  const dialog = page.getByRole('dialog', { name: `Share “${folder}”` });
+  const dialog = page.getByRole('dialog', { name: `Share folder “${folder}”` });
   await expect(dialog).toBeVisible();
   return dialog;
 }
 
 /** Turns the public link on in an open share dialog and returns the public URL. */
 export async function enablePublicLink(dialog: Locator): Promise<string> {
-  const toggle = dialog.getByRole('switch', { name: 'Public link' });
+  const toggle = dialog.getByRole('switch', { name: 'Public folder' });
   await expect(toggle).toHaveAttribute('aria-checked', 'false');
   await toggle.click();
-  const field = dialog.getByLabel('Public link address');
+  const field = dialog.getByLabel('Folder page address');
   await expect(field).toHaveValue(/\/c\/[A-Za-z0-9_-]{22}$/);
   return field.inputValue();
 }

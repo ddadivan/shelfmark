@@ -22,7 +22,6 @@ export function toLanguageSettings(
     dateFormat: isDateFormat(row.dateFormat) ? row.dateFormat : d.dateFormat,
     timeFormat: isTimeFormat(row.timeFormat) ? row.timeFormat : d.timeFormat,
     weekStart: isWeekStart(row.weekStart) ? row.weekStart : d.weekStart,
-    spellcheck: row.spellcheck,
     languageSaved: row.languageSavedAt !== null,
   };
 }

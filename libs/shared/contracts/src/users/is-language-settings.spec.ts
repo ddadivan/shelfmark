@@ -25,7 +25,7 @@ describe('language settings guards', () => {
     expect(isLanguageSettings({ ...LANGUAGE_SETTINGS_DEFAULT })).toBe(true);
     expect(isLanguageSettings({ ...LANGUAGE_SETTINGS_DEFAULT, language: 'de' })).toBe(true);
     expect(isLanguageSettings({ ...LANGUAGE_SETTINGS_DEFAULT, extra: 1 })).toBe(false);
-    expect(isLanguageSettings({ ...LANGUAGE_SETTINGS_DEFAULT, spellcheck: 'yes' })).toBe(false);
+    expect(isLanguageSettings({ ...LANGUAGE_SETTINGS_DEFAULT, spellcheck: true })).toBe(false);
     expect(isLanguageSettings({ language: 'en' })).toBe(false);
     expect(isLanguageSettings(null)).toBe(false);
     expect(isLanguageSettings([])).toBe(false);

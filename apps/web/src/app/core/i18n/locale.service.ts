@@ -18,6 +18,8 @@ import { relativeTime } from './relative-time';
 import { resolveAppLang, resolveFirstDay, resolveIntlLocale } from './resolve-locale';
 
 const STORAGE_EVENT = 'storage';
+/** Keys a copy stored before they were retired may still hold (`spellcheck`, #326); dropped on read. */
+const RETIRED_STORAGE_KEYS: readonly string[] = ['spellcheck'];
 const LANGUAGE_CHANGE_EVENT = 'languagechange';
 
 type DateInput = Date | number | string;
@@ -68,9 +70,6 @@ export class LocaleService {
   readonly firstDay = computed(() =>
     resolveFirstDay(this.settingsState().weekStart, this.locale()),
   );
-  /** Spell-check in the note fields. */
-  readonly spellcheck = computed(() => this.settingsState().spellcheck);
-
   private readonly hourCycle = computed<Intl.DateTimeFormatOptions['hourCycle']>(() => {
     switch (this.settingsState().timeFormat) {
       case TIME_FORMAT.H24:
@@ -138,7 +137,6 @@ export class LocaleService {
       dateFormat: settings.dateFormat,
       timeFormat: settings.timeFormat,
       weekStart: settings.weekStart,
-      spellcheck: settings.spellcheck,
     };
     this.settingsState.set(next);
     try {
@@ -264,13 +262,20 @@ export class LocaleService {
   }
 
   private readStorage(): unknown {
+    let stored: unknown;
     try {
-      return JSON.parse(
+      stored = JSON.parse(
         this.document.defaultView?.localStorage.getItem(LANGUAGE_STORAGE_KEY) ?? 'null',
       );
     } catch {
       return null;
     }
+    if (typeof stored !== 'object' || stored === null || Array.isArray(stored)) {
+      return stored;
+    }
+    return Object.fromEntries(
+      Object.entries(stored).filter(([key]) => !RETIRED_STORAGE_KEYS.includes(key)),
+    );
   }
 
   private readBrowserLangs(): readonly string[] {

@@ -4,6 +4,5 @@ export const LANGUAGE_SELECT = {
   dateFormat: true,
   timeFormat: true,
   weekStart: true,
-  spellcheck: true,
   languageSavedAt: true,
 } as const;

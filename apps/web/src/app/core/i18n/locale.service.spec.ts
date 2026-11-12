@@ -175,12 +175,19 @@ describe('LocaleService', () => {
     expect(locale.firstDay()).toBe(1);
   });
 
-  it('exposes spell-check', async () => {
-    const { locale } = setup();
+  it('reads a copy stored before spell-check was retired and stores it without the key (#326)', async () => {
+    const { locale } = setup({
+      ...settings({ language: INTERFACE_LANGUAGE.It }),
+      spellcheck: false,
+    });
     await locale.init();
-    expect(locale.spellcheck()).toBe(true);
-    locale.apply(settings({ spellcheck: false }));
-    expect(locale.spellcheck()).toBe(false);
+    expect(locale.lang()).toBe('it');
+    expect(locale.settings()).toEqual(settings({ language: INTERFACE_LANGUAGE.It }));
+    expect(locale.hasStoredLanguage()).toBe(true);
+    locale.apply(locale.settings());
+    expect(JSON.parse(localStorage.getItem(LANGUAGE_STORAGE_KEY) ?? 'null')).not.toHaveProperty(
+      'spellcheck',
+    );
   });
 
   it('keeps English when a language file fails to load', async () => {
@@ -200,8 +207,8 @@ describe('LocaleService', () => {
     });
     const { locale } = setup();
     await locale.init();
-    expect(() => locale.apply(settings({ spellcheck: false }))).not.toThrow();
-    expect(locale.spellcheck()).toBe(false);
+    expect(() => locale.apply(settings({ weekStart: WEEK_START.Monday }))).not.toThrow();
+    expect(locale.settings().weekStart).toBe(WEEK_START.Monday);
   });
 
   it('initialises once', async () => {

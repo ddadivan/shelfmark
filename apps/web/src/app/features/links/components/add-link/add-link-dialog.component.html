@@ -170,15 +170,7 @@
           [hint]="'links.add.note.hint' | transloco"
           [counterLabel]="'links.add.note.counter' | transloco"
           [rows]="2"
-          [spellcheck]="spellcheck()"
           [formField]="form.note"
-        />
-        <ui-checkbox
-          #spellcheckBox
-          class="add-link__spellcheck"
-          [label]="'links.add.note.spellcheck' | transloco"
-          [checked]="spellcheck()"
-          (checkedChange)="setSpellcheck($event, spellcheckBox)"
         />
 
         @if (editing) {
