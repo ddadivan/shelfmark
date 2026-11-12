@@ -3,9 +3,9 @@ import { TestBed } from '@angular/core/testing';
 import type { FolderShareResponse } from '@shelfmark/contracts';
 import { of, throwError } from 'rxjs';
 import { FolderShareStore } from './folder-share.store';
-import { SHARE_ERROR } from './models/share-error.const';
-import { SHARES_API } from './models/shares-api.const';
-import type { SharesApi } from './models/shares-api.interface';
+import { SHARE_ERROR } from '../models/share-error.const';
+import { SHARES_API } from '../models/shares-api.const';
+import type { SharesApi } from '../models/shares-api.interface';
 
 const FOLDER = 'f1';
 const OFF: FolderShareResponse = {

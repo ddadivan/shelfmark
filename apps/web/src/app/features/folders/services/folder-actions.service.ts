@@ -21,7 +21,7 @@ import { FOLDER_NAME_MODE } from '../models/folder-name-mode.const';
 import type { MoveFolderDialogData } from '../models/move-folder-dialog-data.interface';
 import { MoveFolderDialogComponent } from '../components/move-folder-dialog/move-folder-dialog.component';
 import type { ShareFolderDialogData } from '../../sharing/models/share-folder-dialog-data.interface';
-import { ShareFolderDialogComponent } from '../../sharing/share-folder-dialog/share-folder-dialog.component';
+import { ShareFolderDialogComponent } from '../../sharing/components/share-folder-dialog/share-folder-dialog.component';
 
 /**
  * What a user can do with folders from the sidebar: create (also as a subfolder), rename, move,

@@ -25,11 +25,11 @@ import {
   ToastService,
   UiDialogRef,
 } from '@shelfmark/ui';
-import { pluralKey } from '../../../core/i18n/plural-key';
-import { FolderShareStore } from '../folder-share.store';
-import { SHARE_ERROR } from '../models/share-error.const';
-import type { ShareFolderDialogData } from '../models/share-folder-dialog-data.interface';
-import { publicCollectionUrl } from '../public-collection-url';
+import { pluralKey } from '../../../../core/i18n/plural-key';
+import { FolderShareStore } from '../../services/folder-share.store';
+import { SHARE_ERROR } from '../../models/share-error.const';
+import type { ShareFolderDialogData } from '../../models/share-folder-dialog-data.interface';
+import { publicCollectionUrl } from '../../utils/public-collection-url';
 
 /**
  * Share a folder as a public collection (Share.dc board 1 without invites and roles, #276): the

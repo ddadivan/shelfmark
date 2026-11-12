@@ -3,8 +3,8 @@ import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { SHARE_LIMIT } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
-import type { PublicCollectionState } from './models/public-collection-state.interface';
-import { SHARES_API } from './models/shares-api.const';
+import type { PublicCollectionState } from '../models/public-collection-state.interface';
+import { SHARES_API } from '../models/shares-api.const';
 
 const initialState: PublicCollectionState = {
   token: null,

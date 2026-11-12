@@ -3,10 +3,10 @@ import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import type { FolderShareResponse } from '@shelfmark/contracts';
 import { firstValueFrom, type Observable } from 'rxjs';
-import type { FolderShareState } from './models/folder-share-state.interface';
-import { SHARE_ERROR } from './models/share-error.const';
-import type { ShareError } from './models/share-error.type';
-import { SHARES_API } from './models/shares-api.const';
+import type { FolderShareState } from '../models/folder-share-state.interface';
+import { SHARE_ERROR } from '../models/share-error.const';
+import type { ShareError } from '../models/share-error.type';
+import { SHARES_API } from '../models/shares-api.const';
 
 const initialState: FolderShareState = {
   folderId: null,

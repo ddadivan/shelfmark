@@ -32,8 +32,8 @@ import { APP_PATH } from '../../models/app-path.const';
 import { LinkCardComponent } from '../links/components/link-card/link-card.component';
 import type { LinkCardItem } from '../links/models/link-card-item.type';
 import { relativeTime } from '../../core/i18n/relative-time';
-import { PublicCollectionStore } from './public-collection.store';
-import { publicCollectionUrl } from './public-collection-url';
+import { PublicCollectionStore } from './services/public-collection.store';
+import { publicCollectionUrl } from './utils/public-collection-url';
 
 const ROBOTS = { name: 'robots', content: 'noindex, nofollow' } as const;
 

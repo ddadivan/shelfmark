@@ -7,7 +7,7 @@ import {
   type PublicCollectionResponse,
 } from '@shelfmark/contracts';
 import { Subject, of, throwError, type Observable } from 'rxjs';
-import { SHARES_API } from './models/shares-api.const';
+import { SHARES_API } from '../models/shares-api.const';
 import { PublicCollectionStore } from './public-collection.store';
 
 const TOKEN = 'sampleToken-sampleToke';
