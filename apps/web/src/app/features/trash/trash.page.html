@@ -36,7 +36,8 @@
 
   @if (!store.loaded()) { @if (store.error()) {
   <ui-empty-state
-    icon="warning"
+    layout="page"
+    illustration="offline"
     [heading]="'trash.loadFailed.title' | transloco"
     [text]="'trash.loadFailed.text' | transloco"
   >
@@ -48,8 +49,8 @@
   </div>
   } } @else if (store.total() === 0) {
   <ui-empty-state
-    class="trash-page__empty"
-    icon="trash"
+    layout="page"
+    illustration="empty-trash"
     [heading]="'trash.emptyState.title' | transloco"
     [text]="'trash.emptyState.text' | transloco: { days: settings.retentionDays() }"
   />
@@ -75,7 +76,8 @@
 
   @if (visible().length === 0) {
   <ui-empty-state
-    icon="trash"
+    layout="page"
+    illustration="empty-filter"
     [heading]="'trash.filter.emptyTitle' | transloco"
     [text]="'trash.filter.emptyText' | transloco"
   >

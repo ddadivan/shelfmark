@@ -228,32 +228,49 @@ describe('TreeComponent', () => {
       const REDUCED = /prefers-reduced-motion: reduce/;
       const base = withoutMedia(css, REDUCED);
       const dropRow = /\.ui-tree__row--drop\s*\{([^}]*)\}/.exec(base)?.[1] ?? '';
-      const badge =
-        /\.ui-tree__drop-badge,\s*\.ui-tree__drop-slot\s*\{([^}]*)\}/.exec(base)?.[1] ?? '';
+      const badge = [...base.matchAll(/(?:^|\})\s*\.ui-tree__drop-badge\s*\{([^}]*)\}/g)]
+        .map((match) => match[1])
+        .join('\n');
 
       expect(dropRow).toContain('background');
       expect(dropRow).not.toMatch(/height|padding|margin/);
       expect(badge).toMatch(/animation:\s*ui-reveal var\(--duration-base\) var\(--ease-out\)/);
       expect(mediaBlocks(css, REDUCED).join('\n')).toMatch(
-        /\.ui-tree__drop-badge,[^{]*\{\s*animation:\s*none/,
+        /\.ui-tree__drop-badge\s*\{\s*animation:\s*none/,
       );
     });
 
-    it('reorders into a reserved slot: tinted, dashed, no line or dot, glides ease-in-out', () => {
+    it('reorders with a line: 2px accent, rounded, no dot, takes no room; rows hold still (#315)', () => {
       const css = compileScss('lib/tree/tree.component.scss');
       const REDUCED = /prefers-reduced-motion: reduce/;
       const base = withoutMedia(css, REDUCED);
+      const line = [
+        ...base.matchAll(/(?:^|\})\s*\.ui-tree__list\.ui-drop-line--shown::after\s*\{([^}]*)\}/g),
+      ]
+        .map((match) => match[1])
+        .join('\n');
       const slot = [...base.matchAll(/(?:^|\})\s*\.ui-tree__drop-slot\s*\{([^}]*)\}/g)]
         .map((match) => match[1])
         .join('\n');
 
-      expect(slot).toMatch(/background:\s*var\(--accent-bg\)/);
-      expect(slot).toMatch(/border:\s*1px dashed var\(--accent\)/);
-      expect(slot).toMatch(/min-height:\s*2\.25rem/);
-      expect(css).not.toContain('drop-line');
-      expect(base).toMatch(/transition:\s*transform var\(--duration-base\) var\(--ease-in-out\)/);
+      expect(line).toMatch(/position:\s*absolute/);
+      expect(line).toMatch(/block-size:\s*0\.125rem/);
+      expect(line).toMatch(/margin-block-start:\s*-0\.0625rem/);
+      expect(line).toMatch(/background:\s*var\(--accent\)/);
+      expect(line).toMatch(/border-radius:\s*var\(--radius-full\)/);
+      expect(line).toMatch(/inset-inline-start:\s*var\(--ui-drop-line-left/);
+      expect(line).toMatch(/inline-size:\s*var\(--ui-drop-line-width/);
+      expect(line).toMatch(/animation:\s*ui-reveal var\(--duration-base\) var\(--ease-out\)/);
+      expect(line).not.toMatch(/border:|box-shadow/);
+      expect(base).toMatch(/\.ui-tree__list\s*\{[^}]*position:\s*relative/);
+      // No glide: the siblings never animate a transform (CDK's offsets are removed in code).
+      expect(base).not.toMatch(/\.ui-tree__item[^{]*\{[^}]*transition:\s*transform/);
+      expect(css).not.toContain('!important');
+      // The placeholder is a faint ghost where the row was: no tint, no outline.
+      expect(slot).not.toMatch(/background|border:/);
+      expect(slot).toMatch(/opacity:\s*0\.45/);
       expect(mediaBlocks(css, REDUCED).join('\n')).toMatch(
-        /\.ui-tree__drop-slot\s*\{\s*animation:\s*none/,
+        /\.ui-tree__list\.ui-drop-line--shown::after\s*\{\s*animation:\s*none/,
       );
     });
 

@@ -24,17 +24,6 @@ describe('HttpOnboardingApi', () => {
     await expect(result).resolves.toEqual({ onboardingCompletedAt: '2026-03-03T10:00:00.000Z' });
   });
 
-  it('resets with DELETE /api/me/onboarding', async () => {
-    const { api, http } = setup();
-
-    const result = api.reset();
-    const request = http.expectOne('/api/me/onboarding');
-    expect(request.request.method).toBe('DELETE');
-    request.flush(null, { status: 204, statusText: 'No Content' });
-
-    await expect(result).resolves.toBeUndefined();
-  });
-
   it('rejects when the server fails', async () => {
     const { api, http } = setup();
 

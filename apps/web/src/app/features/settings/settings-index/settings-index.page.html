@@ -35,7 +35,13 @@
   }
 </nav>
 
-<ui-button block [size]="BUTTON_SIZE.Lg" ariaHaspopup="dialog" (click)="feedback.open()">
+<ui-button
+  block
+  [size]="BUTTON_SIZE.Lg"
+  iconLeft="message"
+  ariaHaspopup="dialog"
+  (click)="feedback.open()"
+>
   {{ 'shell.sendFeedback' | transloco }}
 </ui-button>
 

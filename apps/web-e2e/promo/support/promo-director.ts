@@ -145,10 +145,13 @@ export class PromoDirector {
     return sleep(ms);
   }
 
-  /** Holds the current frame until the chapter starts; returns the measured start. */
+  /**
+   * Holds the current frame until the chapter starts; returns the measured start. With
+   * `PROMO_MEASURE=1` it never waits, so a run reports where each chapter would start on its own.
+   */
   async holdUntil(chapter: PromoChapter): Promise<number> {
     const wait = PROMO_CHAPTER_START_MS[chapter] - this.elapsed();
-    if (wait > 0) {
+    if (wait > 0 && !process.env['PROMO_MEASURE']) {
       await sleep(wait);
     }
     return this.elapsed();
@@ -166,7 +169,7 @@ export class PromoDirector {
 
   /** Glides the pointer to the target and clicks it; on the phone, taps it. */
   async press(target: Locator): Promise<void> {
-    await target.scrollIntoViewIfNeeded();
+    await this.reveal(target);
     if (this.phone) {
       await sleep(BEFORE_PRESS_MS);
       await target.tap();
@@ -180,6 +183,18 @@ export class PromoDirector {
     }
     await sleep(BEFORE_PRESS_MS);
     await target.click();
+  }
+
+  /**
+   * Scrolls the target into view; on the phone into the middle of the screen, so it never sits
+   * under the floating tab bar.
+   */
+  async reveal(target: Locator): Promise<void> {
+    await target.scrollIntoViewIfNeeded();
+    if (this.phone) {
+      await target.evaluate((element) => element.scrollIntoView({ block: 'center' }));
+      await sleep(250);
+    }
   }
 
   /** Focuses the field like a person would, then types one character at a time. */

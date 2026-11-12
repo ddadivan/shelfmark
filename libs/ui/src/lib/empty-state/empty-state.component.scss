@@ -11,8 +11,63 @@
   text-align: center;
 }
 
+// Page layout (#315): the state is the page's content. A surface card that takes the free
+// height of a flex-column parent (at least a comfortable stage), the content centred both ways.
+:host(.ui-empty-state--page) {
+  --ui-illustration-width: #{rem(300px)};
+
+  box-sizing: border-box;
+  flex: 1 0 auto;
+  justify-content: center;
+  width: 100%;
+  max-width: none;
+  min-height: rem(440px);
+  padding: var(--space-8) var(--space-6);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+
+  @include phone {
+    --ui-illustration-width: #{rem(240px)};
+
+    min-height: rem(380px);
+    padding: var(--space-6) var(--space-4);
+  }
+}
+
+// The scene stands on a soft disc (`illustration-disc`: a step stronger than the page background
+// in light, the page background in dark), so it reads as one object on the card.
+.ui-empty-state__stage {
+  display: grid;
+  place-items: center;
+}
+
+:host(.ui-empty-state--page) .ui-empty-state__stage {
+  position: relative;
+  isolation: isolate;
+  margin-block-end: var(--space-2);
+
+  &::before {
+    position: absolute;
+    z-index: -1;
+    width: 72%;
+    aspect-ratio: 1;
+    content: '';
+    background: var(--illustration-disc);
+    border-radius: var(--radius-full);
+  }
+}
+
 .ui-empty-state__illustration {
   --ui-illustration-width: #{rem(220px)};
+}
+
+:host(.ui-empty-state--page) .ui-empty-state__illustration {
+  // On the disc the key shapes need edges of 3:1 (WCAG 1.4.11, #315): white parts take the
+  // control border, the pale sage bodies (folder, tray, filter chip) an accent outline.
+  --ui-illustration-width: inherit;
+  --ui-illustration-edge: var(--border-control);
+  --ui-illustration-key-edge: var(--accent);
 }
 
 .ui-empty-state__art {
@@ -35,11 +90,29 @@
   color: var(--text);
 }
 
+// Page: a larger heading, still below the 40px page title; the lines stay readable in width.
+:host(.ui-empty-state--page) .ui-empty-state__title {
+  max-width: rem(560px);
+  font-size: rem(28px);
+  line-height: rem(34px);
+
+  @include phone {
+    font-size: rem(24px);
+    line-height: rem(30px);
+  }
+}
+
 .ui-empty-state__text {
   @include type(body);
 
   margin: 0;
   color: var(--text-muted);
+}
+
+:host(.ui-empty-state--page) .ui-empty-state__text {
+  max-width: rem(460px);
+  font-size: rem(16px);
+  line-height: rem(24px);
 }
 
 // Action buttons: one width (the longest label fits), 12px apart, wrapping on a phone.

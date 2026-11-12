@@ -4,7 +4,7 @@
   display: block;
 }
 
-// Panel: 440 / 560 px wide, never wider than the viewport minus the scrim padding.
+// Panel: 440 / 560 / 860 px wide (`lg`: the How it works video, HowItWorks.dc.html), never wider than the viewport minus the scrim padding.
 // Below 40em it is a bottom sheet: full width, top corners rounded, safe-area padding.
 .ui-dialog {
   --ui-dialog-width: #{rem(440px)};
@@ -25,6 +25,10 @@
 
   &--md {
     --ui-dialog-width: #{rem(560px)};
+  }
+
+  &--lg {
+    --ui-dialog-width: #{rem(860px)};
   }
 
   @include phone {

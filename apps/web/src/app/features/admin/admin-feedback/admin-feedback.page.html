@@ -13,6 +13,15 @@
   />
 </div>
 
+@if (store.phase() === LOAD.Loaded && store.empty()) {
+<!-- Nothing matches: the page-level empty state (#315) instead of an empty panel. -->
+<ui-empty-state
+  layout="page"
+  icon="inbox"
+  [heading]="'admin.feedback.empty.title' | transloco"
+  [text]="'admin.feedback.empty.text' | transloco"
+/>
+} @else {
 <ui-panel>
   <div [attr.aria-busy]="store.phase() === LOAD.Loading">
     @switch (store.phase()) { @case (LOAD.Failed) {
@@ -22,19 +31,13 @@
         {{ 'feedback.page.list.retry' | transloco }}
       </ui-button>
     </ui-notice>
-    } @case (LOAD.Loaded) { @if (store.empty()) {
-    <ui-empty-state
-      icon="inbox"
-      [heading]="'admin.feedback.empty.title' | transloco"
-      [text]="'admin.feedback.empty.text' | transloco"
-    />
-    } @else {
+    } @case (LOAD.Loaded) {
     <ul class="admin-feedback__list">
       @for (message of store.items(); track message.id) {
       <li><app-admin-feedback-item [message]="message" /></li>
       }
     </ul>
-    } } @default {
+    } @default {
     <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="3" />
     } }
   </div>
@@ -45,3 +48,4 @@
   </ui-button>
   }
 </ui-panel>
+}

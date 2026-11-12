@@ -9,15 +9,16 @@ import {
 } from '@shelfmark/contracts';
 import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
 import {
+  CUSTOM_ACCENT_OWN,
   CUSTOM_THEME_ATTRIBUTE,
-  DialogService,
+  TOAST_KIND,
   LAYOUT_ATTRIBUTE,
   LAYOUT_OFF,
   THEME_ATTRIBUTE,
   THEME_CUSTOM,
   ToastService,
+  nearestAccessibleAccent,
 } from '@shelfmark/ui';
-import { LinksStore } from '../../../stores/links.store';
 import { LAYOUT_STORAGE_KEY } from '../../../core/theme/models/layout-storage-key.const';
 import { of, throwError } from 'rxjs';
 import { axeViolations } from '../../../../testing/axe';
@@ -98,12 +99,15 @@ describe('AppearancePage', () => {
       root.removeAttribute(name);
     }
     root.removeAttribute('data-motion');
+    for (const name of ['--accent', '--accent-bg', '--accent-text', '--focus-ring']) {
+      root.style.removeProperty(name);
+    }
     for (const name of Object.values(LAYOUT_ATTRIBUTE)) {
       root.removeAttribute(name);
     }
   });
 
-  it('shows the theme choice, animations, the preview and the language', async () => {
+  it('shows the theme choice, animations and the preview, without the moved rows (#315)', async () => {
     const { root: page } = await setup();
 
     expect(page.querySelector('h1')?.textContent).toContain('Appearance');
@@ -111,10 +115,11 @@ describe('AppearancePage', () => {
     expect(page.textContent).toContain('Light and Dark are tuned by us');
     expect(page.textContent).toContain('Want other colours or corners? Choose Custom.');
     expect(page.textContent).toContain('Animations');
-    expect(page.textContent).toContain('Interface language, date format and spell-check');
-    expect(page.querySelector('a[href="/settings/language"]')?.textContent).toContain(
-      'Change language',
-    );
+    // Language has its own page, link counts live in Library, recently opened in Privacy.
+    expect(page.querySelector('a[href="/settings/language"]')).toBeNull();
+    for (const gone of ['Change language', 'Link counts', 'Remember recently opened']) {
+      expect(page.textContent).not.toContain(gone);
+    }
     expect(page.querySelector('ui-theme-preview')?.getAttribute('aria-label')).toBe(
       'Preview of your settings',
     );
@@ -184,6 +189,76 @@ describe('AppearancePage', () => {
     await stable();
     expect(theme.customTheme()).toEqual(CUSTOM_THEME_DEFAULT);
     expect(theme.preference()).toBe(THEME_PREFERENCE.Custom);
+  });
+
+  it('saves an own accent colour that keeps 4.5:1 from the "+" swatch (#315)', async () => {
+    const { root: page, theme, settingsApi, stable } = await setup();
+    radioIn(page, 'Theme', 'Custom').click();
+    await stable();
+
+    const swatch = page.querySelector('.ui-color-picker__swatch') as HTMLButtonElement;
+    expect(swatch.getAttribute('aria-label')).toBe('Your own colour');
+    swatch.click();
+    await stable();
+    const hex = page.querySelector('.ui-color-picker__hex-input') as HTMLInputElement;
+    hex.value = '#23716C';
+    hex.dispatchEvent(new Event('input'));
+    hex.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    await stable();
+
+    expect(theme.customTheme().accent).toBe('#23716c');
+    expect(settingsApi.update).toHaveBeenLastCalledWith({
+      customTheme: { ...CUSTOM_THEME_DEFAULT, accent: '#23716c' },
+    });
+    expect(root.getAttribute(CUSTOM_THEME_ATTRIBUTE.Accent)).toBe(CUSTOM_ACCENT_OWN);
+    expect(root.style.getPropertyValue('--accent')).toBe('#23716c');
+    // No curated swatch is checked; the own swatch carries the ring.
+    expect(radioIn(page, 'Accent colour', 'Ocean').checked).toBe(false);
+    expect(swatch.classList).toContain('ui-color-picker__swatch--selected');
+    expect(page.querySelector('ui-notice')).toBeNull();
+
+    // A curated accent takes over again and drops the custom properties.
+    radioIn(page, 'Accent colour', 'Teal').click();
+    await stable();
+    expect(theme.customTheme().accent).toBe('teal');
+    expect(root.style.getPropertyValue('--accent')).toBe('');
+  });
+
+  it('warns about an own colour below 4.5:1 and offers the nearest passing shade', async () => {
+    const { root: page, theme, settingsApi, stable } = await setup();
+    radioIn(page, 'Theme', 'Custom').click();
+    await stable();
+    settingsApi.update.mockClear();
+
+    (page.querySelector('.ui-color-picker__swatch') as HTMLButtonElement).click();
+    await stable();
+    const hex = page.querySelector('.ui-color-picker__hex-input') as HTMLInputElement;
+    hex.value = '#f5d0e0';
+    hex.dispatchEvent(new Event('input'));
+    hex.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    await stable();
+
+    // Not applied: the accent stays and nothing is saved.
+    expect(theme.customTheme().accent).toBe(CUSTOM_THEME_DEFAULT.accent);
+    expect(settingsApi.update).not.toHaveBeenCalled();
+    const notice = page.querySelector('ui-notice');
+    expect(notice?.textContent).toMatch(
+      /hard to read on your background \(1\.\d:1, it needs 4\.5:1\)/u,
+    );
+    const shade = nearestAccessibleAccent('#f5d0e0', 'light', 'paper');
+    const use = Array.from(notice?.querySelectorAll('button') ?? []).find((b) =>
+      b.textContent?.includes(`Use ${shade}`),
+    );
+    expect(use).toBeDefined();
+
+    use?.click();
+    await stable();
+    expect(theme.customTheme().accent).toBe(shade);
+    expect(settingsApi.update).toHaveBeenLastCalledWith({
+      customTheme: { ...CUSTOM_THEME_DEFAULT, accent: shade },
+    });
+    expect(page.querySelector('ui-notice')).toBeNull();
+    expect(hex.value).toBe(shade);
   });
 
   it('sets Animations', async () => {
@@ -284,57 +359,35 @@ describe('AppearancePage', () => {
       );
     });
 
-    it('turns link counts and folder colours off through the same account settings as Library', async () => {
+    it('turns folder colours off and on here, the only place for them (#315)', async () => {
       const { root: page, settingsApi, stable } = await setup();
       await vi.waitFor(async () => {
         await stable();
-        expect(switchNamed(page, 'Link counts').getAttribute('aria-checked')).toBe('true');
+        expect(switchNamed(page, 'Folder colours').getAttribute('aria-checked')).toBe('true');
       });
 
-      switchNamed(page, 'Link counts').click();
-      await stable();
       switchNamed(page, 'Folder colours').click();
       await stable();
-
-      expect(settingsApi.update).toHaveBeenCalledWith({ showFolderCounts: false });
       expect(settingsApi.update).toHaveBeenCalledWith({ folderColours: false });
-      const preview = page.querySelector('ui-theme-preview');
-      expect(preview?.querySelector('.ui-theme-preview__count')).toBeNull();
+      expect(switchNamed(page, 'Folder colours').getAttribute('aria-checked')).toBe('false');
+
+      switchNamed(page, 'Folder colours').click();
+      await stable();
+      expect(settingsApi.update).toHaveBeenLastCalledWith({ folderColours: true });
     });
 
-    it('asks before it stops remembering recently opened, then pauses and clears', async () => {
-      const { root: page, settingsApi, stable } = await setup();
-      const confirm = vi.spyOn(TestBed.inject(DialogService), 'confirm');
-      const clear = vi.spyOn(TestBed.inject(LinksStore), 'clearHistory').mockResolvedValue(true);
+    it('puts folder colours back with a toast when saving fails', async () => {
+      const { root: page, show, stable } = await setup({ fail: true });
       await vi.waitFor(async () => {
         await stable();
-        expect(page.querySelector('.ui-theme-preview__row--recent')).not.toBeNull();
+        expect(switchNamed(page, 'Folder colours').getAttribute('aria-checked')).toBe('true');
       });
-      const remember = () => switchNamed(page, 'Remember recently opened');
 
-      confirm.mockResolvedValueOnce(false);
-      remember().click();
+      switchNamed(page, 'Folder colours').click();
       await vi.waitFor(async () => {
         await stable();
-        expect(confirm).toHaveBeenCalledTimes(1);
-        expect(remember().getAttribute('aria-checked')).toBe('true');
-      });
-      expect(settingsApi.update).not.toHaveBeenCalledWith({ pauseHistory: true });
-
-      confirm.mockResolvedValueOnce(true);
-      remember().click();
-      await vi.waitFor(async () => {
-        await stable();
-        expect(settingsApi.update).toHaveBeenCalledWith({ pauseHistory: true });
-        expect(clear).toHaveBeenCalledTimes(1);
-        expect(remember().getAttribute('aria-checked')).toBe('false');
-      });
-      expect(page.querySelector('.ui-theme-preview__row--recent')).toBeNull();
-
-      remember().click();
-      await vi.waitFor(async () => {
-        await stable();
-        expect(settingsApi.update).toHaveBeenLastCalledWith({ pauseHistory: false });
+        expect(show).toHaveBeenCalledWith(expect.objectContaining({ kind: TOAST_KIND.Danger }));
+        expect(switchNamed(page, 'Folder colours').getAttribute('aria-checked')).toBe('true');
       });
     });
   });

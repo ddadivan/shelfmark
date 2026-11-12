@@ -16,13 +16,15 @@ const PROVIDER_ICONS = ['google', 'github'];
 const KEY_ICONS = ['key-command', 'key-enter', 'key-option', 'key-shift'];
 /**
  * Other glyphs drawn for this app where the design set has none: the video play button (#270), the
- * sidebar / card pin and the folder topic glyphs of the Main mockup (#312).
+ * sidebar / card pin and the folder topic glyphs of the Main mockup (#312), the speech bubble of
+ * "Send feedback" (#315).
  */
 const APP_ICONS = [
   'briefcase',
   'code',
   'cooking-pot',
   'graduation-cap',
+  'message',
   'pin',
   'pin-off',
   'play',

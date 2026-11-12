@@ -113,4 +113,23 @@ describe('RadioGroupComponent', () => {
   ])('has no axe violations (%s)', async (_name, inputs) => {
     expect(await axeViolations(setup(inputs).host)).toEqual([]);
   });
+
+  it('leads an option with a flag or an icon and sets the title language (#315)', () => {
+    const { host } = setup({
+      options: [
+        { value: 'de', title: 'Deutsch', flag: 'de', lang: 'de' },
+        { value: 'browser', title: 'Match my browser', icon: 'monitor' },
+        { value: 'plain', title: 'Plain' },
+      ],
+    });
+    const labels = [...host.querySelectorAll('label')];
+    expect(labels[0].querySelector('ui-flag img')?.getAttribute('src')).toContain('flags/de.svg');
+    expect(labels[0].querySelector('.ui-radio__title')?.getAttribute('lang')).toBe('de');
+    expect(labels[1].querySelector('ui-flag')).toBeNull();
+    expect(labels[1].querySelector('ui-icon')).not.toBeNull();
+    expect(labels[1].querySelector('.ui-radio__title')?.hasAttribute('lang')).toBe(false);
+    expect(labels[2].querySelector('ui-flag, ui-icon')).toBeNull();
+    // The flag and the icon are decorative: the radio is named by its title only.
+    expect(labels[0].textContent?.trim()).toBe('Deutsch');
+  });
 });

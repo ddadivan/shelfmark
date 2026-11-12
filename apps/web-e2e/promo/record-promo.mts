@@ -29,7 +29,7 @@ const ACTION_TIMEOUT_MS = 15_000;
  * with the times measured in this run. Run with `npx nx run web-e2e:promo`; see README.md.
  */
 for (const variant of PROMO_VARIANTS) {
-  const name = `${PROMO_MEDIA.Prefix}-${variant.theme}-${variant.device}`;
+  const name = `${PROMO_MEDIA.Prefix}-${variant.device}`;
 
   test(name, async ({ browser }, testInfo) => {
     assertFfmpeg();
@@ -68,6 +68,14 @@ for (const variant of PROMO_VARIANTS) {
     const posterPng = testInfo.outputPath('poster.png');
     const { cues, chapters, duration } = await runPromoSteps({ page, phone, director }, posterPng);
 
+    if (process.env['PROMO_MEASURE']) {
+      // A measuring run only reports where each chapter would start; nothing is encoded.
+      console.log(
+        JSON.stringify({ variant: name, durationMs: duration, chapterStartsMs: chapters }),
+      );
+      await context.close();
+      return;
+    }
     const video = page.video();
     await context.close();
     const raw = testInfo.outputPath('raw.webm');

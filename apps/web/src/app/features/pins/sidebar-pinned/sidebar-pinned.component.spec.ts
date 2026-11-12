@@ -1,9 +1,12 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { PIN_KIND } from '@shelfmark/contracts';
-import { ToastService } from '@shelfmark/ui';
+import { TOAST_KIND, ToastService } from '@shelfmark/ui';
 import axe from 'axe-core';
+import { ViewportService } from '../../../core/layout/viewport.service';
 import { PinsStore } from '../../../stores/pins.store';
 import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
 import { MockFoldersApi } from '../../links/mock/mock-folders.api';
@@ -20,7 +23,10 @@ import { SidebarPinnedComponent } from './sidebar-pinned.component';
 // Toasts are ToastService's own business (and need its overlay region): here only what is asked.
 const toastShow = vi.fn<ToastService['show']>();
 
-async function setup(pinned: 'none' | 'both' = 'both') {
+async function setup(
+  pinned: 'none' | 'both' = 'both',
+  { card = false, phone = false }: { card?: boolean; phone?: boolean } = {},
+) {
   TestBed.configureTestingModule({
     providers: [
       provideTranslocoForTest(),
@@ -30,16 +36,19 @@ async function setup(pinned: 'none' | 'both' = 'both') {
       { provide: LINKS_API, useClass: MockLinksApi },
       { provide: TAGS_API, useClass: MockTagsApi },
       { provide: ToastService, useValue: { show: toastShow } },
+      { provide: ViewportService, useValue: { phone: signal(phone) } },
     ],
   });
   await loadEnglish();
   const data = TestBed.inject(MockLibraryData);
   const pins = TestBed.inject(PinsStore);
+  await pins.load();
   if (pinned === 'both') {
     await pins.pin({ kind: PIN_KIND.Folder, id: data.foldersView()[0].id });
     await pins.pin({ kind: PIN_KIND.Link, id: data.links[0].id });
   }
   const fixture = TestBed.createComponent(SidebarPinnedComponent);
+  fixture.componentRef.setInput('card', card);
   await fixture.whenStable();
   const element = fixture.nativeElement as HTMLElement;
   return { fixture, element, pins, data };
@@ -65,6 +74,55 @@ describe('SidebarPinnedComponent', () => {
     const { element } = await setup('none');
 
     expect(element.querySelector('.pinned')).toBeNull();
+  });
+
+  it('keeps hiding an empty section in the desktop sidebar, even as a card off the phone', async () => {
+    const { element } = await setup('none', { card: true, phone: false });
+
+    expect(element.querySelector('.pinned')).toBeNull();
+    expect(element.classList).not.toContain('pinned--card');
+  });
+
+  it('keeps the Pinned section on the phone Library page with a quiet empty row (#315)', async () => {
+    const { element } = await setup('none', { card: true, phone: true });
+
+    expect(element.querySelector('h2')?.textContent?.trim()).toBe('Pinned');
+    expect(element.classList).toContain('pinned--card');
+    const empty = element.querySelector<HTMLElement>('.pinned__empty');
+    expect(empty?.textContent?.trim()).toBe('Nothing pinned yet');
+    expect(empty?.querySelector('ui-icon use')?.getAttribute('href')).toMatch(/#sm-pin$/);
+    expect(element.querySelector('.pinned__list')).toBeNull();
+  });
+
+  it('explains how to pin in a toast when the empty row is tapped', async () => {
+    const { element } = await setup('none', { card: true, phone: true });
+
+    element.querySelector<HTMLButtonElement>('.pinned__empty button')?.click();
+
+    expect(toastShow).toHaveBeenCalledWith({
+      kind: TOAST_KIND.Info,
+      title: 'Nothing pinned yet — use “Pin to sidebar” in a folder or link menu',
+    });
+  });
+
+  it('drops the empty row once something is pinned', async () => {
+    const { element, fixture, pins, data } = await setup('none', { card: true, phone: true });
+
+    await pins.pin({ kind: PIN_KIND.Folder, id: data.foldersView()[0].id });
+    await fixture.whenStable();
+
+    expect(element.querySelector('.pinned__empty')).toBeNull();
+    expect(items(element)).toHaveLength(1);
+  });
+
+  it('has no axe violations with the empty row', async () => {
+    const { element } = await setup('none', { card: true, phone: true });
+    document.body.appendChild(element);
+
+    const result = await axe.run(element);
+
+    expect(result.violations).toEqual([]);
+    element.remove();
   });
 
   it('lists pinned folders and links in order under a Pinned heading', async () => {
@@ -164,6 +222,29 @@ describe('SidebarPinnedComponent', () => {
       },
       { timeout: 5000 },
     );
+  });
+
+  it('draws the reorder line while a row drags over another place and clears it on drop (#315)', async () => {
+    const { fixture, element } = await setup();
+    const list = fixture.debugElement.query(By.css('.pinned__list'));
+    const ul = list.nativeElement as HTMLElement;
+    const placeholder = items(element)[0];
+    const event = {
+      container: { element: { nativeElement: ul } },
+      item: { getPlaceholderElement: () => placeholder },
+      previousIndex: 0,
+    };
+
+    list.triggerEventHandler('cdkDropListSorted', { ...event, currentIndex: 1 });
+    expect(ul.classList).toContain('ui-drop-line--shown');
+    expect(ul.style.getPropertyValue('--ui-drop-line-top')).toMatch(/px$/);
+
+    list.triggerEventHandler('cdkDropListSorted', { ...event, currentIndex: 0 });
+    expect(ul.classList).not.toContain('ui-drop-line--shown');
+
+    list.triggerEventHandler('cdkDropListSorted', { ...event, currentIndex: 1 });
+    list.triggerEventHandler('cdkDropListDropped', { ...event, currentIndex: 0 });
+    expect(ul.classList).not.toContain('ui-drop-line--shown');
   });
 
   it('has no axe violations', async () => {

@@ -1,7 +1,8 @@
 @use 'ui' as *;
 
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
 }
 
 .recent-history__groups {
@@ -41,8 +42,13 @@
   gap: var(--space-2);
 }
 
+// In the sheet the state is inline; on the page it is the page card, which fills the free height.
 .recent-history__empty {
   margin-block: var(--space-8);
+
+  &.ui-empty-state--page {
+    margin-block: 0;
+  }
 }
 
 .recent-history__note {

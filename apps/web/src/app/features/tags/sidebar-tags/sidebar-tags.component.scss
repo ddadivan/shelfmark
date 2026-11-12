@@ -82,6 +82,11 @@
 .tags--page {
   margin-top: 0;
 
+  // The Tags tab with no tags: the page empty state (#315), a little below the header.
+  .tags__empty {
+    margin-block-start: var(--space-2);
+  }
+
   .tags__header {
     padding: var(--space-4) 0 var(--space-2);
   }
@@ -100,6 +105,11 @@
     background: var(--surface);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-card);
+
+    // No tags and no editor: the empty state is the card, not an empty white box under it.
+    &.tags__list--empty {
+      display: none;
+    }
   }
 }
 

@@ -56,6 +56,8 @@ model User {
   openLinksIn           String        @default("new-tab") @map("open_links_in")
   showFolderCounts      Boolean       @default(true) @map("show_folder_counts")
   newLinksFolderId      String?       @map("new_links_folder_id") @db.Uuid
+  // Retired in #315 (the duplicate notice is always on, tracking parameters are always stripped):
+  // the API no longer reads or writes warn_duplicates and keep_query; a later migration drops them.
   warnDuplicates        Boolean       @default(true) @map("warn_duplicates")
   fetchPreviews         Boolean       @default(true) @map("fetch_previews")
   keepQuery             Boolean       @default(false) @map("keep_query")

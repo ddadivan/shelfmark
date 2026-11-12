@@ -104,13 +104,4 @@ export class UsersController {
   completeOnboarding(@CurrentUser() user: AuthUser): Promise<OnboardingResponse> {
     return this.users.completeOnboarding(user);
   }
-
-  @Delete('onboarding')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Show the onboarding again' })
-  @ApiNoContentResponse({ description: 'The completed flag is cleared' })
-  @ApiUnauthorizedResponse({ type: ApiErrorResponseDto, description: 'No valid session' })
-  resetOnboarding(@CurrentUser() user: AuthUser): Promise<void> {
-    return this.users.resetOnboarding(user);
-  }
 }

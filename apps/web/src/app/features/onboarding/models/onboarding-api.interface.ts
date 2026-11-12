@@ -7,6 +7,4 @@ import type { OnboardingResponse } from '@shelfmark/contracts';
 export interface OnboardingApi {
   /** `POST /api/me/onboarding`: marks the onboarding completed; resolves with the server time. */
   complete(): Promise<OnboardingResponse>;
-  /** `DELETE /api/me/onboarding`: makes the welcome tour due again. */
-  reset(): Promise<void>;
 }

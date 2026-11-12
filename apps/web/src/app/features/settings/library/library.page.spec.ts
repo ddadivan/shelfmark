@@ -127,7 +127,6 @@ describe('LibrarySettingsPage', () => {
     expect([...root.querySelectorAll('h2')].map((h) => h.textContent?.trim())).toEqual([
       'Viewing',
       'Saving',
-      'Tags and folders',
       'Trash',
     ]);
     expect(root.textContent).toContain('Keep deleted items for');
@@ -239,47 +238,20 @@ describe('LibrarySettingsPage', () => {
     });
   });
 
-  it('turns folder colours off at once with the switch, and back on', async () => {
-    const { root, settingsApi, harness } = await setup();
-    const colours = switchNamed(root, 'Folder colours');
-    expect(colours?.getAttribute('aria-checked')).toBe('true');
+  it('has no rows that live elsewhere since #315: folder colours, tags, pins, duplicates, query', async () => {
+    const { root } = await setup();
 
-    colours?.click();
-    await vi.waitFor(() => {
-      harness.fixture.detectChanges();
-      expect(settingsApi.update).toHaveBeenCalledWith({ folderColours: false });
-      expect(colours?.getAttribute('aria-checked')).toBe('false');
-    });
-
-    colours?.click();
-    await vi.waitFor(() => {
-      harness.fixture.detectChanges();
-      expect(settingsApi.update).toHaveBeenLastCalledWith({ folderColours: true });
-    });
-  });
-
-  it('puts the switch back with an error toast when saving the colours fails', async () => {
-    const { root, toasts, harness } = await setup({ failUpdate: true });
-    const colours = switchNamed(root, 'Folder colours');
-
-    colours?.click();
-    await vi.waitFor(() => {
-      harness.fixture.detectChanges();
-      expect(toasts.at(-1)?.kind).toBe(TOAST_KIND.Danger);
-      expect(colours?.getAttribute('aria-checked')).toBe('true');
-    });
-  });
-
-  it('opens the pinned items editor from the "Pinned at the top" row', async () => {
-    const { root, open } = await setup();
-    expect(root.textContent).toContain('Up to 7 folders and links');
-    const edit = Array.from(root.querySelectorAll('button')).find(
-      (b) => b.getAttribute('aria-haspopup') === 'dialog',
-    );
-
-    edit?.click();
-
-    expect(open).toHaveBeenCalledTimes(1);
+    for (const gone of [
+      'Folder colours',
+      'Manage tags',
+      'Pinned at the top',
+      'Edit pinned',
+      'Warn about duplicates',
+      'Keep the query part',
+    ]) {
+      expect(root.textContent).not.toContain(gone);
+    }
+    expect(root.querySelector('[aria-haspopup="dialog"]')).toBeNull();
   });
 
   it('shows the Viewing and Saving choices of the account, then the footer note', async () => {
@@ -288,12 +260,8 @@ describe('LibrarySettingsPage', () => {
     expect(radio(root, 'Cards').checked).toBe(true);
     expect(radio(root, 'New tab').checked).toBe(true);
     expect(switchNamed(root, 'Show folder counts').getAttribute('aria-checked')).toBe('true');
-    expect(switchNamed(root, 'Warn about duplicates').getAttribute('aria-checked')).toBe('true');
     expect(switchNamed(root, 'Fetch titles and previews').getAttribute('aria-checked')).toBe(
       'true',
-    );
-    expect(switchNamed(root, 'Keep the query part of links').getAttribute('aria-checked')).toBe(
-      'false',
     );
     expect(root.textContent).toContain('Newest first');
     expect(root.textContent).toContain('Unsorted');
@@ -317,9 +285,7 @@ describe('LibrarySettingsPage', () => {
 
   it.each([
     ['Show folder counts', 'showFolderCounts', false],
-    ['Warn about duplicates', 'warnDuplicates', false],
     ['Fetch titles and previews', 'fetchPreviews', false],
-    ['Keep the query part of links', 'keepQuery', true],
   ] as const)('switches "%s" at once', async (name, key, value) => {
     const { root, settingsApi, harness } = await setup();
     const control = switchNamed(root, name);
@@ -345,18 +311,6 @@ describe('LibrarySettingsPage', () => {
       });
       expect(control.getAttribute('aria-checked')).toBe('true');
     });
-  });
-
-  it('opens the sidebar tags from "Manage tags" on a wide screen', async () => {
-    const { root } = await setup();
-    const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
-    const manage = Array.from(root.querySelectorAll('button')).find((b) =>
-      b.textContent?.includes('Manage tags'),
-    );
-
-    manage?.click();
-
-    expect(navigate).toHaveBeenCalledWith('/links');
   });
 
   it('has no axe violations', async () => {

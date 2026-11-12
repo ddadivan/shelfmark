@@ -250,25 +250,19 @@ $more-column: rem(30px);
   }
 }
 
-// Reorder (folder rows, a mouse): the siblings glide apart (ease-in-out, a move across the list)
-// and the row lands in a reserved slot (DragDrop spec, like the feed's carried cards): one row
-// tall, the row's own width and corners, a soft sage tint, a thin dashed sage outline and a faint
-// ghost of the row (its icon at low opacity, the name muted). It is the CDK placeholder, which
-// sits where the row was, so the list keeps its height and nothing below moves. The dragged row
-// follows the pointer as a small floating card. Reduced motion: no glide, the slot just appears.
-.ui-tree__list--sorting > .ui-tree__item:not(.ui-tree__drop-slot),
-.ui-tree__item.cdk-drag-animating {
-  transition: transform var(--duration-base) var(--ease-in-out);
-
-  @include reduced-motion {
-    transition: none;
-  }
+// Reorder (folder rows, a mouse or a finger after a rest, #315): the rows hold still and a line
+// marks where the row lands (`reorder-drop-line` on every list: a 2px accent divider, rounded
+// ends, no dot, centred in the gap, as wide as the rows' own background; fades in, appears under
+// reduced motion). CDK still sorts in its model and would slide the siblings and its placeholder
+// with inline transforms; `uiTreeReorderList` removes them after each sort step (`holdRowsStill`),
+// so the placeholder stays where the row was as a faint ghost of it (one row tall: the list keeps
+// its height and nothing below moves). The dragged row follows the pointer as a small floating card.
+.ui-tree__list {
+  @include reorder-drop-line;
 }
 
-// The "Move here" badge and the reorder slot fade in (duration-base, ease-out); under reduced
-// motion they simply appear.
-.ui-tree__drop-badge,
-.ui-tree__drop-slot {
+// The "Move here" badge fades in (duration-base, ease-out); under reduced motion it simply appears.
+.ui-tree__drop-badge {
   @include enter(fade);
 
   @include reduced-motion {
@@ -288,13 +282,7 @@ $more-column: rem(30px);
   line-height: rem(20px);
   color: var(--text-muted);
   list-style: none;
-  background: var(--accent-bg);
-  border: 1px dashed var(--accent);
-  border-radius: calc(var(--radius-md) - #{rem(2px)});
-
-  ui-folder-icon {
-    opacity: 0.5;
-  }
+  opacity: 0.45;
 
   @include phone {
     min-height: rem(44px);

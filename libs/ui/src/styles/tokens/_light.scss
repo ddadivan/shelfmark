@@ -25,6 +25,10 @@
   --warning: #93600a;
   --warning-bg: #fbf1de;
   --overlay: rgb(19 19 21 / 40%);
+
+  // The disc behind a page-level empty-state scene (#315): one step stronger than the page `bg`, so the scene's
+  // edges (`border-control`, `accent`) keep 3:1 on it (WCAG 1.4.11).
+  --illustration-disc: var(--surface-hover);
   --logo-bookmark: #8dbb86;
 
   // Frosted floating layers (menus, toasts, phone tab bar, bulk bar, sign-in card).

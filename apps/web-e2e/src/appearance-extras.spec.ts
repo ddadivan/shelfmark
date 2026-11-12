@@ -156,8 +156,13 @@ test.describe('appearance extras (mock API)', () => {
     expect(ratio).toBeGreaterThan(3);
   });
 
-  test('Sidebar and motion: link counts and Remember recently opened', async ({ page }) => {
+  test('link counts (Library) and Remember recently opened (Privacy) show in the preview (#315)', async ({
+    page,
+  }) => {
     await openAppearance(page);
+    // Neither row is on Appearance any more.
+    await expect(toggle(page, 'Link counts')).toHaveCount(0);
+    await expect(toggle(page, 'Remember recently opened')).toHaveCount(0);
     // The preview draws its sidebar from the tablet width on.
     const sidebar = isPhone(page) ? null : page.locator('ui-theme-preview');
     if (sidebar) {
@@ -165,13 +170,12 @@ test.describe('appearance extras (mock API)', () => {
       await expect(sidebar.getByText('Recently opened')).toBeVisible();
     }
 
-    await toggle(page, 'Link counts').click();
-    await expect(toggle(page, 'Link counts')).toHaveAttribute('aria-checked', 'false');
-    if (sidebar) {
-      await expect(sidebar.locator('.ui-theme-preview__count')).toHaveCount(0);
-    }
+    await page.goto('/settings/library');
+    await toggle(page, 'Show folder counts').click();
+    await expect(toggle(page, 'Show folder counts')).toHaveAttribute('aria-checked', 'false');
 
     // Off asks first; Cancel keeps it on.
+    await page.goto('/settings/privacy');
     await toggle(page, 'Remember recently opened').click();
     const dialog = page.getByRole('alertdialog').or(page.getByRole('dialog'));
     await expect(dialog).toContainText('Stop remembering recently opened?');
@@ -181,16 +185,15 @@ test.describe('appearance extras (mock API)', () => {
     await toggle(page, 'Remember recently opened').click();
     await page.getByRole('button', { name: 'Clear and stop' }).click();
     await expect(toggle(page, 'Remember recently opened')).toHaveAttribute('aria-checked', 'false');
-    if (sidebar) {
-      await expect(sidebar.getByText('Recently opened')).toHaveCount(0);
-    }
 
-    await page.reload();
-    await expect(toggle(page, 'Link counts')).toHaveAttribute('aria-checked', 'false');
-    // The mock keeps "pause history" in memory, like its history (the API stores it: #269).
-    if (!isPhone(page)) {
-      await openFeed(page);
-      await expect(page.locator('.ui-tree__count')).toHaveCount(0);
+    // A client-side move keeps the mock's in-memory "pause history".
+    if (sidebar) {
+      await page
+        .getByRole('navigation', { name: 'Settings' })
+        .getByRole('link', { name: 'Appearance' })
+        .click();
+      await expect(sidebar.locator('.ui-theme-preview__count')).toHaveCount(0);
+      await expect(sidebar.getByText('Recently opened')).toHaveCount(0);
     }
   });
 

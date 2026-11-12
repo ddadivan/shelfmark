@@ -2,10 +2,13 @@ import type { ShortcutGroup } from './shortcut-group.interface';
 import { SHORTCUT_KEY } from './shortcut-key.const';
 
 /**
- * Every shortcut the app really has (read from the code, not from the mockups, which draw many
- * more): search (`SearchDialogService`), Esc (dialogs, menus, toasts), undo and the toast action
+ * The one list of every shortcut the app really has (read from the code, not from the mockups,
+ * which draw many more). The "?" dialog and Settings › Keyboard shortcuts both render it, and
+ * `shortcut-groups.spec.ts` compares it with the key handlers: search (`SearchDialogService`), the
+ * list ("?", `ShortcutsDialogService`), Esc (dialogs, menus, toasts), undo and the toast action
  * (`ToastService`), save in the link dialog, paste links into the library (`LibraryPage`), the
- * search results, the folder tree and reordering the sidebar (Alt+Up / Alt+Down).
+ * search results, the feed selection (`LibraryPage`, `linkKeyIntent`), the folder tree and
+ * reordering the sidebar (Alt+Up / Alt+Down). A new key handler adds its row here.
  */
 export const SHORTCUT_GROUPS: readonly ShortcutGroup[] = [
   {
@@ -34,6 +37,17 @@ export const SHORTCUT_GROUPS: readonly ShortcutGroup[] = [
         labelKey: 'shortcuts.items.openBackground',
         keys: [SHORTCUT_KEY.Command, SHORTCUT_KEY.Enter],
       },
+    ],
+  },
+  {
+    id: 'selecting',
+    titleKey: 'shortcuts.groups.selecting',
+    shortcuts: [
+      { labelKey: 'shortcuts.items.select', keys: [SHORTCUT_KEY.Space] },
+      { labelKey: 'shortcuts.items.selectRange', keys: [SHORTCUT_KEY.Shift, SHORTCUT_KEY.Space] },
+      { labelKey: 'shortcuts.items.selectAll', keys: [SHORTCUT_KEY.Command, SHORTCUT_KEY.A] },
+      { labelKey: 'shortcuts.items.moveLink', keys: [SHORTCUT_KEY.M] },
+      { labelKey: 'shortcuts.items.clearSelection', keys: [SHORTCUT_KEY.Escape] },
     ],
   },
   {

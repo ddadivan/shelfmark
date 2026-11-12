@@ -10,6 +10,7 @@ import { TREE_STORY_FIXED } from './stories/tree-story-fixed.const';
 import { TREE_STORY_FLAT } from './stories/tree-story-flat.const';
 import { TREE_STORY_LONG } from './stories/tree-story-long.const';
 import { TREE_STORY_NESTED } from './stories/tree-story-nested.const';
+import { reorderDropLine, setReorderDropLine } from './reorder-drop-line';
 import { TreeComponent } from './tree.component';
 import { THEME, THEME_ATTRIBUTE } from '../theme';
 import type { Theme } from '../theme';
@@ -148,6 +149,47 @@ export const WithContextMenu: Story = {
         </ui-menu>
       </div>`,
   }),
+};
+
+/** Draws the reorder line in every open sub-folder list: the first row would land after the second. */
+async function drawReorderLines(canvas: HTMLElement): Promise<void> {
+  await new Promise((resolve) => requestAnimationFrame(resolve));
+  for (const list of canvas.querySelectorAll<HTMLElement>(
+    '.ui-tree__children.is-open > ul.ui-tree__group',
+  )) {
+    const items = [...list.querySelectorAll<HTMLElement>(':scope > .ui-tree__item')];
+    if (items.length > 1) {
+      const rowOf = (item: HTMLElement) =>
+        item.querySelector<HTMLElement>(':scope > .ui-tree__row') ?? item;
+      setReorderDropLine(list, reorderDropLine(list, items, items[0], 1, rowOf));
+    }
+  }
+}
+
+/**
+ * Reorder line (#315): while a folder row drags among its siblings, the rows hold still and a
+ * plain 2px accent line with rounded ends marks where it lands, centred in the gap and as wide as
+ * the row's own background (the same inset on both sides, whatever the indent or chevron). It
+ * fades in; under reduced motion it simply appears. Drawn here in Work's sub-folders, both themes.
+ */
+export const ReorderLine: Story = {
+  parameters: { layout: 'fullscreen' },
+  render: () => ({
+    props: { fixedNodes: TREE_STORY_FIXED, nested: TREE_STORY_NESTED, ids: TREE_STORY_ID },
+    template: `${Object.values(THEME)
+      .map(
+        (theme) => `
+          <div ${THEME_ATTRIBUTE}="${theme}" class="ts-panel ts-panel--variants">
+            <p class="ts-hint">${theme} theme: the first sub-folder of Work lands after the second</p>
+            <div class="ts-sidebar">
+              <ui-tree ariaLabel="Reorder (${theme})" heading="Folders" menuLabel="Actions for {name}"
+                reorderable [nodes]="nested" [activeId]="ids.Angular" />
+            </div>
+          </div>`,
+      )
+      .join('')}`,
+  }),
+  play: async ({ canvasElement }) => drawReorderLines(canvasElement),
 };
 
 const variants = (theme: Theme) => `

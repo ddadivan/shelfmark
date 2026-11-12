@@ -123,6 +123,33 @@ describe('SidebarTagsComponent', () => {
     );
   });
 
+  it('shows a short note without tags in the sidebar, the page empty state on the Tags tab', async () => {
+    const api: TagsApi = {
+      list: () => of([]),
+      create: vi.fn(),
+      update: vi.fn(),
+      remove: vi.fn(),
+      merge: vi.fn(),
+    };
+    const { element, fixture } = await setup(api);
+
+    expect(element.querySelector('.tags__note')?.textContent).toContain('No tags yet');
+    expect(element.querySelector('ui-empty-state')).toBeNull();
+
+    fixture.componentRef.setInput('asPage', true);
+    await fixture.whenStable();
+    const state = element.querySelector('ui-empty-state');
+    expect(state?.classList.contains('ui-empty-state--page')).toBe(true);
+    expect(state?.querySelector('h2')?.textContent).toBe('No tags yet');
+    expect(element.querySelector('.tags__list')?.classList).toContain('tags__list--empty');
+
+    // Its button opens the new-tag field, like the + in the header.
+    state?.querySelector('button')?.click();
+    await fixture.whenStable();
+    expect(field(element)).not.toBeNull();
+    expect(element.querySelector('ui-empty-state')).toBeNull();
+  });
+
   it('shows the 8 most used tags and folds the rest behind "+ N more"', async () => {
     const many = Array.from({ length: 11 }, (_, n) => tag(`t${n}`, 20 - n));
     const api: TagsApi = {

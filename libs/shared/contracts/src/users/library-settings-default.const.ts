@@ -10,7 +10,5 @@ export const LIBRARY_SETTINGS_DEFAULT: Readonly<LibrarySettings> = {
   openLinksIn: LINK_OPEN_TARGET.NewTab,
   showFolderCounts: true,
   newLinksFolderId: null,
-  warnDuplicates: true,
   fetchPreviews: true,
-  keepQuery: false,
 };

@@ -251,6 +251,7 @@
         "placeholder": "Why are you saving this?",
         "hint": "Helps you find it later",
         "counter": "characters",
+        "spellcheck": "Check spelling",
         "tooLong": "The note is too long (at most {{max}} characters)"
       },
       "duplicate": {
@@ -267,6 +268,18 @@
         "save": "Save link",
         "saveAnyway": "Save anyway",
         "saving": "Saving…"
+      },
+      "several": {
+        "offer": "Have several links? Paste them all at once",
+        "open": "Add several links",
+        "title": "Add several links",
+        "label": "Paste links, one per line or inside any text",
+        "placeholder": "https://…",
+        "hint": "Up to {{max}} links at a time. You check the list before anything is saved.",
+        "required": "Paste or type some links",
+        "none": "No links found in this text",
+        "back": "One link",
+        "find": "Find links"
       }
     },
     "edit": {
@@ -608,17 +621,11 @@
         "kyoto": {
           "title": "Kyoto away from the crowds"
         },
-        "focaccia": {
-          "title": "Crispy no-knead focaccia"
-        },
         "containerQueries": {
           "title": "Container queries in practice"
         },
         "linenShirt": {
           "title": "Linen shirt in sage green"
-        },
-        "madeira": {
-          "title": "Five day hikes on Madeira"
         }
       },
       "tags": {
@@ -693,7 +700,9 @@
         "moveUp": "Move up",
         "moveDown": "Move down",
         "unpin": "Unpin from sidebar",
-        "unpinButton": "Unpin {{name}}"
+        "unpinButton": "Unpin {{name}}",
+        "empty": "Nothing pinned yet",
+        "emptyHint": "Nothing pinned yet — use “Pin to sidebar” in a folder or link menu"
       },
       "reorder": {
         "movedUp": "Moved up, position {{position}} of {{total}}",
@@ -917,6 +926,16 @@
       "text": "Nothing you saved has all of the selected tags.",
       "clear": "Clear filter"
     },
+    "emptyView": {
+      "title": "Nothing in “{{name}}” yet",
+      "text": "Links that match this view show up here as you save them.",
+      "clear": "Show all links"
+    },
+    "emptyFilters": {
+      "title": "Nothing matches these filters",
+      "text": "No saved link matches all of the selected filters.",
+      "clear": "Clear filters"
+    },
     "filter": {
       "label": "Active filters"
     },
@@ -987,7 +1006,7 @@
       "account": "Your profile and your account.",
       "appearance": "Saved as you go and synced to all your devices.",
       "library": "How links are shown, saved and kept.",
-      "language": "Interface language and how dates look.",
+      "language": "The language of the interface. Date and time formats are in Appearance.",
       "export": "Take everything you saved with you.",
       "privacy": "What we keep, and how to take it with you.",
       "shortcuts": "Work without the mouse.",
@@ -1063,7 +1082,16 @@
           "soft": "Soft",
           "square": "Square"
         },
-        "reset": "Reset custom theme"
+        "reset": "Reset custom theme",
+        "own": {
+          "label": "Your own colour",
+          "picker": "Choose a colour",
+          "hex": "Hex code",
+          "invalid": "Enter # and six digits or letters a–f, like #2e6a99.",
+          "hint": "Shelfmark keeps 4.5:1 contrast: on the other base it uses a darker or lighter shade of your colour.",
+          "warning": "This colour is hard to read on your background ({{ratio}}:1, it needs 4.5:1).",
+          "use": "Use {{colour}}"
+        }
       },
       "layout": {
         "title": "Text and layout",
@@ -1112,21 +1140,6 @@
         }
       },
       "sidebar": {
-        "counts": {
-          "label": "Link counts",
-          "hint": "Numbers next to folders"
-        },
-        "recent": {
-          "label": "Remember recently opened",
-          "hint": "Keeps the Recently opened list. Off clears it and stops recording.",
-          "confirm": {
-            "title": "Stop remembering recently opened?",
-            "message": "The Recently opened list is cleared, and links you open are not added until you turn this back on. Your links stay saved.",
-            "confirm": "Clear and stop",
-            "cancel": "Cancel",
-            "close": "Close"
-          }
-        },
         "colours": {
           "label": "Folder colours",
           "hint": "Off shows every folder in plain graphite"
@@ -1166,12 +1179,7 @@
         "recent": "Recently opened"
       },
       "failed": "Couldn't save the appearance",
-      "failedDetail": "It is back to how it was.",
-      "language": {
-        "label": "Language",
-        "hint": "Interface language, date format and spell-check",
-        "value": "Change language"
-      }
+      "failedDetail": "It is back to how it was."
     },
     "privacy": {
       "policy": {
@@ -1180,8 +1188,18 @@
         "action": "Read",
         "actionLabel": "Read the privacy policy"
       },
+      "recent": {
+        "label": "Remember recently opened",
+        "hint": "Keeps the Recently opened list. Off clears it and stops recording.",
+        "confirm": {
+          "title": "Stop remembering recently opened?",
+          "message": "The Recently opened list is cleared, and links you open are not added until you turn this back on. Your links stay saved.",
+          "confirm": "Clear and stop",
+          "cancel": "Cancel",
+          "close": "Close"
+        }
+      },
       "data": {
-        "label": "Download your data",
         "hint": "Everything you saved, as JSON or bookmarks HTML",
         "action": "Open export"
       },
@@ -1192,13 +1210,6 @@
     "footer": {
       "privacy": "Privacy policy",
       "version": "Shelfmark v1.0"
-    },
-    "welcome": {
-      "title": "Welcome tour",
-      "hint": "See the 3-step introduction again",
-      "action": "Show welcome again",
-      "error": "Couldn't reset the welcome tour",
-      "errorDetail": "Try again"
     },
     "delete": {
       "title": "Delete account",
@@ -1248,27 +1259,10 @@
           "label": "New links go to",
           "hint": "When you paste a link without picking a folder"
         },
-        "duplicates": {
-          "label": "Warn about duplicates",
-          "hint": "Shows where you already saved the same link"
-        },
         "previews": {
           "label": "Fetch titles and previews",
           "hint": "Turn off to save only the address"
-        },
-        "query": {
-          "label": "Keep the query part of links",
-          "hint": "Removes tracking like ?utm_source when off"
         }
-      },
-      "tags": {
-        "label": "Tags",
-        "hint": {
-          "one": "{{count}} tag. Rename, merge or delete it.",
-          "other": "{{count}} tags. Rename, merge or delete them."
-        },
-        "hintPending": "Rename, merge or delete them",
-        "action": "Manage tags"
       },
       "failed": "Couldn't save the setting",
       "failedDetail": "It is back to how it was.",
@@ -1302,31 +1296,6 @@
           "cancel": "Cancel",
           "close": "Close"
         }
-      },
-      "folders": {
-        "title": "Tags and folders",
-        "colours": {
-          "label": "Folder colours",
-          "hint": "Coloured folder icons in the sidebar and tiles",
-          "failed": "Couldn't save the setting",
-          "failedDetail": "It is back to how it was."
-        },
-        "pinned": {
-          "label": "Pinned at the top",
-          "hint": "Up to {{max}} folders and links",
-          "action": "Edit pinned"
-        }
-      },
-      "pinnedDialog": {
-        "title": "Pinned",
-        "description": "The order of the Pinned section in the sidebar.",
-        "empty": "Nothing is pinned. Use “Pin to sidebar” in the menu of a folder or link.",
-        "list": "Pinned items",
-        "close": "Close",
-        "done": "Done",
-        "moveUp": "Move {{name}} up",
-        "moveDown": "Move {{name}} down",
-        "unpin": "Unpin {{name}} from the sidebar"
       }
     },
     "language": {
@@ -1335,10 +1304,6 @@
         "label": "Interface language",
         "hint": "Your links and notes stay as they are",
         "browser": "Match my browser"
-      },
-      "spellcheck": {
-        "label": "Spell-check notes",
-        "hint": "Uses your browser’s dictionary"
       },
       "dates": {
         "title": "Dates and numbers"
@@ -1383,7 +1348,8 @@
     "groups": {
       "everywhere": "Everywhere",
       "links": "Saving and finding",
-      "folders": "In the folder list"
+      "folders": "In the folder list",
+      "selecting": "Selecting links"
     },
     "items": {
       "search": "Search",
@@ -1399,7 +1365,12 @@
       "toggleFolder": "Close or open a folder",
       "folderMenu": "Open the folder menu",
       "paste": "Paste links into the library",
-      "reorder": "Move a pinned item or folder up or down"
+      "reorder": "Move a pinned item or folder up or down",
+      "select": "Select or unselect the focused link",
+      "selectRange": "Select up to the focused link",
+      "selectAll": "Select every link in the list",
+      "moveLink": "Move the focused link to a folder",
+      "clearSelection": "Clear the selection"
     },
     "keys": {
       "command": "Command",
@@ -1413,7 +1384,8 @@
       "down": "Down",
       "left": "Left",
       "right": "Right",
-      "question": "Question mark"
+      "question": "Question mark",
+      "space": "Space"
     }
   },
   "tags": {
@@ -1437,6 +1409,12 @@
         "rename": "Rename",
         "merge": "Merge into another tag…",
         "delete": "Delete tag"
+      }
+    },
+    "page": {
+      "empty": {
+        "title": "No tags yet",
+        "text": "Tags group links across folders. Add one here, or while you save a link."
       }
     },
     "add": {
@@ -1933,20 +1911,22 @@
   },
   "howItWorks": {
     "menu": "How it works",
-    "title": "Shelfmark in 60 seconds",
+    "title": "Shelfmark in 2 minutes",
     "close": "Close",
     "captions": "English",
     "chaptersLabel": "Chapters",
     "chapters": {
       "save": "Save a link",
       "organise": "Folders and tags",
-      "find": "Find it again"
+      "find": "Find it again",
+      "many": "Many at once",
+      "yours": "Make it yours"
     },
     "emptyLink": "Watch how it works",
     "card": {
       "label": "How it works",
       "title": "New here? Watch how it works",
-      "length": "1 minute",
+      "length": "2 minutes",
       "hide": "Hide"
     }
   },

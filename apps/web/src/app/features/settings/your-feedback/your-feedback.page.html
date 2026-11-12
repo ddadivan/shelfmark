@@ -8,12 +8,21 @@
     [title]="'feedback.page.send.label' | transloco"
     [description]="'feedback.page.send.hint' | transloco"
   >
-    <ui-button variant="primary" ariaHaspopup="dialog" (click)="send()">
+    <ui-button variant="primary" iconLeft="message" ariaHaspopup="dialog" (click)="send()">
       {{ 'feedback.page.send.action' | transloco }}
     </ui-button>
   </ui-settings-row>
 </ui-settings-section>
 
+@if (store.phase() === LOAD.Loaded && rows().length === 0) {
+<!-- No messages yet: the page-level empty state (#315) instead of an empty list section. -->
+<ui-empty-state
+  layout="page"
+  icon="inbox"
+  [heading]="'feedback.page.empty.title' | transloco"
+  [text]="'feedback.page.empty.text' | transloco"
+/>
+} @else {
 <ui-settings-section [title]="'feedback.page.list.title' | transloco">
   <div class="feedback-page__body" [attr.aria-busy]="store.phase() === LOAD.Loading">
     @switch (store.phase()) { @case (LOAD.Failed) {
@@ -23,13 +32,7 @@
         {{ 'feedback.page.list.retry' | transloco }}
       </ui-button>
     </ui-notice>
-    } @case (LOAD.Loaded) { @if (rows().length === 0) {
-    <ui-empty-state
-      icon="inbox"
-      [heading]="'feedback.page.empty.title' | transloco"
-      [text]="'feedback.page.empty.text' | transloco"
-    />
-    } @else {
+    } @case (LOAD.Loaded) {
     <ul class="feedback-page__list">
       @for (row of rows(); track row.message.id) {
       <li class="feedback-page__item">
@@ -54,8 +57,9 @@
       </li>
       }
     </ul>
-    } } @default {
+    } @default {
     <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="3" />
     } }
   </div>
 </ui-settings-section>
+}

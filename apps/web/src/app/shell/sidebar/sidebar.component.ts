@@ -49,6 +49,7 @@ import { TrashStore } from '../../stores/trash.store';
 import { UserSettingsStore } from '../../stores/user-settings.store';
 import { LinkDragService } from '../../features/links/drag/link-drag.service';
 import { HowItWorksService } from '../../features/how-it-works/how-it-works.service';
+import { FeedbackDialogService } from '../../features/feedback/feedback-dialog.service';
 import { HowItWorksCardComponent } from '../../features/how-it-works/how-it-works-card/how-it-works-card.component';
 import { SIDEBAR_RECENT_ID } from './models/sidebar-recent-id.const';
 import { SIDEBAR_TRASH_ID } from './models/sidebar-trash-id.const';
@@ -101,6 +102,8 @@ export class SidebarComponent {
   private readonly pinActions = inject(PinActionsService);
   protected readonly drag = inject(LinkDragService);
   protected readonly howItWorks = inject(HowItWorksService);
+  /** "Send feedback" in the sidebar footer opens the same dialog as the account menu (#315). */
+  protected readonly feedback = inject(FeedbackDialogService);
   private readonly tagsStore = inject(TagsStore);
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
@@ -119,6 +122,8 @@ export class SidebarComponent {
 
   private readonly actions = inject(FolderActionsService);
   private readonly viewport = inject(ViewportService);
+  /** Wide-screen-only blocks of the sidebar (the phone drawer and Library leave them out). */
+  protected readonly phone = this.viewport.phone;
   /** Text buttons reach the 44px touch target on a phone. */
   protected readonly buttonSize = computed(() =>
     this.viewport.phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm,
@@ -275,6 +280,16 @@ export class SidebarComponent {
       this.menu().openAt(event.position);
     } else {
       this.menu().openFrom(event.anchor);
+    }
+  }
+
+  /**
+   * A folder row started to move: a long press may have opened its menu just before (press, hold,
+   * then move, as on iOS), so the menu closes and the drag goes on (#315).
+   */
+  protected reorderStarted(): void {
+    if (this.menu().isOpen()) {
+      this.menu().close({ restoreFocus: false });
     }
   }
 

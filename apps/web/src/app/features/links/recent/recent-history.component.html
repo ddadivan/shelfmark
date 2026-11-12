@@ -5,7 +5,8 @@
 } @else if (!hasHistory()) {
   <ui-empty-state
     class="recent-history__empty"
-    illustration="empty-feed"
+    [layout]="emptyLayout()"
+    illustration="empty-recent"
     [heading]="'links.recent.empty.title' | transloco"
     [text]="'links.recent.empty.text' | transloco: { days: windowDays }"
   />
@@ -35,6 +36,7 @@
   @if (searchEmpty()) {
     <ui-empty-state
       class="recent-history__empty"
+      [layout]="emptyLayout()"
       illustration="not-found"
       [heading]="'links.recent.search.emptyTitle' | transloco"
       [text]="'links.recent.search.emptyText' | transloco: { query: appliedSearch() }"
@@ -44,7 +46,8 @@
   } @else if (filteredEmpty()) {
     <ui-empty-state
       class="recent-history__empty"
-      illustration="not-found"
+      [layout]="emptyLayout()"
+      illustration="empty-filter"
       [heading]="'links.recent.filter.emptyTitle' | transloco"
       [text]="'links.recent.filter.emptyText' | transloco: { days: windowDays }"
     >

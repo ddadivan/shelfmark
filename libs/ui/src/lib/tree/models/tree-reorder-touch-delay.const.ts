@@ -1,6 +1,7 @@
 /**
- * A touch never starts a reorder drag (CDK ends a touch sequence that moves before this delay):
- * on touch the finger scrolls the list and a long press opens the folder menu. Reorder on touch
- * goes through the menu-free keyboard route or a mouse.
+ * Touch reorder, like iOS (#315): a finger has to rest this long on a row before moving it starts
+ * a drag (CDK `dragStartDelay`). A move before that ends the sequence, so a plain swipe scrolls;
+ * a long press without moving still opens the row menu (`LONG_PRESS_DURATION_MS`, 500), which
+ * is longer than this delay, so press, wait, move = drag and press, hold = menu.
  */
-export const TREE_REORDER_TOUCH_DELAY_MS = 24 * 60 * 60 * 1000;
+export const TREE_REORDER_TOUCH_DELAY_MS = 400;

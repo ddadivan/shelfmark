@@ -164,9 +164,9 @@ export class MockLinksApi implements LinksApi {
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
 
-  /** Like the API: tracking parameters go unless the account keeps the query part. */
+  /** Like the API: tracking parameters always go (#315). */
   private savedUrl(url: string): string {
-    return this.data.library.keepQuery ? url : stripTrackingParams(url);
+    return stripTrackingParams(url);
   }
 
   list(query: ListLinksQuery = {}): Observable<ListLinksResponse> {

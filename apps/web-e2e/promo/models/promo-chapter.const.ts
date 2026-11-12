@@ -6,6 +6,8 @@
  */
 export const PROMO_CHAPTER_START_MS = {
   Save: 0,
-  Organise: 18_000,
-  Find: 41_000,
+  Organise: 34_000,
+  Find: 52_000,
+  Many: 79_000,
+  Yours: 99_000,
 } as const;

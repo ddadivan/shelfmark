@@ -3,6 +3,7 @@ import { CUSTOM_THEME_BACKGROUNDS } from './custom-theme-backgrounds.const';
 import { CUSTOM_THEME_BASE } from './custom-theme-base.const';
 import { CUSTOM_THEME_CORNERS } from './custom-theme-corners.const';
 import type { CustomTheme } from './custom-theme.interface';
+import { isHexColour } from './is-hex-colour';
 import { MOTION_PREFERENCE } from './motion-preference.const';
 import type { MotionPreference } from './motion-preference.type';
 import { THEME_PREFERENCE } from './theme-preference.const';
@@ -31,8 +32,8 @@ export function isBackgroundOfBase(base: unknown, background: unknown): boolean 
 }
 
 /**
- * A complete, valid `CustomTheme` with no other keys: the allow-lists plus the
- * background-of-base rule. Checks stored copies (browser storage) and database rows.
+ * A complete, valid `CustomTheme` with no other keys: the allow-lists (an accent may also be an
+ * own `#rrggbb` colour) plus the background-of-base rule. Checks stored copies (browser storage) and database rows.
  */
 export function isCustomTheme(value: unknown): value is CustomTheme {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
@@ -43,7 +44,8 @@ export function isCustomTheme(value: unknown): value is CustomTheme {
   }
   const theme = value as Record<string, unknown>;
   return (
-    isOneOf(Object.values(CUSTOM_THEME_ACCENT), theme['accent']) &&
+    (isOneOf(Object.values(CUSTOM_THEME_ACCENT), theme['accent']) ||
+      isHexColour(theme['accent'])) &&
     isOneOf(Object.values(CUSTOM_THEME_CORNERS), theme['corners']) &&
     isBackgroundOfBase(theme['base'], theme['background'])
   );

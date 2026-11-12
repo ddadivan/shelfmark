@@ -1,0 +1,33 @@
+@use 'functions' as *;
+@use 'media' as *;
+@use 'motion' as *;
+
+// The reorder line of the sidebar lists (#315): `ui-tree` sibling lists and the app's Pinned list.
+// Include it on the list element. While a row is dragged the list gets `ui-drop-line--shown`
+// and the line's place from `setReorderDropLine()` (`--ui-drop-line-top|left|width`, set through
+// CSSOM): a plain 2px accent divider with rounded ends, no dot, centred in the gap where the row
+// lands and as wide as that row's own background. It takes no room, so nothing moves; it fades
+// in (Motion `fade`), and simply appears under reduced motion.
+@mixin reorder-drop-line {
+  position: relative;
+
+  &.ui-drop-line--shown::after {
+    @include enter(fade);
+
+    position: absolute;
+    inset-block-start: var(--ui-drop-line-top, 0);
+    inset-inline-start: var(--ui-drop-line-left, 0);
+    z-index: 1;
+    inline-size: var(--ui-drop-line-width, 100%);
+    block-size: rem(2px);
+    margin-block-start: rem(-1px);
+    pointer-events: none;
+    content: '';
+    background: var(--accent);
+    border-radius: var(--radius-full);
+
+    @include reduced-motion {
+      animation: none;
+    }
+  }
+}

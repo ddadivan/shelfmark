@@ -2,14 +2,17 @@ import type { CustomThemeAccent } from './custom-theme-accent.type';
 import type { CustomThemeBackground } from './custom-theme-background.type';
 import type { CustomThemeBase } from './custom-theme-base.type';
 import type { CustomThemeCorners } from './custom-theme-corners.type';
+import type { HexColour } from './hex-colour.type';
 
 /**
- * The Custom theme: a fixed base plus curated accent, background and corners. It only swaps token
- * values (BRAND.md, Colour). `background` must be one of `CUSTOM_THEME_BACKGROUNDS[base]`.
+ * The Custom theme: a fixed base plus an accent, background and corners. It only swaps token
+ * values (BRAND.md, Colour). `background` must be one of `CUSTOM_THEME_BACKGROUNDS[base]`. The
+ * accent is a curated name or an own colour (`#rrggbb`, #315); the app draws an own colour in its
+ * nearest shade that keeps WCAG AA on the base (`customAccentTokens` in `libs/ui`).
  */
 export interface CustomTheme {
   base: CustomThemeBase;
-  accent: CustomThemeAccent;
+  accent: CustomThemeAccent | HexColour;
   background: CustomThemeBackground;
   corners: CustomThemeCorners;
 }

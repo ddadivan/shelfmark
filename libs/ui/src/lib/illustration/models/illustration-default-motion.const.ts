@@ -12,4 +12,10 @@ export const ILLUSTRATION_DEFAULT_MOTION: Readonly<Record<IllustrationName, Illu
   'not-found': ILLUSTRATION_MOTION.Once,
   'page-not-found': ILLUSTRATION_MOTION.Once,
   offline: ILLUSTRATION_MOTION.Once,
+  'empty-trash': ILLUSTRATION_MOTION.Once,
+  'empty-recent': ILLUSTRATION_MOTION.Once,
+  'empty-favorites': ILLUSTRATION_MOTION.Once,
+  'empty-unsorted': ILLUSTRATION_MOTION.Once,
+  'empty-tags': ILLUSTRATION_MOTION.Once,
+  'empty-filter': ILLUSTRATION_MOTION.Once,
 };

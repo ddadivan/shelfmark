@@ -5,7 +5,18 @@
 
 <ui-settings-section [title]="'settings.data.title' | transloco">
   <ui-settings-row
-    [title]="'settings.privacy.data.label' | transloco"
+    [title]="'settings.privacy.recent.label' | transloco"
+    [description]="'settings.privacy.recent.hint' | transloco"
+  >
+    <ui-switch
+      #rememberSwitch
+      [label]="'settings.privacy.recent.label' | transloco"
+      [checked]="!settings.historyPaused()"
+      (checkedChange)="setRemember($event, rememberSwitch)"
+    />
+  </ui-settings-row>
+  <ui-settings-row
+    [title]="'settings.data.export.label' | transloco"
     [description]="'settings.privacy.data.hint' | transloco"
   >
     <ui-button [href]="exportHref" (linkClick)="open($event, exportHref)">

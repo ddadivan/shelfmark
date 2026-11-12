@@ -19,7 +19,7 @@
   <main class="collection__main">
     @if (store.notFound()) {
     <ui-empty-state
-      class="collection__state"
+      layout="page"
       illustration="not-found"
       [headingLevel]="1"
       [heading]="'publicCollection.notFound.title' | transloco"
@@ -83,7 +83,7 @@
     >
     } @else if (cards().length === 0) {
     <ui-empty-state
-      class="collection__state"
+      layout="page"
       illustration="empty-folder"
       [heading]="'publicCollection.empty.title' | transloco"
       [text]="'publicCollection.empty.text' | transloco"

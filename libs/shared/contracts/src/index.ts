@@ -150,6 +150,9 @@ export { CUSTOM_THEME_BACKGROUNDS } from './users/custom-theme-backgrounds.const
 export { CUSTOM_THEME_CORNERS } from './users/custom-theme-corners.const';
 export type { CustomThemeCorners } from './users/custom-theme-corners.type';
 export type { CustomTheme } from './users/custom-theme.interface';
+export type { HexColour } from './users/hex-colour.type';
+export { HEX_COLOUR_PATTERN } from './users/hex-colour-pattern.const';
+export { isHexColour } from './users/is-hex-colour';
 export { CUSTOM_THEME_DEFAULT } from './users/custom-theme-default.const';
 export { LIBRARY_VIEW } from './users/library-view.const';
 export type { LibraryView } from './users/library-view.type';

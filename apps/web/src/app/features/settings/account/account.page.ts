@@ -11,10 +11,9 @@ import {
 import { AuthStore } from '../../../core/auth/auth.store';
 import { ViewportService } from '../../../core/layout/viewport.service';
 import { AccountDeletionService } from '../../account-deletion/account-deletion.service';
-import { OnboardingStore } from '../../onboarding/onboarding.store';
 import { SettingsPageHeaderComponent } from '../settings-page-header/settings-page-header.component';
 
-/** `/settings/account`: who is signed in, sign out, the welcome tour and deleting the account. */
+/** `/settings/account`: who is signed in, sign out and deleting the account. */
 @Component({
   selector: 'app-settings-account-page',
   imports: [
@@ -31,7 +30,6 @@ import { SettingsPageHeaderComponent } from '../settings-page-header/settings-pa
 })
 export default class AccountPage {
   protected readonly auth = inject(AuthStore);
-  protected readonly onboarding = inject(OnboardingStore);
   private readonly viewport = inject(ViewportService);
   private readonly accountDeletion = inject(AccountDeletionService);
 

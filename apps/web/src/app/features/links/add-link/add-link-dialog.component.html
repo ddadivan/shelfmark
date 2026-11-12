@@ -4,6 +4,43 @@
     [folderId]="form.folderId().value()"
     [tags]="form.tags().value()"
   />
+} @else if (several()) {
+  <!-- "Add several links" (#315): any text with links, read by the paste-many parser. -->
+  <form [formRoot]="severalForm" class="add-link" (keydown)="onSeveralKeydown($event)">
+    <ui-dialog
+      [title]="'links.add.several.title' | transloco"
+      [closeLabel]="'links.add.close' | transloco"
+      size="md"
+    >
+      <div class="add-link__fields">
+        <ui-textarea
+          class="add-link__several-text"
+          (paste)="onSeveralPaste($event)"
+          [label]="'links.add.several.label' | transloco"
+          [placeholder]="'links.add.several.placeholder' | transloco"
+          [hint]="'links.add.several.hint' | transloco: { max: LINK_LIMIT.BatchMax }"
+          [rows]="8"
+          [spellcheck]="false"
+          [formField]="severalForm.text"
+        />
+      </div>
+      <ui-button
+        slot="footer"
+        class="add-link__back"
+        [variant]="BUTTON_VARIANT.Ghost"
+        iconLeft="chevron-left"
+        (click)="showSingle()"
+        >{{ 'links.add.several.back' | transloco }}</ui-button
+      >
+      <ui-button
+        slot="footer"
+        class="add-link__action"
+        [type]="BUTTON_TYPE.Submit"
+        [variant]="BUTTON_VARIANT.Primary"
+        >{{ 'links.add.several.find' | transloco }}</ui-button
+      >
+    </ui-dialog>
+  </form>
 } @else {
   <form [formRoot]="form" class="add-link" (keydown)="onKeydown($event)">
     <ui-dialog
@@ -21,6 +58,19 @@
           [loading]="shownState() === PREVIEW_STATE.Loading"
           [formField]="form.url"
         />
+        @if (!editing) {
+          <!-- Paste many (story 3, #265) made findable (#315). -->
+          <div class="add-link__several">
+            <span class="add-link__several-hint">{{ 'links.add.several.offer' | transloco }}</span>
+            <ui-button
+              class="add-link__several-open"
+              [variant]="BUTTON_VARIANT.Ghost"
+              size="sm"
+              (click)="showSeveral()"
+              >{{ 'links.add.several.open' | transloco }}</ui-button
+            >
+          </div>
+        }
 
         <!-- Always present, so changes are announced reliably (notices inserted later may not be). -->
         <div class="add-link__sr" role="status">
@@ -122,6 +172,13 @@
           [rows]="2"
           [spellcheck]="spellcheck()"
           [formField]="form.note"
+        />
+        <ui-checkbox
+          #spellcheckBox
+          class="add-link__spellcheck"
+          [label]="'links.add.note.spellcheck' | transloco"
+          [checked]="spellcheck()"
+          (checkedChange)="setSpellcheck($event, spellcheckBox)"
         />
 
         @if (editing) {

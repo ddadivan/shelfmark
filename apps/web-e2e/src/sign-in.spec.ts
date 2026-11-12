@@ -61,7 +61,7 @@ test.describe('sign-in flow (mock auth)', () => {
     expect(overflow).toBeLessThanOrEqual(0);
   });
 
-  test('on a desktop the glass card is centred and sixteen cards drift in the side lanes', async ({
+  test('on a desktop the glass card is centred and fourteen cards drift in the side lanes', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
@@ -77,8 +77,8 @@ test.describe('sign-in flow (mock auth)', () => {
     // The mosaic band is a phone layout.
     await expect(page.locator('.sign-in__art')).toHaveCount(0);
 
-    // Sixteen cards in three depth layers, each floating and taking its turn to land (ring).
-    await expect(page.locator('.sd-card')).toHaveCount(16);
+    // Fourteen cards (#315) in three depth layers, each floating and taking its turn to land (ring).
+    await expect(page.locator('.sd-card')).toHaveCount(14);
     for (const layer of ['far', 'mid', 'near']) {
       expect(await page.locator(`.sd-card--${layer}`).count()).toBeGreaterThan(0);
     }
@@ -86,12 +86,12 @@ test.describe('sign-in flow (mock auth)', () => {
     const running = await page.evaluate<string[]>(
       "document.getAnimations().filter((a) => a instanceof CSSAnimation && a.playState === 'running').map((a) => a.animationName).filter((name) => name.endsWith('sd-float') || name.endsWith('sd-ring'))",
     );
-    expect(running.filter((n) => n.endsWith('sd-float'))).toHaveLength(16);
-    expect(running.filter((n) => n.endsWith('sd-ring'))).toHaveLength(16);
+    expect(running.filter((n) => n.endsWith('sd-float'))).toHaveLength(14);
+    expect(running.filter((n) => n.endsWith('sd-ring'))).toHaveLength(14);
     // Every card looks like the library's: the drawing, favicon and domain, the date, tag chips.
-    await expect(page.locator('.sd-card ui-card .ui-card__placeholder')).toHaveCount(16);
+    await expect(page.locator('.sd-card ui-card .ui-card__placeholder')).toHaveCount(14);
     await expect(page.locator('.sd-card .ui-card__date').first()).not.toBeEmpty();
-    expect(await page.locator('.sd-card ui-chip').count()).toBeGreaterThanOrEqual(16);
+    expect(await page.locator('.sd-card ui-chip').count()).toBeGreaterThanOrEqual(14);
     // Far is dimmer and smaller than near.
     const far = page.locator('.sd-card--far .sd-fly').first();
     const near = page.locator('.sd-card--near .sd-fly').first();
@@ -131,7 +131,7 @@ test.describe('sign-in flow (mock auth)', () => {
       const flying = await page.evaluate<number>(
         "document.getAnimations().filter((a) => a instanceof CSSAnimation && a.animationName.endsWith('sd-fly') && a.playState === 'running').length",
       );
-      expect(flying, `visit ${visit}`).toBe(16);
+      expect(flying, `visit ${visit}`).toBe(14);
       // ... and they settle: the wave ends.
       await expect
         .poll(() =>
@@ -149,7 +149,7 @@ test.describe('sign-in flow (mock auth)', () => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/sign-in');
-    await expect(page.locator('.sd-card')).toHaveCount(16);
+    await expect(page.locator('.sd-card')).toHaveCount(14);
     await expect(page.locator('.sd-card .sd-fly').first()).toHaveCSS('opacity', /^(1|0\.\d+)$/);
 
     const animations = await page.evaluate<number>(
@@ -160,10 +160,10 @@ test.describe('sign-in flow (mock auth)', () => {
 
   for (const viewport of [
     { width: 1024, height: 768, cards: 8 },
-    { width: 1280, height: 720, cards: 16 },
-    { width: 1366, height: 768, cards: 16 },
-    { width: 1440, height: 900, cards: 16 },
-    { width: 1920, height: 1080, cards: 16 },
+    { width: 1280, height: 720, cards: 14 },
+    { width: 1366, height: 768, cards: 14 },
+    { width: 1440, height: 900, cards: 14 },
+    { width: 1920, height: 1080, cards: 14 },
   ]) {
     test(`at ${viewport.width}x${viewport.height} ${viewport.cards} cards sit in the side lanes: no collisions, none under the sign-in card`, async ({
       page,
@@ -240,14 +240,14 @@ test.describe('sign-in flow (mock auth)', () => {
     const running = await page.evaluate<number>(
       "document.getAnimations().filter((a) => a instanceof CSSAnimation && a.animationName.endsWith('sd-float')).length",
     );
-    expect(running).toBe(16);
+    expect(running).toBe(14);
   });
 
   test('with reduced motion the cards do not lean', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/sign-in');
-    await expect(page.locator('.sd-tilt')).toHaveCount(16);
+    await expect(page.locator('.sd-tilt')).toHaveCount(14);
 
     await page.mouse.move(1400, 880);
     await page.waitForTimeout(150);

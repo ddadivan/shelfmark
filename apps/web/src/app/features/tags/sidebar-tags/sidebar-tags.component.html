@@ -30,10 +30,28 @@
       }}</ui-button>
     </p>
   } @else if (tags.loaded() && tags.count() === 0 && !adding()) {
-    <p class="tags__note">{{ 'tags.sidebar.empty' | transloco }}</p>
+    @if (asPage()) {
+      <ui-empty-state
+        class="tags__empty"
+        layout="page"
+        illustration="empty-tags"
+        [heading]="'tags.page.empty.title' | transloco"
+        [text]="'tags.page.empty.text' | transloco"
+      >
+        <ui-button variant="primary" iconLeft="add" (click)="toggleAdd()">
+          {{ 'tags.sidebar.add' | transloco }}
+        </ui-button>
+      </ui-empty-state>
+    } @else {
+      <p class="tags__note">{{ 'tags.sidebar.empty' | transloco }}</p>
+    }
   }
 
-  <ul class="tags__list" [attr.aria-label]="'tags.sidebar.list' | transloco">
+  <ul
+    class="tags__list"
+    [class.tags__list--empty]="tags.loaded() && tags.count() === 0 && !adding()"
+    [attr.aria-label]="'tags.sidebar.list' | transloco"
+  >
     @if (adding()) {
       <li class="tags__item tags__item--editor" [class.tags__item--wide]="editorWide()">
         <ng-container *ngTemplateOutlet="editor" />

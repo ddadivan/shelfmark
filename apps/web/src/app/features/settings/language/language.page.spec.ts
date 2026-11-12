@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
 import {
   LANGUAGE_SETTINGS_DEFAULT,
   LIBRARY_SETTINGS_DEFAULT,
@@ -7,7 +6,7 @@ import {
   type UpdateUserSettingsRequest,
 } from '@shelfmark/contracts';
 import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
-import { SelectComponent, ToastService, TOAST_KIND } from '@shelfmark/ui';
+import { ToastService, TOAST_KIND } from '@shelfmark/ui';
 import { of, switchMap, throwError, timer } from 'rxjs';
 import { axeViolations } from '../../../../testing/axe';
 import { setupSettingsPage } from '../../../../testing/settings-page-testbed';
@@ -66,11 +65,7 @@ async function setup(options: { failUpdate?: boolean } = {}) {
   });
   const page = await setupSettingsPage(LanguageSettingsPage, 'language');
   await page.harness.fixture.whenStable();
-  const selects = (): SelectComponent[] =>
-    page.harness.fixture.debugElement
-      .queryAll(By.directive(SelectComponent))
-      .map((debug) => debug.componentInstance as SelectComponent);
-  return { ...page, settingsApi, toasts, selects };
+  return { ...page, settingsApi, toasts };
 }
 
 function radio(root: HTMLElement, label: string): HTMLInputElement {
@@ -83,60 +78,61 @@ function radio(root: HTMLElement, label: string): HTMLInputElement {
   return found;
 }
 
+/** The rows of the language list: the visible name, its `lang` and the flag file it shows. */
+function rows(root: HTMLElement) {
+  return Array.from(
+    root.querySelectorAll<HTMLLabelElement>('[data-testid="interface-language"] label'),
+  ).map((label) => ({
+    name: label.querySelector('.ui-radio__title')?.textContent?.trim(),
+    lang: label.querySelector('.ui-radio__title')?.getAttribute('lang'),
+    flag: label.querySelector('ui-flag img')?.getAttribute('src') ?? null,
+    icon: label.querySelector('ui-icon') !== null,
+  }));
+}
+
 describe('LanguageSettingsPage', () => {
   afterEach(() => {
     setActiveLang('en');
     localStorage.clear();
   });
 
-  it('shows the language and the date sections per the mockup', async () => {
+  it('shows only the language: no dates, no dropdown (#315)', async () => {
     const { root } = await setup();
 
     expect(root.querySelector('h1')?.textContent).toContain('Language');
     expect([...root.querySelectorAll('h2')].map((h) => h.textContent?.trim())).toEqual([
       'Language',
-      'Dates and numbers',
     ]);
-    for (const text of [
-      'Interface language',
-      'Your links and notes stay as they are',
-      'Spell-check notes',
-      'Uses your browser’s dictionary',
-      'Date format',
-      'Week starts on',
-      'Preview',
-    ]) {
-      expect(root.textContent).toContain(text);
+    expect(root.textContent).toContain('Your links and notes stay as they are');
+    expect(root.textContent).toContain('Date and time formats are in Appearance');
+    for (const text of ['Date format', 'Week starts on', 'Preview']) {
+      expect(root.textContent).not.toContain(text);
     }
-    expect(root.textContent).toContain('Match my browser');
-    expect(
-      Array.from(root.querySelectorAll('input[type="radio"]')).map((input) =>
-        input.closest('label')?.textContent?.trim(),
-      ),
-    ).toEqual(['Auto', '24-hour', '12-hour', 'Auto', 'Monday', 'Sunday']);
-    expect(radio(root, '24-hour').checked).toBe(false);
+    expect(root.querySelector('ui-select, [role="combobox"]')).toBeNull();
+    expect(root.querySelector('[role="radiogroup"]')?.getAttribute('aria-label')).toBe(
+      'Interface language',
+    );
   });
 
-  it('lists every language in its own name, then "Match my browser"', async () => {
-    const { selects } = await setup();
-    const options = selects()[0]?.options() ?? [];
+  it('lists every language with its flag in its own name, then "Match my browser"', async () => {
+    const { root } = await setup();
 
-    expect(options.map((option) => option.name)).toEqual([
-      'English',
-      'Français',
-      'Deutsch',
-      'Italiano',
-      'Español',
-      'Português',
-      'Match my browser',
+    expect(rows(root)).toEqual([
+      { name: 'English', lang: 'en', flag: 'assets/ui/flags/gb.svg', icon: false },
+      { name: 'Français', lang: 'fr', flag: 'assets/ui/flags/fr.svg', icon: false },
+      { name: 'Deutsch', lang: 'de', flag: 'assets/ui/flags/de.svg', icon: false },
+      { name: 'Italiano', lang: 'it', flag: 'assets/ui/flags/it.svg', icon: false },
+      { name: 'Español', lang: 'es', flag: 'assets/ui/flags/es.svg', icon: false },
+      { name: 'Português', lang: 'pt', flag: 'assets/ui/flags/br.svg', icon: false },
+      { name: 'Match my browser', lang: null, flag: null, icon: true },
     ]);
-    expect(options.find((option) => option.id === 'de')?.lang).toBe('de');
+    expect(radio(root, 'Match my browser').checked).toBe(true);
   });
 
   it('switches the interface language at once and saves it', async () => {
-    const { root, selects, settingsApi, harness } = await setup();
+    const { root, settingsApi, harness } = await setup();
 
-    selects()[0]?.value.set('fr');
+    radio(root, 'Français').click();
     await vi.waitFor(async () => {
       await TestBed.inject(LocaleService).settled();
       harness.fixture.detectChanges();
@@ -144,57 +140,21 @@ describe('LanguageSettingsPage', () => {
       expect(root.querySelector('h1')?.textContent).toContain('Langue');
     });
     expect(settingsApi.update).toHaveBeenCalledWith({ language: 'fr' });
-    expect(selects()[0]?.options().at(-1)?.name).toBe('Comme mon navigateur');
-    expect(root.textContent).toContain('Français');
+    expect(rows(root).at(-1)?.name).toBe('Comme mon navigateur');
+    expect(radio(root, 'Français').checked).toBe(true);
   });
 
-  it('shows date format samples and saves a choice; the preview follows', async () => {
-    const { root, selects, settingsApi, harness } = await setup();
-    const dates = selects()[1];
-    expect(dates?.options().map((option) => option.id)).toEqual([
-      'default',
-      'medium',
-      'dmy',
-      'mdy',
-      'iso',
-    ]);
-    expect(dates?.options()[0]?.name).toMatch(/^Language default \(.+\)$/);
+  it('has no spell-check row: it sits next to the note field since #315', async () => {
+    const { root } = await setup();
 
-    dates?.value.set('iso');
-    await harness.fixture.whenStable();
-
-    expect(settingsApi.update).toHaveBeenCalledWith({ dateFormat: 'iso' });
-    const preview = root.querySelector('[data-testid="language-preview"]')?.textContent ?? '';
-    expect(preview).toMatch(/\d{4}-\d{2}-\d{2}/);
-  });
-
-  it('saves the clock and the week start', async () => {
-    const { root, settingsApi, harness } = await setup();
-
-    radio(root, '24-hour').click();
-    await harness.fixture.whenStable();
-    expect(settingsApi.update).toHaveBeenCalledWith({ timeFormat: 'h24' });
-
-    radio(root, 'Sunday').click();
-    await harness.fixture.whenStable();
-    expect(settingsApi.update).toHaveBeenLastCalledWith({ weekStart: 'sunday' });
-  });
-
-  it('switches spell-check', async () => {
-    const { root, settingsApi, harness } = await setup();
-    const control = root.querySelector<HTMLButtonElement>(
-      'button[role="switch"][aria-label="Spell-check notes"]',
-    );
-
-    control?.click();
-    await harness.fixture.whenStable();
-    expect(settingsApi.update).toHaveBeenCalledWith({ spellcheck: false });
+    expect(root.textContent).not.toContain('Spell-check');
+    expect(root.querySelector('button[role="switch"]')).toBeNull();
   });
 
   it('puts a choice back and says so when saving fails', async () => {
     const { root, toasts, harness } = await setup({ failUpdate: true });
 
-    radio(root, '12-hour').click();
+    radio(root, 'Deutsch').click();
     await vi.waitFor(() => {
       expect(toasts).toHaveLength(1);
     });
@@ -203,15 +163,7 @@ describe('LanguageSettingsPage', () => {
       kind: TOAST_KIND.Danger,
       title: 'Couldn’t save the setting',
     });
-    expect(TestBed.inject(LocaleService).settings().timeFormat).toBe('default');
-  });
-
-  it('ignores values outside the allow-lists', async () => {
-    const { selects, settingsApi, harness } = await setup();
-    selects()[0]?.value.set('uk');
-    selects()[1]?.value.set('yyyy');
-    await harness.fixture.whenStable();
-    expect(settingsApi.update).not.toHaveBeenCalled();
+    expect(TestBed.inject(LocaleService).settings().language).toBe('browser');
   });
 
   it('has no axe violations', async () => {

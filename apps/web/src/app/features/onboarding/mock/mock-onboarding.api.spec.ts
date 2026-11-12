@@ -34,13 +34,6 @@ describe('MockOnboardingApi', () => {
     expect(stored()).toEqual({ ...USER, onboardingCompletedAt });
   });
 
-  it('clears the flag again on reset, keeping the rest of the user', async () => {
-    await create().complete();
-    await create().reset();
-
-    expect(stored()).toEqual(USER);
-  });
-
   it.each([null, 'not json', '[]'])('rejects when the session is %s', async (raw) => {
     localStorage.removeItem(MOCK_SESSION_STORAGE_KEY);
     if (raw !== null) {
@@ -48,6 +41,5 @@ describe('MockOnboardingApi', () => {
     }
 
     await expect(create().complete()).rejects.toThrow(MOCK_ONBOARDING_ERROR_MESSAGE);
-    await expect(create().reset()).rejects.toThrow();
   });
 });

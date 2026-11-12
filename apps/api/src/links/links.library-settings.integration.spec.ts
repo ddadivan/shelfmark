@@ -85,19 +85,29 @@ describe('links and the library save settings', () => {
       expect((await create(a, { url, title: 'Coat' })).url).toBe(url);
     });
 
-    it('keeps every parameter for a user who keeps the query, and only for them', async () => {
-      await a.patch(USER_SETTINGS_ENDPOINT).send({ keepQuery: true }).expect(200);
-      expect((await create(a, { url: TRACKED, title: 'Coat' })).url).toBe(TRACKED);
+    it('strips tracking parameters for everyone, even with the retired keep_query column on (#315)', async () => {
+      await t.db.prisma.user.update({
+        where: { id: users.owner.userId },
+        data: { keepQuery: true },
+      });
+      expect((await create(a, { url: TRACKED, title: 'Coat' })).url).toBe(CLEAN);
       expect((await create(b, { url: TRACKED, title: 'Coat' })).url).toBe(CLEAN);
+    });
+
+    it('no longer accepts keepQuery in the settings (400)', async () => {
+      await a.patch(USER_SETTINGS_ENDPOINT).send({ keepQuery: true }).expect(400);
     });
 
     it('strips a new address on update too', async () => {
       const link = await create(a, { url: 'https://shop.test/a', title: 'A' });
       const res = await a.patch(`${BASE}/${link.id}`).send({ url: TRACKED }).expect(200);
       expect((res.body as LinkResponse).url).toBe(CLEAN);
-      await a.patch(USER_SETTINGS_ENDPOINT).send({ keepQuery: true }).expect(200);
-      const kept = await a.patch(`${BASE}/${link.id}`).send({ url: TRACKED }).expect(200);
-      expect((kept.body as LinkResponse).url).toBe(TRACKED);
+      await t.db.prisma.user.update({
+        where: { id: users.owner.userId },
+        data: { keepQuery: true },
+      });
+      const again = await a.patch(`${BASE}/${link.id}`).send({ url: TRACKED }).expect(200);
+      expect((again.body as LinkResponse).url).toBe(CLEAN);
     });
 
     it('finds the duplicate of the stripped address and fetches that address', async () => {

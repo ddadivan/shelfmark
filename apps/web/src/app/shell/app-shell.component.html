@@ -71,16 +71,13 @@
               <ui-menu-item icon="settings" (activated)="openSettings()">
                 {{ 'shell.settings' | transloco }}
               </ui-menu-item>
-              <ui-menu-item icon="refresh" (activated)="onboarding.reset()">
-                {{ 'settings.welcome.action' | transloco }}
-              </ui-menu-item>
               <ui-menu-item icon="download" (activated)="exportAll(EXPORT_FORMAT.Json)">
                 {{ 'export.all.json' | transloco }}
               </ui-menu-item>
               <ui-menu-item icon="bookmark" (activated)="exportAll(EXPORT_FORMAT.Html)">
                 {{ 'export.all.html' | transloco }}
               </ui-menu-item>
-              <ui-menu-item icon="edit" (activated)="feedback.open()">
+              <ui-menu-item icon="message" (activated)="feedback.open()">
                 {{ 'shell.sendFeedback' | transloco }}
               </ui-menu-item>
               @if (admin.isAdmin()) {

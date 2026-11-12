@@ -22,11 +22,7 @@ export class MockOnboardingApi implements OnboardingApi {
     return this.persist(onboardingCompletedAt).then(() => ({ onboardingCompletedAt }));
   }
 
-  reset(): Promise<void> {
-    return this.persist(null);
-  }
-
-  private persist(onboardingCompletedAt: string | null): Promise<void> {
+  private persist(onboardingCompletedAt: string): Promise<void> {
     const raw = this.storage?.getItem(MOCK_SESSION_STORAGE_KEY);
     if (!raw) {
       return Promise.reject(new Error(MOCK_ONBOARDING_ERROR_MESSAGE));

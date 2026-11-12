@@ -80,6 +80,54 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     expect(await token(page, '--accent')).toBe('#4f7a4b');
   });
 
+  test('an own accent colour: a readable one applies at once, a faint one gets a passing shade', async ({
+    page,
+  }) => {
+    await openAppearance(page);
+    const html = page.locator('html');
+    await pick(page, 'Theme', 'Custom');
+
+    const swatch = page.getByRole('button', { name: 'Your own colour' });
+    await swatch.click();
+    await expect(swatch).toHaveAttribute('aria-expanded', 'true');
+    const hex = page.getByRole('textbox', { name: 'Hex code' });
+    await expect(hex).toBeFocused();
+    await expect(page.getByLabel('Choose a colour')).toBeVisible();
+
+    // Readable on Paper: it is the accent right away.
+    await hex.fill('#23716c');
+    await hex.press('Enter');
+    await expect(html).toHaveAttribute('data-custom-accent', 'own');
+    expect(await token(page, '--accent')).toBe('#23716c');
+    await expect(choice(page, 'Accent colour', 'Ocean')).not.toBeChecked();
+
+    // Too faint: not applied, a warning offers the nearest shade that keeps 4.5:1.
+    await hex.fill('#f5d0e0');
+    await hex.press('Enter');
+    await expect(page.getByText(/hard to read on your background/u)).toBeVisible();
+    expect(await token(page, '--accent')).toBe('#23716c');
+    const use = page.getByRole('button', { name: /^Use #[0-9a-f]{6}$/u });
+    const shade = ((await use.textContent()) ?? '').trim().replace('Use ', '');
+    await use.click();
+    await expect(page.getByText(/hard to read on your background/u)).toHaveCount(0);
+    expect(await token(page, '--accent')).toBe(shade);
+    await expectNoBlockingViolations(page, test.info());
+
+    // Esc closes the panel and returns to the swatch; a reload keeps the colour.
+    await hex.press('Escape');
+    await expect(swatch).toBeFocused();
+    await expect(swatch).toHaveAttribute('aria-expanded', 'false');
+    await page.reload();
+    await expect(html).toHaveAttribute('data-custom-accent', 'own');
+    expect(await token(page, '--accent')).toBe(shade);
+
+    // The dark base draws the same colour in a lighter shade that still reads.
+    await pick(page, 'Start from', 'Dark');
+    const dark = await token(page, '--accent');
+    expect(dark).not.toBe(shade);
+    expect(dark).toMatch(/^#[0-9a-f]{6}$/u);
+  });
+
   test('a theme chosen before the account kept one stays and is saved to the account once', async ({
     page,
   }) => {
@@ -130,16 +178,18 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
       }
     })()`);
     const morphs = (): Promise<number> => page.evaluate<number>('window.__morphs');
-    const toggle = async (view: string): Promise<number> => {
+    const toggle = async (view: string): Promise<void> => {
       await page.evaluate('window.__morphs = 0');
       await page.getByRole('radio', { name: view, exact: true }).click();
       await expect(page.getByRole('radio', { name: view, exact: true })).toBeChecked();
-      return morphs();
     };
 
     await page.goto('/links');
     await expect(page.locator('ui-card').first()).toBeVisible();
-    expect(await toggle('List')).toBeGreaterThan(0);
+    await toggle('List');
+    // The morph starts after the render that sets the transition names, so it may come a frame
+    // after the radio is checked.
+    await expect.poll(morphs).toBeGreaterThan(0);
 
     await openAppearance(page);
     await pick(page, 'Animations', 'Reduced');
@@ -148,8 +198,9 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     await expect(page.locator('html')).toHaveAttribute('data-motion', 'reduced');
     await expect(page.locator('ui-list-item').first()).toBeVisible();
 
-    expect(await toggle('Cards')).toBe(0);
+    await toggle('Cards');
     await expect(page.locator('ui-card').first()).toBeVisible();
+    expect(await morphs()).toBe(0);
   });
 
   test('Animations: Reduced stills the landing even when the device allows motion', async ({
@@ -185,6 +236,44 @@ async function scanSettled(page: Page, testInfo: TestInfo): Promise<void> {
   await settled(page);
   await expectNoBlockingViolations(page, testInfo);
 }
+
+test.describe('appearance width (mock API, #315)', () => {
+  test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
+
+  for (const [width, height] of [
+    [1280, 800],
+    [1440, 900],
+    [1920, 1080],
+  ] as const) {
+    test(`at ${width}px Appearance is wider than the 880px pages, options beside the preview`, async ({
+      page,
+    }, testInfo) => {
+      test.skip(testInfo.project.name !== E2E_PROJECT.Desktop, 'a desktop layout check');
+      await page.setViewportSize({ width, height });
+      await seedSession(page);
+      await page.goto('/settings/library');
+      await expect(page.getByRole('heading', { level: 1, name: 'Library' })).toBeVisible();
+      const library = await page.locator('app-settings-library-page').boundingBox();
+      await openAppearance(page);
+      const host = await page.locator('app-settings-appearance-page').boundingBox();
+      const options = await page.locator('.appearance__options').boundingBox();
+      const preview = await page.locator('.appearance__preview').boundingBox();
+
+      // The other pages keep the 880px column; Appearance takes up to the mockup's 1224px.
+      expect(library?.width).toBeLessThanOrEqual(880.5);
+      expect(host?.width).toBeLessThanOrEqual(1224.5);
+      expect(host?.width ?? 0).toBeGreaterThan(library?.width ?? 0);
+      if (width >= 1920) {
+        expect(host?.width).toBeGreaterThan(1223.5);
+      }
+      // Two columns: the preview on the right of the options, about 680 : 520.
+      expect(preview?.x ?? 0).toBeGreaterThan((options?.x ?? 0) + (options?.width ?? 0));
+      const ratio = (options?.width ?? 0) / (preview?.width ?? 1);
+      expect(ratio).toBeGreaterThan(1.2);
+      expect(ratio).toBeLessThan(1.4);
+    });
+  }
+});
 
 test.describe('appearance accessibility (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');

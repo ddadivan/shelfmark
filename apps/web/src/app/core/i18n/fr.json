@@ -251,6 +251,7 @@
         "placeholder": "Pourquoi enregistrez-vous ce lien ?",
         "hint": "Pour le retrouver plus tard",
         "counter": "caractères",
+        "spellcheck": "Vérifier l’orthographe",
         "tooLong": "La note est trop longue ({{max}} caractères au maximum)"
       },
       "duplicate": {
@@ -267,6 +268,18 @@
         "save": "Enregistrer le lien",
         "saveAnyway": "Enregistrer quand même",
         "saving": "Enregistrement…"
+      },
+      "several": {
+        "offer": "Plusieurs liens ? Collez-les tous d’un coup",
+        "open": "Ajouter plusieurs liens",
+        "title": "Ajouter plusieurs liens",
+        "label": "Collez des liens, un par ligne ou dans n’importe quel texte",
+        "placeholder": "https://…",
+        "hint": "Jusqu’à {{max}} liens à la fois. Vous vérifiez la liste avant tout enregistrement.",
+        "required": "Collez ou saisissez des liens",
+        "none": "Aucun lien trouvé dans ce texte",
+        "back": "Un seul lien",
+        "find": "Trouver les liens"
       }
     },
     "edit": {
@@ -619,17 +632,11 @@
         "kyoto": {
           "title": "Kyoto loin de la foule"
         },
-        "focaccia": {
-          "title": "Focaccia croustillante sans pétrissage"
-        },
         "containerQueries": {
           "title": "Les container queries en pratique"
         },
         "linenShirt": {
           "title": "Chemise en lin vert sauge"
-        },
-        "madeira": {
-          "title": "Cinq randonnées d’une journée à Madère"
         }
       },
       "tags": {
@@ -705,7 +712,9 @@
         "moveUp": "Monter",
         "moveDown": "Descendre",
         "unpin": "Désépingler de la barre latérale",
-        "unpinButton": "Désépingler {{name}}"
+        "unpinButton": "Désépingler {{name}}",
+        "empty": "Rien d’épinglé pour l’instant",
+        "emptyHint": "Rien d’épinglé pour l’instant — utilisez « Épingler dans la barre latérale » dans le menu d’un dossier ou d’un lien"
       },
       "reorder": {
         "movedUp": "Déplacé vers le haut, position {{position}} sur {{total}}",
@@ -938,6 +947,16 @@
       "text": "Aucun de vos liens n’a tous les tags sélectionnés.",
       "clear": "Effacer le filtre"
     },
+    "emptyView": {
+      "title": "Rien dans « {{name}} » pour l’instant",
+      "text": "Les liens qui correspondent à cette vue apparaîtront ici dès que vous les enregistrerez.",
+      "clear": "Afficher tous les liens"
+    },
+    "emptyFilters": {
+      "title": "Aucun lien ne correspond à ces filtres",
+      "text": "Aucun lien enregistré ne correspond à tous les filtres choisis.",
+      "clear": "Effacer les filtres"
+    },
     "filter": {
       "label": "Filtres actifs"
     },
@@ -1008,7 +1027,7 @@
       "account": "Votre profil et votre compte.",
       "appearance": "Enregistré au fur et à mesure et synchronisé sur tous vos appareils.",
       "library": "Comment les liens sont affichés, enregistrés et conservés.",
-      "language": "Langue de l’interface et affichage des dates.",
+      "language": "La langue de l’interface. Les formats de date et d’heure sont dans Apparence.",
       "export": "Emportez tout ce que vous avez enregistré.",
       "privacy": "Ce que nous conservons, et comment le récupérer.",
       "shortcuts": "Travaillez sans la souris.",
@@ -1084,7 +1103,16 @@
           "soft": "Doux",
           "square": "Carrés"
         },
-        "reset": "Réinitialiser le thème personnalisé"
+        "reset": "Réinitialiser le thème personnalisé",
+        "own": {
+          "label": "Votre propre couleur",
+          "picker": "Choisir une couleur",
+          "hex": "Code hexadécimal",
+          "invalid": "Saisissez # suivi de six chiffres ou lettres a–f, par exemple #2e6a99.",
+          "hint": "Shelfmark garde un contraste de 4,5:1 : sur l’autre base, il utilise une nuance plus foncée ou plus claire de votre couleur.",
+          "warning": "Cette couleur est difficile à lire sur votre fond ({{ratio}}:1, il faut 4,5:1).",
+          "use": "Utiliser {{colour}}"
+        }
       },
       "layout": {
         "title": "Texte et mise en page",
@@ -1133,21 +1161,6 @@
         }
       },
       "sidebar": {
-        "counts": {
-          "label": "Nombre de liens",
-          "hint": "Les chiffres à côté des dossiers"
-        },
-        "recent": {
-          "label": "Mémoriser les liens ouverts récemment",
-          "hint": "Garde la liste Ouverts récemment. Désactivé, la liste est effacée et plus rien n’est enregistré.",
-          "confirm": {
-            "title": "Ne plus mémoriser les liens ouverts récemment ?",
-            "message": "La liste Ouverts récemment est effacée, et les liens que vous ouvrez ne sont plus ajoutés tant que vous ne réactivez pas l’option. Vos liens restent enregistrés.",
-            "confirm": "Effacer et arrêter",
-            "cancel": "Annuler",
-            "close": "Fermer"
-          }
-        },
         "colours": {
           "label": "Couleurs des dossiers",
           "hint": "Désactivé, tous les dossiers sont en graphite"
@@ -1187,12 +1200,7 @@
         "recent": "Ouverts récemment"
       },
       "failed": "Impossible d’enregistrer l’apparence",
-      "failedDetail": "Elle est revenue comme avant.",
-      "language": {
-        "label": "Langue",
-        "hint": "Langue de l’interface, format de date et correcteur orthographique",
-        "value": "Changer de langue"
-      }
+      "failedDetail": "Elle est revenue comme avant."
     },
     "privacy": {
       "policy": {
@@ -1201,8 +1209,18 @@
         "action": "Lire",
         "actionLabel": "Lire la politique de confidentialité"
       },
+      "recent": {
+        "label": "Mémoriser les liens ouverts récemment",
+        "hint": "Garde la liste Ouverts récemment. Désactivé, la liste est effacée et plus rien n’est enregistré.",
+        "confirm": {
+          "title": "Ne plus mémoriser les liens ouverts récemment ?",
+          "message": "La liste Ouverts récemment est effacée, et les liens que vous ouvrez ne sont plus ajoutés tant que vous ne réactivez pas l’option. Vos liens restent enregistrés.",
+          "confirm": "Effacer et arrêter",
+          "cancel": "Annuler",
+          "close": "Fermer"
+        }
+      },
       "data": {
-        "label": "Télécharger vos données",
         "hint": "Tout ce que vous avez enregistré, en JSON ou en favoris HTML",
         "action": "Ouvrir l’export"
       },
@@ -1213,13 +1231,6 @@
     "footer": {
       "privacy": "Politique de confidentialité",
       "version": "Shelfmark v1.0"
-    },
-    "welcome": {
-      "title": "Visite guidée",
-      "hint": "Revoir l’introduction en 3 étapes",
-      "action": "Revoir la bienvenue",
-      "error": "Impossible de réinitialiser la visite guidée",
-      "errorDetail": "Réessayez"
     },
     "delete": {
       "title": "Supprimer le compte",
@@ -1269,28 +1280,10 @@
           "label": "Les nouveaux liens vont dans",
           "hint": "Quand vous collez un lien sans choisir de dossier"
         },
-        "duplicates": {
-          "label": "Signaler les doublons",
-          "hint": "Indique où vous avez déjà enregistré le même lien"
-        },
         "previews": {
           "label": "Récupérer titres et aperçus",
           "hint": "Désactivez pour n’enregistrer que l’adresse"
-        },
-        "query": {
-          "label": "Garder les paramètres des liens",
-          "hint": "Désactivé, retire le suivi comme ?utm_source"
         }
-      },
-      "tags": {
-        "label": "Tags",
-        "hint": {
-          "one": "{{count}} tag. Renommez-le, fusionnez-le ou supprimez-le.",
-          "many": "{{count}} tags. Renommez-les, fusionnez-les ou supprimez-les.",
-          "other": "{{count}} tags. Renommez-les, fusionnez-les ou supprimez-les."
-        },
-        "hintPending": "Renommez-les, fusionnez-les ou supprimez-les",
-        "action": "Gérer les tags"
       },
       "failed": "Impossible d’enregistrer le paramètre",
       "failedDetail": "Il est revenu comme avant.",
@@ -1326,31 +1319,6 @@
           "cancel": "Annuler",
           "close": "Fermer"
         }
-      },
-      "folders": {
-        "title": "Tags et dossiers",
-        "colours": {
-          "label": "Couleurs des dossiers",
-          "hint": "Icônes de dossier en couleur dans la barre latérale et les tuiles",
-          "failed": "Impossible d’enregistrer le paramètre",
-          "failedDetail": "Il est revenu comme avant."
-        },
-        "pinned": {
-          "label": "Épinglés en haut",
-          "hint": "Jusqu’à {{max}} dossiers et liens",
-          "action": "Modifier les épinglés"
-        }
-      },
-      "pinnedDialog": {
-        "title": "Épinglés",
-        "description": "L’ordre de la section Épinglés dans la barre latérale.",
-        "empty": "Rien n’est épinglé. Utilisez « Épingler dans la barre latérale » dans le menu d’un dossier ou d’un lien.",
-        "list": "Éléments épinglés",
-        "close": "Fermer",
-        "done": "Terminé",
-        "moveUp": "Monter {{name}}",
-        "moveDown": "Descendre {{name}}",
-        "unpin": "Désépingler {{name}} de la barre latérale"
       }
     },
     "language": {
@@ -1359,10 +1327,6 @@
         "label": "Langue de l’interface",
         "hint": "Vos liens et vos notes restent tels quels",
         "browser": "Comme mon navigateur"
-      },
-      "spellcheck": {
-        "label": "Correcteur orthographique des notes",
-        "hint": "Utilise le dictionnaire de votre navigateur"
       },
       "dates": {
         "title": "Dates et nombres"
@@ -1407,7 +1371,8 @@
     "groups": {
       "everywhere": "Partout",
       "links": "Enregistrer et retrouver",
-      "folders": "Dans la liste des dossiers"
+      "folders": "Dans la liste des dossiers",
+      "selecting": "Sélectionner des liens"
     },
     "items": {
       "search": "Rechercher",
@@ -1423,7 +1388,12 @@
       "toggleFolder": "Fermer ou ouvrir un dossier",
       "folderMenu": "Ouvrir le menu du dossier",
       "paste": "Coller des liens dans la bibliothèque",
-      "reorder": "Monter ou descendre un élément épinglé ou un dossier"
+      "reorder": "Monter ou descendre un élément épinglé ou un dossier",
+      "select": "Sélectionner ou désélectionner le lien actif",
+      "selectRange": "Sélectionner jusqu’au lien actif",
+      "selectAll": "Sélectionner tous les liens de la liste",
+      "moveLink": "Déplacer le lien actif dans un dossier",
+      "clearSelection": "Effacer la sélection"
     },
     "keys": {
       "command": "Commande",
@@ -1437,7 +1407,8 @@
       "down": "Bas",
       "left": "Gauche",
       "right": "Droite",
-      "question": "Point d’interrogation"
+      "question": "Point d’interrogation",
+      "space": "Espace"
     }
   },
   "tags": {
@@ -1461,6 +1432,12 @@
         "rename": "Renommer",
         "merge": "Fusionner avec un autre tag…",
         "delete": "Supprimer le tag"
+      }
+    },
+    "page": {
+      "empty": {
+        "title": "Pas encore d’étiquettes",
+        "text": "Les étiquettes regroupent des liens de plusieurs dossiers. Ajoutez-en une ici ou en enregistrant un lien."
       }
     },
     "add": {
@@ -1971,20 +1948,22 @@
   },
   "howItWorks": {
     "menu": "Comment ça marche",
-    "title": "Shelfmark en 60 secondes",
+    "title": "Shelfmark en 2 minutes",
     "close": "Fermer",
     "captions": "Anglais",
     "chaptersLabel": "Chapitres",
     "chapters": {
       "save": "Enregistrer un lien",
       "organise": "Dossiers et tags",
-      "find": "Le retrouver"
+      "find": "Le retrouver",
+      "many": "Plusieurs à la fois",
+      "yours": "Personnaliser"
     },
     "emptyLink": "Voir comment ça marche",
     "card": {
       "label": "Comment ça marche",
       "title": "Nouveau ici ? Découvrez comment ça marche",
-      "length": "1 minute",
+      "length": "2 minutes",
       "hide": "Masquer"
     }
   },

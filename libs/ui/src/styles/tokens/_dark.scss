@@ -25,6 +25,10 @@
   --warning: #e6b45c;
   --warning-bg: #33280f;
   --overlay: rgb(0 0 0 / 60%);
+
+  // The disc behind a page-level empty-state scene (#315): the page `bg`, darker than the
+  // card, so the scene's edges (`border-control`, `accent`) keep 3:1 on it (WCAG 1.4.11).
+  --illustration-disc: var(--bg);
   --logo-bookmark: #4f7a4b;
   --glass: rgb(30 30 34 / 84%);
   --glass-line: rgb(237 237 239 / 8%);

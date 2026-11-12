@@ -5,6 +5,7 @@ import { openSettingsSection } from './support/mock-session';
 import { gotoWithSidebar, isPhone, openSidebar, tabBar } from './support/sidebar';
 import { settled } from './support/settled';
 import { expect, test } from './support/test';
+import { Finger } from './support/touch';
 
 const READING = MOCK_FIXTURE.readingName;
 const NOTES = 'Notes';
@@ -16,6 +17,19 @@ test.describe('folder style and pins (mock API)', () => {
 
   const pinned = (page: Page): Locator => page.locator('app-sidebar-pinned section.pinned');
   const pinnedItems = (page: Page): Locator => pinned(page).locator('.pinned__item');
+
+  /**
+   * Nothing pinned: the sidebar drops the section; the phone Library page keeps it with its
+   * "Nothing pinned yet" row (#315).
+   */
+  async function expectNoPins(page: Page): Promise<void> {
+    if (isPhone(page) && new URL(page.url()).pathname === '/library') {
+      await expect(pinnedItems(page)).toHaveCount(0);
+      await expect(pinned(page).getByRole('button', { name: 'Nothing pinned yet' })).toBeVisible();
+    } else {
+      await expect(pinned(page)).toHaveCount(0);
+    }
+  }
   const coloured = (page: Page, colour: string): Locator =>
     page.locator(`ui-folder-icon.ui-folder-icon--${colour}`);
 
@@ -105,7 +119,7 @@ test.describe('folder style and pins (mock API)', () => {
   });
 
   test('pins and unpins a folder from its menu', async ({ page }) => {
-    await expect(pinned(page)).toHaveCount(0);
+    await expectNoPins(page);
 
     await pickFolderMenuItem(page, READING, 'Pin to sidebar');
     await expect(pinned(page).getByRole('heading', { name: 'Pinned' })).toBeVisible();
@@ -113,7 +127,7 @@ test.describe('folder style and pins (mock API)', () => {
     await expect(pinnedItems(page).first()).toContainText(READING);
 
     await pickFolderMenuItem(page, READING, 'Unpin from sidebar');
-    await expect(pinned(page)).toHaveCount(0);
+    await expectNoPins(page);
   });
 
   test("unpins from the row's Unpin button (hover on desktop, always on touch) with Undo", async ({
@@ -130,7 +144,7 @@ test.describe('folder style and pins (mock API)', () => {
     }
     await expect(actions).toHaveCSS('opacity', '1');
     await unpin.click();
-    await expect(pinned(page)).toHaveCount(0);
+    await expectNoPins(page);
 
     const toast = page.locator('ui-toast').filter({ hasText: 'Unpinned from sidebar' });
     await expect(toast).toContainText(READING);
@@ -153,7 +167,7 @@ test.describe('folder style and pins (mock API)', () => {
       await row.hover();
     }
     await row.getByRole('button', { name: `Unpin ${title}` }).click();
-    await expect(pinned(page)).toHaveCount(0);
+    await expectNoPins(page);
   });
 
   test('reorders pinned items with Alt+ArrowDown / Alt+ArrowUp; rows have no "…" menu', async ({
@@ -183,6 +197,55 @@ test.describe('folder style and pins (mock API)', () => {
     // Unpin is the only row action, so there is no "…" menu (#314).
     await expect(pinned(page).getByRole('button', { name: /^Actions for / })).toHaveCount(0);
   });
+
+  /** The reorder line of a list (#315) in viewport px, or `null` while none is drawn. */
+  interface DropLine {
+    readonly top: number;
+    readonly left: number;
+    readonly width: number;
+    readonly height: number;
+  }
+  const dropLine = (list: Locator): Promise<DropLine | null> =>
+    list.evaluate((element): DropLine | null => {
+      const view = element.ownerDocument.defaultView;
+      const line = view?.getComputedStyle(element, '::after');
+      if (!line) {
+        return null;
+      }
+      if (!element.classList.contains('ui-drop-line--shown') || line.content === 'none') {
+        return null;
+      }
+      const box = element.getBoundingClientRect();
+      return {
+        top: box.top + parseFloat(line.top) + parseFloat(line.marginTop),
+        left: box.left + parseFloat(line.left),
+        width: parseFloat(line.width),
+        height: parseFloat(line.height),
+      };
+    });
+
+  /**
+   * The line is drawn (2px), centred on the row's background left to right (±1px) and in the gap
+   * at `gapY` (±1.5px: half the 1px gap plus rounding).
+   */
+  async function expectLine(list: Locator, row: Locator, gapY: number): Promise<void> {
+    await expect.poll(() => dropLine(list)).not.toBeNull();
+    const line = await dropLine(list);
+    const box = await row.boundingBox();
+    if (!line || !box) {
+      throw new Error('no reorder line or row box');
+    }
+    expect(line.height).toBeCloseTo(2, 1);
+    expect(Math.abs(line.left + line.width / 2 - (box.x + box.width / 2))).toBeLessThanOrEqual(1);
+    expect(Math.abs(line.width - box.width)).toBeLessThanOrEqual(1);
+    expect(Math.abs(line.top + line.height / 2 - gapY)).toBeLessThanOrEqual(1.5);
+  }
+
+  const folderList = (page: Page): Locator =>
+    page.locator('app-sidebar ui-tree ul.ui-tree__list', {
+      has: page.locator(':scope > .ui-tree__drop-slot'),
+    });
+  const pinnedList = (page: Page): Locator => pinned(page).locator('ul.pinned__list');
 
   /** Top of the sidebar's Tags section, which a reorder drag above it must never move. */
   const sidebarTagsTop = async (page: Page): Promise<number> => {
@@ -226,7 +289,7 @@ test.describe('folder style and pins (mock API)', () => {
   test('reorders folders by dragging inside the Folders section (desktop, #314)', async ({
     page,
   }) => {
-    test.skip(isPhone(page), 'a touch never starts a reorder drag');
+    test.skip(isPhone(page), 'the touch drag has its own tests below');
     await createNotes(page);
     await settled(page);
     const notes = page.getByRole('treeitem', { name: new RegExp(`^${NOTES}\\b`) });
@@ -242,12 +305,15 @@ test.describe('folder style and pins (mock API)', () => {
     await page.mouse.down();
     await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2 - 8, { steps: 4 });
     await page.mouse.move(to.x + to.width / 2, to.y + 2, { steps: 10 });
-    // The place it lands is a reserved slot one row tall with a ghost of the row; the section
-    // keeps its height, so Tags below does not move.
+    // A line in the gap above Reading marks the place; the rows hold still (Notes stays as a faint
+    // ghost one row tall where it was), so the section keeps its height and Tags does not move.
     const slot = page.locator('app-sidebar .ui-tree__drop-slot');
     await expect(slot).toHaveCount(1);
     await expect(slot).toContainText(NOTES);
+    expect((await slot.boundingBox())?.y).toBeCloseTo(from.y, 0);
     expect((await slot.boundingBox())?.height).toBeCloseTo(from.height, 0);
+    expect((await reading.boundingBox())?.y).toBeCloseTo(to.y, 0);
+    await expectLine(folderList(page), reading, to.y);
     await expectStill(page, tagsTop);
     await page.mouse.up();
 
@@ -261,10 +327,11 @@ test.describe('folder style and pins (mock API)', () => {
     expect(page.url()).toBe(url);
     await expect(notes).toHaveAttribute('aria-level', '1');
     await expect(page.locator('app-sidebar .ui-tree__drop-slot')).toHaveCount(0);
+    expect(await dropLine(page.locator('app-sidebar ui-tree ul.ui-tree__list').first())).toBeNull();
   });
 
   test('reorders pinned items by dragging (desktop)', async ({ page }) => {
-    test.skip(isPhone(page), 'a phone reorders with Alt+arrows or Settings › Edit pinned');
+    test.skip(isPhone(page), 'the touch drag has its own test below');
     await createNotes(page);
     await pickFolderMenuItem(page, READING, 'Pin to sidebar');
     await pickFolderMenuItem(page, NOTES, 'Pin to sidebar');
@@ -284,11 +351,150 @@ test.describe('folder style and pins (mock API)', () => {
     const slot = pinned(page).locator('.pinned__drop-slot');
     await expect(slot).toHaveCount(1);
     await expect(slot).toContainText(READING);
+    expect((await slot.boundingBox())?.y).toBeCloseTo(from.y, 0);
     expect((await slot.boundingBox())?.height).toBeCloseTo(from.height, 0);
+    // The line below Notes (the last row, so it straddles its bottom edge); Notes holds still.
+    const notesRow = pinnedItems(page).filter({ hasText: NOTES });
+    expect((await notesRow.boundingBox())?.y).toBeCloseTo(to.y, 0);
+    await expectLine(pinnedList(page), notesRow, to.y + to.height);
     await expectStill(page, tagsTop);
     await page.mouse.up();
 
     await expect(pinnedItems(page).first()).toContainText(NOTES);
+    expect(await dropLine(pinnedList(page))).toBeNull();
+  });
+
+  /** Centre of a locator's box. */
+  const centre = async (locator: Locator): Promise<{ x: number; y: number }> => {
+    const box = await locator.boundingBox();
+    expect(box).not.toBeNull();
+    return { x: (box?.x ?? 0) + (box?.width ?? 0) / 2, y: (box?.y ?? 0) + (box?.height ?? 0) / 2 };
+  };
+  /**
+   * With the Pinned card always on the Library page (#315) the last folder sits where the
+   * "Folder created" toast floats: dismiss it before a finger goes down.
+   */
+  async function dismissToast(page: Page): Promise<void> {
+    await page.locator('ui-toast').getByRole('button', { name: 'Dismiss' }).click();
+    await expect(page.locator('ui-toast')).toHaveCount(0);
+  }
+  /** Rest longer than the touch drag delay (400 ms), shorter than the long press (500 ms). */
+  const DRAG_REST_MS = 440;
+
+  test.describe('touch reorder on a phone (#315)', () => {
+    test.beforeEach(({ page }) => {
+      test.skip(!isPhone(page), 'touch screens only; a mouse drags at once');
+    });
+
+    const notesRow = (page: Page) =>
+      page.getByRole('treeitem', { name: new RegExp(`^${NOTES}\\b`) });
+    const readingRow = (page: Page) =>
+      page.getByRole('treeitem', { name: new RegExp(`^${READING}\\b`) });
+
+    test('a press, a short rest and a move drag a folder; the line shows, nothing jumps', async ({
+      page,
+    }) => {
+      await createNotes(page);
+      await dismissToast(page);
+      await settled(page);
+      const from = await centre(notesRow(page));
+      const to = await readingRow(page).boundingBox();
+      const height = (await notesRow(page).boundingBox())?.height ?? 0;
+      const tilesTop = (await page.locator('app-library-tile').first().boundingBox())?.y ?? 0;
+
+      const finger = await Finger.down(page, from);
+      await finger.hold(DRAG_REST_MS);
+      await finger.move({ x: from.x, y: (to?.y ?? 0) + 2 }, 12);
+      const slot = page.locator('app-sidebar .ui-tree__drop-slot');
+      await expect(slot).toHaveCount(1);
+      await expect(slot).toContainText(NOTES);
+      expect((await slot.boundingBox())?.height).toBeCloseTo(height, 0);
+      // The line in the gap above Reading, which holds still.
+      expect((await readingRow(page).boundingBox())?.y).toBeCloseTo(to?.y ?? 0, 0);
+      await expectLine(folderList(page), readingRow(page), to?.y ?? 0);
+      // The finger moves the row, not the page.
+      expect((await page.locator('app-library-tile').first().boundingBox())?.y).toBeCloseTo(
+        tilesTop,
+        0,
+      );
+      // A drag past the long-press time opens no folder menu.
+      await expect(page.getByRole('menu')).toHaveCount(0);
+      await finger.up();
+
+      await expect
+        .poll(async () => {
+          const names = await folderNames(page);
+          return names.indexOf(NOTES) < names.indexOf(READING);
+        })
+        .toBe(true);
+      await expect(page).toHaveURL('/library');
+      await expect(slot).toHaveCount(0);
+      await expect(page.locator('.cdk-live-announcer-element')).toHaveText(/^Moved up, position/);
+    });
+
+    test('a long press without moving still opens the folder menu', async ({ page }) => {
+      await createNotes(page);
+      await dismissToast(page);
+      await settled(page);
+      const finger = await Finger.down(page, await centre(notesRow(page)));
+      await finger.hold(800);
+      await finger.up();
+
+      await expect(page.getByRole('menuitem', { name: 'Rename' })).toBeVisible();
+      await expect(page.locator('app-sidebar .ui-tree__drop-slot')).toHaveCount(0);
+      const names = await folderNames(page);
+      expect(names.indexOf(NOTES)).toBeGreaterThan(names.indexOf(READING));
+    });
+
+    test('a plain swipe on a folder row scrolls the page and moves nothing', async ({ page }) => {
+      await createNotes(page);
+      await settled(page);
+      // Room to scroll: a shorter phone screen than the Library page.
+      await page.setViewportSize({ width: 360, height: 700 });
+      await page.evaluate('window.scrollTo(0, 0)');
+      const before = await folderNames(page);
+      const start = await centre(readingRow(page));
+      expect(await page.evaluate('window.scrollY')).toBe(0);
+      expect(start.y).toBeLessThan(680);
+
+      const finger = await Finger.down(page, start);
+      await finger.move({ x: start.x, y: start.y - 240 }, 8);
+      await finger.up();
+
+      await expect.poll(() => page.evaluate('window.scrollY')).toBeGreaterThan(40);
+      await expect(page.locator('app-sidebar .ui-tree__drop-slot')).toHaveCount(0);
+      expect(await folderNames(page)).toEqual(before);
+      await expect(page).toHaveURL('/library');
+    });
+
+    test('pinned items move the same way', async ({ page }) => {
+      await createNotes(page);
+      await pickFolderMenuItem(page, READING, 'Pin to sidebar');
+      await pickFolderMenuItem(page, NOTES, 'Pin to sidebar');
+      await backToTree(page);
+      await expect(pinnedItems(page)).toHaveCount(2);
+      await expect(pinnedItems(page).first()).toContainText(READING);
+      await settled(page);
+
+      const from = await centre(pinnedItems(page).first());
+      const to = await pinnedItems(page).nth(1).boundingBox();
+      const finger = await Finger.down(page, from);
+      await finger.hold(DRAG_REST_MS);
+      await finger.move({ x: from.x, y: (to?.y ?? 0) + (to?.height ?? 0) - 2 }, 12);
+      const slot = pinned(page).locator('.pinned__drop-slot');
+      await expect(slot).toHaveCount(1);
+      await expect(slot).toContainText(READING);
+      // The dragged row leaves the list while it moves: find Notes by its name.
+      await expectLine(
+        pinnedList(page),
+        pinnedItems(page).filter({ hasText: NOTES }),
+        (to?.y ?? 0) + (to?.height ?? 0),
+      );
+      await finger.up();
+
+      await expect(pinnedItems(page).first()).toContainText(NOTES);
+      await expect(page).toHaveURL('/library');
+    });
   });
 
   test('explains the limit with a toast on the eighth pin', async ({ page }) => {
@@ -339,7 +545,8 @@ test.describe('folder style and pins (mock API)', () => {
     await openSidebar(page);
     await expect(coloured(page, 'clay').first()).toBeVisible();
 
-    await openSettingsSection(page, 'Library');
+    // Folder colours live only in Appearance since #315.
+    await openSettingsSection(page, 'Appearance');
     await settled(page);
     await page.getByRole('switch', { name: 'Folder colours' }).click();
     await expect(page.getByRole('switch', { name: 'Folder colours' })).not.toBeChecked();
@@ -349,22 +556,14 @@ test.describe('folder style and pins (mock API)', () => {
     await expect(coloured(page, 'graphite').first()).toBeVisible();
   });
 
-  test('Settings › Library edits the pinned items', async ({ page }) => {
-    await createNotes(page);
-    await pickFolderMenuItem(page, READING, 'Pin to sidebar');
-    await pickFolderMenuItem(page, NOTES, 'Pin to sidebar');
-
+  test('Settings › Library has no pinned or tags rows: they are managed in place (#315)', async ({
+    page,
+  }) => {
     await openSettingsSection(page, 'Library');
-    await expect(page.getByText('Up to 7 folders and links')).toBeVisible();
-    await page.getByRole('button', { name: 'Edit pinned' }).click();
-    const dialog = page.getByRole('dialog', { name: 'Pinned' });
-    await dialog.getByRole('button', { name: `Move ${READING} down` }).click();
-    await dialog.getByRole('button', { name: `Unpin ${NOTES} from the sidebar` }).click();
-    await expect(dialog.getByRole('listitem')).toHaveCount(1);
-    await dialog.getByRole('button', { name: 'Done' }).click();
-
-    await backToTree(page);
-    await expect(pinnedItems(page)).toHaveCount(1);
-    await expect(pinnedItems(page).first()).toContainText(READING);
+    await settled(page);
+    await expect(page.getByRole('heading', { name: 'Trash', level: 2 })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Edit pinned' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Manage tags' })).toHaveCount(0);
+    await expect(page.getByRole('switch', { name: 'Folder colours' })).toHaveCount(0);
   });
 });

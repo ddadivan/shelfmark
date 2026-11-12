@@ -1,7 +1,6 @@
 import { computed, inject } from '@angular/core';
-import { TranslocoService } from '@jsverse/transloco';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-import { DIALOG_SIZE, DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
+import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
 import { AuthStore } from '../../core/auth/auth.store';
 import { SessionScope } from '../../core/auth/session-scope.service';
 import { LinkActionsService } from '../links/link-actions.service';
@@ -11,13 +10,13 @@ import { ONBOARDING_RESULT } from './models/onboarding-result.const';
 import type { OnboardingResult } from './models/onboarding-result.type';
 import type { OnboardingState } from './models/onboarding-state.interface';
 
-const initialState: OnboardingState = { open: false, resetting: false };
+const initialState: OnboardingState = { open: false };
 
 /**
  * The welcome tour. It is due while the signed-in user's `onboardingCompletedAt` is `null`; a
  * missing flag (or a guest) never opens it. Every way out of the dialog completes it: the flag is
  * patched at once, then the server is told, and a failed request is silent (the dialog is simply
- * due again on the next load). "Show welcome again" resets the flag, which opens the dialog.
+ * due again on the next load). It shows once: there is no way to bring it back (#315).
  */
 export const OnboardingStore = signalStore(
   { providedIn: 'root' },
@@ -32,8 +31,6 @@ export const OnboardingStore = signalStore(
       api = inject(ONBOARDING_API),
       dialogs = inject(DialogService),
       actions = inject(LinkActionsService),
-      toasts = inject(ToastService),
-      transloco = inject(TranslocoService),
       scope = inject(SessionScope),
     ) => {
       function clear(): void {
@@ -46,7 +43,6 @@ export const OnboardingStore = signalStore(
         try {
           const { onboardingCompletedAt } = await api.complete();
           // A sign-out or a switch to another user meanwhile must not touch the new session.
-          // A reset meanwhile (flag back to null) wins over this older answer.
           const flag = auth.user()?.onboardingCompletedAt;
           if (auth.user()?.id === userId && flag !== null && flag !== undefined) {
             auth.setOnboardingCompletedAt(onboardingCompletedAt);
@@ -89,25 +85,6 @@ export const OnboardingStore = signalStore(
           }
           // A dialog that cannot open leaves the app as it was (`open` is reset in `show`).
           show(user.id).catch(() => undefined);
-        },
-        /** Settings, "Show welcome again": clears the flag on the server, then the dialog opens. */
-        async reset(): Promise<void> {
-          if (store.resetting()) {
-            return;
-          }
-          patchState(store, { resetting: true });
-          try {
-            await api.reset();
-            auth.setOnboardingCompletedAt(null);
-          } catch {
-            toasts.show({
-              kind: TOAST_KIND.Danger,
-              title: transloco.translate('settings.welcome.error'),
-              detail: transloco.translate('settings.welcome.errorDetail'),
-            });
-          } finally {
-            patchState(store, { resetting: false });
-          }
         },
       };
     },

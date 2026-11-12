@@ -36,17 +36,17 @@ describe('SignInDriftComponent', () => {
     expect(root.querySelectorAll('a[href]')).toHaveLength(0);
   });
 
-  it('draws sixteen library cards in two lanes and depth layers on a wide desktop, each with a landing ring', async () => {
+  it('draws fourteen library cards in two lanes and depth layers on a wide desktop, each with a landing ring', async () => {
     const root = await setup(true);
     const text = root.textContent ?? '';
 
-    expect(root.querySelectorAll('.sd-card')).toHaveLength(16);
-    expect(root.querySelectorAll('.sd-lane--start .sd-card')).toHaveLength(8);
-    expect(root.querySelectorAll('.sd-lane--end .sd-card')).toHaveLength(8);
-    expect(root.querySelectorAll('.sd-ring')).toHaveLength(16);
-    expect(root.querySelectorAll('ui-card .ui-card__placeholder')).toHaveLength(16);
-    expect(root.querySelectorAll('ui-card .ui-card__date').length).toBe(16);
-    expect(root.querySelectorAll('ui-chip').length).toBeGreaterThanOrEqual(16);
+    expect(root.querySelectorAll('.sd-card')).toHaveLength(14);
+    expect(root.querySelectorAll('.sd-lane--start .sd-card')).toHaveLength(7);
+    expect(root.querySelectorAll('.sd-lane--end .sd-card')).toHaveLength(7);
+    expect(root.querySelectorAll('.sd-ring')).toHaveLength(14);
+    expect(root.querySelectorAll('ui-card .ui-card__placeholder')).toHaveLength(14);
+    expect(root.querySelectorAll('ui-card .ui-card__date').length).toBe(14);
+    expect(root.querySelectorAll('ui-chip').length).toBeGreaterThanOrEqual(14);
     for (const layer of ['far', 'mid', 'near']) {
       expect(root.querySelectorAll(`.sd-card--${layer}`).length).toBeGreaterThan(0);
     }

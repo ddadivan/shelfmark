@@ -11,8 +11,13 @@
       (change)="select(option)"
     />
     <span class="ui-radio__dot" aria-hidden="true"></span>
+    @if (option.flag) {
+      <ui-flag class="ui-radio__flag" [code]="option.flag" />
+    } @else if (option.icon) {
+      <ui-icon class="ui-radio__icon" [name]="option.icon" [size]="ICON_SIZE.Md" />
+    }
     <span class="ui-radio__text">
-      <span class="ui-radio__title">{{ option.title }}</span>
+      <span class="ui-radio__title" [attr.lang]="option.lang ?? null">{{ option.title }}</span>
       @if (option.description) {
         <span class="ui-radio__desc" [id]="groupId + '-' + i + '-desc'">{{
           option.description

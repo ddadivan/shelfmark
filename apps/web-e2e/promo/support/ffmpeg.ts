@@ -52,11 +52,12 @@ export function encodeVideo(
     ...cut,
     '-c:v',
     'libx264',
-    // Fixed so the app can name the codec in `<source type>`: avc1.64001F (High, level 3.1).
+    // Fixed so the app can name the codec in `<source type>`: avc1.640028 (High, level 4.0, which
+    // allows the 1440 x 900 desktop recording; 3.1 stops at 1280 x 720).
     '-profile:v',
     'high',
     '-level',
-    '3.1',
+    '4.0',
     '-preset',
     'slow',
     '-crf',

@@ -24,6 +24,18 @@ describe('custom theme guards', () => {
     }
   });
 
+  it('accepts an own accent colour as lower-case #rrggbb (#315)', () => {
+    expect(isCustomTheme({ ...CUSTOM_THEME_DEFAULT, accent: '#2e6a99' })).toBe(true);
+    expect(
+      isCustomTheme({
+        ...CUSTOM_THEME_DEFAULT,
+        base: 'dark',
+        background: 'ink',
+        accent: '#c0ffee',
+      }),
+    ).toBe(true);
+  });
+
   it('splits every background between the two bases, once', () => {
     const all = [...CUSTOM_THEME_BACKGROUNDS.light, ...CUSTOM_THEME_BACKGROUNDS.dark];
     expect([...all].sort()).toEqual(Object.values(CUSTOM_THEME_BACKGROUND).sort());
@@ -35,7 +47,10 @@ describe('custom theme guards', () => {
     [],
     {},
     { ...CUSTOM_THEME_DEFAULT, accent: 'red' },
-    { ...CUSTOM_THEME_DEFAULT, accent: '#ff0000' },
+    { ...CUSTOM_THEME_DEFAULT, accent: '#FF0000' },
+    { ...CUSTOM_THEME_DEFAULT, accent: '#ff000' },
+    { ...CUSTOM_THEME_DEFAULT, accent: 'ff0000' },
+    { ...CUSTOM_THEME_DEFAULT, accent: '#ff0000ff' },
     { ...CUSTOM_THEME_DEFAULT, corners: 'pill' },
     { ...CUSTOM_THEME_DEFAULT, base: 'sepia' },
     { ...CUSTOM_THEME_DEFAULT, background: 'black' },

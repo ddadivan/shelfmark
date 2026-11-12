@@ -1,7 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { APP_PATH } from '../../../models/app-path.const';
-import { SETTINGS_PATH } from '../models/settings-path.const';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
@@ -20,6 +17,7 @@ import {
   CUSTOM_THEME_DEFAULT,
   MOTION_PREFERENCE,
   THEME_PREFERENCE,
+  isHexColour,
   isMotionPreference,
   isThemePreference,
   type CustomTheme,
@@ -28,7 +26,10 @@ import {
   BUTTON_SIZE,
   BUTTON_VARIANT,
   ButtonComponent,
-  DialogService,
+  ColorPickerComponent,
+  CUSTOM_ACCENT_OWN,
+  NOTICE_KIND,
+  NoticeComponent,
   SegmentedControlComponent,
   SwitchComponent,
   SETTINGS_ROW_ALIGN,
@@ -43,12 +44,18 @@ import {
   type SegmentedOption,
   type ThemePickerOption,
   type ThemePreviewCard,
+  accentContrast,
+  customAccentTokens,
+  isAccessibleAccent,
+  nearestAccessibleAccent,
 } from '@shelfmark/ui';
 import type { Appearance } from '../../../core/theme/models/appearance.type';
+import { LocaleService } from '../../../core/i18n/locale.service';
 import { ThemeService } from '../../../core/theme/theme.service';
-import { LinksStore } from '../../../stores/links.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
+import type { AccentWarning } from '../models/accent-warning.interface';
 import { THEME_OPTION_KEYS } from '../models/theme-option-keys.const';
+import { DateTimeSettingsComponent } from './date-time-settings/date-time-settings.component';
 import { SettingsPageHeaderComponent } from '../settings-page-header/settings-page-header.component';
 
 const KEY = 'settings.appearance';
@@ -58,9 +65,10 @@ const SYSTEM_THUMB = 'system';
  * `/settings/appearance` (Themes mockup, issues #273 and #285): Theme (System, Light, Dark,
  * Custom); for Custom the base, accent, background and corners and "Reset custom theme"; a live
  * preview; Text and layout (text size, font, density); Cards (preview image, site, notes, tags);
- * Sidebar and motion (link counts, remember recently opened, folder colours, Animations); the
- * language. Every change applies to the whole app at once (ThemeService) and is
- * saved on the account right away, so the preview simply shows a sample in the current tokens;
+ * Dates and numbers (date format, clock, week start, preview; moved from Language in #315);
+ * Sidebar and motion (folder colours, Animations). Link counts live in Library, "Remember
+ * recently opened" in Privacy and data (#315). Every change applies to the whole app at once
+ * (ThemeService) and is saved on the account right away, so the preview simply shows a sample in the current tokens;
  * a failed save puts the old appearance back and says so. Light and Dark never change.
  */
 @Component({
@@ -68,6 +76,9 @@ const SYSTEM_THUMB = 'system';
   imports: [
     TranslocoPipe,
     ButtonComponent,
+    ColorPickerComponent,
+    DateTimeSettingsComponent,
+    NoticeComponent,
     SegmentedControlComponent,
     SettingsPageHeaderComponent,
     SettingsRowComponent,
@@ -82,20 +93,17 @@ const SYSTEM_THUMB = 'system';
 })
 export default class AppearancePage {
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
-  /** Settings › Language, where the language row leads. */
-  protected readonly languageHref = `/${APP_PATH.Settings}/${SETTINGS_PATH.Language}`;
-  private readonly router = inject(Router);
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
+  protected readonly NOTICE_KIND = NOTICE_KIND;
   protected readonly SETTINGS_ROW_ALIGN = SETTINGS_ROW_ALIGN;
   protected readonly THEME_PICKER_KIND = THEME_PICKER_KIND;
   protected readonly THEME_PREFERENCE = THEME_PREFERENCE;
 
   protected readonly theme = inject(ThemeService);
   protected readonly settings = inject(UserSettingsStore);
-  private readonly links = inject(LinksStore);
-  private readonly dialogs = inject(DialogService);
   private readonly transloco = inject(TranslocoService);
   private readonly toasts = inject(ToastService);
+  private readonly locale = inject(LocaleService);
 
   /** Changes when the translations load, so the labels below are computed again. */
   private readonly translation = toSignal(this.transloco.selectTranslation());
@@ -111,7 +119,7 @@ export default class AppearancePage {
       ...(value === THEME_PREFERENCE.System
         ? { theme: SYSTEM_THUMB }
         : value === THEME_PREFERENCE.Custom
-          ? { theme: THEME_CUSTOM, ...custom }
+          ? { theme: THEME_CUSTOM, ...custom, ...this.ownAccentDrawing(custom) }
           : { theme: value }),
     }));
   });
@@ -126,6 +134,24 @@ export default class AppearancePage {
       (option) => ({ ...option, theme: THEME_CUSTOM, base, accent: option.value }),
     );
   });
+
+  /** The own accent colour of the Custom theme (#315), or null for a curated accent. */
+  protected readonly ownAccent = computed(() => {
+    const accent = this.theme.customTheme().accent;
+    return isHexColour(accent) ? accent : null;
+  });
+
+  /** The curated accent that is checked; none while an own colour is the accent. */
+  protected readonly curatedAccent = computed(() =>
+    this.ownAccent() === null ? this.theme.customTheme().accent : '',
+  );
+
+  /** What the colour picker shows: the last colour picked here, else the saved own colour. */
+  protected readonly pickedColour = signal('');
+  protected readonly shownColour = computed(() => this.pickedColour() || (this.ownAccent() ?? ''));
+
+  /** A picked colour that would not keep 4.5:1, with the nearest shade that does. */
+  protected readonly accentWarning = signal<AccentWarning | null>(null);
 
   protected readonly backgroundOptions = computed<ThemePickerOption[]>(() => {
     const base = this.theme.customTheme().base;
@@ -200,8 +226,44 @@ export default class AppearancePage {
   protected setAccent(value: string): void {
     const accent = Object.values(CUSTOM_THEME_ACCENT).find((name) => name === value);
     if (accent) {
+      this.accentWarning.set(null);
       this.setCustom({ accent });
     }
+  }
+
+  /**
+   * A colour finished in the picker (#315): one that keeps 4.5:1 on the current base and
+   * background becomes the accent at once; one that does not is not applied, a warning offers the
+   * nearest shade that passes instead.
+   */
+  protected pickOwnAccent(colour: string): void {
+    if (!isHexColour(colour)) {
+      return;
+    }
+    const { base, background } = this.theme.customTheme();
+    this.pickedColour.set(colour);
+    if (isAccessibleAccent(colour, base, background)) {
+      this.accentWarning.set(null);
+      this.setCustom({ accent: colour });
+      return;
+    }
+    this.accentWarning.set({
+      colour,
+      // Rounded down, so a colour just short of 4.5:1 never reads as 4.5.
+      ratio: this.locale.formatNumber(
+        Math.floor(accentContrast(colour, base, background) * 10) / 10,
+      ),
+      shade: nearestAccessibleAccent(colour, base, background),
+    });
+  }
+
+  protected useShade(shade: string): void {
+    if (!isHexColour(shade)) {
+      return;
+    }
+    this.pickedColour.set(shade);
+    this.accentWarning.set(null);
+    this.setCustom({ accent: shade });
   }
 
   protected setBackground(value: string): void {
@@ -220,7 +282,22 @@ export default class AppearancePage {
   }
 
   protected resetCustom(): void {
+    this.pickedColour.set('');
+    this.accentWarning.set(null);
     void this.save({ customTheme: { ...CUSTOM_THEME_DEFAULT } });
+  }
+
+  /** The Custom thumbnail of an own accent: no Sass rule, the derived tokens instead. */
+  private ownAccentDrawing(custom: CustomTheme): Partial<ThemePickerOption> {
+    if (!isHexColour(custom.accent)) {
+      return {};
+    }
+    return {
+      accent: CUSTOM_ACCENT_OWN,
+      tokens: Object.fromEntries(
+        Object.entries(customAccentTokens(custom.accent, custom.base, custom.background)),
+      ),
+    };
   }
 
   protected setMotion(value: string): void {
@@ -259,52 +336,11 @@ export default class AppearancePage {
     void this.save(change);
   }
 
-  /** "Link counts" is the Library setting "Show folder counts" (one value on the account). */
-  protected async setCounts(on: boolean): Promise<void> {
-    if (!(await this.settings.setLibrary({ showFolderCounts: on }))) {
-      this.failed();
-    }
-  }
-
-  protected async setFolderColours(on: boolean): Promise<void> {
+  /** A failed save puts the switch back (the account value never changed, so no binding does). */
+  protected async setFolderColours(on: boolean, control: SwitchComponent): Promise<void> {
     if (!(await this.settings.setFolderColours(on))) {
+      control.checked.set(!on);
       this.failed();
-    }
-  }
-
-  /**
-   * "Remember recently opened": on resumes recording opens; off asks first, then clears the list
-   * and stops recording (the account's "Pause history"). A switch that was not confirmed, or a
-   * failed save, stays or goes back on.
-   */
-  protected async setRemember(on: boolean, control: SwitchComponent): Promise<void> {
-    if (on) {
-      if (!(await this.settings.setPauseHistory(false))) {
-        this.failed();
-      }
-      return;
-    }
-    const confirmed = await this.dialogs.confirm({
-      title: this.transloco.translate(`${KEY}.sidebar.recent.confirm.title`),
-      message: this.transloco.translate(`${KEY}.sidebar.recent.confirm.message`),
-      confirmLabel: this.transloco.translate(`${KEY}.sidebar.recent.confirm.confirm`),
-      cancelLabel: this.transloco.translate(`${KEY}.sidebar.recent.confirm.cancel`),
-      closeLabel: this.transloco.translate(`${KEY}.sidebar.recent.confirm.close`),
-      destructive: true,
-    });
-    if (!confirmed) {
-      control.checked.set(true);
-      return;
-    }
-    if (!(await this.settings.setPauseHistory(true))) {
-      this.failed();
-      return;
-    }
-    if (!(await this.links.clearHistory())) {
-      this.toasts.show({
-        kind: TOAST_KIND.Danger,
-        title: this.transloco.translate('links.recent.clearFailed'),
-      });
     }
   }
 
@@ -333,10 +369,5 @@ export default class AppearancePage {
       value,
       label: this.transloco.translate(`${prefix}.${value}`),
     }));
-  }
-
-  protected async openLanguage(event: MouseEvent): Promise<void> {
-    event.preventDefault();
-    await this.router.navigateByUrl(this.languageHref);
   }
 }

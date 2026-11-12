@@ -38,10 +38,16 @@ export function keyCap(key: ShortcutKey, mac: boolean): KeyCap {
       return symbol('→', 'shortcuts.keys.right');
     case SHORTCUT_KEY.Question:
       return symbol('?', 'shortcuts.keys.question');
+    case SHORTCUT_KEY.Space:
+      return word('shortcuts.keys.space');
     case SHORTCUT_KEY.F10:
       return letter('F10');
+    case SHORTCUT_KEY.A:
+      return letter('A');
     case SHORTCUT_KEY.K:
       return letter('K');
+    case SHORTCUT_KEY.M:
+      return letter('M');
     case SHORTCUT_KEY.T:
       return letter('T');
     case SHORTCUT_KEY.V:

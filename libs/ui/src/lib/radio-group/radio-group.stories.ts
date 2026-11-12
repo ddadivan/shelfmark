@@ -13,6 +13,17 @@ const OPTIONS: RadioOption[] = [
   { value: 'delete', title: 'Delete links too', description: "This can't be undone" },
 ];
 
+/** The language list of Settings › Language (#315): a flag and the name in its own language. */
+const LANGUAGES: RadioOption[] = [
+  { value: 'en', title: 'English', flag: 'gb', lang: 'en' },
+  { value: 'fr', title: 'Français', flag: 'fr', lang: 'fr' },
+  { value: 'de', title: 'Deutsch', flag: 'de', lang: 'de' },
+  { value: 'it', title: 'Italiano', flag: 'it', lang: 'it' },
+  { value: 'es', title: 'Español', flag: 'es', lang: 'es' },
+  { value: 'pt', title: 'Português', flag: 'br', lang: 'pt' },
+  { value: 'browser', title: 'Match my browser', icon: 'monitor' },
+];
+
 const ORIENTATIONS = Object.values(RADIO_ORIENTATION);
 
 const meta: Meta<RadioGroupComponent> = {
@@ -71,11 +82,16 @@ export const Focus: Story = {
 
 export const Disabled: Story = { args: { disabled: true } };
 
+/** Options led by a flag or an icon: the interface languages, each in its own name (#315). */
+export const WithFlags: Story = {
+  args: { options: LANGUAGES, value: 'fr', ariaLabel: 'Interface language' },
+};
+
 /** Both orientations and states in both themes, independent of the toolbar. */
 export const AllVariants: Story = {
   parameters: { layout: 'padded' },
   render: () => ({
-    props: { options: OPTIONS, themes: Object.values(THEME) },
+    props: { options: OPTIONS, languages: LANGUAGES, themes: Object.values(THEME) },
     template: `
       <div class="fs-themes">
         @for (theme of themes; track theme) {
@@ -85,6 +101,7 @@ export const AllVariants: Story = {
               ariaLabel="Horizontal" />
             <ui-radio-group [options]="options" value="move" [disabled]="true"
               ariaLabel="Disabled" />
+            <ui-radio-group [options]="languages" value="de" ariaLabel="Languages" />
           </div>
         }
       </div>`,

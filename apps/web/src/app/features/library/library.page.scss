@@ -68,22 +68,6 @@
   }
 }
 
-// Empty and error states (EmptyStates.dc.html): a surface card with the state centred in it, in
-// in the middle of the space under the toolbar. With links the feed flows as usual.
-.library__empty {
-  display: flex;
-  justify-content: center;
-  padding: var(--space-6);
-  margin-block: auto;
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-
-  @include phone {
-    padding: var(--space-4);
-  }
-}
-
 .library__toolbar {
   display: flex;
   flex-wrap: wrap;

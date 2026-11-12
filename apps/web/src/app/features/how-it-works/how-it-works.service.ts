@@ -49,7 +49,7 @@ export class HowItWorksService {
   /** Opens the video; the card is done from now on. */
   async open(): Promise<void> {
     this.markDone();
-    await this.dialogs.open(HowItWorksDialogComponent, { size: DIALOG_SIZE.Md }).result;
+    await this.dialogs.open(HowItWorksDialogComponent, { size: DIALOG_SIZE.Lg }).result;
   }
 
   /** "Hide" on the card. */

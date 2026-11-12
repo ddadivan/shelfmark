@@ -1,21 +1,28 @@
 # Promo video recorder (#271)
 
 A scripted Playwright run on the mock demo that records the "How it works" video
-(`HowItWorks.dc.html`, "Shelfmark in 60 seconds"): landing → "Open the demo" → paste a link →
-the preview fills in → choose a folder → add a tag → save (the card lands) → open the folder and
-the tag → find it again with ⌘K (Search on the phone). It never runs with the e2e suite: it has
+(`HowItWorks.dc.html`, "Shelfmark in 2 minutes", rewritten for #315) through the features of
+today, in five chapters: **Save a link** (landing → "Open the demo" → paste a link, the preview
+fills in, folder and tag, save; "Add several links" with a pasted list), **Folders and tags**
+(colour and icon, pin to the sidebar, filter by a tag), **Find it again** (⌘K / Search, a saved
+view, favorites, Recently opened, delete and restore from Trash), **Many at once** (select two
+cards and move them; drag a card onto a folder on desktop, Move to folder on the phone) and
+**Make it yours** (dark theme and an own accent colour, a language switch, export, Send
+feedback; on the phone the share target too). The phone recording shows the tab bar throughout.
+Sharing a folder is not in the video: demo accounts cannot share. It never runs with the e2e suite: it has
 its own config (`playwright.promo.config.mts`) and file pattern.
 
 ## Re-record
 
 ```bash
-npx nx run web-e2e:promo          # or: npm run promo — all four variants, about 6 minutes
-npx nx run web-e2e:promo -- --grep light-desktop   # one variant
+npx nx run web-e2e:promo          # or: npm run promo — both recordings, about 15 minutes
+npx nx run web-e2e:promo -- --grep desktop          # one variant
+PROMO_MEASURE=1 npx nx run web-e2e:promo             # where each chapter would start, no encoding
 ```
 
 It serves the e2e build on port 4218 (`PROMO_PORT` changes it; a server already running there is
 reused), then writes to `apps/web/public/media/`, per variant
-`how-it-works-<light|dark>-<desktop|phone>`:
+`how-it-works-<desktop|phone>`:
 
 | File    | What                                                                |
 | ------- | ------------------------------------------------------------------- |
@@ -24,8 +31,11 @@ reused), then writes to `apps/web/public/media/`, per variant
 | `.webp` | Poster: the library right after the save                            |
 | `.vtt`  | English captions, one cue per step, times measured during the run   |
 
-Desktop is 1280 × 720, the phone 390 × 844 (touch, the tab bar). Each video is about 0.3–0.6 MB.
-Commit the files after checking them; the dialog picks the one for the current theme and device.
+Two recordings (#315): the desktop at 1440 × 900 (H.264 level 4.0) and the phone at 390 × 844
+(touch, the tab bar), both starting in the light theme. Each video is about 1–2 MB for two
+minutes (CRF 34 / VP9 46). Commit the files after checking them; the dialog plays the one that
+fits the layout (`ViewportService.phone`), shows only the poster under reduced motion and starts
+playing on request.
 
 **Requires a full ffmpeg** with `libx264`, `libvpx-vp9` and `libwebp` (macOS: `brew install ffmpeg`;
 or set `FFMPEG_PATH`). Playwright's bundled ffmpeg only writes the raw VP8 recording, so the
@@ -36,14 +46,18 @@ script checks for the encoders first and stops with the fix.
 - `models/promo-steps.const.ts` is the script: each step has a caption and an action; the
   recorder measures when each step starts and writes the captions from those times.
 - Chapters: a step with `chapter` waits until that chapter's start (`PROMO_CHAPTER_START_MS`:
-  0:00, 0:18, 0:41), so the captions line up with the dialog's chapter buttons
+  0:00, 0:34, 0:52, 1:19, 1:39), so the captions line up with the dialog's chapter buttons
   (`HOW_IT_WORKS_CHAPTERS` in `apps/web`). If a chapter starts more than 0.5 s late, the run
-  fails: shorten the steps before it, or move both constants to the new time.
+  fails: shorten the steps before it, or move both constants to the new time (a `PROMO_MEASURE=1`
+  run prints where each chapter would start with no holds). A step with `only` runs on one device.
 - `support/promo-director.ts` paces the run: pointer glides, typing with a delay, pauses. The
   pointer dot (and the tap ripple on the phone) is injected by the recorder only, as a manual
   popover so it stays above the app's dialogs; it is hidden in the poster.
-- The dark variants use the system colour scheme (`colorScheme: 'dark'`), as a visitor would.
+- Both recordings start in the light system colour scheme; the video switches to dark and an own
+  accent in its last chapter through Settings › Appearance.
   The desktop uses a Mac user agent, so the app shows ⌘ and answers ⌘K.
+- Everything happens inside the app (no reloads), since a reload starts a fresh demo library;
+  the phone's share-target step at the end is the one `page.goto`.
 - The raw recording starts when the page opens; ffmpeg cuts it from the first frame of the
   loaded landing.
 

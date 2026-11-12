@@ -6,17 +6,15 @@ import type { LinkSavePrefs } from './models/link-save-prefs.interface';
 export async function readLinkSavePrefs(db: LinkDbClient, userId: string): Promise<LinkSavePrefs> {
   const row = await db.user.findUnique({
     where: { id: userId },
-    select: { fetchPreviews: true, keepQuery: true },
+    select: { fetchPreviews: true },
   });
-  return (
-    row ?? {
-      fetchPreviews: LIBRARY_SETTINGS_DEFAULT.fetchPreviews,
-      keepQuery: LIBRARY_SETTINGS_DEFAULT.keepQuery,
-    }
-  );
+  return row ?? { fetchPreviews: LIBRARY_SETTINGS_DEFAULT.fetchPreviews };
 }
 
-/** The address to store: as sent, or without its tracking parameters when "Keep the query part" is off. */
-export function savedUrl(url: string, prefs: LinkSavePrefs): string {
-  return prefs.keepQuery ? url : stripTrackingParams(url);
+/**
+ * The address to store: always without its tracking parameters (`TRACKING_QUERY_PARAMS`,
+ * `utm_*`); every other parameter stays as written (#315: no longer a setting).
+ */
+export function savedUrl(url: string): string {
+  return stripTrackingParams(url);
 }

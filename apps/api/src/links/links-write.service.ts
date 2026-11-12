@@ -75,7 +75,7 @@ export class LinksWriteService {
     // Settings › Library (#284): the address without tracking parameters, and no page fetch or
     // image capture at all when "Fetch titles and previews" is off (the client hints are ignored).
     const prefs = await readLinkSavePrefs(this.prisma, userId);
-    const url = savedUrl(request.url, prefs);
+    const url = savedUrl(request.url);
     const normalizedUrl = this.normalize(url);
 
     let title = request.title;
@@ -169,11 +169,9 @@ export class LinksWriteService {
   }
 
   async update(userId: string, id: string, sent: UpdateLinkRequest): Promise<LinkResponse> {
-    // A new address is stored like a new link's: without tracking parameters unless kept (#284).
+    // A new address is stored like a new link's: without tracking parameters (#284, #315).
     const request: UpdateLinkRequest =
-      sent.url === undefined
-        ? sent
-        : { ...sent, url: savedUrl(sent.url, await readLinkSavePrefs(this.prisma, userId)) };
+      sent.url === undefined ? sent : { ...sent, url: savedUrl(sent.url) };
     const data = this.updateData(request);
     this.assertTagNames(request.tags);
     const needsLock = typeof request.folderId === 'string' || request.pinnedInFolder === true;

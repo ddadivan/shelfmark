@@ -5,7 +5,5 @@ export interface LibraryRow {
   openLinksIn: string;
   showFolderCounts: boolean;
   newLinksFolderId: string | null;
-  warnDuplicates: boolean;
   fetchPreviews: boolean;
-  keepQuery: boolean;
 }

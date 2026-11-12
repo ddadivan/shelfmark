@@ -16,9 +16,11 @@
 }
 
 // Fills are classes bound to tokens. Resting styles are the final frame of every scene.
+// `--ui-illustration-edge` / `--ui-illustration-key-edge`: stronger edges set by the caller (the
+// page-level empty state, whose disc needs 3:1 edges); unset, the soft look of the design.
 .ui-illustration__surface {
   fill: var(--surface);
-  stroke: var(--border);
+  stroke: var(--ui-illustration-edge, var(--border));
   stroke-width: 1;
 }
 
@@ -38,8 +40,19 @@
   fill: var(--accent-bg);
 }
 
+// A pale sage body that carries the scene (a folder, a tray, a filter chip).
+.ui-illustration__tint--key {
+  stroke: var(--ui-illustration-key-edge, none);
+  stroke-width: 1.5;
+}
+
 .ui-illustration__line {
   fill: var(--surface-pressed);
+}
+
+// A mark that stands on the ground, not on a white part (the offline break marks).
+.ui-illustration__line--ground {
+  fill: var(--ui-illustration-edge, var(--surface-pressed));
 }
 
 .ui-illustration__mark {
@@ -56,6 +69,11 @@
 
 .ui-illustration__search {
   stroke: var(--text-muted);
+}
+
+.ui-illustration__halo {
+  fill: var(--accent-bg);
+  opacity: 0.7;
 }
 
 .ui-illustration__lens {
@@ -105,11 +123,25 @@
   --ill-delay: 0.36s;
 }
 
+// The minute hand sweeps round the clock face (its box is centred on the axis).
+.ui-illustration__fly--sweep {
+  --ill-x: 0%;
+  --ill-y: 0%;
+  --ill-r: -140deg;
+}
+
 .ui-illustration__dim {
   --ill-from: 1;
   --ill-to: 0.35;
 
   opacity: 0.35;
+}
+
+// A softer fade for dashed placeholders, which would vanish at 35%.
+.ui-illustration__dim--soft {
+  --ill-to: 0.55;
+
+  opacity: 0.55;
 }
 
 .ui-illustration__pick {
@@ -119,6 +151,14 @@
 
 .ui-illustration__shift--bob {
   --ill-dy: -23%;
+}
+
+.ui-illustration__shift--lift {
+  --ill-dy: -45%;
+}
+
+.ui-illustration__shift--dip {
+  --ill-dy: 30%;
 }
 
 .ui-illustration__shift--scan {

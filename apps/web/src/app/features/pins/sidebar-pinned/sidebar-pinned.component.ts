@@ -4,6 +4,7 @@ import {
   CdkDragPreview,
   CdkDropList,
   type CdkDragDrop,
+  type CdkDragSortEvent,
 } from '@angular/cdk/drag-drop';
 import {
   afterNextRender,
@@ -23,7 +24,13 @@ import {
   ButtonComponent,
   FaviconComponent,
   FolderIconComponent,
+  holdRowsStill,
   KEYBOARD_KEY,
+  reorderDropLine,
+  setReorderDropLine,
+  TOAST_KIND,
+  ToastService,
+  TREE_REORDER_TOUCH_DELAY_MS,
   TooltipDirective,
 } from '@shelfmark/ui';
 import { ReorderAnnouncer } from '../../../core/a11y/reorder-announcer.service';
@@ -39,11 +46,13 @@ import { PinActionsService } from '../pin-actions.service';
 /**
  * The "Pinned" section of the sidebar and of the phone Library page: up to seven folders and
  * links in the order the user chose, a folder with its colour, icon and count, a link with its
- * favicon letter. A folder opens its page, a link opens in a new tab. Reorder by dragging (desktop,
- * a reserved slot marks the place) or with Alt+Up / Alt+Down on the focused row (announced). Unpin is
- * the row's only action: an icon button (hover / focus, always on touch) with Undo, no "…" menu
- * (#314). Settings ›
- * Library › Edit pinned keeps its buttons. Nothing is rendered while nothing is pinned.
+ * favicon letter. A folder opens its page, a link opens in a new tab. Reorder by dragging (a
+ * mouse, or a finger after a short rest; the rows hold still and a line marks the place, #315) or
+ * with Alt+Up / Alt+Down on the focused row (announced). Unpin is the row's only action: an icon
+ * button (hover / focus, always on touch) with Undo, no "…" menu (#314). While nothing is pinned
+ * the sidebar renders nothing; the phone Library page (`card`) keeps the section with one quiet
+ * "Nothing pinned yet" row whose tap explains in a toast how to pin (#315), so people know where
+ * pins live.
  */
 @Component({
   selector: 'app-sidebar-pinned',
@@ -62,7 +71,7 @@ import { PinActionsService } from '../pin-actions.service';
   templateUrl: './sidebar-pinned.component.html',
   styleUrl: './sidebar-pinned.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '[class.pinned--card]': 'card()' },
+  host: { '[class.pinned--card]': 'card() && shown()' },
 })
 export class SidebarPinnedComponent {
   protected readonly PIN_KIND = PIN_KIND;
@@ -73,18 +82,48 @@ export class SidebarPinnedComponent {
   private readonly actions = inject(PinActionsService);
   private readonly linkActions = inject(LinkActionsService);
   private readonly transloco = inject(TranslocoService);
-  private readonly viewport = inject(ViewportService);
   private readonly announcer = inject(ReorderAnnouncer);
   private readonly injector = inject(Injector);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+  private readonly toasts = inject(ToastService);
+  private readonly viewport = inject(ViewportService);
 
   /** The id of the open page's row (a folder id), to mark the folder you are in. */
   readonly activeId = input<string | null>(null);
   /** Its own card with a page-sized heading: the phone Library page. */
   readonly card = input(false, { transform: booleanAttribute });
 
-  /** Dragging is for a mouse; on a phone a drag would fight scrolling (Alt+arrows still work). */
-  protected readonly dragDisabled = computed(() => this.viewport.phone());
+  /**
+   * The section is drawn while something is pinned; empty, only on the phone Library page once the
+   * pins have loaded (no flash of the empty row before), the desktop sidebar hides it.
+   */
+  protected readonly shown = computed(
+    () =>
+      this.pins.rows().length > 0 || (this.card() && this.viewport.phone() && this.pins.loaded()),
+  );
+
+  /**
+   * Touch reorder like iOS (#315): the finger rests `TREE_REORDER_TOUCH_DELAY_MS` (the folder
+   * tree's delay), then moving starts the drag; a move before that scrolls. Mouse at once.
+   */
+  protected readonly DRAG_START_DELAY = { touch: TREE_REORDER_TOUCH_DELAY_MS, mouse: 0 };
+  /** A row is being dragged: a long press must not open the browser's link menu meanwhile. */
+  private dragging = false;
+
+  protected dragStarted(): void {
+    this.dragging = true;
+  }
+
+  protected dragEnded(): void {
+    this.dragging = false;
+  }
+
+  /** Android fires its own long-press `contextmenu` (the link menu) while a finger drags a row. */
+  protected onContextMenu(event: Event): void {
+    if (this.dragging) {
+      event.preventDefault();
+    }
+  }
 
   protected folderLink(folder: FolderResponse): string[] {
     return ['/', APP_PATH.Folders, folder.id];
@@ -106,7 +145,17 @@ export class SidebarPinnedComponent {
     this.linkActions.open(link);
   }
 
+  /** The reorder line (#315) where the row would land; the rows hold still. */
+  protected sorted(event: CdkDragSortEvent<unknown>): void {
+    const list = event.container.element.nativeElement;
+    const placeholder = event.item.getPlaceholderElement();
+    const items = [...list.children].filter((child) => child instanceof HTMLElement);
+    holdRowsStill(items);
+    setReorderDropLine(list, reorderDropLine(list, items, placeholder, event.currentIndex));
+  }
+
   protected dropped(event: CdkDragDrop<unknown>): void {
+    setReorderDropLine(event.container.element.nativeElement, null);
     this.announcer.announce(event.previousIndex, event.currentIndex, this.pins.rows().length);
     void this.actions.move(event.previousIndex, event.currentIndex);
   }
@@ -145,6 +194,14 @@ export class SidebarPinnedComponent {
           ?.focus(),
       { injector: this.injector },
     );
+  }
+
+  /** The empty row's tap: how to pin something. */
+  protected explainEmpty(): void {
+    this.toasts.show({
+      kind: TOAST_KIND.Info,
+      title: this.transloco.translate('shell.sidebar.pinned.emptyHint'),
+    });
   }
 
   protected unpinLabel(name: string): string {

@@ -151,7 +151,7 @@ export default class AppShellComponent {
     });
   });
 
-  /** The welcome dialog opens whenever it becomes due: first sign-in, or "Show welcome again". */
+  /** The welcome dialog opens when it becomes due: the first sign-in (it shows once). */
   private readonly welcome = effect(() => {
     if (this.onboarding.due()) {
       untracked(() => {

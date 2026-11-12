@@ -72,6 +72,15 @@ describe('ThemePickerComponent', () => {
     expect(host.querySelectorAll('.ui-theme-picker__surface')).toHaveLength(5);
   });
 
+  it('sets the token values of an option as custom properties on its drawing (own accent)', () => {
+    const { host } = setup({}, [
+      { ...THEMES[3], accent: 'own', tokens: { '--accent': '#2e6a99', '--accent-bg': '#ddeaf4' } },
+    ]);
+    const paint = host.querySelector('.ui-theme-picker__paint') as HTMLElement;
+    expect(paint.style.getPropertyValue('--accent')).toBe('#2e6a99');
+    expect(paint.style.getPropertyValue('--accent-bg')).toBe('#ddeaf4');
+  });
+
   it('checks and marks the option equal to the value; a choice writes the model', () => {
     const { fixture, host, radios } = setup({ value: 'dark' });
     expect(radios().map((r) => r.checked)).toEqual([false, false, true, false]);

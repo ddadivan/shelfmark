@@ -1,4 +1,4 @@
-import { type Page } from '@playwright/test';
+import { type Locator, type Page } from '@playwright/test';
 import { MOCK_TRASH_SCENARIO } from './models/mock-trash-scenario.const';
 import { openFeed } from './support/a11y-flows';
 import { openSettingsSection } from './support/mock-session';
@@ -38,6 +38,30 @@ test.describe('trash (mock API)', () => {
     await radio.check({ force: true });
   };
   const emptyTrash = (page: Page) => page.getByRole('heading', { name: 'Trash is empty' });
+
+  test('the empty Trash is the page card, centred in the content area (#315)', async ({ page }) => {
+    await openFeed(page);
+    await openTrash(page);
+    await expect(emptyTrash(page)).toBeVisible();
+
+    const state = page.locator('ui-empty-state');
+    await expect(state).toHaveClass(/ui-empty-state--page/);
+    await expect(state.locator('ui-illustration')).toBeVisible();
+    const box = async (locator: Locator) => {
+      const found = await locator.boundingBox();
+      expect(found).not.toBeNull();
+      return found ?? { x: 0, y: 0, width: 0, height: 0 };
+    };
+    const main = await box(page.locator('main'));
+    const card = await box(state);
+    const heading = await box(emptyTrash(page));
+    // The card runs to the bottom of the column (above the tab bar on a phone), its content sits
+    // in the middle of it both ways.
+    expect(card.height).toBeGreaterThan(main.height * 0.4);
+    expect(Math.abs(heading.x + heading.width / 2 - (card.x + card.width / 2))).toBeLessThan(2);
+    expect(heading.y).toBeGreaterThan(card.y + card.height * 0.35);
+    expect(heading.y).toBeLessThan(card.y + card.height * 0.75);
+  });
 
   test('a deleted link appears in Trash and Restore puts it back in the feed', async ({ page }) => {
     await openFeed(page);

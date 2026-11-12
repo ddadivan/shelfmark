@@ -1,9 +1,11 @@
 import {
+  afterNextRender,
   ChangeDetectionStrategy,
   Component,
   computed,
   effect,
   inject,
+  Injector,
   signal,
   untracked,
 } from '@angular/core';
@@ -48,6 +50,8 @@ import {
   BUTTON_TYPE,
   INPUT_TYPE,
   SKELETON_SHAPE,
+  TOAST_KIND,
+  ToastService,
   type TagSuggestion,
 } from '@shelfmark/ui';
 import { firstValueFrom, switchMap, tap, timer, type Observable } from 'rxjs';
@@ -62,6 +66,7 @@ import { ADD_LINK_ACTION } from '../models/add-link-action.const';
 import type { AddLinkDialogData } from '../models/add-link-dialog-data.interface';
 import type { AddLinkSaved } from '../models/add-link-saved.interface';
 import type { AddLinkFormModel } from '../models/add-link-form-model.interface';
+import type { AddSeveralFormModel } from '../models/add-several-form-model.interface';
 import type { AddLinkResult } from '../models/add-link-result.type';
 import { LINKS_API } from '../models/links-api.const';
 import { PREVIEW_STATE } from '../models/preview-state.const';
@@ -136,11 +141,13 @@ export class AddLinkDialogComponent {
   private readonly ref = inject<UiDialogRef<AddLinkResult>>(UiDialogRef);
   private readonly transloco = inject(TranslocoService);
   private readonly localeService = inject(LocaleService);
-  /** Settings › Language › Spell-check notes. */
+  /** "Check spelling" under the note (#315: moved here from Settings › Language). */
   protected readonly spellcheck = this.localeService.spellcheck;
   private readonly data = injectDialogData<AddLinkDialogData>();
-  /** Settings › Library › Saving: default folder, duplicate notice, whether pages are fetched. */
-  private readonly library = inject(UserSettingsStore).libraryShown;
+  private readonly settings = inject(UserSettingsStore);
+  private readonly toasts = inject(ToastService);
+  /** Settings › Library › Saving: the default folder and whether pages are fetched. */
+  private readonly library = this.settings.libraryShown;
 
   /** Ticks when the active language or its translations change, so messages re-translate. */
   private readonly i18n = toSignal(this.transloco.events$, { initialValue: undefined });
@@ -151,6 +158,36 @@ export class AddLinkDialogComponent {
 
   /** What a paste with several links held; set, the paste-many list replaces the form. */
   protected readonly pasted = signal<ParsedPaste | null>(null);
+
+  /**
+   * "Add several links" (#315): a large text area replaces the single-link fields; pasting into
+   * it or "Find links" reads the text with the paste-many parser and opens the same list.
+   */
+  protected readonly several = signal(false);
+  private readonly injector = inject(Injector);
+  private readonly severalModel = signal<AddSeveralFormModel>({ text: '' });
+  protected readonly severalForm = form(
+    this.severalModel,
+    (path) => {
+      validate(path.text, ({ value }): ValidationError.WithoutFieldTree | undefined =>
+        value().trim() === ''
+          ? { kind: 'required', message: this.text('links.add.several.required') }
+          : parsePastedLinks(value()).links.length === 0
+            ? { kind: 'noLinks', message: this.text('links.add.several.none') }
+            : undefined,
+      );
+    },
+    {
+      submission: {
+        action: async () => {
+          this.openList(parsePastedLinks(this.severalModel().text));
+        },
+        onInvalid: () => {
+          this.severalForm.text().focusBoundControl();
+        },
+      },
+    },
+  );
   private readonly handedOver = this.editing ? null : this.readHandedOver();
 
   private readonly model = signal<AddLinkFormModel>({
@@ -215,16 +252,14 @@ export class AddLinkDialogComponent {
 
   /** "Fetch titles and previews" is on: the preview loads the page (else it only checks duplicates). */
   protected readonly fetchPages = computed(() => this.library().fetchPreviews);
-  private readonly warnDuplicates = computed(() => this.library().warnDuplicates);
 
   /** The typed URL once it is a valid http(s) URL; the preview follows it. */
   private readonly previewUrl = computed(() => {
     const url = this.form.url();
     const value = url.value().trim();
-    // Neither a page nor a duplicate to show (an edit only ever checks duplicates): no request.
-    const wanted = this.warnDuplicates() || (!this.editing && this.fetchPages());
-    // Editing: the saved address needs no preview, only a changed one is checked for duplicates.
-    return wanted && url.valid() && value !== this.original?.url ? value : undefined;
+    // The duplicate check always runs (#315), so a valid new address always asks the server; an
+    // edit only checks a changed address for duplicates (the saved one needs no preview).
+    return url.valid() && value !== this.original?.url ? value : undefined;
   });
 
   private readonly preview = rxResource({
@@ -298,7 +333,7 @@ export class AddLinkDialogComponent {
   protected readonly previewHost = computed(() => displayHost(this.previewUrl() ?? ''));
 
   protected readonly duplicate = computed(() =>
-    this.warnDuplicates() && this.previewState() === PREVIEW_STATE.Ready && this.preview.hasValue()
+    this.previewState() === PREVIEW_STATE.Ready && this.preview.hasValue()
       ? this.otherThanOriginal(this.preview.value().duplicate)
       : null,
   );
@@ -375,6 +410,50 @@ export class AddLinkDialogComponent {
   }
 
   /** Cmd / Ctrl + Enter saves from any field (Enter alone in a text field submits as before). */
+  /** Switches to the several-links text area and puts focus in it. */
+  protected showSeveral(): void {
+    this.several.set(true);
+    afterNextRender(
+      { read: () => this.severalForm.text().focusBoundControl() },
+      {
+        injector: this.injector,
+      },
+    );
+  }
+
+  /** Back to one link, focus on the address field. */
+  protected showSingle(): void {
+    this.several.set(false);
+    afterNextRender(
+      { read: () => this.form.url().focusBoundControl() },
+      {
+        injector: this.injector,
+      },
+    );
+  }
+
+  /** A paste into the text area that holds links goes straight to the list. */
+  protected onSeveralPaste(event: ClipboardEvent): void {
+    const parsed = parsePastedLinks(event.clipboardData?.getData('text/plain') ?? '');
+    if (parsed.links.length > 0) {
+      event.preventDefault();
+      this.openList(parsed);
+    }
+  }
+
+  protected onSeveralKeydown(event: KeyboardEvent): void {
+    if (event.key === KEYBOARD_KEY.Enter && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault();
+      (event.currentTarget as HTMLFormElement).requestSubmit();
+    }
+  }
+
+  private openList(parsed: ParsedPaste): void {
+    if (parsed.links.length > 0) {
+      this.pasted.set(parsed);
+    }
+  }
+
   protected onKeydown(event: KeyboardEvent): void {
     if (event.key === KEYBOARD_KEY.Enter && (event.metaKey || event.ctrlKey) && !this.saving()) {
       event.preventDefault();
@@ -555,5 +634,20 @@ export class AddLinkDialogComponent {
   private text(key: string, params?: Record<string, unknown>): string {
     this.i18n();
     return this.transloco.translate(key, params);
+  }
+
+  /**
+   * "Check spelling" next to the note: an account preference (`spellcheck`), saved at once and
+   * not part of the link; a failed save puts it back (the store rolls back) and says so.
+   */
+  protected async setSpellcheck(on: boolean, control: CheckboxComponent): Promise<void> {
+    if (!(await this.settings.setLanguage({ spellcheck: on }))) {
+      control.checked.set(!on);
+      this.toasts.show({
+        kind: TOAST_KIND.Danger,
+        title: this.transloco.translate('settings.language.failed'),
+        detail: this.transloco.translate('settings.language.failedDetail'),
+      });
+    }
   }
 }

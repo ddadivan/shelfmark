@@ -104,7 +104,7 @@
     }
     @case ('empty-folder') {
       <path
-        class="ui-illustration__tint"
+        class="ui-illustration__tint ui-illustration__tint--key"
         d="M64 40h34l10 10h68a8 8 0 0 1 8 8v56a8 8 0 0 1-8 8H64a8 8 0 0 1-8-8V48a8 8 0 0 1 8-8z"
       />
       <g class="ui-illustration__shift ui-illustration__shift--bob">
@@ -158,6 +158,178 @@
       <rect class="ui-illustration__line" x="84" y="78" width="72" height="8" rx="4" />
       <rect class="ui-illustration__line" x="84" y="94" width="44" height="8" rx="4" />
     }
+    @case ('empty-trash') {
+      <rect class="ui-illustration__tint" x="58" y="42" width="4" height="12" rx="2" />
+      <rect class="ui-illustration__tint" x="54" y="46" width="12" height="4" rx="2" />
+      <rect class="ui-illustration__tint" x="178" y="62" width="4" height="12" rx="2" />
+      <rect class="ui-illustration__tint" x="174" y="66" width="12" height="4" rx="2" />
+      <rect class="ui-illustration__tint" x="168" y="104" width="8" height="8" rx="4" />
+      <rect class="ui-illustration__surface" x="96" y="58" width="48" height="64" rx="8" />
+      <rect class="ui-illustration__line" x="108" y="70" width="4" height="40" rx="2" />
+      <rect class="ui-illustration__line" x="118" y="70" width="4" height="40" rx="2" />
+      <rect class="ui-illustration__line" x="128" y="70" width="4" height="40" rx="2" />
+      <g class="ui-illustration__shift ui-illustration__shift--lift">
+        <rect class="ui-illustration__accent" x="110" y="38" width="20" height="12" rx="4" />
+        <rect class="ui-illustration__ink" x="88" y="46" width="64" height="8" rx="4" />
+      </g>
+    }
+    @case ('empty-recent') {
+      <circle class="ui-illustration__surface" cx="80" cy="75" r="36" />
+      <rect class="ui-illustration__line" x="78" y="45" width="4" height="8" rx="2" />
+      <rect class="ui-illustration__line" x="78" y="97" width="4" height="8" rx="2" />
+      <rect class="ui-illustration__line" x="50" y="73" width="8" height="4" rx="2" />
+      <rect class="ui-illustration__line" x="102" y="73" width="8" height="4" rx="2" />
+      <rect class="ui-illustration__ink" x="78" y="73" width="17" height="4" rx="2" />
+      <g class="ui-illustration__fly ui-illustration__fly--sweep">
+        <rect class="ui-illustration__accent" x="78" y="51" width="4" height="26" rx="2" />
+        <rect x="78" y="73" width="4" height="26" fill="none" />
+      </g>
+      <circle class="ui-illustration__ink" cx="80" cy="75" r="4" />
+      <rect
+        class="ui-illustration__dash"
+        x="132"
+        y="46"
+        width="76"
+        height="16"
+        rx="8"
+        fill="none"
+        stroke-width="1.5"
+        stroke-dasharray="4 4"
+      />
+      <rect
+        class="ui-illustration__dash"
+        x="132"
+        y="68"
+        width="76"
+        height="16"
+        rx="8"
+        fill="none"
+        stroke-width="1.5"
+        stroke-dasharray="4 4"
+      />
+      <rect
+        class="ui-illustration__dash"
+        x="132"
+        y="90"
+        width="56"
+        height="16"
+        rx="8"
+        fill="none"
+        stroke-width="1.5"
+        stroke-dasharray="4 4"
+      />
+    }
+    @case ('empty-favorites') {
+      <rect class="ui-illustration__surface" x="70" y="38" width="92" height="80" rx="10" />
+      <rect class="ui-illustration__tint" x="76" y="44" width="80" height="34" rx="6" />
+      <rect class="ui-illustration__line" x="76" y="86" width="60" height="6" rx="3" />
+      <rect class="ui-illustration__line" x="76" y="98" width="40" height="6" rx="3" />
+      <g class="ui-illustration__grow">
+        <circle class="ui-illustration__halo" cx="160" cy="42" r="22" />
+        <path
+          class="ui-illustration__accent"
+          d="M160 26l4.1 10.3 11.1 0.7-8.6 7.1 2.8 10.8-9.4-5.9-9.4 5.9 2.8-10.8-8.6-7.1 11.1-0.7z"
+        />
+      </g>
+    }
+    @case ('empty-unsorted') {
+      <g class="ui-illustration__shift ui-illustration__shift--dip">
+        <rect class="ui-illustration__surface" x="92" y="28" width="56" height="40" rx="6" />
+        <rect class="ui-illustration__accent" x="97" y="33" width="46" height="14" rx="3" />
+        <rect class="ui-illustration__line" x="97" y="53" width="30" height="5" rx="2.5" />
+      </g>
+      <path
+        class="ui-illustration__tint ui-illustration__tint--key"
+        d="M52 82h36l8 14h48l8-14h36v28a12 12 0 0 1-12 12H64a12 12 0 0 1-12-12z"
+      />
+    }
+    @case ('empty-tags') {
+      <rect
+        class="ui-illustration__dash"
+        x="40"
+        y="44"
+        width="64"
+        height="24"
+        rx="12"
+        fill="none"
+        stroke-width="1.5"
+        stroke-dasharray="5 5"
+      />
+      <rect
+        class="ui-illustration__dash"
+        x="112"
+        y="44"
+        width="88"
+        height="24"
+        rx="12"
+        fill="none"
+        stroke-width="1.5"
+        stroke-dasharray="5 5"
+      />
+      <rect
+        class="ui-illustration__dash"
+        x="56"
+        y="82"
+        width="72"
+        height="24"
+        rx="12"
+        fill="none"
+        stroke-width="1.5"
+        stroke-dasharray="5 5"
+      />
+      <g class="ui-illustration__shift ui-illustration__shift--bob">
+        <rect class="ui-illustration__accent" x="136" y="82" width="56" height="24" rx="12" />
+        <rect class="ui-illustration__plus" x="162" y="88" width="4" height="12" rx="2" />
+        <rect class="ui-illustration__plus" x="158" y="92" width="12" height="4" rx="2" />
+      </g>
+    }
+    @case ('empty-filter') {
+      <rect
+        class="ui-illustration__tint ui-illustration__tint--key"
+        x="52"
+        y="24"
+        width="60"
+        height="22"
+        rx="11"
+      />
+      <rect class="ui-illustration__accent" x="120" y="24" width="68" height="22" rx="11" />
+      <circle class="ui-illustration__plus" cx="133" cy="35" r="4" />
+      <g class="ui-illustration__dim ui-illustration__dim--soft">
+        <rect
+          class="ui-illustration__dash"
+          x="44"
+          y="62"
+          width="44"
+          height="58"
+          rx="8"
+          fill="none"
+          stroke-width="1.5"
+          stroke-dasharray="5 5"
+        />
+        <rect
+          class="ui-illustration__dash"
+          x="98"
+          y="62"
+          width="44"
+          height="58"
+          rx="8"
+          fill="none"
+          stroke-width="1.5"
+          stroke-dasharray="5 5"
+        />
+        <rect
+          class="ui-illustration__dash"
+          x="152"
+          y="62"
+          width="44"
+          height="58"
+          rx="8"
+          fill="none"
+          stroke-width="1.5"
+          stroke-dasharray="5 5"
+        />
+      </g>
+    }
     @case ('offline') {
       <g class="ui-illustration__shift ui-illustration__shift--toward">
         <rect class="ui-illustration__ink" x="40" y="62" width="70" height="26" rx="13" />
@@ -166,7 +338,7 @@
         <rect class="ui-illustration__accent" x="130" y="62" width="70" height="26" rx="13" />
       </g>
       <rect
-        class="ui-illustration__line"
+        class="ui-illustration__line ui-illustration__line--ground"
         x="113"
         y="40"
         width="4"
@@ -175,7 +347,7 @@
         transform="rotate(-20 115 46)"
       />
       <rect
-        class="ui-illustration__line"
+        class="ui-illustration__line ui-illustration__line--ground"
         x="123"
         y="98"
         width="4"

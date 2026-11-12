@@ -1,6 +1,79 @@
 @use 'ui' as *;
 @use '../settings-page' as *;
-@include settings-page;
+
+// Appearance gets more room than the other pages (#315): the options column (Themes mockup: up to
+// 680px) and the live preview (up to 520px) side by side, 24px apart.
+@include settings-page(rem(1224px));
+
+:host {
+  container-type: inline-size;
+}
+
+// Narrow content area (phone, tablet, a small desktop window): header, preview, options in one
+// column; the preview scrolls away with the page.
+.appearance {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+
+  @include tablet-up {
+    gap: rem(18px);
+  }
+}
+
+.appearance__options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+
+  @include tablet-up {
+    gap: rem(18px);
+  }
+}
+
+.appearance__preview {
+  display: flex;
+  flex-direction: column;
+  gap: rem(10px);
+  min-width: 0;
+}
+
+// Themes mockup: options on the left, the preview on the right and sticky while the options scroll
+// (the shell's main column is the scroller). The columns keep the mockup's 680 : 520 ratio.
+@container (width >= 52.5em) {
+  .appearance {
+    display: grid;
+    grid-template:
+      'header preview' auto
+      'options preview' 1fr / minmax(0, 17fr) minmax(0, 13fr);
+    column-gap: var(--space-6);
+    align-items: start;
+  }
+
+  .appearance__header {
+    grid-area: header;
+  }
+
+  .appearance__options {
+    grid-area: options;
+  }
+
+  .appearance__preview {
+    position: sticky;
+    top: var(--space-3);
+    grid-area: preview;
+  }
+}
+
+.appearance__preview-title {
+  @include type(label);
+
+  margin: 0;
+  color: var(--text-muted);
+  font-weight: 600;
+}
 
 .appearance__themes {
   display: flex;
@@ -17,8 +90,26 @@
   color: var(--text-muted);
 }
 
-.appearance__note {
+.appearance__options .appearance__note {
   padding-bottom: var(--space-2);
+}
+
+// The curated accent swatches and the "+" swatch share a wrapping row; the colour panel opens on a
+// line of its own under them (Themes mockup: up to 420px, right-aligned beside the text).
+.appearance__accents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(10px);
+  align-items: center;
+  justify-content: flex-end;
+  max-width: rem(420px);
+}
+
+.appearance__own-hint {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
 }
 
 // The Custom options sit on the page background, inset in the panel (Themes mockup).
@@ -35,11 +126,4 @@
   display: flex;
   justify-content: flex-end;
   padding-bottom: var(--space-3);
-}
-
-.appearance__preview {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-1) 0 var(--space-2);
 }

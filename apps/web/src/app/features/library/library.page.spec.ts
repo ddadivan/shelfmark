@@ -15,6 +15,9 @@ import { LINKS_SCOPE } from '../links/models/links-scope.const';
 import { FEED_MEMORY_STORAGE_KEY } from './models/feed-memory-storage-key.const';
 import { UI_VIEW } from '../../stores/models/ui-view.const';
 import { LinksStore } from '../../stores/links.store';
+import { SavedViewsStore } from '../../stores/saved-views.store';
+import { MockSavedViewsApi } from '../views/mock/mock-saved-views.api';
+import { SAVED_VIEWS_API } from '../views/models/saved-views-api.const';
 import { FeedMemoryService } from './feed-memory.service';
 import { loadEnglish, provideTranslocoForTest } from '../../testing/transloco-testing';
 import LibraryPage from './library.page';
@@ -214,6 +217,59 @@ describe('LibraryPage', () => {
         queryParams: { tag: null, kind: null },
         queryParamsHandling: 'merge',
       });
+    });
+
+    it('is the page card with a scene per scope (#315)', async () => {
+      const scenes: Record<string, string> = {
+        [LINKS_SCOPE.All]: 'empty-feed',
+        [LINKS_SCOPE.Unsorted]: 'empty-unsorted',
+        [LINKS_SCOPE.Favorites]: 'empty-favorites',
+      };
+      const { element, fixture } = await empty(LINKS_SCOPE.All);
+      for (const [scope, scene] of Object.entries(scenes)) {
+        fixture.componentRef.setInput('scope', scope);
+        await fixture.whenStable();
+        const state = element.querySelector('ui-empty-state');
+        expect(state?.classList.contains('ui-empty-state--page')).toBe(true);
+        // The scene is drawn by its own template branch; the filled tray marks Unsorted, etc.
+        expect(state?.querySelector('ui-illustration')).not.toBeNull();
+        expect(fixture.componentInstance['emptyIllustration']()).toBe(scene);
+      }
+    });
+
+    it('names a link type filter apart from tags', async () => {
+      const { api, element, fixture } = await setup();
+      api.list.mockReturnValue(of(page([])));
+      fixture.componentRef.setInput('kind', 'shopping');
+      fixture.componentRef.setInput('tag', 'docs');
+      await fixture.whenStable();
+
+      expect(element.querySelector('ui-empty-state h2')?.textContent).toBe(
+        'Nothing matches these filters',
+      );
+      expect(element.querySelector('ui-empty-state button')?.textContent?.trim()).toBe(
+        'Clear filters',
+      );
+    });
+
+    it('names the saved view whose filters match', async () => {
+      TestBed.configureTestingModule({
+        providers: [{ provide: SAVED_VIEWS_API, useClass: MockSavedViewsApi }],
+      });
+      const { api, element, fixture } = await setup();
+      api.list.mockReturnValue(of(page([])));
+      fixture.componentRef.setInput('kind', 'video');
+      // The starter views (Videos, Articles) arrive after the mock API's list latency.
+      void TestBed.inject(SavedViewsStore).load();
+      await vi.waitFor(() => expect(TestBed.inject(SavedViewsStore).loaded()).toBe(true));
+      await fixture.whenStable();
+
+      expect(element.querySelector('ui-empty-state h2')?.textContent).toBe(
+        'Nothing in “Videos” yet',
+      );
+      expect(element.querySelector('ui-empty-state button')?.textContent?.trim()).toBe(
+        'Show all links',
+      );
     });
 
     it('clears the tag filter on the favorites scope too', async () => {

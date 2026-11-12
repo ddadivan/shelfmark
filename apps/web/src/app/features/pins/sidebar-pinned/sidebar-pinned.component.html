@@ -1,25 +1,57 @@
-@if (pins.rows().length > 0) {
+@if (shown()) {
   <section class="pinned" aria-labelledby="sidebar-pinned-heading">
     <h2 id="sidebar-pinned-heading" class="pinned__heading">
       {{ 'shell.sidebar.pinned.heading' | transloco }}
     </h2>
-    <ul
-      class="pinned__list"
-      cdkDropList
-      cdkDropListLockAxis="y"
-      [cdkDropListDisabled]="dragDisabled()"
-      (cdkDropListDropped)="dropped($event)"
-    >
-      @for (row of pins.rows(); track row.key; let index = $index) {
-        <li
-          class="pinned__item"
-          cdkDrag
-          [cdkDragDisabled]="dragDisabled()"
-          [attr.data-pin]="row.key"
-        >
-          <!-- The row as a small floating card down-right of the pointer, so the slot shows. -->
-          <div *cdkDragPreview class="pinned__preview">
-            <div class="pinned__preview-card">
+    @if (pins.rows().length === 0) {
+      <!-- Phone Library page only: an empty Pinned section still says where pins live (#315). -->
+      <ui-button
+        class="pinned__empty"
+        variant="ghost"
+        block
+        iconLeft="pin"
+        (click)="explainEmpty()"
+      >
+        {{ 'shell.sidebar.pinned.empty' | transloco }}
+      </ui-button>
+    } @else {
+      <ul
+        class="pinned__list"
+        cdkDropList
+        cdkDropListLockAxis="y"
+        (cdkDropListSorted)="sorted($event)"
+        (cdkDropListDropped)="dropped($event)"
+      >
+        @for (row of pins.rows(); track row.key; let index = $index) {
+          <li
+            class="pinned__item"
+            cdkDrag
+            [cdkDragStartDelay]="DRAG_START_DELAY"
+            [attr.data-pin]="row.key"
+            (cdkDragStarted)="dragStarted()"
+            (cdkDragEnded)="dragEnded()"
+            (contextmenu)="onContextMenu($event)"
+          >
+            <!-- The row as a small floating card down-right of the pointer, so the slot shows. -->
+            <div *cdkDragPreview class="pinned__preview">
+              <div class="pinned__preview-card">
+                @if (row.folder; as folder) {
+                  <ui-folder-icon
+                    size="sm"
+                    [icon]="folder.icon"
+                    [colour]="settings.shownColour(folder.colour)"
+                  />
+                  <span class="pinned__name">{{ folder.name }}</span>
+                } @else if (row.link; as link) {
+                  <ui-favicon [src]="favicon(link)" [letter]="letter(link)" />
+                  <span class="pinned__name">{{ link.title }}</span>
+                }
+              </div>
+            </div>
+            <!-- Where the row was: a faint ghost of it (the folder tree's look) while a line marks
+                 where it lands; nothing else moves. A div: an li cannot sit in this li's
+                 template; it only lives while dragging. -->
+            <div *cdkDragPlaceholder class="pinned__drop-slot" aria-hidden="true">
               @if (row.folder; as folder) {
                 <ui-folder-icon
                   size="sm"
@@ -32,73 +64,57 @@
                 <span class="pinned__name">{{ link.title }}</span>
               }
             </div>
-          </div>
-          <!-- The place it lands: a reserved slot one row tall with a faint ghost of the row (the
-               folder tree's look), the siblings glide apart. A div: an li cannot sit in this li's
-               template; it only lives while dragging. -->
-          <div *cdkDragPlaceholder class="pinned__drop-slot" aria-hidden="true">
             @if (row.folder; as folder) {
-              <ui-folder-icon
-                size="sm"
-                [icon]="folder.icon"
-                [colour]="settings.shownColour(folder.colour)"
-              />
-              <span class="pinned__name">{{ folder.name }}</span>
+              <a
+                class="pinned__link"
+                [class.is-active]="activeId() === folder.id"
+                [routerLink]="folderLink(folder)"
+                [attr.aria-current]="activeId() === folder.id ? 'page' : null"
+                (keydown)="onKeydown($event, index, row.key)"
+              >
+                <ui-folder-icon
+                  size="sm"
+                  [icon]="folder.icon"
+                  [colour]="settings.shownColour(folder.colour)"
+                />
+                <span class="pinned__name">{{ folder.name }}</span>
+                @if (settings.countsShown()) {
+                  <span class="pinned__count">&ngsp;{{ folder.linkCount }}</span>
+                }
+              </a>
             } @else if (row.link; as link) {
-              <ui-favicon [src]="favicon(link)" [letter]="letter(link)" />
-              <span class="pinned__name">{{ link.title }}</span>
+              <a
+                class="pinned__link"
+                [attr.href]="href(link) ?? null"
+                [attr.target]="href(link) && newTab() ? '_blank' : null"
+                [attr.rel]="href(link) ? (newTab() ? 'noopener noreferrer' : 'noreferrer') : null"
+                (click)="openLink(link)"
+                (keydown)="onKeydown($event, index, row.key)"
+              >
+                <ui-favicon [src]="favicon(link)" [letter]="letter(link)" />
+                <span class="pinned__name">{{ link.title }}</span>
+                @if (href(link) && newTab()) {
+                  <span class="pinned__hidden">{{ 'links.item.opensInNewTab' | transloco }}</span>
+                }
+              </a>
             }
-          </div>
-          @if (row.folder; as folder) {
-            <a
-              class="pinned__link"
-              [class.is-active]="activeId() === folder.id"
-              [routerLink]="folderLink(folder)"
-              [attr.aria-current]="activeId() === folder.id ? 'page' : null"
-              (keydown)="onKeydown($event, index, row.key)"
-            >
-              <ui-folder-icon
-                size="sm"
-                [icon]="folder.icon"
-                [colour]="settings.shownColour(folder.colour)"
-              />
-              <span class="pinned__name">{{ folder.name }}</span>
-              @if (settings.countsShown()) {
-                <span class="pinned__count">&ngsp;{{ folder.linkCount }}</span>
-              }
-            </a>
-          } @else if (row.link; as link) {
-            <a
-              class="pinned__link"
-              [attr.href]="href(link) ?? null"
-              [attr.target]="href(link) && newTab() ? '_blank' : null"
-              [attr.rel]="href(link) ? (newTab() ? 'noopener noreferrer' : 'noreferrer') : null"
-              (click)="openLink(link)"
-              (keydown)="onKeydown($event, index, row.key)"
-            >
-              <ui-favicon [src]="favicon(link)" [letter]="letter(link)" />
-              <span class="pinned__name">{{ link.title }}</span>
-              @if (href(link) && newTab()) {
-                <span class="pinned__hidden">{{ 'links.item.opensInNewTab' | transloco }}</span>
-              }
-            </a>
-          }
-          <!-- Unpin is the row's only action, so no "…" menu (author, #314): shown on hover or
+            <!-- Unpin is the row's only action, so no "…" menu (author, #314): shown on hover or
                focus, always on touch. -->
-          <div class="pinned__actions">
-            <ui-button
-              class="pinned__unpin"
-              variant="ghost"
-              size="sm"
-              iconOnly
-              iconLeft="pin-off"
-              [ariaLabel]="unpinLabel(row.folder?.name ?? row.link?.title ?? '')"
-              [uiTooltip]="unpinLabel(row.folder?.name ?? row.link?.title ?? '')"
-              (click)="unpin(row)"
-            />
-          </div>
-        </li>
-      }
-    </ul>
+            <div class="pinned__actions">
+              <ui-button
+                class="pinned__unpin"
+                variant="ghost"
+                size="sm"
+                iconOnly
+                iconLeft="pin-off"
+                [ariaLabel]="unpinLabel(row.folder?.name ?? row.link?.title ?? '')"
+                [uiTooltip]="unpinLabel(row.folder?.name ?? row.link?.title ?? '')"
+                (click)="unpin(row)"
+              />
+            </div>
+          </li>
+        }
+      </ul>
+    }
   </section>
 }
