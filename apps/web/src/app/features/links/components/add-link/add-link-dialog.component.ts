@@ -73,9 +73,9 @@ import { LocaleService } from '../../../../core/i18n/locale.service';
 import { parsePastedLinks } from '../paste-many/parse-pasted-links';
 import type { ParsedPaste } from '../paste-many/models/parsed-paste.interface';
 import { PasteManyListComponent } from '../paste-many/paste-many-list.component';
-import { buildFolderOptions } from './folder-options';
-import { displayHost, urlWithoutScheme } from './http-url';
-import { saveErrorKey } from './save-error-key';
+import { buildFolderOptions } from '../../utils/folder-options';
+import { displayHost, urlWithoutScheme } from '../../utils/http-url';
+import { saveErrorKey } from '../../utils/save-error-key';
 
 /** Wait after the last keystroke before the preview is requested (a paste is instant to the eye). */
 const PREVIEW_DEBOUNCE_MS = 350;

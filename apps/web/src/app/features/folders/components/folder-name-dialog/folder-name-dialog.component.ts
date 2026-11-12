@@ -24,7 +24,7 @@ import {
   UiDialogRef,
 } from '@shelfmark/ui';
 import { FoldersStore } from '../../../../stores/folders.store';
-import { buildFolderOptions } from '../../../links/components/add-link/folder-options';
+import { buildFolderOptions } from '../../../links/utils/folder-options';
 import { FOLDER_NAME_ERROR } from '../../models/folder-name-error.const';
 import { FOLDER_NAME_MODE } from '../../models/folder-name-mode.const';
 import type { FolderNameDialogData } from '../../models/folder-name-dialog-data.interface';
