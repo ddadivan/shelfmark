@@ -43,7 +43,6 @@ function languageOf(settings: UserSettingsResponse): LanguageSettings {
     dateFormat: settings.dateFormat,
     timeFormat: settings.timeFormat,
     weekStart: settings.weekStart,
-    spellcheck: settings.spellcheck,
   };
 }
 
@@ -52,8 +51,7 @@ function sameLanguage(a: LanguageSettings, b: LanguageSettings): boolean {
     a.language === b.language &&
     a.dateFormat === b.dateFormat &&
     a.timeFormat === b.timeFormat &&
-    a.weekStart === b.weekStart &&
-    a.spellcheck === b.spellcheck
+    a.weekStart === b.weekStart
   );
 }
 

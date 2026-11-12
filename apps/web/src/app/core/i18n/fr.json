@@ -251,7 +251,6 @@
         "placeholder": "Pourquoi enregistrez-vous ce lien ?",
         "hint": "Pour le retrouver plus tard",
         "counter": "caractères",
-        "spellcheck": "Vérifier l’orthographe",
         "tooLong": "La note est trop longue ({{max}} caractères au maximum)"
       },
       "duplicate": {
@@ -1969,7 +1968,7 @@
   },
   "sharing": {
     "dialog": {
-      "title": "Partager « {{name}} »",
+      "title": "Partager le dossier « {{name}} »",
       "close": "Fermer",
       "done": "Terminé",
       "count": {
@@ -1980,26 +1979,26 @@
       "loading": "Chargement des paramètres de partage…",
       "loadFailed": "Impossible de charger les paramètres de partage.",
       "retry": "Réessayer",
-      "public": "Lien public",
-      "publicHint": "Toute personne disposant du lien peut le consulter. Aucun compte requis.",
-      "linkLabel": "Adresse du lien public",
+      "public": "Dossier public",
+      "publicHint": "Toute personne disposant du lien peut consulter ce dossier. Aucun compte requis.",
+      "linkLabel": "Adresse de la page du dossier",
       "copy": "Copier le lien",
-      "copied": "Lien copié",
+      "copied": "Lien du dossier copié",
       "copyFallback": "La copie n’est pas autorisée ici. Le lien est sélectionné : appuyez sur Ctrl+C ou ⌘C pour le copier.",
       "settings": "Paramètres du lien",
       "notes": "Afficher mes notes",
       "notesHint": "Les invités voient pourquoi vous avez enregistré chaque lien",
       "reset": "Réinitialiser le lien",
-      "resetHint": "L’ancien lien cesse aussitôt de fonctionner",
+      "resetHint": "L’ancien lien du dossier cesse aussitôt de fonctionner",
       "resetAction": "Réinitialiser",
       "privateNotes": "Les notes restent privées, sauf si vous les activez.",
-      "limit": "Vous pouvez partager jusqu’à {{max}} dossiers. Désactivez d’abord un autre lien public.",
+      "limit": "Vous pouvez partager jusqu’à {{max}} dossiers. Rendez d’abord un autre dossier privé.",
       "demo": "Les comptes de démo ne peuvent pas partager de dossiers. Connectez-vous pour partager les vôtres.",
       "saveFailed": "Impossible d’enregistrer la modification. Réessayez."
     },
     "reset": {
-      "title": "Réinitialiser le lien public ?",
-      "message": "L’ancien lien cesse aussitôt de fonctionner. Toute personne qui doit encore voir le dossier aura besoin du nouveau lien.",
+      "title": "Réinitialiser le lien du dossier ?",
+      "message": "L’ancien lien du dossier cesse aussitôt de fonctionner. Toute personne qui doit encore voir le dossier aura besoin du nouveau lien.",
       "confirm": "Réinitialiser le lien",
       "cancel": "Annuler",
       "done": "Lien réinitialisé",

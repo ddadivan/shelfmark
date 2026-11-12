@@ -251,7 +251,6 @@
         "placeholder": "Por que você está salvando isto?",
         "hint": "Ajuda a encontrar depois",
         "counter": "caracteres",
-        "spellcheck": "Verificar ortografia",
         "tooLong": "A nota é longa demais (no máximo {{max}} caracteres)"
       },
       "duplicate": {
@@ -1969,7 +1968,7 @@
   },
   "sharing": {
     "dialog": {
-      "title": "Compartilhar “{{name}}”",
+      "title": "Compartilhar a pasta “{{name}}”",
       "close": "Fechar",
       "done": "Concluído",
       "count": {
@@ -1980,26 +1979,26 @@
       "loading": "Carregando as configurações de compartilhamento…",
       "loadFailed": "Não foi possível carregar as configurações de compartilhamento.",
       "retry": "Tentar de novo",
-      "public": "Link público",
-      "publicHint": "Qualquer pessoa com o link pode ver. Não precisa de conta.",
-      "linkLabel": "Endereço do link público",
+      "public": "Pasta pública",
+      "publicHint": "Qualquer pessoa com o link pode ver esta pasta. Não precisa de conta.",
+      "linkLabel": "Endereço da página da pasta",
       "copy": "Copiar link",
-      "copied": "Link copiado",
+      "copied": "Link da pasta copiado",
       "copyFallback": "Não é possível copiar aqui. O link está selecionado: pressione Ctrl+C ou ⌘C para copiá-lo.",
       "settings": "Configurações do link",
       "notes": "Mostrar minhas notas",
       "notesHint": "Os convidados veem por que você salvou cada link",
       "reset": "Redefinir link",
-      "resetHint": "O link antigo para de funcionar na hora",
+      "resetHint": "O link antigo da pasta para de funcionar na hora",
       "resetAction": "Redefinir",
       "privateNotes": "As notas ficam privadas, a menos que você as ative.",
-      "limit": "Você pode compartilhar até {{max}} pastas. Desative outro link público primeiro.",
+      "limit": "Você pode compartilhar até {{max}} pastas. Torne outra pasta privada primeiro.",
       "demo": "Contas de demo não podem compartilhar pastas. Entre para compartilhar as suas.",
       "saveFailed": "Não foi possível salvar a alteração. Tente de novo."
     },
     "reset": {
-      "title": "Redefinir o link público?",
-      "message": "O link antigo para de funcionar na hora. Quem ainda precisar ver a pasta vai precisar do novo link.",
+      "title": "Redefinir o link da pasta?",
+      "message": "O link antigo da pasta para de funcionar na hora. Quem ainda precisar ver a pasta vai precisar do novo link.",
       "confirm": "Redefinir link",
       "cancel": "Cancelar",
       "done": "Link redefinido",

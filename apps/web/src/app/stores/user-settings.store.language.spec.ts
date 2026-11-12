@@ -5,6 +5,7 @@ import {
   LANGUAGE_SETTINGS_DEFAULT,
   LIBRARY_SETTINGS_DEFAULT,
   TIME_FORMAT,
+  WEEK_START,
   type UserSettingsResponse,
 } from '@shelfmark/contracts';
 import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
@@ -102,7 +103,7 @@ describe('UserSettingsStore language', () => {
 
   it('does nothing for an unchanged value', async () => {
     const { store, api } = setup();
-    await expect(store.setLanguage({ spellcheck: true })).resolves.toBe(true);
+    await expect(store.setLanguage({ weekStart: WEEK_START.Default })).resolves.toBe(true);
     expect(api.update).not.toHaveBeenCalled();
   });
 

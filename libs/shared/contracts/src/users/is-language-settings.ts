@@ -8,7 +8,7 @@ import type { TimeFormat } from './time-format.type';
 import { WEEK_START } from './week-start.const';
 import type { WeekStart } from './week-start.type';
 
-const LANGUAGE_KEYS = 'dateFormat,language,spellcheck,timeFormat,weekStart';
+const LANGUAGE_KEYS = 'dateFormat,language,timeFormat,weekStart';
 
 function isOneOf<T extends string>(values: readonly T[], value: unknown): value is T {
   return typeof value === 'string' && (values as readonly string[]).includes(value);
@@ -41,7 +41,6 @@ export function isLanguageSettings(value: unknown): value is LanguageSettings {
     isInterfaceLanguage(record['language']) &&
     isDateFormat(record['dateFormat']) &&
     isTimeFormat(record['timeFormat']) &&
-    isWeekStart(record['weekStart']) &&
-    typeof record['spellcheck'] === 'boolean'
+    isWeekStart(record['weekStart'])
   );
 }

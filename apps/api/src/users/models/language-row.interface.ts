@@ -4,6 +4,5 @@ export interface LanguageRow {
   dateFormat: string;
   timeFormat: string;
   weekStart: string;
-  spellcheck: boolean;
   languageSavedAt: Date | null;
 }

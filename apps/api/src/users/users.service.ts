@@ -132,7 +132,6 @@ export class UsersService {
       dateFormat: request.dateFormat,
       timeFormat: request.timeFormat,
       weekStart: request.weekStart,
-      spellcheck: request.spellcheck,
     };
     if (Object.values(language).some((value) => value !== undefined)) {
       // Only the fields sent are written (Prisma skips `undefined`); the first write marks them saved.

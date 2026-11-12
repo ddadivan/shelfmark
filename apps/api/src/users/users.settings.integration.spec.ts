@@ -652,7 +652,6 @@ describe('account settings', () => {
       dateFormat: DATE_FORMAT.Iso,
       timeFormat: TIME_FORMAT.H12,
       weekStart: WEEK_START.Sunday,
-      spellcheck: false,
     };
     const defaults = {
       trashRetentionDays: 30,
@@ -685,8 +684,26 @@ describe('account settings', () => {
       expect(body.language).toBe(INTERFACE_LANGUAGE.De);
       expect(body.timeFormat).toBe(TIME_FORMAT.H24);
       expect(body.dateFormat).toBe(DATE_FORMAT.Default);
-      expect(body.spellcheck).toBe(true);
+      expect(body).not.toHaveProperty('spellcheck');
       expect(body.languageSaved).toBe(true);
+    });
+
+    it('ignores the retired spellcheck column: a stored value never reaches the answer (#326)', async () => {
+      await t.db.prisma.user.update({
+        where: { id: users.owner.userId },
+        data: { spellcheck: false },
+      });
+      const a = asUser(t.app, users.owner);
+      const read = (await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse;
+      expect(read).toEqual(defaults);
+      expect(read).not.toHaveProperty('spellcheck');
+      const saved = await a
+        .patch(USER_SETTINGS_ENDPOINT)
+        .send({ language: INTERFACE_LANGUAGE.De })
+        .expect(200);
+      expect(saved.body).not.toHaveProperty('spellcheck');
+      const row = await t.db.prisma.user.findUniqueOrThrow({ where: { id: users.owner.userId } });
+      expect(row.spellcheck).toBe(false);
     });
 
     it('does not mark the language saved for other settings', async () => {
@@ -718,8 +735,9 @@ describe('account settings', () => {
       [{ timeFormat: true }],
       [{ weekStart: 'saturday' }],
       [{ weekStart: null }],
-      [{ spellcheck: 'on' }],
-      [{ spellcheck: null }],
+      // Retired in #326 (spell-check is always on): an unknown field now.
+      [{ spellcheck: false }],
+      [{ spellcheck: true }],
       [{ locale: 'fr' }],
     ])('rejects %j with 400 and changes nothing', async (body) => {
       const a = asUser(t.app, users.owner);

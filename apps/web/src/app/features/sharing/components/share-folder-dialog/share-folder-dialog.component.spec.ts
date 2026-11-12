@@ -77,13 +77,13 @@ describe('ShareFolderDialogComponent', () => {
     vi.stubGlobal('navigator', { ...navigator, clipboard: { writeText } });
     await open();
 
-    expect(dialog()?.textContent).toContain('Share “Reading”');
+    expect(dialog()?.textContent).toContain('Share folder “Reading”');
     expect(dialog()?.textContent).toContain('15 links, subfolders included');
     await until(() =>
-      expect(switchNamed('Public link')?.getAttribute('aria-checked')).toBe('false'),
+      expect(switchNamed('Public folder')?.getAttribute('aria-checked')).toBe('false'),
     );
 
-    switchNamed('Public link')?.click();
+    switchNamed('Public folder')?.click();
     await until(() => expect(q<HTMLInputElement>('input[readonly]')).not.toBeNull());
     const field = q<HTMLInputElement>('input[readonly]');
     const token = field?.value.split('/c/')[1] ?? '';
@@ -102,8 +102,8 @@ describe('ShareFolderDialogComponent', () => {
       clipboard: { writeText: vi.fn().mockRejectedValue(new Error('denied')) },
     });
     await open();
-    await until(() => expect(switchNamed('Public link')).not.toBeNull());
-    switchNamed('Public link')?.click();
+    await until(() => expect(switchNamed('Public folder')).not.toBeNull());
+    switchNamed('Public folder')?.click();
     await until(() => expect(buttonNamed('Copy link')).toBeDefined());
 
     buttonNamed('Copy link')?.click();
@@ -116,8 +116,8 @@ describe('ShareFolderDialogComponent', () => {
 
   it('turns notes on and resets the link after a confirmation', async () => {
     await open();
-    await until(() => expect(switchNamed('Public link')).not.toBeNull());
-    switchNamed('Public link')?.click();
+    await until(() => expect(switchNamed('Public folder')).not.toBeNull());
+    switchNamed('Public folder')?.click();
     await until(() => expect(switchNamed('Show my notes')).not.toBeNull());
     const before = q<HTMLInputElement>('input[readonly]')?.value;
 
@@ -129,7 +129,7 @@ describe('ShareFolderDialogComponent', () => {
     // The switch flips at once; the change is saved when the controls are enabled again.
     await until(() => expect(buttonNamed('Reset')?.disabled).toBe(false));
     buttonNamed('Reset')?.click();
-    await until(() => expect(document.body.textContent).toContain('Reset the public link?'));
+    await until(() => expect(document.body.textContent).toContain('Reset the folder link?'));
     const confirm = [...document.querySelectorAll('button')].find(
       (button) => button.textContent?.trim() === 'Reset link',
     );
@@ -139,17 +139,17 @@ describe('ShareFolderDialogComponent', () => {
 
   it('turns the link off again', async () => {
     await open();
-    await until(() => expect(switchNamed('Public link')).not.toBeNull());
-    switchNamed('Public link')?.click();
+    await until(() => expect(switchNamed('Public folder')).not.toBeNull());
+    switchNamed('Public folder')?.click();
     await until(() => expect(q('input[readonly]')).not.toBeNull());
-    switchNamed('Public link')?.click();
+    switchNamed('Public folder')?.click();
     await until(() => expect(q('input[readonly]')).toBeNull());
-    expect(switchNamed('Public link')?.getAttribute('aria-checked')).toBe('false');
+    expect(switchNamed('Public folder')?.getAttribute('aria-checked')).toBe('false');
   });
 
   it('explains that demo accounts cannot share, without a switch', async () => {
     await open({ isDemo: true });
     expect(dialog()?.textContent).toContain("Demo accounts can't share folders");
-    expect(switchNamed('Public link')).toBeNull();
+    expect(switchNamed('Public folder')).toBeNull();
   });
 });

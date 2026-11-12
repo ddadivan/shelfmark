@@ -113,9 +113,6 @@ export class UserSettingsResponseDto implements UserSettingsResponse {
   @ApiProperty({ enum: Object.values(WEEK_START), example: WEEK_START.Default })
   weekStart!: WeekStart;
 
-  @ApiProperty({ example: true })
-  spellcheck!: boolean;
-
   @ApiProperty({
     example: false,
     description: 'False until a language setting is first written (the web keeps a local choice)',
