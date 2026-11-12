@@ -6,7 +6,7 @@ import { MOCK_FOLDERS, MOCK_LIBRARY_COUNTS, MOCK_LINKS } from '@shelfmark/contra
 import { DialogService } from '@shelfmark/ui';
 import axe from 'axe-core';
 import { of, Subject, throwError, type Observable } from 'rxjs';
-import { AddLinkDialogService } from '../links/add-link/add-link-dialog.service';
+import { AddLinkDialogService } from '../links/services/add-link-dialog.service';
 import { FOLDERS_API } from '../links/models/folders-api.const';
 import type { FoldersApi } from '../links/models/folders-api.interface';
 import { LINKS_API } from '../links/models/links-api.const';

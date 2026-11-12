@@ -47,7 +47,7 @@ import { PinsStore } from '../../stores/pins.store';
 import { TagsStore } from '../../stores/tags.store';
 import { TrashStore } from '../../stores/trash.store';
 import { UserSettingsStore } from '../../stores/user-settings.store';
-import { LinkDragService } from '../../features/links/drag/link-drag.service';
+import { LinkDragService } from '../../features/links/services/link-drag.service';
 import { HowItWorksService } from '../../features/how-it-works/services/how-it-works.service';
 import { FeedbackDialogService } from '../../features/feedback/services/feedback-dialog.service';
 import { HowItWorksCardComponent } from '../../features/how-it-works/components/how-it-works-card/how-it-works-card.component';

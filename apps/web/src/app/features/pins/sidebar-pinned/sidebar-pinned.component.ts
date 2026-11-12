@@ -38,8 +38,8 @@ import { ViewportService } from '../../../core/layout/viewport.service';
 import { PinsStore } from '../../../stores/pins.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { APP_PATH } from '../../../models/app-path.const';
-import { LinkActionsService } from '../../links/link-actions.service';
-import { ownImageUrl, safeHref, siteLetter } from '../../links/link-view';
+import { LinkActionsService } from '../../links/services/link-actions.service';
+import { ownImageUrl, safeHref, siteLetter } from '../../links/utils/link-view';
 import type { PinRow } from '../models/pin-row.interface';
 import { PinActionsService } from '../pin-actions.service';
 

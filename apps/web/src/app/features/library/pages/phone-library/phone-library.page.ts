@@ -17,9 +17,9 @@ import { SidebarComponent } from '../../../../shell/sidebar/sidebar.component';
 import { FoldersStore } from '../../../../stores/folders.store';
 import { LinksStore } from '../../../../stores/links.store';
 import { TrashStore } from '../../../../stores/trash.store';
-import { groupByDay } from '../../../links/recent/history-days';
-import { HISTORY_DAY_KIND } from '../../../links/recent/models/history-day-kind.const';
-import { RecentSheetComponent } from '../../../links/recent/recent-sheet.component';
+import { groupByDay } from '../../../links/utils/history-days';
+import { HISTORY_DAY_KIND } from '../../../links/models/history-day-kind.const';
+import { RecentSheetComponent } from '../../../links/components/recent-sheet/recent-sheet.component';
 import { LibraryTileComponent } from './library-tile.component';
 
 /**

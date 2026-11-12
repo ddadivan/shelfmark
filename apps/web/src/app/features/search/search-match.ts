@@ -1,5 +1,5 @@
 import type { FolderResponse, TagResponse } from '@shelfmark/contracts';
-import { splitQuery } from '../links/search-query';
+import { splitQuery } from '../links/utils/search-query';
 import { SEARCH_LOCAL_LIMIT } from './models/search-local-limit.const';
 import type { FolderMatch } from './models/folder-match.interface';
 

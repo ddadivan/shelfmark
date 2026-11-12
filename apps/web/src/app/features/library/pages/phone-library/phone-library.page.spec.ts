@@ -13,7 +13,7 @@ import { LINKS_API } from '../../../links/models/links-api.const';
 import { TAGS_API } from '../../../links/models/tags-api.const';
 import { MockTrashApi } from '../../../trash/mock/mock-trash.api';
 import { TRASH_API } from '../../../trash/models/trash-api.const';
-import { RecentSheetComponent } from '../../../links/recent/recent-sheet.component';
+import { RecentSheetComponent } from '../../../links/components/recent-sheet/recent-sheet.component';
 import PhoneLibraryPage from './phone-library.page';
 
 async function setup(phone = true) {

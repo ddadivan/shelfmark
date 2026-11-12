@@ -33,7 +33,7 @@ import { AdminStore } from '../features/admin/services/admin.store';
 import { FeedbackDialogService } from '../features/feedback/services/feedback-dialog.service';
 import { ExportActionsService } from '../features/export/services/export-actions.service';
 import { AuthStore } from '../core/auth/auth.store';
-import { LinkActionsService } from '../features/links/link-actions.service';
+import { LinkActionsService } from '../features/links/services/link-actions.service';
 import { OnboardingStore } from '../features/onboarding/onboarding.store';
 import { RatingStore } from '../features/rating/rating.store';
 import { SearchDialogService } from '../features/search/search-dialog.service';

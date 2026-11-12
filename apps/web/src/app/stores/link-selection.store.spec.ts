@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { selectRange } from '../features/links/selection/select-range';
+import { selectRange } from '../features/links/utils/select-range';
 import { LinkSelectionStore } from './link-selection.store';
 
 const ORDER = ['a', 'b', 'c', 'd', 'e'];

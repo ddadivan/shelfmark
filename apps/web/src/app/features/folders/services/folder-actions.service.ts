@@ -10,7 +10,7 @@ import { sidebarActiveId } from '../../../shell/sidebar/sidebar-active-id';
 import { SidebarTreeFocusService } from '../../../shell/sidebar/sidebar-tree-focus.service';
 import { FoldersStore } from '../../../stores/folders.store';
 import { TrashStore } from '../../../stores/trash.store';
-import { LinkActionsService } from '../../links/link-actions.service';
+import { LinkActionsService } from '../../links/services/link-actions.service';
 import { FolderStyleDialogComponent } from '../components/folder-style-dialog/folder-style-dialog.component';
 import type { FolderStyleDialogData } from '../models/folder-style-dialog-data.interface';
 import { DeleteFolderDialogComponent } from '../components/delete-folder-dialog/delete-folder-dialog.component';

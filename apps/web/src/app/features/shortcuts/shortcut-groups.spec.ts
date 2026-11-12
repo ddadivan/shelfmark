@@ -1,5 +1,5 @@
 import { TOAST_SHORTCUT } from '@shelfmark/ui';
-import { LINK_SELECT_SHORTCUT } from '../links/selection/models/link-select-shortcut.const';
+import { LINK_SELECT_SHORTCUT } from '../links/models/link-select-shortcut.const';
 import { SEARCH_SHORTCUT_KEY } from '../search/models/search-shortcut-key.const';
 import { SHORTCUT_GROUPS } from './models/shortcut-groups.const';
 import { SHORTCUT_KEY } from './models/shortcut-key.const';

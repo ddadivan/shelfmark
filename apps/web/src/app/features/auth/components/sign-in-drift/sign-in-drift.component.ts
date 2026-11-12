@@ -14,7 +14,7 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { ReducedMotion } from '@shelfmark/ui';
 import { activeLang } from '../../../../core/i18n/active-lang';
 import { ViewportService } from '../../../../core/layout/viewport.service';
-import { LinkPreviewCardComponent } from '../../../links/link-preview-card/link-preview-card.component';
+import { LinkPreviewCardComponent } from '../../../links/components/link-preview-card/link-preview-card.component';
 import { layoutDriftLane } from './drift-layout';
 import { SIGN_IN_DRIFT_CARDS } from './models/sign-in-drift-cards.const';
 import { SIGN_IN_DRIFT_FRAMES } from './models/sign-in-drift-frames.const';

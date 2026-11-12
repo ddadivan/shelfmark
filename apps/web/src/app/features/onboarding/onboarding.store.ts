@@ -3,7 +3,7 @@ import { patchState, signalStore, withComputed, withMethods, withState } from '@
 import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
 import { AuthStore } from '../../core/auth/auth.store';
 import { SessionScope } from '../../core/auth/session-scope.service';
-import { LinkActionsService } from '../links/link-actions.service';
+import { LinkActionsService } from '../links/services/link-actions.service';
 import { OnboardingDialogComponent } from './onboarding-dialog.component';
 import { ONBOARDING_API } from './models/onboarding-api.const';
 import { ONBOARDING_RESULT } from './models/onboarding-result.const';

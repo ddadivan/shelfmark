@@ -3,7 +3,7 @@ import type { LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { DialogService } from '@shelfmark/ui';
 import { of } from 'rxjs';
-import { BulkLinkActionsService } from '../links/bulk/bulk-link-actions.service';
+import { BulkLinkActionsService } from '../links/services/bulk-link-actions.service';
 import { LINKS_API } from '../links/models/links-api.const';
 import type { LinksApi } from '../links/models/links-api.interface';
 import { LINKS_SCOPE } from '../links/models/links-scope.const';

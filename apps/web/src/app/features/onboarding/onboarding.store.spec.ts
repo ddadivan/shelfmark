@@ -9,7 +9,7 @@ import { AUTH_PROVIDER, type AuthUser } from '@shelfmark/contracts';
 import { AppTranslocoLoader } from '../../core/i18n/app-transloco.loader';
 import { APP_LANG } from '../../core/i18n/models/app-lang.const';
 import { translocoConfig } from '../../core/i18n/transloco.config';
-import { LinkActionsService } from '../links/link-actions.service';
+import { LinkActionsService } from '../links/services/link-actions.service';
 import { ONBOARDING_API } from './models/onboarding-api.const';
 import type { OnboardingApi } from './models/onboarding-api.interface';
 import { ONBOARDING_RESULT } from './models/onboarding-result.const';

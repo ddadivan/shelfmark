@@ -5,7 +5,7 @@ import { MOCK_FOLDERS, MOCK_LIBRARY_COUNTS, MOCK_LINKS } from '@shelfmark/contra
 import { UiDialogRef } from '@shelfmark/ui';
 import axe from 'axe-core';
 import { of, Subject } from 'rxjs';
-import { LinkActionsService } from '../../links/link-actions.service';
+import { LinkActionsService } from '../../links/services/link-actions.service';
 import { FOLDERS_API } from '../../links/models/folders-api.const';
 import { LINKS_API } from '../../links/models/links-api.const';
 import type { LinksApi } from '../../links/models/links-api.interface';
