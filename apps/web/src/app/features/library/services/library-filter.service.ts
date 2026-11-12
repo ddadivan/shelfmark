@@ -41,7 +41,7 @@ const NO_INPUTS: LibraryRouteInputs = {
  * folder of the page, and the query-param changes of the filter chips and sort menu.
  * Page-scoped: the page provides it and hands over its inputs with `connect`.
  */
-@Service()
+@Service({ autoProvided: false })
 export class LibraryFilterService {
   private readonly settings = inject(UserSettingsStore);
   private readonly memory = inject(FeedMemoryService);

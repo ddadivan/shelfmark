@@ -11,7 +11,7 @@ import { AddLinkFormService } from './add-link-form.service';
  * that turns the dialog into the paste-many list, and the "Add several links" text area (#315)
  * whose text is read with the paste-many parser.
  */
-@Service()
+@Service({ autoProvided: false })
 export class AddSeveralLinksService {
   private readonly formState = inject(AddLinkFormService);
   private readonly injector = inject(Injector);

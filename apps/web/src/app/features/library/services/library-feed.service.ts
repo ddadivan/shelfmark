@@ -32,7 +32,7 @@ import { LibraryFilterService } from './library-filter.service';
  * skeleton, the empty and error states, the subfolders and the cards / list switch with its morph.
  * Page-scoped: the page provides it.
  */
-@Service()
+@Service({ autoProvided: false })
 export class LibraryFeedService {
   private readonly store = inject(LinksStore);
   private readonly filters = inject(LibraryFilterService);

@@ -6,9 +6,12 @@ import type { LinksScope } from '../../links/models/links-scope.type';
 import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
 import { LibraryFilterService } from './library-filter.service';
 import { LibraryHeadService } from './library-head.service';
+import { provideLibraryPage } from './provide-library-page';
 
 async function setup() {
-  TestBed.configureTestingModule({ providers: [provideTranslocoForTest()] });
+  TestBed.configureTestingModule({
+    providers: [...provideLibraryPage(), provideTranslocoForTest()],
+  });
   await loadEnglish();
   const scope = signal<LinksScope>(LINKS_SCOPE.Favorites);
   const q = signal<unknown>(undefined);

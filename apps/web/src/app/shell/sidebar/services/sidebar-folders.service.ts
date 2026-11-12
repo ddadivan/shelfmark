@@ -12,7 +12,7 @@ import { PinsStore } from '../../../stores/pins.store';
  * do. Provided by the sidebar component, because the desktop sidebar and the phone drawer each
  * have their own menu.
  */
-@Service()
+@Service({ autoProvided: false })
 export class SidebarFoldersService {
   private readonly folders = inject(FoldersStore);
   private readonly pins = inject(PinsStore);

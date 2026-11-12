@@ -13,6 +13,7 @@ import { FEED_MEMORY_STORAGE_KEY } from '../models/feed-memory-storage-key.const
 import { LibraryBulkService } from './library-bulk.service';
 import { LibraryFilterService } from './library-filter.service';
 import { LibrarySelectionService } from './library-selection.service';
+import { provideLibraryPage } from './provide-library-page';
 
 const link = (n: number): LinkResponse => ({
   ...MOCK_LINKS[0],
@@ -43,6 +44,7 @@ async function setup(deleted: boolean) {
   };
   TestBed.configureTestingModule({
     providers: [
+      ...provideLibraryPage(),
       provideTranslocoForTest(),
       { provide: LINKS_API, useValue: api },
       { provide: BulkLinkActionsService, useValue: links },

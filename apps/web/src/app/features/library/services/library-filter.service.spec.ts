@@ -6,10 +6,13 @@ import { LINKS_SCOPE } from '../../links/models/links-scope.const';
 import type { LinksScope } from '../../links/models/links-scope.type';
 import { FEED_MEMORY_STORAGE_KEY } from '../models/feed-memory-storage-key.const';
 import { LibraryFilterService } from './library-filter.service';
+import { provideLibraryPage } from './provide-library-page';
 
 function setup() {
   const router = { navigate: vi.fn(() => Promise.resolve(true)) };
-  TestBed.configureTestingModule({ providers: [{ provide: Router, useValue: router }] });
+  TestBed.configureTestingModule({
+    providers: [...provideLibraryPage(), { provide: Router, useValue: router }],
+  });
   const service = TestBed.inject(LibraryFilterService);
   const scope = signal<LinksScope>(LINKS_SCOPE.All);
   const folderId = signal<string | undefined>(undefined);

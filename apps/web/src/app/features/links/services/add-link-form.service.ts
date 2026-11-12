@@ -17,7 +17,7 @@ import type { AddLinkFormModel } from '../models/add-link-form-model.interface';
  * contract), the edit-mode link and the text handed over by ⌘V in the library. Saving lives in
  * `AddLinkSaveService`, which registers itself as the submit action.
  */
-@Service()
+@Service({ autoProvided: false })
 export class AddLinkFormService {
   private readonly transloco = inject(TranslocoService);
   private readonly settings = inject(UserSettingsStore);

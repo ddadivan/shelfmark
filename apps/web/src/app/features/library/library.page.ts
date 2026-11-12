@@ -50,6 +50,7 @@ import { LibraryDragService } from './services/library-drag.service';
 import { LibraryBulkService } from './services/library-bulk.service';
 import { LibrarySelectionService } from './services/library-selection.service';
 import { LibraryFilterService } from './services/library-filter.service';
+import { provideLibraryPage } from './services/provide-library-page';
 import { FolderTileComponent } from './components/folder-tile/folder-tile.component';
 import { SORT_OPTION_KEYS } from './models/sort-option-keys.const';
 import { SORT_OPTIONS } from './models/sort-options.const';
@@ -97,14 +98,7 @@ const SKELETON_COUNT = 8;
   templateUrl: './library.page.html',
   styleUrl: './library.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [
-    LibraryFilterService,
-    LibraryFeedService,
-    LibraryHeadService,
-    LibrarySelectionService,
-    LibraryBulkService,
-    LibraryDragService,
-  ],
+  providers: provideLibraryPage(),
 })
 export default class LibraryPage {
   protected readonly store = inject(LinksStore);

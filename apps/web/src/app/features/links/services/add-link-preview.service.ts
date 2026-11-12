@@ -19,7 +19,7 @@ const PREVIEW_DEBOUNCE_MS = 350;
  * it. A failed preview is not an error for saving. In edit mode the request serves the duplicate
  * check alone (the link itself is not a duplicate).
  */
-@Service()
+@Service({ autoProvided: false })
 export class AddLinkPreviewService {
   private readonly linksApi = inject(LINKS_API);
   private readonly formState = inject(AddLinkFormService);

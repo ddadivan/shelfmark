@@ -12,6 +12,7 @@ import { FEED_MEMORY_STORAGE_KEY } from '../models/feed-memory-storage-key.const
 import { provideTranslocoForTest, loadEnglish } from '../../../testing/transloco-testing';
 import { LibraryFeedService } from './library-feed.service';
 import { LibraryFilterService } from './library-filter.service';
+import { provideLibraryPage } from './provide-library-page';
 
 const link = (n: number): LinkResponse => ({ ...MOCK_LINKS[0], id: `id-${n}`, title: `Link ${n}` });
 const page = (items: LinkResponse[]): ListLinksResponse => ({
@@ -26,7 +27,11 @@ async function setup(items: LinkResponse[]) {
     recent: vi.fn<LinksApi['recent']>(() => of({ items: [] })),
   };
   TestBed.configureTestingModule({
-    providers: [provideTranslocoForTest(), { provide: LINKS_API, useValue: api }],
+    providers: [
+      ...provideLibraryPage(),
+      provideTranslocoForTest(),
+      { provide: LINKS_API, useValue: api },
+    ],
   });
   await loadEnglish();
   const filters = TestBed.inject(LibraryFilterService);

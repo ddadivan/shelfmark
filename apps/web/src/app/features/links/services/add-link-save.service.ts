@@ -23,7 +23,7 @@ import { AddLinkPreviewService } from './add-link-preview.service';
  * only, sends it and closes the dialog with the result. Registers itself as the submit action of
  * the form.
  */
-@Service()
+@Service({ autoProvided: false })
 export class AddLinkSaveService {
   private readonly linksApi = inject(LINKS_API);
   private readonly formState = inject(AddLinkFormService);

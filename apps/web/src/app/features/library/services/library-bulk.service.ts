@@ -12,7 +12,7 @@ import { LibrarySelectionService } from './library-selection.service';
  * of opening all) and running one of them, which may end the selection afterwards.
  * Page-scoped: the page provides it.
  */
-@Service()
+@Service({ autoProvided: false })
 export class LibraryBulkService {
   private readonly links = inject(BulkLinkActionsService);
   private readonly selection = inject(LibrarySelectionService);

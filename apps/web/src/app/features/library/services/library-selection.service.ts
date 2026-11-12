@@ -24,7 +24,7 @@ import { LibraryFilterService } from './library-filter.service';
  * entering and leaving selection mode, and the rules that clear it (a new view, filter, sort or
  * route; links that left the view). Page-scoped: the page provides it.
  */
-@Service()
+@Service({ autoProvided: false })
 export class LibrarySelectionService {
   private readonly store = inject(LinkSelectionStore);
   private readonly feed = inject(LibraryFeedService);

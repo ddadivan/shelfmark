@@ -12,7 +12,7 @@ import { LibraryFilterService } from './library-filter.service';
  * The names of the library page: the breadcrumb trail of a folder page and the tab title
  * (restored to the brand when the page goes away). Page-scoped: the page provides it.
  */
-@Service()
+@Service({ autoProvided: false })
 export class LibraryHeadService {
   private readonly transloco = inject(TranslocoService);
   private readonly title = inject(Title);

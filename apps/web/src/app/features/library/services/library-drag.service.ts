@@ -11,7 +11,7 @@ import { LibrarySelectionService } from './library-selection.service';
  * a picked link is dragged), the spoken text and the badge of the preview. The drop targets and
  * the hit test live in the app-wide `LinkDragService`. Page-scoped: the page provides it.
  */
-@Service()
+@Service({ autoProvided: false })
 export class LibraryDragService {
   private readonly links = inject(LinkDragService);
   private readonly selection = inject(LibrarySelectionService);
