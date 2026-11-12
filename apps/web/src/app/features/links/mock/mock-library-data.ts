@@ -23,7 +23,7 @@ import { MOCK_TRASH_SCENARIO } from '../../trash/mock/models/mock-trash-scenario
 import { MOCK_TRASH_SCENARIO_KEY } from '../../trash/mock/models/mock-trash-scenario-key.const';
 import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
 import { matchesQuery } from '../utils/search-query';
-import { buildDemoLibrarySeed, isDemoMockSession } from './demo-library-seed';
+import { buildDemoLibrarySeed, usesDemoLibrary } from './demo-library-seed';
 import { generateMockLinks } from './generate-mock-links';
 import type { MockSavedView } from '../../views/mock/models/mock-saved-view.interface';
 import { mockStarterViews } from '../../views/mock/mock-starter-views';
@@ -53,8 +53,11 @@ const SEEDED_OLD_DAYS = 20;
  */
 @Service()
 export class MockLibraryData {
-  /** The demo sandbox starts from the mockup library; every other mock session from the fixtures. */
-  private readonly demo = isDemoMockSession() ? buildDemoLibrarySeed() : null;
+  /**
+   * The demo sandbox (and the `showcase` scenario) starts from the mockup library; every other
+   * mock session from the fixtures.
+   */
+  private readonly demo = usesDemoLibrary() ? buildDemoLibrarySeed() : null;
   links: LinkResponse[] = this.demo?.links ?? generateMockLinks();
   private folders: FolderResponse[] =
     this.demo?.folders ?? MOCK_FOLDERS.map((folder) => ({ ...folder }));

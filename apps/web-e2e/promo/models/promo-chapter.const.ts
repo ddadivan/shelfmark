@@ -10,4 +10,5 @@ export const PROMO_CHAPTER_START_MS = {
   Find: 52_000,
   Many: 79_000,
   Yours: 99_000,
+  Share: 126_000,
 } as const;

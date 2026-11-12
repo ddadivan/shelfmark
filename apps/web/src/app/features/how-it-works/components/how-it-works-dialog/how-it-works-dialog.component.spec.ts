@@ -45,7 +45,7 @@ describe('HowItWorksDialogComponent', () => {
   }
 
   it(
-    'plays the desktop recording, muted, with English captions on and five chapters',
+    'plays the desktop recording, muted, with English captions on and six chapters',
     async () => {
       const { root, video } = await render();
 
@@ -72,6 +72,7 @@ describe('HowItWorksDialogComponent', () => {
         'Find it again 0:52',
         'Many at once 1:19',
         'Make it yours 1:39',
+        'Share a collection 2:06',
       ]);
       expect(await axeViolations(root)).toEqual([]);
     },
@@ -108,7 +109,22 @@ describe('HowItWorksDialogComponent', () => {
       'false',
       'false',
       'false',
+      'false',
     ]);
+  });
+
+  it('jumps to the share scene from the last chapter (#326)', async () => {
+    const { fixture, root, video } = await render();
+    const buttons = Array.from(
+      root.querySelectorAll<HTMLButtonElement>('.how-it-works__chapters button'),
+    );
+
+    buttons[5].click();
+    await fixture.whenStable();
+
+    expect(video.currentTime).toBe(126);
+    expect(buttons[5].getAttribute('aria-pressed')).toBe('true');
+    expect(buttons[5].textContent).toContain('Share a collection');
   });
 
   it('follows the playing chapter as the video time moves', async () => {
