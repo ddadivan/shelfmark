@@ -1,21 +1,37 @@
 # Promo video recorder (#271)
 
-A scripted Playwright run on the mock demo that records the "How it works" video
-(`HowItWorks.dc.html`, "Shelfmark in 2 minutes", rewritten for #315) through the features of
-today, in six chapters: **Save a link** (landing → "Open the demo" → paste a link, the preview
-fills in, folder and tag, save; "Add several links" with a pasted list), **Folders and tags**
-(colour and icon, pin to the sidebar, filter by a tag), **Find it again** (⌘K / Search, a saved
-view, favorites, Recently opened, delete and restore from Trash), **Many at once** (select two
-cards and move them; drag a card onto a folder on desktop, Move to folder on the phone), **Make it
-yours** (dark theme and an own accent colour, a language switch, export, Send feedback; on the
-phone the share target too) and **Share a collection** (#326: a folder's menu → Share… → the
-"Public folder" on → Copy link → the `/c/…` page as a guest). The phone recording shows the tab bar
-throughout. Demo accounts cannot share, so the last chapter switches to a made-up regular mock
-account (`PROMO_SHARE`, no personal data) under the mock `showcase` scenario
+A scripted Playwright run on the mock demo that records the "How it works" videos
+(`HowItWorks.dc.html`, "Shelfmark in 3 minutes"). Since #330 they show every feature in short
+captioned scenes (2–5 s), grouped into seven chapters:
+
+1. **Save a link**: landing → "Open the demo" → paste a link, the preview fills in, folder, tag
+   and note, the card lands; the "already saved" notice; "Add several links" with a pasted list.
+2. **Folders and tags**: a nested folder and its empty state, colour and icon, expand / collapse,
+   pin, reorder Pinned by drag (the drop line), Unpin with Undo, reorder folders, filter by a tag,
+   rename a tag into another one and merge, Favorites.
+3. **Many at once**: the Move to folder picker (search, the current folder) and the toast's Undo,
+   dragging two cards onto a sidebar folder, selecting links and the bulk bar (tags, favorite,
+   copy, open all, move).
+4. **Find it again**: ⌘K and the inline search panel, saved views and "Save this view", sort and
+   Cards ↔ List, Recently opened (type filter, search, pause), an empty state.
+5. **Undo and Trash**: delete with Undo, Trash and restore, the retention setting.
+6. **Make it yours**: dark, Custom on the dark base with an own accent (a faint one first, so the
+   4.5:1 guard shows), text size, font, density and card preview with the live preview, a
+   language switch, the "?" shortcuts dialog, Send feedback.
+7. **Share and export**: export (JSON / bookmarks HTML), a public folder page (Share… → "Public
+   folder" → Copy link), the rating question, the page as a guest.
+
+The phone recording skips the desktop-only scenes (mouse drags, the inline search panel, the
+shortcuts) and a few repeats, and shows the tab bar, a long press, touch reorder, bottom sheets
+(the Move to folder picker), installing the app and the share target instead.
+
+Demo accounts cannot share, so the last chapter switches to a made-up regular mock account
+(`PROMO_SHARE`, Sam Rivera, no personal data) under the mock `showcase` scenario
 (`sm-mock-links-scenario`), which starts every mock session, the guest's too, from the demo's
-mockup library; under it the share dialog shows the production origin
-(`MOCK_PUBLIC_ORIGIN`), never the local server; the guest is the same tab without the session. It never runs with the e2e suite: it has
-its own config (`playwright.promo.config.mts`) and file pattern.
+mockup library; under it the share dialog shows the production origin (`MOCK_PUBLIC_ORIGIN`),
+never the local server. The account is nine days old, so the rating question comes once the
+share dialog closes. The guest is the same tab without the session. It never runs with the e2e
+suite: it has its own config (`playwright.promo.config.mts`) and file pattern.
 
 ## Re-record
 
@@ -31,14 +47,14 @@ reused), then writes to `apps/web/public/media/`, per variant
 
 | File    | What                                                                |
 | ------- | ------------------------------------------------------------------- |
-| `.mp4`  | H.264 (High, level 3.1), no audio, faststart; what the dialog plays |
+| `.mp4`  | H.264 (High, level 4.0), no audio, faststart; what the dialog plays |
 | `.webm` | VP9, no audio; the fallback for browsers without H.264              |
 | `.webp` | Poster: the library right after the save                            |
 | `.vtt`  | English captions, one cue per step, times measured during the run   |
 
 Two recordings (#315): the desktop at 1440 × 900 (H.264 level 4.0) and the phone at 390 × 844
-(touch, the tab bar), both starting in the light theme. Each video is about 1–2.5 MB for two
-and a half minutes (CRF 34 / VP9 46). Commit the files after checking them; the dialog plays the one that
+(touch, the tab bar), both starting in the light theme. The desktop runs about 3:15, the phone
+about 2:45; the MP4s stay near 4 MB and 2.5 MB (CRF 34 / VP9 46). Commit the files after checking them; the dialog plays the one that
 fits the layout (`ViewportService.phone`), shows only the poster under reduced motion and starts
 playing on request.
 
@@ -50,9 +66,11 @@ script checks for the encoders first and stops with the fix.
 
 - `models/promo-steps.const.ts` is the script: each step has a caption and an action; the
   recorder measures when each step starts and writes the captions from those times.
-- Chapters: a step with `chapter` waits until that chapter's start (`PROMO_CHAPTER_START_MS`:
-  0:00, 0:34, 0:52, 1:19, 1:39, 2:06), so the captions line up with the dialog's chapter buttons
-  (`HOW_IT_WORKS_CHAPTERS` in `apps/web`). If a chapter starts more than 0.5 s late, the run
+- Chapters: a step with `chapter` waits until that chapter's start in its recording
+  (`PROMO_CHAPTER_START_MS`, one set per device: desktop 0:00, 0:33, 1:09, 1:40, 2:09, 2:26,
+  2:55; phone 0:00, 0:27, 0:58, 1:21, 1:42, 1:56, 2:15), so the captions line up with the
+  dialog's chapter buttons (`HOW_IT_WORKS_CHAPTERS` in `apps/web`, which shows the times of the
+  recording it plays). If a chapter starts more than 0.5 s late, the run
   fails: shorten the steps before it, or move both constants to the new time (a `PROMO_MEASURE=1`
   run prints where each chapter would start with no holds). A step with `only` runs on one device.
 - `support/promo-director.ts` paces the run: pointer glides, typing with a delay, pauses. The
@@ -63,8 +81,9 @@ script checks for the encoders first and stops with the fix.
   the share chapter keeps that look (the mock appearance stays in the browser).
   The desktop uses a Mac user agent, so the app shows ⌘ and answers ⌘K.
 - Everything happens inside the app (no reloads), since a reload starts a fresh demo library;
-  the exceptions come at the end: the phone's share-target step and the share chapter (the switch
-  to the account, then the guest page) use `page.goto`.
+  the exceptions come in the last chapter: the phone's install and share-target steps and the
+  share scenes (the switch to the account, then the guest page) use `page.goto`.
+- "Open all" opens real tabs: the recorder closes them as they come, behind the recorded page.
 - The raw recording starts when the page opens; ffmpeg cuts it from the first frame of the
   loaded landing.
 
