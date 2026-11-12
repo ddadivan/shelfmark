@@ -54,8 +54,8 @@ import { HowItWorksCardComponent } from '../../features/how-it-works/components/
 import { SIDEBAR_RECENT_ID } from './models/sidebar-recent-id.const';
 import { SIDEBAR_FEEDBACK_ID } from './models/sidebar-feedback-id.const';
 import { SIDEBAR_TRASH_ID } from './models/sidebar-trash-id.const';
-import { sidebarActiveId } from './sidebar-active-id';
-import { SidebarTreeFocusService } from './sidebar-tree-focus.service';
+import { sidebarActiveId } from './utils/sidebar-active-id';
+import { SidebarTreeFocusService } from './services/sidebar-tree-focus.service';
 
 /** The fixed rows and their routes. */
 const FIXED_ROUTES: Readonly<Record<string, string>> = {

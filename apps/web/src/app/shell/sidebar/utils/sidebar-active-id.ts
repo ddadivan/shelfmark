@@ -1,7 +1,7 @@
-import { LINKS_SCOPE } from '../../features/links/models/links-scope.const';
-import { APP_PATH } from '../../models/app-path.const';
-import { SIDEBAR_RECENT_ID } from './models/sidebar-recent-id.const';
-import { SIDEBAR_TRASH_ID } from './models/sidebar-trash-id.const';
+import { LINKS_SCOPE } from '../../../features/links/models/links-scope.const';
+import { APP_PATH } from '../../../models/app-path.const';
+import { SIDEBAR_RECENT_ID } from '../models/sidebar-recent-id.const';
+import { SIDEBAR_TRASH_ID } from '../models/sidebar-trash-id.const';
 
 /**
  * The tree row a URL belongs to: a fixed row (`LINKS_SCOPE.*` is its id, `SIDEBAR_RECENT_ID` the
