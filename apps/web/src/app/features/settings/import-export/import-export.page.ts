@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { ButtonComponent, SettingsRowComponent, SettingsSectionComponent } from '@shelfmark/ui';
 import { EXPORT_FORMAT, type ExportFormat } from '@shelfmark/contracts';
-import { ExportActionsService } from '../../export/export-actions.service';
+import { ExportActionsService } from '../../export/services/export-actions.service';
 import { SettingsPageHeaderComponent } from '../settings-page-header/settings-page-header.component';
 
 /** `/settings/import-export`: download everything as JSON or as a browser bookmarks file. */

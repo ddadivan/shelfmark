@@ -1,5 +1,5 @@
 import { EXPORT_FORMAT } from '@shelfmark/contracts';
-import { LINKS_SCOPE } from '../links/models/links-scope.const';
+import { LINKS_SCOPE } from '../../links/models/links-scope.const';
 import { buildExportUrl, exportScopeOf } from './export-url';
 
 const FOLDER = '3f0c1d52-8a3b-4d6e-9d57-0a5f2a1b9c11';

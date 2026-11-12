@@ -3,8 +3,8 @@ import { TranslocoService } from '@jsverse/transloco';
 import type { ExportFormat } from '@shelfmark/contracts';
 import { TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { firstValueFrom } from 'rxjs';
-import { EXPORT_API } from './models/export-api.const';
-import type { ExportScope } from './models/export-scope.interface';
+import { EXPORT_API } from '../models/export-api.const';
+import type { ExportScope } from '../models/export-scope.interface';
 
 /**
  * Exports links from the library toolbar, the account menu and settings. A failure shows an

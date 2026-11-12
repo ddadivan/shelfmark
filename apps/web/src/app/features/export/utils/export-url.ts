@@ -1,7 +1,7 @@
 import type { ExportFormat, LinkKind } from '@shelfmark/contracts';
-import type { ExportScope } from './models/export-scope.interface';
-import type { LinksFilter } from '../links/models/links-filter.type';
-import { LINKS_SCOPE } from '../links/models/links-scope.const';
+import type { ExportScope } from '../models/export-scope.interface';
+import type { LinksFilter } from '../../links/models/links-filter.type';
+import { LINKS_SCOPE } from '../../links/models/links-scope.const';
 
 /**
  * The export scope of a feed filter, or `undefined` when the view has no export equivalent:

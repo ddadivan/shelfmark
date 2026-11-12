@@ -2,7 +2,7 @@ import { LINK_KIND, LINK_SORT_FIELD } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { firstValueFrom } from 'rxjs';
 import { Injector, runInInjectionContext } from '@angular/core';
-import { buildExportUrl, exportScopeOf } from '../export/export-url';
+import { buildExportUrl, exportScopeOf } from '../export/utils/export-url';
 import { isLinkKind, parseLinkKind } from './link-kind';
 import { inFilter, linksQuery } from './links-filter';
 import { MockLibraryData } from './mock/mock-library-data';

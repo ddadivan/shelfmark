@@ -3,12 +3,12 @@ import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { EXPORT_FORMAT } from '@shelfmark/contracts';
 import { ToastService } from '@shelfmark/ui';
 import { firstValueFrom, of, Subject, throwError } from 'rxjs';
-import { APP_LANG } from '../../core/i18n/models/app-lang.const';
-import { AppTranslocoLoader } from '../../core/i18n/app-transloco.loader';
-import { translocoConfig } from '../../core/i18n/transloco.config';
+import { APP_LANG } from '../../../core/i18n/models/app-lang.const';
+import { AppTranslocoLoader } from '../../../core/i18n/app-transloco.loader';
+import { translocoConfig } from '../../../core/i18n/transloco.config';
 import { ExportActionsService } from './export-actions.service';
-import { EXPORT_API } from './models/export-api.const';
-import type { ExportApi } from './models/export-api.interface';
+import { EXPORT_API } from '../models/export-api.const';
+import type { ExportApi } from '../models/export-api.interface';
 
 async function setup(api: ExportApi) {
   TestBed.configureTestingModule({

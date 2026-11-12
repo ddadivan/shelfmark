@@ -61,8 +61,8 @@ import {
 import { Router } from '@angular/router';
 import { pluralKey } from '../../core/i18n/plural-key';
 import { ViewportService } from '../../core/layout/viewport.service';
-import { ExportActionsService } from '../export/export-actions.service';
-import { exportScopeOf } from '../export/export-url';
+import { ExportActionsService } from '../export/services/export-actions.service';
+import { exportScopeOf } from '../export/utils/export-url';
 import { TAG_QUERY_PARAM } from '../tags/models/tag-query-param.const';
 import { parseTagFilter } from '../tags/tag-filter';
 import { explicitFeedSort, feedSortQuery } from '../links/feed-sort';
