@@ -73,6 +73,7 @@ import { LocaleService } from '../../../../core/i18n/locale.service';
 import { parsePastedLinks } from '../paste-many/parse-pasted-links';
 import type { ParsedPaste } from '../paste-many/models/parsed-paste.interface';
 import { PasteManyListComponent } from '../paste-many/paste-many-list.component';
+import { AddLinkFormService } from '../../services/add-link-form.service';
 import { buildFolderOptions } from '../../utils/folder-options';
 import { displayHost, urlWithoutScheme } from '../../utils/http-url';
 import { saveErrorKey } from '../../utils/save-error-key';
@@ -117,6 +118,7 @@ const PREVIEW_DEBOUNCE_MS = 350;
     TranslocoPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [AddLinkFormService],
   templateUrl: './add-link-dialog.component.html',
   styleUrl: './add-link-dialog.component.scss',
 })
@@ -133,6 +135,7 @@ export class AddLinkDialogComponent {
 
   /** The phone sheet has no Cancel in add mode and no shortcut hint: not rendered there. */
   protected readonly phone = inject(ViewportService).phone;
+  private readonly formState = inject(AddLinkFormService);
   private readonly linksApi = inject(LINKS_API);
   private readonly folders = inject(FoldersStore);
   private readonly tagStore = inject(TagsStore);
@@ -144,15 +147,12 @@ export class AddLinkDialogComponent {
   /** Settings › Library › Saving: the default folder and whether pages are fetched. */
   private readonly library = this.settings.libraryShown;
 
-  /** Ticks when the active language or its translations change, so messages re-translate. */
-  private readonly i18n = toSignal(this.transloco.events$, { initialValue: undefined });
-
   /** The link being edited; `undefined` when adding. */
-  protected readonly original = this.data.link;
-  protected readonly editing = this.original !== undefined;
+  protected readonly original = this.formState.original;
+  protected readonly editing = this.formState.editing;
 
   /** What a paste with several links held; set, the paste-many list replaces the form. */
-  protected readonly pasted = signal<ParsedPaste | null>(null);
+  protected readonly pasted = signal<ParsedPaste | null>(this.formState.handedOverMany);
 
   /**
    * "Add several links" (#315): a large text area replaces the single-link fields; pasting into
@@ -166,9 +166,9 @@ export class AddLinkDialogComponent {
     (path) => {
       validate(path.text, ({ value }): ValidationError.WithoutFieldTree | undefined =>
         value().trim() === ''
-          ? { kind: 'required', message: this.text('links.add.several.required') }
+          ? { kind: 'required', message: this.formState.text('links.add.several.required') }
           : parsePastedLinks(value()).links.length === 0
-            ? { kind: 'noLinks', message: this.text('links.add.several.none') }
+            ? { kind: 'noLinks', message: this.formState.text('links.add.several.none') }
             : undefined,
       );
     },
@@ -183,67 +183,17 @@ export class AddLinkDialogComponent {
       },
     },
   );
-  private readonly handedOver = this.editing ? null : this.readHandedOver();
-
-  private readonly model = signal<AddLinkFormModel>({
-    url: this.original?.url ?? this.handedOver?.url ?? '',
-    title: this.original?.title ?? '',
-    // The folder of the page, else "New links go to" (null is Unsorted).
-    folderId: this.original
-      ? this.original.folderId
-      : (this.data.folderId ?? this.library().newLinksFolderId),
-    tags: [...normalizeTagNames(this.original?.tags ?? [])],
-    note: this.original?.note ?? '',
-    isFavorite: this.original?.isFavorite ?? false,
-    kind: this.original?.kind ?? null,
-  });
-
   /** Edit mode: the "Type" select (video, article, shopping, other). */
   protected readonly kindOptions = computed(() => {
-    this.i18n();
+    this.formState.i18n();
     return Object.values(LINK_KIND).map((kind) => ({
       id: kind,
       name: this.transloco.translate(`links.kindOption.${kind}`),
     }));
   });
 
-  protected readonly form = form(
-    this.model,
-    (path) => {
-      required(path.url, { message: () => this.text('links.add.url.required') });
-      maxLength(path.url, LINK_LIMIT.UrlMax, {
-        message: () => this.text('links.add.url.tooLong', { max: LINK_LIMIT.UrlMax }),
-      });
-      validate(path.url, ({ value }): ValidationError.WithoutFieldTree | undefined => {
-        const url = value().trim();
-        return url === '' || isHttpUrl(url)
-          ? undefined
-          : { kind: 'url', message: this.text('links.add.url.invalid') };
-      });
-      if (this.editing) {
-        // Adding may leave the title empty (the preview fills it); an edit must not lose it.
-        validate(path.title, ({ value }): ValidationError.WithoutFieldTree | undefined =>
-          value().trim() === ''
-            ? { kind: 'required', message: this.text('links.add.titleField.required') }
-            : undefined,
-        );
-      }
-      maxLength(path.title, LINK_LIMIT.TitleMax, {
-        message: () => this.text('links.add.titleField.tooLong', { max: LINK_LIMIT.TitleMax }),
-      });
-      maxLength(path.note, LINK_LIMIT.NoteMax, {
-        message: () => this.text('links.add.note.tooLong', { max: LINK_LIMIT.NoteMax }),
-      });
-    },
-    {
-      submission: {
-        action: () => this.save(),
-        onInvalid: () => {
-          this.form().errorSummary()[0]?.fieldTree().focusBoundControl();
-        },
-      },
-    },
-  );
+  protected readonly form = this.formState.form;
+  private readonly model = this.formState.model;
 
   /** "Fetch titles and previews" is on: the preview loads the page (else it only checks duplicates). */
   protected readonly fetchPages = computed(() => this.library().fetchPreviews);
@@ -278,7 +228,7 @@ export class AddLinkDialogComponent {
 
   protected readonly folderOptions = computed(() => buildFolderOptions(this.folders.entities()));
   protected readonly tagSuggestions = computed<TagSuggestion[]>(() => {
-    this.i18n();
+    this.formState.i18n();
     return this.tagStore.entities().map((tag) => ({
       name: tag.name,
       countLabel: this.transloco.translate(pluralKey('tags.count', tag.linkCount), {
@@ -335,7 +285,7 @@ export class AddLinkDialogComponent {
 
   /** "Saved X, last opened Y" under the form (edit mode). */
   protected readonly meta = computed(() => {
-    this.i18n();
+    this.formState.i18n();
     const link = this.original;
     if (!link) {
       return null;
@@ -354,15 +304,7 @@ export class AddLinkDialogComponent {
     // Usually loaded by the sidebar already; the options fill in when the list arrives.
     void this.folders.load();
     void this.tagStore.load();
-    // Tags leave the field the way the API stores them: `normalizeTagName`, deduplicated.
-    effect(() => {
-      const field = this.form.tags();
-      const tags = field.value();
-      const normalized = normalizeTagNames(tags);
-      if (normalized !== tags) {
-        untracked(() => field.value.set([...normalized]));
-      }
-    });
+    this.formState.onSubmit(() => this.save());
     // The preview is gone (URL emptied or no longer valid): drop a title it filled in.
     // An `effect` because the field tree exposes `dirty()` but has no value-change hook, and the
     // form model is a plain signal, so a `linkedSignal` could not see whether the user typed.
@@ -601,29 +543,5 @@ export class AddLinkDialogComponent {
     if (!this.editing && !field.dirty()) {
       field.value.set(title.slice(0, LINK_LIMIT.TitleMax));
     }
-  }
-
-  /**
-   * Text handed over by ⌘V in the library: several links open the list at once, a single one
-   * fills the address (and the preview runs as if it had been pasted into the field).
-   */
-  private readHandedOver(): { url: string } | null {
-    const text = this.data.text;
-    if (text === undefined) {
-      return null;
-    }
-    const parsed = parsePastedLinks(text);
-    if (parsed.links.length > 1) {
-      this.pasted.set(parsed);
-      return null;
-    }
-    const [url] = parsed.links;
-    return url === undefined ? null : { url };
-  }
-
-  /** Reads `i18n` so a validation message re-translates when the language changes or loads. */
-  private text(key: string, params?: Record<string, unknown>): string {
-    this.i18n();
-    return this.transloco.translate(key, params);
   }
 }
