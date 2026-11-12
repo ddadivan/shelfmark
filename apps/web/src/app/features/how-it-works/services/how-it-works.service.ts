@@ -23,7 +23,8 @@ function isState(value: unknown): value is HowItWorksState {
 /**
  * "How it works" (#270, HowItWorks.dc.html): opens the promo video dialog and decides whether the
  * sidebar card shows: during the first two weeks the account is seen on this device, until the
- * video was opened or the card hidden. The state is per user in `localStorage` (the account's
+ * video was opened or the card hidden. A demo visitor always sees it until then (no two-week
+ * window): the demo is where people meet Shelfmark first. The state is per user in `localStorage` (the account's
  * creation time is not part of the session), so another device shows the card again.
  */
 @Service()
@@ -37,12 +38,15 @@ export class HowItWorksService {
   readonly cardVisible = computed(() => {
     this.version();
     const user = this.auth.user();
-    if (!user || user.isDemo) {
+    if (!user) {
       return false;
     }
     const state = this.read(user.id);
+    if (state.done) {
+      return false;
+    }
     return (
-      !state.done && Date.now() - Date.parse(state.firstSeen) < HOW_IT_WORKS_CARD_DAYS * MS_PER_DAY
+      user.isDemo || Date.now() - Date.parse(state.firstSeen) < HOW_IT_WORKS_CARD_DAYS * MS_PER_DAY
     );
   });
 
