@@ -19,7 +19,7 @@ You change only `libs/ui/**`. Feature code in `apps/web` is `frontend-dev`'s. If
 
 ## Rules
 
-- One component (or directive) per design folder; selector `ui-<name>`; standalone; signal inputs; variants as typed union inputs.
+- One component (or directive) per design folder, placed by kind (ADR 0042: `lib/components/<name>/` with sub-components in sub-folders, `lib/directives/`, `lib/services/`, `lib/utils/`, `lib/models/`); selector `ui-<name>`; standalone; signal inputs; variants as typed union inputs.
 - Behaviour (keyboard, focus, ARIA, overlays) from Angular Aria / CDK. No Angular Material, no Tailwind, no third-party icon sets.
 - SCSS through CSS custom properties from tokens only; no hard-coded colours; no `::ng-deep`. Sizes in `rem` via `rem($px)`; px only for border widths, outline, outline-offset, box-shadow and the 2px progress bar; breakpoints in `em`.
 - `docs/design/reference.css` is reference only — re-implement, never copy wholesale.

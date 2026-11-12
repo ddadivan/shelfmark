@@ -15,13 +15,18 @@ description: Step-by-step template for a new Shelfmark libs/ui component or dire
 ## 2. Files
 
 ```
-libs/ui/src/lib/<name>/
+libs/ui/src/lib/components/<name>/   # a directive: lib/directives/<name>/ (ADR 0042)
   <name>.component.ts        # or <name>.directive.ts
-  <name>.component.scss
+  <name>.component.html
+  <name>.component.scss      # starts with @use '../../../styles/ui' as *;
   <name>.component.spec.ts
   <name>.stories.ts
-  index.ts                   # re-exported from libs/ui/src/index.ts
+  index.ts                   # re-exported from libs/ui/src/index.ts (in its kind's group)
+  models/                    # one const / type / interface per file
+  <sub-name>/                # a sub-component in its own folder (components/menu/menu-item/)
 ```
+
+A service goes to `lib/services/<name>/`, a pure function shared by several components to `lib/utils/<name>/`, constants and types without a component to `lib/models/<domain>/`. A helper that only this component uses stays in its folder.
 
 ## 3. Component
 
