@@ -100,15 +100,28 @@ jobs:
       - name: Build Storybook
         run: npx nx affected -t build-storybook --output-style=static
 
-  e2e:
-    name: e2e
+  # Browser tests, sharded (#313): four web-e2e shards and Storybook axe run side by side, so the
+  # full run (pushes to `stage`, release PRs into `main`) stays well under the job limit. A PR into
+  # `stage` keeps the short diff-based run in the first entry; the others finish at once.
+  e2e-shard:
+    name: e2e ${{ matrix.name }}
     runs-on: ubuntu-latest
-    # Stopgap: the full browser run (pushes to `stage`, release PRs into `main`) outgrew 30 minutes
-    # and was cancelled. Issue #313 shards it so it fits well under the limit; lower this then.
-    timeout-minutes: 60
+    timeout-minutes: 30
     permissions:
       contents: read
       actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: 'web 1/4', kind: web, shard: 1 }
+          - { name: 'web 2/4', kind: web, shard: 2 }
+          - { name: 'web 3/4', kind: web, shard: 3 }
+          - { name: 'web 4/4', kind: web, shard: 4 }
+          - { name: 'storybook', kind: storybook, shard: 0 }
+    env:
+      PR_INTO_STAGE: ${{ github.event_name == 'pull_request' && github.base_ref == 'stage' }}
+      SHARDS: 4
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -121,21 +134,33 @@ jobs:
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .nx/cache
-          key: nx-e2e-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
+          key: nx-e2e-${{ matrix.kind }}-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
           restore-keys: |
+            nx-e2e-${{ matrix.kind }}-${{ runner.os }}-
             nx-e2e-${{ runner.os }}-
       - run: npm ci
       - uses: nrwl/nx-set-shas@e602fada7ad5987b0f7b1905e7a99ea1c661514c # v5.1.0
         with:
           # Affected base: the PR's target branch, or the pushed branch itself.
           main-branch-name: ${{ github.base_ref || github.ref_name }}
-      # The job always runs (required check), but the browser is only downloaded when a browser
-      # test target is affected: `e2e` (web-e2e) or `test-storybook` (libs/ui axe over Storybook).
-      - name: Detect affected browser tests
+      # The browser is only downloaded when this entry has something to run: the diff-based PR
+      # run (first entry only), or the affected `e2e` (web-e2e) / `test-storybook` (libs/ui axe).
+      - name: Detect what this entry runs
         id: browser
         run: |
-          projects="$(npx nx show projects --affected --with-target e2e,test-storybook --json)"
-          echo "Affected projects with browser tests: ${projects}"
+          if [ "$PR_INTO_STAGE" = "true" ]; then
+            if [ "${{ matrix.kind }}-${{ matrix.shard }}" != "web-1" ]; then
+              echo "::notice::PR into stage: the diff-based run is in the first entry"
+              echo "needed=false" >> "$GITHUB_OUTPUT"; exit 0
+            fi
+            target="e2e,test-storybook"
+          elif [ "${{ matrix.kind }}" = "web" ]; then
+            target="e2e"
+          else
+            target="test-storybook"
+          fi
+          projects="$(npx nx show projects --affected --with-target "$target" --json)"
+          echo "Affected projects with ${target}: ${projects}"
           if [ "$projects" = "[]" ]; then echo "needed=false" >> "$GITHUB_OUTPUT"; else echo "needed=true" >> "$GITHUB_OUTPUT"; fi
       - name: Install Chromium
         if: steps.browser.outputs.needed == 'true'
@@ -151,21 +176,89 @@ jobs:
       # (tools/ci/pr-browser-tests.sh), so the required check stays short. Pushes to `stage` and
       # release PRs into `main` run every affected suite, so nothing skipped on a PR goes unchecked.
       - name: Run e2e and Storybook a11y tests for the diff
-        if: steps.browser.outputs.needed == 'true' && github.event_name == 'pull_request' && github.base_ref == 'stage'
+        if: steps.browser.outputs.needed == 'true' && env.PR_INTO_STAGE == 'true'
         run: tools/ci/pr-browser-tests.sh origin/stage
-      - name: Run every e2e and Storybook a11y test
-        if: steps.browser.outputs.needed == 'true' && !(github.event_name == 'pull_request' && github.base_ref == 'stage')
-        # One target at a time: web-e2e and test-storybook each use 4 browser workers.
-        run: npx nx affected -t e2e test-storybook --parallel=1 --output-style=static
+      # One shard of every web-e2e spec (desktop and phone); each shard writes a blob report that
+      # the `e2e` job merges into one HTML report when something failed.
+      - name: Run web-e2e shard ${{ matrix.shard }}/${{ env.SHARDS }}
+        if: steps.browser.outputs.needed == 'true' && env.PR_INTO_STAGE != 'true' && matrix.kind == 'web'
+        env:
+          PLAYWRIGHT_BLOB_OUTPUT_DIR: ${{ github.workspace }}/blob-report
+        run: npx nx affected -t e2e --output-style=static -- --shard=${{ matrix.shard }}/${{ env.SHARDS }} --reporter=blob,line
+      - name: Run Storybook a11y tests
+        if: steps.browser.outputs.needed == 'true' && env.PR_INTO_STAGE != 'true' && matrix.kind == 'storybook'
+        run: npx nx affected -t test-storybook --output-style=static
+      - name: Upload the blob report of this shard
+        if: always() && matrix.kind == 'web'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: blob-report-${{ matrix.shard }}
+          path: blob-report
+          if-no-files-found: ignore
+          retention-days: 1
       - if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: playwright-report
+          name: playwright-output-${{ matrix.kind }}-${{ matrix.shard }}
           path: |
             dist/.playwright/apps/web-e2e/playwright-report
             dist/.playwright/apps/web-e2e/test-output
           if-no-files-found: ignore
           retention-days: 7
+
+  # The required check (branch protection asks for `e2e`): green when every shard passed or had
+  # nothing to run, red when one failed or was cancelled. On a failure it merges the shards' blob
+  # reports into one Playwright HTML report artifact.
+  e2e:
+    name: e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: e2e-shard
+    if: always()
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: needs.e2e-shard.result == 'failure'
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: needs.e2e-shard.result == 'failure'
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - if: needs.e2e-shard.result == 'failure'
+        run: npm ci
+      - name: Download the blob reports
+        if: needs.e2e-shard.result == 'failure'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: blob-report-*
+          path: all-blob-reports
+          merge-multiple: true
+      - name: Merge them into one HTML report
+        if: needs.e2e-shard.result == 'failure'
+        run: |
+          if [ -d all-blob-reports ] && [ -n "$(ls -A all-blob-reports)" ]; then
+            npx playwright merge-reports --reporter html ./all-blob-reports
+          else
+            echo "::notice::No blob reports to merge (the failure was before or outside web-e2e)"
+          fi
+      - if: needs.e2e-shard.result == 'failure'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: playwright-report
+          path: playwright-report
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Result of the shards
+        run: |
+          echo "e2e-shard: ${{ needs.e2e-shard.result }}"
+          case "${{ needs.e2e-shard.result }}" in
+            success|skipped) exit 0 ;;
+            *) echo "::error::A browser test shard ${{ needs.e2e-shard.result }}"; exit 1 ;;
+          esac
 
   # Not a required check (ADR 0018): reports Lighthouse scores, does not gate merges yet.
   lighthouse:
