@@ -383,6 +383,12 @@
     inset-block-end: calc(#{rem(20px + 68px + 12px)} + env(safe-area-inset-bottom, 0rem));
     align-self: stretch;
   }
+
+  // A tablet keeps the stacked bar as wide as the centred tab bar under it (560px, #316).
+  @include tablet {
+    align-self: center;
+    inline-size: min(100%, #{rem(560px)});
+  }
 }
 
 // Every link that travels with a drag shows the same empty slot (DragDrop spec, `app-drag-slot`):

@@ -321,7 +321,7 @@ test.describe('mobile layout (mock API)', () => {
     await expect(page.getByRole('button', { name: 'Account menu' })).toHaveCount(0);
   });
 
-  test('the tab bar floats 16px from the sides and 20px from the bottom and does not cover the last row', async ({
+  test('the tab bar floats 16px from the sides (centred, at most 560px on a tablet) and 20px from the bottom and does not cover the last row', async ({
     page,
   }) => {
     await page.goto('/links');
@@ -329,8 +329,10 @@ test.describe('mobile layout (mock API)', () => {
 
     const box = await tabBar(page).boundingBox();
     const view = page.viewportSize();
-    expect(box?.x).toBeCloseTo(16, 0);
-    expect((view?.width ?? 0) - ((box?.x ?? 0) + (box?.width ?? 0))).toBeCloseTo(16, 0);
+    // 16px from each side on a phone; centred and at most 560px wide on a tablet (#316).
+    const side = Math.max(16, ((view?.width ?? 0) - 560) / 2);
+    expect(box?.x).toBeCloseTo(side, 0);
+    expect((view?.width ?? 0) - ((box?.x ?? 0) + (box?.width ?? 0))).toBeCloseTo(side, 0);
     expect((view?.height ?? 0) - ((box?.y ?? 0) + (box?.height ?? 0))).toBeCloseTo(20, 0);
     await page.mouse.wheel(0, 100000);
     await expect
