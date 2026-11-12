@@ -411,11 +411,10 @@
     },
     "move": {
       "title": "Sposta “{{title}}”",
-      "label": "Cartella",
       "searchLabel": "Cerca cartelle",
       "noResults": "Nessuna cartella trovata",
-      "action": "Sposta",
-      "cancel": "Annulla",
+      "list": "Cartelle",
+      "current": "Cartella attuale",
       "close": "Chiudi",
       "moved": "Spostato in {{folder}}",
       "failed": "Impossibile spostare il link",

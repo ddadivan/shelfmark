@@ -1,0 +1,12 @@
+<ui-sheet [title]="data.heading" [closeLabel]="'links.move.close' | transloco">
+  <ui-picker-list
+    [options]="options()"
+    [emptyLabel]="'links.add.folder.unsorted' | transloco"
+    [currentIds]="data.currentIds"
+    [currentLabel]="'links.move.current' | transloco"
+    [searchLabel]="'links.move.searchLabel' | transloco"
+    [listLabel]="'links.move.list' | transloco"
+    [noResultsLabel]="'links.move.noResults' | transloco"
+    (chosen)="choose($event)"
+  />
+</ui-sheet>

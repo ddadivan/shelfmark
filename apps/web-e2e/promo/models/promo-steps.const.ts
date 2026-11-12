@@ -326,9 +326,7 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       await director.pause(800);
       await director.press(bar.getByRole('button', { name: 'Move', exact: true }));
       const dialog = page.getByRole('dialog', { name: 'Move 2 links' });
-      await director.press(dialog.getByRole('combobox', { name: 'Folder' }));
-      await director.press(page.getByRole('option').filter({ hasText: FOLDER_MOVE }).first());
-      await director.press(dialog.getByRole('button', { name: 'Move' }));
+      await director.press(dialog.getByRole('option').filter({ hasText: FOLDER_MOVE }).first());
       await expect(page.getByText(`2 links moved to ${FOLDER_MOVE}`)).toBeVisible();
       await director.parkPointer();
       await director.pause(1400);
@@ -378,9 +376,7 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       await director.press(card.getByRole('button', { name: /^Actions for / }));
       await director.press(page.getByRole('menuitem', { name: 'Move to folder…' }));
       const dialog = page.getByRole('dialog', { name: `Move “${title}”` });
-      await director.press(dialog.getByRole('combobox', { name: 'Folder' }));
-      await director.press(page.getByRole('option').filter({ hasText: FOLDER_STYLE }).first());
-      await director.press(dialog.getByRole('button', { name: 'Move' }));
+      await director.press(dialog.getByRole('option').filter({ hasText: FOLDER_STYLE }).first());
       await expect(dialog).toBeHidden();
       await director.pause(1600);
     },

@@ -24,7 +24,7 @@ import { LINKS_API } from '../models/links-api.const';
 import type { LinksApi } from '../models/links-api.interface';
 import { LINKS_SCOPE } from '../models/links-scope.const';
 import type { LinksFilter } from '../models/links-filter.type';
-import type { MoveLinkDialogData } from '../models/move-link-dialog-data.interface';
+import type { MovePickerData } from '../models/move-picker-data.interface';
 import { BulkLinkActionsService } from './bulk-link-actions.service';
 import type { BulkTagsDialogData } from '../models/bulk-tags-dialog-data.interface';
 
@@ -153,10 +153,10 @@ describe('BulkLinkActionsService', () => {
   afterEach(() => vi.restoreAllMocks());
   describe('move', () => {
     it('asks for a folder with a multi-link title and moves all links in one request', async () => {
-      let data: MoveLinkDialogData | undefined;
+      let data: MovePickerData | undefined;
       const { bulk, api, store, toasts, counts } = await setup({
         onDialog: (d) => {
-          data = d as MoveLinkDialogData;
+          data = d as MovePickerData;
           data.submit(FOLDER);
         },
       });
@@ -171,15 +171,21 @@ describe('BulkLinkActionsService', () => {
       expect(counts.views.refresh).toHaveBeenCalled();
     });
 
-    it('preselects the shared folder and always submits for mixed folders', async () => {
-      const seen: MoveLinkDialogData[] = [];
-      const { bulk } = await setup({ onDialog: (d) => seen.push(d as MoveLinkDialogData) });
+    it('marks the shared folder as current and none for a mixed selection', async () => {
+      const seen: MovePickerData[] = [];
+      const { bulk } = await setup({ onDialog: (d) => seen.push(d as MovePickerData) });
       await bulk.move([link(1, { folderId: FOLDER }), link(2, { folderId: FOLDER })]);
       await bulk.move([link(1, { folderId: FOLDER }), link(2)]);
-      expect(seen[0]?.folderId).toBe(FOLDER);
-      expect(seen[0]?.submitUnchanged).toBe(false);
-      expect(seen[1]?.folderId).toBeNull();
-      expect(seen[1]?.submitUnchanged).toBe(true);
+      expect(seen[0]?.currentIds).toEqual([FOLDER]);
+      expect(seen[1]?.currentIds).toEqual([]);
+    });
+
+    it('moves a mixed selection to any folder, one of its own included', async () => {
+      const { bulk, api } = await setup({
+        onDialog: (d) => (d as MovePickerData).submit(FOLDER),
+      });
+      await bulk.move([link(1, { folderId: FOLDER }), link(2)]);
+      expect(api.updateBatch).toHaveBeenCalledWith({ folderId: FOLDER, ids: ['id-2'] });
     });
 
     it('does nothing when the dialog is cancelled', async () => {

@@ -410,11 +410,10 @@
     },
     "move": {
       "title": "Move “{{title}}”",
-      "label": "Folder",
       "searchLabel": "Search folders",
       "noResults": "No folders found",
-      "action": "Move",
-      "cancel": "Cancel",
+      "list": "Folders",
+      "current": "Current folder",
       "close": "Close",
       "moved": "Moved to {{folder}}",
       "failed": "Couldn't move the link",

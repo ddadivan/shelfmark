@@ -411,11 +411,10 @@
     },
     "move": {
       "title": "Mover «{{title}}»",
-      "label": "Carpeta",
       "searchLabel": "Buscar carpetas",
       "noResults": "No se encontraron carpetas",
-      "action": "Mover",
-      "cancel": "Cancelar",
+      "list": "Carpetas",
+      "current": "Carpeta actual",
       "close": "Cerrar",
       "moved": "Movido a {{folder}}",
       "failed": "No se pudo mover el enlace",
