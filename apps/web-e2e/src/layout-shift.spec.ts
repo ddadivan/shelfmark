@@ -85,8 +85,8 @@ test.describe('library view switch (mock API)', () => {
     page,
   }) => {
     test.skip(
-      (page.viewportSize()?.width ?? 0) < 640,
-      'the phone has no top bar; its pages carry their own title',
+      (page.viewportSize()?.width ?? 0) < 1024,
+      'the mobile shell (below 64em) has no top bar; its pages carry their own title',
     );
     const top = (selector: string) =>
       page.locator(selector).evaluate((element) => element.getBoundingClientRect());

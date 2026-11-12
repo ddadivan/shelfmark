@@ -3,7 +3,7 @@ import { E2E_PROJECT } from './models/e2e-project.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { openAccountMenu, seedSession } from './support/mock-session';
 import { settled } from './support/settled';
-import { isCompact, tabBar } from './support/sidebar';
+import { isCompact, isPhone, tabBar } from './support/sidebar';
 
 /** `HTMLMediaElement.HAVE_METADATA`: duration and size are known. */
 const HAVE_METADATA = 1;
@@ -98,7 +98,8 @@ test.describe('About and "How it works" (mock API)', () => {
 
     // The recording of the layout, served from our own origin. The two recordings (#315) are named
     // like the projects: `how-it-works-<desktop|phone>`.
-    const device = isCompact(page) ? E2E_PROJECT.Phone : E2E_PROJECT.Desktop;
+    // The phone recording below 40em; a tablet plays the desktop one (#316).
+    const device = isPhone(page) ? E2E_PROJECT.Phone : E2E_PROJECT.Desktop;
     const video = dialog.locator('video');
     await expect(video).toBeVisible();
     await expect

@@ -54,7 +54,10 @@ test.describe('mobile polish (mock API)', () => {
   });
 
   test.describe('phone only', () => {
-    test.skip(({ isMobile }) => !isMobile, 'the phone project covers the phone layout');
+    test.skip(
+      ({ viewport }) => (viewport?.width ?? 0) >= 640,
+      'the phone project covers the phone layout',
+    );
 
     test('the tab bar stays at the bottom while the page scrolls', async ({ page }) => {
       await page.goto('/links');
@@ -155,7 +158,7 @@ test.describe('mobile polish (mock API)', () => {
   });
 
   test.describe('library toolbar on a phone', () => {
-    test.skip(({ isMobile }) => !isMobile, 'phone only');
+    test.skip(({ viewport }) => (viewport?.width ?? 0) >= 640, 'phone only');
 
     test('one View menu holds sort, view and export; the saved views scroll in one row', async ({
       page,
@@ -188,7 +191,7 @@ test.describe('mobile polish (mock API)', () => {
   });
 
   test.describe('desktop and tablet', () => {
-    test.skip(({ isMobile }) => isMobile, 'the desktop project covers the keyboard hints');
+    test.skip(({ hasTouch }) => hasTouch, 'the desktop project covers the keyboard hints');
 
     test('the search dialog keeps the keyboard hints', async ({ page }) => {
       await page.goto('/links');
