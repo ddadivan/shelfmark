@@ -113,7 +113,8 @@ for (const variant of PROMO_VARIANTS) {
     console.log(JSON.stringify(report));
     const drift = Object.entries(chapters).filter(
       ([chapter, start]) =>
-        Math.abs(start - PROMO_CHAPTER_START_MS[chapter as PromoChapter]) > CHAPTER_TOLERANCE_MS,
+        Math.abs(start - PROMO_CHAPTER_START_MS[variant.device][chapter as PromoChapter]) >
+        CHAPTER_TOLERANCE_MS,
     );
     expect(
       drift,

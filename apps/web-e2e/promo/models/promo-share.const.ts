@@ -9,6 +9,9 @@ export const PROMO_SHARE = {
   SessionKey: 'sm-mock-session',
   ScenarioKey: 'sm-mock-links-scenario',
   Scenario: 'showcase',
+  /** MOCK_RATING_STORAGE_KEY of the rating mock: the account's age decides when it asks. */
+  RatingKey: 'sm-mock-feedback',
+  RatingAgeDays: 9,
   /** What the share dialog shows under the scenario (MOCK_PUBLIC_ORIGIN in apps/web). */
   PublicOrigin: 'https://shelfmark-app.vercel.app',
   /** The folder of the mockup library that gets a public link. */
