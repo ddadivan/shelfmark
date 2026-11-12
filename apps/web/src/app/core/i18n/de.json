@@ -251,7 +251,6 @@
         "placeholder": "Warum speicherst du das?",
         "hint": "Hilft dir, es später zu finden",
         "counter": "Zeichen",
-        "spellcheck": "Rechtschreibung prüfen",
         "tooLong": "Die Notiz ist zu lang (höchstens {{max}} Zeichen)"
       },
       "duplicate": {

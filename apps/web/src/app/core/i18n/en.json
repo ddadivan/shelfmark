@@ -251,7 +251,6 @@
         "placeholder": "Why are you saving this?",
         "hint": "Helps you find it later",
         "counter": "characters",
-        "spellcheck": "Check spelling",
         "tooLong": "The note is too long (at most {{max}} characters)"
       },
       "duplicate": {

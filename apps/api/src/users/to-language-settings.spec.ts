@@ -9,7 +9,6 @@ describe('toLanguageSettings', () => {
         dateFormat: 'iso',
         timeFormat: 'h12',
         weekStart: 'sunday',
-        spellcheck: false,
         languageSavedAt: new Date(0),
       }),
     ).toEqual({
@@ -17,7 +16,6 @@ describe('toLanguageSettings', () => {
       dateFormat: 'iso',
       timeFormat: 'h12',
       weekStart: 'sunday',
-      spellcheck: false,
       languageSaved: true,
     });
   });
@@ -29,7 +27,6 @@ describe('toLanguageSettings', () => {
         dateFormat: 'yyyy',
         timeFormat: '13h',
         weekStart: 'saturday',
-        spellcheck: true,
         languageSavedAt: null,
       }),
     ).toEqual({ ...LANGUAGE_SETTINGS_DEFAULT, languageSaved: false });

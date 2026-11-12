@@ -251,7 +251,6 @@
         "placeholder": "¿Por qué lo guardas?",
         "hint": "Te ayuda a encontrarlo después",
         "counter": "caracteres",
-        "spellcheck": "Revisar ortografía",
         "tooLong": "La nota es demasiado larga (máximo {{max}} caracteres)"
       },
       "duplicate": {

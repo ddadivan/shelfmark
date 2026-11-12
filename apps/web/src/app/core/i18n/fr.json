@@ -251,7 +251,6 @@
         "placeholder": "Pourquoi enregistrez-vous ce lien ?",
         "hint": "Pour le retrouver plus tard",
         "counter": "caractères",
-        "spellcheck": "Vérifier l’orthographe",
         "tooLong": "La note est trop longue ({{max}} caractères au maximum)"
       },
       "duplicate": {

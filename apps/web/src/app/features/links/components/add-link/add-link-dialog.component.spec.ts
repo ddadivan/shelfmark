@@ -20,7 +20,6 @@ import {
 import axe from 'axe-core';
 import { delay, of, tap, throwError, type Observable } from 'rxjs';
 import { APP_LANG } from '../../../../core/i18n/models/app-lang.const';
-import { LANGUAGE_STORAGE_KEY } from '../../../../core/i18n/models/language-storage-key.const';
 import { AppTranslocoLoader } from '../../../../core/i18n/app-transloco.loader';
 import { translocoConfig } from '../../../../core/i18n/transloco.config';
 import { ADD_LINK_ACTION } from '../../models/add-link-action.const';
@@ -120,15 +119,6 @@ async function setup(
   return { result };
 }
 
-/** The account the "Check spelling" tests answer with after a save. */
-const ACCOUNT_FOR_SPELLING: UserSettingsResponse = {
-  trashRetentionDays: 30,
-  folderColours: true,
-  pauseHistory: false,
-  ...MOCK_APPEARANCE_DEFAULTS,
-  ...LIBRARY_SETTINGS_DEFAULT,
-};
-
 function checkbox(label: string): HTMLInputElement {
   const found = [...dialog().querySelectorAll<HTMLInputElement>('input[type="checkbox"]')].find(
     (box) => box.closest('label')?.textContent?.trim() === label,
@@ -201,8 +191,8 @@ describe('AddLinkDialogComponent', () => {
     await setup(fakeApi(() => of(PLAIN)));
 
     expect(dialog().textContent).not.toContain('Add to favorites');
-    // The only checkbox when adding is "Check spelling" under the note (#315).
-    expect(dialog().querySelectorAll('ui-checkbox')).toHaveLength(1);
+    // No checkbox at all when adding: "Check spelling" is gone (#326).
+    expect(dialog().querySelectorAll('ui-checkbox')).toHaveLength(0);
   });
 
   it('starts empty with the hint and no preview', async () => {
@@ -1108,52 +1098,11 @@ describe('AddLinkDialogComponent', () => {
       expect(input('Title').value).toBe('');
     });
 
-    describe('"Check spelling" next to the note (#315)', () => {
-      // A saved language choice is remembered in the browser; the next spec must not see it.
-      afterEach(() => {
-        localStorage.removeItem(LANGUAGE_STORAGE_KEY);
-      });
-
-      it('saves "Check spelling" under the note on the account at once (#315)', async () => {
-        const update = vi.fn((request: UpdateUserSettingsRequest) =>
-          of({ ...ACCOUNT_FOR_SPELLING, ...request }),
-        );
-        await setup(
-          fakeApi(() => of(PLAIN)),
-          {},
-          {},
-          update,
-        );
-        const box = checkbox('Check spelling');
-        expect(box.checked).toBe(true);
-        expect(input('Note').getAttribute('spellcheck')).toBe('true');
-
-        box.click();
-        await vi.waitFor(() => {
-          TestBed.tick();
-          expect(update).toHaveBeenCalledWith({ spellcheck: false });
-          expect(input('Note').getAttribute('spellcheck')).toBe('false');
-        });
-      });
-
-      it('puts "Check spelling" back when saving it fails', async () => {
-        const update = vi.fn(() => throwError(() => new Error('down')));
-        await setup(
-          fakeApi(() => of(PLAIN)),
-          {},
-          {},
-          update,
-        );
-        const box = checkbox('Check spelling');
-
-        box.click();
-        await vi.waitFor(() => {
-          TestBed.tick();
-          expect(update).toHaveBeenCalled();
-          expect(checkbox('Check spelling').checked).toBe(true);
-          expect(input('Note').getAttribute('spellcheck')).toBe('true');
-        });
-      });
+    it('always spell-checks the note and has no "Check spelling" option (#326)', async () => {
+      await setup(fakeApi(() => of(PLAIN)));
+      expect(input('Note').getAttribute('spellcheck')).toBe('true');
+      expect(() => checkbox('Check spelling')).toThrow();
+      expect(dialog().querySelectorAll('input[type="checkbox"]')).toHaveLength(0);
     });
 
     it('with previews off only checks duplicates: no skeleton, no "no preview" notice', async () => {

@@ -20,7 +20,6 @@ async function seedLanguage(page: Page, language: string): Promise<void> {
     dateFormat: 'default',
     timeFormat: 'default',
     weekStart: 'default',
-    spellcheck: true,
   });
   await page.addInitScript(
     ([keys, value]) => {
@@ -142,7 +141,7 @@ test.describe('interface languages (mock API)', () => {
     await expect(dates.first()).toHaveText(/^\d{4}-\d{2}-\d{2}$/);
   });
 
-  test('"Check spelling" next to the note field turns spell-check off and stays off (#315)', async ({
+  test('the note field always spell-checks, with no option to turn it off (#326)', async ({
     page,
   }) => {
     await seedSession(page);
@@ -150,19 +149,9 @@ test.describe('interface languages (mock API)', () => {
     await expect(page.getByRole('switch', { name: 'Spell-check notes' })).toHaveCount(0);
     await page.goto('/links');
     await page.getByRole('button', { name: 'Add link' }).first().click();
-    let dialog = page.getByRole('dialog');
+    const dialog = page.getByRole('dialog');
     await expect(dialog.getByLabel('Note')).toHaveAttribute('spellcheck', 'true');
-    // The native input is visually hidden: click the drawn box, like the other checkbox specs.
-    await dialog.locator('ui-checkbox.add-link__spellcheck .ui-checkbox__box').click();
-    await expect(dialog.getByRole('checkbox', { name: 'Check spelling' })).not.toBeChecked();
-    await expect(dialog.getByLabel('Note')).toHaveAttribute('spellcheck', 'false');
-    await dialog.getByRole('button', { name: 'Close' }).first().click();
-    await expect(dialog).toBeHidden();
-
-    await page.getByRole('button', { name: 'Add link' }).first().click();
-    dialog = page.getByRole('dialog');
-    await expect(dialog.getByRole('checkbox', { name: 'Check spelling' })).not.toBeChecked();
-    await expect(dialog.getByLabel('Note')).toHaveAttribute('spellcheck', 'false');
+    await expect(dialog.getByRole('checkbox', { name: 'Check spelling' })).toHaveCount(0);
   });
 
   test.describe('with a German browser', () => {

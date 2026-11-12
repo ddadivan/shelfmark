@@ -76,6 +76,8 @@ model User {
   dateFormat            String        @default("default") @map("date_format")
   timeFormat            String        @default("default") @map("time_format")
   weekStart             String        @default("default") @map("week_start")
+  // Retired in #326 (spell-check in the note field is always on, the browser default): the API no
+  // longer reads or writes spellcheck; a later migration drops it.
   spellcheck            Boolean       @default(true) @map("spellcheck")
   languageSavedAt       DateTime?     @map("language_saved_at") @db.Timestamptz(3)
   createdAt             DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
