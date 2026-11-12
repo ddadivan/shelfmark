@@ -1,9 +1,14 @@
 @use 'ui' as *;
 
-// Fills the main column so an empty state can sit in the middle of the free space.
+// Fills the main column so an empty state can sit in the middle of the free space. On very wide
+// screens (4K and up at 100%) the feed stops at 150rem and is centred, title and toolbar with it,
+// so the grid never turns into a dozen tiny cards (#335).
 :host {
   display: flex;
   flex: 1;
+  inline-size: 100%;
+  max-inline-size: #{rem(2400px)};
+  margin-inline: auto;
   flex-direction: column;
   min-height: 0;
 }
@@ -138,9 +143,21 @@
 }
 
 .library__grid {
+  // Minimum card width, by window width (#335): 19rem keeps two columns from 820px to 1280px and
+  // three at 1440px; wider windows get more, smaller cards (7 at 1920px).
+  --library-card-min: #{rem(304px)};
+
   display: grid;
   gap: var(--density-feed-gap);
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, rem(304px)), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--library-card-min)), 1fr));
+
+  @media (min-width: 100em) {
+    --library-card-min: #{rem(272px)};
+  }
+
+  @media (min-width: 120em) {
+    --library-card-min: #{rem(200px)};
+  }
 
   // The list items hold the cards; stretch them to the row height.
   > li {
