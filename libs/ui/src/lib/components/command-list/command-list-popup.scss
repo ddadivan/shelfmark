@@ -1,0 +1,87 @@
+@use '../../../styles/ui' as *;
+
+// Popup mode of `ui-command-list` (#329), split from the main sheet to keep each sheet small.
+// The popup and panel wrappers take no box in a dialog: the list, status and footer stay direct
+// flex children of the host, as before.
+.ui-command-list__popup,
+.ui-command-list__panel {
+  display: contents;
+}
+
+// Popup mode (a header search field): the popup element sits empty where it is written; shown,
+// the overlay moves it into its pane (like `ui-select`).
+.ui-command-list__popup--floating {
+  display: none;
+}
+
+.ui-command-list__popup--floating.ui-command-list__popup--shown {
+  display: block;
+  min-width: 0;
+}
+
+// The results panel: glass like menus, at least the field width (the pane has the measured
+// `min-width`), up to 60% of the viewport height; the list is the part that scrolls.
+.ui-command-list__panel--floating {
+  @include glass;
+
+  display: flex;
+  flex-direction: column;
+  width: max-content;
+  min-width: 100%;
+  max-width: min(rem(720px), calc(100vw - #{rem(16px)}));
+  max-height: min(60vh, calc(100vh - #{rem(96px)}));
+  margin: var(--space-1) 0;
+  overflow: hidden;
+  border-radius: rem(18px);
+}
+
+// `--ui-origin` is set on the overlay pane from the resolved position.
+.ui-command-list__panel--floating.ui-command-list--enter {
+  @include enter(pop);
+  @include origin;
+}
+
+.ui-command-list__panel--floating.ui-command-list--leave {
+  @include leave(pop);
+  @include origin;
+}
+
+// The header field: the pill of the search trigger (surface, card shadow, 48px), the text in the
+// body size, the shortcut cap small, no divider (the panel is a separate surface).
+.ui-command-list--popup .ui-command-list__field {
+  gap: var(--space-2);
+  min-height: rem(48px);
+  padding: 0 rem(10px) 0 rem(18px);
+  background: var(--surface);
+  border-bottom: 0;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-card);
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  &:has(.ui-command-list__input:focus-visible) {
+    @include focus-ring;
+  }
+
+  @include hover {
+    background: var(--surface-hover);
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+
+  > kbd {
+    @include type(caption);
+
+    min-width: 0;
+    height: auto;
+    padding: 0 rem(5px);
+    font-size: inherit;
+    line-height: inherit;
+    border-radius: rem(5px);
+  }
+}
+
+.ui-command-list--popup .ui-command-list__input {
+  @include type(body);
+}

@@ -86,7 +86,7 @@ import { ICON_SIZE } from '../icon/models/icon-size.const';
     '(focusout)': 'onFocusout($event)',
   },
   templateUrl: './command-list.component.html',
-  styleUrl: './command-list.component.scss',
+  styleUrls: ['./command-list.component.scss', './command-list-popup.scss'],
 })
 export class CommandListComponent {
   protected readonly ICON_SIZE = ICON_SIZE;
