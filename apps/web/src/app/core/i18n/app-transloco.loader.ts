@@ -1,16 +1,15 @@
 import { Service } from '@angular/core';
 import { Translation, TranslocoLoader } from '@jsverse/transloco';
-import en from './en.json';
 import { APP_LANG } from './models/app-lang.const';
 import type { AppLang } from './models/app-lang.type';
 
 /**
- * English is part of the main bundle, so an English first render needs no extra request (a lazy
- * chunk delayed FCP/LCP and a late fill-in shifted the layout). The other languages are lazy
- * chunks, loaded before they are switched on (`LocaleService`), so text never flashes as keys.
+ * Every language, English too, is a lazy chunk (#339: English alone was 63 kB of the initial
+ * bundle). `LocaleService.init()` loads the wanted file in an app initializer, before the first
+ * render, so text never flashes as keys and a late fill-in cannot shift the layout.
  */
 const loaders: Readonly<Record<AppLang, () => Promise<Translation>>> = {
-  [APP_LANG.En]: () => Promise.resolve(en),
+  [APP_LANG.En]: async () => (await import('./en.json')).default,
   [APP_LANG.Fr]: async () => (await import('./fr.json')).default,
   [APP_LANG.De]: async () => (await import('./de.json')).default,
   [APP_LANG.It]: async () => (await import('./it.json')).default,
