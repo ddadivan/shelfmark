@@ -188,6 +188,17 @@ describe('PickerListComponent', () => {
     expect(active()?.textContent).toContain('Work');
   });
 
+  it('chooses the first match when Enter comes right behind the typed text', async () => {
+    const { fixture, search } = await setup();
+    search.value = 'clo';
+    search.dispatchEvent(new Event('input', { bubbles: true }));
+    search.dispatchEvent(
+      new KeyboardEvent('keydown', { key: KEYBOARD_KEY.Enter, bubbles: true, cancelable: true }),
+    );
+    await settle(fixture);
+    expect((fixture.componentInstance as HostComponent).picked).toEqual(['clothes']);
+  });
+
   it('says so when nothing matches and hides the list', async () => {
     const { type, root, listbox } = await setup();
     await type('zzz');

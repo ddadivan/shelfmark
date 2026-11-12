@@ -93,6 +93,9 @@ export class PickerListComponent {
    * chooses. The Aria listbox starts on its first row, which must not be one Enter picks blindly.
    */
   protected readonly engaged = signal(false);
+  /** Runs once the first match of the latest search is active (an Enter typed right behind the text). */
+  private afterFirst: (() => void) | undefined;
+  private filtering = false;
   protected readonly rows = computed(() =>
     pickerRows(this.options(), this.query(), this.emptyLabel(), this.currentIds()),
   );
@@ -135,6 +138,7 @@ export class PickerListComponent {
       this.query.set(event.target.value);
       this.engaged.set(event.target.value !== '');
     }
+    this.filtering = true;
     afterNextRender(
       () => {
         // The mutation observer of Angular Aria re-sorts the new options in a microtask first.
@@ -142,6 +146,10 @@ export class PickerListComponent {
           if (this.rows().length > 0) {
             this.listbox()?.gotoFirst();
           }
+          this.filtering = false;
+          const queued = this.afterFirst;
+          this.afterFirst = undefined;
+          queued?.();
         });
       },
       { injector: this.injector },
@@ -152,7 +160,11 @@ export class PickerListComponent {
     const field = this.searchField().nativeElement;
     switch (event.key) {
       case KEYBOARD_KEY.Enter:
-        if (this.engaged()) {
+        if (this.filtering) {
+          // The list is still catching up with the text: choose its first match when it has.
+          event.preventDefault();
+          this.afterFirst = () => this.relay(event);
+        } else if (this.engaged()) {
           this.relay(event);
         }
         break;
