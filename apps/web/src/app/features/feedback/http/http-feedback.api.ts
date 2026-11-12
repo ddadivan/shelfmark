@@ -8,7 +8,7 @@ import {
 } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
 import { skipErrorToast } from '../../../core/api/skip-error-toast';
-import { FeedbackSendError } from '../feedback-send-error';
+import { FeedbackSendError } from '../utils/feedback-send-error';
 import type { FeedbackApi } from '../models/feedback-api.interface';
 import { FEEDBACK_SEND_ERROR_REASON } from '../models/feedback-send-error-reason.const';
 

@@ -1,4 +1,4 @@
-import type { FeedbackSentDate } from './models/feedback-sent-date.interface';
+import type { FeedbackSentDate } from '../models/feedback-sent-date.interface';
 
 /** The design writes "3 Nov" (day first), which plain `en` does not give. */
 const DAY_FIRST_ENGLISH = 'en-GB';

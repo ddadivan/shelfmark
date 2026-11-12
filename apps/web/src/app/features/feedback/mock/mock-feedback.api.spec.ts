@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { FEEDBACK_MESSAGE_LIMIT, FEEDBACK_STATUS } from '@shelfmark/contracts';
 import { MOCK_SESSION_STORAGE_KEY } from '../../../core/auth/models/mock-session-storage-key.const';
 import { MockAdminApi } from '../../admin/mock/mock-admin.api';
-import { FeedbackSendError } from '../feedback-send-error';
+import { FeedbackSendError } from '../utils/feedback-send-error';
 import { FEEDBACK_SEND_ERROR_REASON } from '../models/feedback-send-error-reason.const';
 import { MockFeedbackApi } from './mock-feedback.api';
 import { MOCK_ADMIN_MODE } from './models/mock-admin-mode.const';

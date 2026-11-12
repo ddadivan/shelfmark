@@ -1,4 +1,4 @@
-import { FEEDBACK_SCREENSHOT_ERROR } from './models/feedback-screenshot-error.const';
+import { FEEDBACK_SCREENSHOT_ERROR } from '../models/feedback-screenshot-error.const';
 import { readFeedbackScreenshot } from './read-feedback-screenshot';
 
 describe('readFeedbackScreenshot', () => {

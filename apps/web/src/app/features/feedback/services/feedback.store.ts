@@ -1,10 +1,10 @@
 import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import type { FeedbackMessage, SendFeedbackRequest } from '@shelfmark/contracts';
-import { SessionScope } from '../../core/auth/session-scope.service';
-import { FEEDBACK_API } from './models/feedback-api.const';
-import { FEEDBACK_LOAD_STATE } from './models/feedback-load-state.const';
-import type { FeedbackState } from './models/feedback-state.interface';
+import { SessionScope } from '../../../core/auth/session-scope.service';
+import { FEEDBACK_API } from '../models/feedback-api.const';
+import { FEEDBACK_LOAD_STATE } from '../models/feedback-load-state.const';
+import type { FeedbackState } from '../models/feedback-state.interface';
 
 const initialState: FeedbackState = { items: [], phase: FEEDBACK_LOAD_STATE.Idle };
 

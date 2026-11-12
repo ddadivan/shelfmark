@@ -1,7 +1,7 @@
 import { feedbackScreenshotProblem, feedbackScreenshotType } from './feedback-screenshot-problem';
-import { FEEDBACK_SCREENSHOT_ERROR } from './models/feedback-screenshot-error.const';
-import type { FeedbackScreenshotAttachment } from './models/feedback-screenshot-attachment.interface';
-import type { FeedbackScreenshotError } from './models/feedback-screenshot-error.type';
+import { FEEDBACK_SCREENSHOT_ERROR } from '../models/feedback-screenshot-error.const';
+import type { FeedbackScreenshotAttachment } from '../models/feedback-screenshot-attachment.interface';
+import type { FeedbackScreenshotError } from '../models/feedback-screenshot-error.type';
 
 const BASE64_MARKER = ';base64,';
 

@@ -13,10 +13,10 @@ import {
   SKELETON_SHAPE,
   SkeletonComponent,
 } from '@shelfmark/ui';
-import { feedbackSentDate } from '../../feedback/feedback-sent-date';
-import { FeedbackDialogService } from '../../feedback/feedback-dialog.service';
-import { FeedbackStatusBadgeComponent } from '../../feedback/feedback-status-badge/feedback-status-badge.component';
-import { FeedbackStore } from '../../feedback/feedback.store';
+import { feedbackSentDate } from '../../feedback/utils/feedback-sent-date';
+import { FeedbackDialogService } from '../../feedback/services/feedback-dialog.service';
+import { FeedbackStatusBadgeComponent } from '../../feedback/components/feedback-status-badge/feedback-status-badge.component';
+import { FeedbackStore } from '../../feedback/services/feedback.store';
 import { FEEDBACK_KIND_COPY } from '../../feedback/models/feedback-kind-copy.const';
 import { FEEDBACK_LOAD_STATE } from '../../feedback/models/feedback-load-state.const';
 import { SettingsPageHeaderComponent } from '../settings-page-header/settings-page-header.component';

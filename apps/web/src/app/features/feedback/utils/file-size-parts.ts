@@ -1,4 +1,4 @@
-import type { FileSizeParts } from './models/file-size-parts.interface';
+import type { FileSizeParts } from '../models/file-size-parts.interface';
 
 const KB = 1024;
 const MB = KB * KB;

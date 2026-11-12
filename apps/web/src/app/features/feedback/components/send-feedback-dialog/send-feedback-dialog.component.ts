@@ -42,19 +42,19 @@ import {
   UiDialogRef,
   type SegmentedOption,
 } from '@shelfmark/ui';
-import { ViewportService } from '../../core/layout/viewport.service';
-import { APP_VERSION } from '../../models/app-version.const';
-import { fileSizeParts } from './file-size-parts';
-import { FeedbackSendError } from './feedback-send-error';
-import { FeedbackStore } from './feedback.store';
-import { FEEDBACK_KIND_COPY } from './models/feedback-kind-copy.const';
-import type { FeedbackFormModel } from './models/feedback-form-model.interface';
-import { FEEDBACK_SCREENSHOT_ERROR } from './models/feedback-screenshot-error.const';
-import type { FeedbackScreenshotAttachment } from './models/feedback-screenshot-attachment.interface';
-import type { FeedbackScreenshotError } from './models/feedback-screenshot-error.type';
-import { FEEDBACK_SEND_ERROR_REASON } from './models/feedback-send-error-reason.const';
-import type { FeedbackSendErrorReason } from './models/feedback-send-error-reason.type';
-import { readFeedbackScreenshot } from './read-feedback-screenshot';
+import { ViewportService } from '../../../../core/layout/viewport.service';
+import { APP_VERSION } from '../../../../models/app-version.const';
+import { fileSizeParts } from '../../utils/file-size-parts';
+import { FeedbackSendError } from '../../utils/feedback-send-error';
+import { FeedbackStore } from '../../services/feedback.store';
+import { FEEDBACK_KIND_COPY } from '../../models/feedback-kind-copy.const';
+import type { FeedbackFormModel } from '../../models/feedback-form-model.interface';
+import { FEEDBACK_SCREENSHOT_ERROR } from '../../models/feedback-screenshot-error.const';
+import type { FeedbackScreenshotAttachment } from '../../models/feedback-screenshot-attachment.interface';
+import type { FeedbackScreenshotError } from '../../models/feedback-screenshot-error.type';
+import { FEEDBACK_SEND_ERROR_REASON } from '../../models/feedback-send-error-reason.const';
+import type { FeedbackSendErrorReason } from '../../models/feedback-send-error-reason.type';
+import { readFeedbackScreenshot } from '../../utils/read-feedback-screenshot';
 
 const BYTES_PER_MB = 1024 * 1024;
 

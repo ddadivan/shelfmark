@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import type { FeedbackMessage } from '@shelfmark/contracts';
-import { feedbackMessage } from '../../../testing/feedback-message';
-import { SessionScope } from '../../core/auth/session-scope.service';
-import { FeedbackSendError } from './feedback-send-error';
+import { feedbackMessage } from '../../../../testing/feedback-message';
+import { SessionScope } from '../../../core/auth/session-scope.service';
+import { FeedbackSendError } from '../utils/feedback-send-error';
 import { FeedbackStore } from './feedback.store';
-import { FEEDBACK_API } from './models/feedback-api.const';
-import type { FeedbackApi } from './models/feedback-api.interface';
-import { FEEDBACK_LOAD_STATE } from './models/feedback-load-state.const';
-import { FEEDBACK_SEND_ERROR_REASON } from './models/feedback-send-error-reason.const';
+import { FEEDBACK_API } from '../models/feedback-api.const';
+import type { FeedbackApi } from '../models/feedback-api.interface';
+import { FEEDBACK_LOAD_STATE } from '../models/feedback-load-state.const';
+import { FEEDBACK_SEND_ERROR_REASON } from '../models/feedback-send-error-reason.const';
 
 function setup(overrides: Partial<FeedbackApi> = {}) {
   const api = {

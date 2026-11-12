@@ -49,7 +49,7 @@ import { TrashStore } from '../../stores/trash.store';
 import { UserSettingsStore } from '../../stores/user-settings.store';
 import { LinkDragService } from '../../features/links/drag/link-drag.service';
 import { HowItWorksService } from '../../features/how-it-works/how-it-works.service';
-import { FeedbackDialogService } from '../../features/feedback/feedback-dialog.service';
+import { FeedbackDialogService } from '../../features/feedback/services/feedback-dialog.service';
 import { HowItWorksCardComponent } from '../../features/how-it-works/how-it-works-card/how-it-works-card.component';
 import { SIDEBAR_RECENT_ID } from './models/sidebar-recent-id.const';
 import { SIDEBAR_TRASH_ID } from './models/sidebar-trash-id.const';

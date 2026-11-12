@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslocoService } from '@jsverse/transloco';
 import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
-import { feedbackMessage } from '../../../testing/feedback-message';
-import { axeViolations } from '../../../testing/axe';
-import { loadEnglish, provideTranslocoForTest } from '../../testing/transloco-testing';
-import { FeedbackSendError } from './feedback-send-error';
-import { FEEDBACK_API } from './models/feedback-api.const';
-import type { FeedbackApi } from './models/feedback-api.interface';
-import { FEEDBACK_SEND_ERROR_REASON } from './models/feedback-send-error-reason.const';
+import { feedbackMessage } from '../../../../../testing/feedback-message';
+import { axeViolations } from '../../../../../testing/axe';
+import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
+import { FeedbackSendError } from '../../utils/feedback-send-error';
+import { FEEDBACK_API } from '../../models/feedback-api.const';
+import type { FeedbackApi } from '../../models/feedback-api.interface';
+import { FEEDBACK_SEND_ERROR_REASON } from '../../models/feedback-send-error-reason.const';
 import { SendFeedbackDialogComponent } from './send-feedback-dialog.component';
 
 async function setup(send: FeedbackApi['send'] = () => Promise.resolve(feedbackMessage())) {

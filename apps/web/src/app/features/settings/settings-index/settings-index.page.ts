@@ -10,7 +10,7 @@ import {
 } from '@shelfmark/ui';
 import { AdminStore } from '../../admin/services/admin.store';
 import { ADMIN_PATH } from '../../admin/models/admin-path.const';
-import { FeedbackDialogService } from '../../feedback/feedback-dialog.service';
+import { FeedbackDialogService } from '../../feedback/services/feedback-dialog.service';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { ViewportService } from '../../../core/layout/viewport.service';
 import { ThemeService } from '../../../core/theme/theme.service';

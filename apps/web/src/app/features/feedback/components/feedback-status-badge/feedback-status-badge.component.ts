@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { TranslocoPipe } from '@jsverse/transloco';
 import type { FeedbackStatus } from '@shelfmark/contracts';
 import { ChipComponent } from '@shelfmark/ui';
-import { FEEDBACK_STATUS_VIEW } from '../models/feedback-status-view.const';
+import { FEEDBACK_STATUS_VIEW } from '../../models/feedback-status-view.const';
 
 /**
  * The status of a feedback message as a badge. Words always carry the status (Done also has a

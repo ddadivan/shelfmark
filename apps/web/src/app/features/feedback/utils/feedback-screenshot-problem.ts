@@ -3,8 +3,8 @@ import {
   FEEDBACK_SCREENSHOT_TYPES,
   type FeedbackScreenshotType,
 } from '@shelfmark/contracts';
-import { FEEDBACK_SCREENSHOT_ERROR } from './models/feedback-screenshot-error.const';
-import type { FeedbackScreenshotError } from './models/feedback-screenshot-error.type';
+import { FEEDBACK_SCREENSHOT_ERROR } from '../models/feedback-screenshot-error.const';
+import type { FeedbackScreenshotError } from '../models/feedback-screenshot-error.type';
 
 /** The contract type of a file, or `null` when it is not a PNG, JPEG or WebP image. */
 export function feedbackScreenshotType(type: string): FeedbackScreenshotType | null {

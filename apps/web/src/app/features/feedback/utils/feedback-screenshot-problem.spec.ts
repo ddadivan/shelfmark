@@ -1,6 +1,6 @@
 import { FEEDBACK_MESSAGE_LIMIT } from '@shelfmark/contracts';
 import { feedbackScreenshotProblem, feedbackScreenshotType } from './feedback-screenshot-problem';
-import { FEEDBACK_SCREENSHOT_ERROR } from './models/feedback-screenshot-error.const';
+import { FEEDBACK_SCREENSHOT_ERROR } from '../models/feedback-screenshot-error.const';
 
 const MAX = FEEDBACK_MESSAGE_LIMIT.ScreenshotMaxBytes;
 
