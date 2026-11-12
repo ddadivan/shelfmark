@@ -61,6 +61,7 @@ const template = `
         [activeId]="activeId"
         [dropTargetId]="dropTargetId"
         [dropLabel]="dropLabel"
+        [noDropIds]="noDropIds"
       />
     </div>
   </div>`;
@@ -100,6 +101,16 @@ export const SelectedState: Story = {
  */
 export const DropTarget: Story = {
   args: { dropTargetId: TREE_STORY_ID.Recipes, dropLabel: 'Move here' },
+  render: (args) => ({ props: args, template }),
+};
+
+/** A link is dragged: rows that cannot take it (here Favorites) are muted with a no-drop cursor. */
+export const NoDropRows: Story = {
+  args: {
+    noDropIds: [TREE_STORY_ID.Favorites],
+    dropTargetId: TREE_STORY_ID.Recipes,
+    dropLabel: 'Move here',
+  },
   render: (args) => ({ props: args, template }),
 };
 

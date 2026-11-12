@@ -286,6 +286,11 @@ export class TreeComponent {
    * `TREE_DROP_OPEN_DELAY_MS`. Every row carries its id in `data-ui-tree-id` for hit testing.
    */
   readonly dropTargetId = input<string | null>(null);
+  /**
+   * Ids of rows that cannot take what is dragged (the feature passes them only while dragging):
+   * they show a no-drop cursor and a muted state, never the drop highlight.
+   */
+  readonly noDropIds = input<readonly string[]>([]);
   /** Badge text on the drop target row ("Move here"); none when empty. */
   readonly dropLabel = input<string>();
   /**

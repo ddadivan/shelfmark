@@ -28,6 +28,7 @@ import { TREE_DROP_OPEN_DELAY_MS } from './models/tree-drop-open-delay.const';
       [menuLabel]="menuLabel()"
       [menuNodeId]="menuNodeId()"
       [dropTargetId]="dropTargetId()"
+      [noDropIds]="noDropIds()"
       dropLabel="Move here"
       (selected)="selected.push($event)"
       (toggled)="toggled.push($event)"
@@ -46,6 +47,7 @@ class HostComponent {
   readonly menuLabel = signal<string | undefined>('Actions for {name}');
   readonly menuNodeId = signal<string | null>(null);
   readonly dropTargetId = signal<string | null>(null);
+  readonly noDropIds = signal<readonly string[]>([]);
   created = 0;
   readonly selected: UiTreeNode[] = [];
   readonly toggled: UiTreeToggleEvent[] = [];
@@ -221,6 +223,20 @@ describe('TreeComponent', () => {
       await settle(fixture);
       expect(recipes.classList).not.toContain('ui-tree__row--drop');
       expect(recipes.querySelector('.ui-tree__count')).not.toBeNull();
+    });
+
+    it('mutes the rows that cannot take the drag, never highlights them', async () => {
+      const { fixture, host, item } = await setup();
+
+      host.noDropIds.set([TREE_STORY_ID.Favorites]);
+      await settle(fixture);
+      expect(item(TREE_STORY_NAME.Favorites).classList).toContain('ui-tree__row--no-drop');
+      expect(item(TREE_STORY_NAME.Favorites).classList).not.toContain('ui-tree__row--drop');
+      expect(item(TREE_STORY_NAME.Recipes).classList).not.toContain('ui-tree__row--no-drop');
+
+      host.noDropIds.set([]);
+      await settle(fixture);
+      expect(item(TREE_STORY_NAME.Favorites).classList).not.toContain('ui-tree__row--no-drop');
     });
 
     it('keeps the row height while it is the target and fades the badge in (none when reduced)', () => {

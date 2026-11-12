@@ -87,6 +87,19 @@ describe('LinkDragService', () => {
     expect(moveTo).toHaveBeenCalledWith(link(null), FOLDER_A.id);
   });
 
+  it('lists the rows that cannot take links only while dragging (Unsorted can)', () => {
+    const { drag } = setup();
+    expect(drag.treeNoDropIds()).toEqual([]);
+
+    drag.start(link(FOLDER_A.id));
+    const ids = drag.treeNoDropIds();
+    expect(ids).toContain(LINKS_SCOPE.All);
+    expect(ids).toContain(LINKS_SCOPE.Favorites);
+    expect(ids).not.toContain(LINKS_SCOPE.Unsorted);
+    drag.drop();
+    expect(drag.treeNoDropIds()).toEqual([]);
+  });
+
   it('ignores the folder the link is already in, fixed rows and unknown ids', () => {
     const { drag, moveTo, element, under } = setup();
     drag.start(link(FOLDER_A.id));

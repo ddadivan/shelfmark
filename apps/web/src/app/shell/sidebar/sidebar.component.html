@@ -10,6 +10,7 @@
     <ui-tree
       [fixedNodes]="fixedNodes()"
       [activeId]="activeId()"
+      [noDropIds]="drag.treeNoDropIds()"
       [ariaLabel]="'shell.sidebar.views' | transloco"
       (selected)="select($event)"
     />
@@ -76,6 +77,7 @@
         class="sidebar__trash-tree"
         [fixedNodes]="trashNodes()"
         [activeId]="activeId()"
+        [noDropIds]="drag.treeNoDropIds()"
         [ariaLabel]="'trash.title' | transloco"
         (selected)="openTrash()"
       />

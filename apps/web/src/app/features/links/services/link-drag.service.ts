@@ -6,15 +6,26 @@ import { FoldersStore } from '../../../stores/folders.store';
 import { LINKS_SCOPE } from '../models/links-scope.const';
 import { LINK_DROP_ATTRIBUTE } from '../models/link-drop-attribute.const';
 import { LinkSelectionStore } from '../../../stores/link-selection.store';
+import { SIDEBAR_RECENT_ID } from '../../../shell/sidebar/models/sidebar-recent-id.const';
+import { SIDEBAR_TRASH_ID } from '../../../shell/sidebar/models/sidebar-trash-id.const';
 import { BulkLinkActionsService } from './bulk-link-actions.service';
 import { LinkActionsService } from './link-actions.service';
 
 /** `data-ui-tree-id` on the rows of `ui-tree` (libs/ui). */
 const TREE_ROW_SELECTOR = '[data-ui-tree-id]';
 
+/** Fixed sidebar rows that are no drop target: All links, Favorites, Recently opened, Trash. */
+const NO_DROP_TREE_IDS: readonly string[] = [
+  LINKS_SCOPE.All,
+  LINKS_SCOPE.Favorites,
+  SIDEBAR_RECENT_ID,
+  SIDEBAR_TRASH_ID,
+];
+const EMPTY_IDS: readonly string[] = [];
+
 /**
  * Drag a link onto a folder (DragDrop spec). The feed reports the drag (CDK `cdkDrag` events);
- * this service hit-tests the pointer against the sidebar tree rows and the subfolder tiles, keeps
+ * this service hit-tests the pointer against the sidebar tree rows, the pinned folders and the subfolder tiles, keeps
  * the current target for their highlight, and moves the link on drop through
  * `LinkActionsService.moveTo` (optimistic, `moved` toast with Undo). Dragging a selected link
  * carries the whole selection (one batch move through `BulkLinkActionsService.moveTo`, one toast,
@@ -43,7 +54,14 @@ export class LinkDragService {
     const target = this.target();
     return target === undefined ? null : (target ?? LINKS_SCOPE.Unsorted);
   });
-  /** Folder id of the highlighted subfolder tile. */
+  /**
+   * Sidebar rows that cannot take links while one is dragged (`ui-tree` `noDropIds`): they show a
+   * no-drop cursor and a muted state. Unsorted can (the drop removes the folder).
+   */
+  readonly treeNoDropIds = computed<readonly string[]>(() =>
+    this.dragging() ? NO_DROP_TREE_IDS : EMPTY_IDS,
+  );
+  /** Folder id of the highlighted subfolder tile and pinned folder row. */
   readonly folderTargetId = computed(() => this.target() ?? null);
 
   private readonly onKeydown = (event: KeyboardEvent): void => {
