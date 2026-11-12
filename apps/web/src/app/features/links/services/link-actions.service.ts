@@ -18,7 +18,7 @@ import { PinsStore } from '../../../stores/pins.store';
 import { TagsStore } from '../../../stores/tags.store';
 import { TrashStore } from '../../../stores/trash.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
-import { PinActionsService } from '../../pins/pin-actions.service';
+import { PinActionsService } from '../../pins/services/pin-actions.service';
 import { AddLinkDialogService } from './add-link-dialog.service';
 import { pluralKey } from '../../../core/i18n/plural-key';
 import { ADD_LINK_ACTION } from '../models/add-link-action.const';

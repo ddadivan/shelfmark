@@ -33,15 +33,15 @@ import {
   TREE_REORDER_TOUCH_DELAY_MS,
   TooltipDirective,
 } from '@shelfmark/ui';
-import { ReorderAnnouncer } from '../../../core/a11y/reorder-announcer.service';
-import { ViewportService } from '../../../core/layout/viewport.service';
-import { PinsStore } from '../../../stores/pins.store';
-import { UserSettingsStore } from '../../../stores/user-settings.store';
-import { APP_PATH } from '../../../models/app-path.const';
-import { LinkActionsService } from '../../links/services/link-actions.service';
-import { ownImageUrl, safeHref, siteLetter } from '../../links/utils/link-view';
-import type { PinRow } from '../models/pin-row.interface';
-import { PinActionsService } from '../pin-actions.service';
+import { ReorderAnnouncer } from '../../../../core/a11y/reorder-announcer.service';
+import { ViewportService } from '../../../../core/layout/viewport.service';
+import { PinsStore } from '../../../../stores/pins.store';
+import { UserSettingsStore } from '../../../../stores/user-settings.store';
+import { APP_PATH } from '../../../../models/app-path.const';
+import { LinkActionsService } from '../../../links/services/link-actions.service';
+import { ownImageUrl, safeHref, siteLetter } from '../../../links/utils/link-view';
+import type { PinRow } from '../../models/pin-row.interface';
+import { PinActionsService } from '../../services/pin-actions.service';
 
 /**
  * The "Pinned" section of the sidebar and of the phone Library page: up to seven folders and

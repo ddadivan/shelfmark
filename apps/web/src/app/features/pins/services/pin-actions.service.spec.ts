@@ -2,16 +2,16 @@ import { TestBed } from '@angular/core/testing';
 import { PIN_KIND, PIN_LIMIT } from '@shelfmark/contracts';
 import { MOCK_FOLDERS } from '@shelfmark/contracts/testing';
 import { TOAST_KIND, ToastService } from '@shelfmark/ui';
-import { PinsStore } from '../../stores/pins.store';
-import { loadEnglish, provideTranslocoForTest } from '../../testing/transloco-testing';
-import { FOLDERS_API } from '../links/models/folders-api.const';
-import { LINKS_API } from '../links/models/links-api.const';
-import { MockFoldersApi } from '../links/mock/mock-folders.api';
-import { MockLibraryData } from '../links/mock/mock-library-data';
-import { MockLinksApi } from '../links/mock/mock-links.api';
+import { PinsStore } from '../../../stores/pins.store';
+import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
+import { FOLDERS_API } from '../../links/models/folders-api.const';
+import { LINKS_API } from '../../links/models/links-api.const';
+import { MockFoldersApi } from '../../links/mock/mock-folders.api';
+import { MockLibraryData } from '../../links/mock/mock-library-data';
+import { MockLinksApi } from '../../links/mock/mock-links.api';
 import { PinActionsService } from './pin-actions.service';
-import { MockPinsApi } from './mock/mock-pins.api';
-import { PINS_API } from './models/pins-api.const';
+import { MockPinsApi } from '../mock/mock-pins.api';
+import { PINS_API } from '../models/pins-api.const';
 
 async function setup() {
   const toasts = { show: vi.fn() };

@@ -12,7 +12,7 @@ import { pluralKey } from '../../../../core/i18n/plural-key';
 import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { APP_PATH } from '../../../../models/app-path.const';
-import { SidebarPinnedComponent } from '../../../pins/sidebar-pinned/sidebar-pinned.component';
+import { SidebarPinnedComponent } from '../../../pins/components/sidebar-pinned/sidebar-pinned.component';
 import { SidebarComponent } from '../../../../shell/sidebar/sidebar.component';
 import { FoldersStore } from '../../../../stores/folders.store';
 import { LinksStore } from '../../../../stores/links.store';

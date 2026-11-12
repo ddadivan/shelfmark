@@ -8,9 +8,9 @@ import {
   type PinKind,
 } from '@shelfmark/contracts';
 import { TOAST_DURATION_MS, TOAST_KIND, toastShortcutLabel, ToastService } from '@shelfmark/ui';
-import { PinsStore } from '../../stores/pins.store';
-import { PIN_OUTCOME } from './models/pin-outcome.const';
-import type { PinRow } from './models/pin-row.interface';
+import { PinsStore } from '../../../stores/pins.store';
+import { PIN_OUTCOME } from '../models/pin-outcome.const';
+import type { PinRow } from '../models/pin-row.interface';
 
 /**
  * What a user can do with the sidebar pins: pin and unpin a folder or link (a row of the Pinned
