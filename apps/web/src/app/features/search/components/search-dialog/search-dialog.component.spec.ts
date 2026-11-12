@@ -116,7 +116,8 @@ describe('SearchDialogComponent', () => {
   it('shows the hint and asks nothing for an empty query', async () => {
     const { api, element } = await setup();
 
-    expect(element.textContent).toContain('Results show up as you type');
+    expect(element.textContent).toContain('Search your shelf');
+    expect(element.textContent).toContain('show up as you type');
     expect(api.list).not.toHaveBeenCalled();
   });
 

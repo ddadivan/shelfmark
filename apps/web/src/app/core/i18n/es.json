@@ -1522,7 +1522,8 @@
       "many": "{{count}} resultados",
       "other": "{{count}} resultados"
     },
-    "hint": "Los resultados aparecen mientras escribes: títulos, notas, etiquetas y sitios. Los enlaces abiertos recientemente están en Biblioteca.",
+    "hintTitle": "Busca en tu estantería",
+    "hint": "Títulos, notas, etiquetas y sitios aparecen mientras escribes.",
     "emptyText": "Prueba otra palabra. La búsqueda revisa títulos, notas, etiquetas y sitios.",
     "searching": "Buscando…",
     "failed": "No se pudo buscar. Inténtalo de nuevo.",

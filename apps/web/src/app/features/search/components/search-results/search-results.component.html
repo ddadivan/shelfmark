@@ -79,6 +79,7 @@
       ><ui-icon name="search" [size]="20"
     /></span>
     @if (parsed() === '') {
+      <span class="search-results__empty-title">{{ 'search.hintTitle' | transloco }}</span>
       <span class="search-results__empty-text">{{ 'search.hint' | transloco }}</span>
     } @else if (busy()) {
       <span class="search-results__empty-text">{{ 'search.searching' | transloco }}</span>

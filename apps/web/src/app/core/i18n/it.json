@@ -1522,7 +1522,8 @@
       "many": "{{count}} risultati",
       "other": "{{count}} risultati"
     },
-    "hint": "I risultati compaiono mentre scrivi: titoli, note, tag e siti. I link aperti di recente sono nella Libreria.",
+    "hintTitle": "Cerca nel tuo scaffale",
+    "hint": "Titoli, note, tag e siti compaiono mentre scrivi.",
     "emptyText": "Prova un’altra parola. La ricerca guarda titoli, note, tag e siti.",
     "searching": "Ricerca in corso…",
     "failed": "Ricerca non riuscita. Riprova.",

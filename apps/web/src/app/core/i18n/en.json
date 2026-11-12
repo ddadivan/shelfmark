@@ -1494,7 +1494,8 @@
       "one": "{{count}} result",
       "other": "{{count}} results"
     },
-    "hint": "Results show up as you type: titles, notes, tags and sites. Recently opened links live in Library.",
+    "hintTitle": "Search your shelf",
+    "hint": "Titles, notes, tags and sites show up as you type.",
     "emptyText": "Try another word. Search looks through titles, notes, tags and sites.",
     "searching": "Searching…",
     "failed": "Couldn't search. Try again.",

@@ -1522,7 +1522,8 @@
       "many": "{{count}} resultados",
       "other": "{{count}} resultados"
     },
-    "hint": "Os resultados aparecem enquanto você digita: títulos, notas, tags e sites. Os links abertos recentemente ficam na Biblioteca.",
+    "hintTitle": "Pesquise na sua estante",
+    "hint": "Títulos, notas, tags e sites aparecem enquanto você digita.",
     "emptyText": "Tente outra palavra. A pesquisa olha títulos, notas, tags e sites.",
     "searching": "Pesquisando…",
     "failed": "Não foi possível pesquisar. Tente de novo.",

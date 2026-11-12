@@ -54,5 +54,8 @@ ui-command-list {
 .search-results__empty-text {
   @include type(body);
 
+  // Two even lines in every language, not one long one.
+  max-width: rem(384px);
   color: var(--text-muted);
+  text-wrap: balance;
 }
