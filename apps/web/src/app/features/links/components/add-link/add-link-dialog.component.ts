@@ -1,27 +1,16 @@
 import {
-  afterNextRender,
   ChangeDetectionStrategy,
   Component,
   computed,
   effect,
   inject,
-  Injector,
   signal,
   untracked,
 } from '@angular/core';
-import { rxResource, toSignal } from '@angular/core/rxjs-interop';
-import {
-  form,
-  FormField,
-  FormRoot,
-  maxLength,
-  required,
-  validate,
-  type ValidationError,
-} from '@angular/forms/signals';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { FormField, FormRoot } from '@angular/forms/signals';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
-  isHttpUrl,
   LINK_KIND,
   LINK_LIMIT,
   type CreateLinkRequest,
@@ -63,17 +52,14 @@ import { normalizeTagNames } from '../../../tags/utils/normalize-tag-names';
 import { ADD_LINK_ACTION } from '../../models/add-link-action.const';
 import type { AddLinkDialogData } from '../../models/add-link-dialog-data.interface';
 import type { AddLinkSaved } from '../../models/add-link-saved.interface';
-import type { AddLinkFormModel } from '../../models/add-link-form-model.interface';
-import type { AddSeveralFormModel } from '../../models/add-several-form-model.interface';
 import type { AddLinkResult } from '../../models/add-link-result.type';
 import { LINKS_API } from '../../models/links-api.const';
 import { PREVIEW_STATE } from '../../models/preview-state.const';
 import type { PreviewState } from '../../models/preview-state.type';
 import { LocaleService } from '../../../../core/i18n/locale.service';
-import { parsePastedLinks } from '../paste-many/parse-pasted-links';
-import type { ParsedPaste } from '../paste-many/models/parsed-paste.interface';
 import { PasteManyListComponent } from '../paste-many/paste-many-list.component';
 import { AddLinkFormService } from '../../services/add-link-form.service';
+import { AddSeveralLinksService } from '../../services/add-several-links.service';
 import { buildFolderOptions } from '../../utils/folder-options';
 import { displayHost, urlWithoutScheme } from '../../utils/http-url';
 import { saveErrorKey } from '../../utils/save-error-key';
@@ -118,7 +104,7 @@ const PREVIEW_DEBOUNCE_MS = 350;
     TranslocoPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [AddLinkFormService],
+  providers: [AddLinkFormService, AddSeveralLinksService],
   templateUrl: './add-link-dialog.component.html',
   styleUrl: './add-link-dialog.component.scss',
 })
@@ -151,38 +137,11 @@ export class AddLinkDialogComponent {
   protected readonly original = this.formState.original;
   protected readonly editing = this.formState.editing;
 
-  /** What a paste with several links held; set, the paste-many list replaces the form. */
-  protected readonly pasted = signal<ParsedPaste | null>(this.formState.handedOverMany);
+  private readonly severalLinks = inject(AddSeveralLinksService);
+  protected readonly pasted = this.severalLinks.pasted;
+  protected readonly several = this.severalLinks.several;
+  protected readonly severalForm = this.severalLinks.severalForm;
 
-  /**
-   * "Add several links" (#315): a large text area replaces the single-link fields; pasting into
-   * it or "Find links" reads the text with the paste-many parser and opens the same list.
-   */
-  protected readonly several = signal(false);
-  private readonly injector = inject(Injector);
-  private readonly severalModel = signal<AddSeveralFormModel>({ text: '' });
-  protected readonly severalForm = form(
-    this.severalModel,
-    (path) => {
-      validate(path.text, ({ value }): ValidationError.WithoutFieldTree | undefined =>
-        value().trim() === ''
-          ? { kind: 'required', message: this.formState.text('links.add.several.required') }
-          : parsePastedLinks(value()).links.length === 0
-            ? { kind: 'noLinks', message: this.formState.text('links.add.several.none') }
-            : undefined,
-      );
-    },
-    {
-      submission: {
-        action: async () => {
-          this.openList(parsePastedLinks(this.severalModel().text));
-        },
-        onInvalid: () => {
-          this.severalForm.text().focusBoundControl();
-        },
-      },
-    },
-  );
   /** Edit mode: the "Type" select (video, article, shopping, other). */
   protected readonly kindOptions = computed(() => {
     this.formState.i18n();
@@ -324,21 +283,6 @@ export class AddLinkDialogComponent {
   /** Translation key of why the last save failed; `null` while nothing failed. */
   protected readonly saveError = signal<string | null>(null);
 
-  /**
-   * A paste into the address field: text with more than one link opens the paste-many list
-   * instead of landing in the field. One link (or none) pastes as usual.
-   */
-  protected onUrlPaste(event: ClipboardEvent): void {
-    if (this.editing) {
-      return;
-    }
-    const parsed = parsePastedLinks(event.clipboardData?.getData('text/plain') ?? '');
-    if (parsed.links.length > 1) {
-      event.preventDefault();
-      this.pasted.set(parsed);
-    }
-  }
-
   protected openExisting(): void {
     const existing = this.duplicate();
     if (existing) {
@@ -346,47 +290,23 @@ export class AddLinkDialogComponent {
     }
   }
 
-  /** Cmd / Ctrl + Enter saves from any field (Enter alone in a text field submits as before). */
-  /** Switches to the several-links text area and puts focus in it. */
+  protected onUrlPaste(event: ClipboardEvent): void {
+    this.severalLinks.onUrlPaste(event);
+  }
+
   protected showSeveral(): void {
-    this.several.set(true);
-    afterNextRender(
-      { read: () => this.severalForm.text().focusBoundControl() },
-      {
-        injector: this.injector,
-      },
-    );
+    this.severalLinks.showSeveral();
   }
 
-  /** Back to one link, focus on the address field. */
   protected showSingle(): void {
-    this.several.set(false);
-    afterNextRender(
-      { read: () => this.form.url().focusBoundControl() },
-      {
-        injector: this.injector,
-      },
-    );
+    this.severalLinks.showSingle();
   }
 
-  /**
-   * Pasting into the "several links" text area is plain text entry (#335): people paste more than
-   * once and edit the text; only "Find links" (or Cmd / Ctrl + Enter) goes on to the list. Enter
-   * alone is a new line.
-   */
   protected onSeveralKeydown(event: KeyboardEvent): void {
-    if (event.key === KEYBOARD_KEY.Enter && (event.metaKey || event.ctrlKey)) {
-      event.preventDefault();
-      (event.currentTarget as HTMLFormElement).requestSubmit();
-    }
+    this.severalLinks.onSeveralKeydown(event);
   }
 
-  private openList(parsed: ParsedPaste): void {
-    if (parsed.links.length > 0) {
-      this.pasted.set(parsed);
-    }
-  }
-
+  /** Cmd / Ctrl + Enter saves from any field (Enter alone in a text field submits as before). */
   protected onKeydown(event: KeyboardEvent): void {
     if (event.key === KEYBOARD_KEY.Enter && (event.metaKey || event.ctrlKey) && !this.saving()) {
       event.preventDefault();
