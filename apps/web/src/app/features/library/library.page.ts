@@ -21,10 +21,9 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { switchMap } from 'rxjs';
 import {
   BreadcrumbsComponent,
   BULK_BAR_LAYOUT,
@@ -48,7 +47,6 @@ import {
   SkeletonComponent,
   type BreadcrumbClick,
   type BulkBarAction,
-  type BreadcrumbItem,
 } from '@shelfmark/ui';
 import {
   EXPORT_FORMAT,
@@ -86,6 +84,7 @@ import { PinsStore } from '../../stores/pins.store';
 import { UI_VIEW } from '../../stores/models/ui-view.const';
 import { UserSettingsStore } from '../../stores/user-settings.store';
 import { LibraryFeedService } from './services/library-feed.service';
+import { LibraryHeadService } from './services/library-head.service';
 import { LibraryFilterService } from './services/library-filter.service';
 import { SavedViewsStore } from '../../stores/saved-views.store';
 import { FolderTileComponent } from './components/folder-tile/folder-tile.component';
@@ -138,7 +137,7 @@ const FEED_ITEM_FOCUS_SELECTOR = '.ui-card__link, .ui-list-item__link';
   templateUrl: './library.page.html',
   styleUrl: './library.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [LibraryFilterService, LibraryFeedService],
+  providers: [LibraryFilterService, LibraryFeedService, LibraryHeadService],
   host: {
     '(document:keydown)': 'onKeydown($event)',
     '(document:paste)': 'onPaste($event)',
@@ -149,6 +148,7 @@ export default class LibraryPage {
   private readonly settings = inject(UserSettingsStore);
   protected readonly filters = inject(LibraryFilterService);
   protected readonly feed = inject(LibraryFeedService);
+  protected readonly head = inject(LibraryHeadService);
   protected readonly actions = inject(LinkActionsService);
   protected readonly pins = inject(PinsStore);
   protected readonly PIN_KIND = PIN_KIND;
@@ -200,54 +200,6 @@ export default class LibraryPage {
   protected readonly SORT_OPTIONS = SORT_OPTIONS;
   protected readonly SORT_OPTION_KEYS = SORT_OPTION_KEYS;
 
-  /** The document title the app started with (the brand), the suffix of every page title. */
-  private readonly appName = this.title.getTitle();
-  private readonly rootLabel = toSignal(this.transloco.selectTranslate('library.scope.all'));
-  private readonly scopeLabel = toSignal(
-    toObservable(this.filters.titleKey).pipe(
-      switchMap((key) => this.transloco.selectTranslate(key)),
-    ),
-  );
-  /** The heading of the page; `undefined` until translated. */
-  private readonly heading = computed(() => this.filters.folder()?.name ?? this.scopeLabel());
-  /** The trail of a folder page: "All links", the ancestors (links) and the folder itself. */
-  protected readonly crumbs = computed<BreadcrumbItem[] | null>(() => {
-    const id = this.filters.folderId();
-    const root = this.rootLabel();
-    if (
-      !this.filters.isFolder() ||
-      id === undefined ||
-      root === undefined ||
-      !this.filters.folder()
-    ) {
-      return null;
-    }
-    const path = this.folders.pathTo(id);
-    return [
-      { label: root, href: `/${APP_PATH.Links}` },
-      ...path.map((folder, index) =>
-        index === path.length - 1
-          ? { label: folder.name }
-          : { label: folder.name, href: `/${APP_PATH.Folders}/${folder.id}` },
-      ),
-    ];
-  });
-  /** The tab title: "<heading> · <app>", or "Search: <query> · <app>" while searching. */
-  private readonly pageTitle = toSignal(
-    toObservable(computed(() => ({ query: this.filters.query(), heading: this.heading() }))).pipe(
-      switchMap(({ query, heading }) =>
-        query === ''
-          ? this.transloco.selectTranslate('library.pageTitle.page', {
-              page: heading ?? '',
-              app: this.appName,
-            })
-          : this.transloco.selectTranslate('library.pageTitle.search', {
-              query,
-              app: this.appName,
-            }),
-      ),
-    ),
-  );
   /** Ids of the links on screen, in order: the range and "select all" of the selection. */
   protected readonly order = computed(() => this.feed.shownLinks().map((link) => link.id));
   /** The picked links that are on screen (a link that left the view drops out by itself). */
@@ -323,12 +275,6 @@ export default class LibraryPage {
         }
       });
     });
-    effect(() => {
-      const text = this.pageTitle();
-      if (text !== undefined && this.heading() !== undefined) {
-        this.title.setTitle(text);
-      }
-    });
     // Entering and leaving selection mode is announced politely (the "N selected" header is gone
     // once the mode ends, so it cannot say so itself).
     effect(() => {
@@ -357,7 +303,6 @@ export default class LibraryPage {
       });
     });
     inject(DestroyRef).onDestroy(() => {
-      this.title.setTitle(this.appName);
       this.selection.clear();
     });
   }

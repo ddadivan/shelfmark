@@ -53,7 +53,7 @@
     </ui-button>
     }
   </div>
-  } @if (!filters.folderMissing()) { @if (crumbs(); as trail) {
+  } @if (!filters.folderMissing()) { @if (head.crumbs(); as trail) {
   <ui-breadcrumbs
     class="library__crumbs"
     [items]="trail"
