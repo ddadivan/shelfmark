@@ -1,0 +1,8 @@
+@use '../../../../styles/ui' as *;
+
+:host {
+  display: block;
+  height: 0;
+  margin: var(--space-1) rem(6px);
+  border-top: 1px solid var(--border);
+}

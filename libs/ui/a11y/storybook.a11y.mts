@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { expect, test, type Page } from '@playwright/test';
-import { THEME, THEME_ATTRIBUTE } from '../src/lib/theme';
+import { THEME, THEME_ATTRIBUTE } from '../src/lib/models/theme';
 
 // Runs axe-core (including colour contrast) on every story of the built Storybook, in a real
 // browser, under the production CSP from libs/ui/vercel.json (see serve-storybook.mjs).

@@ -96,8 +96,8 @@ describe('decide', () => {
 describe('isStorybookRelevant', () => {
   it('treats library sources, stories, styles and workspace setup as Storybook inputs', () => {
     for (const file of [
-      'libs/ui/src/lib/button/button.component.ts',
-      'libs/ui/src/lib/drawer/drawer.stories.ts',
+      'libs/ui/src/lib/components/button/button.component.ts',
+      'libs/ui/src/lib/components/drawer/drawer.stories.ts',
       'libs/ui/.storybook/preview.ts',
       'libs/ui/src/styles/tokens.scss',
       'libs/ui/README.md',
@@ -110,7 +110,7 @@ describe('isStorybookRelevant', () => {
 
   it('ignores unit tests, the a11y runner and everything outside the library', () => {
     for (const file of [
-      'libs/ui/src/lib/button/button.component.spec.ts',
+      'libs/ui/src/lib/components/button/button.component.spec.ts',
       'libs/ui/a11y/storybook.a11y.mts',
       'apps/web/src/main.ts',
       'apps/api/src/main.ts',
@@ -134,7 +134,7 @@ describe('decideStorybook', () => {
   });
 
   it('builds a main merge that changed the library', () => {
-    const files = ['apps/web/src/main.ts', 'libs/ui/src/lib/card/card.component.scss'];
+    const files = ['apps/web/src/main.ts', 'libs/ui/src/lib/components/card/card.component.scss'];
     assert.equal(decideStorybook(input('main', files)).skip, false);
   });
 

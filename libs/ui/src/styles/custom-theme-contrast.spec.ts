@@ -8,14 +8,12 @@ import {
   type CustomThemeBase,
 } from '@shelfmark/contracts';
 import { compileString } from 'sass';
+import { CUSTOM_THEME_SURFACES, THEME_ATTRIBUTE, THEME_CUSTOM } from '../lib/models/theme';
 import {
-  CUSTOM_THEME_SURFACES,
-  THEME_ATTRIBUTE,
-  THEME_CUSTOM,
   customAccentTokens,
   isAccessibleAccent,
   nearestAccessibleAccent,
-} from '../lib/theme';
+} from '../lib/utils/custom-accent';
 
 /**
  * WCAG AA for every Custom theme combination (issue #273), computed from the token values in

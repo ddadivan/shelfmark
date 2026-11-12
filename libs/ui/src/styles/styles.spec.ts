@@ -1,9 +1,9 @@
 import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { compile, compileString } from 'sass';
-import { PHONE_MEDIA_QUERY } from '../lib/media';
+import { PHONE_MEDIA_QUERY } from '../lib/utils/media';
 import { encapsulateStyle } from '@angular/compiler';
-import { MOTION_ATTRIBUTE, MOTION_REDUCED } from '../lib/motion';
+import { MOTION_ATTRIBUTE, MOTION_REDUCED } from '../lib/services/motion';
 import {
   CUSTOM_THEME_ATTRIBUTE,
   LAYOUT_ATTRIBUTE,
@@ -11,7 +11,7 @@ import {
   THEME,
   THEME_ATTRIBUTE,
   THEME_CUSTOM,
-} from '../lib/theme';
+} from '../lib/models/theme';
 
 const STYLES_PATH = 'libs/ui/src/styles';
 
@@ -514,7 +514,7 @@ describe('appearance layout attributes (#285)', () => {
   });
 
   it('lets ui-card shrink or drop its image area on the preview attribute', () => {
-    const card = compile(resolve(STYLES_DIR, '../lib/card/card.component.scss'), {
+    const card = compile(resolve(STYLES_DIR, '../lib/components/card/card.component.scss'), {
       loadPaths: [STYLES_DIR],
     }).css;
     expect(card).toMatch(
@@ -525,7 +525,7 @@ describe('appearance layout attributes (#285)', () => {
     );
     expect(card).toContain('padding: var(--density-card-padding)');
     const preview = compile(
-      resolve(STYLES_DIR, '../lib/theme-preview/theme-preview.component.scss'),
+      resolve(STYLES_DIR, '../lib/components/theme-preview/theme-preview.component.scss'),
       {
         loadPaths: [STYLES_DIR],
       },

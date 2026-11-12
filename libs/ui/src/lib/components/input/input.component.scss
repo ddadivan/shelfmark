@@ -1,0 +1,77 @@
+@use '../../../styles/ui' as *;
+@use '../field/field-parts' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.ui-input__native {
+  @include field-native;
+
+  // The own clear button replaces the browser's search cancel button.
+  &::-webkit-search-cancel-button {
+    appearance: none;
+  }
+}
+
+:host(.ui-input--compact) .ui-input__native {
+  @include type(caption);
+
+  padding: rem(4px) 0;
+
+  // A touch screen zooms into fields under 16px.
+  @include coarse {
+    @include type(body);
+  }
+}
+
+.ui-input__native[type='url'] {
+  @include type(mono);
+}
+
+// One 24px slot for the search icon and the spinner: the field never shifts.
+.ui-input__slot {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: rem(24px);
+  height: rem(24px);
+}
+
+.ui-input__glyph {
+  grid-area: 1 / 1;
+}
+
+.ui-input__glyph--return {
+  @include enter(spinner);
+}
+
+.ui-input__glyph--leave {
+  @include leave(spinner);
+}
+
+.ui-input__spinner {
+  flex: none;
+  color: var(--text-muted);
+}
+
+.ui-input__spinner--leave {
+  @include leave(spinner);
+}
+
+.ui-input__clear {
+  @include field-icon-button;
+}
+
+.ui-input__kbd {
+  @include type(caption);
+
+  flex: none;
+  padding: 0 rem(5px);
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: rem(5px);
+}

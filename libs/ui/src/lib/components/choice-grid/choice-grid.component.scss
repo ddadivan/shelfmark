@@ -1,0 +1,93 @@
+@use '../../../styles/ui' as *;
+
+:host {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+:host(.ui-choice-grid--icon) {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(rem(40px), 1fr));
+  gap: var(--space-2);
+}
+
+@each $name in 'graphite', 'sage', 'ocean', 'plum', 'clay', 'amber', 'rose', 'teal' {
+  .ui-choice--#{$name} {
+    --ui-choice-glyph: var(--folder-#{$name});
+    --ui-choice-tile: var(--folder-#{$name}-bg);
+  }
+}
+
+.ui-choice {
+  position: relative;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+// The native radio stays in the tab order and the accessibility tree; the drawing is next to it.
+.ui-choice__input {
+  @include visually-hidden;
+}
+
+.ui-choice__swatch {
+  display: block;
+  inline-size: rem(36px);
+  block-size: rem(36px);
+  background: var(--ui-choice-glyph);
+  border-radius: 50%;
+  transition: box-shadow var(--duration-fast) var(--ease-out);
+
+  @include coarse {
+    inline-size: rem(44px);
+    block-size: rem(44px);
+  }
+}
+
+.ui-choice--checked .ui-choice__swatch {
+  box-shadow:
+    0 0 0 3px var(--surface),
+    0 0 0 5px var(--text);
+}
+
+.ui-choice__input:focus-visible + .ui-choice__swatch,
+.ui-choice__input:focus-visible + .ui-choice__tile {
+  @include focus-ring;
+}
+
+.ui-choice__tile {
+  display: grid;
+  place-items: center;
+  inline-size: 100%;
+  block-size: rem(40px);
+  color: var(--ui-choice-glyph);
+  background: var(--ui-choice-tile);
+  border-radius: var(--radius-md);
+  transition: box-shadow var(--duration-fast) var(--ease-out);
+
+  @include coarse {
+    block-size: rem(44px);
+  }
+
+  @include hover {
+    box-shadow: inset 0 0 0 1px var(--ui-choice-glyph);
+  }
+}
+
+.ui-choice--checked .ui-choice__tile {
+  box-shadow: inset 0 0 0 2px var(--ui-choice-glyph);
+}
+
+:host(.ui-choice-grid--disabled) .ui-choice {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@include reduced-motion {
+  .ui-choice__swatch,
+  .ui-choice__tile {
+    transition: none;
+  }
+}

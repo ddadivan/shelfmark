@@ -1,0 +1,28 @@
+@use '../../../styles/ui' as *;
+
+:host {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  inline-size: rem(20px);
+  block-size: rem(14px);
+  overflow: hidden;
+  border-radius: rem(3px);
+}
+
+.ui-flag__img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+// The hairline edge sits above the image, so a white stripe still shows its border.
+:host::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: '';
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px var(--border);
+}

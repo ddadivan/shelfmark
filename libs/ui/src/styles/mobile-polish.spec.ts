@@ -17,7 +17,7 @@ describe('mobile polish styles', () => {
   });
 
   it('stacks the dialog footer on a phone, primary on top, destructive last', () => {
-    const css = compileScss('lib/dialog/dialog.component.scss');
+    const css = compileScss('lib/components/dialog/dialog.component.scss');
     const phone = mediaBlocks(css, PHONE).join('\n');
     expect(phone).toMatch(/\.ui-dialog__foot\s*\{[^}]*flex-flow:\s*column-reverse nowrap/);
     expect(phone).toMatch(/\.ui-dialog__foot\s*\{[^}]*align-items:\s*stretch/);
@@ -33,7 +33,7 @@ describe('mobile polish styles', () => {
   });
 
   it('hides the Esc cap and keeps the footer hints readable by screen readers on a phone', () => {
-    const css = compileScss('lib/command-list/command-list.component.scss');
+    const css = compileScss('lib/components/command-list/command-list.component.scss');
     const phone = mediaBlocks(css, PHONE).join('\n');
     expect(phone).toMatch(/\.ui-command-list__field > kbd\s*\{[^}]*display:\s*none/);
     expect(phone).toMatch(/\.ui-command-list__footer\s*\{[^}]*clip-path:\s*inset\(50%\)/);
@@ -42,9 +42,9 @@ describe('mobile polish styles', () => {
   });
 
   it.each([
-    'lib/breadcrumbs/breadcrumbs.component.scss',
-    'lib/radio-group/radio-group.component.scss',
-    'lib/checkbox/checkbox.component.scss',
+    'lib/components/breadcrumbs/breadcrumbs.component.scss',
+    'lib/components/radio-group/radio-group.component.scss',
+    'lib/components/checkbox/checkbox.component.scss',
   ])('%s has a pressed state', (file) => {
     expect(compileScss(file)).toContain(':active');
   });

@@ -1,0 +1,91 @@
+@use '../../../../styles/ui' as *;
+
+// Bottom centre on every screen, 24px up. This is the author's decision and overrides the Toast
+// README's old bottom-left. The overlay pane spans the viewport edge and lets pointer events
+// through; the toasts take them themselves. The toasts of both live regions share one grid cell: they pile up with the newest in front and
+// the older ones peeking out above it (`data-depth` 1 and 2). Hovering or focusing the stack
+// fans it out into a list, the newest at the bottom, so every action can be reached.
+:host {
+  box-sizing: border-box;
+  display: grid;
+
+  // One column that can shrink to the viewport (`minmax(0, 1fr)`, not `auto`): an auto track
+  // grows to the widest toast's max-content (a long second line, such as the titles of 16
+  // deleted links), pushes the centred toasts to the right and half off the screen.
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  inline-size: 100%;
+
+  // `--ui-toast-offset` lets the app lift the toast above its own bottom bar (the phone tab bar,
+  // the bulk bar: bar height plus a 12px gap); the default is the plain 24px edge gap.
+  padding: var(--space-3) var(--space-3)
+    max(var(--ui-toast-offset, var(--space-6)), env(safe-area-inset-bottom));
+  pointer-events: none;
+
+  @include tablet-up {
+    padding-inline: var(--space-4);
+  }
+}
+
+// The live regions add no box of their own: the toasts take part in the grid of the host.
+.ui-toast-region__live {
+  display: contents;
+}
+
+.ui-toast-region__item {
+  z-index: var(--ui-toast-index, 0);
+  grid-area: 1 / 1;
+  align-self: end;
+  transition:
+    transform var(--duration-base) var(--ease-out),
+    opacity var(--duration-base) var(--ease-out);
+
+  &[data-depth='1'] {
+    pointer-events: none;
+    opacity: 0.75;
+    transform: translateY(rem(-12px)) scale(0.95);
+  }
+
+  &[data-depth='2'] {
+    pointer-events: none;
+    opacity: 0.45;
+    transform: translateY(rem(-24px)) scale(0.9);
+  }
+
+  &--enter {
+    @include enter(toast);
+  }
+
+  &--leave {
+    @include leave(toast);
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+// Fanned out: one column in stacking order (the newest nearest the edge, so it does not move
+// under the pointer). The grid has one cell per toast again.
+:host(:hover),
+:host(:focus-within) {
+  gap: var(--space-2);
+
+  .ui-toast-region__item {
+    grid-area: auto;
+    order: var(--ui-toast-index, 0);
+    pointer-events: auto;
+    opacity: 1;
+    transform: none;
+
+    // The bridge keeps the pointer inside the stack when it moves between the toasts.
+    &::before {
+      position: absolute;
+      inset-block: rem(-8px) auto;
+      inset-inline: 0;
+      block-size: rem(8px);
+      pointer-events: auto;
+      content: '';
+    }
+  }
+}

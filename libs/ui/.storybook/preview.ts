@@ -24,7 +24,7 @@ import './tree-stories.scss';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { applicationConfig, type Preview } from '@storybook/angular-vite';
 import { withThemeByDataAttribute } from '@storybook/addon-themes';
-import { THEME, THEME_ATTRIBUTE } from '../src/lib/theme';
+import { THEME, THEME_ATTRIBUTE } from '../src/lib/models/theme';
 
 const preview: Preview = {
   decorators: [

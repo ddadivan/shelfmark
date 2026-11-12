@@ -1,0 +1,115 @@
+@use '../../../styles/ui' as *;
+
+:host {
+  display: block;
+}
+
+// Pinned over the content: 16px from the sides, 20px above the bottom edge and the home indicator.
+:host(.ui-tab-bar--fixed) {
+  position: fixed;
+  inset-inline: var(--space-4);
+  inset-block-end: calc(#{rem(20px)} + env(safe-area-inset-bottom, 0rem));
+  z-index: 10;
+}
+
+.ui-tab-bar__nav {
+  @include glass;
+
+  box-sizing: border-box;
+  block-size: rem(68px);
+  padding-inline: var(--space-2);
+  border-radius: rem(26px);
+}
+
+.ui-tab-bar__list {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+  justify-content: space-around;
+  block-size: 100%;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.ui-tab-bar__slot {
+  display: flex;
+  flex: 1 1 0;
+  justify-content: center;
+  min-inline-size: 0;
+}
+
+.ui-tab-bar__tab {
+  @include type(caption);
+
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-inline-size: rem(56px);
+  max-inline-size: 100%;
+  block-size: rem(52px);
+
+  // Narrow side padding: labels get the room (translations run longer; at 360px a slot is ~60px).
+  padding: 0 var(--space-1);
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: rem(18px);
+
+  @include hover {
+    color: var(--text);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &:active {
+    background: var(--surface-hover);
+  }
+}
+
+.ui-tab-bar__tab--active {
+  color: var(--text);
+  background: var(--surface-hover);
+}
+
+.ui-tab-bar__label {
+  max-inline-size: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// The primary Add button: 56px, 20px corners.
+.ui-tab-bar__add {
+  display: grid;
+  flex: none;
+  place-items: center;
+  inline-size: rem(56px);
+  block-size: rem(56px);
+  padding: 0;
+  color: var(--on-primary);
+  cursor: pointer;
+  background: var(--primary);
+  border: 0;
+  border-radius: rem(20px);
+
+  @include hover {
+    background: var(--primary-hover);
+  }
+
+  &:active {
+    background: var(--primary-hover);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}

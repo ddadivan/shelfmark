@@ -1,0 +1,429 @@
+@use '../../../styles/ui' as *;
+
+// Whole-card activation: the title link's ::after covers the card (z-index 1); the favorite
+// toggle and the actions sit above it (z-index 2), so they never activate the card.
+
+:host {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  isolation: isolate;
+  overflow: hidden;
+  color: var(--text);
+  cursor: pointer;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  transition:
+    box-shadow var(--duration-slow) var(--ease-out),
+    background-color var(--duration-slow) var(--ease-out);
+}
+
+// The ring sits on the card, not on the title text. An element's own outline and shadow are
+// not clipped by its own `overflow`, so the card can clip its image and keep both whole.
+:host(:has(.ui-card__link:focus-visible)) {
+  @include focus-ring;
+}
+
+:host(.ui-card--reveal) {
+  @include enter(fade);
+}
+
+// Hover: pointer devices only (Motion principle 7). The card never moves.
+:host {
+  @include hover {
+    background: var(--card-hover-bg);
+
+    // `--shadow-x` / `--shadow-y` come from `uiPointerShadow` (a few px, away from the
+    // pointer); without the directive they are 0 and the extra layer just deepens the spread.
+    box-shadow:
+      0 0 0 1px var(--card-hover-border),
+      var(--shadow-card-spread),
+      var(--shadow-x, 0) var(--shadow-y, 0) 24px -10px var(--shadow-card-pointer);
+
+    .ui-card__overlay {
+      pointer-events: auto;
+      opacity: 1;
+      transform: none;
+    }
+
+    .ui-card__favorite,
+    .ui-card__more {
+      opacity: 1;
+      transform: none;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .ui-card__image,
+      .ui-card__placeholder {
+        transform: scale(1.06);
+      }
+    }
+  }
+}
+
+// Press: the shadow tightens back (80 ms), the overlay bar darkens.
+:host(:has(.ui-card__link:active)) {
+  box-shadow: var(--shadow-card-press);
+  transition-duration: var(--duration-instant);
+
+  .ui-card__overlay {
+    background: var(--surface-pressed);
+  }
+}
+
+:host(.ui-card--selected) {
+  background: var(--accent-bg);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+// Picked for a bulk action: a thin 2px `accent` (sage) ring and a light `accent-bg` tint, also
+// while hovered. The author's choice (the Checkbox spec says a `primary` ring, which is too loud
+// in dark); `text` and `text-muted` hold 4.5:1 on `accent-bg` in both themes.
+:host(.ui-card--checked) {
+  // Chips are `accent-bg` too: on the tinted card they sit on `surface`, so they stay visible.
+  --ui-chip-bg: var(--surface);
+
+  background: var(--accent-bg);
+  box-shadow: 0 0 0 2px var(--accent);
+
+  @include hover {
+    background: var(--accent-bg);
+    box-shadow:
+      0 0 0 2px var(--accent),
+      var(--shadow-card-spread);
+  }
+}
+
+// Media ---------------------------------------------------------------------------------------
+
+.ui-card__media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  margin: rem(6px) rem(6px) 0;
+  overflow: hidden;
+  color: var(--text-muted);
+  background: var(--surface-hover);
+  border-radius: rem(16px); // concentric with the 22px card corner (22 - 6)
+  aspect-ratio: 16 / 9;
+}
+
+// Settings › Appearance › Cards › Preview image (#285, `data-card-preview` on an ancestor): a
+// short strip, or no image area at all.
+:host-context([data-card-preview='small']) .ui-card__media {
+  aspect-ratio: 32 / 9;
+}
+
+:host-context([data-card-preview='off']) .ui-card__media {
+  display: none;
+}
+
+.ui-card__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--duration-slow) var(--ease-out);
+}
+
+// Soft background and a small card drawing when there is no image (and no `fallback` content);
+// the tone rotates over `accent-bg`, `surface-hover` and `surface-pressed`. The opacities are
+// decorative (no text), so they are allowed.
+.ui-card__placeholder {
+  position: absolute;
+  inset: 0;
+  background: var(--surface-hover);
+  transition: transform var(--duration-slow) var(--ease-out);
+
+  &[data-tone='0'] {
+    background: var(--accent-bg);
+  }
+
+  &[data-tone='2'] {
+    background: var(--surface-pressed);
+  }
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.ui-card__art-glow {
+  fill: var(--surface);
+  opacity: 0.4;
+}
+
+.ui-card__art-card {
+  fill: var(--surface);
+  opacity: 0.75;
+}
+
+.ui-card__art-bar {
+  fill: var(--text-muted);
+  opacity: 0.45;
+}
+
+.ui-card__art-bar--short {
+  opacity: 0.3;
+}
+
+// A custom `fallback` (for example a site letter) sits on `accent-bg` over the drawing.
+.ui-card__fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-sans);
+  font-size: rem(28px);
+  font-weight: 600;
+  line-height: 1;
+  color: var(--accent-text);
+  background: var(--accent-bg);
+
+  &:empty {
+    display: none;
+  }
+}
+
+.ui-card__overlay {
+  @include type(caption);
+
+  position: absolute;
+  inset: auto rem(10px) rem(10px);
+  z-index: 2;
+  padding: rem(6px) rem(8px) rem(6px) rem(10px);
+  color: var(--text);
+  pointer-events: none;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  border-radius: var(--radius-md);
+  opacity: 0;
+  backdrop-filter: blur(#{rem(6px)});
+  transform: translateY(#{rem(8px)});
+  transition:
+    opacity var(--duration-base) var(--ease-out),
+    transform var(--duration-base) var(--ease-out),
+    background-color var(--duration-instant);
+
+  &:empty {
+    display: none;
+  }
+
+  @include reduced-motion {
+    transform: none;
+  }
+}
+
+:host(:has(.ui-card__link:focus-visible)) .ui-card__overlay {
+  opacity: 1;
+  transform: none;
+}
+
+// Body ----------------------------------------------------------------------------------------
+
+.ui-card__body {
+  display: flex;
+
+  // Cards in a grid row share one height: the body takes the free room, so projected tags can sit
+  // at the bottom (`margin-block-start: auto`).
+  flex: 1;
+  flex-direction: column;
+  gap: var(--density-card-gap);
+  padding: var(--density-card-padding);
+}
+
+.ui-card__meta {
+  @include type(caption);
+
+  display: flex;
+  gap: rem(6px);
+  align-items: center;
+  min-width: 0;
+  color: var(--text-muted);
+}
+
+.ui-card__site {
+  display: flex;
+  flex: 0 1 auto;
+  gap: rem(6px);
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-card__date {
+  flex: none;
+  margin-inline-start: auto;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+
+  &:empty {
+    display: none;
+  }
+}
+
+// The heading wraps the link. It stays static positioned (the link's `::after` is stretched
+// over the card) and carries no type of its own.
+.ui-card__heading {
+  margin: 0;
+  font: inherit;
+}
+
+// The one activation target: a native link or button reset to look like text.
+.ui-card__link {
+  @include type(heading);
+  @include line-clamp(2);
+
+  font-size: rem(16px);
+  line-height: rem(22px);
+  letter-spacing: -0.01em;
+  padding: 0;
+  margin: 0;
+  color: var(--text);
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  overflow-wrap: anywhere;
+
+  // The card's ring replaces the one on the text.
+  &:focus-visible {
+    outline: none;
+  }
+
+  &::after {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    content: '';
+    border-radius: inherit;
+  }
+}
+
+// Above the stretched link's layer, so the pointer on the text reaches it (the full-title
+// tooltip opens only there); it is inside the link, so a click still activates the card.
+.ui-card__title-text {
+  position: relative;
+  z-index: 2;
+}
+
+.ui-card__description {
+  @include visually-hidden;
+}
+
+.ui-card__actions {
+  position: absolute;
+
+  --ui-button-sm-size: #{rem(32px)};
+  --ui-button-radius: #{rem(10px)};
+
+  inset: rem(10px) rem(10px) auto auto;
+  z-index: 2;
+  display: flex;
+  gap: rem(4px);
+}
+
+// The favorite toggle and the "..." trigger reveal on their own, so a toggled-on favorite can stay.
+.ui-card__favorite,
+.ui-card__more {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(#{rem(-2px)});
+  transition:
+    opacity var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+
+  &:empty {
+    display: none;
+  }
+
+  @include reduced-motion {
+    transform: none;
+  }
+}
+
+:host(:has(:focus-visible)) :is(.ui-card__favorite, .ui-card__more),
+:host(.ui-card--pinned) :is(.ui-card__favorite, .ui-card__more),
+:host(.ui-card--favorited) .ui-card__favorite {
+  opacity: 1;
+  transform: none;
+}
+
+// Touch has no hover: the actions are always there.
+@media (hover: none) {
+  .ui-card__favorite,
+  .ui-card__more {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// Bulk selection checkbox, top left over the preview (above the stretched link, like the actions).
+// The wrapper draws nothing: the checkbox's own solid `surface` box and `border-control` outline are
+// the one frame, readable on every placeholder tone.
+// It fades in with the actions on hover and keyboard focus, and stays while a selection runs.
+.ui-card__select {
+  position: absolute;
+
+  // Same row, size and inset as the "..." on the right: 32px squares (40px on touch).
+  --ui-checkbox-size: #{rem(32px)};
+  --ui-checkbox-hit: #{rem(32px)};
+  --ui-checkbox-radius: #{rem(10px)};
+  --ui-checkbox-tick: #{rem(20px)};
+  --ui-checkbox-fill: var(--accent);
+  --ui-checkbox-hover-bg: var(--surface-hover);
+  --ui-checkbox-pressed-bg: var(--surface-pressed);
+
+  inset: rem(10px) auto auto rem(10px);
+  z-index: 2;
+  display: flex;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+
+  &:empty {
+    display: none;
+  }
+}
+
+:host {
+  @include hover {
+    .ui-card__select {
+      opacity: 1;
+    }
+  }
+}
+
+:host(:has(:focus-visible)) .ui-card__select,
+:host(.ui-card--selecting) .ui-card__select,
+:host(.ui-card--checked) .ui-card__select {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .ui-card__select {
+    opacity: 1;
+  }
+}
+
+// Touch: the checkbox and the "..." both grow to 40px.
+@include coarse {
+  .ui-card__select {
+    --ui-checkbox-size: #{rem(40px)};
+    --ui-checkbox-hit: #{rem(40px)};
+    --ui-checkbox-radius: #{rem(12px)};
+  }
+
+  .ui-card__actions {
+    --ui-button-sm-size: #{rem(40px)};
+    --ui-button-radius: #{rem(12px)};
+  }
+}

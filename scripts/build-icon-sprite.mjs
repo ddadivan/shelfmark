@@ -2,7 +2,7 @@
 // Builds the icon sprite from one SVG file per icon.
 //
 //   libs/ui/src/icons/<name>.svg  ->  libs/ui/src/assets/icons/sprite.svg  (<symbol id="sm-<name>">)
-//                                 ->  libs/ui/src/lib/icon/models/icon-names.const.ts  (ICON_NAMES)
+//                                 ->  libs/ui/src/lib/components/icon/models/icon-names.const.ts  (ICON_NAMES)
 //
 // `node scripts/build-icon-sprite.mjs` writes both files; `--check` writes nothing and exits 1
 // when they differ from a fresh build (CI and a unit test run it).
@@ -21,7 +21,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const ICONS_DIR = join(ROOT, 'libs/ui/src/icons');
 const SPRITE_PATH = join(ROOT, 'libs/ui/src/assets/icons/sprite.svg');
-const NAMES_PATH = join(ROOT, 'libs/ui/src/lib/icon/models/icon-names.const.ts');
+const NAMES_PATH = join(ROOT, 'libs/ui/src/lib/components/icon/models/icon-names.const.ts');
 
 const VIEW_BOX = '0 0 24 24';
 const SYMBOL_PREFIX = 'sm-';

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { COLOR_GROUPS } from './models/color-groups.const';
-import { THEME, THEME_ATTRIBUTE } from '../lib/theme';
+import { THEME, THEME_ATTRIBUTE } from '../lib/models/theme';
 
 const meta: Meta = {
   title: 'Foundations/Colours',
