@@ -58,7 +58,7 @@ test.describe('public collections (mock API)', () => {
     );
 
     await dialog.getByRole('button', { name: 'Copy link' }).click();
-    await expect(page.getByText('Link copied')).toBeVisible();
+    await expect(page.getByText('Folder link copied')).toBeVisible();
     expect(await page.evaluate('navigator.clipboard.readText()')).toBe(url);
 
     // A guest opens the link: read-only, no notes, noindex.
@@ -92,7 +92,7 @@ test.describe('public collections (mock API)', () => {
     // Reset: the old link stops working, the new one works.
     await dialog.getByRole('button', { name: 'Reset' }).click();
     await page.getByRole('alertdialog').getByRole('button', { name: 'Reset link' }).click();
-    const field = dialog.getByLabel('Public link address');
+    const field = dialog.getByLabel('Folder page address');
     await expect(field).not.toHaveValue(url);
     const fresh = new URL(await field.inputValue()).pathname;
     const third = await asGuest(browser, testInfo, await readShares(page));
@@ -107,7 +107,7 @@ test.describe('public collections (mock API)', () => {
     await third.context.close();
 
     // Turned off: the link is gone.
-    await dialog.getByRole('switch', { name: 'Public link' }).click();
+    await dialog.getByRole('switch', { name: 'Public folder' }).click();
     await expect(field).toHaveCount(0);
     const fourth = await asGuest(browser, testInfo, await readShares(page));
     await fourth.guest.goto(fresh);
