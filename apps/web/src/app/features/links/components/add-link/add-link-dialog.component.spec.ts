@@ -270,7 +270,7 @@ describe('AddLinkDialogComponent', () => {
       expect(dialog().querySelectorAll('.paste-many__row')).toHaveLength(3);
     });
 
-    it('goes straight to the list when links are pasted into the text area', async () => {
+    it('keeps a paste in the text area (several pastes, editable) until Find links', async () => {
       await setup(fakeApi(() => of(PLAIN)));
       button('Add several links').click();
       await until(() => {
@@ -281,10 +281,10 @@ describe('AddLinkDialogComponent', () => {
         value: { getData: () => 'https://a.example.com/1\nhttps://b.example.com/2' },
       });
       textArea().dispatchEvent(paste);
-      await until(() => {
-        expect(dialog().querySelectorAll('.paste-many__row')).toHaveLength(2);
-      });
-      expect(paste.defaultPrevented).toBe(true);
+      await Promise.resolve();
+      expect(paste.defaultPrevented).toBe(false);
+      expect(dialog().querySelector('app-paste-many-list')).toBeNull();
+      expect(textArea()).toBeDefined();
     });
   });
 

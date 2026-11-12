@@ -427,15 +427,11 @@ export class AddLinkDialogComponent {
     );
   }
 
-  /** A paste into the text area that holds links goes straight to the list. */
-  protected onSeveralPaste(event: ClipboardEvent): void {
-    const parsed = parsePastedLinks(event.clipboardData?.getData('text/plain') ?? '');
-    if (parsed.links.length > 0) {
-      event.preventDefault();
-      this.openList(parsed);
-    }
-  }
-
+  /**
+   * Pasting into the "several links" text area is plain text entry (#335): people paste more than
+   * once and edit the text; only "Find links" (or Cmd / Ctrl + Enter) goes on to the list. Enter
+   * alone is a new line.
+   */
   protected onSeveralKeydown(event: KeyboardEvent): void {
     if (event.key === KEYBOARD_KEY.Enter && (event.metaKey || event.ctrlKey)) {
       event.preventDefault();
