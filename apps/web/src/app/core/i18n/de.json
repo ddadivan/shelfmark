@@ -411,11 +411,10 @@
     },
     "move": {
       "title": "„{{title}}“ verschieben",
-      "label": "Ordner",
       "searchLabel": "Ordner suchen",
       "noResults": "Keine Ordner gefunden",
-      "action": "Verschieben",
-      "cancel": "Abbrechen",
+      "list": "Ordner",
+      "current": "Aktueller Ordner",
       "close": "Schließen",
       "moved": "Verschoben nach {{folder}}",
       "failed": "Link konnte nicht verschoben werden",

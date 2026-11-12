@@ -412,11 +412,10 @@
     },
     "move": {
       "title": "Déplacer « {{title}} »",
-      "label": "Dossier",
       "searchLabel": "Rechercher des dossiers",
       "noResults": "Aucun dossier trouvé",
-      "action": "Déplacer",
-      "cancel": "Annuler",
+      "list": "Dossiers",
+      "current": "Dossier actuel",
       "close": "Fermer",
       "moved": "Déplacé dans {{folder}}",
       "failed": "Impossible de déplacer le lien",

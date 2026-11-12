@@ -173,10 +173,14 @@ describe('LinkActionsService', () => {
 
       await actions.move(link(1));
       const config = dialogOpen.mock.calls[0]?.[1] as {
-        data: { heading: string; folderId: string | null; submit: (id: string | null) => void };
+        data: {
+          heading: string;
+          currentIds: (string | null)[];
+          submit: (id: string | null) => void;
+        };
       };
       expect(config.data.heading).toContain(link(1).title);
-      expect(config.data.folderId).toBe(link(1).folderId);
+      expect(config.data.currentIds).toEqual([link(1).folderId]);
       config.data.submit(folderId);
       await vi.runAllTicks();
 

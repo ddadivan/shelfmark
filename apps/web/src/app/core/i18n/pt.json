@@ -412,11 +412,10 @@
     },
     "move": {
       "title": "Mover “{{title}}”",
-      "label": "Pasta",
       "searchLabel": "Pesquisar pastas",
       "noResults": "Nenhuma pasta encontrada",
-      "action": "Mover",
-      "cancel": "Cancelar",
+      "list": "Pastas",
+      "current": "Pasta atual",
       "close": "Fechar",
       "moved": "Movido para {{folder}}",
       "failed": "Não foi possível mover o link",

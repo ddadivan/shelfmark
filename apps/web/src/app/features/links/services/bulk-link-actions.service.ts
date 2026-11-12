@@ -30,8 +30,8 @@ import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { TRASH_OUTCOME } from '../../trash/models/trash-outcome.const';
 import { safeHref } from '../utils/link-view';
 import { LINKS_API } from '../models/links-api.const';
-import type { MoveLinkDialogData } from '../models/move-link-dialog-data.interface';
-import { MoveLinkDialogComponent } from '../components/move-link-dialog/move-link-dialog.component';
+import type { MovePickerData } from '../models/move-picker-data.interface';
+import { MovePickerComponent } from '../components/move-picker/move-picker.component';
 import { BulkTagsDialogComponent } from '../components/bulk-tags-dialog/bulk-tags-dialog.component';
 import { chunks } from '../utils/chunks';
 import { BULK_OPEN_CONFIRM_ABOVE } from '../models/bulk-open-confirm-above.const';
@@ -72,25 +72,22 @@ export class BulkLinkActionsService {
     return typeof this.navigator()?.share === 'function';
   }
 
-  /** "Move": a folder picker for the selection, then one batch move with Undo. */
+  /** "Move": the folder picker for the selection; choosing a folder moves all of them in one batch, with Undo. */
   async move(links: readonly LinkResponse[]): Promise<boolean> {
     if (links.length === 0) {
       return false;
     }
     const folders = new Set(links.map((link) => link.folderId));
     const pick: { folderId?: string | null } = {};
-    await this.dialogs.open<MoveLinkDialogComponent, boolean, MoveLinkDialogData>(
-      MoveLinkDialogComponent,
-      {
-        size: DIALOG_SIZE.Sm,
-        data: {
-          heading: this.plural('bulk.move.title', links.length),
-          folderId: folders.size === 1 ? (links[0]?.folderId ?? null) : null,
-          submitUnchanged: folders.size > 1,
-          submit: (folderId) => (pick.folderId = folderId),
-        },
+    await this.dialogs.open<MovePickerComponent, boolean, MovePickerData>(MovePickerComponent, {
+      size: DIALOG_SIZE.Sm,
+      data: {
+        heading: this.plural('bulk.move.title', links.length),
+        // One shared folder is the current one; a mixed selection has none.
+        currentIds: folders.size === 1 ? [...folders] : [],
+        submit: (folderId) => (pick.folderId = folderId),
       },
-    ).result;
+    }).result;
     if (pick.folderId === undefined) {
       return false;
     }
