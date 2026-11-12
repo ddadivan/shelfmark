@@ -140,7 +140,7 @@
 .library__grid {
   display: grid;
   gap: var(--density-feed-gap);
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, rem(320px)), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, rem(304px)), 1fr));
 
   // The list items hold the cards; stretch them to the row height.
   > li {
