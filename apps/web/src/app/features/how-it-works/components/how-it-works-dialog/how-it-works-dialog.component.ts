@@ -9,11 +9,11 @@ import {
 } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { ButtonComponent, DialogComponent, ReducedMotion } from '@shelfmark/ui';
-import { ViewportService } from '../../../core/layout/viewport.service';
-import { HOW_IT_WORKS_CHAPTERS } from '../models/how-it-works-chapters.const';
-import { HOW_IT_WORKS_VIDEO } from '../models/how-it-works-video.const';
-import type { HowItWorksChapter } from '../models/how-it-works-chapter.interface';
-import type { HowItWorksMedia } from '../models/how-it-works-media.interface';
+import { ViewportService } from '../../../../core/layout/viewport.service';
+import { HOW_IT_WORKS_CHAPTERS } from '../../models/how-it-works-chapters.const';
+import { HOW_IT_WORKS_VIDEO } from '../../models/how-it-works-video.const';
+import type { HowItWorksChapter } from '../../models/how-it-works-chapter.interface';
+import type { HowItWorksMedia } from '../../models/how-it-works-media.interface';
 
 /** `/media/how-it-works-phone.mp4` (and `.webm`) with its poster and captions. */
 function mediaFor(phone: boolean): HowItWorksMedia {

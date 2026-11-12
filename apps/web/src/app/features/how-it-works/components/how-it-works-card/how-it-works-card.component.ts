@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { ButtonComponent, ICON_SIZE, IconComponent } from '@shelfmark/ui';
-import { HowItWorksService } from '../how-it-works.service';
+import { HowItWorksService } from '../../services/how-it-works.service';
 
 /**
  * "New here? Watch how it works" at the bottom of the desktop sidebar (HowItWorks.dc.html,

@@ -2,10 +2,10 @@ import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import type { AuthUser } from '@shelfmark/contracts';
 import { DialogService } from '@shelfmark/ui';
-import { AuthStore } from '../../core/auth/auth.store';
+import { AuthStore } from '../../../core/auth/auth.store';
 import { HowItWorksService } from './how-it-works.service';
-import { HowItWorksDialogComponent } from './how-it-works-dialog/how-it-works-dialog.component';
-import { HOW_IT_WORKS_STORAGE_PREFIX } from './models/how-it-works-card.const';
+import { HowItWorksDialogComponent } from '../components/how-it-works-dialog/how-it-works-dialog.component';
+import { HOW_IT_WORKS_STORAGE_PREFIX } from '../models/how-it-works-card.const';
 
 const USER = { id: 'u1', isDemo: false } as AuthUser;
 const DAY = 86_400_000;

@@ -89,7 +89,7 @@ import { LinkSelectionStore } from '../../stores/link-selection.store';
 import { LinkActionsService } from '../links/link-actions.service';
 import { DragSlotComponent } from '../links/drag/drag-slot/drag-slot.component';
 import { LinkDragService } from '../links/drag/link-drag.service';
-import { HowItWorksService } from '../how-it-works/how-it-works.service';
+import { HowItWorksService } from '../how-it-works/services/how-it-works.service';
 import { LinkCardComponent } from '../links/link-card/link-card.component';
 import { LinkRowComponent } from '../links/link-row/link-row.component';
 import type { AddLinkData } from '../links/models/add-link-data.interface';

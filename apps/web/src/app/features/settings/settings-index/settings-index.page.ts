@@ -18,7 +18,7 @@ import { LocaleService } from '../../../core/i18n/locale.service';
 import { LANGUAGE_NAMES } from '../../../core/i18n/models/language-names.const';
 import { INTERFACE_LANGUAGE } from '@shelfmark/contracts';
 import { APP_PATH } from '../../../models/app-path.const';
-import { HowItWorksService } from '../../how-it-works/how-it-works.service';
+import { HowItWorksService } from '../../how-it-works/services/how-it-works.service';
 import { SETTINGS_NAV_ENTRIES } from '../models/settings-nav-entries.const';
 import { SETTINGS_PATH } from '../models/settings-path.const';
 import { THEME_OPTION_KEYS } from '../models/theme-option-keys.const';

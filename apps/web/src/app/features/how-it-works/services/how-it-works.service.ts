@@ -1,13 +1,13 @@
 import { DOCUMENT } from '@angular/common';
 import { computed, inject, Service, signal } from '@angular/core';
 import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
-import { AuthStore } from '../../core/auth/auth.store';
-import { HowItWorksDialogComponent } from './how-it-works-dialog/how-it-works-dialog.component';
+import { AuthStore } from '../../../core/auth/auth.store';
+import { HowItWorksDialogComponent } from '../components/how-it-works-dialog/how-it-works-dialog.component';
 import {
   HOW_IT_WORKS_CARD_DAYS,
   HOW_IT_WORKS_STORAGE_PREFIX,
-} from './models/how-it-works-card.const';
-import type { HowItWorksState } from './models/how-it-works-state.interface';
+} from '../models/how-it-works-card.const';
+import type { HowItWorksState } from '../models/how-it-works-state.interface';
 
 const MS_PER_DAY = 86_400_000;
 

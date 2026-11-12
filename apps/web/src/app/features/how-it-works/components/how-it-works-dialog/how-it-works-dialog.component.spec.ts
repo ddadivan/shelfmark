@@ -1,9 +1,9 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ReducedMotion, UiDialogRef } from '@shelfmark/ui';
-import { axeViolations } from '../../../../testing/axe';
-import { createTranslated } from '../../../../testing/create-translated';
-import { ViewportService } from '../../../core/layout/viewport.service';
+import { axeViolations } from '../../../../../testing/axe';
+import { createTranslated } from '../../../../../testing/create-translated';
+import { ViewportService } from '../../../../core/layout/viewport.service';
 import { HowItWorksDialogComponent } from './how-it-works-dialog.component';
 
 /** `[src, type]` of each `<source>`, in the order the browser tries them. */

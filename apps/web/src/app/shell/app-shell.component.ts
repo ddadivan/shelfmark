@@ -46,7 +46,7 @@ import { APP_PATH } from '../models/app-path.const';
 import { PinsStore } from '../stores/pins.store';
 import { UserSettingsStore } from '../stores/user-settings.store';
 import { ADMIN_PATH } from '../features/admin/models/admin-path.const';
-import { HowItWorksService } from '../features/how-it-works/how-it-works.service';
+import { HowItWorksService } from '../features/how-it-works/services/how-it-works.service';
 import { DemoBannerComponent } from './demo-banner/demo-banner.component';
 import { OfflineBannerComponent } from './offline-banner/offline-banner.component';
 import { PHONE_TAB } from './models/phone-tab.const';
