@@ -1,8 +1,8 @@
 import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-import { SessionScope } from '../../core/auth/session-scope.service';
-import { ADMIN_API } from './models/admin-api.const';
-import type { AdminState } from './models/admin-state.interface';
+import { SessionScope } from '../../../core/auth/session-scope.service';
+import { ADMIN_API } from '../models/admin-api.const';
+import type { AdminState } from '../models/admin-state.interface';
 
 const initialState: AdminState = { admin: null };
 

@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { SessionScope } from '../../core/auth/session-scope.service';
+import { SessionScope } from '../../../core/auth/session-scope.service';
 import { AdminStore } from './admin.store';
-import { ADMIN_API } from './models/admin-api.const';
-import type { AdminApi } from './models/admin-api.interface';
-import { adminApiStub } from '../../../testing/admin-api-stub';
+import { ADMIN_API } from '../models/admin-api.const';
+import type { AdminApi } from '../models/admin-api.interface';
+import { adminApiStub } from '../../../../testing/admin-api-stub';
 
 function setup(isAdmin: AdminApi['isAdmin']) {
   const api: AdminApi = { ...adminApiStub(), isAdmin: vi.fn(isAdmin) };

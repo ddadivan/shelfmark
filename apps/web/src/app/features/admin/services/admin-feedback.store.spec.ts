@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
-import { adminFeedbackMessage } from '../../../testing/feedback-message';
-import { ApiErrorToastService } from '../../core/api/api-error-toast.service';
-import { SessionScope } from '../../core/auth/session-scope.service';
-import { FEEDBACK_LOAD_STATE } from '../feedback/models/feedback-load-state.const';
+import { adminFeedbackMessage } from '../../../../testing/feedback-message';
+import { ApiErrorToastService } from '../../../core/api/api-error-toast.service';
+import { SessionScope } from '../../../core/auth/session-scope.service';
+import { FEEDBACK_LOAD_STATE } from '../../feedback/models/feedback-load-state.const';
 import { AdminFeedbackStore } from './admin-feedback.store';
-import { ADMIN_API } from './models/admin-api.const';
-import type { AdminApi } from './models/admin-api.interface';
-import { adminApiStub } from '../../../testing/admin-api-stub';
+import { ADMIN_API } from '../models/admin-api.const';
+import type { AdminApi } from '../models/admin-api.interface';
+import { adminApiStub } from '../../../../testing/admin-api-stub';
 
 const FIRST = adminFeedbackMessage({ id: 'a', text: 'first' });
 const SECOND = adminFeedbackMessage({ id: 'b', text: 'second' });

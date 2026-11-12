@@ -8,7 +8,7 @@ import {
   ICON_SIZE,
   IconComponent,
 } from '@shelfmark/ui';
-import { AdminStore } from '../../admin/admin.store';
+import { AdminStore } from '../../admin/services/admin.store';
 import { ADMIN_PATH } from '../../admin/models/admin-path.const';
 import { FeedbackDialogService } from '../../feedback/feedback-dialog.service';
 import { AuthStore } from '../../../core/auth/auth.store';

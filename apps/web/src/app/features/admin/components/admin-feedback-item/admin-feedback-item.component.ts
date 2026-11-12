@@ -28,12 +28,12 @@ import {
   TextareaComponent,
   type SelectOption,
 } from '@shelfmark/ui';
-import { feedbackSentDate } from '../../feedback/feedback-sent-date';
-import { FeedbackStatusBadgeComponent } from '../../feedback/feedback-status-badge/feedback-status-badge.component';
-import { FEEDBACK_KIND_COPY } from '../../feedback/models/feedback-kind-copy.const';
-import { FEEDBACK_STATUS_VIEW } from '../../feedback/models/feedback-status-view.const';
-import { AdminFeedbackStore } from '../admin-feedback.store';
-import type { AdminFeedbackDraft } from '../models/admin-feedback-draft.interface';
+import { feedbackSentDate } from '../../../feedback/feedback-sent-date';
+import { FeedbackStatusBadgeComponent } from '../../../feedback/feedback-status-badge/feedback-status-badge.component';
+import { FEEDBACK_KIND_COPY } from '../../../feedback/models/feedback-kind-copy.const';
+import { FEEDBACK_STATUS_VIEW } from '../../../feedback/models/feedback-status-view.const';
+import { AdminFeedbackStore } from '../../services/admin-feedback.store';
+import type { AdminFeedbackDraft } from '../../models/admin-feedback-draft.interface';
 
 function statusOf(value: string | null): FeedbackStatus | null {
   return Object.values(FEEDBACK_STATUS).find((status) => status === value) ?? null;

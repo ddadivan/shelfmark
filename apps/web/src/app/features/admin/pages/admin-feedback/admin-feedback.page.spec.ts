@@ -2,13 +2,13 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { signal } from '@angular/core';
-import { axeViolations } from '../../../../testing/axe';
-import { adminFeedbackMessage } from '../../../../testing/feedback-message';
-import { adminApiStub } from '../../../../testing/admin-api-stub';
-import { ViewportService } from '../../../core/layout/viewport.service';
-import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
-import { ADMIN_API } from '../models/admin-api.const';
-import type { AdminApi } from '../models/admin-api.interface';
+import { axeViolations } from '../../../../../testing/axe';
+import { adminFeedbackMessage } from '../../../../../testing/feedback-message';
+import { adminApiStub } from '../../../../../testing/admin-api-stub';
+import { ViewportService } from '../../../../core/layout/viewport.service';
+import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
+import { ADMIN_API } from '../../models/admin-api.const';
+import type { AdminApi } from '../../models/admin-api.interface';
 import AdminFeedbackPage from './admin-feedback.page';
 
 const FIRST = adminFeedbackMessage({

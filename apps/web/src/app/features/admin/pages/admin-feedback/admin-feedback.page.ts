@@ -14,11 +14,11 @@ import {
   SkeletonComponent,
   type SelectOption,
 } from '@shelfmark/ui';
-import { FEEDBACK_LOAD_STATE } from '../../feedback/models/feedback-load-state.const';
-import { FEEDBACK_STATUS_VIEW } from '../../feedback/models/feedback-status-view.const';
-import { SettingsPageHeaderComponent } from '../../settings/settings-page-header/settings-page-header.component';
-import { AdminFeedbackItemComponent } from '../admin-feedback-item/admin-feedback-item.component';
-import { AdminFeedbackStore } from '../admin-feedback.store';
+import { FEEDBACK_LOAD_STATE } from '../../../feedback/models/feedback-load-state.const';
+import { FEEDBACK_STATUS_VIEW } from '../../../feedback/models/feedback-status-view.const';
+import { SettingsPageHeaderComponent } from '../../../settings/settings-page-header/settings-page-header.component';
+import { AdminFeedbackItemComponent } from '../../components/admin-feedback-item/admin-feedback-item.component';
+import { AdminFeedbackStore } from '../../services/admin-feedback.store';
 
 /**
  * `/admin/feedback`, the author's inbox: every message with who sent it, a status filter, and per

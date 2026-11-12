@@ -29,7 +29,7 @@ import {
 } from '@shelfmark/ui';
 import { EXPORT_FORMAT, type ExportFormat } from '@shelfmark/contracts';
 import { combineLatest, filter, map } from 'rxjs';
-import { AdminStore } from '../features/admin/admin.store';
+import { AdminStore } from '../features/admin/services/admin.store';
 import { FeedbackDialogService } from '../features/feedback/feedback-dialog.service';
 import { ExportActionsService } from '../features/export/export-actions.service';
 import { AuthStore } from '../core/auth/auth.store';

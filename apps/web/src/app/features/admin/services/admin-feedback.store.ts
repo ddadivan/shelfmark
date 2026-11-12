@@ -1,12 +1,12 @@
 import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import type { FeedbackStatus } from '@shelfmark/contracts';
-import { ApiErrorToastService } from '../../core/api/api-error-toast.service';
-import { SessionScope } from '../../core/auth/session-scope.service';
-import { FEEDBACK_LOAD_STATE } from '../feedback/models/feedback-load-state.const';
-import { ADMIN_API } from './models/admin-api.const';
-import type { AdminFeedbackState } from './models/admin-feedback-state.interface';
-import { ADMIN_LIMIT } from './models/admin-limit.const';
+import { ApiErrorToastService } from '../../../core/api/api-error-toast.service';
+import { SessionScope } from '../../../core/auth/session-scope.service';
+import { FEEDBACK_LOAD_STATE } from '../../feedback/models/feedback-load-state.const';
+import { ADMIN_API } from '../models/admin-api.const';
+import type { AdminFeedbackState } from '../models/admin-feedback-state.interface';
+import { ADMIN_LIMIT } from '../models/admin-limit.const';
 import { type AdminFeedbackItem, type UpdateAdminFeedbackRequest } from '@shelfmark/contracts';
 
 const initialState: AdminFeedbackState = {
