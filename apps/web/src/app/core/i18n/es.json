@@ -1827,6 +1827,11 @@
     "unavailable": {
       "title": "Esta vista espera a su carpeta",
       "detail": "La carpeta de {{name}} está en la papelera. Restáurala para usar la vista."
+    },
+    "kindHint": {
+      "video": "Enlaces detectados como vídeos",
+      "article": "Enlaces detectados como artículos",
+      "shopping": "Enlaces detectados como compras"
     }
   },
   "feedback": {

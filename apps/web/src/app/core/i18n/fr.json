@@ -1827,6 +1827,11 @@
     "unavailable": {
       "title": "Cette vue attend son dossier",
       "detail": "Le dossier de {{name}} est dans la corbeille. Restaurez-le pour utiliser la vue."
+    },
+    "kindHint": {
+      "video": "Liens détectés comme vidéos",
+      "article": "Liens détectés comme articles",
+      "shopping": "Liens détectés comme achats"
     }
   },
   "feedback": {

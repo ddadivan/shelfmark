@@ -343,6 +343,37 @@ describe('saved views API', () => {
     expect(body.items.every((item) => item.count === 0)).toBe(true);
   });
 
+  it('counts inside a feed: folder, Unsorted, Favorites and tags narrow the total and every view (#335)', async () => {
+    const userId = users.owner.userId;
+    const work = await folder('Work');
+    await seedLink(t.db.prisma, userId, { folderId: work, kind: 'video', tags: ['ng'] });
+    await seedLink(t.db.prisma, userId, { folderId: work, kind: 'article' });
+    await seedLink(t.db.prisma, userId, { kind: 'video', isFavorite: true });
+    await seedLink(t.db.prisma, userId, { kind: 'article', tags: ['ng'] });
+    const feed = async (query: string): Promise<[number, number[]]> => {
+      const body = (await a.get(`${BASE}${query}`).expect(200)).body as ListSavedViewsResponse;
+      return [body.total, body.items.map((item) => item.count)];
+    };
+    expect(await feed('')).toEqual([4, [2, 2]]);
+    expect(await feed(`?scope=folder&folderId=${work}`)).toEqual([2, [1, 1]]);
+    expect(await feed('?scope=unsorted')).toEqual([2, [1, 1]]);
+    expect(await feed('?scope=favorites')).toEqual([1, [1, 0]]);
+    expect(await feed('?tag=NG')).toEqual([2, [1, 1]]);
+    await a.get(`${BASE}?scope=folder`).expect(400);
+    await a.get(`${BASE}?scope=all&folderId=${work}`).expect(400);
+    await a.get(`${BASE}?scope=nope`).expect(400);
+    await a.get(`${BASE}?unknown=1`).expect(400);
+  });
+
+  it('a feed never counts the links of another user, not even in their folder', async () => {
+    const theirs = await folder('Theirs', asUser(t.app, users.intruder));
+    await seedLink(t.db.prisma, users.intruder.userId, { folderId: theirs, kind: 'video' });
+    const body = (await a.get(`${BASE}?scope=folder&folderId=${theirs}`).expect(200))
+      .body as ListSavedViewsResponse;
+    expect(body.total).toBe(0);
+    expect(body.items.every((item) => item.count === 0)).toBe(true);
+  });
+
   it('needs a session, a JSON body and the same origin', async () => {
     await anonymous(t.app).get(BASE).expect(401);
     await anonymous(t.app)

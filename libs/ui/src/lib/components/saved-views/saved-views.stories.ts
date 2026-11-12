@@ -6,8 +6,20 @@ import { SavedViewsComponent } from './saved-views.component';
 
 const ITEMS: SavedViewItem[] = [
   { id: 'all', label: 'All', count: 12 },
-  { id: 'videos', label: 'Videos', count: 5, menuLabel: 'Actions for Videos' },
-  { id: 'articles', label: 'Articles', count: 4, menuLabel: 'Actions for Articles' },
+  {
+    id: 'videos',
+    label: 'Videos',
+    count: 5,
+    menuLabel: 'Actions for Videos',
+    hint: 'Links detected as videos',
+  },
+  {
+    id: 'articles',
+    label: 'Articles',
+    count: 4,
+    menuLabel: 'Actions for Articles',
+    hint: 'Links detected as articles',
+  },
   { id: 'read', label: 'To read', count: 3, menuLabel: 'Actions for To read' },
 ];
 

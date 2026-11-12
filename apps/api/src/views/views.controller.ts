@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -26,6 +27,7 @@ import { CurrentUser } from '../common/auth/current-user.decorator';
 import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
 import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
 import { CreateSavedViewDto } from './dto/create-saved-view.dto';
+import { ListSavedViewsQueryDto } from './dto/list-saved-views-query.dto';
 import { ListSavedViewsResponseDto } from './dto/list-saved-views-response.dto';
 import { ReorderSavedViewsDto } from './dto/reorder-saved-views.dto';
 import { SavedViewResponseDto } from './dto/saved-view-response.dto';
@@ -39,9 +41,16 @@ export class ViewsController {
 
   @Get()
   @ApiOkResponse({ type: ListSavedViewsResponseDto })
-  @ApiOperation({ summary: 'Saved views in order, each with its live link count, plus the total' })
-  list(@CurrentUser() user: AuthUser): Promise<ListSavedViewsResponseDto> {
-    return this.views.list(user.id);
+  @ApiBadRequestResponse({ description: 'Invalid feed (a folder feed needs folderId)' })
+  @ApiOperation({
+    summary:
+      'Saved views in order, each with its live link count, plus the total; with a feed (scope, folderId, tag) the counts are those inside that feed',
+  })
+  list(
+    @CurrentUser() user: AuthUser,
+    @Query() query: ListSavedViewsQueryDto,
+  ): Promise<ListSavedViewsResponseDto> {
+    return this.views.list(user.id, query);
   }
 
   @Post()

@@ -1790,6 +1790,11 @@
     "unavailable": {
       "title": "This view is waiting for its folder",
       "detail": "The folder of {{name}} is in Trash. Restore it to use the view."
+    },
+    "kindHint": {
+      "video": "Links detected as videos",
+      "article": "Links detected as articles",
+      "shopping": "Links detected as shopping"
     }
   },
   "feedback": {

@@ -3,14 +3,15 @@ import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { SAVED_VIEW_LIMIT, type SavedViewResponse } from '@shelfmark/contracts';
 import { DIALOG_SIZE, DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
-import { APP_PATH } from '../../../models/app-path.const';
 import { DIALOG_FIRST_FIELD } from '../../../models/dialog-first-field.const';
 import { VIEW_OUTCOME } from '../../../stores/models/view-outcome.const';
 import { SavedViewsStore } from '../../../stores/saved-views.store';
 import type { LinksFilter } from '../../links/models/links-filter.type';
 import type { ViewNameDialogData } from '../models/view-name-dialog-data.interface';
 import { VIEW_NAME_MODE } from '../models/view-name-mode.const';
-import { viewNavigation, viewQueryOf } from '../utils/saved-view-query';
+import { LINKS_SCOPE } from '../../links/models/links-scope.const';
+import { feedAllNavigation, savedQueryOf, viewNavigationOnFeed } from '../utils/feed-views';
+import { viewQueryOf } from '../utils/saved-view-query';
 import { ViewNameDialogComponent } from '../components/view-name-dialog/view-name-dialog.component';
 
 /**
@@ -27,13 +28,24 @@ export class SavedViewActionsService {
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
 
-  /** "All": every link, newest first. */
-  async applyAll(): Promise<void> {
-    await this.router.navigate(['/', APP_PATH.Links]);
+  /** "All": the feed the chips sit on, with no type and no search (its own tags kept). */
+  async applyAll(
+    filter: LinksFilter = { scope: LINKS_SCOPE.All },
+    views: readonly SavedViewResponse[] = this.store.items(),
+  ): Promise<void> {
+    const { commands, queryParams } = feedAllNavigation(filter, views);
+    await this.router.navigate(commands, { queryParams });
   }
 
-  /** Applies the view's filter through the router (scope route plus query parameters). */
-  async apply(view: SavedViewResponse): Promise<void> {
+  /**
+   * Applies the view through the router: on All links its own scope route, anywhere else inside
+   * the feed it is opened on (#335).
+   */
+  async apply(
+    view: SavedViewResponse,
+    filter: LinksFilter = { scope: LINKS_SCOPE.All },
+    views: readonly SavedViewResponse[] = this.store.items(),
+  ): Promise<void> {
     if (!view.available) {
       this.toasts.show({
         kind: TOAST_KIND.Info,
@@ -42,7 +54,7 @@ export class SavedViewActionsService {
       });
       return;
     }
-    const { commands, queryParams } = viewNavigation(view.query);
+    const { commands, queryParams } = viewNavigationOnFeed(view, filter, views);
     await this.router.navigate(commands, { queryParams });
   }
 
@@ -52,7 +64,7 @@ export class SavedViewActionsService {
       this.limitToast();
       return;
     }
-    const query = viewQueryOf(filter);
+    const query = savedQueryOf(filter, viewQueryOf(filter));
     let saved = '';
     const ref = this.dialogs.open<ViewNameDialogComponent, boolean, ViewNameDialogData>(
       ViewNameDialogComponent,

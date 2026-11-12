@@ -1790,6 +1790,11 @@
     "unavailable": {
       "title": "Diese Ansicht wartet auf ihren Ordner",
       "detail": "Der Ordner von {{name}} liegt im Papierkorb. Stell ihn wieder her, um die Ansicht zu nutzen."
+    },
+    "kindHint": {
+      "video": "Links, die als Videos erkannt wurden",
+      "article": "Links, die als Artikel erkannt wurden",
+      "shopping": "Links, die als Shopping erkannt wurden"
     }
   },
   "feedback": {

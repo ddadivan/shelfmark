@@ -11,6 +11,7 @@
         type="button"
         class="ui-saved-views__body"
         uiRipple
+        [uiTooltip]="item.hint ?? ''"
         [attr.aria-pressed]="item.id === activeId()"
         (click)="selected.emit(item.id)"
         (contextmenu)="requestMenu($event, item, body)"

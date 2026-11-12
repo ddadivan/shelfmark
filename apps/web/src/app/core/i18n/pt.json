@@ -1827,6 +1827,11 @@
     "unavailable": {
       "title": "Esta visualização está esperando a pasta dela",
       "detail": "A pasta de {{name}} está na lixeira. Restaure-a para usar a visualização."
+    },
+    "kindHint": {
+      "video": "Links detetados como vídeos",
+      "article": "Links detetados como artigos",
+      "shopping": "Links detetados como compras"
     }
   },
   "feedback": {

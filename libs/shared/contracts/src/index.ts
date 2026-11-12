@@ -239,6 +239,7 @@ export { SAVED_VIEW_ERROR_MESSAGE } from './views/saved-view-error-message.const
 export type { SavedViewQuery } from './views/saved-view-query.interface';
 export type { SavedViewQueryRequest } from './views/saved-view-query-request.interface';
 export type { SavedViewResponse } from './views/saved-view-response.interface';
+export type { ListSavedViewsQuery } from './views/list-saved-views-query.interface';
 export type { ListSavedViewsResponse } from './views/list-saved-views-response.interface';
 export type { CreateSavedViewRequest } from './views/create-saved-view-request.interface';
 export type { UpdateSavedViewRequest } from './views/update-saved-view-request.interface';

@@ -1827,6 +1827,11 @@
     "unavailable": {
       "title": "Questa vista aspetta la sua cartella",
       "detail": "La cartella di {{name}} è nel cestino. Ripristinala per usare la vista."
+    },
+    "kindHint": {
+      "video": "Link riconosciuti come video",
+      "article": "Link riconosciuti come articoli",
+      "shopping": "Link riconosciuti come acquisti"
     }
   },
   "feedback": {
