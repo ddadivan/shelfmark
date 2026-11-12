@@ -1,5 +1,5 @@
 import { computed, inject, type Signal } from '@angular/core';
-import { AuthStore } from '../../core/auth/auth.store';
+import { AuthStore } from '../../../core/auth/auth.store';
 
 /**
  * Whether the landing is shown to a signed-in person (`/about`, #270): sign-in buttons become

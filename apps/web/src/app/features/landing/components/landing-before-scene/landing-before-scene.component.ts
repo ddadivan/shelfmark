@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { LandingLoopGateDirective } from '../../directives/landing-loop-gate.directive';
-import { LandingMotionService } from '../../landing-motion.service';
+import { LandingMotionService } from '../../services/landing-motion.service';
 
 /**
  * The "before" board: scraps of Saved Messages, tabs, a sticky note and a bookmarks bar.

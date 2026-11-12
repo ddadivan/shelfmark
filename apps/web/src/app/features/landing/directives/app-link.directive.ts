@@ -1,6 +1,6 @@
 import { booleanAttribute, Directive, inject, input } from '@angular/core';
 import { Router } from '@angular/router';
-import { preloadAppChunks } from '../../core/routing/preload-app-chunks';
+import { preloadAppChunks } from '../../../core/routing/preload-app-chunks';
 
 /**
  * A landing button that is a link (`ui-button [href]`) and navigates through the router: a plain

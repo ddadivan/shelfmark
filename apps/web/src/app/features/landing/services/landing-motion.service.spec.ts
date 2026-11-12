@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, vi } from 'vitest';
-import { setTabState, stubReducedMotion } from '../../../testing/mock-intersection-observer';
+import { setTabState, stubReducedMotion } from '../../../../testing/mock-intersection-observer';
 import { LandingMotionService } from './landing-motion.service';
 
 describe('LandingMotionService', () => {

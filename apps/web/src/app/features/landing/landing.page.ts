@@ -9,7 +9,7 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import { LandingMotionService } from './landing-motion.service';
+import { LandingMotionService } from './services/landing-motion.service';
 import { LANDING_LINKS } from './models/landing-links.const';
 import { LANDING_SCROLL_TARGET } from './models/landing-scroll-target.const';
 import type { LandingScrollTarget } from './models/landing-scroll-target.type';
@@ -19,7 +19,7 @@ import { LandingBuiltComponent } from './components/landing-built/landing-built.
 import { LandingFinaleComponent } from './components/landing-finale/landing-finale.component';
 import { LandingFooterComponent } from './components/landing-footer/landing-footer.component';
 import { LandingWhatsNewComponent } from './components/landing-whats-new/landing-whats-new.component';
-import { injectSignedIn } from './inject-signed-in';
+import { injectSignedIn } from './utils/inject-signed-in';
 import { LandingHeaderComponent } from './components/landing-header/landing-header.component';
 import { LandingHeroComponent } from './components/landing-hero/landing-hero.component';
 import { LandingWhyComponent } from './components/landing-why/landing-why.component';
