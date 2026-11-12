@@ -1,11 +1,11 @@
 <ui-progress-bar [active]="feed.refetching()" [label]="'library.loading' | transloco" />
 <section
   class="library"
-  [class.library--selecting]="selecting()"
+  [class.library--selecting]="selection.selecting()"
   [attr.aria-busy]="store.loading()"
 >
-  <p class="library__live" role="status">{{ modeAnnouncement() }}</p>
-  @if (selecting()) {
+  <p class="library__live" role="status">{{ selection.modeAnnouncement() }}</p>
+  @if (selection.selecting()) {
   <div
     class="library__selection"
     role="group"
@@ -18,23 +18,23 @@
       iconOnly
       iconLeft="close"
       [ariaLabel]="'bulk.header.cancel' | transloco"
-      (click)="endSelection()"
+      (click)="selection.endSelection()"
     />
     } @else {
     <ui-checkbox
       hideLabel
       [label]="pluralKey('bulk.header.selectAllBox', feed.shownCount()) | transloco: { count: feed.shownCount() }"
-      [checked]="allSelected()"
-      [indeterminate]="!allSelected()"
-      (checkedChange)="toggleAll($event)"
+      [checked]="selection.allSelected()"
+      [indeterminate]="!selection.allSelected()"
+      (checkedChange)="selection.toggleAll($event)"
     />
     }
     <p class="library__selected" aria-live="polite">
-      {{ pluralKey('bulk.header.selected', selectedCount()) | transloco: { count: selectedCount() }
-      }}
+      {{ pluralKey('bulk.header.selected', selection.selectedCount()) | transloco: { count:
+      selection.selectedCount() } }}
     </p>
-    @if (!allSelected()) {
-    <ui-button variant="ghost" size="sm" (click)="selectAll()">
+    @if (!selection.allSelected()) {
+    <ui-button variant="ghost" size="sm" (click)="selection.selectAll()">
       @if (phone()) { {{ 'bulk.header.selectAllShort' | transloco }} } @else { {{
       'bulk.header.selectAll' | transloco: { count: feed.shownCount() } }} }
     </ui-button>
@@ -48,7 +48,7 @@
       ><kbd class="library__kbd">{{ 'bulk.header.esc' | transloco }}</kbd> {{
       'bulk.header.clearHint' | transloco }}</span
     >
-    <ui-button variant="ghost" size="sm" (click)="endSelection()">
+    <ui-button variant="ghost" size="sm" (click)="selection.endSelection()">
       {{ 'bulk.header.done' | transloco }}
     </ui-button>
     }
@@ -396,9 +396,9 @@
         <app-link-row
           [link]="link"
           [pinnable]="filters.isFolder()"
-          [selecting]="selecting()"
+          [selecting]="selection.selecting()"
           [selected]="selection.has(link.id)"
-          (selectToggled)="toggleSelected(link, $event)"
+          (selectToggled)="selection.toggleSelected(link, $event)"
           [pinnedToSidebar]="pins.has(PIN_KIND.Link, link.id)"
           (pinToTopToggled)="actions.togglePinInFolder(link)"
           (pinToSidebarToggled)="actions.togglePinToSidebar(link)"
@@ -460,9 +460,9 @@
         <app-link-card
           [link]="link"
           [pinnable]="filters.isFolder()"
-          [selecting]="selecting()"
+          [selecting]="selection.selecting()"
           [selected]="selection.has(link.id)"
-          (selectToggled)="toggleSelected(link, $event)"
+          (selectToggled)="selection.toggleSelected(link, $event)"
           [pinnedToSidebar]="pins.has(PIN_KIND.Link, link.id)"
           (pinToTopToggled)="actions.togglePinInFolder(link)"
           (pinToSidebarToggled)="actions.togglePinToSidebar(link)"
@@ -493,13 +493,13 @@
         {{ 'library.loadMore' | transloco }}
       </ui-button>
     </div>
-    } } @if (selecting()) {
+    } } @if (selection.selecting()) {
     <ui-bulk-bar
       class="library__bulk"
       animate.enter="ui-bulk-bar--enter"
       animate.leave="ui-bulk-bar--leave"
       [actions]="barActions()"
-      [ariaLabel]="pluralKey('bulk.bar.label', selectedCount()) | transloco: { count: selectedCount() }"
+      [ariaLabel]="pluralKey('bulk.bar.label', selection.selectedCount()) | transloco: { count: selection.selectedCount() }"
       [layout]="compact() ? BULK_BAR_LAYOUT.Stacked : BULK_BAR_LAYOUT.Inline"
       (action)="runBulk($event)"
     />
