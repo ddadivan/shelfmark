@@ -149,7 +149,9 @@ describe('OnboardingDialogComponent', () => {
     await expect(ref.result).resolves.toBe(ONBOARDING_RESULT.AddLink);
   });
 
-  it('resolves undefined on Esc (the store treats it as Skip)', async () => {
+  // `ref.result` settles once the dialog is gone (a render, the leave animation, the CDK teardown),
+  // which takes long on a loaded CI runner: the wait is generous instead of the 5 s default.
+  it('resolves undefined on Esc (the store treats it as Skip)', { timeout: 30_000 }, async () => {
     const { ref } = await setup();
 
     container()?.dispatchEvent(

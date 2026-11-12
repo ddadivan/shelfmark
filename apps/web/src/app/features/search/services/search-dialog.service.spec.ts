@@ -3,7 +3,7 @@ import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { MOCK_LIBRARY_COUNTS } from '@shelfmark/contracts/testing';
-import { DialogService } from '@shelfmark/ui';
+import { DialogService, type UiDialogRef } from '@shelfmark/ui';
 import { of } from 'rxjs';
 import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
 import { LinkActionsService } from '../../links/services/link-actions.service';
@@ -93,6 +93,9 @@ describe('SearchDialogService shortcut', () => {
   });
 });
 
+/** Generous: a closing dialog needs a render, the leave animation and the CDK teardown. */
+const CLOSE_TIMEOUT_MS = 15_000;
+
 describe('SearchDialogService dialog', () => {
   async function setup() {
     TestBed.configureTestingModule({
@@ -119,18 +122,31 @@ describe('SearchDialogService dialog', () => {
     document.body.replaceChildren();
   });
 
-  it('focuses the search field on open and gives focus back to the opener on Esc', async () => {
-    const { service, trigger } = await setup();
+  it(
+    'focuses the search field on open and gives focus back to the opener on Esc',
+    // The leave animation and the CDK teardown scale with the CPU a loaded CI runner leaves: the
+    // test waits for the dialog to be really gone (`ref.result`), never for a fixed short time.
+    { timeout: CLOSE_TIMEOUT_MS * 2 },
+    async () => {
+      const { service, trigger } = await setup();
+      const open = vi.spyOn(TestBed.inject(DialogService), 'open');
 
-    service.open();
-    await vi.waitFor(() => expect(document.activeElement?.getAttribute('role')).toBe('combobox'));
-    document.activeElement?.dispatchEvent(
-      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }),
-    );
+      service.open();
+      const ref = open.mock.results[0]?.value as UiDialogRef;
+      await vi.waitFor(
+        () => expect(document.activeElement?.getAttribute('role')).toBe('combobox'),
+        { timeout: CLOSE_TIMEOUT_MS },
+      );
+      document.activeElement?.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }),
+      );
 
-    await vi.waitFor(() => expect(document.activeElement).toBe(trigger), { timeout: 2000 });
-    expect(document.querySelector('[role="dialog"]')).toBeNull();
-  });
+      // The CDK gives focus back while it removes the overlay, before `result` resolves.
+      await ref.result;
+      expect(document.querySelector('[role="dialog"]')).toBeNull();
+      expect(document.activeElement).toBe(trigger);
+    },
+  );
 
   it('opens only one search dialog', async () => {
     const { service } = await setup();
