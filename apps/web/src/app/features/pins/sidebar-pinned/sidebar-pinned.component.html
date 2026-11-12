@@ -19,6 +19,7 @@
         class="pinned__list"
         cdkDropList
         cdkDropListLockAxis="y"
+        (cdkDropListSorted)="sorted($event)"
         (cdkDropListDropped)="dropped($event)"
       >
         @for (row of pins.rows(); track row.key; let index = $index) {
@@ -47,9 +48,9 @@
                 }
               </div>
             </div>
-            <!-- The place it lands: a reserved slot one row tall with a faint ghost of the row (the
-               folder tree's look), the siblings glide apart. A div: an li cannot sit in this li's
-               template; it only lives while dragging. -->
+            <!-- Where the row was: a faint ghost of it (the folder tree's look) while a line marks
+                 where it lands; nothing else moves. A div: an li cannot sit in this li's
+                 template; it only lives while dragging. -->
             <div *cdkDragPlaceholder class="pinned__drop-slot" aria-hidden="true">
               @if (row.folder; as folder) {
                 <ui-folder-icon

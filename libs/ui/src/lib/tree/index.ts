@@ -9,3 +9,5 @@ export { TreeComponent } from './tree.component';
 export type { UiTreeReorderEvent } from './models/tree-reorder-event.interface';
 export { UI_TREE_REORDER_TRIGGER } from './models/tree-reorder-trigger.const';
 export type { UiTreeReorderTrigger } from './models/tree-reorder-trigger.type';
+export type { ReorderDropLine } from './models/reorder-drop-line.interface';
+export { reorderDropLine, setReorderDropLine } from './reorder-drop-line';

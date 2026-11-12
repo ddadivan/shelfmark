@@ -1,6 +1,7 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { PIN_KIND } from '@shelfmark/contracts';
 import { TOAST_KIND, ToastService } from '@shelfmark/ui';
@@ -221,6 +222,29 @@ describe('SidebarPinnedComponent', () => {
       },
       { timeout: 5000 },
     );
+  });
+
+  it('draws the reorder line while a row drags over another place and clears it on drop (#315)', async () => {
+    const { fixture, element } = await setup();
+    const list = fixture.debugElement.query(By.css('.pinned__list'));
+    const ul = list.nativeElement as HTMLElement;
+    const placeholder = items(element)[0];
+    const event = {
+      container: { element: { nativeElement: ul } },
+      item: { getPlaceholderElement: () => placeholder },
+      previousIndex: 0,
+    };
+
+    list.triggerEventHandler('cdkDropListSorted', { ...event, currentIndex: 1 });
+    expect(ul.classList).toContain('ui-drop-line--shown');
+    expect(ul.style.getPropertyValue('--ui-drop-line-top')).toMatch(/px$/);
+
+    list.triggerEventHandler('cdkDropListSorted', { ...event, currentIndex: 0 });
+    expect(ul.classList).not.toContain('ui-drop-line--shown');
+
+    list.triggerEventHandler('cdkDropListSorted', { ...event, currentIndex: 1 });
+    list.triggerEventHandler('cdkDropListDropped', { ...event, currentIndex: 0 });
+    expect(ul.classList).not.toContain('ui-drop-line--shown');
   });
 
   it('has no axe violations', async () => {

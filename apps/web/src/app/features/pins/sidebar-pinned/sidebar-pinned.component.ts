@@ -4,6 +4,7 @@ import {
   CdkDragPreview,
   CdkDropList,
   type CdkDragDrop,
+  type CdkDragSortEvent,
 } from '@angular/cdk/drag-drop';
 import {
   afterNextRender,
@@ -24,6 +25,8 @@ import {
   FaviconComponent,
   FolderIconComponent,
   KEYBOARD_KEY,
+  reorderDropLine,
+  setReorderDropLine,
   TOAST_KIND,
   ToastService,
   TREE_REORDER_TOUCH_DELAY_MS,
@@ -43,7 +46,7 @@ import { PinActionsService } from '../pin-actions.service';
  * The "Pinned" section of the sidebar and of the phone Library page: up to seven folders and
  * links in the order the user chose, a folder with its colour, icon and count, a link with its
  * favicon letter. A folder opens its page, a link opens in a new tab. Reorder by dragging (desktop,
- * a reserved slot marks the place) or with Alt+Up / Alt+Down on the focused row (announced). Unpin is
+ * a line marks the place, #315) or with Alt+Up / Alt+Down on the focused row (announced). Unpin is
  * the row's only action: an icon button (hover / focus, always on touch) with Undo, no "…" menu
  * (#314). Settings ›
  * Library › Edit pinned keeps its buttons. While nothing is pinned the sidebar renders nothing; the
@@ -141,7 +144,16 @@ export class SidebarPinnedComponent {
     this.linkActions.open(link);
   }
 
+  /** The reorder line (#315) where the row would land, the rows as they stand. */
+  protected sorted(event: CdkDragSortEvent<unknown>): void {
+    const list = event.container.element.nativeElement;
+    const placeholder = event.item.getPlaceholderElement();
+    const items = [...list.children].filter((child) => child instanceof HTMLElement);
+    setReorderDropLine(list, reorderDropLine(list, items, placeholder, event.currentIndex));
+  }
+
   protected dropped(event: CdkDragDrop<unknown>): void {
+    setReorderDropLine(event.container.element.nativeElement, null);
     this.announcer.announce(event.previousIndex, event.currentIndex, this.pins.rows().length);
     void this.actions.move(event.previousIndex, event.currentIndex);
   }

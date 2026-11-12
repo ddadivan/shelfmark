@@ -198,6 +198,51 @@ test.describe('folder style and pins (mock API)', () => {
     await expect(pinned(page).getByRole('button', { name: /^Actions for / })).toHaveCount(0);
   });
 
+  /** The reorder line of a list (#315) in viewport px, or `null` while none is drawn. */
+  interface DropLine {
+    readonly top: number;
+    readonly left: number;
+    readonly width: number;
+    readonly height: number;
+  }
+  const dropLine = (list: Locator): Promise<DropLine | null> =>
+    list.evaluate<DropLine | null>(
+      `(list) => {
+        const line = getComputedStyle(list, '::after');
+        if (!list.classList.contains('ui-drop-line--shown') || line.content === 'none') return null;
+        const box = list.getBoundingClientRect();
+        return {
+          top: box.top + parseFloat(line.top) + parseFloat(line.marginTop),
+          left: box.left + parseFloat(line.left),
+          width: parseFloat(line.width),
+          height: parseFloat(line.height),
+        };
+      }`,
+    );
+
+  /**
+   * The line is drawn (2px), centred on the row's background left to right (±1px) and in the gap
+   * at `gapY` (±1.5px: half the 1px gap plus rounding).
+   */
+  async function expectLine(list: Locator, row: Locator, gapY: number): Promise<void> {
+    await expect.poll(() => dropLine(list)).not.toBeNull();
+    const line = await dropLine(list);
+    const box = await row.boundingBox();
+    if (!line || !box) {
+      throw new Error('no reorder line or row box');
+    }
+    expect(line.height).toBeCloseTo(2, 1);
+    expect(Math.abs(line.left + line.width / 2 - (box.x + box.width / 2))).toBeLessThanOrEqual(1);
+    expect(Math.abs(line.width - box.width)).toBeLessThanOrEqual(1);
+    expect(Math.abs(line.top + line.height / 2 - gapY)).toBeLessThanOrEqual(1.5);
+  }
+
+  const folderList = (page: Page): Locator =>
+    page.locator('app-sidebar ui-tree ul.ui-tree__list', {
+      has: page.locator(':scope > .ui-tree__drop-slot'),
+    });
+  const pinnedList = (page: Page): Locator => pinned(page).locator('ul.pinned__list');
+
   /** Top of the sidebar's Tags section, which a reorder drag above it must never move. */
   const sidebarTagsTop = async (page: Page): Promise<number> => {
     const tags = page.locator('app-sidebar app-sidebar-tags');
@@ -256,12 +301,15 @@ test.describe('folder style and pins (mock API)', () => {
     await page.mouse.down();
     await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2 - 8, { steps: 4 });
     await page.mouse.move(to.x + to.width / 2, to.y + 2, { steps: 10 });
-    // The place it lands is a reserved slot one row tall with a ghost of the row; the section
-    // keeps its height, so Tags below does not move.
+    // A line in the gap above Reading marks the place; the rows hold still (Notes stays as a faint
+    // ghost one row tall where it was), so the section keeps its height and Tags does not move.
     const slot = page.locator('app-sidebar .ui-tree__drop-slot');
     await expect(slot).toHaveCount(1);
     await expect(slot).toContainText(NOTES);
+    expect((await slot.boundingBox())?.y).toBeCloseTo(from.y, 0);
     expect((await slot.boundingBox())?.height).toBeCloseTo(from.height, 0);
+    expect((await reading.boundingBox())?.y).toBeCloseTo(to.y, 0);
+    await expectLine(folderList(page), reading, to.y);
     await expectStill(page, tagsTop);
     await page.mouse.up();
 
@@ -275,6 +323,7 @@ test.describe('folder style and pins (mock API)', () => {
     expect(page.url()).toBe(url);
     await expect(notes).toHaveAttribute('aria-level', '1');
     await expect(page.locator('app-sidebar .ui-tree__drop-slot')).toHaveCount(0);
+    expect(await dropLine(page.locator('app-sidebar ui-tree ul.ui-tree__list').first())).toBeNull();
   });
 
   test('reorders pinned items by dragging (desktop)', async ({ page }) => {
@@ -298,11 +347,17 @@ test.describe('folder style and pins (mock API)', () => {
     const slot = pinned(page).locator('.pinned__drop-slot');
     await expect(slot).toHaveCount(1);
     await expect(slot).toContainText(READING);
+    expect((await slot.boundingBox())?.y).toBeCloseTo(from.y, 0);
     expect((await slot.boundingBox())?.height).toBeCloseTo(from.height, 0);
+    // The line below Notes (the last row, so it straddles its bottom edge); Notes holds still.
+    const notesRow = pinnedItems(page).filter({ hasText: NOTES });
+    expect((await notesRow.boundingBox())?.y).toBeCloseTo(to.y, 0);
+    await expectLine(pinnedList(page), notesRow, to.y + to.height);
     await expectStill(page, tagsTop);
     await page.mouse.up();
 
     await expect(pinnedItems(page).first()).toContainText(NOTES);
+    expect(await dropLine(pinnedList(page))).toBeNull();
   });
 
   /** Centre of a locator's box. */
@@ -332,7 +387,7 @@ test.describe('folder style and pins (mock API)', () => {
     const readingRow = (page: Page) =>
       page.getByRole('treeitem', { name: new RegExp(`^${READING}\\b`) });
 
-    test('a press, a short rest and a move drag a folder; the reserved slot shows, nothing jumps', async ({
+    test('a press, a short rest and a move drag a folder; the line shows, nothing jumps', async ({
       page,
     }) => {
       await createNotes(page);
@@ -350,6 +405,9 @@ test.describe('folder style and pins (mock API)', () => {
       await expect(slot).toHaveCount(1);
       await expect(slot).toContainText(NOTES);
       expect((await slot.boundingBox())?.height).toBeCloseTo(height, 0);
+      // The line in the gap above Reading, which holds still.
+      expect((await readingRow(page).boundingBox())?.y).toBeCloseTo(to?.y ?? 0, 0);
+      await expectLine(folderList(page), readingRow(page), to?.y ?? 0);
       // The finger moves the row, not the page.
       expect((await page.locator('app-library-tile').first().boundingBox())?.y).toBeCloseTo(
         tilesTop,
@@ -422,6 +480,11 @@ test.describe('folder style and pins (mock API)', () => {
       const slot = pinned(page).locator('.pinned__drop-slot');
       await expect(slot).toHaveCount(1);
       await expect(slot).toContainText(READING);
+      await expectLine(
+        pinnedList(page),
+        pinnedItems(page).nth(1),
+        (to?.y ?? 0) + (to?.height ?? 0),
+      );
       await finger.up();
 
       await expect(pinnedItems(page).first()).toContainText(NOTES);
