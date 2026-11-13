@@ -146,6 +146,17 @@ describe('LinkDragService', () => {
     expect(event.defaultPrevented).toBe(false);
   });
 
+  it('stops listening for Esc when its injector is destroyed in the middle of a drag', () => {
+    const { drag, doc } = setup();
+    drag.start(link(null));
+    TestBed.resetTestingModule();
+    const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true });
+
+    doc.dispatchEvent(event);
+
+    expect(event.defaultPrevented).toBe(false);
+  });
+
   it('remembers where the item was grabbed and its height until the drag ends', () => {
     const { drag, doc } = setup();
     const item = doc.createElement('li');
