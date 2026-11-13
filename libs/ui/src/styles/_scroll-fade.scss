@@ -11,10 +11,12 @@
 // in the scroll container itself (`scroll(nearest)` is then the area). The fades take the
 // content width (the area's padding and scrollbar stay clear) and sit at `$layer`: keep sticky
 // bars that must stay on top above it. The keyframes are global (`scroll-fade-keyframes`, in
-// `global.scss`), so every use stays small.
-@mixin scroll-fade($bg: var(--bg), $size: rem(24px), $layer: 2) {
-  &::before,
-  &::after {
+// `global.scss`), so every use stays small. `$bottom: false` draws only the top fade (the library
+// feed: the bulk bar and the last row sit at its bottom edge, where a fade only got in the way).
+@mixin scroll-fade($bg: var(--bg), $size: rem(24px), $layer: 2, $bottom: true) {
+  $edges: if($bottom, '&::before, &::after', '&::before');
+
+  #{$edges} {
     position: sticky;
     z-index: $layer;
     display: block;
@@ -31,16 +33,17 @@
     background: linear-gradient(to bottom, #{$bg}, transparent);
   }
 
-  &::after {
-    inset-block-end: 0;
-    background: linear-gradient(to top, #{$bg}, transparent);
+  @if $bottom {
+    &::after {
+      inset-block-end: 0;
+      background: linear-gradient(to top, #{$bg}, transparent);
+    }
   }
 
   @supports (animation-timeline: scroll()) {
     // Hidden unless the timeline says otherwise: an area that does not scroll (inactive
     // timeline) shows no fades over its last row.
-    &::before,
-    &::after {
+    #{$edges} {
       opacity: 0;
       animation-timeline: scroll(nearest);
       animation-timing-function: linear;
@@ -54,10 +57,12 @@
       animation-range: 0 $size;
     }
 
-    &::after {
-      margin-block-start: calc(#{$size} * -1);
-      animation-name: ui-scroll-fade-bottom;
-      animation-range: calc(100% - #{$size}) 100%;
+    @if $bottom {
+      &::after {
+        margin-block-start: calc(#{$size} * -1);
+        animation-name: ui-scroll-fade-bottom;
+        animation-range: calc(100% - #{$size}) 100%;
+      }
     }
   }
 }

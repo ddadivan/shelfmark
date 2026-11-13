@@ -186,3 +186,48 @@ app-link-card ui-card {
     transition: none;
   }
 }
+
+// Root font size of the landing and sign-in on very wide screens (#352). The app shell takes the
+// steps in libs/ui `global.scss` (100% up to 3200 CSS px, then 112.5%, 145%, 175%); these two pages are
+// tuned on their own, so each has its own steps here. `--root-base` is multiplied by the text size
+// setting (`--text-scale`). Breakpoints in em (16px each): 160em = 2560px, 200em = 3200px,
+// 240em = 3840px (4K at 100% OS scaling), 320em = 5120px (5K).
+@media (width >= 160em) {
+  :root:has(app-landing-page) {
+    --root-base: 112.5%;
+  }
+
+  :root:has(app-sign-in-page) {
+    --root-base: 112.5%;
+  }
+}
+
+@media (width >= 200em) {
+  :root:has(app-landing-page) {
+    --root-base: 125%;
+  }
+
+  :root:has(app-sign-in-page) {
+    --root-base: 125%;
+  }
+}
+
+@media (width >= 240em) {
+  :root:has(app-landing-page) {
+    --root-base: 160%;
+  }
+
+  :root:has(app-sign-in-page) {
+    --root-base: 180%;
+  }
+}
+
+@media (width >= 320em) {
+  :root:has(app-landing-page) {
+    --root-base: 230%;
+  }
+
+  :root:has(app-sign-in-page) {
+    --root-base: 230%;
+  }
+}
