@@ -24,27 +24,16 @@
     content: '';
   }
 
+  // Without scroll timelines the fades are always on, so each takes its own room at its end (no
+  // negative margin): the first and last rows stay clear at the two ends of the area.
   &::before {
     inset-block-start: 0;
-    margin-block-end: calc(#{$size} * -1);
     background: linear-gradient(to bottom, #{$bg}, transparent);
   }
 
   &::after {
     inset-block-end: 0;
-    margin-block-start: calc(#{$size} * -1);
     background: linear-gradient(to top, #{$bg}, transparent);
-  }
-
-  @supports not (animation-timeline: scroll()) {
-    // Always on: the fades no longer overlap the content at the two ends of the area.
-    &::before {
-      margin-block-end: 0;
-    }
-
-    &::after {
-      margin-block-start: 0;
-    }
   }
 
   @supports (animation-timeline: scroll()) {
@@ -58,12 +47,15 @@
       animation-fill-mode: both;
     }
 
+    // Hidden at the ends, so they lie over the content instead of taking room.
     &::before {
+      margin-block-end: calc(#{$size} * -1);
       animation-name: ui-scroll-fade-top;
       animation-range: 0 $size;
     }
 
     &::after {
+      margin-block-start: calc(#{$size} * -1);
       animation-name: ui-scroll-fade-bottom;
       animation-range: calc(100% - #{$size}) 100%;
     }
