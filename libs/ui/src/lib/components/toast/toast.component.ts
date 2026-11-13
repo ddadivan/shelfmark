@@ -42,7 +42,7 @@ import { ICON_SIZE } from '../icon/models/icon-size.const';
     '(focusout)': 'onFocusOut($event)',
   },
   templateUrl: './toast.component.html',
-  styleUrl: './toast.component.scss',
+  styleUrls: ['./toast.component.scss', './toast-actions.scss'],
 })
 export class ToastComponent {
   protected readonly ICON_SIZE = ICON_SIZE;
