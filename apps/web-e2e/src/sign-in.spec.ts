@@ -154,15 +154,15 @@ test.describe('sign-in flow (mock auth)', () => {
     expect(animations).toBe(0);
   });
 
-  for (const viewport of [
-    // One window per card count; drift-layout.spec.ts proves the lanes of every size (#349).
-    { width: 1024, height: 768, cards: 8 },
-    { width: 1440, height: 900, cards: 14 },
-    { width: 2560, height: 1440, cards: 22 },
-  ]) {
-    test(`at ${viewport.width}x${viewport.height} ${viewport.cards} cards sit in the side lanes: no collisions, none under the sign-in card`, async ({
-      page,
-    }) => {
+  test('at 1024, 1440 and 2560px the cards sit in the side lanes: no collisions, none under the sign-in card', async ({
+    page,
+  }) => {
+    for (const viewport of [
+      // One window per card count; drift-layout.spec.ts proves the lanes of every size (#349).
+      { width: 1024, height: 768, cards: 8 },
+      { width: 1440, height: 900, cards: 14 },
+      { width: 2560, height: 1440, cards: 22 },
+    ]) {
       // At rest (reduced motion): the boxes are the resting places.
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
@@ -216,8 +216,8 @@ test.describe('sign-in flow (mock auth)', () => {
           }
         }
       }
-    });
-  }
+    }
+  });
 
   test('with a mouse the cards lean toward the pointer while they keep drifting', async ({
     page,

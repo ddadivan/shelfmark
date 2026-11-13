@@ -286,14 +286,14 @@ async function scanSettled(page: Page, testInfo: TestInfo): Promise<void> {
 test.describe('appearance width (mock API, #315)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
 
-  for (const [width, height] of [
-    [1280, 800],
-    [1440, 900],
-    [1920, 1080],
-  ] as const) {
-    test(`at ${width}px Appearance is wider than the 880px pages and ${
-      width >= 1440 ? 'puts the options beside the preview' : 'stacks the preview above the options'
-    }`, async ({ page }, testInfo) => {
+  test('Appearance is wider than the 880px pages; options beside the preview from 1440px, stacked below', async ({
+    page,
+  }, testInfo) => {
+    for (const [width, height] of [
+      [1280, 800],
+      [1440, 900],
+      [1920, 1080],
+    ] as const) {
       test.skip(testInfo.project.name !== E2E_PROJECT.Desktop, 'a desktop layout check');
       await page.setViewportSize({ width, height });
       await seedSession(page);
@@ -321,8 +321,8 @@ test.describe('appearance width (mock API, #315)', () => {
         expect(options?.x).toBeCloseTo(preview?.x ?? 0, 0);
         expect(options?.width ?? 0).toBeGreaterThan(600);
       }
-    });
-  }
+    }
+  });
 });
 
 test.describe('appearance accessibility (mock API)', () => {

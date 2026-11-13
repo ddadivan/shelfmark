@@ -28,14 +28,14 @@ test.describe('links feed (mock API)', () => {
   // The grid's minimum card width: 14.25rem up to 1920px, 16.25rem above (#350), so the cards fold
   // without squeezing. The feed is centred and capped at 150rem; side padding and the sidebar eat
   // into the content width, so the columns are the ones the window leaves.
-  for (const viewport of [
-    { width: 1280, height: 800, min: 14.25 },
-    { width: 1920, height: 1080, min: 14.25 },
-    { width: 2560, height: 1440, min: 16.25 },
-  ]) {
-    test(`at ${viewport.width}px the grid folds cards no narrower than ${viewport.min}rem`, async ({
-      page,
-    }, testInfo) => {
+  test('at 1280, 1920 and 2560px the grid folds cards no narrower than its minimum width', async ({
+    page,
+  }) => {
+    for (const viewport of [
+      { width: 1280, height: 800, min: 14.25 },
+      { width: 1920, height: 1080, min: 14.25 },
+      { width: 2560, height: 1440, min: 16.25 },
+    ]) {
       test.skip(isCompact(page), 'the desktop grid');
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       await openFeed(page);
@@ -56,12 +56,12 @@ test.describe('links feed (mock API)', () => {
         };
       })()`);
       const rem = 16;
-      expect(columns, testInfo.title).toBeGreaterThanOrEqual(2);
+      expect(columns, `at ${viewport.width}px`).toBeGreaterThanOrEqual(2);
       expect(card).toBeGreaterThanOrEqual(viewport.min * rem - 0.5);
       // Equal heights in a row.
       expect(new Set(row.map((h) => Math.round(h))).size).toBe(1);
-    });
-  }
+    }
+  });
 
   test('hovering a card slides up the open bar with the address', async ({ page }, testInfo) => {
     test.skip(testInfo.project.use.hasTouch === true, 'touch has no hover');
