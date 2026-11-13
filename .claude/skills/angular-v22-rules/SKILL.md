@@ -24,6 +24,7 @@ Applies to `apps/web` and `libs/ui`. Official Angular guidance (AI config, Agent
 | Animations           | CSS + `animate.enter` / `animate.leave`; timings from Motion tokens. No `@angular/animations`                                                   |
 | Behaviour primitives | Angular Aria, CDK (Dialog, Overlay, A11y)                                                                                                       |
 | i18n                 | Transloco keys for every UI string                                                                                                              |
+| Thin components      | Component binds signals, calls services, renders; state and flows in stores / services, DOM behaviour in directives, pure logic in `utils/`     |
 | Images               | `NgOptimizedImage` for static images                                                                                                            |
 
 ## Forbidden
@@ -39,6 +40,16 @@ Applies to `apps/web` and `libs/ui`. Official Angular guidance (AI config, Agent
 - Angular Material, Tailwind, third-party icon sets, animation libraries
 - Bare styled `<button>`, `<input>`, `<select>`, `<textarea>` in feature code — use `libs/ui`
 - Hard-coded UI strings, colours, px sizes (see `libs/ui/CLAUDE.md` for the px exceptions)
+
+## Components stay thin
+
+A page or component binds signals, calls services and renders (#338). Move logic out as soon as it is more than glue:
+
+- state, derived lists, URL params, multi-step flows (rename, merge, save, bulk actions) → a store or service in `services/` (scoped through the component's `providers` when it holds per-instance state);
+- DOM behaviour (drag and drop, keyboard navigation, long press) → a directive in `directives/`;
+- pure calculations → `utils/` with their own spec.
+
+Rough ceiling: ~250–300 lines of TS for a page, ~200–250 for a component. Specs move with the code they test; the component spec stays as the integration test. Reviewers flag a component that grows past the ceiling.
 
 ## File layout (apps/web)
 

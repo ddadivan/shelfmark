@@ -29,7 +29,7 @@
         'shell.sidebar.retry' | transloco
       }}</ui-button>
     </p>
-  } @else if (tags.loaded() && tags.count() === 0 && !adding()) {
+  } @else if (tags.loaded() && tags.count() === 0 && !editor.adding()) {
     @if (asPage()) {
       <ui-empty-state
         class="tags__empty"
@@ -49,22 +49,22 @@
 
   <ul
     class="tags__list"
-    [class.tags__list--empty]="tags.loaded() && tags.count() === 0 && !adding()"
+    [class.tags__list--empty]="tags.loaded() && tags.count() === 0 && !editor.adding()"
     [attr.aria-label]="'tags.sidebar.list' | transloco"
   >
-    @if (adding()) {
-      <li class="tags__item tags__item--editor" [class.tags__item--wide]="editorWide()">
-        <ng-container *ngTemplateOutlet="editor" />
+    @if (editor.adding()) {
+      <li class="tags__item tags__item--editor" [class.tags__item--wide]="editor.editorWide()">
+        <ng-container *ngTemplateOutlet="editorForm" />
       </li>
     }
     @for (tag of split().shown; track tag.id) {
       <li
         class="tags__item"
-        [class.tags__item--editor]="renamingId() === tag.id"
-        [class.tags__item--wide]="renamingId() === tag.id && editorWide()"
+        [class.tags__item--editor]="editor.renamingId() === tag.id"
+        [class.tags__item--wide]="editor.renamingId() === tag.id && editor.editorWide()"
       >
-        @if (renamingId() === tag.id) {
-          <ng-container *ngTemplateOutlet="editor" />
+        @if (editor.renamingId() === tag.id) {
+          <ng-container *ngTemplateOutlet="editorForm" />
         } @else {
           <ui-chip
             clickable
@@ -97,45 +97,49 @@
   </ul>
 
   <ui-menu
-    [ariaLabel]="menuLabel() ?? ('tags.sidebar.menu.label' | transloco)"
-    (closed)="menuClosed()"
+    [ariaLabel]="menuState.label() ?? ('tags.sidebar.menu.label' | transloco)"
+    (closed)="menuState.closed()"
   >
-    <p class="tags__menu-summary" role="none">{{ menuSummary() }}</p>
-    <ui-menu-item icon="search" (activated)="showFromMenu()">
+    <p class="tags__menu-summary" role="none">{{ menuState.summary() }}</p>
+    <ui-menu-item icon="search" (activated)="menuState.show()">
       {{ 'tags.sidebar.menu.show' | transloco }}
     </ui-menu-item>
     <ui-menu-item icon="edit" (activated)="renameFromMenu()">
       {{ 'tags.sidebar.menu.rename' | transloco }}
     </ui-menu-item>
-    <ui-menu-item icon="tag" (activated)="mergeFromMenu()">
+    <ui-menu-item icon="tag" (activated)="menuState.merge()">
       {{ 'tags.sidebar.menu.merge' | transloco }}
     </ui-menu-item>
     <ui-menu-separator />
-    <ui-menu-item icon="trash" danger (activated)="deleteFromMenu()">
+    <ui-menu-item icon="trash" danger (activated)="menuState.delete()">
       {{ 'tags.sidebar.menu.delete' | transloco }}
     </ui-menu-item>
   </ui-menu>
 </section>
 
-<ng-template #editor>
+<ng-template #editorForm>
   <form
     class="tags__editor"
-    [formRoot]="form"
+    [formRoot]="editor.form"
     (keydown.escape)="cancel()"
     (focusout)="editorFocusOut($event)"
   >
     <ui-input
       compact
-      [label]="(renamingId() === null ? 'tags.add.label' : 'tags.rename.label') | transloco"
+      [label]="(editor.renamingId() === null ? 'tags.add.label' : 'tags.rename.label') | transloco"
       [placeholder]="'tags.add.placeholder' | transloco"
-      [error]="fieldError()"
-      [formField]="form.name"
+      [error]="editor.fieldError()"
+      [formField]="editor.form.name"
     />
-    @if (conflict(); as existing) {
+    @if (editor.conflict(); as existing) {
       <p class="tags__conflict" role="status">
         {{ 'tags.rename.conflict' | transloco: { name: existing.name } }}
       </p>
-      <ui-button [size]="buttonSize()" [disabled]="saving()" (click)="mergeIntoConflict()">
+      <ui-button
+        [size]="buttonSize()"
+        [disabled]="editor.saving()"
+        (click)="editor.mergeIntoConflict()"
+      >
         {{ 'tags.rename.merge' | transloco: { name: existing.name } }}
       </ui-button>
     }

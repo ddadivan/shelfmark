@@ -22,6 +22,7 @@ Angular 22 client (CSR only, zoneless). Read `docs/PROJECT.md` 5.1 and 7 first. 
 - Styles: tokens only, `rem` / `em` (breakpoints in `em`), both themes, phone from 360px, honour `prefers-reduced-motion`.
 - Breakpoints (#316): navigation switches at 64em. `ViewportService.compact` (and the Sass `compact` mixin) is the mobile shell below it: the tab bar, no sidebar or top bar, the Library / Tags / You pages, touch sizes, long press to select, swipe rows, the stacked bulk bar; `desktop` from 64em is the sidebar layout; `ViewportService.wide` (and `wide`) from 80em is the inline header search (#329: a real field with a results panel; 64em to 80em a "Search" button opens the dialog). `ViewportService.phone` (and `phone`) is only for small-screen details: bottom-sheet dialogs, the one View menu, short labels, block buttons. Touch affordances (checkboxes, the star, "…") follow the input (`hover: none` / `pointer: coarse`), not the width. Content stays fluid (the card grid keeps `auto-fill` columns).
 - Build UI from `libs/ui` components; no bare styled `<button>` / `<input>` in features.
+- Components stay thin (#338): a page or component binds signals, calls services and renders. Logic lives elsewhere: state, derived lists, URL params and flows in a store or service (`services/*.service.ts`, `*.store.ts`; scoped to the page or dialog through its `providers` when it holds per-instance state), DOM behaviour (drag, keyboard, long press) in a directive (`directives/`), pure calculations in `utils/` with their own spec. Aim for at most ~250–300 lines of TS per page and ~200–250 per component; when one grows past that, extract before adding more. Specs move with the code they test; the component spec stays as the integration test.
 - HTTP: relative `/api` URLs (`API_BASE_URL`); the dev server proxies `/api` to `http://localhost:3000` (`proxy.conf.json`).
 - Security: no `innerHTML` / `bypassSecurityTrust*`; nothing inline in `index.html` (strict CSP: `optimization.styles.inlineCritical` is `false` in `project.json`; keep it that way).
 
@@ -41,6 +42,7 @@ CI=1 npx nx e2e web-e2e               # CI mode: serves the production build, re
 ## Tests
 
 - A `*.spec.ts` next to every service and page (Vitest via `@angular/build:unit-test`).
+- Visual regression screenshots of the key screens: `apps/web-e2e/visual/` (`npm run e2e:visual`); baselines come from CI, see its [README](../web-e2e/visual/README.md) for review and update.
 - e2e in `apps/web-e2e` runs on the `desktop`, `tablet` (820 x 1180, touch, #316) and `phone` (360px) projects. `isCompact(page)` (below 64em) picks the mobile-shell path (tab bar, Library / Tags / You pages), `isPhone(page)` (below 40em) only small-screen details (bottom-sheet dialogs, the one View menu).
 
 ## Official Angular AI config

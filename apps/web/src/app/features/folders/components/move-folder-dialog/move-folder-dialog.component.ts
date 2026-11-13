@@ -11,7 +11,7 @@ import {
   UiDialogRef,
 } from '@shelfmark/ui';
 import { FoldersStore } from '../../../../stores/folders.store';
-import { buildFolderOptions } from '../../../links/components/add-link/folder-options';
+import { buildFolderOptions } from '../../../links/utils/folder-options';
 import type { MoveFolderDialogData } from '../../models/move-folder-dialog-data.interface';
 
 /**

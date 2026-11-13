@@ -36,7 +36,7 @@ import { MOCK_LINK_PREVIEW_DUPLICATE } from '@shelfmark/contracts/testing';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { defer, delay, type Observable, of, throwError } from 'rxjs';
 import { mockHttpError } from '../../../core/api/mock-http-error';
-import { displayHost } from '../components/add-link/http-url';
+import { displayHost } from '../utils/http-url';
 import { MOCK_HOST } from '../models/mock-host.const';
 import { MOCK_LATENCY_MS } from '../models/mock-latency.const';
 import { MOCK_LINKS_SCENARIO } from '../models/mock-links-scenario.const';
