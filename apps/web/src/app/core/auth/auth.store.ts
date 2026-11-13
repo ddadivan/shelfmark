@@ -11,9 +11,6 @@ import {
   withState,
 } from '@ngrx/signals';
 import type { AuthProvider, AuthUser } from '@shelfmark/contracts';
-import { FoldersStore } from '../../stores/folders.store';
-import { LinksStore } from '../../stores/links.store';
-import { TagsStore } from '../../stores/tags.store';
 import { AUTH_API } from './auth-api.token';
 import { SessionScope } from './session-scope.service';
 import { DemoSignInError } from './demo-sign-in-error';
@@ -46,22 +43,14 @@ export const AuthStore = signalStore(
     isSignedIn: computed(() => user() !== null),
   })),
   withMethods(
-    (
-      store,
-      router = inject(Router),
-      links = inject(LinksStore),
-      folders = inject(FoldersStore),
-      tags = inject(TagsStore),
-      injector = inject(Injector),
-      scope = inject(SessionScope),
-    ) => {
+    (store, router = inject(Router), injector = inject(Injector), scope = inject(SessionScope)) => {
       // Resolved on use: pages that only read `user` (landing, library) need no auth API in specs.
       const api = () => injector.get(AUTH_API);
       let loading: Promise<void> | null = null;
 
       /**
-       * Forgets everything cached for the user: the library, and whatever else registered with
-       * `SessionScope` (onboarding and rating, which depend on this store).
+       * Forgets everything cached for the user: whatever registered with `SessionScope` (the
+       * library stores, onboarding and rating).
        */
       /** Tells the other tabs a user is signed in here (they reload when locked or signed out). */
       function announceSignedIn(user: AuthUser | null): void {
@@ -71,9 +60,6 @@ export const AuthStore = signalStore(
       }
 
       function clearUserState(): void {
-        links.reset();
-        folders.reset();
-        tags.reset();
         scope.end();
       }
 
@@ -109,7 +95,7 @@ export const AuthStore = signalStore(
           timer = setTimeout(resolve, ms);
         });
         try {
-          await Promise.race([Promise.all([links.flushPending(), tags.flushPending()]), timeout]);
+          await Promise.race([scope.flush(), timeout]);
         } catch {
           // A failed flush restores the links in the store; sign-out goes on.
         } finally {
