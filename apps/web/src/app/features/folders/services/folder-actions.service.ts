@@ -13,7 +13,6 @@ import { TrashStore } from '../../../stores/trash.store';
 import { LinkActionsService } from '../../links/services/link-actions.service';
 import { FolderStyleDialogComponent } from '../components/folder-style-dialog/folder-style-dialog.component';
 import type { FolderStyleDialogData } from '../models/folder-style-dialog-data.interface';
-import { FolderEmojiService } from './folder-emoji.service';
 import { DeleteFolderDialogComponent } from '../components/delete-folder-dialog/delete-folder-dialog.component';
 import { FolderNameDialogComponent } from '../components/folder-name-dialog/folder-name-dialog.component';
 import type { DeleteFolderDialogData } from '../models/delete-folder-dialog-data.interface';
@@ -41,7 +40,6 @@ export class FolderActionsService {
   private readonly linkActions = inject(LinkActionsService);
   private readonly treeFocus = inject(SidebarTreeFocusService);
   private readonly auth = inject(AuthStore);
-  private readonly emoji = inject(FolderEmojiService);
 
   /** Creates a folder at the top level or inside `parent`, then opens it. */
   async create(parent: FolderResponse | null = null): Promise<void> {
@@ -169,7 +167,6 @@ export class FolderActionsService {
           subfolderCount: this.folders.entities().filter((item) => item.parentId === folder.id)
             .length,
           submit: (style) => {
-            this.emoji.remember(style.icon);
             if (style.colour === folder.colour && style.icon === folder.icon) {
               return;
             }

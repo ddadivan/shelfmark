@@ -245,6 +245,8 @@ export class FolderStyleDialogComponent {
     const { colour } = this.model();
     const icon = this.previewIcon();
     if ((isFolderColourName(colour) || isHexColour(colour)) && this.form.emoji().valid()) {
+      // "Recent" on this device; an emoji the collection lacks is kept under "Yours".
+      this.emoji.remember(icon);
       this.data.submit({ colour, icon });
       this.ref.close(true);
     }
