@@ -346,16 +346,20 @@ jobs:
           projects="$(npx nx show projects --affected --with-target e2e --json)"
           echo "Affected projects with e2e: ${projects}"
           if [ "$projects" = "[]" ]; then echo "needed=false" >> "$GITHUB_OUTPUT"; else echo "needed=true" >> "$GITHUB_OUTPUT"; fi
+      # The browser download is cached per Playwright version (#362); the system packages are still
+      # installed on every run, with a browser-only fallback when the Ubuntu mirrors fail.
+      - name: Read the Playwright version
+        id: playwright
+        if: steps.browser.outputs.needed == 'true'
+        run: echo "version=$(node -p "require('playwright-core/package.json').version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        if: steps.browser.outputs.needed == 'true'
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ steps.playwright.outputs.version }}
       - name: Install Chromium
         if: steps.browser.outputs.needed == 'true'
-        # The system packages come from the Ubuntu mirrors; when those are down, the runner image
-        # already has Chromium's libraries, so the browser alone is enough (no screenshot tests
-        # depend on system fonts).
-        run: |
-          timeout 600 npx playwright install --with-deps chromium || {
-            echo "::warning::System packages for Chromium failed to install (Ubuntu mirror?); installing the browser only"
-            npx playwright install chromium
-          }
+        run: tools/ci/install-chromium.sh
       - name: Wait for the e2e bundle of web-build
         id: bundle
         if: steps.browser.outputs.needed == 'true'
@@ -455,16 +459,20 @@ jobs:
           projects="$(npx nx show projects --affected --with-target test-storybook --json)"
           echo "Affected projects with test-storybook: ${projects}"
           if [ "$projects" = "[]" ]; then echo "needed=false" >> "$GITHUB_OUTPUT"; else echo "needed=true" >> "$GITHUB_OUTPUT"; fi
+      # The browser download is cached per Playwright version (#362); the system packages are still
+      # installed on every run, with a browser-only fallback when the Ubuntu mirrors fail.
+      - name: Read the Playwright version
+        id: playwright
+        if: steps.browser.outputs.needed == 'true'
+        run: echo "version=$(node -p "require('playwright-core/package.json').version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        if: steps.browser.outputs.needed == 'true'
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ steps.playwright.outputs.version }}
       - name: Install Chromium
         if: steps.browser.outputs.needed == 'true'
-        # The system packages come from the Ubuntu mirrors; when those are down, the runner image
-        # already has Chromium's libraries, so the browser alone is enough (no screenshot tests
-        # depend on system fonts).
-        run: |
-          timeout 600 npx playwright install --with-deps chromium || {
-            echo "::warning::System packages for Chromium failed to install (Ubuntu mirror?); installing the browser only"
-            npx playwright install chromium
-          }
+        run: tools/ci/install-chromium.sh
       - name: Run the Storybook a11y tests for the diff, shard ${{ matrix.shard }}/${{ matrix.shards }}
         if: steps.browser.outputs.needed == 'true' && env.PR_INTO_STAGE == 'true'
         env:
@@ -558,6 +566,10 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+          # The npm cache also holds the isolated Lighthouse CI install (tools/lighthouse).
+          cache-dependency-path: |
+            package-lock.json
+            tools/lighthouse/package-lock.json
       - run: npm ci
       - uses: nrwl/nx-set-shas@e602fada7ad5987b0f7b1905e7a99ea1c661514c # v5.1.0
         with:
@@ -578,16 +590,20 @@ jobs:
           else
             echo "needed=false" >> "$GITHUB_OUTPUT"
           fi
+      # The browser download is cached per Playwright version (#362); the system packages are still
+      # installed on every run, with a browser-only fallback when the Ubuntu mirrors fail.
+      - name: Read the Playwright version
+        id: playwright
+        if: steps.web.outputs.needed == 'true'
+        run: echo "version=$(node -p "require('playwright-core/package.json').version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        if: steps.web.outputs.needed == 'true'
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ steps.playwright.outputs.version }}
       - name: Install Chromium
         if: steps.web.outputs.needed == 'true'
-        # The system packages come from the Ubuntu mirrors; when those are down, the runner image
-        # already has Chromium's libraries, so the browser alone is enough (no screenshot tests
-        # depend on system fonts).
-        run: |
-          timeout 600 npx playwright install --with-deps chromium || {
-            echo "::warning::System packages for Chromium failed to install (Ubuntu mirror?); installing the browser only"
-            npx playwright install chromium
-          }
+        run: tools/ci/install-chromium.sh
       # @lhci/cli lives in its own lockfile (tools/lighthouse, ADR 0028): its dependency tree has
       # high npm audit advisories that must not reach the root tree or the required npm-audit job.
       - name: Install Lighthouse CI (install scripts off)
