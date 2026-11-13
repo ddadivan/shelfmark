@@ -79,10 +79,10 @@ export class SavedViewActionsService {
           mode: VIEW_NAME_MODE.Create,
           name: '',
           submit: async (name) => {
-            const outcome = await this.store.create(name, query);
+            const { outcome, view } = await this.store.create(name, query);
             saved = name;
             if (outcome === VIEW_OUTCOME.Done) {
-              createdId = this.store.items().at(-1)?.id ?? null;
+              createdId = view?.id ?? null;
               return null;
             }
             if (outcome === VIEW_OUTCOME.Limit) {

@@ -18,7 +18,7 @@
       [iconSize]="ICON_SIZE.Lg"
       [ariaLabel]="'tags.sidebar.add' | transloco"
       [uiTooltip]="'tags.sidebar.add' | transloco"
-      (click)="toggleAdd()"
+      (click)="toggleAdd($event)"
     />
   </div>
 
@@ -38,7 +38,7 @@
         [heading]="'tags.page.empty.title' | transloco"
         [text]="'tags.page.empty.text' | transloco"
       >
-        <ui-button variant="primary" iconLeft="add" (click)="toggleAdd()">
+        <ui-button variant="primary" iconLeft="add" (click)="toggleAdd($event)">
           {{ 'tags.sidebar.add' | transloco }}
         </ui-button>
       </ui-empty-state>

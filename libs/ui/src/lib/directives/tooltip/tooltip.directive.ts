@@ -22,7 +22,7 @@ import { sidePositions } from '../../services/overlay/side-positions';
 import type { TooltipPosition } from './models/tooltip-position.type';
 import { TooltipPanelComponent } from './tooltip-panel/tooltip-panel.component';
 import { KEYBOARD_KEY } from '../../models/keyboard';
-import { isFocusReturn } from '../../services/dialog/focus-return';
+import { consumeFocusReturn } from '../../services/dialog/focus-return';
 import { OVERLAY_LAYER } from '../../services/overlay/models/overlay-layer.const';
 import { OVERLAY_SIDE } from '../../services/overlay/models/overlay-side.const';
 
@@ -39,7 +39,7 @@ function textTransform(value: string | null | undefined): string {
  * Appears after `delay` (400 ms) on hover and on keyboard focus, closes on blur, pointer leave
  * and Esc (focus stays where it is), and stays open while the pointer is over it (WCAG 1.4.13).
  * It never opens on devices without hover (`(hover: none)`), nor for focus that a closing dialog
- * hands back to its trigger (`isFocusReturn`).
+ * hands back to its trigger (`consumeFocusReturn`).
  *
  * On `<ui-button>` the directive reaches the inner native element through `UI_FOCUS_TARGET`
  * (listeners, anchor, `aria-description`); on any other host it uses the host element. The
@@ -182,7 +182,7 @@ export class TooltipDirective {
 
   private onFocus(target: HTMLElement): void {
     // Focus handed back after a dialog closed is not the user moving to the control.
-    if (isFocusReturn() || !this.isKeyboardFocus(target)) {
+    if (consumeFocusReturn(target) || !this.isKeyboardFocus(target)) {
       return;
     }
     this.focused = true;

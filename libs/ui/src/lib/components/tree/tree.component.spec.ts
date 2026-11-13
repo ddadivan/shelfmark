@@ -112,6 +112,16 @@ describe('TreeComponent', () => {
       return { ...ctx, component: tree };
     }
 
+    it('revealRow opens the collapsed folders above a row so it can take focus', async () => {
+      const { component, item, fixture } = await focusSetup();
+      expect(component.focusRow(TREE_STORY_ID.Shoes)).toBe(false);
+      component.revealRow(TREE_STORY_ID.Shoes);
+      fixture.detectChanges();
+      expect(component.focusRow(TREE_STORY_ID.Shoes)).toBe(true);
+      expect(document.activeElement).toBe(item(TREE_STORY_NAME.Shoes));
+      expect(() => component.revealRow('nope')).not.toThrow();
+    });
+
     it('focusRow focuses a visible row and refuses hidden and unknown rows', async () => {
       const { component, item } = await focusSetup();
       expect(component.focusRow(TREE_STORY_ID.Courses)).toBe(true);

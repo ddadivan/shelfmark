@@ -179,7 +179,7 @@ describe('SavedViewActionsService', () => {
 
   it('explains a missing folder in the dialog', async () => {
     const { actions, store } = await setup();
-    vi.spyOn(store, 'create').mockResolvedValue(VIEW_OUTCOME.Missing);
+    vi.spyOn(store, 'create').mockResolvedValue({ outcome: VIEW_OUTCOME.Missing });
     const done = actions.saveCurrent({ scope: LINKS_SCOPE.All });
     await opened();
     type('Gone');

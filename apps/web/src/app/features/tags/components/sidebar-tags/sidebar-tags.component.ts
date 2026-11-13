@@ -28,10 +28,10 @@ import {
   InputComponent,
   KEYBOARD_KEY,
   LongPressDirective,
-  markFocusReturn,
   MenuComponent,
   MenuItemComponent,
   MenuSeparatorComponent,
+  returnFocus,
   TooltipDirective,
   type UiLongPressEvent,
 } from '@shelfmark/ui';
@@ -92,6 +92,8 @@ export class SidebarTagsComponent {
   private readonly injector = inject(Injector);
 
   protected readonly expanded = signal(false);
+  /** The "+" was clicked (not pressed with a key): focus goes back to it without a ring. */
+  private addByPointer = false;
   private readonly moreChip = viewChild('moreChip', { read: ElementRef });
   protected readonly split = computed(() => splitTags(this.tags.entities(), this.expanded()));
 
@@ -125,6 +127,7 @@ export class SidebarTagsComponent {
           return;
         }
         const renamedId = this.editor.renamingId();
+        this.addByPointer = true;
         this.cancel(false);
         // Once the press has settled: when it left focus nowhere (a click on empty space), the
         // "+" button (or the renamed chip) takes it; a control that took focus keeps it.
@@ -158,7 +161,9 @@ export class SidebarTagsComponent {
   }
 
   /** The "+" button: opens the field, or closes it when it is open (one click, one toggle). */
-  protected toggleAdd(): void {
+  protected toggleAdd(event?: MouseEvent): void {
+    // `detail` is 0 for a click the keyboard made (Enter, Space).
+    this.addByPointer = (event?.detail ?? 0) > 0;
     if (this.editor.adding()) {
       this.cancel();
       return;
@@ -191,21 +196,31 @@ export class SidebarTagsComponent {
   protected cancel(restoreFocus = true, createdId?: string): void {
     const renamedId = this.editor.renamingId() ?? createdId ?? null;
     this.editor.close();
+    // A new tag inside the folded group: open the group so its chip exists to take focus.
+    if (createdId !== undefined && !this.split().shown.some((tag) => tag.id === createdId)) {
+      this.expanded.set(true);
+    }
     if (restoreFocus) {
       afterNextRender(() => this.restoreFocus(renamedId), { injector: this.injector });
     }
   }
 
   private restoreFocus(renamedId: string | null): void {
-    // Handing focus back is not the user moving to "+": its tooltip stays closed.
-    markFocusReturn();
     const chip =
       renamedId === null
         ? null
         : this.host.querySelector<HTMLElement>(
             `ui-chip[data-tag-id="${CSS.escape(renamedId)}"] button.ui-chip__body`,
           );
-    (chip ?? this.addButton()?.nativeElement.querySelector('button'))?.focus();
+    if (chip) {
+      chip.focus();
+      return;
+    }
+    // Handing focus back is not the user moving to "+": no tooltip, and no ring after a click.
+    const add = this.addButton()?.nativeElement.querySelector('button') as HTMLElement | null;
+    if (add) {
+      returnFocus(add, this.addByPointer);
+    }
   }
 
   protected openMenuFrom(tag: TagResponse, origin: HTMLElement): void {

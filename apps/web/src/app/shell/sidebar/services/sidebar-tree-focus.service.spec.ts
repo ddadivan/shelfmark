@@ -4,7 +4,8 @@ import { SidebarTreeFocusService } from './sidebar-tree-focus.service';
 
 function fakeTree(rows: readonly string[]) {
   const focusRow = vi.fn((id: string) => rows.includes(id));
-  return { tree: { focusRow } as unknown as TreeComponent, focusRow };
+  const revealRow = vi.fn();
+  return { tree: { focusRow, revealRow } as unknown as TreeComponent, focusRow, revealRow };
 }
 
 describe('SidebarTreeFocusService.focusCreated', () => {
@@ -19,6 +20,7 @@ describe('SidebarTreeFocusService.focusCreated', () => {
     TestBed.tick();
 
     expect(shown.focusRow).toHaveBeenCalledWith('new');
+    expect(shown.revealRow).toHaveBeenCalledWith('new');
   });
 
   it('tries once more after the next render and then gives up quietly', () => {

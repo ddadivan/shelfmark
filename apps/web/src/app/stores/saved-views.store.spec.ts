@@ -102,16 +102,18 @@ describe('SavedViewsStore', () => {
   it('creates at the end and maps the refusals', async () => {
     const { store, api } = setup();
     await store.load();
-    expect(await store.create('Mine', QUERY)).toBe(VIEW_OUTCOME.Done);
+    const created = await store.create('Mine', QUERY);
+    expect(created.outcome).toBe(VIEW_OUTCOME.Done);
+    expect(created.view?.id).toBe('new');
     expect(api.create).toHaveBeenCalledWith({ name: 'Mine', query: QUERY });
     expect(store.items().at(-1)).toMatchObject({ id: 'new', name: 'Mine', position: 3 });
 
     api.create.mockReturnValueOnce(throwError(() => httpError(HttpStatusCode.Conflict)));
-    expect(await store.create('x', QUERY)).toBe(VIEW_OUTCOME.Limit);
+    expect((await store.create('x', QUERY)).outcome).toBe(VIEW_OUTCOME.Limit);
     api.create.mockReturnValueOnce(throwError(() => httpError(HttpStatusCode.NotFound)));
-    expect(await store.create('x', QUERY)).toBe(VIEW_OUTCOME.Missing);
+    expect((await store.create('x', QUERY)).outcome).toBe(VIEW_OUTCOME.Missing);
     api.create.mockReturnValueOnce(throwError(() => httpError(500)));
-    expect(await store.create('x', QUERY)).toBe(VIEW_OUTCOME.Failed);
+    expect((await store.create('x', QUERY)).outcome).toBe(VIEW_OUTCOME.Failed);
     expect(store.items()).toHaveLength(4);
   });
 
@@ -120,7 +122,7 @@ describe('SavedViewsStore', () => {
     const { store, api } = setup(full);
     await store.load();
     expect(store.atLimit()).toBe(true);
-    expect(await store.create('x', QUERY)).toBe(VIEW_OUTCOME.Limit);
+    expect((await store.create('x', QUERY)).outcome).toBe(VIEW_OUTCOME.Limit);
     expect(api.create).not.toHaveBeenCalled();
   });
 

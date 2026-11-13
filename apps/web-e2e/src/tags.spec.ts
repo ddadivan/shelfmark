@@ -74,6 +74,34 @@ test.describe('tags (mock API)', () => {
       await expect(page.locator('ui-tooltip-panel')).toHaveCount(0);
     });
 
+    test('Esc after a click on "+" returns focus without ring or tooltip; after Enter with the ring', async ({
+      page,
+    }) => {
+      test.skip(isCompact(page), 'the Tags tab is a page: the desktop sidebar path is checked');
+      await gotoWithTags(page, '/links');
+      const add = sidebar(page).getByRole('button', { name: 'New tag' });
+      const focusVisible = () => add.evaluate((el) => el.matches(':focus-visible'));
+      const field = sidebar(page).getByRole('textbox', { name: 'New tag' });
+
+      await add.click();
+      // A pointer resting on "+" would show its hover tooltip: only focus is checked here.
+      await page.mouse.move(0, 0);
+      await field.press('Escape');
+      await expect(add).toBeFocused();
+      expect(await focusVisible()).toBe(false);
+      await page.waitForTimeout(700);
+      await expect(page.locator('ui-tooltip-panel')).toHaveCount(0);
+
+      await page.mouse.move(0, 0);
+      await add.focus();
+      await page.keyboard.press('Enter');
+      await field.press('Escape');
+      await expect(add).toBeFocused();
+      expect(await focusVisible()).toBe(true);
+      await page.waitForTimeout(700);
+      await expect(page.locator('ui-tooltip-panel')).toHaveCount(0);
+    });
+
     test('Esc on the new tag field returns focus to "+" without its tooltip', async ({ page }) => {
       test.skip(isCompact(page), 'the Tags tab is a page: the desktop sidebar path is checked');
       await gotoWithTags(page, '/links');
@@ -148,6 +176,10 @@ test.describe('tags (mock API)', () => {
         // The field closes once the tag is saved. New tags have no links, so they sort last.
         await expect(sidebar(page).getByRole('textbox', { name: 'New tag' })).toHaveCount(0);
       }
+
+      // The last tag fell into the folded group: the group opened and the new chip has focus.
+      await expect(chip(page, 'extra-7')).toBeFocused();
+      await sidebar(page).getByRole('button', { name: 'Show less' }).click();
 
       const more = sidebar(page).getByRole('button', { name: /^\+ \d+ more$/ });
       await expect(more).toBeVisible();

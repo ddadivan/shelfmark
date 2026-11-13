@@ -27,13 +27,14 @@ export class SidebarTreeFocusService {
   }
 
   /**
-   * Focuses the row `id` of a folder just created, once the tree has rendered it (scrolled into
+   * Focuses the row `id` of a folder just created (opening collapsed folders above it), once the tree has rendered it (scrolled into
    * view by the focus). Tries again after the next render when the row is not there yet. Does
    * nothing when no tree on screen shows it (the mobile shell pages without a sidebar).
    */
   focusCreated(id: string): void {
     const attempt = (retry: boolean): void => {
       for (const tree of this.trees) {
+        tree.revealRow(id);
         if (tree.focusRow(id)) {
           return;
         }

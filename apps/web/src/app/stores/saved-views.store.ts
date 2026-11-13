@@ -13,6 +13,7 @@ import { SessionScope } from '../core/auth/session-scope.service';
 import { SAVED_VIEWS_API } from '../features/views/models/saved-views-api.const';
 import type { SavedViewsState } from './models/saved-views-state.interface';
 import { VIEW_OUTCOME } from './models/view-outcome.const';
+import type { ViewCreateResult } from './models/view-create-result.interface';
 import type { ViewOutcome } from './models/view-outcome.type';
 
 const initialState: SavedViewsState = {
@@ -138,9 +139,9 @@ export const SavedViewsStore = signalStore(
       },
 
       /** Saves a filter as a view at the end; waits for the server. */
-      async create(name: string, query: SavedViewQueryRequest): Promise<ViewOutcome> {
+      async create(name: string, query: SavedViewQueryRequest): Promise<ViewCreateResult> {
         if (store.atLimit()) {
-          return VIEW_OUTCOME.Limit;
+          return { outcome: VIEW_OUTCOME.Limit };
         }
         const started = epoch;
         try {
@@ -151,9 +152,9 @@ export const SavedViewsStore = signalStore(
               items: renumber([...store.items().filter((item) => item.id !== view.id), view]),
             });
           }
-          return VIEW_OUTCOME.Done;
+          return { outcome: VIEW_OUTCOME.Done, view };
         } catch (error) {
-          return outcomeOf(error);
+          return { outcome: outcomeOf(error) };
         }
       },
 

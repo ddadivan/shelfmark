@@ -2,7 +2,12 @@ import type { ComponentType } from '@angular/cdk/portal';
 import { UiDialogRef } from './dialog-ref';
 import type { ModalOverlayDeps } from './models/modal-overlay-deps.interface';
 import type { ModalOverlayOptions } from './models/modal-overlay-options.interface';
-import { markFocusReturn } from './focus-return';
+import {
+  cancelFocusReturn,
+  expectFocusReturn,
+  lastInputWasPointer,
+  returnFocus,
+} from './focus-return';
 import { KEYBOARD_KEY } from '../../models/keyboard';
 import { OVERLAY_LAYER } from '../overlay/models/overlay-layer.const';
 import { raiseOverlayLayers } from '../overlay/overlay-stacking';
@@ -45,6 +50,11 @@ export function openModalOverlay<C, R, D>(
   options: ModalOverlayOptions<R, C, D>,
 ): UiDialogRef<R, C> {
   const opener = document.activeElement;
+  const openedByPointer = lastInputWasPointer();
+  // Before any close path (Esc, scrim, `close()`, the CDK closing it) puts focus back on it.
+  if (opener) {
+    expectFocusReturn(opener);
+  }
   const holder: { ref?: UiDialogRef<R, C> } = {};
 
   const cdkRef = deps.dialog.open<R, D, C>(component, {
@@ -58,6 +68,8 @@ export function openModalOverlay<C, R, D>(
     // The ref owns closing (leave animation first), so the CDK never closes on its own.
     disableClose: true,
     closeOnDestroy: true,
+    // The CDK would restore focus with the ring of the last key (Esc): done below, per opener.
+    restoreFocus: false,
     backdropClass: ['ui-dialog-scrim', overlayLayerClass(OVERLAY_LAYER.Dialog)],
     positionStrategy: options.positionStrategy,
     injector: deps.injector,
@@ -83,7 +95,18 @@ export function openModalOverlay<C, R, D>(
   // (The host leaves the container on dispose, so the container is read now.)
   const overlayContainer = cdkRef.overlayRef.hostElement.parentElement;
   cdkRef.closed.subscribe(() => {
-    markFocusReturn();
+    // Focus returns to the trigger the way it was activated: no ring after a click. Only when
+    // focus is nowhere (the dialog's own element is gone), like the CDK does.
+    const active = document.activeElement;
+    if (
+      opener instanceof HTMLElement &&
+      opener.isConnected &&
+      (!active || active === document.body)
+    ) {
+      returnFocus(opener, openedByPointer);
+    }
+    // An opener that did not get focus must not swallow a later real one.
+    cancelFocusReturn(opener);
     // The caller's resolver only counts when the opener is gone (the CDK restored it otherwise).
     if (options.restoreFocus && isDetached(opener)) {
       options.restoreFocus()?.focus();

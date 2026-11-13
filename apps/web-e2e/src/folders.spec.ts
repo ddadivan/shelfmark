@@ -326,6 +326,57 @@ test.describe('folders (mock API)', () => {
       await expect(page.locator('ui-tooltip-panel')).toHaveCount(0);
     });
 
+    test('a new subfolder under a collapsed parent is revealed and focused', async ({ page }) => {
+      test.skip(isCompact(page), 'the sidebar tree exists on the desktop shell only');
+      await gotoWithSidebar(page, '/links');
+      // Open, then collapse the parent with its twisty (it toggles without choosing the row).
+      const twist = row(page, READING.name).locator('.ui-tree__twist').first();
+      await twist.click();
+      await expect(row(page, ANGULAR.name)).toBeVisible();
+      await twist.click();
+      await expect(row(page, READING.name)).toHaveAttribute('aria-expanded', 'false');
+
+      await pickFolderMenuItem(page, READING.name, 'New subfolder');
+      const dialog = page.getByRole('dialog', { name: `New folder in “${READING.name}”` });
+      await dialog.getByLabel('Name').fill('Essays');
+      await page.keyboard.press('Enter');
+
+      await expect(dialog).toBeHidden();
+      await expect(row(page, 'Essays')).toBeFocused();
+    });
+
+    test('Esc after a click on "+" returns focus without ring or tooltip; after Enter with the ring', async ({
+      page,
+    }) => {
+      test.skip(isCompact(page), 'the sidebar tree exists on the desktop shell only');
+      await gotoWithSidebar(page, '/links');
+      const add = page.getByRole('button', { name: 'New folder' });
+      const dialog = page.getByRole('dialog', { name: 'New folder' });
+      const focusVisible = () => add.evaluate((el) => el.matches(':focus-visible'));
+
+      await add.click();
+      await expect(dialog).toBeVisible();
+      // A pointer resting on "+" would show its hover tooltip: only focus is checked here.
+      await page.mouse.move(0, 0);
+      await page.keyboard.press('Escape');
+      await expect(dialog).toBeHidden();
+      await expect(add).toBeFocused();
+      expect(await focusVisible()).toBe(false);
+      await page.waitForTimeout(700);
+      await expect(page.locator('ui-tooltip-panel')).toHaveCount(0);
+
+      await page.mouse.move(0, 0);
+      await add.focus();
+      await page.keyboard.press('Enter');
+      await expect(dialog).toBeVisible();
+      await page.keyboard.press('Escape');
+      await expect(dialog).toBeHidden();
+      await expect(add).toBeFocused();
+      expect(await focusVisible()).toBe(true);
+      await page.waitForTimeout(700);
+      await expect(page.locator('ui-tooltip-panel')).toHaveCount(0);
+    });
+
     test('Cancel leaves the folder alone', async ({ page }) => {
       await gotoWithSidebar(page, '/links');
 
