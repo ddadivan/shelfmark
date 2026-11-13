@@ -124,6 +124,25 @@ describe('LinkRowComponent', () => {
     expect(requested).toHaveBeenCalledTimes(1);
   });
 
+  it('selects from its checkbox (Shift for a range) and shows the checked state', async () => {
+    const { fixture, element } = await setup();
+    const toggled = vi.fn();
+    fixture.componentInstance.selectToggled.subscribe(toggled);
+
+    const box = element.querySelector<HTMLElement>('ui-checkbox');
+    box?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    box?.dispatchEvent(new MouseEvent('click', { bubbles: true, shiftKey: true }));
+    expect(toggled.mock.calls.map(([toggle]) => toggle)).toEqual([
+      { range: false },
+      { range: true },
+    ]);
+
+    fixture.componentRef.setInput('selecting', true);
+    fixture.componentRef.setInput('selected', true);
+    await fixture.whenStable();
+    expect(element.querySelector('ui-list-item')?.classList).toContain('ui-list-item--checked');
+  });
+
   it('has no axe violations', async () => {
     const { element } = await setup();
     document.body.append(element);
