@@ -2,12 +2,13 @@
 @use '../../settings-page' as *;
 @include settings-page;
 
-// SetShortcuts: the groups side by side while there is room (SetShortcuts, 18px between panels).
+// SetShortcuts: the groups side by side while there is room (SetShortcuts, 18px between panels),
+// every row as tall as its tallest panel (#350).
 .shortcuts__groups {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(rem(300px), 1fr));
   gap: var(--space-4);
-  align-items: start;
+  align-items: stretch;
 
   @include tablet-up {
     gap: rem(18px);
