@@ -12,7 +12,10 @@ const STEPS: readonly { width: number; fontSize: string }[] = [
 ];
 
 const rootFontSize = (page: Page): Promise<string> =>
-  page.evaluate(() => getComputedStyle(document.documentElement).fontSize);
+  page.evaluate<string>('getComputedStyle(document.documentElement).fontSize');
+
+const setTextSize = (page: Page, size: string): Promise<void> =>
+  page.locator('html').evaluate((el, value) => el.setAttribute('data-text-size', value), size);
 
 test.describe('root font size on wide viewports', () => {
   test.skip(({ isMobile }) => isMobile, 'wide viewports are a desktop matter');
@@ -28,10 +31,10 @@ test.describe('root font size on wide viewports', () => {
   test('the text size setting multiplies on top of the base', async ({ page }) => {
     await page.setViewportSize({ width: 3840, height: 1080 });
     await page.goto('/sign-in');
-    await page.evaluate(() => document.documentElement.setAttribute('data-text-size', 'l'));
+    await setTextSize(page, 'l');
     // 150% of 16px, times 1.125.
     await expect.poll(() => rootFontSize(page)).toBe('27px');
-    await page.evaluate(() => document.documentElement.setAttribute('data-text-size', 's'));
+    await setTextSize(page, 's');
     await expect.poll(() => rootFontSize(page)).toBe('21.6px');
   });
 });

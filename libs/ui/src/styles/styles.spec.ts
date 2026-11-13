@@ -497,10 +497,20 @@ describe('appearance layout attributes (#285)', () => {
   it('scales the root font size for every text size but the default', () => {
     const out = globalCss();
     const size = (value: string) => rule(out, `:root[${LAYOUT_ATTRIBUTE.TextSize}=${value}]`);
-    expect(size('s')).toContain('font-size: 90%');
-    expect(size('l')).toContain('font-size: 112.5%');
-    expect(size('xl')).toContain('font-size: 125%');
+    expect(size('s')).toContain('--text-scale: 0.9');
+    expect(size('l')).toContain('--text-scale: 1.125');
+    expect(size('xl')).toContain('--text-scale: 1.25');
     expect(out).not.toContain(`[${LAYOUT_ATTRIBUTE.TextSize}=m]`);
+  });
+
+  it('multiplies the text size on the root base, which steps up on very wide viewports (#352)', () => {
+    const out = globalCss();
+    expect(out).toContain('font-size: calc(var(--root-base) * var(--text-scale))');
+    const base = (min: number) => rule(out, `@media (width >= ${min}em) {\n  html`);
+    expect(base(160)).toContain('--root-base: 112.5%');
+    expect(base(200)).toContain('--root-base: 125%');
+    expect(base(240)).toContain('--root-base: 150%');
+    expect(base(320)).toContain('--root-base: 200%');
   });
 
   it('swaps --font-sans for the system and the readable font', () => {
