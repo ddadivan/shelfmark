@@ -1,15 +1,19 @@
 import { SIGN_IN_DRIFT_LAYER } from './sign-in-drift-layer.const';
 import { SIGN_IN_DRIFT_SIDE } from './sign-in-drift-side.const';
+import { SIGN_IN_DRIFT_TIER } from './sign-in-drift-tier.const';
 import type { SignInDriftCard } from './sign-in-drift-card.interface';
 
 const { Far, Mid, Near } = SIGN_IN_DRIFT_LAYER;
 const { Start, End } = SIGN_IN_DRIFT_SIDE;
+const { Narrow, Wide, Huge } = SIGN_IN_DRIFT_TIER;
 
 /**
- * Fourteen saved links, seven a side, in three depth layers (two near, three mid, two far a
- * side; #315 took one far card off each side, sixteen felt crowded). Where each one sits comes
- * from the seeded scatter (`layoutDriftLane`), not from here. A narrow desktop keeps the eight
- * marked `narrow`, four a side, one of each layer and a second mid.
+ * Twenty-two saved links, eleven a side, in three depth layers. Fourteen are the base set (seven
+ * a side: two near, three mid, two far; #315 took one far card off each side, sixteen felt
+ * crowded); the eight marked `huge` only join on a 4K / 5K screen (from 160em, #350), where the
+ * lanes are far larger. Where each one sits comes from the seeded scatter (`layoutDriftLane`),
+ * not from here. A narrow desktop keeps the eight marked `narrow`, four a side, one of each layer
+ * and a second mid.
  */
 export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
   {
@@ -20,7 +24,7 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
     tone: 0,
     layer: Near,
     side: Start,
-    narrow: true,
+    tier: Narrow,
   },
   {
     id: 'grid',
@@ -30,7 +34,7 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
     tone: 1,
     layer: Far,
     side: Start,
-    narrow: true,
+    tier: Narrow,
   },
   {
     id: 'woolCoat',
@@ -40,7 +44,7 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
     tone: 2,
     layer: Mid,
     side: Start,
-    narrow: true,
+    tier: Narrow,
   },
   {
     id: 'lisbon',
@@ -50,7 +54,7 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
     tone: 0,
     layer: Mid,
     side: Start,
-    narrow: true,
+    tier: Narrow,
   },
   {
     id: 'sourdough',
@@ -60,7 +64,7 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
     tone: 1,
     layer: Far,
     side: Start,
-    narrow: false,
+    tier: Wide,
   },
   {
     id: 'typeScale',
@@ -70,7 +74,7 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
     tone: 2,
     layer: Near,
     side: Start,
-    narrow: false,
+    tier: Wide,
   },
   {
     id: 'kyoto',
@@ -80,7 +84,7 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
     tone: 1,
     layer: Mid,
     side: Start,
-    narrow: false,
+    tier: Wide,
   },
   {
     id: 'nestjs',
@@ -90,7 +94,7 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
     tone: 2,
     layer: Near,
     side: End,
-    narrow: true,
+    tier: Narrow,
   },
   {
     id: 'icons',
@@ -100,7 +104,7 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
     tone: 1,
     layer: Mid,
     side: End,
-    narrow: true,
+    tier: Narrow,
   },
   {
     id: 'ramen',
@@ -110,7 +114,7 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
     tone: 0,
     layer: Far,
     side: End,
-    narrow: true,
+    tier: Narrow,
   },
   {
     id: 'zoneless',
@@ -120,7 +124,7 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
     tone: 2,
     layer: Mid,
     side: End,
-    narrow: true,
+    tier: Narrow,
   },
   {
     id: 'sneakers',
@@ -130,7 +134,7 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
     tone: 1,
     layer: Far,
     side: End,
-    narrow: false,
+    tier: Wide,
   },
   {
     id: 'containerQueries',
@@ -140,7 +144,7 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
     tone: 0,
     layer: Near,
     side: End,
-    narrow: false,
+    tier: Wide,
   },
   {
     id: 'linenShirt',
@@ -150,6 +154,86 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
     tone: 2,
     layer: Mid,
     side: End,
-    narrow: false,
+    tier: Wide,
+  },
+  {
+    id: 'bikepacking',
+    host: 'bikepacking.com',
+    daysAgo: 14,
+    tags: ['travel'],
+    tone: 1,
+    layer: Near,
+    side: Start,
+    tier: Huge,
+  },
+  {
+    id: 'typefaces',
+    host: 'fontsinuse.com',
+    daysAgo: 10,
+    tags: ['design'],
+    tone: 0,
+    layer: Far,
+    side: Start,
+    tier: Huge,
+  },
+  {
+    id: 'rxjs',
+    host: 'rxjs.dev',
+    daysAgo: 5,
+    tags: ['angular'],
+    tone: 2,
+    layer: Mid,
+    side: Start,
+    tier: Huge,
+  },
+  {
+    id: 'cacioEPepe',
+    host: 'bonappetit.com',
+    daysAgo: 18,
+    tags: ['recipes'],
+    tone: 0,
+    layer: Far,
+    side: Start,
+    tier: Huge,
+  },
+  {
+    id: 'standingDesk',
+    host: 'wirecutter.com',
+    daysAgo: 2,
+    tags: ['shopping'],
+    tone: 2,
+    layer: Near,
+    side: End,
+    tier: Huge,
+  },
+  {
+    id: 'contrast',
+    host: 'a11yproject.com',
+    daysAgo: 13,
+    tags: ['design'],
+    tone: 1,
+    layer: Mid,
+    side: End,
+    tier: Huge,
+  },
+  {
+    id: 'hydration',
+    host: 'angular.dev',
+    daysAgo: 7,
+    tags: ['angular'],
+    tone: 0,
+    layer: Far,
+    side: End,
+    tier: Huge,
+  },
+  {
+    id: 'ferry',
+    host: 'atlasobscura.com',
+    daysAgo: 24,
+    tags: ['travel'],
+    tone: 2,
+    layer: Far,
+    side: End,
+    tier: Huge,
   },
 ];

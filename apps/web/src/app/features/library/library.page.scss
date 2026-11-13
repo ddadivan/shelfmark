@@ -22,10 +22,11 @@
   // line plus the 8px the trail keeps from the top edge of the main column (phone: no top bar).
   padding-block-start: calc(var(--space-3) + var(--space-2));
 
-  // Desktop (Main.dc.html, from 64em since #316): a gap under the top bar (24px ~ the mockup's 22px), the 24px
-  // trail line, a 12px gap, the title. The main column pads its top by 16px, so 44px here.
+  // Desktop (Main.dc.html, from 64em since #316): a gap under the top bar, the 24px trail line, a
+  // gap, the title. The selection bar ("1 selected · Select all") sits in that room, so it is kept
+  // at rest too (#350, the author's value): the title never moves when a selection starts or ends.
   @include desktop {
-    padding-block-start: calc(var(--space-8) + var(--space-3));
+    padding-block-start: calc(var(--space-8) + var(--space-8));
   }
 
   flex: 1;
@@ -143,11 +144,16 @@
 }
 
 .library__grid {
-  // One fluid minimum card width (#335): the number of columns grows with the window, about 3 at
-  // 1024px, 4 at 1280px, 5 at 1440px and 7 at 1920px; a phone keeps one column (`min(100%, …)`).
+  // One fluid minimum card width (#335, #350): the number of columns grows with the window; a
+  // phone keeps one column (`min(100%, …)`). The minimum is wider above 1920px (120em), so the
+  // cards of a big screen are not smaller than at 1920 and fold without squeezing.
   display: grid;
   gap: var(--density-feed-gap);
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, #{rem(196px)}), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14.25rem), 1fr));
+
+  @media (width > 120em) {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16.25rem), 1fr));
+  }
 
   // The list items hold the cards; stretch them to the row height.
   > li {

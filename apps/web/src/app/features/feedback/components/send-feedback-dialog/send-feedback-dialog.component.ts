@@ -39,6 +39,7 @@ import {
   NoticeComponent,
   SegmentedControlComponent,
   TextareaComponent,
+  TooltipDirective,
   UiDialogRef,
   type SegmentedOption,
 } from '@shelfmark/ui';
@@ -90,12 +91,17 @@ const SEND_ERROR_KEY: Record<FeedbackSendErrorReason, string> = {
     NoticeComponent,
     SegmentedControlComponent,
     TextareaComponent,
+    TooltipDirective,
   ],
   templateUrl: './send-feedback-dialog.component.html',
   styleUrl: './send-feedback-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SendFeedbackDialogComponent {
+  /** The "what is sent" text under the checkbox: what a tap on the info button shows (#350). */
+  protected readonly attachInfoOpen = signal(false);
+  protected readonly attachInfoId = 'feedback-attach-info';
+
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
   protected readonly BUTTON_TYPE = BUTTON_TYPE;
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;

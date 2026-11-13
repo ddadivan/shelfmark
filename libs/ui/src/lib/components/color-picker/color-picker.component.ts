@@ -5,16 +5,20 @@ import {
   afterNextRender,
   booleanAttribute,
   computed,
+  effect,
   inject,
   Injector,
   input,
   linkedSignal,
   model,
   output,
+  untracked,
 } from '@angular/core';
 import type { FormValueControl } from '@angular/forms/signals';
 import { nextFieldId } from '../field/field-ids';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
+import { BUTTON_VARIANT } from '../button/models/button-variant.const';
+import { ButtonComponent } from '../button/button.component';
 import { IconComponent } from '../icon/icon.component';
 import { hexToHsv, hsvToHex, parseHex } from '../../utils/colour-contrast/colour-contrast';
 
@@ -36,14 +40,15 @@ function normalise(text: string): string | null {
  * the keyboard uses real sliders: in the area two visually hidden range inputs (saturation and
  * brightness, arrow keys, Page keys, Home and End) draw one handle, the hue slider is a native
  * range input. Every slider has its name and `aria-valuetext`. `value` follows every change for
- * live samples; `committed` emits a finished choice (the pointer released, Enter, a slider losing
- * focus, a valid hex field left, the panel closed after a change), the moment to save. Projected
- * content shows under the fields (a contrast warning). Esc in the panel closes it and returns focus
- * to the swatch. Every string comes in translated.
+ * live samples only (the swatch, the preview, the handles): dragging, the hue slider and typing a
+ * hex code never choose anything. `committed` emits once, when the person presses the explicit
+ * "Add colour" button, the moment to save and apply. Esc, "Cancel" and closing the panel from the
+ * swatch discard the preview: `value` goes back to what it was when the panel opened. Projected
+ * content shows under the fields (a contrast warning). Every string comes in translated.
  */
 @Component({
   selector: 'ui-color-picker',
-  imports: [IconComponent],
+  imports: [ButtonComponent, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-color-picker',
@@ -58,6 +63,7 @@ function normalise(text: string): string | null {
 })
 export class ColorPickerComponent implements FormValueControl<string> {
   protected readonly ICON_SIZE = ICON_SIZE;
+  protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   private readonly host: HTMLElement = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly injector = inject(Injector);
 
@@ -79,8 +85,12 @@ export class ColorPickerComponent implements FormValueControl<string> {
   readonly hexLabel = input.required<string>();
   /** Shown when the hex field holds something that is not a colour. */
   readonly invalidMessage = input.required<string>();
+  /** Label of the button that commits the colour ("Add colour"). */
+  readonly addLabel = input.required<string>();
+  /** Label of the button that discards the preview and closes the panel ("Cancel"). */
+  readonly cancelLabel = input.required<string>();
   readonly disabled = input(false, { transform: booleanAttribute });
-  /** A finished choice, lower-case `#rrggbb`. */
+  /** The explicit choice ("Add colour"), lower-case `#rrggbb`; nothing else commits. */
   readonly committed = output<string>();
   /** Emits when focus leaves the control; `[formField]` marks the field touched. */
   readonly touch = output<void>();
@@ -113,18 +123,23 @@ export class ColorPickerComponent implements FormValueControl<string> {
   protected readonly shown = computed(() => this.value() || START_COLOUR);
   /** Fully saturated colour of the hue: the area's base. */
   protected readonly hueColour = computed(() => hsvToHex(this.hsv()[0], 1, 1));
-  /** The value changed since the last commit. */
-  private changed = false;
-  /** The hex field was typed in: only then does leaving it commit. */
-  private hexEdited = false;
+  /** The value when the panel opened: what Esc and "Cancel" go back to. */
+  private openedWith = '';
   private dragging = false;
+
+  constructor() {
+    effect(() => {
+      if (this.open()) {
+        untracked(() => (this.openedWith = this.value()));
+      }
+    });
+  }
 
   /** Forgets the colour: the swatch is the wheel with "+" again and the fields start empty. */
   clear(): void {
     this.value.set('');
     this.draft.set('');
-    this.changed = false;
-    this.hexEdited = false;
+    this.openedWith = '';
   }
 
   /** Focuses the swatch. */
@@ -134,10 +149,10 @@ export class ColorPickerComponent implements FormValueControl<string> {
 
   protected toggle(): void {
     if (this.open()) {
-      this.commitIfChanged();
-      this.open.set(false);
+      this.discard();
       return;
     }
+    this.openedWith = this.value();
     this.open.set(true);
     // Into the panel: the hex field, the route that works the same on every system.
     afterNextRender(
@@ -146,12 +161,37 @@ export class ColorPickerComponent implements FormValueControl<string> {
     );
   }
 
+  /** Esc in the panel: the preview is dropped, the panel closes, focus returns to the swatch. */
   protected close(event: Event): void {
     event.preventDefault();
     event.stopPropagation();
-    this.commitIfChanged();
-    this.open.set(false);
+    this.discard();
     this.focus();
+  }
+
+  /** "Cancel": the same as Esc. */
+  protected cancel(): void {
+    this.discard();
+    this.focus();
+  }
+
+  private discard(): void {
+    this.value.set(this.openedWith);
+    this.draft.set(this.openedWith);
+    this.open.set(false);
+  }
+
+  /** "Add colour": the shown colour (a valid hex text first) is the choice. */
+  protected add(): void {
+    if (this.disabled() || this.hexInvalid()) {
+      return;
+    }
+    const colour = normalise(this.draft()) ?? this.shown();
+    this.draft.set(colour);
+    if (colour !== this.value()) {
+      this.value.set(colour);
+    }
+    this.committed.emit(colour);
   }
 
   /** Pointer or touch down in the area: the handle jumps there and follows until release. */
@@ -180,7 +220,6 @@ export class ColorPickerComponent implements FormValueControl<string> {
     }
     this.dragging = false;
     (event.currentTarget as HTMLElement).releasePointerCapture(event.pointerId);
-    this.commitIfChanged();
   }
 
   private moveHandle(event: PointerEvent, area: HTMLElement): void {
@@ -210,49 +249,33 @@ export class ColorPickerComponent implements FormValueControl<string> {
 
   private setHsv(h: number, s: number, v: number): void {
     const hex = hsvToHex(h, s, v);
-    this.changed = this.changed || hex !== this.value();
     this.hsv.set([h, s, v]);
     // The linked signal keeps the model while the value is what it produced.
     this.value.set(hex);
   }
 
-  /** A slider let go (pointer released, Enter, focus left): the choice is finished. */
-  protected sliderDone(event?: Event): void {
-    if (event instanceof KeyboardEvent) {
-      event.preventDefault();
-    }
-    this.commitIfChanged();
+  /** Enter in a slider must not submit a surrounding form; it chooses nothing. */
+  protected sliderEnter(event: Event): void {
+    event.preventDefault();
   }
 
-  private commitIfChanged(): void {
-    if (this.changed && this.value() !== '') {
-      this.changed = false;
-      this.committed.emit(this.value());
-    }
-  }
-
+  /** Typing a valid colour previews it at once; anything else stays to fix. */
   protected onHexInput(event: Event): void {
-    this.hexEdited = true;
-    this.draft.set((event.target as HTMLInputElement).value);
-  }
-
-  /** Enter or leaving the hex field: a valid colour is a choice, anything else stays to fix. */
-  protected commitHex(event?: Event): void {
-    event?.preventDefault();
-    if (!event && !this.hexEdited) {
-      return;
-    }
-    this.hexEdited = false;
-    const colour = normalise(this.draft());
-    if (!colour) {
-      return;
-    }
-    this.draft.set(colour);
-    if (colour !== this.value()) {
+    const text = (event.target as HTMLInputElement).value;
+    this.draft.set(text);
+    const colour = normalise(text);
+    if (colour && colour !== this.value()) {
       this.value.set(colour);
     }
-    this.changed = false;
-    this.committed.emit(colour);
+  }
+
+  /** Enter in the hex field (never a form submit) or leaving it: tidies the text, chooses nothing. */
+  protected tidyHex(event?: Event): void {
+    event?.preventDefault();
+    const colour = normalise(this.draft());
+    if (colour) {
+      this.draft.set(colour);
+    }
   }
 
   protected onFocusOut(event: FocusEvent): void {

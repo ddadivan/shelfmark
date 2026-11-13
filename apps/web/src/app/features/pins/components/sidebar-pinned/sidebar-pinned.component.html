@@ -92,6 +92,7 @@
             } @else if (row.link; as link) {
               <a
                 class="pinned__link"
+                [attr.aria-disabled]="linkDragging() ? 'true' : null"
                 [attr.href]="href(link) ?? null"
                 [attr.target]="href(link) && newTab() ? '_blank' : null"
                 [attr.rel]="href(link) ? (newTab() ? 'noopener noreferrer' : 'noreferrer') : null"

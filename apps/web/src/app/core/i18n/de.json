@@ -483,6 +483,13 @@
       "move": {
         "one": "{{count}} Link verschieben",
         "other": "{{count}} Links verschieben"
+      },
+      "noDrop": {
+        "all": "Hier nicht ablegbar — leg den Link auf einen Ordner",
+        "favorites": "Hier nicht ablegbar — markiere einen Link mit Stern, um ihn zu den Favoriten zu legen",
+        "recent": "Hier nicht ablegbar — „Zuletzt geöffnet“ füllt sich beim Öffnen von Links",
+        "trash": "Hier nicht ablegbar — nutze „Löschen“, um einen Link in den Papierkorb zu legen",
+        "pinnedLink": "Hier nicht ablegbar — ein angehefteter Link ist kein Ordner"
       }
     }
   },
@@ -624,6 +631,30 @@
         },
         "linenShirt": {
           "title": "Leinenhemd in Salbeigrün"
+        },
+        "bikepacking": {
+          "title": "Fünf Tage mit dem Rad durch die Dolomiten"
+        },
+        "typefaces": {
+          "title": "Zwei Schriften richtig kombinieren"
+        },
+        "rxjs": {
+          "title": "RxJS-Operatoren, die du wirklich brauchst"
+        },
+        "cacioEPepe": {
+          "title": "Cacio e pepe ohne Klumpen"
+        },
+        "standingDesk": {
+          "title": "Die besten Stehpulte im Test"
+        },
+        "contrast": {
+          "title": "Ein praktischer Leitfaden zum Farbkontrast"
+        },
+        "hydration": {
+          "title": "Hydration und inkrementelles Rendering"
+        },
+        "ferry": {
+          "title": "Versteckte Strände, die man per Fähre erreicht"
         }
       },
       "tags": {
@@ -867,7 +898,13 @@
         "trophy": "Pokal",
         "umbrella": "Regenschirm",
         "utensils": "Essen",
-        "wallet": "Geldbörse"
+        "wallet": "Geldbörse",
+        "newspaper": "Zeitung",
+        "backpack": "Rucksack",
+        "palm": "Palme",
+        "guitar": "Gitarre",
+        "laptop": "Laptop",
+        "lock": "Schloss"
       },
       "own": {
         "group": "Deine eigenen Farben",
@@ -1143,7 +1180,13 @@
           "use": "{{colour}} verwenden",
           "saturation": "Sättigung",
           "brightness": "Helligkeit",
-          "hue": "Farbton"
+          "hue": "Farbton",
+          "addColour": "Farbe hinzufügen",
+          "cancel": "Abbrechen",
+          "remove": "Farbe {{colour}} entfernen",
+          "removed": "Farbe entfernt",
+          "undo": "Rückgängig",
+          "removeFailed": "Farbe konnte nicht entfernt werden"
         },
         "ownBackground": {
           "label": "Deine eigene Hintergrundfarbe",
@@ -1892,7 +1935,9 @@
       "send": "Senden",
       "sending": "Wird gesendet…",
       "error": "Senden fehlgeschlagen. Dein Text bleibt erhalten — versuch es gleich noch einmal.",
-      "rateLimited": "Du hast in der letzten Stunde viele Nachrichten gesendet. Dein Text bleibt erhalten — versuch es später noch einmal."
+      "rateLimited": "Du hast in der letzten Stunde viele Nachrichten gesendet. Dein Text bleibt erhalten — versuch es später noch einmal.",
+      "attachClientInfoLabel": "Was wird gesendet?",
+      "attachClientInfo": "Hilft uns, Probleme nachzustellen. Gesendet werden nur die App-Version sowie Name und Version deines Browsers."
     },
     "screenshot": {
       "label": "Screenshot (optional)",

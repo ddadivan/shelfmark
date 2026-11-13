@@ -13,16 +13,18 @@
   }
 }
 
-// While the bulk bar shows (#267), toasts sit 12px above it: on desktop above the bar (16px from
-// the bottom, 58px high), in the mobile shell above the bar that floats over the tab bar (68px high).
+// While the bulk bar shows (#267), toasts sit 12px above it (a global rule: a toast never covers
+// the bar). Desktop: the bar is sticky 16px above the bottom of the content area, which ends 52px
+// above the window edge (#350), and is 58px high. The mobile shell: above the bar (68px high) that
+// floats 16px above the tab bar's own gap.
 :root:has(.library__bulk) {
-  --ui-toast-offset: #{rem(16px + 58px + 12px)};
+  --ui-toast-offset: #{rem(52px + 16px + 58px + 12px)};
 }
 
 @include compact {
   :root:has(app-shell):has(.library__bulk) {
     --ui-toast-offset: calc(
-      #{rem(20px + 68px + 12px + 68px + 12px)} + env(safe-area-inset-bottom, 0rem)
+      #{rem(20px + 68px + 12px + 16px + 68px + 12px)} + env(safe-area-inset-bottom, 0rem)
     );
   }
 }
@@ -74,8 +76,8 @@ app-link-card ui-card {
 // item), so the folder under the pointer stays visible. Rotate, scale and translate are their own
 // properties on the inner card, so the CDK's `transform` on the root keeps following the pointer.
 // A badge (read from the template) names "Move 1 link" or "3 links"; a selection of several adds
-// two silhouettes right behind the card, a tight deck (2px and 4px apart, never more than two). Reduced motion: no
-// tilt; the deck stays, static.
+// silhouettes right behind the card: one for two links, two for three or more (a deck of three
+// cards, 3px and 6px apart, never more; #350). Reduced motion: no tilt; the deck stays, static.
 .library__drag-preview {
   --drag-x: calc(var(--drag-grab-x, 0rem) + 1.25rem);
   --drag-y: calc(var(--drag-grab-y, 0rem) + 1.5rem);
@@ -112,12 +114,12 @@ app-link-card ui-card {
 }
 
 .library__drag-preview .library__drag-stack--near {
-  translate: calc(var(--drag-x) + #{rem(2px)}) calc(var(--drag-y) + #{rem(2px)});
+  translate: calc(var(--drag-x) + #{rem(3px)}) calc(var(--drag-y) + #{rem(3px)});
   rotate: -3.5deg;
 }
 
 .library__drag-preview .library__drag-stack--far {
-  translate: calc(var(--drag-x) + #{rem(4px)}) calc(var(--drag-y) + #{rem(4px)});
+  translate: calc(var(--drag-x) + #{rem(6px)}) calc(var(--drag-y) + #{rem(6px)});
   rotate: -3deg;
 }
 

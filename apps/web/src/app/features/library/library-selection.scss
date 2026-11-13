@@ -18,8 +18,7 @@
   box-shadow: var(--shadow-card);
 
   // Desktop: the bar starts 8px above the trail line (it covers the trail) and its 48px end
-  // 4px above the title box (the 44px room under the main column's padding); the title's line box
-  // has 10px of leading, so the text keeps a clear gap and nothing moves when the bar appears.
+  // 24px above the title box (the 64px room, #350); nothing moves when the bar appears.
   @include desktop {
     inset-block-start: calc(var(--space-2) * -1);
   }
@@ -77,13 +76,16 @@
 }
 
 // The bulk bar floats at the bottom of the feed (glass); in the mobile shell above the tab bar.
+// In a short feed the auto margin pushes it to the bottom of the scroll area, so it sits there
+// whatever the length (#350); the padding keeps a gap to the last cards in a long one.
 .library__bulk {
   position: sticky;
   inset-block-end: var(--space-4);
   z-index: 3;
   align-self: center;
   max-width: 100%;
-  margin-block-start: var(--space-4);
+  padding-block-start: var(--space-4);
+  margin-block-start: auto;
 
   @include compact {
     inset-block-end: calc(#{rem(20px + 68px + 12px)} + env(safe-area-inset-bottom, 0rem));

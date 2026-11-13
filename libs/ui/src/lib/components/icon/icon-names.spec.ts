@@ -56,6 +56,13 @@ const APP_ICONS = [
   'umbrella',
   'utensils',
   'wallet',
+  // Folder icons added in #350.
+  'newspaper',
+  'backpack',
+  'palm',
+  'guitar',
+  'laptop',
+  'lock',
   'briefcase',
   'code',
   'cooking-pot',

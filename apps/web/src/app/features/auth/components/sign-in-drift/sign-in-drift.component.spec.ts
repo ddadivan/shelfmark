@@ -9,11 +9,11 @@ import { translocoConfig } from '../../../../core/i18n/transloco.config';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { SignInDriftComponent } from './sign-in-drift.component';
 
-async function setup(wide = true) {
+async function setup(wide = true, huge = false) {
   TestBed.configureTestingModule({
     providers: [
       provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
-      { provide: ViewportService, useValue: { wide: signal(wide) } },
+      { provide: ViewportService, useValue: { wide: signal(wide), huge: signal(huge) } },
     ],
   });
   await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
@@ -53,6 +53,17 @@ describe('SignInDriftComponent', () => {
     expect(text).toContain('youtube.com');
     expect(text).toContain('Signal Forms in 20 minutes');
     expect(text).toContain('NestJS for frontend developers');
+  });
+
+  it('draws twenty-two cards, eleven a side, on a 4K / 5K screen (the fourteen of a wide one plus eight)', async () => {
+    const root = await setup(true, true);
+
+    expect(root.querySelectorAll('.sd-card')).toHaveLength(22);
+    expect(root.querySelectorAll('.sd-lane--start .sd-card')).toHaveLength(11);
+    expect(root.querySelectorAll('.sd-lane--end .sd-card')).toHaveLength(11);
+    expect(root.querySelectorAll('.sd-ring')).toHaveLength(22);
+    expect(root.textContent).toContain('Signal Forms in 20 minutes');
+    expect(root.textContent).toContain('The best standing desks, tested');
   });
 
   it('draws eight cards, four a side, on a narrower desktop', async () => {

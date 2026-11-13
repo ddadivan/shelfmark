@@ -2,6 +2,8 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  Injector,
+  afterNextRender,
   inject,
   input,
   model,
@@ -10,6 +12,9 @@ import {
 import { NgTemplateOutlet } from '@angular/common';
 import type { FormValueControl } from '@angular/forms/signals';
 import { nextFieldId } from '../field/field-ids';
+import { KEYBOARD_KEY } from '../../models/keyboard';
+import { ICON_SIZE } from '../icon/models/icon-size.const';
+import { IconComponent } from '../icon/icon.component';
 import { THEME } from '../../models/theme/models/theme.const';
 import { THEME_PICKER_KIND } from './models/theme-picker-kind.const';
 import type { ThemePickerKind } from './models/theme-picker-kind.type';
@@ -28,7 +33,7 @@ const SYSTEM = 'system';
  */
 @Component({
   selector: 'ui-theme-picker',
-  imports: [NgTemplateOutlet],
+  imports: [NgTemplateOutlet, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-theme-picker',
@@ -41,14 +46,16 @@ const SYSTEM = 'system';
     '(focusout)': 'onFocusOut($event)',
   },
   templateUrl: './theme-picker.component.html',
-  styleUrl: './theme-picker.component.scss',
+  styleUrls: ['./theme-picker.component.scss', './theme-picker-remove.scss'],
 })
 export class ThemePickerComponent implements FormValueControl<string> {
   protected readonly THEME_PICKER_KIND = THEME_PICKER_KIND;
   protected readonly THEME = THEME;
   protected readonly SYSTEM = SYSTEM;
+  protected readonly ICON_SIZE = ICON_SIZE;
 
   private readonly host: HTMLElement = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+  private readonly injector = inject(Injector);
 
   /** Value of the selected option; empty when none is selected. */
   readonly value = model('');
@@ -62,6 +69,8 @@ export class ThemePickerComponent implements FormValueControl<string> {
   readonly ariaLabelledby = input('');
   /** Emits when focus leaves the group; `[formField]` marks the field touched. */
   readonly touch = output<void>();
+  /** An option with a `removeLabel` was removed (the "×" or Delete / Backspace): its `value`. */
+  readonly removed = output<string>();
 
   protected readonly groupId = nextFieldId('ui-theme-picker');
 
@@ -75,6 +84,39 @@ export class ThemePickerComponent implements FormValueControl<string> {
 
   protected select(option: ThemePickerOption): void {
     this.value.set(option.value);
+  }
+
+  /** The "×" of a removable option. */
+  protected remove(event: Event, option: ThemePickerOption): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.emitRemoved(option);
+  }
+
+  /** Delete or Backspace on the focused radio of a removable option. */
+  protected onKeydown(event: KeyboardEvent, option: ThemePickerOption): void {
+    if (
+      option.removeLabel &&
+      (event.key === KEYBOARD_KEY.Delete || event.key === KEYBOARD_KEY.Backspace)
+    ) {
+      event.preventDefault();
+      this.emitRemoved(option);
+    }
+  }
+
+  /** Emits, then keeps focus in the group: on the option that took the removed one's place. */
+  private emitRemoved(option: ThemePickerOption): void {
+    const index = this.options().findIndex((item) => item.value === option.value);
+    this.removed.emit(option.value);
+    afterNextRender(
+      {
+        read: () => {
+          const radios = this.host.querySelectorAll<HTMLInputElement>('input');
+          radios[Math.min(index, radios.length - 1)]?.focus();
+        },
+      },
+      { injector: this.injector },
+    );
   }
 
   protected onFocusOut(event: FocusEvent): void {

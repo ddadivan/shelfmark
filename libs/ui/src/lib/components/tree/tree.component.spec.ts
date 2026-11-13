@@ -239,6 +239,20 @@ describe('TreeComponent', () => {
       expect(item(TREE_STORY_NAME.Favorites).classList).not.toContain('ui-tree__row--no-drop');
     });
 
+    it('marks no-drop rows aria-disabled while they last (#350)', async () => {
+      const { fixture, host, item } = await setup();
+      host.noDropIds.set([TREE_STORY_ID.Favorites]);
+      await settle(fixture);
+      const favorites = item(TREE_STORY_NAME.Favorites);
+
+      expect(favorites.getAttribute('aria-disabled')).toBe('true');
+      expect(item(TREE_STORY_NAME.Recipes).getAttribute('aria-disabled')).not.toBe('true');
+
+      host.noDropIds.set([]);
+      await settle(fixture);
+      expect(favorites.getAttribute('aria-disabled')).not.toBe('true');
+    });
+
     it('keeps the row height while it is the target and fades the badge in (none when reduced)', () => {
       const css = compileScss('lib/components/tree/tree.component.scss');
       const REDUCED = /prefers-reduced-motion: reduce/;

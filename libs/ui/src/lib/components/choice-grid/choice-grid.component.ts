@@ -3,6 +3,8 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  Injector,
+  afterNextRender,
   inject,
   numberAttribute,
   input,
@@ -17,6 +19,7 @@ import { FOLDER_COLOUR } from '../folder-icon/models/folder-colour.const';
 import type { FolderColour } from '../folder-icon/models/folder-colour.type';
 import { IconComponent } from '../icon/icon.component';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
+import { KEYBOARD_KEY } from '../../models/keyboard';
 import { CHOICE_GRID_KIND } from './models/choice-grid-kind.const';
 import type { ChoiceGridKind } from './models/choice-grid-kind.type';
 import type { ChoiceOption } from './models/choice-option.interface';
@@ -27,7 +30,7 @@ import type { ChoiceOption } from './models/choice-option.interface';
  * `colour` of the group). Native radios behind the drawing: the arrow keys move and select, Tab
  * enters the checked option (the first when none is checked), and each option is named by its
  * `label`. Name the group with `ariaLabel` or `ariaLabelledby`. Bind with `[formField]` or
- * `[(value)]`.
+ * `[(value)]`. An option with a `removeLabel` (an own colour) can be deleted: see `removed`.
  */
 @Component({
   selector: 'ui-choice-grid',
@@ -55,6 +58,7 @@ export class ChoiceGridComponent implements FormValueControl<string> {
   protected readonly ICON_SIZE = ICON_SIZE;
 
   private readonly host: HTMLElement = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+  private readonly injector = inject(Injector);
 
   /** Value of the selected option; empty when none is selected. */
   readonly value = model('');
@@ -75,6 +79,8 @@ export class ChoiceGridComponent implements FormValueControl<string> {
   readonly ariaLabelledby = input('');
   /** Emits when focus leaves the group; `[formField]` marks the field touched. */
   readonly touch = output<void>();
+  /** An option with a `removeLabel` was removed (the "×" or Delete / Backspace): its `value`. */
+  readonly removed = output<string>();
 
   protected readonly groupId = nextFieldId('ui-choice');
 
@@ -88,6 +94,39 @@ export class ChoiceGridComponent implements FormValueControl<string> {
 
   protected select(option: ChoiceOption): void {
     this.value.set(option.value);
+  }
+
+  /** The "×" of a removable option. */
+  protected remove(event: Event, option: ChoiceOption): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.emitRemoved(option);
+  }
+
+  /** Delete or Backspace on the focused radio of a removable option. */
+  protected onKeydown(event: KeyboardEvent, option: ChoiceOption): void {
+    if (
+      option.removeLabel &&
+      (event.key === KEYBOARD_KEY.Delete || event.key === KEYBOARD_KEY.Backspace)
+    ) {
+      event.preventDefault();
+      this.emitRemoved(option);
+    }
+  }
+
+  /** Emits, then keeps focus in the group: on the option that took the removed one's place. */
+  private emitRemoved(option: ChoiceOption): void {
+    const index = this.options().findIndex((item) => item.value === option.value);
+    this.removed.emit(option.value);
+    afterNextRender(
+      {
+        read: () => {
+          const radios = this.host.querySelectorAll<HTMLInputElement>('input');
+          radios[Math.min(index, radios.length - 1)]?.focus();
+        },
+      },
+      { injector: this.injector },
+    );
   }
 
   /** The built-in colour name that styles the option; an own `#rrggbb` has none (`own`). */

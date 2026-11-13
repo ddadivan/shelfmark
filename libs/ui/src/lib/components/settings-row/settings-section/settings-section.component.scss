@@ -1,11 +1,14 @@
 @use '../../../../styles/ui' as *;
 
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
 }
 
-// The rows carry their own padding and separators, so the panel gap is off.
+// The rows carry their own padding and separators, so the panel gap is off. In a grid cell taller
+// than the section (equal-height groups, #350) the panel fills it.
 .ui-settings-section__panel {
+  flex: 1;
   gap: 0;
 }
 

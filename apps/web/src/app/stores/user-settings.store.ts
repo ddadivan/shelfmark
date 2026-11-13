@@ -188,21 +188,26 @@ export const UserSettingsStore = signalStore(
       }
     }
 
+    /** Counts the saves of the colour list: only the newest one may write its answer back (#350). */
+    let coloursSave = 0;
+
     async function saveColours(previous: HexColour[], next: HexColour[]): Promise<boolean> {
       if (previous.length === next.length && previous.every((item, i) => item === next[i])) {
         return true;
       }
       const started = epoch;
+      const mine = ++coloursSave;
       version++;
       patchState(store, { customColours: next });
       try {
         const saved = await firstValueFrom(api().update({ customColours: next }));
-        if (started === epoch) {
+        // A newer add or remove already changed the list: its answer is the one that counts.
+        if (started === epoch && mine === coloursSave) {
           patchState(store, { customColours: saved.customColours });
         }
         return true;
       } catch {
-        if (started === epoch) {
+        if (started === epoch && mine === coloursSave) {
           patchState(store, { customColours: previous });
         }
         return false;

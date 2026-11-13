@@ -164,6 +164,8 @@ test.describe('sign-in flow (mock auth)', () => {
     { width: 1366, height: 768, cards: 14 },
     { width: 1440, height: 900, cards: 14 },
     { width: 1920, height: 1080, cards: 14 },
+    { width: 2560, height: 1440, cards: 22 },
+    { width: 3840, height: 2160, cards: 22 },
   ]) {
     test(`at ${viewport.width}x${viewport.height} ${viewport.cards} cards sit in the side lanes: no collisions, none under the sign-in card`, async ({
       page,

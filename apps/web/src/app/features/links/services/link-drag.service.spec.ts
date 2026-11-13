@@ -227,4 +227,47 @@ describe('LinkDragService', () => {
       expect(drag.treeTargetId()).toBeNull();
     });
   });
+
+  describe('rows that cannot take links (#350)', () => {
+    it('names the sidebar row under the pointer and why, and clears it on leaving and at the end', () => {
+      const { drag, element, under } = setup();
+      drag.start(link(FOLDER_A.id));
+
+      under.mockReturnValue(element({ 'data-ui-tree-id': LINKS_SCOPE.Favorites }));
+      drag.move(1, 1);
+      expect(drag.noDropHoverId()).toBe(LINKS_SCOPE.Favorites);
+      expect(drag.noDropReasonKey()).toBe('links.drag.noDrop.favorites');
+      expect(drag.treeTargetId()).toBeNull();
+
+      under.mockReturnValue(element({ 'data-ui-tree-id': FOLDER_B.id }));
+      drag.move(2, 2);
+      expect(drag.noDropHoverId()).toBeNull();
+
+      under.mockReturnValue(element({ 'data-ui-tree-id': LINKS_SCOPE.All }));
+      drag.move(3, 3);
+      expect(drag.noDropReasonKey()).toBe('links.drag.noDrop.all');
+      drag.drop();
+      expect(drag.noDropHoverId()).toBeNull();
+    });
+
+    it('treats a pinned link as "not a folder" and a pinned folder as a target', () => {
+      const { drag, moveTo, element, under } = setup();
+      drag.start(link(null));
+
+      under.mockReturnValue(element({ 'data-pin': 'link:1' }));
+      drag.move(1, 1);
+      expect(drag.noDropHoverId()).toBe('link:1');
+      expect(drag.noDropReasonKey()).toBe('links.drag.noDrop.pinnedLink');
+      drag.drop();
+      expect(moveTo).not.toHaveBeenCalled();
+
+      drag.start(link(null));
+      under.mockReturnValue(
+        element({ 'data-pin': 'folder:1', [LINK_DROP_ATTRIBUTE]: FOLDER_A.id }),
+      );
+      drag.move(2, 2);
+      expect(drag.noDropHoverId()).toBeNull();
+      expect(drag.folderTargetId()).toBe(FOLDER_A.id);
+    });
+  });
 });

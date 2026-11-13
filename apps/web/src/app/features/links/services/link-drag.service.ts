@@ -10,9 +10,15 @@ import { SIDEBAR_RECENT_ID } from '../../../shell/sidebar/models/sidebar-recent-
 import { SIDEBAR_TRASH_ID } from '../../../shell/sidebar/models/sidebar-trash-id.const';
 import { BulkLinkActionsService } from './bulk-link-actions.service';
 import { LinkActionsService } from './link-actions.service';
+import type { NoDropHover } from '../models/no-drop-hover.interface';
+import { NO_DROP_PINNED_LINK_KEY } from '../models/no-drop-pinned-link-key.const';
+import { NO_DROP_REASON_KEYS } from '../models/no-drop-reason-keys.const';
 
 /** `data-ui-tree-id` on the rows of `ui-tree` (libs/ui). */
 const TREE_ROW_SELECTOR = '[data-ui-tree-id]';
+
+/** `data-pin` on the rows of the pinned section; a pinned folder also has `data-link-drop-folder`. */
+const PINNED_ROW_SELECTOR = '[data-pin]';
 
 /** Fixed sidebar rows that are no drop target: All links, Favorites, Recently opened, Trash. */
 const NO_DROP_TREE_IDS: readonly string[] = [
@@ -46,6 +52,9 @@ export class LinkDragService {
   /** Folder id under the pointer, `null` for Unsorted, `undefined` for no target. */
   private readonly target = signal<string | null | undefined>(undefined);
 
+  /** The row under the pointer that cannot take links, with the reason it shows (#350). */
+  private readonly noDropHover = signal<NoDropHover | null>(null);
+
   readonly dragging = computed(() => this.link() !== null);
   /** Ids of the links that travel with the pointer (the feed dims the other ones). */
   readonly carriedIds = computed(() => new Set(this.links().map((item) => item.id)));
@@ -61,6 +70,10 @@ export class LinkDragService {
   readonly treeNoDropIds = computed<readonly string[]>(() =>
     this.dragging() ? NO_DROP_TREE_IDS : EMPTY_IDS,
   );
+  /** Id of the no-drop row under the pointer (`ui-tree` `noDropHoverId`, pinned link key). */
+  readonly noDropHoverId = computed(() => this.noDropHover()?.id ?? null);
+  /** Translation key of the reason the hovered no-drop row shows, for the row and the live region. */
+  readonly noDropReasonKey = computed(() => this.noDropHover()?.reasonKey ?? null);
   /** Folder id of the highlighted subfolder tile and pinned folder row. */
   readonly folderTargetId = computed(() => this.target() ?? null);
 
@@ -118,6 +131,7 @@ export class LinkDragService {
     if (!link || this.cancelled) {
       return;
     }
+    this.noDropHover.set(this.noDropAt(x, y));
     const target = this.targetAt(x, y);
     const already = this.links().every((item) => item.folderId === target);
     this.target.set(already ? undefined : target);
@@ -151,7 +165,23 @@ export class LinkDragService {
     this.doc.documentElement.style.removeProperty('--drag-grab-y');
     this.doc.documentElement.style.removeProperty('--drag-slot-height');
     this.target.set(undefined);
+    this.noDropHover.set(null);
     this.doc.removeEventListener('keydown', this.onKeydown, true);
+  }
+
+  /** The sidebar row under the pointer when it cannot take links: a fixed row or a pinned link. */
+  private noDropAt(x: number, y: number): NoDropHover | null {
+    const element = this.doc.elementFromPoint(x, y);
+    const treeId = element?.closest(TREE_ROW_SELECTOR)?.getAttribute('data-ui-tree-id');
+    if (treeId && NO_DROP_TREE_IDS.includes(treeId)) {
+      return { id: treeId, reasonKey: NO_DROP_REASON_KEYS[treeId] };
+    }
+    const pinned = element?.closest(PINNED_ROW_SELECTOR);
+    const key = pinned?.getAttribute('data-pin');
+    if (key && !pinned?.hasAttribute(LINK_DROP_ATTRIBUTE)) {
+      return { id: key, reasonKey: NO_DROP_PINNED_LINK_KEY };
+    }
+    return null;
   }
 
   private targetAt(x: number, y: number): string | null | undefined {

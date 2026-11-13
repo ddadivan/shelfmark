@@ -100,6 +100,45 @@ test.describe('drag a link to a folder (mock API)', () => {
     await expect(allLinks).not.toHaveClass(/ui-tree__row--no-drop/);
   });
 
+  test('rows that cannot take a link are dimmed, a toast says why once, and a drop does nothing (#350)', async ({
+    page,
+  }) => {
+    test.skip(isCompact(page), 'phones have no sidebar; "Move to folder" is the way there');
+    const card = page.locator('li.library__item').filter({ hasText: PASTA });
+    const favorites = treeRow(page, 'Favorites');
+    const reason = page
+      .getByRole('status')
+      .filter({ hasText: "Can't drop here — star a link to add it to Favorites" });
+
+    await dragOver(page, card, favorites);
+    await expect(favorites).toHaveClass(/ui-tree__row--no-drop/);
+    await expect(favorites).toHaveAttribute('aria-disabled', 'true');
+    // The glyph is dimmed to half; the text stays readable (text-muted, AA contrast).
+    await expect(favorites.locator('.ui-tree__icon')).toHaveCSS('opacity', '0.5');
+    await expect(favorites.locator('.ui-tree__name')).toHaveCSS('opacity', '1');
+    // No badge in the row (it truncated the name): the reason is one info toast.
+    await expect(favorites.locator('.ui-tree__drop-badge')).toHaveCount(0);
+    await expect(reason).toHaveCount(1);
+    await expect(favorites).not.toHaveClass(/ui-tree__row--drop\b/);
+
+    // Moving within the row, or leaving it and coming back, does not show it again.
+    const box = await favorites.boundingBox();
+    if (!box) {
+      throw new Error('Favorites is not visible');
+    }
+    await page.mouse.move(box.x + box.width / 2 + 10, box.y + box.height / 2);
+    await page.mouse.move(box.x + box.width + 300, box.y + box.height / 2);
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await expect(reason).toHaveCount(1);
+
+    await page.mouse.up();
+    // Nothing moved: the card is still here, the row is back to normal, the toast is gone.
+    await expect(page.getByRole('heading', { name: PASTA, exact: true })).toBeVisible();
+    await expect(favorites).not.toHaveClass(/ui-tree__row--no-drop/);
+    await expect(favorites).not.toHaveAttribute('aria-disabled', 'true');
+    await expect(reason).toHaveCount(0);
+  });
+
   test('dragging a picked card carries every picked card, with one toast and Undo', async ({
     page,
   }) => {
@@ -132,6 +171,7 @@ test.describe('drag a link to a folder (mock API)', () => {
       expect(slotBox?.width).toBeCloseTo(boxes[index]?.width ?? 0, 0);
       expect(slotBox?.height).toBeCloseTo(boxes[index]?.height ?? 0, 0);
     }
+    // Three cards dragged: the preview and two behind it (a deck of three, #350).
     await expect(page.locator('.cdk-drag-preview .library__drag-stack')).toHaveCount(2);
     // The move is announced.
     await expect(page.locator('li.library__item--carried')).not.toHaveCount(0);

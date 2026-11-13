@@ -12,11 +12,15 @@ import { SIGN_IN_DRIFT_CARDS } from './models/sign-in-drift-cards.const';
 import { SIGN_IN_DRIFT_FRAMES } from './models/sign-in-drift-frames.const';
 import { SIGN_IN_DRIFT_LAYER } from './models/sign-in-drift-layer.const';
 import { SIGN_IN_DRIFT_SIDE } from './models/sign-in-drift-side.const';
+import { SIGN_IN_DRIFT_TIER } from './models/sign-in-drift-tier.const';
 
 const LAYOUTS = [
-  { name: 'wide', frame: SIGN_IN_DRIFT_FRAMES.wide, narrowOnly: false },
-  { name: 'narrow', frame: SIGN_IN_DRIFT_FRAMES.narrow, narrowOnly: true },
+  { name: 'huge', frame: SIGN_IN_DRIFT_FRAMES.huge, tier: SIGN_IN_DRIFT_TIER.Huge },
+  { name: 'wide', frame: SIGN_IN_DRIFT_FRAMES.wide, tier: SIGN_IN_DRIFT_TIER.Wide },
+  { name: 'narrow', frame: SIGN_IN_DRIFT_FRAMES.narrow, tier: SIGN_IN_DRIFT_TIER.Narrow },
 ] as const;
+
+const TIERS = [SIGN_IN_DRIFT_TIER.Narrow, SIGN_IN_DRIFT_TIER.Wide, SIGN_IN_DRIFT_TIER.Huge];
 
 describe('seededRandom', () => {
   it('gives the same sequence for the same seed and numbers in [0, 1)', () => {
@@ -31,10 +35,10 @@ describe('seededRandom', () => {
 });
 
 describe('layoutDriftLane', () => {
-  for (const { name, frame, narrowOnly } of LAYOUTS) {
+  for (const { name, frame, tier } of LAYOUTS) {
     Object.values(SIGN_IN_DRIFT_SIDE).forEach((side, sideIndex) => {
       const layers = SIGN_IN_DRIFT_CARDS.filter(
-        (card) => card.side === side && (!narrowOnly || card.narrow),
+        (card) => card.side === side && TIERS.indexOf(card.tier) <= TIERS.indexOf(tier),
       ).map((card) => card.layer);
       const placements = layoutDriftLane(layers, frame, frame.seeds[sideIndex]);
       const boxes = driftBoxes(layers, placements, frame);
@@ -89,9 +93,9 @@ describe('layoutDriftLane', () => {
   });
 
   it('is not a grid: the cards of a wide lane sit at many different heights and depths', () => {
-    const layers = SIGN_IN_DRIFT_CARDS.filter((c) => c.side === SIGN_IN_DRIFT_SIDE.Start).map(
-      (c) => c.layer,
-    );
+    const layers = SIGN_IN_DRIFT_CARDS.filter(
+      (c) => c.side === SIGN_IN_DRIFT_SIDE.Start && c.tier !== SIGN_IN_DRIFT_TIER.Huge,
+    ).map((c) => c.layer);
     const placements = layoutDriftLane(
       layers,
       SIGN_IN_DRIFT_FRAMES.wide,

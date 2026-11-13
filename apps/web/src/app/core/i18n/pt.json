@@ -494,6 +494,13 @@
         "one": "Mover {{count}} link",
         "many": "Mover {{count}} links",
         "other": "Mover {{count}} links"
+      },
+      "noDrop": {
+        "all": "Não dá para soltar aqui — solte em uma pasta",
+        "favorites": "Não dá para soltar aqui — marque um link com estrela para adicioná-lo aos Favoritos",
+        "recent": "Não dá para soltar aqui — «Abertos recentemente» enche ao abrir links",
+        "trash": "Não dá para soltar aqui — use Excluir para mover um link para a lixeira",
+        "pinnedLink": "Não dá para soltar aqui — um link fixado não é uma pasta"
       }
     }
   },
@@ -635,6 +642,30 @@
         },
         "linenShirt": {
           "title": "Camisa de linho verde-sálvia"
+        },
+        "bikepacking": {
+          "title": "As Dolomitas de bicicleta em cinco dias"
+        },
+        "typefaces": {
+          "title": "Como combinar duas tipografias"
+        },
+        "rxjs": {
+          "title": "Os operadores RxJS que você realmente usa"
+        },
+        "cacioEPepe": {
+          "title": "Cacio e pepe sem grumos"
+        },
+        "standingDesk": {
+          "title": "As melhores mesas reguláveis, testadas"
+        },
+        "contrast": {
+          "title": "Guia prático do contraste de cores"
+        },
+        "hydration": {
+          "title": "Hidratação e renderização incremental"
+        },
+        "ferry": {
+          "title": "Praias escondidas que se alcançam de ferry"
         }
       },
       "tags": {
@@ -883,7 +914,13 @@
         "trophy": "Troféu",
         "umbrella": "Guarda-chuva",
         "utensils": "Comida",
-        "wallet": "Carteira"
+        "wallet": "Carteira",
+        "newspaper": "Jornal",
+        "backpack": "Mochila escolar",
+        "palm": "Palmeira",
+        "guitar": "Guitarra",
+        "laptop": "Notebook",
+        "lock": "Cadeado"
       },
       "own": {
         "group": "Suas cores",
@@ -1164,7 +1201,13 @@
           "use": "Usar {{colour}}",
           "saturation": "Saturação",
           "brightness": "Brilho",
-          "hue": "Matiz"
+          "hue": "Matiz",
+          "addColour": "Adicionar cor",
+          "cancel": "Cancelar",
+          "remove": "Remover a cor {{colour}}",
+          "removed": "Cor removida",
+          "undo": "Desfazer",
+          "removeFailed": "Não foi possível remover a cor"
         },
         "ownBackground": {
           "label": "Sua cor de fundo",
@@ -1929,7 +1972,9 @@
       "send": "Enviar",
       "sending": "Enviando…",
       "error": "Não foi possível enviar. Seu texto foi mantido — tente de novo em instantes.",
-      "rateLimited": "Você enviou muitas mensagens na última hora. Seu texto foi mantido — tente mais tarde."
+      "rateLimited": "Você enviou muitas mensagens na última hora. Seu texto foi mantido — tente mais tarde.",
+      "attachClientInfoLabel": "O que é enviado?",
+      "attachClientInfo": "Ajuda a reproduzir os problemas. Só são enviados a versão do app e o nome e a versão do seu navegador."
     },
     "screenshot": {
       "label": "Captura de tela (opcional)",

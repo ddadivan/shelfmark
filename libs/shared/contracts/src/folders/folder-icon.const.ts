@@ -63,4 +63,12 @@ export const FOLDER_ICON = {
   Umbrella: 'umbrella',
   Utensils: 'utensils',
   Wallet: 'wallet',
+  // Topics added in #350 so the icon grid ends on a full row (63 = nine rows of seven): news, school,
+  // beach, music, work and security.
+  Newspaper: 'newspaper',
+  Backpack: 'backpack',
+  Palm: 'palm',
+  Guitar: 'guitar',
+  Laptop: 'laptop',
+  Lock: 'lock',
 } as const;

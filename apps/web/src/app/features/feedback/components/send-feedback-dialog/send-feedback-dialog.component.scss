@@ -156,3 +156,17 @@
     animation: none;
   }
 }
+
+// The checkbox and the info button of "Attach browser and app version" share a line.
+.feedback-dialog__attach {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.feedback-dialog__attach-info {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}

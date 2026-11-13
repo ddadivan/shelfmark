@@ -483,6 +483,13 @@
       "move": {
         "one": "Move {{count}} link",
         "other": "Move {{count}} links"
+      },
+      "noDrop": {
+        "all": "Can't drop here — drop it on a folder",
+        "favorites": "Can't drop here — star a link to add it to Favorites",
+        "recent": "Can't drop here — Recently opened fills as you open links",
+        "trash": "Can't drop here — use Delete to move a link to Trash",
+        "pinnedLink": "Can't drop here — a pinned link is not a folder"
       }
     }
   },
@@ -624,6 +631,30 @@
         },
         "linenShirt": {
           "title": "Linen shirt in sage green"
+        },
+        "bikepacking": {
+          "title": "Bikepacking the Dolomites in five days"
+        },
+        "typefaces": {
+          "title": "How to pair two typefaces"
+        },
+        "rxjs": {
+          "title": "RxJS operators you actually use"
+        },
+        "cacioEPepe": {
+          "title": "Cacio e pepe without the clumps"
+        },
+        "standingDesk": {
+          "title": "The best standing desks, tested"
+        },
+        "contrast": {
+          "title": "A practical guide to colour contrast"
+        },
+        "hydration": {
+          "title": "Hydration and incremental rendering"
+        },
+        "ferry": {
+          "title": "Hidden beaches you can reach by ferry"
         }
       },
       "tags": {
@@ -867,7 +898,13 @@
         "trophy": "Trophy",
         "umbrella": "Umbrella",
         "utensils": "Food",
-        "wallet": "Wallet"
+        "wallet": "Wallet",
+        "newspaper": "Newspaper",
+        "backpack": "Backpack",
+        "palm": "Palm tree",
+        "guitar": "Guitar",
+        "laptop": "Laptop",
+        "lock": "Lock"
       },
       "own": {
         "group": "Your own colours",
@@ -1143,7 +1180,13 @@
           "use": "Use {{colour}}",
           "saturation": "Saturation",
           "brightness": "Brightness",
-          "hue": "Hue"
+          "hue": "Hue",
+          "addColour": "Add colour",
+          "cancel": "Cancel",
+          "remove": "Remove colour {{colour}}",
+          "removed": "Colour removed",
+          "undo": "Undo",
+          "removeFailed": "Couldn’t remove the colour"
         },
         "ownBackground": {
           "label": "Your own background colour",
@@ -1892,7 +1935,9 @@
       "send": "Send",
       "sending": "Sending…",
       "error": "Couldn't send. Your text is kept — try again in a moment.",
-      "rateLimited": "You have sent a lot of messages in the last hour. Your text is kept — try again later."
+      "rateLimited": "You have sent a lot of messages in the last hour. Your text is kept — try again later.",
+      "attachClientInfoLabel": "What is sent?",
+      "attachClientInfo": "Helps us reproduce problems. Only the app version and your browser name and version are sent."
     },
     "screenshot": {
       "label": "Screenshot (optional)",

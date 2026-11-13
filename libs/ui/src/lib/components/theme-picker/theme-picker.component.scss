@@ -25,6 +25,7 @@
 }
 
 .ui-theme-picker__option {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: rem(6px);

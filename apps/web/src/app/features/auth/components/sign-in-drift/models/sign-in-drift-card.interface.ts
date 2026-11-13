@@ -1,5 +1,6 @@
 import type { SignInDriftLayer } from './sign-in-drift-layer.type';
 import type { SignInDriftSide } from './sign-in-drift-side.type';
+import type { SignInDriftTier } from './sign-in-drift-tier.type';
 
 /** One saved-link card drifting in a side lane of the sign-in page. */
 export interface SignInDriftCard {
@@ -14,6 +15,6 @@ export interface SignInDriftCard {
   readonly tone: number;
   readonly layer: SignInDriftLayer;
   readonly side: SignInDriftSide;
-  /** Also drawn on a narrow desktop (64em to 80em), where each lane keeps four cards. */
-  readonly narrow: boolean;
+  /** The smallest layout that draws it: `narrow` cards are on every desktop, `huge` ones only from 160em. */
+  readonly tier: SignInDriftTier;
 }

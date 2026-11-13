@@ -39,6 +39,7 @@ import {
 import { FOLDER_ICON_COMMON } from '../../models/folder-icon-common.const';
 import { FOLDER_ICON_GRID } from '../../models/folder-icon-rows-shown.const';
 import { pluralKey } from '../../../../core/i18n/plural-key';
+import { OwnColourActionsService } from '../../../../core/colours/own-colour-actions.service';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import type { FolderStyleDialogData } from '../../models/folder-style-dialog-data.interface';
 import type { FolderStyleFormModel } from '../../models/folder-style-form-model.interface';
@@ -77,6 +78,7 @@ export class FolderStyleDialogComponent {
   private readonly ref = inject<UiDialogRef<boolean>>(UiDialogRef);
   private readonly transloco = inject(TranslocoService);
   protected readonly settings = inject(UserSettingsStore);
+  private readonly ownColours = inject(OwnColourActionsService);
   protected readonly data = injectDialogData<FolderStyleDialogData>();
   /** Ticks when the language or its translations change, so messages re-translate. */
   private readonly i18n = toSignal(this.transloco.events$, { initialValue: undefined });
@@ -137,6 +139,8 @@ export class FolderStyleDialogComponent {
       value: colour,
       colour,
       label: this.transloco.translate('folders.style.ownSwatch', { colour }),
+      // A colour only the folder wears (not in the account's list) stays: it is in use (#350).
+      ...(colours.includes(colour) ? { removeLabel: this.ownColours.removeLabel(colour) } : {}),
     }));
   });
 
@@ -206,6 +210,11 @@ export class FolderStyleDialogComponent {
   /** An icon of the grid was chosen: the emoji field empties. */
   protected chooseIcon(value: string): void {
     this.model.update((model) => ({ ...model, icon: value, emoji: '' }));
+  }
+
+  /** The "×" or Delete on an own swatch: forgotten from the account (the folder keeps its colour). */
+  protected removeColour(colour: string): void {
+    void this.ownColours.remove(colour);
   }
 
   /** A colour finished in the picker: kept as a swatch of the account and chosen. */

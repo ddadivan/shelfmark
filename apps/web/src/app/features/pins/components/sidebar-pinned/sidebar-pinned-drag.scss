@@ -91,9 +91,11 @@
 }
 
 .pinned__item--no-drop {
-  // The text stays text-muted (no opacity on text, 4.5:1); the favicon is dimmed.
-  ui-favicon {
-    opacity: 0.55;
+  // The favicon / folder tile at half; the text stays `text-muted` (4.5:1, no opacity on text);
+  // a toast says why when the card enters it.
+  .pinned__link > ui-favicon,
+  .pinned__link > ui-folder-icon {
+    opacity: 0.5;
   }
 
   &:hover {

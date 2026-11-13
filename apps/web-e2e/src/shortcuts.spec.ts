@@ -126,6 +126,23 @@ test.describe('keyboard shortcuts (mock API)', () => {
     await expect(page.getByRole('dialog', { name: DIALOG })).toBeVisible();
   });
 
+  test('the four group panels of the settings page are as tall as their row (#350)', async ({
+    page,
+  }) => {
+    test.skip(isCompact(page), 'the shortcuts page is part of the tablet and desktop settings');
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto('/settings/shortcuts');
+    const panels = page.locator('.shortcuts__groups ui-panel');
+    await expect(panels).toHaveCount(4);
+    const boxes = await Promise.all([0, 1, 2, 3].map((i) => panels.nth(i).boundingBox()));
+    const [a, b, c, d] = boxes;
+    // Two columns: each row's two panels share the top and the height.
+    expect(a?.y).toBeCloseTo(b?.y ?? -1, 0);
+    expect(a?.height).toBeCloseTo(b?.height ?? -1, 0);
+    expect(c?.y).toBeCloseTo(d?.y ?? -1, 0);
+    expect(c?.height).toBeCloseTo(d?.height ?? -1, 0);
+  });
+
   test('the list fits a 360px phone as a sheet without horizontal scroll', async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 780 });
 

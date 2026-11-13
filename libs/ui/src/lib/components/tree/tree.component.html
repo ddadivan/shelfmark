@@ -27,6 +27,7 @@
         [class.ui-tree__row--folder]="folder"
         [class.ui-tree__row--drop]="dropTargetId() === node.id"
         [class.ui-tree__row--no-drop]="noDropIds().includes(node.id)"
+        [attr.aria-disabled]="noDropIds().includes(node.id) ? 'true' : null"
         [attr.data-ui-tree-id]="node.id"
         [style.--ui-tree-level]="level"
         [uiRipple]="true"

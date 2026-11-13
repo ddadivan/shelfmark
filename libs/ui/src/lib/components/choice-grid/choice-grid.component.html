@@ -14,7 +14,10 @@
       [checked]="value() === option.value"
       [disabled]="disabled()"
       [attr.aria-label]="option.label"
+      [attr.aria-description]="option.removeLabel ?? null"
+      [attr.aria-keyshortcuts]="option.removeLabel ? 'Delete Backspace' : null"
       (change)="select(option)"
+      (keydown)="onKeydown($event, option)"
     />
     @if (kind() === CHOICE_GRID_KIND.Swatch) {
       <span class="ui-choice__swatch" aria-hidden="true"></span>
@@ -24,6 +27,18 @@
           <ui-icon [name]="icon" [size]="ICON_SIZE.Lg" />
         }
       </span>
+    }
+    @if (option.removeLabel) {
+      <!-- Pointer and touch only: the keyboard has Delete / Backspace on the radio. -->
+      <button
+        type="button"
+        class="ui-choice__remove"
+        tabindex="-1"
+        aria-hidden="true"
+        (click)="remove($event, option)"
+      >
+        <ui-icon name="close" [size]="ICON_SIZE.Sm" />
+      </button>
     }
   </label>
 }

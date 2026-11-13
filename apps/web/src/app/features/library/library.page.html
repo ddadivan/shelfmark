@@ -383,8 +383,9 @@
         }
         <ng-template cdkDragPreview matchSize>
           <div class="library__drag-preview" aria-hidden="true">
-            @if (dnd.bundled(link)) {
+            @if (dnd.deckDepth(link) > 1) {
             <span class="library__drag-stack library__drag-stack--far"></span>
+            } @if (dnd.deckDepth(link) > 0) {
             <span class="library__drag-stack library__drag-stack--near"></span>
             }
             <app-link-row [link]="link" />
@@ -447,8 +448,9 @@
         }
         <ng-template cdkDragPreview matchSize>
           <div class="library__drag-preview" aria-hidden="true">
-            @if (dnd.bundled(link)) {
+            @if (dnd.deckDepth(link) > 1) {
             <span class="library__drag-stack library__drag-stack--far"></span>
+            } @if (dnd.deckDepth(link) > 0) {
             <span class="library__drag-stack library__drag-stack--near"></span>
             }
             <app-link-card [link]="link" [readOnly]="true" />

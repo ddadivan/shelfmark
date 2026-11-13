@@ -13,6 +13,8 @@ const LABELS = {
   hueLabel: 'Hue',
   hexLabel: 'Hex code',
   invalidMessage: 'Enter a colour like #2e6a99',
+  addLabel: 'Add colour',
+  cancelLabel: 'Cancel',
 };
 
 function setup(inputs: Record<string, unknown> = {}) {
@@ -30,12 +32,16 @@ function setup(inputs: Record<string, unknown> = {}) {
   const slider = (label: string) =>
     host.querySelector(`input[type="range"][aria-label="${label}"]`) as HTMLInputElement;
   const area = () => host.querySelector('.ui-color-picker__area') as HTMLElement;
+  const action = (name: string) =>
+    Array.from(host.querySelectorAll<HTMLButtonElement>('.ui-color-picker__actions button')).find(
+      (button) => button.textContent?.trim() === name,
+    ) as HTMLButtonElement;
   const open = async () => {
     swatch().click();
     fixture.detectChanges();
     await fixture.whenStable();
   };
-  return { fixture, host, swatch, panel, hex, slider, area, open, committed };
+  return { fixture, host, swatch, panel, hex, slider, area, action, open, committed };
 }
 
 function type(input: HTMLInputElement, text: string): void {
@@ -54,6 +60,8 @@ function type(input: HTMLInputElement, text: string): void {
     hueLabel="Hue"
     hexLabel="Hex"
     invalidMessage="Bad"
+    addLabel="Add"
+    cancelLabel="Cancel"
     [formField]="f.colour"
   />`,
 })
@@ -96,6 +104,32 @@ describe('ColorPickerComponent', () => {
     (fixture.nativeElement as HTMLElement).remove();
   });
 
+  it('Esc and Cancel drop the preview: the value goes back to what it was when the panel opened', async () => {
+    const { fixture, panel, slider, action, open, committed } = setup({ value: '#ff0000' });
+    await open();
+    const hue = slider('Hue');
+    hue.value = '120';
+    hue.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(fixture.componentInstance.value()).toBe('#00ff00');
+
+    action('Cancel').click();
+    fixture.detectChanges();
+    await vi.waitFor(() => {
+      expect(panel()).toBeNull();
+    });
+    expect(fixture.componentInstance.value()).toBe('#ff0000');
+
+    await open();
+    hue.value = '240';
+    slider('Hue').dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    slider('Hue').dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    fixture.detectChanges();
+    expect(fixture.componentInstance.value()).toBe('#ff0000');
+    expect(committed).toEqual([]);
+  });
+
   it('labels the area, the three sliders and the hex field, with a value text each', async () => {
     const { host, hex, slider, open } = setup({ value: '#ff0000' });
     await open();
@@ -107,29 +141,28 @@ describe('ColorPickerComponent', () => {
     expect(label?.textContent).toContain('Hex code');
   });
 
-  it('the hue slider and the area sliders move the colour live and commit when let go', async () => {
-    const { fixture, slider, open, committed } = setup({ value: '#ff0000' });
+  it('the hue slider and the area sliders only preview; "Add colour" commits once', async () => {
+    const { fixture, slider, action, open, committed } = setup({ value: '#ff0000' });
     await open();
 
     const hue = slider('Hue');
     hue.value = '120';
     hue.dispatchEvent(new Event('input'));
+    hue.dispatchEvent(new Event('change'));
     fixture.detectChanges();
     expect(fixture.componentInstance.value()).toBe('#00ff00');
-    expect(committed).toEqual([]);
-    hue.dispatchEvent(new Event('change'));
-    expect(committed).toEqual(['#00ff00']);
 
     const brightness = slider('Brightness');
     brightness.value = '50';
     brightness.dispatchEvent(new Event('input'));
+    brightness.dispatchEvent(new Event('blur'));
+    brightness.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
     fixture.detectChanges();
     expect(fixture.componentInstance.value()).toBe('#008000');
-    brightness.dispatchEvent(new Event('blur'));
-    expect(committed).toEqual(['#00ff00', '#008000']);
-    // Nothing changed since: letting go again commits nothing more.
-    brightness.dispatchEvent(new Event('blur'));
-    expect(committed).toHaveLength(2);
+    expect(committed).toEqual([]);
+
+    action('Add colour').click();
+    expect(committed).toEqual(['#008000']);
   });
 
   it('keeps the hue while the colour is grey (the hex cannot hold it)', async () => {
@@ -151,7 +184,7 @@ describe('ColorPickerComponent', () => {
     expect(slider('Hue').value).toBe('200');
   });
 
-  it('a pointer in the area sets saturation and brightness and commits on release', async () => {
+  it('a pointer in the area sets saturation and brightness; releasing it commits nothing', async () => {
     const { fixture, area, open, committed } = setup({ value: '#ff0000' });
     await open();
     const box = area();
@@ -173,26 +206,33 @@ describe('ColorPickerComponent', () => {
     fixture.detectChanges();
     expect(fixture.componentInstance.value()).toBe('#000000');
     fire('pointerup', 0, 100);
-    expect(committed).toEqual(['#000000']);
+    expect(fixture.componentInstance.value()).toBe('#000000');
+    expect(committed).toEqual([]);
   });
 
-  it('commits a typed hex on Enter or blur, with or without #, in lower case', async () => {
-    const { fixture, hex, open, committed } = setup();
+  it('a typed hex previews at once (with or without #, in lower case); Enter and blur only tidy it', async () => {
+    const { fixture, hex, action, open, committed } = setup();
     await open();
     type(hex(), 'C0FFEE');
-    hex().dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
     fixture.detectChanges();
-    expect(committed).toEqual(['#c0ffee']);
     expect(fixture.componentInstance.value()).toBe('#c0ffee');
+    const enter = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
+    hex().dispatchEvent(enter);
+    fixture.detectChanges();
+    // Enter never submits a surrounding form and chooses nothing.
+    expect(enter.defaultPrevented).toBe(true);
+    expect(committed).toEqual([]);
     expect(hex().value).toBe('#c0ffee');
 
     type(hex(), '#123abc');
     hex().dispatchEvent(new Event('blur'));
-    expect(committed).toEqual(['#c0ffee', '#123abc']);
+    expect(committed).toEqual([]);
+    action('Add colour').click();
+    expect(committed).toEqual(['#123abc']);
   });
 
-  it('flags text that is not a colour and commits nothing', async () => {
-    const { fixture, host, hex, open, committed } = setup();
+  it('flags text that is not a colour and cannot be added', async () => {
+    const { fixture, host, hex, action, open, committed } = setup();
     await open();
     type(hex(), '#12');
     fixture.detectChanges();
@@ -200,6 +240,7 @@ describe('ColorPickerComponent', () => {
     fixture.detectChanges();
 
     expect(committed).toEqual([]);
+    expect(action('Add colour').disabled).toBe(true);
     expect(hex().getAttribute('aria-invalid')).toBe('true');
     const error = host.querySelector('.ui-color-picker__error');
     expect(error?.textContent).toContain('Enter a colour like #2e6a99');
