@@ -62,6 +62,8 @@ describe('UiButtonHarness', () => {
     expect(await save.isFocused()).toBe(true);
     await save.blur();
     expect(await save.isFocused()).toBe(false);
+    await save.sendKeys('x');
+    expect(await save.isFocused()).toBe(true);
   });
 
   it('reads loading, expanded, pressed and the disabled state', async () => {

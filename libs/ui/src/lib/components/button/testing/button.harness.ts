@@ -1,4 +1,4 @@
-import { ComponentHarness, HarnessPredicate } from '@angular/cdk/testing';
+import { ComponentHarness, HarnessPredicate, type TestKey } from '@angular/cdk/testing';
 import { BUTTON_VARIANT } from '../models/button-variant.const';
 import type { ButtonVariant } from '../models/button-variant.type';
 import type { ButtonHarnessFilters } from './models/button-harness-filters.interface';
@@ -41,6 +41,11 @@ export class UiButtonHarness extends ComponentHarness {
     modifiers: { control?: boolean; meta?: boolean; shift?: boolean } = {},
   ): Promise<void> {
     return (await this.control()).click(modifiers);
+  }
+
+  /** Sends keys to the inner control (for example ArrowDown on a menu trigger). */
+  async sendKeys(...keys: (string | TestKey)[]): Promise<void> {
+    return (await this.control()).sendKeys(...keys);
   }
 
   async focus(): Promise<void> {
