@@ -33,7 +33,7 @@
         [uiRipple]="true"
         uiLongPress
         [uiLongPressDisabled]="!folder"
-        (uiLongPress)="onLongPress($event, node, row)"
+        (uiLongPress)="menu.fromLongPress($event, node, row)"
         [parent]="parent"
         [value]="node.id"
         [label]="node.name"
@@ -42,10 +42,10 @@
         [attr.aria-labelledby]="labelledBy(item.id(), node)"
         [attr.aria-owns]="node.children?.length ? item.id() + '-group' : null"
         (expandedChange)="toggled.emit({ node, expanded: $event })"
-        (contextmenu)="folder && onContextMenu($event, node, row)"
+        (contextmenu)="folder && menu.fromContextMenu($event, node, row)"
         (keydown)="onKeydown($event, node, row, folder)"
-        (keyup)="onKeyup()"
-        (blur)="disarmEcho()"
+        (keyup)="menu.release()"
+        (blur)="menu.disarm()"
       >
         @if (folder) {
           <span
@@ -93,7 +93,7 @@
             [uiTooltip]="menuButtonLabel(node)"
             [position]="MORE_TOOLTIP_SIDE"
             (pointerdown)="$event.stopPropagation()"
-            (click)="onButton($event, node, more)"
+            (click)="menu.fromButton($event, node, more)"
           />
         }
       </div>
