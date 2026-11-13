@@ -40,7 +40,7 @@ const INTRO_SLOTS = 3;
   hostDirectives: [LandingLoopGateDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './landing-hero-preview.component.html',
-  styleUrl: './landing-hero-preview.component.scss',
+  styleUrls: ['./landing-hero-preview.component.scss', './landing-hero-preview-motion.scss'],
 })
 export class LandingHeroPreviewComponent {
   protected readonly TOAST_KIND = TOAST_KIND;
