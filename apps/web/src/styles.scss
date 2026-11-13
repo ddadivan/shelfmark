@@ -14,17 +14,18 @@
 }
 
 // While the bulk bar shows (#267), toasts sit 12px above it (a global rule: a toast never covers
-// the bar). Desktop: the bar is sticky 16px above the bottom of the content area, which ends 52px
-// above the window edge (#350), and is 58px high. The mobile shell: above the bar (68px high) that
-// floats 16px above the tab bar's own gap.
+// the bar). `ToastAreaService` measures the bar and sets the exact offset on `html` (#352); these
+// rules are the first frame before it does. Desktop: the bar's bottom is 52px above the window
+// edge (its sticky 16px included, #350) and it is 58px high. The mobile shell: above the bar
+// (68px high) whose bottom sits 12px above the tab bar (20px from the edge, 68px high).
 :root:has(.library__bulk) {
-  --ui-toast-offset: #{rem(52px + 16px + 58px + 12px)};
+  --ui-toast-offset: #{rem(52px + 58px + 12px)};
 }
 
 @include compact {
   :root:has(app-shell):has(.library__bulk) {
     --ui-toast-offset: calc(
-      #{rem(20px + 68px + 12px + 16px + 68px + 12px)} + env(safe-area-inset-bottom, 0rem)
+      #{rem(20px + 68px + 12px + 68px + 12px)} + env(safe-area-inset-bottom, 0rem)
     );
   }
 }

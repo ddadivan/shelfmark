@@ -231,11 +231,12 @@ test.describe('select links and bulk actions (mock API)', () => {
       await button.click();
       await expect(page.getByText('2 links added to favorites')).toBeVisible();
       await expect(button).toHaveAttribute('aria-pressed', 'true');
-      // A toast never covers the bulk bar: it sits above it (#350).
+      // A toast never covers the bulk bar: it sits exactly 12px above it (#350, #352).
       await settled(page);
       const toastBox = await page.locator('ui-toast').first().boundingBox();
-      const barBox = await page.locator('ui-bulk-bar').boundingBox();
-      expect((toastBox?.y ?? 0) + (toastBox?.height ?? 0)).toBeLessThanOrEqual(barBox?.y ?? 0);
+      const barBox = await bar(page).boundingBox();
+      const gap = (barBox?.y ?? 0) - ((toastBox?.y ?? 0) + (toastBox?.height ?? 0));
+      expect(Math.abs(gap - 12)).toBeLessThanOrEqual(1);
       await button.click();
       await expect(page.getByText('2 links removed from favorites')).toBeVisible();
       await expect(button).toHaveAttribute('aria-pressed', 'false');
@@ -256,6 +257,11 @@ test.describe('select links and bulk actions (mock API)', () => {
       expect(Math.abs(centre(toastBox) - centre(barBox))).toBeLessThanOrEqual(1);
       // Not the window centre: the sidebar takes the left of the window.
       expect(Math.abs(centre(toastBox) - 720)).toBeGreaterThan(50);
+      // And 12px above the visible bar (#352).
+      const barTop = (await bar(page).boundingBox())?.y ?? 0;
+      expect(
+        Math.abs(barTop - ((toastBox?.y ?? 0) + (toastBox?.height ?? 0)) - 12),
+      ).toBeLessThanOrEqual(1);
     });
 
     test('Delete moves the links to Trash, Undo restores them', async ({ page }) => {
@@ -464,7 +470,9 @@ test.describe('select links and bulk actions (mock API)', () => {
       const tabBox = await page.locator('ui-tab-bar nav').boundingBox();
       const toastBox = await toast.boundingBox();
       expect(barBox && tabBox && barBox.y + barBox.height <= tabBox.y).toBe(true);
-      expect(barBox && toastBox && toastBox.y + toastBox.height <= barBox.y).toBe(true);
+      // Exactly 12px above the bar (#352).
+      const gap = (barBox?.y ?? 0) - ((toastBox?.y ?? 0) + (toastBox?.height ?? 0));
+      expect(Math.abs(gap - 12)).toBeLessThanOrEqual(1);
     });
   });
 

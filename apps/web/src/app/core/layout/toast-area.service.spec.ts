@@ -64,4 +64,54 @@ describe('ToastAreaService (#352)', () => {
     expect(document.documentElement.style.getPropertyValue(START)).toBe('');
     expect(document.documentElement.style.getPropertyValue(END)).toBe('');
   });
+
+  describe('a bar the toasts sit above', () => {
+    const OFFSET = '--ui-toast-offset';
+
+    afterEach(() => document.documentElement.style.removeProperty(OFFSET));
+
+    function bar(top: number): HTMLElement {
+      const host = document.createElement('div');
+      const el = document.createElement('div');
+      host.append(el);
+      document.body.append(host);
+      vi.spyOn(el, 'getBoundingClientRect').mockReturnValue({ top } as DOMRect);
+      return el;
+    }
+
+    it('keeps the toasts 12px above the bar, on any shell, until it goes', () => {
+      vi.stubGlobal('innerHeight', 900);
+      desktop.set(false);
+      const service = TestBed.inject(ToastAreaService);
+      const el = bar(790);
+      const unregister = service.registerBar(el);
+      TestBed.tick();
+      expect(document.documentElement.style.getPropertyValue(OFFSET)).toBe('122px');
+
+      unregister();
+      TestBed.tick();
+      expect(document.documentElement.style.getPropertyValue(OFFSET)).toBe('');
+      el.parentElement?.remove();
+    });
+
+    it('measures again after the entrance animation and on resize', async () => {
+      vi.stubGlobal('innerHeight', 900);
+      const service = TestBed.inject(ToastAreaService);
+      const el = bar(820);
+      service.registerBar(el);
+      TestBed.tick();
+      expect(document.documentElement.style.getPropertyValue(OFFSET)).toBe('92px');
+
+      vi.spyOn(el, 'getBoundingClientRect').mockReturnValue({ top: 790 } as DOMRect);
+      el.parentElement?.dispatchEvent(new Event('animationend'));
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      expect(document.documentElement.style.getPropertyValue(OFFSET)).toBe('122px');
+
+      vi.stubGlobal('innerHeight', 800);
+      window.dispatchEvent(new Event('resize'));
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      expect(document.documentElement.style.getPropertyValue(OFFSET)).toBe('22px');
+      el.parentElement?.remove();
+    });
+  });
 });

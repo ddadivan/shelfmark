@@ -498,6 +498,7 @@
     } } @if (selection.selecting()) {
     <ui-bulk-bar
       class="library__bulk"
+      appToastAbove=".ui-bulk-bar__bar"
       animate.enter="ui-bulk-bar--enter"
       animate.leave="ui-bulk-bar--leave"
       [actions]="bulk.barActions()"
