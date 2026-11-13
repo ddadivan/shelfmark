@@ -73,6 +73,29 @@ test.describe('select links and bulk actions (mock API)', () => {
       await expect(first.locator('.link-card__open')).toHaveCount(1);
     });
 
+    test('the bulk bar sits at the bottom of the window in a short feed too (#350)', async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 1440, height: 1100 });
+      await openFeed(page);
+      // The "recipes" tag and the Videos view together leave two links.
+      await page.getByRole('navigation').getByText('recipes', { exact: true }).first().click();
+      await page.getByRole('button', { name: /^Videos \d+$/ }).click();
+      await expect(cards(page)).toHaveCount(2);
+      await pick(page, 0);
+      await expect(bar(page)).toBeVisible();
+      await settled(page);
+
+      const box = await bar(page).boundingBox();
+      // The same inset under the bar as with a long feed (--space-4 = 16px, plus the scroll
+      // area's own 4px padding), whatever the number of cards.
+      expect(1100 - ((box?.y ?? 0) + (box?.height ?? 0))).toBeGreaterThanOrEqual(12);
+      expect(1100 - ((box?.y ?? 0) + (box?.height ?? 0))).toBeLessThanOrEqual(60);
+      const lastCard = await cards(page).last().boundingBox();
+      // Not floating under the cards: the bar is far below the last card.
+      expect((box?.y ?? 0) - ((lastCard?.y ?? 0) + (lastCard?.height ?? 0))).toBeGreaterThan(200);
+    });
+
     test('hover checkbox, Shift range, click toggles, select all and Esc', async ({ page }) => {
       await openFeed(page);
       await expect(header(page)).toHaveCount(0);
