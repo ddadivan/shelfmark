@@ -4,7 +4,8 @@ import { expect, test } from './support/test';
 
 // Root font size by viewport width (#352). The app: 100% below 3200 CSS px, then 112.5% / 145% / 175%
 // (author's values; the text size setting covers anyone who wants more). Landing and sign-in have
-// their own steps (apps/web/src/styles.scss): 112.5% / 125% / 150% / 200% from 2560 px.
+// their own steps (apps/web/src/styles.scss) from 2560 px: landing 112.5% / 125% / 160% / 230%,
+// sign-in 112.5% / 125% / 180% / 230% (author's values).
 const APP_STEPS: readonly { width: number; fontSize: string }[] = [
   { width: 1440, fontSize: '16px' },
   { width: 2560, fontSize: '16px' },
@@ -14,18 +15,18 @@ const APP_STEPS: readonly { width: number; fontSize: string }[] = [
   { width: 5120, fontSize: '28px' },
 ];
 
-const PUBLIC_STEPS: readonly { width: number; fontSize: string }[] = [
+const PUBLIC_STEPS = (at4k: string): typeof APP_STEPS => [
   { width: 1440, fontSize: '16px' },
   { width: 2559, fontSize: '16px' },
   { width: 2560, fontSize: '18px' },
   { width: 3200, fontSize: '20px' },
-  { width: 3840, fontSize: '24px' },
-  { width: 5120, fontSize: '32px' },
+  { width: 3840, fontSize: at4k },
+  { width: 5120, fontSize: '36.8px' },
 ];
 
-const PUBLIC_PAGES: readonly { path: string; host: string }[] = [
-  { path: '/', host: 'app-landing-page' },
-  { path: '/sign-in', host: 'app-sign-in-page' },
+const PUBLIC_PAGES: readonly { path: string; host: string; steps: typeof APP_STEPS }[] = [
+  { path: '/', host: 'app-landing-page', steps: PUBLIC_STEPS('25.6px') },
+  { path: '/sign-in', host: 'app-sign-in-page', steps: PUBLIC_STEPS('28.8px') },
 ];
 
 const rootFontSize = (page: Page): Promise<string> =>
@@ -51,8 +52,8 @@ test.describe('root font size on wide viewports', () => {
     });
   }
 
-  for (const { path, host } of PUBLIC_PAGES) {
-    for (const { width, fontSize } of PUBLIC_STEPS) {
+  for (const { path, host, steps } of PUBLIC_PAGES) {
+    for (const { width, fontSize } of steps) {
       test(`${host} is ${fontSize} at ${width}px wide`, async ({ page }) => {
         await page.setViewportSize({ width, height: 1080 });
         await page.goto(path);

@@ -214,20 +214,20 @@ app-link-card ui-card {
 
 @media (width >= 240em) {
   :root:has(app-landing-page) {
-    --root-base: 150%;
+    --root-base: 160%;
   }
 
   :root:has(app-sign-in-page) {
-    --root-base: 150%;
+    --root-base: 180%;
   }
 }
 
 @media (width >= 320em) {
   :root:has(app-landing-page) {
-    --root-base: 200%;
+    --root-base: 230%;
   }
 
   :root:has(app-sign-in-page) {
-    --root-base: 200%;
+    --root-base: 230%;
   }
 }
