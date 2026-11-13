@@ -16,30 +16,29 @@ import { RETRY_AFTER_HEADER } from '../common/rate-limit/models/retry-after-head
  * (a Vercel Function takes at most 4.5 MB), so the limit stays at one image.
  */
 const BODY_LIMIT_BYTES = 3 * 1024 * 1024;
-const THROTTLER_NAME = 'feedback-message-body';
+const THROTTLER_NAME = 'feedback-screenshot-body';
 
 const parser = json({ limit: BODY_LIMIT_BYTES });
 const UUID = '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}';
-/** The message route and its screenshot route (`feedbackScreenshotsPath`). */
-const ROUTE = new RegExp(`^${FEEDBACK_ENDPOINT.Messages}(?:/${UUID}/screenshots)?/?$`);
+/** The screenshot route only (`feedbackScreenshotsPath`); the message itself is small. */
+const ROUTE = new RegExp(`^${FEEDBACK_ENDPOINT.Messages}/${UUID}/screenshots/?$`);
 const SESSION_COOKIE = new RegExp(
   `(?:^|;\\s*)(?:${AUTH_SESSION_COOKIE.SecurePrefix})?${AUTH_COOKIE_PREFIX}\\.${AUTH_SESSION_COOKIE.Name}=[^;\\s]`,
 );
-const logger = new Logger('FeedbackMessageBody');
+const logger = new Logger('FeedbackScreenshotBody');
 
 function hasSessionCookie(req: Request): boolean {
   return SESSION_COOKIE.test(req.headers.cookie ?? '');
 }
 
 /**
- * Larger JSON parser (3 MB) for `POST /api/feedback/messages` and
- * `POST /api/feedback/messages/<id>/screenshots` only; every other request passes
- * through to the global 100kb parser. It runs before Nest's guards, so a cheap gate comes first and
+ * Larger JSON parser (3 MB) for `POST /api/feedback/messages/<id>/screenshots` only; every other
+ * request, `POST /api/feedback/messages` included, passes through to the global 100kb parser. It runs before Nest's guards, so a cheap gate comes first and
  * nothing is read for a request that would be refused anyway: a declared `Content-Length` over the
  * cap is 413, a request without a session cookie is 401 (the real session check still follows in
  * `SessionAuthGuard`), and a per-IP throttle applies before the body is parsed.
  */
-export function createFeedbackMessageBodyParser(
+export function createFeedbackScreenshotBodyParser(
   storage: ThrottlerStorage,
   trustProxyHeaders: boolean,
 ): RequestHandler {

@@ -364,7 +364,10 @@ describe('admin API', () => {
 
     it('is 404 without a screenshot there, for a rating row and for a non-admin', async () => {
       const plain = await message(users.intruder.userId);
-      await admin.get(`${FEEDBACK}/${plain.id}/screenshots/0`).expect(404);
+      const none = await admin.get(`${FEEDBACK}/${plain.id}/screenshots/0`).expect(404);
+      expect(none.headers['cache-control']).toBe('private, no-store');
+      const badId = await admin.get(`${FEEDBACK}/nope/screenshots/0`).expect(400);
+      expect(badId.headers['cache-control']).toBe('private, no-store');
       const withShot = await message(users.intruder.userId, { screenshots: 1 });
       await admin.get(`${FEEDBACK}/${withShot.id}/screenshots/1`).expect(404);
       await admin.get(`${FEEDBACK}/${withShot.id}/screenshots/7`).expect(404);

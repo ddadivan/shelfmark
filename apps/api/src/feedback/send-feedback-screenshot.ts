@@ -1,4 +1,5 @@
 import type { Response } from 'express';
+import { PRIVATE_NO_STORE } from '../common/interceptors/models/private-no-store.const';
 import type { StoredFeedbackScreenshot } from './models/stored-feedback-screenshot.interface';
 
 /**
@@ -13,7 +14,7 @@ export function sendFeedbackScreenshot(res: Response, screenshot: StoredFeedback
     .setHeader('Cross-Origin-Resource-Policy', 'same-origin')
     .setHeader('Content-Disposition', 'inline')
     .setHeader('Content-Security-Policy', "sandbox; default-src 'none'")
-    .setHeader('Cache-Control', 'private, no-store')
+    .setHeader('Cache-Control', PRIVATE_NO_STORE)
     .setHeader('Vary', 'Cookie')
     .send(Buffer.from(screenshot.bytes));
 }

@@ -140,8 +140,10 @@ describe('feedback messages API', () => {
     });
 
     describe('body limit', () => {
-      it('takes a body above 100kb on these routes (up to 3mb)', async () => {
-        await send(a, { ...valid, text: 'x'.repeat(200_000) }).expect(400);
+      /** A well-formed screenshot path of a message that does not exist. */
+      const SHOT = feedbackScreenshotsPath('0190d3a4-0000-7000-8000-000000000000');
+
+      it('takes a body above 100kb on the screenshot route only (up to 3mb)', async () => {
         const message = (await send(a, valid).expect(201)).body as FeedbackMessage;
         const big = image(PNG_HEAD, FEEDBACK_MESSAGE_LIMIT.ScreenshotMaxBytes);
         await a
@@ -150,34 +152,43 @@ describe('feedback messages API', () => {
           .expect(201);
       });
 
+      it('keeps the default 100kb on the message route', async () => {
+        const res = await send(a, { ...valid, text: 'x'.repeat(200_000) }).expect(413);
+        expect(res.body).toMatchObject({ statusCode: 413 });
+        expect(await t.db.prisma.feedback.count()).toBe(0);
+      });
+
       it('answers 401 before parsing for a guest, even with a malformed or large body', async () => {
         const malformed = await anonymous(t.app)
-          .post(MESSAGES)
+          .post(SHOT)
           .set('Content-Type', 'application/json')
-          .send('{"kind": ');
+          .send('{"type": ');
         expect(malformed.status).toBe(401);
         expect(malformed.body).toMatchObject({ statusCode: 401, error: 'Unauthorized' });
         expect(malformed.body).toHaveProperty('requestId');
         // The guard answers 401 without reading the 2 MB body and the connection closes; a client
         // still writing may see that as ECONNRESET / EPIPE instead of the response. Either way the
         // body was never parsed; anything else (2xx, 400, 413) fails.
-        const large = await send(anonymous(t.app), { ...valid, text: 'x'.repeat(2_000_000) }).then(
-          (res) => res.status,
-          (error: unknown) => (error as { code?: string }).code,
-        );
+        const large = await anonymous(t.app)
+          .post(SHOT)
+          .send({ type: 'image/png', data: 'A'.repeat(2_000_000) })
+          .then(
+            (res) => res.status,
+            (error: unknown) => (error as { code?: string }).code,
+          );
         expect([401, 'ECONNRESET', 'EPIPE']).toContain(large);
         // A cookie of another name is no session cookie.
         await anonymous(t.app)
-          .post(MESSAGES)
+          .post(SHOT)
           .set('Cookie', 'other=1')
           .set('Content-Type', 'application/json')
-          .send('{"kind": ')
+          .send('{"type": ')
           .expect(401);
       });
 
       it('answers 413 from Content-Length alone, without reading the body', async () => {
         const res = await anonymous(t.app)
-          .post(MESSAGES)
+          .post(SHOT)
           .set('Content-Type', 'application/json')
           .set('Content-Length', String(4 * 1024 * 1024))
           .send('{}');
@@ -185,25 +196,16 @@ describe('feedback messages API', () => {
       });
 
       it('throttles per IP before parsing', async () => {
-        for (let i = 0; i < 10; i++) await send(a, { kind: 'nope', text: 'x' }).expect(400);
-        const res = await send(a, valid).expect(429);
+        for (let i = 0; i < 10; i++) await a.post(SHOT).send({ type: 'nope' }).expect(400);
+        const res = await a.post(SHOT).send({ type: 'nope' }).expect(429);
         expect(res.headers['retry-after']).toBeDefined();
         expect(res.body).toMatchObject({ statusCode: 429 });
       });
 
-      it('answers 413 above 3mb on this route', async () => {
+      it('answers 413 above 3mb on the screenshot route', async () => {
         // The server answers 413 and closes the connection while the client may still be writing
         // the 3 MB body; supertest then reports ECONNRESET / EPIPE instead of the response. Both
         // mean "rejected"; anything else (2xx, 400, …) fails, and nothing may be stored.
-        const outcome = await send(a, { ...valid, text: 'x'.repeat(3 * 1024 * 1024 + 10) }).then(
-          (res) => res.status,
-          (error: unknown) => (error as { code?: string }).code,
-        );
-        expect([413, 'ECONNRESET', 'EPIPE']).toContain(outcome);
-        expect(await t.db.prisma.feedback.count()).toBe(0);
-      });
-
-      it('answers 413 above 3mb on the screenshot route too', async () => {
         const message = (await send(a, valid).expect(201)).body as FeedbackMessage;
         const outcome = await a
           .post(feedbackScreenshotsPath(message.id))
@@ -229,10 +231,10 @@ describe('feedback messages API', () => {
       });
 
       it('does not raise the limit for other methods on the same path', async () => {
-        // GET has no body; a PATCH body above 100kb on this path is rejected before routing.
+        // A PATCH body above 100kb on the screenshot path is rejected before routing.
         await a
-          .patch(MESSAGES)
-          .send({ text: 'x'.repeat(200_000) })
+          .patch(SHOT)
+          .send({ data: 'x'.repeat(200_000) })
           .expect(413);
       });
     });
@@ -452,6 +454,86 @@ describe('feedback messages API', () => {
       expect(await t.db.prisma.feedbackScreenshot.count()).toBe(0);
     });
 
+    describe('daily screenshot bytes', () => {
+      const MAX_SHOT = FEEDBACK_MESSAGE_LIMIT.ScreenshotMaxBytes;
+
+      /** Messages of the owner, each with three full-size screenshots, sent at `createdAt`. */
+      async function seedShots(messages: number, createdAt: Date): Promise<void> {
+        for (let i = 0; i < messages; i++) {
+          await t.db.prisma.feedback.create({
+            data: {
+              userId: users.owner.userId,
+              kind: FEEDBACK_MESSAGE_KIND.Other,
+              comment: `with shots ${i}`,
+              createdAt: new Date(createdAt.getTime() + i),
+              screenshots: {
+                create: [0, 1, 2].map((position) => ({
+                  position,
+                  type: 'image/png',
+                  bytes: image(PNG_HEAD, MAX_SHOT),
+                })),
+              },
+            },
+          });
+        }
+      }
+
+      it('takes up to the daily maximum, then answers 429 with Retry-After and a clear message', async () => {
+        // 3 messages x 3 x 2 MB = 18 MB an hour ago; 2 MB more is exactly the 20 MB maximum.
+        expect(FEEDBACK_MESSAGE_LIMIT.ScreenshotBytesPerDayMax).toBe(10 * MAX_SHOT);
+        await seedShots(3, new Date(Date.now() - HOUR));
+        await attach(a, message.id, upload('image/png', image(PNG_HEAD, MAX_SHOT))).expect(201);
+
+        const res = await attach(a, message.id, upload('image/png', image(PNG_HEAD))).expect(429);
+        expect(res.body).toMatchObject({
+          statusCode: 429,
+          error: 'Too Many Requests',
+          message: FEEDBACK_SCREENSHOT_ERROR_MESSAGE.DailyLimit,
+        });
+        expect(res.body).toHaveProperty('requestId');
+        // Room opens when the oldest counted message leaves the 24 hour window, 23 hours from now.
+        const retry = Number(res.headers['retry-after']);
+        expect(retry).toBeGreaterThan(23 * 3600 - 120);
+        expect(retry).toBeLessThanOrEqual(23 * 3600);
+        expect(
+          await t.db.prisma.feedbackScreenshot.count({ where: { feedbackId: message.id } }),
+        ).toBe(1);
+      });
+
+      it('counts only the last 24 hours and only the own messages', async () => {
+        await seedShots(3, new Date(Date.now() - 25 * HOUR));
+        await t.db.prisma.feedback.create({
+          data: {
+            userId: users.intruder.userId,
+            kind: FEEDBACK_MESSAGE_KIND.Other,
+            comment: 'other user',
+            screenshots: {
+              create: [0, 1, 2].map((position) => ({
+                position,
+                type: 'image/png',
+                bytes: image(PNG_HEAD, MAX_SHOT),
+              })),
+            },
+          },
+        });
+        await seedShots(3, new Date(Date.now() - HOUR));
+        await attach(a, message.id, upload('image/png', image(PNG_HEAD, MAX_SHOT))).expect(201);
+      });
+
+      it('allows a demo user less', async () => {
+        await t.db.prisma.user.update({
+          where: { id: users.owner.userId },
+          data: { isDemo: true, demoExpiresAt: new Date(Date.now() + HOUR) },
+        });
+        // One message with 3 x 2 MB is the demo maximum of 6 MB.
+        expect(FEEDBACK_MESSAGE_LIMIT.DemoScreenshotBytesPerDayMax).toBe(3 * MAX_SHOT);
+        await seedShots(1, new Date(Date.now() - HOUR));
+        const res = await attach(a, message.id, upload('image/png', image(PNG_HEAD))).expect(429);
+        expect(res.body).toMatchObject({ message: FEEDBACK_SCREENSHOT_ERROR_MESSAGE.DailyLimit });
+        expect(res.headers['retry-after']).toBeDefined();
+      });
+    });
+
     it('goes when the message goes', async () => {
       await attach(a, message.id, upload('image/png', image(PNG_HEAD))).expect(201);
       await t.db.prisma.feedback.delete({ where: { id: message.id } });
@@ -514,11 +596,15 @@ describe('feedback messages API', () => {
       const rating = await t.db.prisma.feedback.create({
         data: { userId: users.owner.userId, milestone: 'day3', score: 3 },
       });
-      await a.get(`${feedbackScreenshotsPath(rating.id)}/0`).expect(404);
+      const ratingRes = await a.get(`${feedbackScreenshotsPath(rating.id)}/0`).expect(404);
+      expect(ratingRes.headers['cache-control']).toBe('private, no-store');
+      const free = await a.get(`${path}/1`).expect(404);
+      expect(free.headers['cache-control']).toBe('private, no-store');
     });
 
     it('is 400 for an id that is not a UUID or a position that is not a number, 401 without a session', async () => {
-      await a.get(`${MESSAGES}/nope/screenshots/0`).expect(400);
+      const badId = await a.get(`${MESSAGES}/nope/screenshots/0`).expect(400);
+      expect(badId.headers['cache-control']).toBe('private, no-store');
       const { message, url } = await withScreenshot(a, 'image/png', PNG_HEAD);
       await a.get(`${feedbackScreenshotsPath(message.id)}/first`).expect(400);
       await anonymous(t.app).get(url).expect(401);

@@ -10,6 +10,7 @@ import {
   ParseUUIDPipe,
   Post,
   Res,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -22,6 +23,7 @@ import {
 } from '@nestjs/swagger';
 import type { AuthUser } from '@shelfmark/contracts';
 import type { Response } from 'express';
+import { PrivateNoStoreInterceptor } from '../common/interceptors/private-no-store.interceptor';
 import { CurrentUser } from '../common/auth/current-user.decorator';
 import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
 import { RETRY_AFTER_HEADER } from '../common/rate-limit/models/retry-after-header.const';
@@ -87,15 +89,26 @@ export class FeedbackMessagesController {
     description: 'Invalid image, already 3 screenshots, or too long after sending',
   })
   @ApiNotFoundResponse({ description: 'Foreign or missing message' })
-  attachScreenshot(
+  @ApiTooManyRequestsResponse({ description: 'Daily screenshot bytes used up (Retry-After)' })
+  async attachScreenshot(
     @CurrentUser() user: AuthUser,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() body: FeedbackScreenshotUploadDto,
+    @Res({ passthrough: true }) res: Response,
   ): Promise<FeedbackMessageResponseDto> {
-    return this.messages.attachScreenshot(user.id, id, body);
+    try {
+      return await this.messages.attachScreenshot(user.id, id, body);
+    } catch (error) {
+      if (error instanceof FeedbackLimitExceededException) {
+        res.setHeader(RETRY_AFTER_HEADER, String(error.retryAfterSeconds));
+      }
+      throw error;
+    }
   }
 
   @Get(':id/screenshots/:position')
+  // Before the pipes: an error answer (a bad id or position, a 404) is never cached either.
+  @UseInterceptors(PrivateNoStoreInterceptor)
   @ApiOperation({ summary: 'One screenshot of one of your messages' })
   @ApiOkResponse({ description: 'The image bytes with the stored type' })
   @ApiNotFoundResponse({ description: 'Foreign, missing or no screenshot at this position' })
