@@ -304,7 +304,8 @@ test.describe('select links and bulk actions (mock API)', () => {
         const lastCard = cards(page).last();
         await expect(lastCard).toBeVisible();
         const barTop = (await page.locator('ui-bulk-bar').boundingBox())?.y ?? 0;
-        expect(await bottom(lastCard)).toBeLessThanOrEqual(barTop);
+        // Sub-pixel rounding: the last row may end exactly on the bar's top edge.
+        expect(await bottom(lastCard)).toBeLessThanOrEqual(barTop + 1);
       });
     }
 
