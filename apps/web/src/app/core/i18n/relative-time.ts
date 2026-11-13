@@ -17,6 +17,11 @@ export function relativeTimeFormat(locale: string): Intl.RelativeTimeFormat {
   return format;
 }
 
+/** Forgets the formatters built so far, so a spec can watch the first build of a locale again. */
+export function resetRelativeTimeFormats(): void {
+  formats.clear();
+}
+
 /**
  * "3 weeks ago", "yesterday", "now": the ISO timestamp relative to `now`, in the given locale
  * (`Intl.RelativeTimeFormat`, so it follows the active language). Future times count as now.

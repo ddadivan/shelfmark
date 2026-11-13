@@ -215,6 +215,16 @@
         }
       }
     },
+    "serve-prebuilt": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "options": {
+        "port": 4200,
+        "staticFilePath": "dist/apps/web-e2e-build/browser",
+        "spa": true,
+        "watch": false
+      }
+    },
     "test": {
       "executor": "@angular/build:unit-test",
       "options": {
@@ -225,7 +235,13 @@
       },
       "configurations": {
         "coverage": {
-          "coverage": true
+          "coverage": true,
+          "coverageThresholds": {
+            "statements": 88,
+            "branches": 83,
+            "functions": 83,
+            "lines": 89
+          }
         }
       },
       "dependsOn": ["ui:icons"]

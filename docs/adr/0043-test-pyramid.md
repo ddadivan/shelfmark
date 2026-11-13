@@ -1,6 +1,6 @@
 # 0043. Test pyramid: e2e for journeys, tagged mobile runs, component tests with harnesses
 
-- Status: Proposed
+- Status: Accepted (by the author, Nov 13, 2026)
 - Date: 2026-11-13
 - Source: issue #349, `docs/PROJECT.md` 9.4 and 9.5, plan in [`docs/test-rebalance-349.md`](../test-rebalance-349.md); partly supersedes [ADR 0008](0008-e2e-playwright-chromium.md) ("every future e2e scenario runs on both desktop and phone")
 

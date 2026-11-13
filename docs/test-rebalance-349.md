@@ -1,6 +1,6 @@
 # Test rebalance (#349): audit and plan
 
-Goal ([#349](https://github.com/ddadivan/shelfmark/issues/349)): a full e2e run under ~3 minutes in CI with almost no flaky tests, without losing real coverage. The suite should look like a pyramid: many unit and component tests, contract and visual tests, and e2e only for user journeys. The decision is recorded in [ADR 0043](adr/0043-test-pyramid.md) (proposed).
+Goal ([#349](https://github.com/ddadivan/shelfmark/issues/349)): a full e2e run under ~3 minutes in CI with almost no flaky tests, without losing real coverage. The suite should look like a pyramid: many unit and component tests, contract and visual tests, and e2e only for user journeys. The decision is recorded in [ADR 0043](adr/0043-test-pyramid.md) (accepted by the author on Nov 13, 2026). The CI polish that followed (build once, caches, web coverage threshold, flaky report) is [#362](https://github.com/ddadivan/shelfmark/issues/362), section 4.4.
 
 ## 0. Measured baseline
 
@@ -275,6 +275,28 @@ The desktop set did not reach the ~150 of the plan: what is left needs a browser
 
 **CI:** web e2e in 3 shards (was 5). Root files: `nx show projects --affected --files=vercel.json` (and `middleware.ts`, `docs/SETUP.md`) already selects `web-csp` (and `web-e2e`), through the inputs of the `web-csp` test target set in phase 2a; no change needed. `tools/ci/pr-browser-tests.sh` needs no spec name change (no spec file was removed or renamed).
 
+### 4.4 CI polish (#362, done)
+
+After the rebalance the required checks took about 4.5 minutes. #362 removes repeated work and adds two signals:
+
+- **Build once.** The `web-build` job builds `web:build:e2e` and uploads `dist/apps/web-e2e-build` as the `web-e2e-build` artifact (kept 1 day). The `e2e web N/3` shards and `lighthouse` do not `need` it: they start with it, run their own setup (checkout, `npm ci`, Chromium) while it builds, then wait for the artifact (`tools/ci/wait-for-artifact.sh` polls the run's artifacts and fails when `web-build` failed). With `E2E_PREBUILT=true` the Playwright webServer runs `web:serve-prebuilt` (the Nx file server on the downloaded folder, no build target); Lighthouse runs `tools/lighthouse/run.mjs` on it instead of `web-e2e:lighthouse`. Without the artifact both build on their own, as before. `web-build` skips the build on a PR that leaves `web-e2e` unaffected; pushes always build. The Visual workflow keeps its own build in the Playwright container: it is a separate workflow, so that the `visual:update` label reruns it alone.
+- **Two browser jobs.** The `e2e-shard` matrix is split into `e2e-web` and `e2e-storybook` (same check names), so the Storybook shards never wait for the bundle. The required `e2e` job also needs `web-build`, so a failed build cannot turn into skipped shards and a green check.
+- **Caches.** `~/.cache/ms-playwright` is cached per OS and `playwright-core` version in every browser job; `tools/ci/install-chromium.sh` keeps the `--with-deps` install with the browser-only fallback (the system packages are still installed on every run). The npm cache was already restored in every job (`actions/setup-node`, `cache: npm`); `lighthouse` now also keys it by `tools/lighthouse/package-lock.json`. `node_modules` is not cached: `npm ci` runs the reviewed install scripts (ADR 0020).
+- **Web coverage threshold.** The `unit web` entry runs `web:test:coverage`, which checks statements 88, branches 83, functions 83, lines 89 (measured on Nov 13, 2026: 89.44 / 84.08 / 84.94 / 90.38%).
+- **Flaky report.** On CI, `apps/web-e2e/reporters/flaky.reporter.ts` writes the tests that passed only on a retry; the `e2e` job lists them in its summary (`tools/ci/flaky-summary.mjs`) with a warning annotation each. Flakes fail nothing. Next step from the risk table: `failOnFlakyTests` after two clean weeks.
+- **Last single-purpose e2e test.** "moving a folder under a collapsed parent puts focus on that parent row" moved to `tree.component.spec` (`restoreFocusNear`) and `folder-actions.service.spec`.
+
+Expected durations (estimates; the first runs on GitHub prove them):
+
+| Job | What | Expected |
+| --- | --- | --- |
+| `web-build` | setup (~1 min), `web:build:e2e` (~0.5–1 min cold), upload of ~17 MB | ~2 min |
+| `e2e web N/3` | setup and Chromium (~1.5 min, while `web-build` runs), wait (~0–0.5 min), download, tests (~2 min) | ~3.5–4 min (was ~4.5) |
+| `e2e storybook N/3` | unchanged, plus the Chromium cache | ~3.5 min |
+| `lighthouse` | setup, Lighthouse CI install, wait, three runs, no build | ~0.5–1 min shorter |
+| `unit web` | the web unit tests with coverage | +~10 s |
+| `e2e` (required) | after the shards: the flaky summary (checkout only), the HTML report on a failure | +~0.2 min |
+
 ## 5. Risks
 
 | Risk                                                                                                   | Mitigation                                                                                                                                                                                                                                               |
@@ -283,7 +305,7 @@ The desktop set did not reach the ~150 of the plan: what is left needs a browser
 | Touch-only behaviour (hover-only controls always visible, long press, swipe)                          | every such test is tagged `@phone` or `@mobile` (3.2); a `hasTouch` check in a test body is the hint when tagging new tests                                                                                                                             |
 | A new test forgets its tag                                                                             | the tagging rule goes into ADR 0043 and the `test-engineer` brief. `code-reviewer` checks: a branch on `isCompact` / `isPhone` / `hasTouch` → a tag                                                                                                      |
 | Shard imbalance                                                                                        | Playwright splits by test count, and runs have similar lengths (p90 5.9 s, max 17 s), so the imbalance is small                                                                                                                                          |
-| Cold web build in each shard (the baseline had a cache hit)                                            | measure in the phase 1 PR. If a cold build adds >1 min, build once in a job and pass `dist/` as an artifact (costs ~1 min of serial wall time; decide on numbers)                                                                                         |
+| Cold web build in each shard (the baseline had a cache hit)                                            | done in #362 (4.4): `web-build` builds the bundle once; the shards start at the same time and wait for its artifact only after their own setup |
 | Fixed waits (flake sources)                                                                            | `landing.spec` 332 (4000), 389 (3500), 440 (1500), 482 / 522 (6000), 185, 555; `appearance` 231; `bulk-actions` 340; `library-settings` 199; `layout-shift` 55 / 77; `recent-extras` 47; `sign-in` 255; `overlay-close-shift` 85; `csp` 71; `support/trash.ts` 88 (650); `support/touch.ts` hold. Negative assertions ("does not happen in N ms") move to fake-timer component tests in phase 2. Phase 1 already removes the 6000 ms wait at 522 |
 | Retries 1 shows real flakes as failures                                                                | intended. Add `failOnFlakyTests` after two clean weeks                                                                                                                                                                                                   |
 | CI wall is still ~7.5 min (Storybook axe 7.1 min, `lint-test-build` 7.4 min)                           | done in phase 1 (D5, 3.5): Storybook axe in 3 shards; `lint-test-build` split into `static`, `build` and a `unit` matrix with an aggregate job of the same name                                                                                     |
@@ -291,7 +313,7 @@ The desktop set did not reach the ~150 of the plan: what is left needs a browser
 
 ## 6. Decisions
 
-Decided by the tech lead on Nov 13, 2026 (the ADR stays Proposed until the author accepts it):
+Decided by the tech lead on Nov 13, 2026; the author accepted ADR 0043 the same day:
 
 - **D1. Yes.** Desktop runs everything; tablet only `@mobile` / `@tablet`; phone only `@mobile` / `@phone` (Playwright tags, per-project `grep`). The constant is `E2E_TAG` (`as const`) in `apps/web-e2e/src/models/e2e-tag.const.ts`. A test that sets its own viewport is never tagged (exception: the touch-only overflow matrix, `@phone`, see ADR 0043).
 - **D2. Yes.** The 390px width is dropped from the overflow matrix.

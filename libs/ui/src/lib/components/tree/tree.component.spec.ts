@@ -145,6 +145,51 @@ describe('TreeComponent', () => {
       expect(document.activeElement).toBe(item(TREE_STORY_NAME.Clothes));
     });
 
+    // The flow of "Move to…" on a focused row (#362, replaces the e2e "moving a folder under a
+    // collapsed parent puts focus on that parent row"): the row opens a dialog, moves under a
+    // collapsed folder, the dialog closes and focus would fall to <body>.
+    it('restoreFocusNear gives a focused row that moved under a collapsed folder to that folder', async () => {
+      const { component, host, fixture, item, key } = await focusSetup();
+      item(TREE_STORY_NAME.Angular).focus();
+      const dialog = document.createElement('button');
+      document.body.appendChild(dialog);
+      dialog.focus();
+      const moved = TREE_STORY_NESTED[0].children?.[0] as UiTreeNode;
+      host.nodes.set([
+        { ...TREE_STORY_NESTED[0], children: [TREE_STORY_NESTED[0].children?.[1] as UiTreeNode] },
+        { ...TREE_STORY_NESTED[1], children: [moved, ...(TREE_STORY_NESTED[1].children ?? [])] },
+        TREE_STORY_NESTED[2],
+      ]);
+      await settle(fixture);
+      dialog.remove();
+      expect(document.activeElement).toBe(document.body);
+
+      expect(component.restoreFocusNear(TREE_STORY_ID.Angular)).toBe(TREE_STORY_ID.Clothes);
+      expect(document.activeElement).toBe(item(TREE_STORY_NAME.Clothes));
+      // The folder is the active row too, so the keyboard carries on from it.
+      await key(item(TREE_STORY_NAME.Clothes), KEYBOARD_KEY.ArrowRight);
+      expect(item(TREE_STORY_NAME.Clothes).getAttribute('aria-expanded')).toBe('true');
+      expect(item(TREE_STORY_NAME.Clothes).getAttribute('tabindex')).toBe('0');
+    });
+
+    it('restoreFocusNear skips hidden ancestors up to the first visible one', async () => {
+      const { component, host, fixture, item } = await focusSetup();
+      const moved = TREE_STORY_NESTED[0].children?.[0] as UiTreeNode;
+      const [shoes, ...otherClothes] = TREE_STORY_NESTED[1].children ?? [];
+      // Angular moves under Shoes, which sits in the collapsed Clothes: both rows are hidden.
+      host.nodes.set([
+        { ...TREE_STORY_NESTED[0], children: [TREE_STORY_NESTED[0].children?.[1] as UiTreeNode] },
+        {
+          ...TREE_STORY_NESTED[1],
+          children: [{ ...(shoes as UiTreeNode), children: [moved] }, ...otherClothes],
+        },
+        TREE_STORY_NESTED[2],
+      ]);
+      await settle(fixture);
+      expect(component.restoreFocusNear(TREE_STORY_ID.Angular)).toBe(TREE_STORY_ID.Clothes);
+      expect(document.activeElement).toBe(item(TREE_STORY_NAME.Clothes));
+    });
+
     it('focusRow makes the row the active one, so the arrow keys act from it', async () => {
       const { component, item, key } = await focusSetup();
       // Clothes is a collapsed folder; a plain DOM focus would leave Aria's active row on All links.
