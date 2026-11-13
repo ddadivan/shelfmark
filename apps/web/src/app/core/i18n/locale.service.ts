@@ -14,7 +14,7 @@ import { activeLang, setActiveLang } from './active-lang';
 import { APP_LANG } from './models/app-lang.const';
 import type { AppLang } from './models/app-lang.type';
 import { LANGUAGE_STORAGE_KEY } from './models/language-storage-key.const';
-import { relativeTime } from './relative-time';
+import { relativeTime, relativeTimeFormat } from './relative-time';
 import { resolveAppLang, resolveFirstDay, resolveIntlLocale } from './resolve-locale';
 
 const STORAGE_EVENT = 'storage';
@@ -126,6 +126,7 @@ export class LocaleService {
         view.removeEventListener(LANGUAGE_CHANGE_EVENT, onLanguages);
       });
     }
+    this.warmRelativeTime();
     await this.switchTo(this.wantedLang());
     this.initialized = true;
   }
@@ -235,6 +236,16 @@ export class LocaleService {
   /** A number with the active language's grouping (1,234 / 1 234 / 1.234). */
   formatNumber(value: number): string {
     return new Intl.NumberFormat(this.locale()).format(value);
+  }
+
+  /**
+   * Builds the relative-time formatter of the wanted locale in a task of its own, while the
+   * language file downloads: the first one loads ICU data, which would otherwise land in the first
+   * render's long task (the landing's app preview, a library of cards; #359).
+   */
+  private warmRelativeTime(): void {
+    const locale = resolveIntlLocale(this.wantedLang(), this.browserLangs());
+    this.document.defaultView?.setTimeout(() => relativeTimeFormat(locale));
   }
 
   private async switchTo(lang: AppLang): Promise<void> {

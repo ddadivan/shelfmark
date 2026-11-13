@@ -59,6 +59,19 @@ describe('LocaleService', () => {
     expect(locale.locale()).toBe('en-US');
   });
 
+  it('builds the relative-time formatter in a task of its own before the first render (#359)', async () => {
+    // A region no other spec uses: formatters are cached per locale for the whole module.
+    stubLanguages(['it-CH', 'en']);
+    const timer = vi.spyOn(window, 'setTimeout');
+    const build = vi.spyOn(Intl, 'RelativeTimeFormat');
+    const { locale } = setup();
+    await locale.init();
+    const warm = timer.mock.calls.find(([, delay]) => delay === undefined)?.[0];
+    expect(warm).toBeTypeOf('function');
+    (warm as () => void)();
+    expect(build).toHaveBeenCalledWith('it-CH', { numeric: 'auto' });
+  });
+
   it('matches the browser language before the first render', async () => {
     stubLanguages(['de-DE', 'en']);
     const { locale, transloco } = setup();
