@@ -10,6 +10,10 @@ export default defineConfig({
   resolve: {
     // Workspace library, resolved from source (runtime imports such as AUTH_PROVIDER).
     alias: {
+      '@shelfmark/contract-tests': resolve(
+        import.meta.dirname,
+        '../../libs/shared/contract-tests/src/index.ts',
+      ),
       '@shelfmark/contracts': resolve(
         import.meta.dirname,
         '../../libs/shared/contracts/src/index.ts',
