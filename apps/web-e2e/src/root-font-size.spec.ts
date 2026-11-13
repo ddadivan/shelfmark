@@ -45,22 +45,25 @@ async function openApp(page: Page, width: number): Promise<void> {
 test.describe('root font size on wide viewports', () => {
   test.skip(({ isMobile }) => isMobile, 'wide viewports are a desktop matter');
 
-  for (const { width, fontSize } of APP_STEPS) {
-    test(`the app is ${fontSize} at ${width}px wide`, async ({ page }) => {
-      await openApp(page, width);
-      await expect.poll(() => rootFontSize(page)).toBe(fontSize);
-    });
-  }
+  // One test per page walks its widths (#349): the same checks, one page load each.
+  test('the app steps its root font size with the width', async ({ page }) => {
+    await openApp(page, APP_STEPS[0].width);
+    for (const { width, fontSize } of APP_STEPS) {
+      await page.setViewportSize({ width, height: 1080 });
+      await expect.poll(() => rootFontSize(page), { message: `at ${width}px` }).toBe(fontSize);
+    }
+  });
 
   for (const { path, host, steps } of PUBLIC_PAGES) {
-    for (const { width, fontSize } of steps) {
-      test(`${host} is ${fontSize} at ${width}px wide`, async ({ page }) => {
+    test(`${host} steps its root font size with the width`, async ({ page }) => {
+      await page.setViewportSize({ width: steps[0].width, height: 1080 });
+      await page.goto(path);
+      await expect(page.locator(host)).toBeAttached();
+      for (const { width, fontSize } of steps) {
         await page.setViewportSize({ width, height: 1080 });
-        await page.goto(path);
-        await expect(page.locator(host)).toBeAttached();
-        await expect.poll(() => rootFontSize(page)).toBe(fontSize);
-      });
-    }
+        await expect.poll(() => rootFontSize(page), { message: `at ${width}px` }).toBe(fontSize);
+      }
+    });
   }
 
   test('the text size setting multiplies on top of the base', async ({ page }) => {

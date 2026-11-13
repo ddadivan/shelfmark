@@ -1,4 +1,5 @@
 import type { Locator, Page } from '@playwright/test';
+import { settled } from './support/settled';
 import { expect, test } from './support/test';
 import { openCardEdit } from './support/a11y-flows';
 import { seedSession } from './support/mock-session';
@@ -82,7 +83,8 @@ test.describe('overlays do not move content when an outside click closes them (m
     const dialog = await openCardEdit(page);
     const select = dialog.getByRole('combobox', { name: 'Folder' });
     const watched = [select, dialog.getByLabel('Title', { exact: true }), dialog];
-    await page.waitForTimeout(500);
+    // The dialog's enter animation has ended before the boxes are measured.
+    await settled(page);
     const before = await boxes(watched);
     await observeShifts(page);
     await watchStrayHosts(page);

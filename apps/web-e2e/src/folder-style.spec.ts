@@ -1,8 +1,7 @@
 import { type Locator, type Page } from '@playwright/test';
 import { MOCK_FIXTURE } from './models/mock-fixture.const';
 import { openFeed, pickFolderMenuItem } from './support/a11y-flows';
-import { openSettingsSection } from './support/mock-session';
-import { gotoWithSidebar, isCompact, openSidebar, tabBar } from './support/sidebar';
+import { isCompact, openSidebar, tabBar } from './support/sidebar';
 import { settled } from './support/settled';
 import { expect, test } from './support/test';
 import { Finger } from './support/touch';
@@ -11,7 +10,6 @@ import { E2E_TAG } from './models/e2e-tag.const';
 
 const READING = MOCK_FIXTURE.readingName;
 const NOTES = 'Notes';
-const PIN_LIMIT = 7;
 
 // The mock state lives in the page: after the first load every step navigates inside the app.
 test.describe('folder style and pins (mock API)', () => {
@@ -41,16 +39,6 @@ test.describe('folder style and pins (mock API)', () => {
       .locator('label.ui-choice', { has: dialog.page().getByLabel(name, { exact: true }) })
       .click();
   }
-
-  // The menu of one trigger; closed menus of other cards stay in the DOM while they fade out.
-  async function menuItem(trigger: Locator, name: string): Promise<Locator> {
-    await trigger.click();
-    const menuId = await trigger.getAttribute('aria-controls');
-    return trigger.page().locator(`#${menuId}`).getByRole('menuitem', { name });
-  }
-
-  const cardMenuItem = (card: Locator, item: string) =>
-    menuItem(card.getByRole('button', { name: /^Actions for / }), item);
 
   // From a folder page or Settings back to a place with the folder tree (the Library tab on a phone).
   async function backToTree(page: Page): Promise<void> {
@@ -104,7 +92,9 @@ test.describe('folder style and pins (mock API)', () => {
     },
   );
 
-  test('own colors and an emoji: the swatches stay on one line, a "+" swatch adds a colour, one emoji replaces the icon (#335)', async ({
+  // The dialog's logic (own colours, emoji, icon toggle, Reset, radio names) is in
+  // folder-actions.style.spec.ts; this checks the geometry only a browser lays out.
+  test('the style dialog lays out its swatches on one line and folds the icon grid by height (#335, #350)', async ({
     page,
   }) => {
     await pickFolderMenuItem(page, READING, 'Color and icon…');
@@ -119,82 +109,11 @@ test.describe('folder style and pins (mock API)', () => {
     );
     expect(new Set(tops).size).toBe(1);
 
-    // "+" opens the colour picker; a finished colour is kept as a swatch and chosen.
-    await dialog.getByRole('button', { name: 'Add your own color' }).click();
-    const hex = dialog.getByRole('textbox', { name: 'Hex code' });
-    await expect(hex).toBeFocused();
-    await expect(dialog.getByRole('slider', { name: 'Hue' })).toBeVisible();
-    await hex.fill('#3a7bd5');
-    await hex.press('Enter');
-    // Typing only previews; the explicit button keeps and chooses the colour (#350).
-    await expect(dialog.getByRole('radio', { name: 'Your color #3a7bd5' })).toHaveCount(0);
-    await dialog.getByRole('button', { name: 'Add color', exact: true }).click();
-    await expect(dialog.getByRole('radio', { name: 'Your color #3a7bd5' })).toBeChecked();
-    await expect(hex).toHaveCount(0);
-
-    // One emoji replaces the icon; anything else is refused.
-    const emoji = dialog.getByRole('textbox', { name: 'Emoji' });
-    await emoji.fill('pizza');
-    await dialog.getByRole('button', { name: 'Save' }).click();
-    await expect(dialog.getByText('Enter exactly one emoji.')).toBeVisible();
-    await emoji.fill('🍕');
-    await expect(dialog.locator('.ui-folder-icon__emoji').first()).toHaveText('🍕');
-    await dialog.getByRole('button', { name: 'Save' }).click();
-    await expect(dialog).toHaveCount(0);
-
-    await openSidebar(page);
-    await expect(page.locator('.ui-folder-icon--own').first()).toBeVisible();
-    await expect(page.locator('.ui-folder-icon__emoji').first()).toHaveText('🍕');
-  });
-
-  test('an own color swatch is removed with Delete, with Undo; the folder keeps the colour it wears (#350)', async ({
-    page,
-  }, testInfo) => {
-    test.skip(testInfo.project.use.hasTouch === true, 'the keyboard path is checked on desktop');
-    await pickFolderMenuItem(page, READING, 'Color and icon…');
-    const dialog = page.getByRole('dialog', { name: READING });
-    const plus = dialog.getByRole('button', { name: 'Add your own color' });
-    const hex = dialog.getByRole('textbox', { name: 'Hex code' });
-    for (const colour of ['#3a7bd5', '#1d4f91']) {
-      await plus.click();
-      await hex.fill(colour);
-      await dialog.getByRole('button', { name: 'Add color', exact: true }).click();
-      await expect(hex).toHaveCount(0);
-    }
-    const first = dialog.getByRole('radio', { name: 'Your color #3a7bd5' });
-    const second = dialog.getByRole('radio', { name: 'Your color #1d4f91' });
-    await expect(second).toBeChecked();
-
-    await first.focus();
-    await page.keyboard.press('Delete');
-    await expect(first).toHaveCount(0);
-    // The colour the folder wears stays, and has no "×".
-    await expect(second).toBeChecked();
-    await expect(dialog.locator('.ui-choice__remove')).toHaveCount(1);
-    const toast = page.getByRole('status').filter({ hasText: 'Color removed' });
-    await expect(toast).toBeVisible();
-    await toast.getByRole('button', { name: 'Undo' }).click();
-    await expect(first).toBeVisible();
-  });
-
-  test('the icon grid shows four full rows, a toggle expands every icon, no inner scroll (#335)', async ({
-    page,
-  }) => {
-    await pickFolderMenuItem(page, READING, 'Color and icon…');
-    const dialog = page.getByRole('dialog', { name: READING });
-    await expect(dialog).toBeVisible();
-    const toggle = dialog.getByRole('button', { name: /^Show all icons \(\d+\)$/ });
-    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-    const more = dialog.locator('.folder-style__more');
     // Collapsed: the rest of the icons are out of the tab order and take no room.
+    const toggle = dialog.getByRole('button', { name: /^Show all icons \(\d+\)$/ });
+    const more = dialog.locator('.folder-style__more');
     await expect(more).toHaveCSS('visibility', 'hidden');
     expect((await more.boundingBox())?.height ?? 0).toBeLessThan(2);
-    await expect(
-      dialog
-        .locator('[role="radiogroup"][aria-labelledby="folder-style-icon"]')
-        .first()
-        .locator('input'),
-    ).toHaveCount(28);
 
     // The toggle sits closer to the icon grid above than to the emoji field below (#350).
     const [grid, toggleBox, emoji] = await Promise.all([
@@ -209,55 +128,9 @@ test.describe('folder style and pins (mock API)', () => {
     const below = (emoji?.y ?? 0) - ((toggleBox?.y ?? 0) + (toggleBox?.height ?? 0));
     expect(below).toBeGreaterThan(above * 2);
 
-    await expect(toggle).toHaveText('Show all icons (63)');
-
     await toggle.click();
-    await expect(dialog.getByRole('button', { name: 'Show fewer' })).toHaveAttribute(
-      'aria-expanded',
-      'true',
-    );
     await expect(more).toHaveCSS('visibility', 'visible');
     await expect.poll(async () => (await more.boundingBox())?.height ?? 0).toBeGreaterThan(80);
-    // 63 icons are nine full rows of seven: the last row is full (#350).
-    await expect(
-      dialog.locator('[role="radiogroup"][aria-labelledby="folder-style-icon"] input'),
-    ).toHaveCount(63);
-    // The arrow keys run on through the expanded icons (one radio name).
-    await dialog.getByRole('radio', { name: 'Leaf', exact: true }).focus();
-    await page.keyboard.press('ArrowRight');
-    await expect(dialog.getByRole('radio', { name: 'Bookmark', exact: true })).toBeFocused();
-    await dialog.getByRole('button', { name: 'Show fewer' }).click();
-    await expect(more).toHaveCSS('visibility', 'hidden');
-  });
-
-  test('the dialog radio groups move with the arrow keys, Reset goes back to graphite', async ({
-    page,
-  }) => {
-    await pickFolderMenuItem(page, READING, 'Color and icon…');
-    const dialog = page.getByRole('dialog', { name: READING });
-    const sage = dialog.getByRole('radio', { name: 'Sage', exact: true });
-    await choose(dialog, 'Sage');
-    await sage.focus();
-    await page.keyboard.press('ArrowRight');
-    await expect(dialog.getByRole('radio', { name: 'Ocean', exact: true })).toBeChecked();
-
-    await dialog.getByRole('button', { name: 'Reset' }).click();
-
-    await expect(dialog.getByRole('radio', { name: 'Graphite', exact: true })).toBeChecked();
-    await dialog.getByRole('button', { name: 'Cancel' }).click();
-    await expect(dialog).toHaveCount(0);
-  });
-
-  test('pins and unpins a folder from its menu', async ({ page }) => {
-    await expectNoPins(page);
-
-    await pickFolderMenuItem(page, READING, 'Pin to sidebar');
-    await expect(pinned(page).getByRole('heading', { name: 'Pinned' })).toBeVisible();
-    await expect(pinnedItems(page)).toHaveCount(1);
-    await expect(pinnedItems(page).first()).toContainText(READING);
-
-    await pickFolderMenuItem(page, READING, 'Unpin from sidebar');
-    await expectNoPins(page);
   });
 
   test(
@@ -284,51 +157,6 @@ test.describe('folder style and pins (mock API)', () => {
       await expect(pinnedItems(page).first()).toContainText(READING);
     },
   );
-
-  test('pins a link from its card menu and unpins it from its Pinned row', async ({ page }) => {
-    const card = page.locator('ui-card').first();
-    const title = (await card.getByRole('link').first().innerText()).trim();
-    await (await cardMenuItem(card, 'Pin to sidebar')).click();
-
-    await openSidebar(page);
-    await expect(pinnedItems(page)).toHaveCount(1);
-    await expect(pinnedItems(page).first()).toContainText(title);
-
-    const row = pinnedItems(page).first();
-    if (!isCompact(page)) {
-      await row.hover();
-    }
-    await row.getByRole('button', { name: `Unpin ${title}` }).click();
-    await expectNoPins(page);
-  });
-
-  test('reorders pinned items with Alt+ArrowDown / Alt+ArrowUp; rows have no "…" menu', async ({
-    page,
-  }) => {
-    await createNotes(page);
-    await pickFolderMenuItem(page, READING, 'Pin to sidebar');
-    await pickFolderMenuItem(page, NOTES, 'Pin to sidebar');
-    await expect(pinnedItems(page)).toHaveCount(2);
-    await expect(pinnedItems(page).first()).toContainText(READING);
-
-    const readingLink = pinned(page).getByRole('link', { name: new RegExp(`^${READING}\\b`) });
-    await readingLink.focus();
-    await page.keyboard.press('Alt+ArrowDown');
-    await expect(pinnedItems(page).first()).toContainText(NOTES);
-    await expect(readingLink).toBeFocused();
-    await expect(page.locator('.cdk-live-announcer-element')).toHaveText(
-      'Moved down, position 2 of 2',
-    );
-
-    await page.keyboard.press('Alt+ArrowUp');
-    await expect(pinnedItems(page).first()).toContainText(READING);
-    await expect(page.locator('.cdk-live-announcer-element')).toHaveText(
-      'Moved up, position 1 of 2',
-    );
-
-    // Unpin is the only row action, so there is no "…" menu (#314).
-    await expect(pinned(page).getByRole('button', { name: /^Actions for / })).toHaveCount(0);
-  });
 
   /** The reorder line of a list (#315) in viewport px, or `null` while none is drawn. */
   interface DropLine {
@@ -393,30 +221,6 @@ test.describe('folder style and pins (mock API)', () => {
 
   const folderNames = (page: Page) =>
     page.locator('app-sidebar ui-tree [data-ui-tree-id] .ui-tree__name').allTextContents();
-
-  test('reorders folders with Alt+ArrowUp on the focused row, announced (#314)', async ({
-    page,
-  }) => {
-    await createNotes(page);
-    const before = await folderNames(page);
-    expect(before.indexOf(NOTES)).toBeGreaterThan(before.indexOf(READING));
-
-    const notes = page.getByRole('treeitem', { name: new RegExp(`^${NOTES}\\b`) });
-    const url = page.url();
-    await notes.focus();
-    await page.keyboard.press('Alt+ArrowUp');
-
-    await expect
-      .poll(async () => {
-        const names = await folderNames(page);
-        return names.indexOf(NOTES) < names.indexOf(READING);
-      })
-      .toBe(true);
-    await expect(notes).toBeFocused();
-    await expect(page.locator('.cdk-live-announcer-element')).toHaveText(/^Moved up, position/);
-    // Not read as a plain arrow by the tree, and no other page opened.
-    expect(page.url()).toBe(url);
-  });
 
   test('reorders folders by dragging inside the Folders section (desktop, #314)', async ({
     page,
@@ -628,75 +432,5 @@ test.describe('folder style and pins (mock API)', () => {
       await expect(pinnedItems(page).first()).toContainText(NOTES);
       await expect(page).toHaveURL('/library');
     });
-  });
-
-  test('explains the limit with a toast on the eighth pin', async ({ page }) => {
-    const cards = page.locator('ui-card');
-    for (let index = 0; index < PIN_LIMIT; index++) {
-      await (await cardMenuItem(cards.nth(index), 'Pin to sidebar')).click();
-    }
-
-    await (await cardMenuItem(cards.nth(PIN_LIMIT), 'Pin to sidebar')).click();
-
-    await expect(page.getByText('Pinned is full')).toBeVisible();
-    await expect(page.getByText('You can pin up to 7 folders and links.')).toBeVisible();
-    await openSidebar(page);
-    await expect(pinnedItems(page)).toHaveCount(PIN_LIMIT);
-  });
-
-  test('pins a link to the top of its folder, with a Pinned label, and unpins it', async ({
-    page,
-  }) => {
-    await gotoWithSidebar(page, '/links');
-    await page.getByRole('treeitem', { name: new RegExp(`^${READING}\\b`) }).click();
-    await expect(page.getByRole('heading', { level: 1, name: READING })).toBeVisible();
-    const cards = page.locator('ui-card');
-    await expect(cards.nth(1)).toBeVisible();
-    await settled(page);
-    const title = (await cards.nth(1).getByRole('link').first().innerText()).trim();
-    const second = cards.filter({ has: page.getByText(title, { exact: true }) });
-
-    await (await cardMenuItem(second, 'Pin to top')).click();
-
-    const first = cards.first();
-    await expect(first).toContainText(title);
-    await expect(first).toContainText('Pinned');
-
-    await (await cardMenuItem(first, 'Unpin from top')).click();
-    await expect(cards.first()).not.toContainText('Pinned');
-  });
-
-  test('"Pin to top" is only offered inside a folder', async ({ page }) => {
-    const card = page.locator('ui-card').first();
-
-    await expect(await cardMenuItem(card, 'Pin to sidebar')).toBeVisible();
-    await expect(await cardMenuItem(card, 'Pin to top')).toHaveCount(0);
-  });
-
-  test('turning Folder colors off shows every folder in graphite', async ({ page }) => {
-    await chooseStyle(page, 'Clay', 'Star');
-    await openSidebar(page);
-    await expect(coloured(page, 'clay').first()).toBeVisible();
-
-    // Folder colors live only in Appearance since #315.
-    await openSettingsSection(page, 'Appearance');
-    await settled(page);
-    await page.getByRole('switch', { name: 'Folder colors' }).click();
-    await expect(page.getByRole('switch', { name: 'Folder colors' })).not.toBeChecked();
-
-    await backToTree(page);
-    await expect(coloured(page, 'clay')).toHaveCount(0);
-    await expect(coloured(page, 'graphite').first()).toBeVisible();
-  });
-
-  test('Settings › Library has no pinned or tags rows: they are managed in place (#315)', async ({
-    page,
-  }) => {
-    await openSettingsSection(page, 'Library');
-    await settled(page);
-    await expect(page.getByRole('heading', { name: 'Trash', level: 2 })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Edit pinned' })).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Manage tags' })).toHaveCount(0);
-    await expect(page.getByRole('switch', { name: 'Folder colors' })).toHaveCount(0);
   });
 });

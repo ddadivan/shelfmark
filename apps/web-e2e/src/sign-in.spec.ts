@@ -46,13 +46,6 @@ test.describe('sign-in flow (mock auth)', () => {
     await expect(page).toHaveURL(/\/sign-in\?returnUrl=%2Flinks$/);
   });
 
-  test('a signed-in user is kept away from sign-in', async ({ page }) => {
-    await seedSession(page);
-    await page.goto('/sign-in');
-
-    await expect(page).toHaveURL(/\/links$/);
-  });
-
   test('the sign-in page fits a 360px phone and shows the expiry reason', async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 780 });
     await page.goto('/sign-in?reason=session-expired');
@@ -161,18 +154,15 @@ test.describe('sign-in flow (mock auth)', () => {
     expect(animations).toBe(0);
   });
 
-  for (const viewport of [
-    { width: 1024, height: 768, cards: 8 },
-    { width: 1280, height: 720, cards: 14 },
-    { width: 1366, height: 768, cards: 14 },
-    { width: 1440, height: 900, cards: 14 },
-    { width: 1920, height: 1080, cards: 14 },
-    { width: 2560, height: 1440, cards: 22 },
-    { width: 3840, height: 2160, cards: 22 },
-  ]) {
-    test(`at ${viewport.width}x${viewport.height} ${viewport.cards} cards sit in the side lanes: no collisions, none under the sign-in card`, async ({
-      page,
-    }) => {
+  test('at 1024, 1440 and 2560px the cards sit in the side lanes: no collisions, none under the sign-in card', async ({
+    page,
+  }) => {
+    for (const viewport of [
+      // One window per card count; drift-layout.spec.ts proves the lanes of every size (#349).
+      { width: 1024, height: 768, cards: 8 },
+      { width: 1440, height: 900, cards: 14 },
+      { width: 2560, height: 1440, cards: 22 },
+    ]) {
       // At rest (reduced motion): the boxes are the resting places.
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
@@ -226,8 +216,8 @@ test.describe('sign-in flow (mock auth)', () => {
           }
         }
       }
-    });
-  }
+    }
+  });
 
   test('with a mouse the cards lean toward the pointer while they keep drifting', async ({
     page,

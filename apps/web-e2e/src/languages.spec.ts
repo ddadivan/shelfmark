@@ -3,7 +3,6 @@ import { COLOR_SCHEME } from './models/color-scheme.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { seedSession } from './support/mock-session';
 import { settled } from './support/settled';
-import { isCompact } from './support/sidebar';
 import { expect, test } from './support/test';
 import { E2E_TAG } from './models/e2e-tag.const';
 
@@ -142,19 +141,6 @@ test.describe('interface languages (mock API)', () => {
     await expect(dates.first()).toHaveText(/^\d{4}-\d{2}-\d{2}$/);
   });
 
-  test('the note field always spell-checks, with no option to turn it off (#326)', async ({
-    page,
-  }) => {
-    await seedSession(page);
-    await page.goto('/settings/language');
-    await expect(page.getByRole('switch', { name: 'Spell-check notes' })).toHaveCount(0);
-    await page.goto('/links');
-    await page.getByRole('button', { name: 'Add link' }).first().click();
-    const dialog = page.getByRole('dialog');
-    await expect(dialog.getByLabel('Note')).toHaveAttribute('spellcheck', 'true');
-    await expect(dialog.getByRole('checkbox', { name: 'Check spelling' })).toHaveCount(0);
-  });
-
   test.describe('with a German browser', () => {
     test.use({ locale: 'de-DE' });
 
@@ -226,50 +212,35 @@ async function isoSample(page: Page): Promise<string> {
 test.describe('interface languages: axe', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
 
-  for (const language of ['fr', 'de']) {
-    for (const colorScheme of Object.values(COLOR_SCHEME)) {
-      const crossed = (language === 'fr') !== (colorScheme === COLOR_SCHEME.Light);
-      test.describe(`${language}, ${colorScheme}`, () => {
-        test.use({ colorScheme });
+  // One scan per language and per theme (#349): contrast depends on the theme, a wrong or
+  // mismatched label on the language. The language settings page has a jsdom axe test
+  // (language.page.spec.ts) and translations.spec.ts keeps every language's keys complete.
+  test.describe('de, dark', () => {
+    test.use({ colorScheme: COLOR_SCHEME.Dark });
 
-        test.beforeEach(async ({ page }) => {
-          await seedLanguage(page, language);
-          await seedSession(page);
-        });
+    test('library', async ({ page }, testInfo) => {
+      await seedLanguage(page, 'de');
+      await seedSession(page);
+      await page.goto('/links');
+      await expect(page.locator('ui-card').first()).toBeVisible();
+      await expect(page.locator('html')).toHaveAttribute('lang', 'de');
+      await settled(page);
+      await expectNoBlockingViolations(page, testInfo);
+    });
+  });
 
-        // Each screen runs once per language and once per theme (#349): contrast depends on the
-        // theme, missing or wrong labels on the language. fr-light and de-dark scan the library and
-        // the language settings, fr-dark and de-light the add link dialog.
-        if (crossed) {
-          test('add link dialog', async ({ page }, testInfo) => {
-            await page.goto('/links');
-            await expect(page.locator('ui-card').first()).toBeVisible();
-            const add = language === 'fr' ? 'Ajouter un lien' : 'Link hinzufügen';
-            await page.getByRole('button', { name: add }).first().click();
-            await expect(page.getByRole('dialog')).toBeVisible();
-            await settled(page);
-            await expectNoBlockingViolations(page, testInfo, { include: '[role="dialog"]' });
-          });
-        } else {
-          test('library', async ({ page }, testInfo) => {
-            await page.goto('/links');
-            await expect(page.locator('ui-card').first()).toBeVisible();
-            await expect(page.locator('html')).toHaveAttribute('lang', language);
-            await settled(page);
-            await expectNoBlockingViolations(page, testInfo);
-          });
+  test.describe('fr, light', () => {
+    test.use({ colorScheme: COLOR_SCHEME.Light });
 
-          test('settings › language', async ({ page }, testInfo) => {
-            await page.goto('/settings/language');
-            await expect(page.locator('ui-flag')).toHaveCount(6);
-            await settled(page);
-            await expectNoBlockingViolations(page, testInfo);
-            if (isCompact(page)) {
-              await expectNoSideScroll(page);
-            }
-          });
-        }
-      });
-    }
-  }
+    test('add link dialog', async ({ page }, testInfo) => {
+      await seedLanguage(page, 'fr');
+      await seedSession(page);
+      await page.goto('/links');
+      await expect(page.locator('ui-card').first()).toBeVisible();
+      await page.getByRole('button', { name: 'Ajouter un lien' }).first().click();
+      await expect(page.getByRole('dialog')).toBeVisible();
+      await settled(page);
+      await expectNoBlockingViolations(page, testInfo, { include: '[role="dialog"]' });
+    });
+  });
 });

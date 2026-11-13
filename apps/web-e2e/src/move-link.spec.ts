@@ -66,66 +66,6 @@ test.describe('move a link to a folder (mock API)', () => {
     await expect(page.getByRole('status').filter({ hasText: `Moved to ${READING}` })).toBeVisible();
   });
 
-  test('lists Unsorted and the nested folders, and marks the current folder, which cannot be chosen', async ({
-    page,
-  }) => {
-    const picker = await openMovePicker(page, 'ui-card');
-    await expect(picker.getByRole('listbox', { name: 'Folders' })).toBeVisible();
-    // The link is in Unsorted: marked, aria-disabled, and a click changes nothing.
-    const current = folderOption(picker, 'Unsorted, Current folder');
-    await expect(current).toHaveAttribute('aria-disabled', 'true');
-    await expect(current).toContainText('Current folder');
-    // `force`: Playwright would wait for an aria-disabled row to become enabled.
-    await current.click({ force: true });
-    await expect(picker).toBeVisible();
-    await expect(page.getByRole('status').filter({ hasText: 'Moved to' })).toHaveCount(0);
-    // Nested rows are named by their path.
-    await expect(folderOption(picker, READING)).toBeVisible();
-    await expect(folderOption(picker, ANGULAR_PATH)).toBeVisible();
-  });
-
-  test('the search filters by name and keeps the ancestors of a match', async ({ page }) => {
-    const picker = await openMovePicker(page, 'ui-card');
-    await picker.getByRole('combobox', { name: 'Search folders' }).fill('angul');
-
-    await expect(folderOption(picker, ANGULAR_PATH)).toBeVisible();
-    await expect(folderOption(picker, READING)).toBeVisible();
-    await expect(picker.getByRole('option', { name: /Unsorted/ })).toHaveCount(0);
-
-    await picker.getByRole('combobox', { name: 'Search folders' }).fill('zzzz');
-    await expect(picker.getByRole('option')).toHaveCount(0);
-    await expect(picker.getByRole('status')).toHaveText('No folders found');
-
-    await picker.getByRole('combobox', { name: 'Search folders' }).fill('angul');
-    await folderOption(picker, ANGULAR_PATH).click();
-    await expect(
-      page.getByRole('status').filter({ hasText: `Moved to ${ANGULAR_PATH}` }),
-    ).toBeVisible();
-  });
-
-  test('the close button keeps the link where it was', async ({ page }) => {
-    const picker = await openMovePicker(page, 'ui-card');
-    await picker.getByRole('button', { name: 'Close' }).click();
-
-    await expect(picker).toBeHidden();
-    await expect(page.getByRole('heading', { name: PASTA, exact: true })).toBeVisible();
-    await expect(page.getByRole('status').filter({ hasText: 'Moved to' })).toHaveCount(0);
-  });
-
-  test('Esc closes the picker and focus returns to the trigger', async ({ page }) => {
-    const picker = await openMovePicker(page, 'ui-card');
-    await page.keyboard.press('Escape');
-
-    await expect(picker).toBeHidden();
-    await expect(page.getByRole('heading', { name: PASTA, exact: true })).toBeVisible();
-    await expect(
-      page
-        .locator('ui-card')
-        .filter({ hasText: PASTA })
-        .getByRole('button', { name: /^Actions for / }),
-    ).toBeFocused();
-  });
-
   test(
     'is a centred dialog on desktop and a bottom sheet below 64em',
     { tag: E2E_TAG.Mobile },
@@ -183,23 +123,6 @@ test.describe('move a link to a folder (mock API)', () => {
       await expect(
         page.getByRole('status').filter({ hasText: `Moved to ${READING}` }),
       ).toBeVisible();
-    });
-
-    test('typing then Enter moves to the first match', async ({ page }) => {
-      const picker = await openMovePicker(page, 'ui-card');
-      await page.keyboard.type('angul');
-      await page.keyboard.press('Enter');
-      // The first match is the ancestor Reading, so Enter chooses it.
-      await expect(picker).toBeHidden();
-      await expect(
-        page.getByRole('status').filter({ hasText: `Moved to ${READING}` }),
-      ).toBeVisible();
-    });
-
-    test('Enter without entering the list does not move anything', async ({ page }) => {
-      const picker = await openMovePicker(page, 'ui-card');
-      await page.keyboard.press('Enter');
-      await expect(picker).toBeVisible();
     });
   });
 });

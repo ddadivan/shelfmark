@@ -3,6 +3,7 @@ import type { LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { DialogService } from '@shelfmark/ui';
 import { of } from 'rxjs';
+import { axeViolations } from '../../../testing/axe';
 import { BulkLinkActionsService } from '../links/services/bulk-link-actions.service';
 import { LINKS_API } from '../links/models/links-api.const';
 import type { LinksApi } from '../links/models/links-api.interface';
@@ -106,6 +107,16 @@ describe('LibraryPage selection', () => {
     expect(
       [...element.querySelectorAll('.ui-bulk-bar__action')].map((b) => b.textContent?.trim()),
     ).toEqual(['Move', 'Tags', 'Favorite', 'Open all', 'Copy links', 'Delete']);
+  });
+
+  it('has no axe violations with the selection header and the bulk bar', async () => {
+    const { element, fixture } = await setup();
+    boxes(element)[0]?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+    boxes(element)[1]?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+    await stable(fixture);
+
+    expect(element.querySelector('ui-bulk-bar')).not.toBeNull();
+    expect(await axeViolations(element)).toEqual([]);
   });
 
   it('a click on a card while selecting toggles it and does not navigate', async () => {

@@ -1,6 +1,7 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { signal } from '@angular/core';
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestKey } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { provideRouter, Router } from '@angular/router';
 import { MOCK_ID, MOCK_NAME } from '@shelfmark/contracts/testing';
@@ -269,6 +270,20 @@ describe('SidebarComponent', () => {
 
     await (await treeRow(fixture, MOCK_NAME.FolderReading)).select();
     expect(router.url).toBe(`/folders/${MOCK_ID.FolderReading}`);
+  });
+
+  it('moves through the rows with the arrow keys and opens the focused row with Enter', async () => {
+    const { fixture, router } = await setup();
+
+    const all = await treeRow(fixture, 'All links');
+    await all.focus();
+    await all.sendKeys(TestKey.DOWN_ARROW);
+    const unsorted = await treeRow(fixture, 'Unsorted');
+    expect(await unsorted.isFocused()).toBe(true);
+
+    await unsorted.sendKeys(TestKey.ENTER);
+    await fixture.whenStable();
+    expect(router.url).toBe('/unsorted');
   });
 
   it('offers the folder actions in a menu from the "..." button', async () => {

@@ -1,14 +1,12 @@
 import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
-import { E2E_PROJECT } from './models/e2e-project.const';
 import { MOCK_LINKS_SCENARIO } from './models/mock-links-scenario.const';
 import { seedSession } from './support/mock-session';
 import { switchView } from './support/library-toolbar';
 import { isCompact } from './support/sidebar';
 import { E2E_TAG } from './models/e2e-tag.const';
 
-// The mock page size is 50 of 60 links.
-const FIRST_PAGE = 50;
+// The mock library has 60 links (a first page of 50).
 const ALL_LINKS = 60;
 
 test.describe('links feed (mock API)', () => {
@@ -30,14 +28,14 @@ test.describe('links feed (mock API)', () => {
   // The grid's minimum card width: 14.25rem up to 1920px, 16.25rem above (#350), so the cards fold
   // without squeezing. The feed is centred and capped at 150rem; side padding and the sidebar eat
   // into the content width, so the columns are the ones the window leaves.
-  for (const viewport of [
-    { width: 1280, height: 800, min: 14.25 },
-    { width: 1920, height: 1080, min: 14.25 },
-    { width: 2560, height: 1440, min: 16.25 },
-  ]) {
-    test(`at ${viewport.width}px the grid folds cards no narrower than ${viewport.min}rem`, async ({
-      page,
-    }, testInfo) => {
+  test('at 1280, 1920 and 2560px the grid folds cards no narrower than its minimum width', async ({
+    page,
+  }) => {
+    for (const viewport of [
+      { width: 1280, height: 800, min: 14.25 },
+      { width: 1920, height: 1080, min: 14.25 },
+      { width: 2560, height: 1440, min: 16.25 },
+    ]) {
       test.skip(isCompact(page), 'the desktop grid');
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       await openFeed(page);
@@ -58,12 +56,12 @@ test.describe('links feed (mock API)', () => {
         };
       })()`);
       const rem = 16;
-      expect(columns, testInfo.title).toBeGreaterThanOrEqual(2);
+      expect(columns, `at ${viewport.width}px`).toBeGreaterThanOrEqual(2);
       expect(card).toBeGreaterThanOrEqual(viewport.min * rem - 0.5);
       // Equal heights in a row.
       expect(new Set(row.map((h) => Math.round(h))).size).toBe(1);
-    });
-  }
+    }
+  });
 
   test('hovering a card slides up the open bar with the address', async ({ page }, testInfo) => {
     test.skip(testInfo.project.use.hasTouch === true, 'touch has no hover');
@@ -114,14 +112,6 @@ test.describe('links feed (mock API)', () => {
     await expect(card.locator('.ui-card__overlay')).toHaveCSS('opacity', '1');
   });
 
-  test('shows the cards, the count and "load more" on the first page', async ({ page }) => {
-    await openFeed(page);
-
-    await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
-    await expect(page.locator('ui-card')).toHaveCount(FIRST_PAGE);
-    await expect(page.getByText(`${FIRST_PAGE}+ links`)).toBeVisible();
-  });
-
   test(
     'loads the rest when the end of the list is reached',
     { tag: E2E_TAG.Phone },
@@ -150,63 +140,6 @@ test.describe('links feed (mock API)', () => {
       await expect(page.locator('ui-list-item').first()).toBeVisible();
     },
   );
-
-  test('toggles a favorite and keeps it', async ({ page }) => {
-    await openFeed(page);
-    const favorite = page
-      .locator('ui-card')
-      .first()
-      .getByRole('button', { name: /^Favorite: / });
-    const before = await favorite.getAttribute('aria-pressed');
-
-    await favorite.click();
-
-    await expect(favorite).toHaveAttribute('aria-pressed', before === 'true' ? 'false' : 'true');
-  });
-
-  test('rolls a favorite back and offers Retry when the request fails', async ({ page }) => {
-    await openFeed(page);
-    await page.getByRole('button', { name: 'Add link' }).first().click();
-    const dialog = page.getByRole('dialog', { name: 'Add link' });
-    await dialog.getByLabel('Link', { exact: true }).fill('https://patch-fails.example/x');
-    await dialog.getByRole('button', { name: /Save/ }).click();
-    await expect(dialog).toBeHidden();
-
-    const favorite = page
-      .locator('ui-card')
-      .first()
-      .getByRole('button', { name: /^Favorite: / });
-    await expect(favorite).toHaveAttribute('aria-pressed', 'false');
-    await favorite.click();
-
-    await expect(page.getByText("Couldn't update the favorite")).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Retry' })).toBeVisible();
-    await expect(favorite).toHaveAttribute('aria-pressed', 'false');
-  });
-
-  test('the card menu lists Open, Edit, the favorite toggle, Pin to sidebar, Move to folder and Delete last, after a separator', async ({
-    page,
-  }) => {
-    await openFeed(page);
-    const card = page.locator('ui-card').first();
-    const favorite = card.getByRole('button', { name: /^Favorite: / });
-    const before = await favorite.getAttribute('aria-pressed');
-
-    await card.getByRole('button', { name: /^Actions for / }).click();
-    const menu = page.getByRole('menu');
-    await expect(menu.getByRole('menuitem')).toHaveText([
-      /Open/,
-      /Edit/,
-      before === 'true' ? /Remove from favorites/ : /Add to favorites/,
-      /Pin to sidebar/,
-      /Move to folder…/,
-      /Delete/,
-    ]);
-    await expect(menu.getByRole('separator')).toHaveCount(1);
-
-    await menu.getByRole('menuitem', { name: /favorites/ }).click();
-    await expect(favorite).toHaveAttribute('aria-pressed', before === 'true' ? 'false' : 'true');
-  });
 
   test(
     'deleting asks first, removes the card and Undo brings it back',
@@ -258,21 +191,6 @@ test.describe('links feed (mock API)', () => {
     await expect(page.locator('ui-toast-region').getByRole('button')).toHaveCount(0);
   });
 
-  test('cancelling the confirmation keeps the link', async ({ page }) => {
-    await openFeed(page);
-    const title = await firstTitle(page);
-
-    await page
-      .locator('ui-card')
-      .first()
-      .getByRole('button', { name: /^Actions for / })
-      .click();
-    await page.getByRole('menuitem', { name: 'Delete' }).click();
-    await page.getByRole('alertdialog').getByRole('button', { name: 'Cancel' }).click();
-
-    await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
-  });
-
   test('a link saved from the header appears at the top', async ({ page }) => {
     await openFeed(page);
 
@@ -284,38 +202,6 @@ test.describe('links feed (mock API)', () => {
 
     await expect(page.getByText(/Saved to /)).toBeVisible();
     await expect(page.locator('ui-card').first()).toContainText('Page on example.org');
-  });
-
-  test('the favorites page lists favorites only', async ({ page }) => {
-    await openFeed(page, '/favorites');
-
-    await expect(page.getByRole('heading', { level: 1, name: 'Favorites' })).toBeVisible();
-    const buttons = page.locator('ui-card').getByRole('button', { name: /^Favorite: / });
-    const count = await buttons.count();
-    expect(count).toBeGreaterThan(0);
-    for (let i = 0; i < count; i++) {
-      await expect(buttons.nth(i)).toHaveAttribute('aria-pressed', 'true');
-    }
-  });
-
-  test('the unsorted page has its own heading', async ({ page }) => {
-    await openFeed(page, '/unsorted');
-
-    await expect(page.getByRole('heading', { level: 1, name: 'Unsorted' })).toBeVisible();
-  });
-
-  test('shows the empty state', async ({ page }) => {
-    await page.addInitScript(
-      ([key, value]) => sessionStorage.setItem(key, value),
-      [MOCK_LINKS_SCENARIO.key, MOCK_LINKS_SCENARIO.empty],
-    );
-    await page.goto('/links');
-
-    await expect(page.getByRole('heading', { name: 'Your links will live here' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Add link' })).toHaveCount(2);
-
-    await page.getByRole('main').getByRole('button', { name: 'Add link' }).click();
-    await expect(page.getByRole('dialog')).toBeVisible();
   });
 
   test('the shell fills the viewport and the empty state sits in the middle of the free space', async ({
@@ -364,36 +250,6 @@ test.describe('links feed (mock API)', () => {
     expect(gapAbove).toBeGreaterThan(40);
   });
 
-  test.describe('new-account feed', () => {
-    test.beforeEach(async ({ page }) => {
-      await page.addInitScript(
-        ([key, value]) => sessionStorage.setItem(key, value),
-        [MOCK_LINKS_SCENARIO.key, MOCK_LINKS_SCENARIO.empty],
-      );
-    });
-
-    test('fits the viewport without horizontal scroll', async ({ page }) => {
-      await page.goto('/links');
-      await expect(page.getByRole('heading', { name: 'Your links will live here' })).toBeVisible();
-
-      const overflow = await page.evaluate<number>(
-        '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
-      );
-      expect(overflow).toBeLessThanOrEqual(0);
-    });
-  });
-
-  test('shows the error state', async ({ page }) => {
-    await page.addInitScript(
-      ([key, value]) => sessionStorage.setItem(key, value),
-      [MOCK_LINKS_SCENARIO.key, MOCK_LINKS_SCENARIO.error],
-    );
-    await page.goto('/links');
-
-    await expect(page.getByRole('heading', { name: "Couldn't load your links" })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();
-  });
-
   test.describe('pending image capture', () => {
     // The service worker would answer the image requests before `page.route` sees them.
     test.use({ serviceWorkers: 'block' });
@@ -420,22 +276,5 @@ test.describe('links feed (mock API)', () => {
       expect(requested.some((url) => url.endsWith('v=pending'))).toBe(false);
       expect(requested.some((url) => url.endsWith('/image?v=0123456789abcdef'))).toBe(true);
     });
-  });
-
-  test('has no recent panel and no toggle for one', async ({ page }) => {
-    await openFeed(page);
-
-    await expect(page.locator('app-recent-links-panel')).toHaveCount(0);
-    await expect(page.getByRole('button', { name: /recently opened/i })).toHaveCount(0);
-    await expect(page.getByRole('heading', { name: 'Recently opened' })).toHaveCount(0);
-  });
-
-  test('fits the viewport without horizontal scroll', async ({ page }) => {
-    await openFeed(page);
-
-    const overflow = await page.evaluate<number>(
-      '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
-    );
-    expect(overflow).toBeLessThanOrEqual(0);
   });
 });

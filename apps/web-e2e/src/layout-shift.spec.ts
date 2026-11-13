@@ -1,4 +1,5 @@
 import { type Page } from '@playwright/test';
+import { settled } from './support/settled';
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
 import { openSidebar, viewEntry } from './support/sidebar';
@@ -52,7 +53,7 @@ test.describe('library view switch (mock API)', () => {
   }) => {
     await page.goto('/links');
     await expect(page.locator('app-link-card').first()).toBeVisible();
-    await page.waitForTimeout(500);
+    await settled(page);
     // Whatever moved while the first page and the sidebar loaded is not what is measured.
     await takeShifts(page);
 
@@ -73,8 +74,8 @@ test.describe('library view switch (mock API)', () => {
       await expect(page.getByRole('heading', { level: 1, name: title })).toBeVisible();
       await expect(page.locator('ui-skeleton')).toHaveCount(0);
       await expect(page.locator('app-link-card').first()).toBeVisible();
-      // Late shifts (fonts, the count) show up a few frames after the list.
-      await page.waitForTimeout(300);
+      // Late shifts (fonts, the count, the enter animations) are in once the page has settled.
+      await settled(page);
     }
 
     const moved = (await takeShifts(page)).filter((shift) => shift.inPage);

@@ -31,10 +31,10 @@ test.describe('feed alignment (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
   test.skip(({ isMobile }) => isMobile, 'desktop: the feed is its own scroll area');
 
-  for (const width of [1024, 1280, 1440, 1920]) {
-    test(`cards and rows end on the header's right edge at ${width}px, short or long`, async ({
-      page,
-    }) => {
+  test("cards and rows end on the header's right edge at 1024, 1280, 1440 and 1920px, short or long", async ({
+    page,
+  }) => {
+    for (const width of [1024, 1280, 1440, 1920]) {
       await page.setViewportSize({ width, height: 900 });
       await seedSession(page);
       test.skip(isCompact(page), 'the mobile shell has no feed scroll area');
@@ -66,8 +66,11 @@ test.describe('feed alignment (mock API)', () => {
       expect(
         Math.abs((await feedRight(page, 'ui-list-item')) - (await right(header))),
       ).toBeLessThanOrEqual(1);
-    });
-  }
+
+      // The next width starts from cards again: forget the view this feed remembers.
+      await page.evaluate("localStorage.removeItem('sm-feed-memory')");
+    }
+  });
 
   test('the bulk bar and its toast stay centred on the cards', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });

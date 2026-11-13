@@ -1,16 +1,14 @@
 import { type Locator, type Page } from '@playwright/test';
-import { COLOR_SCHEME } from './models/color-scheme.const';
 import { openFeed } from './support/a11y-flows';
-import { expectNoBlockingViolations } from './support/axe';
 import { makePageTall, scrollMainTo, SHELL_MAIN } from './support/scroll';
 import { settled } from './support/settled';
-import { viewEntry } from './support/sidebar';
 import { expect, test } from './support/test';
-import { switchView } from './support/library-toolbar';
 import { E2E_TAG } from './models/e2e-tag.const';
 
 // Mirror MOCK_NAME.FolderReading (libs/shared/contracts); the e2e project cannot import from it.
 const READING = 'Reading';
+// The mock library has 60 links (a first page of 50).
+const ALL_LINKS = 60;
 
 const cards = (page: Page): Locator => page.locator('ui-card');
 const header = (page: Page): Locator => page.getByRole('group', { name: 'Selection' });
@@ -154,31 +152,6 @@ test.describe('select links and bulk actions (mock API)', () => {
       await expect(bar(page)).toHaveCount(0);
     });
 
-    test('Ctrl+A selects all, Space toggles the focused card, Done clears', async ({ page }) => {
-      await openFeed(page);
-      const total = await cards(page).count();
-      await page.locator('.library__scroll').focus();
-      await page.keyboard.press('ControlOrMeta+a');
-      await expect(selectedText(page)).toHaveText(`${total} selected`);
-
-      await cards(page).first().locator('.ui-card__link').focus();
-      await page.keyboard.press('Space');
-      await expect(selectedText(page)).toHaveText(`${total - 1} selected`);
-      await page.keyboard.press('Space');
-      await expect(selectedText(page)).toHaveText(`${total} selected`);
-
-      await header(page).getByRole('button', { name: 'Done' }).click();
-      await expect(header(page)).toHaveCount(0);
-    });
-
-    test('M opens Move for the focused card', async ({ page }) => {
-      await openFeed(page);
-      const title = await cardTitle(cards(page).first());
-      await cards(page).first().locator('.ui-card__link').focus();
-      await page.keyboard.press('m');
-      await expect(page.getByRole('dialog', { name: `Move “${title}”` })).toBeVisible();
-    });
-
     test('moves the selection to a folder with one choice in the picker, and Undo puts it back', async ({
       page,
     }) => {
@@ -205,20 +178,6 @@ test.describe('select links and bulk actions (mock API)', () => {
       await expect(cards(page)).toHaveCount(before);
     });
 
-    test('a selection from several folders has no current folder, and Esc closes the picker', async ({
-      page,
-    }) => {
-      await openFeed(page);
-      await page.locator('.library__scroll').focus();
-      await page.keyboard.press('ControlOrMeta+a');
-      await barButton(page, 'Move').click();
-      const picker = page.getByRole('dialog', { name: /^Move \d+ links$/ });
-      await expect(picker.getByRole('option', { name: READING, exact: true })).toBeVisible();
-      await expect(picker.getByText('Current folder')).toHaveCount(0);
-      await page.keyboard.press('Escape');
-      await expect(picker).toHaveCount(0);
-    });
-
     test('adds a tag to every selected link and removes it again', async ({ page }) => {
       await openFeed(page);
       await pick(page, 0);
@@ -241,26 +200,6 @@ test.describe('select links and bulk actions (mock API)', () => {
       await dialog.getByRole('button', { name: 'Apply' }).click();
       await expect(cards(page).nth(0).getByText('bulk-e2e')).toHaveCount(0);
       await expect(cards(page).nth(1).getByText('bulk-e2e')).toHaveCount(0);
-    });
-
-    test('Favorite turns on for all, then off for all', async ({ page }) => {
-      await openFeed(page);
-      await pick(page, 0);
-      await pick(page, 1);
-      const button = barButton(page, 'Favorite');
-      await expect(button).toHaveAttribute('aria-pressed', 'false');
-      await button.click();
-      await expect(page.getByText('2 links added to favorites')).toBeVisible();
-      await expect(button).toHaveAttribute('aria-pressed', 'true');
-      // A toast never covers the bulk bar: it sits exactly 12px above it (#350, #352).
-      await settled(page);
-      const toastBox = await page.locator('ui-toast').first().boundingBox();
-      const barBox = await bar(page).boundingBox();
-      const gap = (barBox?.y ?? 0) - ((toastBox?.y ?? 0) + (toastBox?.height ?? 0));
-      expect(Math.abs(gap - 12)).toBeLessThanOrEqual(1);
-      await button.click();
-      await expect(page.getByText('2 links removed from favorites')).toBeVisible();
-      await expect(button).toHaveAttribute('aria-pressed', 'false');
     });
 
     test('the toast stays 12px above the bar while the feed scrolls (#352)', async ({ page }) => {
@@ -328,18 +267,13 @@ test.describe('select links and bulk actions (mock API)', () => {
 
         // The last row stays reachable: at the end of the feed (every page loaded) it ends above the bar.
         const area = page.locator('.library__scroll');
-        let height = -1;
-        for (let round = 0; round < 10; round++) {
-          const next = await area.evaluate((el) => {
-            el.scrollTo(0, el.scrollHeight);
-            return el.scrollHeight;
-          });
-          if (next === height) {
-            break;
-          }
-          height = next;
-          await page.waitForTimeout(400);
-        }
+        await expect
+          .poll(async () => {
+            await area.evaluate((el) => el.scrollTo(0, el.scrollHeight));
+            return cards(page).count();
+          })
+          .toBe(ALL_LINKS);
+        await area.evaluate((el) => el.scrollTo(0, el.scrollHeight));
         const lastCard = cards(page).last();
         await expect(lastCard).toBeVisible();
         const barTop = (await page.locator('ui-bulk-bar').boundingBox())?.y ?? 0;
@@ -371,18 +305,6 @@ test.describe('select links and bulk actions (mock API)', () => {
       }
     });
 
-    test('Copy links puts the URLs on the clipboard, one per line', async ({ page, context }) => {
-      await context.grantPermissions(['clipboard-read', 'clipboard-write']);
-      await openFeed(page);
-      await pick(page, 0);
-      await pick(page, 1);
-      await barButton(page, 'Copy links').click();
-      await expect(page.getByText('2 links copied')).toBeVisible();
-      const text = await page.evaluate('navigator.clipboard.readText()');
-      expect(String(text).split('\n')).toHaveLength(2);
-      expect(String(text)).toMatch(/^https?:\/\//);
-    });
-
     test('Open all opens a tab per link and says when pop-ups were blocked', async ({
       page,
       context,
@@ -406,66 +328,6 @@ test.describe('select links and bulk actions (mock API)', () => {
       await page.evaluate('window.open = () => null');
       await barButton(page, 'Open all').click();
       await expect(page.getByText('The browser blocked 2 of 2 tabs')).toBeVisible();
-    });
-
-    test('Open all asks first above 10 links', async ({ page }) => {
-      await openFeed(page);
-      const total = await cards(page).count();
-      test.skip(total <= 10, 'the mock feed needs more than 10 links');
-      await page.locator('.library__scroll').focus();
-      await page.keyboard.press('ControlOrMeta+a');
-      await barButton(page, 'Open all').click();
-      const confirm = page.getByRole('dialog', { name: `Open ${total} links?` });
-      await expect(confirm).toBeVisible();
-      await confirm.getByRole('button', { name: 'Cancel' }).click();
-      await expect(confirm).toHaveCount(0);
-    });
-
-    test('the list view selects rows too', async ({ page }) => {
-      await openFeed(page);
-      await switchView(page, 'List');
-      const row = page.locator('ui-list-item').first();
-      await row.hover();
-      await row.locator('ui-checkbox .ui-checkbox__box').click();
-      await expect(selectedText(page)).toHaveText('1 selected');
-      await expect(page.locator('ui-list-item.ui-list-item--checked')).toHaveCount(1);
-    });
-
-    for (const view of ['Cards', 'List'] as const) {
-      test(`Esc hands focus back to the last picked ${view === 'Cards' ? 'card' : 'row'}, not the chips row`, async ({
-        page,
-      }) => {
-        await openFeed(page);
-        if (view === 'List') {
-          await switchView(page, 'List');
-        }
-        const items = page.locator(view === 'Cards' ? 'ui-card' : 'ui-list-item');
-        for (const index of [0, 1]) {
-          await items.nth(index).hover();
-          await items.nth(index).locator('ui-checkbox .ui-checkbox__box').click();
-        }
-        await expect(selectedText(page)).toHaveText('2 selected');
-        // Focus somewhere outside the feed, as after a click in a gap of the chips row.
-        await page.locator('.ui-saved-views__bar').focus();
-
-        await page.keyboard.press('Escape');
-
-        await expect(header(page)).toHaveCount(0);
-        const link = items
-          .nth(1)
-          .locator(view === 'Cards' ? '.ui-card__link' : '.ui-list-item__link');
-        await expect(link).toBeFocused();
-        await expect(page.locator('.ui-saved-views__bar')).not.toBeFocused();
-      });
-    }
-
-    test('a route change clears the selection', async ({ page }) => {
-      await openFeed(page);
-      await pick(page, 0);
-      await expect(header(page)).toBeVisible();
-      await viewEntry(page, 'Favorites').click();
-      await expect(page).toHaveURL(/\/favorites/);
-      await expect(header(page)).toHaveCount(0);
     });
   });
 
@@ -583,27 +445,4 @@ test.describe('select links and bulk actions (mock API)', () => {
       await expectToastGap(page, toast);
     });
   });
-
-  for (const colorScheme of Object.values(COLOR_SCHEME)) {
-    test.describe(`${colorScheme} theme`, () => {
-      test.use({ colorScheme });
-
-      test('no serious or critical axe violations with the bulk bar', async ({
-        page,
-        isMobile,
-      }, testInfo) => {
-        await openFeed(page);
-        if (isMobile) {
-          await longPress(page, cards(page).nth(0));
-        } else {
-          await pick(page, 0);
-          await pick(page, 1);
-        }
-        await expect(bar(page)).toBeVisible();
-        await expect(page.locator('html')).toHaveAttribute('data-theme', colorScheme);
-        await settled(page);
-        await expectNoBlockingViolations(page, testInfo);
-      });
-    });
-  }
 });

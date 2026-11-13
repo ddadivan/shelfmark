@@ -198,37 +198,13 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     expect(dark).toMatch(/^#[0-9a-f]{6}$/u);
   });
 
-  test('a theme chosen before the account kept one stays and is saved to the account once', async ({
-    page,
-  }) => {
-    // A browser from before #273: only `sm-theme`, and a fresh account that never stored a theme.
-    await page.addInitScript(`(() => {
-      if (!sessionStorage.getItem('sm-e2e-theme-seeded')) {
-        sessionStorage.setItem('sm-e2e-theme-seeded', '1');
-        localStorage.setItem('sm-theme', 'dark');
-        localStorage.removeItem('sm-mock-appearance');
-      }
-    })()`);
-    await page.goto('/links');
-    await expect(page.locator('ui-card').first()).toBeVisible();
-
-    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-    await expect
-      .poll(() => page.evaluate<string | null>(`localStorage.getItem('sm-mock-appearance')`))
-      .toContain('"theme":"dark"');
-
-    await page.reload();
-    await expect(page.locator('ui-card').first()).toBeVisible();
-    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  });
-
   test('another tab follows the change', async ({ page, context }) => {
     await openAppearance(page);
     const other = await context.newPage();
-    await other.goto('/links');
-    await expect(other.locator('ui-card').first()).toBeVisible();
-    // Let the other tab's own account load finish first (it would answer the older values).
-    await other.waitForTimeout(500);
+    // Let the other tab's own account load finish first (it would answer the older values): the
+    // Library page checks the saved Trash retention only once the account is there.
+    await other.goto('/settings/library');
+    await expect(other.getByRole('radio', { name: '30 days' })).toBeChecked();
 
     await pick(page, 'Theme', 'Custom');
     await pick(page, 'Accent color', 'Teal');
@@ -310,14 +286,14 @@ async function scanSettled(page: Page, testInfo: TestInfo): Promise<void> {
 test.describe('appearance width (mock API, #315)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
 
-  for (const [width, height] of [
-    [1280, 800],
-    [1440, 900],
-    [1920, 1080],
-  ] as const) {
-    test(`at ${width}px Appearance is wider than the 880px pages and ${
-      width >= 1440 ? 'puts the options beside the preview' : 'stacks the preview above the options'
-    }`, async ({ page }, testInfo) => {
+  test('Appearance is wider than the 880px pages; options beside the preview from 1440px, stacked below', async ({
+    page,
+  }, testInfo) => {
+    for (const [width, height] of [
+      [1280, 800],
+      [1440, 900],
+      [1920, 1080],
+    ] as const) {
       test.skip(testInfo.project.name !== E2E_PROJECT.Desktop, 'a desktop layout check');
       await page.setViewportSize({ width, height });
       await seedSession(page);
@@ -345,8 +321,8 @@ test.describe('appearance width (mock API, #315)', () => {
         expect(options?.x).toBeCloseTo(preview?.x ?? 0, 0);
         expect(options?.width ?? 0).toBeGreaterThan(600);
       }
-    });
-  }
+    }
+  });
 });
 
 test.describe('appearance accessibility (mock API)', () => {

@@ -242,7 +242,7 @@ jobs:
             esac
           done
 
-  # Browser tests, sharded (#313, #349): five web-e2e shards and three Storybook axe shards run
+  # Browser tests, sharded (#313, #349): three web-e2e shards and three Storybook axe shards run
   # side by side, so the full run (pushes to `stage`, release PRs into `main`) takes about as long
   # as the other checks. Desktop runs every web-e2e test, tablet and phone only the tagged ones
   # (ADR 0043). A PR into `stage` runs the diff-based set, sharded the same way (a Playwright config
@@ -258,11 +258,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { name: 'web 1/5', kind: web, shard: 1, shards: 5 }
-          - { name: 'web 2/5', kind: web, shard: 2, shards: 5 }
-          - { name: 'web 3/5', kind: web, shard: 3, shards: 5 }
-          - { name: 'web 4/5', kind: web, shard: 4, shards: 5 }
-          - { name: 'web 5/5', kind: web, shard: 5, shards: 5 }
+          - { name: 'web 1/3', kind: web, shard: 1, shards: 3 }
+          - { name: 'web 2/3', kind: web, shard: 2, shards: 3 }
+          - { name: 'web 3/3', kind: web, shard: 3, shards: 3 }
           - { name: 'storybook 1/3', kind: storybook, shard: 1, shards: 3 }
           - { name: 'storybook 2/3', kind: storybook, shard: 2, shards: 3 }
           - { name: 'storybook 3/3', kind: storybook, shard: 3, shards: 3 }

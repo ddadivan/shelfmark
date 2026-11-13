@@ -28,14 +28,6 @@ test.describe('inline search (mock API)', () => {
   test.describe('from 80em (1440 x 900)', () => {
     test.use({ viewport: WIDE });
 
-    test('the header has a real field and no Search button', async ({ page }) => {
-      await page.goto('/links');
-
-      await expect(field(page)).toBeVisible();
-      await expect(field(page)).toHaveAttribute('aria-expanded', 'false');
-      await expect(page.getByRole('button', { name: SEARCH_BUTTON })).toHaveCount(0);
-    });
-
     test('typing opens a panel under the field, sized to the field and 60% of the height at most', async ({
       page,
     }) => {
@@ -120,78 +112,10 @@ test.describe('inline search (mock API)', () => {
       await expect(page.getByRole('option')).toHaveCount(0);
       await expect(field(page)).toHaveValue('pasta');
     });
-
-    test('Esc closes the panel and keeps the text, a second Esc clears it', async ({ page }) => {
-      await page.goto('/links');
-      await field(page).fill('pasta');
-      await expect(page.getByRole('option').first()).toBeVisible();
-
-      await field(page).press('Escape');
-      await expect(page.getByRole('option')).toHaveCount(0);
-      await expect(field(page)).toHaveValue('pasta');
-      await expect(field(page)).toBeFocused();
-
-      await field(page).press('Escape');
-      await expect(field(page)).toHaveValue('');
-    });
-
-    test('ArrowDown reopens the closed panel when there is text', async ({ page }) => {
-      await page.goto('/links');
-      await field(page).fill('pasta');
-      await expect(page.getByRole('option').first()).toBeVisible();
-      await field(page).press('Escape');
-      await expect(page.getByRole('option')).toHaveCount(0);
-
-      await field(page).press('ArrowDown');
-
-      await expect(page.getByRole('option').first()).toBeVisible();
-    });
-
-    test('a press outside closes the panel and keeps the text', async ({ page }) => {
-      await page.goto('/links');
-      await field(page).fill('pasta');
-      await expect(page.getByRole('option').first()).toBeVisible();
-
-      // The empty part of the header bar (the panel covers the page below the field).
-      await page.getByRole('banner').click({ position: { x: 760, y: 24 } });
-
-      await expect(page.getByRole('option')).toHaveCount(0);
-      await expect(field(page)).toHaveValue('pasta');
-    });
-
-    test('Ctrl+K focuses the field instead of opening the dialog', async ({ page }) => {
-      await page.goto('/links');
-      await expect(page.locator('app-link-card').first()).toBeVisible();
-
-      await page.keyboard.press('Control+k');
-
-      await expect(field(page)).toBeFocused();
-      await expect(page.getByRole('dialog')).toHaveCount(0);
-    });
-
-    test('shows the empty state in the panel for a query without results', async ({ page }) => {
-      await page.goto('/links');
-      await field(page).fill('zzzzqq');
-
-      await expect(
-        page.locator('.ui-command-list__panel').getByText('Nothing found for “zzzzqq”'),
-      ).toBeVisible();
-    });
   });
 
   test.describe('from 64em to 80em (1180 x 800)', () => {
     test.use({ viewport: NARROW_DESKTOP });
-
-    test('the header has a Search button with the shortcut hint, and no field', async ({
-      page,
-    }) => {
-      await page.goto('/links');
-
-      const button = page.getByRole('button', { name: SEARCH_BUTTON });
-      await expect(button).toBeVisible();
-      await expect(button).toContainText(/⌘K|Ctrl K/);
-      await expect(page.getByRole('banner').getByRole('combobox')).toHaveCount(0);
-    });
 
     test('the button opens the search dialog', async ({ page }) => {
       await page.goto('/links');
@@ -199,25 +123,6 @@ test.describe('inline search (mock API)', () => {
 
       await expect(page.getByRole('dialog', { name: 'Search' })).toBeVisible();
       await expect(field(page)).toBeFocused();
-    });
-
-    test('Ctrl+K opens the search dialog', async ({ page }) => {
-      await page.goto('/links');
-      await expect(page.locator('app-link-card').first()).toBeVisible();
-
-      await page.keyboard.press('Control+k');
-
-      await expect(page.getByRole('dialog', { name: 'Search' })).toBeVisible();
-    });
-
-    test('growing to 80em swaps the button for the field', async ({ page }) => {
-      await page.goto('/links');
-      await expect(page.getByRole('button', { name: SEARCH_BUTTON })).toBeVisible();
-
-      await page.setViewportSize(WIDE);
-
-      await expect(field(page)).toBeVisible();
-      await expect(page.getByRole('button', { name: SEARCH_BUTTON })).toHaveCount(0);
     });
   });
 });

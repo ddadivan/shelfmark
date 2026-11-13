@@ -485,6 +485,13 @@ describe('TrashPage', () => {
     expect(await axeViolations(element)).toEqual([]);
   });
 
+  it('has no axe violations when Trash is empty', async () => {
+    const { element, fixture } = await setup({ items: [] });
+    await settle(fixture);
+    expect(element.textContent).toContain('Trash is empty');
+    expect(await axeViolations(element)).toEqual([]);
+  });
+
   it('has no axe violations on a phone', async () => {
     const { element, fixture } = await setup({ phone: true });
     await settle(fixture);

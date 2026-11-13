@@ -11,6 +11,7 @@ import { DialogComponent } from '../../components/dialog/dialog.component';
 import { UiDialogRef } from './dialog-ref';
 import { DialogService } from './dialog.service';
 import { injectDialogData } from './inject-dialog-data';
+import { consumeFocusReturn } from './focus-return';
 import type { ConfirmDialogConfig } from '../../components/dialog/models/confirm-config.interface';
 import { KEYBOARD_KEY } from '../../models/keyboard';
 import { DIALOG_SIZE } from '../../components/dialog/models/dialog-size.const';
@@ -241,6 +242,23 @@ describe('DialogService', () => {
       ref.close();
       await closed();
       expect(document.activeElement).toBe(trigger);
+    });
+
+    it('hands focus back to the trigger as a focus return, so its tooltip stays closed', async () => {
+      const returns: boolean[] = [];
+      trigger.addEventListener('focus', () => returns.push(consumeFocusReturn(trigger)));
+      const ref = service.open(EditDialogComponent, { data: { name: 'x' } });
+      settle();
+      await vi.waitFor(() => {
+        settle();
+        expect(container().contains(document.activeElement)).toBe(true);
+      });
+
+      ref.close();
+      await closed();
+
+      expect(document.activeElement).toBe(trigger);
+      expect(returns).toEqual([true]);
     });
 
     describe('restoreFocus resolver', () => {

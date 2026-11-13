@@ -1,4 +1,6 @@
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { provideRouter } from '@angular/router';
 import {
   FOLDER_COLOUR,
@@ -7,6 +9,8 @@ import {
   FOLDER_ICON,
 } from '@shelfmark/contracts';
 import { MOCK_ID, MOCK_NAME } from '@shelfmark/contracts/testing';
+import { ToastService } from '@shelfmark/ui';
+import { UiChoiceGridHarness, UiColorPickerHarness } from '@shelfmark/ui/testing';
 import axe from 'axe-core';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { FoldersStore } from '../../../stores/folders.store';
@@ -20,6 +24,13 @@ import { TAGS_API } from '../../links/models/tags-api.const';
 import { MockUserSettingsApi } from '../../settings/mock/mock-user-settings.api';
 import { USER_SETTINGS_API } from '../../settings/models/user-settings-api.const';
 import { FolderActionsService } from './folder-actions.service';
+
+@Component({ template: '', changeDetection: ChangeDetectionStrategy.OnPush })
+class RootComponent {}
+
+function overlayLoader() {
+  return TestbedHarnessEnvironment.documentRootLoader(TestBed.createComponent(RootComponent));
+}
 
 async function setup() {
   TestBed.configureTestingModule({
@@ -227,6 +238,85 @@ describe('FolderActionsService style', () => {
     await done;
 
     expect(store.entityMap()[MOCK_ID.FolderReading].colour).toBe('#3a7bd5');
+  });
+
+  it('a typed hex code only previews; "Add color" keeps and chooses it and closes the picker (#350)', async () => {
+    const { actions, store } = await setup();
+
+    void actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    const root = await opened();
+    const picker = await overlayLoader().getHarness(
+      UiColorPickerHarness.with({ label: 'Add your own color' }),
+    );
+    await picker.open();
+    await picker.setHex('#3a7bd5');
+    await picker.confirmHex();
+
+    expect(root.querySelector('input[aria-label="Your color #3a7bd5"]')).toBeNull();
+    await picker.add();
+    await until(() => {
+      expect(
+        (root.querySelector('input[aria-label="Your color #3a7bd5"]') as HTMLInputElement | null)
+          ?.checked,
+      ).toBe(true);
+    });
+    expect(await picker.isOpen()).toBe(false);
+    button('Cancel').click();
+    await closed();
+  });
+
+  it('Delete on an own swatch forgets it with an Undo toast; the worn colour stays chosen (#350)', async () => {
+    const { actions, store } = await setup();
+    const settings = TestBed.inject(UserSettingsStore);
+    await settings.load();
+    await settings.addCustomColour('#3a7bd5');
+    await settings.addCustomColour('#1d4f91');
+    await store.setStyle(MOCK_ID.FolderReading, { colour: '#1d4f91' });
+    const show = vi.spyOn(TestBed.inject(ToastService), 'show').mockReturnValue({
+      dismiss: vi.fn(),
+      closed: new Promise(() => undefined),
+    } as unknown as ReturnType<ToastService['show']>);
+
+    void actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    await opened();
+    const own = await overlayLoader().getHarness(
+      UiChoiceGridHarness.with({ label: 'Your own colors' }),
+    );
+    const [first] = await own.getChoices({ label: 'Your color #3a7bd5' });
+    await first.removeWithKeyboard();
+
+    await until(() => {
+      expect(settings.customColours()).toEqual(['#1d4f91']);
+      expect(show).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Color removed',
+          action: expect.objectContaining({ label: 'Undo' }),
+        }),
+      );
+    });
+    expect(await own.getLabels()).toEqual(['Your color #1d4f91']);
+    expect(await (await own.getSelected())?.getLabel()).toBe('Your color #1d4f91');
+    button('Cancel').click();
+    await closed();
+  });
+
+  it('gives the colours one radio name and every icon, shown or behind the toggle, another', async () => {
+    const { actions, store } = await setup();
+
+    void actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    const root = await opened();
+    const names = (group: string) =>
+      new Set(
+        [...root.querySelectorAll(`[aria-labelledby="folder-style-${group}"] input`)].map((input) =>
+          input.getAttribute('name'),
+        ),
+      );
+
+    // One name per group: the browser's arrow keys run through all of its radios.
+    expect(names('colour').size).toBe(1);
+    expect([...names('icon')]).toEqual(['folder-style-icon']);
+    button('Cancel').click();
+    await closed();
   });
 
   it('takes exactly one emoji as the icon and refuses anything else (#335)', async () => {

@@ -3,7 +3,9 @@ import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import type { FolderResponse, LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
 import { MOCK_FOLDERS, MOCK_LIBRARY_COUNTS, MOCK_LINKS } from '@shelfmark/contracts/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { DialogService } from '@shelfmark/ui';
+import { UiButtonHarness, UiMenuItemHarness } from '@shelfmark/ui/testing';
 import axe from 'axe-core';
 import { of, Subject, throwError, type Observable } from 'rxjs';
 import { AddLinkDialogService } from '../links/services/add-link-dialog.service';
@@ -90,6 +92,9 @@ describe('LibraryPage', () => {
     expect(text(fixture)).toContain('2+ links');
     expect(element.querySelectorAll('app-link-card')).toHaveLength(2);
     expect(element.querySelector('ui-skeleton')).toBeNull();
+    // Recently opened is its own page: the feed has no panel and no toggle for it.
+    expect(element.querySelector('app-recent-links-panel')).toBeNull();
+    expect(text(fixture)).not.toMatch(/recently opened/i);
   });
 
   it.each([
@@ -109,13 +114,31 @@ describe('LibraryPage', () => {
     expect(one.element.querySelector('.library__count')?.textContent?.trim()).toBe('1+ link');
   });
 
+  it('offers no "Pin to top" outside a folder', async () => {
+    const { element, fixture } = await setup();
+
+    element
+      .querySelector<HTMLButtonElement>('app-link-card button[aria-label^="Actions for"]')
+      ?.click();
+    await fixture.whenStable();
+    const items = [...document.querySelectorAll('[role="menuitem"]')].map((item) =>
+      item.textContent?.trim(),
+    );
+
+    expect(items).toContain('Pin to sidebar');
+    expect(items).not.toContain('Pin to top');
+  });
+
   it('names the heading after the scope', async () => {
     const { fixture, element } = await setup();
 
     fixture.componentRef.setInput('scope', LINKS_SCOPE.Favorites);
     await fixture.whenStable();
-
     expect(element.querySelector('h1')?.textContent).toBe('Favorites');
+
+    fixture.componentRef.setInput('scope', LINKS_SCOPE.Unsorted);
+    await fixture.whenStable();
+    expect(element.querySelector('h1')?.textContent).toBe('Unsorted');
   });
 
   it('shows rows when the list view is chosen', async () => {
@@ -471,6 +494,21 @@ describe('LibraryPage of a folder', () => {
     expect(element.querySelectorAll('app-link-card')).toHaveLength(1);
   });
 
+  it('offers "Pin to top" on the cards of a folder only', async () => {
+    const { element, fixture } = await setupFolder('f1');
+    const menuItems = async (root: HTMLElement) => {
+      root
+        .querySelector<HTMLButtonElement>('app-link-card button[aria-label^="Actions for"]')
+        ?.click();
+      await fixture.whenStable();
+      return [...document.querySelectorAll('[role="menuitem"]')].map((item) =>
+        item.textContent?.trim(),
+      );
+    };
+
+    expect(await menuItems(element)).toContain('Pin to top');
+  });
+
   it('says so when the folder is empty and offers to add a link here', async () => {
     const { element, fixture } = await setupFolder('f1', []);
 
@@ -487,6 +525,31 @@ describe('LibraryPage of a folder', () => {
     expect(element.querySelector('h1')).toBeNull();
     expect(element.querySelector('app-link-card')).toBeNull();
     expect(element.querySelector('ui-segmented-control')).toBeNull();
+  });
+
+  it('"Show all links" on the not-found state goes to All links', async () => {
+    const { element, fixture } = await setupFolder('gone');
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+
+    const action = [...element.querySelectorAll<HTMLButtonElement>('ui-empty-state button')].find(
+      (button) => button.textContent?.trim() === 'Show all links',
+    );
+    action?.click();
+    await fixture.whenStable();
+
+    expect(navigate).toHaveBeenCalledWith('/links');
+  });
+
+  it('has no axe violations on the empty folder', async () => {
+    const { element } = await setupFolder('f1', []);
+    document.body.append(element);
+
+    const { violations } = await axe.run(element, {
+      rules: { 'color-contrast': { enabled: false } },
+    });
+    element.remove();
+
+    expect(violations.map((violation) => violation.id)).toEqual([]);
   });
 
   it('has no axe violations on the not-found state', async () => {
@@ -547,7 +610,46 @@ describe('LibraryPage of a folder', () => {
       expect(text(fixture)).toContain('No links with these tags');
     });
   });
+  describe('empty and filtered states', () => {
+    it.each([
+      ['the empty feed', {}],
+      ['a tag filter', { tag: ['docs'] }],
+      ['a search with nothing found', { q: 'zzzzqq' }],
+    ])('has no axe violations on %s', async (_name, inputs: Record<string, unknown>) => {
+      const { api, fixture, element } = await setup(of(page([])));
+      api.list.mockReturnValue(of(page([])));
+      for (const [name, value] of Object.entries(inputs)) {
+        fixture.componentRef.setInput(name, value);
+      }
+      await fixture.whenStable();
+      document.body.append(element);
+
+      expect(element.querySelector('ui-empty-state')).not.toBeNull();
+      const { violations } = await axe.run(element, {
+        rules: { 'color-contrast': { enabled: false } },
+      });
+      element.remove();
+
+      expect(violations.map((violation) => violation.id)).toEqual([]);
+    });
+  });
+
   describe('search, sort and title', () => {
+    it('sorts from the sort menu and writes the sort into the URL', async () => {
+      const { fixture } = await setup();
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+      const loader = TestbedHarnessEnvironment.documentRootLoader(fixture);
+      await (await loader.getHarness(UiButtonHarness.with({ name: /^Sort: / }))).click();
+      await (await loader.getHarness(UiMenuItemHarness.with({ text: 'Title A–Z' }))).click();
+
+      expect(navigate).toHaveBeenLastCalledWith([], {
+        queryParams: { sort: 'title' },
+        queryParamsHandling: 'merge',
+      });
+      localStorage.removeItem(FEED_MEMORY_STORAGE_KEY);
+    });
+
     it('asks for the search text, normalized', async () => {
       const { api, fixture } = await setup();
 

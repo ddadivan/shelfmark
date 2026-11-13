@@ -34,7 +34,7 @@
 - **Removal rule.** An e2e test is removed only when a lower-level spec covers the same behaviour. The PR that removes it names that spec.
 - **Harnesses.** Angular CDK component harnesses for the main libs/ui components (button, menu, select, dialog / sheet, tree, card, command-list, tag-input, choice-grid, color-picker) live next to each component in `testing/`. Only component tests use them (phase 2). E2e stays on role-based locators (see Alternatives).
 - **CI.**
-  - Web e2e runs in 5 shards while phase 1 is in place and goes back to 4 once component tests take over. CI retries go from 2 to 1.
+  - Web e2e runs in 5 shards while phase 1 is in place and in 3 after the phase 3 cut to journeys (#349). CI retries go from 2 to 1.
   - The Storybook axe run is split into 3 Playwright shards.
   - The required `lint-test-build` check becomes an aggregate of parallel jobs: `static` (format, styles, scripts, lint), `build` (typecheck, builds, bundle and migration checks, Storybook build) and a `unit` matrix (the API suite in 2 Vitest shards, the web app, the other libraries). The aggregate merges the API shards and checks the API coverage thresholds on the whole suite. Everything keeps `nx affected` semantics.
   - Target: every required check in about 4 minutes.

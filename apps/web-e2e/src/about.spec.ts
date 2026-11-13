@@ -168,21 +168,6 @@ test.describe('About and "How it works" (mock API)', () => {
     await expect(dialog).toBeHidden();
   });
 
-  test('the sidebar card shows for a new account until it is hidden', async ({ page }) => {
-    test.skip(isCompact(page), 'the card lives in the desktop sidebar');
-    await seedSession(page);
-    await page.goto('/links');
-    const card = page.getByRole('region', { name: 'How it works' });
-    await expect(card).toBeVisible();
-
-    await card.getByRole('button', { name: 'Hide' }).click();
-    await expect(card).toHaveCount(0);
-
-    await page.reload();
-    await expect(page.locator('ui-card').first()).toBeVisible();
-    await expect(page.getByRole('region', { name: 'How it works' })).toHaveCount(0);
-  });
-
   test('the sidebar card keeps a section gap under Tags and sits right above the footer (#315, #335)', async ({
     page,
   }) => {
@@ -204,16 +189,5 @@ test.describe('About and "How it works" (mock API)', () => {
     const gap = (footer?.y ?? 0) - ((box?.y ?? 0) + (box?.height ?? 0));
     expect(gap).toBeGreaterThanOrEqual(12);
     expect(gap).toBeLessThanOrEqual(16);
-  });
-
-  test('opening the video from the card also retires the card', async ({ page }) => {
-    test.skip(isCompact(page), 'the card lives in the desktop sidebar');
-    await seedSession(page);
-    await page.goto('/links');
-    const card = page.getByRole('region', { name: 'How it works' });
-
-    await card.getByRole('button', { name: 'New here? Watch how it works' }).click();
-    await expect(page.getByRole('dialog', { name: 'Shelfmark in 3 minutes' })).toBeVisible();
-    await expect(card).toHaveCount(0);
   });
 });

@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { axeViolations } from '../../../testing/axe';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
@@ -181,6 +182,15 @@ describe('SharePage', () => {
     expect(root.querySelector('form')).toBeNull();
     expect(api.preview).not.toHaveBeenCalled();
     expect(api.create).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['the quick save form', '/share?text=Look%20https%3A%2F%2Fexample.com%2Fa'],
+    ['the error state', '/share'],
+  ])('has no axe violations on %s', async (_name, url) => {
+    const { root } = await open(url);
+
+    expect(await axeViolations(root)).toEqual([]);
   });
 
   it('goes to the library from the error state', async () => {
