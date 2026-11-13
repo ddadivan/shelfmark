@@ -1,6 +1,7 @@
-import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
+import { HttpStatusCode } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import {
+  SAVED_VIEW_ERROR_MESSAGE,
   SAVED_VIEW_LIMIT,
   SAVED_VIEW_SCOPE,
   type CreateSavedViewRequest,
@@ -11,14 +12,15 @@ import {
   type UpdateSavedViewRequest,
 } from '@shelfmark/contracts';
 import { defer, delay, type Observable, of, throwError } from 'rxjs';
+import { mockHttpError } from '../../../core/api/mock-http-error';
 import { MockLibraryData } from '../../links/mock/mock-library-data';
 import { MOCK_LATENCY_MS } from '../../links/models/mock-latency.const';
 import type { SavedViewsApi } from '../models/saved-views-api.interface';
 import { feedListQuery, listQueryOf, normalizeViewQuery } from '../utils/saved-view-query';
 import type { MockSavedView } from './models/mock-saved-view.interface';
 
-function failure(status: number, statusText: string): Observable<never> {
-  return throwError(() => new HttpErrorResponse({ status, statusText }));
+function failure(status: number, message?: string | string[]): Observable<never> {
+  return throwError(() => mockHttpError(status, message));
 }
 
 /** A view name that fails to save (e2e and manual checks of the rollback). */
@@ -36,7 +38,15 @@ export class MockSavedViewsApi implements SavedViewsApi {
   private readonly data = inject(MockLibraryData);
 
   list(feed?: ListSavedViewsQuery): Observable<ListSavedViewsResponse> {
-    return defer(() => of(this.view(feed))).pipe(delay(MOCK_LATENCY_MS.List));
+    return defer(() => {
+      if (feed?.scope === SAVED_VIEW_SCOPE.Folder && !feed.folderId) {
+        return failure(HttpStatusCode.BadRequest, SAVED_VIEW_ERROR_MESSAGE.FeedFolderRequired);
+      }
+      if ((feed?.tag?.length ?? 0) > SAVED_VIEW_LIMIT.TagsMax) {
+        return failure(HttpStatusCode.BadRequest, ['too many tags']);
+      }
+      return of(this.view(feed));
+    }).pipe(delay(MOCK_LATENCY_MS.List));
   }
 
   create(request: CreateSavedViewRequest): Observable<SavedViewResponse> {
@@ -47,7 +57,7 @@ export class MockSavedViewsApi implements SavedViewsApi {
         return refused;
       }
       if (this.data.views.length >= SAVED_VIEW_LIMIT.PerUserMax) {
-        return failure(HttpStatusCode.Conflict, 'Conflict');
+        return failure(HttpStatusCode.Conflict, SAVED_VIEW_ERROR_MESSAGE.LimitReached);
       }
       const view: MockSavedView = {
         id: globalThis.crypto.randomUUID(),
@@ -63,7 +73,7 @@ export class MockSavedViewsApi implements SavedViewsApi {
     return defer(() => {
       const current = this.data.views.find((view) => view.id === id);
       if (!current) {
-        return failure(HttpStatusCode.NotFound, 'Not Found');
+        return failure(HttpStatusCode.NotFound, SAVED_VIEW_ERROR_MESSAGE.NotFound);
       }
       const name = request.name?.trim() ?? current.name;
       const refused = this.refuse(name, request.query);
@@ -83,7 +93,7 @@ export class MockSavedViewsApi implements SavedViewsApi {
   remove(id: string): Observable<void> {
     return defer(() => {
       if (!this.data.views.some((view) => view.id === id)) {
-        return failure(HttpStatusCode.NotFound, 'Not Found');
+        return failure(HttpStatusCode.NotFound, SAVED_VIEW_ERROR_MESSAGE.NotFound);
       }
       this.data.views = this.data.views.filter((view) => view.id !== id);
       return of(undefined);
@@ -98,7 +108,7 @@ export class MockSavedViewsApi implements SavedViewsApi {
         new Set(ids).size === ids.length &&
         current.every((view) => ids.includes(view.id));
       if (!same) {
-        return failure(HttpStatusCode.BadRequest, 'Bad Request');
+        return failure(HttpStatusCode.BadRequest, SAVED_VIEW_ERROR_MESSAGE.OrderMismatch);
       }
       this.data.views = ids.flatMap((id) => current.filter((view) => view.id === id));
       return of(this.view());
@@ -111,13 +121,18 @@ export class MockSavedViewsApi implements SavedViewsApi {
       return failure(HttpStatusCode.InternalServerError, 'Internal Server Error');
     }
     if (name === '' || name.length > SAVED_VIEW_LIMIT.NameMax) {
-      return failure(HttpStatusCode.BadRequest, 'Bad Request');
+      return failure(HttpStatusCode.BadRequest, ['name must be 1 to 40 characters']);
     }
     if (query?.scope === SAVED_VIEW_SCOPE.Folder) {
+      if (!query.folderId) {
+        return failure(HttpStatusCode.BadRequest, SAVED_VIEW_ERROR_MESSAGE.FolderRequired);
+      }
       const exists = this.data.folderList.some((folder) => folder.id === query.folderId);
       if (!exists) {
-        return failure(HttpStatusCode.NotFound, 'Not Found');
+        return failure(HttpStatusCode.NotFound, SAVED_VIEW_ERROR_MESSAGE.FolderNotFound);
       }
+    } else if (query?.folderId) {
+      return failure(HttpStatusCode.BadRequest, SAVED_VIEW_ERROR_MESSAGE.FolderNotAllowed);
     }
     return null;
   }
