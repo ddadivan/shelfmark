@@ -132,6 +132,7 @@ test.describe('drag a link to a folder (mock API)', () => {
       expect(slotBox?.width).toBeCloseTo(boxes[index]?.width ?? 0, 0);
       expect(slotBox?.height).toBeCloseTo(boxes[index]?.height ?? 0, 0);
     }
+    // Three cards dragged: the preview and two behind it (a deck of three, #350).
     await expect(page.locator('.cdk-drag-preview .library__drag-stack')).toHaveCount(2);
     // The move is announced.
     await expect(page.locator('li.library__item--carried')).not.toHaveCount(0);

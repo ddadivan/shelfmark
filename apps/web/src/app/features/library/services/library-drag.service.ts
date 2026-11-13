@@ -6,6 +6,9 @@ import { pluralKey } from '../../../core/i18n/plural-key';
 import { LinkDragService } from '../../links/services/link-drag.service';
 import { LibrarySelectionService } from './library-selection.service';
 
+/** The preview plus this many silhouettes behind it: a deck of three cards. */
+const MAX_DECK_DEPTH = 2;
+
 /**
  * Dragging links of the library page onto folders: what a drag carries (the whole selection when
  * a picked link is dragged), the spoken text and the badge of the preview. The drop targets and
@@ -43,6 +46,14 @@ export class LibraryDragService {
   /** How many links a drag of `link` carries: the whole selection when it travels, else 1. */
   dragCount(link: LinkResponse): number {
     return this.bundled(link) ? this.selection.selectedCount() : 1;
+  }
+
+  /**
+   * How many card silhouettes the deck shows behind the preview: none for one link, one for two,
+   * two (a deck of three cards) for three or more.
+   */
+  deckDepth(link: LinkResponse): number {
+    return Math.min(MAX_DECK_DEPTH, this.dragCount(link) - 1);
   }
 
   /** Label key of the drag preview badge: "Move 1 link" / "Move 3 links" (plural per language). */

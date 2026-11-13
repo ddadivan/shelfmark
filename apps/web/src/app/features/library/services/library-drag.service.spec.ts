@@ -57,6 +57,7 @@ describe('LibraryDragService', () => {
 
   it('carries one link unless a picked link is dragged with others picked', async () => {
     const { dnd, selection } = await setup();
+    expect(dnd.deckDepth(link(1))).toBe(0);
     expect(dnd.bundled(link(1))).toBe(false);
     expect(dnd.dragCount(link(1))).toBe(1);
 
@@ -68,6 +69,14 @@ describe('LibraryDragService', () => {
     expect(dnd.bundled(link(3))).toBe(false);
     expect(dnd.dragCount(link(2))).toBe(2);
     expect(dnd.dragCount(link(3))).toBe(1);
+    // The deck behind the preview: none for one link, one behind for two, two for three or more.
+    expect(dnd.deckDepth(link(3))).toBe(0);
+    expect(dnd.deckDepth(link(2))).toBe(1);
+
+    selection.toggleSelected(link(3), { range: false });
+    expect(dnd.deckDepth(link(3))).toBe(2);
+    selection.toggleSelected(link(4), { range: false });
+    expect(dnd.deckDepth(link(4))).toBe(2);
   });
 
   it('starts the drag with the picked links, says what moves and clears it at the end', async () => {
