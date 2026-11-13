@@ -1105,17 +1105,15 @@
       "appearance": "Aparência",
       "library": "Biblioteca",
       "language": "Idioma",
-      "export": "Exportar",
       "privacy": "Privacidade e dados",
       "shortcuts": "Atalhos de teclado",
       "feedback": "Seu feedback"
     },
     "description": {
-      "account": "Seu perfil e sua conta.",
+      "account": "Seu perfil, sua estante e seus dados.",
       "appearance": "Salvo na hora e sincronizado em todos os seus dispositivos.",
       "library": "Como os links são mostrados, salvos e mantidos.",
       "language": "O idioma da interface. Os formatos de data e hora ficam em Aparência.",
-      "export": "Leve com você tudo o que salvou.",
       "privacy": "O que guardamos e como levar com você.",
       "shortcuts": "Trabalhe sem o mouse.",
       "feedback": "Ideias, problemas e as respostas que enviamos."
@@ -1127,6 +1125,33 @@
         "title": "Sair",
         "label": "Sair do Shelfmark",
         "hint": "Seus links continuam salvos. Entre de novo quando quiser."
+      },
+      "memberSince": "Membro desde {{date}}",
+      "shelf": {
+        "title": "Sua estante",
+        "loading": "Carregando seus números",
+        "links": "Links",
+        "folders": "Pastas",
+        "tags": "Tags",
+        "oldest": "Link mais antigo: {{when}}",
+        "topSites": "Sites que você mais salva",
+        "topTags": "Tags mais usadas",
+        "weekly": "Links adicionados por semana",
+        "weeklyHint": "Últimas 12 semanas",
+        "week": "Semana de {{date}}: {{count}}",
+        "error": "Não foi possível carregar seus números.",
+        "retry": "Tentar de novo",
+        "empty": {
+          "title": "Nada salvo ainda",
+          "text": "Salve seu primeiro link e seus números aparecerão aqui."
+        }
+      },
+      "connected": {
+        "title": "Contas conectadas",
+        "since": "Conectada em {{date}}",
+        "none": "A conta de demonstração não está vinculada ao Google nem ao GitHub.",
+        "google": "Google",
+        "github": "GitHub"
       }
     },
     "data": {

@@ -104,8 +104,8 @@ test.describe('export (mock API)', () => {
     await page.goto('/links');
     const download = page.waitForEvent('download');
     if (isCompact(page)) {
-      await openSettingsSection(page, 'Export');
-      await page.getByRole('button', { name: 'JSON' }).click();
+      await openSettingsSection(page, 'Account');
+      await page.getByRole('button', { name: 'Download JSON' }).click();
     } else {
       await openAccountMenu(page);
       await page.getByRole('menuitem', { name: 'Everything as JSON' }).click();
@@ -114,12 +114,16 @@ test.describe('export (mock API)', () => {
     expect(await requestedUrl(await download)).toBe('/api/export?format=json');
   });
 
-  test('settings export both formats', async ({ page }) => {
+  test('Account › Your data exports both formats; the old export page leads there', async ({
+    page,
+  }) => {
     await page.goto('/settings/import-export');
-    await expect(page.getByText('Export your data')).toBeVisible();
+    await expect(page).toHaveURL('/settings/account#your-data');
+    const yourData = page.getByRole('heading', { name: 'Your data' });
+    await expect(yourData).toBeInViewport();
 
     const download = page.waitForEvent('download');
-    await page.getByRole('button', { name: 'Bookmarks HTML' }).click();
+    await page.getByRole('button', { name: 'Download Bookmarks HTML' }).click();
 
     expect(await requestedUrl(await download)).toBe('/api/export?format=html');
   });

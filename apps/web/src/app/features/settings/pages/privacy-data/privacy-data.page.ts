@@ -14,13 +14,14 @@ import { APP_PATH } from '../../../../models/app-path.const';
 import { LinksStore } from '../../../../stores/links.store';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { SETTINGS_PATH } from '../../models/settings-path.const';
+import { YOUR_DATA_FRAGMENT } from '../../models/your-data-fragment.const';
 import { SettingsPageHeaderComponent } from '../../components/settings-page-header/settings-page-header.component';
 
 const KEY = 'settings.privacy.recent';
 
 /**
  * `/settings/privacy`: "Remember recently opened" (moved here from Appearance in #315), the way
- * to take your data out (the one Export page), the policy, and what is kept.
+ * to take your data out (Account › Your data), the policy, and what is kept.
  */
 @Component({
   selector: 'app-settings-privacy-page',
@@ -45,7 +46,8 @@ export default class PrivacyDataPage {
   private readonly toasts = inject(ToastService);
 
   protected readonly policyHref = `/${APP_PATH.Privacy}`;
-  protected readonly exportHref = `/${APP_PATH.Settings}/${SETTINGS_PATH.ImportExport}`;
+  /** Export lives in Account › Your data (#352). */
+  protected readonly exportHref = `/${APP_PATH.Settings}/${SETTINGS_PATH.Account}#${YOUR_DATA_FRAGMENT}`;
 
   constructor() {
     void this.settings.load();

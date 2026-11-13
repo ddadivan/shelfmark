@@ -7,7 +7,13 @@ export const CSP_DIRECTIVES: Readonly<Record<string, readonly string[]>> = {
   'script-src': ["'self'"],
   'style-src': ["'self'"],
   'font-src': ["'self'"],
-  'img-src': ["'self'", 'data:'],
+  // The profile photo comes from the sign-in provider (#352): only these two avatar hosts.
+  'img-src': [
+    "'self'",
+    'data:',
+    'https://lh3.googleusercontent.com',
+    'https://avatars.githubusercontent.com',
+  ],
   'connect-src': ["'self'"],
   'base-uri': ["'self'"],
   'frame-ancestors': ["'none'"],

@@ -1084,17 +1084,15 @@
       "appearance": "Appearance",
       "library": "Library",
       "language": "Language",
-      "export": "Export",
       "privacy": "Privacy and data",
       "shortcuts": "Keyboard shortcuts",
       "feedback": "Your feedback"
     },
     "description": {
-      "account": "Your profile and your account.",
+      "account": "Your profile, your shelf and your data.",
       "appearance": "Saved as you go and synced to all your devices.",
       "library": "How links are shown, saved and kept.",
       "language": "The language of the interface. Date and time formats are in Appearance.",
-      "export": "Take everything you saved with you.",
       "privacy": "What we keep, and how to take it with you.",
       "shortcuts": "Work without the mouse.",
       "feedback": "Ideas, problems and the answers we sent."
@@ -1106,6 +1104,33 @@
         "title": "Sign out",
         "label": "Sign out of Shelfmark",
         "hint": "Your links stay saved. Sign in again any time."
+      },
+      "memberSince": "Member since {{date}}",
+      "shelf": {
+        "title": "Your shelf",
+        "loading": "Loading your numbers",
+        "links": "Links",
+        "folders": "Folders",
+        "tags": "Tags",
+        "oldest": "Oldest link: {{when}}",
+        "topSites": "Sites you save most",
+        "topTags": "Most used tags",
+        "weekly": "Links added per week",
+        "weeklyHint": "Last 12 weeks",
+        "week": "Week of {{date}}: {{count}}",
+        "error": "Couldn't load your numbers.",
+        "retry": "Try again",
+        "empty": {
+          "title": "Nothing saved yet",
+          "text": "Save your first link and your numbers show up here."
+        }
+      },
+      "connected": {
+        "title": "Connected accounts",
+        "since": "Connected {{date}}",
+        "none": "The demo account isn't linked to Google or GitHub.",
+        "google": "Google",
+        "github": "GitHub"
       }
     },
     "data": {

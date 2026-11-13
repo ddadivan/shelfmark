@@ -34,12 +34,6 @@ export const SETTINGS_NAV_ENTRIES: readonly SettingsNavEntry[] = [
     phone: false,
   },
   {
-    path: SETTINGS_PATH.ImportExport,
-    labelKey: 'settings.nav.export',
-    descriptionKey: 'settings.description.export',
-    phone: true,
-  },
-  {
     path: SETTINGS_PATH.Privacy,
     labelKey: 'settings.nav.privacy',
     descriptionKey: 'settings.description.privacy',

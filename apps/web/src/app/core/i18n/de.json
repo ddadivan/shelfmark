@@ -1084,17 +1084,15 @@
       "appearance": "Darstellung",
       "library": "Bibliothek",
       "language": "Sprache",
-      "export": "Exportieren",
       "privacy": "Datenschutz und Daten",
       "shortcuts": "Tastenkürzel",
       "feedback": "Dein Feedback"
     },
     "description": {
-      "account": "Dein Profil und dein Konto.",
+      "account": "Dein Profil, dein Regal und deine Daten.",
       "appearance": "Wird sofort gespeichert und auf all deinen Geräten synchronisiert.",
       "library": "Wie Links gezeigt, gespeichert und aufbewahrt werden.",
       "language": "Die Sprache der Oberfläche. Datums- und Zeitformate findest du unter Darstellung.",
-      "export": "Nimm alles mit, was du gespeichert hast.",
       "privacy": "Was wir speichern und wie du es mitnimmst.",
       "shortcuts": "Arbeite ohne Maus.",
       "feedback": "Ideen, Probleme und unsere Antworten."
@@ -1106,6 +1104,33 @@
         "title": "Abmelden",
         "label": "Von Shelfmark abmelden",
         "hint": "Deine Links bleiben gespeichert. Melde dich jederzeit wieder an."
+      },
+      "memberSince": "Mitglied seit {{date}}",
+      "shelf": {
+        "title": "Dein Regal",
+        "loading": "Deine Zahlen werden geladen",
+        "links": "Links",
+        "folders": "Ordner",
+        "tags": "Tags",
+        "oldest": "Ältester Link: {{when}}",
+        "topSites": "Am häufigsten gespeicherte Websites",
+        "topTags": "Meistgenutzte Tags",
+        "weekly": "Hinzugefügte Links pro Woche",
+        "weeklyHint": "Letzte 12 Wochen",
+        "week": "Woche ab {{date}}: {{count}}",
+        "error": "Deine Zahlen konnten nicht geladen werden.",
+        "retry": "Erneut versuchen",
+        "empty": {
+          "title": "Noch nichts gespeichert",
+          "text": "Speichere deinen ersten Link, dann erscheinen hier deine Zahlen."
+        }
+      },
+      "connected": {
+        "title": "Verbundene Konten",
+        "since": "Verbunden am {{date}}",
+        "none": "Das Demokonto ist nicht mit Google oder GitHub verknüpft.",
+        "google": "Google",
+        "github": "GitHub"
       }
     },
     "data": {

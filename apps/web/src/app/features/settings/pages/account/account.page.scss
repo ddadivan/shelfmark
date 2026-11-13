@@ -34,3 +34,16 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.account__muted {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+// "Your data": the target of the old export page and of Privacy and data's "Open export" (#352).
+.account__anchor {
+  display: block;
+  scroll-margin-block-start: var(--space-4);
+}

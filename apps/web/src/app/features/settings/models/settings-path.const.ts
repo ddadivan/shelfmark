@@ -8,7 +8,7 @@ export const SETTINGS_PATH = {
   Language: 'language',
   /** Your feedback: the send form and the user's messages. */
   Feedback: 'feedback',
-  /** Only export exists today; the path is the one an import would join. */
+  /** The old Export page (#352: export lives in Account › Your data); only redirects there. */
   ImportExport: 'import-export',
   Privacy: 'privacy',
   Shortcuts: 'shortcuts',

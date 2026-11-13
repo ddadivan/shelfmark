@@ -5,6 +5,7 @@ export type { ContractExportFile } from './models/contract-export-file.interface
 export type { ContractFeedbackApi } from './models/contract-feedback-api.interface';
 export type { ContractFoldersApi } from './models/contract-folders-api.interface';
 export type { ContractLinksApi } from './models/contract-links-api.interface';
+export type { ContractMeApi } from './models/contract-me-api.interface';
 export type { ContractPinsApi } from './models/contract-pins-api.interface';
 export type { ContractScenario } from './models/contract-scenario.interface';
 export type { ContractSettingsApi } from './models/contract-settings-api.interface';

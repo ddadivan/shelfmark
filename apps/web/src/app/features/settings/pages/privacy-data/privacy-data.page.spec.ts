@@ -65,7 +65,7 @@ describe('PrivacyDataPage', () => {
     expect(root.querySelector('a[href="/privacy"]')?.getAttribute('aria-label')).toBe(
       'Read the privacy policy',
     );
-    expect(root.querySelector('a[href="/settings/import-export"]')?.textContent).toContain(
+    expect(root.querySelector('a[href="/settings/account#your-data"]')?.textContent).toContain(
       'Open export',
     );
     expect(root.textContent).toContain('Export your data');

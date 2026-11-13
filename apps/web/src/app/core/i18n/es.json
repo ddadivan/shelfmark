@@ -1105,17 +1105,15 @@
       "appearance": "Apariencia",
       "library": "Biblioteca",
       "language": "Idioma",
-      "export": "Exportar",
       "privacy": "Privacidad y datos",
       "shortcuts": "Atajos de teclado",
       "feedback": "Tus comentarios"
     },
     "description": {
-      "account": "Tu perfil y tu cuenta.",
+      "account": "Tu perfil, tu estantería y tus datos.",
       "appearance": "Se guarda al momento y se sincroniza en todos tus dispositivos.",
       "library": "Cómo se muestran, guardan y conservan los enlaces.",
       "language": "El idioma de la interfaz. Los formatos de fecha y hora están en Apariencia.",
-      "export": "Llévate todo lo que has guardado.",
       "privacy": "Qué guardamos y cómo llevártelo.",
       "shortcuts": "Trabaja sin ratón.",
       "feedback": "Ideas, problemas y nuestras respuestas."
@@ -1127,6 +1125,33 @@
         "title": "Cerrar sesión",
         "label": "Cerrar sesión en Shelfmark",
         "hint": "Tus enlaces siguen guardados. Vuelve a iniciar sesión cuando quieras."
+      },
+      "memberSince": "Miembro desde {{date}}",
+      "shelf": {
+        "title": "Tu estantería",
+        "loading": "Cargando tus cifras",
+        "links": "Enlaces",
+        "folders": "Carpetas",
+        "tags": "Etiquetas",
+        "oldest": "Enlace más antiguo: {{when}}",
+        "topSites": "Sitios que más guardas",
+        "topTags": "Etiquetas más usadas",
+        "weekly": "Enlaces añadidos por semana",
+        "weeklyHint": "Últimas 12 semanas",
+        "week": "Semana del {{date}}: {{count}}",
+        "error": "No se pudieron cargar tus cifras.",
+        "retry": "Reintentar",
+        "empty": {
+          "title": "Aún no has guardado nada",
+          "text": "Guarda tu primer enlace y aquí verás tus cifras."
+        }
+      },
+      "connected": {
+        "title": "Cuentas conectadas",
+        "since": "Conectada el {{date}}",
+        "none": "La cuenta de demostración no está vinculada a Google ni a GitHub.",
+        "google": "Google",
+        "github": "GitHub"
       }
     },
     "data": {

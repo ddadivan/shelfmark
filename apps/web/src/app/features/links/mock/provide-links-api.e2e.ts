@@ -7,6 +7,10 @@ import { HttpUserSettingsApi } from '../../settings/http/http-user-settings.api'
 import { MockUserSettingsApi } from '../../settings/mock/mock-user-settings.api';
 import { USER_SETTINGS_API } from '../../settings/models/user-settings-api.const';
 import type { UserSettingsApi } from '../../settings/models/user-settings-api.interface';
+import { HttpMeStatsApi } from '../../settings/http/http-me-stats.api';
+import { MockMeStatsApi } from '../../settings/mock/mock-me-stats.api';
+import { ME_STATS_API } from '../../settings/models/me-stats-api.const';
+import type { MeStatsApi } from '../../settings/models/me-stats-api.interface';
 import { HttpPinsApi } from '../../pins/http/http-pins.api';
 import { MockPinsApi } from '../../pins/mock/mock-pins.api';
 import { PINS_API } from '../../pins/models/pins-api.const';
@@ -113,6 +117,11 @@ export function provideLinksApi(): Provider[] {
       provide: USER_SETTINGS_API,
       useFactory: (): UserSettingsApi =>
         useRealApi() ? inject(HttpUserSettingsApi) : inject(MockUserSettingsApi),
+    },
+    {
+      provide: ME_STATS_API,
+      useFactory: (): MeStatsApi =>
+        useRealApi() ? inject(HttpMeStatsApi) : inject(MockMeStatsApi),
     },
     {
       provide: SAVED_VIEWS_API,

@@ -1,7 +1,7 @@
 import { buildCsp } from './build-csp';
 
 const STATIC_POLICY =
-  "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; form-action 'self'";
+  "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: https://lh3.googleusercontent.com https://avatars.githubusercontent.com; connect-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; form-action 'self'";
 
 describe('buildCsp', () => {
   it('returns the documented static policy for null', () => {

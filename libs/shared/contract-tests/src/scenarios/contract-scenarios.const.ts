@@ -3,6 +3,7 @@ import { EXPORT_SCENARIOS } from './export-scenarios.const';
 import { FEEDBACK_SCENARIOS } from './feedback-scenarios.const';
 import { FOLDERS_SCENARIOS } from './folders-scenarios.const';
 import { LINKS_SCENARIOS } from './links-scenarios.const';
+import { ME_SCENARIOS } from './me-scenarios.const';
 import { PINS_SCENARIOS } from './pins-scenarios.const';
 import { SETTINGS_SCENARIOS } from './settings-scenarios.const';
 import { SHARES_SCENARIOS } from './shares-scenarios.const';
@@ -22,4 +23,5 @@ export const CONTRACT_SCENARIOS: readonly ContractScenario[] = [
   ...SHARES_SCENARIOS,
   ...FEEDBACK_SCENARIOS,
   ...EXPORT_SCENARIOS,
+  ...ME_SCENARIOS,
 ];

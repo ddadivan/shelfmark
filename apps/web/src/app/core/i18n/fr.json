@@ -1105,17 +1105,15 @@
       "appearance": "Apparence",
       "library": "Bibliothèque",
       "language": "Langue",
-      "export": "Exporter",
       "privacy": "Confidentialité et données",
       "shortcuts": "Raccourcis clavier",
       "feedback": "Vos avis"
     },
     "description": {
-      "account": "Votre profil et votre compte.",
+      "account": "Votre profil, votre étagère et vos données.",
       "appearance": "Enregistré au fur et à mesure et synchronisé sur tous vos appareils.",
       "library": "Comment les liens sont affichés, enregistrés et conservés.",
       "language": "La langue de l’interface. Les formats de date et d’heure sont dans Apparence.",
-      "export": "Emportez tout ce que vous avez enregistré.",
       "privacy": "Ce que nous conservons, et comment le récupérer.",
       "shortcuts": "Travaillez sans la souris.",
       "feedback": "Idées, problèmes et nos réponses."
@@ -1127,6 +1125,33 @@
         "title": "Se déconnecter",
         "label": "Se déconnecter de Shelfmark",
         "hint": "Vos liens restent enregistrés. Reconnectez-vous quand vous voulez."
+      },
+      "memberSince": "Membre depuis {{date}}",
+      "shelf": {
+        "title": "Votre étagère",
+        "loading": "Chargement de vos chiffres",
+        "links": "Liens",
+        "folders": "Dossiers",
+        "tags": "Tags",
+        "oldest": "Lien le plus ancien : {{when}}",
+        "topSites": "Sites que vous enregistrez le plus",
+        "topTags": "Tags les plus utilisés",
+        "weekly": "Liens ajoutés par semaine",
+        "weeklyHint": "12 dernières semaines",
+        "week": "Semaine du {{date}} : {{count}}",
+        "error": "Impossible de charger vos chiffres.",
+        "retry": "Réessayer",
+        "empty": {
+          "title": "Rien d'enregistré pour l'instant",
+          "text": "Enregistrez votre premier lien et vos chiffres apparaîtront ici."
+        }
+      },
+      "connected": {
+        "title": "Comptes connectés",
+        "since": "Connecté le {{date}}",
+        "none": "Le compte de démo n'est pas lié à Google ni à GitHub.",
+        "google": "Google",
+        "github": "GitHub"
       }
     },
     "data": {

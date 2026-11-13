@@ -19,7 +19,6 @@ const SCREENS = [
   '/settings',
   '/settings/account',
   '/settings/appearance',
-  '/settings/import-export',
   '/settings/privacy',
   '/library',
   '/tags',

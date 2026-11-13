@@ -9,6 +9,8 @@ import {
   SAVED_VIEW_ENDPOINT,
   TRASH_ENDPOINT,
   USER_SETTINGS_ENDPOINT,
+  ME_STATS_ENDPOINT,
+  type MeStatsResponse,
   type CreateFolderRequest,
   type CreateLinkRequest,
   type CreateLinksBatchRequest,
@@ -138,6 +140,9 @@ export function createHttpContractApis(app: NestExpressApplication, cookie: stri
       deleteForever: (items: readonly TrashItemRef[]) =>
         http.send<TrashActionResponse>('post', TRASH_ENDPOINT.Delete, { items: [...items] }),
       empty: () => http.send<TrashActionResponse>('delete', TRASH_ENDPOINT.Base),
+    },
+    me: {
+      stats: () => http.send<MeStatsResponse>('get', ME_STATS_ENDPOINT),
     },
     settings: {
       get: () => http.send<UserSettingsResponse>('get', USER_SETTINGS_ENDPOINT),
