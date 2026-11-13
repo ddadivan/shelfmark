@@ -143,11 +143,16 @@
 }
 
 .library__grid {
-  // One fluid minimum card width (#335): the number of columns grows with the window, about 3 at
-  // 1024px, 4 at 1280px, 5 at 1440px and 7 at 1920px; a phone keeps one column (`min(100%, …)`).
+  // One fluid minimum card width (#335, #350): the number of columns grows with the window; a
+  // phone keeps one column (`min(100%, …)`). The minimum is wider above 1920px (120em), so the
+  // cards of a big screen are not smaller than at 1920 and fold without squeezing.
   display: grid;
   gap: var(--density-feed-gap);
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, #{rem(196px)}), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14.25rem), 1fr));
+
+  @media (width > 120em) {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16.25rem), 1fr));
+  }
 
   // The list items hold the cards; stretch them to the row height.
   > li {

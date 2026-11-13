@@ -4,6 +4,7 @@ import { E2E_PROJECT } from './models/e2e-project.const';
 import { MOCK_LINKS_SCENARIO } from './models/mock-links-scenario.const';
 import { seedSession } from './support/mock-session';
 import { switchView } from './support/library-toolbar';
+import { isCompact } from './support/sidebar';
 
 // The mock page size is 50 of 60 links.
 const FIRST_PAGE = 50;
@@ -23,6 +24,44 @@ test.describe('links feed (mock API)', () => {
 
   async function firstTitle(page: Page): Promise<string> {
     return page.locator('ui-card').first().getByRole('heading').innerText();
+  }
+
+  // The grid's minimum card width: 14.25rem up to 1920px, 16.25rem above (#350), so the cards fold
+  // without squeezing. The feed is centred and capped at 150rem; side padding and the sidebar eat
+  // into the content width, so the columns are the ones the window leaves.
+  for (const viewport of [
+    { width: 1280, height: 800, min: 14.25 },
+    { width: 1920, height: 1080, min: 14.25 },
+    { width: 2560, height: 1440, min: 16.25 },
+  ]) {
+    test(`at ${viewport.width}px the grid folds cards no narrower than ${viewport.min}rem`, async ({
+      page,
+    }, testInfo) => {
+      test.skip(isCompact(page), 'the desktop grid');
+      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+      await openFeed(page);
+      const { columns, card, row } = await page.evaluate<{
+        columns: number;
+        card: number;
+        row: number[];
+      }>(`(() => {
+        const grid = document.querySelector('.library__grid');
+        const style = getComputedStyle(grid);
+        const items = Array.from(grid.children);
+        const top = items[0].getBoundingClientRect().top;
+        const row = items.filter((el) => el.getBoundingClientRect().top === top);
+        return {
+          columns: style.gridTemplateColumns.split(' ').length,
+          card: row[0].getBoundingClientRect().width,
+          row: row.map((el) => el.getBoundingClientRect().height),
+        };
+      })()`);
+      const rem = 16;
+      expect(columns, testInfo.title).toBeGreaterThanOrEqual(2);
+      expect(card).toBeGreaterThanOrEqual(viewport.min * rem - 0.5);
+      // Equal heights in a row.
+      expect(new Set(row.map((h) => Math.round(h))).size).toBe(1);
+    });
   }
 
   test('hovering a card slides up the open bar with the address', async ({ page }, testInfo) => {
