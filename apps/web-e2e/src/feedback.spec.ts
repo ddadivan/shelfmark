@@ -45,6 +45,26 @@ test.describe('send feedback (mock API)', () => {
     await expect(item.getByText('Received', { exact: true })).toBeVisible();
   });
 
+  test('an info button next to the version box explains what is sent, on hover, focus and tap (#350)', async ({
+    page,
+  }) => {
+    const dialog = await openSendFeedback(page);
+    const info = dialog.getByRole('button', { name: 'What is sent?' });
+    const text =
+      'Helps us reproduce problems. Only the app version and your browser name and version are sent.';
+    await expect(info).toBeVisible();
+    // Screen readers get the text as the button's description.
+    await expect(info).toHaveAttribute('aria-description', text);
+
+    // A tap (or click) opens the same text in the dialog, which works without a hover.
+    await expect(info).toHaveAttribute('aria-expanded', 'false');
+    await info.click();
+    await expect(info).toHaveAttribute('aria-expanded', 'true');
+    await expect(dialog.getByText(text)).toBeVisible();
+    await info.click();
+    await expect(dialog.getByText(text)).toHaveCount(0);
+  });
+
   test('a failed send keeps the text and works on the next try', async ({ page }) => {
     await setMockKey(page, MOCK_FEEDBACK_SCENARIO_KEY, 'server-error');
     const dialog = await openSendFeedback(page);

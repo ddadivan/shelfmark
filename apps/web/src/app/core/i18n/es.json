@@ -1972,7 +1972,9 @@
       "send": "Enviar",
       "sending": "Enviando…",
       "error": "No se pudo enviar. Tu texto se conserva — inténtalo de nuevo en un momento.",
-      "rateLimited": "Has enviado muchos mensajes en la última hora. Tu texto se conserva — inténtalo más tarde."
+      "rateLimited": "Has enviado muchos mensajes en la última hora. Tu texto se conserva — inténtalo más tarde.",
+      "attachClientInfoLabel": "¿Qué se envía?",
+      "attachClientInfo": "Nos ayuda a reproducir los problemas. Solo se envían la versión de la app y el nombre y la versión de tu navegador."
     },
     "screenshot": {
       "label": "Captura de pantalla (opcional)",

@@ -1935,7 +1935,9 @@
       "send": "Senden",
       "sending": "Wird gesendet…",
       "error": "Senden fehlgeschlagen. Dein Text bleibt erhalten — versuch es gleich noch einmal.",
-      "rateLimited": "Du hast in der letzten Stunde viele Nachrichten gesendet. Dein Text bleibt erhalten — versuch es später noch einmal."
+      "rateLimited": "Du hast in der letzten Stunde viele Nachrichten gesendet. Dein Text bleibt erhalten — versuch es später noch einmal.",
+      "attachClientInfoLabel": "Was wird gesendet?",
+      "attachClientInfo": "Hilft uns, Probleme nachzustellen. Gesendet werden nur die App-Version sowie Name und Version deines Browsers."
     },
     "screenshot": {
       "label": "Screenshot (optional)",

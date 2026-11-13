@@ -82,10 +82,30 @@
           }
         </div>
 
-        <ui-checkbox
-          [label]="'feedback.dialog.attachClient' | transloco"
-          [formField]="form.attachClient"
-        />
+        <div class="feedback-dialog__attach">
+          <ui-checkbox
+            [label]="'feedback.dialog.attachClient' | transloco"
+            [formField]="form.attachClient"
+          />
+          <!-- The tooltip (hover and focus) carries the text for screen readers as the button's
+               description; a tap, which never shows a tooltip, opens the same text below. -->
+          <ui-button
+            variant="ghost"
+            size="sm"
+            iconOnly
+            iconLeft="info"
+            [ariaLabel]="'feedback.dialog.attachClientInfoLabel' | transloco"
+            [uiTooltip]="'feedback.dialog.attachClientInfo' | transloco"
+            [ariaExpanded]="attachInfoOpen()"
+            [ariaControls]="attachInfoId"
+            (click)="attachInfoOpen.set(!attachInfoOpen())"
+          />
+        </div>
+        @if (attachInfoOpen()) {
+          <p class="feedback-dialog__attach-info" [id]="attachInfoId">
+            {{ 'feedback.dialog.attachClientInfo' | transloco }}
+          </p>
+        }
 
         @if (sendErrorText(); as message) {
           <ui-notice [kind]="NOTICE_KIND.Danger">{{ message }}</ui-notice>

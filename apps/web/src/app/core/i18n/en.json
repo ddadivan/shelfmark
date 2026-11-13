@@ -1935,7 +1935,9 @@
       "send": "Send",
       "sending": "Sending…",
       "error": "Couldn't send. Your text is kept — try again in a moment.",
-      "rateLimited": "You have sent a lot of messages in the last hour. Your text is kept — try again later."
+      "rateLimited": "You have sent a lot of messages in the last hour. Your text is kept — try again later.",
+      "attachClientInfoLabel": "What is sent?",
+      "attachClientInfo": "Helps us reproduce problems. Only the app version and your browser name and version are sent."
     },
     "screenshot": {
       "label": "Screenshot (optional)",

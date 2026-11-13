@@ -1972,7 +1972,9 @@
       "send": "Invia",
       "sending": "Invio in corso…",
       "error": "Invio non riuscito. Il tuo testo è salvato — riprova tra un momento.",
-      "rateLimited": "Hai inviato molti messaggi nell’ultima ora. Il tuo testo è salvato — riprova più tardi."
+      "rateLimited": "Hai inviato molti messaggi nell’ultima ora. Il tuo testo è salvato — riprova più tardi.",
+      "attachClientInfoLabel": "Cosa viene inviato?",
+      "attachClientInfo": "Ci aiuta a riprodurre i problemi. Vengono inviati solo la versione dell’app e il nome e la versione del browser."
     },
     "screenshot": {
       "label": "Screenshot (facoltativo)",

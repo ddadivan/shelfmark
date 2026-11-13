@@ -1972,7 +1972,9 @@
       "send": "Envoyer",
       "sending": "Envoi…",
       "error": "Envoi impossible. Votre texte est conservé — réessayez dans un instant.",
-      "rateLimited": "Vous avez envoyé beaucoup de messages dans la dernière heure. Votre texte est conservé — réessayez plus tard."
+      "rateLimited": "Vous avez envoyé beaucoup de messages dans la dernière heure. Votre texte est conservé — réessayez plus tard.",
+      "attachClientInfoLabel": "Qu’est-ce qui est envoyé ?",
+      "attachClientInfo": "Nous aide à reproduire les problèmes. Seuls la version de l’app ainsi que le nom et la version de votre navigateur sont envoyés."
     },
     "screenshot": {
       "label": "Capture d’écran (facultatif)",

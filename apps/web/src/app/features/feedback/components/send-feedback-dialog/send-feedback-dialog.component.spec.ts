@@ -179,6 +179,30 @@ describe('SendFeedbackDialogComponent', () => {
     expect(api.send).toHaveBeenCalledWith({ kind: 'idea', text: 'Hello' });
   });
 
+  it('explains what the version box sends: a focusable info button, the text as its description, a tap opens it (#350)', async () => {
+    await setup();
+    const text =
+      'Helps us reproduce problems. Only the app version and your browser name and version are sent.';
+    const info = container()?.querySelector<HTMLButtonElement>(
+      'button[aria-label="What is sent?"]',
+    );
+
+    expect(info).toBeTruthy();
+    expect(info?.tabIndex).toBe(0);
+    expect(info?.getAttribute('aria-expanded')).toBe('false');
+    expect(container()?.textContent).not.toContain(text);
+
+    await click(info ?? undefined);
+
+    expect(info?.getAttribute('aria-expanded')).toBe('true');
+    const hint = container()?.querySelector('#feedback-attach-info');
+    expect(hint?.textContent?.trim()).toBe(text);
+    expect(info?.getAttribute('aria-controls')).toBe('feedback-attach-info');
+
+    await click(info ?? undefined);
+    expect(container()?.querySelector('#feedback-attach-info')).toBeNull();
+  });
+
   it('shows Sending… on the button while the request runs', async () => {
     let resolve: () => void = () => undefined;
     await setup(() => new Promise((res) => (resolve = () => res(feedbackMessage()))));

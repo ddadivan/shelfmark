@@ -1972,7 +1972,9 @@
       "send": "Enviar",
       "sending": "Enviando…",
       "error": "Não foi possível enviar. Seu texto foi mantido — tente de novo em instantes.",
-      "rateLimited": "Você enviou muitas mensagens na última hora. Seu texto foi mantido — tente mais tarde."
+      "rateLimited": "Você enviou muitas mensagens na última hora. Seu texto foi mantido — tente mais tarde.",
+      "attachClientInfoLabel": "O que é enviado?",
+      "attachClientInfo": "Ajuda a reproduzir os problemas. Só são enviados a versão do app e o nome e a versão do seu navegador."
     },
     "screenshot": {
       "label": "Captura de tela (opcional)",
