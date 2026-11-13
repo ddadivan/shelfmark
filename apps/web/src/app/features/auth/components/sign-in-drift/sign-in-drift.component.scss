@@ -7,7 +7,9 @@
   --sd-pad: var(--space-6);
 
   // Half of the sign-in card (420px); the lane's inner edge keeps `--sd-pad` from it.
-  --sd-clear: #{rem(210px)};
+  // On very large screens the card grows with the window (`--sign-k`, set by the page).
+  --sd-clear: calc(#{rem(210px)} * var(--sign-k, 1));
+  --sd-cap: 1.3;
   --sd-lane-w: calc(50cqw - var(--sd-clear) - var(--sd-pad) * 2);
   --sd-lane-h: calc(100cqh - var(--sd-pad) * 2);
 
@@ -16,19 +18,24 @@
   overflow: hidden;
   pointer-events: none;
   container-type: size;
+
+  // 4K / 5K (160em, the huge layout of eleven cards a side): the cards may grow with the lanes.
+  @media (width >= 160em) {
+    --sd-cap: 2.4;
+  }
 }
 
 // One lane on each side. The cards' spots (`--sd-x`, `--sd-y`) are shares of the lane, from the
 // seeded scatter computed for a reference lane (`--sd-ref-w` x `--sd-ref-h`, unitless pixels).
 // Every card is scaled by `--sd-k`, the smaller of the two ratios between the real lane and that
 // reference, so a scatter without overlaps there has none here: the other axis only spreads the
-// cards further apart. Capped, so a very large window does not blow the cards up.
+// cards further apart. Capped (`--sd-cap`), so a very large window does not blow the cards up.
 .sd-lane {
   --sd-k: 0.8;
 
   @supports (scale: calc(tan(atan2(1px, 1px)))) {
     --sd-k: min(
-      1.3,
+      var(--sd-cap),
       tan(atan2(var(--sd-lane-w), var(--sd-ref-w) * #{rem(1px)})),
       tan(atan2(var(--sd-lane-h), var(--sd-ref-h) * #{rem(1px)}))
     );

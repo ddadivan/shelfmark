@@ -624,6 +624,30 @@
         },
         "linenShirt": {
           "title": "Linen shirt in sage green"
+        },
+        "bikepacking": {
+          "title": "Bikepacking the Dolomites in five days"
+        },
+        "typefaces": {
+          "title": "How to pair two typefaces"
+        },
+        "rxjs": {
+          "title": "RxJS operators you actually use"
+        },
+        "cacioEPepe": {
+          "title": "Cacio e pepe without the clumps"
+        },
+        "standingDesk": {
+          "title": "The best standing desks, tested"
+        },
+        "contrast": {
+          "title": "A practical guide to colour contrast"
+        },
+        "hydration": {
+          "title": "Hydration and incremental rendering"
+        },
+        "ferry": {
+          "title": "Hidden beaches you can reach by ferry"
         }
       },
       "tags": {

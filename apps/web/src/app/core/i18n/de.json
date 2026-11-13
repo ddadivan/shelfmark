@@ -624,6 +624,30 @@
         },
         "linenShirt": {
           "title": "Leinenhemd in Salbeigrün"
+        },
+        "bikepacking": {
+          "title": "Fünf Tage mit dem Rad durch die Dolomiten"
+        },
+        "typefaces": {
+          "title": "Zwei Schriften richtig kombinieren"
+        },
+        "rxjs": {
+          "title": "RxJS-Operatoren, die du wirklich brauchst"
+        },
+        "cacioEPepe": {
+          "title": "Cacio e pepe ohne Klumpen"
+        },
+        "standingDesk": {
+          "title": "Die besten Stehpulte im Test"
+        },
+        "contrast": {
+          "title": "Ein praktischer Leitfaden zum Farbkontrast"
+        },
+        "hydration": {
+          "title": "Hydration und inkrementelles Rendering"
+        },
+        "ferry": {
+          "title": "Versteckte Strände, die man per Fähre erreicht"
         }
       },
       "tags": {

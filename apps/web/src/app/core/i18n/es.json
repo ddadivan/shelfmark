@@ -635,6 +635,30 @@
         },
         "linenShirt": {
           "title": "Camisa de lino verde salvia"
+        },
+        "bikepacking": {
+          "title": "Las Dolomitas en bicicleta en cinco días"
+        },
+        "typefaces": {
+          "title": "Cómo combinar dos tipografías"
+        },
+        "rxjs": {
+          "title": "Los operadores de RxJS que sí usas"
+        },
+        "cacioEPepe": {
+          "title": "Cacio e pepe sin grumos"
+        },
+        "standingDesk": {
+          "title": "Los mejores escritorios elevables, probados"
+        },
+        "contrast": {
+          "title": "Guía práctica del contraste de color"
+        },
+        "hydration": {
+          "title": "Hidratación y renderizado incremental"
+        },
+        "ferry": {
+          "title": "Playas escondidas a las que se llega en ferry"
         }
       },
       "tags": {

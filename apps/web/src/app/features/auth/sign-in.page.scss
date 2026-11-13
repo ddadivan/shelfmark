@@ -16,6 +16,15 @@
     padding: var(--space-6);
     place-items: center;
   }
+
+  // 4K / 5K (#350): from 125em (2000px) the glass card grows with the window, so it stays
+  // proportionate at 3840 and 5120 (`--sign-k` is the window over 125em, between 1 and 2.6;
+  // the drifting lanes read it too, to keep clear of the card).
+  @supports (scale: calc(tan(atan2(1px, 1px)))) {
+    @media (width >= 125em) {
+      --sign-k: clamp(1, tan(atan2(100vw, #{rem(2000px)})), 2.6);
+    }
+  }
 }
 
 .sign-in__art {
@@ -54,6 +63,7 @@
     margin-inline: 0;
     background: var(--glass);
     border-radius: rem(32px);
+    zoom: var(--sign-k, 1);
   }
 }
 

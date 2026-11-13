@@ -4,6 +4,9 @@ import { COMPACT_MEDIA_QUERY, PHONE_MEDIA_QUERY, mediaMatch } from '@shelfmark/u
 /** The Sass `wide` mixin starts at 80em. */
 const BELOW_WIDE_QUERY = '(width < 80em)';
 
+/** 160em = 2560 CSS pixels: 4K and 5K screens. */
+const HUGE_QUERY = '(width >= 160em)';
+
 /**
  * The layout breakpoint the viewport is in, for the few places where CSS alone is not enough:
  * what is not shown should not be rendered (and fetch its data), and touch controls use the touch
@@ -27,4 +30,9 @@ export class ViewportService {
    * header has a "Search" button that opens the dialog.
    */
   readonly wide = computed(() => !this.belowWide());
+  /**
+   * From 160em (2560px, 4K and 5K screens, #350): the sign-in lanes are large enough for eleven
+   * cards a side. Without `matchMedia` it is off.
+   */
+  readonly huge = mediaMatch(HUGE_QUERY);
 }
