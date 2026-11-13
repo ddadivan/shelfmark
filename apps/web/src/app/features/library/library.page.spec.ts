@@ -540,6 +540,18 @@ describe('LibraryPage of a folder', () => {
     expect(navigate).toHaveBeenCalledWith('/links');
   });
 
+  it('has no axe violations on the empty folder', async () => {
+    const { element } = await setupFolder('f1', []);
+    document.body.append(element);
+
+    const { violations } = await axe.run(element, {
+      rules: { 'color-contrast': { enabled: false } },
+    });
+    element.remove();
+
+    expect(violations.map((violation) => violation.id)).toEqual([]);
+  });
+
   it('has no axe violations on the not-found state', async () => {
     const { element } = await setupFolder('gone');
     document.body.append(element);
@@ -598,6 +610,30 @@ describe('LibraryPage of a folder', () => {
       expect(text(fixture)).toContain('No links with these tags');
     });
   });
+  describe('empty and filtered states', () => {
+    it.each([
+      ['the empty feed', {}],
+      ['a tag filter', { tag: ['docs'] }],
+      ['a search with nothing found', { q: 'zzzzqq' }],
+    ])('has no axe violations on %s', async (_name, inputs: Record<string, unknown>) => {
+      const { api, fixture, element } = await setup(of(page([])));
+      api.list.mockReturnValue(of(page([])));
+      for (const [name, value] of Object.entries(inputs)) {
+        fixture.componentRef.setInput(name, value);
+      }
+      await fixture.whenStable();
+      document.body.append(element);
+
+      expect(element.querySelector('ui-empty-state')).not.toBeNull();
+      const { violations } = await axe.run(element, {
+        rules: { 'color-contrast': { enabled: false } },
+      });
+      element.remove();
+
+      expect(violations.map((violation) => violation.id)).toEqual([]);
+    });
+  });
+
   describe('search, sort and title', () => {
     it('sorts from the sort menu and writes the sort into the URL', async () => {
       const { fixture } = await setup();

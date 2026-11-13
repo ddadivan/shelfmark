@@ -498,6 +498,19 @@ describe('AddLinkDialogComponent', () => {
       expect(api.create).toHaveBeenCalledWith(expect.objectContaining({ tags: ['winter-sale'] }));
     });
 
+    it('has no axe violations with a new tag chip', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      await setup(api);
+
+      addTag('brand new');
+      await until(() => {
+        expect(dialog().querySelector('ui-tag-input')?.textContent).toContain('brand-new');
+      });
+
+      const results = await axe.run(dialog(), { rules: { 'color-contrast': { enabled: false } } });
+      expect(results.violations.map((v) => `${v.id}: ${v.help}`)).toEqual([]);
+    });
+
     it('suggests the existing tags of the store with their link counts', async () => {
       const api = fakeApi(() => of(PLAIN));
       await setup(api);

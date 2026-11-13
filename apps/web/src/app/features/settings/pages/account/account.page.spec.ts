@@ -93,13 +93,14 @@ describe('AccountPage', () => {
     expect(root.textContent).toContain('Connected Sep 14, 2025');
   });
 
-  it('shows the empty state for an account with no links', async () => {
+  it('shows the empty state for an account with no links, free of axe violations', async () => {
     const { root } = await setup(SETTINGS_TEST_USER, () =>
       of({ ...SETTINGS_TEST_STATS, linkCount: 0, topSites: [], topTags: [], oldestLinkAt: null }),
     );
 
     expect(root.textContent).toContain('Nothing saved yet');
     expect(root.querySelector('.shelf__counts')).toBeNull();
+    expect(await axeViolations(root)).toEqual([]);
   });
 
   it("asks for weeks that start on the user's first day and asks again when it changes", async () => {

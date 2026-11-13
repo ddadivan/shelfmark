@@ -362,7 +362,7 @@ describe('SidebarTagsComponent', () => {
     element.remove();
   });
 
-  it('a right click opens the tag menu with its summary and actions', async () => {
+  it('a right click opens the tag menu with its summary and actions, free of axe violations', async () => {
     const { element } = await setup();
 
     chip(element, MOCK_NAME.TagDocs).dispatchEvent(
@@ -379,6 +379,10 @@ describe('SidebarTagsComponent', () => {
       ),
     ).toEqual(['Show links', 'Rename', 'Merge into another tag…', 'Delete tag']);
     expect(menu?.textContent).toMatch(/docs, \d+ links?/);
+    const { violations } = await axe.run(menu as HTMLElement, {
+      rules: { 'color-contrast': { enabled: false } },
+    });
+    expect(violations.map((violation) => violation.id)).toEqual([]);
   });
 
   it('refuses an empty name without a request', async () => {

@@ -4,8 +4,9 @@ import { COLOR_SCHEME } from './models/color-scheme.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { settled } from './support/settled';
 
-// One matrix for the whole app: every screen and dialog, both themes, on desktop; the screens
-// tagged for the touch projects (ADR 0043) also run on the phone (and the tablet for `@mobile`).
+// The key app screens (A11Y_SCREENS), both themes, on desktop; the screens tagged for the touch
+// projects (ADR 0043) also run on the phone (and the tablet for `@mobile`). The other dialogs,
+// menus and states have jsdom axe tests in their component specs (#349).
 test.describe('app-wide accessibility (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
 
