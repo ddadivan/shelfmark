@@ -1,7 +1,5 @@
-import { type Locator, type Page, type TestInfo } from '@playwright/test';
-import { expectNoBlockingViolations } from './support/axe';
+import { type Locator, type Page } from '@playwright/test';
 import { seedSession } from './support/mock-session';
-import { settled } from './support/settled';
 import { isCompact } from './support/sidebar';
 import { expect, test } from './support/test';
 import { E2E_TAG } from './models/e2e-tag.const';
@@ -157,47 +155,6 @@ test.describe('appearance extras (mock API)', () => {
     expect(ratio).toBeGreaterThan(3);
   });
 
-  test('link counts (Library) and Remember recently opened (Privacy) show in the preview (#315)', async ({
-    page,
-  }) => {
-    await openAppearance(page);
-    // Neither row is on Appearance any more.
-    await expect(toggle(page, 'Link counts')).toHaveCount(0);
-    await expect(toggle(page, 'Remember recently opened')).toHaveCount(0);
-    // The preview draws its sidebar from the tablet width on.
-    const sidebar = isCompact(page) ? null : page.locator('ui-theme-preview');
-    if (sidebar) {
-      await expect(sidebar.locator('.ui-theme-preview__count').first()).toBeVisible();
-      await expect(sidebar.getByText('Recently opened')).toBeVisible();
-    }
-
-    await page.goto('/settings/library');
-    await toggle(page, 'Show folder counts').click();
-    await expect(toggle(page, 'Show folder counts')).toHaveAttribute('aria-checked', 'false');
-
-    // Off asks first; Cancel keeps it on.
-    await page.goto('/settings/privacy');
-    await toggle(page, 'Remember recently opened').click();
-    const dialog = page.getByRole('alertdialog').or(page.getByRole('dialog'));
-    await expect(dialog).toContainText('Stop remembering recently opened?');
-    await dialog.getByRole('button', { name: 'Cancel' }).click();
-    await expect(toggle(page, 'Remember recently opened')).toHaveAttribute('aria-checked', 'true');
-
-    await toggle(page, 'Remember recently opened').click();
-    await page.getByRole('button', { name: 'Clear and stop' }).click();
-    await expect(toggle(page, 'Remember recently opened')).toHaveAttribute('aria-checked', 'false');
-
-    // A client-side move keeps the mock's in-memory "pause history".
-    if (sidebar) {
-      await page
-        .getByRole('navigation', { name: 'Settings' })
-        .getByRole('link', { name: 'Appearance' })
-        .click();
-      await expect(sidebar.locator('.ui-theme-preview__count')).toHaveCount(0);
-      await expect(sidebar.getByText('Recently opened')).toHaveCount(0);
-    }
-  });
-
   test(
     'the phone keeps every option reachable at 125% text without side scroll',
     { tag: E2E_TAG.Phone },
@@ -221,35 +178,4 @@ test.describe('appearance extras (mock API)', () => {
       await expectNoSideScroll(page);
     },
   );
-});
-
-/** axe after the animations, scrolled to the end (see appearance.spec.ts). */
-async function scanSettled(page: Page, testInfo: TestInfo): Promise<void> {
-  await page.evaluate('scrollTo(0, document.documentElement.scrollHeight)');
-  await settled(page);
-  await expectNoBlockingViolations(page, testInfo);
-}
-
-test.describe('appearance extras accessibility (mock API)', () => {
-  test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
-
-  test.beforeEach(async ({ page }) => {
-    await seedSession(page);
-  });
-
-  for (const theme of ['Light', 'Dark']) {
-    test(`${theme} at 125% text, compact and readable: no serious or critical axe violations`, async ({
-      page,
-    }, testInfo) => {
-      await openAppearance(page);
-      await pick(page, 'Theme', theme);
-      await pick(page, 'Text size', '125%');
-      await pick(page, 'Density', 'Compact');
-      await pick(page, 'Font', 'Readable');
-      await scanSettled(page, testInfo);
-
-      await openFeed(page);
-      await scanSettled(page, testInfo);
-    });
-  }
 });

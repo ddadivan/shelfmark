@@ -30,6 +30,7 @@ import { CUSTOM_THEME_STORAGE_KEY } from '../../../../core/theme/models/custom-t
 import { MOTION_STORAGE_KEY } from '../../../../core/theme/models/motion-storage-key.const';
 import { THEME_STORAGE_KEY } from '../../../../core/theme/models/theme-storage-key.const';
 import { USER_SETTINGS_API } from '../../models/user-settings-api.const';
+import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import AppearancePage from './appearance.page';
 
 /** The radio named `label` inside the radiogroup named by the row or label `group`. */
@@ -72,8 +73,11 @@ const BASE: UserSettingsResponse = {
   ...LIBRARY_SETTINGS_DEFAULT,
 };
 
-async function setup({ fail = false } = {}) {
-  let current: UserSettingsResponse = { ...BASE };
+async function setup({
+  fail = false,
+  settings = {},
+}: { fail?: boolean; settings?: Partial<UserSettingsResponse> } = {}) {
+  let current: UserSettingsResponse = { ...BASE, ...settings };
   const settingsApi = {
     get: vi.fn(() => of(current)),
     update: vi.fn((request: UpdateUserSettingsRequest) => {
@@ -143,6 +147,27 @@ describe('AppearancePage', () => {
     for (const title of ['Text and layout', 'Cards', 'Sidebar and motion']) {
       expect(page.textContent).toContain(title);
     }
+  });
+
+  it('draws the link counts and Recently opened in the preview as Library and Privacy set them (#315)', async () => {
+    const shown = await setup();
+    const preview = () => shown.root.querySelector('ui-theme-preview') as HTMLElement;
+    await vi.waitFor(() => {
+      shown.harness.detectChanges();
+      expect(preview().querySelectorAll('.ui-theme-preview__count').length).toBeGreaterThan(0);
+      expect(preview().textContent).toContain('Recently opened');
+    });
+  });
+
+  it('leaves the counts and Recently opened out of the preview when they are off (#315)', async () => {
+    const off = await setup({ settings: { showFolderCounts: false, pauseHistory: true } });
+    await TestBed.inject(UserSettingsStore).load();
+    await vi.waitFor(() => {
+      off.harness.detectChanges();
+      const preview = off.root.querySelector('ui-theme-preview') as HTMLElement;
+      expect(preview.querySelectorAll('.ui-theme-preview__count')).toHaveLength(0);
+      expect(preview.textContent).not.toContain('Recently opened');
+    });
   });
 
   it('applies and saves a fixed theme on the account', async () => {
