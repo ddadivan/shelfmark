@@ -498,7 +498,7 @@
     "home": "Shelfmark, home",
     "newTab": "(opens in a new tab)",
     "updated": "Last updated {{date}}",
-    "updatedDate": "9 November 2026",
+    "updatedDate": "13 November 2026",
     "intro": "Shelfmark is a personal project that stores the links you save. This page explains what we keep and why, in plain words.",
     "store": {
       "title": "What we store",
@@ -506,6 +506,7 @@
       "content": "Your links (address, title, note, favorite mark, when you last opened it), your folders and your tags.",
       "images": "For each link, a small copy of the site's icon and preview image, if the site has them. Our server downloads and stores them so they load from Shelfmark.",
       "feedback": "Your answers to the in-app rating, linked to your account: a score from 1 to 10 and, if you write one, a comment.",
+      "stats": "The \"Your shelf\" numbers on the Account page (counts, the sites and tags you use most, links per week) are worked out from your own data each time you open the page. They are not stored and never shared.",
       "sessions": "For each sign-in: when it expires, plus the IP address and the browser (user agent) it was started from, to keep sessions secure.",
       "logs": "Our API logs the request method, path, status, duration and a request id, without link contents or personal data. Our host, Vercel, keeps its own standard request logs, which include IP addresses, for a limited time."
     },
@@ -530,6 +531,7 @@
       "google": "Google privacy policy",
       "github": "GitHub privacy statement",
       "tokens": "We do not store the access tokens that Google or GitHub issue when you sign in.",
+      "avatar": "Your profile photo is loaded directly from Google or GitHub, so your browser contacts them whenever Shelfmark shows it. No referrer is sent with that request, so they don't see which Shelfmark page you are on.",
       "monitoring": "If error monitoring is switched on, crashes and server errors are reported to Sentry through our own server. Reports are scrubbed before they leave: no email, IP address, cookies, request contents or saved link addresses, only technical details such as the error type, where in the code it happened, your browser and system type, the page path and a request id. If it is off, nothing is sent."
     },
     "where": {

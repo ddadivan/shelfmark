@@ -509,7 +509,7 @@
     "home": "Shelfmark, home",
     "newTab": "(si apre in una nuova scheda)",
     "updated": "Ultimo aggiornamento: {{date}}",
-    "updatedDate": "9 novembre 2026",
+    "updatedDate": "13 novembre 2026",
     "intro": "Shelfmark è un progetto personale che conserva i link che salvi. Questa pagina spiega in parole semplici cosa teniamo e perché.",
     "store": {
       "title": "Cosa conserviamo",
@@ -517,6 +517,7 @@
       "content": "I tuoi link (indirizzo, titolo, nota, preferito, ultima apertura), le tue cartelle e i tuoi tag.",
       "images": "Per ogni link, una piccola copia dell’icona e dell’immagine di anteprima del sito, se ne ha. Il nostro server le scarica e le conserva, così si caricano da Shelfmark.",
       "feedback": "Le tue risposte alla valutazione nell’app, collegate al tuo account: un punteggio da 1 a 10 e, se lo scrivi, un commento.",
+      "stats": "I numeri di «Il tuo scaffale» nella pagina Account (totali, siti e tag che usi di più, link per settimana) vengono calcolati dai tuoi dati ogni volta che apri la pagina. Non vengono salvati né condivisi.",
       "sessions": "Per ogni accesso: quando scade, oltre all’indirizzo IP e al browser (user agent) da cui è iniziato, per tenere le sessioni al sicuro.",
       "logs": "La nostra API registra metodo, percorso, stato, durata e un id della richiesta, senza contenuti dei link né dati personali. Il nostro hosting, Vercel, conserva i propri log standard delle richieste, che includono gli indirizzi IP, per un periodo limitato."
     },
@@ -541,6 +542,7 @@
       "google": "Informativa sulla privacy di Google",
       "github": "Informativa sulla privacy di GitHub",
       "tokens": "Non conserviamo i token di accesso che Google o GitHub emettono quando accedi.",
+      "avatar": "La tua foto profilo viene caricata direttamente da Google o GitHub, quindi il tuo browser li contatta ogni volta che Shelfmark la mostra. Con questa richiesta non viene inviato alcun referrer, quindi non vedono su quale pagina di Shelfmark ti trovi.",
       "monitoring": "Se il monitoraggio degli errori è attivo, crash ed errori del server vengono segnalati a Sentry tramite il nostro server. I report vengono ripuliti prima di partire: niente email, indirizzo IP, cookie, contenuti delle richieste o indirizzi dei link salvati, solo dettagli tecnici come il tipo di errore, il punto del codice, il tipo di browser e di sistema, il percorso della pagina e un id della richiesta. Se è disattivato, non viene inviato nulla."
     },
     "where": {

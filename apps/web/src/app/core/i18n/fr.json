@@ -509,7 +509,7 @@
     "home": "Shelfmark, accueil",
     "newTab": "(s’ouvre dans un nouvel onglet)",
     "updated": "Dernière mise à jour : {{date}}",
-    "updatedDate": "9 novembre 2026",
+    "updatedDate": "13 novembre 2026",
     "intro": "Shelfmark est un projet personnel qui stocke les liens que vous enregistrez. Cette page explique ce que nous conservons et pourquoi, en termes simples.",
     "store": {
       "title": "Ce que nous stockons",
@@ -517,6 +517,7 @@
       "content": "Vos liens (adresse, titre, note, marque de favori, dernière ouverture), vos dossiers et vos tags.",
       "images": "Pour chaque lien, une petite copie de l’icône et de l’image d’aperçu du site, s’il en a. Notre serveur les télécharge et les stocke pour qu’elles se chargent depuis Shelfmark.",
       "feedback": "Vos réponses à l’évaluation dans l’application, liées à votre compte : une note de 1 à 10 et, si vous en écrivez un, un commentaire.",
+      "stats": "Les chiffres de « Votre étagère » sur la page Compte (totaux, sites et tags les plus utilisés, liens par semaine) sont calculés à partir de vos propres données chaque fois que vous ouvrez la page. Ils ne sont ni stockés ni partagés.",
       "sessions": "Pour chaque connexion : sa date d’expiration, ainsi que l’adresse IP et le navigateur (user agent) d’où elle a été ouverte, pour sécuriser les sessions.",
       "logs": "Notre API journalise la méthode, le chemin, le statut, la durée et un identifiant de requête, sans contenu de lien ni donnée personnelle. Notre hébergeur, Vercel, conserve ses propres journaux de requêtes standard, qui incluent les adresses IP, pendant une durée limitée."
     },
@@ -541,6 +542,7 @@
       "google": "Politique de confidentialité de Google",
       "github": "Déclaration de confidentialité de GitHub",
       "tokens": "Nous ne stockons pas les jetons d’accès que Google ou GitHub émettent lors de la connexion.",
+      "avatar": "Votre photo de profil est chargée directement depuis Google ou GitHub : votre navigateur les contacte donc chaque fois que Shelfmark l’affiche. Aucun référent n’est envoyé avec cette requête, ils ne voient donc pas sur quelle page de Shelfmark vous êtes.",
       "monitoring": "Si la surveillance des erreurs est activée, les plantages et erreurs serveur sont signalés à Sentry via notre propre serveur. Les rapports sont nettoyés avant de partir : ni e-mail, ni adresse IP, ni cookies, ni contenu de requête, ni adresse de lien enregistré, seulement des détails techniques comme le type d’erreur, l’endroit du code concerné, votre type de navigateur et de système, le chemin de la page et un identifiant de requête. Si elle est désactivée, rien n’est envoyé."
     },
     "where": {

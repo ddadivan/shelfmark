@@ -509,7 +509,7 @@
     "home": "Shelfmark, inicio",
     "newTab": "(se abre en una pestaña nueva)",
     "updated": "Última actualización: {{date}}",
-    "updatedDate": "9 de noviembre de 2026",
+    "updatedDate": "13 de noviembre de 2026",
     "intro": "Shelfmark es un proyecto personal que guarda los enlaces que guardas. Esta página explica qué conservamos y por qué, con palabras sencillas.",
     "store": {
       "title": "Qué guardamos",
@@ -517,6 +517,7 @@
       "content": "Tus enlaces (dirección, título, nota, marca de favorito, cuándo lo abriste por última vez), tus carpetas y tus etiquetas.",
       "images": "Para cada enlace, una copia pequeña del icono y de la imagen de vista previa del sitio, si los tiene. Nuestro servidor los descarga y los guarda para que se carguen desde Shelfmark.",
       "feedback": "Tus respuestas a la valoración dentro de la app, vinculadas a tu cuenta: una puntuación del 1 al 10 y, si lo escribes, un comentario.",
+      "stats": "Las cifras de «Tu estantería» en la página Cuenta (totales, los sitios y etiquetas que más usas, enlaces por semana) se calculan a partir de tus propios datos cada vez que abres la página. No se guardan ni se comparten.",
       "sessions": "Para cada inicio de sesión: cuándo caduca, además de la dirección IP y el navegador (user agent) desde el que se inició, para mantener seguras las sesiones.",
       "logs": "Nuestra API registra el método, la ruta, el estado, la duración y un id de solicitud, sin contenido de enlaces ni datos personales. Nuestro proveedor de alojamiento, Vercel, guarda sus propios registros estándar de solicitudes, que incluyen direcciones IP, durante un tiempo limitado."
     },
@@ -541,6 +542,7 @@
       "google": "Política de privacidad de Google",
       "github": "Declaración de privacidad de GitHub",
       "tokens": "No guardamos los tokens de acceso que emiten Google o GitHub al iniciar sesión.",
+      "avatar": "Tu foto de perfil se carga directamente desde Google o GitHub, así que tu navegador se conecta con ellos cada vez que Shelfmark la muestra. Esa solicitud no envía ningún referente, así que no ven en qué página de Shelfmark estás.",
       "monitoring": "Si la supervisión de errores está activada, los fallos y errores del servidor se envían a Sentry a través de nuestro propio servidor. Los informes se limpian antes de salir: sin correo, dirección IP, cookies, contenido de solicitudes ni direcciones de enlaces guardados, solo detalles técnicos como el tipo de error, el lugar del código, tu tipo de navegador y sistema, la ruta de la página y un id de solicitud. Si está desactivada, no se envía nada."
     },
     "where": {
