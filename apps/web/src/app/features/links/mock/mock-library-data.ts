@@ -16,6 +16,7 @@ import {
   type PinResponse,
   type TagResponse,
   type TrashRetentionDays,
+  type FolderEmoji,
   type HexColour,
 } from '@shelfmark/contracts';
 import { MOCK_FOLDERS, MOCK_TAGS } from '@shelfmark/contracts/testing';
@@ -75,6 +76,8 @@ export class MockLibraryData {
   folderColours = true;
   /** Own colours (#335), in the order they were added. */
   customColours: HexColour[] = [];
+  /** Own emoji (#363), in the order they were added. */
+  customEmoji: FolderEmoji[] = [];
   /** The mock account setting "Pause history": while on, the mock open records nothing. */
   pauseHistory = false;
   /** The sidebar pins in order (folders and links together). */

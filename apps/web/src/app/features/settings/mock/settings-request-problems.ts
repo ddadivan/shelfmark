@@ -4,6 +4,7 @@ import {
   isCustomTheme,
   isDateFormat,
   isDensity,
+  isFolderEmoji,
   isHexColour,
   isInterfaceLanguage,
   isLibrarySort,
@@ -34,6 +35,11 @@ const FIELD_CHECKS: Readonly<Record<string, Check>> = {
     Array.isArray(value) &&
     value.length <= USER_LIMIT.CustomColoursMax &&
     value.every((colour) => isHexColour(colour)),
+  customEmoji: (value) =>
+    Array.isArray(value) &&
+    value.length <= USER_LIMIT.CustomEmojiMax &&
+    new Set(value).size === value.length &&
+    value.every((emoji) => isFolderEmoji(emoji)),
   motion: isMotionPreference,
   textSize: isTextSize,
   font: isAppFont,

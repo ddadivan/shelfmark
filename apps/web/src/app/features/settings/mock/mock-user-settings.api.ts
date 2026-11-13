@@ -73,6 +73,9 @@ export class MockUserSettingsApi implements UserSettingsApi {
       if (request.customColours !== undefined) {
         this.data.customColours = [...request.customColours];
       }
+      if (request.customEmoji !== undefined) {
+        this.data.customEmoji = [...request.customEmoji];
+      }
       const library = { ...this.data.library };
       for (const key of Object.keys(library) as (keyof typeof library)[]) {
         if (request[key] !== undefined) {
@@ -118,6 +121,7 @@ export class MockUserSettingsApi implements UserSettingsApi {
       folderColours: this.data.folderColours,
       pauseHistory: this.data.pauseHistory,
       customColours: [...this.data.customColours],
+      customEmoji: [...this.data.customEmoji],
       ...this.readAppearance(),
       ...this.data.library,
       ...this.readLanguage(),
