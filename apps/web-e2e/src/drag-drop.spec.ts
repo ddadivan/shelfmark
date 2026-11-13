@@ -113,7 +113,9 @@ test.describe('drag a link to a folder (mock API)', () => {
     await dragOver(page, card, favorites);
     await expect(favorites).toHaveClass(/ui-tree__row--no-drop/);
     await expect(favorites).toHaveAttribute('aria-disabled', 'true');
-    await expect(favorites.locator('.ui-tree__name')).toHaveCSS('opacity', '0.5');
+    // The glyph is dimmed to half; the text stays readable (text-muted, AA contrast).
+    await expect(favorites.locator('.ui-tree__icon')).toHaveCSS('opacity', '0.5');
+    await expect(favorites.locator('.ui-tree__name')).toHaveCSS('opacity', '1');
     // No badge in the row (it truncated the name): the reason is one info toast.
     await expect(favorites.locator('.ui-tree__drop-badge')).toHaveCount(0);
     await expect(reason).toHaveCount(1);

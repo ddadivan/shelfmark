@@ -27,7 +27,9 @@
     cursor: no-drop;
   }
 
-  > * {
+  // Glyphs at half; the text stays `text-muted` (no opacity on text, so it keeps 4.5:1).
+  .ui-tree__icon,
+  .ui-tree__twist {
     opacity: 0.5;
   }
 
