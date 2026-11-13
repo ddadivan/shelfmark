@@ -1,8 +1,8 @@
-import { MOCK_LINKS_SCENARIO } from './mock-links-scenario.const';
 import { expect, type Page } from '@playwright/test';
 import {
   openCardEdit,
   openCardMove,
+  openEmptyAccount,
   openEmptyFeed,
   openFeed,
   openSignedIn,
@@ -196,15 +196,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
   {
     // Export moved to Account › Your data (#352): the account of a new user, with nothing saved.
     name: 'settings account, empty shelf',
-    open: async (page) => {
-      await page.addInitScript(
-        ([key, value]) => sessionStorage.setItem(key, value),
-        [MOCK_LINKS_SCENARIO.key, MOCK_LINKS_SCENARIO.empty],
-      );
-      await openSignedIn(page, '/settings/account');
-      await expect(page.getByRole('heading', { name: 'Nothing saved yet' })).toBeVisible();
-      await expect(page.getByRole('button', { name: 'Download JSON' })).toBeVisible();
-    },
+    open: (page) => openEmptyAccount(page),
   },
   {
     name: 'settings privacy and data',
