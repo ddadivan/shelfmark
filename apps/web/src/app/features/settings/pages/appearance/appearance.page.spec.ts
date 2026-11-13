@@ -1,5 +1,7 @@
 import { LIBRARY_SETTINGS_DEFAULT } from '@shelfmark/contracts';
-import { TestBed } from '@angular/core/testing';
+import { type ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { UiColorPickerHarness } from '@shelfmark/ui/testing';
 import {
   CUSTOM_THEME_DEFAULT,
   MOTION_PREFERENCE,
@@ -49,6 +51,16 @@ function radioIn(root: HTMLElement, group: string, label: string): HTMLInputElem
     throw new Error(`No radio "${label}" in "${group}"`);
   }
   return found;
+}
+
+/** The own-colour picker whose swatch button is named `label`. */
+async function pickerNamed(
+  harness: { fixture: ComponentFixture<unknown> },
+  label: string,
+): Promise<UiColorPickerHarness> {
+  return TestbedHarnessEnvironment.loader(harness.fixture).getHarness(
+    UiColorPickerHarness.with({ label }),
+  );
 }
 
 const BASE: UserSettingsResponse = {
@@ -194,23 +206,15 @@ describe('AppearancePage', () => {
   });
 
   it('saves an own accent color that keeps 4.5:1 from the "+" swatch (#315)', async () => {
-    const { root: page, theme, settingsApi, stable } = await setup();
+    const { root: page, theme, settingsApi, stable, harness } = await setup();
     radioIn(page, 'Theme', 'Custom').click();
     await stable();
 
-    const swatch = page.querySelector('.ui-color-picker__swatch') as HTMLButtonElement;
-    expect(swatch.getAttribute('aria-label')).toBe('Your own color');
-    swatch.click();
-    await stable();
-    const hex = page.querySelector('.ui-color-picker__hex-input') as HTMLInputElement;
-    hex.value = '#23716C';
-    hex.dispatchEvent(new Event('input'));
+    const picker = await pickerNamed(harness, 'Your own color');
+    await picker.open();
+    await picker.setHex('#23716C');
     // Typing only previews; "Add color" is the explicit choice (#350).
-    (
-      page.querySelector(
-        '.ui-color-picker__actions .ui-button--primary, .ui-color-picker__actions ui-button:last-child button',
-      ) as HTMLButtonElement
-    ).click();
+    await picker.add();
     await stable();
 
     expect(theme.customTheme().accent).toBe('#23716c');
@@ -232,22 +236,16 @@ describe('AppearancePage', () => {
   });
 
   it('warns about an own color below 4.5:1 and offers the nearest passing shade', async () => {
-    const { root: page, theme, settingsApi, stable } = await setup();
+    const { root: page, theme, settingsApi, stable, harness } = await setup();
     radioIn(page, 'Theme', 'Custom').click();
     await stable();
     settingsApi.update.mockClear();
 
-    (page.querySelector('.ui-color-picker__swatch') as HTMLButtonElement).click();
-    await stable();
-    const hex = page.querySelector('.ui-color-picker__hex-input') as HTMLInputElement;
-    hex.value = '#f5d0e0';
-    hex.dispatchEvent(new Event('input'));
+    const picker = await pickerNamed(harness, 'Your own color');
+    await picker.open();
+    await picker.setHex('#f5d0e0');
     // Typing only previews; "Add color" is the explicit choice (#350).
-    (
-      page.querySelector(
-        '.ui-color-picker__actions .ui-button--primary, .ui-color-picker__actions ui-button:last-child button',
-      ) as HTMLButtonElement
-    ).click();
+    await picker.add();
     await stable();
 
     // Not applied: the accent stays and nothing is saved.
@@ -275,23 +273,15 @@ describe('AppearancePage', () => {
   });
 
   it('saves an own background color that keeps text at 4.5:1 and draws it as a swatch (#335)', async () => {
-    const { root: page, theme, settingsApi, stable } = await setup();
+    const { root: page, theme, settingsApi, stable, harness } = await setup();
     radioIn(page, 'Theme', 'Custom').click();
     await stable();
 
-    const swatch = page.querySelectorAll<HTMLButtonElement>('.ui-color-picker__swatch')[1];
-    expect(swatch.getAttribute('aria-label')).toBe('Your own background color');
-    swatch.click();
-    await stable();
-    const hex = page.querySelector('.ui-color-picker__hex-input') as HTMLInputElement;
-    hex.value = '#FDF6E3';
-    hex.dispatchEvent(new Event('input'));
+    const picker = await pickerNamed(harness, 'Your own background color');
+    await picker.open();
+    await picker.setHex('#FDF6E3');
     // Typing only previews; "Add color" is the explicit choice (#350).
-    (
-      page.querySelector(
-        '.ui-color-picker__actions .ui-button--primary, .ui-color-picker__actions ui-button:last-child button',
-      ) as HTMLButtonElement
-    ).click();
+    await picker.add();
     await stable();
 
     expect(theme.customTheme().background).toBe('#fdf6e3');
@@ -309,22 +299,16 @@ describe('AppearancePage', () => {
   });
 
   it('warns about a background that hides the text and offers the nearest readable shade (#335)', async () => {
-    const { root: page, theme, settingsApi, stable } = await setup();
+    const { root: page, theme, settingsApi, stable, harness } = await setup();
     radioIn(page, 'Theme', 'Custom').click();
     await stable();
     settingsApi.update.mockClear();
 
-    page.querySelectorAll<HTMLButtonElement>('.ui-color-picker__swatch')[1].click();
-    await stable();
-    const hex = page.querySelector('.ui-color-picker__hex-input') as HTMLInputElement;
-    hex.value = '#808080';
-    hex.dispatchEvent(new Event('input'));
+    const picker = await pickerNamed(harness, 'Your own background color');
+    await picker.open();
+    await picker.setHex('#808080');
     // Typing only previews; "Add color" is the explicit choice (#350).
-    (
-      page.querySelector(
-        '.ui-color-picker__actions .ui-button--primary, .ui-color-picker__actions ui-button:last-child button',
-      ) as HTMLButtonElement
-    ).click();
+    await picker.add();
     await stable();
 
     expect(theme.customTheme().background).toBe(CUSTOM_THEME_DEFAULT.background);
