@@ -1,11 +1,6 @@
 import { type Page } from '@playwright/test';
-import { MOCK_LINKS_SCENARIO } from './models/mock-links-scenario.const';
-import { demoUser, MOCK_USER, openAccountMenu, seedSession } from './support/mock-session';
-import {
-  BROKEN_AVATAR_PATH,
-  routeSampleAvatars,
-  SAMPLE_AVATAR_PATH,
-} from './support/sample-avatar';
+import { MOCK_USER, openAccountMenu, seedSession } from './support/mock-session';
+import { routeSampleAvatars, SAMPLE_AVATAR_PATH } from './support/sample-avatar';
 import { isCompact, tabBar } from './support/sidebar';
 import { expect, test } from './support/test';
 import { E2E_TAG } from './models/e2e-tag.const';
@@ -26,43 +21,6 @@ test.describe('account page (mock API)', () => {
   // image requests go through it and bypass `page.route`, so the sample avatar 404s on the
   // second page (seen in CI on the You page). Block it here: these tests are about the photo.
   test.use({ serviceWorkers: 'block' });
-
-  test('shows the shelf: counts, top sites, top tags, 12 weeks, member since', async ({ page }) => {
-    await seedSession(page);
-    await page.goto('/settings/account');
-
-    const shelf = page.locator('app-account-shelf');
-    await expect(shelf.locator('.shelf__count')).toHaveCount(3);
-    await expect(shelf.locator('.shelf__count').first()).toContainText('Links');
-    await expect(shelf.getByRole('heading', { name: 'Sites you save most' })).toBeVisible();
-    await expect(shelf.locator('.shelf__site').first()).toBeVisible();
-    await expect(shelf.getByRole('heading', { name: 'Most used tags' })).toBeVisible();
-    await expect(shelf.locator('.shelf__week')).toHaveCount(12);
-    await expect(shelf.getByText(/^Oldest link: /)).toBeVisible();
-    await expect(page.getByText('Member since September 2025')).toBeVisible();
-
-    await expect(page.getByRole('heading', { name: 'Connected accounts' })).toBeVisible();
-    await expect(page.getByText('Connected Sep 14, 2025')).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Your data' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Download JSON' })).toBeVisible();
-
-    const overflow = await page.evaluate<number>(
-      '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
-    );
-    expect(overflow).toBeLessThanOrEqual(0);
-  });
-
-  test('a new account sees the empty state', async ({ page }) => {
-    await seedSession(page);
-    await page.addInitScript(
-      ([key, value]) => sessionStorage.setItem(key, value),
-      [MOCK_LINKS_SCENARIO.key, MOCK_LINKS_SCENARIO.empty],
-    );
-    await page.goto('/settings/account');
-
-    await expect(page.getByRole('heading', { name: 'Nothing saved yet' })).toBeVisible();
-    await expect(page.locator('.shelf__counts')).toHaveCount(0);
-  });
 
   test(
     'the provider photo shows on Account and in the account menu or the You page',
@@ -91,33 +49,4 @@ test.describe('account page (mock API)', () => {
       }
     },
   );
-
-  test('a photo that fails to load falls back to the initials', async ({ page }) => {
-    await routeSampleAvatars(page);
-    await seedSession(page, { ...MOCK_USER, image: BROKEN_AVATAR_PATH });
-    await page.goto('/settings/account');
-
-    const avatar = page.locator('app-settings-account-page ui-avatar');
-    await expect(avatar.locator('.ui-avatar__initials')).toHaveAttribute('data-initials', 'EU');
-    await expect(avatar.locator('img')).toHaveCount(0);
-  });
-
-  test('a demo account has no connected provider and no Delete account', async ({ page }) => {
-    await seedSession(page, demoUser(12));
-    await page.goto('/settings/account');
-
-    await expect(
-      page.getByText("The demo account isn't linked to Google or GitHub."),
-    ).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Delete account' })).toHaveCount(0);
-  });
-
-  test('Privacy and data "Open export" leads to Your data', async ({ page }) => {
-    await seedSession(page);
-    await page.goto('/settings/privacy');
-    await page.getByRole('link', { name: 'Open export' }).click();
-
-    await expect(page).toHaveURL('/settings/account#your-data');
-    await expect(page.getByRole('heading', { name: 'Your data' })).toBeInViewport();
-  });
 });

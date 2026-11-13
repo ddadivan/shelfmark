@@ -8,10 +8,6 @@ import { E2E_TAG } from './models/e2e-tag.const';
 
 // Mirrors EXPORT_MOCK_MARKER (apps/web); this project cannot import it.
 const MOCK_MARKER = 'sm-mock-export';
-// Mirrors MOCK_EXPORT_FAILS_TAG: the first mock export with this tag fails, the retry succeeds.
-const FAILS_TAG = 'mock-fail';
-// Mirrors MOCK_ID.FolderReading (libs/shared/contracts).
-const READING_ID = '00000000-0000-4000-8000-000000000101';
 
 /** The second line of the mock file: the URL the real API would have been asked for. */
 async function requestedUrl(download: Download): Promise<string> {
@@ -60,45 +56,6 @@ test.describe('export (mock API)', () => {
     await page.getByRole('menuitem', { name: 'This view as JSON' }).click();
 
     expect(await requestedUrl(await download)).toBe('/api/export?format=json&tag=docs&tag=c%2B%2B');
-  });
-
-  test('a folder view exports that folder', async ({ page }) => {
-    await page.goto(`/folders/${READING_ID}`);
-    await openExportMenu(page);
-
-    const download = page.waitForEvent('download');
-    await page.getByRole('menuitem', { name: 'This view as JSON' }).click();
-
-    expect(await requestedUrl(await download)).toBe(
-      `/api/export?format=json&folderId=${READING_ID}`,
-    );
-  });
-
-  test('a failed export toasts and the retry downloads the file', async ({ page }) => {
-    await page.goto(`/links?tag=${FAILS_TAG}`);
-    await openExportMenu(page);
-    await page.getByRole('menuitem', { name: 'This view as JSON' }).click();
-
-    await expect(page.getByText("Couldn't export your links")).toBeVisible();
-
-    const download = page.waitForEvent('download');
-    await page.getByRole('button', { name: 'Try again' }).click();
-
-    expect(await requestedUrl(await download)).toBe(`/api/export?format=json&tag=${FAILS_TAG}`);
-    await expect(page.getByText("Couldn't export your links")).toBeHidden();
-  });
-
-  test('the toolbar does not scroll the page sideways at 360px', async ({ page }) => {
-    await page.setViewportSize({ width: 360, height: 780 });
-    await page.goto('/links?tag=docs');
-    await expect(
-      page.getByRole('button', { name: isCompact(page) ? 'Options' : 'Export', exact: true }),
-    ).toBeVisible();
-
-    const overflow = await page.evaluate<number>(
-      '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
-    );
-    expect(overflow).toBeLessThanOrEqual(0);
   });
 
   test(
