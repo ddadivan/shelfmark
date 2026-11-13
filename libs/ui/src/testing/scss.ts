@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { compile } from 'sass';
 
@@ -19,12 +19,33 @@ function findSrcDir(): string {
 
 const compiled = new Map<string, string>();
 
-/** Compiles a component stylesheet (path relative to `libs/ui/src`) to plain CSS. */
+/**
+ * The extra sheets a component loads after `<name>.component.scss` (its `styleUrls`): a sheet is
+ * split in several files to stay under the component style budget, the specs read them as one.
+ */
+function companionSheets(path: string): string[] {
+  const source = path.replace(/\.scss$/, '.ts');
+  if (!existsSync(source)) {
+    return [];
+  }
+  const urls = /styleUrls:\s*\[([^\]]*)\]/.exec(readFileSync(source, 'utf8'));
+  if (!urls) {
+    return [];
+  }
+  return [...urls[1].matchAll(/'\.\/([^']+\.scss)'/g)]
+    .map((m) => resolve(dirname(path), m[1]))
+    .filter((sheet) => sheet !== path);
+}
+
+/**
+ * Compiles a component stylesheet (path relative to `libs/ui/src`) to plain CSS, followed by the
+ * other sheets of the same component when its `styleUrls` lists more than one.
+ */
 export function compileScss(relativePath: string): string {
   const path = resolve(findSrcDir(), relativePath);
   let css = compiled.get(path);
   if (css === undefined) {
-    css = compile(path).css;
+    css = [path, ...companionSheets(path)].map((sheet) => compile(sheet).css).join('\n');
     compiled.set(path, css);
   }
   return css;
