@@ -102,6 +102,7 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     await swatch.click();
     await hex.fill('#23716c');
     await add.click();
+    await expect(hex).toHaveCount(0);
     await swatch.click();
     await hex.fill('#1d4f91');
     await add.click();
