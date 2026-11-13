@@ -891,7 +891,13 @@
         "trophy": "Pokal",
         "umbrella": "Regenschirm",
         "utensils": "Essen",
-        "wallet": "Geldbörse"
+        "wallet": "Geldbörse",
+        "newspaper": "Zeitung",
+        "backpack": "Rucksack",
+        "palm": "Palme",
+        "guitar": "Gitarre",
+        "laptop": "Laptop",
+        "lock": "Schloss"
       },
       "own": {
         "group": "Deine eigenen Farben",

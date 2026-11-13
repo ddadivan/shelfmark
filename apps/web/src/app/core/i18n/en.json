@@ -891,7 +891,13 @@
         "trophy": "Trophy",
         "umbrella": "Umbrella",
         "utensils": "Food",
-        "wallet": "Wallet"
+        "wallet": "Wallet",
+        "newspaper": "Newspaper",
+        "backpack": "Backpack",
+        "palm": "Palm tree",
+        "guitar": "Guitar",
+        "laptop": "Laptop",
+        "lock": "Lock"
       },
       "own": {
         "group": "Your own colours",

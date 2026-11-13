@@ -907,7 +907,13 @@
         "trophy": "Trofeo",
         "umbrella": "Paraguas",
         "utensils": "Comida",
-        "wallet": "Cartera"
+        "wallet": "Cartera",
+        "newspaper": "Periódico",
+        "backpack": "Mochila",
+        "palm": "Palmera",
+        "guitar": "Guitarra",
+        "laptop": "Portátil",
+        "lock": "Candado"
       },
       "own": {
         "group": "Tus colores",

@@ -907,7 +907,13 @@
         "trophy": "Trofeo",
         "umbrella": "Ombrello",
         "utensils": "Cibo",
-        "wallet": "Portafoglio"
+        "wallet": "Portafoglio",
+        "newspaper": "Giornale",
+        "backpack": "Zaino",
+        "palm": "Palma",
+        "guitar": "Chitarra",
+        "laptop": "Portatile",
+        "lock": "Lucchetto"
       },
       "own": {
         "group": "I tuoi colori",

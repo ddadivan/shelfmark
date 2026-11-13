@@ -159,6 +159,21 @@ test.describe('folder style and pins (mock API)', () => {
         .locator('input'),
     ).toHaveCount(28);
 
+    // The toggle sits closer to the icon grid above than to the emoji field below (#350).
+    const [grid, toggleBox, emoji] = await Promise.all([
+      dialog
+        .locator('[role="radiogroup"][aria-labelledby="folder-style-icon"]')
+        .first()
+        .boundingBox(),
+      toggle.boundingBox(),
+      dialog.locator('.folder-style__emoji').boundingBox(),
+    ]);
+    const above = (toggleBox?.y ?? 0) - ((grid?.y ?? 0) + (grid?.height ?? 0));
+    const below = (emoji?.y ?? 0) - ((toggleBox?.y ?? 0) + (toggleBox?.height ?? 0));
+    expect(below).toBeGreaterThan(above * 2);
+
+    await expect(toggle).toHaveText('Show all icons (63)');
+
     await toggle.click();
     await expect(dialog.getByRole('button', { name: 'Show fewer' })).toHaveAttribute(
       'aria-expanded',
@@ -166,6 +181,10 @@ test.describe('folder style and pins (mock API)', () => {
     );
     await expect(more).toHaveCSS('visibility', 'visible');
     await expect.poll(async () => (await more.boundingBox())?.height ?? 0).toBeGreaterThan(80);
+    // 63 icons are nine full rows of seven: the last row is full (#350).
+    await expect(
+      dialog.locator('[role="radiogroup"][aria-labelledby="folder-style-icon"] input'),
+    ).toHaveCount(63);
     // The arrow keys run on through the expanded icons (one radio name).
     await dialog.getByRole('radio', { name: 'Leaf', exact: true }).focus();
     await page.keyboard.press('ArrowRight');
