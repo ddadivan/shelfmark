@@ -121,10 +121,9 @@ test.describe('folder emoji picker (mock API)', () => {
 
     const toast = page.locator('ui-toast').filter({ hasText: 'Emoji removed' });
     await expect(toast).toContainText('🦩');
-    // A press outside the picker (the toast) closes it; Undo brings the emoji back.
+    // Undo in the toast brings the emoji back; pressing the toast keeps the picker open.
     await toast.getByRole('button', { name: 'Undo' }).click();
-    await expect(panel(page)).toHaveCount(0);
-    picker = await openPicker(page, dialog);
+    await expect(panel(page)).toBeVisible();
     await expect(
       picker.getByRole('grid', { name: 'Yours' }).getByRole('gridcell', { name: '🦩' }),
     ).toBeVisible();

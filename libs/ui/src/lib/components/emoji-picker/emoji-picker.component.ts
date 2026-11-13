@@ -35,6 +35,7 @@ import type { ConnectedOverlay } from '../../services/overlay/connected-overlay'
 import { UiOverlay } from '../../services/overlay/overlay.service';
 import { OVERLAY_EDGE } from '../../services/overlay/models/overlay-edge.const';
 import { OVERLAY_LAYER } from '../../services/overlay/models/overlay-layer.const';
+import { overlayLayerClass } from '../../services/overlay/overlay-layer';
 import {
   lastInputWasPointer,
   returnFocus,
@@ -166,12 +167,7 @@ export class EmojiPickerComponent extends UiFieldControl implements FormValueCon
   private detachSubscription: Subscription | null = null;
   private openedByPointer = false;
   private readonly outsidePress = (event: Event): void => {
-    const target = event.target;
-    if (
-      target instanceof Node &&
-      !this.host.contains(target) &&
-      !this.popup().nativeElement.contains(target)
-    ) {
+    if (event.target instanceof Node && !this.ownsOrIgnores(event.target)) {
       this.hide(false);
     }
   };
@@ -313,13 +309,22 @@ export class EmojiPickerComponent extends UiFieldControl implements FormValueCon
 
   protected onPanelFocusout(event: FocusEvent): void {
     const next = event.relatedTarget;
-    if (
-      next instanceof Node &&
-      !this.popup().nativeElement.contains(next) &&
-      next !== this.field().nativeElement
-    ) {
+    if (next instanceof Node && !this.ownsOrIgnores(next)) {
       this.hide(false);
     }
+  }
+
+  /**
+   * The node is the field, the panel, or a toast: a toast (the Undo after removing an own emoji)
+   * belongs to what the person is doing here, so pressing it or focusing it keeps the panel open.
+   */
+  private ownsOrIgnores(node: Node): boolean {
+    const element = node instanceof Element ? node : node.parentElement;
+    return (
+      this.host.contains(node) ||
+      this.popup().nativeElement.contains(node) ||
+      !!element?.closest(`.${overlayLayerClass(OVERLAY_LAYER.Toast)}`)
+    );
   }
 
   /** Enter or Space chooses the focused cell; Delete or Backspace removes an own emoji. */

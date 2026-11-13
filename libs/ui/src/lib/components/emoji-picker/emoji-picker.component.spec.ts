@@ -377,6 +377,22 @@ describe('EmojiPickerComponent', () => {
     expect(panel()).toBeNull();
   });
 
+  it('stays open when a toast is pressed or focused (the Undo of a removal)', async () => {
+    const { open, panel, fixture } = await setup();
+    await open();
+    const layer = document.createElement('div');
+    layer.className = overlayLayerClass(OVERLAY_LAYER.Toast);
+    const undo = document.createElement('button');
+    undo.append(document.createTextNode('Undo'));
+    layer.append(undo);
+    document.body.append(layer);
+    undo.firstChild?.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+    panel()?.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: undo }));
+    await settle(fixture);
+    expect(panel()).not.toBeNull();
+    layer.remove();
+  });
+
   it('a second click on the field closes it; focus leaving to another control closes it', async () => {
     const { open, panel, field, root, fixture } = await setup();
     await open();
