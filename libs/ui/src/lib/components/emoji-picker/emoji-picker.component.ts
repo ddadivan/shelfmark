@@ -41,6 +41,7 @@ import {
   trackInputModality,
 } from '../../services/dialog/focus-return';
 import { mediaMatch } from '../../utils/media/media-match';
+import { SHEET_DRAG_END, SheetDragTracker } from '../../utils/sheet-drag';
 import { PHONE_MEDIA_QUERY } from '../../utils/media/models/phone-media-query.const';
 import { emojiRows, searchEmoji } from './emoji-search';
 import { EMOJI_PICKER_COLUMNS } from './models/emoji-picker-columns.const';
@@ -86,6 +87,7 @@ const PANEL_STOPS = 'input, button:not([tabindex="-1"]), [tabindex="0"]';
     './emoji-picker.component.scss',
     './emoji-picker-panel.scss',
     './emoji-picker-grid.scss',
+    './emoji-picker-sheet.scss',
   ],
 })
 export class EmojiPickerComponent extends UiFieldControl implements FormValueControl<string> {
@@ -140,6 +142,9 @@ export class EmojiPickerComponent extends UiFieldControl implements FormValueCon
   /** This open is the phone sheet. */
   protected readonly sheet = signal(false);
   protected readonly query = signal('');
+  /** The phone sheet snaps back after a short drag (only then its transform is animated). */
+  protected readonly snapping = signal(false);
+  private readonly drag = new SheetDragTracker();
   protected readonly searching = computed(() => this.query().trim() !== '');
   /** The selected tab; kept while it still exists. */
   protected readonly category = linkedSignal<readonly EmojiPickerCategory[], string | undefined>({
@@ -337,6 +342,38 @@ export class EmojiPickerComponent extends UiFieldControl implements FormValueCon
   protected onRemoveClick(event: Event, emoji: string): void {
     event.stopPropagation();
     this.remove(emoji);
+  }
+
+  /** The grip or the head of the phone sheet is pressed: it follows the finger down. */
+  protected onDragStart(event: PointerEvent): void {
+    if (this.sheet() && this.drag.start(event)) {
+      this.snapping.set(false);
+    }
+  }
+
+  protected onDragMove(event: PointerEvent): void {
+    const panel = this.panel()?.nativeElement;
+    if (panel) {
+      this.drag.move(event, panel);
+    }
+  }
+
+  /** Past 30% of the height or a flick closes (from where it was dragged); else it snaps back. */
+  protected onDragEnd(event: PointerEvent): void {
+    const panel = this.panel()?.nativeElement;
+    const end = panel ? this.drag.end(event, panel) : null;
+    if (end === SHEET_DRAG_END.Close) {
+      this.hide(true);
+    } else if (end === SHEET_DRAG_END.Snap) {
+      this.snapping.set(true);
+    }
+  }
+
+  protected onDragCancel(event: PointerEvent): void {
+    const panel = this.panel()?.nativeElement;
+    if (panel && this.drag.cancel(event, panel)) {
+      this.snapping.set(true);
+    }
   }
 
   protected choose(emoji: string): void {

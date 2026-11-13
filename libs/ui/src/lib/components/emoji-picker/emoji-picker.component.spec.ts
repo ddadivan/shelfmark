@@ -414,6 +414,59 @@ describe('EmojiPickerComponent', () => {
     expect(panel()).toBeNull();
   });
 
+  it('the phone sheet has a grip and closes when dragged down far enough', async () => {
+    stubPhone(true);
+    const { open, panel, field, fixture } = await setup();
+    await open();
+    const sheet = panel() as HTMLElement;
+    expect(sheet.querySelector('.ui-emoji-picker__grip')).not.toBeNull();
+    sheet.getBoundingClientRect = () => ({ height: 400 }) as DOMRect;
+    const handle = sheet.querySelector('.ui-emoji-picker__drag') as HTMLElement;
+    const pointer = (type: string, clientY: number, timeStamp: number) => {
+      const event = new MouseEvent(type, { bubbles: true, clientY });
+      Object.defineProperty(event, 'pointerId', { value: 1 });
+      Object.defineProperty(event, 'pointerType', { value: 'touch' });
+      Object.defineProperty(event, 'timeStamp', { value: timeStamp });
+      handle.dispatchEvent(event);
+    };
+    // A short slow drag snaps back (animated).
+    pointer('pointerdown', 100, 0);
+    pointer('pointermove', 140, 400);
+    pointer('pointerup', 140, 450);
+    await settle(fixture);
+    expect(sheet.style.getPropertyValue('--ui-sheet-drag')).toBe('0px');
+    expect(sheet.classList.contains('ui-emoji-picker__panel--snapping')).toBe(true);
+    // A cancelled drag snaps back too.
+    pointer('pointerdown', 100, 1000);
+    pointer('pointermove', 150, 1100);
+    pointer('pointercancel', 150, 1200);
+    expect(sheet.style.getPropertyValue('--ui-sheet-drag')).toBe('0px');
+    // Past 30% it closes and hands focus back to the field.
+    pointer('pointerdown', 100, 2000);
+    expect(sheet.classList.contains('ui-emoji-picker__panel--snapping')).toBe(true);
+    await settle(fixture);
+    expect(sheet.classList.contains('ui-emoji-picker__panel--snapping')).toBe(false);
+    pointer('pointermove', 260, 2400);
+    pointer('pointerup', 260, 2500);
+    await settle(fixture);
+    expect(panel()).toBeNull();
+    expect(document.activeElement).toBe(field);
+  });
+
+  it('does not drag on a desktop panel', async () => {
+    const { open, panel } = await setup();
+    await open();
+    const handle = panel()?.querySelector('.ui-emoji-picker__drag') as HTMLElement;
+    expect(panel()?.querySelector('.ui-emoji-picker__grip')).toBeNull();
+    const event = new MouseEvent('pointerdown', { bubbles: true, clientY: 10 });
+    Object.defineProperty(event, 'pointerId', { value: 1 });
+    handle.dispatchEvent(event);
+    const move = new MouseEvent('pointermove', { bubbles: true, clientY: 300 });
+    Object.defineProperty(move, 'pointerId', { value: 1 });
+    handle.dispatchEvent(move);
+    expect(panel()?.style.getPropertyValue('--ui-sheet-drag')).toBe('');
+  });
+
   it('emits touch when focus leaves the closed field', async () => {
     const { field, host, fixture } = await setup();
     field.focus();

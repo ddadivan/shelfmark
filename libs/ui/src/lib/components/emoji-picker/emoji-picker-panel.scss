@@ -20,19 +20,6 @@
   }
 }
 
-// Below 40em: a bottom sheet across the screen (sheet corners, page surface, no glass blur).
-// The global pane lets pointer events through, the sheet takes them back.
-.ui-emoji-picker__panel--sheet {
-  width: 100vw;
-  height: min(rem(520px), calc(100dvh - #{rem(150px)}));
-  padding: var(--space-4) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom));
-  margin: 0;
-  pointer-events: auto;
-  background: var(--surface);
-  backdrop-filter: none;
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-}
-
 .ui-emoji-picker__head {
   display: flex;
   flex: none;

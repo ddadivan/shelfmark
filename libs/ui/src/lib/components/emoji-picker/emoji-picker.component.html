@@ -47,6 +47,7 @@
       role="dialog"
       tabindex="-1"
       [class.ui-emoji-picker__panel--sheet]="sheet()"
+      [class.ui-emoji-picker__panel--snapping]="snapping()"
       [id]="panelId"
       [attr.aria-label]="label()"
       [animate.enter]="sheet() ? 'ui-emoji-picker--sheet-enter' : 'ui-emoji-picker--enter'"
@@ -54,32 +55,43 @@
       (keydown)="onPanelKeydown($event)"
       (focusout)="onPanelFocusout($event)"
     >
-      <div class="ui-emoji-picker__head">
-        <div class="ui-emoji-picker__search">
-          <ui-icon class="ui-emoji-picker__search-icon" name="search" />
-          <input
-            class="ui-emoji-picker__search-input"
-            type="text"
-            autocomplete="off"
-            spellcheck="false"
-            enterkeyhint="search"
-            [attr.aria-label]="searchLabel()"
-            [attr.placeholder]="searchLabel()"
-            [value]="query()"
-            (input)="onSearch($event)"
-            (keydown)="onSearchKeydown($event)"
-          />
-        </div>
-        @if (sheet() && closeLabel()) {
-          <ui-button
-            variant="ghost"
-            size="lg"
-            iconOnly
-            iconLeft="close"
-            [ariaLabel]="closeLabel()"
-            (click)="hide(true)"
-          />
+      <div
+        class="ui-emoji-picker__drag"
+        (pointerdown)="onDragStart($event)"
+        (pointermove)="onDragMove($event)"
+        (pointerup)="onDragEnd($event)"
+        (pointercancel)="onDragCancel($event)"
+      >
+        @if (sheet()) {
+          <div class="ui-emoji-picker__grip" aria-hidden="true"></div>
         }
+        <div class="ui-emoji-picker__head">
+          <div class="ui-emoji-picker__search">
+            <ui-icon class="ui-emoji-picker__search-icon" name="search" />
+            <input
+              class="ui-emoji-picker__search-input"
+              type="text"
+              autocomplete="off"
+              spellcheck="false"
+              enterkeyhint="search"
+              [attr.aria-label]="searchLabel()"
+              [attr.placeholder]="searchLabel()"
+              [value]="query()"
+              (input)="onSearch($event)"
+              (keydown)="onSearchKeydown($event)"
+            />
+          </div>
+          @if (sheet() && closeLabel()) {
+            <ui-button
+              variant="ghost"
+              size="lg"
+              iconOnly
+              iconLeft="close"
+              [ariaLabel]="closeLabel()"
+              (click)="hide(true)"
+            />
+          }
+        </div>
       </div>
 
       @if (categories().length === 0) {
