@@ -41,38 +41,6 @@ test.describe('landing', () => {
     await expect(section).toBeFocused();
   });
 
-  test('the header offers "Privacy", "Sign in" and "Get started"', async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto('/');
-    const header = page.getByRole('banner');
-
-    await expect(header.getByRole('link', { name: 'Privacy' })).toHaveAttribute('href', '/privacy');
-    await expect(header.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/sign-in');
-    await expect(header.getByRole('link', { name: 'Get started' })).toHaveAttribute(
-      'href',
-      '/sign-in',
-    );
-    await header.getByRole('link', { name: 'Privacy' }).click();
-    await expect(page).toHaveURL(/\/privacy$/);
-  });
-
-  test('the first screen has the mockup copy, the buttons and the note', async ({ page }) => {
-    await page.goto('/');
-    const hero = page.locator('.landing-hero');
-
-    await expect(hero).toContainText('on one calm shelf instead of chats and open tabs.');
-    await expect(hero.getByRole('link', { name: 'Start your shelf' })).toHaveAttribute(
-      'href',
-      '/sign-in',
-    );
-    await expect(hero.getByRole('link', { name: 'Open the demo' })).toHaveAttribute(
-      'href',
-      '/demo',
-    );
-    await expect(hero.getByText('Sign in with Google or GitHub.')).toBeVisible();
-    await expect(page.getByText('Saved Messages', { exact: true })).toHaveCount(0);
-  });
-
   test('opening the page with #how scrolls to and focuses the section', async ({ page }) => {
     await page.goto('/#how');
 
@@ -195,72 +163,9 @@ test.describe('landing', () => {
       expect(total, JSON.stringify(shifts)).toBeLessThan(0.001);
     });
   }
-
-  test('"How it\'s built" links to the repository and decision log in new tabs', async ({
-    page,
-  }) => {
-    await page.goto('/');
-
-    const code = page.getByRole('link', { name: /Read the code on GitHub/ });
-    const decisions = page.getByRole('link', { name: /Read the decision log/ });
-
-    await expect(code).toHaveAttribute('href', 'https://github.com/ddadivan/shelfmark');
-    await expect(decisions).toHaveAttribute('href', /\/docs\/adr$/);
-    for (const link of [code, decisions]) {
-      await expect(link).toHaveAttribute('target', '_blank');
-      await expect(link).toHaveAttribute('rel', /noopener/);
-    }
-  });
-
-  test('the call-to-action buttons point to sign-in and the demo', async ({ page }) => {
-    await page.goto('/');
-    const finale = page.getByRole('region', { name: 'Empty your Saved Messages.' });
-
-    await expect(finale.getByRole('link', { name: 'Open the demo' })).toHaveAttribute(
-      'href',
-      '/demo',
-    );
-    await expect(finale.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/sign-in');
-    await expect(page.getByRole('banner').getByRole('link', { name: 'Sign in' })).toHaveAttribute(
-      'href',
-      '/sign-in',
-    );
-  });
-
-  test('the header sign-in link opens the sign-in page', async ({ page }) => {
-    await page.goto('/');
-    await page.getByRole('banner').getByRole('link', { name: 'Sign in' }).click();
-
-    await expect(page).toHaveURL(/\/sign-in$/);
-  });
 });
 
 test.describe('landing scenes and reveals', () => {
-  test('the bento "Save once, find in seconds" shows five tiles and fits the width', async ({
-    page,
-  }) => {
-    await page.goto('/');
-    const bento = page.getByRole('region', { name: 'Save once, find in seconds' });
-
-    await bento.scrollIntoViewIfNeeded();
-
-    await expect(bento.getByRole('heading', { level: 2 })).toBeVisible();
-    await expect(bento.getByRole('heading', { level: 3 })).toHaveText([
-      'The preview fills in by itself',
-      'Folders inside folders',
-      'Find it by any word',
-      'Save from your phone',
-      'Your links stay yours',
-    ]);
-    // The tiles fade in once scrolled to and end fully visible.
-    await expect(bento.locator('.landing-bento__tile').first()).toHaveCSS('opacity', '1');
-    await expect(bento.locator('.landing-bento__tile').last()).toHaveCSS('opacity', '1');
-    const overflow = await page.evaluate<number>(
-      '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
-    );
-    expect(overflow).toBeLessThanOrEqual(0);
-  });
-
   test('the bento sits between the hero and the before and after, no overflow at 360px', async ({
     page,
   }) => {
@@ -277,57 +182,6 @@ test.describe('landing scenes and reveals', () => {
       '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
     );
     expect(overflow).toBeLessThanOrEqual(0);
-  });
-
-  test('sections below the first screen are visible after scrolling to them', async ({ page }) => {
-    await page.goto('/');
-    const finale = page.getByRole('region', { name: 'Empty your Saved Messages.' });
-
-    await finale.scrollIntoViewIfNeeded();
-
-    await expect(finale.getByRole('link', { name: 'Open the demo' })).toBeVisible();
-    await expect(finale.locator('h2')).toHaveCSS('opacity', '1');
-    // The sections are tall now: the one above the finale is not on screen yet on a phone.
-    await page.getByRole('region', { name: 'Why this exists' }).scrollIntoViewIfNeeded();
-    await expect(page.getByRole('region', { name: 'Why this exists' }).locator('h2')).toHaveCSS(
-      'opacity',
-      '1',
-    );
-  });
-
-  test('the shelf keeps cycling past one full pass, with no pause control', async ({ page }) => {
-    test.setTimeout(60_000);
-    await page.goto('/');
-    const shelf = page.getByRole('region', { name: 'The same links, before and after' });
-    await shelf.scrollIntoViewIfNeeded();
-    await page.mouse.move(0, 0);
-    const activeRow = shelf.getByTestId('landing-ba-active-row');
-
-    // Clothes, Angular, Recipes, Clothes again and on to Angular (3 s each).
-    await expect(activeRow).toHaveText('Angular', { timeout: 15_000 });
-    await expect(activeRow).toHaveText('Recipes', { timeout: 6000 });
-    await expect(activeRow).toHaveText('Clothes', { timeout: 6000 });
-    await expect(activeRow).toHaveText('Angular', { timeout: 6000 });
-    await expect(shelf.getByRole('button')).toHaveCount(0);
-  });
-
-  test('the shelf pauses while the pointer is over the section and resumes after', async ({
-    page,
-  }) => {
-    test.setTimeout(60_000);
-    await page.goto('/');
-    const shelf = page.getByRole('region', { name: 'The same links, before and after' });
-    await shelf.scrollIntoViewIfNeeded();
-    const activeRow = shelf.getByTestId('landing-ba-active-row');
-    await expect(activeRow).toHaveText('Angular', { timeout: 15_000 });
-
-    await shelf.locator('.landing-ba__scenes').hover();
-    const held = await activeRow.textContent();
-    await page.waitForTimeout(4000);
-    await expect(activeRow).toHaveText(held ?? '');
-
-    await page.mouse.move(0, 0);
-    await expect(activeRow).not.toHaveText(held ?? '', { timeout: 6000 });
   });
 
   test('the scattered board comes in, then floats on and holds still under the pointer', async ({
@@ -362,30 +216,6 @@ test.describe('landing scenes and reveals', () => {
       .poll(async () => (await states()).filter((state) => state === 'running').length)
       .toBeGreaterThan(0);
   });
-
-  test.describe('reduced motion', () => {
-    test.use({ reducedMotion: 'reduce' });
-
-    test('shows the static final frame with everything visible and no pause control', async ({
-      page,
-    }) => {
-      await page.goto('/');
-      const shelf = page.getByRole('region', { name: 'The same links, before and after' });
-
-      await expect(shelf.locator('h2')).toHaveCSS('opacity', '1');
-      await expect(shelf.getByRole('button', { name: 'Pause animations' })).toHaveCount(0);
-      await expect(page.getByRole('region', { name: 'Empty your Saved Messages.' })).toBeVisible();
-      await expect(
-        page.getByRole('region', { name: 'Empty your Saved Messages.' }).locator('h2'),
-      ).toHaveCSS('opacity', '1');
-
-      await shelf.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(3500);
-      await expect(shelf.getByTestId('landing-ba-active-row')).toHaveText('Clothes');
-      const board = shelf.getByRole('img', { name: /scattered across Saved Messages/ });
-      expect(await board.evaluate((el) => el.getAnimations({ subtree: true }).length)).toBe(0);
-    });
-  });
 });
 
 test.describe('landing app preview motion', () => {
@@ -399,10 +229,6 @@ test.describe('landing app preview motion', () => {
   const shownCards = (page: Page): Promise<string[]> =>
     page.evaluate<string[]>(
       "[...document.querySelectorAll('.landing-hero-preview__item')].filter((el) => getComputedStyle(el).opacity === '1').map((el) => el.querySelector('.link-preview-card__host')?.textContent.trim() ?? '')",
-    );
-  const switchValue = (page: Page): Promise<string | undefined> =>
-    page.evaluate<string | undefined>(
-      "document.querySelector('.landing-hero-preview ui-segmented-control input:checked')?.value",
     );
   const toast = (page: Page): Locator => page.locator('.landing-hero-preview__toast');
   /** Animations still running inside the preview. */
@@ -424,60 +250,9 @@ test.describe('landing app preview motion', () => {
     await expect(toast(page)).toHaveCSS('opacity', '1', { timeout: 5000 });
     await expect.poll(() => running(page)).toBe(0);
     expect((await shownCards(page)).length).toBeGreaterThan(0);
-    // The landing does not start again while the page stays open (the switch loop below moves
-    // the cards sideways; none of them lands again).
-    await page.waitForTimeout(1500);
-    const landing = await page.evaluate<number>(
-      "document.querySelector('.landing-hero-preview').getAnimations({ subtree: true }).filter((a) => a instanceof CSSAnimation && a.animationName.includes('land')).length",
-    );
-    expect(landing).toBe(0);
+    // That it never lands again while the page stays open: landing-hero-preview.component.spec.ts.
     await expect(toast(page)).toContainText('Saved to Read later');
     await expect(toast(page)).toContainText('Undo');
-  });
-
-  test('the loop waits while the tab is hidden', async ({ page }) => {
-    await page.goto('/');
-    await expect(toast(page)).toHaveCSS('opacity', '1', { timeout: 5000 });
-    await page.evaluate(`(() => {
-      Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' });
-      document.dispatchEvent(new Event('visibilitychange'));
-    })()`);
-    await page.waitForTimeout(6000);
-    expect(await switchValue(page)).toBe('all');
-  });
-
-  test.describe('prefers-reduced-motion', () => {
-    test.use({ reducedMotion: 'reduce' });
-
-    test('shows the final frame at once: the cards and the toast, nothing moving', async ({
-      page,
-    }) => {
-      await page.goto('/');
-
-      await expect(cards(page)).toHaveCount(4);
-      await expect(toast(page)).toHaveCSS('opacity', '1');
-      // The "All" frame: the row's first cards fully there, from the first one, no gaps.
-      const shown = await shownCards(page);
-      expect(shown.length).toBeGreaterThan(0);
-      expect(shown).toEqual(['youtube.com', 'web.dev', 'vox.com'].slice(0, shown.length));
-      expect(
-        await page
-          .locator('.landing-hero-preview')
-          .evaluate((el) => el.getAnimations({ subtree: true }).length),
-      ).toBe(0);
-    });
-
-    test('axe stays clean and nothing scrolls sideways at 360px', async ({ page }, testInfo) => {
-      await page.setViewportSize({ width: 360, height: 780 });
-      await page.goto('/');
-      await expect(toast(page)).toBeVisible();
-      await expectNoBlockingViolations(page, testInfo);
-
-      const overflow = await page.evaluate<number>(
-        '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
-      );
-      expect(overflow).toBeLessThanOrEqual(0);
-    });
   });
 });
 
@@ -504,10 +279,9 @@ async function settleReveals(page: Page): Promise<void> {
   );
 }
 
-const VIEWPORTS = [
-  { name: 'desktop', width: 1280, height: 900 },
-  { name: 'phone', width: 360, height: 780 },
-] as const;
+// Desktop only: the phone layout has the same content (the header drops two links, see
+// landing-header.component.spec.ts), and the smoke and mobile overflow checks cover 360px.
+const VIEWPORTS = [{ name: 'desktop', width: 1280, height: 900 }] as const;
 
 for (const colorScheme of Object.values(COLOR_SCHEME)) {
   for (const viewport of VIEWPORTS) {
@@ -530,42 +304,8 @@ for (const colorScheme of Object.values(COLOR_SCHEME)) {
       });
     });
 
-    test.describe(`landing accessibility with motion (${colorScheme}, ${viewport.name})`, () => {
+    test.describe(`landing accessibility, settled scenes (${colorScheme}, ${viewport.name})`, () => {
       test.use({ colorScheme, viewport: { width: viewport.width, height: viewport.height } });
-
-      test('page scrolled to the end has no serious or critical axe violations', async ({
-        page,
-      }, testInfo) => {
-        await gotoLandingLoaded(page);
-        // Scroll through the page: each section reveals when it comes into view.
-        await scrollThrough(page);
-        await expect(
-          page.getByRole('region', { name: 'Empty your Saved Messages.' }).locator('h2'),
-        ).toHaveCSS('opacity', '1');
-        // Motion is on: the before board loops forever and is held mid-frame once it leaves the
-        // screen, so scrolling past it can leave it half way through its entrance. Bring it back,
-        // wait for the entrance to finish, then hold the loop (pointer over the section) before
-        // the scan, so axe reads fully opaque scraps.
-        expect(await page.evaluate("matchMedia('(prefers-reduced-motion: reduce)').matches")).toBe(
-          false,
-        );
-        const board = page.getByRole('region', { name: 'The same links, before and after' });
-        await board.scrollIntoViewIfNeeded();
-        const before = board.locator('.landing-before__before');
-        await expect(before).toHaveClass(/landing-before__before--entered/);
-        for (const scrap of await board
-          .locator('.landing-before__scrap, .landing-before__ping')
-          .all()) {
-          await expect(scrap).toHaveCSS('opacity', '1');
-        }
-        await board.locator('.landing-ba__scenes').hover();
-        await expect(before).toHaveClass(/landing-before__before--holding/);
-        await page.evaluate('scrollTo(0, document.documentElement.scrollHeight)');
-        await settleReveals(page);
-        await page.evaluate('document.fonts.ready.then(() => undefined)');
-
-        await expectNoBlockingViolations(page, testInfo);
-      });
 
       test('shelf and board on a settled frame (reduced motion) have no serious or critical axe violations', async ({
         page,

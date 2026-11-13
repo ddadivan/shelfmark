@@ -114,6 +114,18 @@ describe('LandingHeroPreviewComponent', () => {
       expect(slots(root)).toEqual(['0', '1', '2', '3']);
     });
 
+    it('waits where it is while the tab is hidden', async () => {
+      const { root, advance } = await seen();
+      const visibility = vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
+      document.dispatchEvent(new Event('visibilitychange'));
+      advance(20_000);
+
+      expect(checked(root)).toBe('all');
+      expect(slots(root)).toEqual(['0', '1', '2', '3']);
+      visibility.mockRestore();
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+
     it('stays on the All frame under reduced motion', async () => {
       const { root, advance } = await seen(true);
       advance(20_000);
