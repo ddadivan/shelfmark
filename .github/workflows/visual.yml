@@ -88,7 +88,8 @@ jobs:
   # The `visual:update` label on a PR from this repository: regenerates every baseline in the same
   # container, commits them to the PR branch and uploads them as an artifact. The only job with
   # write access; the token is used in the push step alone (the checkout keeps no credentials).
-  # A push made with GITHUB_TOKEN starts no workflow: the next push to the PR runs the comparison.
+  # The runs queued for that bot commit wait for approval ("action required"); approving them or
+  # the next push to the PR runs the comparison.
   visual-update:
     name: visual-update
     if: >-

@@ -67,7 +67,9 @@ is a regression to fix.
    `visual-baselines` artifact.
 2. Review the changed PNGs in the PR's diff (GitHub shows image diffs side by side, swipe and
    onion skin). Pull the commit before you push again.
-3. A push made by the job's token starts no workflow, so the comparison runs on your next push.
+3. The workflows that GitHub queues for the bot's commit wait for approval (they show "action
+   required"); approve them on the run page, or simply push again: the comparison runs on your
+   next push.
    To regenerate again later, remove the label and add it once more.
 
 Or run the same inside the image, from the repo root:
