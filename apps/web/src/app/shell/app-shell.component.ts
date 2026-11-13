@@ -53,7 +53,7 @@ import { phoneTabForUrl } from './phone-tab-for-url';
 import { SettingsNavComponent } from '../features/settings/components/settings-nav/settings-nav.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { ToastAreaDirective } from '../core/layout/toast-area.directive';
-import { ScrollTopOnNavigateDirective } from '../core/layout/scroll-top-on-navigate.directive';
+import { ScrollRestorationDirective } from '../core/layout/scroll-restoration.directive';
 
 /**
  * Layout around the signed-in pages. Desktop and tablet: the sidebar card on the left, the top bar
@@ -65,7 +65,7 @@ import { ScrollTopOnNavigateDirective } from '../core/layout/scroll-top-on-navig
   imports: [
     RouterOutlet,
     ToastAreaDirective,
-    ScrollTopOnNavigateDirective,
+    ScrollRestorationDirective,
     TranslocoPipe,
     AvatarComponent,
     DemoBannerComponent,
