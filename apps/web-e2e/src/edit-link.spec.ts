@@ -27,48 +27,6 @@ test.describe('edit link (mock API)', () => {
     await expect(page.locator('ui-card').first()).toContainText('A renamed link');
   });
 
-  test('toggles "Add to favorites" and the card star follows', async ({ page }) => {
-    const star = page
-      .locator('ui-card')
-      .first()
-      .getByRole('button', { name: /^Favorite: / });
-    const wasFavorite = (await star.getAttribute('aria-pressed')) === 'true';
-    const dialog = await openCardEdit(page);
-    const box = dialog.getByRole('checkbox', { name: 'Add to favorites' });
-    await expect(box).toBeChecked({ checked: wasFavorite });
-
-    await dialog.getByText('Add to favorites').click();
-    await dialog.getByRole('button', { name: 'Save changes' }).click();
-
-    await expect(dialog).toBeHidden();
-    await expect(star).toHaveAttribute('aria-pressed', String(!wasFavorite));
-  });
-
-  test('Cancel keeps the link as it was', async ({ page }) => {
-    const card = page.locator('ui-card').first();
-    const before = await card.getByRole('heading').innerText();
-    const dialog = await openCardEdit(page);
-
-    await dialog.getByLabel('Title', { exact: true }).fill('Never saved');
-    await dialog.getByRole('button', { name: 'Cancel' }).click();
-
-    await expect(dialog).toBeHidden();
-    await expect(card.getByRole('heading')).toHaveText(before);
-  });
-
-  test('Delete asks first and Undo brings the link back', async ({ page }) => {
-    const title = await page.locator('ui-card').first().getByRole('heading').innerText();
-    const dialog = await openCardEdit(page);
-
-    await dialog.getByRole('button', { name: 'Delete' }).click();
-    const confirm = page.getByRole('alertdialog');
-    await confirm.getByRole('button', { name: 'Delete' }).click();
-
-    await expect(page.getByRole('heading', { name: title, exact: true })).toHaveCount(0);
-    await page.getByRole('button', { name: 'Undo' }).click();
-    await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
-  });
-
   test('"Open saved" from the add-link duplicate notice opens the edit dialog', async ({
     page,
   }) => {

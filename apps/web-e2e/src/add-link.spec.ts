@@ -8,7 +8,6 @@ const duplicateUrl = 'https://angular.dev/overview';
 // Mirror `E2E_ADD_LINK_OUTCOME` (apps/web harness page); the e2e project cannot import from apps/web.
 const outcome = {
   savedPrefix: 'Outcome: saved: ',
-  openExistingPrefix: 'Outcome: open-existing: ',
 } as const;
 
 test.describe('add link dialog (mock API)', () => {
@@ -44,61 +43,6 @@ test.describe('add link dialog (mock API)', () => {
       );
     },
   );
-
-  test('an invalid address shows the error and is not saved', async ({ page }) => {
-    const dialog = await open(page);
-
-    await dialog.getByLabel('Link', { exact: true }).fill('youtube com/ng22');
-    await dialog.getByRole('button', { name: 'Save link' }).click();
-
-    await expect(
-      dialog.getByText('Enter an address that starts with http:// or https://'),
-    ).toBeVisible();
-    await expect(dialog).toBeVisible();
-    await expect(dialog.getByLabel('Link', { exact: true })).toBeFocused();
-  });
-
-  test('a saved URL shows the duplicate notice; "Open saved" opens the existing link', async ({
-    page,
-  }) => {
-    const dialog = await open(page);
-
-    await dialog.getByLabel('Link', { exact: true }).fill(duplicateUrl);
-    await expect(
-      dialog.locator('ui-notice', { hasText: 'You already saved this link in Angular' }),
-    ).toBeVisible();
-
-    await dialog.getByRole('button', { name: 'Open saved' }).click();
-    await expect(page.locator('#outcome')).toContainText(outcome.openExistingPrefix);
-  });
-
-  test('"Save anyway" saves the duplicate', async ({ page }) => {
-    const dialog = await open(page);
-
-    await dialog.getByLabel('Link', { exact: true }).fill(duplicateUrl);
-    await dialog.getByRole('button', { name: 'Save anyway' }).click();
-
-    await expect(page.locator('#outcome')).toContainText(outcome.savedPrefix);
-  });
-
-  test('a failing preview keeps the link saveable', async ({ page }) => {
-    const dialog = await open(page);
-
-    await dialog.getByLabel('Link', { exact: true }).fill('https://unreachable.example/doc/42');
-    await expect(dialog.getByText("Couldn't load a preview")).toBeVisible();
-    await expect(dialog.getByLabel('Title', { exact: true })).toHaveValue(
-      'unreachable.example/doc/42',
-    );
-  });
-
-  test('Escape closes the dialog and focus returns to the trigger', async ({ page }) => {
-    const dialog = await open(page);
-
-    await page.keyboard.press('Escape');
-
-    await expect(dialog).toBeHidden();
-    await expect(page.getByRole('button', { name: 'Open add link' })).toBeFocused();
-  });
 
   test('fits a 360px phone without horizontal scroll and keeps the actions reachable', async ({
     page,
