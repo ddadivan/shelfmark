@@ -40,9 +40,6 @@
   gap: var(--space-1);
   align-items: center;
   margin-inline: var(--space-4) auto;
-
-  // The links are `ui-button`s: they grow with the wide breakpoints like the hero buttons.
-  @include landing.zoom(1.1, 1.2);
 }
 
 .landing-header__actions {
@@ -50,8 +47,6 @@
   min-block-size: rem(36px);
   gap: var(--space-2);
   align-items: center;
-
-  @include landing.zoom(1.1, 1.2);
 
   // Without the nav (a phone) the actions go to the end by themselves; with it, the nav's
   // auto margin does.

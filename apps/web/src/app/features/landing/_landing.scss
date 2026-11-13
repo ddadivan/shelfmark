@@ -24,20 +24,6 @@ $xwide-min: 120em;
   }
 }
 
-// Scales an element and everything in it from the wide breakpoints up. `zoom` (not `transform`)
-// changes the layout size too, and `ui-button` is sized in fixed rem inside
-// `libs/ui`, so this is how the landing makes them bigger without touching the library. Equal
-// `zoom` on a component and on its placeholder keeps their boxes equal, so nothing shifts.
-@mixin zoom($wide, $xwide: $wide) {
-  @include wide {
-    zoom: $wide;
-  }
-
-  @include xwide {
-    zoom: $xwide;
-  }
-}
-
 // Centred content column shared by every section: wider on big screens.
 @mixin wrap {
   width: 100%;
