@@ -27,6 +27,7 @@
         <ng-content select="[slot=actions]" />
         @if (closeLabel(); as label) {
           <ui-button
+            class="ui-dialog__close"
             variant="ghost"
             [size]="sheetMode() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm"
             iconOnly
