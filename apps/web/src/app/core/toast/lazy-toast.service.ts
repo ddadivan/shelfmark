@@ -1,4 +1,4 @@
-import { inject, Injector, Service } from '@angular/core';
+import { DestroyRef, inject, Injector, Service } from '@angular/core';
 import type { ToastOptions } from '@shelfmark/ui';
 
 let host: typeof import('./toast-host') | undefined;
@@ -16,12 +16,25 @@ export function loadToastHost(): Promise<typeof import('./toast-host')> {
 @Service()
 export class LazyToastService {
   private readonly injector = inject(Injector);
+  private destroyed = false;
+
+  constructor() {
+    inject(DestroyRef).onDestroy(() => (this.destroyed = true));
+  }
 
   show(options: ToastOptions): void {
+    if (this.destroyed) {
+      return;
+    }
     if (host) {
       host.showToast(this.injector, options);
       return;
     }
-    void loadToastHost().then((loaded) => loaded.showToast(this.injector, options));
+    void loadToastHost().then((loaded) => {
+      // The app (or a test) may be gone by the time the chunk arrives.
+      if (!this.destroyed) {
+        loaded.showToast(this.injector, options);
+      }
+    });
   }
 }
