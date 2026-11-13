@@ -135,6 +135,7 @@ body {
 }
 
 @include keyframes;
+@include scroll-fade-keyframes;
 @include illustration-keyframes;
 @include ripple;
 

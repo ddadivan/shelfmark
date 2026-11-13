@@ -95,3 +95,62 @@ test.describe('feed alignment (mock API)', () => {
     expect(Math.abs((await middle(toast)) - centre)).toBeLessThanOrEqual(1);
   });
 });
+
+// #352 item 9: soft fades at the scroll edges of the feed and the sidebar tree.
+test.describe('scroll fades (mock API)', () => {
+  test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
+  test.skip(({ isMobile }) => isMobile, 'desktop: the feed is its own scroll area');
+
+  const fade = (page: Page, selector: string, edge: '::before' | '::after') =>
+    page.evaluate<{ opacity: string; pointerEvents: string; position: string; content: string }>(
+      `(() => { const s = getComputedStyle(document.querySelector(${JSON.stringify(selector)}), ${JSON.stringify(edge)});
+        return { opacity: s.opacity, pointerEvents: s.pointerEvents, position: s.position, content: s.content }; })()`,
+    );
+
+  test('the feed fades in at the top once scrolled and out at the bottom at the end', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await seedSession(page);
+    await page.goto('/links');
+    await expect(page.locator('ui-card').first()).toBeVisible();
+    const area = '.library__scroll';
+
+    for (const edge of ['::before', '::after'] as const) {
+      const style = await fade(page, area, edge);
+      expect(style.content).not.toBe('none');
+      expect(style.position).toBe('sticky');
+      expect(style.pointerEvents).toBe('none');
+    }
+    const supported = await page.evaluate<boolean>(`CSS.supports('animation-timeline: scroll()')`);
+    test.skip(!supported, 'without scroll-driven animations both fades are always on');
+
+    expect(Number((await fade(page, area, '::before')).opacity)).toBe(0);
+    expect(Number((await fade(page, area, '::after')).opacity)).toBe(1);
+
+    await page.locator(area).evaluate((el) => el.scrollTo(0, 200));
+    await expect.poll(async () => Number((await fade(page, area, '::before')).opacity)).toBe(1);
+
+    // Scrolled to the end again on every try: reaching the end loads the next page.
+    await expect
+      .poll(async () => {
+        await page.locator(area).evaluate((el) => el.scrollTo(0, el.scrollHeight));
+        return Number((await fade(page, area, '::after')).opacity);
+      })
+      .toBe(0);
+  });
+
+  test('a short feed shows no fades and the sidebar tree has them too', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await seedSession(page);
+    await page.goto(ANGULAR_FOLDER);
+    await expect(page.locator('ui-card').first()).toBeVisible();
+    const sidebar = await fade(page, '.sidebar__scroll', '::after');
+    expect(sidebar.pointerEvents).toBe('none');
+    expect(sidebar.position).toBe('sticky');
+    const supported = await page.evaluate<boolean>(`CSS.supports('animation-timeline: scroll()')`);
+    test.skip(!supported, 'without scroll-driven animations both fades are always on');
+    expect(Number((await fade(page, '.library__scroll', '::before')).opacity)).toBe(0);
+    expect(Number((await fade(page, '.library__scroll', '::after')).opacity)).toBe(0);
+  });
+});

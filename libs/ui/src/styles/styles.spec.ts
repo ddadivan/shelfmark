@@ -559,3 +559,30 @@ describe('appearance layout attributes (#285)', () => {
     }
   });
 });
+
+describe('scroll-fade (#352)', () => {
+  const output = css('.area { overflow-y: auto; @include scroll-fade(var(--surface)); }');
+
+  it('draws non-interactive sticky overlays from the given colour, never a mask', () => {
+    expect(output).toMatch(/\.area::before,\s*\.area::after\s*\{[^}]*position: sticky/);
+    expect(output).toMatch(/\.area::before,\s*\.area::after\s*\{[^}]*pointer-events: none/);
+    expect(output).toContain('linear-gradient(to bottom, var(--surface), transparent)');
+    expect(output).toContain('linear-gradient(to top, var(--surface), transparent)');
+    expect(output).not.toMatch(/mask/);
+  });
+
+  it('ties the opacity to the scroll where scroll-driven animations exist', () => {
+    expect(output).toContain('@supports (animation-timeline: scroll())');
+    expect(output).toContain('animation-timeline: scroll(nearest)');
+    expect(output).toContain('animation-name: ui-scroll-fade-top');
+    expect(output).toContain('animation-name: ui-scroll-fade-bottom');
+  });
+
+  it('has its keyframes once in the global styles', () => {
+    const global = compile(resolve(STYLES_DIR, 'global.scss'), {
+      loadPaths: [resolve(STYLES_DIR, '../../../../node_modules')],
+    }).css;
+    expect(global.match(/@keyframes ui-scroll-fade-top/g)).toHaveLength(1);
+    expect(global.match(/@keyframes ui-scroll-fade-bottom/g)).toHaveLength(1);
+  });
+});

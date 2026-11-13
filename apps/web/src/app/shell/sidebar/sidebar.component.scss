@@ -48,6 +48,9 @@
   overflow-y: auto;
   overscroll-behavior: contain;
 
+  // Soft edges when the tree scrolls (#352), in the sidebar card's colour.
+  @include scroll-fade(var(--surface));
+
   > * {
     flex: none;
   }
