@@ -231,6 +231,11 @@ test.describe('select links and bulk actions (mock API)', () => {
       await button.click();
       await expect(page.getByText('2 links added to favorites')).toBeVisible();
       await expect(button).toHaveAttribute('aria-pressed', 'true');
+      // A toast never covers the bulk bar: it sits above it (#350).
+      await settled(page);
+      const toastBox = await page.locator('ui-toast').first().boundingBox();
+      const barBox = await page.locator('ui-bulk-bar').boundingBox();
+      expect((toastBox?.y ?? 0) + (toastBox?.height ?? 0)).toBeLessThanOrEqual(barBox?.y ?? 0);
       await button.click();
       await expect(page.getByText('2 links removed from favorites')).toBeVisible();
       await expect(button).toHaveAttribute('aria-pressed', 'false');
