@@ -44,7 +44,6 @@ import { FeedbackDialogService } from '../../features/feedback/services/feedback
 import { HowItWorksCardComponent } from '../../features/how-it-works/components/how-it-works-card/how-it-works-card.component';
 import { SIDEBAR_FEEDBACK_ID } from './models/sidebar-feedback-id.const';
 import { folderTreeNodes } from './utils/folder-tree-nodes';
-import { injectNoDropLabels } from './utils/inject-no-drop-labels';
 import { injectSidebarLabels } from './utils/inject-sidebar-labels';
 import { latched } from './utils/latched';
 import { sidebarActiveId } from './utils/sidebar-active-id';
@@ -135,8 +134,6 @@ export class SidebarComponent {
   );
 
   private readonly labels = injectSidebarLabels();
-  /** Why a row cannot take the dragged link, shown while it is over the row (#350). */
-  protected readonly noDropLabels = injectNoDropLabels();
   /** The "..." button name with its `{name}` placeholder; `ui-tree` fills in the folder. */
   protected readonly menuLabel = computed(() => this.labels()?.actions);
 

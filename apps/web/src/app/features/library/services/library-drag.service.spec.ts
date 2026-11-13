@@ -2,6 +2,7 @@ import { ElementRef, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import type { LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
+import { TOAST_KIND, ToastService, type ToastOptions } from '@shelfmark/ui';
 import { of } from 'rxjs';
 import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
 import { LINKS_API } from '../../links/models/links-api.const';
@@ -27,13 +28,23 @@ async function setup() {
     recent: vi.fn<LinksApi['recent']>(() => of({ items: [] })),
   };
   const noDropReasonKey = vi.fn<() => string | null>(() => null);
-  const links = { start: vi.fn(), drop: vi.fn(), move: vi.fn(), noDropReasonKey };
+  const noDropHoverId = vi.fn<() => string | null>(() => null);
+  const links = { start: vi.fn(), drop: vi.fn(), move: vi.fn(), noDropReasonKey, noDropHoverId };
+  const dismiss = vi.fn();
+  const shown: ToastOptions[] = [];
+  const toasts = {
+    show: (options: ToastOptions) => {
+      shown.push(options);
+      return { dismiss, closed: new Promise<never>(() => undefined) };
+    },
+  };
   TestBed.configureTestingModule({
     providers: [
       ...provideLibraryPage(),
       provideTranslocoForTest(),
       { provide: LINKS_API, useValue: api },
       { provide: LinkDragService, useValue: links },
+      { provide: ToastService, useValue: toasts },
       { provide: ElementRef, useValue: new ElementRef(document.createElement('div')) },
     ],
   });
@@ -49,7 +60,7 @@ async function setup() {
   const dnd = TestBed.inject(LibraryDragService);
   const selection = TestBed.inject(LibrarySelectionService);
   TestBed.tick();
-  return { dnd, selection, links, noDropReasonKey };
+  return { dnd, selection, links, noDropReasonKey, noDropHoverId, shown, dismiss };
 }
 
 describe('LibraryDragService', () => {
@@ -103,23 +114,38 @@ describe('LibraryDragService', () => {
     expect(links.move).toHaveBeenCalledWith(12, 34);
   });
 
-  it('says why a sidebar row cannot take the link once when the pointer reaches it (#350)', async () => {
-    const { dnd, selection, noDropReasonKey } = await setup();
+  it('says why a sidebar row cannot take the link in one toast, once per row and drag (#350)', async () => {
+    const { dnd, selection, noDropReasonKey, noDropHoverId, shown, dismiss } = await setup();
     const move = (): void =>
       dnd.moved({ pointerPosition: { x: 1, y: 2 } } as Parameters<LibraryDragService['moved']>[0]);
+    const over = (id: string | null, key: string | null): void => {
+      noDropHoverId.mockReturnValue(id);
+      noDropReasonKey.mockReturnValue(key);
+      move();
+    };
 
-    noDropReasonKey.mockReturnValue('links.drag.noDrop.favorites');
-    move();
-    expect(selection.modeAnnouncement()).toBe('Star a link to add it');
+    over('favorites', 'links.drag.noDrop.favorites');
+    expect(shown).toHaveLength(1);
+    expect(shown[0].kind).toBe(TOAST_KIND.Info);
+    expect(shown[0].title).toBe("Can't drop here — star a link to add it to Favorites");
+    expect(shown[0].duration).toBe(2500);
+    // Moving on inside the row, or leaving and coming back, shows nothing more.
+    over('favorites', 'links.drag.noDrop.favorites');
+    over(null, null);
+    over('favorites', 'links.drag.noDrop.favorites');
+    expect(shown).toHaveLength(1);
+    // Spoken once, by the toast region: the live region stays quiet.
+    expect(selection.modeAnnouncement()).not.toContain("Can't drop");
 
-    selection.announce('');
-    move();
-    expect(selection.modeAnnouncement()).toBe('');
+    // Another row replaces the toast.
+    over('all', 'links.drag.noDrop.all');
+    expect(shown).toHaveLength(2);
+    expect(dismiss).toHaveBeenCalledTimes(1);
 
-    noDropReasonKey.mockReturnValue(null);
-    move();
-    noDropReasonKey.mockReturnValue('links.drag.noDrop.favorites');
-    move();
-    expect(selection.modeAnnouncement()).toBe('Star a link to add it');
+    // The drag ends: the toast goes, and the next drag explains the rows again.
+    dnd.ended();
+    expect(dismiss).toHaveBeenCalledTimes(2);
+    over('favorites', 'links.drag.noDrop.favorites');
+    expect(shown).toHaveLength(3);
   });
 });

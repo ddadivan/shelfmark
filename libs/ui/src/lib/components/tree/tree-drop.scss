@@ -18,7 +18,7 @@
 // A row that cannot take what is dragged: a no-drop cursor and a dimmed state (half opacity, no
 // hover tint, never the highlight) while the drag lasts; the feature sets `noDropIds` only then
 // and the row is `aria-disabled` (inactive controls are exempt from the contrast rule, WCAG
-// 1.4.3). The reason badge stays at full strength so it can be read.
+// 1.4.3).
 .ui-tree__row--no-drop {
   color: var(--text-muted);
 
@@ -27,7 +27,7 @@
     cursor: no-drop;
   }
 
-  > :not(.ui-tree__drop-badge) {
+  > * {
     opacity: 0.5;
   }
 
@@ -49,12 +49,6 @@
   white-space: nowrap;
   background: var(--surface);
   border-radius: var(--radius-full);
-}
-
-// The reason a row cannot take the dragged item: the drop badge in a neutral colour.
-.ui-tree__drop-badge--muted {
-  color: var(--text-muted);
-  background: var(--surface-hover);
 }
 
 // "..." button: fades in on hover or focus, always there on touch.

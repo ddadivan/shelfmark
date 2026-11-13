@@ -496,11 +496,11 @@
         "other": "Mover {{count}} enlaces"
       },
       "noDrop": {
-        "all": "Suéltalo en una carpeta",
-        "favorites": "Marca un enlace con estrella",
-        "recent": "Se llena al abrir enlaces",
-        "trash": "Usa Eliminar",
-        "pinnedLink": "No es una carpeta"
+        "all": "No se puede soltar aquí — suéltalo en una carpeta",
+        "favorites": "No se puede soltar aquí — marca un enlace con estrella para añadirlo a Favoritos",
+        "recent": "No se puede soltar aquí — «Abiertos recientemente» se llena al abrir enlaces",
+        "trash": "No se puede soltar aquí — usa Eliminar para mover un enlace a la papelera",
+        "pinnedLink": "No se puede soltar aquí — un enlace fijado no es una carpeta"
       }
     }
   },

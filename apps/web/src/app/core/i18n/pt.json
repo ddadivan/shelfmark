@@ -496,11 +496,11 @@
         "other": "Mover {{count}} links"
       },
       "noDrop": {
-        "all": "Solte em uma pasta",
-        "favorites": "Marque um link com estrela",
-        "recent": "Enche ao abrir links",
-        "trash": "Use Excluir",
-        "pinnedLink": "Não é uma pasta"
+        "all": "Não dá para soltar aqui — solte em uma pasta",
+        "favorites": "Não dá para soltar aqui — marque um link com estrela para adicioná-lo aos Favoritos",
+        "recent": "Não dá para soltar aqui — «Abertos recentemente» enche ao abrir links",
+        "trash": "Não dá para soltar aqui — use Excluir para mover um link para a lixeira",
+        "pinnedLink": "Não dá para soltar aqui — um link fixado não é uma pasta"
       }
     }
   },

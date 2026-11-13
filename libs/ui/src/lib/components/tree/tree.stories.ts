@@ -62,8 +62,6 @@ const template = `
         [dropTargetId]="dropTargetId"
         [dropLabel]="dropLabel"
         [noDropIds]="noDropIds ?? []"
-        [noDropHoverId]="noDropHoverId ?? null"
-        [noDropLabels]="noDropLabels ?? {}"
       />
     </div>
   </div>`;
@@ -112,16 +110,6 @@ export const NoDropRows: Story = {
     noDropIds: [TREE_STORY_ID.Favorites],
     dropTargetId: TREE_STORY_ID.Recipes,
     dropLabel: 'Move here',
-  },
-  render: (args) => ({ props: args, template }),
-};
-
-/** The dragged link is over a row that cannot take it: the row says why, in a neutral badge. */
-export const NoDropReason: Story = {
-  args: {
-    noDropIds: [TREE_STORY_ID.Favorites],
-    noDropHoverId: TREE_STORY_ID.Favorites,
-    noDropLabels: { [TREE_STORY_ID.Favorites]: 'Star a link to add it' },
   },
   render: (args) => ({ props: args, template }),
 };

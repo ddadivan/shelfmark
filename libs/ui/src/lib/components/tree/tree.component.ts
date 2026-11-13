@@ -291,13 +291,6 @@ export class TreeComponent {
    * they show a no-drop cursor and a muted state, never the drop highlight.
    */
   readonly noDropIds = input<readonly string[]>([]);
-  /**
-   * `id` of the no-drop row under the dragged item and the short reasons per row id ("Star a link
-   * to add it"): the hovered row shows its reason as a muted badge in place of the count and is
-   * named by it. Rows in `noDropIds` are `aria-disabled` while they last.
-   */
-  readonly noDropHoverId = input<string | null>(null);
-  readonly noDropLabels = input<Readonly<Record<string, string>>>({});
   /** Badge text on the drop target row ("Move here"); none when empty. */
   readonly dropLabel = input<string>();
   /**
@@ -350,18 +343,8 @@ export class TreeComponent {
     return node.count === undefined ? null : `${itemId}-count`;
   }
 
-  /** The reason shown on a no-drop row while the dragged item is over it, if any. */
-  protected noDropReason(node: UiTreeNode): string | undefined {
-    return this.noDropIds().includes(node.id) && this.noDropHoverId() === node.id
-      ? this.noDropLabels()[node.id]
-      : undefined;
-  }
-
   /** The row is named by its name, then its count or drop badge (never by its children). */
   protected labelledBy(itemId: string, node: UiTreeNode): string {
-    if (this.noDropReason(node)) {
-      return `${itemId}-name ${itemId}-drop`;
-    }
     // The drop target's badge replaces the count, in the name too ("Recipes Move here").
     if (this.dropTargetId() === node.id && this.dropLabel()) {
       return `${itemId}-name ${itemId}-drop`;

@@ -12,8 +12,6 @@
         [fixedNodes]="fixedNodes()"
         [activeId]="activeId()"
         [noDropIds]="drag.treeNoDropIds()"
-        [noDropHoverId]="drag.noDropHoverId()"
-        [noDropLabels]="noDropLabels()"
         [ariaLabel]="'shell.sidebar.views' | transloco"
         (selected)="select($event)"
       />
@@ -82,8 +80,6 @@
           [fixedNodes]="feedbackNodes()"
           [activeId]="activeId()"
           [noDropIds]="drag.treeNoDropIds()"
-          [noDropHoverId]="drag.noDropHoverId()"
-          [noDropLabels]="noDropLabels()"
           [ariaLabel]="'shell.sidebar.footer' | transloco"
           (selected)="footerSelected($event)"
         />
@@ -93,8 +89,6 @@
         [fixedNodes]="trashNodes()"
         [activeId]="activeId()"
         [noDropIds]="drag.treeNoDropIds()"
-        [noDropHoverId]="drag.noDropHoverId()"
-        [noDropLabels]="noDropLabels()"
         [ariaLabel]="'trash.title' | transloco"
         (selected)="footerSelected($event)"
       />

@@ -485,11 +485,11 @@
         "other": "Move {{count}} links"
       },
       "noDrop": {
-        "all": "Drop on a folder",
-        "favorites": "Star a link to add it",
-        "recent": "Fills as you open links",
-        "trash": "Use Delete instead",
-        "pinnedLink": "Not a folder"
+        "all": "Can't drop here — drop it on a folder",
+        "favorites": "Can't drop here — star a link to add it to Favorites",
+        "recent": "Can't drop here — Recently opened fills as you open links",
+        "trash": "Can't drop here — use Delete to move a link to Trash",
+        "pinnedLink": "Can't drop here — a pinned link is not a folder"
       }
     }
   },

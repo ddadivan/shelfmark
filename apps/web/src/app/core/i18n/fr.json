@@ -496,11 +496,11 @@
         "other": "Déplacer {{count}} liens"
       },
       "noDrop": {
-        "all": "Déposez sur un dossier",
-        "favorites": "Ajoutez un lien en favori",
-        "recent": "Se remplit à l’ouverture",
-        "trash": "Utilisez Supprimer",
-        "pinnedLink": "Pas un dossier"
+        "all": "Impossible de déposer ici — déposez-le sur un dossier",
+        "favorites": "Impossible de déposer ici — mettez un lien en favori pour l’ajouter aux Favoris",
+        "recent": "Impossible de déposer ici — « Ouverts récemment » se remplit quand vous ouvrez des liens",
+        "trash": "Impossible de déposer ici — utilisez Supprimer pour mettre un lien à la corbeille",
+        "pinnedLink": "Impossible de déposer ici — un lien épinglé n’est pas un dossier"
       }
     }
   },

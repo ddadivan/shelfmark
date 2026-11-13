@@ -92,8 +92,8 @@
 
 .pinned__item--no-drop {
   // Dimmed to half (the link is `aria-disabled` while the drag lasts, so the contrast rule does
-  // not apply); the reason badge stays at full strength.
-  .pinned__link > :not(.pinned__drop-badge) {
+  // not apply); a toast says why when the card enters it.
+  .pinned__link > * {
     opacity: 0.5;
   }
 
@@ -105,10 +105,4 @@
 // While a link is over the row the "Move here" badge has the end of the row to itself.
 .pinned__item--drop .pinned__actions {
   opacity: 0;
-}
-
-// The reason a pinned link cannot take the dragged link, in a neutral colour.
-.pinned__drop-badge--muted {
-  color: var(--text-muted);
-  background: var(--surface-hover);
 }

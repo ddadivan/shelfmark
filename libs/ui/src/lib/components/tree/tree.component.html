@@ -73,10 +73,6 @@
           <span class="ui-tree__drop-badge" [id]="item.id() + '-drop'"
             >&ngsp;{{ dropLabel() }}</span
           >
-        } @else if (noDropReason(node); as reason) {
-          <span class="ui-tree__drop-badge ui-tree__drop-badge--muted" [id]="item.id() + '-drop'"
-            >&ngsp;{{ reason }}</span
-          >
         } @else if (countId(item.id(), node); as count) {
           <span class="ui-tree__count" [id]="count">&ngsp;{{ node.count }}</span>
         }

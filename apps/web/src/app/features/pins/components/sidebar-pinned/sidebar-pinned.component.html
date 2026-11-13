@@ -101,11 +101,6 @@
               >
                 <ui-favicon [src]="favicon(link)" [letter]="letter(link)" />
                 <span class="pinned__name">{{ link.title }}</span>
-                @if (drag.noDropHoverId() === row.key) {
-                  <span class="pinned__drop-badge pinned__drop-badge--muted"
-                    >&ngsp;{{ drag.noDropReasonKey() ?? '' | transloco }}</span
-                  >
-                }
                 @if (href(link) && newTab()) {
                   <span class="pinned__hidden">{{ 'links.item.opensInNewTab' | transloco }}</span>
                 }

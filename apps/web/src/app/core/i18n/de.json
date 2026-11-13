@@ -485,11 +485,11 @@
         "other": "{{count}} Links verschieben"
       },
       "noDrop": {
-        "all": "Auf einen Ordner ziehen",
-        "favorites": "Markiere einen Link mit Stern",
-        "recent": "Füllt sich beim Öffnen",
-        "trash": "Stattdessen Löschen nutzen",
-        "pinnedLink": "Kein Ordner"
+        "all": "Hier nicht ablegbar — leg den Link auf einen Ordner",
+        "favorites": "Hier nicht ablegbar — markiere einen Link mit Stern, um ihn zu den Favoriten zu legen",
+        "recent": "Hier nicht ablegbar — „Zuletzt geöffnet“ füllt sich beim Öffnen von Links",
+        "trash": "Hier nicht ablegbar — nutze „Löschen“, um einen Link in den Papierkorb zu legen",
+        "pinnedLink": "Hier nicht ablegbar — ein angehefteter Link ist kein Ordner"
       }
     }
   },
