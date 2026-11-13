@@ -168,6 +168,13 @@
         "cwd": "{workspaceRoot}"
       }
     },
+    "emoji": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node scripts/build-folder-emoji.mjs",
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "check-bundle": {
       "executor": "nx:run-commands",
       "dependsOn": ["build"],
