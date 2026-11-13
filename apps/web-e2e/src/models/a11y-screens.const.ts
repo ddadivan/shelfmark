@@ -1,3 +1,4 @@
+import { MOCK_LINKS_SCENARIO } from './mock-links-scenario.const';
 import { expect, type Page } from '@playwright/test';
 import {
   openCardEdit,
@@ -172,6 +173,9 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
       await openSignedIn(page, '/settings/account');
       await expect(page.getByRole('heading', { level: 1, name: 'Account' })).toBeVisible();
       await expect(page.getByText('Sign out of Shelfmark')).toBeVisible();
+      // Your shelf, connected accounts and Your data (#352).
+      await expect(page.getByRole('heading', { name: 'Sites you save most' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Connected accounts' })).toBeVisible();
     },
   },
   {
@@ -190,11 +194,16 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     },
   },
   {
-    name: 'settings export',
+    // Export moved to Account › Your data (#352): the account of a new user, with nothing saved.
+    name: 'settings account, empty shelf',
     open: async (page) => {
-      await openSignedIn(page, '/settings/import-export');
-      await expect(page.getByRole('heading', { level: 1, name: 'Export' })).toBeVisible();
-      await expect(page.getByText('Export your data')).toBeVisible();
+      await page.addInitScript(
+        ([key, value]) => sessionStorage.setItem(key, value),
+        [MOCK_LINKS_SCENARIO.key, MOCK_LINKS_SCENARIO.empty],
+      );
+      await openSignedIn(page, '/settings/account');
+      await expect(page.getByRole('heading', { name: 'Nothing saved yet' })).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Download JSON' })).toBeVisible();
     },
   },
   {
