@@ -73,8 +73,9 @@
         @if (sheet() && closeLabel()) {
           <ui-button
             variant="ghost"
+            size="lg"
             iconOnly
-            icon="close"
+            iconLeft="close"
             [ariaLabel]="closeLabel()"
             (click)="hide(true)"
           />

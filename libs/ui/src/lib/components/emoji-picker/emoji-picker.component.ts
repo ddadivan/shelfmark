@@ -3,6 +3,7 @@ import { Tab, TabContent, TabList, TabPanel, Tabs } from '@angular/aria/tabs';
 import { DOCUMENT, NgTemplateOutlet } from '@angular/common';
 import {
   afterNextRender,
+  afterRenderEffect,
   ChangeDetectionStrategy,
   Component,
   computed,
@@ -173,6 +174,17 @@ export class EmojiPickerComponent extends UiFieldControl implements FormValueCon
   constructor() {
     super();
     trackInputModality();
+    // The panel's height changes when the names arrive, a search runs or own emoji go: place it
+    // again, so it flips above the field when there is no longer room below.
+    afterRenderEffect(() => {
+      this.categories();
+      this.results();
+      this.recent();
+      this.own();
+      if (this.open()) {
+        this.overlay?.updatePosition();
+      }
+    });
     inject(DestroyRef).onDestroy(() => {
       this.document.removeEventListener('pointerdown', this.outsidePress, true);
       this.detachSubscription?.unsubscribe();
@@ -243,7 +255,6 @@ export class EmojiPickerComponent extends UiFieldControl implements FormValueCon
 
   protected onSearch(event: Event): void {
     this.query.set((event.target as HTMLInputElement).value);
-    afterNextRender(() => this.overlay?.updatePosition(), { injector: this.injector });
   }
 
   protected onSearchKeydown(event: KeyboardEvent): void {

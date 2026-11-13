@@ -1,7 +1,8 @@
 @use '../../../styles/ui' as *;
 @use '../field/field-parts' as *;
 
-// Glass panel under the field (menus and listboxes: 18px corners, 6px padding).
+// Glass panel under the field (menus and listboxes: 18px corners, 6px padding). A fixed height,
+// so the panel neither jumps nor flips while the names load or a search shortens the list.
 .ui-emoji-picker__panel {
   @include glass;
 
@@ -9,7 +10,7 @@
   flex-direction: column;
   gap: var(--space-2);
   width: min(rem(360px), calc(100vw - #{rem(16px)}));
-  max-height: min(rem(420px), calc(100dvh - #{rem(16px)}));
+  height: min(rem(400px), calc(100dvh - #{rem(16px)}));
   padding: rem(6px);
   margin: var(--space-1) 0;
   border-radius: rem(18px);
@@ -23,7 +24,7 @@
 // The global pane lets pointer events through, the sheet takes them back.
 .ui-emoji-picker__panel--sheet {
   width: 100vw;
-  max-height: calc(100dvh - #{rem(150px)});
+  height: min(rem(520px), calc(100dvh - #{rem(150px)}));
   padding: var(--space-4) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom));
   margin: 0;
   pointer-events: auto;
@@ -131,8 +132,8 @@
 
 .ui-emoji-picker__loading {
   display: grid;
+  flex: 1 1 auto;
   place-items: center;
-  min-height: rem(160px);
   color: var(--text-muted);
 }
 
