@@ -62,6 +62,11 @@
     // Room for the focus ring and a lifted card, which the clip of the scroll area would cut.
     padding: var(--space-1);
     margin: calc(var(--space-1) * -1);
+
+    // Down to the window edge, past the shell's 12px bottom gap (#352, see the app styles); the
+    // end padding stops the last row (or the bulk bar) on the sidebar card's bottom line.
+    margin-block-end: calc(var(--space-3) * -1);
+    padding-block-end: var(--space-3);
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-gutter: stable;

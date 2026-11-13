@@ -77,10 +77,12 @@
 
 // The bulk bar floats at the bottom of the feed (glass); in the mobile shell above the tab bar.
 // In a short feed the auto margin pushes it to the bottom of the scroll area, so it sits there
-// whatever the length (#350); the padding keeps a gap to the last cards in a long one.
+// whatever the length (#350); the padding keeps a gap to the last cards in a long one. Desktop:
+// the scroll area reaches the window edge and its 12px end padding is the sticky edge, which
+// puts the bar's bottom on the sidebar card's bottom line (#352).
 .library__bulk {
   position: sticky;
-  inset-block-end: var(--space-4);
+  inset-block-end: 0;
   z-index: 3;
   align-self: center;
   max-width: 100%;

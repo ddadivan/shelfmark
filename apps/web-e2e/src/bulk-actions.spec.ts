@@ -264,6 +264,50 @@ test.describe('select links and bulk actions (mock API)', () => {
       ).toBeLessThanOrEqual(1);
     });
 
+    for (const size of [
+      { width: 1440, height: 900 },
+      { width: 1920, height: 1080 },
+      { width: 1024, height: 768 },
+      { width: 1280, height: 600 },
+    ]) {
+      test(`the bar's bottom is on the sidebar card's bottom line at ${size.width}x${size.height} (#352)`, async ({
+        page,
+      }) => {
+        await page.setViewportSize(size);
+        await openFeed(page);
+        await pick(page, 0);
+        await expect(bar(page)).toBeVisible();
+        await settled(page);
+        const bottom = async (locator: Locator) => {
+          const box = await locator.boundingBox();
+          return (box?.y ?? 0) + (box?.height ?? 0);
+        };
+        const sidebarBottom = await bottom(page.locator('.shell__sidebar'));
+        expect(
+          Math.abs((await bottom(page.locator('ui-bulk-bar'))) - sidebarBottom),
+        ).toBeLessThanOrEqual(1);
+
+        // The last row stays reachable: at the end of the feed (every page loaded) it ends above the bar.
+        const area = page.locator('.library__scroll');
+        let height = -1;
+        for (let round = 0; round < 10; round++) {
+          const next = await area.evaluate((el) => {
+            el.scrollTo(0, el.scrollHeight);
+            return el.scrollHeight;
+          });
+          if (next === height) {
+            break;
+          }
+          height = next;
+          await page.waitForTimeout(400);
+        }
+        const lastCard = cards(page).last();
+        await expect(lastCard).toBeVisible();
+        const barTop = (await page.locator('ui-bulk-bar').boundingBox())?.y ?? 0;
+        expect(await bottom(lastCard)).toBeLessThanOrEqual(barTop);
+      });
+    }
+
     test('Delete moves the links to Trash, Undo restores them', async ({ page }) => {
       await openFeed(page);
       const before = await cards(page).count();
