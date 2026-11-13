@@ -13,6 +13,11 @@
   :root {
     --scrollbar-thumb: color-mix(in srgb, var(--text-muted) 45%, transparent);
     --scrollbar-thumb-hover: color-mix(in srgb, var(--text-muted) 75%, transparent);
+
+    // The width a classic scrollbar takes from the layout (#352): 0 where the scrollbar overlays
+    // the content (touch) or its width is the engine's own (Firefox `thin`), 12px where ours is.
+    // A scroll area that moves its scrollbar out into the page margin reads it.
+    --scrollbar-size: 0rem;
   }
 
   @media (hover: hover) and (pointer: fine) {
@@ -24,9 +29,13 @@
     }
 
     @supports selector(::-webkit-scrollbar) {
+      :root {
+        --scrollbar-size: #{rem(12px)};
+      }
+
       ::-webkit-scrollbar {
-        width: rem(12px);
-        height: rem(12px);
+        width: var(--scrollbar-size);
+        height: var(--scrollbar-size);
         background: transparent;
       }
 

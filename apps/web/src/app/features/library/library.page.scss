@@ -66,6 +66,13 @@
     // Down to the window edge, past the shell's 12px bottom gap (#352, see the app styles); the
     // end padding stops the last row (or the bulk bar) on the sidebar card's bottom line.
     margin-block-end: calc(var(--space-3) * -1);
+
+    // The scrollbar sits outside the content column, in the page margin (#352): the area grows
+    // to the right by the scrollbar's width, so the cards end on the header's right edge. The
+    // room is the main column's end padding (24px on every desktop width), which always holds
+    // the 12px bar plus the 4px focus-ring padding. Where the scrollbar takes no width (touch
+    // overlay scrollbars, Firefox's own) `--scrollbar-size` is 0 and nothing changes.
+    margin-inline-end: calc((var(--space-1) + var(--scrollbar-size)) * -1);
     padding-block-end: var(--space-3);
     overflow-y: auto;
     overscroll-behavior: contain;
