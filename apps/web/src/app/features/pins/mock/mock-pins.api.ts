@@ -1,13 +1,20 @@
-import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
+import { HttpStatusCode } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
-import { PIN_KIND, PIN_LIMIT, type ListPinsResponse, type PinRef } from '@shelfmark/contracts';
+import {
+  PIN_ERROR_MESSAGE,
+  PIN_KIND,
+  PIN_LIMIT,
+  type ListPinsResponse,
+  type PinRef,
+} from '@shelfmark/contracts';
 import { defer, delay, type Observable, of, throwError } from 'rxjs';
+import { mockHttpError } from '../../../core/api/mock-http-error';
 import { MockLibraryData } from '../../links/mock/mock-library-data';
 import { MOCK_LATENCY_MS } from '../../links/models/mock-latency.const';
 import type { PinsApi } from '../models/pins-api.interface';
 
-function failure(status: number, statusText: string): Observable<never> {
-  return throwError(() => new HttpErrorResponse({ status, statusText }));
+function failure(status: number, message: string): Observable<never> {
+  return throwError(() => mockHttpError(status, message));
 }
 
 /**
@@ -26,11 +33,11 @@ export class MockPinsApi implements PinsApi {
   create(ref: PinRef): Observable<ListPinsResponse> {
     return defer(() => {
       if (!this.exists(ref)) {
-        return failure(HttpStatusCode.NotFound, 'Not Found');
+        return failure(HttpStatusCode.NotFound, PIN_ERROR_MESSAGE.NotFound);
       }
       if (!this.data.isPinned(ref.kind, ref.id)) {
         if (this.data.pins.length >= PIN_LIMIT.Max) {
-          return failure(HttpStatusCode.Conflict, 'Conflict');
+          return failure(HttpStatusCode.Conflict, PIN_ERROR_MESSAGE.LimitReached);
         }
         this.data.pins = [...this.data.pins, { kind: ref.kind, id: ref.id }];
       }
@@ -41,7 +48,7 @@ export class MockPinsApi implements PinsApi {
   remove(ref: PinRef): Observable<void> {
     return defer(() => {
       if (!this.exists(ref)) {
-        return failure(HttpStatusCode.NotFound, 'Not Found');
+        return failure(HttpStatusCode.NotFound, PIN_ERROR_MESSAGE.NotFound);
       }
       this.data.unpin(ref.kind, [ref.id]);
       return of(undefined);
@@ -59,7 +66,7 @@ export class MockPinsApi implements PinsApi {
             refs.findIndex((other) => other.kind === ref.kind && other.id === ref.id) === index,
         );
       if (!same) {
-        return failure(HttpStatusCode.BadRequest, 'Bad Request');
+        return failure(HttpStatusCode.BadRequest, PIN_ERROR_MESSAGE.OrderMismatch);
       }
       this.data.pins = refs.map(({ kind, id }) => ({ kind, id }));
       return of(this.data.pinsView());

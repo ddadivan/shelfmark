@@ -66,7 +66,22 @@ Throw Nest HTTP exceptions; the global `ExceptionFilter` renders `{ statusCode, 
 - Controller: status codes and response shape.
 - **Isolation:** `createIsolationUsers(t)` + `expectIsolated(t.app, users, scenario)` (`apps/api/test-utils/isolation`): user B gets 404 for user A's resources and lists never include A's data; provide or explicitly skip `update`, `remove`, `list`, `reference`.
 - Coverage ≥ 80% for `apps/api`.
+- **Contract scenarios (#341):** every endpoint the web calls gets a scenario that runs against the real API and the web mock, so the two cannot drift. See section 7.
 
-## 7. Done when
+## 7. Contract scenarios (API and web mock)
 
-`npx nx lint api`, `npx nx test api --coverage`, `npx nx build api` pass; the route appears in Swagger; `security-checklist` items for the module are covered.
+`libs/shared/contract-tests` holds scenarios, each `(apis: ContractApis) => Promise<void>`, that make calls and compare the result with explicit expected values (status, contract message, every field of the response, ids and timestamps as `ANY.id` / `ANY.time`). Runner B (`apps/api/src/contract/contract.integration.spec.ts`, PGlite, no network) runs them through supertest; runner A (`apps/web/src/app/contract/contract-scenarios.mock.spec.ts`) runs the same ones through the mock API classes. Both start from a new empty account. A scenario that passes on one side and fails on the other is drift: fix the side that disagrees with `docs/PROJECT.md` 6 and the contracts (usually the mock, so `fix(web): mock … matches the API`), never the scenario to fit a mock.
+
+For a new endpoint (or a new behaviour of an old one):
+
+1. **Contract first.** Types and messages (`<DOMAIN>_ERROR_MESSAGE`) in `libs/shared/contracts`.
+2. **Interface.** Add the method to the domain's `Contract<Domain>Api` in `libs/shared/contract-tests/src/models/` (a new domain: new interface file, a field on `ContractApis`). Promises, contract types, nothing HTTP.
+3. **Both adapters.** Runner B: the method in `apps/api/test-utils/contract/create-http-contract-apis.ts` (same path, body and query as the web's `Http<Domain>Api`; a non-2xx answer becomes a `ContractError(status, message)`). Runner A: the method in `apps/web/src/app/contract/testing/create-mock-contract-apis.ts` (`settle(mock.call(...))`; a rejection becomes a `ContractError` through `toContractError`).
+4. **Scenarios.** In `libs/shared/contract-tests/src/scenarios/<domain>-scenarios.const.ts` (add the file to `contract-scenarios.const.ts` for a new domain): the happy path with the whole response compared (`expectEqual`, builders `expectedLink`, `expectedFolder`, `expectedTag`), then one scenario per error class with `expectError(call, { status, code })` where `code` is the contract message: 400 validation (status only, validation messages are lists), 404 for a missing or foreign object, 409 conflict or limit, 429. Name them by behaviour, prefixed by the domain (`scenario('tags', 'refuses a name that is taken, ignoring case', ...)`).
+5. **Run both:** `npx nx test api` and `npx nx test web` (a change in the scenarios marks both projects affected). Fix the drift in the side that is wrong; the mock throws `mockHttpError(status, message)` (`apps/web/src/app/core/api/mock-http-error.ts`), shaped like the API's error body, never a plain `Error` (plain errors stay only for the e2e failure switches such as `MOCK_HOST.SaveFails`).
+
+Out of scope for scenarios: demo seed data, e2e scenario switches, image capture and preview (they need the network), per-user isolation (the isolation tests cover that) and HTTP details the web cannot see (201 vs 200, headers).
+
+## 8. Done when
+
+`npx nx lint api`, `npx nx test api --coverage`, `npx nx build api` pass; the contract scenarios pass on both runners; the route appears in Swagger; `security-checklist` items for the module are covered.

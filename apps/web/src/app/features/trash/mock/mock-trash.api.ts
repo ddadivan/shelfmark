@@ -1,3 +1,4 @@
+import { HttpStatusCode, type HttpErrorResponse } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import {
   TRASH_ITEM_KIND,
@@ -7,7 +8,8 @@ import {
   type TrashItem,
   type TrashItemRef,
 } from '@shelfmark/contracts';
-import { defer, delay, type Observable, of } from 'rxjs';
+import { defer, delay, type Observable, of, throwError } from 'rxjs';
+import { mockHttpError } from '../../../core/api/mock-http-error';
 import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
 import { MockLibraryData } from '../../links/mock/mock-library-data';
 import { MOCK_LATENCY_MS } from '../../links/models/mock-latency.const';
@@ -39,10 +41,10 @@ export class MockTrashApi implements TrashApi {
 
   restore(items: readonly TrashItemRef[]): Observable<TrashActionResponse> {
     return defer(() => {
-      const entries = this.pick(items);
-      if (entries.length === 0 && items.length > 0) {
-        return of<TrashActionResponse>({ count: 0 });
+      if (!validBatch(items)) {
+        return throwError(() => badBatch());
       }
+      const entries = this.pick(items);
       for (const entry of entries) {
         this.restoreEntry(entry);
       }
@@ -53,6 +55,9 @@ export class MockTrashApi implements TrashApi {
 
   deleteForever(items: readonly TrashItemRef[]): Observable<TrashActionResponse> {
     return defer(() => {
+      if (!validBatch(items)) {
+        return throwError(() => badBatch());
+      }
       const entries = this.pick(items);
       this.drop(entries);
       return of<TrashActionResponse>({ count: entries.length });
@@ -68,9 +73,6 @@ export class MockTrashApi implements TrashApi {
   }
 
   private pick(items: readonly TrashItemRef[]): MockTrashEntry[] {
-    if (items.length === 0 || items.length > TRASH_LIMIT.BatchMax) {
-      return [];
-    }
     return this.data.trash.filter((entry) =>
       items.some((item) => item.kind === entry.kind && item.id === entry.id),
     );
@@ -98,6 +100,15 @@ export class MockTrashApi implements TrashApi {
   private isLive(folderId: string | null): folderId is string {
     return folderId !== null && this.data.folderList.some((folder) => folder.id === folderId);
   }
+}
+
+/** Like the API: a restore or delete names 1 to `TRASH_LIMIT.BatchMax` items, else it is a 400. */
+function validBatch(items: readonly TrashItemRef[]): boolean {
+  return items.length >= 1 && items.length <= TRASH_LIMIT.BatchMax;
+}
+
+function badBatch(): HttpErrorResponse {
+  return mockHttpError(HttpStatusCode.BadRequest, ['items must hold 1 to 100 entries']);
 }
 
 function toItem(entry: MockTrashEntry, retentionDays: number): TrashItem {

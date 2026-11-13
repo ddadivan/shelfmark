@@ -8,7 +8,6 @@ import {
 } from '@shelfmark/contracts';
 import { PrismaService } from '../prisma/prisma.service';
 import { FeedbackLimitExceededException } from './feedback-limit-exceeded.exception';
-import { FEEDBACK_MESSAGE_LIST_MAX } from './models/feedback-message-list-max.const';
 import { FEEDBACK_MESSAGE_LOCK_PREFIX } from './models/feedback-message-lock-prefix.const';
 import { FEEDBACK_MESSAGE_SELECT } from './models/feedback-message-select.const';
 import { FEEDBACK_MESSAGE_WINDOW_MS } from './models/feedback-message-window-ms.const';
@@ -79,7 +78,7 @@ export class FeedbackMessagesService {
     const rows = await this.prisma.feedback.findMany({
       where: { userId, kind: { not: null } },
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
-      take: FEEDBACK_MESSAGE_LIST_MAX,
+      take: FEEDBACK_MESSAGE_LIMIT.ListMax,
       select: FEEDBACK_MESSAGE_SELECT,
     });
     return { items: rows.map((row) => toFeedbackMessage(row, ownerScreenshotUrl)) };

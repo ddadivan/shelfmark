@@ -36,7 +36,8 @@ test.describe('export (mock API)', () => {
     const json = page.waitForEvent('download');
     await page.getByRole('menuitem', { name: 'Everything as JSON' }).click();
     const jsonFile = await json;
-    expect(jsonFile.suggestedFilename()).toBe('shelfmark-export.json');
+    // Named like the API's Content-Disposition: shelfmark-<day>.<format>.
+    expect(jsonFile.suggestedFilename()).toMatch(/^shelfmark-\d{4}-\d{2}-\d{2}\.json$/);
     expect(await requestedUrl(jsonFile)).toBe('/api/export?format=json');
 
     // The first menu is still leaving: opening now would toggle it shut.
@@ -46,7 +47,7 @@ test.describe('export (mock API)', () => {
     const html = page.waitForEvent('download');
     await page.getByRole('menuitem', { name: 'Everything as Bookmarks HTML' }).click();
     const htmlFile = await html;
-    expect(htmlFile.suggestedFilename()).toBe('shelfmark-bookmarks.html');
+    expect(htmlFile.suggestedFilename()).toMatch(/^shelfmark-\d{4}-\d{2}-\d{2}\.html$/);
     expect(await requestedUrl(htmlFile)).toBe('/api/export?format=html');
   });
 

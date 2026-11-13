@@ -141,14 +141,16 @@ describe('MockTrashApi', () => {
     expect((await firstValueFrom(trash.list())).total).toBe(0);
   });
 
-  it('refuses a batch above the limit', async () => {
+  it('refuses a batch above the limit and an empty one, like the API (400)', async () => {
     const { trash } = create();
     const refs = Array.from({ length: TRASH_LIMIT.BatchMax + 1 }, (_, i) => ({
       kind: TRASH_ITEM_KIND.Link,
       id: `x${i}`,
     }));
 
-    expect(await firstValueFrom(trash.restore(refs))).toEqual({ count: 0 });
+    await expect(firstValueFrom(trash.restore(refs))).rejects.toMatchObject({ status: 400 });
+    await expect(firstValueFrom(trash.deleteForever(refs))).rejects.toMatchObject({ status: 400 });
+    await expect(firstValueFrom(trash.restore([]))).rejects.toMatchObject({ status: 400 });
   });
 
   it('follows the retention setting in the days left', async () => {
