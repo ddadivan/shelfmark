@@ -43,6 +43,7 @@ const DEFAULT_SETTINGS = {
   theme: THEME_PREFERENCE.System,
   customTheme: CUSTOM_THEME_DEFAULT,
   customColours: [],
+  customEmoji: [],
   motion: MOTION_PREFERENCE.System,
   appearanceSaved: false,
   languageSaved: false,
@@ -130,6 +131,39 @@ export const SETTINGS_SCENARIOS: readonly ContractScenario[] = [
       );
       await expectError(settings.update({ customColours: tooMany }), { status: 400 }, 'too many');
       expectEqual((await settings.get()).customColours, []);
+    },
+  ),
+
+  scenario(
+    'settings',
+    'saves own emoji in order and replaces the list as a whole',
+    async ({ settings }) => {
+      const emoji = ['🦩', '🧑‍🍳', '🇺🇦'];
+      expectEqual((await settings.update({ customEmoji: emoji })).customEmoji, emoji);
+      expectEqual((await settings.get()).customEmoji, emoji);
+      expectEqual((await settings.update({ customEmoji: ['❤️'] })).customEmoji, ['❤️']);
+      expectEqual((await settings.update({ customEmoji: [] })).customEmoji, []);
+    },
+  ),
+
+  scenario(
+    'settings',
+    'rejects own emoji that are not exactly one emoji or past the limit',
+    async ({ settings }) => {
+      await expectError(settings.update({ customEmoji: ['a'] }), { status: 400 }, 'letter');
+      await expectError(settings.update({ customEmoji: ['🍕🍔'] }), { status: 400 }, 'two emoji');
+      await expectError(settings.update({ customEmoji: ['🍕 '] }), { status: 400 }, 'space');
+      await expectError(settings.update({ customEmoji: [''] }), { status: 400 }, 'empty');
+      await expectError(
+        settings.update({ customEmoji: ['🍕', '🍕'] }),
+        { status: 400 },
+        'duplicate',
+      );
+      const tooMany = Array.from({ length: USER_LIMIT.CustomEmojiMax + 1 }, (_, index) =>
+        String.fromCodePoint(0x1f400 + index),
+      );
+      await expectError(settings.update({ customEmoji: tooMany }), { status: 400 }, 'too many');
+      expectEqual((await settings.get()).customEmoji, []);
     },
   ),
 

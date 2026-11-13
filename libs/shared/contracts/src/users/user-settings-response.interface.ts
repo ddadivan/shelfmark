@@ -1,3 +1,4 @@
+import type { FolderEmoji } from '../folders/folder-emoji.type';
 import type { TrashRetentionDays } from '../trash/trash-retention-days.type';
 import type { CustomTheme } from './custom-theme.interface';
 import type { HexColour } from './hex-colour.type';
@@ -26,6 +27,11 @@ export interface UserSettingsResponse extends LibrarySettings, LayoutSettings, L
    * swatches next to the built-in ones in the folder style dialog and the Custom theme (#335).
    */
   customColours: HexColour[];
+  /**
+   * Own emoji (each exactly one emoji, newest last, at most `USER_LIMIT.CustomEmojiMax`): folder
+   * icons the account used that the emoji picker's collection lacks, offered under "Yours" (#363).
+   */
+  customEmoji: FolderEmoji[];
   /** Settings › Appearance › Animations. Default `system`. */
   motion: MotionPreference;
   /**
