@@ -16,8 +16,6 @@ import { FEEDBACK_SEND_ERROR_REASON } from '../models/feedback-send-error-reason
 import { MockFeedbackData } from './mock-feedback-data.service';
 import { MOCK_FEEDBACK_SCENARIO } from './models/mock-feedback-scenario.const';
 
-/** At most this many messages come back, like the API. */
-const LIST_MAX = 100;
 const BASE64_RATIO = 3 / 4;
 
 function failed(): Promise<never> {
@@ -57,7 +55,7 @@ export class MockFeedbackApi implements FeedbackApi {
       this.data
         .entries()
         .filter((entry) => entry.userId === user.id)
-        .slice(0, LIST_MAX)
+        .slice(0, FEEDBACK_MESSAGE_LIMIT.ListMax)
         .map((entry) => forUser(entry.message)),
     );
   }
