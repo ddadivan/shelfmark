@@ -28,8 +28,8 @@ function navigationIdOf(state: unknown): number {
  * does nothing here. Like it, the position is stored per navigation id when a navigation starts:
  *
  * - Back / Forward (a `popstate` navigation to a stored entry) puts that position back once the
- *   page has rendered, and keeps trying while the content grows (the list loads after the page)
- *   until it fits, the user scrolls or `RESTORE_SCROLL_TIMEOUT_MS` passes.
+ *   page has rendered, and holds it while the page settles (the list loads after the page, the
+ *   previous page leaves) until the user scrolls or `RESTORE_SCROLL_TIMEOUT_MS` passes.
  * - Any other navigation to a new URL starts at the top: another page, and a new query (sort,
  *   filters) too. A change of the fragment alone keeps the position.
  */
@@ -82,17 +82,26 @@ export class ScrollRestorationDirective {
     }
   }
 
-  /** Scrolls to `top` after the next render, then again while the content grows into it. */
+  /**
+   * Scrolls to `top` after the next render, then holds it there while the page settles: every
+   * change in the content (the list arriving, the previous page leaving, which the browser's
+   * scroll anchoring would otherwise answer by moving the position) puts it back in the next
+   * frame, until the user scrolls or `RESTORE_SCROLL_TIMEOUT_MS` passes.
+   */
   private restore(top: number): void {
     this.cancel();
     const host = this.host;
-    const apply = (): boolean => {
-      host.scrollTop = top;
-      return host.scrollHeight - host.clientHeight >= top - 1;
+    const view = host.ownerDocument.defaultView;
+    let frame = 0;
+    const apply = (): void => {
+      frame = 0;
+      if (host.scrollTop !== top) {
+        host.scrollTop = top;
+      }
     };
     const observer = new MutationObserver(() => {
-      if (apply()) {
-        this.cancel();
+      if (!frame) {
+        frame = view?.requestAnimationFrame(apply) ?? 0;
       }
     });
     const stopOnUser = (): void => this.cancel();
@@ -100,6 +109,9 @@ export class ScrollRestorationDirective {
     const stop = (): void => {
       observer.disconnect();
       clearTimeout(timer);
+      if (frame) {
+        view?.cancelAnimationFrame(frame);
+      }
       for (const type of USER_SCROLL_EVENTS) {
         host.removeEventListener(type, stopOnUser);
       }
@@ -111,8 +123,8 @@ export class ScrollRestorationDirective {
     }
     afterNextRender(
       () => {
-        if (this.stopRestoring === stop && apply()) {
-          this.cancel();
+        if (this.stopRestoring === stop) {
+          apply();
         }
       },
       { injector: this.injector },

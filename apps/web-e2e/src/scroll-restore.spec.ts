@@ -27,11 +27,14 @@ test.describe('scroll restoration in the mobile shell (mock API)', () => {
     await makePageTall(page, 3000);
     await scrollMainTo(page, 600);
     await expect.poll(() => mainScrollTop(page)).toBe(600);
+    // The tree focuses the folder on activation, which scrolls it into view: focus it first, so the
+    // position left behind is known, then open it.
+    const folder = page.getByRole('treeitem', { name: new RegExp(`^${READING.name}\\b`) });
+    await folder.focus();
+    const before = await mainScrollTop(page);
+    expect(before).toBeGreaterThan(100);
 
-    // A dispatched click: Playwright's own click would scroll the folder into view first.
-    await page
-      .getByRole('treeitem', { name: new RegExp(`^${READING.name}\\b`) })
-      .dispatchEvent('click');
+    await folder.dispatchEvent('click');
     await expect(page).toHaveURL(`/folders/${READING.id}`);
     await expect(page.getByRole('heading', { level: 1, name: READING.name })).toBeVisible();
     await expect.poll(() => mainScrollTop(page)).toBe(0);
@@ -39,7 +42,7 @@ test.describe('scroll restoration in the mobile shell (mock API)', () => {
     await page.goBack();
     await expect(page).toHaveURL('/library');
     await expect
-      .poll(async () => Math.abs((await mainScrollTop(page)) - 600))
+      .poll(async () => Math.abs((await mainScrollTop(page)) - before))
       .toBeLessThanOrEqual(TOLERANCE_PX);
 
     await page.goForward();
