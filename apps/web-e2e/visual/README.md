@@ -61,10 +61,14 @@ is a regression to fix.
 
 ## Update the baselines on purpose
 
-1. Add the `visual:update` label to the PR. A CI job regenerates all baselines in the container
-   and uploads them as the `visual-baselines` artifact.
-2. Download it, unzip into `apps/web-e2e/visual/__screenshots__` (replacing the folder content),
-   review the changed PNGs in the diff of the PR, commit them.
+1. Add the `visual:update` label to the PR (a PR from this repository). The `visual-update` job
+   regenerates every baseline in the container, commits them to the PR branch as
+   `test(web-e2e): update the visual baselines (visual:update)` and also uploads them as the
+   `visual-baselines` artifact.
+2. Review the changed PNGs in the PR's diff (GitHub shows image diffs side by side, swipe and
+   onion skin). Pull the commit before you push again.
+3. A push made by the job's token starts no workflow, so the comparison runs on your next push.
+   To regenerate again later, remove the label and add it once more.
 
 Or run the same inside the image, from the repo root:
 

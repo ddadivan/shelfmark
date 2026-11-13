@@ -17,14 +17,15 @@ env:
   NX_NO_CLOUD: 'true'
 
 concurrency:
-  group: visual-${{ github.event.pull_request.number || github.ref }}
+  # The update run and a comparison run of the same PR never cancel each other.
+  group: visual-${{ github.event.pull_request.number || github.ref }}-${{ github.event.action == 'labeled' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   visual:
     name: visual
-    # A label other than `visual:update` changes nothing to compare.
-    if: github.event.action != 'labeled' || github.event.label.name == 'visual:update'
+    # Labels never change what is compared; `visual:update` runs the job below instead.
+    if: github.event.action != 'labeled'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
@@ -36,7 +37,6 @@ jobs:
     container:
       image: mcr.microsoft.com/playwright:v1.65.0-noble@sha256:9beb546099e11f52d62e505537914870e01a67e0e6b00ae41da4775324e73dbe
     env:
-      UPDATE: ${{ github.event.action == 'labeled' }}
       E2E_PORT: '4200'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -59,12 +59,12 @@ jobs:
       - uses: nrwl/nx-set-shas@e602fada7ad5987b0f7b1905e7a99ea1c661514c # v5.1.0
         with:
           main-branch-name: ${{ github.base_ref || github.ref_name }}
-      # Screens only change with the app, the component library or the suite itself. Pushes and the
-      # update label always run.
+      # Screens only change with the app, the component library or the suite itself. Pushes always
+      # run.
       - name: Detect whether the screens can have changed
         id: affected
         run: |
-          if [ "${{ github.event_name }}" = "push" ] || [ "$UPDATE" = "true" ]; then echo "needed=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          if [ "${{ github.event_name }}" = "push" ]; then echo "needed=true" >> "$GITHUB_OUTPUT"; exit 0; fi
           projects="$(npx nx show projects --affected --projects web,ui,web-e2e --json)"
           echo "Affected: ${projects}"
           if [ "$projects" = "[]" ]; then echo "needed=false" >> "$GITHUB_OUTPUT"; else echo "needed=true" >> "$GITHUB_OUTPUT"; fi
@@ -72,11 +72,8 @@ jobs:
         if: steps.affected.outputs.needed == 'true'
         run: npx nx run web:build:e2e --output-style=static
       - name: Compare the screenshots
-        if: steps.affected.outputs.needed == 'true' && env.UPDATE != 'true'
+        if: steps.affected.outputs.needed == 'true'
         run: npx nx run web-e2e:visual --output-style=static
-      - name: Regenerate every baseline (visual:update label)
-        if: steps.affected.outputs.needed == 'true' && env.UPDATE == 'true'
-        run: npx nx run web-e2e:visual-update --output-style=static
       # Expected, actual and diff PNGs of every failed comparison, plus the HTML report.
       - if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -87,11 +84,53 @@ jobs:
             dist/.playwright/apps/web-e2e/visual-report
           if-no-files-found: ignore
           retention-days: 7
-      # Download, unzip into apps/web-e2e/visual/__screenshots__ and commit (README).
-      - if: env.UPDATE == 'true'
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+
+  # The `visual:update` label on a PR from this repository: regenerates every baseline in the same
+  # container, commits them to the PR branch and uploads them as an artifact. The only job with
+  # write access; the token is used in the push step alone (the checkout keeps no credentials).
+  # A push made with GITHUB_TOKEN starts no workflow: the next push to the PR runs the comparison.
+  visual-update:
+    name: visual-update
+    if: >-
+      github.event.action == 'labeled' && github.event.label.name == 'visual:update' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: write
+      actions: read
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.0-noble@sha256:9beb546099e11f52d62e505537914870e01a67e0e6b00ae41da4775324e73dbe
+    env:
+      E2E_PORT: '4200'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.head_ref }}
+          persist-credentials: false
+      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Build the e2e bundle
+        run: npx nx run web:build:e2e --output-style=static
+      - name: Regenerate every baseline
+        run: npx nx run web-e2e:visual-update --output-style=static
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: visual-baselines
           path: apps/web-e2e/visual/__screenshots__
           if-no-files-found: error
           retention-days: 7
+      - name: Commit the baselines to the PR branch
+        env:
+          TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          git add apps/web-e2e/visual/__screenshots__
+          if git diff --cached --quiet; then echo "Baselines unchanged"; exit 0; fi
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -m "test(web-e2e): update the visual baselines (visual:update)"
+          git push "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:${BRANCH}"

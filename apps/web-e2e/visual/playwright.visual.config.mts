@@ -3,7 +3,11 @@ import { getReadyUrl, workspaceRoot } from '@nx/devkit';
 
 const isCI = !!process.env['CI'];
 const port = process.env['E2E_PORT'] ?? '4200';
-const origin = `http://localhost:${port}`;
+// IPv4 loopback, not `localhost`: in the CI container `localhost` resolves to ::1 first, while the
+// static server listens on IPv4 and answers deep links (/sign-in, /links) through a proxy to
+// itself; with `localhost` that proxy fails and every route but `/` is a 404.
+const LOOPBACK = '127.0.0.1';
+const origin = `http://${LOOPBACK}:${port}`;
 
 /** The two colour schemes every screen is captured in. */
 const SCHEMES = ['light', 'dark'] as const;
@@ -72,7 +76,7 @@ export default defineConfig({
     trace: 'off',
   },
   webServer: {
-    command: `npx nx run web:serve-static:e2e --port=${port}`,
+    command: `npx nx run web:serve-static:e2e --port=${port} --host=${LOOPBACK} "--proxyUrl=${origin}?"`,
     url: getReadyUrl(origin),
     reuseExistingServer: !isCI,
     timeout: 300_000,
