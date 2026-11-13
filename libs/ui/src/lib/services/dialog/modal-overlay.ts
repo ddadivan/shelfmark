@@ -36,7 +36,7 @@ function isDetached(opener: Element | null): boolean {
  * Opens `component` as a modal on the CDK `Dialog` for `DialogService` and `DrawerService`:
  * the scrim and the `dialog` overlay layer, `aria-modal`, a ref that plays the leave animation
  * before the overlay goes away, and Esc / scrim closing (both off when not `dismissible`; the
- * scrim alone off when not `scrimClose`).
+ * scrim alone off when not `scrimClose`; both ignored while the ref is `locked`).
  */
 export function openModalOverlay<C, R, D>(
   deps: ModalOverlayDeps,
@@ -92,11 +92,13 @@ export function openModalOverlay<C, R, D>(
   cdkRef.keydownEvents.subscribe((event) => {
     if (event.key === KEYBOARD_KEY.Escape && options.dismissible && !event.defaultPrevented) {
       event.preventDefault();
-      result.close();
+      if (!result.locked()) {
+        result.close();
+      }
     }
   });
   cdkRef.backdropClick.subscribe(() => {
-    if (options.dismissible && options.scrimClose) {
+    if (options.dismissible && options.scrimClose && !result.locked()) {
       result.close();
     } else {
       // A click on the scrim must not leave focus on <body>. `_recaptureFocus` is internal CDK

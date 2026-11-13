@@ -349,6 +349,27 @@ describe('DialogService', () => {
       await closed();
     });
 
+    it('while locked, Esc, the scrim and the close button do nothing; close() from code still works', async () => {
+      const ref = service.open(EditDialogComponent, { data: { name: 'x' } });
+      settle();
+      ref.setLocked(true);
+      settle();
+      const close = container().querySelector<HTMLButtonElement>('button[aria-label="Close"]');
+      expect(close?.disabled).toBe(true);
+      press(KEYBOARD_KEY.Escape);
+      document.querySelector<HTMLElement>('.ui-dialog-scrim')?.click();
+      settle();
+      expect(ref.isClosing).toBe(false);
+      expect(container().contains(document.activeElement)).toBe(true);
+
+      ref.setLocked(false);
+      settle();
+      expect(close?.disabled).toBe(false);
+      press(KEYBOARD_KEY.Escape);
+      await closed();
+      expect(ref.isClosing).toBe(true);
+    });
+
     it('ignores a second close() and a close() after it closed', async () => {
       const ref = service.open<EditDialogComponent, string, EditData>(EditDialogComponent, {
         data: { name: 'x' },

@@ -400,6 +400,31 @@ describe('SendFeedbackDialogComponent', () => {
     });
   });
 
+  it('cannot be dismissed while it sends: Esc, the scrim and the close button wait', async () => {
+    let finish: (message: ReturnType<typeof feedbackMessage>) => void = () => undefined;
+    const { closed } = await setup(() => new Promise((resolve) => (finish = resolve)));
+
+    await type('Hello');
+    await click(buttonByText('Send'));
+    const closeButton = container()?.querySelector<HTMLButtonElement>('button[aria-label="Close"]');
+    expect(closeButton?.disabled).toBe(true);
+    container()?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    document.querySelector<HTMLElement>('.ui-dialog-scrim')?.click();
+    await flush();
+    await flush();
+    expect(closed).not.toHaveBeenCalled();
+    expect(container()).not.toBeNull();
+
+    finish(feedbackMessage());
+    await vi.waitFor(() => {
+      expect(buttonByText('Done')).toBeDefined();
+    });
+    container()?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    await vi.waitFor(() => {
+      expect(closed).toHaveBeenCalled();
+    });
+  });
+
   it('Cancel closes without sending', async () => {
     const { api, closed } = await setup();
 

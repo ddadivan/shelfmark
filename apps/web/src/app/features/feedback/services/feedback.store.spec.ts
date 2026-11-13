@@ -118,6 +118,26 @@ describe('FeedbackStore', () => {
     expect(store.items()[0]?.id).toBe('new');
   });
 
+  it('stops sending screenshots when the session ends meanwhile', async () => {
+    let end: () => void = () => undefined;
+    const attachScreenshot = vi.fn<FeedbackApi['attachScreenshot']>((id) => {
+      end();
+      return Promise.resolve(feedbackMessage({ id, screenshotUrls: [`/s/${id}`] }));
+    });
+    const { api, store, scope } = setup({ attachScreenshot });
+    end = () => scope.end();
+
+    const sent = await store.send({ kind: 'idea', text: 'hello' }, [
+      { type: 'image/png', data: 'AAAA' },
+      { type: 'image/png', data: 'BBBB' },
+      { type: 'image/png', data: 'CCCC' },
+    ]);
+
+    expect(api.attachScreenshot).toHaveBeenCalledTimes(1);
+    expect(sent.screenshotsFailed).toBe(2);
+    expect(store.items()).toEqual([]);
+  });
+
   it('passes a send failure on and leaves the list alone', async () => {
     const failure = new FeedbackSendError(FEEDBACK_SEND_ERROR_REASON.RateLimited);
     const { store } = setup({ send: vi.fn(() => Promise.reject(failure)) });

@@ -61,11 +61,12 @@ export const FeedbackStore = signalStore(
         loading = run;
         return run;
       },
-      /** Sends a message and adds it on top of the list. Rejects with the API's `FeedbackSendError`. */
       /**
-       * Sends the message, then attaches `screenshots` in order. A failed screenshot does not undo
-       * the message (it is already saved): the result counts the ones that did not make it. A
-       * failure of the message itself rejects (`FeedbackSendError`).
+       * Sends the message, then attaches `screenshots` in order and puts the saved message on top
+       * of the list. A failed screenshot does not undo the message (it is already saved): the
+       * result counts the ones that did not make it. When the session ends meanwhile the rest are
+       * not sent (and counted as failed). A failure of the message itself rejects
+       * (`FeedbackSendError`).
        */
       async send(
         request: SendFeedbackRequest,
@@ -74,7 +75,11 @@ export const FeedbackStore = signalStore(
         const startedIn = epoch;
         let message = await api.send(request);
         let screenshotsFailed = 0;
-        for (const upload of screenshots) {
+        for (const [index, upload] of screenshots.entries()) {
+          if (startedIn !== epoch) {
+            screenshotsFailed += screenshots.length - index;
+            break;
+          }
           try {
             message = await api.attachScreenshot(message.id, upload);
           } catch {

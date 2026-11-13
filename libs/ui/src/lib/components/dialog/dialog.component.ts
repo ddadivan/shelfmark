@@ -108,6 +108,8 @@ export class DialogComponent {
     () => (this.variant() ?? this.context?.variant) === DIALOG_VARIANT.Command,
   );
   protected readonly leaving = computed(() => this.context?.leaving() ?? false);
+  /** The content holds the dialog open (`UiDialogRef.setLocked`): no close button, no drag. */
+  protected readonly locked = computed(() => this.ref?.locked() ?? false);
   protected readonly phone = signal(false);
   /** Below 64em (#316): a `ui-sheet` stays a bottom sheet on a tablet too (centred, 560px). */
   protected readonly compact = signal(false);
@@ -155,6 +157,9 @@ export class DialogComponent {
   }
 
   protected requestClose(): void {
+    if (this.locked()) {
+      return;
+    }
     this.closeRequested.emit();
     this.ref?.close();
   }
@@ -165,6 +170,7 @@ export class DialogComponent {
       !this.sheetMode() ||
       this.phoneFullscreen() ||
       this.leaving() ||
+      this.locked() ||
       this.drag ||
       (event.pointerType === 'mouse' && event.button !== 0) ||
       (target instanceof Element && target.closest(NO_DRAG_TARGETS))

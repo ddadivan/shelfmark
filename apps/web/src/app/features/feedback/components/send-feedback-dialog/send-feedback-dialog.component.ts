@@ -78,7 +78,8 @@ const SEND_ERROR_KEY: Record<FeedbackSendErrorReason, string> = {
  * size are checked in the browser before anything is sent; each has a thumbnail and a remove
  * button), "Attach browser and app version" (on by default), Cancel and Send. A failed send keeps
  * the text and shows a notice (a 429 has its own words); a sent message replaces the form with a
- * thank-you and "Done" (with a warning when a screenshot did not make it). On a phone `ui-dialog`
+ * thank-you and "Done" (with a warning when a screenshot did not make it). While it sends, the
+ * dialog cannot be dismissed (Esc, scrim, close button, sheet drag, Cancel). On a phone `ui-dialog`
  * makes it a sheet.
  */
 @Component({
@@ -264,6 +265,8 @@ export class SendFeedbackDialogComponent {
       return;
     }
     this.sending.set(true);
+    // Esc, the scrim, the close button and the sheet drag wait until the screenshots are sent.
+    this.ref.setLocked(true);
     this.sendError.set(null);
     const { kind, text, attachClient } = this.model();
     const request: SendFeedbackRequest = {
@@ -283,12 +286,14 @@ export class SendFeedbackDialogComponent {
       this.screenshotsFailed.set(result.screenshotsFailed);
     } catch (error) {
       this.sending.set(false);
+      this.ref.setLocked(false);
       this.sendError.set(
         error instanceof FeedbackSendError ? error.reason : FEEDBACK_SEND_ERROR_REASON.Failed,
       );
       return;
     }
     this.sending.set(false);
+    this.ref.setLocked(false);
     this.sent.set(true);
     afterNextRender(() => this.doneButton()?.focus(), { injector: this.injector });
   }

@@ -9,10 +9,19 @@ const LEAVE_TIMEOUT_MS = 400;
  * Handle of an open dialog. `close(result)` plays the leave animation and then removes the
  * overlay (focus returns to the trigger at that point); a second call is ignored.
  * Esc, the scrim and the sheet drag all go through it, so every path animates the same way.
+ * `setLocked(true)` turns those user dismissals off until it is released.
  */
 export class UiDialogRef<R = undefined, C = unknown> {
   /** True from the first `close()` until the overlay is removed. */
   readonly leaving = signal(false);
+
+  private readonly lockedState = signal(false);
+  /**
+   * True while the content holds the dialog open (a request in flight): Esc, the scrim, the close
+   * button and the sheet drag do nothing. `close()` from code still closes, and so does the CDK
+   * (navigation, `closeAll` on sign-out).
+   */
+  readonly locked = this.lockedState.asReadonly();
 
   private readonly closedSubject = new ReplaySubject<R | undefined>(1);
   private closing = false;
@@ -60,6 +69,11 @@ export class UiDialogRef<R = undefined, C = unknown> {
   /** Emits the result once, after the overlay is removed (also to late subscribers). */
   afterClosed(): Observable<R | undefined> {
     return this.closedSubject.asObservable();
+  }
+
+  /** Holds the dialog open against every dismissal by the user (see `locked`), or releases it. */
+  setLocked(locked: boolean): void {
+    this.lockedState.set(locked);
   }
 
   close(result?: R): void {
