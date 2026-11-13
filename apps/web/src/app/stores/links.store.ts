@@ -22,7 +22,6 @@ import type { FolderDeleteMode, LinkResponse } from '@shelfmark/contracts';
 import { FOLDER_DELETE_MODE, LINK_SORT_FIELD, SORT_ORDER } from '@shelfmark/contracts';
 import { catchError, EMPTY, firstValueFrom, pipe, switchMap, tap } from 'rxjs';
 import { inFilter, linksQuery, sameFilter } from '../features/links/utils/links-filter';
-import { hasPendingImages } from '../features/links/utils/link-view';
 import { LINKS_API } from '../features/links/models/links-api.const';
 import type { LinksFilter } from '../features/links/models/links-filter.type';
 import { LINKS_SCOPE } from '../features/links/models/links-scope.const';
@@ -30,11 +29,10 @@ import type { PendingRemoval } from '../features/links/models/pending-removal.in
 import { RECENT_LINKS_LIMIT } from '../features/links/models/recent-links-limit.const';
 import type { LinksSnapshot } from './models/links-snapshot.interface';
 import type { LinksState } from './models/links-state.interface';
+import { createLinkImageCapture } from './link-image-capture';
+import { insertAt, retagLink, staysAfterEdit } from './links-feed';
 import { PinsStore } from './pins.store';
 import { SessionScope } from '../core/auth/session-scope.service';
-
-/** Image capture requests in flight at once (the endpoint shares the AddLink rate limit). */
-const CAPTURE_CONCURRENCY = 3;
 
 const initialState: LinksState = {
   filter: { scope: LINKS_SCOPE.All },
@@ -53,44 +51,6 @@ const initialState: LinksState = {
 const LANDED_MS = 2600;
 /** At most this many cards are staggered; later ones land with the last of them. */
 const LANDED_STAGGER_MAX = 10;
-
-/**
- * Whether an edited link still belongs in the open feed. A favorite flag never removes it (an
- * unfavorited link stays until the next load); leaving "Unsorted" or the open folder does.
- */
-function staysAfterEdit(filter: LinksFilter, link: LinkResponse): boolean {
-  switch (filter.scope) {
-    case LINKS_SCOPE.Unsorted:
-      return link.folderId === null;
-    case LINKS_SCOPE.Folder:
-      return link.folderId === filter.folderId;
-    default:
-      return true;
-  }
-}
-
-/** `link` with the tag `from` renamed to `to` (or dropped for `null`); other tags keep their order, no duplicates. */
-function retagLink(link: LinkResponse, from: string, to: string | null): LinkResponse {
-  if (!link.tags.some((name) => name.toLowerCase() === from.toLowerCase())) {
-    return link;
-  }
-  const seen = new Set<string>();
-  const tags: string[] = [];
-  for (const name of link.tags) {
-    const next = name.toLowerCase() === from.toLowerCase() ? to : name;
-    if (next !== null && !seen.has(next.toLowerCase())) {
-      seen.add(next.toLowerCase());
-      tags.push(next);
-    }
-  }
-  return { ...link, tags };
-}
-
-function insertAt<T>(list: readonly T[], index: number, item: T): T[] {
-  const copy = [...list];
-  copy.splice(Math.min(index, copy.length), 0, item);
-  return copy;
-}
 
 /**
  * The links feed and the "Recently opened" list, cached for the whole app. Favorite, delete and
@@ -115,10 +75,6 @@ export const LinksStore = signalStore(
     const favoriteBusy = new Set<string>();
     // Feed slots of links a move took out of the open scope, so moving them back restores the slot.
     const movedFrom = new Map<string, number>();
-    // Links whose image capture was requested this session: one request per link.
-    const captureRequested = new Set<string>();
-    const captureQueue: LinkResponse[] = [];
-    let captureInFlight = 0;
     // Bumped when the filter changes or the store resets: late responses are dropped.
     let generation = 0;
     // Bumped only by `reset()`: a response that started before it belongs to the previous user.
@@ -128,70 +84,18 @@ export const LinksStore = signalStore(
       return store.recent().map((link) => (link.id === id ? { ...link, ...changes } : link));
     }
 
-    /**
-     * Asks the server to re-capture the images of loaded links that carry the pending marker (their
-     * page changed), once per link and session, at most `CAPTURE_CONCURRENCY` at a time so a page
-     * of pending links does not burst the AddLink rate limit. A failure is silent: the card keeps
-     * the letter.
-     */
-    function noteLinks(links: readonly LinkResponse[]): void {
-      for (const link of links) {
-        if (hasPendingImages(link) && !captureRequested.has(link.id)) {
-          captureRequested.add(link.id);
-          captureQueue.push(link);
-        }
-      }
-      pumpCaptures();
-    }
-
-    function pumpCaptures(): void {
-      while (captureInFlight < CAPTURE_CONCURRENCY) {
-        const next = captureQueue.shift();
-        if (next === undefined) {
-          return;
-        }
-        captureInFlight++;
-        void captureImages(next).finally(() => {
-          captureInFlight--;
-          pumpCaptures();
-        });
-      }
-    }
-
     function loaded(id: string): LinkResponse | undefined {
       return store.entityMap()[id] ?? store.recent().find((link) => link.id === id);
     }
 
-    /** The response is applied only while the link is still the version that was asked about. */
-    async function captureImages(asked: LinkResponse): Promise<void> {
-      const { id } = asked;
-      const started = epoch;
-      try {
-        const saved = await firstValueFrom(api().captureImages(id));
-        if (started !== epoch || pending.has(id)) {
-          return;
-        }
-        const current = loaded(id);
-        if (current?.updatedAt === asked.updatedAt && hasPendingImages(current)) {
-          // The capture also fills in the page title of a link saved without one (paste many);
-          // a title the user changed meanwhile is a newer `updatedAt` and never reaches here.
-          const changes = {
-            faviconUrl: saved.faviconUrl,
-            imageUrl: saved.imageUrl,
-            ...(current.title === asked.title && { title: saved.title }),
-          };
-          patchState(store, updateEntity({ id, changes }), { recent: mapRecent(id, changes) });
-        } else if (current !== undefined && hasPendingImages(current)) {
-          // Edited to another page while the request ran: that version is pending in its own right.
-          captureRequested.delete(id);
-          noteLinks([current]);
-        }
-        // Done (or superseded): a later edit that makes the link pending again may ask again.
-        captureRequested.delete(id);
-      } catch {
-        // No toast: the capture is a courtesy, the card falls back to the site letter.
-      }
-    }
+    const capture = createLinkImageCapture({
+      request: (id) => firstValueFrom(api().captureImages(id)),
+      current: loaded,
+      isHidden: (id) => pending.has(id),
+      epoch: () => epoch,
+      apply: (id, changes) =>
+        patchState(store, updateEntity({ id, changes }), { recent: mapRecent(id, changes) }),
+    });
 
     /** Marks just-saved links for the landing motion and drops the marks once it has played. */
     function markLanded(ids: readonly string[]): void {
@@ -291,7 +195,7 @@ export const LinksStore = signalStore(
             recent: items.filter((link) => !pending.has(link.id)),
             recentLoaded: true,
           });
-          noteLinks(items);
+          capture.note(items);
         }
       } catch {
         if (started === epoch) {
@@ -328,7 +232,7 @@ export const LinksStore = signalStore(
                     ),
                     { nextCursor: page.nextCursor, loaded: true, loading: false },
                   );
-                  noteLinks(page.items);
+                  capture.note(page.items);
                 }
               }),
               catchError(() => {
@@ -400,7 +304,7 @@ export const LinksStore = signalStore(
             nextCursor: page.nextCursor,
             loadingMore: false,
           });
-          noteLinks(page.items);
+          capture.note(page.items);
         } catch {
           if (started === generation) {
             patchState(store, { loadingMore: false, loadMoreFailed: true });
@@ -445,7 +349,7 @@ export const LinksStore = signalStore(
           );
         }
         patchState(store, { recent: mapRecent(link.id, link) });
-        noteLinks([link]);
+        capture.note([link]);
       },
 
       /** Shows a link that was just saved at the top, when it belongs to the current scope. */
@@ -468,7 +372,7 @@ export const LinksStore = signalStore(
           patchState(store, setAllEntities([...shown, ...store.entities()]));
           markLanded(shown.map((link) => link.id));
         }
-        noteLinks(links);
+        capture.note(links);
       },
 
       /** Takes links out of the feed and the recent list at once (Undo of a batch save). */
@@ -627,7 +531,7 @@ export const LinksStore = signalStore(
           ),
           { recent: store.recent().map((link) => byId.get(link.id) ?? link) },
         );
-        noteLinks(links);
+        capture.note(links);
       },
 
       /** Takes links out of the feed and the recent list at once (bulk move to Trash). */
@@ -796,8 +700,7 @@ export const LinksStore = signalStore(
       reset(): void {
         pending.clear();
         favoriteBusy.clear();
-        captureRequested.clear();
-        captureQueue.length = 0;
+        capture.clear();
         movedFrom.clear();
         generation++;
         epoch++;
