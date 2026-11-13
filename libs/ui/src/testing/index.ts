@@ -10,3 +10,11 @@ export type * from '../lib/components/dialog/testing/models/dialog-harness-slot.
 export type * from '../lib/components/dialog/testing/models/dialog-harness-filters.interface';
 export * from '../lib/components/sheet/testing/sheet.harness';
 export type * from '../lib/components/sheet/testing/models/sheet-harness-filters.interface';
+export * from '../lib/components/tree/testing/tree.harness';
+export * from '../lib/components/tree/testing/tree-item.harness';
+export type * from '../lib/components/tree/testing/models/tree-harness-filters.interface';
+export type * from '../lib/components/tree/testing/models/tree-item-harness-filters.interface';
+export * from '../lib/components/card/testing/card.harness';
+export * from '../lib/components/card/testing/models/card-harness-slot.const';
+export type * from '../lib/components/card/testing/models/card-harness-slot.type';
+export type * from '../lib/components/card/testing/models/card-harness-filters.interface';
