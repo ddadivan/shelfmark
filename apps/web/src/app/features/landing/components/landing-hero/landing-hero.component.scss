@@ -125,6 +125,15 @@
   display: flex;
   flex-wrap: wrap;
   gap: rem(10px);
+
+  // The `lg` buttons grow with the wide breakpoints (`ui-button` reads `--ui-button-scale`).
+  @include landing.wide {
+    --ui-button-scale: 1.2;
+  }
+
+  @include landing.xwide {
+    --ui-button-scale: 1.45;
+  }
 }
 
 .landing-hero__note {

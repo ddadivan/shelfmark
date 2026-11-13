@@ -1,23 +1,24 @@
 @use '../../../styles/ui' as *;
 
-// `--ui-icon-size` lets a context (a dialog) set one size for the icons of its controls.
+// `--ui-icon-size` lets a context (a dialog) set one size for the icons of its controls;
+// `--ui-icon-scale` (unitless, default 1) multiplies it (`ui-button` passes `--ui-button-scale`).
 :host {
   display: inline-flex;
   flex: none;
-  width: var(--ui-icon-size, var(--icon-size-lg));
-  height: var(--ui-icon-size, var(--icon-size-lg));
+  width: calc(var(--ui-icon-size, var(--icon-size-lg)) * var(--ui-icon-scale, 1));
+  height: calc(var(--ui-icon-size, var(--icon-size-lg)) * var(--ui-icon-scale, 1));
   color: inherit;
   line-height: 0;
 }
 
 :host(.ui-icon--20) {
-  width: var(--ui-icon-size, var(--icon-size-md));
-  height: var(--ui-icon-size, var(--icon-size-md));
+  width: calc(var(--ui-icon-size, var(--icon-size-md)) * var(--ui-icon-scale, 1));
+  height: calc(var(--ui-icon-size, var(--icon-size-md)) * var(--ui-icon-scale, 1));
 }
 
 :host(.ui-icon--16) {
-  width: var(--ui-icon-size, var(--icon-size-sm));
-  height: var(--ui-icon-size, var(--icon-size-sm));
+  width: calc(var(--ui-icon-size, var(--icon-size-sm)) * var(--ui-icon-scale, 1));
+  height: calc(var(--ui-icon-size, var(--icon-size-sm)) * var(--ui-icon-scale, 1));
 }
 
 .ui-icon__svg {

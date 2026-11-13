@@ -13,6 +13,15 @@
   align-items: center;
   justify-content: space-between;
   block-size: var(--landing-header-height, #{rem(72px)});
+
+  // The links and actions are `ui-button`s: they grow with the wide breakpoints like the hero's.
+  @include landing.wide {
+    --ui-button-scale: 1.1;
+  }
+
+  @include landing.xwide {
+    --ui-button-scale: 1.2;
+  }
 }
 
 .landing-header__logo {
