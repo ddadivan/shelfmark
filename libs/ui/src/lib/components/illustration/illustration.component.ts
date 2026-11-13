@@ -24,7 +24,11 @@ import { ILLUSTRATION_MOTION } from './models/illustration-motion.const';
     '[attr.aria-hidden]': "label() ? null : 'true'",
   },
   templateUrl: './illustration.component.html',
-  styleUrl: './illustration.component.scss',
+  styleUrls: [
+    './illustration.component.scss',
+    './illustration-once.scss',
+    './illustration-loop.scss',
+  ],
 })
 export class IllustrationComponent {
   protected readonly ILLUSTRATION_MOTION = ILLUSTRATION_MOTION;
