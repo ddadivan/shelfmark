@@ -14,6 +14,10 @@
       "options": {
         "outputPath": "dist/apps/web",
         "browser": "apps/web/src/main.ts",
+        "index": {
+          "input": "apps/web/src/index.html",
+          "preloadInitial": true
+        },
         "tsConfig": "apps/web/tsconfig.app.json",
         "polyfills": [],
         "inlineStyleLanguage": "scss",
