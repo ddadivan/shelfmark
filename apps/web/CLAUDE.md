@@ -41,6 +41,7 @@ CI=1 npx nx e2e web-e2e               # CI mode: serves the production build, re
 ## Tests
 
 - A `*.spec.ts` next to every service and page (Vitest via `@angular/build:unit-test`).
+- Visual regression screenshots of the key screens: `apps/web-e2e/visual/` (`npm run e2e:visual`); baselines come from CI, see its [README](../web-e2e/visual/README.md) for review and update.
 - e2e in `apps/web-e2e` runs on the `desktop`, `tablet` (820 x 1180, touch, #316) and `phone` (360px) projects. `isCompact(page)` (below 64em) picks the mobile-shell path (tab bar, Library / Tags / You pages), `isPhone(page)` (below 40em) only small-screen details (bottom-sheet dialogs, the one View menu).
 
 ## Official Angular AI config
