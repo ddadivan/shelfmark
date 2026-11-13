@@ -80,7 +80,7 @@
 
     // Soft top and bottom edges (#352), under the bulk bar (z-index 3); the filters above the
     // area stay clear.
-    @include scroll-fade(var(--bg));
+    @include scroll-fade(var(--bg), $bottom: false);
 
     // Focusable by script and by a click (so the keys scroll it), but not a tab stop; the cards
     // inside are the focus targets, so no ring on the area itself.

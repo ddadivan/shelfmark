@@ -585,6 +585,13 @@ describe('scroll-fade (#352)', () => {
     expect(timeline).toMatch(/\.area::after\s*\{[^}]*margin-block-start: calc\(1\.5rem \* -1\)/);
   });
 
+  it('draws only the top fade with $bottom: false', () => {
+    const top = css('.feed { overflow-y: auto; @include scroll-fade(var(--bg), $bottom: false); }');
+    expect(top).toContain('.feed::before');
+    expect(top).not.toContain('.feed::after');
+    expect(top).not.toContain('ui-scroll-fade-bottom');
+  });
+
   it('has its keyframes once in the global styles', () => {
     const global = compile(resolve(STYLES_DIR, 'global.scss'), {
       loadPaths: [resolve(STYLES_DIR, '../../../../node_modules')],

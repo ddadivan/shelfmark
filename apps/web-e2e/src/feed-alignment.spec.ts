@@ -107,37 +107,25 @@ test.describe('scroll fades (mock API)', () => {
         return { opacity: s.opacity, pointerEvents: s.pointerEvents, position: s.position, content: s.content }; })()`,
     );
 
-  test('the feed fades in at the top once scrolled and out at the bottom at the end', async ({
-    page,
-  }) => {
+  test('the feed fades in at the top once scrolled and has no bottom fade', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await seedSession(page);
     await page.goto('/links');
     await expect(page.locator('ui-card').first()).toBeVisible();
     const area = '.library__scroll';
 
-    for (const edge of ['::before', '::after'] as const) {
-      const style = await fade(page, area, edge);
-      expect(style.content).not.toBe('none');
-      expect(style.position).toBe('sticky');
-      expect(style.pointerEvents).toBe('none');
-    }
+    const top = await fade(page, area, '::before');
+    expect(top.content).not.toBe('none');
+    expect(top.position).toBe('sticky');
+    expect(top.pointerEvents).toBe('none');
+    // The bottom edge has no fade: the bulk bar and the last row sit there (author decision).
+    expect((await fade(page, area, '::after')).content).toBe('none');
+
     const supported = await page.evaluate<boolean>(`CSS.supports('animation-timeline: scroll()')`);
-    test.skip(!supported, 'without scroll-driven animations both fades are always on');
-
+    test.skip(!supported, 'without scroll-driven animations the top fade is always on');
     expect(Number((await fade(page, area, '::before')).opacity)).toBe(0);
-    expect(Number((await fade(page, area, '::after')).opacity)).toBe(1);
-
     await page.locator(area).evaluate((el) => el.scrollTo(0, 200));
     await expect.poll(async () => Number((await fade(page, area, '::before')).opacity)).toBe(1);
-
-    // Scrolled to the end again on every try: reaching the end loads the next page.
-    await expect
-      .poll(async () => {
-        await page.locator(area).evaluate((el) => el.scrollTo(0, el.scrollHeight));
-        return Number((await fade(page, area, '::after')).opacity);
-      })
-      .toBe(0);
   });
 
   test('a short feed shows no fades and the sidebar tree has them too', async ({ page }) => {
@@ -151,6 +139,5 @@ test.describe('scroll fades (mock API)', () => {
     const supported = await page.evaluate<boolean>(`CSS.supports('animation-timeline: scroll()')`);
     test.skip(!supported, 'without scroll-driven animations both fades are always on');
     expect(Number((await fade(page, '.library__scroll', '::before')).opacity)).toBe(0);
-    expect(Number((await fade(page, '.library__scroll', '::after')).opacity)).toBe(0);
   });
 });
