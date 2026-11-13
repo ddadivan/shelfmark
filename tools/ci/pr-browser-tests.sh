@@ -11,21 +11,26 @@
 #            - SHARED_SPECS when app-wide code changes (core, shell, stores, libs).
 #            - DEPS_SPECS when the dependencies change (package.json / package-lock.json).
 #            A change to the Playwright config runs every spec.
+#            Each spec runs in the projects that select it (ADR 0043): desktop runs every test,
+#            tablet only the `@mobile` / `@tablet` tagged ones, phone only `@mobile` / `@phone`.
+#            The projects filter themselves, so this script names spec files only.
 #   ui axe:  the Storybook stories of the changed libs/ui components; a change to the shared
 #            styles, the Storybook setup or the a11y runner checks every story.
 #
 # Usage: tools/ci/pr-browser-tests.sh <base-ref> [web|ui|all]   (for example origin/stage web)
 #   web: only the web-e2e part, ui: only the Storybook axe part, all (default): both.
-#   PR_SHARD / PR_SHARDS (for example 2 and 4) split the web-e2e part into Playwright shards, so a
-#   PR that runs many specs (a Playwright config change runs all of them) spreads over the CI
-#   matrix like the full run does (#313).
+#   PR_SHARD / PR_SHARDS (for example 2 and 5) split the part into Playwright shards, so a PR that
+#   runs many specs or stories (a Playwright config change runs every spec, a shared style change
+#   every story) spreads over the CI matrix like the full run does (#313, #349). The CI matrix runs
+#   5 web-e2e shards and 3 Storybook shards.
 set -euo pipefail
 
 base="${1:?base ref, for example origin/stage}"
 part="${2:-all}"
 shard_args=()
 if [ -n "${PR_SHARD:-}" ] && [ -n "${PR_SHARDS:-}" ]; then
-  shard_args=(--shard="${PR_SHARD}/${PR_SHARDS}")
+  # A shard can end up with no test (a few changed stories over three shards): that is fine.
+  shard_args=(--shard="${PR_SHARD}/${PR_SHARDS}" --pass-with-no-tests)
 fi
 e2e_dir=apps/web-e2e/src
 config=apps/web-e2e/playwright.config.mts
@@ -93,7 +98,7 @@ if [ "${part}" = "web" ]; then
   echo "::notice::ui axe: not in this entry"
 elif has '^libs/ui/(src/styles|\.storybook|a11y)/' || has '^libs/ui/(project|package)\.json$'; then
   echo "::notice::ui axe: shared styles or the Storybook setup changed, checking every story"
-  npx nx run ui:test-storybook --output-style=static
+  npx nx run ui:test-storybook --output-style=static -- "${shard_args[@]}"
 else
   titles=()
   # libs/ui/src/lib/<kind>/<name>/… (ADR 0042: components, directives, services, utils, models).
@@ -110,6 +115,6 @@ else
     # Test titles are `<story title> / <story name> (<theme>)`.
     pattern="$(printf '%s|' "${titles[@]}")"
     echo "::notice::ui axe: checking ${titles[*]}"
-    npx nx run ui:test-storybook --output-style=static -- --grep "(^|\\s)(${pattern%|}) / "
+    npx nx run ui:test-storybook --output-style=static -- --grep "(^|\\s)(${pattern%|}) / " "${shard_args[@]}"
   fi
 fi
