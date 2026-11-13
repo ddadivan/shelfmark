@@ -6,8 +6,8 @@ import { DIALOG_SIZE, DialogService, TOAST_KIND, ToastService } from '@shelfmark
 import { AuthStore } from '../../../core/auth/auth.store';
 import { APP_PATH } from '../../../models/app-path.const';
 import { DIALOG_FIRST_FIELD } from '../../../models/dialog-first-field.const';
-import { sidebarActiveId } from '../../../shell/sidebar/sidebar-active-id';
-import { SidebarTreeFocusService } from '../../../shell/sidebar/sidebar-tree-focus.service';
+import { sidebarActiveId } from '../../../shell/sidebar/utils/sidebar-active-id';
+import { SidebarTreeFocusService } from '../../../shell/sidebar/services/sidebar-tree-focus.service';
 import { FoldersStore } from '../../../stores/folders.store';
 import { TrashStore } from '../../../stores/trash.store';
 import { LinkActionsService } from '../../links/services/link-actions.service';

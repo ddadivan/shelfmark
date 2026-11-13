@@ -25,13 +25,13 @@
         [heading]="'shell.sidebar.folders' | transloco"
         [ariaLabel]="'shell.sidebar.foldersTree' | transloco"
         [menuLabel]="menuLabel()"
-        [menuNodeId]="menuNodeId()"
+        [menuNodeId]="folderMenu.menuNodeId()"
         [dropTargetId]="drag.treeTargetId()"
         [dropLabel]="'links.drag.moveHere' | transloco"
         reorderable
         (selected)="select($event)"
         (contextMenu)="openMenu($event)"
-        (reordered)="reorder($event)"
+        (reordered)="folderMenu.reorder($event)"
         (reorderStarted)="reorderStarted()"
       >
         <ui-button
@@ -43,7 +43,7 @@
           [iconSize]="ICON_SIZE.Md"
           [ariaLabel]="'shell.sidebar.newFolder' | transloco"
           [uiTooltip]="'shell.sidebar.newFolder' | transloco"
-          (click)="createTopLevel()"
+          (click)="folderMenu.createTopLevel()"
         />
       </ui-tree>
     } @else if (loaderShown()) {
@@ -95,30 +95,33 @@
     </div>
   }
 
-  <ui-menu [ariaLabel]="'shell.sidebar.folderMenu' | transloco" (closed)="menuClosed()">
-    <ui-menu-item icon="pin" (activated)="togglePin()">
-      {{ (menuPinned() ? 'shell.sidebar.menu.unpin' : 'shell.sidebar.menu.pin') | transloco }}
+  <ui-menu [ariaLabel]="'shell.sidebar.folderMenu' | transloco" (closed)="folderMenu.menuClosed()">
+    <ui-menu-item icon="pin" (activated)="folderMenu.togglePin()">
+      {{
+        (folderMenu.menuPinned() ? 'shell.sidebar.menu.unpin' : 'shell.sidebar.menu.pin')
+          | transloco
+      }}
     </ui-menu-item>
-    <ui-menu-item icon="edit" (activated)="style()">
+    <ui-menu-item icon="edit" (activated)="folderMenu.style()">
       {{ 'shell.sidebar.menu.style' | transloco }}
     </ui-menu-item>
-    <ui-menu-item icon="folder-plus" (activated)="createSubfolder()">
+    <ui-menu-item icon="folder-plus" (activated)="folderMenu.createSubfolder()">
       {{ 'shell.sidebar.menu.newSubfolder' | transloco }}
     </ui-menu-item>
-    <ui-menu-item icon="add" (activated)="addLinkHere()">
+    <ui-menu-item icon="add" (activated)="folderMenu.addLinkHere()">
       {{ 'shell.sidebar.menu.addLink' | transloco }}
     </ui-menu-item>
-    <ui-menu-item icon="edit" (activated)="rename()">
+    <ui-menu-item icon="edit" (activated)="folderMenu.rename()">
       {{ 'shell.sidebar.menu.rename' | transloco }}
     </ui-menu-item>
-    <ui-menu-item icon="folder-move" (activated)="move()">
+    <ui-menu-item icon="folder-move" (activated)="folderMenu.move()">
       {{ 'shell.sidebar.menu.move' | transloco }}
     </ui-menu-item>
-    <ui-menu-item icon="share" (activated)="share()">
+    <ui-menu-item icon="share" (activated)="folderMenu.share()">
       {{ 'shell.sidebar.menu.share' | transloco }}
     </ui-menu-item>
     <ui-menu-separator />
-    <ui-menu-item icon="trash" danger (activated)="remove()">
+    <ui-menu-item icon="trash" danger (activated)="folderMenu.remove()">
       {{ 'shell.sidebar.menu.delete' | transloco }}
     </ui-menu-item>
   </ui-menu>

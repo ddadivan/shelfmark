@@ -16,7 +16,7 @@ import { MockTagsApi } from '../../links/mock/mock-tags.api';
 import { FolderActionsService } from './folder-actions.service';
 import type { MoveFolderDialogData } from '../models/move-folder-dialog-data.interface';
 import type { TreeComponent } from '@shelfmark/ui';
-import { SidebarTreeFocusService } from '../../../shell/sidebar/sidebar-tree-focus.service';
+import { SidebarTreeFocusService } from '../../../shell/sidebar/services/sidebar-tree-focus.service';
 import { MoveFolderDialogComponent } from '../components/move-folder-dialog/move-folder-dialog.component';
 
 async function setup() {
