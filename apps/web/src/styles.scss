@@ -30,6 +30,27 @@
   }
 }
 
+// While the app shell is shown the document never scrolls (#352): the shell is exactly `100dvh`
+// and only its inner areas scroll (feed, sidebar, settings content, dialogs, sheets). Landing,
+// sign-in, privacy and about keep the document scroll (without the rubber band, libs/ui global).
+// No `position: fixed` on body: it breaks the iPad keyboard, scroll restoration and the landing.
+:root:has(app-shell),
+:root:has(app-shell) body {
+  height: 100%;
+  overflow: hidden;
+}
+
+// The mobile shell scrolls the main column, a flex column: a page keeps at least its content
+// height there (instead of shrinking to the column and overflowing it), so the room for the tab
+// bar stays under the last row and sticky bars keep their scroll range. Desktop pages still fill
+// the column and scroll their own areas.
+@include compact {
+  app-shell .shell__main > * {
+    flex-shrink: 0;
+    min-block-size: auto;
+  }
+}
+
 // Library cards (#335): the title always takes two lines (the card clamps it at two), so a one-line
 // title does not make its card shorter than the others.
 app-link-card .ui-card__heading {

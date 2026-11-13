@@ -84,6 +84,11 @@ html {
   // No default tap flash on touch devices (iOS Safari, Android Chrome). Every interactive
   // component has its own `:active` / pressed state, and `:focus-visible` is not affected.
   -webkit-tap-highlight-color: transparent;
+
+  // No rubber band or scroll chaining on the page itself (#352): touch pages (landing, sign-in,
+  // privacy) keep their document scroll without the bounce; the app shell does not scroll the
+  // document at all (apps/web styles), only its inner areas, each with `overscroll-behavior: contain`.
+  overscroll-behavior: none;
 }
 
 @media (width >= 160em) {
@@ -120,6 +125,7 @@ body {
   @include type(body);
 
   margin: 0;
+  overscroll-behavior: none;
   color: var(--text);
   background: var(--bg);
 }

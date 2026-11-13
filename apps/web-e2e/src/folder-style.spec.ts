@@ -6,6 +6,7 @@ import { gotoWithSidebar, isCompact, openSidebar, tabBar } from './support/sideb
 import { settled } from './support/settled';
 import { expect, test } from './support/test';
 import { Finger } from './support/touch';
+import { documentScrollTop, mainScrollTop, scrollMainTo } from './support/scroll';
 
 const READING = MOCK_FIXTURE.readingName;
 const NOTES = 'Notes';
@@ -577,17 +578,18 @@ test.describe('folder style and pins (mock API)', () => {
       await settled(page);
       // Room to scroll: a shorter phone screen than the Library page.
       await page.setViewportSize({ width: 360, height: 700 });
-      await page.evaluate('window.scrollTo(0, 0)');
+      await scrollMainTo(page, 0);
       const before = await folderNames(page);
       const start = await centre(readingRow(page));
-      expect(await page.evaluate('window.scrollY')).toBe(0);
+      expect(await mainScrollTop(page)).toBe(0);
       expect(start.y).toBeLessThan(680);
 
       const finger = await Finger.down(page, start);
       await finger.move({ x: start.x, y: start.y - 240 }, 8);
       await finger.up();
 
-      await expect.poll(() => page.evaluate('window.scrollY')).toBeGreaterThan(40);
+      await expect.poll(() => mainScrollTop(page)).toBeGreaterThan(40);
+      expect(await documentScrollTop(page)).toBe(0);
       await expect(page.locator('app-sidebar .ui-tree__drop-slot')).toHaveCount(0);
       expect(await folderNames(page)).toEqual(before);
       await expect(page).toHaveURL('/library');
