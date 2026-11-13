@@ -16,7 +16,9 @@ import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { FOLDER_EMOJI_CATALOG } from '../models/folder-emoji-catalog.const';
 import type { FolderEmojiCategory } from '../models/folder-emoji-category.type';
 import type { FolderEmojiNames } from '../models/folder-emoji-names.type';
-import { FOLDER_EMOJI_RECENT } from '../models/folder-emoji-recent.const';
+import { EMOJI_RECENT_STORAGE_KEY } from '../../../core/auth/models/emoji-recent-storage-key.const';
+import { SessionScope } from '../../../core/auth/session-scope.service';
+import { FOLDER_EMOJI_RECENT_MAX } from '../models/folder-emoji-recent-max.const';
 import { loadFolderEmojiNames } from './folder-emoji-names.loader';
 
 const CATEGORIES = Object.keys(FOLDER_EMOJI_CATALOG) as FolderEmojiCategory[];
@@ -79,6 +81,12 @@ export class FolderEmojiService {
     }));
   });
 
+  constructor() {
+    // The session ends (sign-out, a deleted account): "Recent" is forgotten; `SessionScope`
+    // removes the stored key itself.
+    inject(SessionScope).onEnd(() => this.recentList.set([]));
+  }
+
   /** Loads the names of the active language once (the picker calls it on every open). */
   load(): Promise<void> {
     const lang = this.locale.lang();
@@ -109,7 +117,7 @@ export class FolderEmojiService {
     }
     const next = [icon, ...this.recentList().filter((emoji) => emoji !== icon)].slice(
       0,
-      FOLDER_EMOJI_RECENT.Max,
+      FOLDER_EMOJI_RECENT_MAX,
     );
     this.recentList.set(next);
     this.writeRecent(next);
@@ -146,13 +154,11 @@ export class FolderEmojiService {
 
   private readRecent(): string[] {
     try {
-      const parsed: unknown = JSON.parse(
-        this.storage?.getItem(FOLDER_EMOJI_RECENT.StorageKey) ?? '[]',
-      );
+      const parsed: unknown = JSON.parse(this.storage?.getItem(EMOJI_RECENT_STORAGE_KEY) ?? '[]');
       return Array.isArray(parsed)
         ? parsed
             .filter((item): item is string => isFolderEmoji(item))
-            .slice(0, FOLDER_EMOJI_RECENT.Max)
+            .slice(0, FOLDER_EMOJI_RECENT_MAX)
         : [];
     } catch {
       return [];
@@ -161,7 +167,7 @@ export class FolderEmojiService {
 
   private writeRecent(list: readonly string[]): void {
     try {
-      this.storage?.setItem(FOLDER_EMOJI_RECENT.StorageKey, JSON.stringify(list));
+      this.storage?.setItem(EMOJI_RECENT_STORAGE_KEY, JSON.stringify(list));
     } catch {
       // Storage full or blocked (private mode): "Recent" lives until the page reloads.
     }

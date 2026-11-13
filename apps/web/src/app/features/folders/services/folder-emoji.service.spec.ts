@@ -14,7 +14,9 @@ import { FOLDERS_API } from '../../links/models/folders-api.const';
 import { MockUserSettingsApi } from '../../settings/mock/mock-user-settings.api';
 import { USER_SETTINGS_API } from '../../settings/models/user-settings-api.const';
 import { FOLDER_EMOJI_CATALOG } from '../models/folder-emoji-catalog.const';
-import { FOLDER_EMOJI_RECENT } from '../models/folder-emoji-recent.const';
+import { EMOJI_RECENT_STORAGE_KEY } from '../../../core/auth/models/emoji-recent-storage-key.const';
+import { SessionScope } from '../../../core/auth/session-scope.service';
+import { FOLDER_EMOJI_RECENT_MAX } from '../models/folder-emoji-recent-max.const';
 import { FolderEmojiService } from './folder-emoji.service';
 
 async function setup() {
@@ -75,24 +77,22 @@ describe('FolderEmojiService', () => {
       service.remember(item);
     }
     service.remember(emoji[10]);
-    expect(service.recent().map((item) => item.emoji)).toHaveLength(FOLDER_EMOJI_RECENT.Max);
+    expect(service.recent().map((item) => item.emoji)).toHaveLength(FOLDER_EMOJI_RECENT_MAX);
     expect(service.recent()[0].emoji).toBe(emoji[10]);
-    expect(JSON.parse(localStorage.getItem(FOLDER_EMOJI_RECENT.StorageKey) ?? '[]')[0]).toBe(
-      emoji[10],
-    );
+    expect(JSON.parse(localStorage.getItem(EMOJI_RECENT_STORAGE_KEY) ?? '[]')[0]).toBe(emoji[10]);
     await service.load();
     expect(service.recent()[0].name).not.toBe(emoji[10]);
   });
 
   it('reads recent emoji back, skipping anything that is not one emoji', () => {
-    localStorage.setItem(FOLDER_EMOJI_RECENT.StorageKey, JSON.stringify(['🍕', 'x', 7, '🦩']));
+    localStorage.setItem(EMOJI_RECENT_STORAGE_KEY, JSON.stringify(['🍕', 'x', 7, '🦩']));
     return setup().then(({ service }) => {
       expect(service.recent().map((item) => item.emoji)).toEqual(['🍕', '🦩']);
     });
   });
 
   it('survives storage that is broken or blocked', async () => {
-    localStorage.setItem(FOLDER_EMOJI_RECENT.StorageKey, '{not json');
+    localStorage.setItem(EMOJI_RECENT_STORAGE_KEY, '{not json');
     const { service } = await setup();
     expect(service.recent()).toEqual([]);
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
@@ -100,6 +100,14 @@ describe('FolderEmojiService', () => {
     });
     service.remember('🍕');
     expect(service.recent().map((item) => item.emoji)).toEqual(['🍕']);
+  });
+
+  it('forgets Recent when the session ends (sign-out, a deleted account)', async () => {
+    const { service } = await setup();
+    service.remember('🍕');
+    TestBed.inject(SessionScope).end();
+    expect(service.recent()).toEqual([]);
+    expect(localStorage.getItem(EMOJI_RECENT_STORAGE_KEY)).toBeNull();
   });
 
   it('keeps an emoji the collection lacks on the account, once', async () => {

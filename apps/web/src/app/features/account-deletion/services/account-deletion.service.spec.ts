@@ -1,3 +1,4 @@
+import { EMOJI_RECENT_STORAGE_KEY } from '../../../core/auth/models/emoji-recent-storage-key.const';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
@@ -219,6 +220,7 @@ describe('AccountDeletionService', () => {
     const pending = deferred<void>();
     const { service, store } = await setup(USER, () => pending.promise);
     const expire = vi.spyOn(store, 'expireSession');
+    localStorage.setItem(EMOJI_RECENT_STORAGE_KEY, '["🍕"]');
     const open = service.open();
     await opened();
     await type('ada@example.com');
@@ -234,6 +236,8 @@ describe('AccountDeletionService', () => {
 
     expect(expire).toHaveBeenCalledTimes(1);
     expect(store.isSignedIn()).toBe(false);
+    // The emoji picker's Recent goes with the account (#363).
+    expect(localStorage.getItem(EMOJI_RECENT_STORAGE_KEY)).toBeNull();
     expect(TestBed.inject(Router).url).toBe('/');
     await vi.waitFor(() => {
       TestBed.tick();
