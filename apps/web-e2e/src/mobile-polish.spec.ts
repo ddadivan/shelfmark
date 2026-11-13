@@ -4,6 +4,7 @@ import { settled } from './support/settled';
 import { SEARCH_BUTTON, useSearchDialogWidth } from './support/search-button';
 import { openSidebar, tabBar } from './support/sidebar';
 import { switchView } from './support/library-toolbar';
+import { documentScrollTop, mainScrollTop, makePageTall, scrollMainTo } from './support/scroll';
 
 // Mirror MOCK_ID.FolderReading / FolderAngular and their names (libs/shared/contracts); the e2e
 // project cannot import from them.
@@ -64,10 +65,11 @@ test.describe('mobile polish (mock API)', () => {
       const bar = tabBar(page);
       await expect(bar).toBeVisible();
       // Make sure the page is taller than the screen, whatever the mock data size.
-      await page.addStyleTag({ content: 'main { min-height: 3000px; }' });
+      await makePageTall(page, 3000);
 
-      await page.evaluate('window.scrollTo(0, 1200)');
-      await expect.poll(() => page.evaluate('window.scrollY')).toBeGreaterThan(500);
+      await scrollMainTo(page, 1200);
+      await expect.poll(() => mainScrollTop(page)).toBeGreaterThan(500);
+      expect(await documentScrollTop(page)).toBe(0);
 
       const box = await bar.boundingBox();
       const view = page.viewportSize();
@@ -77,8 +79,9 @@ test.describe('mobile polish (mock API)', () => {
 
     test('a dialog and the sheet stay above the tab bar', async ({ page }) => {
       await page.goto('/links');
-      await page.addStyleTag({ content: 'main { min-height: 3000px; }' });
-      await page.evaluate('window.scrollTo(0, 800)');
+      await expect(page.locator('ui-card').first()).toBeVisible();
+      await makePageTall(page, 3000);
+      await scrollMainTo(page, 800);
 
       await page.getByRole('button', { name: 'Add link' }).click();
       await expect(page.getByRole('dialog', { name: 'Add link' })).toBeVisible();
@@ -160,7 +163,7 @@ test.describe('mobile polish (mock API)', () => {
   test.describe('library toolbar on a phone', () => {
     test.skip(({ viewport }) => (viewport?.width ?? 0) >= 640, 'phone only');
 
-    test('one View menu holds sort, view and export; the saved views scroll in one row', async ({
+    test('one Options menu holds sort, view and export; the saved views scroll in one row', async ({
       page,
     }) => {
       await page.goto('/links');
@@ -170,8 +173,8 @@ test.describe('mobile polish (mock API)', () => {
       await expect(page.getByRole('radio', { name: 'List' })).toHaveCount(0);
       await expect(page.getByRole('button', { name: 'Export' })).toHaveCount(0);
 
-      await page.getByRole('button', { name: 'View', exact: true }).click();
-      const menu = page.getByRole('menu');
+      await page.getByRole('button', { name: 'Options', exact: true }).click();
+      const menu = page.getByRole('menu', { name: 'Sort, view and export' });
       await expect(menu.getByText('Sort by', { exact: true })).toBeVisible();
       await expect(menu.getByText('View', { exact: true })).toBeVisible();
       await expect(menu.getByText('Export', { exact: true })).toBeVisible();

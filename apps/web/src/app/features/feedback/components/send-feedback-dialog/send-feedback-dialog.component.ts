@@ -8,6 +8,7 @@ import {
   Injector,
   signal,
   viewChild,
+  viewChildren,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
@@ -51,11 +52,10 @@ import { FeedbackStore } from '../../services/feedback.store';
 import { FEEDBACK_KIND_COPY } from '../../models/feedback-kind-copy.const';
 import type { FeedbackFormModel } from '../../models/feedback-form-model.interface';
 import { FEEDBACK_SCREENSHOT_ERROR } from '../../models/feedback-screenshot-error.const';
-import type { FeedbackScreenshotAttachment } from '../../models/feedback-screenshot-attachment.interface';
 import type { FeedbackScreenshotError } from '../../models/feedback-screenshot-error.type';
+import { FeedbackScreenshots } from '../../services/feedback-screenshots.service';
 import { FEEDBACK_SEND_ERROR_REASON } from '../../models/feedback-send-error-reason.const';
 import type { FeedbackSendErrorReason } from '../../models/feedback-send-error-reason.type';
-import { readFeedbackScreenshot } from '../../utils/read-feedback-screenshot';
 
 const BYTES_PER_MB = 1024 * 1024;
 
@@ -64,6 +64,7 @@ const SCREENSHOT_ERROR_KEY: Record<FeedbackScreenshotError, string> = {
   [FEEDBACK_SCREENSHOT_ERROR.Size]: 'feedback.screenshot.error.size',
   [FEEDBACK_SCREENSHOT_ERROR.Empty]: 'feedback.screenshot.error.empty',
   [FEEDBACK_SCREENSHOT_ERROR.Read]: 'feedback.screenshot.error.read',
+  [FEEDBACK_SCREENSHOT_ERROR.Count]: 'feedback.screenshot.error.count',
 };
 
 const SEND_ERROR_KEY: Record<FeedbackSendErrorReason, string> = {
@@ -72,11 +73,14 @@ const SEND_ERROR_KEY: Record<FeedbackSendErrorReason, string> = {
 };
 
 /**
- * "Send feedback": the kind (Idea, Problem, Other), the message with its 2000 counter, an optional
- * screenshot (a drop area and a "choose a file" button; type and size are checked in the browser
- * before anything is sent), "Attach browser and app version" (on by default), Cancel and Send.
- * A failed send keeps the text and shows a notice (a 429 has its own words); a sent message
- * replaces the form with a thank-you and "Done". On a phone `ui-dialog` makes it a sheet.
+ * "Send feedback": the kind (Idea, Problem, Other), the message with its 2000 counter, up to three
+ * screenshots (#352: a drop area and a "choose files" button, gone once three are added; type and
+ * size are checked in the browser before anything is sent; each has a thumbnail and a remove
+ * button), "Attach browser and app version" (on by default), Cancel and Send. A failed send keeps
+ * the text and shows a notice (a 429 has its own words); a sent message replaces the form with a
+ * thank-you and "Done" (with a warning when a screenshot did not make it). While it sends, the
+ * dialog cannot be dismissed (Esc, scrim, close button, sheet drag, Cancel). On a phone `ui-dialog`
+ * makes it a sheet.
  */
 @Component({
   selector: 'app-send-feedback-dialog',
@@ -95,6 +99,7 @@ const SEND_ERROR_KEY: Record<FeedbackSendErrorReason, string> = {
   ],
   templateUrl: './send-feedback-dialog.component.html',
   styleUrl: './send-feedback-dialog.component.scss',
+  providers: [FeedbackScreenshots],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SendFeedbackDialogComponent {
@@ -122,6 +127,7 @@ export class SendFeedbackDialogComponent {
 
   private readonly fileInput = viewChild.required<ElementRef<HTMLInputElement>>('fileInput');
   private readonly chooseButton = viewChild<ButtonComponent>('chooseButton');
+  private readonly removeButtons = viewChildren<ButtonComponent>('removeButton');
   private readonly doneButton = viewChild<ButtonComponent>('doneButton');
 
   private readonly model = signal<FeedbackFormModel>({
@@ -154,12 +160,13 @@ export class SendFeedbackDialogComponent {
     },
   );
 
-  protected readonly screenshot = signal<FeedbackScreenshotAttachment | null>(null);
-  protected readonly screenshotError = signal<FeedbackScreenshotError | null>(null);
+  protected readonly screenshots = inject(FeedbackScreenshots);
   protected readonly dragging = signal(false);
   protected readonly sending = signal(false);
   protected readonly sendError = signal<FeedbackSendErrorReason | null>(null);
   protected readonly sent = signal(false);
+  /** Screenshots that could not be attached to the sent message. */
+  protected readonly screenshotsFailed = signal(0);
 
   protected readonly kindOptions = computed<SegmentedOption[]>(() => {
     this.i18n();
@@ -169,18 +176,29 @@ export class SendFeedbackDialogComponent {
     }));
   });
   protected readonly copy = computed(() => FEEDBACK_KIND_COPY[this.model().kind]);
-  protected readonly screenshotSize = computed(() => {
-    const attached = this.screenshot();
-    if (attached === null) {
-      return '';
-    }
-    const { unit, value } = fileSizeParts(attached.size);
-    return this.text(`feedback.screenshot.size.${unit}`, { size: value });
+  /** Size and remove label of each screenshot, in order. */
+  protected readonly screenshotViews = computed(() => {
+    this.i18n();
+    const items = this.screenshots.items();
+    return items.map((item, index) => {
+      const { unit, value } = fileSizeParts(item.size);
+      return {
+        item,
+        size: this.text(`feedback.screenshot.size.${unit}`, { size: value }),
+        removeLabel: this.text('feedback.screenshot.remove', {
+          index: index + 1,
+          count: items.length,
+          name: item.name,
+        }),
+      };
+    });
   });
   protected readonly screenshotErrorText = computed(() => {
     this.i18n();
-    const error = this.screenshotError();
-    return error === null ? '' : this.text(SCREENSHOT_ERROR_KEY[error], { max: this.maxMb });
+    const error = this.screenshots.error();
+    return error === null
+      ? ''
+      : this.text(SCREENSHOT_ERROR_KEY[error], { max: this.maxMb, count: this.screenshots.max });
   });
   protected readonly sendErrorText = computed(() => {
     this.i18n();
@@ -208,12 +226,10 @@ export class SendFeedbackDialogComponent {
     if (!(input instanceof HTMLInputElement)) {
       return;
     }
-    const file = input.files?.item(0);
+    const files = Array.from(input.files ?? []);
     // Reset, so choosing the same file again after removing it fires `change`.
     input.value = '';
-    if (file) {
-      await this.take(file);
-    }
+    await this.screenshots.add(files);
   }
 
   protected onDragOver(event: DragEvent): void {
@@ -228,27 +244,20 @@ export class SendFeedbackDialogComponent {
   protected async onDrop(event: DragEvent): Promise<void> {
     event.preventDefault();
     this.dragging.set(false);
-    const file = event.dataTransfer?.files.item(0);
-    if (file) {
-      await this.take(file);
-    }
+    await this.screenshots.add(Array.from(event.dataTransfer?.files ?? []));
   }
 
-  protected removeScreenshot(): void {
-    this.screenshot.set(null);
-    this.screenshotError.set(null);
-    afterNextRender(() => this.chooseButton()?.focus(), { injector: this.injector });
-  }
-
-  private async take(file: File): Promise<void> {
-    const result = await readFeedbackScreenshot(file);
-    if (typeof result === 'string') {
-      this.screenshot.set(null);
-      this.screenshotError.set(result);
-    } else {
-      this.screenshotError.set(null);
-      this.screenshot.set(result);
-    }
+  /** Removes one screenshot; focus moves to the remove button now in its place, else "choose". */
+  protected removeScreenshot(index: number): void {
+    this.screenshots.remove(index);
+    afterNextRender(
+      () => {
+        const buttons = this.removeButtons();
+        const next = buttons[Math.min(index, buttons.length - 1)];
+        (next ?? this.chooseButton())?.focus();
+      },
+      { injector: this.injector },
+    );
   }
 
   private async send(): Promise<undefined> {
@@ -256,13 +265,13 @@ export class SendFeedbackDialogComponent {
       return;
     }
     this.sending.set(true);
+    // Esc, the scrim, the close button and the sheet drag wait until the screenshots are sent.
+    this.ref.setLocked(true);
     this.sendError.set(null);
     const { kind, text, attachClient } = this.model();
-    const attached = this.screenshot();
     const request: SendFeedbackRequest = {
       kind,
       text: text.trim(),
-      ...(attached ? { screenshot: attached.upload } : {}),
       ...(attachClient
         ? {
             client: {
@@ -273,15 +282,18 @@ export class SendFeedbackDialogComponent {
         : {}),
     };
     try {
-      await this.store.send(request);
+      const result = await this.store.send(request, this.screenshots.uploads());
+      this.screenshotsFailed.set(result.screenshotsFailed);
     } catch (error) {
       this.sending.set(false);
+      this.ref.setLocked(false);
       this.sendError.set(
         error instanceof FeedbackSendError ? error.reason : FEEDBACK_SEND_ERROR_REASON.Failed,
       );
       return;
     }
     this.sending.set(false);
+    this.ref.setLocked(false);
     this.sent.set(true);
     afterNextRender(() => this.doneButton()?.focus(), { injector: this.injector });
   }

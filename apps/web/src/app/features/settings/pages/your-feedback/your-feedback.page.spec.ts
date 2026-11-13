@@ -8,7 +8,7 @@ import type { FeedbackApi } from '../../../feedback/models/feedback-api.interfac
 import YourFeedbackPage from './your-feedback.page';
 
 async function setup(list: FeedbackApi['list'] = () => Promise.resolve([])) {
-  const api = { list: vi.fn(list), send: vi.fn() } satisfies FeedbackApi;
+  const api = { list: vi.fn(list), send: vi.fn(), attachScreenshot: vi.fn() } satisfies FeedbackApi;
   TestBed.configureTestingModule({ providers: [{ provide: FEEDBACK_API, useValue: api }] });
   const page = await setupSettingsPage(YourFeedbackPage, 'feedback');
   await page.harness.fixture.whenStable();

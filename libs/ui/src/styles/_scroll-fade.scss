@@ -1,0 +1,86 @@
+@use 'functions' as *;
+
+// Soft scroll edges (#352): a fade into `$bg` (the colour the area sits on, so it follows both
+// themes and an own page background) over the first and last `$size` of a scroll area's
+// visible part. Overlay pseudo-elements, sticky to the area's edges, never a mask, so the
+// scrollbar stays crisp; `pointer-events: none`. Where scroll-driven animations exist the top
+// fade shows only once the area is scrolled and the bottom fade goes away at the end (no JS,
+// no movement, so reduced motion needs nothing); without them both are always on, so each fade
+// takes its own room there (like a padding of `$size` at both ends): the first row is not
+// covered at scroll 0, nor the last at the end. Include it
+// in the scroll container itself (`scroll(nearest)` is then the area). The fades take the
+// content width (the area's padding and scrollbar stay clear) and sit at `$layer`: keep sticky
+// bars that must stay on top above it. The keyframes are global (`scroll-fade-keyframes`, in
+// `global.scss`), so every use stays small.
+@mixin scroll-fade($bg: var(--bg), $size: rem(24px), $layer: 2) {
+  &::before,
+  &::after {
+    position: sticky;
+    z-index: $layer;
+    display: block;
+    flex: none;
+    block-size: $size;
+    pointer-events: none;
+    content: '';
+  }
+
+  // Without scroll timelines the fades are always on, so each takes its own room at its end (no
+  // negative margin): the first and last rows stay clear at the two ends of the area.
+  &::before {
+    inset-block-start: 0;
+    background: linear-gradient(to bottom, #{$bg}, transparent);
+  }
+
+  &::after {
+    inset-block-end: 0;
+    background: linear-gradient(to top, #{$bg}, transparent);
+  }
+
+  @supports (animation-timeline: scroll()) {
+    // Hidden unless the timeline says otherwise: an area that does not scroll (inactive
+    // timeline) shows no fades over its last row.
+    &::before,
+    &::after {
+      opacity: 0;
+      animation-timeline: scroll(nearest);
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+    }
+
+    // Hidden at the ends, so they lie over the content instead of taking room.
+    &::before {
+      margin-block-end: calc(#{$size} * -1);
+      animation-name: ui-scroll-fade-top;
+      animation-range: 0 $size;
+    }
+
+    &::after {
+      margin-block-start: calc(#{$size} * -1);
+      animation-name: ui-scroll-fade-bottom;
+      animation-range: calc(100% - #{$size}) 100%;
+    }
+  }
+}
+
+// The two keyframes of `scroll-fade`, emitted once by `global.scss`.
+@mixin scroll-fade-keyframes {
+  @keyframes ui-scroll-fade-top {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes ui-scroll-fade-bottom {
+    from {
+      opacity: 1;
+    }
+
+    to {
+      opacity: 0;
+    }
+  }
+}

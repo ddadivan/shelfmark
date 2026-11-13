@@ -210,7 +210,7 @@ describe('Custom theme tokens', () => {
   });
 });
 
-/** Own accent colours (#315): a spread of hues, greys and extremes. */
+/** Own accent colors (#315): a spread of hues, greys and extremes. */
 const OWN_COLOURS = [
   '#ff0000',
   '#ffff00',
@@ -238,7 +238,7 @@ const OWN_COLOURS = [
   '#00aa55',
 ];
 
-describe('own accent colour', () => {
+describe('own accent color', () => {
   const grounds = Object.values(CUSTOM_THEME_BASE).flatMap((base) =>
     CUSTOM_THEME_BACKGROUNDS[base].map((background) => ({ base, background })),
   );

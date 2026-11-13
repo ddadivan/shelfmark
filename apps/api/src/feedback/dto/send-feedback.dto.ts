@@ -9,7 +9,6 @@ import { Transform, Type } from 'class-transformer';
 import { IsIn, IsNotEmpty, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
 import { NoControlChars } from '../../common/validation/no-control-chars.decorator';
 import { FeedbackClientInfoDto } from './feedback-client-info.dto';
-import { FeedbackScreenshotUploadDto } from './feedback-screenshot-upload.dto';
 
 export class SendFeedbackDto implements SendFeedbackRequest {
   @ApiProperty({ enum: Object.values(FEEDBACK_MESSAGE_KIND) })
@@ -23,12 +22,6 @@ export class SendFeedbackDto implements SendFeedbackRequest {
   @NoControlChars(true)
   @MaxLength(FEEDBACK_MESSAGE_LIMIT.TextMax)
   text!: string;
-
-  @ApiPropertyOptional({ type: FeedbackScreenshotUploadDto })
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => FeedbackScreenshotUploadDto)
-  screenshot?: FeedbackScreenshotUploadDto;
 
   @ApiPropertyOptional({ type: FeedbackClientInfoDto })
   @IsOptional()

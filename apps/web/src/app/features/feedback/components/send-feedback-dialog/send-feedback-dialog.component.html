@@ -13,6 +13,11 @@
           {{ 'feedback.thanks.title' | transloco }}
         </p>
         <p class="feedback-dialog__text">{{ 'feedback.thanks.text' | transloco }}</p>
+        @if (screenshotsFailed() > 0) {
+          <ui-notice [kind]="NOTICE_KIND.Warning">{{
+            'feedback.thanks.screenshotsFailed' | transloco
+          }}</ui-notice>
+        }
       </div>
     } @else {
       <div class="feedback-dialog__fields">
@@ -36,25 +41,38 @@
           <span class="feedback-dialog__shot-label" id="feedback-shot-label">{{
             'feedback.screenshot.label' | transloco
           }}</span>
-          <input #fileInput type="file" hidden [accept]="accept" (change)="onFileChosen($event)" />
-          @if (screenshot(); as attached) {
-            <div class="feedback-dialog__file">
-              <img class="feedback-dialog__thumb" [src]="attached.previewUrl" alt="" />
-              <span class="feedback-dialog__file-text">
-                <span class="feedback-dialog__file-name">{{ attached.name }}</span>
-                <span class="feedback-dialog__file-size">{{ screenshotSize() }}</span>
-              </span>
-              <ui-button
-                variant="ghost"
-                size="sm"
-                iconOnly
-                iconLeft="close"
-                [ariaLabel]="'feedback.screenshot.remove' | transloco"
-                [disabled]="sending()"
-                (click)="removeScreenshot()"
-              />
-            </div>
-          } @else {
+          <input
+            #fileInput
+            type="file"
+            hidden
+            multiple
+            [accept]="accept"
+            (change)="onFileChosen($event)"
+          />
+          @if (screenshotViews().length > 0) {
+            <ul class="feedback-dialog__files">
+              @for (view of screenshotViews(); track view.item; let index = $index) {
+                <li class="feedback-dialog__file">
+                  <img class="feedback-dialog__thumb" [src]="view.item.previewUrl" alt="" />
+                  <span class="feedback-dialog__file-text">
+                    <span class="feedback-dialog__file-name">{{ view.item.name }}</span>
+                    <span class="feedback-dialog__file-size">{{ view.size }}</span>
+                  </span>
+                  <ui-button
+                    #removeButton
+                    variant="ghost"
+                    size="sm"
+                    iconOnly
+                    iconLeft="close"
+                    [ariaLabel]="view.removeLabel"
+                    [disabled]="sending()"
+                    (click)="removeScreenshot(index)"
+                  />
+                </li>
+              }
+            </ul>
+          }
+          @if (screenshots.canAdd()) {
             <div
               class="feedback-dialog__drop"
               [class.feedback-dialog__drop--over]="dragging()"
@@ -68,15 +86,17 @@
                 variant="ghost"
                 size="sm"
                 ariaDescribedby="feedback-shot-hint"
+                [disabled]="sending()"
                 (click)="chooseFile()"
               >
                 {{ 'feedback.screenshot.choose' | transloco }}
               </ui-button>
             </div>
-            <span class="feedback-dialog__shot-hint" id="feedback-shot-hint">{{
-              'feedback.screenshot.hint' | transloco: { max: maxMb }
-            }}</span>
           }
+          <span class="feedback-dialog__shot-hint" id="feedback-shot-hint" aria-live="polite">{{
+            (screenshots.canAdd() ? 'feedback.screenshot.hint' : 'feedback.screenshot.full')
+              | transloco: { max: maxMb, count: screenshots.max }
+          }}</span>
           @if (screenshotErrorText(); as message) {
             <ui-notice [kind]="NOTICE_KIND.Danger">{{ message }}</ui-notice>
           }

@@ -1,18 +1,23 @@
 @use '../../../styles/ui' as *;
 
+// Every size is multiplied by `--ui-button-scale` (see `button.component.scss`).
+@function k($value) {
+  @return calc(#{$value} * var(--ui-button-scale, 1));
+}
+
 // sm inherits the `label` line-height; only font-size shrinks (spec: 12px text, 16px icons).
 .ui-button--sm {
   // `--ui-button-sm-size`: a feature that needs a larger small button (the card's "..." at 40px on
   // touch) sets it on an ancestor.
-  height: var(--ui-button-sm-size, #{rem(32px)});
-  padding: 0 rem(12px);
-  font-size: rem(12px);
+  height: k(var(--ui-button-sm-size, #{rem(32px)}));
+  padding: 0 k(rem(12px));
+  font-size: k(rem(12px));
 }
 
 .ui-button--lg {
-  height: rem(48px);
-  padding: 0 rem(22px);
-  font-size: rem(15px);
+  height: k(rem(48px));
+  padding: 0 k(rem(22px));
+  font-size: k(rem(15px));
 }
 
 .ui-button.ui-button--block {
@@ -21,15 +26,15 @@
 }
 
 .ui-button--icon {
-  width: rem(40px);
+  width: k(rem(40px));
   padding: 0;
 
   &.ui-button--sm {
-    width: var(--ui-button-sm-size, #{rem(32px)});
+    width: k(var(--ui-button-sm-size, #{rem(32px)}));
   }
 
   &.ui-button--lg {
-    width: rem(48px);
+    width: k(rem(48px));
   }
 
   // Touch: the button itself grows to 44px; `hitArea="overlay"` keeps its size instead.

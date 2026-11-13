@@ -34,7 +34,7 @@ test.describe('vercel.json deployment config', () => {
     expect(config.buildCommand).toContain('middleware-shell');
   });
 
-  test('CSP is strict: no unsafe-inline, no unsafe-eval, no wildcard sources', () => {
+  test('CSP is strict: no unsafe-inline, no unsafe-eval, no bare wildcard source', () => {
     const csp = readCsp(config);
     expect(csp).not.toMatch(/unsafe-inline|unsafe-eval/);
     expect(csp).not.toMatch(/\s\*(\s|;|$)/);

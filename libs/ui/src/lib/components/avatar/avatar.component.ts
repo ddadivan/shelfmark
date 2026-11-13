@@ -6,10 +6,12 @@ import { AVATAR_SIZE } from './models/avatar-size.const';
 
 /**
  * The signed-in user's picture. Shows `src` when it loads; without `src`, or when the image
- * fails (the CSP blocks external hosts in stage 1), it shows the initials of `name`, and a
+ * fails (the app CSP allows only the Google and GitHub avatar hosts), it shows the initials of `name`, and a
  * user icon when there is no name either. The box has a fixed size, so switching between the
  * image and the fallback never shifts the layout. The image is sent with
- * `referrerpolicy="no-referrer"`.
+ * `referrerpolicy="no-referrer"` and decoded off the main thread. Not `loading="lazy"`: a lazy
+ * image inside a closed menu (moved into the overlay on open) failed to load and fell back to
+ * the initials, and the avatar is tiny and above the fold anyway.
  *
  * The initials are drawn by CSS from `data-initials` (no text node), so a labelled control
  * that contains the avatar passes WCAG 2.5.3. Without `label` the avatar is decorative

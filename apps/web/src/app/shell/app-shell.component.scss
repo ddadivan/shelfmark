@@ -3,16 +3,13 @@
 :host {
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
 
-  // From the desktop width (64em, #316) the shell is exactly the viewport (banner and header
-  // included) and the page itself never scrolls: the sidebar and the main column scroll on their
-  // own. The mobile shell (phones and tablets) keeps the natural page scroll under the tab bar.
-  @include desktop {
-    height: 100dvh;
-    min-height: 0;
-    overflow: hidden;
-  }
+  // The shell is exactly the viewport (banner and header included) and the document never scrolls
+  // (#352, also on phones and tablets, so the page does not move under the finger): the sidebar
+  // and the main column scroll on their own, each with `overscroll-behavior: contain`. The root
+  // lock lives in the app styles (`:root:has(app-shell)`).
+  height: 100dvh;
+  overflow: hidden;
 }
 
 // The top bar of the desktop sits in the content column, above the page, with no rule under it
@@ -138,9 +135,13 @@
   min-width: 0;
   padding: var(--space-6) var(--space-4);
 
-  // Room below the last row for the floating tab bar (110px, TabBar spec).
+  // The one scroll area of the mobile shell (#352): the page scrolls here, under the floating tab
+  // bar, never the document. Room below the last row for the tab bar (110px, TabBar spec).
   @include compact {
+    min-height: 0;
     padding-block-end: calc(rem(110px) + env(safe-area-inset-bottom));
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   // A tablet in the mobile shell keeps the wider page gutter.
@@ -155,6 +156,7 @@
     // Pages that are taller than the column (settings, privacy) scroll here; the library fits
     // and scrolls only its list.
     overflow-y: auto;
+    overscroll-behavior: contain;
     scrollbar-gutter: stable;
   }
 }

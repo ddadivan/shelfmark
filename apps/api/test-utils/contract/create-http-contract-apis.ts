@@ -1,6 +1,7 @@
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import {
   FEEDBACK_ENDPOINT,
+  feedbackScreenshotsPath,
   LINKS_BATCH_ENDPOINT,
   LINKS_BATCH_UPDATE_ENDPOINT,
   PIN_ENDPOINT,
@@ -8,6 +9,9 @@ import {
   SAVED_VIEW_ENDPOINT,
   TRASH_ENDPOINT,
   USER_SETTINGS_ENDPOINT,
+  ME_STATS_ENDPOINT,
+  type MeStatsQuery,
+  type MeStatsResponse,
   type CreateFolderRequest,
   type CreateLinkRequest,
   type CreateLinksBatchRequest,
@@ -17,6 +21,7 @@ import {
   type DeleteLinksBatchResponse,
   type ExportQuery,
   type FeedbackMessage,
+  type FeedbackScreenshotUpload,
   type FolderResponse,
   type FolderShareResponse,
   type GetLinkResponse,
@@ -137,6 +142,10 @@ export function createHttpContractApis(app: NestExpressApplication, cookie: stri
         http.send<TrashActionResponse>('post', TRASH_ENDPOINT.Delete, { items: [...items] }),
       empty: () => http.send<TrashActionResponse>('delete', TRASH_ENDPOINT.Base),
     },
+    me: {
+      stats: (query?: MeStatsQuery) =>
+        http.send<MeStatsResponse>('get', `${ME_STATS_ENDPOINT}${queryString({ ...query })}`),
+    },
     settings: {
       get: () => http.send<UserSettingsResponse>('get', USER_SETTINGS_ENDPOINT),
       update: (request: UpdateUserSettingsRequest) =>
@@ -165,6 +174,8 @@ export function createHttpContractApis(app: NestExpressApplication, cookie: stri
         (await http.send<ListFeedbackMessagesResponse>('get', FEEDBACK_ENDPOINT.Messages)).items,
       send: (request: SendFeedbackRequest) =>
         http.send<FeedbackMessage>('post', FEEDBACK_ENDPOINT.Messages, request),
+      attachScreenshot: (id: string, upload: FeedbackScreenshotUpload) =>
+        http.send<FeedbackMessage>('post', feedbackScreenshotsPath(id), upload),
     },
     exports: {
       download: async (query: ExportQuery) => {

@@ -498,7 +498,7 @@
     "home": "Shelfmark, Startseite",
     "newTab": "(öffnet in einem neuen Tab)",
     "updated": "Zuletzt aktualisiert am {{date}}",
-    "updatedDate": "9. November 2026",
+    "updatedDate": "13. November 2026",
     "intro": "Shelfmark ist ein persönliches Projekt, das die Links speichert, die du sicherst. Diese Seite erklärt in einfachen Worten, was wir speichern und warum.",
     "store": {
       "title": "Was wir speichern",
@@ -506,6 +506,7 @@
       "content": "Deine Links (Adresse, Titel, Notiz, Favoritenmarkierung, wann du ihn zuletzt geöffnet hast), deine Ordner und deine Tags.",
       "images": "Für jeden Link eine kleine Kopie des Website-Icons und des Vorschaubilds, falls die Website welche hat. Unser Server lädt sie herunter und speichert sie, damit sie von Shelfmark geladen werden.",
       "feedback": "Deine Antworten auf die Bewertung in der App, mit deinem Konto verknüpft: eine Punktzahl von 1 bis 10 und, falls du einen schreibst, ein Kommentar.",
+      "stats": "Die Zahlen unter „Dein Regal“ auf der Kontoseite (Anzahlen, deine häufigsten Websites und Tags, Links pro Woche) werden bei jedem Öffnen der Seite aus deinen eigenen Daten berechnet. Sie werden weder gespeichert noch weitergegeben.",
       "sessions": "Für jede Anmeldung: wann sie abläuft, dazu die IP-Adresse und der Browser (User-Agent), von dem aus sie gestartet wurde, um Sitzungen abzusichern.",
       "logs": "Unsere API protokolliert Methode, Pfad, Status, Dauer und eine Anfrage-ID, ohne Link-Inhalte oder personenbezogene Daten. Unser Hoster Vercel führt eigene Standard-Anfrageprotokolle mit IP-Adressen für begrenzte Zeit."
     },
@@ -530,6 +531,7 @@
       "google": "Datenschutzerklärung von Google",
       "github": "Datenschutzerklärung von GitHub",
       "tokens": "Wir speichern die Zugriffstoken nicht, die Google oder GitHub bei der Anmeldung ausstellen.",
+      "avatar": "Dein Profilbild wird direkt von Google oder GitHub geladen. Dein Browser kontaktiert sie also jedes Mal, wenn Shelfmark es anzeigt. Dabei wird kein Referrer gesendet, sie sehen also nicht, auf welcher Shelfmark-Seite du bist.",
       "monitoring": "Ist die Fehlerüberwachung eingeschaltet, werden Abstürze und Serverfehler über unseren eigenen Server an Sentry gemeldet. Die Berichte werden vorher bereinigt: keine E-Mail, IP-Adresse, Cookies, Anfrageinhalte oder Adressen gespeicherter Links, nur technische Details wie Fehlertyp, Stelle im Code, dein Browser- und Systemtyp, der Seitenpfad und eine Anfrage-ID. Ist sie aus, wird nichts gesendet."
     },
     "where": {
@@ -1055,8 +1057,8 @@
       "remove": "Filter {{kind}} entfernen"
     },
     "viewMenu": {
-      "label": "Ansichtsoptionen",
-      "button": "Ansicht",
+      "label": "Sortieren, Ansicht und Export",
+      "button": "Optionen",
       "sortBy": "Sortieren nach"
     }
   },
@@ -1084,17 +1086,15 @@
       "appearance": "Darstellung",
       "library": "Bibliothek",
       "language": "Sprache",
-      "export": "Exportieren",
       "privacy": "Datenschutz und Daten",
       "shortcuts": "Tastenkürzel",
       "feedback": "Dein Feedback"
     },
     "description": {
-      "account": "Dein Profil und dein Konto.",
+      "account": "Dein Profil, dein Regal und deine Daten.",
       "appearance": "Wird sofort gespeichert und auf all deinen Geräten synchronisiert.",
       "library": "Wie Links gezeigt, gespeichert und aufbewahrt werden.",
       "language": "Die Sprache der Oberfläche. Datums- und Zeitformate findest du unter Darstellung.",
-      "export": "Nimm alles mit, was du gespeichert hast.",
       "privacy": "Was wir speichern und wie du es mitnimmst.",
       "shortcuts": "Arbeite ohne Maus.",
       "feedback": "Ideen, Probleme und unsere Antworten."
@@ -1106,6 +1106,33 @@
         "title": "Abmelden",
         "label": "Von Shelfmark abmelden",
         "hint": "Deine Links bleiben gespeichert. Melde dich jederzeit wieder an."
+      },
+      "memberSince": "Mitglied seit {{date}}",
+      "shelf": {
+        "title": "Dein Regal",
+        "loading": "Deine Zahlen werden geladen",
+        "links": "Links",
+        "folders": "Ordner",
+        "tags": "Tags",
+        "oldest": "Ältester Link: {{when}}",
+        "topSites": "Am häufigsten gespeicherte Websites",
+        "topTags": "Meistgenutzte Tags",
+        "weekly": "Hinzugefügte Links pro Woche",
+        "weeklyHint": "Letzte 12 Wochen",
+        "week": "Woche ab {{date}}: {{count}}",
+        "error": "Deine Zahlen konnten nicht geladen werden.",
+        "retry": "Erneut versuchen",
+        "empty": {
+          "title": "Noch nichts gespeichert",
+          "text": "Speichere deinen ersten Link, dann erscheinen hier deine Zahlen."
+        }
+      },
+      "connected": {
+        "title": "Verbundene Konten",
+        "since": "Verbunden am {{date}}",
+        "none": "Das Demokonto ist nicht mit Google oder GitHub verknüpft.",
+        "google": "Google",
+        "github": "GitHub"
       }
     },
     "data": {
@@ -1940,11 +1967,12 @@
       "attachClientInfo": "Hilft uns, Probleme nachzustellen. Gesendet werden nur die App-Version sowie Name und Version deines Browsers."
     },
     "screenshot": {
-      "label": "Screenshot (optional)",
-      "drop": "Bild hierher ziehen oder",
-      "choose": "Datei auswählen",
-      "hint": "PNG, JPEG oder WebP, bis {{max}} MB.",
-      "remove": "Screenshot entfernen",
+      "label": "Screenshots (optional)",
+      "drop": "Bilder hierher ziehen oder",
+      "choose": "Dateien auswählen",
+      "hint": "PNG, JPEG oder WebP, bis zu {{count}} Bilder, je bis {{max}} MB.",
+      "full": "{{count}} Bilder hinzugefügt, mehr geht pro Nachricht nicht.",
+      "remove": "Bild {{index}} von {{count}} entfernen: {{name}}",
       "size": {
         "kb": "{{size}} KB",
         "mb": "{{size}} MB"
@@ -1953,13 +1981,15 @@
         "type": "Diese Datei ist kein PNG-, JPEG- oder WebP-Bild.",
         "size": "Dieses Bild ist größer als {{max}} MB. Wähle ein kleineres.",
         "empty": "Diese Datei ist leer.",
-        "read": "Die Datei konnte nicht gelesen werden. Versuch eine andere."
+        "read": "Die Datei konnte nicht gelesen werden. Versuch eine andere.",
+        "count": "Du kannst bis zu {{count}} Bilder hinzufügen."
       }
     },
     "thanks": {
       "title": "Danke",
       "text": "Wir lesen jede Nachricht. Den Status siehst du unter Einstellungen › Dein Feedback.",
-      "done": "Fertig"
+      "done": "Fertig",
+      "screenshotsFailed": "Einige Bilder konnten nicht angehängt werden. Deine Nachricht wurde ohne sie gesendet."
     },
     "page": {
       "send": {
@@ -1993,7 +2023,7 @@
       "replyHint": "Wird dem Absender unter Dein Feedback angezeigt. Leer lassen für keine.",
       "replyTooLong": "Höchstens {{max}} Zeichen für die Antwort.",
       "save": "Speichern",
-      "screenshot": "Screenshot ansehen",
+      "screenshot": "Screenshot {{index}} von {{count}} öffnen",
       "error": "Die Nachrichten konnten nicht geladen werden.",
       "empty": {
         "title": "Keine Nachrichten",

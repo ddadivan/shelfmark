@@ -39,18 +39,19 @@
 @include custom-themes;
 
 // Settings › Appearance › Text and layout (#285), attributes set on <html> by the app's
-// ThemeService (LAYOUT_ATTRIBUTE). Text size scales the root font size, so every rem size (type,
-// spacing, controls) grows with it; breakpoints are in em and stay where they are.
+// ThemeService (LAYOUT_ATTRIBUTE). Text size scales the root font size (`--text-scale`, on top of
+// the base for the viewport, `--root-base`), so every rem size (type, spacing, controls) grows
+// with it; breakpoints are in em and stay where they are.
 :root[data-text-size='s'] {
-  font-size: 90%;
+  --text-scale: 0.9;
 }
 
 :root[data-text-size='l'] {
-  font-size: 112.5%;
+  --text-scale: 1.125;
 }
 
 :root[data-text-size='xl'] {
-  font-size: 125%;
+  --text-scale: 1.25;
 }
 
 // Font: the system UI font, or Atkinson Hyperlegible (self-hosted, SIL OFL 1.1) for low vision.
@@ -71,12 +72,47 @@
   --density-row-padding: #{rem(6px)} #{rem(10px)};
 }
 
+// Root font size: the base of the viewport times the text size setting. Below 2560 CSS px the base
+// is 100% (the browser's own size); very wide screens (4K / 5K at 100% OS scaling) step up so the
+// whole UI, which is in rem, grows with them. Breakpoints in em (16px each), values in %.
 html {
-  font-size: 100%;
+  --root-base: 100%;
+  --text-scale: 1;
+
+  font-size: calc(var(--root-base) * var(--text-scale));
 
   // No default tap flash on touch devices (iOS Safari, Android Chrome). Every interactive
   // component has its own `:active` / pressed state, and `:focus-visible` is not affected.
   -webkit-tap-highlight-color: transparent;
+
+  // No rubber band or scroll chaining on the page itself (#352): touch pages (landing, sign-in,
+  // privacy) keep their document scroll without the bounce; the app shell does not scroll the
+  // document at all (apps/web styles), only its inner areas, each with `overscroll-behavior: contain`.
+  overscroll-behavior: none;
+}
+
+@media (width >= 160em) {
+  html {
+    --root-base: 112.5%;
+  }
+}
+
+@media (width >= 200em) {
+  html {
+    --root-base: 125%;
+  }
+}
+
+@media (width >= 240em) {
+  html {
+    --root-base: 150%;
+  }
+}
+
+@media (width >= 320em) {
+  html {
+    --root-base: 200%;
+  }
 }
 
 *,
@@ -89,6 +125,7 @@ body {
   @include type(body);
 
   margin: 0;
+  overscroll-behavior: none;
   color: var(--text);
   background: var(--bg);
 }
@@ -98,6 +135,7 @@ body {
 }
 
 @include keyframes;
+@include scroll-fade-keyframes;
 @include illustration-keyframes;
 @include ripple;
 

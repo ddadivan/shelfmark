@@ -6,14 +6,14 @@ import { axeViolations } from '../../../testing/axe';
 import { ColorPickerComponent } from './color-picker.component';
 
 const LABELS = {
-  label: 'Your own colour',
-  pickerLabel: 'Colour',
+  label: 'Your own color',
+  pickerLabel: 'Color',
   saturationLabel: 'Saturation',
   brightnessLabel: 'Brightness',
   hueLabel: 'Hue',
   hexLabel: 'Hex code',
-  invalidMessage: 'Enter a colour like #2e6a99',
-  addLabel: 'Add colour',
+  invalidMessage: 'Enter a color like #2e6a99',
+  addLabel: 'Add color',
   cancelLabel: 'Cancel',
 };
 
@@ -74,7 +74,7 @@ describe('ColorPickerComponent', () => {
   it('is a swatch button named by its label that discloses the panel', async () => {
     const { swatch, panel, open, host } = setup();
     expect(swatch().type).toBe('button');
-    expect(swatch().getAttribute('aria-label')).toBe('Your own colour');
+    expect(swatch().getAttribute('aria-label')).toBe('Your own color');
     expect(swatch().getAttribute('aria-expanded')).toBe('false');
     expect(host.querySelector('.ui-color-picker__plus')).not.toBeNull();
     expect(panel()).toBeNull();
@@ -84,7 +84,7 @@ describe('ColorPickerComponent', () => {
     expect(swatch().getAttribute('aria-expanded')).toBe('true');
     expect(panel()?.id).toBe(swatch().getAttribute('aria-controls'));
     expect(panel()?.getAttribute('role')).toBe('group');
-    expect(panel()?.getAttribute('aria-label')).toBe('Your own colour');
+    expect(panel()?.getAttribute('aria-label')).toBe('Your own color');
   });
 
   it('moves focus into the hex field on open, and Esc closes and returns to the swatch', async () => {
@@ -133,7 +133,7 @@ describe('ColorPickerComponent', () => {
   it('labels the area, the three sliders and the hex field, with a value text each', async () => {
     const { host, hex, slider, open } = setup({ value: '#ff0000' });
     await open();
-    expect(host.querySelector('.ui-color-picker__area')?.getAttribute('aria-label')).toBe('Colour');
+    expect(host.querySelector('.ui-color-picker__area')?.getAttribute('aria-label')).toBe('Color');
     expect(slider('Hue').getAttribute('aria-valuetext')).toBe('0°');
     expect(slider('Saturation').getAttribute('aria-valuetext')).toBe('100%');
     expect(slider('Brightness').getAttribute('aria-valuetext')).toBe('100%');
@@ -141,7 +141,7 @@ describe('ColorPickerComponent', () => {
     expect(label?.textContent).toContain('Hex code');
   });
 
-  it('the hue slider and the area sliders only preview; "Add colour" commits once', async () => {
+  it('the hue slider and the area sliders only preview; "Add color" commits once', async () => {
     const { fixture, slider, action, open, committed } = setup({ value: '#ff0000' });
     await open();
 
@@ -161,7 +161,7 @@ describe('ColorPickerComponent', () => {
     expect(fixture.componentInstance.value()).toBe('#008000');
     expect(committed).toEqual([]);
 
-    action('Add colour').click();
+    action('Add color').click();
     expect(committed).toEqual(['#008000']);
   });
 
@@ -227,7 +227,7 @@ describe('ColorPickerComponent', () => {
     type(hex(), '#123abc');
     hex().dispatchEvent(new Event('blur'));
     expect(committed).toEqual([]);
-    action('Add colour').click();
+    action('Add color').click();
     expect(committed).toEqual(['#123abc']);
   });
 
@@ -240,10 +240,10 @@ describe('ColorPickerComponent', () => {
     fixture.detectChanges();
 
     expect(committed).toEqual([]);
-    expect(action('Add colour').disabled).toBe(true);
+    expect(action('Add color').disabled).toBe(true);
     expect(hex().getAttribute('aria-invalid')).toBe('true');
     const error = host.querySelector('.ui-color-picker__error');
-    expect(error?.textContent).toContain('Enter a colour like #2e6a99');
+    expect(error?.textContent).toContain('Enter a color like #2e6a99');
     expect(hex().getAttribute('aria-describedby')).toBe(error?.id);
   });
 

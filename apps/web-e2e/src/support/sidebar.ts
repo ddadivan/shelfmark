@@ -6,7 +6,7 @@ const PHONE_BREAKPOINT_PX = 640;
 const DESKTOP_BREAKPOINT_PX = 1024;
 
 /**
- * Below 40em: small-screen details only (bottom-sheet dialogs, the one View menu, short labels).
+ * Below 40em: small-screen details only (bottom-sheet dialogs, the one Options menu, short labels).
  * The navigation follows `isCompact`.
  */
 export function isPhone(page: Page): boolean {

@@ -13,6 +13,9 @@ function setup(overrides: Partial<FeedbackApi> = {}) {
   const api = {
     list: vi.fn(() => Promise.resolve([feedbackMessage({ id: 'old' })])),
     send: vi.fn(() => Promise.resolve(feedbackMessage({ id: 'new' }))),
+    attachScreenshot: vi.fn((id: string) =>
+      Promise.resolve(feedbackMessage({ id, screenshotUrls: [`/s/${id}`] })),
+    ),
     ...overrides,
   } satisfies FeedbackApi;
   TestBed.configureTestingModule({ providers: [{ provide: FEEDBACK_API, useValue: api }] });
@@ -76,9 +79,63 @@ describe('FeedbackStore', () => {
     const sent = await store.send({ kind: 'idea', text: 'hello' });
 
     expect(api.send).toHaveBeenCalledWith({ kind: 'idea', text: 'hello' });
-    expect(sent.id).toBe('new');
+    expect(sent).toEqual({ message: feedbackMessage({ id: 'new' }), screenshotsFailed: 0 });
+    expect(api.attachScreenshot).not.toHaveBeenCalled();
     expect(store.items().map((item) => item.id)).toEqual(['new', 'old']);
     expect(api.list).toHaveBeenCalledTimes(1);
+  });
+
+  it('attaches the screenshots one by one after the message, in order', async () => {
+    const { api, store } = setup();
+    const shots = [
+      { type: 'image/png' as const, data: 'AAAA' },
+      { type: 'image/jpeg' as const, data: 'BBBB' },
+    ];
+
+    const sent = await store.send({ kind: 'idea', text: 'hello' }, shots);
+
+    expect(api.attachScreenshot).toHaveBeenCalledTimes(2);
+    expect(api.attachScreenshot).toHaveBeenNthCalledWith(1, 'new', shots[0]);
+    expect(api.attachScreenshot).toHaveBeenNthCalledWith(2, 'new', shots[1]);
+    expect(sent.screenshotsFailed).toBe(0);
+    expect(store.items()[0]?.screenshotUrls).toEqual(['/s/new']);
+  });
+
+  it('keeps the sent message and counts the screenshots that failed', async () => {
+    const attachScreenshot = vi
+      .fn<FeedbackApi['attachScreenshot']>()
+      .mockRejectedValueOnce(new Error('400'))
+      .mockResolvedValueOnce(feedbackMessage({ id: 'new', screenshotUrls: ['/s/0'] }));
+    const { store } = setup({ attachScreenshot });
+
+    const sent = await store.send({ kind: 'idea', text: 'hello' }, [
+      { type: 'image/png', data: 'AAAA' },
+      { type: 'image/png', data: 'BBBB' },
+    ]);
+
+    expect(sent.screenshotsFailed).toBe(1);
+    expect(sent.message.screenshotUrls).toEqual(['/s/0']);
+    expect(store.items()[0]?.id).toBe('new');
+  });
+
+  it('stops sending screenshots when the session ends meanwhile', async () => {
+    let end: () => void = () => undefined;
+    const attachScreenshot = vi.fn<FeedbackApi['attachScreenshot']>((id) => {
+      end();
+      return Promise.resolve(feedbackMessage({ id, screenshotUrls: [`/s/${id}`] }));
+    });
+    const { api, store, scope } = setup({ attachScreenshot });
+    end = () => scope.end();
+
+    const sent = await store.send({ kind: 'idea', text: 'hello' }, [
+      { type: 'image/png', data: 'AAAA' },
+      { type: 'image/png', data: 'BBBB' },
+      { type: 'image/png', data: 'CCCC' },
+    ]);
+
+    expect(api.attachScreenshot).toHaveBeenCalledTimes(1);
+    expect(sent.screenshotsFailed).toBe(2);
+    expect(store.items()).toEqual([]);
   });
 
   it('passes a send failure on and leaves the list alone', async () => {

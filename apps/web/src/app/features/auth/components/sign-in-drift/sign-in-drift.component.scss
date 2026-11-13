@@ -7,8 +7,8 @@
   --sd-pad: var(--space-6);
 
   // Half of the sign-in card (420px); the lane's inner edge keeps `--sd-pad` from it.
-  // On very large screens the card grows with the window (`--sign-k`, set by the page).
-  --sd-clear: calc(#{rem(210px)} * var(--sign-k, 1));
+  // On very large screens the card grows with the root font size (rem), and so does this.
+  --sd-clear: #{rem(210px)};
   --sd-cap: 1.3;
   --sd-lane-w: calc(50cqw - var(--sd-clear) - var(--sd-pad) * 2);
   --sd-lane-h: calc(100cqh - var(--sd-pad) * 2);

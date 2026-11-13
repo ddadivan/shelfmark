@@ -1,4 +1,7 @@
-import type { Routes } from '@angular/router';
+import { inject } from '@angular/core';
+import { Router, type Routes } from '@angular/router';
+import { APP_PATH } from '../../models/app-path.const';
+import { YOUR_DATA_FRAGMENT } from './models/your-data-fragment.const';
 import { SETTINGS_PATH } from './models/settings-path.const';
 import { settingsIndexGuard } from './pages/settings-index/settings-index.guard';
 
@@ -30,9 +33,13 @@ export default [
     path: SETTINGS_PATH.Shortcuts,
     loadComponent: () => import('./pages/shortcuts/shortcuts.page'),
   },
+  // Export moved to Account › Your data (#352); old links and bookmarks land there.
   {
     path: SETTINGS_PATH.ImportExport,
-    loadComponent: () => import('./pages/import-export/import-export.page'),
+    redirectTo: () =>
+      inject(Router).createUrlTree(['/', APP_PATH.Settings, SETTINGS_PATH.Account], {
+        fragment: YOUR_DATA_FRAGMENT,
+      }),
   },
   {
     path: SETTINGS_PATH.Privacy,

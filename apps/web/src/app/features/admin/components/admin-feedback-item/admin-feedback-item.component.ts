@@ -40,7 +40,7 @@ function statusOf(value: string | null): FeedbackStatus | null {
 }
 
 /**
- * One message in the admin inbox: who sent it and when, the text, the screenshot link, and the
+ * One message in the admin inbox: who sent it and when, the text, a thumbnail per screenshot (each opens the image), and the
  * author's controls: a status select and a reply field with Save. Save sends only what changed;
  * the store applies it at once and puts it back (with a toast) if the API refuses, in which case
  * the draft stays here so the text is not lost.

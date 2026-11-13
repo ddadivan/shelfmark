@@ -1,6 +1,14 @@
 import type { Page } from '@playwright/test';
 import { COLOR_SCHEME } from './models/color-scheme.const';
-import { MOCK_ADMIN_KEY, seedMockKey, sendIdea, setMockKey } from './support/feedback';
+import {
+  MOCK_ADMIN_KEY,
+  openSendFeedback,
+  pngFiles,
+  seedMockKey,
+  sendIdea,
+  setMockKey,
+  typeFeedback,
+} from './support/feedback';
 import { expectNoBlockingViolations } from './support/axe';
 import {
   MOCK_USER,
@@ -40,6 +48,33 @@ async function choose(
 
 test.describe('admin feedback inbox (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
+
+  test('the inbox shows every screenshot of a message (#352)', async ({ page }) => {
+    await seedSession(page);
+    await page.goto('/links');
+    const dialog = await openSendFeedback(page);
+    await dialog.locator('input[type="file"]').setInputFiles(pngFiles(3));
+    await expect(dialog.locator('img')).toHaveCount(3);
+    await typeFeedback(dialog, IDEA);
+    await dialog.getByRole('button', { name: 'Send', exact: true }).click();
+    await page.getByRole('button', { name: 'Done' }).click();
+
+    await openInbox(page);
+    const item = page.getByRole('main').getByRole('listitem').filter({ hasText: IDEA });
+    const shots = item.getByRole('link', { name: /^Open screenshot \d of 3$/ });
+    await expect(shots).toHaveCount(3);
+    await expect(shots.nth(2)).toHaveAttribute('target', '_blank');
+    // The images really load (the mock keeps small ones as data: URLs).
+    await expect
+      .poll(() =>
+        item
+          .locator('img')
+          .evaluateAll((images) =>
+            images.every((image) => Number(Reflect.get(image, 'naturalWidth')) > 0),
+          ),
+      )
+      .toBe(true);
+  });
 
   test('the author answers a message and the user sees status and reply', async ({ page }) => {
     await seedSession(page);

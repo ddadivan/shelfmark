@@ -8,6 +8,7 @@ import {
   Logger,
   Patch,
   Post,
+  Query,
   Req,
   Res,
 } from '@nestjs/common';
@@ -28,9 +29,12 @@ import { ApiErrorResponseDto } from '../common/errors/dto/api-error-response.dto
 import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
 import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
 import { DeleteAccountRequestDto } from './dto/delete-account-request.dto';
+import { MeStatsQueryDto } from './dto/me-stats-query.dto';
+import { MeStatsResponseDto } from './dto/me-stats-response.dto';
 import { OnboardingResponseDto } from './dto/onboarding-response.dto';
 import { UpdateUserSettingsDto } from './dto/update-user-settings.dto';
 import { UserSettingsResponseDto } from './dto/user-settings-response.dto';
+import { MeStatsService } from './me-stats.service';
 import { UsersService } from './users.service';
 
 @ApiTags('me')
@@ -40,6 +44,7 @@ export class UsersController {
 
   constructor(
     private readonly users: UsersService,
+    private readonly meStats: MeStatsService,
     private readonly sessionCookies: SessionCookieService,
   ) {}
 
@@ -82,6 +87,21 @@ export class UsersController {
   @ApiUnauthorizedResponse({ type: ApiErrorResponseDto, description: 'No valid session' })
   getSettings(@CurrentUser() user: AuthUser): Promise<UserSettingsResponseDto> {
     return this.users.getSettings(user);
+  }
+
+  // A read like `GET settings`: the global rate limit applies (a handful of aggregate queries).
+  @Get('stats')
+  @ApiOperation({
+    summary: 'Your shelf: counts, top sites and tags, links per week, connected accounts',
+  })
+  @ApiOkResponse({ type: MeStatsResponseDto })
+  @ApiUnauthorizedResponse({ type: ApiErrorResponseDto, description: 'No valid session' })
+  @ApiBadRequestResponse({ type: ApiErrorResponseDto, description: 'firstDay is not 1 to 7' })
+  getStats(
+    @CurrentUser() user: AuthUser,
+    @Query() query: MeStatsQueryDto,
+  ): Promise<MeStatsResponseDto> {
+    return this.meStats.stats(user.id, query.firstDay);
   }
 
   @Patch('settings')

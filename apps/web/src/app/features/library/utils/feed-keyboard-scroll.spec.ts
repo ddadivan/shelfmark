@@ -75,7 +75,15 @@ describe('scrollFeedForKey', () => {
     button.remove();
   });
 
-  it('does nothing when the area does not scroll itself', () => {
+  it('scrolls the nearest scrolling ancestor when the feed does not scroll (the mobile shell, #352)', () => {
+    const feed = document.createElement('div');
+    area.append(feed);
+
+    expect(scrollFeedForKey(feed, key('End'))).toBe(true);
+    expect(area.scrollTop).toBe(900);
+  });
+
+  it('does nothing when nothing scrolls', () => {
     area.style.overflowY = 'visible';
     expect(scrollFeedForKey(area, key('End'))).toBe(false);
   });

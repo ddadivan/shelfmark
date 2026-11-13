@@ -11,6 +11,8 @@ import { HttpExportApi } from '../export/http/http-export.api';
 import { EXPORT_API } from '../export/models/export-api.const';
 import { HttpUserSettingsApi } from '../settings/http/http-user-settings.api';
 import { USER_SETTINGS_API } from '../settings/models/user-settings-api.const';
+import { HttpMeStatsApi } from '../settings/http/http-me-stats.api';
+import { ME_STATS_API } from '../settings/models/me-stats-api.const';
 import { HttpPinsApi } from '../pins/http/http-pins.api';
 import { PINS_API } from '../pins/models/pins-api.const';
 import { HttpTrashApi } from '../trash/http/http-trash.api';
@@ -59,6 +61,7 @@ export function provideLinksApi(): Provider[] {
       useFactory: () => tabSyncedTrashApi(inject(HttpTrashApi), inject(TabSyncService)),
     },
     { provide: USER_SETTINGS_API, useExisting: HttpUserSettingsApi },
+    { provide: ME_STATS_API, useExisting: HttpMeStatsApi },
     { provide: SAVED_VIEWS_API, useExisting: HttpSavedViewsApi },
   ];
 }

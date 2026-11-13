@@ -1,15 +1,16 @@
 @use '../../../styles/ui' as *;
 
 // A fixed 16px box: the image, the letter and the icon share it, so nothing shifts.
+// `--ui-favicon-scale` (unitless, default 1) lets a feature show it bigger (the landing).
 :host {
   display: inline-grid;
   flex: none;
   place-items: center;
-  width: rem(16px);
-  height: rem(16px);
+  width: calc(#{rem(16px)} * var(--ui-favicon-scale, 1));
+  height: calc(#{rem(16px)} * var(--ui-favicon-scale, 1));
   overflow: hidden;
   font-family: var(--font-sans);
-  font-size: rem(11px);
+  font-size: calc(#{rem(11px)} * var(--ui-favicon-scale, 1));
   font-weight: 600;
   line-height: 1;
   color: var(--text-muted);
@@ -29,6 +30,6 @@
 
 // The fallback icon sits inside the square with a margin, as in the design (11px glyph).
 ui-icon {
-  width: rem(12px);
-  height: rem(12px);
+  width: calc(#{rem(12px)} * var(--ui-favicon-scale, 1));
+  height: calc(#{rem(12px)} * var(--ui-favicon-scale, 1));
 }

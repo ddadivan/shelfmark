@@ -19,6 +19,7 @@
   border-radius: rem(18px);
   margin: var(--space-1) 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
 
   // A context menu starts exactly at the pointer: no gap to the trigger.
   &--point {

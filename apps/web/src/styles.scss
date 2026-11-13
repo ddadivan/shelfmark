@@ -14,18 +14,51 @@
 }
 
 // While the bulk bar shows (#267), toasts sit 12px above it (a global rule: a toast never covers
-// the bar). Desktop: the bar is sticky 16px above the bottom of the content area, which ends 52px
-// above the window edge (#350), and is 58px high. The mobile shell: above the bar (68px high) that
-// floats 16px above the tab bar's own gap.
+// the bar). `ToastAreaService` measures the bar and sets the exact offset on `html` (#352); these
+// rules are the first frame before it does. Desktop: the bar's bottom is on the sidebar card's
+// bottom line, 12px above the window edge (#352), and it is 58px high. The mobile shell: above the bar
+// (68px high) whose bottom sits 12px above the tab bar (20px from the edge, 68px high).
 :root:has(.library__bulk) {
-  --ui-toast-offset: #{rem(52px + 16px + 58px + 12px)};
+  --ui-toast-offset: #{rem(12px + 58px + 12px)};
 }
 
 @include compact {
   :root:has(app-shell):has(.library__bulk) {
     --ui-toast-offset: calc(
-      #{rem(20px + 68px + 12px + 16px + 68px + 12px)} + env(safe-area-inset-bottom, 0rem)
+      #{rem(20px + 68px + 12px + 68px + 12px)} + env(safe-area-inset-bottom, 0rem)
     );
+  }
+}
+
+// While the app shell is shown the document never scrolls (#352): the shell is exactly `100dvh`
+// and only its inner areas scroll (feed, sidebar, settings content, dialogs, sheets). Landing,
+// sign-in, privacy and about keep the document scroll (without the rubber band, libs/ui global).
+// No `position: fixed` on body: it breaks the iPad keyboard, scroll restoration and the landing.
+:root:has(app-shell),
+:root:has(app-shell) body {
+  height: 100%;
+  overflow: hidden;
+}
+
+// The mobile shell scrolls the main column, a flex column: a page keeps at least its content
+// height there (instead of shrinking to the column and overflowing it), so the room for the tab
+// bar stays under the last row and sticky bars keep their scroll range. Desktop pages still fill
+// the column and scroll their own areas.
+@include compact {
+  app-shell .shell__main > * {
+    flex-shrink: 0;
+    min-block-size: auto;
+  }
+}
+
+// Desktop library (#352): the feed's scroll area runs to the window edge, under the 12px gap
+// the sidebar card keeps, so the bulk bar (sticky 12px above that edge) sits on the sidebar
+// card's bottom line and its shadow is not clipped. The main column has no bottom padding and
+// does not clip there; the feed is the page's only scroll area (the page itself fits).
+@include desktop {
+  app-shell .shell__main.shell__main:has(> app-library-page) {
+    padding-block-end: 0;
+    overflow: visible;
   }
 }
 

@@ -46,6 +46,8 @@ import { UserSettingsStore } from '../../stores/user-settings.store';
 import { LibraryFeedService } from './services/library-feed.service';
 import { LibraryHeadService } from './services/library-head.service';
 import { LibraryHotkeysDirective } from './directives/library-hotkeys.directive';
+import { ToastAboveDirective } from '../../core/layout/toast-above.directive';
+import { ToastAreaDirective } from '../../core/layout/toast-area.directive';
 import { LibraryDragService } from './services/library-drag.service';
 import { LibraryBulkService } from './services/library-bulk.service';
 import { LibrarySelectionService } from './services/library-selection.service';
@@ -80,6 +82,8 @@ const SKELETON_COUNT = 8;
     FolderTileComponent,
     InViewDirective,
     LibraryHotkeysDirective,
+    ToastAboveDirective,
+    ToastAreaDirective,
     LinkCardComponent,
     LinkRowComponent,
     DragSlotComponent,

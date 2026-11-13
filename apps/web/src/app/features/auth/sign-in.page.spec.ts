@@ -232,7 +232,7 @@ describe('SignInPage', () => {
 
   it.each([
     ['email_not_found', 'no verified email'],
-    ['access_denied', 'was cancelled'],
+    ['access_denied', 'was canceled'],
     ['state_mismatch', 'Start again'],
     ['account_not_linked', 'could not be linked'],
     ['something_new', 'Sign-in did not finish'],

@@ -49,8 +49,17 @@ describe('PrivacyPage', () => {
   it('shows the last updated date and renders no raw translation keys', async () => {
     const element = await render();
 
-    expect(element.textContent).toContain('Last updated 9 November 2026');
+    expect(element.textContent).toContain('Last updated 13 November 2026');
     expect(element.textContent).not.toMatch(/\bprivacy\.[a-zA-Z.]+/);
+  });
+
+  it('says where the profile photo comes from and that the shelf numbers are not stored (#352)', async () => {
+    const element = await render();
+
+    expect(element.textContent).toContain('loaded directly from Google or GitHub');
+    expect(element.textContent).toContain('No referrer is sent');
+    expect(element.textContent).toContain('"Your shelf" numbers');
+    expect(element.textContent).toContain('They are not stored and never shared.');
   });
 
   it('gives the repository as the contact and shows no email address', async () => {

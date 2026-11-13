@@ -98,7 +98,6 @@ test.describe('settings (mock auth)', () => {
       'Library',
       'Language',
       'Keyboard shortcuts',
-      'Export',
       'Privacy and data',
       'Your feedback',
     ]);
@@ -191,6 +190,5 @@ const SECTION_PATHS = [
   '/settings/account',
   '/settings/appearance',
   '/settings/shortcuts',
-  '/settings/import-export',
   '/settings/privacy',
 ];

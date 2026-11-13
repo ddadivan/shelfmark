@@ -2,6 +2,7 @@ import { expect, type Page } from '@playwright/test';
 import {
   openCardEdit,
   openCardMove,
+  openEmptyAccount,
   openEmptyFeed,
   openFeed,
   openSignedIn,
@@ -172,6 +173,9 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
       await openSignedIn(page, '/settings/account');
       await expect(page.getByRole('heading', { level: 1, name: 'Account' })).toBeVisible();
       await expect(page.getByText('Sign out of Shelfmark')).toBeVisible();
+      // Your shelf, connected accounts and Your data (#352).
+      await expect(page.getByRole('heading', { name: 'Sites you save most' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Connected accounts' })).toBeVisible();
     },
   },
   {
@@ -190,12 +194,9 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     },
   },
   {
-    name: 'settings export',
-    open: async (page) => {
-      await openSignedIn(page, '/settings/import-export');
-      await expect(page.getByRole('heading', { level: 1, name: 'Export' })).toBeVisible();
-      await expect(page.getByText('Export your data')).toBeVisible();
-    },
+    // Export moved to Account › Your data (#352): the account of a new user, with nothing saved.
+    name: 'settings account, empty shelf',
+    open: (page) => openEmptyAccount(page),
   },
   {
     name: 'settings privacy and data',
@@ -343,7 +344,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     name: 'folder colour and icon dialog',
     open: async (page) => {
       await openFeed(page);
-      await pickFolderMenuItem(page, MOCK_FIXTURE.readingName, 'Colour and icon…');
+      await pickFolderMenuItem(page, MOCK_FIXTURE.readingName, 'Color and icon…');
       await expect(
         page.getByRole('dialog', { name: MOCK_FIXTURE.readingName }).getByRole('radiogroup'),
       ).toHaveCount(2);

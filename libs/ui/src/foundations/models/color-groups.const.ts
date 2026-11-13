@@ -15,7 +15,7 @@ export const COLOR_GROUPS: readonly ColorGroup[] = [
   { title: 'Search highlight', tokens: ['highlight-bg', 'highlight-text'] },
   { title: 'Glass', tokens: ['glass', 'glass-line'] },
   {
-    title: 'Folder colours',
+    title: 'Folder colors',
     tokens: [
       'folder-graphite',
       'folder-graphite-bg',

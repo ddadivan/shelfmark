@@ -33,6 +33,8 @@ function isEntry(value: unknown): value is MockFeedbackEntry {
     typeof message['createdAt'] === 'string' &&
     isKind(message['kind']) &&
     isStatus(message['status']) &&
+    // An entry stored before #352 (one `screenshotUrl`) is dropped.
+    Array.isArray(message['screenshotUrls']) &&
     isRecord(message['user'])
   );
 }

@@ -2,7 +2,9 @@ import { HttpClient, HttpErrorResponse, HttpStatusCode } from '@angular/common/h
 import { inject, Service } from '@angular/core';
 import {
   FEEDBACK_ENDPOINT,
+  feedbackScreenshotsPath,
   type FeedbackMessage,
+  type FeedbackScreenshotUpload,
   type ListFeedbackMessagesResponse,
   type SendFeedbackRequest,
 } from '@shelfmark/contracts';
@@ -13,10 +15,11 @@ import type { FeedbackApi } from '../models/feedback-api.interface';
 import { FEEDBACK_SEND_ERROR_REASON } from '../models/feedback-send-error-reason.const';
 
 /**
- * `FeedbackApi` over `GET` and `POST /api/feedback/messages`. The contract's `FEEDBACK_ENDPOINT`
- * already carries the `/api` prefix, so `API_BASE_URL` is not added. Both calls skip the global
- * error toast: the page and the dialog show their own states. A 429 becomes
- * `FeedbackSendError(RateLimited)`, any other failure of the send `FeedbackSendError(Failed)`.
+ * `FeedbackApi` over `GET` and `POST /api/feedback/messages` and the screenshot route. The
+ * contract paths already carry the `/api` prefix, so `API_BASE_URL` is not added. Every call skips
+ * the global error toast: the page and the dialog show their own states. A 429 becomes
+ * `FeedbackSendError(RateLimited)`, any other failure of the send `FeedbackSendError(Failed)`; a
+ * failed screenshot rejects with the `HttpErrorResponse` as is.
  */
 @Service()
 export class HttpFeedbackApi implements FeedbackApi {
@@ -45,5 +48,13 @@ export class HttpFeedbackApi implements FeedbackApi {
         rateLimited ? FEEDBACK_SEND_ERROR_REASON.RateLimited : FEEDBACK_SEND_ERROR_REASON.Failed,
       );
     }
+  }
+
+  attachScreenshot(id: string, upload: FeedbackScreenshotUpload): Promise<FeedbackMessage> {
+    return firstValueFrom(
+      this.http.post<FeedbackMessage>(feedbackScreenshotsPath(id), upload, {
+        context: skipErrorToast(),
+      }),
+    );
   }
 }

@@ -4,10 +4,12 @@ import {
   Get,
   Header,
   Param,
+  ParseIntPipe,
   ParseUUIDPipe,
   Patch,
   Query,
   Res,
+  UseInterceptors,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -19,6 +21,7 @@ import {
   ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
 import type { Response } from 'express';
+import { PrivateNoStoreInterceptor } from '../common/interceptors/private-no-store.interceptor';
 import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
 import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
 import { sendFeedbackScreenshot } from '../feedback/send-feedback-screenshot';
@@ -76,11 +79,17 @@ export class AdminController {
     return this.feedback.update(id, body);
   }
 
-  @Get('feedback/:id/screenshot')
-  @ApiOperation({ summary: 'The screenshot of a message' })
+  @Get('feedback/:id/screenshots/:position')
+  // Before the pipes: an error answer (a bad id or position, a 404) is never cached either.
+  @UseInterceptors(PrivateNoStoreInterceptor)
+  @ApiOperation({ summary: 'One screenshot of a message' })
   @ApiOkResponse({ description: 'The image bytes with the stored type' })
-  @ApiNotFoundResponse({ description: 'Not an admin, no such message or no screenshot' })
-  async screenshot(@Param('id', ParseUUIDPipe) id: string, @Res() res: Response): Promise<void> {
-    sendFeedbackScreenshot(res, await this.feedback.findScreenshot(id));
+  @ApiNotFoundResponse({ description: 'Not an admin, no such message or no screenshot there' })
+  async screenshot(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('position', ParseIntPipe) position: number,
+    @Res() res: Response,
+  ): Promise<void> {
+    sendFeedbackScreenshot(res, await this.feedback.findScreenshot(id, position));
   }
 }

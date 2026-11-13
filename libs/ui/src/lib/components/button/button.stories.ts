@@ -142,6 +142,33 @@ export const Wrap: Story = {
   }),
 };
 
+/**
+ * `--ui-button-scale` on an ancestor multiplies box, text and icons of every size (the landing's
+ * hero buttons are `lg` at 1.2 and 1.45 on wide screens). Light and dark side by side.
+ */
+export const Scaled: Story = {
+  parameters: { layout: 'padded' },
+  render: () => ({
+    props: { themes: Object.values(THEME), scales: [1, 1.2, 1.45] },
+    template: `
+      <div style="display: grid; gap: 1rem">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" style="padding: 1.5rem; background: var(--bg); color: var(--text); display: grid; gap: 1rem">
+            @for (scale of scales; track scale) {
+              <div [style.--ui-button-scale]="scale" style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap">
+                <ui-button variant="primary" size="lg">Start for free</ui-button>
+                <ui-button size="lg">Try the demo</ui-button>
+                <ui-button variant="ghost" iconLeft="add">Add link</ui-button>
+                <ui-button [iconOnly]="true" iconLeft="settings" ariaLabel="Settings" />
+              </div>
+            }
+          </div>
+        }
+      </div>
+    `,
+  }),
+};
+
 /** Press it: a ripple grows from the touch point (20% of the text colour on filled buttons). */
 export const WithRipple: Story = {
   args: { variant: BUTTON_VARIANT.Primary, size: BUTTON_SIZE.Lg },

@@ -497,10 +497,20 @@ describe('appearance layout attributes (#285)', () => {
   it('scales the root font size for every text size but the default', () => {
     const out = globalCss();
     const size = (value: string) => rule(out, `:root[${LAYOUT_ATTRIBUTE.TextSize}=${value}]`);
-    expect(size('s')).toContain('font-size: 90%');
-    expect(size('l')).toContain('font-size: 112.5%');
-    expect(size('xl')).toContain('font-size: 125%');
+    expect(size('s')).toContain('--text-scale: 0.9');
+    expect(size('l')).toContain('--text-scale: 1.125');
+    expect(size('xl')).toContain('--text-scale: 1.25');
     expect(out).not.toContain(`[${LAYOUT_ATTRIBUTE.TextSize}=m]`);
+  });
+
+  it('multiplies the text size on the root base, which steps up on very wide viewports (#352)', () => {
+    const out = globalCss();
+    expect(out).toContain('font-size: calc(var(--root-base) * var(--text-scale))');
+    const base = (min: number) => rule(out, `@media (width >= ${min}em) {\n  html`);
+    expect(base(160)).toContain('--root-base: 112.5%');
+    expect(base(200)).toContain('--root-base: 125%');
+    expect(base(240)).toContain('--root-base: 150%');
+    expect(base(320)).toContain('--root-base: 200%');
   });
 
   it('swaps --font-sans for the system and the readable font', () => {
@@ -547,5 +557,39 @@ describe('appearance layout attributes (#285)', () => {
         `:host-context([${attribute}=${LAYOUT_OFF}]) .ui-theme-preview__${part}`,
       );
     }
+  });
+});
+
+describe('scroll-fade (#352)', () => {
+  const output = css('.area { overflow-y: auto; @include scroll-fade(var(--surface)); }');
+
+  it('draws non-interactive sticky overlays from the given colour, never a mask', () => {
+    expect(output).toMatch(/\.area::before,\s*\.area::after\s*\{[^}]*position: sticky/);
+    expect(output).toMatch(/\.area::before,\s*\.area::after\s*\{[^}]*pointer-events: none/);
+    expect(output).toContain('linear-gradient(to bottom, var(--surface), transparent)');
+    expect(output).toContain('linear-gradient(to top, var(--surface), transparent)');
+    expect(output).not.toMatch(/mask/);
+  });
+
+  it('ties the opacity to the scroll where scroll-driven animations exist', () => {
+    expect(output).toContain('@supports (animation-timeline: scroll())');
+    expect(output).toContain('animation-timeline: scroll(nearest)');
+    expect(output).toContain('animation-name: ui-scroll-fade-top');
+    expect(output).toContain('animation-name: ui-scroll-fade-bottom');
+  });
+
+  it('overlaps the content only where scroll-driven animations exist; else each fade takes room', () => {
+    const [base, timeline] = output.split('@supports (animation-timeline: scroll())');
+    expect(base).not.toContain('margin-block');
+    expect(timeline).toMatch(/\.area::before\s*\{[^}]*margin-block-end: calc\(1\.5rem \* -1\)/);
+    expect(timeline).toMatch(/\.area::after\s*\{[^}]*margin-block-start: calc\(1\.5rem \* -1\)/);
+  });
+
+  it('has its keyframes once in the global styles', () => {
+    const global = compile(resolve(STYLES_DIR, 'global.scss'), {
+      loadPaths: [resolve(STYLES_DIR, '../../../../node_modules')],
+    }).css;
+    expect(global.match(/@keyframes ui-scroll-fade-top/g)).toHaveLength(1);
+    expect(global.match(/@keyframes ui-scroll-fade-bottom/g)).toHaveLength(1);
   });
 });

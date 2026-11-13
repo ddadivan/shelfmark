@@ -32,7 +32,6 @@ describe('SettingsNavComponent', () => {
       'Library',
       'Language',
       'Keyboard shortcuts',
-      'Export',
       'Privacy and data',
       'Your feedback',
     ]);
@@ -42,7 +41,6 @@ describe('SettingsNavComponent', () => {
       '/settings/library',
       '/settings/language',
       '/settings/shortcuts',
-      '/settings/import-export',
       '/settings/privacy',
       '/settings/feedback',
     ]);

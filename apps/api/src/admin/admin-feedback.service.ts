@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import {
+  ADMIN_ENDPOINT,
   PAGE_LIMIT,
   type AdminFeedbackItem,
   type ListAdminFeedbackQuery,
@@ -8,6 +9,7 @@ import {
 } from '@shelfmark/contracts';
 import type { Prisma } from '../generated/prisma/client';
 import type { StoredFeedbackScreenshot } from '../feedback/models/stored-feedback-screenshot.interface';
+import { isScreenshotPosition } from '../feedback/is-screenshot-position';
 import { toFeedbackMessage } from '../feedback/to-feedback-message';
 import { PrismaService } from '../prisma/prisma.service';
 import { decodeAdminFeedbackCursor, encodeAdminFeedbackCursor } from './admin-feedback-cursor';
@@ -15,9 +17,9 @@ import { ADMIN_FEEDBACK_SELECT } from './models/admin-feedback-select.const';
 
 type AdminRow = Prisma.FeedbackGetPayload<{ select: typeof ADMIN_FEEDBACK_SELECT }>;
 
-/** The admin screenshot path of a message. */
-export function adminScreenshotUrl(id: string): string {
-  return `/api/admin/feedback/${id}/screenshot`;
+/** The admin path of one screenshot of a message. */
+export function adminScreenshotUrl(id: string, position: number): string {
+  return `${ADMIN_ENDPOINT.Feedback}/${id}/screenshots/${position}`;
 }
 
 function toItem(row: AdminRow): AdminFeedbackItem {
@@ -78,12 +80,13 @@ export class AdminFeedbackService {
     return toItem(row);
   }
 
-  async findScreenshot(id: string): Promise<StoredFeedbackScreenshot> {
-    const row = await this.prisma.feedback.findFirst({
-      where: { id, kind: { not: null }, screenshot: { not: null } },
-      select: { screenshot: true, screenshotType: true },
+  async findScreenshot(id: string, position: number): Promise<StoredFeedbackScreenshot> {
+    if (!isScreenshotPosition(position)) throw new NotFoundException();
+    const row = await this.prisma.feedbackScreenshot.findFirst({
+      where: { feedbackId: id, position, feedback: { kind: { not: null } } },
+      select: { bytes: true, type: true },
     });
-    if (!row?.screenshot || !row.screenshotType) throw new NotFoundException();
-    return { bytes: row.screenshot, contentType: row.screenshotType };
+    if (!row) throw new NotFoundException();
+    return { bytes: row.bytes, contentType: row.type };
   }
 }

@@ -498,14 +498,15 @@
     "home": "Shelfmark, home",
     "newTab": "(opens in a new tab)",
     "updated": "Last updated {{date}}",
-    "updatedDate": "9 November 2026",
+    "updatedDate": "13 November 2026",
     "intro": "Shelfmark is a personal project that stores the links you save. This page explains what we keep and why, in plain words.",
     "store": {
       "title": "What we store",
       "account": "From Google or GitHub: your name, email address and avatar (a link to your profile picture). They are used to sign you in and to show who is signed in. Your account record also holds which provider you used and your id there.",
-      "content": "Your links (address, title, note, favourite mark, when you last opened it), your folders and your tags.",
+      "content": "Your links (address, title, note, favorite mark, when you last opened it), your folders and your tags.",
       "images": "For each link, a small copy of the site's icon and preview image, if the site has them. Our server downloads and stores them so they load from Shelfmark.",
       "feedback": "Your answers to the in-app rating, linked to your account: a score from 1 to 10 and, if you write one, a comment.",
+      "stats": "The \"Your shelf\" numbers on the Account page (counts, the sites and tags you use most, links per week) are worked out from your own data each time you open the page. They are not stored and never shared.",
       "sessions": "For each sign-in: when it expires, plus the IP address and the browser (user agent) it was started from, to keep sessions secure.",
       "logs": "Our API logs the request method, path, status, duration and a request id, without link contents or personal data. Our host, Vercel, keeps its own standard request logs, which include IP addresses, for a limited time."
     },
@@ -530,6 +531,7 @@
       "google": "Google privacy policy",
       "github": "GitHub privacy statement",
       "tokens": "We do not store the access tokens that Google or GitHub issue when you sign in.",
+      "avatar": "Your profile photo is loaded directly from Google or GitHub, so your browser contacts them whenever Shelfmark shows it. No referrer is sent with that request, so they don't see which Shelfmark page you are on.",
       "monitoring": "If error monitoring is switched on, crashes and server errors are reported to Sentry through our own server. Reports are scrubbed before they leave: no email, IP address, cookies, request contents or saved link addresses, only technical details such as the error type, where in the code it happened, your browser and system type, the page path and a request id. If it is off, nothing is sent."
     },
     "where": {
@@ -576,7 +578,7 @@
       "failed": "We could not sign you in. Try again.",
       "error": {
         "generic": "Sign-in did not finish. Try again.",
-        "denied": "Sign-in was cancelled. Try again when you are ready.",
+        "denied": "Sign-in was canceled. Try again when you are ready.",
         "emailMissing": "Your GitHub account has no verified email. Verify an email in your GitHub settings, or sign in with Google.",
         "restart": "The sign-in took too long or was interrupted. Start again.",
         "notLinked": "This email already belongs to an account that could not be linked. Sign in with the provider you used before."
@@ -648,7 +650,7 @@
           "title": "The best standing desks, tested"
         },
         "contrast": {
-          "title": "A practical guide to colour contrast"
+          "title": "A practical guide to color contrast"
         },
         "hydration": {
           "title": "Hydration and incremental rendering"
@@ -720,7 +722,7 @@
         "delete": "Delete folder…",
         "pin": "Pin to sidebar",
         "unpin": "Unpin from sidebar",
-        "style": "Colour and icon…"
+        "style": "Color and icon…"
       },
       "views": "Views",
       "foldersTree": "Folders",
@@ -823,14 +825,14 @@
       "done": "Folder moved to Trash"
     },
     "style": {
-      "colour": "Colour",
+      "colour": "Color",
       "icon": "Icon",
       "reset": "Reset",
       "save": "Save",
       "cancel": "Cancel",
       "close": "Close",
       "failed": "Couldn't save the style",
-      "failedDetail": "The old colour and icon are back.",
+      "failedDetail": "The old color and icon are back.",
       "colours": {
         "graphite": "Graphite",
         "sage": "Sage",
@@ -907,11 +909,11 @@
         "lock": "Lock"
       },
       "own": {
-        "group": "Your own colours",
-        "add": "Add your own colour",
-        "picker": "Choose a colour"
+        "group": "Your own colors",
+        "add": "Add your own color",
+        "picker": "Choose a color"
       },
-      "ownSwatch": "Your colour {{colour}}",
+      "ownSwatch": "Your color {{colour}}",
       "emoji": {
         "label": "Emoji",
         "hint": "Use one emoji instead of an icon",
@@ -1055,8 +1057,8 @@
       "remove": "Remove filter {{kind}}"
     },
     "viewMenu": {
-      "label": "View options",
-      "button": "View",
+      "label": "Sort, view and export",
+      "button": "Options",
       "sortBy": "Sort by"
     }
   },
@@ -1084,17 +1086,15 @@
       "appearance": "Appearance",
       "library": "Library",
       "language": "Language",
-      "export": "Export",
       "privacy": "Privacy and data",
       "shortcuts": "Keyboard shortcuts",
       "feedback": "Your feedback"
     },
     "description": {
-      "account": "Your profile and your account.",
+      "account": "Your profile, your shelf and your data.",
       "appearance": "Saved as you go and synced to all your devices.",
       "library": "How links are shown, saved and kept.",
       "language": "The language of the interface. Date and time formats are in Appearance.",
-      "export": "Take everything you saved with you.",
       "privacy": "What we keep, and how to take it with you.",
       "shortcuts": "Work without the mouse.",
       "feedback": "Ideas, problems and the answers we sent."
@@ -1106,6 +1106,33 @@
         "title": "Sign out",
         "label": "Sign out of Shelfmark",
         "hint": "Your links stay saved. Sign in again any time."
+      },
+      "memberSince": "Member since {{date}}",
+      "shelf": {
+        "title": "Your shelf",
+        "loading": "Loading your numbers",
+        "links": "Links",
+        "folders": "Folders",
+        "tags": "Tags",
+        "oldest": "Oldest link: {{when}}",
+        "topSites": "Sites you save most",
+        "topTags": "Most used tags",
+        "weekly": "Links added per week",
+        "weeklyHint": "Last 12 weeks",
+        "week": "Week of {{date}}: {{count}}",
+        "error": "Couldn't load your numbers.",
+        "retry": "Try again",
+        "empty": {
+          "title": "Nothing saved yet",
+          "text": "Save your first link and your numbers show up here."
+        }
+      },
+      "connected": {
+        "title": "Connected accounts",
+        "since": "Connected {{date}}",
+        "none": "The demo account isn't linked to Google or GitHub.",
+        "google": "Google",
+        "github": "GitHub"
       }
     },
     "data": {
@@ -1129,18 +1156,18 @@
         "light": "Light",
         "dark": "Dark",
         "custom": "Custom",
-        "note": "Want other colours or corners? Choose Custom. Light and Dark won’t change."
+        "note": "Want other colors or corners? Choose Custom. Light and Dark won’t change."
       },
       "custom": {
         "base": {
           "label": "Start from",
-          "hint": "Your colours sit on the light or the dark base",
+          "hint": "Your colors sit on the light or the dark base",
           "light": "Light",
           "dark": "Dark"
         },
         "accent": {
-          "label": "Accent colour",
-          "hint": "Active folder, tags, favourites and focus. Every option keeps 4.5:1 contrast in light and dark.",
+          "label": "Accent color",
+          "hint": "Active folder, tags, favorites and focus. Every option keeps 4.5:1 contrast in light and dark.",
           "sage": "Sage",
           "ocean": "Ocean",
           "plum": "Plum",
@@ -1171,26 +1198,26 @@
         },
         "reset": "Reset custom theme",
         "own": {
-          "label": "Your own colour",
-          "picker": "Choose a colour",
+          "label": "Your own color",
+          "picker": "Choose a color",
           "hex": "Hex code",
           "invalid": "Enter # and six digits or letters a–f, like #2e6a99.",
-          "hint": "Shelfmark keeps 4.5:1 contrast: on the other base it uses a darker or lighter shade of your colour.",
-          "warning": "This colour is hard to read on your background ({{ratio}}:1, it needs 4.5:1).",
+          "hint": "Shelfmark keeps 4.5:1 contrast: on the other base it uses a darker or lighter shade of your color.",
+          "warning": "This color is hard to read on your background ({{ratio}}:1, it needs 4.5:1).",
           "use": "Use {{colour}}",
           "saturation": "Saturation",
           "brightness": "Brightness",
           "hue": "Hue",
-          "addColour": "Add colour",
+          "addColour": "Add color",
           "cancel": "Cancel",
-          "remove": "Remove colour {{colour}}",
-          "removed": "Colour removed",
+          "remove": "Remove color {{colour}}",
+          "removed": "Color removed",
           "undo": "Undo",
-          "removeFailed": "Couldn’t remove the colour"
+          "removeFailed": "Couldn’t remove the color"
         },
         "ownBackground": {
-          "label": "Your own background colour",
-          "hint": "Text must stay readable (4.5:1): if needed, Shelfmark uses a lighter or darker shade of your colour.",
+          "label": "Your own background color",
+          "hint": "Text must stay readable (4.5:1): if needed, Shelfmark uses a lighter or darker shade of your color.",
           "warning": "Text is hard to read on this background ({{ratio}}:1, it needs 4.5:1)."
         }
       },
@@ -1242,7 +1269,7 @@
       },
       "sidebar": {
         "colours": {
-          "label": "Folder colours",
+          "label": "Folder colors",
           "hint": "Off shows every folder in plain graphite"
         }
       },
@@ -1940,11 +1967,12 @@
       "attachClientInfo": "Helps us reproduce problems. Only the app version and your browser name and version are sent."
     },
     "screenshot": {
-      "label": "Screenshot (optional)",
-      "drop": "Drop an image or",
-      "choose": "choose a file",
-      "hint": "PNG, JPEG or WebP, up to {{max}} MB.",
-      "remove": "Remove screenshot",
+      "label": "Screenshots (optional)",
+      "drop": "Drop images or",
+      "choose": "choose files",
+      "hint": "PNG, JPEG or WebP, up to {{count}} images, {{max}} MB each.",
+      "full": "{{count}} images added, the most one message can have.",
+      "remove": "Remove image {{index}} of {{count}}: {{name}}",
       "size": {
         "kb": "{{size}} KB",
         "mb": "{{size}} MB"
@@ -1953,13 +1981,15 @@
         "type": "That file is not a PNG, JPEG or WebP image.",
         "size": "That image is larger than {{max}} MB. Choose a smaller one.",
         "empty": "That file is empty.",
-        "read": "Couldn't read that file. Try another one."
+        "read": "Couldn't read that file. Try another one.",
+        "count": "You can add up to {{count}} images."
       }
     },
     "thanks": {
       "title": "Thank you",
       "text": "We read every message. You'll see its status in Settings › Your feedback.",
-      "done": "Done"
+      "done": "Done",
+      "screenshotsFailed": "Some images couldn't be attached. Your message was sent without them."
     },
     "page": {
       "send": {
@@ -1993,7 +2023,7 @@
       "replyHint": "Shown to the sender in Your feedback. Leave empty for none.",
       "replyTooLong": "Keep the reply to {{max}} characters or fewer.",
       "save": "Save",
-      "screenshot": "View screenshot",
+      "screenshot": "Open screenshot {{index}} of {{count}}",
       "error": "Couldn't load the messages.",
       "empty": {
         "title": "No messages",

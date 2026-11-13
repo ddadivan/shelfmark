@@ -18,7 +18,7 @@ const ICONS: ChoiceOption[] = [
 function setup(inputs: Record<string, unknown> = {}, options: ChoiceOption[] = SWATCHES) {
   const fixture = TestBed.createComponent(ChoiceGridComponent);
   fixture.componentRef.setInput('options', options);
-  fixture.componentRef.setInput('ariaLabel', 'Colour');
+  fixture.componentRef.setInput('ariaLabel', 'Color');
   for (const [name, value] of Object.entries(inputs)) {
     fixture.componentRef.setInput(name, value);
   }
@@ -32,7 +32,7 @@ describe('ChoiceGridComponent', () => {
   it('is a named radiogroup of native radios, each named by its label', () => {
     const { host, radios } = setup();
     expect(host.getAttribute('role')).toBe('radiogroup');
-    expect(host.getAttribute('aria-label')).toBe('Colour');
+    expect(host.getAttribute('aria-label')).toBe('Color');
     expect(radios().map((r) => r.getAttribute('aria-label'))).toEqual(['Graphite', 'Clay', 'Teal']);
     expect(new Set(radios().map((r) => r.name)).size).toBe(1);
   });
@@ -67,7 +67,7 @@ describe('ChoiceGridComponent', () => {
     expect(fixture.componentInstance.value()).toBe('clay');
   });
 
-  it('draws swatches in their own colour', () => {
+  it('draws swatches in their own color', () => {
     const { host } = setup();
     expect(host.querySelectorAll('.ui-choice__swatch')).toHaveLength(3);
     expect(host.querySelector('.ui-choice--clay')).not.toBeNull();
@@ -121,15 +121,15 @@ describe('ChoiceGridComponent', () => {
       ...SWATCHES,
       {
         value: '#a33a5b',
-        label: 'Own colour #a33a5b',
+        label: 'Own color #a33a5b',
         colour: '#a33a5b',
-        removeLabel: 'Remove colour #a33a5b',
+        removeLabel: 'Remove color #a33a5b',
       },
       {
         value: '#23716c',
-        label: 'Own colour #23716c',
+        label: 'Own color #23716c',
         colour: '#23716c',
-        removeLabel: 'Remove colour #23716c',
+        removeLabel: 'Remove color #23716c',
       },
     ];
 
@@ -138,7 +138,7 @@ describe('ChoiceGridComponent', () => {
 
       expect(host.querySelectorAll('.ui-choice__remove')).toHaveLength(2);
       expect(radios()[0].getAttribute('aria-keyshortcuts')).toBeNull();
-      expect(radios()[3].getAttribute('aria-description')).toBe('Remove colour #a33a5b');
+      expect(radios()[3].getAttribute('aria-description')).toBe('Remove color #a33a5b');
       expect(radios()[3].getAttribute('aria-keyshortcuts')).toBe('Delete Backspace');
       // Pointer only: out of the tab order and hidden from assistive technology.
       const button = host.querySelector<HTMLButtonElement>('.ui-choice__remove');

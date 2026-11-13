@@ -13,7 +13,7 @@ export function feedbackMessage(overrides: Partial<FeedbackMessage> = {}): Feedb
     text: 'Sort a folder by when I last opened a link',
     status: FEEDBACK_STATUS.Received,
     reply: null,
-    screenshotUrl: null,
+    screenshotUrls: [],
     createdAt: '2026-11-10T09:00:00.000Z',
     updatedAt: '2026-11-10T09:00:00.000Z',
     ...overrides,

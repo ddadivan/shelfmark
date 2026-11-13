@@ -194,7 +194,7 @@ describe('FolderActionsService style', () => {
     await closed();
   });
 
-  it('adds an own colour from the "+" swatch, keeps it as a swatch and saves it (#335)', async () => {
+  it('adds an own color from the "+" swatch, keeps it as a swatch and saves it (#335)', async () => {
     const { actions, store } = await setup();
     const settings = TestBed.inject(UserSettingsStore);
 
@@ -209,7 +209,7 @@ describe('FolderActionsService style', () => {
     const hex = root.querySelector('.ui-color-picker__hex-input') as HTMLInputElement;
     hex.value = '#3A7BD5';
     hex.dispatchEvent(new Event('input'));
-    // Typing only previews; "Add colour" is the explicit choice (#350).
+    // Typing only previews; "Add color" is the explicit choice (#350).
     (
       root.querySelector(
         '.ui-color-picker__actions .ui-button--primary, .ui-color-picker__actions ui-button:last-child button',
@@ -217,10 +217,10 @@ describe('FolderActionsService style', () => {
     ).click();
     await until(() => {
       expect(settings.customColours()).toEqual(['#3a7bd5']);
-      expect(root.querySelector('input[aria-label="Your colour #3a7bd5"]')).not.toBeNull();
+      expect(root.querySelector('input[aria-label="Your color #3a7bd5"]')).not.toBeNull();
     });
     expect(
-      (root.querySelector('input[aria-label="Your colour #3a7bd5"]') as HTMLInputElement).checked,
+      (root.querySelector('input[aria-label="Your color #3a7bd5"]') as HTMLInputElement).checked,
     ).toBe(true);
     button('Save').click();
     await closed();

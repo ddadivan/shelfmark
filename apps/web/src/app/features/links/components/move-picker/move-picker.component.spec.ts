@@ -19,7 +19,7 @@ async function setup(
   folders: readonly FolderResponse[] = MOCK_FOLDERS,
 ) {
   const submit = vi.fn<MovePickerData['submit']>();
-  const ref = { close: vi.fn() };
+  const ref = { close: vi.fn(), locked: () => false };
   await TestBed.configureTestingModule({
     imports: [MovePickerComponent],
     providers: [

@@ -86,7 +86,7 @@
       <ui-button
         [uiMenuTrigger]="viewMenu"
         variant="secondary"
-        iconLeft="sort"
+        iconLeft="settings"
         iconRight="chevron-down"
         [iconSize]="ICON_SIZE.Sm"
       >
@@ -235,7 +235,7 @@
     </ui-button>
   </div>
   } }
-  <div appLibraryHotkeys class="library__scroll" tabindex="-1">
+  <div appLibraryHotkeys appToastArea class="library__scroll" tabindex="-1">
     @if (store.error() && store.count() > 0 && !filters.folderMissing()) {
     <ui-notice kind="danger" class="library__notice">
       {{ 'library.refetchFailed' | transloco }}
@@ -498,6 +498,7 @@
     } } @if (selection.selecting()) {
     <ui-bulk-bar
       class="library__bulk"
+      appToastAbove=".ui-bulk-bar__bar"
       animate.enter="ui-bulk-bar--enter"
       animate.leave="ui-bulk-bar--leave"
       [actions]="bulk.barActions()"

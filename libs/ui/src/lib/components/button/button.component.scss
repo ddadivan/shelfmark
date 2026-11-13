@@ -16,7 +16,7 @@
 
 :host(.ui-button-host--wrap) .ui-button {
   height: auto;
-  min-height: rem(40px);
+  min-height: calc(#{rem(40px)} * var(--ui-button-scale, 1));
   max-inline-size: 100%;
   padding-block: var(--space-2);
   text-align: start;
@@ -30,13 +30,19 @@
   // Inside a dialog every icon is 24px (`--ui-dialog-icon-size` from `ui-dialog`).
   --ui-icon-size: var(--ui-dialog-icon-size);
 
+  // `--ui-button-scale` (unitless, default 1): a feature that needs bigger buttons than the
+  // three sizes (the landing on wide screens) sets it on an ancestor; box, text and icons grow.
+  --ui-icon-scale: var(--ui-button-scale, 1);
+
   display: inline-flex;
-  gap: var(--space-2);
+  gap: calc(var(--space-2) * var(--ui-button-scale, 1));
   align-items: center;
   justify-content: center;
-  height: rem(40px);
+  height: calc(#{rem(40px)} * var(--ui-button-scale, 1));
   min-width: var(--ui-button-min-width, 0);
-  padding: 0 rem(18px);
+  padding: 0 calc(#{rem(18px)} * var(--ui-button-scale, 1));
+  font-size: calc(#{rem(13px)} * var(--ui-button-scale, 1));
+  line-height: calc(#{rem(18px)} * var(--ui-button-scale, 1));
   color: var(--ui-button-color, var(--text));
   white-space: nowrap;
   cursor: pointer;

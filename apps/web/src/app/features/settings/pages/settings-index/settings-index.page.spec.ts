@@ -14,6 +14,10 @@ import { ONBOARDING_API } from '../../../onboarding/models/onboarding-api.const'
 import { SETTINGS_TEST_USER } from '../../../../../testing/settings-page-testbed';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
 import settingsRoutes from '../../settings.routes';
+import { of } from 'rxjs';
+import { EXPORT_API } from '../../../export/models/export-api.const';
+import { ME_STATS_API } from '../../models/me-stats-api.const';
+import { SETTINGS_TEST_STATS } from '../../../../../testing/settings-test-stats.const';
 
 async function setup(phone: boolean) {
   localStorage.removeItem(THEME_STORAGE_KEY);
@@ -36,6 +40,8 @@ async function setup(phone: boolean) {
       { provide: ONBOARDING_API, useValue: { complete: vi.fn() } },
       { provide: ADMIN_API, useValue: adminApiStub() },
       { provide: ACCOUNT_DELETION_API, useValue: { delete: vi.fn() } },
+      { provide: EXPORT_API, useValue: { download: vi.fn() } },
+      { provide: ME_STATS_API, useValue: { get: () => of(SETTINGS_TEST_STATS) } },
       { provide: ViewportService, useValue: { phone: phoneSignal, compact: phoneSignal } },
     ],
   });
@@ -61,7 +67,6 @@ describe('the You list (/settings)', () => {
       '/settings/appearance',
       '/settings/library',
       '/settings/language',
-      '/settings/import-export',
       '/settings/privacy',
       '/settings/feedback',
       '/about',

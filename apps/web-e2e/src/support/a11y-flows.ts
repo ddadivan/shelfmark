@@ -23,6 +23,17 @@ export async function openEmptyFeed(page: Page): Promise<void> {
   await expect(page.getByRole('heading', { name: 'Your links will live here' })).toBeVisible();
 }
 
+/** The Account page of a new user with nothing saved (#352: Your shelf's empty state, Your data). */
+export async function openEmptyAccount(page: Page): Promise<void> {
+  await page.addInitScript(
+    ([key, value]) => sessionStorage.setItem(key, value),
+    [MOCK_LINKS_SCENARIO.key, MOCK_LINKS_SCENARIO.empty],
+  );
+  await openSignedIn(page, '/settings/account');
+  await expect(page.getByRole('heading', { name: 'Nothing saved yet' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Download JSON' })).toBeVisible();
+}
+
 /** Opens the context menu of a folder row and picks an item (the Library tab opens first on a phone). */
 export async function pickFolderMenuItem(page: Page, folder: string, item: string): Promise<void> {
   await openSidebar(page);

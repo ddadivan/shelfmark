@@ -18,12 +18,17 @@
 
   // `--ui-toast-offset` lets the app lift the toast above its own bottom bar (the phone tab bar,
   // the bulk bar: bar height plus a 12px gap); the default is the plain 24px edge gap.
-  padding: var(--space-3) var(--space-3)
+  // `--ui-toast-inset-start` / `--ui-toast-inset-end` let the app centre the toasts on a content
+  // area instead of the window (the distances from the window edges to that area).
+  padding-block: var(--space-3)
     max(var(--ui-toast-offset, var(--space-6)), env(safe-area-inset-bottom));
+  padding-inline: var(--ui-toast-inset-start, var(--space-3))
+    var(--ui-toast-inset-end, var(--space-3));
   pointer-events: none;
 
   @include tablet-up {
-    padding-inline: var(--space-4);
+    padding-inline: var(--ui-toast-inset-start, var(--space-4))
+      var(--ui-toast-inset-end, var(--space-4));
   }
 }
 

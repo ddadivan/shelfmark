@@ -6,6 +6,7 @@ import { gotoWithSidebar, isCompact, openSidebar, tabBar } from './support/sideb
 import { settled } from './support/settled';
 import { expect, test } from './support/test';
 import { Finger } from './support/touch';
+import { documentScrollTop, mainScrollTop, scrollMainTo } from './support/scroll';
 
 const READING = MOCK_FIXTURE.readingName;
 const NOTES = 'Notes';
@@ -76,7 +77,7 @@ test.describe('folder style and pins (mock API)', () => {
   }
 
   async function chooseStyle(page: Page, colour: string, icon: string): Promise<void> {
-    await pickFolderMenuItem(page, READING, 'Colour and icon…');
+    await pickFolderMenuItem(page, READING, 'Color and icon…');
     const dialog = page.getByRole('dialog', { name: READING });
     await expect(dialog).toBeVisible();
     await choose(dialog, colour);
@@ -100,10 +101,10 @@ test.describe('folder style and pins (mock API)', () => {
     await expect(coloured(page, 'clay').first()).toBeVisible();
   });
 
-  test('own colours and an emoji: the swatches stay on one line, a "+" swatch adds a colour, one emoji replaces the icon (#335)', async ({
+  test('own colors and an emoji: the swatches stay on one line, a "+" swatch adds a colour, one emoji replaces the icon (#335)', async ({
     page,
   }) => {
-    await pickFolderMenuItem(page, READING, 'Colour and icon…');
+    await pickFolderMenuItem(page, READING, 'Color and icon…');
     const dialog = page.getByRole('dialog', { name: READING });
     await expect(dialog).toBeVisible();
 
@@ -116,16 +117,16 @@ test.describe('folder style and pins (mock API)', () => {
     expect(new Set(tops).size).toBe(1);
 
     // "+" opens the colour picker; a finished colour is kept as a swatch and chosen.
-    await dialog.getByRole('button', { name: 'Add your own colour' }).click();
+    await dialog.getByRole('button', { name: 'Add your own color' }).click();
     const hex = dialog.getByRole('textbox', { name: 'Hex code' });
     await expect(hex).toBeFocused();
     await expect(dialog.getByRole('slider', { name: 'Hue' })).toBeVisible();
     await hex.fill('#3a7bd5');
     await hex.press('Enter');
     // Typing only previews; the explicit button keeps and chooses the colour (#350).
-    await expect(dialog.getByRole('radio', { name: 'Your colour #3a7bd5' })).toHaveCount(0);
-    await dialog.getByRole('button', { name: 'Add colour', exact: true }).click();
-    await expect(dialog.getByRole('radio', { name: 'Your colour #3a7bd5' })).toBeChecked();
+    await expect(dialog.getByRole('radio', { name: 'Your color #3a7bd5' })).toHaveCount(0);
+    await dialog.getByRole('button', { name: 'Add color', exact: true }).click();
+    await expect(dialog.getByRole('radio', { name: 'Your color #3a7bd5' })).toBeChecked();
     await expect(hex).toHaveCount(0);
 
     // One emoji replaces the icon; anything else is refused.
@@ -143,22 +144,22 @@ test.describe('folder style and pins (mock API)', () => {
     await expect(page.locator('.ui-folder-icon__emoji').first()).toHaveText('🍕');
   });
 
-  test('an own colour swatch is removed with Delete, with Undo; the folder keeps the colour it wears (#350)', async ({
+  test('an own color swatch is removed with Delete, with Undo; the folder keeps the colour it wears (#350)', async ({
     page,
   }, testInfo) => {
     test.skip(testInfo.project.use.hasTouch === true, 'the keyboard path is checked on desktop');
-    await pickFolderMenuItem(page, READING, 'Colour and icon…');
+    await pickFolderMenuItem(page, READING, 'Color and icon…');
     const dialog = page.getByRole('dialog', { name: READING });
-    const plus = dialog.getByRole('button', { name: 'Add your own colour' });
+    const plus = dialog.getByRole('button', { name: 'Add your own color' });
     const hex = dialog.getByRole('textbox', { name: 'Hex code' });
     for (const colour of ['#3a7bd5', '#1d4f91']) {
       await plus.click();
       await hex.fill(colour);
-      await dialog.getByRole('button', { name: 'Add colour', exact: true }).click();
+      await dialog.getByRole('button', { name: 'Add color', exact: true }).click();
       await expect(hex).toHaveCount(0);
     }
-    const first = dialog.getByRole('radio', { name: 'Your colour #3a7bd5' });
-    const second = dialog.getByRole('radio', { name: 'Your colour #1d4f91' });
+    const first = dialog.getByRole('radio', { name: 'Your color #3a7bd5' });
+    const second = dialog.getByRole('radio', { name: 'Your color #1d4f91' });
     await expect(second).toBeChecked();
 
     await first.focus();
@@ -167,7 +168,7 @@ test.describe('folder style and pins (mock API)', () => {
     // The colour the folder wears stays, and has no "×".
     await expect(second).toBeChecked();
     await expect(dialog.locator('.ui-choice__remove')).toHaveCount(1);
-    const toast = page.getByRole('status').filter({ hasText: 'Colour removed' });
+    const toast = page.getByRole('status').filter({ hasText: 'Color removed' });
     await expect(toast).toBeVisible();
     await toast.getByRole('button', { name: 'Undo' }).click();
     await expect(first).toBeVisible();
@@ -176,7 +177,7 @@ test.describe('folder style and pins (mock API)', () => {
   test('the icon grid shows four full rows, a toggle expands every icon, no inner scroll (#335)', async ({
     page,
   }) => {
-    await pickFolderMenuItem(page, READING, 'Colour and icon…');
+    await pickFolderMenuItem(page, READING, 'Color and icon…');
     const dialog = page.getByRole('dialog', { name: READING });
     await expect(dialog).toBeVisible();
     const toggle = dialog.getByRole('button', { name: /^Show all icons \(\d+\)$/ });
@@ -229,7 +230,7 @@ test.describe('folder style and pins (mock API)', () => {
   test('the dialog radio groups move with the arrow keys, Reset goes back to graphite', async ({
     page,
   }) => {
-    await pickFolderMenuItem(page, READING, 'Colour and icon…');
+    await pickFolderMenuItem(page, READING, 'Color and icon…');
     const dialog = page.getByRole('dialog', { name: READING });
     const sage = dialog.getByRole('radio', { name: 'Sage', exact: true });
     await choose(dialog, 'Sage');
@@ -577,17 +578,18 @@ test.describe('folder style and pins (mock API)', () => {
       await settled(page);
       // Room to scroll: a shorter phone screen than the Library page.
       await page.setViewportSize({ width: 360, height: 700 });
-      await page.evaluate('window.scrollTo(0, 0)');
+      await scrollMainTo(page, 0);
       const before = await folderNames(page);
       const start = await centre(readingRow(page));
-      expect(await page.evaluate('window.scrollY')).toBe(0);
+      expect(await mainScrollTop(page)).toBe(0);
       expect(start.y).toBeLessThan(680);
 
       const finger = await Finger.down(page, start);
       await finger.move({ x: start.x, y: start.y - 240 }, 8);
       await finger.up();
 
-      await expect.poll(() => page.evaluate('window.scrollY')).toBeGreaterThan(40);
+      await expect.poll(() => mainScrollTop(page)).toBeGreaterThan(40);
+      expect(await documentScrollTop(page)).toBe(0);
       await expect(page.locator('app-sidebar .ui-tree__drop-slot')).toHaveCount(0);
       expect(await folderNames(page)).toEqual(before);
       await expect(page).toHaveURL('/library');
@@ -666,16 +668,16 @@ test.describe('folder style and pins (mock API)', () => {
     await expect(await cardMenuItem(card, 'Pin to top')).toHaveCount(0);
   });
 
-  test('turning Folder colours off shows every folder in graphite', async ({ page }) => {
+  test('turning Folder colors off shows every folder in graphite', async ({ page }) => {
     await chooseStyle(page, 'Clay', 'Star');
     await openSidebar(page);
     await expect(coloured(page, 'clay').first()).toBeVisible();
 
-    // Folder colours live only in Appearance since #315.
+    // Folder colors live only in Appearance since #315.
     await openSettingsSection(page, 'Appearance');
     await settled(page);
-    await page.getByRole('switch', { name: 'Folder colours' }).click();
-    await expect(page.getByRole('switch', { name: 'Folder colours' })).not.toBeChecked();
+    await page.getByRole('switch', { name: 'Folder colors' }).click();
+    await expect(page.getByRole('switch', { name: 'Folder colors' })).not.toBeChecked();
 
     await backToTree(page);
     await expect(coloured(page, 'clay')).toHaveCount(0);
@@ -690,6 +692,6 @@ test.describe('folder style and pins (mock API)', () => {
     await expect(page.getByRole('heading', { name: 'Trash', level: 2 })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Edit pinned' })).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Manage tags' })).toHaveCount(0);
-    await expect(page.getByRole('switch', { name: 'Folder colours' })).toHaveCount(0);
+    await expect(page.getByRole('switch', { name: 'Folder colors' })).toHaveCount(0);
   });
 });

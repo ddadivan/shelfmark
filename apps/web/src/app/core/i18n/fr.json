@@ -509,7 +509,7 @@
     "home": "Shelfmark, accueil",
     "newTab": "(s’ouvre dans un nouvel onglet)",
     "updated": "Dernière mise à jour : {{date}}",
-    "updatedDate": "9 novembre 2026",
+    "updatedDate": "13 novembre 2026",
     "intro": "Shelfmark est un projet personnel qui stocke les liens que vous enregistrez. Cette page explique ce que nous conservons et pourquoi, en termes simples.",
     "store": {
       "title": "Ce que nous stockons",
@@ -517,6 +517,7 @@
       "content": "Vos liens (adresse, titre, note, marque de favori, dernière ouverture), vos dossiers et vos tags.",
       "images": "Pour chaque lien, une petite copie de l’icône et de l’image d’aperçu du site, s’il en a. Notre serveur les télécharge et les stocke pour qu’elles se chargent depuis Shelfmark.",
       "feedback": "Vos réponses à l’évaluation dans l’application, liées à votre compte : une note de 1 à 10 et, si vous en écrivez un, un commentaire.",
+      "stats": "Les chiffres de « Votre étagère » sur la page Compte (totaux, sites et tags les plus utilisés, liens par semaine) sont calculés à partir de vos propres données chaque fois que vous ouvrez la page. Ils ne sont ni stockés ni partagés.",
       "sessions": "Pour chaque connexion : sa date d’expiration, ainsi que l’adresse IP et le navigateur (user agent) d’où elle a été ouverte, pour sécuriser les sessions.",
       "logs": "Notre API journalise la méthode, le chemin, le statut, la durée et un identifiant de requête, sans contenu de lien ni donnée personnelle. Notre hébergeur, Vercel, conserve ses propres journaux de requêtes standard, qui incluent les adresses IP, pendant une durée limitée."
     },
@@ -541,6 +542,7 @@
       "google": "Politique de confidentialité de Google",
       "github": "Déclaration de confidentialité de GitHub",
       "tokens": "Nous ne stockons pas les jetons d’accès que Google ou GitHub émettent lors de la connexion.",
+      "avatar": "Votre photo de profil est chargée directement depuis Google ou GitHub : votre navigateur les contacte donc chaque fois que Shelfmark l’affiche. Aucun référent n’est envoyé avec cette requête, ils ne voient donc pas sur quelle page de Shelfmark vous êtes.",
       "monitoring": "Si la surveillance des erreurs est activée, les plantages et erreurs serveur sont signalés à Sentry via notre propre serveur. Les rapports sont nettoyés avant de partir : ni e-mail, ni adresse IP, ni cookies, ni contenu de requête, ni adresse de lien enregistré, seulement des détails techniques comme le type d’erreur, l’endroit du code concerné, votre type de navigateur et de système, le chemin de la page et un identifiant de requête. Si elle est désactivée, rien n’est envoyé."
     },
     "where": {
@@ -1076,8 +1078,8 @@
       "remove": "Retirer le filtre {{kind}}"
     },
     "viewMenu": {
-      "label": "Options d'affichage",
-      "button": "Affichage",
+      "label": "Trier, afficher et exporter",
+      "button": "Options",
       "sortBy": "Trier par"
     }
   },
@@ -1105,17 +1107,15 @@
       "appearance": "Apparence",
       "library": "Bibliothèque",
       "language": "Langue",
-      "export": "Exporter",
       "privacy": "Confidentialité et données",
       "shortcuts": "Raccourcis clavier",
       "feedback": "Vos avis"
     },
     "description": {
-      "account": "Votre profil et votre compte.",
+      "account": "Votre profil, votre étagère et vos données.",
       "appearance": "Enregistré au fur et à mesure et synchronisé sur tous vos appareils.",
       "library": "Comment les liens sont affichés, enregistrés et conservés.",
       "language": "La langue de l’interface. Les formats de date et d’heure sont dans Apparence.",
-      "export": "Emportez tout ce que vous avez enregistré.",
       "privacy": "Ce que nous conservons, et comment le récupérer.",
       "shortcuts": "Travaillez sans la souris.",
       "feedback": "Idées, problèmes et nos réponses."
@@ -1127,6 +1127,33 @@
         "title": "Se déconnecter",
         "label": "Se déconnecter de Shelfmark",
         "hint": "Vos liens restent enregistrés. Reconnectez-vous quand vous voulez."
+      },
+      "memberSince": "Membre depuis {{date}}",
+      "shelf": {
+        "title": "Votre étagère",
+        "loading": "Chargement de vos chiffres",
+        "links": "Liens",
+        "folders": "Dossiers",
+        "tags": "Tags",
+        "oldest": "Lien le plus ancien : {{when}}",
+        "topSites": "Sites que vous enregistrez le plus",
+        "topTags": "Tags les plus utilisés",
+        "weekly": "Liens ajoutés par semaine",
+        "weeklyHint": "12 dernières semaines",
+        "week": "Semaine du {{date}} : {{count}}",
+        "error": "Impossible de charger vos chiffres.",
+        "retry": "Réessayer",
+        "empty": {
+          "title": "Rien d'enregistré pour l'instant",
+          "text": "Enregistrez votre premier lien et vos chiffres apparaîtront ici."
+        }
+      },
+      "connected": {
+        "title": "Comptes connectés",
+        "since": "Connecté le {{date}}",
+        "none": "Le compte de démo n'est pas lié à Google ni à GitHub.",
+        "google": "Google",
+        "github": "GitHub"
       }
     },
     "data": {
@@ -1977,11 +2004,12 @@
       "attachClientInfo": "Nous aide à reproduire les problèmes. Seuls la version de l’app ainsi que le nom et la version de votre navigateur sont envoyés."
     },
     "screenshot": {
-      "label": "Capture d’écran (facultatif)",
-      "drop": "Déposez une image ou",
-      "choose": "choisissez un fichier",
-      "hint": "PNG, JPEG ou WebP, jusqu’à {{max}} Mo.",
-      "remove": "Retirer la capture d’écran",
+      "label": "Captures d’écran (facultatif)",
+      "drop": "Déposez des images ou",
+      "choose": "choisissez des fichiers",
+      "hint": "PNG, JPEG ou WebP, jusqu’à {{count}} images de {{max}} Mo chacune.",
+      "full": "{{count}} images ajoutées, le maximum pour un message.",
+      "remove": "Retirer l’image {{index}} sur {{count}} : {{name}}",
       "size": {
         "kb": "{{size}} Ko",
         "mb": "{{size}} Mo"
@@ -1990,13 +2018,15 @@
         "type": "Ce fichier n’est pas une image PNG, JPEG ou WebP.",
         "size": "Cette image dépasse {{max}} Mo. Choisissez-en une plus petite.",
         "empty": "Ce fichier est vide.",
-        "read": "Impossible de lire ce fichier. Essayez-en un autre."
+        "read": "Impossible de lire ce fichier. Essayez-en un autre.",
+        "count": "Vous pouvez ajouter jusqu’à {{count}} images."
       }
     },
     "thanks": {
       "title": "Merci",
       "text": "Nous lisons chaque message. Vous verrez son statut dans Paramètres › Vos avis.",
-      "done": "Terminé"
+      "done": "Terminé",
+      "screenshotsFailed": "Certaines images n’ont pas pu être jointes. Votre message a été envoyé sans elles."
     },
     "page": {
       "send": {
@@ -2030,7 +2060,7 @@
       "replyHint": "Visible par l’expéditeur dans Vos avis. Laissez vide pour ne rien afficher.",
       "replyTooLong": "Réponse de {{max}} caractères au maximum.",
       "save": "Enregistrer",
-      "screenshot": "Voir la capture d’écran",
+      "screenshot": "Ouvrir la capture {{index}} sur {{count}}",
       "error": "Impossible de charger les messages.",
       "empty": {
         "title": "Aucun message",

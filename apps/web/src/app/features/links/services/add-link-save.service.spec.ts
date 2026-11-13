@@ -43,7 +43,7 @@ async function setup(link?: LinkResponse) {
       { provide: LINKS_API, useValue: api },
       { provide: FOLDERS_API, useValue: {} },
       { provide: UI_DIALOG_DATA, useValue: data },
-      { provide: UiDialogRef, useValue: { close } },
+      { provide: UiDialogRef, useValue: { close, locked: () => false } },
       AddLinkFormService,
       AddLinkPreviewService,
       AddLinkSaveService,

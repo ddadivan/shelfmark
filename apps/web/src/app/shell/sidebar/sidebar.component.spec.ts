@@ -260,7 +260,7 @@ describe('SidebarComponent', () => {
     );
     expect(items).toEqual([
       'Pin to sidebar',
-      'Colour and icon…',
+      'Color and icon…',
       'New subfolder',
       'Add link here',
       'Rename',

@@ -244,7 +244,7 @@ describe('ThemeService', () => {
       expect(service.customTheme()).toEqual(dark);
     });
 
-    it('draws an own accent colour through custom properties in its nearest AA shade (#315)', () => {
+    it('draws an own accent color through custom properties in its nearest AA shade (#315)', () => {
       stubSystemScheme(false);
       const service = createService();
       service.setCustomTheme({

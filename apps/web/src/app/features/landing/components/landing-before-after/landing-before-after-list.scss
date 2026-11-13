@@ -58,8 +58,8 @@
   white-space: nowrap;
 }
 
-// On desktop the after panel matches the bigger before board: larger text, rows and spacing.
-// `ui-chip` and `ui-favicon` have fixed sizes in `libs/ui`, so they scale with `zoom`.
+// On desktop the after panel matches the bigger before board: larger text, rows and spacing;
+// `ui-chip` and `ui-favicon` grow through their scale properties.
 @include desktop {
   .landing-ba__after {
     gap: var(--space-6);
@@ -87,8 +87,9 @@
   }
 
   .landing-ba__tags {
+    --ui-chip-scale: 1.2;
+
     padding: 0 var(--space-3);
-    zoom: 1.2;
   }
 
   .landing-ba__list {
@@ -96,12 +97,10 @@
   }
 
   .landing-ba__item {
+    --ui-favicon-scale: 1.25;
+
     gap: var(--space-4);
     padding: var(--space-3);
-
-    ui-favicon {
-      zoom: 1.25;
-    }
   }
 
   .landing-ba__item-title {

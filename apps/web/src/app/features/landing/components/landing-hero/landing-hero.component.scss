@@ -126,8 +126,14 @@
   flex-wrap: wrap;
   gap: rem(10px);
 
-  // `ui-button` has three fixed sizes in the library; the buttons grow with the screen instead.
-  @include landing.zoom(1.2, 1.45);
+  // The `lg` buttons grow with the wide breakpoints (`ui-button` reads `--ui-button-scale`).
+  @include landing.wide {
+    --ui-button-scale: 1.2;
+  }
+
+  @include landing.xwide {
+    --ui-button-scale: 1.45;
+  }
 }
 
 .landing-hero__note {

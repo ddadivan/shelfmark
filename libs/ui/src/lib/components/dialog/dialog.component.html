@@ -32,6 +32,7 @@
             iconOnly
             iconLeft="close"
             [ariaLabel]="label"
+            [disabled]="locked()"
             (click)="requestClose()"
           />
         }

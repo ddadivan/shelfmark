@@ -31,7 +31,7 @@ function setup(customColours: UserSettingsResponse['customColours'] = []) {
   return { api, store: TestBed.inject(UserSettingsStore) };
 }
 
-describe('UserSettingsStore own colours (#350)', () => {
+describe('UserSettingsStore own colors (#350)', () => {
   beforeEach(() => localStorage.clear());
 
   it('removes a colour from the saved list and sends the shorter list', async () => {

@@ -9,6 +9,7 @@ import { MockLibraryData } from '../../features/links/mock/mock-library-data';
 import { MockLinksApi } from '../../features/links/mock/mock-links.api';
 import { MockTagsApi } from '../../features/links/mock/mock-tags.api';
 import { MockPinsApi } from '../../features/pins/mock/mock-pins.api';
+import { MockMeStatsApi } from '../../features/settings/mock/mock-me-stats.api';
 import { MockUserSettingsApi } from '../../features/settings/mock/mock-user-settings.api';
 import { MockSharesApi } from '../../features/sharing/mock/mock-shares.api';
 import { MockTrashApi } from '../../features/trash/mock/mock-trash.api';
@@ -51,6 +52,7 @@ export function createMockContractApis(): ContractApis {
   const views = TestBed.inject(MockSavedViewsApi);
   const trash = TestBed.inject(MockTrashApi);
   const settings = TestBed.inject(MockUserSettingsApi);
+  const meStats = TestBed.inject(MockMeStatsApi);
   const shares = TestBed.inject(MockSharesApi);
   const feedback = TestBed.inject(MockFeedbackApi);
   const exporter = TestBed.inject(MockExportApi);
@@ -103,6 +105,9 @@ export function createMockContractApis(): ContractApis {
       deleteForever: (items) => settle(trash.deleteForever(items)),
       empty: () => settle(trash.empty()),
     },
+    me: {
+      stats: (query) => settle(meStats.get(query)),
+    },
     settings: {
       get: () => settle(settings.get()),
       update: (request) => settle(settings.update(request)),
@@ -118,6 +123,7 @@ export function createMockContractApis(): ContractApis {
     feedback: {
       list: () => settlePromise(feedback.list()),
       send: (request) => settlePromise(feedback.send(request)),
+      attachScreenshot: (id, upload) => settlePromise(feedback.attachScreenshot(id, upload)),
     },
     exports: {
       download: async ({ format, ...scope }) => {

@@ -12,10 +12,21 @@
 
   <p class="admin-item__text">{{ message().text }}</p>
 
-  @if (message().screenshotUrl; as screenshot) {
-    <a class="admin-item__link" [href]="screenshot" target="_blank" rel="noopener noreferrer">{{
-      'admin.feedback.screenshot' | transloco
-    }}</a>
+  @if (message().screenshotUrls.length > 0) {
+    <ul class="admin-item__shots">
+      @for (url of message().screenshotUrls; track url; let index = $index, count = $count) {
+        <li>
+          <a class="admin-item__shot" [href]="url" target="_blank" rel="noopener noreferrer">
+            <img
+              class="admin-item__shot-image"
+              [src]="url"
+              [alt]="'admin.feedback.screenshot' | transloco: { index: index + 1, count }"
+              loading="lazy"
+            />
+          </a>
+        </li>
+      }
+    </ul>
   }
 
   <div class="admin-item__controls">

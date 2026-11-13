@@ -115,7 +115,7 @@ describe('AppearancePage', () => {
     expect(page.querySelector('h1')?.textContent).toContain('Appearance');
     expect(page.textContent).toContain('Saved as you go and synced to all your devices.');
     expect(page.textContent).toContain('Light and Dark are tuned by us');
-    expect(page.textContent).toContain('Want other colours or corners? Choose Custom.');
+    expect(page.textContent).toContain('Want other colors or corners? Choose Custom.');
     expect(page.textContent).toContain('Animations');
     // Language has its own page, link counts live in Library, recently opened in Privacy.
     expect(page.querySelector('a[href="/settings/language"]')).toBeNull();
@@ -155,7 +155,7 @@ describe('AppearancePage', () => {
     expect(page.textContent).toContain('Start from');
     expect(radioIn(page, 'Background', 'Paper').checked).toBe(true);
 
-    radioIn(page, 'Accent colour', 'Rose').click();
+    radioIn(page, 'Accent color', 'Rose').click();
     await stable();
     expect(theme.customTheme().accent).toBe('rose');
     expect(settingsApi.update).toHaveBeenLastCalledWith({
@@ -193,19 +193,19 @@ describe('AppearancePage', () => {
     expect(theme.preference()).toBe(THEME_PREFERENCE.Custom);
   });
 
-  it('saves an own accent colour that keeps 4.5:1 from the "+" swatch (#315)', async () => {
+  it('saves an own accent color that keeps 4.5:1 from the "+" swatch (#315)', async () => {
     const { root: page, theme, settingsApi, stable } = await setup();
     radioIn(page, 'Theme', 'Custom').click();
     await stable();
 
     const swatch = page.querySelector('.ui-color-picker__swatch') as HTMLButtonElement;
-    expect(swatch.getAttribute('aria-label')).toBe('Your own colour');
+    expect(swatch.getAttribute('aria-label')).toBe('Your own color');
     swatch.click();
     await stable();
     const hex = page.querySelector('.ui-color-picker__hex-input') as HTMLInputElement;
     hex.value = '#23716C';
     hex.dispatchEvent(new Event('input'));
-    // Typing only previews; "Add colour" is the explicit choice (#350).
+    // Typing only previews; "Add color" is the explicit choice (#350).
     (
       page.querySelector(
         '.ui-color-picker__actions .ui-button--primary, .ui-color-picker__actions ui-button:last-child button',
@@ -219,19 +219,19 @@ describe('AppearancePage', () => {
     });
     expect(root.getAttribute(CUSTOM_THEME_ATTRIBUTE.Accent)).toBe(CUSTOM_ACCENT_OWN);
     expect(root.style.getPropertyValue('--accent')).toBe('#23716c');
-    // No curated swatch is checked; the own colour is a swatch of its own and is checked (#335).
-    expect(radioIn(page, 'Accent colour', 'Ocean').checked).toBe(false);
-    expect(radioIn(page, 'Accent colour', '#23716c').checked).toBe(true);
+    // No curated swatch is checked; the own color is a swatch of its own and is checked (#335).
+    expect(radioIn(page, 'Accent color', 'Ocean').checked).toBe(false);
+    expect(radioIn(page, 'Accent color', '#23716c').checked).toBe(true);
     expect(page.querySelector('ui-notice')).toBeNull();
 
     // A curated accent takes over again and drops the custom properties.
-    radioIn(page, 'Accent colour', 'Teal').click();
+    radioIn(page, 'Accent color', 'Teal').click();
     await stable();
     expect(theme.customTheme().accent).toBe('teal');
     expect(root.style.getPropertyValue('--accent')).toBe('');
   });
 
-  it('warns about an own colour below 4.5:1 and offers the nearest passing shade', async () => {
+  it('warns about an own color below 4.5:1 and offers the nearest passing shade', async () => {
     const { root: page, theme, settingsApi, stable } = await setup();
     radioIn(page, 'Theme', 'Custom').click();
     await stable();
@@ -242,7 +242,7 @@ describe('AppearancePage', () => {
     const hex = page.querySelector('.ui-color-picker__hex-input') as HTMLInputElement;
     hex.value = '#f5d0e0';
     hex.dispatchEvent(new Event('input'));
-    // Typing only previews; "Add colour" is the explicit choice (#350).
+    // Typing only previews; "Add color" is the explicit choice (#350).
     (
       page.querySelector(
         '.ui-color-picker__actions .ui-button--primary, .ui-color-picker__actions ui-button:last-child button',
@@ -271,22 +271,22 @@ describe('AppearancePage', () => {
     });
     expect(page.querySelector('ui-notice')).toBeNull();
     // The shade is a swatch of its own now, checked; the "+" panel closed.
-    expect(radioIn(page, 'Accent colour', shade).checked).toBe(true);
+    expect(radioIn(page, 'Accent color', shade).checked).toBe(true);
   });
 
-  it('saves an own background colour that keeps text at 4.5:1 and draws it as a swatch (#335)', async () => {
+  it('saves an own background color that keeps text at 4.5:1 and draws it as a swatch (#335)', async () => {
     const { root: page, theme, settingsApi, stable } = await setup();
     radioIn(page, 'Theme', 'Custom').click();
     await stable();
 
     const swatch = page.querySelectorAll<HTMLButtonElement>('.ui-color-picker__swatch')[1];
-    expect(swatch.getAttribute('aria-label')).toBe('Your own background colour');
+    expect(swatch.getAttribute('aria-label')).toBe('Your own background color');
     swatch.click();
     await stable();
     const hex = page.querySelector('.ui-color-picker__hex-input') as HTMLInputElement;
     hex.value = '#FDF6E3';
     hex.dispatchEvent(new Event('input'));
-    // Typing only previews; "Add colour" is the explicit choice (#350).
+    // Typing only previews; "Add color" is the explicit choice (#350).
     (
       page.querySelector(
         '.ui-color-picker__actions .ui-button--primary, .ui-color-picker__actions ui-button:last-child button',
@@ -319,7 +319,7 @@ describe('AppearancePage', () => {
     const hex = page.querySelector('.ui-color-picker__hex-input') as HTMLInputElement;
     hex.value = '#808080';
     hex.dispatchEvent(new Event('input'));
-    // Typing only previews; "Add colour" is the explicit choice (#350).
+    // Typing only previews; "Add color" is the explicit choice (#350).
     (
       page.querySelector(
         '.ui-color-picker__actions .ui-button--primary, .ui-color-picker__actions ui-button:last-child button',
@@ -443,15 +443,15 @@ describe('AppearancePage', () => {
       const { root: page, settingsApi, stable } = await setup();
       await vi.waitFor(async () => {
         await stable();
-        expect(switchNamed(page, 'Folder colours').getAttribute('aria-checked')).toBe('true');
+        expect(switchNamed(page, 'Folder colors').getAttribute('aria-checked')).toBe('true');
       });
 
-      switchNamed(page, 'Folder colours').click();
+      switchNamed(page, 'Folder colors').click();
       await stable();
       expect(settingsApi.update).toHaveBeenCalledWith({ folderColours: false });
-      expect(switchNamed(page, 'Folder colours').getAttribute('aria-checked')).toBe('false');
+      expect(switchNamed(page, 'Folder colors').getAttribute('aria-checked')).toBe('false');
 
-      switchNamed(page, 'Folder colours').click();
+      switchNamed(page, 'Folder colors').click();
       await stable();
       expect(settingsApi.update).toHaveBeenLastCalledWith({ folderColours: true });
     });
@@ -460,14 +460,14 @@ describe('AppearancePage', () => {
       const { root: page, show, stable } = await setup({ fail: true });
       await vi.waitFor(async () => {
         await stable();
-        expect(switchNamed(page, 'Folder colours').getAttribute('aria-checked')).toBe('true');
+        expect(switchNamed(page, 'Folder colors').getAttribute('aria-checked')).toBe('true');
       });
 
-      switchNamed(page, 'Folder colours').click();
+      switchNamed(page, 'Folder colors').click();
       await vi.waitFor(async () => {
         await stable();
         expect(show).toHaveBeenCalledWith(expect.objectContaining({ kind: TOAST_KIND.Danger }));
-        expect(switchNamed(page, 'Folder colours').getAttribute('aria-checked')).toBe('true');
+        expect(switchNamed(page, 'Folder colors').getAttribute('aria-checked')).toBe('true');
       });
     });
   });

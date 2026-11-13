@@ -3,7 +3,8 @@ import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
-import type { AuthUser } from '@shelfmark/contracts';
+import type { AuthUser, MeStatsResponse } from '@shelfmark/contracts';
+import { of, type Observable } from 'rxjs';
 import { AUTH_API } from '../app/core/auth/auth-api.token';
 import { AuthStore } from '../app/core/auth/auth.store';
 import type { AuthApi } from '../app/core/auth/models/auth-api.interface';
@@ -17,6 +18,8 @@ import { ThemeService } from '../app/core/theme/theme.service';
 import { ACCOUNT_DELETION_API } from '../app/features/account-deletion/models/account-deletion-api.const';
 import { EXPORT_API } from '../app/features/export/models/export-api.const';
 import { ONBOARDING_API } from '../app/features/onboarding/models/onboarding-api.const';
+import { ME_STATS_API } from '../app/features/settings/models/me-stats-api.const';
+import { SETTINGS_TEST_STATS } from './settings-test-stats.const';
 import { loadEnglish, provideTranslocoForTest } from '../app/testing/transloco-testing';
 
 export const SETTINGS_TEST_USER: AuthUser = {
@@ -32,13 +35,19 @@ export const SETTINGS_TEST_USER: AuthUser = {
 interface SetupOptions {
   user?: AuthUser;
   phone?: boolean;
+  /** What `GET /api/me/stats` answers (the Account page). */
+  stats?: () => Observable<MeStatsResponse>;
 }
 
 /** Renders one settings page at `/settings/<path>` with the real translations and mock APIs. */
 export async function setupSettingsPage(
   component: Type<unknown>,
   path: string,
-  { user = SETTINGS_TEST_USER, phone = false }: SetupOptions = {},
+  {
+    user = SETTINGS_TEST_USER,
+    phone = false,
+    stats = () => of(SETTINGS_TEST_STATS),
+  }: SetupOptions = {},
 ) {
   // No appearance from an earlier spec: the settings load would keep and save it (#273).
   // Nor a language (#274), for the same reason.
@@ -53,6 +62,7 @@ export async function setupSettingsPage(
   }
   const onboardingApi = { complete: vi.fn() };
   const exportApi = { download: vi.fn() };
+  const meStatsApi = { get: vi.fn(stats) };
   const api: AuthApi = {
     getSession: () => Promise.resolve(user),
     signIn: vi.fn(),
@@ -73,6 +83,7 @@ export async function setupSettingsPage(
       { provide: ONBOARDING_API, useValue: onboardingApi },
       { provide: ACCOUNT_DELETION_API, useValue: { delete: vi.fn() } },
       { provide: EXPORT_API, useValue: exportApi },
+      { provide: ME_STATS_API, useValue: meStatsApi },
       {
         provide: ViewportService,
         useValue: { phone: signal(phone), compact: signal(phone), desktop: signal(!phone) },
@@ -87,6 +98,7 @@ export async function setupSettingsPage(
   return {
     api,
     exportApi,
+    meStatsApi,
     onboardingApi,
     store,
     theme,

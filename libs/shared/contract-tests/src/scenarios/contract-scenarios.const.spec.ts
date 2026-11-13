@@ -14,6 +14,7 @@ describe('CONTRACT_SCENARIOS', () => {
       'feedback',
       'folders',
       'links',
+      'me',
       'pins',
       'settings',
       'sharing',
