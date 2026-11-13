@@ -13,7 +13,7 @@ import { LANDING_BENTO_FOLDERS } from '../../models/landing-bento-folders.const'
   imports: [LandingRevealDirective, TranslocoPipe, ChipComponent, FaviconComponent, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './landing-bento.component.html',
-  styleUrl: './landing-bento.component.scss',
+  styleUrls: ['./landing-bento.component.scss', './landing-bento-demo.scss'],
 })
 export class LandingBentoComponent {
   protected readonly CHIP_VARIANT = CHIP_VARIANT;

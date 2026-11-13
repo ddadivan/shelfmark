@@ -1,0 +1,57 @@
+@use 'ui' as *;
+
+// Plays once (`--playing`, set when the preview is first seen): the cards land one after
+// another, then the toast slides up. Only `transform` and `opacity` move. `--waiting` holds the
+// parts invisible until then; reduced motion shows the final frame and never waits.
+$landing-preview-step: 120ms;
+
+.landing-hero-preview--waiting {
+  .landing-hero-preview__item,
+  .landing-hero-preview__toast {
+    opacity: 0;
+  }
+
+  @include reduced-motion {
+    .landing-hero-preview__item {
+      opacity: var(--landing-preview-shown);
+    }
+
+    .landing-hero-preview__toast {
+      opacity: 1;
+    }
+  }
+}
+
+.landing-hero-preview--playing {
+  .landing-hero-preview__item {
+    animation: landing-preview-land var(--duration-slow) var(--ease-spring) backwards;
+    animation-delay: calc(var(--landing-preview-index) * #{$landing-preview-step} + 150ms);
+
+    @include reduced-motion {
+      animation: none;
+    }
+  }
+
+  .landing-hero-preview__toast {
+    animation: landing-preview-toast var(--duration-slow) var(--ease-out) backwards;
+    animation-delay: calc(var(--landing-preview-index) * #{$landing-preview-step} + 350ms);
+
+    @include reduced-motion {
+      animation: none;
+    }
+  }
+}
+
+@keyframes landing-preview-land {
+  from {
+    opacity: 0;
+    transform: translateY(#{rem(16px)}) scale(0.96);
+  }
+}
+
+@keyframes landing-preview-toast {
+  from {
+    opacity: 0;
+    transform: translateY(#{rem(12px)});
+  }
+}

@@ -28,7 +28,7 @@ import { LandingMotionService } from '../../services/landing-motion.service';
   hostDirectives: [LandingLoopGateDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './landing-before-scene.component.html',
-  styleUrl: './landing-before-scene.component.scss',
+  styleUrls: ['./landing-before-scene.component.scss', './landing-before-motion.scss'],
 })
 export class LandingBeforeSceneComponent {
   private readonly gate = inject(LandingLoopGateDirective).active;

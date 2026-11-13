@@ -65,7 +65,7 @@ import { BUTTON_TYPE } from './models/button-type.const';
     '[class.ui-button-host--wrap]': 'wrap()',
   },
   templateUrl: './button.component.html',
-  styleUrl: './button.component.scss',
+  styleUrls: ['./button.component.scss', './button-loading.scss', './button-sizes.scss'],
 })
 export class ButtonComponent implements UiFocusTarget {
   readonly variant = input<ButtonVariant>(BUTTON_VARIANT.Secondary);

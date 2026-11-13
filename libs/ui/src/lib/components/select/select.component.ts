@@ -69,7 +69,7 @@ import { ICON_SIZE } from '../icon/models/icon-size.const';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'ui-select' },
   templateUrl: './select.component.html',
-  styleUrl: './select.component.scss',
+  styleUrls: ['./select.component.scss', './select-list.scss'],
 })
 export class SelectComponent extends UiFieldControl implements FormValueControl<string | null> {
   protected readonly ICON_SIZE = ICON_SIZE;

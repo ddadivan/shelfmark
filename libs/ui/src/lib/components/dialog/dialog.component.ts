@@ -54,7 +54,7 @@ const NO_DRAG_TARGETS = 'button, a, input, select, textarea, [contenteditable]';
     '[attr.title]': 'null',
   },
   templateUrl: './dialog.component.html',
-  styleUrl: './dialog.component.scss',
+  styleUrls: ['./dialog.component.scss', './dialog-motion.scss', './dialog-parts.scss'],
 })
 export class DialogComponent {
   /** Heading of the dialog; it names it for assistive technology. */

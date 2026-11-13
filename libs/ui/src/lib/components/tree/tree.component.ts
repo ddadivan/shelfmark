@@ -88,7 +88,7 @@ const KEYBOARD_ECHO_RELEASE_MS = 100;
     '(focusout)': 'onFocusout($event)',
   },
   templateUrl: './tree.component.html',
-  styleUrl: './tree.component.scss',
+  styleUrls: ['./tree.component.scss', './tree-drop.scss', './tree-reorder.scss'],
 })
 export class TreeComponent {
   protected readonly ICON_SIZE = ICON_SIZE;
