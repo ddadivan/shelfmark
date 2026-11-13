@@ -106,7 +106,7 @@ export function createMockContractApis(): ContractApis {
       empty: () => settle(trash.empty()),
     },
     me: {
-      stats: () => settle(meStats.get()),
+      stats: (query) => settle(meStats.get(query)),
     },
     settings: {
       get: () => settle(settings.get()),

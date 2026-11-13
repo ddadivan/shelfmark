@@ -12,13 +12,18 @@ import { weekBars } from '../utils/week-bars';
 /**
  * The Account page's "Your shelf" numbers and connected accounts (`GET /api/me/stats`, #352),
  * loaded once per visit and written out in the active language (dates through `LocaleService`).
+ * The weekly chart starts its weeks on the user's first day (`LocaleService.firstDay`).
  * Scoped to the page through its `providers`.
  */
 @Service()
 export class AccountStatsService {
   private readonly api = inject(ME_STATS_API);
   private readonly locale = inject(LocaleService);
-  private readonly resource = rxResource({ stream: () => this.api.get() });
+  /** Reloads when the first day of the week changes (Settings › Language, or the region). */
+  private readonly resource = rxResource({
+    params: () => ({ firstDay: this.locale.firstDay() }),
+    stream: ({ params }) => this.api.get(params),
+  });
 
   private readonly stats = computed<MeStatsResponse | undefined>(() =>
     this.resource.hasValue() ? this.resource.value() : undefined,

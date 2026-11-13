@@ -18,8 +18,8 @@ function top(keys: readonly string[], limit: number): [string, number][] {
 
 /**
  * The mock twin of `MeStatsService` (apps/api): the same counts and orders over the live mock
- * links (the contract scenarios compare the two). The favicon of a site is the one of its newest
- * link that has one.
+ * links (the contract scenarios compare the two). Tags count only while they are on a live link.
+ * The favicon of a site is the one of its newest link that has one.
  */
 export function buildMockStats(input: MockStatsInput): MeStatsResponse {
   const { links } = input;
@@ -35,17 +35,17 @@ export function buildMockStats(input: MockStatsInput): MeStatsResponse {
         (link) => link.faviconUrl !== null && displayHost(link.url).toLowerCase() === host,
       )?.faviconUrl ?? null,
   }));
-  const weeks = statsWeekStarts(input.now);
+  const weeks = statsWeekStarts(input.now, input.firstDay);
   const perWeek = new Map<string, number>();
   for (const link of links) {
-    const [week] = statsWeekStarts(new Date(link.createdAt)).slice(-1);
+    const [week] = statsWeekStarts(new Date(link.createdAt), input.firstDay).slice(-1);
     perWeek.set(week, (perWeek.get(week) ?? 0) + 1);
   }
   const oldest = newestFirst.at(-1);
   return {
     linkCount: links.length,
     folderCount: input.folderCount,
-    tagCount: input.tagCount,
+    tagCount: new Set(links.flatMap((link) => link.tags)).size,
     topSites: sites,
     topTags: top(
       links.flatMap((link) => link.tags),

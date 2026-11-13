@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { EXPORT_FORMAT } from '@shelfmark/contracts';
+import { EXPORT_FORMAT, WEEK_START } from '@shelfmark/contracts';
 import { of, throwError } from 'rxjs';
 import { SETTINGS_TEST_STATS } from '../../../../../testing/settings-test-stats.const';
 import { axeViolations } from '../../../../../testing/axe';
@@ -9,6 +9,7 @@ import {
   SETTINGS_TEST_USER,
   setupSettingsPage,
 } from '../../../../../testing/settings-page-testbed';
+import { LocaleService } from '../../../../core/i18n/locale.service';
 import AccountPage from './account.page';
 
 const setup = (user = SETTINGS_TEST_USER, stats = () => of(SETTINGS_TEST_STATS)) =>
@@ -99,6 +100,19 @@ describe('AccountPage', () => {
 
     expect(root.textContent).toContain('Nothing saved yet');
     expect(root.querySelector('.shelf__counts')).toBeNull();
+  });
+
+  it("asks for weeks that start on the user's first day and asks again when it changes", async () => {
+    const { meStatsApi, harness } = await setup();
+    const locale = TestBed.inject(LocaleService);
+
+    expect(meStatsApi.get).toHaveBeenLastCalledWith({ firstDay: locale.firstDay() });
+    locale.apply({ ...locale.settings(), weekStart: WEEK_START.Sunday });
+    await harness.fixture.whenStable();
+    expect(meStatsApi.get).toHaveBeenLastCalledWith({ firstDay: 7 });
+    locale.apply({ ...locale.settings(), weekStart: WEEK_START.Monday });
+    await harness.fixture.whenStable();
+    expect(meStatsApi.get).toHaveBeenLastCalledWith({ firstDay: 1 });
   });
 
   it('says when the numbers fail to load and loads them again', async () => {

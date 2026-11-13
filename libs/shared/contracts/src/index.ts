@@ -94,11 +94,13 @@ export type { SocialSignInResponse } from './auth/social-sign-in-response.interf
 export type { SignOutResponse } from './auth/sign-out-response.interface';
 export { AUTH_PROVIDER } from './auth/auth-provider.const';
 export type { ConnectedAccount } from './me/connected-account.interface';
+export type { MeStatsQuery } from './me/me-stats-query.interface';
 export type { MeStatsResponse } from './me/me-stats-response.interface';
 export type { MeStatsSite } from './me/me-stats-site.interface';
 export type { MeStatsTag } from './me/me-stats-tag.interface';
 export type { MeStatsWeek } from './me/me-stats-week.interface';
 export { ME_STATS_ENDPOINT } from './me/me-stats-endpoint.const';
+export { ME_STATS_FIRST_DAY } from './me/me-stats-first-day.const';
 export { ME_STATS_LIMIT } from './me/me-stats-limit.const';
 export { statsWeekStarts } from './me/stats-week-starts';
 export { AUTH_ENDPOINT } from './auth/auth-endpoint.const';

@@ -91,8 +91,13 @@ describe('GET /api/me/stats', () => {
     await seedLink(prisma, owner, { url: 'https://beta.test/' });
     const trashed = await seedLink(prisma, owner, { url: 'https://github.com/c', tags: ['dev'] });
     await prisma.link.update({ where: { id: trashed }, data: { deletedAt: now } });
-    // A tag on no live link is counted but not "most used".
+    // A tag on no live link, or only on a trashed one, is not counted at all.
     await prisma.tag.create({ data: { userId: owner, name: 'unused' } });
+    const trashedOnly = await seedLink(prisma, owner, {
+      url: 'https://old.test/',
+      tags: ['archived'],
+    });
+    await prisma.link.update({ where: { id: trashedOnly }, data: { deletedAt: now } });
     await prisma.linkImage.create({
       data: {
         userId: owner,
@@ -110,7 +115,7 @@ describe('GET /api/me/stats', () => {
 
     expect(stats.linkCount).toBe(6);
     expect(stats.folderCount).toBe(1);
-    expect(stats.tagCount).toBe(3);
+    expect(stats.tagCount).toBe(2);
     expect(stats.topSites).toEqual([
       {
         host: 'github.com',
@@ -142,11 +147,42 @@ describe('GET /api/me/stats', () => {
     await seedLink(t.db.prisma, owner, { createdAt: new Date('2026-08-24T00:00:00Z') });
     await seedLink(t.db.prisma, owner, { createdAt: new Date('2026-08-23T23:00:00Z') });
 
-    const stats = await t.app.get(MeStatsService).stats(owner, now);
+    const stats = await t.app.get(MeStatsService).stats(owner, undefined, now);
 
     expect(stats.weeklyLinks.at(-1)).toEqual({ weekStart: '2026-11-09', count: 1 });
     expect(stats.weeklyLinks.at(-2)).toEqual({ weekStart: '2026-11-02', count: 1 });
     expect(stats.weeklyLinks[0]).toEqual({ weekStart: '2026-08-24', count: 1 });
+  });
+
+  it('starts the weeks on the requested first day (Sunday)', async () => {
+    const owner = users.owner.userId;
+    const now = new Date('2026-11-13T12:00:00Z');
+    await seedLink(t.db.prisma, owner, { createdAt: new Date('2026-11-08T00:00:00Z') });
+    await seedLink(t.db.prisma, owner, { createdAt: new Date('2026-11-09T12:00:00Z') });
+    await seedLink(t.db.prisma, owner, { createdAt: new Date('2026-11-07T23:59:59Z') });
+    await seedLink(t.db.prisma, owner, { createdAt: new Date('2026-08-23T00:00:00Z') });
+    await seedLink(t.db.prisma, owner, { createdAt: new Date('2026-08-22T23:00:00Z') });
+
+    const stats = await t.app.get(MeStatsService).stats(owner, 7, now);
+
+    expect(stats.weeklyLinks.map((week) => week.weekStart)).toEqual(statsWeekStarts(now, 7));
+    expect(stats.weeklyLinks.at(-1)).toEqual({ weekStart: '2026-11-08', count: 2 });
+    expect(stats.weeklyLinks.at(-2)).toEqual({ weekStart: '2026-11-01', count: 1 });
+    expect(stats.weeklyLinks[0]).toEqual({ weekStart: '2026-08-23', count: 1 });
+  });
+
+  it('takes firstDay from the query and refuses anything but 1 to 7', async () => {
+    const agent = asUser(t.app, users.owner);
+    const sunday = (await agent.get(`${ME_STATS_ENDPOINT}?firstDay=7`).expect(200))
+      .body as MeStatsResponse;
+    expect(sunday.weeklyLinks.map((week) => week.weekStart)).toEqual(
+      statsWeekStarts(new Date(), 7),
+    );
+    for (const bad of ['0', '8', '1.5', 'monday', '']) {
+      const res = await agent.get(`${ME_STATS_ENDPOINT}?firstDay=${bad}`).expect(400);
+      expect(res.body).toMatchObject({ statusCode: 400 });
+    }
+    await agent.get(`${ME_STATS_ENDPOINT}?weekStart=7`).expect(400);
   });
 
   it('data isolation: another user never counts or sees the owner data', async () => {

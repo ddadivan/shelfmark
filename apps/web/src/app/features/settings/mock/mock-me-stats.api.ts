@@ -1,5 +1,5 @@
 import { inject, Service } from '@angular/core';
-import { AUTH_PROVIDER, type MeStatsResponse } from '@shelfmark/contracts';
+import { AUTH_PROVIDER, type MeStatsQuery, type MeStatsResponse } from '@shelfmark/contracts';
 import { defer, delay, type Observable, of } from 'rxjs';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { MockLibraryData } from '../../links/mock/mock-library-data';
@@ -29,7 +29,7 @@ export class MockMeStatsApi implements MeStatsApi {
   private readonly data = inject(MockLibraryData);
   private readonly auth = inject(AuthStore);
 
-  get(): Observable<MeStatsResponse> {
+  get(query: MeStatsQuery = {}): Observable<MeStatsResponse> {
     return defer(() => {
       const empty = emptyScenario();
       const demo = this.auth.user()?.isDemo ?? false;
@@ -37,8 +37,8 @@ export class MockMeStatsApi implements MeStatsApi {
         buildMockStats({
           links: empty ? [] : this.data.links,
           folderCount: empty ? 0 : this.data.folderList.length,
-          tagCount: empty ? 0 : this.data.tagList.length,
           now: new Date(),
+          firstDay: query.firstDay,
           memberSince: MOCK_MEMBER_SINCE,
           connectedAccounts: demo
             ? []

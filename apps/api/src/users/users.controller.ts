@@ -8,6 +8,7 @@ import {
   Logger,
   Patch,
   Post,
+  Query,
   Req,
   Res,
 } from '@nestjs/common';
@@ -28,6 +29,7 @@ import { ApiErrorResponseDto } from '../common/errors/dto/api-error-response.dto
 import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
 import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
 import { DeleteAccountRequestDto } from './dto/delete-account-request.dto';
+import { MeStatsQueryDto } from './dto/me-stats-query.dto';
 import { MeStatsResponseDto } from './dto/me-stats-response.dto';
 import { OnboardingResponseDto } from './dto/onboarding-response.dto';
 import { UpdateUserSettingsDto } from './dto/update-user-settings.dto';
@@ -94,8 +96,12 @@ export class UsersController {
   })
   @ApiOkResponse({ type: MeStatsResponseDto })
   @ApiUnauthorizedResponse({ type: ApiErrorResponseDto, description: 'No valid session' })
-  getStats(@CurrentUser() user: AuthUser): Promise<MeStatsResponseDto> {
-    return this.meStats.stats(user.id);
+  @ApiBadRequestResponse({ type: ApiErrorResponseDto, description: 'firstDay is not 1 to 7' })
+  getStats(
+    @CurrentUser() user: AuthUser,
+    @Query() query: MeStatsQueryDto,
+  ): Promise<MeStatsResponseDto> {
+    return this.meStats.stats(user.id, query.firstDay);
   }
 
   @Patch('settings')

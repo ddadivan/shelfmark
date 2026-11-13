@@ -21,9 +21,9 @@ function withoutAccounts(stats: MeStatsResponse): Omit<MeStatsResponse, 'connect
   };
 }
 
-/** The 12 weeks with every count 0 but the current week's. */
-function weeks(current: number): MeStatsResponse['weeklyLinks'] {
-  const starts = statsWeekStarts(new Date());
+/** The 12 weeks (starting on `firstDay`) with every count 0 but the current week's. */
+function weeks(current: number, firstDay?: number): MeStatsResponse['weeklyLinks'] {
+  const starts = statsWeekStarts(new Date(), firstDay);
   return starts.map((weekStart, index) => ({
     weekStart,
     count: index === starts.length - 1 ? current : 0,
@@ -63,7 +63,12 @@ export const ME_SCENARIOS: readonly ContractScenario[] = [
         folderId: reading.id,
       });
       await links.create({ url: 'https://docs.example.org/c', title: 'C' });
-      const trashed = await links.create({ url: 'https://trashed.example/d', title: 'D' });
+      // Its tag is on no live link, so it is not counted.
+      const trashed = await links.create({
+        url: 'https://trashed.example/d',
+        title: 'D',
+        tags: ['archived'],
+      });
       await links.remove(trashed.id);
 
       expectEqual(withoutAccounts(await me.stats()), {
@@ -84,4 +89,11 @@ export const ME_SCENARIOS: readonly ContractScenario[] = [
       });
     },
   ),
+
+  scenario('me', 'the weeks start on the requested first day', async ({ me, links }) => {
+    await links.create({ url: 'https://example.org/a', title: 'A' });
+
+    expectEqual((await me.stats({ firstDay: 7 })).weeklyLinks, weeks(1, 7));
+    expectEqual((await me.stats({ firstDay: 1 })).weeklyLinks, weeks(1, 1));
+  }),
 ];

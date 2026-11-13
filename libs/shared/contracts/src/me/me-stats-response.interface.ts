@@ -10,12 +10,16 @@ import type { MeStatsWeek } from './me-stats-week.interface';
 export interface MeStatsResponse {
   linkCount: number;
   folderCount: number;
+  /** Tags on at least one live link (like `topTags`). */
   tagCount: number;
   /** At most `ME_STATS_LIMIT.TopSites`, most links first, then by host. */
   topSites: MeStatsSite[];
   /** At most `ME_STATS_LIMIT.TopTags` tags used on at least one live link, most first, then by name. */
   topTags: MeStatsTag[];
-  /** Exactly `ME_STATS_LIMIT.Weeks` weeks, oldest first, the current week last (zeros included). */
+  /**
+   * Exactly `ME_STATS_LIMIT.Weeks` weeks starting on `MeStatsQuery.firstDay` (UTC days), oldest
+   * first, the current week last (zeros included).
+   */
   weeklyLinks: MeStatsWeek[];
   /** ISO time the account was created. */
   memberSince: string;

@@ -20,7 +20,6 @@ describe('buildMockStats', () => {
         link('https://alpha.test/', '2026-06-01T00:00:00.000Z'),
       ],
       folderCount: 2,
-      tagCount: 3,
       now: new Date('2026-11-13T12:00:00Z'),
       memberSince: '2025-01-01T00:00:00.000Z',
       connectedAccounts: [
@@ -29,6 +28,7 @@ describe('buildMockStats', () => {
     });
 
     expect(stats.linkCount).toBe(4);
+    expect(stats.tagCount).toBe(2);
     expect(stats.topSites).toEqual([
       { host: 'github.com', count: 2, faviconUrl: '/f/new' },
       { host: 'alpha.test', count: 1, faviconUrl: null },
@@ -44,11 +44,27 @@ describe('buildMockStats', () => {
     expect(stats.connectedAccounts).toHaveLength(1);
   });
 
+  it('starts the weeks on the requested first day', () => {
+    const stats = buildMockStats({
+      links: [
+        link('https://a.test/', '2026-11-08T00:00:00.000Z'),
+        link('https://b.test/', '2026-11-07T23:59:59.000Z'),
+      ],
+      folderCount: 0,
+      now: new Date('2026-11-13T12:00:00Z'),
+      firstDay: 7,
+      memberSince: '2025-01-01T00:00:00.000Z',
+      connectedAccounts: [],
+    });
+
+    expect(stats.weeklyLinks.at(-1)).toEqual({ weekStart: '2026-11-08', count: 1 });
+    expect(stats.weeklyLinks.at(-2)).toEqual({ weekStart: '2026-11-01', count: 1 });
+  });
+
   it('a new account: zeros and no oldest link', () => {
     const stats = buildMockStats({
       links: [],
       folderCount: 0,
-      tagCount: 0,
       now: new Date('2026-11-13T12:00:00Z'),
       memberSince: '2025-01-01T00:00:00.000Z',
       connectedAccounts: [],

@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   AUTH_PROVIDER,
   LINK_IMAGE_KIND,
+  ME_STATS_FIRST_DAY,
   ME_STATS_LIMIT,
   statsWeekStarts,
   type AuthProvider,
@@ -22,24 +23,32 @@ function isProvider(value: string): value is AuthProvider {
 /**
  * `GET /api/me/stats` (#352): the "Your shelf" numbers and the connected accounts. Everything is
  * aggregated in the database and filtered by the session user; links and folders in Trash are
- * left out. Plain SQL only through tagged templates (parameterised).
+ * left out, and a tag counts only while it is on a live link. The weeks start on the ISO weekday
+ * `firstDay` (validated 1 to 7 by the DTO). Plain SQL only through tagged templates
+ * (parameterised).
  */
 @Injectable()
 export class MeStatsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async stats(userId: string, now = new Date()): Promise<MeStatsResponse> {
-    const weeks = statsWeekStarts(now);
+  async stats(
+    userId: string,
+    firstDay: number = ME_STATS_FIRST_DAY.Default,
+    now = new Date(),
+  ): Promise<MeStatsResponse> {
+    const weeks = statsWeekStarts(now, firstDay);
     const live = { userId, deletedAt: null };
     const [user, links, folderCount, tagCount, topSites, topTags, weekly, accounts] =
       await Promise.all([
         this.prisma.user.findUnique({ where: { id: userId }, select: { createdAt: true } }),
         this.prisma.link.aggregate({ where: live, _count: true, _min: { createdAt: true } }),
         this.prisma.folder.count({ where: live }),
-        this.prisma.tag.count({ where: { userId } }),
+        this.prisma.tag.count({
+          where: { userId, links: { some: { link: { userId, deletedAt: null } } } },
+        }),
         this.topSites(userId),
         this.topTags(userId),
-        this.weekly(userId, weeks[0]),
+        this.weekly(userId, weeks[0], firstDay),
         this.prisma.account.findMany({
           where: { userId },
           select: { providerId: true, createdAt: true },
@@ -123,10 +132,17 @@ export class MeStatsService {
       LIMIT ${ME_STATS_LIMIT.TopTags}`;
   }
 
-  /** Live links per UTC week (Monday, `YYYY-MM-DD`) from `firstWeek` on. */
-  private weekly(userId: string, firstWeek: string): Promise<CountRow[]> {
+  /**
+   * Live links per week of UTC days, keyed by the week's first day (`YYYY-MM-DD`, the ISO weekday
+   * `firstDay`, like `statsWeekStarts`) from `firstWeek` on.
+   */
+  private weekly(userId: string, firstWeek: string, firstDay: number): Promise<CountRow[]> {
     return this.prisma.$queryRaw<CountRow[]>`
-      SELECT to_char(date_trunc('week', l.created_at AT TIME ZONE 'UTC'), 'YYYY-MM-DD') AS key,
+      SELECT to_char(
+          (l.created_at AT TIME ZONE 'UTC')::date
+            - ((extract(isodow FROM l.created_at AT TIME ZONE 'UTC')::int - ${firstDay}::int + 7) % 7),
+          'YYYY-MM-DD'
+        ) AS key,
         count(*)::int AS count
       FROM links l
       WHERE l.user_id = ${userId}::uuid AND l.deleted_at IS NULL
