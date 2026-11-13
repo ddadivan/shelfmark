@@ -109,6 +109,21 @@ describe('LibraryPage', () => {
     expect(one.element.querySelector('.library__count')?.textContent?.trim()).toBe('1+ link');
   });
 
+  it('offers no "Pin to top" outside a folder', async () => {
+    const { element, fixture } = await setup();
+
+    element
+      .querySelector<HTMLButtonElement>('app-link-card button[aria-label^="Actions for"]')
+      ?.click();
+    await fixture.whenStable();
+    const items = [...document.querySelectorAll('[role="menuitem"]')].map((item) =>
+      item.textContent?.trim(),
+    );
+
+    expect(items).toContain('Pin to sidebar');
+    expect(items).not.toContain('Pin to top');
+  });
+
   it('names the heading after the scope', async () => {
     const { fixture, element } = await setup();
 
@@ -469,6 +484,21 @@ describe('LibraryPage of a folder', () => {
     expect(linksApi.list).toHaveBeenCalledWith({ folderId: 'f1' });
     expect(element.querySelector('h1')?.textContent).toBe('Reading list');
     expect(element.querySelectorAll('app-link-card')).toHaveLength(1);
+  });
+
+  it('offers "Pin to top" on the cards of a folder only', async () => {
+    const { element, fixture } = await setupFolder('f1');
+    const menuItems = async (root: HTMLElement) => {
+      root
+        .querySelector<HTMLButtonElement>('app-link-card button[aria-label^="Actions for"]')
+        ?.click();
+      await fixture.whenStable();
+      return [...document.querySelectorAll('[role="menuitem"]')].map((item) =>
+        item.textContent?.trim(),
+      );
+    };
+
+    expect(await menuItems(element)).toContain('Pin to top');
   });
 
   it('says so when the folder is empty and offers to add a link here', async () => {

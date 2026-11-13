@@ -19,6 +19,8 @@ import { DELETE_UNDO_MS } from '../../../core/undo/models/delete-undo.const';
 import { LINKS_API } from '../models/links-api.const';
 import type { LinksApi } from '../models/links-api.interface';
 import { LINKS_SCOPE } from '../models/links-scope.const';
+import { PinActionsService } from '../../pins/services/pin-actions.service';
+import { PinsStore } from '../../../stores/pins.store';
 
 function link(n: number): LinkResponse {
   return { ...MOCK_LINKS[0], id: `id-${n}`, title: `Link ${n}`, isFavorite: false };
@@ -468,6 +470,33 @@ describe('LinkActionsService', () => {
         }),
       );
       expect(ids(store)).toEqual(['id-7', 'id-8', 'id-9', 'id-1', 'id-2']);
+    });
+  });
+
+  describe('pins', () => {
+    it('"Pin to top" pins the link in its folder', async () => {
+      const { actions, api } = await setup();
+      await vi.runAllTicks();
+
+      await actions.togglePinInFolder(link(1));
+
+      expect(api.update).toHaveBeenLastCalledWith('id-1', { pinnedInFolder: true });
+    });
+
+    it('"Pin to sidebar" pins an unpinned link and unpins a pinned one', async () => {
+      const { actions } = await setup();
+      const pinActions = TestBed.inject(PinActionsService);
+      const pin = vi.spyOn(pinActions, 'pinLink').mockResolvedValue(undefined);
+      const unpin = vi.spyOn(pinActions, 'unpinLink').mockResolvedValue(undefined);
+      const has = vi.spyOn(TestBed.inject(PinsStore), 'has');
+
+      has.mockReturnValue(false);
+      await actions.togglePinToSidebar(link(1));
+      expect(pin).toHaveBeenCalledWith(link(1));
+
+      has.mockReturnValue(true);
+      await actions.togglePinToSidebar(link(1));
+      expect(unpin).toHaveBeenCalledWith(link(1));
     });
   });
 });

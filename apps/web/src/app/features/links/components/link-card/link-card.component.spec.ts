@@ -258,4 +258,51 @@ describe('LinkCardComponent', () => {
 
     expect(violations.map((violation) => violation.id)).toEqual([]);
   });
+
+  describe('pin menu', () => {
+    async function openMenu(element: HTMLElement, fixture: { whenStable(): Promise<unknown> }) {
+      element
+        .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
+        ?.click();
+      await fixture.whenStable();
+    }
+    const items = () =>
+      [...document.querySelectorAll<HTMLElement>('[role="menuitem"]')].map((item) =>
+        item.textContent?.trim(),
+      );
+
+    it('offers "Pin to sidebar" everywhere and "Pin to top" only inside a folder', async () => {
+      const { fixture, element } = await setup();
+      const sidebar = vi.fn();
+      fixture.componentInstance.pinToSidebarToggled.subscribe(sidebar);
+
+      await openMenu(element, fixture);
+      expect(items()).toContain('Pin to sidebar');
+      expect(items()).not.toContain('Pin to top');
+      menuItem('Pin to sidebar').click();
+      expect(sidebar).toHaveBeenCalledTimes(1);
+
+      fixture.componentRef.setInput('pinnable', true);
+      fixture.componentRef.setInput('pinnedToSidebar', true);
+      await fixture.whenStable();
+      await openMenu(element, fixture);
+      expect(items()).toContain('Pin to top');
+      expect(items()).toContain('Unpin from sidebar');
+    });
+
+    it('a link pinned to the top of the folder shows "Pinned" and offers "Unpin from top"', async () => {
+      const { fixture, element } = await setup({ ...LINK, pinnedInFolderAt: '2026-01-01' });
+      const top = vi.fn();
+      fixture.componentInstance.pinToTopToggled.subscribe(top);
+
+      expect(element.textContent).not.toContain('Pinned');
+      fixture.componentRef.setInput('pinnable', true);
+      await fixture.whenStable();
+      expect(element.querySelector('.link-card__pinned')?.textContent?.trim()).toBe('Pinned');
+
+      await openMenu(element, fixture);
+      menuItem('Unpin from top').click();
+      expect(top).toHaveBeenCalledTimes(1);
+    });
+  });
 });
