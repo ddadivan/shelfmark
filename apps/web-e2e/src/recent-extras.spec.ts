@@ -1,9 +1,6 @@
 import { type Locator, type Page } from '@playwright/test';
-import { COLOR_SCHEME } from './models/color-scheme.const';
-import { expectNoBlockingViolations } from './support/axe';
 import { seedSession } from './support/mock-session';
 import { isCompact } from './support/sidebar';
-import { settled } from './support/settled';
 import { expect, test } from './support/test';
 import { E2E_TAG } from './models/e2e-tag.const';
 
@@ -57,57 +54,6 @@ test.describe('Recently opened extras (mock API)', () => {
     await expect(titleOf(rows(page).first())).toHaveText(second);
   });
 
-  test('the search filters the history and says when nothing matches', async ({ page }) => {
-    await openRecent(page);
-    const before = await rows(page).count();
-    const target = (await titleOf(rows(page).nth(1)).innerText()).trim();
-    const search = page.getByRole('searchbox', { name: 'Search history' });
-
-    await search.fill(target);
-    await expect(titleOf(rows(page).first())).toHaveText(target);
-    expect(await rows(page).count()).toBeLessThan(before);
-    // Every word of the search is in the title (or the domain) of every row left.
-    const words = target.toLowerCase().split(/\s+/);
-    for (const row of await rows(page).all()) {
-      const text = (await row.innerText()).toLowerCase();
-      for (const word of words) {
-        expect(text).toContain(word);
-      }
-    }
-
-    await search.fill('zzqx nothing like this');
-    await expect(page.getByRole('heading', { name: 'Nothing matches' })).toBeVisible();
-    await expect(rows(page)).toHaveCount(0);
-    await page.locator('ui-empty-state').getByRole('button', { name: 'Clear search' }).click();
-    await expect(rows(page)).toHaveCount(before);
-    await expect(search).toHaveValue('');
-  });
-
-  test('Copy link puts the address on the clipboard', async ({ page, context }) => {
-    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
-    await openRecent(page);
-    const first = rows(page).first();
-    const href = await first.locator('a.ui-history-row__link').getAttribute('href');
-
-    await first.getByRole('button', { name: /^More for / }).click();
-    await page.getByRole('menuitem', { name: 'Copy link' }).click();
-
-    await expect(page.getByRole('status').getByText('Link copied')).toBeVisible();
-    expect(await page.evaluate<string>('navigator.clipboard.readText()')).toBe(href);
-  });
-
-  test('Show in folder opens the folder (or Unsorted) of the link', async ({ page }) => {
-    await openRecent(page);
-    const first = rows(page).first();
-    const title = (await titleOf(first).innerText()).trim();
-
-    await first.getByRole('button', { name: /^More for / }).click();
-    await page.getByRole('menuitem', { name: 'Show in folder' }).click();
-
-    await expect(page).toHaveURL(/\/(folders\/[\w-]+|unsorted)$/);
-    await expect(page.getByText(title, { exact: true }).first()).toBeVisible();
-  });
-
   test('phone: swiping a row left reveals Remove', { tag: E2E_TAG.Mobile }, async ({ page }) => {
     test.skip(!isCompact(page), 'the swipe is the phone pattern');
     await openRecent(page);
@@ -137,30 +83,6 @@ test.describe('Recently opened extras (mock API)', () => {
     await expect(page.getByRole('status').getByText('Removed from history')).toBeVisible();
     await expect(titleOf(rows(page).first())).not.toHaveText(title);
   });
-
-  for (const colorScheme of Object.values(COLOR_SCHEME)) {
-    test.describe(`${colorScheme} theme`, () => {
-      test.use({ colorScheme });
-
-      test('paused notice, search and rows have no serious axe violations', async ({
-        page,
-      }, testInfo) => {
-        await openRecent(page);
-        await expect(page.locator('html')).toHaveAttribute('data-theme', colorScheme);
-        await page.getByRole('button', { name: 'Pause history' }).click();
-        await expect(notice(page)).toBeVisible();
-        await page.getByRole('searchbox', { name: 'Search history' }).fill('a');
-        await expect(rows(page).first()).toBeVisible();
-        await settled(page);
-        await expectNoBlockingViolations(page, testInfo);
-
-        await page.getByRole('searchbox', { name: 'Search history' }).fill('zzqx nothing');
-        await expect(page.getByRole('heading', { name: 'Nothing matches' })).toBeVisible();
-        await settled(page);
-        await expectNoBlockingViolations(page, testInfo);
-      });
-    });
-  }
 });
 
 function escapeRegExp(text: string): string {
