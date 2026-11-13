@@ -3,6 +3,7 @@ import { expect, test } from './support/test';
 import { pickTagMenuItem } from './support/a11y-flows';
 import { seedSession } from './support/mock-session';
 import { gotoWithTags } from './support/sidebar';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 // Mirror MOCK_NAME.TagDocs / TagRecipes and MOCK_TAG_NAME (apps/web and libs/shared/contracts);
 // the e2e project cannot import from them.
@@ -40,20 +41,22 @@ test.describe('tags (mock API)', () => {
       await expect(chip(page, RECIPES)).toBeVisible();
     });
 
-    test('adds a tag with Enter, refuses a duplicate ignoring case and cancels with Esc', async ({
-      page,
-    }) => {
-      await gotoWithTags(page, '/links');
+    test(
+      'adds a tag with Enter, refuses a duplicate ignoring case and cancels with Esc',
+      { tag: E2E_TAG.Phone },
+      async ({ page }) => {
+        await gotoWithTags(page, '/links');
 
-      await addTag(page, 'winter sale');
-      await expect(chip(page, 'winter-sale')).toBeVisible();
+        await addTag(page, 'winter sale');
+        await expect(chip(page, 'winter-sale')).toBeVisible();
 
-      await addTag(page, 'WINTER-SALE');
-      await expect(sidebar(page).getByText(/There.s already a tag/)).toBeVisible();
-      await sidebar(page).getByRole('textbox', { name: 'New tag' }).press('Escape');
-      await expect(sidebar(page).getByRole('textbox', { name: 'New tag' })).toHaveCount(0);
-      await expect(sidebar(page).getByRole('button', { name: 'New tag' })).toBeFocused();
-    });
+        await addTag(page, 'WINTER-SALE');
+        await expect(sidebar(page).getByText(/There.s already a tag/)).toBeVisible();
+        await sidebar(page).getByRole('textbox', { name: 'New tag' }).press('Escape');
+        await expect(sidebar(page).getByRole('textbox', { name: 'New tag' })).toHaveCount(0);
+        await expect(sidebar(page).getByRole('button', { name: 'New tag' })).toBeFocused();
+      },
+    );
 
     test('an outside click closes the new tag field without saving and focuses "+"', async ({
       page,
@@ -127,20 +130,22 @@ test.describe('tags (mock API)', () => {
       await expect(more).toBeVisible();
     });
 
-    test('a click on a tag opens the links with that tag, and the filter can be cleared', async ({
-      page,
-    }) => {
-      await gotoWithTags(page, '/links');
+    test(
+      'a click on a tag opens the links with that tag, and the filter can be cleared',
+      { tag: E2E_TAG.Phone },
+      async ({ page }) => {
+        await gotoWithTags(page, '/links');
 
-      await chip(page, DOCS).click();
+        await chip(page, DOCS).click();
 
-      await expect(page).toHaveURL(/\/links\?tag=docs$/);
-      const filter = page.getByRole('group', { name: 'Active filters' });
-      await expect(filter).toBeVisible();
-      await filter.getByRole('button', { name: 'Clear filter' }).click();
-      await expect(page).toHaveURL(/\/links$/);
-      await expect(filter).toHaveCount(0);
-    });
+        await expect(page).toHaveURL(/\/links\?tag=docs$/);
+        const filter = page.getByRole('group', { name: 'Active filters' });
+        await expect(filter).toBeVisible();
+        await filter.getByRole('button', { name: 'Clear filter' }).click();
+        await expect(page).toHaveURL(/\/links$/);
+        await expect(filter).toHaveCount(0);
+      },
+    );
 
     test('the menu offers show, rename, merge and delete from a right click', async ({ page }) => {
       await gotoWithTags(page, '/links');
@@ -154,7 +159,7 @@ test.describe('tags (mock API)', () => {
       await page.keyboard.press('Escape');
     });
 
-    test('the "…" button opens the same menu', async ({ page }) => {
+    test('the "…" button opens the same menu', { tag: E2E_TAG.Phone }, async ({ page }) => {
       await gotoWithTags(page, '/links');
 
       // The button is clipped away until the chip is hovered.

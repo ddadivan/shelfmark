@@ -1,6 +1,7 @@
 import { expect, test } from './support/test';
 import { openCardEdit } from './support/a11y-flows';
 import { seedSession } from './support/mock-session';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 // Mirrors the mock duplicate fixture (`MOCK_LINK_PREVIEW_DUPLICATE`); e2e cannot import apps/web.
 const DUPLICATE_URL = 'https://angular.dev/overview';
@@ -14,7 +15,7 @@ test.describe('edit link (mock API)', () => {
     await expect(page.locator('ui-card').first()).toBeVisible();
   });
 
-  test('edits the title and the card shows it', async ({ page }) => {
+  test('edits the title and the card shows it', { tag: E2E_TAG.Phone }, async ({ page }) => {
     const dialog = await openCardEdit(page);
     await expect(dialog.getByText(/^Saved .*, (last opened .*|never opened)$/)).toBeVisible();
 

@@ -1,6 +1,7 @@
 import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { isStaticBuild } from './support/build-mode';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 const testPage = '/__e2e/add-link';
 const duplicateUrl = 'https://angular.dev/overview';
@@ -24,21 +25,25 @@ test.describe('add link dialog (mock API)', () => {
     return dialog;
   }
 
-  test('pasting a URL fills the title, then saves the link', async ({ page }) => {
-    const dialog = await open(page);
+  test(
+    'pasting a URL fills the title, then saves the link',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      const dialog = await open(page);
 
-    await dialog.getByLabel('Link', { exact: true }).fill('https://example.org/post');
-    await expect(dialog.getByLabel('Title', { exact: true })).toHaveValue('Page on example.org');
-    await expect(dialog.getByText('Filled in from the page')).toBeVisible();
+      await dialog.getByLabel('Link', { exact: true }).fill('https://example.org/post');
+      await expect(dialog.getByLabel('Title', { exact: true })).toHaveValue('Page on example.org');
+      await expect(dialog.getByText('Filled in from the page')).toBeVisible();
 
-    await dialog.getByLabel('Note').fill('Read on the weekend');
-    await dialog.getByRole('button', { name: 'Save link' }).click();
+      await dialog.getByLabel('Note').fill('Read on the weekend');
+      await dialog.getByRole('button', { name: 'Save link' }).click();
 
-    await expect(dialog).toBeHidden();
-    await expect(page.locator('#outcome')).toHaveText(
-      `${outcome.savedPrefix}Page on example.org | https://example.org/post`,
-    );
-  });
+      await expect(dialog).toBeHidden();
+      await expect(page.locator('#outcome')).toHaveText(
+        `${outcome.savedPrefix}Page on example.org | https://example.org/post`,
+      );
+    },
+  );
 
   test('an invalid address shows the error and is not saved', async ({ page }) => {
     const dialog = await open(page);

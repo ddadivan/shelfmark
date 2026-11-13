@@ -3,6 +3,7 @@ import { DEMO_LIMIT } from '@shelfmark/contracts';
 import { COLOR_SCHEME } from './models/color-scheme.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { demoUser, seedSession, signOutFromUi } from './support/mock-session';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 const BANNER_TITLE = "You're in a demo.";
 const BANNER_ACTION = 'Sign in with your own account';
@@ -10,22 +11,26 @@ const BANNER_ACTION = 'Sign in with your own account';
 test.describe('demo sign-in (mock auth)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock auth API');
 
-  test('"Open the demo" on the landing opens the library with the banner', async ({ page }) => {
-    await page.goto('/');
-    const demoLink = page
-      .getByRole('region', { name: 'Empty your Saved Messages.' })
-      .getByRole('link', { name: 'Open the demo' });
-    await demoLink.scrollIntoViewIfNeeded();
-    await demoLink.click();
+  test(
+    '"Open the demo" on the landing opens the library with the banner',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await page.goto('/');
+      const demoLink = page
+        .getByRole('region', { name: 'Empty your Saved Messages.' })
+        .getByRole('link', { name: 'Open the demo' });
+      await demoLink.scrollIntoViewIfNeeded();
+      await demoLink.click();
 
-    await expect(page).toHaveURL(/\/links$/);
-    // A fresh demo user gets the welcome dialog; skip it so the page behind is reachable.
-    await page.getByRole('dialog').getByRole('button', { name: 'Skip' }).click();
-    await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
-    const banner = page.getByRole('status').filter({ hasText: BANNER_TITLE });
-    await expect(banner).toBeVisible();
-    await expect(banner).toContainText(`resets in ${DEMO_LIMIT.SessionHours} hours`);
-  });
+      await expect(page).toHaveURL(/\/links$/);
+      // A fresh demo user gets the welcome dialog; skip it so the page behind is reachable.
+      await page.getByRole('dialog').getByRole('button', { name: 'Skip' }).click();
+      await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
+      const banner = page.getByRole('status').filter({ hasText: BANNER_TITLE });
+      await expect(banner).toBeVisible();
+      await expect(banner).toContainText(`resets in ${DEMO_LIMIT.SessionHours} hours`);
+    },
+  );
 
   for (const [failure, reason, text] of [
     ['rate-limited', 'demo-limit', 'Too many demos'],

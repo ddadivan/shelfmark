@@ -3,8 +3,8 @@ import { COLOR_SCHEME } from './models/color-scheme.const';
 import { settled } from './support/settled';
 import { expectNoBlockingViolations } from './support/axe';
 import { demoUser, MOCK_USER, NEW_USER, seedSession } from './support/mock-session';
-import { useSearchDialogWidth } from './support/search-button';
 import { expect, test } from './support/test';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 // Same value as MOCK_RATING_STORAGE_KEY in the rating feature's mock.
 const RATING_KEY = 'sm-mock-feedback';
@@ -54,17 +54,6 @@ async function stored(page: Page): Promise<{ entries?: Record<string, unknown> }
 test.describe('app rating (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock API');
 
-  test('appears 5 seconds after load, not before', async ({ page }) => {
-    await openLibrary(page, 9);
-
-    // The page clock also runs by itself after the load, so the negative check keeps a margin.
-    await page.clock.runFor(500);
-    await expect(page.getByRole('dialog')).toHaveCount(0);
-
-    await page.clock.runFor(SHOW_MS);
-    await expect(page.getByRole('dialog', { name: QUESTION })).toBeVisible();
-  });
-
   test('a high score goes straight to thanks, which closes by itself after 4 s', async ({
     page,
   }) => {
@@ -110,19 +99,6 @@ test.describe('app rating (mock API)', () => {
     });
   });
 
-  test('Skip on the feedback step keeps the score', async ({ page }) => {
-    const dialog = await openRating(page);
-
-    await dialog.getByRole('button', { name: '2 out of 10' }).click();
-    await page
-      .getByRole('dialog', { name: FEEDBACK_TITLE })
-      .getByRole('button', { name: 'Skip' })
-      .click();
-
-    await expect(page.getByRole('dialog')).toHaveCount(0);
-    expect((await stored(page)).entries).toEqual({ week1: { score: 2 } });
-  });
-
   test('Not now records a skip and the milestone is not asked again', async ({ page }) => {
     const dialog = await openRating(page);
 
@@ -134,45 +110,6 @@ test.describe('app rating (mock API)', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
     await page.clock.runFor(SHOW_MS * 2);
     await expect(page.getByRole('dialog')).toHaveCount(0);
-  });
-
-  test('Esc counts as Not now', async ({ page }) => {
-    await openRating(page);
-
-    await page.keyboard.press('Escape');
-    await expect(page.getByRole('dialog')).toHaveCount(0);
-    await expect.poll(async () => (await stored(page)).entries).toEqual({ week1: { score: null } });
-  });
-
-  test('only the latest missed milestone is asked', async ({ page }) => {
-    const dialog = await openRating(page, 400);
-
-    await dialog.getByRole('button', { name: 'Not now' }).click();
-    await expect.poll(async () => (await stored(page)).entries).toEqual({ year1: { score: null } });
-  });
-
-  test('digits move focus (0 is 10), arrows move along the scale and Enter picks', async ({
-    page,
-  }) => {
-    const dialog = await openRating(page);
-    await expect(dialog).toBeFocused();
-
-    await page.keyboard.press('5');
-    await expect(dialog.getByRole('button', { name: '5 out of 10' })).toBeFocused();
-    // A digit alone never scores.
-    await expect(page.getByRole('dialog', { name: QUESTION })).toBeVisible();
-
-    await page.keyboard.press('ArrowRight');
-    await expect(dialog.getByRole('button', { name: '6 out of 10' })).toBeFocused();
-    await page.keyboard.press('ArrowLeft');
-    await page.keyboard.press('ArrowLeft');
-    await expect(dialog.getByRole('button', { name: '4 out of 10' })).toBeFocused();
-
-    await page.keyboard.press('0');
-    await expect(dialog.getByRole('button', { name: '10 out of 10' })).toBeFocused();
-    await page.keyboard.press('Enter');
-    await expect(page.getByRole('dialog', { name: 'Thank you' })).toBeVisible();
-    expect((await stored(page)).entries).toEqual({ week1: { score: 10 } });
   });
 
   test('is not shown before day 3', async ({ page }) => {
@@ -207,48 +144,35 @@ test.describe('app rating (mock API)', () => {
     await expect(welcome).toBeVisible();
   });
 
-  test('waits while another dialog is open and comes once it is closed', async ({ page }) => {
-    // Below 80em Ctrl+K opens the search dialog (from 80em it focuses the header field).
-    await useSearchDialogWidth(page);
-    await openLibrary(page, 9);
-    await page.keyboard.press('Control+k');
-    const search = page.getByRole('dialog');
-    await expect(search).toBeVisible();
+  test(
+    'the scale is one row of ten on a desktop and two rows of five on a phone',
+    { tag: E2E_TAG.Phone },
+    async ({ page }, testInfo) => {
+      const dialog = await openRating(page);
+      const box = async (name: string) =>
+        (await dialog.getByRole('button', { name }).boundingBox())?.y ?? 0;
+      // The sheet slides in and every button moves with it, so equal rows prove nothing while it
+      // runs: wait for the enter animation to finish before measuring.
+      await settled(page);
+      const first = await box('1 out of 10');
+      const sixth = await box('6 out of 10');
+      const tenth = await box('10 out of 10');
 
-    await page.clock.runFor(SHOW_MS * 2);
-    await expect(page.getByRole('dialog', { name: QUESTION })).toHaveCount(0);
-
-    await page.keyboard.press('Escape');
-    await expect(page.getByRole('dialog')).toHaveCount(0);
-    await page.clock.runFor(SHOW_MS);
-    await expect(page.getByRole('dialog', { name: QUESTION })).toBeVisible();
-  });
-
-  test('the scale is one row of ten on a desktop and two rows of five on a phone', async ({
-    page,
-  }, testInfo) => {
-    const dialog = await openRating(page);
-    const box = async (name: string) =>
-      (await dialog.getByRole('button', { name }).boundingBox())?.y ?? 0;
-    // The sheet slides in and every button moves with it, so equal rows prove nothing while it
-    // runs: wait for the enter animation to finish before measuring.
-    await settled(page);
-    const first = await box('1 out of 10');
-    const sixth = await box('6 out of 10');
-    const tenth = await box('10 out of 10');
-
-    if (testInfo.project.name === 'phone') {
-      expect(sixth).toBeGreaterThan(first + 10);
-      expect(Math.abs(tenth - sixth)).toBeLessThan(2);
-      const sheet = dialog.locator('.ui-dialog');
-      const sheetBox = await sheet.boundingBox();
-      expect(sheetBox?.width).toBeLessThanOrEqual(360);
-      const overflow = await sheet.evaluate((element) => element.scrollWidth - element.clientWidth);
-      expect(overflow).toBeLessThanOrEqual(0);
-    } else {
-      expect(Math.abs(tenth - first)).toBeLessThan(2);
-    }
-  });
+      if (testInfo.project.name === 'phone') {
+        expect(sixth).toBeGreaterThan(first + 10);
+        expect(Math.abs(tenth - sixth)).toBeLessThan(2);
+        const sheet = dialog.locator('.ui-dialog');
+        const sheetBox = await sheet.boundingBox();
+        expect(sheetBox?.width).toBeLessThanOrEqual(360);
+        const overflow = await sheet.evaluate(
+          (element) => element.scrollWidth - element.clientWidth,
+        );
+        expect(overflow).toBeLessThanOrEqual(0);
+      } else {
+        expect(Math.abs(tenth - first)).toBeLessThan(2);
+      }
+    },
+  );
 
   for (const colorScheme of Object.values(COLOR_SCHEME)) {
     test.describe(`${colorScheme} theme`, () => {

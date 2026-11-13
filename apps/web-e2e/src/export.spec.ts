@@ -4,6 +4,7 @@ import { expect, test } from './support/test';
 import { openAccountMenu, openSettingsSection, seedSession } from './support/mock-session';
 import { isCompact } from './support/sidebar';
 import { openExportMenu } from './support/library-toolbar';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 // Mirrors EXPORT_MOCK_MARKER (apps/web); this project cannot import it.
 const MOCK_MARKER = 'sm-mock-export';
@@ -100,19 +101,23 @@ test.describe('export (mock API)', () => {
     expect(overflow).toBeLessThanOrEqual(0);
   });
 
-  test('the account menu (the You tab on a phone) exports everything', async ({ page }) => {
-    await page.goto('/links');
-    const download = page.waitForEvent('download');
-    if (isCompact(page)) {
-      await openSettingsSection(page, 'Account');
-      await page.getByRole('button', { name: 'Download JSON' }).click();
-    } else {
-      await openAccountMenu(page);
-      await page.getByRole('menuitem', { name: 'Everything as JSON' }).click();
-    }
+  test(
+    'the account menu (the You tab on a phone) exports everything',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await page.goto('/links');
+      const download = page.waitForEvent('download');
+      if (isCompact(page)) {
+        await openSettingsSection(page, 'Account');
+        await page.getByRole('button', { name: 'Download JSON' }).click();
+      } else {
+        await openAccountMenu(page);
+        await page.getByRole('menuitem', { name: 'Everything as JSON' }).click();
+      }
 
-    expect(await requestedUrl(await download)).toBe('/api/export?format=json');
-  });
+      expect(await requestedUrl(await download)).toBe('/api/export?format=json');
+    },
+  );
 
   test('Account › Your data exports both formats; the old export page leads there', async ({
     page,

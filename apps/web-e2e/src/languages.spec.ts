@@ -5,6 +5,7 @@ import { seedSession } from './support/mock-session';
 import { settled } from './support/settled';
 import { isCompact } from './support/sidebar';
 import { expect, test } from './support/test';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 // Interface languages (issue #274). In the mock build the account settings live in localStorage
 // (`MockUserSettingsApi`, `sm-mock-language`), so a reload sees them like it would see the
@@ -186,29 +187,32 @@ test.describe('interface languages (mock API)', () => {
   });
 
   for (const language of ['fr', 'de']) {
-    test(`long ${language} strings fit: no side scroll, no clipped buttons`, async ({
-      page,
-    }, testInfo: TestInfo) => {
-      await seedLanguage(page, language);
-      await seedSession(page);
-      for (const path of [
-        '/links',
-        '/settings/language',
-        '/settings/appearance',
-        '/trash',
-        '/settings/library',
-      ]) {
-        await page.goto(path);
-        await expect(page.locator('html')).toHaveAttribute('lang', language);
-        await settled(page);
-        await expectNoSideScroll(page);
-        await expectNoClippedButtons(page);
-        await testInfo.attach(`${language}${path.replace(/\//g, '-')}`, {
-          body: await page.screenshot({ fullPage: true }),
-          contentType: 'image/png',
-        });
-      }
-    });
+    // The German strings are the longest, so they also run on the phone (ADR 0043).
+    test(
+      `long ${language} strings fit: no side scroll, no clipped buttons`,
+      { tag: language === 'de' ? [E2E_TAG.Phone] : [] },
+      async ({ page }, testInfo: TestInfo) => {
+        await seedLanguage(page, language);
+        await seedSession(page);
+        for (const path of [
+          '/links',
+          '/settings/language',
+          '/settings/appearance',
+          '/trash',
+          '/settings/library',
+        ]) {
+          await page.goto(path);
+          await expect(page.locator('html')).toHaveAttribute('lang', language);
+          await settled(page);
+          await expectNoSideScroll(page);
+          await expectNoClippedButtons(page);
+          await testInfo.attach(`${language}${path.replace(/\//g, '-')}`, {
+            body: await page.screenshot({ fullPage: true }),
+            contentType: 'image/png',
+          });
+        }
+      },
+    );
   }
 });
 
@@ -224,6 +228,7 @@ test.describe('interface languages: axe', () => {
 
   for (const language of ['fr', 'de']) {
     for (const colorScheme of Object.values(COLOR_SCHEME)) {
+      const crossed = (language === 'fr') !== (colorScheme === COLOR_SCHEME.Light);
       test.describe(`${language}, ${colorScheme}`, () => {
         test.use({ colorScheme });
 
@@ -232,33 +237,38 @@ test.describe('interface languages: axe', () => {
           await seedSession(page);
         });
 
-        test('library', async ({ page }, testInfo) => {
-          await page.goto('/links');
-          await expect(page.locator('ui-card').first()).toBeVisible();
-          await expect(page.locator('html')).toHaveAttribute('lang', language);
-          await settled(page);
-          await expectNoBlockingViolations(page, testInfo);
-        });
+        // Each screen runs once per language and once per theme (#349): contrast depends on the
+        // theme, missing or wrong labels on the language. fr-light and de-dark scan the library and
+        // the language settings, fr-dark and de-light the add link dialog.
+        if (crossed) {
+          test('add link dialog', async ({ page }, testInfo) => {
+            await page.goto('/links');
+            await expect(page.locator('ui-card').first()).toBeVisible();
+            const add = language === 'fr' ? 'Ajouter un lien' : 'Link hinzufügen';
+            await page.getByRole('button', { name: add }).first().click();
+            await expect(page.getByRole('dialog')).toBeVisible();
+            await settled(page);
+            await expectNoBlockingViolations(page, testInfo, { include: '[role="dialog"]' });
+          });
+        } else {
+          test('library', async ({ page }, testInfo) => {
+            await page.goto('/links');
+            await expect(page.locator('ui-card').first()).toBeVisible();
+            await expect(page.locator('html')).toHaveAttribute('lang', language);
+            await settled(page);
+            await expectNoBlockingViolations(page, testInfo);
+          });
 
-        test('add link dialog', async ({ page }, testInfo) => {
-          await page.goto('/links');
-          await expect(page.locator('ui-card').first()).toBeVisible();
-          const add = language === 'fr' ? 'Ajouter un lien' : 'Link hinzufügen';
-          await page.getByRole('button', { name: add }).first().click();
-          await expect(page.getByRole('dialog')).toBeVisible();
-          await settled(page);
-          await expectNoBlockingViolations(page, testInfo, { include: '[role="dialog"]' });
-        });
-
-        test('settings › language', async ({ page }, testInfo) => {
-          await page.goto('/settings/language');
-          await expect(page.locator('ui-flag')).toHaveCount(6);
-          await settled(page);
-          await expectNoBlockingViolations(page, testInfo);
-          if (isCompact(page)) {
-            await expectNoSideScroll(page);
-          }
-        });
+          test('settings › language', async ({ page }, testInfo) => {
+            await page.goto('/settings/language');
+            await expect(page.locator('ui-flag')).toHaveCount(6);
+            await settled(page);
+            await expectNoBlockingViolations(page, testInfo);
+            if (isCompact(page)) {
+              await expectNoSideScroll(page);
+            }
+          });
+        }
       });
     }
   }

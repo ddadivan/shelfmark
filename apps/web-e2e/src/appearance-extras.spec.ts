@@ -4,6 +4,7 @@ import { seedSession } from './support/mock-session';
 import { settled } from './support/settled';
 import { isCompact } from './support/sidebar';
 import { expect, test } from './support/test';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 // Settings › Appearance extras (issue #285): text size, font, density, card and sidebar options.
 // In the mock build the account settings live in localStorage (`MockUserSettingsApi`), so a
@@ -197,27 +198,29 @@ test.describe('appearance extras (mock API)', () => {
     }
   });
 
-  test('the phone keeps every option reachable at 125% text without side scroll', async ({
-    page,
-  }) => {
-    test.skip(!isCompact(page), 'phone layout');
-    await openAppearance(page);
-    await pick(page, 'Text size', '125%');
-    await pick(page, 'Density', 'Compact');
-    await expectNoSideScroll(page);
-    for (const group of ['Text size', 'Font', 'Density', 'Preview image', 'Animations']) {
-      const radiogroup = page.getByRole('radiogroup', { name: group });
-      await radiogroup.scrollIntoViewIfNeeded();
-      const box = await radiogroup.boundingBox();
-      expect(box?.x ?? -1).toBeGreaterThanOrEqual(0);
-      expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(
-        page.viewportSize()?.width ?? 0,
-      );
-    }
-    await page.goto('/settings/library');
-    await expect(page.getByRole('heading', { level: 1, name: 'Library' })).toBeVisible();
-    await expectNoSideScroll(page);
-  });
+  test(
+    'the phone keeps every option reachable at 125% text without side scroll',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      test.skip(!isCompact(page), 'phone layout');
+      await openAppearance(page);
+      await pick(page, 'Text size', '125%');
+      await pick(page, 'Density', 'Compact');
+      await expectNoSideScroll(page);
+      for (const group of ['Text size', 'Font', 'Density', 'Preview image', 'Animations']) {
+        const radiogroup = page.getByRole('radiogroup', { name: group });
+        await radiogroup.scrollIntoViewIfNeeded();
+        const box = await radiogroup.boundingBox();
+        expect(box?.x ?? -1).toBeGreaterThanOrEqual(0);
+        expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(
+          page.viewportSize()?.width ?? 0,
+        );
+      }
+      await page.goto('/settings/library');
+      await expect(page.getByRole('heading', { level: 1, name: 'Library' })).toBeVisible();
+      await expectNoSideScroll(page);
+    },
+  );
 });
 
 /** axe after the animations, scrolled to the end (see appearance.spec.ts). */

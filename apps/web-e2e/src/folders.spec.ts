@@ -3,6 +3,7 @@ import { expect, test } from './support/test';
 import { pickFolderMenuItem } from './support/a11y-flows';
 import { seedSession } from './support/mock-session';
 import { gotoWithSidebar, isCompact, openSidebar, tabBar, viewEntry } from './support/sidebar';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 // Mirror MOCK_ID.FolderReading, MOCK_NAME.FolderReading / FolderAngular and MOCK_FOLDER_NAME
 // (apps/web and libs/shared/contracts); the e2e project cannot import from them.
@@ -89,18 +90,22 @@ test.describe('folders (mock API)', () => {
       await expect(row(page, ANGULAR.name)).toHaveAttribute('aria-current', 'page');
     });
 
-    test('creates a folder, opens it and shows the empty state', async ({ page }) => {
-      await gotoWithSidebar(page, '/links');
+    test(
+      'creates a folder, opens it and shows the empty state',
+      { tag: E2E_TAG.Phone },
+      async ({ page }) => {
+        await gotoWithSidebar(page, '/links');
 
-      const dialog = await createFolder(page, 'Projects');
+        const dialog = await createFolder(page, 'Projects');
 
-      await expect(dialog).toBeHidden();
-      await expect(page).toHaveURL(/\/folders\/.+/);
-      await expect(page.getByRole('heading', { level: 1, name: 'Projects' })).toBeVisible();
-      await expect(page.getByRole('heading', { name: 'This folder is empty' })).toBeVisible();
-      await openSidebar(page);
-      await expect(row(page, 'Projects')).toBeVisible();
-    });
+        await expect(dialog).toBeHidden();
+        await expect(page).toHaveURL(/\/folders\/.+/);
+        await expect(page.getByRole('heading', { level: 1, name: 'Projects' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'This folder is empty' })).toBeVisible();
+        await openSidebar(page);
+        await expect(row(page, 'Projects')).toBeVisible();
+      },
+    );
 
     test('creating a subfolder names the parent', async ({ page }) => {
       await gotoWithSidebar(page, '/links');
@@ -168,7 +173,7 @@ test.describe('folders (mock API)', () => {
       await expect(dialog).toBeVisible();
     });
 
-    test('renames a folder from its menu', async ({ page }) => {
+    test('renames a folder from its menu', { tag: E2E_TAG.Phone }, async ({ page }) => {
       await gotoWithSidebar(page, `/folders/${READING.id}`);
 
       await pickFolderMenuItem(page, READING.name, 'Rename');

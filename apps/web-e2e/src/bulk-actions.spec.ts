@@ -7,6 +7,7 @@ import { settled } from './support/settled';
 import { viewEntry } from './support/sidebar';
 import { expect, test } from './support/test';
 import { switchView } from './support/library-toolbar';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 // Mirror MOCK_NAME.FolderReading (libs/shared/contracts); the e2e project cannot import from it.
 const READING = 'Reading';
@@ -468,7 +469,7 @@ test.describe('select links and bulk actions (mock API)', () => {
     });
   });
 
-  test.describe('phone', () => {
+  test.describe('phone', { tag: E2E_TAG.Phone }, () => {
     test.skip(({ isMobile }) => !isMobile, 'the desktop has its own tests');
 
     test('a long press starts the selection, taps add to it, Cancel clears', async ({ page }) => {
@@ -541,22 +542,26 @@ test.describe('select links and bulk actions (mock API)', () => {
       expect(shared[0]?.text.split('\n')).toHaveLength(2);
     });
 
-    test('the bar sits above the tab bar and toasts sit above the bar', async ({ page }) => {
-      await openFeed(page);
-      await longPress(page, cards(page).nth(0));
-      await barButton(page, 'Favorite').click();
-      // Added or removed: the toast for the bulk favorite change.
-      const toast = page.locator('ui-toast').filter({ hasText: /from favorites|to favorites/ });
-      await expect(toast).toBeVisible();
-      await settled(page);
-      const barBox = await bar(page).boundingBox();
-      const tabBox = await page.locator('ui-tab-bar nav').boundingBox();
-      const toastBox = await toast.boundingBox();
-      expect(barBox && tabBox && barBox.y + barBox.height <= tabBox.y).toBe(true);
-      // Exactly 12px above the bar (#352).
-      const gap = (barBox?.y ?? 0) - ((toastBox?.y ?? 0) + (toastBox?.height ?? 0));
-      expect(Math.abs(gap - 12)).toBeLessThanOrEqual(1);
-    });
+    test(
+      'the bar sits above the tab bar and toasts sit above the bar',
+      { tag: E2E_TAG.Mobile },
+      async ({ page }) => {
+        await openFeed(page);
+        await longPress(page, cards(page).nth(0));
+        await barButton(page, 'Favorite').click();
+        // Added or removed: the toast for the bulk favorite change.
+        const toast = page.locator('ui-toast').filter({ hasText: /from favorites|to favorites/ });
+        await expect(toast).toBeVisible();
+        await settled(page);
+        const barBox = await bar(page).boundingBox();
+        const tabBox = await page.locator('ui-tab-bar nav').boundingBox();
+        const toastBox = await toast.boundingBox();
+        expect(barBox && tabBox && barBox.y + barBox.height <= tabBox.y).toBe(true);
+        // Exactly 12px above the bar (#352).
+        const gap = (barBox?.y ?? 0) - ((toastBox?.y ?? 0) + (toastBox?.height ?? 0));
+        expect(Math.abs(gap - 12)).toBeLessThanOrEqual(1);
+      },
+    );
 
     test('the toast stays 12px above the bar while the main column scrolls (#352)', async ({
       page,

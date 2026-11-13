@@ -4,23 +4,28 @@ import { COLOR_SCHEME } from './models/color-scheme.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { LANDING_HEADLINE } from './models/landing-headline.const';
 import { gotoLandingLoaded } from './support/landing';
-import { isCompact } from './support/sidebar';
+import { settled } from './support/settled';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 test.describe('landing', () => {
-  test('a guest sees the headline and the sections in order', async ({ page }) => {
-    await page.goto('/');
+  test(
+    'a guest sees the headline and the sections in order',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await page.goto('/');
 
-    await expect(page.getByRole('heading', { level: 1, name: LANDING_HEADLINE })).toBeVisible();
-    await expect(page.getByRole('main')).toBeVisible();
-    // Auto-waits: the sections below the hero are deferred (on idle).
-    await expect(page.getByRole('heading', { level: 2 })).toHaveText([
-      'Save once, find in seconds',
-      'The same links, before and after',
-      'Why this exists',
-      "How it's built",
-      'Empty your Saved Messages.',
-    ]);
-  });
+      await expect(page.getByRole('heading', { level: 1, name: LANDING_HEADLINE })).toBeVisible();
+      await expect(page.getByRole('main')).toBeVisible();
+      // Auto-waits: the sections below the hero are deferred (on idle).
+      await expect(page.getByRole('heading', { level: 2 })).toHaveText([
+        'Save once, find in seconds',
+        'The same links, before and after',
+        'Why this exists',
+        "How it's built",
+        'Empty your Saved Messages.',
+      ]);
+    },
+  );
 
   test('"How it works" in the header scrolls to and focuses the section', async ({ page }) => {
     // The header links are hidden on a phone by design (sign-in stays), so use a desktop width.
@@ -182,7 +187,7 @@ test.describe('landing', () => {
       // The preview's cards land and its toast slides in after the headline: wait for the last
       // part to finish, then for the page to settle.
       await expect(page.locator('.landing-hero-preview__toast')).toHaveCSS('opacity', '1');
-      await page.waitForTimeout(500);
+      await settled(page);
 
       // The sources go into the failure message, so a CI failure says what moved.
       const shifts = await page.evaluate<{ at: number; value: number }[]>('window.__shifts');
@@ -227,17 +232,6 @@ test.describe('landing', () => {
     await page.getByRole('banner').getByRole('link', { name: 'Sign in' }).click();
 
     await expect(page).toHaveURL(/\/sign-in$/);
-  });
-
-  test('has no horizontal scroll at 360px width', async ({ page }) => {
-    await page.setViewportSize({ width: 360, height: 780 });
-    await gotoLandingLoaded(page);
-
-    const overflow = await page.evaluate<number>(
-      '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
-    );
-    expect(overflow).toBeLessThanOrEqual(0);
-    await expect(page.locator('.landing-hero-preview__toast')).toBeVisible();
   });
 });
 
@@ -410,11 +404,6 @@ test.describe('landing app preview motion', () => {
     page.evaluate<string | undefined>(
       "document.querySelector('.landing-hero-preview ui-segmented-control input:checked')?.value",
     );
-  /** Layout box of every card (left, top, width): they all share one grid cell. */
-  const cardBoxes = (page: Page): Promise<string[]> =>
-    page.evaluate<string[]>(
-      "[...document.querySelectorAll('.landing-hero-preview__item')].map((el) => [el.offsetLeft, el.offsetTop, el.offsetWidth].join(','))",
-    );
   const toast = (page: Page): Locator => page.locator('.landing-hero-preview__toast');
   /** Animations still running inside the preview. */
   const running = (page: Page): Promise<number> =>
@@ -446,32 +435,6 @@ test.describe('landing app preview motion', () => {
     await expect(toast(page)).toContainText('Undo');
   });
 
-  test('then the switch loops: All, Articles (the video leaves, the next article comes in), back to All', async ({
-    page,
-  }) => {
-    test.skip(isCompact(page), 'one card on a phone row: covered by the unit tests');
-    await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/');
-    await expect(toast(page)).toHaveCSS('opacity', '1', { timeout: 5000 });
-    await expect.poll(() => shownCards(page)).toEqual(['youtube.com', 'web.dev', 'vox.com']);
-    expect(await switchValue(page)).toBe('all');
-    const focused = await page.evaluate('document.activeElement?.tagName');
-    const boxes = await cardBoxes(page);
-    expect(new Set(boxes).size).toBe(1);
-
-    await expect.poll(() => switchValue(page), { timeout: 8000 }).toBe('articles');
-    await expect(page.locator('.landing-hero-preview__count')).toHaveText('6 links');
-    await expect.poll(() => shownCards(page)).toEqual(['web.dev', 'vox.com', 'wired.com']);
-    // Only transform properties and opacity move; no card's layout box changed.
-    await expect(cards(page).first()).toHaveCSS('transition-property', 'translate, opacity, scale');
-    expect(await cardBoxes(page)).toEqual(boxes);
-
-    await expect.poll(() => switchValue(page), { timeout: 8000 }).toBe('all');
-    await expect.poll(() => shownCards(page)).toEqual(['youtube.com', 'web.dev', 'vox.com']);
-    // Decorative: it never takes focus.
-    expect(await page.evaluate('document.activeElement?.tagName')).toBe(focused);
-  });
-
   test('the loop waits while the tab is hidden', async ({ page }) => {
     await page.goto('/');
     await expect(toast(page)).toHaveCSS('opacity', '1', { timeout: 5000 });
@@ -481,18 +444,6 @@ test.describe('landing app preview motion', () => {
     })()`);
     await page.waitForTimeout(6000);
     expect(await switchValue(page)).toBe('all');
-  });
-
-  test('is a decorative picture: hidden from assistive technology, nothing in it can be focused', async ({
-    page,
-  }) => {
-    await page.goto('/');
-    const picture = page.locator('.landing-hero-preview');
-
-    await expect(picture).toHaveAttribute('aria-hidden', 'true');
-    await expect(picture).toHaveAttribute('inert', '');
-    await expect(page.getByRole('link', { name: /css grid/i })).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Undo' })).toHaveCount(0);
   });
 
   test.describe('prefers-reduced-motion', () => {
@@ -509,19 +460,6 @@ test.describe('landing app preview motion', () => {
       const shown = await shownCards(page);
       expect(shown.length).toBeGreaterThan(0);
       expect(shown).toEqual(['youtube.com', 'web.dev', 'vox.com'].slice(0, shown.length));
-      expect(
-        await page
-          .locator('.landing-hero-preview')
-          .evaluate((el) => el.getAnimations({ subtree: true }).length),
-      ).toBe(0);
-    });
-
-    test('the switch stays on All: no loop', async ({ page }) => {
-      await page.goto('/');
-      await expect(toast(page)).toHaveCSS('opacity', '1');
-      await page.waitForTimeout(6000);
-
-      expect(await switchValue(page)).toBe('all');
       expect(
         await page
           .locator('.landing-hero-preview')

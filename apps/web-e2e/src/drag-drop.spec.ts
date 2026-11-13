@@ -5,6 +5,7 @@ import { seedSession } from './support/mock-session';
 import { settled } from './support/settled';
 import { isCompact } from './support/sidebar';
 import { switchView } from './support/library-toolbar';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 // Mirror MOCK_LINKS ("Simple pasta" is unsorted, "Angular overview" is in Angular) and the
 // MOCK_FOLDERS names (libs/shared/contracts); the e2e project cannot import from them.
@@ -247,7 +248,7 @@ test.describe('drag a link to a folder (mock API)', () => {
     await expect(page.getByRole('status').filter({ hasText: `Moved to ${READING}` })).toBeVisible();
   });
 
-  test('a link cannot be dragged on a phone', async ({ page }) => {
+  test('a link cannot be dragged on a phone', { tag: E2E_TAG.Mobile }, async ({ page }) => {
     test.skip(!isCompact(page), 'phone only');
     const card = page.locator('li.library__item').filter({ hasText: PASTA });
 

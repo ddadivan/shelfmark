@@ -23,6 +23,7 @@ import { deleteFirstLink, deleteReadingFolderWithLinks, openTrash } from '../sup
 import type { A11yScreen } from './a11y-screen.interface';
 import { DIALOG_SELECTOR } from './dialog-selector.const';
 import { E2E_PROJECT } from './e2e-project.const';
+import { E2E_TAG } from './e2e-tag.const';
 import { MOCK_FIXTURE } from './mock-fixture.const';
 import { TITLED_DIALOG_SELECTOR } from './titled-dialog-selector.const';
 import { switchView } from '../support/library-toolbar';
@@ -52,7 +53,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     },
   },
-  { name: 'feed, cards', open: (page) => openFeed(page) },
+  { name: 'feed, cards', tag: E2E_TAG.Phone, open: (page) => openFeed(page) },
   {
     name: 'feed, list',
     open: async (page) => {
@@ -136,6 +137,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
   },
   {
     name: 'search dialog',
+    tag: E2E_TAG.Phone,
     open: async (page) => {
       await useSearchDialogWidth(page);
       await openFeed(page);
@@ -162,6 +164,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
   },
   {
     name: 'settings (You list on a phone, the account on desktop)',
+    tag: E2E_TAG.Phone,
     open: async (page) => {
       await openSignedIn(page, '/settings');
       await expect(page.getByRole('heading', { level: 1, name: /^(Account|You)$/ })).toBeVisible();
@@ -234,6 +237,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
   },
   {
     name: 'add link dialog',
+    tag: E2E_TAG.Mobile,
     open: async (page) => {
       await openFeed(page);
       await page.getByRole('button', { name: 'Add link' }).first().click();
@@ -292,6 +296,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
   },
   {
     name: 'move link picker',
+    tag: E2E_TAG.Phone,
     open: async (page) => {
       await openFeed(page);
       const picker = await openCardMove(page);
@@ -459,6 +464,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
   },
   {
     name: 'phone library',
+    tag: E2E_TAG.Phone,
     only: E2E_PROJECT.Phone,
     open: async (page) => {
       await openFeed(page);
@@ -468,6 +474,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
   },
   {
     name: 'phone tags',
+    tag: E2E_TAG.Phone,
     only: E2E_PROJECT.Phone,
     open: async (page) => {
       await openFeed(page);
@@ -477,6 +484,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
   },
   {
     name: 'phone recently opened sheet',
+    tag: E2E_TAG.Phone,
     only: E2E_PROJECT.Phone,
     open: async (page) => {
       await openFeed(page);

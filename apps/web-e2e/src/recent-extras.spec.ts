@@ -5,6 +5,7 @@ import { seedSession } from './support/mock-session';
 import { isCompact } from './support/sidebar';
 import { settled } from './support/settled';
 import { expect, test } from './support/test';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 // The mock state lives in the page: after the first load every step stays inside the app.
 test.describe('Recently opened extras (mock API)', () => {
@@ -107,7 +108,7 @@ test.describe('Recently opened extras (mock API)', () => {
     await expect(page.getByText(title, { exact: true }).first()).toBeVisible();
   });
 
-  test('phone: swiping a row left reveals Remove', async ({ page }) => {
+  test('phone: swiping a row left reveals Remove', { tag: E2E_TAG.Mobile }, async ({ page }) => {
     test.skip(!isCompact(page), 'the swipe is the phone pattern');
     await openRecent(page);
     const before = await rows(page).count();

@@ -356,16 +356,8 @@ test.describe('appearance accessibility (mock API)', () => {
     await seedSession(page);
   });
 
-  for (const theme of ['Light', 'Dark']) {
-    test(`Appearance in ${theme}: no serious or critical axe violations`, async ({
-      page,
-    }, testInfo) => {
-      await openAppearance(page);
-      await pick(page, 'Theme', theme);
-      await scanSettled(page, testInfo);
-    });
-  }
-
+  // The plain Light and Dark pages are scanned by a11y-app.spec.ts (`settings appearance`, both
+  // themes); this one covers a Custom theme there is no other scan of (#349).
   test('Appearance in a dark Custom theme: no serious or critical axe violations', async ({
     page,
   }, testInfo) => {

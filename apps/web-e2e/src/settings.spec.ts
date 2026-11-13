@@ -7,6 +7,7 @@ import {
   seedSession,
 } from './support/mock-session';
 import { isCompact } from './support/sidebar';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 /** What `/settings` shows: the You list on a phone, the first section (Account) elsewhere. */
 const LANDING_HEADING = /^(Account|You)$/;
@@ -124,35 +125,37 @@ test.describe('settings (mock auth)', () => {
     await expect(page).toHaveURL(/\/links$/);
   });
 
-  test('the phone lists the sections in the You tab, each opens a page with a way back', async ({
-    page,
-  }) => {
-    test.skip(!isCompact(page), 'tablet and desktop have the nav instead of the list');
-    await seedSession(page);
-    await page.goto('/links');
+  test(
+    'the phone lists the sections in the You tab, each opens a page with a way back',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      test.skip(!isCompact(page), 'tablet and desktop have the nav instead of the list');
+      await seedSession(page);
+      await page.goto('/links');
 
-    await openSettingsPage(page);
+      await openSettingsPage(page);
 
-    await expect(page).toHaveURL(/\/settings$/);
-    await expect(page.getByRole('heading', { level: 1, name: 'You' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Appearance' })).toContainText('System');
-    await expect(page.getByRole('link', { name: 'Keyboard shortcuts' })).toHaveCount(0);
+      await expect(page).toHaveURL(/\/settings$/);
+      await expect(page.getByRole('heading', { level: 1, name: 'You' })).toBeVisible();
+      await expect(page.getByRole('link', { name: 'Appearance' })).toContainText('System');
+      await expect(page.getByRole('link', { name: 'Keyboard shortcuts' })).toHaveCount(0);
 
-    await page.getByRole('link', { name: 'Appearance' }).click();
+      await page.getByRole('link', { name: 'Appearance' }).click();
 
-    await expect(page).toHaveURL(/\/settings\/appearance$/);
-    await expect(page.getByRole('heading', { level: 1, name: 'Appearance' })).toBeVisible();
+      await expect(page).toHaveURL(/\/settings\/appearance$/);
+      await expect(page.getByRole('heading', { level: 1, name: 'Appearance' })).toBeVisible();
 
-    await page.getByRole('link', { name: 'You' }).first().click();
+      await page.getByRole('link', { name: 'You' }).first().click();
 
-    await expect(page).toHaveURL(/\/settings$/);
-    await expect(page.getByRole('heading', { level: 1, name: 'You' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Privacy policy' })).toHaveAttribute(
-      'href',
-      '/privacy',
-    );
-    await expect(page.getByText('Shelfmark v1.0')).toBeVisible();
-  });
+      await expect(page).toHaveURL(/\/settings$/);
+      await expect(page.getByRole('heading', { level: 1, name: 'You' })).toBeVisible();
+      await expect(page.getByRole('link', { name: 'Privacy policy' })).toHaveAttribute(
+        'href',
+        '/privacy',
+      );
+      await expect(page.getByText('Shelfmark v1.0')).toBeVisible();
+    },
+  );
 
   test('the theme choice applies at once and survives a reload', async ({ page }) => {
     await seedSession(page);

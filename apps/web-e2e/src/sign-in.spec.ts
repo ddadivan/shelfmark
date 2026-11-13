@@ -1,26 +1,29 @@
 import { expect, test } from './support/test';
 import { isCompact, tabBar } from './support/sidebar';
 import { dismissOnboarding, MOCK_USER, seedSession, signOutFromUi } from './support/mock-session';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 const GITHUB_BUTTON = 'Continue with GitHub';
 
 test.describe('sign-in flow (mock auth)', () => {
-  test('a guest on a protected URL lands on sign-in and returns after signing in', async ({
-    page,
-  }) => {
-    await page.goto('/links');
+  test(
+    'a guest on a protected URL lands on sign-in and returns after signing in',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await page.goto('/links');
 
-    await expect(page).toHaveURL(/\/sign-in\?returnUrl=%2Flinks$/);
-    await expect(
-      page.getByRole('heading', { level: 1, name: 'All your links on one shelf' }),
-    ).toBeVisible();
+      await expect(page).toHaveURL(/\/sign-in\?returnUrl=%2Flinks$/);
+      await expect(
+        page.getByRole('heading', { level: 1, name: 'All your links on one shelf' }),
+      ).toBeVisible();
 
-    await page.getByRole('button', { name: GITHUB_BUTTON }).click();
+      await page.getByRole('button', { name: GITHUB_BUTTON }).click();
 
-    await dismissOnboarding(page);
-    await expect(page).toHaveURL(/\/links$/);
-    await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
-  });
+      await dismissOnboarding(page);
+      await expect(page).toHaveURL(/\/links$/);
+      await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
+    },
+  );
 
   test('sign-out clears the session and returns to sign-in', async ({ page }) => {
     await seedSession(page);
@@ -252,7 +255,10 @@ test.describe('sign-in flow (mock auth)', () => {
     await expect(page.locator('.sd-tilt')).toHaveCount(14);
 
     await page.mouse.move(1400, 880);
-    await page.waitForTimeout(150);
+    // The lean is applied on the next animation frame after a pointer move: wait two frames.
+    await page.evaluate(
+      'new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))',
+    );
     const tx = await page
       .locator('.sd-tilt')
       .first()
@@ -260,7 +266,7 @@ test.describe('sign-in flow (mock auth)', () => {
     expect(tx).toBe('');
   });
 
-  test('on a phone the mosaic sits above the form', async ({ page }) => {
+  test('on a phone the mosaic sits above the form', { tag: E2E_TAG.Phone }, async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 780 });
     await page.goto('/sign-in');
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();

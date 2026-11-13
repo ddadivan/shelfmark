@@ -1,6 +1,7 @@
 import { type Locator, type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { openFeed } from './support/a11y-flows';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 // `angular.dev/overview` is the mock's saved link (the duplicate fixture).
 const PASTE = [
@@ -100,34 +101,36 @@ test.describe('paste several links (mock API)', () => {
     await expect(many.getByRole('button', { name: 'Save 3 links' })).toBeEnabled();
   });
 
-  test('"Add several links" in Add link switches to a text area that leads into the list (#315)', async ({
-    page,
-  }) => {
-    await openFeed(page);
-    await page.getByRole('button', { name: 'Add link' }).first().click();
-    const dialog = page.getByRole('dialog', { name: 'Add link' });
-    await expect(dialog.getByText('Have several links? Paste them all at once')).toBeVisible();
+  test(
+    '"Add several links" in Add link switches to a text area that leads into the list (#315)',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await openFeed(page);
+      await page.getByRole('button', { name: 'Add link' }).first().click();
+      const dialog = page.getByRole('dialog', { name: 'Add link' });
+      await expect(dialog.getByText('Have several links? Paste them all at once')).toBeVisible();
 
-    await dialog.getByRole('button', { name: 'Add several links' }).click();
-    const several = page.getByRole('dialog', { name: 'Add several links' });
-    const text = several.getByRole('textbox', {
-      name: 'Paste links, one per line or inside any text',
-    });
-    await expect(text).toBeFocused();
+      await dialog.getByRole('button', { name: 'Add several links' }).click();
+      const several = page.getByRole('dialog', { name: 'Add several links' });
+      const text = several.getByRole('textbox', {
+        name: 'Paste links, one per line or inside any text',
+      });
+      await expect(text).toBeFocused();
 
-    // Back to one link and in again: the address field gets focus back.
-    await several.getByRole('button', { name: 'One link' }).click();
-    await expect(dialog.getByLabel('Link', { exact: true })).toBeFocused();
-    await dialog.getByRole('button', { name: 'Add several links' }).click();
+      // Back to one link and in again: the address field gets focus back.
+      await several.getByRole('button', { name: 'One link' }).click();
+      await expect(dialog.getByLabel('Link', { exact: true })).toBeFocused();
+      await dialog.getByRole('button', { name: 'Add several links' }).click();
 
-    await text.fill('https://example.org/a\nexample.net/b\nsee www.example.com too');
-    await several.getByRole('button', { name: 'Find links' }).click();
+      await text.fill('https://example.org/a\nexample.net/b\nsee www.example.com too');
+      await several.getByRole('button', { name: 'Find links' }).click();
 
-    const many = page.getByRole('dialog', { name: 'Add 3 links' });
-    await expect(many).toBeVisible();
-    await expect(many.locator('.paste-many__row')).toHaveCount(3);
-    await expect(many.getByRole('button', { name: 'Save 3 links' })).toBeEnabled();
-  });
+      const many = page.getByRole('dialog', { name: 'Add 3 links' });
+      await expect(many).toBeVisible();
+      await expect(many.locator('.paste-many__row')).toHaveCount(3);
+      await expect(many.getByRole('button', { name: 'Save 3 links' })).toBeEnabled();
+    },
+  );
 
   test('pastes into the several-links text area stay in it until Find links (#335)', async ({
     page,
