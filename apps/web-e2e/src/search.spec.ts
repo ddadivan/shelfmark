@@ -3,6 +3,7 @@ import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
 import { SEARCH_BUTTON, useSearchDialogWidth } from './support/search-button';
 import { chooseSort, expectSort } from './support/library-toolbar';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 // Mirror the contract mock links (libs/shared/contracts/src/testing); the e2e project cannot
 // import from them.
@@ -65,20 +66,22 @@ test.describe('search (mock API)', () => {
       await useSearchDialogWidth(page);
     });
 
-    test('opens from the header, finds links, folders and tags, and returns focus on Esc', async ({
-      page,
-    }) => {
-      await page.goto('/links');
-      await searchButton(page).click();
+    test(
+      'opens from the header, finds links, folders and tags, and returns focus on Esc',
+      { tag: E2E_TAG.Phone },
+      async ({ page }) => {
+        await page.goto('/links');
+        await searchButton(page).click();
 
-      await searchField(page).fill(NOTE_WORD);
-      await expect(page.getByRole('option', { name: new RegExp(ANGULAR_TITLE) })).toBeVisible();
-      await expect(page.getByRole('listbox')).not.toHaveAttribute('aria-busy', 'true');
+        await searchField(page).fill(NOTE_WORD);
+        await expect(page.getByRole('option', { name: new RegExp(ANGULAR_TITLE) })).toBeVisible();
+        await expect(page.getByRole('listbox')).not.toHaveAttribute('aria-busy', 'true');
 
-      await searchField(page).press('Escape');
-      await expect(searchField(page)).toHaveCount(0);
-      await expect(searchButton(page)).toBeFocused();
-    });
+        await searchField(page).press('Escape');
+        await expect(searchField(page)).toHaveCount(0);
+        await expect(searchButton(page)).toBeFocused();
+      },
+    );
 
     test('opens with Ctrl+K, moves with the arrows and opens a link in a new tab with Enter', async ({
       page,

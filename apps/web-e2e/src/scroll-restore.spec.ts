@@ -2,6 +2,7 @@ import { seedSession } from './support/mock-session';
 import { makePageTall, mainScrollTop, scrollMainTo } from './support/scroll';
 import { isCompact, openSidebar, tabBar } from './support/sidebar';
 import { expect, test } from './support/test';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 // Mirror MOCK_ID.FolderReading and its name (apps/web); the e2e project cannot import from it.
 const READING = { id: '00000000-0000-4000-8000-000000000101', name: 'Reading' };
@@ -11,7 +12,7 @@ const TOLERANCE_PX = 4;
 // #352: the mobile shell scrolls its main column, not the document, so the router's own window
 // restoration does nothing there. `ScrollRestorationDirective` stores the column's position per
 // navigation: Back and Forward put it back, a new page starts at the top.
-test.describe('scroll restoration in the mobile shell (mock API)', () => {
+test.describe('scroll restoration in the mobile shell (mock API)', { tag: E2E_TAG.Phone }, () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
 
   test.beforeEach(async ({ page }) => {

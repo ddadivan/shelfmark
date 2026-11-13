@@ -35,3 +35,6 @@ __screenshots__/
 # Prisma generated client (rebuilt by the prisma-generate target)
 apps/api/src/generated/
 .lighthouseci/
+
+# Vitest blob reports of the API shards (CI, tools/ci/affected-unit-tests.sh)
+.vitest-reports/

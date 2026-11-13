@@ -5,6 +5,7 @@ import { settled } from './support/settled';
 import { isCompact, tabBar } from './support/sidebar';
 import { expect, test } from './support/test';
 import { Finger } from './support/touch';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 /** The middle of a locator's box. */
 async function centre(locator: Locator): Promise<{ x: number; y: number }> {
@@ -28,7 +29,7 @@ function feedScrollTop(page: Page): Promise<number> {
 
 // #352: the page must not move under the finger on a tablet or phone. The app shell is exactly
 // the viewport and never scrolls the document; only its inner areas scroll.
-test.describe('touch scrolling (mock API)', () => {
+test.describe('touch scrolling (mock API)', { tag: E2E_TAG.Mobile }, () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
 
   test.describe('in the app shell', () => {

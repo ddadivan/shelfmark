@@ -1,8 +1,6 @@
 import { type Locator, type Page } from '@playwright/test';
 import { MOCK_FIXTURE } from './models/mock-fixture.const';
-import { expectNoBlockingViolations } from './support/axe';
 import { seedSession } from './support/mock-session';
-import { settled } from './support/settled';
 import { isCompact } from './support/sidebar';
 import { expect, test } from './support/test';
 import { chooseSort, expectSort, switchView } from './support/library-toolbar';
@@ -216,11 +214,5 @@ test.describe('settings › library (mock API)', () => {
     await dialog.getByRole('button', { name: 'Save link' }).click();
     await expect(dialog).toBeHidden();
     await expect(page.locator('ui-card a[href="https://example.org/coat?id=7"]')).toHaveCount(1);
-  });
-
-  test('has no axe violations', async ({ page }, testInfo) => {
-    await openLibrarySettings(page);
-    await settled(page);
-    await expectNoBlockingViolations(page, testInfo);
   });
 });

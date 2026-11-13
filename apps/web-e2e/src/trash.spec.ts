@@ -14,6 +14,7 @@ import {
   selectRow,
   trashRow,
 } from './support/trash';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 // The mock state lives in the page: every step navigates inside the app, never with `page.goto`
 // (which would start a fresh mock library).
@@ -63,27 +64,31 @@ test.describe('trash (mock API)', () => {
     expect(heading.y).toBeLessThan(card.y + card.height * 0.75);
   });
 
-  test('a deleted link appears in Trash and Restore puts it back in the feed', async ({ page }) => {
-    await openFeed(page);
-    const title = await deleteFirstLink(page);
-    await expect(page.getByText('Moved to Trash')).toBeVisible();
+  test(
+    'a deleted link appears in Trash and Restore puts it back in the feed',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await openFeed(page);
+      const title = await deleteFirstLink(page);
+      await expect(page.getByText('Moved to Trash')).toBeVisible();
 
-    await openTrash(page);
-    await expect(trashRow(page, title)).toBeVisible();
-    // Opening Trash sent the delete, so its Undo toast closes at once (Undo could not bring it back).
-    await expect(page.getByText('Moved to Trash')).toBeHidden({ timeout: 2000 });
-    await expect(trashRow(page, title)).toContainText('30 days left');
-    await expect(trashRow(page, title)).toContainText('Deleted');
-    await expect(page.locator('.trash-page__count')).toHaveText('1 item, kept for 30 days');
+      await openTrash(page);
+      await expect(trashRow(page, title)).toBeVisible();
+      // Opening Trash sent the delete, so its Undo toast closes at once (Undo could not bring it back).
+      await expect(page.getByText('Moved to Trash')).toBeHidden({ timeout: 2000 });
+      await expect(trashRow(page, title)).toContainText('30 days left');
+      await expect(trashRow(page, title)).toContainText('Deleted');
+      await expect(page.locator('.trash-page__count')).toHaveText('1 item, kept for 30 days');
 
-    await restoreRow(page, title);
+      await restoreRow(page, title);
 
-    await expect(page.getByText('Restored', { exact: true })).toBeVisible();
-    await expect(emptyTrash(page)).toBeVisible();
-    await openSidebar(page);
-    await viewEntry(page, 'All links').click();
-    await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
-  });
+      await expect(page.getByText('Restored', { exact: true })).toBeVisible();
+      await expect(emptyTrash(page)).toBeVisible();
+      await openSidebar(page);
+      await viewEntry(page, 'All links').click();
+      await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
+    },
+  );
 
   test('a deleted folder is one entry with its link count and can be deleted for good', async ({
     page,
@@ -156,24 +161,28 @@ test.describe('trash (mock API)', () => {
     await expect(page.locator('app-trash-row')).toHaveCount(2);
   });
 
-  test('selecting entries shows the bar and restores them together', async ({ page }) => {
-    await openFeed(page);
-    const first = await deleteFirstLink(page);
-    const second = await deleteFirstLink(page);
-    await openTrash(page);
+  test(
+    'selecting entries shows the bar and restores them together',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await openFeed(page);
+      const first = await deleteFirstLink(page);
+      const second = await deleteFirstLink(page);
+      await openTrash(page);
 
-    await selectRow(page, first, true);
-    await selectRow(page, second, false);
-    const bar = page.getByRole('toolbar');
-    await expect(bar).toContainText('2 selected');
-    await bar.getByRole('button', { name: 'Restore' }).click();
+      await selectRow(page, first, true);
+      await selectRow(page, second, false);
+      const bar = page.getByRole('toolbar');
+      await expect(bar).toContainText('2 selected');
+      await bar.getByRole('button', { name: 'Restore' }).click();
 
-    await expect(emptyTrash(page)).toBeVisible();
-    await expect(page.getByRole('toolbar')).toHaveCount(0);
-    await openSidebar(page);
-    await viewEntry(page, 'All links').click();
-    await expect(page.getByRole('heading', { name: first, exact: true })).toBeVisible();
-  });
+      await expect(emptyTrash(page)).toBeVisible();
+      await expect(page.getByRole('toolbar')).toHaveCount(0);
+      await openSidebar(page);
+      await viewEntry(page, 'All links').click();
+      await expect(page.getByRole('heading', { name: first, exact: true })).toBeVisible();
+    },
+  );
 
   test('the retention setting changes the days left', async ({ page }) => {
     await openFeed(page);

@@ -5,6 +5,7 @@ import { expectNoBlockingViolations } from './support/axe';
 import { openAccountMenu, seedSession } from './support/mock-session';
 import { settled } from './support/settled';
 import { isCompact, isPhone, tabBar } from './support/sidebar';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 /** `HTMLMediaElement.HAVE_METADATA`: duration and size are known. */
 const HAVE_METADATA = 1;
@@ -25,29 +26,31 @@ test.describe('About and "How it works" (mock API)', () => {
     await expect(page.getByRole('heading', { name: "What's new" })).toHaveCount(0);
   });
 
-  test('a signed-in person reaches About from the account menu and goes back to the shelf', async ({
-    page,
-  }, testInfo) => {
-    await seedSession(page);
-    await page.goto('/links');
-    if (isCompact(page)) {
-      await tabBar(page).getByRole('link', { name: 'You' }).click();
-      await page.getByRole('link', { name: 'About Shelfmark' }).click();
-    } else {
-      await openAccountMenu(page);
-      await page.getByRole('menuitem', { name: 'About Shelfmark' }).click();
-    }
+  test(
+    'a signed-in person reaches About from the account menu and goes back to the shelf',
+    { tag: E2E_TAG.Phone },
+    async ({ page }, testInfo) => {
+      await seedSession(page);
+      await page.goto('/links');
+      if (isCompact(page)) {
+        await tabBar(page).getByRole('link', { name: 'You' }).click();
+        await page.getByRole('link', { name: 'About Shelfmark' }).click();
+      } else {
+        await openAccountMenu(page);
+        await page.getByRole('menuitem', { name: 'About Shelfmark' }).click();
+      }
 
-    await expect(page).toHaveURL('/about');
-    await expect(page.getByRole('heading', { name: "What's new" })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Open the demo' })).toHaveCount(0);
-    await expect(page.getByRole('link', { name: 'Sign in' })).toHaveCount(0);
-    await settled(page);
-    await expectNoBlockingViolations(page, testInfo);
+      await expect(page).toHaveURL('/about');
+      await expect(page.getByRole('heading', { name: "What's new" })).toBeVisible();
+      await expect(page.getByRole('link', { name: 'Open the demo' })).toHaveCount(0);
+      await expect(page.getByRole('link', { name: 'Sign in' })).toHaveCount(0);
+      await settled(page);
+      await expectNoBlockingViolations(page, testInfo);
 
-    await page.getByRole('link', { name: 'Back to my shelf' }).first().click();
-    await expect(page).toHaveURL('/links');
-  });
+      await page.getByRole('link', { name: 'Back to my shelf' }).first().click();
+      await expect(page).toHaveURL('/links');
+    },
+  );
 
   test('"What\'s new" sits in the page column like the other sections, caption not cut', async ({
     page,

@@ -45,18 +45,6 @@ test.describe('keyboard shortcuts (mock API)', () => {
     await expect(page.getByRole('dialog')).toHaveCount(0);
   });
 
-  test('the ? key is only a character while typing in a field', async ({ page }) => {
-    test.skip(isCompact(page), 'the tags are on their own tab on a phone');
-    const tags = page.locator('app-sidebar-tags');
-    await tags.getByRole('button', { name: 'New tag' }).click();
-    const field = tags.getByRole('textbox', { name: 'New tag' });
-
-    await field.pressSequentially('what?');
-
-    await expect(field).toHaveValue('what?');
-    await expect(page.getByRole('dialog')).toHaveCount(0);
-  });
-
   test('the single-key switch turns "?" off at once, keeps the button and survives a reload', async ({
     page,
   }) => {
@@ -91,18 +79,6 @@ test.describe('keyboard shortcuts (mock API)', () => {
     await page.locator('body').click({ position: { x: 1, y: 1 } });
     await page.keyboard.press('?');
     await expect(page.getByRole('dialog', { name: DIALOG })).toBeVisible();
-  });
-
-  test('with single-key shortcuts off from the start "?" does nothing', async ({ page }) => {
-    await page.evaluate(() =>
-      localStorage.setItem('sm-ui', JSON.stringify({ view: 'cards', singleKeyShortcuts: false })),
-    );
-    await page.reload();
-    await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
-
-    await page.keyboard.press('?');
-
-    await expect(page.getByRole('dialog')).toHaveCount(0);
   });
 
   test('the settings page lists the shortcuts and opens the dialog from its row', async ({

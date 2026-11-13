@@ -5,6 +5,7 @@ import { SEARCH_BUTTON, useSearchDialogWidth } from './support/search-button';
 import { openSidebar, tabBar } from './support/sidebar';
 import { switchView } from './support/library-toolbar';
 import { documentScrollTop, mainScrollTop, makePageTall, scrollMainTo } from './support/scroll';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 // Mirror MOCK_ID.FolderReading / FolderAngular and their names (libs/shared/contracts); the e2e
 // project cannot import from them.
@@ -43,7 +44,7 @@ test.describe('mobile polish (mock API)', () => {
       await expect(page).toHaveURL(`/folders/${ANGULAR.id}`);
     });
 
-    test('has no horizontal overflow', async ({ page }) => {
+    test('has no horizontal overflow', { tag: E2E_TAG.Phone }, async ({ page }) => {
       await page.goto(`/folders/${READING.id}`);
       await expect(page.getByRole('link', { name: /^Open folder Angular/ })).toBeVisible();
 
@@ -54,7 +55,7 @@ test.describe('mobile polish (mock API)', () => {
     });
   });
 
-  test.describe('phone only', () => {
+  test.describe('phone only', { tag: E2E_TAG.Phone }, () => {
     test.skip(
       ({ viewport }) => (viewport?.width ?? 0) >= 640,
       'the phone project covers the phone layout',
@@ -160,7 +161,7 @@ test.describe('mobile polish (mock API)', () => {
     });
   });
 
-  test.describe('library toolbar on a phone', () => {
+  test.describe('library toolbar on a phone', { tag: E2E_TAG.Phone }, () => {
     test.skip(({ viewport }) => (viewport?.width ?? 0) >= 640, 'phone only');
 
     test('one Options menu holds sort, view and export; the saved views scroll in one row', async ({

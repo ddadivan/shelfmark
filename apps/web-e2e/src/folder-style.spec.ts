@@ -7,6 +7,7 @@ import { settled } from './support/settled';
 import { expect, test } from './support/test';
 import { Finger } from './support/touch';
 import { documentScrollTop, mainScrollTop, scrollMainTo } from './support/scroll';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 const READING = MOCK_FIXTURE.readingName;
 const NOTES = 'Notes';
@@ -90,16 +91,18 @@ test.describe('folder style and pins (mock API)', () => {
     await openFeed(page);
   });
 
-  test('the colour and icon dialog saves a style that shows on the folder row', async ({
-    page,
-  }) => {
-    await openSidebar(page);
-    await expect(coloured(page, 'clay')).toHaveCount(0);
+  test(
+    'the colour and icon dialog saves a style that shows on the folder row',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await openSidebar(page);
+      await expect(coloured(page, 'clay')).toHaveCount(0);
 
-    await chooseStyle(page, 'Clay', 'Star');
+      await chooseStyle(page, 'Clay', 'Star');
 
-    await expect(coloured(page, 'clay').first()).toBeVisible();
-  });
+      await expect(coloured(page, 'clay').first()).toBeVisible();
+    },
+  );
 
   test('own colors and an emoji: the swatches stay on one line, a "+" swatch adds a colour, one emoji replaces the icon (#335)', async ({
     page,
@@ -257,28 +260,30 @@ test.describe('folder style and pins (mock API)', () => {
     await expectNoPins(page);
   });
 
-  test("unpins from the row's Unpin button (hover on desktop, always on touch) with Undo", async ({
-    page,
-  }) => {
-    await pickFolderMenuItem(page, READING, 'Pin to sidebar');
-    await expect(pinnedItems(page)).toHaveCount(1);
-    const row = pinnedItems(page).first();
-    const unpin = row.getByRole('button', { name: `Unpin ${READING}` });
-    const actions = row.locator('.pinned__actions');
-    if (!isCompact(page)) {
-      await expect(actions).toHaveCSS('opacity', '0');
-      await row.hover();
-    }
-    await expect(actions).toHaveCSS('opacity', '1');
-    await unpin.click();
-    await expectNoPins(page);
+  test(
+    "unpins from the row's Unpin button (hover on desktop, always on touch) with Undo",
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await pickFolderMenuItem(page, READING, 'Pin to sidebar');
+      await expect(pinnedItems(page)).toHaveCount(1);
+      const row = pinnedItems(page).first();
+      const unpin = row.getByRole('button', { name: `Unpin ${READING}` });
+      const actions = row.locator('.pinned__actions');
+      if (!isCompact(page)) {
+        await expect(actions).toHaveCSS('opacity', '0');
+        await row.hover();
+      }
+      await expect(actions).toHaveCSS('opacity', '1');
+      await unpin.click();
+      await expectNoPins(page);
 
-    const toast = page.locator('ui-toast').filter({ hasText: 'Unpinned from sidebar' });
-    await expect(toast).toContainText(READING);
-    await toast.getByRole('button', { name: 'Undo' }).click();
-    await expect(pinnedItems(page)).toHaveCount(1);
-    await expect(pinnedItems(page).first()).toContainText(READING);
-  });
+      const toast = page.locator('ui-toast').filter({ hasText: 'Unpinned from sidebar' });
+      await expect(toast).toContainText(READING);
+      await toast.getByRole('button', { name: 'Undo' }).click();
+      await expect(pinnedItems(page)).toHaveCount(1);
+      await expect(pinnedItems(page).first()).toContainText(READING);
+    },
+  );
 
   test('pins a link from its card menu and unpins it from its Pinned row', async ({ page }) => {
     const card = page.locator('ui-card').first();
@@ -508,7 +513,7 @@ test.describe('folder style and pins (mock API)', () => {
   /** Rest longer than the touch drag delay (400 ms), shorter than the long press (500 ms). */
   const DRAG_REST_MS = 440;
 
-  test.describe('touch reorder on a phone (#315)', () => {
+  test.describe('touch reorder on a phone (#315)', { tag: E2E_TAG.Phone }, () => {
     test.beforeEach(({ page }) => {
       test.skip(!isCompact(page), 'touch screens only; a mouse drags at once');
     });

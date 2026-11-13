@@ -5,6 +5,7 @@ import { MOCK_LINKS_SCENARIO } from './models/mock-links-scenario.const';
 import { seedSession } from './support/mock-session';
 import { switchView } from './support/library-toolbar';
 import { isCompact } from './support/sidebar';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 // The mock page size is 50 of 60 links.
 const FIRST_PAGE = 50;
@@ -121,26 +122,34 @@ test.describe('links feed (mock API)', () => {
     await expect(page.getByText(`${FIRST_PAGE}+ links`)).toBeVisible();
   });
 
-  test('loads the rest when the end of the list is reached', async ({ page }) => {
-    await openFeed(page);
+  test(
+    'loads the rest when the end of the list is reached',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await openFeed(page);
 
-    await page.keyboard.press('End');
+      await page.keyboard.press('End');
 
-    await expect(page.locator('ui-card')).toHaveCount(ALL_LINKS);
-    await expect(page.getByText(`${ALL_LINKS} links`)).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Load more' })).toHaveCount(0);
-  });
+      await expect(page.locator('ui-card')).toHaveCount(ALL_LINKS);
+      await expect(page.getByText(`${ALL_LINKS} links`)).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Load more' })).toHaveCount(0);
+    },
+  );
 
-  test('switches to the list view and remembers it after a reload', async ({ page }) => {
-    await openFeed(page);
+  test(
+    'switches to the list view and remembers it after a reload',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await openFeed(page);
 
-    await switchView(page, 'List');
-    await expect(page.locator('ui-list-item').first()).toBeVisible();
-    await expect(page.locator('ui-card')).toHaveCount(0);
+      await switchView(page, 'List');
+      await expect(page.locator('ui-list-item').first()).toBeVisible();
+      await expect(page.locator('ui-card')).toHaveCount(0);
 
-    await page.reload();
-    await expect(page.locator('ui-list-item').first()).toBeVisible();
-  });
+      await page.reload();
+      await expect(page.locator('ui-list-item').first()).toBeVisible();
+    },
+  );
 
   test('toggles a favorite and keeps it', async ({ page }) => {
     await openFeed(page);
@@ -199,26 +208,30 @@ test.describe('links feed (mock API)', () => {
     await expect(favorite).toHaveAttribute('aria-pressed', before === 'true' ? 'false' : 'true');
   });
 
-  test('deleting asks first, removes the card and Undo brings it back', async ({ page }) => {
-    await openFeed(page);
-    const title = await firstTitle(page);
+  test(
+    'deleting asks first, removes the card and Undo brings it back',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await openFeed(page);
+      const title = await firstTitle(page);
 
-    await page
-      .locator('ui-card')
-      .first()
-      .getByRole('button', { name: /^Actions for / })
-      .click();
-    await page.getByRole('menuitem', { name: 'Delete' }).click();
-    const confirm = page.getByRole('alertdialog');
-    await expect(confirm).toContainText('moves to Trash');
-    await confirm.getByRole('button', { name: 'Delete' }).click();
+      await page
+        .locator('ui-card')
+        .first()
+        .getByRole('button', { name: /^Actions for / })
+        .click();
+      await page.getByRole('menuitem', { name: 'Delete' }).click();
+      const confirm = page.getByRole('alertdialog');
+      await expect(confirm).toContainText('moves to Trash');
+      await confirm.getByRole('button', { name: 'Delete' }).click();
 
-    await expect(page.getByRole('heading', { name: title, exact: true })).toHaveCount(0);
-    await expect(page.getByText('Moved to Trash')).toBeVisible();
+      await expect(page.getByRole('heading', { name: title, exact: true })).toHaveCount(0);
+      await expect(page.getByText('Moved to Trash')).toBeVisible();
 
-    await page.getByRole('button', { name: 'Undo' }).click();
-    await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
-  });
+      await page.getByRole('button', { name: 'Undo' }).click();
+      await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
+    },
+  );
 
   test('Undo is reachable by keyboard with the toast shortcut', async ({ page }) => {
     await openFeed(page);

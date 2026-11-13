@@ -8,6 +8,7 @@ import {
 } from './support/sample-avatar';
 import { isCompact, tabBar } from './support/sidebar';
 import { expect, test } from './support/test';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 /** Whether the avatar image inside `scope` has loaded (a decoded picture, not the initials). */
 async function photoLoaded(page: Page, selector: string): Promise<boolean> {
@@ -63,31 +64,33 @@ test.describe('account page (mock API)', () => {
     await expect(page.locator('.shelf__counts')).toHaveCount(0);
   });
 
-  test('the provider photo shows on Account and in the account menu or the You page', async ({
-    page,
-  }) => {
-    await routeSampleAvatars(page);
-    await seedSession(page, { ...MOCK_USER, image: SAMPLE_AVATAR_PATH });
-    await page.goto('/settings/account');
+  test(
+    'the provider photo shows on Account and in the account menu or the You page',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await routeSampleAvatars(page);
+      await seedSession(page, { ...MOCK_USER, image: SAMPLE_AVATAR_PATH });
+      await page.goto('/settings/account');
 
-    const image = page.locator('app-settings-account-page ui-avatar img');
-    await expect(image).toHaveAttribute('referrerpolicy', 'no-referrer');
-    await expect
-      .poll(() => photoLoaded(page, 'app-settings-account-page ui-avatar img'))
-      .toBe(true);
-
-    if (isCompact(page)) {
-      await tabBar(page).getByRole('link', { name: 'You' }).click();
-      await expect(page).toHaveURL('/settings');
+      const image = page.locator('app-settings-account-page ui-avatar img');
+      await expect(image).toHaveAttribute('referrerpolicy', 'no-referrer');
       await expect
-        .poll(() => photoLoaded(page, 'app-settings-index-page ui-avatar img'))
+        .poll(() => photoLoaded(page, 'app-settings-account-page ui-avatar img'))
         .toBe(true);
-    } else {
-      await expect.poll(() => photoLoaded(page, '.shell__user ui-avatar img')).toBe(true);
-      await openAccountMenu(page);
-      await expect.poll(() => photoLoaded(page, '.shell__account ui-avatar img')).toBe(true);
-    }
-  });
+
+      if (isCompact(page)) {
+        await tabBar(page).getByRole('link', { name: 'You' }).click();
+        await expect(page).toHaveURL('/settings');
+        await expect
+          .poll(() => photoLoaded(page, 'app-settings-index-page ui-avatar img'))
+          .toBe(true);
+      } else {
+        await expect.poll(() => photoLoaded(page, '.shell__user ui-avatar img')).toBe(true);
+        await openAccountMenu(page);
+        await expect.poll(() => photoLoaded(page, '.shell__account ui-avatar img')).toBe(true);
+      }
+    },
+  );
 
   test('a photo that fails to load falls back to the initials', async ({ page }) => {
     await routeSampleAvatars(page);

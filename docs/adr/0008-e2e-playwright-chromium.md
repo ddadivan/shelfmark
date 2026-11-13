@@ -1,6 +1,6 @@
 # 0008. E2E: Playwright, Chromium only in stage 0
 
-- Status: Accepted
+- Status: Accepted; superseded in part by [ADR 0043](0043-test-pyramid.md) (tablet and phone run only the tagged tests)
 - Date: 2026-11-04
 - Source: `docs/PROJECT.md` 9.4
 

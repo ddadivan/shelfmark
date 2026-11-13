@@ -4,6 +4,7 @@ import { seedSession } from './support/mock-session';
 import { switchView } from './support/library-toolbar';
 import { isCompact } from './support/sidebar';
 import { settled } from './support/settled';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 // Mirror MOCK_LINKS ("Simple pasta" is unsorted), MOCK_NAME.FolderReading and FolderAngular
 // (libs/shared/contracts); the e2e project cannot import from them. Angular sits inside Reading.
@@ -125,24 +126,28 @@ test.describe('move a link to a folder (mock API)', () => {
     ).toBeFocused();
   });
 
-  test('is a centred dialog on desktop and a bottom sheet below 64em', async ({ page }) => {
-    const picker = await openMovePicker(page, 'ui-card');
-    const panel = picker.locator('.ui-dialog');
-    const box = await panel.boundingBox();
-    const viewport = page.viewportSize();
-    if (!box || !viewport) {
-      throw new Error('no layout');
-    }
-    if (isCompact(page)) {
-      await expect(panel).toHaveClass(/ui-dialog--sheet/);
-      expect(Math.round(box.y + box.height)).toBe(viewport.height);
-      // A tablet sheet is a centred 560px column; a phone sheet spans the screen.
-      expect(Math.round(box.width)).toBe(Math.min(560, viewport.width));
-    } else {
-      expect(box.y + box.height).toBeLessThan(viewport.height - 40);
-      expect(Math.abs(box.x + box.width / 2 - viewport.width / 2)).toBeLessThan(2);
-    }
-  });
+  test(
+    'is a centred dialog on desktop and a bottom sheet below 64em',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      const picker = await openMovePicker(page, 'ui-card');
+      const panel = picker.locator('.ui-dialog');
+      const box = await panel.boundingBox();
+      const viewport = page.viewportSize();
+      if (!box || !viewport) {
+        throw new Error('no layout');
+      }
+      if (isCompact(page)) {
+        await expect(panel).toHaveClass(/ui-dialog--sheet/);
+        expect(Math.round(box.y + box.height)).toBe(viewport.height);
+        // A tablet sheet is a centred 560px column; a phone sheet spans the screen.
+        expect(Math.round(box.width)).toBe(Math.min(560, viewport.width));
+      } else {
+        expect(box.y + box.height).toBeLessThan(viewport.height - 40);
+        expect(Math.abs(box.x + box.width / 2 - viewport.width / 2)).toBeLessThan(2);
+      }
+    },
+  );
 
   test.describe('keyboard', () => {
     test.skip(({ isMobile }) => isMobile, 'touch screens do not start in the search box');

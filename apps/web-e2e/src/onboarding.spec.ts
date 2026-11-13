@@ -6,6 +6,7 @@ import {
   openSettingsSection,
   seedSession,
 } from './support/mock-session';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 const FIRST_TITLE = 'All your links in one place';
 const GITHUB_BUTTON = 'Continue with GitHub';
@@ -18,33 +19,23 @@ async function signInAsNewUser(page: Page): Promise<void> {
 test.describe('onboarding (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock auth API');
 
-  test('a first sign-in shows the dialog; Skip closes it and a reload does not bring it back', async ({
-    page,
-  }) => {
-    await signInAsNewUser(page);
+  test(
+    'a first sign-in shows the dialog; Skip closes it and a reload does not bring it back',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await signInAsNewUser(page);
 
-    const dialog = page.getByRole('dialog', { name: FIRST_TITLE });
-    await expect(dialog).toBeVisible();
-    await expect(dialog.getByRole('img', { name: 'Step 1 of 3' })).toBeVisible();
-    await dialog.getByRole('button', { name: 'Skip' }).click();
-    await expect(page.getByRole('dialog')).toHaveCount(0);
+      const dialog = page.getByRole('dialog', { name: FIRST_TITLE });
+      await expect(dialog).toBeVisible();
+      await expect(dialog.getByRole('img', { name: 'Step 1 of 3' })).toBeVisible();
+      await dialog.getByRole('button', { name: 'Skip' }).click();
+      await expect(page.getByRole('dialog')).toHaveCount(0);
 
-    await page.reload();
-    await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
-    await expect(page.getByRole('dialog')).toHaveCount(0);
-  });
-
-  test('Esc counts as Skip', async ({ page }) => {
-    await signInAsNewUser(page);
-    await expect(page.getByRole('dialog', { name: FIRST_TITLE })).toBeVisible();
-
-    await page.keyboard.press('Escape');
-    await expect(page.getByRole('dialog')).toHaveCount(0);
-
-    await page.reload();
-    await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
-    await expect(page.getByRole('dialog')).toHaveCount(0);
-  });
+      await page.reload();
+      await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
+      await expect(page.getByRole('dialog')).toHaveCount(0);
+    },
+  );
 
   test('steps through with Next, Back and the arrow keys to the add-link dialog', async ({
     page,

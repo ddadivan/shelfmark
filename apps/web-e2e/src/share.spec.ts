@@ -3,6 +3,7 @@ import { expect, test } from './support/test';
 import { COLOR_SCHEME } from './models/color-scheme.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { seedSession } from './support/mock-session';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 const SHARED_TEXT = '/share?text=Look%20https%3A%2F%2Fexample.com%2Fa';
 const SAVED_TITLE = 'Page on example.com';
@@ -15,19 +16,23 @@ test.describe('share target (mock API)', () => {
     await expect(page.locator('.share__link-title')).toHaveText(SAVED_TITLE);
   }
 
-  test('opens the quick form with the preview and saves the link', async ({ page }) => {
-    await seedSession(page);
-    await page.goto(SHARED_TEXT);
+  test(
+    'opens the quick form with the preview and saves the link',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await seedSession(page);
+      await page.goto(SHARED_TEXT);
 
-    await waitForPreview(page);
-    await expect(page.getByText('https://example.com/a')).toBeVisible();
-    await page.getByLabel('Note').fill('From a chat');
-    await page.getByRole('button', { name: 'Save', exact: true }).click();
+      await waitForPreview(page);
+      await expect(page.getByText('https://example.com/a')).toBeVisible();
+      await page.getByLabel('Note').fill('From a chat');
+      await page.getByRole('button', { name: 'Save', exact: true }).click();
 
-    await expect(page).toHaveURL(/\/links$/);
-    await expect(page.getByText(/Saved to /)).toBeVisible();
-    await expect(page.getByRole('heading', { name: SAVED_TITLE }).first()).toBeVisible();
-  });
+      await expect(page).toHaveURL(/\/links$/);
+      await expect(page.getByText(/Saved to /)).toBeVisible();
+      await expect(page.getByRole('heading', { name: SAVED_TITLE }).first()).toBeVisible();
+    },
+  );
 
   for (const [name, path] of [
     ['a javascript: URL', '/share?url=javascript%3Aalert(1)'],
