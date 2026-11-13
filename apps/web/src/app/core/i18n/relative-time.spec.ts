@@ -1,4 +1,4 @@
-import { relativeTime } from './relative-time';
+import { relativeTime, relativeTimeFormat } from './relative-time';
 
 const NOW = Date.parse('2026-11-07T12:00:00Z');
 
@@ -18,5 +18,11 @@ describe('relativeTime', () => {
 
   it('follows the locale', () => {
     expect(relativeTime('2026-11-06T11:00:00Z', NOW, 'uk')).toBe('учора');
+  });
+
+  it('builds one formatter per locale and reuses it', () => {
+    expect(relativeTimeFormat('en')).toBe(relativeTimeFormat('en'));
+    expect(relativeTimeFormat('fr')).not.toBe(relativeTimeFormat('en'));
+    expect(relativeTimeFormat('fr').resolvedOptions().numeric).toBe('auto');
   });
 });
