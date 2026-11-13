@@ -1,0 +1,188 @@
+<ui-field-shell
+  [controlId]="controlId"
+  [label]="label()"
+  [hint]="hint()"
+  [compact]="compact()"
+  [error]="message()"
+  [invalid]="showInvalid()"
+  [disabled]="disabled()"
+>
+  <input
+    #field
+    class="ui-emoji-picker__native"
+    type="text"
+    autocomplete="off"
+    spellcheck="false"
+    role="combobox"
+    aria-autocomplete="none"
+    aria-haspopup="dialog"
+    [id]="controlId"
+    [value]="value()"
+    [disabled]="disabled()"
+    [attr.placeholder]="placeholder() || null"
+    [attr.aria-expanded]="open()"
+    [attr.aria-controls]="open() ? panelId : null"
+    [attr.aria-required]="required() ? 'true' : null"
+    [attr.aria-invalid]="showInvalid() ? 'true' : null"
+    [attr.aria-describedby]="describedBy()"
+    (input)="onInput($event)"
+    (click)="onFieldClick()"
+    (keydown)="onFieldKeydown($event)"
+    (blur)="onFieldBlur($event)"
+  />
+  <!-- Pointer only: the field itself opens the panel with a click, Enter or ArrowDown. -->
+  <ui-icon
+    class="ui-emoji-picker__chevron"
+    name="chevron-down"
+    [class.is-open]="open()"
+    (click)="onFieldClick()"
+  />
+</ui-field-shell>
+
+<div #popup class="ui-emoji-picker__popup" [class.ui-emoji-picker__popup--shown]="attached()">
+  @if (open()) {
+    <div
+      #panel
+      class="ui-emoji-picker__panel"
+      role="dialog"
+      tabindex="-1"
+      [class.ui-emoji-picker__panel--sheet]="sheet()"
+      [id]="panelId"
+      [attr.aria-label]="label()"
+      [animate.enter]="sheet() ? 'ui-emoji-picker--sheet-enter' : 'ui-emoji-picker--enter'"
+      [animate.leave]="sheet() ? 'ui-emoji-picker--sheet-leave' : 'ui-emoji-picker--leave'"
+      (keydown)="onPanelKeydown($event)"
+      (focusout)="onPanelFocusout($event)"
+    >
+      <div class="ui-emoji-picker__head">
+        <div class="ui-emoji-picker__search">
+          <ui-icon class="ui-emoji-picker__search-icon" name="search" />
+          <input
+            class="ui-emoji-picker__search-input"
+            type="text"
+            autocomplete="off"
+            spellcheck="false"
+            enterkeyhint="search"
+            [attr.aria-label]="searchLabel()"
+            [attr.placeholder]="searchLabel()"
+            [value]="query()"
+            (input)="onSearch($event)"
+            (keydown)="onSearchKeydown($event)"
+          />
+        </div>
+        @if (sheet() && closeLabel()) {
+          <ui-button
+            variant="ghost"
+            iconOnly
+            icon="close"
+            [ariaLabel]="closeLabel()"
+            (click)="hide(true)"
+          />
+        }
+      </div>
+
+      @if (categories().length === 0) {
+        <div class="ui-emoji-picker__loading">
+          <ui-spinner [label]="loadingLabel() || undefined" />
+        </div>
+      } @else if (searching()) {
+        <div #body class="ui-emoji-picker__body">
+          @if (results().rows.length > 0) {
+            <ng-container *ngTemplateOutlet="grid; context: { $implicit: results() }" />
+          }
+        </div>
+      } @else {
+        <div ngTabs class="ui-emoji-picker__tabs-root">
+          <div
+            ngTabList
+            class="ui-emoji-picker__tabs"
+            [attr.aria-label]="categoriesLabel()"
+            [(selectedTab)]="category"
+          >
+            @for (item of categories(); track item.id) {
+              <button
+                ngTab
+                type="button"
+                class="ui-emoji-picker__tab"
+                [value]="item.id"
+                [attr.aria-label]="item.label"
+                [uiTooltip]="item.label"
+              >
+                <span aria-hidden="true">{{ item.items[0]?.emoji }}</span>
+              </button>
+            }
+          </div>
+          <div #body class="ui-emoji-picker__body">
+            @for (item of categories(); track item.id) {
+              <div ngTabPanel class="ui-emoji-picker__tab-panel" [value]="item.id">
+                <ng-template ngTabContent>
+                  @for (section of sections(item); track section.headingId) {
+                    <ng-container *ngTemplateOutlet="grid; context: { $implicit: section }" />
+                  }
+                </ng-template>
+              </div>
+            }
+          </div>
+        </div>
+      }
+      <div
+        class="ui-emoji-picker__status"
+        role="status"
+        [class.ui-emoji-picker__status--filled]="searching() && results().rows.length === 0"
+      >
+        @if (searching() && results().rows.length === 0) {
+          {{ noResultsLabel() }}
+        }
+      </div>
+    </div>
+  }
+</div>
+
+<ng-template #grid let-section>
+  <section class="ui-emoji-picker__section" [attr.data-own]="section.removable || null">
+    <h3 class="ui-emoji-picker__heading" [id]="section.headingId">{{ section.label }}</h3>
+    <div
+      ngGrid
+      class="ui-emoji-picker__grid"
+      focusMode="roving"
+      rowWrap="nowrap"
+      colWrap="nowrap"
+      [attr.aria-labelledby]="section.headingId"
+    >
+      @for (row of section.rows; track $index) {
+        <div ngGridRow class="ui-emoji-picker__row">
+          @for (item of row; track item.emoji) {
+            <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -- ngGridCell sets the roving tabindex; Enter / Space / Delete are handled on the panel (`onPanelKeydown`) -->
+            <div
+              ngGridCell
+              class="ui-emoji-picker__cell"
+              [class.is-current]="item.emoji === value()"
+              [attr.data-emoji]="item.emoji"
+              [attr.aria-label]="item.name"
+              [attr.aria-current]="item.emoji === value() ? 'true' : null"
+              [attr.aria-description]="section.removable ? (item.removeLabel ?? null) : null"
+              [attr.aria-keyshortcuts]="
+                section.removable && item.removeLabel ? 'Delete Backspace' : null
+              "
+              (click)="choose(item.emoji)"
+            >
+              <span class="ui-emoji-picker__glyph" aria-hidden="true">{{ item.emoji }}</span>
+              @if (section.removable && item.removeLabel) {
+                <!-- Pointer and touch only: the keyboard has Delete / Backspace on the cell. -->
+                <button
+                  type="button"
+                  class="ui-emoji-picker__remove"
+                  tabindex="-1"
+                  aria-hidden="true"
+                  (click)="onRemoveClick($event, item.emoji)"
+                >
+                  <ui-icon name="close" [size]="ICON_SIZE.Sm" />
+                </button>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </section>
+</ng-template>

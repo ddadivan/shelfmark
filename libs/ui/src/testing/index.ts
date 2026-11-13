@@ -35,3 +35,5 @@ export type * from '../lib/components/choice-grid/testing/models/choice-grid-har
 export type * from '../lib/components/choice-grid/testing/models/choice-harness-filters.interface';
 export * from '../lib/components/color-picker/testing/color-picker.harness';
 export type * from '../lib/components/color-picker/testing/models/color-picker-harness-filters.interface';
+export * from '../lib/components/emoji-picker/testing/emoji-picker.harness';
+export type * from '../lib/components/emoji-picker/testing/models/emoji-picker-harness-filters.interface';

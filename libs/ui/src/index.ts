@@ -8,6 +8,7 @@ export * from './lib/components/checkbox';
 export * from './lib/components/chip';
 export * from './lib/components/choice-grid';
 export * from './lib/components/color-picker';
+export * from './lib/components/emoji-picker';
 export * from './lib/components/command-list';
 export * from './lib/components/dialog';
 export * from './lib/components/drawer';

@@ -1,0 +1,147 @@
+@use '../../../styles/ui' as *;
+@use '../field/field-parts' as *;
+
+// Glass panel under the field (menus and listboxes: 18px corners, 6px padding).
+.ui-emoji-picker__panel {
+  @include glass;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: min(rem(360px), calc(100vw - #{rem(16px)}));
+  max-height: min(rem(420px), calc(100dvh - #{rem(16px)}));
+  padding: rem(6px);
+  margin: var(--space-1) 0;
+  border-radius: rem(18px);
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+// Below 40em: a bottom sheet across the screen (sheet corners, page surface, no glass blur).
+// The global pane lets pointer events through, the sheet takes them back.
+.ui-emoji-picker__panel--sheet {
+  width: 100vw;
+  max-height: calc(100dvh - #{rem(150px)});
+  padding: var(--space-4) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom));
+  margin: 0;
+  pointer-events: auto;
+  background: var(--surface);
+  backdrop-filter: none;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+.ui-emoji-picker__head {
+  display: flex;
+  flex: none;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.ui-emoji-picker__search {
+  @include field-focus;
+
+  display: flex;
+  flex: 1;
+  gap: var(--space-2);
+  align-items: center;
+  min-height: rem(36px);
+  padding: 0 var(--space-3);
+  color: var(--text-muted);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-md);
+}
+
+.ui-emoji-picker__search-icon {
+  flex: none;
+}
+
+.ui-emoji-picker__search-input {
+  @include field-native;
+
+  padding: rem(6px) 0;
+}
+
+.ui-emoji-picker__tabs-root {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 0;
+}
+
+// Nine tabs on one line; they shrink on a narrow sheet.
+.ui-emoji-picker__tabs {
+  display: flex;
+  flex: none;
+  justify-content: space-between;
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--border);
+}
+
+.ui-emoji-picker__tab {
+  display: grid;
+  flex: 0 1 rem(36px);
+  place-items: center;
+  min-width: rem(28px);
+  height: rem(36px);
+  padding: 0;
+  font-size: rem(20px);
+  line-height: 1;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-md);
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  @include hover {
+    background: var(--surface-hover);
+  }
+
+  &[aria-selected='true'] {
+    background: var(--accent-bg);
+    box-shadow: inset 0 -2px 0 var(--accent);
+  }
+
+  &:focus-visible {
+    @include focus-ring(-2px);
+  }
+
+  @include coarse {
+    height: rem(44px);
+  }
+}
+
+.ui-emoji-picker__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.ui-emoji-picker__tab-panel[inert] {
+  display: none;
+}
+
+.ui-emoji-picker__tab-panel:focus-visible {
+  @include focus-ring(-2px);
+}
+
+.ui-emoji-picker__loading {
+  display: grid;
+  place-items: center;
+  min-height: rem(160px);
+  color: var(--text-muted);
+}
+
+.ui-emoji-picker__status {
+  @include type(body);
+
+  color: var(--text-muted);
+
+  &--filled {
+    padding: rem(7px) rem(10px);
+  }
+}
