@@ -29,6 +29,8 @@ test-results/
 # Angular / Vitest
 .angular/
 __screenshots__/
+# …except the committed visual regression baselines (#340, generated in CI)
+!apps/web-e2e/visual/__screenshots__/
 
 # Prisma generated client (rebuilt by the prisma-generate target)
 apps/api/src/generated/
