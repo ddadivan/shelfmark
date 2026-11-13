@@ -50,7 +50,11 @@ function normalise(text: string): string | null {
     '[class.ui-color-picker--open]': 'open()',
   },
   templateUrl: './color-picker.component.html',
-  styleUrl: './color-picker.component.scss',
+  styleUrls: [
+    './color-picker.component.scss',
+    './color-picker-area.scss',
+    './color-picker-fields.scss',
+  ],
 })
 export class ColorPickerComponent implements FormValueControl<string> {
   protected readonly ICON_SIZE = ICON_SIZE;
