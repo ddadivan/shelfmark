@@ -71,7 +71,7 @@ describe('MockFoldersApi', () => {
     expect(moved.parentId).toBeNull();
     await expect(
       firstValueFrom(folders.update(MOCK_ID.FolderReading, { parentId: MOCK_ID.FolderReading })),
-    ).rejects.toThrow('Mock: folder update failed');
+    ).rejects.toMatchObject({ status: 400 });
     await firstValueFrom(
       folders.update(MOCK_ID.FolderAngular, { parentId: MOCK_ID.FolderReading }),
     );
