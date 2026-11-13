@@ -23,6 +23,7 @@ import type { FoldersApi } from '../../models/folders-api.interface';
 import { LINKS_API } from '../../models/links-api.const';
 import type { LinksApi } from '../../models/links-api.interface';
 import RecentPage from './recent.page';
+import { HISTORY_SEARCH_DEBOUNCE_MS } from '../../models/history-search-debounce-ms.const';
 
 const DAY_MS = 86_400_000;
 
@@ -142,7 +143,11 @@ async function search(fixture: ComponentFixture<unknown>, text: string): Promise
   ) as HTMLInputElement;
   input.value = text;
   input.dispatchEvent(new Event('input', { bubbles: true }));
-  await new Promise((resolve) => setTimeout(resolve, 250));
+  // The debounce timer starts only when change detection hands the new query to the search
+  // (toObservable runs in an effect); a fixed wait from the keystroke raced it under load. Settle
+  // first, then wait out the debounce: a timer set after it with a longer delay fires after it.
+  await fixture.whenStable();
+  await new Promise((resolve) => setTimeout(resolve, HISTORY_SEARCH_DEBOUNCE_MS + 50));
   await fixture.whenStable();
 }
 
