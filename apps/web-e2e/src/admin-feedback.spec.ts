@@ -70,7 +70,7 @@ test.describe('admin feedback inbox (mock API)', () => {
         item
           .locator('img')
           .evaluateAll((images) =>
-            images.every((image) => image instanceof HTMLImageElement && image.naturalWidth > 0),
+            images.every((image) => Number(Reflect.get(image, 'naturalWidth')) > 0),
           ),
       )
       .toBe(true);

@@ -289,6 +289,10 @@ describe('SendFeedbackDialogComponent', () => {
 
     await chooseFile(png('a.png'), png('b.png'));
     await chooseFile(png('c.png'));
+    await vi.waitFor(async () => {
+      await flush();
+      expect(removeButtons()).toHaveLength(3);
+    });
 
     expect(
       Array.from(container()?.querySelectorAll('.feedback-dialog__file-name') ?? []).map(

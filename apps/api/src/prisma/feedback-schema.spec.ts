@@ -122,7 +122,7 @@ describe('feedback table constraints (migrations applied to an in-memory PGlite)
       ).id;
     });
 
-    const shot = (data: { position?: number; bytes?: Buffer; type?: string } = {}) =>
+    const shot = (data: { position?: number; bytes?: Buffer<ArrayBuffer>; type?: string } = {}) =>
       database.prisma.feedbackScreenshot.create({
         data: { feedbackId, position: 0, bytes: PNG, type: 'image/png', ...data },
       });
