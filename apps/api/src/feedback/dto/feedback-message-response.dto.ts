@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   FEEDBACK_MESSAGE_KIND,
+  FEEDBACK_MESSAGE_LIMIT,
   FEEDBACK_STATUS,
   type FeedbackMessage,
   type FeedbackMessageKind,
@@ -14,7 +15,8 @@ export class FeedbackMessageResponseDto implements FeedbackMessage {
   @ApiProperty() text!: string;
   @ApiProperty({ enum: Object.values(FEEDBACK_STATUS) }) status!: FeedbackStatus;
   @ApiProperty({ nullable: true, type: String }) reply!: string | null;
-  @ApiProperty({ nullable: true, type: String }) screenshotUrl!: string | null;
+  @ApiProperty({ type: [String], maxItems: FEEDBACK_MESSAGE_LIMIT.ScreenshotsMax })
+  screenshotUrls!: string[];
   @ApiProperty({ format: 'date-time' }) createdAt!: string;
   @ApiProperty({ format: 'date-time' }) updatedAt!: string;
 }

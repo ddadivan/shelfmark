@@ -107,6 +107,8 @@ export { FEEDBACK_MILESTONE } from './feedback/feedback-milestone.const';
 export { FEEDBACK_MILESTONE_DAYS } from './feedback/feedback-milestone-days.const';
 export { FEEDBACK_LIMIT } from './feedback/feedback-limit.const';
 export { FEEDBACK_ENDPOINT } from './feedback/feedback-endpoint.const';
+export { feedbackScreenshotsPath } from './feedback/feedback-screenshots-path';
+export { FEEDBACK_SCREENSHOT_ERROR_MESSAGE } from './feedback/feedback-screenshot-error-message.const';
 export { dueFeedbackMilestone, reachedFeedbackMilestone } from './feedback/due-feedback-milestone';
 export type { DeleteAccountRequest } from './users/delete-account-request.interface';
 export { USER_LIMIT } from './users/user-limit.const';

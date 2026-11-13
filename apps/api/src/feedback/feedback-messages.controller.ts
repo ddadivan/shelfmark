@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   ParseUUIDPipe,
   Post,
   Res,
@@ -25,6 +26,7 @@ import { CurrentUser } from '../common/auth/current-user.decorator';
 import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
 import { RETRY_AFTER_HEADER } from '../common/rate-limit/models/retry-after-header.const';
 import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
+import { FeedbackScreenshotUploadDto } from './dto/feedback-screenshot-upload.dto';
 import { SendFeedbackDto } from './dto/send-feedback.dto';
 import {
   FeedbackMessageResponseDto,
@@ -39,13 +41,12 @@ import { sendFeedbackScreenshot } from './send-feedback-screenshot';
 export class FeedbackMessagesController {
   constructor(private readonly messages: FeedbackMessagesService) {}
 
-  // The JSON body limit of this one route is raised in `configureApp` (a base64 screenshot).
   @Post()
   @RateLimit(RATE_LIMIT.Feedback)
   @HttpCode(HttpStatus.CREATED)
   @Header('Cache-Control', 'no-store')
   @ApiOperation({
-    summary: 'Send a message (idea, problem or other), optionally with a screenshot',
+    summary: 'Send a message (idea, problem or other); screenshots follow one by one',
   })
   @ApiCreatedResponse({ type: FeedbackMessageResponseDto })
   @ApiBadRequestResponse({ description: 'Invalid body' })
@@ -73,15 +74,37 @@ export class FeedbackMessagesController {
     return this.messages.list(user.id);
   }
 
-  @Get(':id/screenshot')
-  @ApiOperation({ summary: 'The screenshot of one of your messages' })
+  // The JSON body limit of this one route is raised in `configureApp` (one base64 screenshot).
+  @Post(':id/screenshots')
+  @RateLimit(RATE_LIMIT.Feedback)
+  @HttpCode(HttpStatus.CREATED)
+  @Header('Cache-Control', 'no-store')
+  @ApiOperation({
+    summary: 'Attach one screenshot to one of your messages (at most 3, right after sending)',
+  })
+  @ApiCreatedResponse({ type: FeedbackMessageResponseDto })
+  @ApiBadRequestResponse({
+    description: 'Invalid image, already 3 screenshots, or too long after sending',
+  })
+  @ApiNotFoundResponse({ description: 'Foreign or missing message' })
+  attachScreenshot(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: FeedbackScreenshotUploadDto,
+  ): Promise<FeedbackMessageResponseDto> {
+    return this.messages.attachScreenshot(user.id, id, body);
+  }
+
+  @Get(':id/screenshots/:position')
+  @ApiOperation({ summary: 'One screenshot of one of your messages' })
   @ApiOkResponse({ description: 'The image bytes with the stored type' })
-  @ApiNotFoundResponse({ description: 'Foreign, missing or no screenshot' })
+  @ApiNotFoundResponse({ description: 'Foreign, missing or no screenshot at this position' })
   async screenshot(
     @CurrentUser() user: AuthUser,
     @Param('id', ParseUUIDPipe) id: string,
+    @Param('position', ParseIntPipe) position: number,
     @Res() res: Response,
   ): Promise<void> {
-    sendFeedbackScreenshot(res, await this.messages.findScreenshot(user.id, id));
+    sendFeedbackScreenshot(res, await this.messages.findScreenshot(user.id, id, position));
   }
 }

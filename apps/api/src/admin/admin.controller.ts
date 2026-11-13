@@ -4,6 +4,7 @@ import {
   Get,
   Header,
   Param,
+  ParseIntPipe,
   ParseUUIDPipe,
   Patch,
   Query,
@@ -76,11 +77,15 @@ export class AdminController {
     return this.feedback.update(id, body);
   }
 
-  @Get('feedback/:id/screenshot')
-  @ApiOperation({ summary: 'The screenshot of a message' })
+  @Get('feedback/:id/screenshots/:position')
+  @ApiOperation({ summary: 'One screenshot of a message' })
   @ApiOkResponse({ description: 'The image bytes with the stored type' })
-  @ApiNotFoundResponse({ description: 'Not an admin, no such message or no screenshot' })
-  async screenshot(@Param('id', ParseUUIDPipe) id: string, @Res() res: Response): Promise<void> {
-    sendFeedbackScreenshot(res, await this.feedback.findScreenshot(id));
+  @ApiNotFoundResponse({ description: 'Not an admin, no such message or no screenshot there' })
+  async screenshot(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('position', ParseIntPipe) position: number,
+    @Res() res: Response,
+  ): Promise<void> {
+    sendFeedbackScreenshot(res, await this.feedback.findScreenshot(id, position));
   }
 }

@@ -1,6 +1,7 @@
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import {
   FEEDBACK_ENDPOINT,
+  feedbackScreenshotsPath,
   LINKS_BATCH_ENDPOINT,
   LINKS_BATCH_UPDATE_ENDPOINT,
   PIN_ENDPOINT,
@@ -17,6 +18,7 @@ import {
   type DeleteLinksBatchResponse,
   type ExportQuery,
   type FeedbackMessage,
+  type FeedbackScreenshotUpload,
   type FolderResponse,
   type FolderShareResponse,
   type GetLinkResponse,
@@ -165,6 +167,8 @@ export function createHttpContractApis(app: NestExpressApplication, cookie: stri
         (await http.send<ListFeedbackMessagesResponse>('get', FEEDBACK_ENDPOINT.Messages)).items,
       send: (request: SendFeedbackRequest) =>
         http.send<FeedbackMessage>('post', FEEDBACK_ENDPOINT.Messages, request),
+      attachScreenshot: (id: string, upload: FeedbackScreenshotUpload) =>
+        http.send<FeedbackMessage>('post', feedbackScreenshotsPath(id), upload),
     },
     exports: {
       download: async (query: ExportQuery) => {

@@ -53,7 +53,7 @@ describe('admin API', () => {
 
   async function message(
     userId: string,
-    data: { comment?: string; createdAt?: Date; screenshot?: boolean; status?: string } = {},
+    data: { comment?: string; createdAt?: Date; screenshots?: number; status?: string } = {},
   ) {
     return t.db.prisma.feedback.create({
       data: {
@@ -62,7 +62,13 @@ describe('admin API', () => {
         comment: data.comment ?? 'hello',
         createdAt: data.createdAt,
         status: data.status,
-        ...(data.screenshot ? { screenshot: PNG, screenshotType: 'image/png' } : {}),
+        screenshots: {
+          create: Array.from({ length: data.screenshots ?? 0 }, (_, position) => ({
+            position,
+            bytes: PNG,
+            type: 'image/png',
+          })),
+        },
       },
     });
   }
@@ -81,7 +87,7 @@ describe('admin API', () => {
     ],
     [
       'GET',
-      `${FEEDBACK}/0198f6a0-0000-7000-8000-000000000000/screenshot`,
+      `${FEEDBACK}/0198f6a0-0000-7000-8000-000000000000/screenshots/0`,
       (agent, path) => agent.get(path),
     ],
   ];
@@ -172,7 +178,7 @@ describe('admin API', () => {
       const recent = await message(users.owner.userId, {
         comment: 'from owner',
         createdAt: new Date('2026-02-01T00:00:00Z'),
-        screenshot: true,
+        screenshots: 2,
       });
       await t.db.prisma.feedback.create({
         data: { userId: users.owner.userId, milestone: 'day3', score: 5, comment: 'rating' },
@@ -185,9 +191,12 @@ describe('admin API', () => {
       expect(body.items[0]).toMatchObject({
         text: 'from owner',
         user: { name: 'Owner', email: 'owner@example.com' },
-        screenshotUrl: `/api/admin/feedback/${recent.id}/screenshot`,
+        screenshotUrls: [0, 1].map(
+          (position) => `/api/admin/feedback/${recent.id}/screenshots/${position}`,
+        ),
       });
       expect(body.items[1].user).toEqual({ name: 'Intruder', email: 'intruder@example.com' });
+      expect(body.items[1].screenshotUrls).toEqual([]);
       expect(JSON.stringify(body)).not.toContain('rating');
     });
 
@@ -340,23 +349,31 @@ describe('admin API', () => {
     });
   });
 
-  describe('GET feedback/:id/screenshot', () => {
-    it('serves any user screenshot with the safe headers', async () => {
-      const row = await message(users.intruder.userId, { screenshot: true });
-      const res = await admin.get(`${FEEDBACK}/${row.id}/screenshot`).expect(200);
-      expect(res.headers['content-type']).toBe('image/png');
-      expect(res.headers['x-content-type-options']).toBe('nosniff');
-      expect(res.headers['content-disposition']).toBe('inline');
-      expect(res.headers['cache-control']).toBe('private, no-store');
-      expect(res.headers['content-security-policy']).toBe("sandbox; default-src 'none'");
+  describe('GET feedback/:id/screenshots/:position', () => {
+    it('serves every screenshot of any user with the safe headers', async () => {
+      const row = await message(users.intruder.userId, { screenshots: 3 });
+      for (const position of [0, 1, 2]) {
+        const res = await admin.get(`${FEEDBACK}/${row.id}/screenshots/${position}`).expect(200);
+        expect(res.headers['content-type']).toBe('image/png');
+        expect(res.headers['x-content-type-options']).toBe('nosniff');
+        expect(res.headers['content-disposition']).toBe('inline');
+        expect(res.headers['cache-control']).toBe('private, no-store');
+        expect(res.headers['content-security-policy']).toBe("sandbox; default-src 'none'");
+      }
     });
 
-    it('is 404 without a screenshot, for a rating row and for a non-admin', async () => {
+    it('is 404 without a screenshot there, for a rating row and for a non-admin', async () => {
       const plain = await message(users.intruder.userId);
-      await admin.get(`${FEEDBACK}/${plain.id}/screenshot`).expect(404);
-      const withShot = await message(users.intruder.userId, { screenshot: true });
-      await other.get(`${FEEDBACK}/${withShot.id}/screenshot`).expect(404);
-      await anonymous(t.app).get(`${FEEDBACK}/${withShot.id}/screenshot`).expect(404);
+      await admin.get(`${FEEDBACK}/${plain.id}/screenshots/0`).expect(404);
+      const withShot = await message(users.intruder.userId, { screenshots: 1 });
+      await admin.get(`${FEEDBACK}/${withShot.id}/screenshots/1`).expect(404);
+      await admin.get(`${FEEDBACK}/${withShot.id}/screenshots/7`).expect(404);
+      const rating = await t.db.prisma.feedback.create({
+        data: { userId: users.owner.userId, milestone: 'day3', score: 5 },
+      });
+      await admin.get(`${FEEDBACK}/${rating.id}/screenshots/0`).expect(404);
+      await other.get(`${FEEDBACK}/${withShot.id}/screenshots/0`).expect(404);
+      await anonymous(t.app).get(`${FEEDBACK}/${withShot.id}/screenshots/0`).expect(404);
     });
   });
 });
