@@ -10,9 +10,24 @@ export const FROZEN_NOW = new Date('2026-06-15T10:00:00Z');
  * fixed, timers still run so the app starts normally) and the monitoring stub of the e2e suite.
  */
 export const test = base.extend({
-  page: async ({ page }, use) => {
+  page: async ({ page }, use, testInfo) => {
+    // Browser errors and failed requests are printed when a test fails: in CI the only trace of
+    // why a screen did not render (the job's artifacts hold the PNGs, not the console).
+    const problems: string[] = [];
+    page.on('pageerror', (error) => problems.push(`pageerror: ${error.message}`));
+    page.on('console', (message) => {
+      if (message.type() === 'error') {
+        problems.push(`console: ${message.text()}`);
+      }
+    });
+    page.on('requestfailed', (request) =>
+      problems.push(`requestfailed: ${request.url()} ${request.failure()?.errorText ?? ''}`),
+    );
     await page.clock.setFixedTime(FROZEN_NOW);
     await use(page);
+    if (testInfo.status !== testInfo.expectedStatus && problems.length > 0) {
+      console.log(`[${testInfo.project.name}] ${testInfo.title}\n  ${problems.join('\n  ')}`);
+    }
   },
 });
 
