@@ -3,7 +3,7 @@ import { LINKS_SCOPE } from './features/links/models/links-scope.const';
 import { APP_PATH } from './models/app-path.const';
 import { authOnly, guestOnly, redirectToSignIn } from './core/auth/auth.guards';
 import { loadLibraryPage } from './features/library/load-library-page';
-import LandingPage from './features/landing/landing.page';
+import { loadLandingPage } from './features/landing/load-landing-page';
 import { adminOnly } from './features/admin/admin.guard';
 
 const libraryPage = loadLibraryPage;
@@ -21,8 +21,9 @@ export const pageRoutes: Routes = [
   {
     path: '',
     canMatch: [guestOnly],
-    // Eager on purpose: the landing is the LCP page; a lazy chunk chain delays first paint.
-    component: LandingPage,
+    // A lazy chunk (#339: eager it was ~130 kB of the initial bundle), started from `main.ts`
+    // before the session answers, so it is there when the guard lets the landing through.
+    loadComponent: loadLandingPage,
   },
   {
     path: '',
@@ -55,8 +56,8 @@ export const pageRoutes: Routes = [
     ],
   },
   // The landing for everyone (#270): "About Shelfmark" in the account menu; signed-in people see
-  // "Back to my shelf" and "What's new". Eager like `/`, the same component.
-  { path: APP_PATH.About, component: LandingPage },
+  // "Back to my shelf" and "What's new". The same lazy component as `/`.
+  { path: APP_PATH.About, loadComponent: loadLandingPage },
   // Public on purpose (no guard): guests, signed-in users and the OAuth consent screen reach it.
   { path: APP_PATH.Privacy, loadComponent: () => import('./features/privacy/privacy.page') },
   // A public collection (#276): no guard, outside the shell; guests and signed-in people alike.

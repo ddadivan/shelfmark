@@ -37,4 +37,31 @@ describe('SessionScope', () => {
 
     expect(handler).not.toHaveBeenCalled();
   });
+
+  it('runs every flusher on flush and waits for all of them', async () => {
+    const scope = TestBed.inject(SessionScope);
+    let done = false;
+    const slow = vi.fn(async () => {
+      await Promise.resolve();
+      done = true;
+    });
+    const quick = vi.fn(() => Promise.resolve());
+    scope.beforeEnd(slow);
+    scope.beforeEnd(quick);
+
+    await scope.flush();
+
+    expect(quick).toHaveBeenCalledTimes(1);
+    expect(done).toBe(true);
+  });
+
+  it('rejects a flush when a flusher fails and skips a removed flusher', async () => {
+    const scope = TestBed.inject(SessionScope);
+    const removed = vi.fn(() => Promise.resolve());
+    scope.beforeEnd(removed)();
+    scope.beforeEnd(() => Promise.reject(new Error('boom')));
+
+    await expect(scope.flush()).rejects.toThrow('boom');
+    expect(removed).not.toHaveBeenCalled();
+  });
 });

@@ -32,9 +32,10 @@ class FakeChannel {
     this.closed = true;
   }
 
-  /** Delivers `data` as if another tab posted it. */
-  deliver(data: unknown): void {
+  /** Delivers `data` as if another tab posted it; resolves once the lazy receiver applied it. */
+  async deliver(data: unknown): Promise<void> {
     this.onmessage?.(new MessageEvent('message', { data }));
+    await vi.dynamicImportSettled();
   }
 }
 
@@ -97,11 +98,11 @@ describe('TabSyncService', () => {
     expect(channel.posted).toEqual([]);
   });
 
-  it('shows a link saved in another tab and refreshes the sidebar', () => {
+  it('shows a link saved in another tab and refreshes the sidebar', async () => {
     const { channel, links, folders, tags } = setup();
     const link = MOCK_LINKS[0];
 
-    channel.deliver({ kind: TAB_SYNC_KIND.LinkSaved, link, userId: USER.id });
+    await channel.deliver({ kind: TAB_SYNC_KIND.LinkSaved, link, userId: USER.id });
 
     expect(links.addSaved).toHaveBeenCalledWith(link);
     expect(folders.refresh).toHaveBeenCalled();
@@ -109,60 +110,60 @@ describe('TabSyncService', () => {
     expect(links.refresh).not.toHaveBeenCalled();
   });
 
-  it('applies edits and deletes silently', () => {
+  it('applies edits and deletes silently', async () => {
     const { channel, links } = setup();
     const link = MOCK_LINKS[1];
 
-    channel.deliver({ kind: TAB_SYNC_KIND.LinkChanged, link, userId: USER.id });
-    channel.deliver({ kind: TAB_SYNC_KIND.LinkRemoved, id: link.id, userId: USER.id });
+    await channel.deliver({ kind: TAB_SYNC_KIND.LinkChanged, link, userId: USER.id });
+    await channel.deliver({ kind: TAB_SYNC_KIND.LinkRemoved, id: link.id, userId: USER.id });
 
     expect(links.applyEdit).toHaveBeenCalledWith(link);
     expect(links.applyRemoval).toHaveBeenCalledWith(link.id);
   });
 
-  it('reloads the feed and Trash when folders, tags or Trash changed', () => {
+  it('reloads the feed and Trash when folders, tags or Trash changed', async () => {
     const { channel, links, trash } = setup();
 
-    channel.deliver({ kind: TAB_SYNC_KIND.LibraryChanged, userId: USER.id });
+    await channel.deliver({ kind: TAB_SYNC_KIND.LibraryChanged, userId: USER.id });
 
     expect(links.refresh).toHaveBeenCalled();
     expect(trash.refresh).toHaveBeenCalled();
   });
 
-  it('ignores messages about another account and malformed ones', () => {
+  it('ignores messages about another account and malformed ones', async () => {
     const { channel, links, auth } = setup();
 
-    channel.deliver({ kind: TAB_SYNC_KIND.LinkRemoved, id: 'x', userId: 'user-b' });
-    channel.deliver({ kind: TAB_SYNC_KIND.SignedOut, userId: 'user-b' });
-    channel.deliver({ kind: 'nonsense', userId: USER.id });
+    await channel.deliver({ kind: TAB_SYNC_KIND.LinkRemoved, id: 'x', userId: 'user-b' });
+    await channel.deliver({ kind: TAB_SYNC_KIND.SignedOut, userId: 'user-b' });
+    await channel.deliver({ kind: 'nonsense', userId: USER.id });
 
     expect(links.applyRemoval).not.toHaveBeenCalled();
     expect(auth.expireSession).not.toHaveBeenCalled();
   });
 
-  it('locks this tab when the same user signed out in another one', () => {
+  it('locks this tab when the same user signed out in another one', async () => {
     const { channel, auth, lock } = setup();
 
-    channel.deliver({ kind: TAB_SYNC_KIND.SignedOut, userId: USER.id });
+    await channel.deliver({ kind: TAB_SYNC_KIND.SignedOut, userId: USER.id });
 
     expect(auth.expireSession).toHaveBeenCalled();
     expect(lock.lock).toHaveBeenCalled();
   });
 
-  it('reloads a signed-out tab when someone signs in, but not a tab of the same user', () => {
+  it('reloads a signed-out tab when someone signs in, but not a tab of the same user', async () => {
     const signedIn = setup();
-    signedIn.channel.deliver({ kind: TAB_SYNC_KIND.SignedIn, userId: USER.id });
+    await signedIn.channel.deliver({ kind: TAB_SYNC_KIND.SignedIn, userId: USER.id });
     expect(signedIn.reload).not.toHaveBeenCalled();
 
-    signedIn.channel.deliver({ kind: TAB_SYNC_KIND.SignedIn, userId: 'user-b' });
+    await signedIn.channel.deliver({ kind: TAB_SYNC_KIND.SignedIn, userId: 'user-b' });
     expect(signedIn.reload).toHaveBeenCalledTimes(1);
   });
 
-  it('reloads a guest tab when a user signs in elsewhere', () => {
+  it('reloads a guest tab when a user signs in elsewhere', async () => {
     TestBed.resetTestingModule();
     const guest = setup(null);
 
-    guest.channel.deliver({ kind: TAB_SYNC_KIND.SignedIn, userId: USER.id });
+    await guest.channel.deliver({ kind: TAB_SYNC_KIND.SignedIn, userId: USER.id });
 
     expect(guest.reload).toHaveBeenCalled();
   });

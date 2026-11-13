@@ -63,8 +63,8 @@ export const appConfig: ApplicationConfig = {
     // Only apiBase and error exist so far; requestId, retry and loading go between them, devLogging last.
     provideHttpClient(withFetch(), withInterceptors([apiBaseInterceptor, errorInterceptor])),
     provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
-    // Load the language before the first render (English is in the bundle, the others are lazy
-    // chunks): text arriving later fills in empty strings and shifts the layout (CLS).
+    // Load the language before the first render (every language file is a lazy
+    // chunk): text arriving later fills in empty strings and shifts the layout (CLS).
     provideAppInitializer(() => inject(LocaleService).init()),
     // The close button of a toast is named in the active language.
     {

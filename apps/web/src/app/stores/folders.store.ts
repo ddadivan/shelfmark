@@ -1,5 +1,12 @@
 import { computed, inject, Injector } from '@angular/core';
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import {
+  patchState,
+  signalStore,
+  withComputed,
+  withHooks,
+  withMethods,
+  withState,
+} from '@ngrx/signals';
 import { removeAllEntities, setAllEntities, withEntities } from '@ngrx/signals/entities';
 import {
   FOLDER_LIMIT,
@@ -16,6 +23,7 @@ import { buildFolderTree, descendantIds, pathTo } from './folder-tree';
 import { LinksStore } from './links.store';
 import { PinsStore } from './pins.store';
 import type { FoldersState } from './models/folders-state.interface';
+import { SessionScope } from '../core/auth/session-scope.service';
 
 const initialState: FoldersState = {
   counts: { all: 0, unsorted: 0, favorites: 0 },
@@ -395,5 +403,12 @@ export const FoldersStore = signalStore(
         patchState(store, initialState, removeAllEntities());
       },
     };
+  }),
+  withHooks({
+    onInit() {
+      // Resolved on use, so a call goes through the store as it is by then.
+      const injector = inject(Injector);
+      inject(SessionScope).onEnd(() => injector.get(FoldersStore).reset());
+    },
   }),
 );

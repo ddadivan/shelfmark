@@ -9,8 +9,11 @@ import { AuthStore } from '../auth/auth.store';
 import { errorInterceptor } from './error.interceptor';
 import { ERROR_TOAST_DEDUPE_MS } from './models/error-toast-dedupe.const';
 import { skipErrorToast } from './skip-error-toast';
+import { loadToastHost } from '../toast/lazy-toast.service';
 
-function setup() {
+/** Async: the toast code is loaded first, so a toast shows as soon as the interceptor asks. */
+async function setup() {
+  await loadToastHost();
   const show = vi.fn();
   const expireSession = vi.fn();
   const navigate = vi.fn();
@@ -46,8 +49,8 @@ describe('errorInterceptor toasts', () => {
     vi.useRealTimers();
   });
 
-  it('toasts a 429 and rethrows the error', () => {
-    const { http, controller, show } = setup();
+  it('toasts a 429 and rethrows the error', async () => {
+    const { http, controller, show } = await setup();
     let status = 0;
 
     http.get('/api/links').subscribe({ error: (e: { status: number }) => (status = e.status) });
@@ -61,8 +64,8 @@ describe('errorInterceptor toasts', () => {
     expect(status).toBe(429);
   });
 
-  it.each([500, 503])('toasts a %i and rethrows the error', (code) => {
-    const { http, controller, show } = setup();
+  it.each([500, 503])('toasts a %i and rethrows the error', async (code) => {
+    const { http, controller, show } = await setup();
     let status = 0;
 
     http.get('/api/links').subscribe({ error: (e: { status: number }) => (status = e.status) });
@@ -76,8 +79,8 @@ describe('errorInterceptor toasts', () => {
     expect(status).toBe(code);
   });
 
-  it.each([400, 404, 409])('does not toast a %i', (code) => {
-    const { http, controller, show } = setup();
+  it.each([400, 404, 409])('does not toast a %i', async (code) => {
+    const { http, controller, show } = await setup();
 
     http.get('/api/links').subscribe({ error: () => undefined });
     fail(controller, '/api/links', code);
@@ -85,8 +88,8 @@ describe('errorInterceptor toasts', () => {
     expect(show).not.toHaveBeenCalled();
   });
 
-  it('does not toast /api/auth requests', () => {
-    const { http, controller, show } = setup();
+  it('does not toast /api/auth requests', async () => {
+    const { http, controller, show } = await setup();
 
     http.get('/api/auth/get-session').subscribe({ error: () => undefined });
     fail(controller, '/api/auth/get-session', 500);
@@ -94,8 +97,8 @@ describe('errorInterceptor toasts', () => {
     expect(show).not.toHaveBeenCalled();
   });
 
-  it('does not toast other origins or paths outside /api', () => {
-    const { http, controller, show } = setup();
+  it('does not toast other origins or paths outside /api', async () => {
+    const { http, controller, show } = await setup();
 
     http.get('https://other.example/api/links').subscribe({ error: () => undefined });
     fail(controller, 'https://other.example/api/links', 500);
@@ -105,8 +108,8 @@ describe('errorInterceptor toasts', () => {
     expect(show).not.toHaveBeenCalled();
   });
 
-  it('does not toast a failed Sentry tunnel request', () => {
-    const { http, controller, show } = setup();
+  it('does not toast a failed Sentry tunnel request', async () => {
+    const { http, controller, show } = await setup();
 
     http.post('/api/monitoring/tunnel', '').subscribe({ error: () => undefined });
     fail(controller, '/api/monitoring/tunnel', 503);
@@ -114,8 +117,8 @@ describe('errorInterceptor toasts', () => {
     expect(show).not.toHaveBeenCalled();
   });
 
-  it('toasts a 599 but not a 600', () => {
-    const { http, controller, show } = setup();
+  it('toasts a 599 but not a 600', async () => {
+    const { http, controller, show } = await setup();
 
     http.get('/api/links').subscribe({ error: () => undefined });
     fail(controller, '/api/links', 600);
@@ -126,8 +129,8 @@ describe('errorInterceptor toasts', () => {
     expect(show).toHaveBeenCalledTimes(1);
   });
 
-  it('still expires the session on a 401 and shows no toast', () => {
-    const { http, controller, show, expireSession, navigate } = setup();
+  it('still expires the session on a 401 and shows no toast', async () => {
+    const { http, controller, show, expireSession, navigate } = await setup();
 
     http.get('/api/links').subscribe({ error: () => undefined });
     fail(controller, '/api/links', 401);
@@ -137,8 +140,8 @@ describe('errorInterceptor toasts', () => {
     expect(navigate).toHaveBeenCalledTimes(1);
   });
 
-  it('an opted-out failure does not suppress a later toast for the same error', () => {
-    const { http, controller, show } = setup();
+  it('an opted-out failure does not suppress a later toast for the same error', async () => {
+    const { http, controller, show } = await setup();
 
     http.get('/api/links', { context: skipErrorToast() }).subscribe({ error: () => undefined });
     fail(controller, '/api/links', 500);
@@ -148,8 +151,8 @@ describe('errorInterceptor toasts', () => {
     expect(show).toHaveBeenCalledTimes(1);
   });
 
-  it('does not toast when the caller opted out, and still rethrows', () => {
-    const { http, controller, show } = setup();
+  it('does not toast when the caller opted out, and still rethrows', async () => {
+    const { http, controller, show } = await setup();
     let status = 0;
 
     http
@@ -161,9 +164,9 @@ describe('errorInterceptor toasts', () => {
     expect(status).toBe(429);
   });
 
-  it('shows identical toasts once within the window, again after it', () => {
+  it('shows identical toasts once within the window, again after it', async () => {
     vi.useFakeTimers();
-    const { http, controller, show } = setup();
+    const { http, controller, show } = await setup();
 
     http.get('/api/links').subscribe({ error: () => undefined });
     http.get('/api/folders').subscribe({ error: () => undefined });

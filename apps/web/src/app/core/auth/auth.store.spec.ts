@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { provideTransloco } from '@jsverse/transloco';
 import { AUTH_PROVIDER, type AuthUser } from '@shelfmark/contracts';
 import { TOAST_KIND, ToastService } from '@shelfmark/ui';
+import { loadToastHost } from '../toast/lazy-toast.service';
 import { FoldersStore } from '../../stores/folders.store';
 import { LinksStore } from '../../stores/links.store';
 import { SIGN_OUT_FLUSH_TIMEOUT_MS } from './models/sign-out-flush-timeout.const';
@@ -207,6 +208,7 @@ describe('AuthStore', () => {
 
   it('keeps the user signed in and shows an error when sign-out fails', async () => {
     const { store } = setup({ signOut: vi.fn(() => Promise.reject(new Error('down'))) });
+    await loadToastHost();
     const show = vi.spyOn(TestBed.inject(ToastService), 'show');
     const links = vi.spyOn(TestBed.inject(LinksStore), 'reset');
     await store.signIn(AUTH_PROVIDER.Google);
