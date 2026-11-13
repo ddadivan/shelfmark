@@ -85,7 +85,8 @@ export async function selectRow(page: Page, title: string, first: boolean): Prom
       pointerType: 'touch',
       button: 0,
     });
-    await page.waitForTimeout(650);
+    // The long press starts the selection while the finger is still down.
+    await expect(page.getByRole('toolbar')).toContainText('1 selected');
     await trashRow(page, title).locator('.trash-row__surface').dispatchEvent('pointerup', {
       bubbles: true,
       isPrimary: true,

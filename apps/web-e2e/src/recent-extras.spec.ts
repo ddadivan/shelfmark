@@ -40,11 +40,10 @@ test.describe('Recently opened extras (mock API)', () => {
     await expect(notice(page)).toContainText("History is paused. Links you open now aren't added.");
     await expect(page.getByRole('button', { name: 'Resume history' })).toBeVisible();
 
-    await openRow(page, rows(page).nth(1));
-    // Give a recorded open the time to land (it would move the row to the top).
-    await page.waitForTimeout(600);
+    // That an open while paused records nothing (a negative check that needed a fixed wait here):
+    // links.store.spec "leaves the history alone when the open was not recorded (paused)" and
+    // mock-links.api.spec "answers but records nothing while the history is paused".
     await expect(titleOf(rows(page).first())).toHaveText(first);
-    await expect(titleOf(rows(page).nth(1))).toHaveText(second);
 
     await notice(page).getByRole('button', { name: 'Resume', exact: true }).click();
     await expect(notice(page)).toHaveCount(0);
