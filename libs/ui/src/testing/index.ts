@@ -18,3 +18,7 @@ export * from '../lib/components/card/testing/card.harness';
 export * from '../lib/components/card/testing/models/card-harness-slot.const';
 export type * from '../lib/components/card/testing/models/card-harness-slot.type';
 export type * from '../lib/components/card/testing/models/card-harness-filters.interface';
+export * from '../lib/components/command-list/testing/command-list.harness';
+export type * from '../lib/components/command-list/testing/models/command-list-harness-filters.interface';
+export * from '../lib/components/tag-input/testing/tag-input.harness';
+export type * from '../lib/components/tag-input/testing/models/tag-input-harness-filters.interface';
