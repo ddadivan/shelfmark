@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { compile, compileString } from 'sass';
+import { compileScss } from '../testing/scss';
 import { COMPACT_MEDIA_QUERY, PHONE_MEDIA_QUERY } from '../lib/utils/media';
 import { encapsulateStyle } from '@angular/compiler';
 import { MOTION_ATTRIBUTE, MOTION_REDUCED } from '../lib/services/motion';
@@ -523,9 +524,7 @@ describe('appearance layout attributes (#285)', () => {
   });
 
   it('lets ui-card shrink or drop its image area on the preview attribute', () => {
-    const card = compile(resolve(STYLES_DIR, '../lib/components/card/card.component.scss'), {
-      loadPaths: [STYLES_DIR],
-    }).css;
+    const card = compileScss('lib/components/card/card.component.scss');
     expect(card).toMatch(
       /:host-context\(\[data-card-preview=small\]\) \.ui-card__media \{\s*aspect-ratio: 32 ?\/ ?9;/,
     );

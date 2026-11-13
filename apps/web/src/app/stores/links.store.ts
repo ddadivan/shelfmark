@@ -31,6 +31,7 @@ import { RECENT_LINKS_LIMIT } from '../features/links/models/recent-links-limit.
 import type { LinksSnapshot } from './models/links-snapshot.interface';
 import type { LinksState } from './models/links-state.interface';
 import { PinsStore } from './pins.store';
+import { SessionScope } from '../core/auth/session-scope.service';
 
 /** Image capture requests in flight at once (the endpoint shares the AddLink rate limit). */
 const CAPTURE_CONCURRENCY = 3;
@@ -806,6 +807,11 @@ export const LinksStore = signalStore(
   }),
   withHooks({
     onInit(store) {
+      // Resolved on use, so a call goes through the store as it is by then.
+      const injector = inject(Injector);
+      const scope = inject(SessionScope);
+      scope.onEnd(() => injector.get(LinksStore).reset());
+      scope.beforeEnd(() => injector.get(LinksStore).flushPending());
       // The page is going away: the real `HttpClient` implementation (issue #72) must send these
       // deletes with `fetch(..., { keepalive: true })` or `navigator.sendBeacon`, or they are lost.
       inject(DOCUMENT).defaultView?.addEventListener('pagehide', () => {

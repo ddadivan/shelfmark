@@ -8,6 +8,7 @@ import {
   type AdminFeedbackItem,
   FEEDBACK_ENDPOINT,
 } from '@shelfmark/contracts';
+import { MS_PER_HOUR } from '../../../core/models/ms-per-hour.const';
 import { feedbackScreenshotType } from '../utils/feedback-screenshot-problem';
 import { FeedbackSendError } from '../utils/feedback-send-error';
 import type { FeedbackApi } from '../models/feedback-api.interface';
@@ -15,8 +16,6 @@ import { FEEDBACK_SEND_ERROR_REASON } from '../models/feedback-send-error-reason
 import { MockFeedbackData } from './mock-feedback-data.service';
 import { MOCK_FEEDBACK_SCENARIO } from './models/mock-feedback-scenario.const';
 
-/** At most this many messages come back, like the API. */
-const LIST_MAX = 100;
 const BASE64_RATIO = 3 / 4;
 
 function failed(): Promise<never> {
@@ -56,7 +55,7 @@ export class MockFeedbackApi implements FeedbackApi {
       this.data
         .entries()
         .filter((entry) => entry.userId === user.id)
-        .slice(0, LIST_MAX)
+        .slice(0, FEEDBACK_MESSAGE_LIMIT.ListMax)
         .map((entry) => forUser(entry.message)),
     );
   }
@@ -87,6 +86,14 @@ export class MockFeedbackApi implements FeedbackApi {
       ) {
         return failed();
       }
+    }
+    // Like the API: at most `PerHourMax` messages per rolling hour and user.
+    const hourAgo = Date.now() - MS_PER_HOUR;
+    const lastHour = this.data
+      .entries()
+      .filter((entry) => entry.userId === user.id && Date.parse(entry.message.createdAt) > hourAgo);
+    if (lastHour.length >= FEEDBACK_MESSAGE_LIMIT.PerHourMax) {
+      return Promise.reject(new FeedbackSendError(FEEDBACK_SEND_ERROR_REASON.RateLimited));
     }
     const id = crypto.randomUUID();
     const now = new Date().toISOString();

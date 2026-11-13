@@ -224,7 +224,11 @@ describe('MockLinksApi', () => {
       expect(after.items.map((link) => link.id)).not.toContain(items[0].id);
       const saved = await firstValueFrom(feed.get(items[0].id));
       expect(saved.lastOpenedAt).toBeNull();
-      await expect(firstValueFrom(feed.removeRecent(items[0].id))).rejects.toThrow();
+      // Like the API: removing it again is fine, an unknown link is a 404.
+      await firstValueFrom(feed.removeRecent(items[0].id));
+      await expect(firstValueFrom(feed.removeRecent('missing'))).rejects.toMatchObject({
+        status: 404,
+      });
       await firstValueFrom(feed.clearRecent());
       expect((await firstValueFrom(feed.recent({ limit: 100 }))).items).toEqual([]);
     });

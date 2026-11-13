@@ -1,8 +1,6 @@
-import { existsSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
 import { TestBed } from '@angular/core/testing';
-import { compile } from 'sass';
 import { axeViolations } from '../../../testing/axe';
+import { compileScss } from '../../../testing/scss';
 import { IllustrationComponent } from './illustration.component';
 import { ILLUSTRATION_DEFAULT_MOTION } from './models/illustration-default-motion.const';
 import type { IllustrationMotion } from './models/illustration-motion.type';
@@ -10,22 +8,9 @@ import type { IllustrationName } from './models/illustration-name.type';
 import { ILLUSTRATION_NAMES } from './models/illustration-names.const';
 import { ILLUSTRATION_MOTION } from './models/illustration-motion.const';
 
-const SCSS_PATH = 'libs/ui/src/lib/components/illustration/illustration.component.scss';
-
-/** Compiles the component styles; walks up from the cwd when the spec is bundled. */
+/** Compiles every sheet of the component (it loads one per concern, under the style budget). */
 function compiledCss(): string {
-  const direct = import.meta.dirname;
-  if (direct && existsSync(resolve(direct, 'illustration.component.scss'))) {
-    return compile(resolve(direct, 'illustration.component.scss')).css;
-  }
-  for (let dir = process.cwd(); ; dir = dirname(dir)) {
-    if (existsSync(resolve(dir, SCSS_PATH))) {
-      return compile(resolve(dir, SCSS_PATH)).css;
-    }
-    if (dirname(dir) === dir) {
-      throw new Error(`Cannot find ${SCSS_PATH}`);
-    }
-  }
+  return compileScss('lib/components/illustration/illustration.component.scss');
 }
 
 interface Inputs {

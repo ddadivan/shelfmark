@@ -1,12 +1,13 @@
 import { inject, Service } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
-import { TOAST_KIND, ToastService } from '@shelfmark/ui';
+import { TOAST_KIND } from '@shelfmark/ui';
+import { LazyToastService } from '../toast/lazy-toast.service';
 import { ERROR_TOAST_DEDUPE_MS } from './models/error-toast-dedupe.const';
 
 /** The global toast for API failures; the same text is not shown again within `ERROR_TOAST_DEDUPE_MS`. */
 @Service()
 export class ApiErrorToastService {
-  private readonly toasts = inject(ToastService);
+  private readonly toasts = inject(LazyToastService);
   private readonly transloco = inject(TranslocoService);
   private readonly lastShown = new Map<string, number>();
 

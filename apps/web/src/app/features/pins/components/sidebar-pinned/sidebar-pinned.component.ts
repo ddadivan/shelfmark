@@ -70,7 +70,11 @@ import { PinActionsService } from '../../services/pin-actions.service';
     TranslocoPipe,
   ],
   templateUrl: './sidebar-pinned.component.html',
-  styleUrl: './sidebar-pinned.component.scss',
+  styleUrls: [
+    './sidebar-pinned.component.scss',
+    './sidebar-pinned-actions.scss',
+    './sidebar-pinned-drag.scss',
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '[class.pinned--card]': 'card() && shown()' },
 })

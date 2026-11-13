@@ -218,7 +218,7 @@ export class MockLibraryData {
           tags.push(next);
         }
       }
-      return { ...link, tags };
+      return { ...link, tags: tags.sort((a, b) => a.localeCompare(b, 'en')) };
     });
   }
 

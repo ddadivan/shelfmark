@@ -2,6 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { inject, Service } from '@angular/core';
 import {
   CUSTOM_THEME_DEFAULT,
+  FOLDER_ERROR_MESSAGE,
   LANGUAGE_SETTINGS_DEFAULT,
   LAYOUT_SETTINGS_DEFAULT,
   type LanguageSettings,
@@ -18,12 +19,15 @@ import {
   type UpdateUserSettingsRequest,
   type UserSettingsResponse,
 } from '@shelfmark/contracts';
-import { defer, delay, type Observable, of } from 'rxjs';
+import { HttpStatusCode } from '@angular/common/http';
+import { defer, delay, type Observable, of, throwError } from 'rxjs';
+import { mockHttpError } from '../../../core/api/mock-http-error';
 import { MockLibraryData } from '../../links/mock/mock-library-data';
 import { MOCK_LATENCY_MS } from '../../links/models/mock-latency.const';
 import { MOCK_APPEARANCE_STORAGE_KEY } from '../models/mock-appearance-storage-key.const';
 import type { MockAppearance } from '../models/mock-appearance.type';
 import type { UserSettingsApi } from '../models/user-settings-api.interface';
+import { settingsRequestProblems } from './settings-request-problems';
 import { readMockLanguageSettings, writeMockLanguageSettings } from './read-mock-language-settings';
 
 /**
@@ -44,6 +48,19 @@ export class MockUserSettingsApi implements UserSettingsApi {
 
   update(request: UpdateUserSettingsRequest): Observable<UserSettingsResponse> {
     return defer(() => {
+      const problems = settingsRequestProblems(request);
+      if (problems.length > 0) {
+        return throwError(() => mockHttpError(HttpStatusCode.BadRequest, problems));
+      }
+      // Like the API: "New links go to" needs a live folder of the account, else nothing is saved.
+      if (
+        typeof request.newLinksFolderId === 'string' &&
+        !this.data.folderList.some((folder) => folder.id === request.newLinksFolderId)
+      ) {
+        return throwError(() =>
+          mockHttpError(HttpStatusCode.NotFound, FOLDER_ERROR_MESSAGE.NotFound),
+        );
+      }
       if (request.trashRetentionDays !== undefined) {
         this.data.trashRetentionDays = request.trashRetentionDays;
       }

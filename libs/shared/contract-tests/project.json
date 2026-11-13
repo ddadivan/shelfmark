@@ -1,0 +1,19 @@
+{
+  "name": "contract-tests",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/contract-tests/src",
+  "projectType": "library",
+  "tags": ["scope:shared", "type:contracts"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "tsc --noEmit -p libs/shared/contract-tests/tsconfig.lib.json",
+          "tsc --noEmit -p libs/shared/contract-tests/tsconfig.spec.json"
+        ],
+        "parallel": false
+      }
+    }
+  }
+}
