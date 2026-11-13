@@ -1,0 +1,97 @@
+name: Visual
+
+# Visual regression screenshots (#340, apps/web-e2e/visual). A separate workflow so that adding the
+# `visual:update` label to a PR reruns only this job, not the whole CI.
+on:
+  pull_request:
+    branches: [main, stage]
+    types: [opened, synchronize, reopened, labeled]
+  push:
+    branches: [main, stage]
+
+# Deny by default; the job grants only what it needs.
+permissions: {}
+
+env:
+  SCARF_ANALYTICS: 'false'
+  NX_NO_CLOUD: 'true'
+
+concurrency:
+  group: visual-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  visual:
+    name: visual
+    # A label other than `visual:update` changes nothing to compare.
+    if: github.event.action != 'labeled' || github.event.label.name == 'visual:update'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      actions: read
+    # The baselines are rendered in this image (its Chromium, fonts and libraries); it must carry
+    # the same Playwright version as package-lock.json. Bump both together, then regenerate the
+    # baselines with the `visual:update` label.
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.0-noble@sha256:9beb546099e11f52d62e505537914870e01a67e0e6b00ae41da4775324e73dbe
+    env:
+      UPDATE: ${{ github.event.action == 'labeled' }}
+      E2E_PORT: '4200'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      # The checkout belongs to another user than the container's root: let git (Nx affected) read it.
+      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .nx/cache
+          key: nx-visual-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            nx-visual-${{ runner.os }}-
+      - run: npm ci
+      - uses: nrwl/nx-set-shas@e602fada7ad5987b0f7b1905e7a99ea1c661514c # v5.1.0
+        with:
+          main-branch-name: ${{ github.base_ref || github.ref_name }}
+      # Screens only change with the app, the component library or the suite itself. Pushes and the
+      # update label always run.
+      - name: Detect whether the screens can have changed
+        id: affected
+        run: |
+          if [ "${{ github.event_name }}" = "push" ] || [ "$UPDATE" = "true" ]; then echo "needed=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          projects="$(npx nx show projects --affected --projects web,ui,web-e2e --json)"
+          echo "Affected: ${projects}"
+          if [ "$projects" = "[]" ]; then echo "needed=false" >> "$GITHUB_OUTPUT"; else echo "needed=true" >> "$GITHUB_OUTPUT"; fi
+      - name: Build the e2e bundle
+        if: steps.affected.outputs.needed == 'true'
+        run: npx nx run web:build:e2e --output-style=static
+      - name: Compare the screenshots
+        if: steps.affected.outputs.needed == 'true' && env.UPDATE != 'true'
+        run: npx nx run web-e2e:visual --output-style=static
+      - name: Regenerate every baseline (visual:update label)
+        if: steps.affected.outputs.needed == 'true' && env.UPDATE == 'true'
+        run: npx nx run web-e2e:visual-update --output-style=static
+      # Expected, actual and diff PNGs of every failed comparison, plus the HTML report.
+      - if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: visual-diffs
+          path: |
+            dist/.playwright/apps/web-e2e/visual
+            dist/.playwright/apps/web-e2e/visual-report
+          if-no-files-found: ignore
+          retention-days: 7
+      # Download, unzip into apps/web-e2e/visual/__screenshots__ and commit (README).
+      - if: env.UPDATE == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: visual-baselines
+          path: apps/web-e2e/visual/__screenshots__
+          if-no-files-found: error
+          retention-days: 7

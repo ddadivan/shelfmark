@@ -37,6 +37,9 @@ export default defineConfig({
   snapshotPathTemplate: '{testDir}/__screenshots__/{projectName}/{testFilePath}/{arg}{ext}',
   outputDir: `${workspaceRoot}/dist/.playwright/apps/web-e2e/visual`,
   forbidOnly: isCI,
+  // CI never writes a missing baseline on its own (a new screen would pass unchecked): it fails, and
+  // the `visual:update` label regenerates the baselines on purpose (README).
+  updateSnapshots: isCI ? 'none' : 'missing',
   fullyParallel: true,
   retries: isCI ? 1 : 0,
   workers: isCI ? 4 : undefined,
