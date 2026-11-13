@@ -1,0 +1,151 @@
+@use 'ui' as *;
+
+// Entrance, once: the scraps come in one after another when the board first scrolls into view
+// (`--armed` hides them until then, `--entered` plays it). Duration and easing are the landing
+// reveal's (`duration-slow`, `ease-out`); the 160 ms step between scraps is the same as the
+// shelf's folder stagger. transform / opacity only (`translate` and `scale` compose with the
+// scraps' `rotate`), so nothing changes layout. These timings are CSS-only on purpose: ambient
+// decoration with no logic behind them.
+// Loop, after the entrance: every scrap floats (a small `transform` translate plus a `rotate`
+// drift around its own base angle `--r`), each with its own offsets and a 6 to 10 s cycle, so
+// they never move in step. The "+1" bubble also fades out and rises back in every 10 s. The loop
+// is endless and has no pause button, by the author's decision; `--holding` freezes it in place
+// (off screen, hidden tab, pointer or focus in the section) and reduced motion removes it. The
+// scraps have no hover effect of their own.
+$entrance-step: 160ms;
+$float-ease: var(--ease-in-out);
+
+.landing-before__before--armed {
+  .landing-before__scrap,
+  .landing-before__ping {
+    opacity: 0;
+  }
+}
+
+.landing-before__before--entered {
+  .landing-before__scrap,
+  .landing-before__ping {
+    // Each scrap sets --delay (entrance start), --float-ms and its drift (--dx, --dy, --dr).
+    animation:
+      landing-before-in var(--duration-slow) var(--ease-out) var(--delay) both,
+      landing-before-float var(--float-ms) $float-ease var(--delay) infinite;
+  }
+
+  .landing-before__scrap--bubble {
+    --delay: 0ms;
+    --float-ms: 8s;
+    --dx: #{rem(6px)};
+    --dy: #{rem(-5px)};
+    --dr: 1.2deg;
+  }
+
+  .landing-before__scrap--tabs {
+    --delay: #{$entrance-step};
+    --float-ms: 9s;
+    --dx: #{rem(-5px)};
+    --dy: #{rem(6px)};
+    --dr: -1.5deg;
+  }
+
+  .landing-before__scrap--sticky {
+    --delay: calc(2 * #{$entrance-step});
+    --float-ms: 7s;
+    --dx: #{rem(5px)};
+    --dy: #{rem(6px)};
+    --dr: -1.4deg;
+  }
+
+  .landing-before__scrap--bookmarks {
+    --delay: calc(3 * #{$entrance-step});
+    --float-ms: 10s;
+    --dx: #{rem(-6px)};
+    --dy: #{rem(-5px)};
+    --dr: 1.6deg;
+  }
+
+  .landing-before__ping {
+    --delay: calc(4 * #{$entrance-step});
+    --float-ms: 6s;
+    --dx: #{rem(4px)};
+    --dy: #{rem(-6px)};
+    --dr: 1deg;
+
+    // The bubble also comes and goes: it starts after the entrance, stays visible a few seconds.
+    animation:
+      landing-before-in var(--duration-slow) var(--ease-out) var(--delay) both,
+      landing-before-float var(--float-ms) $float-ease var(--delay) infinite,
+      landing-before-ping 10s $float-ease calc(var(--delay) + var(--duration-slow)) infinite;
+  }
+}
+
+.landing-before__before--holding.landing-before__before--entered {
+  .landing-before__scrap,
+  .landing-before__ping {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes landing-before-in {
+  from {
+    opacity: 0;
+    translate: 0 rem(16px);
+    scale: 0.96;
+  }
+}
+
+@keyframes landing-before-float {
+  0%,
+  100% {
+    transform: translate(0, 0);
+    rotate: var(--r, 0deg);
+  }
+
+  35% {
+    transform: translate(var(--dx), var(--dy));
+    rotate: calc(var(--r, 0deg) + var(--dr));
+  }
+
+  70% {
+    transform: translate(calc(var(--dx) * -0.6), calc(var(--dy) * -0.8));
+    rotate: calc(var(--r, 0deg) - var(--dr) * 0.7);
+  }
+}
+
+// Visible, fades out, waits, then fades and rises back in (the rise is `translate`, the float
+// uses `transform`, so they compose).
+@keyframes landing-before-ping {
+  0%,
+  55% {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  65%,
+  75% {
+    opacity: 0;
+    translate: 0 0;
+  }
+
+  76% {
+    opacity: 0;
+    translate: 0 rem(16px);
+  }
+
+  86%,
+  100% {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@include reduced-motion {
+  .landing-before__before--armed .landing-before__scrap,
+  .landing-before__before--armed .landing-before__ping {
+    opacity: 1;
+  }
+
+  .landing-before__before--entered .landing-before__scrap,
+  .landing-before__before--entered .landing-before__ping {
+    animation: none;
+  }
+}
