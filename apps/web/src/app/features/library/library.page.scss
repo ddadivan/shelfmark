@@ -22,10 +22,11 @@
   // line plus the 8px the trail keeps from the top edge of the main column (phone: no top bar).
   padding-block-start: calc(var(--space-3) + var(--space-2));
 
-  // Desktop (Main.dc.html, from 64em since #316): a gap under the top bar (24px ~ the mockup's 22px), the 24px
-  // trail line, a 12px gap, the title. The main column pads its top by 16px, so 44px here.
+  // Desktop (Main.dc.html, from 64em since #316): a gap under the top bar, the 24px trail line, a
+  // gap, the title. The selection bar ("1 selected · Select all") sits in that room, so it is kept
+  // at rest too (#350, the author's value): the title never moves when a selection starts or ends.
   @include desktop {
-    padding-block-start: calc(var(--space-8) + var(--space-3));
+    padding-block-start: calc(var(--space-8) + var(--space-8));
   }
 
   flex: 1;
@@ -324,8 +325,7 @@
   box-shadow: var(--shadow-card);
 
   // Desktop: the bar starts 8px above the trail line (it covers the trail) and its 48px end
-  // 4px above the title box (the 44px room under the main column's padding); the title's line box
-  // has 10px of leading, so the text keeps a clear gap and nothing moves when the bar appears.
+  // 24px above the title box (the 64px room, #350); nothing moves when the bar appears.
   @include desktop {
     inset-block-start: calc(var(--space-2) * -1);
   }
