@@ -58,14 +58,18 @@ export class SavedViewActionsService {
     await this.router.navigate(commands, { queryParams });
   }
 
-  /** Opens the name dialog and saves the filter as a new view at the end. */
-  async saveCurrent(filter: LinksFilter): Promise<void> {
+  /**
+   * Opens the name dialog and saves the filter as a new view at the end. Resolves with the id of
+   * the new view (the caller moves focus to its chip), or `null` when nothing was saved.
+   */
+  async saveCurrent(filter: LinksFilter): Promise<string | null> {
     if (this.store.atLimit()) {
       this.limitToast();
-      return;
+      return null;
     }
     const query = savedQueryOf(filter, viewQueryOf(filter));
     let saved = '';
+    let createdId: string | null = null;
     const ref = this.dialogs.open<ViewNameDialogComponent, boolean, ViewNameDialogData>(
       ViewNameDialogComponent,
       {
@@ -75,9 +79,10 @@ export class SavedViewActionsService {
           mode: VIEW_NAME_MODE.Create,
           name: '',
           submit: async (name) => {
-            const outcome = await this.store.create(name, query);
+            const { outcome, view } = await this.store.create(name, query);
             saved = name;
             if (outcome === VIEW_OUTCOME.Done) {
+              createdId = view?.id ?? null;
               return null;
             }
             if (outcome === VIEW_OUTCOME.Limit) {
@@ -96,7 +101,9 @@ export class SavedViewActionsService {
         title: this.t('views.created.title'),
         detail: saved,
       });
+      return createdId;
     }
+    return null;
   }
 
   async rename(view: SavedViewResponse): Promise<void> {

@@ -2,6 +2,7 @@ import { Dialog } from '@angular/cdk/dialog';
 import { Overlay } from '@angular/cdk/overlay';
 import type { ComponentType } from '@angular/cdk/portal';
 import { inject, Injector, Service } from '@angular/core';
+import { trackInputModality } from './focus-return';
 import { ConfirmDialogComponent } from '../../components/dialog/confirm-dialog/confirm-dialog.component';
 import { nextDialogId } from './dialog-id';
 import { UiDialogRef } from './dialog-ref';
@@ -27,6 +28,8 @@ import { DIALOG_VARIANT } from '../../components/dialog/models/dialog-variant.co
  */
 @Service()
 export class DialogService {
+  /** Remembers pointer or key, so a closing modal returns focus the way its trigger was used. */
+  private readonly modality = trackInputModality();
   private readonly dialog = inject(Dialog);
   private readonly overlay = inject(Overlay);
   private readonly injector = inject(Injector);

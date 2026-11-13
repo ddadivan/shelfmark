@@ -2,7 +2,7 @@ import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { pickTagMenuItem } from './support/a11y-flows';
 import { seedSession } from './support/mock-session';
-import { gotoWithTags } from './support/sidebar';
+import { gotoWithTags, isCompact } from './support/sidebar';
 import { E2E_TAG } from './models/e2e-tag.const';
 
 // Mirror MOCK_NAME.TagDocs / TagRecipes and MOCK_TAG_NAME (apps/web and libs/shared/contracts);
@@ -57,6 +57,64 @@ test.describe('tags (mock API)', () => {
         await expect(sidebar(page).getByRole('button', { name: 'New tag' })).toBeFocused();
       },
     );
+
+    test('after adding a tag with Enter focus is on its chip, no tooltip on "+"', async ({
+      page,
+    }) => {
+      test.skip(isCompact(page), 'the Tags tab is a page: the desktop sidebar path is checked');
+      await gotoWithTags(page, '/links');
+
+      await sidebar(page).getByRole('button', { name: 'New tag' }).focus();
+      await page.keyboard.press('Enter');
+      await sidebar(page).getByRole('textbox', { name: 'New tag' }).fill('fresh-tag');
+      await page.keyboard.press('Enter');
+
+      await expect(chip(page, 'fresh-tag')).toBeFocused();
+      await page.waitForTimeout(700);
+      await expect(page.locator('ui-tooltip-panel')).toHaveCount(0);
+    });
+
+    test('Esc after a click on "+" returns focus without ring or tooltip; after Enter with the ring', async ({
+      page,
+    }) => {
+      test.skip(isCompact(page), 'the Tags tab is a page: the desktop sidebar path is checked');
+      await gotoWithTags(page, '/links');
+      const add = sidebar(page).getByRole('button', { name: 'New tag' });
+      const focusVisible = () => add.evaluate((el) => el.matches(':focus-visible'));
+      const field = sidebar(page).getByRole('textbox', { name: 'New tag' });
+
+      await add.click();
+      // A pointer resting on "+" would show its hover tooltip: only focus is checked here.
+      await page.mouse.move(0, 0);
+      await field.press('Escape');
+      await expect(add).toBeFocused();
+      expect(await focusVisible()).toBe(false);
+      await page.waitForTimeout(700);
+      await expect(page.locator('ui-tooltip-panel')).toHaveCount(0);
+
+      await page.mouse.move(0, 0);
+      await add.focus();
+      await page.keyboard.press('Enter');
+      await field.press('Escape');
+      await expect(add).toBeFocused();
+      expect(await focusVisible()).toBe(true);
+      await page.waitForTimeout(700);
+      await expect(page.locator('ui-tooltip-panel')).toHaveCount(0);
+    });
+
+    test('Esc on the new tag field returns focus to "+" without its tooltip', async ({ page }) => {
+      test.skip(isCompact(page), 'the Tags tab is a page: the desktop sidebar path is checked');
+      await gotoWithTags(page, '/links');
+
+      const add = sidebar(page).getByRole('button', { name: 'New tag' });
+      await add.focus();
+      await page.keyboard.press('Enter');
+      await sidebar(page).getByRole('textbox', { name: 'New tag' }).press('Escape');
+
+      await expect(add).toBeFocused();
+      await page.waitForTimeout(700);
+      await expect(page.locator('ui-tooltip-panel')).toHaveCount(0);
+    });
 
     test('an outside click closes the new tag field without saving and focuses "+"', async ({
       page,
@@ -118,6 +176,10 @@ test.describe('tags (mock API)', () => {
         // The field closes once the tag is saved. New tags have no links, so they sort last.
         await expect(sidebar(page).getByRole('textbox', { name: 'New tag' })).toHaveCount(0);
       }
+
+      // The last tag fell into the folded group: the group opened and the new chip has focus.
+      await expect(chip(page, 'extra-7')).toBeFocused();
+      await sidebar(page).getByRole('button', { name: 'Show less' }).click();
 
       const more = sidebar(page).getByRole('button', { name: /^\+ \d+ more$/ });
       await expect(more).toBeVisible();

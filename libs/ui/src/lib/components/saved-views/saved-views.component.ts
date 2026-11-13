@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  input,
+  output,
+} from '@angular/core';
 import { Toolbar, ToolbarWidget } from '@angular/aria/toolbar';
 import { IconComponent } from '../icon/icon.component';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
@@ -57,6 +64,17 @@ export class SavedViewsComponent {
   readonly selected = output<string>();
   readonly add = output<void>();
   readonly menuRequested = output<SavedViewMenuRequest>();
+
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+
+  /** Moves focus to the chip `id` (a view that was just saved). `false` when there is no such chip. */
+  focusItem(id: string): boolean {
+    const chip = Array.from(this.host.querySelectorAll<HTMLElement>('[data-ui-saved-view]')).find(
+      (element) => element.dataset['uiSavedView'] === id,
+    );
+    chip?.focus();
+    return chip !== undefined;
+  }
 
   protected requestMenu(event: MouseEvent, item: SavedViewItem, origin: HTMLElement): void {
     if (!item.menuLabel) {

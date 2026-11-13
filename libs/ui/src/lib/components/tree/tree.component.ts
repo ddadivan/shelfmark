@@ -179,6 +179,19 @@ export class TreeComponent {
   }
 
   /**
+   * Opens the collapsed folders above the row `id`, so it is visible (and `focusRow` can reach
+   * it). Does nothing for an unknown row or one that is already shown.
+   */
+  revealRow(id: string): void {
+    for (const ancestor of this.ancestors(id).reverse()) {
+      const item = this.items().find((candidate) => candidate.value() === ancestor);
+      if (item && !item.expanded()) {
+        item.expanded.set(true);
+      }
+    }
+  }
+
+  /**
    * Moves focus to the row `id`. Returns `false` (and moves nothing) when there is no such row
    * or it is hidden inside a collapsed folder.
    */

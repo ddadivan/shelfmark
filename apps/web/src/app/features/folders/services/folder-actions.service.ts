@@ -75,6 +75,8 @@ export class FolderActionsService {
         detail: outcome.folder.name,
       });
       await this.router.navigate([`/${APP_PATH.Folders}`, outcome.folder.id]);
+      // The dialog gave focus back to the "+" or the menu: the new folder is the result of the action.
+      this.treeFocus.focusCreated(outcome.folder.id);
     }
   }
 

@@ -2,6 +2,7 @@ import { Dialog } from '@angular/cdk/dialog';
 import { Overlay } from '@angular/cdk/overlay';
 import type { ComponentType } from '@angular/cdk/portal';
 import { inject, Injector, Service } from '@angular/core';
+import { trackInputModality } from '../dialog/focus-return';
 import { DIALOG_ROLE } from '../dialog/models/dialog-role.const';
 import { UI_DIALOG_DATA } from '../dialog/models/ui-dialog-data.const';
 import { openModalOverlay } from '../dialog/modal-overlay';
@@ -17,6 +18,8 @@ import type { UiDrawerConfig } from './models/drawer-config.interface';
  */
 @Service()
 export class DrawerService {
+  /** Remembers pointer or key, so a closing modal returns focus the way its trigger was used. */
+  private readonly modality = trackInputModality();
   private readonly dialog = inject(Dialog);
   private readonly overlay = inject(Overlay);
   private readonly injector = inject(Injector);

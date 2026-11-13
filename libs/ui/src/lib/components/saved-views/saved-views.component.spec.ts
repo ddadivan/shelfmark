@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { axeViolations } from '../../../testing/axe';
 import { compileScss, mediaBlocks } from '../../../testing/scss';
 import { KEYBOARD_KEY } from '../../models/keyboard';
@@ -70,6 +71,15 @@ describe('SavedViewsComponent', () => {
     expect(bodies().map((b) => b.getAttribute('aria-pressed'))).toEqual(['true', 'false', 'false']);
     expect(host.querySelectorAll('.ui-saved-views__chip--on')).toHaveLength(1);
     expect(host.querySelectorAll('b.ui-saved-views__count')).toHaveLength(2);
+  });
+
+  it('focusItem moves focus to a chip and says whether it exists', () => {
+    const { bodies, fixture } = setup();
+    const component = fixture.debugElement.query(By.directive(SavedViewsComponent))
+      .componentInstance as SavedViewsComponent;
+    expect(component.focusItem('v')).toBe(true);
+    expect(document.activeElement).toBe(bodies()[1]);
+    expect(component.focusItem('missing')).toBe(false);
   });
 
   it('pads a one-digit count with a figure space so every count of two digits or less has one width', () => {

@@ -80,7 +80,10 @@ describe('TagEditorService', () => {
     await submit(editor.form);
 
     await vi.waitFor(() => expect(settled).toHaveBeenCalledOnce());
-    expect(store.entities().some((tag) => tag.name === 'brand-new-tag')).toBe(true);
+    const created = store.entities().find((tag) => tag.name === 'brand-new-tag');
+    expect(created).toBeDefined();
+    // The component focuses the chip of the new tag.
+    expect(settled).toHaveBeenCalledWith(created?.id);
   });
 
   it('offers to merge when a rename runs into an existing name', async () => {

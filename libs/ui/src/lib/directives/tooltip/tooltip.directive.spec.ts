@@ -7,6 +7,7 @@ import { ButtonComponent } from '../../components/button/button.component';
 import type { TooltipPosition } from './models/tooltip-position.type';
 import { TooltipPanelComponent } from './tooltip-panel/tooltip-panel.component';
 import { TooltipDirective } from './tooltip.directive';
+import { expectFocusReturn } from '../../services/dialog/focus-return';
 import { KEYBOARD_KEY } from '../../models/keyboard';
 import { OVERLAY_LAYER } from '../../services/overlay/models/overlay-layer.const';
 import { OVERLAY_SIDE } from '../../services/overlay/models/overlay-side.const';
@@ -187,6 +188,32 @@ describe('TooltipDirective', () => {
     await vi.advanceTimersByTimeAsync(500);
     settle();
     expect(panelEl()).toBeNull();
+  });
+
+  it('ignores the one focus a closing dialog hands back to this element, then opens again', async () => {
+    const { inner, settle, panelEl } = await setup();
+    vi.spyOn(inner, 'matches').mockReturnValue(true);
+    expectFocusReturn(inner);
+    inner.dispatchEvent(new FocusEvent('focus'));
+    await vi.advanceTimersByTimeAsync(500);
+    settle();
+    expect(panelEl()).toBeNull();
+
+    inner.dispatchEvent(new FocusEvent('blur'));
+    inner.dispatchEvent(new FocusEvent('focus'));
+    await vi.advanceTimersByTimeAsync(400);
+    settle();
+    expect(panelEl()).not.toBeNull();
+  });
+
+  it('a focus return expected on another element does not silence this one', async () => {
+    const { inner, plain, settle, panelEl } = await setup();
+    vi.spyOn(inner, 'matches').mockReturnValue(true);
+    expectFocusReturn(plain);
+    inner.dispatchEvent(new FocusEvent('focus'));
+    await vi.advanceTimersByTimeAsync(400);
+    settle();
+    expect(panelEl()).not.toBeNull();
   });
 
   it('shows on keyboard focus of a real element and on a plain host', async () => {
