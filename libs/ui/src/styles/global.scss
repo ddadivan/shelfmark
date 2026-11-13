@@ -72,7 +72,7 @@
   --density-row-padding: #{rem(6px)} #{rem(10px)};
 }
 
-// Root font size: the base of the viewport times the text size setting. Below 2560 CSS px the base
+// Root font size: the base of the viewport times the text size setting. Below 3200 CSS px the base
 // is 100% (the browser's own size); very wide screens (4K / 5K at 100% OS scaling) step up so the
 // whole UI, which is in rem, grows with them. Breakpoints in em (16px each), values in %.
 html {
@@ -91,27 +91,21 @@ html {
   overscroll-behavior: none;
 }
 
-@media (width >= 160em) {
+@media (width >= 200em) {
   html {
     --root-base: 112.5%;
   }
 }
 
-@media (width >= 200em) {
-  html {
-    --root-base: 125%;
-  }
-}
-
 @media (width >= 240em) {
   html {
-    --root-base: 150%;
+    --root-base: 145%;
   }
 }
 
 @media (width >= 320em) {
   html {
-    --root-base: 200%;
+    --root-base: 175%;
   }
 }
 

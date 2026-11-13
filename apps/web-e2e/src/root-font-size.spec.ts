@@ -1,8 +1,20 @@
 import { type Page } from '@playwright/test';
+import { seedSession } from './support/mock-session';
 import { expect, test } from './support/test';
 
-// Root font size by viewport width (#352): 100% below 2560 CSS px, then 112.5% / 125% / 150% / 200%.
-const STEPS: readonly { width: number; fontSize: string }[] = [
+// Root font size by viewport width (#352). The app: 100% below 3200 CSS px, then 112.5% / 145% / 175%
+// (author's values; the text size setting covers anyone who wants more). Landing and sign-in have
+// their own steps (apps/web/src/styles.scss): 112.5% / 125% / 150% / 200% from 2560 px.
+const APP_STEPS: readonly { width: number; fontSize: string }[] = [
+  { width: 1440, fontSize: '16px' },
+  { width: 2560, fontSize: '16px' },
+  { width: 3199, fontSize: '16px' },
+  { width: 3200, fontSize: '18px' },
+  { width: 3840, fontSize: '23.2px' },
+  { width: 5120, fontSize: '28px' },
+];
+
+const PUBLIC_STEPS: readonly { width: number; fontSize: string }[] = [
   { width: 1440, fontSize: '16px' },
   { width: 2559, fontSize: '16px' },
   { width: 2560, fontSize: '18px' },
@@ -11,30 +23,51 @@ const STEPS: readonly { width: number; fontSize: string }[] = [
   { width: 5120, fontSize: '32px' },
 ];
 
+const PUBLIC_PAGES: readonly { path: string; host: string }[] = [
+  { path: '/', host: 'app-landing-page' },
+  { path: '/sign-in', host: 'app-sign-in-page' },
+];
+
 const rootFontSize = (page: Page): Promise<string> =>
   page.evaluate<string>('getComputedStyle(document.documentElement).fontSize');
 
 const setTextSize = (page: Page, size: string): Promise<void> =>
   page.locator('html').evaluate((el, value) => el.setAttribute('data-text-size', value), size);
 
+async function openApp(page: Page, width: number): Promise<void> {
+  await seedSession(page);
+  await page.setViewportSize({ width, height: 1080 });
+  await page.goto('/library');
+  await expect(page.locator('app-shell')).toBeAttached();
+}
+
 test.describe('root font size on wide viewports', () => {
   test.skip(({ isMobile }) => isMobile, 'wide viewports are a desktop matter');
 
-  for (const { width, fontSize } of STEPS) {
-    test(`is ${fontSize} at ${width}px wide`, async ({ page }) => {
-      await page.setViewportSize({ width, height: 1080 });
-      await page.goto('/sign-in');
+  for (const { width, fontSize } of APP_STEPS) {
+    test(`the app is ${fontSize} at ${width}px wide`, async ({ page }) => {
+      await openApp(page, width);
       await expect.poll(() => rootFontSize(page)).toBe(fontSize);
     });
   }
 
+  for (const { path, host } of PUBLIC_PAGES) {
+    for (const { width, fontSize } of PUBLIC_STEPS) {
+      test(`${host} is ${fontSize} at ${width}px wide`, async ({ page }) => {
+        await page.setViewportSize({ width, height: 1080 });
+        await page.goto(path);
+        await expect(page.locator(host)).toBeAttached();
+        await expect.poll(() => rootFontSize(page)).toBe(fontSize);
+      });
+    }
+  }
+
   test('the text size setting multiplies on top of the base', async ({ page }) => {
-    await page.setViewportSize({ width: 3840, height: 1080 });
-    await page.goto('/sign-in');
+    await openApp(page, 3840);
     await setTextSize(page, 'l');
-    // 150% of 16px, times 1.125.
-    await expect.poll(() => rootFontSize(page)).toBe('27px');
+    // 145% of 16px, times 1.125.
+    await expect.poll(() => rootFontSize(page)).toBe('26.1px');
     await setTextSize(page, 's');
-    await expect.poll(() => rootFontSize(page)).toBe('21.6px');
+    await expect.poll(() => rootFontSize(page)).toBe('20.88px');
   });
 });

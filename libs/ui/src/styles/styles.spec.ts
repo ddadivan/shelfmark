@@ -507,10 +507,10 @@ describe('appearance layout attributes (#285)', () => {
     const out = globalCss();
     expect(out).toContain('font-size: calc(var(--root-base) * var(--text-scale))');
     const base = (min: number) => rule(out, `@media (width >= ${min}em) {\n  html`);
-    expect(base(160)).toContain('--root-base: 112.5%');
-    expect(base(200)).toContain('--root-base: 125%');
-    expect(base(240)).toContain('--root-base: 150%');
-    expect(base(320)).toContain('--root-base: 200%');
+    expect(out).not.toContain('@media (width >= 160em)');
+    expect(base(200)).toContain('--root-base: 112.5%');
+    expect(base(240)).toContain('--root-base: 145%');
+    expect(base(320)).toContain('--root-base: 175%');
   });
 
   it('swaps --font-sans for the system and the readable font', () => {
