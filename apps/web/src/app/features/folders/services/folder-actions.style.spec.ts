@@ -10,7 +10,11 @@ import {
 } from '@shelfmark/contracts';
 import { MOCK_ID, MOCK_NAME } from '@shelfmark/contracts/testing';
 import { ToastService } from '@shelfmark/ui';
-import { UiChoiceGridHarness, UiColorPickerHarness } from '@shelfmark/ui/testing';
+import {
+  UiChoiceGridHarness,
+  UiColorPickerHarness,
+  UiEmojiPickerHarness,
+} from '@shelfmark/ui/testing';
 import axe from 'axe-core';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { FoldersStore } from '../../../stores/folders.store';
@@ -342,6 +346,53 @@ describe('FolderActionsService style', () => {
     await closed();
 
     expect(store.entityMap()[MOCK_ID.FolderReading].icon).toBe('🍕');
+  });
+
+  it('picks an emoji in the picker; a pasted one the collection lacks is kept under Yours (#363)', async () => {
+    const { actions, store } = await setup();
+    const settings = TestBed.inject(UserSettingsStore);
+    await settings.load();
+
+    void actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    await opened();
+    const picker = await overlayLoader().getHarness(UiEmojiPickerHarness.with({ label: 'Emoji' }));
+    expect(await picker.getPlaceholder()).toBe('Choose an emoji');
+    await picker.open();
+    await until(() => {
+      expect(document.querySelector('[role="tab"]')).not.toBeNull();
+    });
+    expect((await picker.getCategories()).slice(0, 3)).toEqual(['Food', 'Travel', 'Work']);
+    await picker.search('pizza');
+    await picker.choose('pizza');
+    expect(await picker.getValue()).toBe('🍕');
+    button('Save').click();
+    await closed();
+    expect(store.entityMap()[MOCK_ID.FolderReading].icon).toBe('🍕');
+    expect(settings.customEmoji()).toEqual([]);
+
+    void actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    await opened();
+    const again = await overlayLoader().getHarness(UiEmojiPickerHarness.with({ label: 'Emoji' }));
+    await again.open();
+    expect(await again.getSections()).toEqual(['Recent', 'Food']);
+    await again.close();
+    await again.setValue('🦩');
+    button('Save').click();
+    await closed();
+    await until(() => {
+      expect(settings.customEmoji()).toEqual(['🦩']);
+    });
+
+    // Worn by the folder: shown under Yours, but not removable.
+    void actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    await opened();
+    const third = await overlayLoader().getHarness(UiEmojiPickerHarness.with({ label: 'Emoji' }));
+    await third.open();
+    expect(await third.getEmojiNames('Yours')).toEqual(['🦩']);
+    expect(await third.getRemovableNames()).toEqual([]);
+    await third.close();
+    button('Cancel').click();
+    await closed();
   });
 
   it('changes nothing on Cancel', async () => {

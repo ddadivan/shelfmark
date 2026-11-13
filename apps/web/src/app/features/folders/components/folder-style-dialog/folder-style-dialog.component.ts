@@ -30,8 +30,8 @@ import {
   ChoiceGridComponent,
   ColorPickerComponent,
   DialogComponent,
+  EmojiPickerComponent,
   FolderIconComponent,
-  InputComponent,
   injectDialogData,
   UiDialogRef,
   type ChoiceOption,
@@ -40,6 +40,7 @@ import { FOLDER_ICON_COMMON } from '../../models/folder-icon-common.const';
 import { FOLDER_ICON_GRID } from '../../models/folder-icon-rows-shown.const';
 import { pluralKey } from '../../../../core/i18n/plural-key';
 import { OwnColourActionsService } from '../../../../core/colours/own-colour-actions.service';
+import { FolderEmojiService } from '../../services/folder-emoji.service';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import type { FolderStyleDialogData } from '../../models/folder-style-dialog-data.interface';
 import type { FolderStyleFormModel } from '../../models/folder-style-form-model.interface';
@@ -50,8 +51,8 @@ const ICONS: readonly FolderIcon[] = Object.values(FOLDER_ICON);
 /**
  * "Colour and icon" of a folder (FolderStyle spec): a preview tile with the name and counts, the
  * eight built-in colours on one line, the account's own colours and a "+" swatch that opens the
- * colour picker to add one (#335), the icon set as a radio group in a scrolling grid, and an Emoji
- * field that takes exactly one emoji instead of an icon. Reset (graphite folder), Cancel and Save.
+ * colour picker to add one (#335), the icon set as a radio group in a scrolling grid, and the emoji
+ * picker (#363) whose one emoji replaces the icon. Reset (graphite folder), Cancel and Save.
  * Save closes at once; the service saves optimistically.
  */
 @Component({
@@ -61,10 +62,10 @@ const ICONS: readonly FolderIcon[] = Object.values(FOLDER_ICON);
     ChoiceGridComponent,
     ColorPickerComponent,
     DialogComponent,
+    EmojiPickerComponent,
     FolderIconComponent,
     FormField,
     FormRoot,
-    InputComponent,
     TranslocoPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -79,6 +80,8 @@ export class FolderStyleDialogComponent {
   private readonly transloco = inject(TranslocoService);
   protected readonly settings = inject(UserSettingsStore);
   private readonly ownColours = inject(OwnColourActionsService);
+  /** The emoji picker's collection, "Recent" and "Yours" (#363). */
+  protected readonly emoji = inject(FolderEmojiService);
   protected readonly data = injectDialogData<FolderStyleDialogData>();
   /** Ticks when the language or its translations change, so messages re-translate. */
   private readonly i18n = toSignal(this.transloco.events$, { initialValue: undefined });
