@@ -634,7 +634,7 @@ export const PROMO_STEPS: readonly PromoStep[] = [
     run: async (context) => {
       const { page, phone, director } = context;
       await backToAllLinks(context);
-      const viewMenu = page.getByRole('button', { name: 'View', exact: true });
+      const viewMenu = page.getByRole('button', { name: 'Options', exact: true });
       if (phone) {
         await director.press(viewMenu);
       } else {

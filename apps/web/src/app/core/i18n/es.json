@@ -1076,8 +1076,8 @@
       "remove": "Quitar el filtro {{kind}}"
     },
     "viewMenu": {
-      "label": "Opciones de vista",
-      "button": "Vista",
+      "label": "Ordenar, ver y exportar",
+      "button": "Opciones",
       "sortBy": "Ordenar por"
     }
   },

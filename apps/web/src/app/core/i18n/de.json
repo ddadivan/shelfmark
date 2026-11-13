@@ -1055,8 +1055,8 @@
       "remove": "Filter {{kind}} entfernen"
     },
     "viewMenu": {
-      "label": "Ansichtsoptionen",
-      "button": "Ansicht",
+      "label": "Sortieren, Ansicht und Export",
+      "button": "Optionen",
       "sortBy": "Sortieren nach"
     }
   },

@@ -160,7 +160,7 @@ test.describe('mobile polish (mock API)', () => {
   test.describe('library toolbar on a phone', () => {
     test.skip(({ viewport }) => (viewport?.width ?? 0) >= 640, 'phone only');
 
-    test('one View menu holds sort, view and export; the saved views scroll in one row', async ({
+    test('one Options menu holds sort, view and export; the saved views scroll in one row', async ({
       page,
     }) => {
       await page.goto('/links');
@@ -170,8 +170,8 @@ test.describe('mobile polish (mock API)', () => {
       await expect(page.getByRole('radio', { name: 'List' })).toHaveCount(0);
       await expect(page.getByRole('button', { name: 'Export' })).toHaveCount(0);
 
-      await page.getByRole('button', { name: 'View', exact: true }).click();
-      const menu = page.getByRole('menu');
+      await page.getByRole('button', { name: 'Options', exact: true }).click();
+      const menu = page.getByRole('menu', { name: 'Sort, view and export' });
       await expect(menu.getByText('Sort by', { exact: true })).toBeVisible();
       await expect(menu.getByText('View', { exact: true })).toBeVisible();
       await expect(menu.getByText('Export', { exact: true })).toBeVisible();

@@ -91,7 +91,7 @@ test.describe('export (mock API)', () => {
     await page.setViewportSize({ width: 360, height: 780 });
     await page.goto('/links?tag=docs');
     await expect(
-      page.getByRole('button', { name: isCompact(page) ? 'View' : 'Export', exact: true }),
+      page.getByRole('button', { name: isCompact(page) ? 'Options' : 'Export', exact: true }),
     ).toBeVisible();
 
     const overflow = await page.evaluate<number>(
