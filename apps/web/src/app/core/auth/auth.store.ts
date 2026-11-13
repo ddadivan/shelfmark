@@ -1,7 +1,8 @@
 import { computed, inject, Injector } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
-import { TOAST_KIND, ToastService } from '@shelfmark/ui';
+import { TOAST_KIND } from '@shelfmark/ui';
+import { LazyToastService } from '../toast/lazy-toast.service';
 import {
   patchState,
   signalStore,
@@ -114,7 +115,7 @@ export const AuthStore = signalStore(
         try {
           await api().signOut();
         } catch {
-          injector.get(ToastService).show({
+          injector.get(LazyToastService).show({
             kind: TOAST_KIND.Danger,
             title: injector.get(TranslocoService).translate('auth.signOutFailed'),
             detail: injector.get(TranslocoService).translate('auth.signOutFailedDetail'),
