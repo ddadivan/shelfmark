@@ -26,9 +26,15 @@ function taggedWith(...tags: E2eTag[]): RegExp {
   return new RegExp(`(^|\\s)(${tags.join('|')})(\\s|$)`);
 }
 
+const preset = nxE2EPreset(import.meta.dirname, { testDir: './src' });
+// CI also lists the tests that passed only on a retry (#362). The full run's `--reporter=blob,line`
+// replaces this list, so ci.yml names the flaky reporter there too.
+const FLAKY_REPORTER = './reporters/flaky.reporter.ts';
+
 // Generated as .mts so Node forces ESM; Playwright auto-discovers playwright.config.mts.
 export default defineConfig({
-  ...nxE2EPreset(import.meta.dirname, { testDir: './src' }),
+  ...preset,
+  reporter: isCI ? [...(preset.reporter ?? []), [FLAKY_REPORTER]] : preset.reporter,
   forbidOnly: isCI,
   // One retry (ADR 0043): the baseline had no flaky test, and two retries hid flakes and tripled
   // the cost of a real failure.

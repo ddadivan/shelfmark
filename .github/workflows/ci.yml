@@ -325,6 +325,9 @@ jobs:
           - { name: 'web 3/3', shard: 3, shards: 3 }
     env:
       PR_INTO_STAGE: ${{ github.event_name == 'pull_request' && github.base_ref == 'stage' }}
+      # apps/web-e2e/reporters/flaky.reporter.ts writes the tests that passed only on a retry here;
+      # the `e2e` job lists them in its summary (#362).
+      FLAKY_REPORT_DIR: ${{ github.workspace }}/flaky-report
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -389,18 +392,26 @@ jobs:
         run: tools/ci/pr-browser-tests.sh origin/stage web
       # One shard of every web-e2e spec (all of desktop, the tagged tests of tablet and phone); each
       # shard writes a blob report that the `e2e` job merges into one HTML report when something
-      # failed.
+      # failed. `--reporter` replaces the config's reporters, so the flaky reporter is named again.
       - name: Run web-e2e shard ${{ matrix.shard }}/${{ matrix.shards }}
         if: steps.browser.outputs.needed == 'true' && env.PR_INTO_STAGE != 'true'
         env:
           PLAYWRIGHT_BLOB_OUTPUT_DIR: ${{ github.workspace }}/blob-report
-        run: npx nx affected -t e2e --output-style=static -- --shard=${{ matrix.shard }}/${{ matrix.shards }} --reporter=blob,line
+        run: npx nx affected -t e2e --output-style=static -- --shard=${{ matrix.shard }}/${{ matrix.shards }} --reporter=blob,line,./reporters/flaky.reporter.ts
       - name: Upload the blob report of this shard
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: blob-report-${{ matrix.shard }}
           path: blob-report
+          if-no-files-found: ignore
+          retention-days: 1
+      - name: Upload the flaky tests of this shard
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: flaky-report-${{ matrix.shard }}
+          path: flaky-report
           if-no-files-found: ignore
           retention-days: 1
       - if: failure()
@@ -493,8 +504,9 @@ jobs:
           retention-days: 7
 
   # The required check (branch protection asks for `e2e`): green when `web-build` and every shard
-  # passed or had nothing to run, red when one failed or was cancelled. On a web shard failure it
-  # merges the web shards' blob reports into one Playwright HTML report artifact.
+  # passed or had nothing to run, red when one failed or was cancelled. Lists the web-e2e tests that
+  # passed only on a retry in the job summary (#362; flakes never fail the check). On a web shard
+  # failure it merges the web shards' blob reports into one Playwright HTML report artifact.
   e2e:
     name: e2e
     runs-on: ubuntu-latest
@@ -506,9 +518,19 @@ jobs:
       actions: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        if: needs.e2e-web.result == 'failure'
+        if: needs.e2e-web.result == 'success' || needs.e2e-web.result == 'failure'
         with:
           persist-credentials: false
+      - name: Download the flaky test lists
+        if: needs.e2e-web.result == 'success' || needs.e2e-web.result == 'failure'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: flaky-report-*
+          path: ${{ runner.temp }}/flaky-reports
+          merge-multiple: true
+      - name: List the flaky tests in the job summary
+        if: needs.e2e-web.result == 'success' || needs.e2e-web.result == 'failure'
+        run: node tools/ci/flaky-summary.mjs "${RUNNER_TEMP}/flaky-reports"
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         if: needs.e2e-web.result == 'failure'
         with:
