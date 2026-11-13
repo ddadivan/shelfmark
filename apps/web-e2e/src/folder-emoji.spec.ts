@@ -4,6 +4,7 @@ import { MOCK_FIXTURE } from './models/mock-fixture.const';
 import { openFeed, pickFolderMenuItem } from './support/a11y-flows';
 import { isPhone, openSidebar } from './support/sidebar';
 import { expect, test } from './support/test';
+import { Finger } from './support/touch';
 
 const READING = MOCK_FIXTURE.readingName;
 
@@ -154,6 +155,40 @@ test.describe('folder emoji picker (mock API)', () => {
       await expect(panel(page)).toHaveCount(0);
       await expect(emojiField(dialog)).toHaveValue('🐶');
       await save(dialog);
+    },
+  );
+
+  test(
+    'the phone sheet closes when its grip is dragged down',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      test.skip(!isPhone(page), 'the sheet is the phone layout');
+      const dialog = await openStyle(page);
+      const picker = await openPicker(page, dialog);
+      const grip = picker.locator('.ui-emoji-picker__grip');
+      await expect(grip).toBeVisible();
+      // After the slide-in (320 ms): the sheet sits on the bottom edge.
+      const viewportHeight = page.viewportSize()?.height;
+      await expect
+        .poll(async () => {
+          const sheet = await picker.boundingBox();
+          return Math.round((sheet?.y ?? 0) + (sheet?.height ?? 0));
+        })
+        .toBe(viewportHeight);
+      await expect(picker).toHaveCSS('border-top-left-radius', '28px');
+      // The close button stays next to the grip.
+      await expect(picker.getByRole('button', { name: 'Close' })).toBeVisible();
+      const box = await grip.boundingBox();
+      const start = { x: (box?.x ?? 0) + (box?.width ?? 0) / 2, y: (box?.y ?? 0) + 6 };
+
+      const finger = await Finger.down(page, start);
+      await finger.move({ x: start.x, y: start.y + 320 }, 12);
+      await finger.up();
+
+      await expect(panel(page)).toHaveCount(0);
+      // Only the picker closed: the style sheet and its field stay, focus back on the field.
+      await expect(dialog).toBeVisible();
+      await expect(emojiField(dialog)).toBeFocused();
     },
   );
 });
