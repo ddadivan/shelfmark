@@ -37,7 +37,7 @@ import { LandingRevealDirective } from '../../directives/landing-reveal.directiv
   hostDirectives: [LandingLoopGateDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './landing-before-after.component.html',
-  styleUrl: './landing-before-after.component.scss',
+  styleUrls: ['./landing-before-after.component.scss', './landing-before-after-list.scss'],
 })
 export class LandingBeforeAfterComponent {
   protected readonly treeRows = LANDING_TREE_ROWS;
