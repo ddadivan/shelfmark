@@ -5,7 +5,9 @@
 // visible part. Overlay pseudo-elements, sticky to the area's edges, never a mask, so the
 // scrollbar stays crisp; `pointer-events: none`. Where scroll-driven animations exist the top
 // fade shows only once the area is scrolled and the bottom fade goes away at the end (no JS,
-// no movement, so reduced motion needs nothing); without them both are always on. Include it
+// no movement, so reduced motion needs nothing); without them both are always on, so each fade
+// takes its own room there (like a padding of `$size` at both ends): the first row is not
+// covered at scroll 0, nor the last at the end. Include it
 // in the scroll container itself (`scroll(nearest)` is then the area). The fades take the
 // content width (the area's padding and scrollbar stay clear) and sit at `$layer`: keep sticky
 // bars that must stay on top above it. The keyframes are global (`scroll-fade-keyframes`, in
@@ -32,6 +34,17 @@
     inset-block-end: 0;
     margin-block-start: calc(#{$size} * -1);
     background: linear-gradient(to top, #{$bg}, transparent);
+  }
+
+  @supports not (animation-timeline: scroll()) {
+    // Always on: the fades no longer overlap the content at the two ends of the area.
+    &::before {
+      margin-block-end: 0;
+    }
+
+    &::after {
+      margin-block-start: 0;
+    }
   }
 
   @supports (animation-timeline: scroll()) {

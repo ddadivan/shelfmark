@@ -578,6 +578,14 @@ describe('scroll-fade (#352)', () => {
     expect(output).toContain('animation-name: ui-scroll-fade-bottom');
   });
 
+  it('without scroll-driven animations, gives each fade its own room at the two ends', () => {
+    const fallback = output.slice(output.indexOf('@supports not (animation-timeline: scroll())'));
+    expect(fallback).toMatch(/\.area::before\s*\{\s*margin-block-end: 0/);
+    expect(fallback).toMatch(/\.area::after\s*\{\s*margin-block-start: 0/);
+    // Overlapping (negative margins) everywhere else.
+    expect(output).toContain('margin-block-end: calc(1.5rem * -1)');
+  });
+
   it('has its keyframes once in the global styles', () => {
     const global = compile(resolve(STYLES_DIR, 'global.scss'), {
       loadPaths: [resolve(STYLES_DIR, '../../../../node_modules')],
