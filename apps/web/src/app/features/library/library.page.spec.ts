@@ -90,6 +90,9 @@ describe('LibraryPage', () => {
     expect(text(fixture)).toContain('2+ links');
     expect(element.querySelectorAll('app-link-card')).toHaveLength(2);
     expect(element.querySelector('ui-skeleton')).toBeNull();
+    // Recently opened is its own page: the feed has no panel and no toggle for it.
+    expect(element.querySelector('app-recent-links-panel')).toBeNull();
+    expect(text(fixture)).not.toMatch(/recently opened/i);
   });
 
   it.each([
@@ -129,8 +132,11 @@ describe('LibraryPage', () => {
 
     fixture.componentRef.setInput('scope', LINKS_SCOPE.Favorites);
     await fixture.whenStable();
-
     expect(element.querySelector('h1')?.textContent).toBe('Favorites');
+
+    fixture.componentRef.setInput('scope', LINKS_SCOPE.Unsorted);
+    await fixture.whenStable();
+    expect(element.querySelector('h1')?.textContent).toBe('Unsorted');
   });
 
   it('shows rows when the list view is chosen', async () => {

@@ -259,6 +259,31 @@ describe('LinkCardComponent', () => {
     expect(violations.map((violation) => violation.id)).toEqual([]);
   });
 
+  it('lists Open, Edit, the favorite toggle, Pin to sidebar, Move and, after a separator, Delete', async () => {
+    const { fixture, element } = await setup();
+
+    element
+      .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
+      ?.click();
+    await fixture.whenStable();
+    const menu = document.querySelector<HTMLElement>('[role="menu"]');
+    const entries = [...(menu?.querySelectorAll('[role="menuitem"], [role="separator"]') ?? [])];
+
+    expect(
+      entries.map((entry) =>
+        entry.getAttribute('role') === 'separator' ? '---' : entry.textContent?.trim(),
+      ),
+    ).toEqual([
+      'Open',
+      'Edit',
+      'Add to favorites',
+      'Pin to sidebar',
+      'Move to folder…',
+      '---',
+      'Delete',
+    ]);
+  });
+
   describe('pin menu', () => {
     async function openMenu(element: HTMLElement, fixture: { whenStable(): Promise<unknown> }) {
       element
