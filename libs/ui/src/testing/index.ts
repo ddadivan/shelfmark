@@ -1,5 +1,12 @@
+// Public test entry `@shelfmark/ui/testing`: the component harnesses, for specs only. Lint bans the
+// import outside specs and testing folders, so harnesses never reach a bundle. The internal spec
+// helpers next to this file (axe, scss) are not exported.
 export * from '../lib/components/button/testing/button.harness';
 export type * from '../lib/components/button/testing/models/button-harness-filters.interface';
+export * from '../lib/components/menu/testing/menu.harness';
+export * from '../lib/components/menu/testing/menu-item.harness';
+export type * from '../lib/components/menu/testing/models/menu-harness-filters.interface';
+export type * from '../lib/components/menu/testing/models/menu-item-harness-filters.interface';
 export * from '../lib/components/select/testing/select.harness';
 export * from '../lib/components/select/testing/option.harness';
 export type * from '../lib/components/select/testing/models/select-harness-filters.interface';
