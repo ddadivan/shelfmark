@@ -46,7 +46,7 @@ describe('ScrollTopOnNavigateDirective', () => {
     expect(writes).toEqual([0]);
   });
 
-  it('keeps the position when only the query changes', async () => {
+  it('starts a new query at the top too, like the router did for the page', async () => {
     const { area, router } = await setup();
     const writes: number[] = [];
     Object.defineProperty(area, 'scrollTop', {
@@ -56,6 +56,20 @@ describe('ScrollTopOnNavigateDirective', () => {
     });
 
     await router.navigateByUrl('/links?sort=oldest');
+
+    expect(writes).toEqual([0]);
+  });
+
+  it('keeps the position when only the fragment changes', async () => {
+    const { area, router } = await setup();
+    const writes: number[] = [];
+    Object.defineProperty(area, 'scrollTop', {
+      configurable: true,
+      get: () => 120,
+      set: (value: number) => writes.push(value),
+    });
+
+    await router.navigateByUrl('/links#your-data');
 
     expect(writes).toEqual([]);
   });

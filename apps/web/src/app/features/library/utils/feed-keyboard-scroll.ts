@@ -36,19 +36,28 @@ export function feedScrollDelta(event: KeyboardEvent, visibleHeight: number): nu
   }
 }
 
+/** The feed area when it scrolls (desktop), else its nearest scrolling ancestor (the shell's main column). */
+function scrollingArea(area: HTMLElement): HTMLElement | null {
+  for (let element: HTMLElement | null = area; element; element = element.parentElement) {
+    const overflow = getComputedStyle(element).overflowY;
+    if (overflow === 'auto' || overflow === 'scroll') {
+      return element;
+    }
+  }
+  return null;
+}
+
 /**
- * The page no longer scrolls (the feed area does), so with no element focused the keys would
- * do nothing: the area scrolls for them, as the page used to. Does nothing while an element has
- * focus (it handles its own keys, and the browser scrolls the area around a focused card), or
- * when the area does not scroll (a phone scrolls the page). Returns whether it scrolled.
+ * The page never scrolls in the app shell (#352): the feed area does on desktop, the shell's main
+ * column in the mobile shell. With no element focused the keys would do nothing, so that area
+ * scrolls for them, as the page used to. Does nothing while an element has focus (it handles its
+ * own keys, and the browser scrolls the area around a focused card), or when nothing scrolls.
+ * Returns whether it scrolled.
  */
-export function scrollFeedForKey(area: HTMLElement, event: KeyboardEvent): boolean {
-  const doc = area.ownerDocument;
-  if (
-    event.defaultPrevented ||
-    (doc.activeElement && doc.activeElement !== doc.body) ||
-    getComputedStyle(area).overflowY !== 'auto'
-  ) {
+export function scrollFeedForKey(feed: HTMLElement, event: KeyboardEvent): boolean {
+  const doc = feed.ownerDocument;
+  const area = scrollingArea(feed);
+  if (event.defaultPrevented || (doc.activeElement && doc.activeElement !== doc.body) || !area) {
     return false;
   }
   const delta = feedScrollDelta(event, area.clientHeight);
