@@ -83,11 +83,13 @@
   }
 }
 
+// The footer sits space-6 (24px) under the body: the panel gap (space-4) plus this margin (#350).
 .ui-dialog__foot {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-4);
   justify-content: flex-end;
+  margin-block-start: var(--space-2);
 
   // Phone: the actions stack at full width. The DOM order is "secondary first, primary last" (the
   // order of a desktop row, right-aligned), so `column-reverse` puts the primary action on top,
