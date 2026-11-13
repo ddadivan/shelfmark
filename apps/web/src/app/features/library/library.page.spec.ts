@@ -3,7 +3,9 @@ import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import type { FolderResponse, LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
 import { MOCK_FOLDERS, MOCK_LIBRARY_COUNTS, MOCK_LINKS } from '@shelfmark/contracts/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { DialogService } from '@shelfmark/ui';
+import { UiButtonHarness, UiMenuItemHarness } from '@shelfmark/ui/testing';
 import axe from 'axe-core';
 import { of, Subject, throwError, type Observable } from 'rxjs';
 import { AddLinkDialogService } from '../links/services/add-link-dialog.service';
@@ -597,6 +599,21 @@ describe('LibraryPage of a folder', () => {
     });
   });
   describe('search, sort and title', () => {
+    it('sorts from the sort menu and writes the sort into the URL', async () => {
+      const { fixture } = await setup();
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+      const loader = TestbedHarnessEnvironment.documentRootLoader(fixture);
+      await (await loader.getHarness(UiButtonHarness.with({ name: /^Sort: / }))).click();
+      await (await loader.getHarness(UiMenuItemHarness.with({ text: 'Title A–Z' }))).click();
+
+      expect(navigate).toHaveBeenLastCalledWith([], {
+        queryParams: { sort: 'title' },
+        queryParamsHandling: 'merge',
+      });
+      localStorage.removeItem(FEED_MEMORY_STORAGE_KEY);
+    });
+
     it('asks for the search text, normalized', async () => {
       const { api, fixture } = await setup();
 
