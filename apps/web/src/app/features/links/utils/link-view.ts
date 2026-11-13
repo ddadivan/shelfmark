@@ -1,5 +1,5 @@
 import { isHttpUrl, LINK_IMAGE_PENDING_VERSION, type LinkResponse } from '@shelfmark/contracts';
-import { displayHost } from '../components/add-link/http-url';
+import { displayHost } from './http-url';
 
 /** The URL when it is safe to put in an `href` (http or https only), else `undefined`. */
 export function safeHref(url: string): string | undefined {

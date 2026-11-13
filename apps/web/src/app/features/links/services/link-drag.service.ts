@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { computed, inject, Service, signal } from '@angular/core';
+import { computed, DestroyRef, inject, Service, signal } from '@angular/core';
 import type { LinkResponse } from '@shelfmark/contracts';
 import { KEYBOARD_KEY } from '@shelfmark/ui';
 import { FoldersStore } from '../../../stores/folders.store';
@@ -63,6 +63,12 @@ export class LinkDragService {
   );
   /** Folder id of the highlighted subfolder tile and pinned folder row. */
   readonly folderTargetId = computed(() => this.target() ?? null);
+
+  constructor() {
+    // A drag cut short by the injector going away (sign-out, a destroyed test bed) must not leave
+    // the capture listener behind: it would swallow every later Esc on the page.
+    inject(DestroyRef).onDestroy(() => this.finish());
+  }
 
   private readonly onKeydown = (event: KeyboardEvent): void => {
     if (event.key === KEYBOARD_KEY.Escape) {

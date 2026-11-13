@@ -36,7 +36,7 @@ import {
   type SelectOption,
 } from '@shelfmark/ui';
 import { FoldersStore } from '../../../../stores/folders.store';
-import { buildFolderOptions } from '../../../links/components/add-link/folder-options';
+import { buildFolderOptions } from '../../../links/utils/folder-options';
 import { FEED_SORT } from '../../../links/models/feed-sort.const';
 import { SORT_OPTION_KEYS } from '../../../library/models/sort-option-keys.const';
 import { VIEW_OPTION_KEYS } from '../../../library/models/view-option-keys.const';

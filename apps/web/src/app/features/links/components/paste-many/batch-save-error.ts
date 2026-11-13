@@ -2,7 +2,7 @@ import { HttpStatusCode } from '@angular/common/http';
 import { linkLimitFit } from '@shelfmark/contracts';
 import { apiError } from '../../../../core/api/api-error';
 import { pluralKey } from '../../../../core/i18n/plural-key';
-import { saveErrorKey } from '../add-link/save-error-key';
+import { saveErrorKey } from '../../utils/save-error-key';
 import type { BatchSaveError } from './models/batch-save-error.interface';
 
 /**

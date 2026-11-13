@@ -1,4 +1,3 @@
-import { activeLang } from '../../../../core/i18n/active-lang';
 import { NgTemplateOutlet } from '@angular/common';
 import {
   afterNextRender,
@@ -15,10 +14,9 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { form, FormField, FormRoot } from '@angular/forms/signals';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { TAG_LIMIT, normalizeTagName, type TagResponse } from '@shelfmark/contracts';
+import { FormField, FormRoot } from '@angular/forms/signals';
+import { TranslocoPipe } from '@jsverse/transloco';
+import { type TagResponse } from '@shelfmark/contracts';
 import {
   BUTTON_SIZE,
   BUTTON_VARIANT,
@@ -33,16 +31,14 @@ import {
   MenuComponent,
   MenuItemComponent,
   MenuSeparatorComponent,
-  TOAST_KIND,
   TooltipDirective,
-  ToastService,
   type UiLongPressEvent,
 } from '@shelfmark/ui';
-import { TAG_OUTCOME } from '../../../../stores/models/tag-outcome.const';
 import { TagsStore } from '../../../../stores/tags.store';
 import { ViewportService } from '../../../../core/layout/viewport.service';
-import { pluralKey } from '../../../../core/i18n/plural-key';
 import { TagActionsService } from '../../services/tag-actions.service';
+import { TagEditorService } from '../../services/tag-editor.service';
+import { TagMenuService } from '../../services/tag-menu.service';
 import { splitTags } from '../../utils/tag-split';
 
 /**
@@ -70,6 +66,7 @@ import { splitTags } from '../../utils/tag-split';
   ],
   templateUrl: './sidebar-tags.component.html',
   styleUrl: './sidebar-tags.component.scss',
+  providers: [TagEditorService, TagMenuService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarTagsComponent {
@@ -87,76 +84,22 @@ export class SidebarTagsComponent {
     this.viewport.compact() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm,
   );
   private readonly actions = inject(TagActionsService);
-  private readonly toasts = inject(ToastService);
-  private readonly transloco = inject(TranslocoService);
   private readonly menu = viewChild.required(MenuComponent);
   private readonly field = viewChild(InputComponent);
   private readonly addButton = viewChild('addButton', { read: ElementRef });
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly injector = inject(Injector);
 
-  /** Ticks when the active language or its translations change, so messages re-translate. */
-  private readonly i18n = toSignal(this.transloco.events$, { initialValue: undefined });
-
   protected readonly expanded = signal(false);
   private readonly moreChip = viewChild('moreChip', { read: ElementRef });
   protected readonly split = computed(() => splitTags(this.tags.entities(), this.expanded()));
 
-  /** The "+" field is open. */
-  protected readonly adding = signal(false);
-  /** `id` of the tag being renamed in place. */
-  protected readonly renamingId = signal<string | null>(null);
-  protected readonly editing = computed(() => this.adding() || this.renamingId() !== null);
-  private readonly model = signal({ name: '' });
-  protected readonly form = form(this.model, () => undefined, {
-    submission: { action: () => this.save() },
-  });
-  protected readonly saving = signal(false);
-  private readonly errorState = signal<{
-    key: string;
-    params?: Record<string, unknown>;
-  } | null>(null);
-  /** The message under the field, translated again when the language changes. */
-  protected readonly fieldError = computed(() => {
-    this.i18n();
-    const error = this.errorState();
-    return error ? this.transloco.translate(error.key, error.params) : '';
-  });
-  /** The existing tag a rename ran into: the merge is offered. */
-  protected readonly conflict = signal<TagResponse | null>(null);
-
-  /** The editor takes the whole row when it shows an error or the offer to merge. */
-  protected readonly editorWide = computed(
-    () => this.conflict() !== null || this.fieldError() !== '',
-  );
-
-  /** `id` of the tag whose menu is open. */
-  protected readonly menuTagId = signal<string | null>(null);
-  protected readonly menuLabel = computed(() => {
-    // Re-runs on a language switch (`translate` itself is not reactive).
-    activeLang();
-    const tag = this.menuTag();
-    return tag ? this.transloco.translate('tags.sidebar.menuFor', { name: tag.name }) : undefined;
-  });
-  /** "winter, 12 links": the first line of the menu says whose menu it is. */
-  protected readonly menuSummary = computed(() => {
-    const tag = this.menuTag();
-    if (!tag) {
-      return '';
-    }
-    this.i18n();
-    return this.transloco.translate('tags.sidebar.menu.summary', {
-      name: tag.name,
-      links: this.transloco.translate(pluralKey('tags.count', tag.linkCount), {
-        count: tag.linkCount,
-      }),
-    });
-  });
-  /** The tag the menu was opened for; kept while an item is chosen and the menu closes. */
-  private menuTargetId: string | null = null;
+  protected readonly editor = inject(TagEditorService);
+  protected readonly menuState = inject(TagMenuService);
 
   constructor() {
     void this.tags.load();
+    this.editor.onSettled = () => this.cancel();
     // `ui-chip` has no `aria-expanded` input: the fold chip is a disclosure button, so its inner
     // button carries the state (the chip is only in the DOM while there is something to fold).
     afterRenderEffect(() => {
@@ -167,7 +110,7 @@ export class SidebarTagsComponent {
     // A press outside the open field closes it without saving, like Esc. The "+" button is left
     // out: its own click toggles the field, so a press on it must not also close it here.
     effect((onCleanup) => {
-      if (!this.editing()) {
+      if (!this.editor.editing()) {
         return;
       }
       const doc = this.host.ownerDocument;
@@ -180,7 +123,7 @@ export class SidebarTagsComponent {
         ) {
           return;
         }
-        const renamedId = this.renamingId();
+        const renamedId = this.editor.renamingId();
         this.cancel(false);
         // Once the press has settled: when it left focus nowhere (a click on empty space), the
         // "+" button (or the renamed chip) takes it; a control that took focus keeps it.
@@ -215,18 +158,22 @@ export class SidebarTagsComponent {
 
   /** The "+" button: opens the field, or closes it when it is open (one click, one toggle). */
   protected toggleAdd(): void {
-    if (this.adding()) {
+    if (this.editor.adding()) {
       this.cancel();
       return;
     }
-    this.openEditor('', null, true);
+    this.editor.open('', null, true);
   }
 
   /** Focus left the field for another control (Tab, or a press that took focus): close it. */
   protected editorFocusOut(event: FocusEvent): void {
     const next = event.relatedTarget;
     const form = event.currentTarget;
-    if (!(next instanceof Node) || (form instanceof Node && form.contains(next)) || this.saving()) {
+    if (
+      !(next instanceof Node) ||
+      (form instanceof Node && form.contains(next)) ||
+      this.editor.saving()
+    ) {
       return;
     }
     // The "+" button toggles by its own click; a press elsewhere on a control keeps its focus.
@@ -236,16 +183,13 @@ export class SidebarTagsComponent {
   }
 
   protected startRename(tag: TagResponse): void {
-    this.openEditor(tag.name, tag.id, false);
+    this.editor.open(tag.name, tag.id, false);
   }
 
   /** Closes the editor; focus goes back to the renamed chip, or to the "+" button. */
   protected cancel(restoreFocus = true): void {
-    const renamedId = this.renamingId();
-    this.adding.set(false);
-    this.renamingId.set(null);
-    this.errorState.set(null);
-    this.conflict.set(null);
+    const renamedId = this.editor.renamingId();
+    this.editor.close();
     if (restoreFocus) {
       afterNextRender(() => this.restoreFocus(renamedId), { injector: this.injector });
     }
@@ -261,33 +205,19 @@ export class SidebarTagsComponent {
     (chip ?? this.addButton()?.nativeElement.querySelector('button'))?.focus();
   }
 
-  protected async mergeIntoConflict(): Promise<void> {
-    const target = this.conflict();
-    const source = this.tags.entityMap()[this.renamingId() ?? ''];
-    if (!target || !source || this.saving()) {
-      return;
-    }
-    this.saving.set(true);
-    const merged = await this.actions.mergeInto(source, target);
-    this.saving.set(false);
-    if (merged) {
-      this.cancel();
-    }
-  }
-
   protected openMenuFrom(tag: TagResponse, origin: HTMLElement): void {
-    this.setMenuTag(tag);
+    this.menuState.open(tag);
     this.menu().openFrom(origin);
   }
 
   protected openMenuAt(tag: TagResponse, event: MouseEvent): void {
     event.preventDefault();
-    this.setMenuTag(tag);
+    this.menuState.open(tag);
     this.menu().openAt({ x: event.clientX, y: event.clientY });
   }
 
   protected openMenuFromLongPress(tag: TagResponse, event: UiLongPressEvent): void {
-    this.setMenuTag(tag);
+    this.menuState.open(tag);
     this.menu().openAt({ x: event.x, y: event.y });
   }
 
@@ -303,120 +233,10 @@ export class SidebarTagsComponent {
     }
   }
 
-  protected menuClosed(): void {
-    this.menuTagId.set(null);
-  }
-
-  protected showFromMenu(): void {
-    const tag = this.menuTag();
-    if (tag) {
-      this.show(tag);
-    }
-  }
-
   protected renameFromMenu(): void {
-    const tag = this.menuTag();
+    const tag = this.menuState.tag();
     if (tag) {
       this.startRename(tag);
     }
-  }
-
-  protected mergeFromMenu(): void {
-    const tag = this.menuTag();
-    if (tag) {
-      void this.actions.merge(tag);
-    }
-  }
-
-  protected deleteFromMenu(): void {
-    const tag = this.menuTag();
-    if (tag) {
-      void this.actions.delete(tag);
-    }
-  }
-
-  private menuTag(): TagResponse | undefined {
-    const id = this.menuTagId() ?? this.menuTargetId;
-    return id === null ? undefined : this.tags.entityMap()[id];
-  }
-
-  private setMenuTag(tag: TagResponse): void {
-    this.menuTargetId = tag.id;
-    this.menuTagId.set(tag.id);
-  }
-
-  private openEditor(name: string, renamingId: string | null, adding: boolean): void {
-    this.errorState.set(null);
-    this.conflict.set(null);
-    this.model.set({ name });
-    this.renamingId.set(renamingId);
-    this.adding.set(adding);
-  }
-
-  /** Enter in the field: create or rename. A refused name keeps the field open with the reason. */
-  private async save(): Promise<undefined> {
-    if (this.saving()) {
-      return;
-    }
-    const name = normalizeTagName(this.model().name);
-    const error = this.validate(name);
-    if (error) {
-      this.errorState.set({ key: error.key, params: { max: error.max } });
-      return;
-    }
-    const renamingId = this.renamingId();
-    const previous = renamingId === null ? undefined : this.tags.entityMap()[renamingId];
-    if (previous && previous.name === name) {
-      this.cancel();
-      return;
-    }
-    this.saving.set(true);
-    this.errorState.set(null);
-    this.conflict.set(null);
-    const result = previous
-      ? await this.tags.rename(previous.id, name)
-      : await this.tags.create(name);
-    this.saving.set(false);
-    switch (result.outcome) {
-      case TAG_OUTCOME.Done:
-        if (previous) {
-          this.actions.renamed(previous.name, name);
-        } else {
-          this.toasts.show({
-            kind: TOAST_KIND.Success,
-            title: this.transloco.translate('tags.add.done', { name }),
-          });
-        }
-        this.cancel();
-        break;
-      case TAG_OUTCOME.Conflict:
-        if (previous && result.tag) {
-          this.conflict.set(result.tag);
-        } else {
-          this.errorState.set({ key: 'tags.name.exists', params: { name } });
-        }
-        break;
-      case TAG_OUTCOME.LimitReached:
-        this.errorState.set({ key: 'tags.add.limit', params: { max: TAG_LIMIT.PerUserMax } });
-        break;
-      default:
-        this.errorState.set({ key: previous ? 'tags.rename.failed' : 'tags.add.failed' });
-        break;
-    }
-    return;
-  }
-
-  /** The translation key (and its limit) of what is wrong with a new name, if anything. */
-  private validate(name: string): { key: string; max: number } | null {
-    if (name === '') {
-      return { key: 'tags.name.required', max: TAG_LIMIT.NameMax };
-    }
-    if (name.length > TAG_LIMIT.NameMax) {
-      return { key: 'tags.name.tooLong', max: TAG_LIMIT.NameMax };
-    }
-    if (!this.renamingId() && this.tags.atLimit()) {
-      return { key: 'tags.add.limit', max: TAG_LIMIT.PerUserMax };
-    }
-    return null;
   }
 }

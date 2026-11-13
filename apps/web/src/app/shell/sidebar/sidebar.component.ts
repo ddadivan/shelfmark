@@ -6,14 +6,11 @@ import {
   effect,
   inject,
   input,
-  linkedSignal,
-  signal,
   viewChild,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { PIN_KIND } from '@shelfmark/contracts';
+import { TranslocoPipe } from '@jsverse/transloco';
 import {
   BUTTON_SIZE,
   ButtonComponent,
@@ -30,18 +27,12 @@ import {
   UI_TREE_CONTEXT_MENU_TRIGGER,
   type UiTreeContextMenuEvent,
   type UiTreeNode,
-  type UiTreeReorderEvent,
 } from '@shelfmark/ui';
-import { ReorderAnnouncer } from '../../core/a11y/reorder-announcer.service';
-import { combineLatest, filter, map } from 'rxjs';
+import { filter, map } from 'rxjs';
 import { ViewportService } from '../../core/layout/viewport.service';
-import { FolderActionsService } from '../../features/folders/services/folder-actions.service';
-import { PinActionsService } from '../../features/pins/services/pin-actions.service';
 import { SidebarPinnedComponent } from '../../features/pins/components/sidebar-pinned/sidebar-pinned.component';
 import { SidebarTagsComponent } from '../../features/tags/components/sidebar-tags/sidebar-tags.component';
-import { LINKS_SCOPE } from '../../features/links/models/links-scope.const';
 import { APP_PATH } from '../../models/app-path.const';
-import type { FolderNode } from '../../stores/models/folder-node.interface';
 import { FoldersStore } from '../../stores/folders.store';
 import { PinsStore } from '../../stores/pins.store';
 import { TagsStore } from '../../stores/tags.store';
@@ -51,19 +42,15 @@ import { LinkDragService } from '../../features/links/services/link-drag.service
 import { HowItWorksService } from '../../features/how-it-works/services/how-it-works.service';
 import { FeedbackDialogService } from '../../features/feedback/services/feedback-dialog.service';
 import { HowItWorksCardComponent } from '../../features/how-it-works/components/how-it-works-card/how-it-works-card.component';
-import { SIDEBAR_RECENT_ID } from './models/sidebar-recent-id.const';
 import { SIDEBAR_FEEDBACK_ID } from './models/sidebar-feedback-id.const';
-import { SIDEBAR_TRASH_ID } from './models/sidebar-trash-id.const';
-import { sidebarActiveId } from './sidebar-active-id';
-import { SidebarTreeFocusService } from './sidebar-tree-focus.service';
-
-/** The fixed rows and their routes. */
-const FIXED_ROUTES: Readonly<Record<string, string>> = {
-  [LINKS_SCOPE.All]: APP_PATH.Links,
-  [LINKS_SCOPE.Unsorted]: APP_PATH.Unsorted,
-  [LINKS_SCOPE.Favorites]: APP_PATH.Favorites,
-  [SIDEBAR_RECENT_ID]: APP_PATH.Recent,
-};
+import { folderTreeNodes } from './utils/folder-tree-nodes';
+import { injectSidebarLabels } from './utils/inject-sidebar-labels';
+import { latched } from './utils/latched';
+import { sidebarActiveId } from './utils/sidebar-active-id';
+import { feedbackNodes, fixedNodes, trashNodes } from './utils/sidebar-nodes';
+import { sidebarRoute } from './utils/sidebar-route';
+import { SidebarFoldersService } from './services/sidebar-folders.service';
+import { SidebarTreeFocusService } from './services/sidebar-tree-focus.service';
 
 /**
  * The library sidebar, an inset card that only navigates: the logo, "All links", "Unsorted",
@@ -93,14 +80,15 @@ const FIXED_ROUTES: Readonly<Record<string, string>> = {
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
+  providers: [SidebarFoldersService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {
   protected readonly folders = inject(FoldersStore);
   private readonly trash = inject(TrashStore);
   private readonly pins = inject(PinsStore);
+  protected readonly folderMenu = inject(SidebarFoldersService);
   private readonly settings = inject(UserSettingsStore);
-  private readonly pinActions = inject(PinActionsService);
   protected readonly drag = inject(LinkDragService);
   protected readonly howItWorks = inject(HowItWorksService);
   /** "Send feedback" in the sidebar footer opens the same dialog as the account menu (#315). */
@@ -121,7 +109,6 @@ export class SidebarComponent {
    */
   readonly foldersOnly = input(false, { transform: booleanAttribute });
 
-  private readonly actions = inject(FolderActionsService);
   private readonly viewport = inject(ViewportService);
   /** Wide-screen-only blocks of the sidebar (the phone drawer and Library leave them out). */
   protected readonly phone = this.viewport.compact;
@@ -130,11 +117,9 @@ export class SidebarComponent {
     this.viewport.compact() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm,
   );
   private readonly router = inject(Router);
-  private readonly transloco = inject(TranslocoService);
   private readonly menu = viewChild.required(MenuComponent);
   private readonly tree = viewChild<TreeComponent>('folderTree');
   private readonly treeFocus = inject(SidebarTreeFocusService);
-  private readonly announcer = inject(ReorderAnnouncer);
 
   private readonly url = toSignal(
     this.router.events.pipe(
@@ -148,39 +133,9 @@ export class SidebarComponent {
     this.foldersOnly() ? 'shell.sidebar.foldersNav' : 'shell.sidebar.nav',
   );
 
-  private readonly labels = toSignal(
-    combineLatest([
-      this.transloco.selectTranslate('library.scope.all'),
-      this.transloco.selectTranslate('library.scope.unsorted'),
-      this.transloco.selectTranslate('library.scope.favorites'),
-      this.transloco.selectTranslate('shell.sidebar.folderActions', { name: '{name}' }),
-      this.transloco.selectTranslate('links.recent.title'),
-      this.transloco.selectTranslate('trash.title'),
-      this.transloco.selectTranslate('shell.sendFeedback'),
-    ]).pipe(
-      map(([all, unsorted, favorites, actions, recent, trash, feedback]) => ({
-        all,
-        unsorted,
-        favorites,
-        actions,
-        recent,
-        trash,
-        feedback,
-      })),
-    ),
-  );
+  private readonly labels = injectSidebarLabels();
   /** The "..." button name with its `{name}` placeholder; `ui-tree` fills in the folder. */
   protected readonly menuLabel = computed(() => this.labels()?.actions);
-
-  /** `id` of the folder whose menu is open (the tree shows its button as pressed). */
-  protected readonly menuNodeId = signal<string | null>(null);
-  /** The folder of the open menu is pinned to the sidebar (the menu offers Unpin). */
-  protected readonly menuPinned = computed(() => {
-    const id = this.menuNodeId();
-    return id !== null && this.pins.has(PIN_KIND.Folder, id);
-  });
-  /** The folder the menu was opened for; kept while an item is chosen and the menu closes. */
-  private menuFolderId: string | null = null;
 
   /** Counts show once the list has loaded; before that the rows have none. */
   protected readonly fixedNodes = computed<UiTreeNode[]>(() => {
@@ -191,31 +146,13 @@ export class SidebarComponent {
     // Settings › Library › Show folder counts: off drops the link counts (Trash keeps its own).
     const counts =
       this.folders.loaded() && this.settings.countsShown() ? this.folders.counts() : null;
-    return [
-      { id: LINKS_SCOPE.All, name: labels.all, icon: 'bookmark', ...count(counts?.all) },
-      {
-        id: LINKS_SCOPE.Unsorted,
-        name: labels.unsorted,
-        icon: 'inbox',
-        ...count(counts?.unsorted),
-      },
-      {
-        id: LINKS_SCOPE.Favorites,
-        name: labels.favorites,
-        icon: 'star',
-        ...count(counts?.favorites),
-      },
-      { id: SIDEBAR_RECENT_ID, name: labels.recent, icon: 'clock' },
-    ];
+    return fixedNodes(labels, counts);
   });
 
   /** "Send feedback" above the divider (not on the phone, which has it in the You list). */
   protected readonly feedbackNodes = computed<UiTreeNode[]>(() => {
     const labels = this.labels();
-    if (!labels || this.phone()) {
-      return [];
-    }
-    return [{ id: SIDEBAR_FEEDBACK_ID, name: labels.feedback, icon: 'message' }];
+    return !labels || this.phone() ? [] : feedbackNodes(labels);
   });
 
   /** Trash under the divider; its count shows once the list has loaded and only while not empty. */
@@ -225,14 +162,7 @@ export class SidebarComponent {
       return [];
     }
     const total = this.trash.total();
-    return [
-      {
-        id: SIDEBAR_TRASH_ID,
-        name: labels.trash,
-        icon: 'trash',
-        ...count(this.trash.loaded() && total > 0 ? total : undefined),
-      },
-    ];
+    return trashNodes(labels, this.trash.loaded() && total > 0 ? total : undefined);
   });
 
   /** The folder tree; the folders above the active one start open. */
@@ -246,16 +176,11 @@ export class SidebarComponent {
             .slice(0, -1)
             .map((folder) => folder.id),
     );
-    const toNode = ({ folder, children }: FolderNode): UiTreeNode => ({
-      id: folder.id,
-      name: folder.name,
-      ...(this.settings.countsShown() && { count: folder.linkCount }),
-      icon: folder.icon,
-      colour: this.settings.shownColour(folder.colour),
-      ...(open.has(folder.id) && { expanded: true }),
-      ...(children.length > 0 && { children: children.map(toNode) }),
+    return folderTreeNodes(this.folders.tree(), {
+      open,
+      countsShown: this.settings.countsShown(),
+      shownColour: (colour) => this.settings.shownColour(colour),
     });
-    return this.folders.tree().map(toNode);
   });
 
   constructor() {
@@ -277,8 +202,7 @@ export class SidebarComponent {
   }
 
   protected async select(node: UiTreeNode): Promise<void> {
-    const fixed = FIXED_ROUTES[node.id];
-    await this.router.navigate(fixed ? [`/${fixed}`] : [`/${APP_PATH.Folders}`, node.id]);
+    await this.router.navigate(sidebarRoute(node.id));
   }
 
   protected async footerSelected(node: UiTreeNode): Promise<void> {
@@ -290,8 +214,7 @@ export class SidebarComponent {
   }
 
   protected openMenu(event: UiTreeContextMenuEvent): void {
-    this.menuFolderId = event.node.id;
-    this.menuNodeId.set(event.node.id);
+    this.folderMenu.openMenuFor(event.node.id);
     if (event.trigger === UI_TREE_CONTEXT_MENU_TRIGGER.Pointer && event.position) {
       this.menu().openAt(event.position);
     } else {
@@ -308,95 +231,4 @@ export class SidebarComponent {
       this.menu().close({ restoreFocus: false });
     }
   }
-
-  /** A folder row moved among its siblings (drag or Alt+Up / Alt+Down): said, then saved. */
-  protected reorder(event: UiTreeReorderEvent): void {
-    this.announcer.announce(event.fromIndex, event.toIndex, event.total);
-    void this.actions.reorder(event.node.id, event.toIndex);
-  }
-
-  protected menuClosed(): void {
-    this.menuNodeId.set(null);
-  }
-
-  protected createTopLevel(): void {
-    void this.actions.create();
-  }
-
-  protected togglePin(): void {
-    const folder = this.menuFolder();
-    if (folder) {
-      void (this.pins.has(PIN_KIND.Folder, folder.id)
-        ? this.pinActions.unpinFolder(folder)
-        : this.pinActions.pinFolder(folder));
-    }
-  }
-
-  protected style(): void {
-    const folder = this.menuFolder();
-    if (folder) {
-      void this.actions.style(folder);
-    }
-  }
-
-  protected createSubfolder(): void {
-    const folder = this.menuFolder();
-    if (folder) {
-      void this.actions.create(folder);
-    }
-  }
-
-  protected addLinkHere(): void {
-    const folder = this.menuFolder();
-    if (folder) {
-      void this.actions.addLinkHere(folder);
-    }
-  }
-
-  protected rename(): void {
-    const folder = this.menuFolder();
-    if (folder) {
-      void this.actions.rename(folder);
-    }
-  }
-
-  protected move(): void {
-    const folder = this.menuFolder();
-    if (folder) {
-      void this.actions.move(folder);
-    }
-  }
-
-  protected share(): void {
-    const folder = this.menuFolder();
-    if (folder) {
-      void this.actions.share(folder);
-    }
-  }
-
-  protected remove(): void {
-    const folder = this.menuFolder();
-    if (folder) {
-      void this.actions.delete(folder);
-    }
-  }
-
-  private menuFolder() {
-    return this.menuFolderId === null ? undefined : this.folders.entityMap()[this.menuFolderId];
-  }
-}
-
-/**
- * True once `ready` has been true: a reload (Retry) flips `error` off for a moment and must not
- * remove a section that is already on screen (its component loads its own data when created).
- */
-function latched(ready: () => boolean) {
-  return linkedSignal<boolean, boolean>({
-    source: ready,
-    computation: (now, previous) => now || (previous?.value ?? false),
-  });
-}
-
-function count(value: number | undefined): { count: number } | Record<string, never> {
-  return value === undefined ? {} : { count: value };
 }
