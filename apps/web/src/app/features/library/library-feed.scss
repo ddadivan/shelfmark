@@ -1,0 +1,104 @@
+@use 'ui' as *;
+
+// The previous view's cards while the next one loads (stale-while-loading): fully visible (the
+// Loading spec keeps old content as it is, under the progress bar), only not clickable.
+.library__list--stale {
+  pointer-events: none;
+}
+
+// A link that was just saved (one, or a paste of many staggered by `--ui-land-delay`) lands at
+// the top: it drops in and a sage ring fades around it (`landed`; a fade under reduced motion).
+.library__landed {
+  border-radius: var(--radius-lg);
+
+  @include landed;
+}
+
+.library__rows > .library__landed {
+  border-radius: var(--radius-md);
+}
+
+.library__rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.library__folders {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0;
+  margin: 0 0 var(--space-6);
+  list-style: none;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, rem(220px)), 1fr));
+
+  // List view: one full-width row after the other, like the link rows.
+  &--rows {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+}
+
+// The same as the stale cards (`library__list--stale`) while the next view loads.
+.library__folders--stale {
+  pointer-events: none;
+}
+
+.library__more {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: center;
+  margin-top: var(--space-6);
+}
+
+.library__more-error {
+  @include type(body);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.library__notice {
+  display: block;
+  margin-bottom: var(--space-4);
+}
+
+.library__views {
+  margin-bottom: var(--space-4);
+}
+
+.library__filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.library__controls {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.library__crumbs {
+  // Over the top padding of the main column (24px on a phone) and the room above the title: 8px
+  // from the top edge, a 24px line, then the 12px gap above the title. The same space in every
+  // view. Desktop: 8px under the main column's 16px padding, so 24px under the top bar.
+  position: absolute;
+  inset-block-start: calc(var(--space-2) - var(--space-6));
+
+  @include desktop {
+    inset-block-start: var(--space-2);
+  }
+
+  inset-inline: 0;
+  display: block;
+}
+
+// Screen reader text only: "Selection mode on / off".
+.library__live {
+  @include visually-hidden;
+}

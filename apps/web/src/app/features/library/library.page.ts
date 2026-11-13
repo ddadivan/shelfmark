@@ -168,7 +168,7 @@ interface LastShown {
     SkeletonComponent,
   ],
   templateUrl: './library.page.html',
-  styleUrl: './library.page.scss',
+  styleUrls: ['./library.page.scss', './library-feed.scss', './library-selection.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '(document:keydown)': 'onKeydown($event)',
