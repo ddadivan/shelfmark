@@ -84,6 +84,27 @@ export const Accents: Story = {
   },
 };
 
+/** An own accent colour can be removed: a "×" on hover and focus (always on touch), Delete or Backspace on the focused swatch. */
+export const RemovableOwnAccent: Story = {
+  args: {
+    options: [
+      ...accents(THEME.Light),
+      {
+        value: '#a33a5b',
+        label: '#a33a5b',
+        theme: THEME_CUSTOM,
+        base: THEME.Light,
+        accent: 'own',
+        tokens: { '--accent': '#a33a5b' },
+        removeLabel: 'Remove colour #a33a5b',
+      },
+    ],
+    kind: THEME_PICKER_KIND.Accent,
+    ariaLabel: 'Accent colour',
+    value: '#a33a5b',
+  },
+};
+
 export const Backgrounds: Story = {
   args: {
     options: backgrounds(THEME.Light),

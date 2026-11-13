@@ -140,4 +140,55 @@ describe('ThemePickerComponent', () => {
     const accents = setup({ kind: THEME_PICKER_KIND.Accent, value: 'rose' }, ACCENTS);
     expect(await axeViolations(accents.host)).toEqual([]);
   });
+
+  describe('removable options (#350)', () => {
+    const OWN: ThemePickerOption[] = [
+      ...ACCENTS,
+      {
+        value: '#a33a5b',
+        label: '#a33a5b',
+        theme: 'custom',
+        base: 'light',
+        accent: 'own',
+        removeLabel: 'Remove colour #a33a5b',
+      },
+    ];
+
+    it('draws a "×" only on own options, out of the tab order, and describes the key', () => {
+      const { host, radios } = setup({ kind: THEME_PICKER_KIND.Accent }, OWN);
+
+      expect(host.querySelectorAll('.ui-theme-picker__remove')).toHaveLength(1);
+      expect(radios()[0].getAttribute('aria-keyshortcuts')).toBeNull();
+      expect(radios()[2].getAttribute('aria-description')).toBe('Remove colour #a33a5b');
+      expect(radios()[2].getAttribute('aria-keyshortcuts')).toBe('Delete Backspace');
+      const button = host.querySelector<HTMLButtonElement>('.ui-theme-picker__remove');
+      expect(button?.tabIndex).toBe(-1);
+      expect(button?.getAttribute('aria-hidden')).toBe('true');
+    });
+
+    it('emits removed for the "×" and for Delete / Backspace, never selecting the option', () => {
+      const { fixture, host, radios } = setup({ kind: THEME_PICKER_KIND.Accent }, OWN);
+      const removed: string[] = [];
+      fixture.componentInstance.removed.subscribe((value) => removed.push(value));
+
+      host.querySelector<HTMLButtonElement>('.ui-theme-picker__remove')?.click();
+      const delete_ = new KeyboardEvent('keydown', {
+        key: 'Delete',
+        bubbles: true,
+        cancelable: true,
+      });
+      radios()[2].dispatchEvent(delete_);
+      radios()[2].dispatchEvent(new KeyboardEvent('keydown', { key: 'Backspace', bubbles: true }));
+      radios()[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'Delete', bubbles: true }));
+
+      expect(removed).toEqual(['#a33a5b', '#a33a5b', '#a33a5b']);
+      expect(delete_.defaultPrevented).toBe(true);
+      expect(fixture.componentInstance.value()).toBe('');
+    });
+
+    it('has no axe violations with a removable option', async () => {
+      const { host } = setup({ kind: THEME_PICKER_KIND.Accent }, OWN);
+      expect(await axeViolations(host)).toEqual([]);
+    });
+  });
 });

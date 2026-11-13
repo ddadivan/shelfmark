@@ -1180,7 +1180,13 @@
           "use": "{{colour}} verwenden",
           "saturation": "Sättigung",
           "brightness": "Helligkeit",
-          "hue": "Farbton"
+          "hue": "Farbton",
+          "addColour": "Farbe hinzufügen",
+          "cancel": "Abbrechen",
+          "remove": "Farbe {{colour}} entfernen",
+          "removed": "Farbe entfernt",
+          "undo": "Rückgängig",
+          "removeFailed": "Farbe konnte nicht entfernt werden"
         },
         "ownBackground": {
           "label": "Deine eigene Hintergrundfarbe",

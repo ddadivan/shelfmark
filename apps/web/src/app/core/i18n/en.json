@@ -1180,7 +1180,13 @@
           "use": "Use {{colour}}",
           "saturation": "Saturation",
           "brightness": "Brightness",
-          "hue": "Hue"
+          "hue": "Hue",
+          "addColour": "Add colour",
+          "cancel": "Cancel",
+          "remove": "Remove colour {{colour}}",
+          "removed": "Colour removed",
+          "undo": "Undo",
+          "removeFailed": "Couldn’t remove the colour"
         },
         "ownBackground": {
           "label": "Your own background colour",

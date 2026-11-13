@@ -63,6 +63,7 @@
               [options]="accentOptions()"
               [value]="checkedAccent()"
               (valueChange)="setAccent($event)"
+              (removed)="removeOwnColour($event)"
             />
             <ui-color-picker
               [label]="'settings.appearance.custom.own.label' | transloco"
@@ -72,6 +73,8 @@
               [hueLabel]="'settings.appearance.custom.own.hue' | transloco"
               [hexLabel]="'settings.appearance.custom.own.hex' | transloco"
               [invalidMessage]="'settings.appearance.custom.own.invalid' | transloco"
+              [addLabel]="'settings.appearance.custom.own.addColour' | transloco"
+              [cancelLabel]="'settings.appearance.custom.own.cancel' | transloco"
               #accentPicker
               [(open)]="accentPickerOpen"
               [(value)]="pickedColour"
@@ -105,6 +108,7 @@
               [options]="backgroundOptions()"
               [value]="checkedBackground()"
               (valueChange)="setBackground($event)"
+              (removed)="removeOwnColour($event)"
             />
             <ui-color-picker
               [label]="'settings.appearance.custom.ownBackground.label' | transloco"
@@ -114,6 +118,8 @@
               [hueLabel]="'settings.appearance.custom.own.hue' | transloco"
               [hexLabel]="'settings.appearance.custom.own.hex' | transloco"
               [invalidMessage]="'settings.appearance.custom.own.invalid' | transloco"
+              [addLabel]="'settings.appearance.custom.own.addColour' | transloco"
+              [cancelLabel]="'settings.appearance.custom.own.cancel' | transloco"
               #backgroundPicker
               [(open)]="backgroundPickerOpen"
               [(value)]="pickedBackground"

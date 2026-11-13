@@ -1201,7 +1201,13 @@
           "use": "Utiliser {{colour}}",
           "saturation": "Saturation",
           "brightness": "Luminosité",
-          "hue": "Teinte"
+          "hue": "Teinte",
+          "addColour": "Ajouter la couleur",
+          "cancel": "Annuler",
+          "remove": "Supprimer la couleur {{colour}}",
+          "removed": "Couleur supprimée",
+          "undo": "Annuler",
+          "removeFailed": "Impossible de supprimer la couleur"
         },
         "ownBackground": {
           "label": "Votre couleur d'arrière-plan",

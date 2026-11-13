@@ -71,6 +71,29 @@ export const Icons: Story = {
   args: { options: ICONS, kind: CHOICE_GRID_KIND.Icon, ariaLabel: 'Icon', value: 'star' },
 };
 
+/** Own colours can be removed: a "×" on hover and focus (always on touch), Delete or Backspace on the focused swatch. */
+export const RemovableOwnColours: Story = {
+  args: {
+    options: [
+      ...SWATCHES,
+      {
+        value: '#a33a5b',
+        label: 'Own colour #a33a5b',
+        colour: '#a33a5b',
+        removeLabel: 'Remove colour #a33a5b',
+      },
+      {
+        value: '#23716c',
+        label: 'Own colour #23716c',
+        colour: '#23716c',
+        removeLabel: 'Remove colour #23716c',
+      },
+    ],
+    ariaLabel: 'Colour',
+    value: '#a33a5b',
+  },
+};
+
 /** Both kinds in light and dark. */
 export const AllVariants: Story = {
   render: () => ({

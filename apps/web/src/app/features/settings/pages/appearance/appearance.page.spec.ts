@@ -205,7 +205,12 @@ describe('AppearancePage', () => {
     const hex = page.querySelector('.ui-color-picker__hex-input') as HTMLInputElement;
     hex.value = '#23716C';
     hex.dispatchEvent(new Event('input'));
-    hex.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    // Typing only previews; "Add colour" is the explicit choice (#350).
+    (
+      page.querySelector(
+        '.ui-color-picker__actions .ui-button--primary, .ui-color-picker__actions ui-button:last-child button',
+      ) as HTMLButtonElement
+    ).click();
     await stable();
 
     expect(theme.customTheme().accent).toBe('#23716c');
@@ -237,7 +242,12 @@ describe('AppearancePage', () => {
     const hex = page.querySelector('.ui-color-picker__hex-input') as HTMLInputElement;
     hex.value = '#f5d0e0';
     hex.dispatchEvent(new Event('input'));
-    hex.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    // Typing only previews; "Add colour" is the explicit choice (#350).
+    (
+      page.querySelector(
+        '.ui-color-picker__actions .ui-button--primary, .ui-color-picker__actions ui-button:last-child button',
+      ) as HTMLButtonElement
+    ).click();
     await stable();
 
     // Not applied: the accent stays and nothing is saved.
@@ -276,7 +286,12 @@ describe('AppearancePage', () => {
     const hex = page.querySelector('.ui-color-picker__hex-input') as HTMLInputElement;
     hex.value = '#FDF6E3';
     hex.dispatchEvent(new Event('input'));
-    hex.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    // Typing only previews; "Add colour" is the explicit choice (#350).
+    (
+      page.querySelector(
+        '.ui-color-picker__actions .ui-button--primary, .ui-color-picker__actions ui-button:last-child button',
+      ) as HTMLButtonElement
+    ).click();
     await stable();
 
     expect(theme.customTheme().background).toBe('#fdf6e3');
@@ -304,7 +319,12 @@ describe('AppearancePage', () => {
     const hex = page.querySelector('.ui-color-picker__hex-input') as HTMLInputElement;
     hex.value = '#808080';
     hex.dispatchEvent(new Event('input'));
-    hex.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    // Typing only previews; "Add colour" is the explicit choice (#350).
+    (
+      page.querySelector(
+        '.ui-color-picker__actions .ui-button--primary, .ui-color-picker__actions ui-button:last-child button',
+      ) as HTMLButtonElement
+    ).click();
     await stable();
 
     expect(theme.customTheme().background).toBe(CUSTOM_THEME_DEFAULT.background);

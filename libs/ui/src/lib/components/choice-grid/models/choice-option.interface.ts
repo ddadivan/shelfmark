@@ -10,4 +10,10 @@ export interface ChoiceOption {
   readonly colour?: FolderColour | string;
   /** Icons: the glyph drawn. */
   readonly icon?: IconName;
+  /**
+   * An own option that can be deleted (an own colour): the translated action name ("Remove colour
+   * #a33a5b"). Shows a small "×" on hover and focus (always on touch); Delete or Backspace on the
+   * focused option removes it too. The grid only emits `removed`; the feature deletes it.
+   */
+  readonly removeLabel?: string;
 }

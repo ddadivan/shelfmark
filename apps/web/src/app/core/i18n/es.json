@@ -1201,7 +1201,13 @@
           "use": "Usar {{colour}}",
           "saturation": "Saturación",
           "brightness": "Brillo",
-          "hue": "Tono"
+          "hue": "Tono",
+          "addColour": "Añadir color",
+          "cancel": "Cancelar",
+          "remove": "Quitar el color {{colour}}",
+          "removed": "Color quitado",
+          "undo": "Deshacer",
+          "removeFailed": "No se pudo quitar el color"
         },
         "ownBackground": {
           "label": "Tu color de fondo",

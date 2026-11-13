@@ -10,7 +10,10 @@
       [value]="option.value"
       [checked]="value() === option.value"
       [attr.aria-label]="kind() === THEME_PICKER_KIND.Accent ? option.label : null"
+      [attr.aria-description]="option.removeLabel ?? null"
+      [attr.aria-keyshortcuts]="option.removeLabel ? 'Delete Backspace' : null"
       (change)="select(option)"
+      (keydown)="onKeydown($event, option)"
     />
     <span class="ui-theme-picker__frame" aria-hidden="true">
       @if (option.theme === SYSTEM) {
@@ -41,6 +44,18 @@
     </span>
     @if (kind() !== THEME_PICKER_KIND.Accent) {
       <span class="ui-theme-picker__label">{{ option.label }}</span>
+    }
+    @if (option.removeLabel) {
+      <!-- Pointer and touch only: the keyboard has Delete / Backspace on the radio. -->
+      <button
+        type="button"
+        class="ui-theme-picker__remove"
+        tabindex="-1"
+        aria-hidden="true"
+        (click)="remove($event, option)"
+      >
+        <ui-icon name="close" [size]="ICON_SIZE.Sm" />
+      </button>
     }
   </label>
 }

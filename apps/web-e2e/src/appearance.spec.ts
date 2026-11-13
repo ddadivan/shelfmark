@@ -80,6 +80,60 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     expect(await token(page, '--accent')).toBe('#4f7a4b');
   });
 
+  test('Cancel and Esc drop a previewed colour; own colour swatches can be removed with Delete or the ×, with Undo (#350)', async ({
+    page,
+  }, testInfo) => {
+    await openAppearance(page);
+    const html = page.locator('html');
+    await pick(page, 'Theme', 'Custom');
+    const swatch = page.getByRole('button', { name: 'Your own colour' });
+    const hex = page.getByRole('textbox', { name: 'Hex code' });
+    const add = page.getByRole('button', { name: 'Add colour', exact: true });
+
+    // Cancel: the preview goes, nothing is kept.
+    await swatch.click();
+    await hex.fill('#23716c');
+    await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+    await expect(hex).toHaveCount(0);
+    await expect(choice(page, 'Accent colour', '#23716c')).toHaveCount(0);
+    await expect(swatch.locator('.ui-color-picker__plus')).toBeVisible();
+
+    // Two own colours; the second is the accent, so the first can go.
+    await swatch.click();
+    await hex.fill('#23716c');
+    await add.click();
+    await swatch.click();
+    await hex.fill('#1d4f91');
+    await add.click();
+    await expect(choice(page, 'Accent colour', '#1d4f91')).toBeChecked();
+    const first = choice(page, 'Accent colour', '#23716c');
+    await expect(first).toBeVisible();
+
+    // The "×" shows on hover (never on the colour in use) and removes the swatch.
+    test.skip(testInfo.project.use.hasTouch === true, 'the keyboard path is checked on desktop');
+    await first.focus();
+    await page.keyboard.press('Delete');
+    await expect(first).toHaveCount(0);
+    const toast = page.getByRole('status').filter({ hasText: 'Colour removed' });
+    await expect(toast).toBeVisible();
+    // The accent in use keeps its colour and its swatch.
+    await expect(html).toHaveAttribute('data-custom-accent', 'own');
+    await expect(choice(page, 'Accent colour', '#1d4f91')).toBeChecked();
+
+    // Undo brings the swatch back.
+    await toast.getByRole('button', { name: 'Undo' }).click();
+    await expect(choice(page, 'Accent colour', '#23716c')).toBeVisible();
+
+    // The colour in use is not removable: no "×", Delete does nothing.
+    const inUse = choice(page, 'Accent colour', '#1d4f91');
+    await inUse.focus();
+    await page.keyboard.press('Delete');
+    await expect(inUse).toBeVisible();
+    await expect(
+      page.getByRole('radiogroup', { name: 'Accent colour' }).locator('.ui-theme-picker__remove'),
+    ).toHaveCount(1);
+  });
+
   test('an own accent colour: a readable one applies at once, a faint one gets a passing shade', async ({
     page,
   }) => {
@@ -94,9 +148,13 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     await expect(hex).toBeFocused();
     await expect(page.getByLabel('Choose a colour')).toBeVisible();
 
-    // Readable on Paper: it is the accent right away.
+    // Typing only previews: nothing is applied or kept until "Add colour" (#350).
     await hex.fill('#23716c');
     await hex.press('Enter');
+    await expect(html).not.toHaveAttribute('data-custom-accent', 'own');
+    await expect(choice(page, 'Accent colour', '#23716c')).toHaveCount(0);
+    // Readable on Paper: it is the accent as soon as it is added.
+    await page.getByRole('button', { name: 'Add colour', exact: true }).click();
     await expect(html).toHaveAttribute('data-custom-accent', 'own');
     expect(await token(page, '--accent')).toBe('#23716c');
     await expect(choice(page, 'Accent colour', 'Ocean')).not.toBeChecked();
@@ -111,6 +169,7 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     await expect(hex).toBeFocused();
     await hex.fill('#f5d0e0');
     await hex.press('Enter');
+    await page.getByRole('button', { name: 'Add colour', exact: true }).click();
     await expect(page.getByText(/hard to read on your background/u)).toBeVisible();
     expect(await token(page, '--accent')).toBe('#23716c');
     const use = page.getByRole('button', { name: /^Use #[0-9a-f]{6}$/u });

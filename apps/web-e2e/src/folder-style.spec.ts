@@ -122,6 +122,9 @@ test.describe('folder style and pins (mock API)', () => {
     await expect(dialog.getByRole('slider', { name: 'Hue' })).toBeVisible();
     await hex.fill('#3a7bd5');
     await hex.press('Enter');
+    // Typing only previews; the explicit button keeps and chooses the colour (#350).
+    await expect(dialog.getByRole('radio', { name: 'Your colour #3a7bd5' })).toHaveCount(0);
+    await dialog.getByRole('button', { name: 'Add colour', exact: true }).click();
     await expect(dialog.getByRole('radio', { name: 'Your colour #3a7bd5' })).toBeChecked();
     await expect(hex).toHaveCount(0);
 
@@ -138,6 +141,36 @@ test.describe('folder style and pins (mock API)', () => {
     await openSidebar(page);
     await expect(page.locator('.ui-folder-icon--own').first()).toBeVisible();
     await expect(page.locator('.ui-folder-icon__emoji').first()).toHaveText('🍕');
+  });
+
+  test('an own colour swatch is removed with Delete, with Undo; the folder keeps the colour it wears (#350)', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.use.hasTouch === true, 'the keyboard path is checked on desktop');
+    await pickFolderMenuItem(page, READING, 'Colour and icon…');
+    const dialog = page.getByRole('dialog', { name: READING });
+    const plus = dialog.getByRole('button', { name: 'Add your own colour' });
+    const hex = dialog.getByRole('textbox', { name: 'Hex code' });
+    for (const colour of ['#3a7bd5', '#1d4f91']) {
+      await plus.click();
+      await hex.fill(colour);
+      await dialog.getByRole('button', { name: 'Add colour', exact: true }).click();
+      await expect(hex).toHaveCount(0);
+    }
+    const first = dialog.getByRole('radio', { name: 'Your colour #3a7bd5' });
+    const second = dialog.getByRole('radio', { name: 'Your colour #1d4f91' });
+    await expect(second).toBeChecked();
+
+    await first.focus();
+    await page.keyboard.press('Delete');
+    await expect(first).toHaveCount(0);
+    // The colour the folder wears stays, and has no "×".
+    await expect(second).toBeChecked();
+    await expect(dialog.locator('.ui-choice__remove')).toHaveCount(1);
+    const toast = page.getByRole('status').filter({ hasText: 'Colour removed' });
+    await expect(toast).toBeVisible();
+    await toast.getByRole('button', { name: 'Undo' }).click();
+    await expect(first).toBeVisible();
   });
 
   test('the icon grid shows four full rows, a toggle expands every icon, no inner scroll (#335)', async ({

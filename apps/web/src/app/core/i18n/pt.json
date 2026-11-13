@@ -1201,7 +1201,13 @@
           "use": "Usar {{colour}}",
           "saturation": "Saturação",
           "brightness": "Brilho",
-          "hue": "Matiz"
+          "hue": "Matiz",
+          "addColour": "Adicionar cor",
+          "cancel": "Cancelar",
+          "remove": "Remover a cor {{colour}}",
+          "removed": "Cor removida",
+          "undo": "Desfazer",
+          "removeFailed": "Não foi possível remover a cor"
         },
         "ownBackground": {
           "label": "Sua cor de fundo",

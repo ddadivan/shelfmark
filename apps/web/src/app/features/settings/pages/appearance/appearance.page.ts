@@ -64,6 +64,8 @@ import {
 import type { Appearance } from '../../../../core/theme/models/appearance.type';
 import { LocaleService } from '../../../../core/i18n/locale.service';
 import { ThemeService } from '../../../../core/theme/theme.service';
+import { OwnColourActionsService } from '../../../../core/colours/own-colour-actions.service';
+import { activeLang } from '../../../../core/i18n/active-lang';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import type { AccentWarning } from '../../models/accent-warning.interface';
 import { THEME_OPTION_KEYS } from '../../models/theme-option-keys.const';
@@ -115,6 +117,7 @@ export default class AppearancePage {
   protected readonly settings = inject(UserSettingsStore);
   private readonly transloco = inject(TranslocoService);
   private readonly toasts = inject(ToastService);
+  private readonly ownColours = inject(OwnColourActionsService);
   private readonly locale = inject(LocaleService);
 
   /** Changes when the translations load, so the labels below are computed again. */
@@ -157,6 +160,7 @@ export default class AppearancePage {
         base,
         accent: CUSTOM_ACCENT_OWN,
         tokens: { ...customAccentTokens(colour, base, background) },
+        ...this.removable(colour),
       }),
     );
     return [...curated, ...own];
@@ -209,6 +213,7 @@ export default class AppearancePage {
         base,
         background: CUSTOM_BACKGROUND_OWN,
         tokens: { ...customBackgroundTokens(colour, base) },
+        ...this.removable(colour),
       }),
     );
     return [...curated, ...own];
@@ -410,6 +415,22 @@ export default class AppearancePage {
   private closeBackgroundPicker(): void {
     this.backgroundPickerOpen.set(false);
     this.backgroundPicker()?.clear();
+  }
+
+  /**
+   * The remove action of an own swatch (#350): only for colours the account lists. The colour the
+   * theme wears but the account does not list keeps its swatch (it is in use).
+   */
+  private removable(colour: string): Pick<ThemePickerOption, 'removeLabel'> {
+    activeLang();
+    return isHexColour(colour) && this.settings.customColours().includes(colour)
+      ? { removeLabel: this.ownColours.removeLabel(colour) }
+      : {};
+  }
+
+  /** The swatch of an own colour was removed: forgotten from the account, with an Undo toast. */
+  protected removeOwnColour(colour: string): void {
+    void this.ownColours.remove(colour);
   }
 
   /** The own colours, with the chosen one added when the account does not list it (yet). */

@@ -115,4 +115,68 @@ describe('ChoiceGridComponent', () => {
   ])('has no axe violations (%s)', async (_name, inputs, options) => {
     expect(await axeViolations(setup(inputs, options).host)).toEqual([]);
   });
+
+  describe('removable options (#350)', () => {
+    const OWN: ChoiceOption[] = [
+      ...SWATCHES,
+      {
+        value: '#a33a5b',
+        label: 'Own colour #a33a5b',
+        colour: '#a33a5b',
+        removeLabel: 'Remove colour #a33a5b',
+      },
+      {
+        value: '#23716c',
+        label: 'Own colour #23716c',
+        colour: '#23716c',
+        removeLabel: 'Remove colour #23716c',
+      },
+    ];
+
+    it('draws a "×" only on options with a removeLabel and describes the key', () => {
+      const { host, radios } = setup({}, OWN);
+
+      expect(host.querySelectorAll('.ui-choice__remove')).toHaveLength(2);
+      expect(radios()[0].getAttribute('aria-keyshortcuts')).toBeNull();
+      expect(radios()[3].getAttribute('aria-description')).toBe('Remove colour #a33a5b');
+      expect(radios()[3].getAttribute('aria-keyshortcuts')).toBe('Delete Backspace');
+      // Pointer only: out of the tab order and hidden from assistive technology.
+      const button = host.querySelector<HTMLButtonElement>('.ui-choice__remove');
+      expect(button?.tabIndex).toBe(-1);
+      expect(button?.getAttribute('aria-hidden')).toBe('true');
+    });
+
+    it('emits removed for the "×" without selecting the option', () => {
+      const { fixture, host } = setup({}, OWN);
+      const removed: string[] = [];
+      fixture.componentInstance.removed.subscribe((value) => removed.push(value));
+
+      host.querySelectorAll<HTMLButtonElement>('.ui-choice__remove')[1].click();
+
+      expect(removed).toEqual(['#23716c']);
+      expect(fixture.componentInstance.value()).toBe('');
+    });
+
+    it('Delete and Backspace on a focused own option remove it; other options ignore them', () => {
+      const { fixture, radios } = setup({}, OWN);
+      const removed: string[] = [];
+      fixture.componentInstance.removed.subscribe((value) => removed.push(value));
+      const press = (radio: HTMLInputElement, key: string): KeyboardEvent => {
+        const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true });
+        radio.dispatchEvent(event);
+        return event;
+      };
+
+      expect(press(radios()[3], 'Delete').defaultPrevented).toBe(true);
+      press(radios()[4], 'Backspace');
+      expect(press(radios()[0], 'Delete').defaultPrevented).toBe(false);
+
+      expect(removed).toEqual(['#a33a5b', '#23716c']);
+    });
+
+    it('has no axe violations with removable options', async () => {
+      const { host } = setup({}, OWN);
+      expect(await axeViolations(host)).toEqual([]);
+    });
+  });
 });
