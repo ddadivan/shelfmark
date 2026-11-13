@@ -2,6 +2,7 @@ import { type Locator, type Page } from '@playwright/test';
 import { COLOR_SCHEME } from './models/color-scheme.const';
 import { openFeed } from './support/a11y-flows';
 import { expectNoBlockingViolations } from './support/axe';
+import { makePageTall, scrollMainTo, SHELL_MAIN } from './support/scroll';
 import { settled } from './support/settled';
 import { viewEntry } from './support/sidebar';
 import { expect, test } from './support/test';
@@ -17,6 +18,25 @@ const bar = (page: Page): Locator =>
 const barButton = (page: Page, name: string): Locator =>
   bar(page).getByRole('button', { name, exact: true });
 const selectedText = (page: Page): Locator => page.locator('.library__selected');
+
+/** The toast sits exactly 12px above the visible bulk bar (#350, #352), within 1px. */
+async function expectToastGap(page: Page, toast: Locator): Promise<void> {
+  await expect
+    .poll(async () => {
+      const toastBox = await toast.boundingBox();
+      const barBox = await bar(page).boundingBox();
+      return Math.abs((barBox?.y ?? 0) - ((toastBox?.y ?? 0) + (toastBox?.height ?? 0)) - 12);
+    })
+    .toBeLessThanOrEqual(1);
+}
+
+/** Scrolls `selector` to `top` (`'end'` for its bottom). String script: no DOM lib here. */
+async function scrollAreaTo(page: Page, selector: string, top: number | 'end'): Promise<void> {
+  const to = top === 'end' ? 'el.scrollHeight' : String(top);
+  await page.evaluate(
+    `(() => { const el = document.querySelector('${selector}'); el.scrollTo(0, ${to}); })()`,
+  );
+}
 
 async function cardTitle(card: Locator): Promise<string> {
   return ((await card.locator('.ui-card__link').textContent()) ?? '').trim();
@@ -240,6 +260,24 @@ test.describe('select links and bulk actions (mock API)', () => {
       await button.click();
       await expect(page.getByText('2 links removed from favorites')).toBeVisible();
       await expect(button).toHaveAttribute('aria-pressed', 'false');
+    });
+
+    test('the toast stays 12px above the bar while the feed scrolls (#352)', async ({ page }) => {
+      // The mock feed is long enough to scroll the feed area on its own.
+      await openFeed(page);
+      await pick(page, 0);
+      await barButton(page, 'Favorite').click();
+      const toast = page.locator('ui-toast').filter({ hasText: /favorites/ });
+      await expect(toast).toBeVisible();
+      await settled(page);
+      await expectToastGap(page, toast);
+
+      await scrollAreaTo(page, '.library__scroll', 700);
+      await expectToastGap(page, toast);
+      await scrollAreaTo(page, '.library__scroll', 'end');
+      await expectToastGap(page, toast);
+      await scrollAreaTo(page, '.library__scroll', 0);
+      await expectToastGap(page, toast);
     });
 
     test('a toast is centred on the content area, like the bulk bar (#352)', async ({ page }) => {
@@ -518,6 +556,26 @@ test.describe('select links and bulk actions (mock API)', () => {
       // Exactly 12px above the bar (#352).
       const gap = (barBox?.y ?? 0) - ((toastBox?.y ?? 0) + (toastBox?.height ?? 0));
       expect(Math.abs(gap - 12)).toBeLessThanOrEqual(1);
+    });
+
+    test('the toast stays 12px above the bar while the main column scrolls (#352)', async ({
+      page,
+    }) => {
+      await openFeed(page);
+      await makePageTall(page, 3000);
+      await longPress(page, cards(page).nth(0));
+      await barButton(page, 'Favorite').click();
+      const toast = page.locator('ui-toast').filter({ hasText: /from favorites|to favorites/ });
+      await expect(toast).toBeVisible();
+      await settled(page);
+      await expectToastGap(page, toast);
+
+      await scrollMainTo(page, 700);
+      await expectToastGap(page, toast);
+      await scrollAreaTo(page, SHELL_MAIN, 'end');
+      await expectToastGap(page, toast);
+      await scrollMainTo(page, 0);
+      await expectToastGap(page, toast);
     });
   });
 

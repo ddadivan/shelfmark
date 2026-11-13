@@ -67,7 +67,11 @@ export class ToastAreaService {
     return () => this.bars.update((bars) => bars.filter((b) => b !== bar));
   }
 
-  /** Measures the bar on every change of its box, the window and the scroll, and on its entrance. */
+  /**
+   * Measures the bar on every change of its box and the window, and after its entrance. Scrolling
+   * needs no listener: the bar is sticky at the bottom of its scroll area, so its place on screen
+   * only changes with a box or window size (the ResizeObserver).
+   */
   private watchBar(bar: HTMLElement): () => void {
     const view = this.root.ownerDocument.defaultView;
     let frame = 0;
@@ -94,7 +98,6 @@ export class ToastAreaService {
     const host = bar.parentElement ?? bar;
     events.forEach((type) => host.addEventListener(type, schedule));
     view?.addEventListener('resize', schedule);
-    view?.addEventListener('scroll', schedule, { capture: true, passive: true });
     measure();
     return () => {
       if (frame) {
@@ -103,7 +106,6 @@ export class ToastAreaService {
       observer?.disconnect();
       events.forEach((type) => host.removeEventListener(type, schedule));
       view?.removeEventListener('resize', schedule);
-      view?.removeEventListener('scroll', schedule, { capture: true });
       this.root.style.removeProperty(OFFSET);
     };
   }
