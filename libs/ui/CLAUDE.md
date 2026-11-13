@@ -15,10 +15,11 @@ libs/ui/
   .storybook/            main.ts, preview.ts, foundations.scss and illustration-stories.scss (styles of the docs pages and stories only)
   src/
     index.ts             public API, re-exports only
+    testing/index.ts     test entry `@shelfmark/ui/testing`: the component harnesses only (specs; never in index.ts)
     icons/               one SVG per icon (source); assets/icons/sprite.svg is generated from it (served as /assets/ui/icons/sprite.svg)
     styles/              _functions, _media, _breakpoints, _focus, _utilities, _motion, _typography, tokens/*, _ui (Sass API), global.scss
     foundations/         Storybook "Foundations" docs stories (colours, type, spacing, motion, ...); not exported
-    testing/axe.ts       axe-core helper for specs
+    testing/axe.ts       axe-core helper for specs (internal, with scss.ts; not exported)
     lib/                 by kind (ADR 0042, #318); each folder: files, spec, stories, index.ts, models/
       components/<name>/ one component per folder; sub-components in sub-folders (components/menu/menu-item/)
       directives/<name>/ ripple, long-press, pointer-shadow, tooltip (panel in tooltip/tooltip-panel/), menu-trigger, focus-target
@@ -28,7 +29,7 @@ libs/ui/
 ```
 
 - A helper used by one component stays in its folder (`select-rows.ts`, `sheet-drag.ts`); it moves to `utils/` when a second user appears. A component and the service that opens it live apart (`components/dialog/`, `services/dialog/`); a model goes with the side that uses it, a union type next to its `as const` object.
-- `src/index.ts` re-exports one `index.ts` per top folder, grouped by kind; `@shelfmark/ui` is the only public entry.
+- `src/index.ts` re-exports one `index.ts` per top folder, grouped by kind; `@shelfmark/ui` is the only public entry for app code. Specs also have `@shelfmark/ui/testing` (Harnesses, below).
 
 ## Component rules
 
@@ -337,6 +338,14 @@ The "Readable" font of Settings › Appearance (#285) is Atkinson Hyperlegible, 
 
 - Vitest through `@angular/build:unit-test`; coverage thresholds 80% (statements, branches, functions, lines).
 - Every component spec checks variants/host classes, inputs and outputs, keyboard where relevant, disabled behaviour, and runs axe with `axeViolations()` from `src/testing/axe.ts` (colour contrast is off in jsdom; Storybook covers it).
+
+## Harnesses (#349)
+
+- Angular CDK component harnesses (`@angular/cdk/testing`) for the shared interactive components live next to them: `components/<name>/testing/<name>.harness.ts` (sub-harnesses beside it, for example `menu-item.harness.ts`, `tree-item.harness.ts`, `choice.harness.ts`; `select/testing/option.harness.ts` is shared by select, tag-input and command-list), filter interfaces and slot constants in `testing/models/`, and a `<name>.harness.spec.ts` that drives the harness against a small TestBed host with `TestbedHarnessEnvironment`.
+- Existing: button, menu / menu item, select / option, dialog, sheet, tree / tree item, card, command-list, tag-input, choice-grid / choice, color-picker (APIs in `docs/test-rebalance-349.md` 4.1). A new interactive component that features test gets one.
+- Rules: `hostSelector` is the component selector (a row harness may use a role, `ui-tree [role="treeitem"]`); a static `with()` returns a `HarnessPredicate` with the filters users need (text, label, name, disabled, ...); methods are user actions and states (click, open, choose, isDisabled, getText), never raw `TestElement`s of the inner DOM; content-projecting components extend `ContentContainerComponentHarness` (areas as an `as const` slot map, `DIALOG_HARNESS_SLOT`, `CARD_HARNESS_SLOT`). Overlay content is reached with `documentRootLocatorFactory()`, through `aria-controls` where the component writes it.
+- Export each harness and its types from `src/testing/index.ts`, never from `src/index.ts`. `tsconfig.lib.json` excludes every `testing/` folder and lint bans `@shelfmark/ui/testing` outside specs and `testing/` folders, so harnesses never reach a bundle. `**/testing/**` is outside the coverage count; the harness specs still run.
+- Component specs may keep querying their own DOM (they test the internals); specs of composites (a component that uses another one) and app specs use the harnesses. E2e stays on role locators (ADR 0043, D6).
 
 ## Commands
 

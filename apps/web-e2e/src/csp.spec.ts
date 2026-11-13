@@ -3,9 +3,10 @@ import { expect, test } from './support/test';
 import { buildCsp, createCspMiddleware } from '@shelfmark/web-csp';
 import { LANDING_HEADLINE } from './models/landing-headline.const';
 import { isCiBuild } from './support/build-mode';
-import { readCsp, readVercelConfig } from './support/vercel-config';
 
-const staticCsp = readCsp(readVercelConfig());
+// vercel.json carries this policy for files; apps/web/src/config-checks/deploy-config.spec.ts
+// checks that it equals the lib (#349).
+const staticCsp = buildCsp(null);
 const deployedUrl = process.env['BASE_URL'];
 const isProductionBuild = isCiBuild();
 const deepLink = '/folders/does-not-matter';

@@ -1,7 +1,12 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { axeViolations } from '../../../testing/axe';
 import { ButtonComponent } from '../../components/button/button.component';
+import { BUTTON_VARIANT } from '../../components/button/models/button-variant.const';
+import { UiButtonHarness } from '../../components/button/testing/button.harness';
+import { UiDialogHarness } from '../../components/dialog/testing/dialog.harness';
+import { DIALOG_HARNESS_SLOT } from '../../components/dialog/testing/models/dialog-harness-slot.const';
 import { DialogComponent } from '../../components/dialog/dialog.component';
 import { UiDialogRef } from './dialog-ref';
 import { DialogService } from './dialog.service';
@@ -85,6 +90,16 @@ function button(label: string): HTMLButtonElement {
     throw new Error(`no button "${label}"`);
   }
   return found;
+}
+
+/** An empty root view: harness environments need a fixture; dialogs live in the overlay. */
+@Component({ template: '', changeDetection: ChangeDetectionStrategy.OnPush })
+class RootComponent {}
+
+async function openDialog(): Promise<UiDialogHarness> {
+  return TestbedHarnessEnvironment.documentRootLoader(
+    TestBed.createComponent(RootComponent),
+  ).getHarness(UiDialogHarness);
 }
 
 function press(key: string): void {
@@ -480,29 +495,32 @@ describe('DialogService', () => {
         expect(document.activeElement).toBe(button('Delete folder'));
       });
       const root = container();
-      expect(root.getAttribute('role')).toBe('dialog');
-      expect(root.querySelector('h2')?.textContent).toBe(confirmConfig.title);
+      const dialog = await openDialog();
+      expect(await dialog.getRole()).toBe('dialog');
+      expect(await dialog.getTitle()).toBe(confirmConfig.title);
+      expect(await dialog.getBodyText()).toBe(confirmConfig.message);
       const text = root.querySelector('.ui-confirm-dialog__text');
-      expect(text?.textContent).toBe(confirmConfig.message);
       expect(root.getAttribute('aria-describedby')).toBe(text?.id);
-      expect(root.querySelector('.ui-button--primary')).not.toBeNull();
-      // Cancel sits left of the main action.
-      const buttons = Array.from(root.querySelectorAll('.ui-dialog__foot button'));
-      expect(buttons.map((element) => element.textContent.trim())).toEqual([
+      // Cancel sits left of the main action, which is the primary button.
+      const footer = await dialog.getChildLoader(DIALOG_HARNESS_SLOT.Footer);
+      const buttons = await footer.getAllHarnesses(UiButtonHarness);
+      expect(await Promise.all(buttons.map((b) => b.getText()))).toEqual([
         'Cancel',
         'Delete folder',
       ]);
+      expect(await buttons[1]?.getVariant()).toBe(BUTTON_VARIANT.Primary);
       expect(await axeViolations(root)).toEqual([]);
-      button('Cancel').click();
+      await buttons[0]?.click();
       await closed();
       expect(await answer).toBe(false);
     });
 
     it('omits the close button without a closeLabel', async () => {
       const answer = service.confirm({ ...confirmConfig, closeLabel: undefined });
-      settle();
-      expect(container().querySelectorAll('button').length).toBe(2);
-      button('Cancel').click();
+      const dialog = await openDialog();
+      expect(await dialog.hasCloseButton()).toBe(false);
+      expect(await dialog.getAllHarnesses(UiButtonHarness)).toHaveLength(2);
+      await (await dialog.getHarness(UiButtonHarness.with({ text: 'Cancel' }))).click();
       await closed();
       await answer;
     });
@@ -528,8 +546,10 @@ describe('DialogService', () => {
 
     it('destructive: the confirm button still resolves true', async () => {
       const answer = service.confirm({ ...confirmConfig, destructive: true });
-      settle();
-      button('Delete folder').click();
+      const dialog = await openDialog();
+      const confirm = await dialog.getHarness(UiButtonHarness.with({ text: 'Delete folder' }));
+      expect(await confirm.getVariant()).toBe(BUTTON_VARIANT.Danger);
+      await confirm.click();
       await closed();
       expect(await answer).toBe(true);
     });

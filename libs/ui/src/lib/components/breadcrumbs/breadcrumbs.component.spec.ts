@@ -1,8 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
+import { TestKey } from '@angular/cdk/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { UiButtonHarness } from '../button/testing/button.harness';
+import { UiMenuHarness } from '../menu/testing/menu.harness';
 import { axeViolations } from '../../../testing/axe';
-import { KEYBOARD_KEY } from '../../models/keyboard';
 import { BreadcrumbsComponent } from './breadcrumbs.component';
 import { breadcrumbTrail } from './breadcrumbs-trail';
 import type { BreadcrumbClick } from './models/breadcrumb-click.interface';
@@ -67,7 +70,12 @@ function setup(items: readonly BreadcrumbItem[] = SHORT, phone = false) {
     [...root.querySelectorAll('.ui-crumbs__item')].map(
       (li) => li.querySelector('a, .ui-crumbs__current, button')?.textContent?.trim() || '…',
     );
-  return { fixture, root, media, labels };
+  const loader = TestbedHarnessEnvironment.documentRootLoader(fixture);
+  const fold = () => loader.getHarness(UiButtonHarness.with({ label: 'Show hidden folders' }));
+  const menu = () => loader.getHarness(UiMenuHarness.with({ label: 'Show hidden folders' }));
+  const menuLabels = async () =>
+    Promise.all((await (await menu()).getItems()).map((item) => item.getText()));
+  return { fixture, root, media, labels, loader, fold, menu, menuLabels };
 }
 
 describe('BreadcrumbsComponent', () => {
@@ -95,17 +103,18 @@ describe('BreadcrumbsComponent', () => {
     expect(seps.every((s) => s.getAttribute('aria-hidden') === 'true')).toBe(true);
   });
 
-  it('shows every level up to maxItems', () => {
-    const { labels, root } = setup();
+  it('shows every level up to maxItems', async () => {
+    const { labels, root, loader } = setup();
     expect(labels()).toEqual(['All links', 'Work', 'Angular']);
     expect(root.querySelector('button')).toBeNull();
+    expect(await loader.getAllHarnesses(UiButtonHarness)).toHaveLength(0);
   });
 
-  it('folds the middle levels into a "…" menu button', () => {
-    const { labels, root } = setup(DEEP);
+  it('folds the middle levels into a "…" menu button', async () => {
+    const { labels, root, fold } = setup(DEEP);
     expect(labels()).toEqual(['All links', '…', 'Design', 'Angular']);
+    expect(await (await fold()).getName()).toBe('Show hidden folders');
     const button = root.querySelector('button') as HTMLButtonElement;
-    expect(button.getAttribute('aria-label')).toBe('Show hidden folders');
     expect(button.getAttribute('aria-haspopup')).toBe('menu');
   });
 
@@ -119,35 +128,26 @@ describe('BreadcrumbsComponent', () => {
     expect(labels()).toHaveLength(6);
   });
 
-  it('opens the menu with the folded levels and emits the chosen one without an event', () => {
-    const { fixture, root } = setup(DEEP);
-    (root.querySelector('button') as HTMLButtonElement).click();
-    fixture.detectChanges();
-    TestBed.tick();
-    const items = [...document.querySelectorAll<HTMLElement>('[role="menuitem"]')];
-    expect(items.map((i) => i.textContent?.trim())).toEqual(['Work', 'Clients', 'Acme']);
-    items[1].click();
-    fixture.detectChanges();
+  it('opens the menu with the folded levels and emits the chosen one without an event', async () => {
+    const { fixture, fold, menu, menuLabels } = setup(DEEP);
+    await (await fold()).click();
+    expect(await menuLabels()).toEqual(['Work', 'Clients', 'Acme']);
+    await (await menu()).clickItem({ text: 'Clients' });
     expect(fixture.componentInstance.clicks).toEqual([{ item: DEEP[2], event: null }]);
   });
 
-  it('opens the menu with ArrowDown on the "…" button', () => {
-    const { fixture, root } = setup(DEEP);
-    (root.querySelector('button') as HTMLButtonElement).dispatchEvent(
-      new KeyboardEvent('keydown', { key: KEYBOARD_KEY.ArrowDown, bubbles: true }),
-    );
-    fixture.detectChanges();
-    TestBed.tick();
-    expect(document.querySelectorAll('[role="menuitem"]')).toHaveLength(3);
+  it('opens the menu with ArrowDown on the "…" button', async () => {
+    const { fold, menu, menuLabels } = setup(DEEP);
+    await (await fold()).sendKeys(TestKey.DOWN_ARROW);
+    expect(await (await menu()).isOpen()).toBe(true);
+    expect(await menuLabels()).toHaveLength(3);
   });
 
-  it('on a phone shows "…", the parent and the current level; the root joins the menu', () => {
-    const { labels, root, fixture } = setup(DEEP, true);
+  it('on a phone shows "…", the parent and the current level; the root joins the menu', async () => {
+    const { labels, fold, menuLabels } = setup(DEEP, true);
     expect(labels()).toEqual(['…', 'Design', 'Angular']);
-    (root.querySelector('button') as HTMLButtonElement).click();
-    fixture.detectChanges();
-    TestBed.tick();
-    expect(document.querySelectorAll('[role="menuitem"]')).toHaveLength(4);
+    await (await fold()).click();
+    expect(await menuLabels()).toHaveLength(4);
   });
 
   it('on a phone with two levels shows both, no "…"', () => {

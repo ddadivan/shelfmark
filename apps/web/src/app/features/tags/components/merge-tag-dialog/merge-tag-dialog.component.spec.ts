@@ -1,6 +1,9 @@
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { MOCK_ID, MOCK_NAME } from '@shelfmark/contracts/testing';
 import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
+import { UiButtonHarness, UiDialogHarness, UiSelectHarness } from '@shelfmark/ui/testing';
 import axe from 'axe-core';
 import { TagsStore } from '../../../../stores/tags.store';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
@@ -10,6 +13,10 @@ import { MockLinksApi } from '../../../links/mock/mock-links.api';
 import { MockTagsApi } from '../../../links/mock/mock-tags.api';
 import type { MergeTagDialogData } from '../../models/merge-tag-dialog-data.interface';
 import { MergeTagDialogComponent } from './merge-tag-dialog.component';
+
+/** An empty root view: the harness environment needs a fixture; the dialog itself is an overlay. */
+@Component({ template: '', changeDetection: ChangeDetectionStrategy.OnPush })
+class RootComponent {}
 
 async function setup(submit: MergeTagDialogData['submit'] = () => Promise.resolve(true)) {
   TestBed.configureTestingModule({
@@ -35,7 +42,13 @@ async function setup(submit: MergeTagDialogData['submit'] = () => Promise.resolv
   await until(() => {
     expect(root()).not.toBeNull();
   });
-  return { ref, submitSpy, store };
+  const loader = TestbedHarnessEnvironment.documentRootLoader(
+    TestBed.createComponent(RootComponent),
+  );
+  const harness = await loader.getHarness(UiDialogHarness);
+  const select = await harness.getHarness(UiSelectHarness);
+  const merge = await harness.getHarness(UiButtonHarness.with({ text: 'Merge' }));
+  return { ref, submitSpy, store, harness, select, merge };
 }
 
 function root(): HTMLElement | null {
@@ -60,16 +73,6 @@ async function until(check: () => void): Promise<void> {
   );
 }
 
-function button(label: string): HTMLButtonElement {
-  const found = [...dialog().querySelectorAll('button')].find(
-    (b) => b.textContent?.trim() === label,
-  );
-  if (!found) {
-    throw new Error(`no button ${label}`);
-  }
-  return found;
-}
-
 afterEach(() => {
   document.querySelectorAll('.cdk-overlay-container').forEach((el) => {
     el.replaceChildren();
@@ -78,21 +81,19 @@ afterEach(() => {
 
 describe('MergeTagDialogComponent', () => {
   it('names the tag and offers every other tag, not the source', async () => {
-    await setup();
+    const { harness, select } = await setup();
 
-    expect(dialog().textContent).toContain(`Merge “${MOCK_NAME.TagDocs}”`);
-    dialog().querySelector<HTMLElement>('ui-select button, ui-select [role="combobox"]')?.click();
-    await until(() => {
-      const options = [...document.querySelectorAll('[role="option"]')].map((o) => o.textContent);
-      expect(options.some((text) => text?.includes(MOCK_NAME.TagRecipes))).toBe(true);
-      expect(options.some((text) => text?.trim() === MOCK_NAME.TagDocs)).toBe(false);
-    });
+    expect(await harness.getTitle()).toContain(`Merge “${MOCK_NAME.TagDocs}”`);
+    await select.open();
+    const options = await Promise.all((await select.getOptions()).map((o) => o.getText()));
+    expect(options.some((text) => text.includes(MOCK_NAME.TagRecipes))).toBe(true);
+    expect(options.some((text) => text === MOCK_NAME.TagDocs)).toBe(false);
   });
 
   it('asks for a target before merging and sends nothing without one', async () => {
-    const { submitSpy } = await setup();
+    const { submitSpy, merge } = await setup();
 
-    button('Merge').click();
+    await merge.click();
 
     await until(() => {
       expect(dialog().textContent).toContain('Choose a tag to merge into');
@@ -101,22 +102,18 @@ describe('MergeTagDialogComponent', () => {
   });
 
   it('stays open with an error when the merge fails', async () => {
-    const { ref } = await setup(() => Promise.resolve(false));
-    const selectHost = dialog().querySelector('ui-select');
-    expect(selectHost).not.toBeNull();
-    // Choose through the form model of the dialog component.
+    const { ref, select, merge, submitSpy } = await setup(() => Promise.resolve(false));
     const closed = vi.fn();
     void ref.result.then(closed);
 
-    const instance = ref.componentInstance as unknown as {
-      form: { targetId: () => { value: { set: (value: string) => void } } };
-    };
-    instance.form.targetId().value.set(MOCK_ID.TagRecipes);
-    button('Merge').click();
+    await select.chooseOption({ text: MOCK_NAME.TagRecipes });
+    expect(await select.getValueText()).toBe(MOCK_NAME.TagRecipes);
+    await merge.click();
 
     await until(() => {
       expect(dialog().textContent).toContain('Couldn’t merge the tags'.replace('’', "'"));
     });
+    expect(submitSpy).toHaveBeenCalledWith(MOCK_ID.TagRecipes);
     expect(closed).not.toHaveBeenCalled();
   });
 
