@@ -47,6 +47,7 @@ libs/ui/
 - Class names are BEM (`ui-button--primary`, `ui-icon__svg`).
 - `:hover` only through the `hover` mixin (`@media (hover: hover)`); `:focus-visible` uses `@include focus-ring`; wrap movement and scale in `@include reduced-motion`.
 - Type styles come from the `type($style)` mixin (display, title, heading, body, label, caption, mono); there are no global type classes.
+- **Scale properties (#352):** unitless custom properties (default 1) that a feature sets on an ancestor to show a component bigger without new variants (the landing uses them instead of `zoom`): `--ui-button-scale` multiplies the box, padding, gap, text and icons of every `ui-button` size (it passes itself on as `--ui-icon-scale`); `--ui-icon-scale` multiplies the `ui-icon` size (`--ui-icon-size` still picks the base); `--ui-chip-scale` the `ui-chip` height, padding and text; `--ui-favicon-scale` the `ui-favicon` box, letter and image. `button/button-scale.spec.ts` checks the compiled rules.
 
 ## Shared mixins, keyframes and breakpoints
 
