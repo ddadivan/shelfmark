@@ -33,7 +33,7 @@ function page(items: LinkResponse[], nextCursor: string | null = null): ListLink
 
 async function setup(list: LinksApi['list'] = () => of(page([link(1), link(2)]))) {
   const api = { list: vi.fn<LinksApi['list']>(list) };
-  const ref = { close: vi.fn() };
+  const ref = { close: vi.fn(), locked: () => false };
   const actions = { open: vi.fn() };
   const opener = { open: vi.fn() };
   TestBed.configureTestingModule({

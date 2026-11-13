@@ -470,7 +470,7 @@ describe('feedback messages API', () => {
                 create: [0, 1, 2].map((position) => ({
                   position,
                   type: 'image/png',
-                  bytes: image(PNG_HEAD, MAX_SHOT),
+                  bytes: new Uint8Array(image(PNG_HEAD, MAX_SHOT)),
                 })),
               },
             },
@@ -511,7 +511,7 @@ describe('feedback messages API', () => {
               create: [0, 1, 2].map((position) => ({
                 position,
                 type: 'image/png',
-                bytes: image(PNG_HEAD, MAX_SHOT),
+                bytes: new Uint8Array(image(PNG_HEAD, MAX_SHOT)),
               })),
             },
           },

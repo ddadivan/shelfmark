@@ -26,7 +26,7 @@ describe('HowItWorksDialogComponent', () => {
     vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined);
     TestBed.configureTestingModule({
       providers: [
-        { provide: UiDialogRef, useValue: { close: vi.fn() } },
+        { provide: UiDialogRef, useValue: { close: vi.fn(), locked: () => false } },
         { provide: ViewportService, useValue: { phone } },
       ],
     });

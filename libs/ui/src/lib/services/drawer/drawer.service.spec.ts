@@ -182,7 +182,12 @@ describe('DrawerComponent', () => {
   it('plays the leave animation while the ref is leaving', () => {
     const leaving = signal(false);
     TestBed.configureTestingModule({
-      providers: [{ provide: UiDialogRef, useValue: { leaving, close: () => leaving.set(true) } }],
+      providers: [
+        {
+          provide: UiDialogRef,
+          useValue: { leaving, locked: () => false, close: () => leaving.set(true) },
+        },
+      ],
     });
     const fixture = TestBed.createComponent(DrawerComponent);
     fixture.componentRef.setInput('closeLabel', 'Close menu');
