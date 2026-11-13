@@ -241,6 +241,23 @@ test.describe('select links and bulk actions (mock API)', () => {
       await expect(button).toHaveAttribute('aria-pressed', 'false');
     });
 
+    test('a toast is centred on the content area, like the bulk bar (#352)', async ({ page }) => {
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await openFeed(page);
+      await pick(page, 0);
+      await barButton(page, 'Favorite').click();
+      const toast = page.locator('ui-toast').first();
+      await expect(toast).toBeVisible();
+      await settled(page);
+      const toastBox = await toast.boundingBox();
+      const barBox = await page.locator('ui-bulk-bar').boundingBox();
+      const centre = (box: { x: number; width: number } | null) =>
+        (box?.x ?? 0) + (box?.width ?? 0) / 2;
+      expect(Math.abs(centre(toastBox) - centre(barBox))).toBeLessThanOrEqual(1);
+      // Not the window centre: the sidebar takes the left of the window.
+      expect(Math.abs(centre(toastBox) - 720)).toBeGreaterThan(50);
+    });
+
     test('Delete moves the links to Trash, Undo restores them', async ({ page }) => {
       await openFeed(page);
       const before = await cards(page).count();
