@@ -31,7 +31,7 @@
           [ariaLabel]="'settings.appearance.theme.label' | transloco"
           [options]="themeOptions()"
           [value]="theme.preference()"
-          (valueChange)="setTheme($event)"
+          (valueChange)="appearance.setTheme($event)"
         />
       </div>
 
@@ -46,7 +46,7 @@
             [ariaLabelledby]="baseRow.titleId"
             [options]="baseOptions()"
             [value]="theme.customTheme().base"
-            (valueChange)="setBase($event)"
+            (valueChange)="appearance.setBase($event)"
           />
         </ui-settings-row>
         <ui-settings-row
@@ -61,9 +61,9 @@
               [kind]="THEME_PICKER_KIND.Accent"
               [ariaLabelledby]="accentRow.titleId"
               [options]="accentOptions()"
-              [value]="checkedAccent()"
-              (valueChange)="setAccent($event)"
-              (removed)="removeOwnColour($event)"
+              [value]="theme.customTheme().accent"
+              (valueChange)="appearance.setAccent($event, accentPicker)"
+              (removed)="appearance.removeOwnColour($event)"
             />
             <ui-color-picker
               [label]="'settings.appearance.custom.own.label' | transloco"
@@ -76,17 +76,20 @@
               [addLabel]="'settings.appearance.custom.own.addColour' | transloco"
               [cancelLabel]="'settings.appearance.custom.own.cancel' | transloco"
               #accentPicker
-              [(open)]="accentPickerOpen"
-              [(value)]="pickedColour"
-              (committed)="pickOwnAccent($event)"
+              [(value)]="appearance.pickedColour"
+              (committed)="appearance.pickOwnAccent($event, accentPicker)"
             >
               <p class="appearance__own-hint">
                 {{ 'settings.appearance.custom.own.hint' | transloco }}
               </p>
-              @if (accentWarning(); as warning) {
+              @if (appearance.accentWarning(); as warning) {
               <ui-notice [kind]="NOTICE_KIND.Warning">
                 {{ 'settings.appearance.custom.own.warning' | transloco: { ratio: warning.ratio } }}
-                <ui-button uiNoticeAction [size]="BUTTON_SIZE.Sm" (click)="useShade(warning.shade)">
+                <ui-button
+                  uiNoticeAction
+                  [size]="BUTTON_SIZE.Sm"
+                  (click)="appearance.useShade(warning.shade, accentPicker)"
+                >
                   {{ 'settings.appearance.custom.own.use' | transloco: { colour: warning.shade } }}
                 </ui-button>
               </ui-notice>
@@ -106,9 +109,9 @@
               [kind]="THEME_PICKER_KIND.Background"
               [ariaLabelledby]="backgroundRow.titleId"
               [options]="backgroundOptions()"
-              [value]="checkedBackground()"
-              (valueChange)="setBackground($event)"
-              (removed)="removeOwnColour($event)"
+              [value]="theme.customTheme().background"
+              (valueChange)="appearance.setBackground($event, backgroundPicker)"
+              (removed)="appearance.removeOwnColour($event)"
             />
             <ui-color-picker
               [label]="'settings.appearance.custom.ownBackground.label' | transloco"
@@ -121,21 +124,20 @@
               [addLabel]="'settings.appearance.custom.own.addColour' | transloco"
               [cancelLabel]="'settings.appearance.custom.own.cancel' | transloco"
               #backgroundPicker
-              [(open)]="backgroundPickerOpen"
-              [(value)]="pickedBackground"
-              (committed)="pickOwnBackground($event)"
+              [(value)]="appearance.pickedBackground"
+              (committed)="appearance.pickOwnBackground($event, backgroundPicker)"
             >
               <p class="appearance__own-hint">
                 {{ 'settings.appearance.custom.ownBackground.hint' | transloco }}
               </p>
-              @if (backgroundWarning(); as warning) {
+              @if (appearance.backgroundWarning(); as warning) {
               <ui-notice [kind]="NOTICE_KIND.Warning">
                 {{ 'settings.appearance.custom.ownBackground.warning' | transloco: { ratio:
                 warning.ratio } }}
                 <ui-button
                   uiNoticeAction
                   [size]="BUTTON_SIZE.Sm"
-                  (click)="useBackgroundShade(warning.shade)"
+                  (click)="appearance.useBackgroundShade(warning.shade, backgroundPicker)"
                 >
                   {{ 'settings.appearance.custom.own.use' | transloco: { colour: warning.shade } }}
                 </ui-button>
@@ -153,14 +155,14 @@
             [ariaLabelledby]="cornersRow.titleId"
             [options]="cornerOptions()"
             [value]="theme.customTheme().corners"
-            (valueChange)="setCorners($event)"
+            (valueChange)="appearance.setCorners($event)"
           />
         </ui-settings-row>
         <div class="appearance__reset">
           <ui-button
             [variant]="BUTTON_VARIANT.Ghost"
             [size]="BUTTON_SIZE.Sm"
-            (click)="resetCustom()"
+            (click)="appearance.resetCustom()"
           >
             {{ 'settings.appearance.custom.reset' | transloco }}
           </ui-button>
@@ -181,7 +183,7 @@
           [ariaLabelledby]="textSizeRow.titleId"
           [options]="textSizeOptions()"
           [value]="theme.layout().textSize"
-          (valueChange)="setTextSize($event)"
+          (valueChange)="appearance.setTextSize($event)"
         />
       </ui-settings-row>
       <ui-settings-row
@@ -193,7 +195,7 @@
           [ariaLabelledby]="fontRow.titleId"
           [options]="fontOptions()"
           [value]="theme.layout().font"
-          (valueChange)="setFont($event)"
+          (valueChange)="appearance.setFont($event)"
         />
       </ui-settings-row>
       <ui-settings-row
@@ -205,7 +207,7 @@
           [ariaLabelledby]="densityRow.titleId"
           [options]="densityOptions()"
           [value]="theme.layout().density"
-          (valueChange)="setDensity($event)"
+          (valueChange)="appearance.setDensity($event)"
         />
       </ui-settings-row>
     </ui-settings-section>
@@ -220,7 +222,7 @@
           [ariaLabelledby]="previewImageRow.titleId"
           [options]="previewImageOptions()"
           [value]="theme.layout().cardPreview"
-          (valueChange)="setPreviewImage($event)"
+          (valueChange)="appearance.setPreviewImage($event)"
         />
       </ui-settings-row>
       <ui-settings-row
@@ -230,7 +232,7 @@
         <ui-switch
           [label]="'settings.appearance.cards.site.label' | transloco"
           [checked]="theme.layout().cardSite"
-          (checkedChange)="setCardPart({ cardSite: $event })"
+          (checkedChange)="appearance.setCardPart({ cardSite: $event })"
         />
       </ui-settings-row>
       <ui-settings-row
@@ -240,7 +242,7 @@
         <ui-switch
           [label]="'settings.appearance.cards.notes.label' | transloco"
           [checked]="theme.layout().cardNotes"
-          (checkedChange)="setCardPart({ cardNotes: $event })"
+          (checkedChange)="appearance.setCardPart({ cardNotes: $event })"
         />
       </ui-settings-row>
       <ui-settings-row
@@ -250,7 +252,7 @@
         <ui-switch
           [label]="'settings.appearance.cards.tags.label' | transloco"
           [checked]="theme.layout().cardTags"
-          (checkedChange)="setCardPart({ cardTags: $event })"
+          (checkedChange)="appearance.setCardPart({ cardTags: $event })"
         />
       </ui-settings-row>
     </ui-settings-section>
@@ -266,7 +268,7 @@
           #coloursSwitch
           [label]="'settings.appearance.sidebar.colours.label' | transloco"
           [checked]="settings.coloursOn()"
-          (checkedChange)="setFolderColours($event, coloursSwitch)"
+          (checkedChange)="appearance.setFolderColours($event, coloursSwitch)"
         />
       </ui-settings-row>
       <ui-settings-row
@@ -278,7 +280,7 @@
           [ariaLabelledby]="motionRow.titleId"
           [options]="motionOptions()"
           [value]="theme.motion()"
-          (valueChange)="setMotion($event)"
+          (valueChange)="appearance.setMotion($event)"
         />
       </ui-settings-row>
     </ui-settings-section>
