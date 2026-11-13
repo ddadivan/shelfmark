@@ -66,6 +66,7 @@ async function setup(
     folderColours: true,
     pauseHistory: options.paused ?? false,
     customColours: [],
+    customEmoji: [],
     ...MOCK_APPEARANCE_DEFAULTS,
     ...LIBRARY_SETTINGS_DEFAULT,
   };

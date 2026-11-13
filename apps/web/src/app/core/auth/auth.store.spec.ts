@@ -1,3 +1,4 @@
+import { EMOJI_RECENT_STORAGE_KEY } from './models/emoji-recent-storage-key.const';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { provideTransloco } from '@jsverse/transloco';
@@ -74,6 +75,14 @@ describe('AuthStore', () => {
 
     expect(ended).toHaveBeenCalledTimes(3);
     expect(api.signOut).toHaveBeenCalledTimes(2);
+  });
+
+  it("forgets the emoji picker's Recent on sign-out (#363)", async () => {
+    const { store } = setup();
+    await store.ensureLoaded();
+    localStorage.setItem(EMOJI_RECENT_STORAGE_KEY, '["🍕"]');
+    expect(await store.signOut()).toBe(true);
+    expect(localStorage.getItem(EMOJI_RECENT_STORAGE_KEY)).toBeNull();
   });
 
   it('is a guest until the session says otherwise', () => {

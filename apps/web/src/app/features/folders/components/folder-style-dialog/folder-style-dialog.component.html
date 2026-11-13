@@ -90,12 +90,25 @@
               | transloco: { count: iconCount }
           }}</ui-button
         >
-        <ui-input
+        <ui-emoji-picker
           class="folder-style__emoji"
           [label]="'folders.style.emoji.label' | transloco"
           [hint]="'folders.style.emoji.hint' | transloco"
           [placeholder]="'folders.style.emoji.placeholder' | transloco"
+          [searchLabel]="'folders.style.emoji.search' | transloco"
+          [categoriesLabel]="'folders.style.emoji.categoriesLabel' | transloco"
+          [recentLabel]="'folders.style.emoji.recent' | transloco"
+          [ownLabel]="'folders.style.emoji.own' | transloco"
+          [resultsLabel]="'folders.style.emoji.results' | transloco"
+          [noResultsLabel]="'folders.style.emoji.noResults' | transloco"
+          [loadingLabel]="'folders.style.emoji.loading' | transloco"
+          [closeLabel]="'folders.style.emoji.close' | transloco"
+          [categories]="emoji.categories()"
+          [recent]="emoji.recent()"
+          [own]="emoji.own()"
           [formField]="form.emoji"
+          (opened)="emoji.load()"
+          (removed)="emoji.remove($event)"
         />
       </div>
     </div>

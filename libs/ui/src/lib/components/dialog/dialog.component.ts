@@ -20,16 +20,11 @@ import type { DialogSize } from './models/dialog-size.type';
 import { SHEET_HEIGHT } from '../sheet/models/sheet-height.const';
 import type { SheetHeight } from '../sheet/models/sheet-height.type';
 import { UI_DIALOG_CONTEXT } from './models/ui-dialog-context.const';
-import type { DragState } from './models/drag-state.interface';
-import { SHEET_SAMPLES } from './models/sheet-samples.const';
-import { shouldCloseSheet, sheetVelocity } from './sheet-drag';
+import { SHEET_DRAG_END, SheetDragTracker } from '../../utils/sheet-drag';
 import { DIALOG_SIZE } from './models/dialog-size.const';
 import { DIALOG_VARIANT } from './models/dialog-variant.const';
 import type { DialogVariant } from './models/dialog-variant.type';
 import { BUTTON_SIZE } from '../button/models/button-size.const';
-
-const DRAG_PROPERTY = '--ui-sheet-drag';
-const NO_DRAG_TARGETS = 'button, a, input, select, textarea, [contenteditable]';
 
 /**
  * Layout of a dialog: title, optional close button, body (default slot) and footer
@@ -122,7 +117,7 @@ export class DialogComponent {
   /** The body overflows: it becomes a focusable region so the keyboard can scroll it. */
   protected readonly scrollable = signal(false);
 
-  private drag: DragState | undefined;
+  private readonly drag = new SheetDragTracker();
 
   constructor() {
     const destroyRef = inject(DestroyRef);
@@ -165,75 +160,41 @@ export class DialogComponent {
   }
 
   protected onPointerDown(event: PointerEvent): void {
-    const target = event.target;
     if (
       !this.sheetMode() ||
       this.phoneFullscreen() ||
       this.leaving() ||
       this.locked() ||
-      this.drag ||
-      (event.pointerType === 'mouse' && event.button !== 0) ||
-      (target instanceof Element && target.closest(NO_DRAG_TARGETS))
+      !this.drag.start(event)
     ) {
       return;
     }
-    this.drag = {
-      pointerId: event.pointerId,
-      startY: event.clientY,
-      samples: [{ y: event.clientY, time: event.timeStamp }],
-      offset: 0,
-    };
     this.snapping.set(false);
     this.dragging.set(true);
-    if (event.currentTarget instanceof Element) {
-      event.currentTarget.setPointerCapture?.(event.pointerId);
-    }
   }
 
   protected onPointerMove(event: PointerEvent): void {
-    const drag = this.drag;
-    if (!drag || event.pointerId !== drag.pointerId) {
-      return;
-    }
-    drag.samples.push({ y: event.clientY, time: event.timeStamp });
-    if (drag.samples.length > SHEET_SAMPLES) {
-      drag.samples.shift();
-    }
-    drag.offset = Math.max(0, event.clientY - drag.startY);
-    this.setOffset(drag.offset);
+    this.drag.move(event, this.panel().nativeElement);
   }
 
   protected onPointerUp(event: PointerEvent): void {
-    const drag = this.drag;
-    if (!drag || event.pointerId !== drag.pointerId) {
+    const end = this.drag.end(event, this.panel().nativeElement);
+    if (end === null) {
       return;
     }
-    this.drag = undefined;
     this.dragging.set(false);
-    const height = this.panel().nativeElement.getBoundingClientRect().height;
-    if (shouldCloseSheet(drag.offset, height, sheetVelocity(drag.samples, event.timeStamp))) {
+    if (end === SHEET_DRAG_END.Close) {
       // The leave animation starts from the dragged position (`--ui-sheet-drag` stays set).
       this.requestClose();
     } else {
-      this.snapBack();
+      this.snapping.set(true);
     }
   }
 
   protected onPointerCancel(event: PointerEvent): void {
-    if (this.drag && event.pointerId === this.drag.pointerId) {
-      this.drag = undefined;
+    if (this.drag.cancel(event, this.panel().nativeElement)) {
       this.dragging.set(false);
-      this.snapBack();
+      this.snapping.set(true);
     }
-  }
-
-  private snapBack(): void {
-    this.snapping.set(true);
-    this.setOffset(0);
-  }
-
-  private setOffset(pixels: number): void {
-    // A custom property through the CSSOM: no `style` attribute, so the strict CSP stays happy.
-    this.panel().nativeElement.style.setProperty(DRAG_PROPERTY, `${pixels}px`);
   }
 }

@@ -38,6 +38,7 @@ const APPEARANCE_DEFAULTS = {
   theme: THEME_PREFERENCE.System,
   customTheme: CUSTOM_THEME_DEFAULT,
   customColours: [],
+  customEmoji: [],
   motion: MOTION_PREFERENCE.System,
   appearanceSaved: false,
   ...LAYOUT_SETTINGS_DEFAULT,
@@ -283,6 +284,7 @@ describe('account settings', () => {
         theme: THEME_PREFERENCE.Custom,
         customTheme: dark,
         customColours: [],
+        customEmoji: [],
         motion: MOTION_PREFERENCE.System,
         appearanceSaved: true,
         ...LAYOUT_SETTINGS_DEFAULT,
@@ -414,6 +416,71 @@ describe('account settings', () => {
           where: { id: users.owner.userId },
           data: { customColours: twelve.concat('#ffffff') },
         }),
+      ).rejects.toThrow();
+    });
+
+    it('keeps the own emoji (#363) per account, each one emoji, at most 24', async () => {
+      const a = asUser(t.app, users.owner);
+      const b = asUser(t.app, users.intruder);
+      const emoji = ['🦩', '🧑‍🍳', '👍🏽', '🇺🇦', '❤️', '🏴󠁧󠁢󠁳󠁣󠁴󠁿'];
+      const res = await a.patch(USER_SETTINGS_ENDPOINT).send({ customEmoji: emoji }).expect(200);
+      expect((res.body as UserSettingsResponse).customEmoji).toEqual(emoji);
+      expect(
+        ((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse)
+          .customEmoji,
+      ).toEqual(emoji);
+      // Another user never sees them, and their own write leaves the owner's list alone.
+      expect(
+        ((await b.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse)
+          .customEmoji,
+      ).toEqual([]);
+      await b
+        .patch(USER_SETTINGS_ENDPOINT)
+        .send({ customEmoji: ['🐙'] })
+        .expect(200);
+      expect(
+        ((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse)
+          .customEmoji,
+      ).toEqual(emoji);
+      // Other settings leave the list alone.
+      await a
+        .patch(USER_SETTINGS_ENDPOINT)
+        .send({ customColours: ['#3a7bd5'] })
+        .expect(200);
+      expect(
+        ((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse)
+          .customEmoji,
+      ).toEqual(emoji);
+      const full = Array.from({ length: 24 }, (_, i) => String.fromCodePoint(0x1f400 + i));
+      await a.patch(USER_SETTINGS_ENDPOINT).send({ customEmoji: full }).expect(200);
+      for (const bad of [
+        [...full, '🐙'],
+        ['a'],
+        ['🍕🍔'],
+        ['🍕 '],
+        [''],
+        ['<b>🍕</b>'],
+        ['🍕', '🍕'],
+        [7],
+        '🍕',
+        null,
+      ]) {
+        await a.patch(USER_SETTINGS_ENDPOINT).send({ customEmoji: bad }).expect(400);
+      }
+      expect(
+        ((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse)
+          .customEmoji,
+      ).toEqual(full);
+      await a.patch(USER_SETTINGS_ENDPOINT).send({ customEmoji: [] }).expect(200);
+      // The CHECK is the backstop: never more than 24 and never an empty entry.
+      await expect(
+        t.db.prisma.user.update({
+          where: { id: users.owner.userId },
+          data: { customEmoji: full.concat('🐙') },
+        }),
+      ).rejects.toThrow();
+      await expect(
+        t.db.prisma.user.update({ where: { id: users.owner.userId }, data: { customEmoji: [''] } }),
       ).rejects.toThrow();
     });
 

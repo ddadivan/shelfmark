@@ -1,3 +1,4 @@
+import type { FolderEmoji } from '../folders/folder-emoji.type';
 import type { TrashRetentionDays } from '../trash/trash-retention-days.type';
 import type { CustomTheme } from './custom-theme.interface';
 import type { HexColour } from './hex-colour.type';
@@ -20,6 +21,11 @@ export interface UpdateUserSettingsRequest
   customTheme?: CustomTheme;
   /** The whole list of own colours (`#rrggbb`, no duplicates, at most `USER_LIMIT.CustomColoursMax`). */
   customColours?: HexColour[];
+  /**
+   * The whole list of own emoji: each exactly one emoji (`isFolderEmoji`), no duplicates, at most
+   * `USER_LIMIT.CustomEmojiMax`.
+   */
+  customEmoji?: FolderEmoji[];
   /** One of `MOTION_PREFERENCE`. */
   motion?: MotionPreference;
   /**

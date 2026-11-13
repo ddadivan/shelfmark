@@ -13,6 +13,7 @@ function setup(customColours: UserSettingsResponse['customColours'] = []) {
     folderColours: true,
     pauseHistory: false,
     customColours,
+    customEmoji: [],
     ...MOCK_APPEARANCE_DEFAULTS,
     ...LIBRARY_SETTINGS_DEFAULT,
   };
@@ -71,6 +72,7 @@ describe('UserSettingsStore own colors (#350)', () => {
       folderColours: true,
       pauseHistory: false,
       customColours: colours,
+      customEmoji: [],
       ...MOCK_APPEARANCE_DEFAULTS,
       ...LIBRARY_SETTINGS_DEFAULT,
     });

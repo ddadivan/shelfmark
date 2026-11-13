@@ -7,6 +7,7 @@ export const APPEARANCE_SELECT = {
   customThemeCorners: true,
   motion: true,
   customColours: true,
+  customEmoji: true,
   appearanceSavedAt: true,
   textSize: true,
   font: true,

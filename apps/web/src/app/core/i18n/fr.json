@@ -933,8 +933,31 @@
       "emoji": {
         "label": "Émoji",
         "hint": "Utilisez un émoji à la place d'une icône",
-        "placeholder": "🍕",
-        "invalid": "Saisissez un seul émoji."
+        "placeholder": "Choisir un emoji",
+        "invalid": "Saisissez un seul émoji.",
+        "search": "Rechercher un emoji",
+        "categoriesLabel": "Catégories",
+        "categories": {
+          "food": "Nourriture",
+          "travel": "Voyage",
+          "work": "Travail",
+          "sport": "Sport",
+          "home": "Maison",
+          "animals": "Animaux",
+          "nature": "Nature",
+          "objects": "Objets",
+          "symbols": "Symboles"
+        },
+        "recent": "Récents",
+        "own": "Les vôtres",
+        "results": "Résultats",
+        "noResults": "Aucun emoji trouvé",
+        "loading": "Chargement des emojis",
+        "close": "Fermer",
+        "remove": "Supprimer l’emoji {{emoji}}",
+        "removed": "Emoji supprimé",
+        "removeFailed": "Impossible de supprimer l’emoji",
+        "undo": "Annuler"
       },
       "iconsShowAll": "Afficher toutes les icônes ({{count}})",
       "iconsShowFewer": "Afficher moins"

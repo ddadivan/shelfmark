@@ -7,6 +7,7 @@ import {
   TRASH_RETENTION_DEFAULT,
   USER_LIMIT,
   type FolderColour,
+  type FolderEmoji,
   type HexColour,
   type LanguageSettings,
   type LibrarySettings,
@@ -19,6 +20,7 @@ import { ThemeService } from '../core/theme/theme.service';
 import { LocaleService } from '../core/i18n/locale.service';
 import { SessionScope } from '../core/auth/session-scope.service';
 import { USER_SETTINGS_API } from '../features/settings/models/user-settings-api.const';
+import type { OwnListField } from './models/own-list-field.type';
 import type { UserSettingsState } from './models/user-settings-state.interface';
 import { TrashStore } from './trash.store';
 
@@ -92,6 +94,7 @@ const initialState: UserSettingsState = {
   folderColours: null,
   pauseHistory: null,
   customColours: [],
+  customEmoji: [],
   library: null,
   loading: false,
   error: false,
@@ -176,6 +179,7 @@ export const UserSettingsStore = signalStore(
                 folderColours: settings.folderColours,
                 pauseHistory: settings.pauseHistory,
                 customColours: settings.customColours,
+                customEmoji: settings.customEmoji,
                 library: libraryOf(settings),
                 loading: false,
               }
@@ -188,30 +192,43 @@ export const UserSettingsStore = signalStore(
       }
     }
 
-    /** Counts the saves of the colour list: only the newest one may write its answer back (#350). */
-    let coloursSave = 0;
+    /**
+     * Counts the saves of each own list (colours #350, emoji #363): only the newest save of a list
+     * may write its answer back.
+     */
+    const listSaves: Record<OwnListField, number> = { customColours: 0, customEmoji: 0 };
 
-    async function saveColours(previous: HexColour[], next: HexColour[]): Promise<boolean> {
+    /** Saves a whole own list optimistically; a failure puts the previous list back. */
+    async function saveList<F extends OwnListField>(
+      field: F,
+      previous: UserSettingsState[F],
+      next: UserSettingsState[F],
+    ): Promise<boolean> {
       if (previous.length === next.length && previous.every((item, i) => item === next[i])) {
         return true;
       }
       const started = epoch;
-      const mine = ++coloursSave;
+      const mine = ++listSaves[field];
       version++;
-      patchState(store, { customColours: next });
+      patchState(store, { [field]: next });
       try {
-        const saved = await firstValueFrom(api().update({ customColours: next }));
+        const saved = await firstValueFrom(api().update({ [field]: next }));
         // A newer add or remove already changed the list: its answer is the one that counts.
-        if (started === epoch && mine === coloursSave) {
-          patchState(store, { customColours: saved.customColours });
+        if (started === epoch && mine === listSaves[field]) {
+          patchState(store, { [field]: saved[field] });
         }
         return true;
       } catch {
-        if (started === epoch && mine === coloursSave) {
-          patchState(store, { customColours: previous });
+        if (started === epoch && mine === listSaves[field]) {
+          patchState(store, { [field]: previous });
         }
         return false;
       }
+    }
+
+    /** `item` at the end of `list`, once (an old copy moves to the end), at most `max` (the oldest go). */
+    function appended<T>(list: readonly T[], item: T, max: number): T[] {
+      return [...list.filter((entry) => entry !== item), item].slice(-max);
     }
 
     scope.onEnd(() => {
@@ -259,18 +276,44 @@ export const UserSettingsStore = signalStore(
        */
       async addCustomColour(colour: HexColour): Promise<boolean> {
         const previous = store.customColours();
-        const next = [...previous.filter((item) => item !== colour), colour].slice(
-          -USER_LIMIT.CustomColoursMax,
+        return saveList(
+          'customColours',
+          previous,
+          appended(previous, colour, USER_LIMIT.CustomColoursMax),
         );
-        return saveColours(previous, next);
       },
 
       /** Forgets an own colour (folders and themes that wear it keep it). */
       async removeCustomColour(colour: HexColour): Promise<boolean> {
         const previous = store.customColours();
-        return saveColours(
+        return saveList(
+          'customColours',
           previous,
           previous.filter((item) => item !== colour),
+        );
+      },
+
+      /**
+       * Keeps an own emoji for the picker's "Yours" (#363): at the end, once, at most
+       * `USER_LIMIT.CustomEmojiMax` (the oldest goes). Saved at once; resolves false (and puts the
+       * list back) when the request fails.
+       */
+      async addCustomEmoji(emoji: FolderEmoji): Promise<boolean> {
+        const previous = store.customEmoji();
+        return saveList(
+          'customEmoji',
+          previous,
+          appended(previous, emoji, USER_LIMIT.CustomEmojiMax),
+        );
+      },
+
+      /** Forgets an own emoji (folders that wear it keep it). */
+      async removeCustomEmoji(emoji: FolderEmoji): Promise<boolean> {
+        const previous = store.customEmoji();
+        return saveList(
+          'customEmoji',
+          previous,
+          previous.filter((item) => item !== emoji),
         );
       },
 

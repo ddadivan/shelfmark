@@ -15,6 +15,7 @@ function setup(pauseHistory = false) {
     folderColours: true,
     pauseHistory,
     customColours: [],
+    customEmoji: [],
     ...MOCK_APPEARANCE_DEFAULTS,
     ...LIBRARY_SETTINGS_DEFAULT,
   };
@@ -59,6 +60,7 @@ describe('UserSettingsStore pause history', () => {
       folderColours: true,
       pauseHistory: true,
       customColours: [],
+      customEmoji: [],
       ...MOCK_APPEARANCE_DEFAULTS,
       ...LIBRARY_SETTINGS_DEFAULT,
     });

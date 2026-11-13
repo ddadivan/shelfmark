@@ -22,6 +22,7 @@ import {
   HEX_COLOUR_PATTERN,
   MOTION_PREFERENCE,
   USER_LIMIT,
+  type FolderEmoji,
   type HexColour,
   THEME_PREFERENCE,
   TRASH_RETENTION_DAYS,
@@ -34,6 +35,7 @@ import {
   type UpdateUserSettingsRequest,
 } from '@shelfmark/contracts';
 import { Type } from 'class-transformer';
+import { IsFolderEmoji } from './is-folder-emoji.decorator';
 import {
   ArrayMaxSize,
   ArrayUnique,
@@ -93,6 +95,19 @@ export class UpdateUserSettingsDto implements UpdateUserSettingsRequest {
   @ArrayUnique()
   @Matches(HEX_COLOUR_PATTERN, { each: true, message: 'each colour must be a lower-case #rrggbb' })
   customColours?: HexColour[];
+
+  @ApiPropertyOptional({
+    type: [String],
+    maxItems: USER_LIMIT.CustomEmojiMax,
+    example: ['🦩'],
+    description: 'The whole list of own emoji: each exactly one emoji, no duplicates, at most 24',
+  })
+  @ValidateIf(present)
+  @IsArray()
+  @ArrayMaxSize(USER_LIMIT.CustomEmojiMax)
+  @ArrayUnique()
+  @IsFolderEmoji({ each: true })
+  customEmoji?: FolderEmoji[];
 
   @ApiPropertyOptional({
     enum: Object.values(MOTION_PREFERENCE),

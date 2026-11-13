@@ -9,6 +9,7 @@ import {
   MOTION_PREFERENCE,
   THEME_PREFERENCE,
   isCustomTheme,
+  isFolderEmoji,
   isHexColour,
   isMotionPreference,
   isThemePreference,
@@ -25,7 +26,7 @@ export function toAppearanceSettings(
   row: AppearanceRow,
 ): Pick<
   UserSettingsResponse,
-  'theme' | 'customTheme' | 'motion' | 'appearanceSaved' | 'customColours'
+  'theme' | 'customTheme' | 'motion' | 'appearanceSaved' | 'customColours' | 'customEmoji'
 > &
   LayoutSettings {
   const d = LAYOUT_SETTINGS_DEFAULT;
@@ -41,6 +42,7 @@ export function toAppearanceSettings(
     motion: isMotionPreference(row.motion) ? row.motion : MOTION_PREFERENCE.System,
     appearanceSaved: row.appearanceSavedAt !== null,
     customColours: row.customColours.filter(isHexColour),
+    customEmoji: row.customEmoji.filter(isFolderEmoji),
     textSize: isTextSize(row.textSize) ? row.textSize : d.textSize,
     font: isAppFont(row.font) ? row.font : d.font,
     density: isDensity(row.density) ? row.density : d.density,

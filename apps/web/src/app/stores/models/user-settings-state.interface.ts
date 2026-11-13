@@ -1,4 +1,9 @@
-import type { HexColour, LibrarySettings, TrashRetentionDays } from '@shelfmark/contracts';
+import type {
+  FolderEmoji,
+  HexColour,
+  LibrarySettings,
+  TrashRetentionDays,
+} from '@shelfmark/contracts';
 
 /** State of `UserSettingsStore`. */
 export interface UserSettingsState {
@@ -12,6 +17,8 @@ export interface UserSettingsState {
   library: LibrarySettings | null;
   /** Own colours (`#rrggbb`) the account keeps as swatches (#335); empty until the settings told. */
   customColours: HexColour[];
+  /** Own emoji the account keeps for the emoji picker's "Yours" (#363); empty until the settings told. */
+  customEmoji: FolderEmoji[];
   /** The settings request is running. */
   loading: boolean;
   /** The first settings request failed; the Library settings offer a retry. */
