@@ -1,8 +1,14 @@
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { provideRouter, Router } from '@angular/router';
 import { FOLDER_DELETE_MODE } from '@shelfmark/contracts';
-import { MOCK_ID, MOCK_NAME } from '@shelfmark/contracts/testing';
-import { DialogService, type SelectOption } from '@shelfmark/ui';
+import { MOCK_ID, MOCK_LINKS, MOCK_NAME } from '@shelfmark/contracts/testing';
+import { DialogService, ToastService, type SelectOption } from '@shelfmark/ui';
+import { UiSelectHarness } from '@shelfmark/ui/testing';
+import { axeViolations } from '../../../../testing/axe';
+import { AddLinkDialogService } from '../../links/services/add-link-dialog.service';
+import { ADD_LINK_ACTION } from '../../links/models/add-link-action.const';
 import { FoldersStore } from '../../../stores/folders.store';
 import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
 import { FOLDERS_API } from '../../links/models/folders-api.const';
@@ -18,6 +24,14 @@ import type { MoveFolderDialogData } from '../models/move-folder-dialog-data.int
 import type { TreeComponent } from '@shelfmark/ui';
 import { SidebarTreeFocusService } from '../../../shell/sidebar/services/sidebar-tree-focus.service';
 import { MoveFolderDialogComponent } from '../components/move-folder-dialog/move-folder-dialog.component';
+
+@Component({ template: '', changeDetection: ChangeDetectionStrategy.OnPush })
+class RootComponent {}
+
+/** Harness loader for the overlays under <body> (the dialog, the select list). */
+function overlayLoader() {
+  return TestbedHarnessEnvironment.documentRootLoader(TestBed.createComponent(RootComponent));
+}
 
 async function setup() {
   TestBed.configureTestingModule({
@@ -156,7 +170,41 @@ describe('FolderActionsService', () => {
       expect(focusCreated).toHaveBeenCalledWith(created?.id);
     });
 
-    it('names the parent in the title of a subfolder', async () => {
+    it('places the new folder inside the folder chosen in the Inside field', async () => {
+      const { actions, store, router } = await setup();
+
+      const done = actions.create();
+      await opened();
+      type('Essays');
+      const inside = await overlayLoader().getHarness(UiSelectHarness.with({ label: 'Inside' }));
+      await inside.chooseOption({ text: MOCK_NAME.FolderReading });
+      await until(() => {
+        expect(dialog().querySelector('h2')?.textContent).toBe(
+          `New folder in “${MOCK_NAME.FolderReading}”`,
+        );
+      });
+      button('Create folder').click();
+      await closed();
+      await done;
+
+      const created = store.entities().find((folder) => folder.name === 'Essays');
+      expect(created?.parentId).toBe(MOCK_ID.FolderReading);
+      expect(router.url).toBe(`/folders/${created?.id}`);
+    });
+
+    it('has no axe violations', async () => {
+      const { actions } = await setup();
+
+      const done = actions.create();
+      await opened();
+
+      expect(await axeViolations(dialog())).toEqual([]);
+      button('Cancel').click();
+      await closed();
+      await done;
+    });
+
+    it('names the parent in the title of a subfolder and creates it there', async () => {
       const { actions, store } = await setup();
 
       const done = actions.create(store.entityMap()[MOCK_ID.FolderReading]);
@@ -165,9 +213,13 @@ describe('FolderActionsService', () => {
       expect(dialog().querySelector('h2')?.textContent).toBe(
         `New folder in “${MOCK_NAME.FolderReading}”`,
       );
-      button('Cancel').click();
+      type('Essays');
+      button('Create folder').click();
       await closed();
       await done;
+
+      const created = store.entities().find((folder) => folder.name === 'Essays');
+      expect(created?.parentId).toBe(MOCK_ID.FolderReading);
     });
 
     it('asks for a name and does not send an empty one', async () => {
@@ -278,6 +330,18 @@ describe('FolderActionsService', () => {
       await closed();
     });
 
+    it('has no axe violations', async () => {
+      const { actions, store } = await setup();
+
+      const done = actions.move(store.entityMap()[MOCK_ID.FolderAngular]);
+      await opened();
+
+      expect(await axeViolations(dialog())).toEqual([]);
+      button('Cancel').click();
+      await closed();
+      await done;
+    });
+
     it('sends nothing when the parent is not changed', async () => {
       const { actions, store } = await setup();
 
@@ -376,6 +440,21 @@ describe('FolderActionsService', () => {
       expect(data.links).toHaveLength(total - linkCount);
     });
 
+    it('Cancel leaves a folder with links alone', async () => {
+      const { actions, store, data } = await setup();
+      const before = data.links.length;
+
+      const done = actions.delete(store.entityMap()[MOCK_ID.FolderReading]);
+      await opened();
+      expect(await axeViolations(dialog())).toEqual([]);
+      button('Cancel').click();
+      await closed();
+      await done;
+
+      expect(store.entityMap()[MOCK_ID.FolderReading]).toBeDefined();
+      expect(data.links).toHaveLength(before);
+    });
+
     it('asks nothing about the links of an empty folder', async () => {
       const { actions, store } = await setup();
       const created = await store.create('Empty', null);
@@ -419,6 +498,24 @@ describe('FolderActionsService', () => {
       button('Cancel').click();
       await closed();
       await done;
+    });
+  });
+
+  describe('add link here', () => {
+    it('opens the add-link dialog on the folder and names its path in the toast', async () => {
+      const { actions } = await setup();
+      const open = vi.spyOn(TestBed.inject(AddLinkDialogService), 'open').mockResolvedValue({
+        action: ADD_LINK_ACTION.Saved,
+        link: { ...MOCK_LINKS[0], folderId: MOCK_ID.FolderReading },
+      });
+      const show = vi.spyOn(TestBed.inject(ToastService), 'show');
+
+      await actions.addLinkHere(TestBed.inject(FoldersStore).entityMap()[MOCK_ID.FolderReading]);
+
+      expect(open).toHaveBeenCalledWith({ folderId: MOCK_ID.FolderReading });
+      expect(show).toHaveBeenCalledWith(
+        expect.objectContaining({ title: `Saved to ${MOCK_NAME.FolderReading}` }),
+      );
     });
   });
 });

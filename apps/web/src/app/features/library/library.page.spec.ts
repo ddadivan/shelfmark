@@ -489,6 +489,19 @@ describe('LibraryPage of a folder', () => {
     expect(element.querySelector('ui-segmented-control')).toBeNull();
   });
 
+  it('"Show all links" on the not-found state goes to All links', async () => {
+    const { element, fixture } = await setupFolder('gone');
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+
+    const action = [...element.querySelectorAll<HTMLButtonElement>('ui-empty-state button')].find(
+      (button) => button.textContent?.trim() === 'Show all links',
+    );
+    action?.click();
+    await fixture.whenStable();
+
+    expect(navigate).toHaveBeenCalledWith('/links');
+  });
+
   it('has no axe violations on the not-found state', async () => {
     const { element } = await setupFolder('gone');
     document.body.append(element);
