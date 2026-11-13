@@ -131,6 +131,31 @@ describe('FolderActionsService', () => {
       expect(router.url).toBe(`/folders/${created?.id}`);
     });
 
+    it('asks the sidebar tree to focus the new folder, but not after Cancel', async () => {
+      const { actions, store } = await setup();
+      const focusCreated = vi.spyOn(TestBed.inject(SidebarTreeFocusService), 'focusCreated');
+
+      const cancelled = actions.create();
+      await opened();
+      button('Cancel').click();
+      await closed();
+      await cancelled;
+      expect(focusCreated).not.toHaveBeenCalled();
+
+      const done = actions.create();
+      await opened();
+      await until(() => {
+        expect(document.activeElement).toBe(nameField());
+      });
+      type('Focused');
+      button('Create folder').click();
+      await closed();
+      await done;
+
+      const created = store.entities().find((folder) => folder.name === 'Focused');
+      expect(focusCreated).toHaveBeenCalledWith(created?.id);
+    });
+
     it('names the parent in the title of a subfolder', async () => {
       const { actions, store } = await setup();
 

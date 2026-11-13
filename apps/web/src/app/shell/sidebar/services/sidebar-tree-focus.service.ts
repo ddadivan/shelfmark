@@ -1,4 +1,4 @@
-import { Service } from '@angular/core';
+import { afterNextRender, inject, Injector, Service } from '@angular/core';
 import type { TreeComponent } from '@shelfmark/ui';
 
 /**
@@ -9,6 +9,7 @@ import type { TreeComponent } from '@shelfmark/ui';
 @Service()
 export class SidebarTreeFocusService {
   private readonly trees = new Set<TreeComponent>();
+  private readonly injector = inject(Injector);
 
   /** Called by the sidebar; the returned function unregisters the tree. */
   register(tree: TreeComponent): () => void {
@@ -23,5 +24,24 @@ export class SidebarTreeFocusService {
         return;
       }
     }
+  }
+
+  /**
+   * Focuses the row `id` of a folder just created, once the tree has rendered it (scrolled into
+   * view by the focus). Tries again after the next render when the row is not there yet. Does
+   * nothing when no tree on screen shows it (the mobile shell pages without a sidebar).
+   */
+  focusCreated(id: string): void {
+    const attempt = (retry: boolean): void => {
+      for (const tree of this.trees) {
+        if (tree.focusRow(id)) {
+          return;
+        }
+      }
+      if (retry) {
+        afterNextRender(() => attempt(false), { injector: this.injector });
+      }
+    };
+    afterNextRender(() => attempt(true), { injector: this.injector });
   }
 }

@@ -2,7 +2,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  afterNextRender,
   effect,
+  Injector,
   inject,
   input,
   signal,
@@ -58,7 +60,9 @@ export class SavedViewChipsComponent {
   private readonly folders = inject(FoldersStore);
   private readonly transloco = inject(TranslocoService);
   private readonly phone = inject(ViewportService).phone;
+  private readonly injector = inject(Injector);
   private readonly menu = viewChild.required(MenuComponent);
+  private readonly chips = viewChild.required(SavedViewsComponent);
   /** Ticks when the active language or its translations change. */
   private readonly i18n = toSignal(this.transloco.events$, { initialValue: undefined });
 
@@ -140,7 +144,11 @@ export class SavedViewChipsComponent {
   }
 
   protected async add(): Promise<void> {
-    await this.actions.saveCurrent(this.filter());
+    const created = await this.actions.saveCurrent(this.filter());
+    if (created !== null) {
+      // The dialog handed focus back to "+ Save this view": the new chip is the result.
+      afterNextRender(() => this.chips().focusItem(created), { injector: this.injector });
+    }
   }
 
   /** What a plain type view filters, so nobody expects it to follow folders (#335). */

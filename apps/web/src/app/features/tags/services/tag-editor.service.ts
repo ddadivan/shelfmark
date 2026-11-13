@@ -26,8 +26,11 @@ export class TagEditorService {
   /** Ticks when the active language or its translations change, so messages re-translate. */
   private readonly i18n = toSignal(this.transloco.events$, { initialValue: undefined });
 
-  /** Called when a save or a merge went through and the field should close. */
-  onSettled: () => void = () => undefined;
+  /**
+   * Called when a save or a merge went through and the field should close; `createdId` is the
+   * new tag after "+" (focus goes to its chip).
+   */
+  onSettled: (createdId?: string) => void = () => undefined;
 
   /** The "+" field is open. */
   readonly adding = signal(false);
@@ -115,7 +118,7 @@ export class TagEditorService {
           title: this.transloco.translate('tags.add.done', { name }),
         });
       }
-      this.onSettled();
+      this.onSettled(previous ? undefined : result.tag?.id);
       return;
     }
     const failure = tagSaveError(result, previous !== undefined, name);

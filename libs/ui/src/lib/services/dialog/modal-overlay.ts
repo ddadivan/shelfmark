@@ -2,6 +2,7 @@ import type { ComponentType } from '@angular/cdk/portal';
 import { UiDialogRef } from './dialog-ref';
 import type { ModalOverlayDeps } from './models/modal-overlay-deps.interface';
 import type { ModalOverlayOptions } from './models/modal-overlay-options.interface';
+import { markFocusReturn } from './focus-return';
 import { KEYBOARD_KEY } from '../../models/keyboard';
 import { OVERLAY_LAYER } from '../overlay/models/overlay-layer.const';
 import { raiseOverlayLayers } from '../overlay/overlay-stacking';
@@ -82,6 +83,7 @@ export function openModalOverlay<C, R, D>(
   // (The host leaves the container on dispose, so the container is read now.)
   const overlayContainer = cdkRef.overlayRef.hostElement.parentElement;
   cdkRef.closed.subscribe(() => {
+    markFocusReturn();
     // The caller's resolver only counts when the opener is gone (the CDK restored it otherwise).
     if (options.restoreFocus && isDetached(opener)) {
       options.restoreFocus()?.focus();

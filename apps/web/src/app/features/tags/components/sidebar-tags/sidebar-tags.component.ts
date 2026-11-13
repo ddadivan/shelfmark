@@ -28,6 +28,7 @@ import {
   InputComponent,
   KEYBOARD_KEY,
   LongPressDirective,
+  markFocusReturn,
   MenuComponent,
   MenuItemComponent,
   MenuSeparatorComponent,
@@ -99,7 +100,7 @@ export class SidebarTagsComponent {
 
   constructor() {
     void this.tags.load();
-    this.editor.onSettled = () => this.cancel();
+    this.editor.onSettled = (createdId) => this.cancel(true, createdId);
     // `ui-chip` has no `aria-expanded` input: the fold chip is a disclosure button, so its inner
     // button carries the state (the chip is only in the DOM while there is something to fold).
     afterRenderEffect(() => {
@@ -186,9 +187,9 @@ export class SidebarTagsComponent {
     this.editor.open(tag.name, tag.id, false);
   }
 
-  /** Closes the editor; focus goes back to the renamed chip, or to the "+" button. */
-  protected cancel(restoreFocus = true): void {
-    const renamedId = this.editor.renamingId();
+  /** Closes the editor; focus goes to the renamed or the new chip, else back to the "+" button. */
+  protected cancel(restoreFocus = true, createdId?: string): void {
+    const renamedId = this.editor.renamingId() ?? createdId ?? null;
     this.editor.close();
     if (restoreFocus) {
       afterNextRender(() => this.restoreFocus(renamedId), { injector: this.injector });
@@ -196,6 +197,8 @@ export class SidebarTagsComponent {
   }
 
   private restoreFocus(renamedId: string | null): void {
+    // Handing focus back is not the user moving to "+": its tooltip stays closed.
+    markFocusReturn();
     const chip =
       renamedId === null
         ? null

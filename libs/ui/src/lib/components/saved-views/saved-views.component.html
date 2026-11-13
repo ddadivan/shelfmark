@@ -10,6 +10,7 @@
         ngToolbarWidget
         type="button"
         class="ui-saved-views__body"
+        [attr.data-ui-saved-view]="item.id"
         uiRipple
         [uiTooltip]="item.hint ?? ''"
         [attr.aria-pressed]="item.id === activeId()"

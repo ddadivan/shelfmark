@@ -150,7 +150,8 @@ describe('SavedViewActionsService', () => {
     type('Inbox articles');
     button('Save view').click();
     await closed();
-    await done;
+    // The caller gets the id of the new view, to move focus to its chip.
+    expect(await done).toBe(store.items().at(-1)?.id);
     expect(store.items().at(-1)).toMatchObject({
       name: 'Inbox articles',
       // Saved on a feed other than All links: only the type, so it works on every feed (#335).
@@ -173,7 +174,7 @@ describe('SavedViewActionsService', () => {
     expect(store.items()).toHaveLength(2);
     button('Cancel').click();
     await closed();
-    await done;
+    expect(await done).toBeNull();
   });
 
   it('explains a missing folder in the dialog', async () => {

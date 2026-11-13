@@ -1,6 +1,7 @@
 import type { DialogRef } from '@angular/cdk/dialog';
 import { afterNextRender, signal, type Injector } from '@angular/core';
 import { ReplaySubject, type Observable } from 'rxjs';
+import { markFocusReturn } from './focus-return';
 
 /** Longest leave animation (the 200 ms sheet exit) plus a margin; never wait longer. */
 const LEAVE_TIMEOUT_MS = 400;
@@ -86,10 +87,12 @@ export class UiDialogRef<R = undefined, C = unknown> {
     this.cdkRef.overlayRef.detachBackdrop();
     // No render may follow (content that does not read `leaving`), so a timer closes anyway.
     const safety = setTimeout(() => {
+      markFocusReturn();
       this.cdkRef.close(result);
     }, LEAVE_TIMEOUT_MS * 2);
     this.timers.push(safety);
     const finish = (): void => {
+      markFocusReturn();
       this.cdkRef.close(result);
     };
     afterNextRender(

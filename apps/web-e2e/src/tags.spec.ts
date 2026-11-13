@@ -2,7 +2,7 @@ import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { pickTagMenuItem } from './support/a11y-flows';
 import { seedSession } from './support/mock-session';
-import { gotoWithTags } from './support/sidebar';
+import { gotoWithTags, isCompact } from './support/sidebar';
 import { E2E_TAG } from './models/e2e-tag.const';
 
 // Mirror MOCK_NAME.TagDocs / TagRecipes and MOCK_TAG_NAME (apps/web and libs/shared/contracts);
@@ -57,6 +57,36 @@ test.describe('tags (mock API)', () => {
         await expect(sidebar(page).getByRole('button', { name: 'New tag' })).toBeFocused();
       },
     );
+
+    test('after adding a tag with Enter focus is on its chip, no tooltip on "+"', async ({
+      page,
+    }) => {
+      test.skip(isCompact(page), 'the Tags tab is a page: the desktop sidebar path is checked');
+      await gotoWithTags(page, '/links');
+
+      await sidebar(page).getByRole('button', { name: 'New tag' }).focus();
+      await page.keyboard.press('Enter');
+      await sidebar(page).getByRole('textbox', { name: 'New tag' }).fill('fresh-tag');
+      await page.keyboard.press('Enter');
+
+      await expect(chip(page, 'fresh-tag')).toBeFocused();
+      await page.waitForTimeout(700);
+      await expect(page.locator('ui-tooltip-panel')).toHaveCount(0);
+    });
+
+    test('Esc on the new tag field returns focus to "+" without its tooltip', async ({ page }) => {
+      test.skip(isCompact(page), 'the Tags tab is a page: the desktop sidebar path is checked');
+      await gotoWithTags(page, '/links');
+
+      const add = sidebar(page).getByRole('button', { name: 'New tag' });
+      await add.focus();
+      await page.keyboard.press('Enter');
+      await sidebar(page).getByRole('textbox', { name: 'New tag' }).press('Escape');
+
+      await expect(add).toBeFocused();
+      await page.waitForTimeout(700);
+      await expect(page.locator('ui-tooltip-panel')).toHaveCount(0);
+    });
 
     test('an outside click closes the new tag field without saving and focuses "+"', async ({
       page,

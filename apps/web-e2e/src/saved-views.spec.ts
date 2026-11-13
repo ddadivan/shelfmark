@@ -125,6 +125,19 @@ test.describe('saved views (mock API)', () => {
     await expect(page).toHaveURL(/\/folders\/00000000-0000-4000-8000-000000000101$/u);
   });
 
+  test('after saving a view with the keyboard focus is on its chip', async ({ page }) => {
+    await openFeed(page, '/unsorted?kind=shopping');
+
+    await views(page).getByRole('button', { name: 'Save this view' }).focus();
+    await page.keyboard.press('Enter');
+    const dialog = page.getByRole('dialog', { name: 'Save this view' });
+    await dialog.getByRole('textbox', { name: 'Name' }).fill('Keyboard view');
+    await page.keyboard.press('Enter');
+
+    await expect(dialog).toHaveCount(0);
+    await expect(chip(page, /^Keyboard view \d+$/)).toBeFocused();
+  });
+
   test('a failed rename puts the old name back with a toast', async ({ page }) => {
     await openFeed(page);
     await viewMenuItem(page, 'Videos', 'Rename');

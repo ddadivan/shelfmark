@@ -287,6 +287,45 @@ test.describe('folders (mock API)', () => {
       await expect(row(page, READING.name)).toHaveCount(0);
     });
 
+    test('after creating with the keyboard focus is on the new folder row, no tooltip on "+"', async ({
+      page,
+    }) => {
+      test.skip(isCompact(page), 'the sidebar tree exists on the desktop shell only');
+      await gotoWithSidebar(page, '/links');
+
+      const add = page.getByRole('button', { name: 'New folder' });
+      await add.focus();
+      await page.keyboard.press('Enter');
+      const dialog = page.getByRole('dialog', { name: 'New folder' });
+      await dialog.getByLabel('Name').fill('Keyboard folder');
+      await page.keyboard.press('Enter');
+
+      await expect(dialog).toBeHidden();
+      await expect(row(page, 'Keyboard folder')).toBeFocused();
+      // The tooltip opens after 400 ms: wait it out, then it must still not exist.
+      await page.waitForTimeout(700);
+      await expect(page.locator('ui-tooltip-panel')).toHaveCount(0);
+    });
+
+    test('Esc in the New folder dialog returns focus to "+" without its tooltip', async ({
+      page,
+    }) => {
+      test.skip(isCompact(page), 'the sidebar tree exists on the desktop shell only');
+      await gotoWithSidebar(page, '/links');
+
+      const add = page.getByRole('button', { name: 'New folder' });
+      await add.focus();
+      await page.keyboard.press('Enter');
+      const dialog = page.getByRole('dialog', { name: 'New folder' });
+      await expect(dialog).toBeVisible();
+      await page.keyboard.press('Escape');
+
+      await expect(dialog).toBeHidden();
+      await expect(add).toBeFocused();
+      await page.waitForTimeout(700);
+      await expect(page.locator('ui-tooltip-panel')).toHaveCount(0);
+    });
+
     test('Cancel leaves the folder alone', async ({ page }) => {
       await gotoWithSidebar(page, '/links');
 
