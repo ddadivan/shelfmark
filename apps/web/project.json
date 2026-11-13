@@ -215,6 +215,16 @@
         }
       }
     },
+    "serve-prebuilt": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "options": {
+        "port": 4200,
+        "staticFilePath": "dist/apps/web-e2e-build/browser",
+        "spa": true,
+        "watch": false
+      }
+    },
     "test": {
       "executor": "@angular/build:unit-test",
       "options": {

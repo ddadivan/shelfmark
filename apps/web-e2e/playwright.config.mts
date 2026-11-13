@@ -11,6 +11,15 @@ const port = process.env['E2E_PORT'] ?? '4200';
 const origin = `http://localhost:${port}`;
 const deployedUrl = process.env['BASE_URL'];
 const baseURL = deployedUrl || getReadyUrl(origin);
+// CI builds the `e2e` bundle once in the `web-build` job and the shards download it into
+// dist/apps/web-e2e-build (#362): `web:serve-prebuilt` then serves it as it is, without a build.
+const prebuilt = process.env['E2E_PREBUILT'] === 'true';
+
+/** The local dev server; on CI the `e2e` build (production plus the hidden /__e2e/csp page). */
+function serveCommand(): string {
+  if (!isCI) return `npx nx run web:serve --port=${port}`;
+  return `npx nx run web:${prebuilt ? 'serve-prebuilt' : 'serve-static:e2e'} --port=${port}`;
+}
 
 /** Matches a test that carries one of the tags (ADR 0043): `tablet` and `phone` run only those. */
 function taggedWith(...tags: E2eTag[]): RegExp {
@@ -36,8 +45,7 @@ export default defineConfig({
   webServer: deployedUrl
     ? undefined
     : {
-        // CI serves the `e2e` build: the production build plus the hidden /__e2e/csp test page.
-        command: `npx nx run web:${isCI ? 'serve-static:e2e' : 'serve'} --port=${port}`,
+        command: serveCommand(),
         url: getReadyUrl(origin),
         reuseExistingServer: !isCI,
         timeout: 180_000,
