@@ -20,8 +20,8 @@
     [value]="value()"
     [disabled]="disabled()"
     [attr.placeholder]="placeholder() || null"
-    [attr.aria-expanded]="open()"
-    [attr.aria-controls]="open() ? panelId : null"
+    [attr.aria-expanded]="overlay.open()"
+    [attr.aria-controls]="overlay.open() ? panelId : null"
     [attr.aria-required]="required() ? 'true' : null"
     [attr.aria-invalid]="showInvalid() ? 'true' : null"
     [attr.aria-describedby]="describedBy()"
@@ -34,35 +34,39 @@
   <ui-icon
     class="ui-emoji-picker__chevron"
     name="chevron-down"
-    [class.is-open]="open()"
+    [class.is-open]="overlay.open()"
     (click)="onFieldClick()"
   />
 </ui-field-shell>
 
-<div #popup class="ui-emoji-picker__popup" [class.ui-emoji-picker__popup--shown]="attached()">
-  @if (open()) {
+<div
+  #popup
+  class="ui-emoji-picker__popup"
+  [class.ui-emoji-picker__popup--shown]="overlay.attached()"
+>
+  @if (overlay.open()) {
     <div
       #panel
       class="ui-emoji-picker__panel"
       role="dialog"
       tabindex="-1"
-      [class.ui-emoji-picker__panel--sheet]="sheet()"
-      [class.ui-emoji-picker__panel--snapping]="snapping()"
+      [class.ui-emoji-picker__panel--sheet]="overlay.sheet()"
+      [class.ui-emoji-picker__panel--snapping]="overlay.snapping()"
       [id]="panelId"
       [attr.aria-label]="label()"
-      [animate.enter]="sheet() ? 'ui-emoji-picker--sheet-enter' : 'ui-emoji-picker--enter'"
-      [animate.leave]="sheet() ? 'ui-emoji-picker--sheet-leave' : 'ui-emoji-picker--leave'"
+      [animate.enter]="overlay.sheet() ? 'ui-emoji-picker--sheet-enter' : 'ui-emoji-picker--enter'"
+      [animate.leave]="overlay.sheet() ? 'ui-emoji-picker--sheet-leave' : 'ui-emoji-picker--leave'"
       (keydown)="onPanelKeydown($event)"
-      (focusout)="onPanelFocusout($event)"
+      (focusout)="overlay.focusOut($event)"
     >
       <div
         class="ui-emoji-picker__drag"
-        (pointerdown)="onDragStart($event)"
-        (pointermove)="onDragMove($event)"
-        (pointerup)="onDragEnd($event)"
-        (pointercancel)="onDragCancel($event)"
+        (pointerdown)="overlay.dragStart($event)"
+        (pointermove)="overlay.dragMove($event)"
+        (pointerup)="overlay.dragEnd($event)"
+        (pointercancel)="overlay.dragCancel($event)"
       >
-        @if (sheet()) {
+        @if (overlay.sheet()) {
           <div class="ui-emoji-picker__grip" aria-hidden="true"></div>
         }
         <div class="ui-emoji-picker__head">
@@ -81,14 +85,14 @@
               (keydown)="onSearchKeydown($event)"
             />
           </div>
-          @if (sheet() && closeLabel()) {
+          @if (overlay.sheet() && closeLabel()) {
             <ui-button
               variant="ghost"
               size="lg"
               iconOnly
               iconLeft="close"
               [ariaLabel]="closeLabel()"
-              (click)="hide(true)"
+              (click)="overlay.hide(true)"
             />
           }
         </div>

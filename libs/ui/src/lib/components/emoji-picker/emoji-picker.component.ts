@@ -1,13 +1,12 @@
 import { Grid, GridCell, GridRow } from '@angular/aria/grid';
 import { Tab, TabContent, TabList, TabPanel, Tabs } from '@angular/aria/tabs';
-import { DOCUMENT, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import {
   afterNextRender,
   afterRenderEffect,
   ChangeDetectionStrategy,
   Component,
   computed,
-  DestroyRef,
   ElementRef,
   inject,
   Injector,
@@ -19,7 +18,6 @@ import {
   viewChild,
 } from '@angular/core';
 import type { FormValueControl } from '@angular/forms/signals';
-import type { Subscription } from 'rxjs';
 import { UiFieldControl } from '../field/field-control.directive';
 import { FieldShellComponent } from '../field/field-shell.component';
 import { nextFieldId } from '../field/field-ids';
@@ -27,41 +25,21 @@ import { ButtonComponent } from '../button/button.component';
 import { IconComponent } from '../icon/icon.component';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
 import { SpinnerComponent } from '../spinner/spinner.component';
-import { menuPositions } from '../menu/menu-positions';
-import { MENU_ALIGN } from '../menu/models/menu-align.const';
 import { TooltipDirective } from '../../directives/tooltip/tooltip.directive';
 import { KEYBOARD_KEY } from '../../models/keyboard';
-import type { ConnectedOverlay } from '../../services/overlay/connected-overlay';
-import { UiOverlay } from '../../services/overlay/overlay.service';
-import { OVERLAY_EDGE } from '../../services/overlay/models/overlay-edge.const';
-import { OVERLAY_LAYER } from '../../services/overlay/models/overlay-layer.const';
-import { overlayLayerClass } from '../../services/overlay/overlay-layer';
-import {
-  lastInputWasPointer,
-  returnFocus,
-  trackInputModality,
-} from '../../services/dialog/focus-return';
-import { mediaMatch } from '../../utils/media/media-match';
-import { SHEET_DRAG_END, SheetDragTracker } from '../../utils/sheet-drag';
-import { PHONE_MEDIA_QUERY } from '../../utils/media/models/phone-media-query.const';
-import { emojiRows, searchEmoji } from './emoji-search';
-import { EMOJI_PICKER_COLUMNS } from './models/emoji-picker-columns.const';
+import { emojiCellAction, firstGridStop, focusAfterRemoval, opensPanel } from './emoji-picker-keys';
+import { EmojiPickerOverlay } from './emoji-picker-overlay';
+import { categorySections, keptCategory, resultsSection } from './emoji-sections';
 import type { EmojiPickerCategory } from './models/emoji-picker-category.interface';
 import type { EmojiPickerItem } from './models/emoji-picker-item.interface';
 import type { EmojiPickerSection } from './models/emoji-picker-section.interface';
 
-/** Tabbable stops of the open panel, in order (roving grids and tabs expose one each). */
-const PANEL_STOPS = 'input, button:not([tabindex="-1"]), [tabindex="0"]';
-
 /**
- * Picks one emoji (the folder icon, #363). The field is a text input, so typing or pasting an
- * emoji still works; a click, Enter or ArrowDown opens a glass panel (`UiOverlay` layer `menu`,
- * anchored to the field; a bottom sheet below 40em) with a search box, category tabs (Angular Aria
- * tabs) and grids of emoji (Angular Aria grids: arrows move, Enter or Space chooses). "Recent" and
- * "Yours" sit above the category while they have emoji; an own emoji with a `removeLabel` shows a
- * "×" and Delete / Backspace removes it (`removed`; the feature forgets it). Esc closes and hands
- * focus back to the field without a tooltip (#356). Names come in translated with the items; the
- * feature loads them lazily on `opened`, and a spinner shows until `categories` arrive.
+ * Picks one emoji (the folder icon, #363): a text field (typing or pasting still works) that opens
+ * a panel with search, Angular Aria category tabs and emoji grids; "Recent" and "Yours" on top,
+ * own emoji removable (`removed`). Names come in translated; the feature loads them on `opened`.
+ * Open / close, focus and the sheet drag are `EmojiPickerOverlay`; sections are `emoji-sections`;
+ * cell keys are `emoji-picker-keys`. The full behaviour is in libs/ui CLAUDE.md (Emoji picker).
  */
 @Component({
   selector: 'ui-emoji-picker',
@@ -124,57 +102,35 @@ export class EmojiPickerComponent extends UiFieldControl implements FormValueCon
   /** An own emoji was removed ("×", Delete or Backspace): the emoji. */
   readonly removed = output<string>();
 
-  private readonly overlays = inject(UiOverlay);
   private readonly injector = inject(Injector);
-  private readonly document = inject(DOCUMENT);
-  private readonly host: HTMLElement = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
-  private readonly phone = mediaMatch(PHONE_MEDIA_QUERY);
-
   private readonly field = viewChild.required<ElementRef<HTMLInputElement>>('field');
   private readonly popup = viewChild.required<ElementRef<HTMLElement>>('popup');
   private readonly panel = viewChild<ElementRef<HTMLElement>>('panel');
   private readonly body = viewChild<ElementRef<HTMLElement>>('body');
 
+  /** Open / close, focus and the phone sheet drag. */
+  protected readonly overlay = new EmojiPickerOverlay({
+    element: inject<ElementRef<HTMLElement>>(ElementRef).nativeElement,
+    field: () => this.field().nativeElement,
+    popup: () => this.popup().nativeElement,
+    panel: () => this.panel()?.nativeElement,
+    onClosed: () => this.touch.emit(),
+  });
   protected readonly panelId = nextFieldId('ui-emoji-picker-panel');
   private readonly ids = nextFieldId('ui-emoji-picker');
-  protected readonly open = signal(false);
-  /** The popup sits in the overlay pane (open, or still leaving). */
-  protected readonly attached = signal(false);
-  /** This open is the phone sheet. */
-  protected readonly sheet = signal(false);
   protected readonly query = signal('');
-  /** The phone sheet snaps back after a short drag (only then its transform is animated). */
-  protected readonly snapping = signal(false);
-  private readonly drag = new SheetDragTracker();
   protected readonly searching = computed(() => this.query().trim() !== '');
   /** The selected tab; kept while it still exists. */
   protected readonly category = linkedSignal<readonly EmojiPickerCategory[], string | undefined>({
     source: this.categories,
-    computation: (categories, previous) =>
-      categories.some((item) => item.id === previous?.value) ? previous?.value : categories[0]?.id,
+    computation: (categories, previous) => keptCategory(categories, previous?.value),
   });
-
   protected readonly results = computed(() =>
-    this.section(
-      'results',
-      this.resultsLabel(),
-      searchEmoji(this.categories(), this.query(), this.own()),
-    ),
+    resultsSection(this.ids, this.resultsLabel(), this.categories(), this.query(), this.own()),
   );
-
-  private overlay: ConnectedOverlay | null = null;
-  private overlaySheet = false;
-  private detachSubscription: Subscription | null = null;
-  private openedByPointer = false;
-  private readonly outsidePress = (event: Event): void => {
-    if (event.target instanceof Node && !this.ownsOrIgnores(event.target)) {
-      this.hide(false);
-    }
-  };
 
   constructor() {
     super();
-    trackInputModality();
     // The panel's height changes when the names arrive, a search runs or own emoji go: place it
     // again, so it flips above the field when there is no longer room below.
     afterRenderEffect(() => {
@@ -182,16 +138,7 @@ export class EmojiPickerComponent extends UiFieldControl implements FormValueCon
       this.results();
       this.recent();
       this.own();
-      if (this.open()) {
-        this.overlay?.updatePosition();
-      }
-    });
-    inject(DestroyRef).onDestroy(() => {
-      this.document.removeEventListener('pointerdown', this.outsidePress, true);
-      this.detachSubscription?.unsubscribe();
-      this.overlay?.dispose();
-      // The pane may still hold the popup element, which Angular no longer owns.
-      this.popup().nativeElement.remove();
+      this.overlay.updatePosition();
     });
   }
 
@@ -200,27 +147,14 @@ export class EmojiPickerComponent extends UiFieldControl implements FormValueCon
     this.field().nativeElement.focus(options);
   }
 
-  /** The sections above and in a category tab: "Recent", "Yours", then the category. */
+  /** The sections of a category tab: "Recent", "Yours", then the category. */
   protected sections(category: EmojiPickerCategory): EmojiPickerSection[] {
-    return [
-      this.section(`${category.id}-recent`, this.recentLabel(), this.recent()),
-      this.section(`${category.id}-own`, this.ownLabel(), this.own(), true),
-      this.section(category.id, category.label, category.items),
-    ].filter((section) => section.rows.length > 0);
-  }
-
-  private section(
-    key: string,
-    label: string,
-    items: readonly EmojiPickerItem[],
-    removable = false,
-  ): EmojiPickerSection {
-    return {
-      headingId: `${this.ids}-${key}`,
-      label,
-      rows: emojiRows(items, EMOJI_PICKER_COLUMNS),
-      removable,
-    };
+    return categorySections(
+      this.ids,
+      category,
+      { label: this.recentLabel(), items: this.recent() },
+      { label: this.ownLabel(), items: this.own() },
+    );
   }
 
   protected onInput(event: Event): void {
@@ -228,19 +162,15 @@ export class EmojiPickerComponent extends UiFieldControl implements FormValueCon
   }
 
   protected onFieldClick(): void {
-    if (this.open()) {
-      this.hide(true);
+    if (this.overlay.open()) {
+      this.overlay.hide(true);
     } else {
       this.show(true);
     }
   }
 
   protected onFieldKeydown(event: KeyboardEvent): void {
-    if (
-      !this.open() &&
-      (event.key === KEYBOARD_KEY.Enter || event.key === KEYBOARD_KEY.ArrowDown) &&
-      !event.isComposing
-    ) {
+    if (!this.overlay.open() && opensPanel(event)) {
       // Enter must not submit the surrounding form: it opens the panel.
       event.preventDefault();
       this.show(false);
@@ -248,8 +178,7 @@ export class EmojiPickerComponent extends UiFieldControl implements FormValueCon
   }
 
   protected onFieldBlur(event: FocusEvent): void {
-    const next = event.relatedTarget;
-    if (!this.open() && !(next instanceof Node && this.popup().nativeElement.contains(next))) {
+    if (this.overlay.isFieldBlur(event)) {
       this.touch.emit();
     }
   }
@@ -261,9 +190,7 @@ export class EmojiPickerComponent extends UiFieldControl implements FormValueCon
   protected onSearchKeydown(event: KeyboardEvent): void {
     if (event.key === KEYBOARD_KEY.ArrowDown) {
       event.preventDefault();
-      this.body()
-        ?.nativeElement.querySelector<HTMLElement>('[role="gridcell"][tabindex="0"]')
-        ?.focus();
+      firstGridStop(this.body()?.nativeElement)?.focus();
     } else if (event.key === KEYBOARD_KEY.Enter) {
       // Enter in the box chooses the first result and never submits the form.
       event.preventDefault();
@@ -274,72 +201,19 @@ export class EmojiPickerComponent extends UiFieldControl implements FormValueCon
     }
   }
 
-  /** Esc closes; Tab past the last stop (or Shift+Tab before the first) leaves through the field. */
+  /** Esc and Tab are the overlay's; on a cell, Enter / Space choose and Delete removes. */
   protected onPanelKeydown(event: KeyboardEvent): void {
-    if (event.key === KEYBOARD_KEY.Escape) {
-      event.preventDefault();
-      // A dialog around the picker keeps its own Esc.
-      event.stopPropagation();
-      this.hide(true);
+    if (this.overlay.keydown(event) || !(event.target instanceof HTMLElement)) {
       return;
     }
-    const cell =
-      event.target instanceof HTMLElement
-        ? event.target.closest<HTMLElement>('[data-emoji]')
-        : null;
-    if (cell) {
-      this.onCellKeydown(event, cell);
-    }
-    if (event.key !== KEYBOARD_KEY.Tab) {
-      return;
-    }
-    const stops = [
-      ...(this.panel()?.nativeElement.querySelectorAll<HTMLElement>(PANEL_STOPS) ?? []),
-    ].filter((element) => !element.closest('[inert]'));
-    const edge = event.shiftKey ? stops[0] : stops[stops.length - 1];
-    if (event.target === edge || stops.length === 0) {
-      // Forward Tab moves on from the field (the browser's default runs after this handler);
-      // Shift+Tab lands on the field itself.
-      if (event.shiftKey) {
-        event.preventDefault();
-      }
-      this.hide(true);
-    }
-  }
-
-  protected onPanelFocusout(event: FocusEvent): void {
-    const next = event.relatedTarget;
-    if (next instanceof Node && !this.ownsOrIgnores(next)) {
-      this.hide(false);
-    }
-  }
-
-  /**
-   * The node is the field, the panel, or a toast: a toast (the Undo after removing an own emoji)
-   * belongs to what the person is doing here, so pressing it or focusing it keeps the panel open.
-   */
-  private ownsOrIgnores(node: Node): boolean {
-    const element = node instanceof Element ? node : node.parentElement;
-    return (
-      this.host.contains(node) ||
-      this.popup().nativeElement.contains(node) ||
-      !!element?.closest(`.${overlayLayerClass(OVERLAY_LAYER.Toast)}`)
-    );
-  }
-
-  /** Enter or Space chooses the focused cell; Delete or Backspace removes an own emoji. */
-  private onCellKeydown(event: KeyboardEvent, cell: HTMLElement): void {
-    const emoji = cell.dataset['emoji'] ?? '';
-    if (event.key === KEYBOARD_KEY.Enter || event.key === KEYBOARD_KEY.Space) {
+    const cell = event.target.closest<HTMLElement>('[data-emoji]');
+    const action = cell ? emojiCellAction(event.key, cell, this.own()) : null;
+    if (action?.kind === 'choose') {
       event.preventDefault();
-      this.choose(emoji);
-    } else if (
-      (event.key === KEYBOARD_KEY.Delete || event.key === KEYBOARD_KEY.Backspace) &&
-      cell.closest('[data-own="true"]') &&
-      this.own().some((item) => item.emoji === emoji && item.removeLabel)
-    ) {
+      this.choose(action.emoji);
+    } else if (action?.kind === 'remove') {
       event.preventDefault();
-      this.remove(emoji);
+      this.remove(action.emoji);
     }
   }
 
@@ -349,131 +223,26 @@ export class EmojiPickerComponent extends UiFieldControl implements FormValueCon
     this.remove(emoji);
   }
 
-  /** The grip or the head of the phone sheet is pressed: it follows the finger down. */
-  protected onDragStart(event: PointerEvent): void {
-    if (this.sheet() && this.drag.start(event)) {
-      this.snapping.set(false);
-    }
-  }
-
-  protected onDragMove(event: PointerEvent): void {
-    const panel = this.panel()?.nativeElement;
-    if (panel) {
-      this.drag.move(event, panel);
-    }
-  }
-
-  /** Past 30% of the height or a flick closes (from where it was dragged); else it snaps back. */
-  protected onDragEnd(event: PointerEvent): void {
-    const panel = this.panel()?.nativeElement;
-    const end = panel ? this.drag.end(event, panel) : null;
-    if (end === SHEET_DRAG_END.Close) {
-      this.hide(true);
-    } else if (end === SHEET_DRAG_END.Snap) {
-      this.snapping.set(true);
-    }
-  }
-
-  protected onDragCancel(event: PointerEvent): void {
-    const panel = this.panel()?.nativeElement;
-    if (panel && this.drag.cancel(event, panel)) {
-      this.snapping.set(true);
-    }
-  }
-
   protected choose(emoji: string): void {
     this.value.set(emoji);
-    this.hide(true);
+    this.overlay.hide(true);
   }
 
   /** Emits, then keeps focus in "Yours": on the emoji that took the place of the removed one. */
   private remove(emoji: string): void {
     const index = this.own().findIndex((item) => item.emoji === emoji);
     this.removed.emit(emoji);
-    afterNextRender(
-      () => {
-        const cells = [
-          ...(this.body()?.nativeElement.querySelectorAll<HTMLElement>(
-            '[data-own="true"] [role="gridcell"]',
-          ) ?? []),
-        ];
-        const next = cells[Math.min(index, cells.length - 1)];
-        (next ?? this.panel()?.nativeElement.querySelector<HTMLElement>('input'))?.focus();
-      },
-      { injector: this.injector },
-    );
-  }
-
-  private show(pointer: boolean): void {
-    if (this.open() || this.disabled()) {
-      return;
-    }
-    this.openedByPointer = pointer || lastInputWasPointer();
-    this.query.set('');
-    const sheet = this.phone();
-    this.sheet.set(sheet);
-    this.open.set(true);
-    if (this.overlay?.isAttached && this.overlaySheet === sheet) {
-      // Reopened while the leave animation runs.
-      this.overlay.cancelRelease();
-    } else {
-      this.createOverlay(sheet);
-    }
-    this.attached.set(true);
-    this.document.addEventListener('pointerdown', this.outsidePress, true);
-    this.opened.emit();
-    afterNextRender(
-      () => {
-        this.overlay?.updatePosition();
-        // On a phone the keyboard would cover the sheet: focus the panel, not the search box.
-        const panel = this.panel()?.nativeElement;
-        (sheet ? panel : panel?.querySelector<HTMLElement>('input'))?.focus({
-          preventScroll: true,
-        });
-      },
-      { injector: this.injector },
-    );
-  }
-
-  private createOverlay(sheet: boolean): void {
-    this.detachSubscription?.unsubscribe();
-    this.overlay?.dispose();
-    const overlay = sheet
-      ? this.overlays.global(
-          { edge: OVERLAY_EDGE.Bottom, layer: OVERLAY_LAYER.Menu },
-          { injector: this.injector },
-        )
-      : this.overlays.connect(
-          {
-            origin: this.host.querySelector<HTMLElement>('.ui-field__control') ?? this.host,
-            positions: menuPositions(MENU_ALIGN.Start),
-            layer: OVERLAY_LAYER.Menu,
-          },
-          { injector: this.injector },
-        );
-    this.overlay = overlay;
-    this.overlaySheet = sheet;
-    overlay.attachElement(this.popup().nativeElement);
-    this.detachSubscription = overlay.detachments().subscribe(() => {
-      if (this.overlay === overlay) {
-        this.attached.set(false);
-        this.open.set(false);
-      }
+    afterNextRender(() => focusAfterRemoval(this.panel()?.nativeElement, index), {
+      injector: this.injector,
     });
   }
 
-  /** Closes; `restoreFocus` hands focus back to the field (no ring after a pointer, no tooltip). */
-  protected hide(restoreFocus: boolean): void {
-    if (!this.open()) {
+  private show(pointer: boolean): void {
+    if (this.overlay.open() || this.disabled()) {
       return;
     }
-    this.open.set(false);
-    this.document.removeEventListener('pointerdown', this.outsidePress, true);
-    if (restoreFocus) {
-      returnFocus(this.field().nativeElement, this.openedByPointer);
-    }
-    this.touch.emit();
-    // The content leaves in this render (its leave animation starts); release the pane after it.
-    afterNextRender(() => this.overlay?.release(), { injector: this.injector });
+    this.query.set('');
+    this.overlay.show(pointer);
+    this.opened.emit();
   }
 }
