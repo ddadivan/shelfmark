@@ -11,6 +11,7 @@ import { TAGS_API } from '../../../links/models/tags-api.const';
 import type { TagsApi } from '../../../links/models/tags-api.interface';
 import { MockLinksApi } from '../../../links/mock/mock-links.api';
 import { MockTagsApi } from '../../../links/mock/mock-tags.api';
+import { MOCK_TAG_NAME } from '../../../links/models/mock-tag-name.const';
 import { SidebarTagsComponent } from './sidebar-tags.component';
 
 async function setup(api?: TagsApi) {
@@ -317,6 +318,67 @@ describe('SidebarTagsComponent', () => {
       expect(element.textContent).toContain('There’s already a tag'.replace('’', "'"));
     });
     expect(field(element)).not.toBeNull();
+  });
+
+  it('shows an error and keeps the field when creating fails', async () => {
+    const { element, fixture } = await setup();
+
+    addButton(element).click();
+    await fixture.whenStable();
+    type(element, MOCK_TAG_NAME.CreateFails);
+    submit(element);
+
+    await until(() => {
+      expect(element.textContent).toContain('Couldn’t create the tag'.replace('’', "'"));
+    });
+    expect(field(element)).not.toBeNull();
+  });
+
+  it('puts focus on the new chip, opening the folded group when the chip lands there', async () => {
+    const many = Array.from({ length: 8 }, (_, n) => tag(`t${n}`, 20 - n));
+    const created = tag('fresh-tag', 0);
+    const api: TagsApi = {
+      list: () => of(many),
+      create: vi.fn(() => of(created)),
+      update: vi.fn(),
+      remove: vi.fn(),
+      merge: vi.fn(),
+    };
+    const { element, fixture } = await setup(api);
+    document.body.append(element);
+
+    addButton(element).click();
+    await fixture.whenStable();
+    type(element, 'fresh-tag');
+    submit(element);
+
+    await until(() => {
+      expect(chips(element)).toContain('fresh-tag');
+      expect(document.activeElement).toBe(
+        chip(element, 'fresh-tag').querySelector('button.ui-chip__body'),
+      );
+    });
+    expect(element.textContent).toContain('Show less');
+    element.remove();
+  });
+
+  it('a right click opens the tag menu with its summary and actions', async () => {
+    const { element } = await setup();
+
+    chip(element, MOCK_NAME.TagDocs).dispatchEvent(
+      new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: 5, clientY: 5 }),
+    );
+    await until(() => {
+      expect(document.querySelector('[role="menuitem"]')).not.toBeNull();
+    });
+    const menu = document.querySelector<HTMLElement>('[role="menu"]');
+
+    expect(
+      [...(menu?.querySelectorAll('[role="menuitem"]') ?? [])].map((item) =>
+        item.textContent?.trim(),
+      ),
+    ).toEqual(['Show links', 'Rename', 'Merge into another tag…', 'Delete tag']);
+    expect(menu?.textContent).toMatch(/docs, \d+ links?/);
   });
 
   it('refuses an empty name without a request', async () => {
