@@ -18,7 +18,6 @@ function setup() {
 const REQUEST: SendFeedbackRequest = {
   kind: 'problem',
   text: 'Preview is missing',
-  screenshot: { type: 'image/png', data: 'aGVsbG8=' },
   client: { appVersion: '1.0', userAgent: 'Test' },
 };
 
@@ -39,7 +38,7 @@ describe('HttpFeedbackApi', () => {
     await expect(result).resolves.toEqual([feedbackMessage()]);
   });
 
-  it('sends with POST /api/feedback/messages and the body as given (base64 screenshot included)', async () => {
+  it('sends with POST /api/feedback/messages and the body as given', async () => {
     const { api, http } = setup();
 
     const result = api.send(REQUEST);
@@ -72,5 +71,35 @@ describe('HttpFeedbackApi', () => {
     http.expectOne('/api/feedback/messages').flush({}, { status, statusText: 'Error' });
 
     await expect(result).rejects.toEqual(new FeedbackSendError(FEEDBACK_SEND_ERROR_REASON.Failed));
+  });
+
+  it('attaches a screenshot with POST to its own route, without the error toast', async () => {
+    const { api, http } = setup();
+    const upload = { type: 'image/png' as const, data: 'aGVsbG8=' };
+
+    const result = api.attachScreenshot('m1', upload);
+    const request = http.expectOne('/api/feedback/messages/m1/screenshots');
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual(upload);
+    expect(request.request.context.get(SKIP_ERROR_TOAST)).toBe(true);
+    request.flush(feedbackMessage({ screenshotUrls: ['/api/feedback/messages/m1/screenshots/0'] }));
+
+    await expect(result).resolves.toMatchObject({
+      screenshotUrls: ['/api/feedback/messages/m1/screenshots/0'],
+    });
+  });
+
+  it('rejects a failed screenshot with the HTTP error as is', async () => {
+    const { api, http } = setup();
+
+    const result = api.attachScreenshot('m1', { type: 'image/png', data: 'aGVsbG8=' });
+    http
+      .expectOne('/api/feedback/messages/m1/screenshots')
+      .flush(
+        { message: 'A message has at most 3 screenshots' },
+        { status: 400, statusText: 'Bad' },
+      );
+
+    await expect(result).rejects.toMatchObject({ status: 400 });
   });
 });

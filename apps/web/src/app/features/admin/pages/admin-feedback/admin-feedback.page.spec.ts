@@ -15,7 +15,7 @@ const FIRST = adminFeedbackMessage({
   id: 'a',
   text: 'Sort by last opened',
   user: { name: 'Ada Lovelace', email: 'ada@example.com' },
-  screenshotUrl: '/api/admin/feedback/a/screenshot',
+  screenshotUrls: ['/api/admin/feedback/a/screenshots/0', '/api/admin/feedback/a/screenshots/1'],
 });
 const SECOND = adminFeedbackMessage({
   id: 'b',
@@ -67,9 +67,9 @@ describe('AdminFeedbackPage', () => {
     });
   });
 
-  it('lists every message with kind, user name and email, status and screenshot link', async () => {
+  it('lists every message with kind, user name and email, status and every screenshot', async () => {
     const { root } = await setup();
-    const items = Array.from(root.querySelectorAll('li'));
+    const items = Array.from(root.querySelectorAll('.admin-feedback__list > li'));
 
     expect(root.querySelector('h1')?.textContent).toContain('Feedback inbox');
     expect(items).toHaveLength(2);
@@ -79,9 +79,18 @@ describe('AdminFeedbackPage', () => {
     expect(first).toContain('ada@example.com');
     expect(first).toContain('Sort by last opened');
     expect(first).toContain('Received');
-    const link = items[0]?.querySelector('a');
-    expect(link?.getAttribute('href')).toBe('/api/admin/feedback/a/screenshot');
-    expect(link?.getAttribute('rel')).toContain('noopener');
+    const links = Array.from(items[0]?.querySelectorAll('a') ?? []);
+    expect(links.map((link) => link.getAttribute('href'))).toEqual([
+      '/api/admin/feedback/a/screenshots/0',
+      '/api/admin/feedback/a/screenshots/1',
+    ]);
+    expect(links[0]?.getAttribute('rel')).toContain('noopener');
+    const images = Array.from(items[0]?.querySelectorAll('img') ?? []);
+    expect(images.map((image) => image.getAttribute('src'))).toEqual([
+      '/api/admin/feedback/a/screenshots/0',
+      '/api/admin/feedback/a/screenshots/1',
+    ]);
+    expect(images[1]?.getAttribute('alt')).toBe('Open screenshot 2 of 2');
     expect(items[1]?.querySelector('a')).toBeNull();
     expect(items[1]?.querySelector('textarea')?.value).toBe('Soon');
   });
@@ -129,7 +138,7 @@ describe('AdminFeedbackPage', () => {
 
   it('clears a reply with null when the field is emptied', async () => {
     const { api, root, harness } = await setup();
-    const item = root.querySelectorAll('li')[1];
+    const item = root.querySelectorAll('.admin-feedback__list > li')[1];
     const reply = item?.querySelector('textarea');
     if (!reply) {
       throw new Error('No reply field');

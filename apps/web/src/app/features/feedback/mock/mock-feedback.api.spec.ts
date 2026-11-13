@@ -1,5 +1,10 @@
 import { TestBed } from '@angular/core/testing';
-import { FEEDBACK_MESSAGE_LIMIT, FEEDBACK_STATUS } from '@shelfmark/contracts';
+import {
+  FEEDBACK_MESSAGE_LIMIT,
+  FEEDBACK_SCREENSHOT_ERROR_MESSAGE,
+  FEEDBACK_STATUS,
+} from '@shelfmark/contracts';
+import { vi } from 'vitest';
 import { MOCK_SESSION_STORAGE_KEY } from '../../../core/auth/models/mock-session-storage-key.const';
 import { MockAdminApi } from '../../admin/mock/mock-admin.api';
 import { FeedbackSendError } from '../utils/feedback-send-error';
@@ -37,7 +42,7 @@ describe('MockFeedbackApi and MockAdminApi', () => {
       text: 'Sort by last opened',
       status: FEEDBACK_STATUS.Received,
       reply: null,
-      screenshotUrl: null,
+      screenshotUrls: [],
     });
     expect(sent).not.toHaveProperty('user');
     expect(await api.list()).toEqual([sent]);
@@ -55,18 +60,84 @@ describe('MockFeedbackApi and MockAdminApi', () => {
     expect((await api.list()).map((message) => message.id)).toEqual([second.id, first.id]);
   });
 
-  it('gives a message with a screenshot a screenshot URL', async () => {
-    const api = TestBed.inject(MockFeedbackApi);
+  describe('screenshots', () => {
+    const PNG = { type: 'image/png' as const, data: 'iVBORw0KGgoAAAAAAAAAAA==' };
 
-    const sent = await api.send({
-      kind: 'problem',
-      text: 'Broken',
-      screenshot: { type: 'image/png', data: 'aGVsbG8=' },
+    it('attaches up to three in order, shows them to the admin and refuses a fourth', async () => {
+      const api = TestBed.inject(MockFeedbackApi);
+      const sent = await api.send({ kind: 'problem', text: 'Broken' });
+      expect(sent.screenshotUrls).toEqual([]);
+
+      let last = sent;
+      for (let index = 0; index < 3; index++) {
+        last = await api.attachScreenshot(sent.id, PNG);
+      }
+      expect(last.screenshotUrls).toEqual(
+        [0, 1, 2].map((position) => `/api/feedback/messages/${sent.id}/screenshots/${position}`),
+      );
+      await expect(api.attachScreenshot(sent.id, PNG)).rejects.toMatchObject({
+        status: 400,
+        error: { message: FEEDBACK_SCREENSHOT_ERROR_MESSAGE.TooMany },
+      });
+      expect((await api.list())[0]?.screenshotUrls).toEqual(last.screenshotUrls);
+
+      // The admin inbox gets the kept previews.
+      const admin = await TestBed.inject(MockAdminApi).listFeedback({});
+      expect(admin.items[0]?.screenshotUrls).toEqual(
+        [0, 1, 2].map(() => `data:image/png;base64,${PNG.data}`),
+      );
     });
 
-    expect(sent.screenshotUrl).toBe(`/api/feedback/messages/${sent.id}/screenshot`);
-    const admin = await TestBed.inject(MockAdminApi).listFeedback({});
-    expect(admin.items[0]?.screenshotUrl).toBe(`/api/admin/feedback/${sent.id}/screenshot`);
+    it('points the admin to the admin route for an image too big to keep', async () => {
+      const api = TestBed.inject(MockFeedbackApi);
+      const sent = await api.send({ kind: 'problem', text: 'Broken' });
+      await api.attachScreenshot(sent.id, { ...PNG, data: PNG.data + 'A'.repeat(400_000) });
+
+      const admin = await TestBed.inject(MockAdminApi).listFeedback({});
+      expect(admin.items[0]?.screenshotUrls).toEqual([
+        `/api/admin/feedback/${sent.id}/screenshots/0`,
+      ]);
+    });
+
+    it.each([
+      // The contract type excludes GIF; the mock must refuse it anyway.
+      ['a wrong type', { type: 'image/gif' as never, data: PNG.data }],
+      ['a wrong signature', { type: 'image/jpeg' as const, data: PNG.data }],
+      ['an empty image', { type: 'image/png' as const, data: '' }],
+      ['broken base64', { type: 'image/png' as const, data: '!!!!' }],
+      [
+        'an image over 2 MB',
+        { type: 'image/png' as const, data: PNG.data + 'A'.repeat(3 * 1024 * 1024) },
+      ],
+    ])('refuses %s with 400', async (_name, upload) => {
+      const api = TestBed.inject(MockFeedbackApi);
+      const sent = await api.send({ kind: 'problem', text: 'Broken' });
+      await expect(api.attachScreenshot(sent.id, upload)).rejects.toMatchObject({ status: 400 });
+      expect((await api.list())[0]?.screenshotUrls).toEqual([]);
+    });
+
+    it('is 404 for a message of another user or a missing one', async () => {
+      const api = TestBed.inject(MockFeedbackApi);
+      const sent = await api.send({ kind: 'problem', text: 'Broken' });
+      signIn('u2');
+      await expect(api.attachScreenshot(sent.id, PNG)).rejects.toMatchObject({ status: 404 });
+      await expect(api.attachScreenshot('missing', PNG)).rejects.toMatchObject({ status: 404 });
+    });
+
+    it('refuses a screenshot sent too long after the message', async () => {
+      vi.useFakeTimers();
+      try {
+        const api = TestBed.inject(MockFeedbackApi);
+        const sent = await api.send({ kind: 'problem', text: 'Broken' });
+        vi.advanceTimersByTime(FEEDBACK_MESSAGE_LIMIT.ScreenshotAttachWindowMs + 1000);
+        await expect(api.attachScreenshot(sent.id, PNG)).rejects.toMatchObject({
+          status: 400,
+          error: { message: FEEDBACK_SCREENSHOT_ERROR_MESSAGE.TooLate },
+        });
+      } finally {
+        vi.useRealTimers();
+      }
+    });
   });
 
   it.each([
@@ -80,19 +151,6 @@ describe('MockFeedbackApi and MockAdminApi', () => {
 
     await expect(api.send(request)).rejects.toBeInstanceOf(FeedbackSendError);
     expect(await api.list()).toEqual([]);
-  });
-
-  it('refuses a screenshot of the wrong type', async () => {
-    const api = TestBed.inject(MockFeedbackApi);
-
-    await expect(
-      api.send({
-        kind: 'idea',
-        text: 'ok',
-        // @ts-expect-error The contract type excludes GIF; the mock must refuse it anyway.
-        screenshot: { type: 'image/gif', data: 'aGVsbG8=' },
-      }),
-    ).rejects.toBeInstanceOf(FeedbackSendError);
   });
 
   it('answers 429 or 500 for the scenarios of sm-mock-feedback-scenario', async () => {

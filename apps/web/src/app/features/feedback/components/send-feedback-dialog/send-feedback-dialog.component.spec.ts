@@ -10,8 +10,16 @@ import type { FeedbackApi } from '../../models/feedback-api.interface';
 import { FEEDBACK_SEND_ERROR_REASON } from '../../models/feedback-send-error-reason.const';
 import { SendFeedbackDialogComponent } from './send-feedback-dialog.component';
 
-async function setup(send: FeedbackApi['send'] = () => Promise.resolve(feedbackMessage())) {
-  const api = { list: vi.fn(() => Promise.resolve([])), send: vi.fn(send) } satisfies FeedbackApi;
+async function setup(
+  send: FeedbackApi['send'] = () => Promise.resolve(feedbackMessage()),
+  attachScreenshot: FeedbackApi['attachScreenshot'] = (id) =>
+    Promise.resolve(feedbackMessage({ id })),
+) {
+  const api = {
+    list: vi.fn(() => Promise.resolve([])),
+    send: vi.fn(send),
+    attachScreenshot: vi.fn(attachScreenshot),
+  } satisfies FeedbackApi;
   TestBed.configureTestingModule({
     providers: [provideTranslocoForTest(), { provide: FEEDBACK_API, useValue: api }],
   });
@@ -66,16 +74,18 @@ async function click(button: HTMLButtonElement | undefined): Promise<void> {
   await flush();
 }
 
-/** Puts `file` into the hidden file input as the browser's file chooser would. */
-async function chooseFile(file: File): Promise<void> {
+/** A `FileList` stand-in with `files`. */
+function fileList(files: readonly File[]): Record<number, File> & { length: number } {
+  return Object.assign({ length: files.length }, files);
+}
+
+/** Puts `files` into the hidden file input as the browser's file chooser would. */
+async function chooseFile(...files: File[]): Promise<void> {
   const input = container()?.querySelector<HTMLInputElement>('input[type="file"]');
   if (!input) {
     throw new Error('No file input');
   }
-  Object.defineProperty(input, 'files', {
-    configurable: true,
-    value: { 0: file, length: 1, item: () => file },
-  });
+  Object.defineProperty(input, 'files', { configurable: true, value: fileList(files) });
   input.dispatchEvent(new Event('change', { bubbles: true }));
   await vi.waitFor(async () => {
     await flush();
@@ -86,6 +96,13 @@ async function chooseFile(file: File): Promise<void> {
 }
 
 const PNG = new File(['hello'], 'shot.png', { type: 'image/png' });
+const png = (name: string): File => new File(['hello'], name, { type: 'image/png' });
+
+function removeButtons(): HTMLButtonElement[] {
+  return Array.from(
+    container()?.querySelectorAll<HTMLButtonElement>('button[aria-label^="Remove image"]') ?? [],
+  );
+}
 
 describe('SendFeedbackDialogComponent', () => {
   afterEach(() => {
@@ -105,9 +122,10 @@ describe('SendFeedbackDialogComponent', () => {
     ).toEqual(['Idea', 'Problem', 'Other']);
     expect(container()?.textContent).toContain('What would make Shelfmark better?');
     expect(container()?.textContent).toContain('0 / 2000');
-    expect(container()?.textContent).toContain('Screenshot (optional)');
-    expect(buttonByText('choose a file')).toBeDefined();
-    expect(container()?.textContent).toContain('PNG, JPEG or WebP, up to 2 MB.');
+    expect(container()?.textContent).toContain('Screenshots (optional)');
+    expect(buttonByText('choose files')).toBeDefined();
+    expect(container()?.textContent).toContain('PNG, JPEG or WebP, up to 3 images, 2 MB each.');
+    expect(container()?.querySelector<HTMLInputElement>('input[type="file"]')?.multiple).toBe(true);
     const attach = container()?.querySelector<HTMLInputElement>('input[type="checkbox"]');
     expect(attach?.checked).toBe(true);
     expect(container()?.textContent).toContain('Attach browser and app version');
@@ -242,8 +260,8 @@ describe('SendFeedbackDialogComponent', () => {
     expect(textarea().value).toBe('Hello');
   });
 
-  it('takes a PNG: shows its name, size and a thumbnail, and sends it as base64', async () => {
-    const { api } = await setup();
+  it('takes a PNG: shows its name, size and a thumbnail, and attaches it as base64 after the message', async () => {
+    const { api } = await setup(() => Promise.resolve(feedbackMessage({ id: 'sent' })));
 
     await chooseFile(PNG);
 
@@ -256,21 +274,87 @@ describe('SendFeedbackDialogComponent', () => {
     await click(buttonByText('Send'));
 
     expect(api.send).toHaveBeenCalledWith(
-      expect.objectContaining({ screenshot: { type: 'image/png', data: btoa('hello') } }),
+      expect.not.objectContaining({ screenshot: expect.anything() }),
+    );
+    await vi.waitFor(() => {
+      expect(api.attachScreenshot).toHaveBeenCalledWith('sent', {
+        type: 'image/png',
+        data: btoa('hello'),
+      });
+    });
+  });
+
+  it('takes up to three images from one pick, in order, then hides the drop area', async () => {
+    const { api } = await setup(() => Promise.resolve(feedbackMessage({ id: 'sent' })));
+
+    await chooseFile(png('a.png'), png('b.png'));
+    await chooseFile(png('c.png'));
+
+    expect(
+      Array.from(container()?.querySelectorAll('.feedback-dialog__file-name') ?? []).map(
+        (n) => n.textContent,
+      ),
+    ).toEqual(['a.png', 'b.png', 'c.png']);
+    expect(removeButtons().map((button) => button.getAttribute('aria-label'))).toEqual([
+      'Remove image 1 of 3: a.png',
+      'Remove image 2 of 3: b.png',
+      'Remove image 3 of 3: c.png',
+    ]);
+    expect(container()?.querySelector('.feedback-dialog__drop')).toBeNull();
+    expect(container()?.textContent).toContain('3 images added, the most one message can have.');
+
+    await type('Three pictures');
+    await click(buttonByText('Send'));
+    await vi.waitFor(() => {
+      expect(api.attachScreenshot).toHaveBeenCalledTimes(3);
+    });
+  });
+
+  it('says so when a pick has more files than places left, and keeps the first ones', async () => {
+    await setup();
+
+    await chooseFile(png('a.png'), png('b.png'), png('c.png'), png('d.png'));
+
+    expect(removeButtons()).toHaveLength(3);
+    expect(container()?.querySelector('[role="alert"]')?.textContent).toContain(
+      'You can add up to 3 images.',
     );
   });
 
-  it('removes the screenshot again and shows the drop area', async () => {
+  it('removes one image, moves focus to the next remove button, and shows the drop area again', async () => {
     await setup();
-    await chooseFile(PNG);
+    await chooseFile(png('a.png'), png('b.png'), png('c.png'));
 
-    container()
-      ?.querySelector<HTMLButtonElement>('button[aria-label="Remove screenshot"]')
-      ?.click();
+    removeButtons()[0]?.click();
     await flush();
 
+    expect(removeButtons().map((button) => button.getAttribute('aria-label'))).toEqual([
+      'Remove image 1 of 2: b.png',
+      'Remove image 2 of 2: c.png',
+    ]);
+    expect(document.activeElement).toBe(removeButtons()[0]);
+    expect(buttonByText('choose files')).toBeDefined();
+
+    removeButtons()[1]?.click();
+    await flush();
+    removeButtons()[0]?.click();
+    await flush();
     expect(container()?.querySelector('img')).toBeNull();
-    expect(buttonByText('choose a file')).toBeDefined();
+    expect(document.activeElement).toBe(buttonByText('choose files'));
+  });
+
+  it('thanks with a warning when an image could not be attached', async () => {
+    await setup(undefined, () => Promise.reject(new Error('400')));
+    await chooseFile(PNG);
+    await type('With picture');
+    await click(buttonByText('Send'));
+
+    await vi.waitFor(() => {
+      expect(buttonByText('Done')).toBeDefined();
+    });
+    expect(container()?.textContent).toContain(
+      "Some images couldn't be attached. Your message was sent without them.",
+    );
   });
 
   it('rejects a wrong type in the browser with clear copy and keeps no screenshot', async () => {
@@ -296,18 +380,19 @@ describe('SendFeedbackDialogComponent', () => {
     );
   });
 
-  it('accepts a dropped image (the drop is a shortcut for "choose a file")', async () => {
+  it('accepts dropped images (the drop is a shortcut for "choose files")', async () => {
     await setup();
     const area = container()?.querySelector('.feedback-dialog__drop');
     const event = new Event('drop', { bubbles: true, cancelable: true });
     Object.defineProperty(event, 'dataTransfer', {
-      value: { files: { 0: PNG, length: 1, item: () => PNG } },
+      value: { files: fileList([PNG, png('two.png')]) },
     });
 
     area?.dispatchEvent(event);
     await vi.waitFor(async () => {
       await flush();
       expect(container()?.textContent).toContain('shot.png');
+      expect(container()?.textContent).toContain('two.png');
     });
   });
 
@@ -324,6 +409,9 @@ describe('SendFeedbackDialogComponent', () => {
 
   it('has no axe violations in the form and in the thank-you state', async () => {
     await setup();
+    expect(await axeViolations(container() ?? document.body)).toEqual([]);
+
+    await chooseFile(png('a.png'), png('b.png'), png('c.png'));
     expect(await axeViolations(container() ?? document.body)).toEqual([]);
 
     await type('Hello');

@@ -1,4 +1,4 @@
-/** Why a chosen file is not accepted as the screenshot of a feedback message. */
+/** Why a chosen file is not accepted as a screenshot of a feedback message. */
 export const FEEDBACK_SCREENSHOT_ERROR = {
   /** Not a PNG, JPEG or WebP image. */
   Type: 'type',
@@ -8,4 +8,6 @@ export const FEEDBACK_SCREENSHOT_ERROR = {
   Empty: 'empty',
   /** The browser could not read the file. */
   Read: 'read',
+  /** More files than the `FEEDBACK_MESSAGE_LIMIT.ScreenshotsMax` places left. */
+  Count: 'count',
 } as const;

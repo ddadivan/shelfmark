@@ -12,14 +12,24 @@ import {
 import { MockFeedbackData } from '../../feedback/mock/mock-feedback-data.service';
 import { MOCK_ADMIN_ERROR_MESSAGE } from '../../feedback/mock/models/mock-admin-error-message.const';
 import { MOCK_ADMIN_MODE } from '../../feedback/mock/models/mock-admin-mode.const';
+import type { MockFeedbackEntry } from '../../feedback/mock/models/mock-feedback-entry.interface';
 import type { AdminApi } from '../models/admin-api.interface';
 import { ADMIN_LIMIT } from '../models/admin-limit.const';
 
-/** The admin sees the screenshot through the admin route, not the owner's. */
-function forAdmin(message: AdminFeedbackItem): AdminFeedbackItem {
-  return message.screenshotUrl === null
-    ? message
-    : { ...message, screenshotUrl: `${ADMIN_ENDPOINT.Feedback}/${message.id}/screenshot` };
+/**
+ * The admin sees the screenshots through the admin route, not the owner's; a mock entry that kept
+ * a `data:` preview shows that instead, so the inbox has real images in development and e2e.
+ */
+function forAdmin(entry: MockFeedbackEntry): AdminFeedbackItem {
+  const { message } = entry;
+  return {
+    ...message,
+    screenshotUrls: message.screenshotUrls.map(
+      (_, position) =>
+        entry.previews?.[position] ??
+        `${ADMIN_ENDPOINT.Feedback}/${message.id}/screenshots/${position}`,
+    ),
+  };
 }
 
 function notFound(): Promise<never> {
@@ -46,8 +56,7 @@ export class MockAdminApi implements AdminApi {
     }
     const all = this.data
       .entries()
-      .map((entry) => entry.message)
-      .filter((message) => query.status === undefined || message.status === query.status);
+      .filter((entry) => query.status === undefined || entry.message.status === query.status);
     const start = query.cursor === undefined ? 0 : Number(query.cursor);
     const limit = query.limit ?? ADMIN_LIMIT.PageSize;
     const end = start + limit;
@@ -88,6 +97,6 @@ export class MockAdminApi implements AdminApi {
     };
     entries[index] = { ...found, message };
     this.data.save(entries);
-    return Promise.resolve(forAdmin(message));
+    return Promise.resolve(forAdmin(entries[index]));
   }
 }

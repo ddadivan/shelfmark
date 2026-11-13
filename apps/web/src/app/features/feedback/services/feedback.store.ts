@@ -1,16 +1,18 @@
 import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-import type { FeedbackMessage, SendFeedbackRequest } from '@shelfmark/contracts';
+import type { FeedbackScreenshotUpload, SendFeedbackRequest } from '@shelfmark/contracts';
 import { SessionScope } from '../../../core/auth/session-scope.service';
 import { FEEDBACK_API } from '../models/feedback-api.const';
 import { FEEDBACK_LOAD_STATE } from '../models/feedback-load-state.const';
+import type { FeedbackSendResult } from '../models/feedback-send-result.interface';
 import type { FeedbackState } from '../models/feedback-state.interface';
 
 const initialState: FeedbackState = { items: [], phase: FEEDBACK_LOAD_STATE.Idle };
 
 /**
  * The signed-in user's feedback messages (Settings › Your feedback), newest first. `load()` asks
- * the API; `send()` posts a message and puts the saved one on top at once, so the page shows it
+ * the API; `send()` posts a message, then its screenshots one by one (one image per request keeps
+ * every body under the platform limit), and puts the saved one on top at once, so the page shows it
  * without another request. A reload that is already running is not started twice. The state is
  * dropped when the session ends.
  */
@@ -60,15 +62,32 @@ export const FeedbackStore = signalStore(
         return run;
       },
       /** Sends a message and adds it on top of the list. Rejects with the API's `FeedbackSendError`. */
-      async send(request: SendFeedbackRequest): Promise<FeedbackMessage> {
+      /**
+       * Sends the message, then attaches `screenshots` in order. A failed screenshot does not undo
+       * the message (it is already saved): the result counts the ones that did not make it. A
+       * failure of the message itself rejects (`FeedbackSendError`).
+       */
+      async send(
+        request: SendFeedbackRequest,
+        screenshots: readonly FeedbackScreenshotUpload[] = [],
+      ): Promise<FeedbackSendResult> {
         const startedIn = epoch;
-        const message = await api.send(request);
+        let message = await api.send(request);
+        let screenshotsFailed = 0;
+        for (const upload of screenshots) {
+          try {
+            message = await api.attachScreenshot(message.id, upload);
+          } catch {
+            screenshotsFailed += 1;
+          }
+        }
         if (startedIn === epoch) {
+          const saved = message;
           patchState(store, (state) => ({
-            items: [message, ...state.items.filter((item) => item.id !== message.id)],
+            items: [saved, ...state.items.filter((item) => item.id !== saved.id)],
           }));
         }
-        return message;
+        return { message, screenshotsFailed };
       },
       clear,
     };

@@ -1940,11 +1940,12 @@
       "attachClientInfo": "Hilft uns, Probleme nachzustellen. Gesendet werden nur die App-Version sowie Name und Version deines Browsers."
     },
     "screenshot": {
-      "label": "Screenshot (optional)",
-      "drop": "Bild hierher ziehen oder",
-      "choose": "Datei auswählen",
-      "hint": "PNG, JPEG oder WebP, bis {{max}} MB.",
-      "remove": "Screenshot entfernen",
+      "label": "Screenshots (optional)",
+      "drop": "Bilder hierher ziehen oder",
+      "choose": "Dateien auswählen",
+      "hint": "PNG, JPEG oder WebP, bis zu {{count}} Bilder, je bis {{max}} MB.",
+      "full": "{{count}} Bilder hinzugefügt, mehr geht pro Nachricht nicht.",
+      "remove": "Bild {{index}} von {{count}} entfernen: {{name}}",
       "size": {
         "kb": "{{size}} KB",
         "mb": "{{size}} MB"
@@ -1953,13 +1954,15 @@
         "type": "Diese Datei ist kein PNG-, JPEG- oder WebP-Bild.",
         "size": "Dieses Bild ist größer als {{max}} MB. Wähle ein kleineres.",
         "empty": "Diese Datei ist leer.",
-        "read": "Die Datei konnte nicht gelesen werden. Versuch eine andere."
+        "read": "Die Datei konnte nicht gelesen werden. Versuch eine andere.",
+        "count": "Du kannst bis zu {{count}} Bilder hinzufügen."
       }
     },
     "thanks": {
       "title": "Danke",
       "text": "Wir lesen jede Nachricht. Den Status siehst du unter Einstellungen › Dein Feedback.",
-      "done": "Fertig"
+      "done": "Fertig",
+      "screenshotsFailed": "Einige Bilder konnten nicht angehängt werden. Deine Nachricht wurde ohne sie gesendet."
     },
     "page": {
       "send": {
@@ -1993,7 +1996,7 @@
       "replyHint": "Wird dem Absender unter Dein Feedback angezeigt. Leer lassen für keine.",
       "replyTooLong": "Höchstens {{max}} Zeichen für die Antwort.",
       "save": "Speichern",
-      "screenshot": "Screenshot ansehen",
+      "screenshot": "Screenshot {{index}} von {{count}} öffnen",
       "error": "Die Nachrichten konnten nicht geladen werden.",
       "empty": {
         "title": "Keine Nachrichten",

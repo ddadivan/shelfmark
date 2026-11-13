@@ -1,4 +1,8 @@
-import type { FeedbackMessage, SendFeedbackRequest } from '@shelfmark/contracts';
+import type {
+  FeedbackMessage,
+  FeedbackScreenshotUpload,
+  SendFeedbackRequest,
+} from '@shelfmark/contracts';
 
 /**
  * What the web app needs from the feedback message endpoints. `HttpFeedbackApi` talks to
@@ -13,4 +17,10 @@ export interface FeedbackApi {
    * (`RateLimited` for a 429, `Failed` for everything else).
    */
   send(request: SendFeedbackRequest): Promise<FeedbackMessage>;
+  /**
+   * `POST feedbackScreenshotsPath(id)`: attaches one screenshot to a message just sent and
+   * answers the updated message. Rejects with the `HttpErrorResponse` (400 with the contract
+   * message, 404).
+   */
+  attachScreenshot(id: string, upload: FeedbackScreenshotUpload): Promise<FeedbackMessage>;
 }

@@ -1977,11 +1977,12 @@
       "attachClientInfo": "Ajuda a reproduzir os problemas. Só são enviados a versão do app e o nome e a versão do seu navegador."
     },
     "screenshot": {
-      "label": "Captura de tela (opcional)",
-      "drop": "Solte uma imagem ou",
-      "choose": "escolha um arquivo",
-      "hint": "PNG, JPEG ou WebP, até {{max}} MB.",
-      "remove": "Remover captura de tela",
+      "label": "Capturas de tela (opcional)",
+      "drop": "Solte imagens ou",
+      "choose": "escolha arquivos",
+      "hint": "PNG, JPEG ou WebP, até {{count}} imagens de {{max}} MB cada.",
+      "full": "{{count}} imagens adicionadas, o máximo para uma mensagem.",
+      "remove": "Remover imagem {{index}} de {{count}}: {{name}}",
       "size": {
         "kb": "{{size}} KB",
         "mb": "{{size}} MB"
@@ -1990,13 +1991,15 @@
         "type": "Esse arquivo não é uma imagem PNG, JPEG ou WebP.",
         "size": "Essa imagem tem mais de {{max}} MB. Escolha uma menor.",
         "empty": "Esse arquivo está vazio.",
-        "read": "Não foi possível ler esse arquivo. Tente outro."
+        "read": "Não foi possível ler esse arquivo. Tente outro.",
+        "count": "Você pode adicionar até {{count}} imagens."
       }
     },
     "thanks": {
       "title": "Obrigado",
       "text": "Lemos todas as mensagens. Você verá o status em Configurações › Seu feedback.",
-      "done": "Concluído"
+      "done": "Concluído",
+      "screenshotsFailed": "Algumas imagens não puderam ser anexadas. Sua mensagem foi enviada sem elas."
     },
     "page": {
       "send": {
@@ -2030,7 +2033,7 @@
       "replyHint": "Aparece para o remetente em Seu feedback. Deixe vazio para nenhuma.",
       "replyTooLong": "Use no máximo {{max}} caracteres na resposta.",
       "save": "Salvar",
-      "screenshot": "Ver captura de tela",
+      "screenshot": "Abrir captura {{index}} de {{count}}",
       "error": "Não foi possível carregar as mensagens.",
       "empty": {
         "title": "Nenhuma mensagem",

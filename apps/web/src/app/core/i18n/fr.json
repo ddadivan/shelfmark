@@ -1977,11 +1977,12 @@
       "attachClientInfo": "Nous aide à reproduire les problèmes. Seuls la version de l’app ainsi que le nom et la version de votre navigateur sont envoyés."
     },
     "screenshot": {
-      "label": "Capture d’écran (facultatif)",
-      "drop": "Déposez une image ou",
-      "choose": "choisissez un fichier",
-      "hint": "PNG, JPEG ou WebP, jusqu’à {{max}} Mo.",
-      "remove": "Retirer la capture d’écran",
+      "label": "Captures d’écran (facultatif)",
+      "drop": "Déposez des images ou",
+      "choose": "choisissez des fichiers",
+      "hint": "PNG, JPEG ou WebP, jusqu’à {{count}} images de {{max}} Mo chacune.",
+      "full": "{{count}} images ajoutées, le maximum pour un message.",
+      "remove": "Retirer l’image {{index}} sur {{count}} : {{name}}",
       "size": {
         "kb": "{{size}} Ko",
         "mb": "{{size}} Mo"
@@ -1990,13 +1991,15 @@
         "type": "Ce fichier n’est pas une image PNG, JPEG ou WebP.",
         "size": "Cette image dépasse {{max}} Mo. Choisissez-en une plus petite.",
         "empty": "Ce fichier est vide.",
-        "read": "Impossible de lire ce fichier. Essayez-en un autre."
+        "read": "Impossible de lire ce fichier. Essayez-en un autre.",
+        "count": "Vous pouvez ajouter jusqu’à {{count}} images."
       }
     },
     "thanks": {
       "title": "Merci",
       "text": "Nous lisons chaque message. Vous verrez son statut dans Paramètres › Vos avis.",
-      "done": "Terminé"
+      "done": "Terminé",
+      "screenshotsFailed": "Certaines images n’ont pas pu être jointes. Votre message a été envoyé sans elles."
     },
     "page": {
       "send": {
@@ -2030,7 +2033,7 @@
       "replyHint": "Visible par l’expéditeur dans Vos avis. Laissez vide pour ne rien afficher.",
       "replyTooLong": "Réponse de {{max}} caractères au maximum.",
       "save": "Enregistrer",
-      "screenshot": "Voir la capture d’écran",
+      "screenshot": "Ouvrir la capture {{index}} sur {{count}}",
       "error": "Impossible de charger les messages.",
       "empty": {
         "title": "Aucun message",

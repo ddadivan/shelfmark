@@ -1940,11 +1940,12 @@
       "attachClientInfo": "Helps us reproduce problems. Only the app version and your browser name and version are sent."
     },
     "screenshot": {
-      "label": "Screenshot (optional)",
-      "drop": "Drop an image or",
-      "choose": "choose a file",
-      "hint": "PNG, JPEG or WebP, up to {{max}} MB.",
-      "remove": "Remove screenshot",
+      "label": "Screenshots (optional)",
+      "drop": "Drop images or",
+      "choose": "choose files",
+      "hint": "PNG, JPEG or WebP, up to {{count}} images, {{max}} MB each.",
+      "full": "{{count}} images added, the most one message can have.",
+      "remove": "Remove image {{index}} of {{count}}: {{name}}",
       "size": {
         "kb": "{{size}} KB",
         "mb": "{{size}} MB"
@@ -1953,13 +1954,15 @@
         "type": "That file is not a PNG, JPEG or WebP image.",
         "size": "That image is larger than {{max}} MB. Choose a smaller one.",
         "empty": "That file is empty.",
-        "read": "Couldn't read that file. Try another one."
+        "read": "Couldn't read that file. Try another one.",
+        "count": "You can add up to {{count}} images."
       }
     },
     "thanks": {
       "title": "Thank you",
       "text": "We read every message. You'll see its status in Settings › Your feedback.",
-      "done": "Done"
+      "done": "Done",
+      "screenshotsFailed": "Some images couldn't be attached. Your message was sent without them."
     },
     "page": {
       "send": {
@@ -1993,7 +1996,7 @@
       "replyHint": "Shown to the sender in Your feedback. Leave empty for none.",
       "replyTooLong": "Keep the reply to {{max}} characters or fewer.",
       "save": "Save",
-      "screenshot": "View screenshot",
+      "screenshot": "Open screenshot {{index}} of {{count}}",
       "error": "Couldn't load the messages.",
       "empty": {
         "title": "No messages",

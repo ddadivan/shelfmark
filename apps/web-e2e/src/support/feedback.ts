@@ -30,6 +30,21 @@ export async function seedMockKey(page: Page, key: string, value: string): Promi
   );
 }
 
+/** A real 1 x 1 PNG (the mock checks the signature like the API). */
+const PNG_1PX = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+  'base64',
+);
+
+/** `count` small PNG files for `setInputFiles`, named `shot-1.png`, `shot-2.png`, ... */
+export function pngFiles(count: number): { name: string; mimeType: string; buffer: Buffer }[] {
+  return Array.from({ length: count }, (_, index) => ({
+    name: `shot-${index + 1}.png`,
+    mimeType: 'image/png',
+    buffer: PNG_1PX,
+  }));
+}
+
 /** Opens the "Send feedback" dialog the way each device has it: the account menu, or the You list. */
 export async function openSendFeedback(page: Page): Promise<Locator> {
   if (isCompact(page)) {

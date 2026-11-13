@@ -46,12 +46,29 @@
   white-space: pre-line;
 }
 
-.admin-item__link {
-  @include type(label);
+.admin-item__shots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
 
-  align-self: flex-start;
-  color: var(--accent-text);
-  text-underline-offset: rem(3px);
+// Each screenshot is a thumbnail that opens the full image in a new tab.
+.admin-item__shot {
+  display: block;
+  border-radius: var(--radius-md);
+}
+
+.admin-item__shot-image {
+  display: block;
+  width: rem(160px);
+  height: rem(100px);
+  object-fit: cover;
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
 }
 
 .admin-item__controls {

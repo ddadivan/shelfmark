@@ -118,6 +118,7 @@ export function createMockContractApis(): ContractApis {
     feedback: {
       list: () => settlePromise(feedback.list()),
       send: (request) => settlePromise(feedback.send(request)),
+      attachScreenshot: (id, upload) => settlePromise(feedback.attachScreenshot(id, upload)),
     },
     exports: {
       download: async ({ format, ...scope }) => {

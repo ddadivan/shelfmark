@@ -2,6 +2,7 @@ import { COLOR_SCHEME } from './models/color-scheme.const';
 import {
   MOCK_FEEDBACK_SCENARIO_KEY,
   openSendFeedback,
+  pngFiles,
   sendIdea,
   setMockKey,
   typeFeedback,
@@ -102,20 +103,35 @@ test.describe('send feedback (mock API)', () => {
     await expect(dialog.getByRole('heading', { name: 'Send feedback' })).toBeVisible();
   });
 
-  test('takes a small PNG, shows it, and lets it be removed', async ({ page }) => {
+  test('takes up to three images, each with a remove button, and hides the drop area at three (#352)', async ({
+    page,
+  }) => {
     const dialog = await openSendFeedback(page);
+    const input = dialog.locator('input[type="file"]');
+    const removeButtons = dialog.getByRole('button', { name: /^Remove image/ });
 
-    await dialog.locator('input[type="file"]').setInputFiles({
-      name: 'shot.png',
-      mimeType: 'image/png',
-      buffer: Buffer.from('not really a png but small'),
-    });
+    await input.setInputFiles(pngFiles(2));
+    await expect(dialog.locator('img')).toHaveCount(2);
+    await expect(dialog.getByRole('button', { name: 'choose files' })).toBeVisible();
 
-    await expect(dialog.getByText('shot.png')).toBeVisible();
-    await expect(dialog.locator('img')).toBeVisible();
-    await dialog.getByRole('button', { name: 'Remove screenshot' }).click();
-    await expect(dialog.locator('img')).toHaveCount(0);
-    await expect(dialog.getByRole('button', { name: 'choose a file' })).toBeFocused();
+    await input.setInputFiles(pngFiles(2));
+    await expect(dialog.locator('img')).toHaveCount(3);
+    await expect(dialog.getByRole('alert')).toContainText('You can add up to 3 images.');
+    await expect(dialog.getByRole('button', { name: 'choose files' })).toHaveCount(0);
+    await expect(dialog.getByText('3 images added, the most one message can have.')).toBeVisible();
+    await expect(removeButtons).toHaveCount(3);
+
+    await dialog.getByRole('button', { name: 'Remove image 1 of 3: shot-1.png' }).click();
+    await expect(dialog.locator('img')).toHaveCount(2);
+    await expect(
+      dialog.getByRole('button', { name: 'Remove image 1 of 2: shot-2.png' }),
+    ).toBeFocused();
+    await expect(dialog.getByRole('button', { name: 'choose files' })).toBeVisible();
+
+    await typeFeedback(dialog, IDEA);
+    await dialog.getByRole('button', { name: 'Send', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Done' })).toBeVisible();
+    await expect(dialog.getByText("couldn't be attached")).toHaveCount(0);
   });
 
   test('rejects a screenshot of the wrong type or over 2 MB, with a clear message', async ({
@@ -205,6 +221,11 @@ test.describe('send feedback (mock API)', () => {
           buffer: Buffer.from('%PDF'),
         });
         await expect(dialog.getByRole('alert')).toBeVisible();
+        await settled(page);
+        await expectNoBlockingViolations(page, testInfo, { include: '.cdk-dialog-container' });
+
+        await dialog.locator('input[type="file"]').setInputFiles(pngFiles(3));
+        await expect(dialog.locator('img')).toHaveCount(3);
         await settled(page);
         await expectNoBlockingViolations(page, testInfo, { include: '.cdk-dialog-container' });
 

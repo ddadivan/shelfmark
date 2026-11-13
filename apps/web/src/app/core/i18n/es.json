@@ -1977,11 +1977,12 @@
       "attachClientInfo": "Nos ayuda a reproducir los problemas. Solo se envían la versión de la app y el nombre y la versión de tu navegador."
     },
     "screenshot": {
-      "label": "Captura de pantalla (opcional)",
-      "drop": "Suelta una imagen o",
-      "choose": "elige un archivo",
-      "hint": "PNG, JPEG o WebP, hasta {{max}} MB.",
-      "remove": "Quitar captura de pantalla",
+      "label": "Capturas de pantalla (opcional)",
+      "drop": "Suelta imágenes o",
+      "choose": "elige archivos",
+      "hint": "PNG, JPEG o WebP, hasta {{count}} imágenes de {{max}} MB cada una.",
+      "full": "{{count}} imágenes añadidas, el máximo para un mensaje.",
+      "remove": "Quitar imagen {{index}} de {{count}}: {{name}}",
       "size": {
         "kb": "{{size}} KB",
         "mb": "{{size}} MB"
@@ -1990,13 +1991,15 @@
         "type": "Ese archivo no es una imagen PNG, JPEG o WebP.",
         "size": "Esa imagen supera {{max}} MB. Elige una más pequeña.",
         "empty": "Ese archivo está vacío.",
-        "read": "No se pudo leer ese archivo. Prueba con otro."
+        "read": "No se pudo leer ese archivo. Prueba con otro.",
+        "count": "Puedes añadir hasta {{count}} imágenes."
       }
     },
     "thanks": {
       "title": "Gracias",
       "text": "Leemos todos los mensajes. Verás su estado en Ajustes › Tus comentarios.",
-      "done": "Listo"
+      "done": "Listo",
+      "screenshotsFailed": "Algunas imágenes no se pudieron adjuntar. Tu mensaje se envió sin ellas."
     },
     "page": {
       "send": {
@@ -2030,7 +2033,7 @@
       "replyHint": "Se muestra al remitente en Tus comentarios. Déjalo vacío para no responder.",
       "replyTooLong": "Usa {{max}} caracteres como máximo en la respuesta.",
       "save": "Guardar",
-      "screenshot": "Ver captura de pantalla",
+      "screenshot": "Abrir captura {{index}} de {{count}}",
       "error": "No se pudieron cargar los mensajes.",
       "empty": {
         "title": "No hay mensajes",
