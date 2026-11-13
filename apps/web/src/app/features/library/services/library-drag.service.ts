@@ -34,6 +34,7 @@ export class LibraryDragService {
 
   /** The drag ended (drop or Esc): clears the spoken text, the toast tells what moved. */
   ended(): void {
+    this.spokenReasonKey = null;
     this.selection.announce('');
     this.links.drop();
   }
@@ -61,8 +62,21 @@ export class LibraryDragService {
     return pluralKey('links.drag.move', this.dragCount(link));
   }
 
-  /** Hit-tests the folders under the pointer while a link is dragged. */
+  /** The reason last spoken for a no-drop row, so it is announced once per row, not per move. */
+  private spokenReasonKey: string | null = null;
+
+  /**
+   * Hit-tests the folders under the pointer while a link is dragged. When the pointer reaches a
+   * sidebar row that cannot take links, its reason is spoken in the live region (polite).
+   */
   moved(event: CdkDragMove<unknown>): void {
     this.links.move(event.pointerPosition.x, event.pointerPosition.y);
+    const key = this.links.noDropReasonKey();
+    if (key !== this.spokenReasonKey) {
+      this.spokenReasonKey = key;
+      if (key) {
+        this.selection.announce(this.transloco.translate(key));
+      }
+    }
   }
 }

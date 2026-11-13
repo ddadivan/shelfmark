@@ -100,6 +100,32 @@ test.describe('drag a link to a folder (mock API)', () => {
     await expect(allLinks).not.toHaveClass(/ui-tree__row--no-drop/);
   });
 
+  test('rows that cannot take a link are dimmed, say why when the card is over them, and a drop does nothing (#350)', async ({
+    page,
+  }) => {
+    test.skip(isCompact(page), 'phones have no sidebar; "Move to folder" is the way there');
+    const card = page.locator('li.library__item').filter({ hasText: PASTA });
+    const favorites = treeRow(page, 'Favorites');
+
+    await dragOver(page, card, favorites);
+    await expect(favorites).toHaveClass(/ui-tree__row--no-drop/);
+    await expect(favorites).toHaveAttribute('aria-disabled', 'true');
+    await expect(favorites.locator('.ui-tree__name')).toHaveCSS('opacity', '0.5');
+    const reason = favorites.locator('.ui-tree__drop-badge--muted');
+    await expect(reason).toHaveText('Star a link to add it');
+    await expect(reason).toHaveCSS('opacity', '1');
+    await expect(favorites).not.toHaveClass(/ui-tree__row--drop\b/);
+    // The reason is spoken politely in the library's live region.
+    await expect(page.locator('.library__live')).toContainText('Star a link to add it');
+
+    await page.mouse.up();
+    // Nothing moved: no toast, the card is still here, the row is back to normal.
+    await expect(page.getByRole('status').filter({ hasText: /moved/i })).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: PASTA, exact: true })).toBeVisible();
+    await expect(favorites).not.toHaveClass(/ui-tree__row--no-drop/);
+    await expect(favorites).not.toHaveAttribute('aria-disabled', 'true');
+  });
+
   test('dragging a picked card carries every picked card, with one toast and Undo', async ({
     page,
   }) => {

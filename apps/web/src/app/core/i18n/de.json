@@ -483,6 +483,13 @@
       "move": {
         "one": "{{count}} Link verschieben",
         "other": "{{count}} Links verschieben"
+      },
+      "noDrop": {
+        "all": "Auf einen Ordner ziehen",
+        "favorites": "Markiere einen Link mit Stern",
+        "recent": "Füllt sich beim Öffnen",
+        "trash": "Stattdessen Löschen nutzen",
+        "pinnedLink": "Kein Ordner"
       }
     }
   },

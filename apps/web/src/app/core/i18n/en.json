@@ -483,6 +483,13 @@
       "move": {
         "one": "Move {{count}} link",
         "other": "Move {{count}} links"
+      },
+      "noDrop": {
+        "all": "Drop on a folder",
+        "favorites": "Star a link to add it",
+        "recent": "Fills as you open links",
+        "trash": "Use Delete instead",
+        "pinnedLink": "Not a folder"
       }
     }
   },

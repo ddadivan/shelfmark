@@ -494,6 +494,13 @@
         "one": "Mover {{count}} enlace",
         "many": "Mover {{count}} enlaces",
         "other": "Mover {{count}} enlaces"
+      },
+      "noDrop": {
+        "all": "Suéltalo en una carpeta",
+        "favorites": "Marca un enlace con estrella",
+        "recent": "Se llena al abrir enlaces",
+        "trash": "Usa Eliminar",
+        "pinnedLink": "No es una carpeta"
       }
     }
   },

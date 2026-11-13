@@ -494,6 +494,13 @@
         "one": "Déplacer {{count}} lien",
         "many": "Déplacer {{count}} liens",
         "other": "Déplacer {{count}} liens"
+      },
+      "noDrop": {
+        "all": "Déposez sur un dossier",
+        "favorites": "Ajoutez un lien en favori",
+        "recent": "Se remplit à l’ouverture",
+        "trash": "Utilisez Supprimer",
+        "pinnedLink": "Pas un dossier"
       }
     }
   },

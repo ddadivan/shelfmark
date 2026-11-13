@@ -494,6 +494,13 @@
         "one": "Sposta {{count}} link",
         "many": "Sposta {{count}} link",
         "other": "Sposta {{count}} link"
+      },
+      "noDrop": {
+        "all": "Trascina su una cartella",
+        "favorites": "Aggiungi un link ai preferiti",
+        "recent": "Si riempie aprendo link",
+        "trash": "Usa Elimina",
+        "pinnedLink": "Non è una cartella"
       }
     }
   },

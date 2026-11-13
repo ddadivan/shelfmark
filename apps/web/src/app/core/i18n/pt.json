@@ -494,6 +494,13 @@
         "one": "Mover {{count}} link",
         "many": "Mover {{count}} links",
         "other": "Mover {{count}} links"
+      },
+      "noDrop": {
+        "all": "Solte em uma pasta",
+        "favorites": "Marque um link com estrela",
+        "recent": "Enche ao abrir links",
+        "trash": "Use Excluir",
+        "pinnedLink": "Não é uma pasta"
       }
     }
   },

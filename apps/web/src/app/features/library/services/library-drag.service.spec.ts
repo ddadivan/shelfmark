@@ -26,7 +26,8 @@ async function setup() {
     list: vi.fn<LinksApi['list']>(() => of(page([link(1), link(2), link(3)]))),
     recent: vi.fn<LinksApi['recent']>(() => of({ items: [] })),
   };
-  const links = { start: vi.fn(), drop: vi.fn(), move: vi.fn() };
+  const noDropReasonKey = vi.fn<() => string | null>(() => null);
+  const links = { start: vi.fn(), drop: vi.fn(), move: vi.fn(), noDropReasonKey };
   TestBed.configureTestingModule({
     providers: [
       ...provideLibraryPage(),
@@ -48,7 +49,7 @@ async function setup() {
   const dnd = TestBed.inject(LibraryDragService);
   const selection = TestBed.inject(LibrarySelectionService);
   TestBed.tick();
-  return { dnd, selection, links };
+  return { dnd, selection, links, noDropReasonKey };
 }
 
 describe('LibraryDragService', () => {
@@ -100,5 +101,25 @@ describe('LibraryDragService', () => {
     const { dnd, links } = await setup();
     dnd.moved({ pointerPosition: { x: 12, y: 34 } } as Parameters<LibraryDragService['moved']>[0]);
     expect(links.move).toHaveBeenCalledWith(12, 34);
+  });
+
+  it('says why a sidebar row cannot take the link once when the pointer reaches it (#350)', async () => {
+    const { dnd, selection, noDropReasonKey } = await setup();
+    const move = (): void =>
+      dnd.moved({ pointerPosition: { x: 1, y: 2 } } as Parameters<LibraryDragService['moved']>[0]);
+
+    noDropReasonKey.mockReturnValue('links.drag.noDrop.favorites');
+    move();
+    expect(selection.modeAnnouncement()).toBe('Star a link to add it');
+
+    selection.announce('');
+    move();
+    expect(selection.modeAnnouncement()).toBe('');
+
+    noDropReasonKey.mockReturnValue(null);
+    move();
+    noDropReasonKey.mockReturnValue('links.drag.noDrop.favorites');
+    move();
+    expect(selection.modeAnnouncement()).toBe('Star a link to add it');
   });
 });

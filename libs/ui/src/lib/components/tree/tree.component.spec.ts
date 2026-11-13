@@ -29,6 +29,8 @@ import { TREE_DROP_OPEN_DELAY_MS } from './models/tree-drop-open-delay.const';
       [menuNodeId]="menuNodeId()"
       [dropTargetId]="dropTargetId()"
       [noDropIds]="noDropIds()"
+      [noDropHoverId]="noDropHoverId()"
+      [noDropLabels]="noDropLabels()"
       dropLabel="Move here"
       (selected)="selected.push($event)"
       (toggled)="toggled.push($event)"
@@ -48,6 +50,8 @@ class HostComponent {
   readonly menuNodeId = signal<string | null>(null);
   readonly dropTargetId = signal<string | null>(null);
   readonly noDropIds = signal<readonly string[]>([]);
+  readonly noDropHoverId = signal<string | null>(null);
+  readonly noDropLabels = signal<Readonly<Record<string, string>>>({});
   created = 0;
   readonly selected: UiTreeNode[] = [];
   readonly toggled: UiTreeToggleEvent[] = [];
@@ -237,6 +241,30 @@ describe('TreeComponent', () => {
       host.noDropIds.set([]);
       await settle(fixture);
       expect(item(TREE_STORY_NAME.Favorites).classList).not.toContain('ui-tree__row--no-drop');
+    });
+
+    it('marks no-drop rows aria-disabled and shows the reason of the hovered one as the name (#350)', async () => {
+      const { fixture, host, item } = await setup();
+      host.noDropIds.set([TREE_STORY_ID.Favorites]);
+      host.noDropLabels.set({ [TREE_STORY_ID.Favorites]: 'Star a link to add it' });
+      await settle(fixture);
+      const favorites = item(TREE_STORY_NAME.Favorites);
+
+      expect(favorites.getAttribute('aria-disabled')).toBe('true');
+      expect(item(TREE_STORY_NAME.Recipes).getAttribute('aria-disabled')).not.toBe('true');
+      expect(favorites.querySelector('.ui-tree__drop-badge')).toBeNull();
+
+      host.noDropHoverId.set(TREE_STORY_ID.Favorites);
+      await settle(fixture);
+      const badge = favorites.querySelector('.ui-tree__drop-badge--muted');
+      expect(badge?.textContent?.trim()).toBe('Star a link to add it');
+      expect(favorites.querySelector('.ui-tree__count')).toBeNull();
+      expect(favorites.getAttribute('aria-labelledby')).toContain('-drop');
+
+      host.noDropIds.set([]);
+      await settle(fixture);
+      expect(favorites.getAttribute('aria-disabled')).not.toBe('true');
+      expect(favorites.querySelector('.ui-tree__drop-badge--muted')).toBeNull();
     });
 
     it('keeps the row height while it is the target and fades the badge in (none when reduced)', () => {

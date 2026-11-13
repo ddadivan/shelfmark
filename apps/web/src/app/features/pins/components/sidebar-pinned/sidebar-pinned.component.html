@@ -92,6 +92,7 @@
             } @else if (row.link; as link) {
               <a
                 class="pinned__link"
+                [attr.aria-disabled]="linkDragging() ? 'true' : null"
                 [attr.href]="href(link) ?? null"
                 [attr.target]="href(link) && newTab() ? '_blank' : null"
                 [attr.rel]="href(link) ? (newTab() ? 'noopener noreferrer' : 'noreferrer') : null"
@@ -100,6 +101,11 @@
               >
                 <ui-favicon [src]="favicon(link)" [letter]="letter(link)" />
                 <span class="pinned__name">{{ link.title }}</span>
+                @if (drag.noDropHoverId() === row.key) {
+                  <span class="pinned__drop-badge pinned__drop-badge--muted"
+                    >&ngsp;{{ drag.noDropReasonKey() ?? '' | transloco }}</span
+                  >
+                }
                 @if (href(link) && newTab()) {
                   <span class="pinned__hidden">{{ 'links.item.opensInNewTab' | transloco }}</span>
                 }
