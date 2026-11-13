@@ -1,10 +1,14 @@
 import { inject, Service } from '@angular/core';
 import {
   deriveLinkKind,
+  FOLDER_ERROR_MESSAGE,
+  isHttpUrl,
   LINK_BATCH_ERROR_CODE,
+  LINK_ERROR_MESSAGE,
   LINK_IMAGE_PENDING_VERSION,
   LINK_LIMIT,
   LINK_SORT_FIELD,
+  LINKS_BATCH_ERROR_MESSAGE,
   normalizeUrl,
   stripTrackingParams,
   PAGE_LIMIT,
@@ -31,13 +35,16 @@ import {
 import { MOCK_LINK_PREVIEW_DUPLICATE } from '@shelfmark/contracts/testing';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { defer, delay, type Observable, of, throwError } from 'rxjs';
+import { mockHttpError } from '../../../core/api/mock-http-error';
 import { displayHost } from '../components/add-link/http-url';
 import { MOCK_HOST } from '../models/mock-host.const';
 import { MOCK_LATENCY_MS } from '../models/mock-latency.const';
 import { MOCK_LINKS_SCENARIO } from '../models/mock-links-scenario.const';
 import { MOCK_LINKS_SCENARIO_KEY } from '../models/mock-links-scenario-key.const';
 import type { LinksApi } from '../models/links-api.interface';
+import { linkFieldsProblems } from './link-fields-problems';
 import { MockLibraryData } from './mock-library-data';
+import { normalizeLinkTags } from './normalize-link-tags';
 
 const DAY_MS = 86_400_000;
 
@@ -131,6 +138,13 @@ export class MockLinksApi implements LinksApi {
       if (displayHost(request.url) === MOCK_HOST.SaveFails) {
         return throwError(() => new Error('Mock: save failed'));
       }
+      const problems = linkFieldsProblems(request);
+      if (problems.length > 0) {
+        return throwError(() => mockHttpError(HttpStatusCode.BadRequest, problems));
+      }
+      if (request.folderId !== undefined && !this.hasFolder(request.folderId)) {
+        return throwError(() => folderNotFound());
+      }
       const replay =
         request.idempotencyKey === undefined ? undefined : this.created.get(request.idempotencyKey);
       if (replay) {
@@ -151,7 +165,7 @@ export class MockLinksApi implements LinksApi {
         pinnedInFolderAt: null,
         pinned: false,
         lastOpenedAt: null,
-        tags: request.tags ?? [],
+        tags: normalizeLinkTags(request.tags ?? []),
         createdAt: now,
         updatedAt: now,
       };
@@ -175,6 +189,10 @@ export class MockLinksApi implements LinksApi {
       if (scenario === MOCK_LINKS_SCENARIO.Error) {
         return throwError(() => new Error('Mock: list failed'));
       }
+      const refused = listProblem(query);
+      if (refused) {
+        return throwError(() => refused);
+      }
       const matching = scenario === MOCK_LINKS_SCENARIO.Empty ? [] : this.filter(query);
       const inFolder = query.folderId !== undefined;
       // Like the API: in a folder the pinned links come first in `pinned` (page one only).
@@ -186,7 +204,7 @@ export class MockLinksApi implements LinksApi {
       const rest = inFolder ? matching.filter((link) => link.pinnedInFolderAt === null) : matching;
       const sorted = sort(rest, query);
       const limit = query.limit ?? PAGE_LIMIT.Default;
-      const offset = decodeCursor(query.cursor);
+      const offset = decodeCursor(query.cursor) ?? 0;
       const first = sorted[0]?.id;
       const items = sorted
         .slice(offset, offset + limit)
@@ -221,9 +239,9 @@ export class MockLinksApi implements LinksApi {
 
   removeRecent(id: string): Observable<void> {
     return defer(() => {
-      const current = this.links.find((link) => link.id === id && link.lastOpenedAt !== null);
+      const current = this.links.find((link) => link.id === id);
       if (!current) {
-        return throwError(() => new Error('Mock: not found'));
+        return throwError(() => linkNotFound());
       }
       if (displayHost(current.url) === MOCK_HOST.DeleteFails) {
         return throwError(() => new Error('Mock: remove from history failed'));
@@ -247,9 +265,7 @@ export class MockLinksApi implements LinksApi {
   get(id: string): Observable<LinkResponse> {
     return defer(() => {
       const current = this.links.find((link) => link.id === id);
-      return current
-        ? of(this.data.linkView(current))
-        : throwError(() => new Error('Mock: get failed'));
+      return current ? of(this.data.linkView(current)) : throwError(() => linkNotFound());
     }).pipe(delay(MOCK_LATENCY_MS.List));
   }
 
@@ -257,10 +273,17 @@ export class MockLinksApi implements LinksApi {
     return defer(() => {
       const current = this.links.find((link) => link.id === id);
       if (!current) {
-        return throwError(() => new Error('Mock: update failed'));
+        return throwError(() => linkNotFound());
       }
       if (displayHost(current.url) === MOCK_HOST.PatchFails) {
         return throwError(() => new Error('Mock: update failed'));
+      }
+      const problems = linkFieldsProblems(request);
+      if (problems.length > 0) {
+        return throwError(() => mockHttpError(HttpStatusCode.BadRequest, problems));
+      }
+      if (typeof request.folderId === 'string' && !this.hasFolder(request.folderId)) {
+        return throwError(() => folderNotFound());
       }
       const { pinnedInFolder, ...fields } = request;
       const now = new Date().toISOString();
@@ -270,15 +293,16 @@ export class MockLinksApi implements LinksApi {
         pinnedInFolderAt = null;
       } else if (pinnedInFolder === true) {
         if (folderId === null) {
-          return throwError(() => badRequest());
+          return throwError(() =>
+            mockHttpError(HttpStatusCode.BadRequest, LINK_ERROR_MESSAGE.PinNeedsFolder),
+          );
         }
         const taken = this.links.filter(
           (link) => link.folderId === folderId && link.pinnedInFolderAt !== null,
         ).length;
         if (current.pinnedInFolderAt === null && taken >= LINK_LIMIT.PinnedInFolderMax) {
-          return throwError(
-            () =>
-              new HttpErrorResponse({ status: HttpStatusCode.Conflict, statusText: 'Conflict' }),
+          return throwError(() =>
+            mockHttpError(HttpStatusCode.Conflict, LINK_ERROR_MESSAGE.PinnedInFolderLimit),
           );
         }
         pinnedInFolderAt = current.pinnedInFolderAt ?? now;
@@ -292,6 +316,7 @@ export class MockLinksApi implements LinksApi {
       const updated: LinkResponse = {
         ...current,
         ...fields,
+        tags: fields.tags === undefined ? current.tags : normalizeLinkTags(fields.tags),
         kind,
         pinnedInFolderAt,
         updatedAt: now,
@@ -305,12 +330,13 @@ export class MockLinksApi implements LinksApi {
   remove(id: string): Observable<void> {
     return defer(() => {
       const current = this.links.find((link) => link.id === id);
-      if (current && displayHost(current.url) === MOCK_HOST.DeleteFails) {
+      if (!current) {
+        return throwError(() => linkNotFound());
+      }
+      if (displayHost(current.url) === MOCK_HOST.DeleteFails) {
         return throwError(() => new Error('Mock: delete failed'));
       }
-      if (current) {
-        this.data.trashLink(current);
-      }
+      this.data.trashLink(current);
       return of(undefined);
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
@@ -319,7 +345,7 @@ export class MockLinksApi implements LinksApi {
     return defer(() => {
       const current = this.links.find((link) => link.id === id);
       if (!current) {
-        return throwError(() => new Error('Mock: update failed'));
+        return throwError(() => linkNotFound());
       }
       // As the server: a paused history answers but records nothing.
       if (this.data.pauseHistory) {
@@ -335,7 +361,7 @@ export class MockLinksApi implements LinksApi {
     return defer(() => {
       const current = this.links.find((link) => link.id === id);
       if (!current) {
-        return throwError(() => new Error('Mock: capture failed'));
+        return throwError(() => linkNotFound());
       }
       this.captured.add(id);
       this.pending.delete(id);
@@ -358,6 +384,13 @@ export class MockLinksApi implements LinksApi {
     return defer(() => {
       if (request.items.some((item) => displayHost(item.url) === MOCK_HOST.SaveFails)) {
         return throwError(() => new Error('Mock: save failed'));
+      }
+      const problems = batchProblems(request);
+      if (problems.length > 0) {
+        return throwError(() => mockHttpError(HttpStatusCode.BadRequest, problems));
+      }
+      if (request.folderId !== undefined && !this.hasFolder(request.folderId)) {
+        return throwError(() => folderNotFound());
       }
       const links: LinkResponse[] = [];
       const errors: LinkBatchItemError[] = [];
@@ -395,7 +428,7 @@ export class MockLinksApi implements LinksApi {
           pinnedInFolderAt: null,
           pinned: false,
           lastOpenedAt: null,
-          tags: request.tags ?? [],
+          tags: normalizeLinkTags(request.tags ?? []),
           createdAt: at,
           updatedAt: at,
         };
@@ -463,13 +496,24 @@ export class MockLinksApi implements LinksApi {
         return throwError(() => new Error('Mock: update failed'));
       }
       const { folderId } = request;
-      if (
-        typeof folderId === 'string' &&
-        !this.data.folderList.some((folder) => folder.id === folderId)
-      ) {
-        return throwError(() => httpError(HttpStatusCode.NotFound, 'Not Found'));
+      const changes = [folderId, request.isFavorite, request.addTags, request.removeTags];
+      if (changes.every((change) => change === undefined)) {
+        return throwError(() =>
+          mockHttpError(HttpStatusCode.BadRequest, LINKS_BATCH_ERROR_MESSAGE.NothingToChange),
+        );
       }
       const add = (request.addTags ?? []).map(normalizeTagName).filter((name) => name !== '');
+      const removing = new Set(
+        (request.removeTags ?? []).map((name) => normalizeTagName(name).toLowerCase()),
+      );
+      if (add.some((name) => removing.has(name.toLowerCase()))) {
+        return throwError(() =>
+          mockHttpError(HttpStatusCode.BadRequest, LINKS_BATCH_ERROR_MESSAGE.TagAddedAndRemoved),
+        );
+      }
+      if (typeof folderId === 'string' && !this.hasFolder(folderId)) {
+        return throwError(() => folderNotFound());
+      }
       const remove = new Set(
         (request.removeTags ?? []).map((name) => normalizeTagName(name).toLowerCase()),
       );
@@ -483,8 +527,11 @@ export class MockLinksApi implements LinksApi {
           }
         }
         if (tags.length > LINK_LIMIT.TagsMax) {
-          return throwError(() => httpError(HttpStatusCode.Conflict, 'Conflict'));
+          return throwError(() =>
+            mockHttpError(HttpStatusCode.Conflict, LINKS_BATCH_ERROR_MESSAGE.TooManyTags),
+          );
         }
+        tags = normalizeLinkTags(tags);
         const nextFolder = folderId === undefined ? link.folderId : folderId;
         changed.set(link.id, {
           ...link,
@@ -508,14 +555,51 @@ export class MockLinksApi implements LinksApi {
   private filter(query: ListLinksQuery): LinkResponse[] {
     return this.data.matching(query);
   }
+
+  private hasFolder(id: string): boolean {
+    return this.data.folderList.some((folder) => folder.id === id);
+  }
 }
 
-function httpError(status: HttpStatusCode, statusText: string): HttpErrorResponse {
-  return new HttpErrorResponse({ status, statusText });
+function linkNotFound(): HttpErrorResponse {
+  return mockHttpError(HttpStatusCode.NotFound, LINK_ERROR_MESSAGE.NotFound);
 }
 
-function badRequest(): HttpErrorResponse {
-  return new HttpErrorResponse({ status: HttpStatusCode.BadRequest, statusText: 'Bad Request' });
+function folderNotFound(): HttpErrorResponse {
+  return mockHttpError(HttpStatusCode.NotFound, FOLDER_ERROR_MESSAGE.NotFound);
+}
+
+/** What `GET /api/links` refuses before it reads anything: paging bounds, a broken cursor, clashing filters. */
+function listProblem(query: ListLinksQuery): HttpErrorResponse | null {
+  if (
+    query.limit !== undefined &&
+    (!Number.isInteger(query.limit) || query.limit < 1 || query.limit > PAGE_LIMIT.Max)
+  ) {
+    return mockHttpError(HttpStatusCode.BadRequest, ['limit must be 1 to 100']);
+  }
+  if (query.cursor !== undefined && decodeCursor(query.cursor) === null) {
+    return mockHttpError(HttpStatusCode.BadRequest, LINK_ERROR_MESSAGE.InvalidCursor);
+  }
+  if (query.folderId !== undefined && query.unsorted) {
+    return mockHttpError(HttpStatusCode.BadRequest, LINK_ERROR_MESSAGE.FolderAndUnsorted);
+  }
+  return null;
+}
+
+/** What the API's `CreateLinksBatchDto` refuses: no items, too many, a URL that is not http(s) or too long. */
+function batchProblems(request: CreateLinksBatchRequest): string[] {
+  const problems: string[] = [];
+  if (request.items.length < 1 || request.items.length > LINK_LIMIT.BatchMax) {
+    problems.push('items must hold 1 to 100 links');
+  }
+  if (
+    request.items.some(
+      (item) => !isHttpUrl(item.url.trim()) || item.url.trim().length > LINK_LIMIT.UrlMax,
+    )
+  ) {
+    problems.push('every url must be an http(s) URL, at most 2048 characters');
+  }
+  return problems;
 }
 
 function sort(links: LinkResponse[], query: ListLinksQuery): LinkResponse[] {
@@ -530,12 +614,17 @@ function encodeCursor(offset: number): string {
   return globalThis.btoa(String(offset));
 }
 
-function decodeCursor(cursor: string | undefined): number {
+/** The offset a cursor stands for, or `null` when it is not one of ours. */
+function decodeCursor(cursor: string | undefined): number | null {
   if (cursor === undefined) {
     return 0;
   }
-  const offset = Number(globalThis.atob(cursor));
-  return Number.isInteger(offset) && offset >= 0 ? offset : 0;
+  try {
+    const offset = Number(globalThis.atob(cursor));
+    return Number.isInteger(offset) && offset >= 0 ? offset : null;
+  } catch {
+    return null;
+  }
 }
 
 function readScenario(): string | null {
