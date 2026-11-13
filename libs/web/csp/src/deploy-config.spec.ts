@@ -1,6 +1,8 @@
-import { expect, test } from './support/test';
-import { buildCsp, HTML_MATCHER } from '@shelfmark/web-csp';
+import { buildCsp } from './lib/build-csp';
+import { HTML_MATCHER } from './lib/models/html-matcher.const';
+import { describe, expect, it } from 'vitest';
 import {
+  hasHeader,
   headerRulesWithCsp,
   readCsp,
   readCspFromSetupDoc,
@@ -8,7 +10,7 @@ import {
   readMiddlewareMatcher,
   readVercelConfig,
   sourceToRegExp,
-} from './support/vercel-config';
+} from './testing/vercel-config';
 
 const config = readVercelConfig();
 const apiRewrite = config.rewrites.find(
@@ -16,41 +18,41 @@ const apiRewrite = config.rewrites.find(
 ) ?? { source: '', destination: '' };
 const apiPaths = ['/api', '/api/', '/api/health', '/api/docs', '/api/folders/1'];
 
-test.describe('vercel.json deployment config', () => {
-  test('static CSP equals the policy documented in SETUP.md 5.6 and the lib', () => {
+// Static checks of the web deployment config (vercel.json, middleware.ts, docs/SETUP.md 5.6)
+// against this lib; moved from the e2e suite in #349 (they need no browser).
+describe('vercel.json deployment config', () => {
+  it('static CSP equals the policy documented in SETUP.md 5.6 and the lib', () => {
     expect(readCsp(config)).toBe(readCspFromSetupDoc());
     expect(readCsp(config)).toBe(buildCsp(null));
   });
 
-  test('SETUP.md 5.6 document CSP template equals the lib policy with a nonce', () => {
+  it('SETUP.md 5.6 document CSP template equals the lib policy with a nonce', () => {
     expect(readCspTemplateFromSetupDoc()).toBe(buildCsp('{nonce}'));
   });
 
-  test('middleware.ts matcher equals the lib HTML_MATCHER', () => {
+  it('middleware.ts matcher equals the lib HTML_MATCHER', () => {
     expect(readMiddlewareMatcher()).toEqual([...HTML_MATCHER]);
   });
 
-  test('the build command also writes the middleware shell', () => {
+  it('the build command also writes the middleware shell', () => {
     expect(config.buildCommand).toContain('middleware-shell');
   });
 
-  test('CSP is strict: no unsafe-inline, no unsafe-eval, no bare wildcard source', () => {
+  it('CSP is strict: no unsafe-inline, no unsafe-eval, no bare wildcard source', () => {
     const csp = readCsp(config);
     expect(csp).not.toMatch(/unsafe-inline|unsafe-eval/);
     expect(csp).not.toMatch(/\s\*(\s|;|$)/);
   });
 
-  for (const path of apiPaths) {
-    test(`no CSP header rule matches ${path}`, () => {
-      for (const rule of headerRulesWithCsp(config)) {
-        expect(sourceToRegExp(rule.source).test(path), rule.source).toBe(false);
-      }
-    });
-  }
+  it.each(apiPaths)('no CSP header rule matches %s', (path) => {
+    for (const rule of headerRulesWithCsp(config)) {
+      expect(sourceToRegExp(rule.source).test(path), rule.source).toBe(false);
+    }
+  });
 
   // HTML documents get their CSP (with a nonce) from the middleware; two policies must never
   // meet on one response, so the static rule covers file-like paths only.
-  test('static CSP rule matches no HTML document path', () => {
+  it('static CSP rule matches no HTML document path', () => {
     for (const rule of headerRulesWithCsp(config)) {
       const regexp = sourceToRegExp(rule.source);
       for (const path of ['/', '/folders/42', '/folders/42/', '/u/john.doe/links', '/index.html']) {
@@ -59,7 +61,7 @@ test.describe('vercel.json deployment config', () => {
     }
   });
 
-  test('static CSP rule matches file paths, including missing files', () => {
+  it('static CSP rule matches file paths, including missing files', () => {
     for (const rule of headerRulesWithCsp(config)) {
       const regexp = sourceToRegExp(rule.source);
       for (const path of [
@@ -73,10 +75,8 @@ test.describe('vercel.json deployment config', () => {
     }
   });
 
-  test('the other security headers still apply to every non-API path', () => {
-    const rule = config.headers.find((r) =>
-      r.headers.some((h) => h.key === 'X-Content-Type-Options'),
-    );
+  it('the other security headers still apply to every non-API path', () => {
+    const rule = config.headers.find((r) => hasHeader(r, 'X-Content-Type-Options'));
     expect(rule).toBeDefined();
     const regexp = sourceToRegExp(rule?.source ?? '');
     for (const path of ['/', '/folders/42', '/index.html', '/main-ABCD1234.js', '/missing.js']) {
@@ -87,7 +87,7 @@ test.describe('vercel.json deployment config', () => {
     }
   });
 
-  test('middleware matcher covers HTML paths and no API or file path', () => {
+  it('middleware matcher covers HTML paths and no API or file path', () => {
     const patterns = readMiddlewareMatcher().map((source) => sourceToRegExp(source));
     const matches = (path: string) => patterns.some((pattern) => pattern.test(path));
     for (const path of ['/', '/folders/42', '/u/john.doe/links', '/index.html']) {
@@ -98,7 +98,7 @@ test.describe('vercel.json deployment config', () => {
     }
   });
 
-  test('SPA rewrite does not match /api paths but matches app routes', () => {
+  it('SPA rewrite does not match /api paths but matches app routes', () => {
     const spa = config.rewrites.find((r) => r.destination === '/index.html');
     expect(spa).toBeDefined();
     const regexp = sourceToRegExp(spa?.source ?? '');
@@ -117,7 +117,7 @@ test.describe('vercel.json deployment config', () => {
     }
   });
 
-  test('SPA rewrite leaves paths with a file extension alone', () => {
+  it('SPA rewrite leaves paths with a file extension alone', () => {
     const spa = config.rewrites.find((r) => r.destination === '/index.html');
     const regexp = sourceToRegExp(spa?.source ?? '');
     for (const path of ['/missing.js', '/media/x.woff2', '/assets/deep/app.css', '/favicon.ico']) {
@@ -128,7 +128,7 @@ test.describe('vercel.json deployment config', () => {
   // Vercel serves the app shell (200) for missing files even without rewrites and with the
   // Framework Preset set to Other (issue #13, ADR 0019). This rule sends file-like paths to `/api`,
   // which Vercel answers with a real 404 for a non-API source (observed, not documented).
-  test('missing-file rule matches file-like paths only, never app routes or /api', () => {
+  it('missing-file rule matches file-like paths only, never app routes or /api', () => {
     const rule = config.rewrites.find(
       (r) => r.source !== apiRewrite.source && r.destination === '/api',
     );
@@ -160,10 +160,8 @@ test.describe('vercel.json deployment config', () => {
     }
   });
 
-  test('public collections (/c/:token) are noindex, nothing else is (ADR 0040)', () => {
-    const rules = config.headers.filter((rule) =>
-      rule.headers.some((h) => h.key === 'X-Robots-Tag'),
-    );
+  it('public collections (/c/:token) are noindex, nothing else is (ADR 0040)', () => {
+    const rules = config.headers.filter((rule) => hasHeader(rule, 'X-Robots-Tag'));
     expect(rules).toHaveLength(1);
     expect(rules[0].headers).toEqual([{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }]);
     const regexp = sourceToRegExp(rules[0].source);
@@ -173,9 +171,11 @@ test.describe('vercel.json deployment config', () => {
     }
   });
 
-  test('hashed js and css share one immutable cache rule', () => {
+  it('hashed js and css share one immutable cache rule', () => {
     const rules = config.headers.filter((rule) =>
-      rule.headers.some((h) => h.key === 'Cache-Control' && h.value.includes('immutable')),
+      rule.headers.some(
+        ({ key, value }) => key.toLowerCase() === 'cache-control' && value.includes('immutable'),
+      ),
     );
     const hashed = rules.filter((rule) => rule.source.includes('{8}'));
     expect(hashed).toHaveLength(1);
@@ -186,10 +186,8 @@ test.describe('vercel.json deployment config', () => {
     expect(regexp.test('/main.js')).toBe(false);
   });
 
-  test('service worker files are revalidated and the manifest has its media type', () => {
-    const cacheRule = config.headers.find((r) =>
-      r.headers.some((h) => h.key === 'Cache-Control' && h.value === 'no-cache'),
-    );
+  it('service worker files are revalidated and the manifest has its media type', () => {
+    const cacheRule = config.headers.find((r) => hasHeader(r, 'Cache-Control', 'no-cache'));
     const regexp = sourceToRegExp(cacheRule?.source ?? '');
     for (const path of [
       '/ngsw.json',
@@ -210,7 +208,7 @@ test.describe('vercel.json deployment config', () => {
     });
   });
 
-  test('service worker and manifest files are file-like paths, never HTML documents', () => {
+  it('service worker and manifest files are file-like paths, never HTML documents', () => {
     const patterns = readMiddlewareMatcher().map((source) => sourceToRegExp(source));
     const spa = sourceToRegExp(
       config.rewrites.find((r) => r.destination === '/index.html')?.source ?? '',
@@ -230,7 +228,7 @@ test.describe('vercel.json deployment config', () => {
     }
   });
 
-  test('API rewrite sends /api/* to the function without named params', () => {
+  it('API rewrite sends /api/* to the function without named params', () => {
     const regexp = sourceToRegExp(apiRewrite.source);
     for (const path of ['/api/health', '/api/docs', '/api/docs/swagger-ui.css']) {
       expect(regexp.test(path), path).toBe(true);
@@ -241,15 +239,15 @@ test.describe('vercel.json deployment config', () => {
     expect(apiRewrite.destination).toBe('/api');
   });
 
-  test('functions run in fra1 only', () => {
+  it('functions run in fra1 only', () => {
     expect(config.regions).toEqual(['fra1']);
   });
 
-  test('dependabot branches are not deployed', () => {
+  it('dependabot branches are not deployed', () => {
     expect(config.git.deploymentEnabled['dependabot/**']).toBe(false);
   });
 
-  test('only main deploys: every prefixed branch (feat/, fix/, chore/, …) is off', () => {
+  it('only main deploys: every prefixed branch (feat/, fix/, chore/, …) is off', () => {
     expect(config.git.deploymentEnabled['*/**']).toBe(false);
     expect(config.git.deploymentEnabled['main']).toBeUndefined();
   });

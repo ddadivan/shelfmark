@@ -14,7 +14,7 @@ export default defineConfig({
       provider: 'v8',
       reportsDirectory: '../../../coverage/libs/web/csp',
       include: ['src/**/*.ts'],
-      exclude: ['src/**/*.spec.ts', 'src/index.ts', 'src/**/models/**'],
+      exclude: ['src/**/*.spec.ts', 'src/index.ts', 'src/**/models/**', 'src/testing/**'],
       thresholds: { lines: 80, branches: 80, functions: 80, statements: 80 },
     },
   },
