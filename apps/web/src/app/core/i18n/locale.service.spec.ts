@@ -12,6 +12,7 @@ import {
 import { activeLang, setActiveLang } from './active-lang';
 import { AppTranslocoLoader } from './app-transloco.loader';
 import { LocaleService } from './locale.service';
+import { resetRelativeTimeFormats } from './relative-time';
 import { LANGUAGE_STORAGE_KEY } from './models/language-storage-key.const';
 import { translocoConfig } from './transloco.config';
 
@@ -60,15 +61,19 @@ describe('LocaleService', () => {
   });
 
   it('builds the relative-time formatter in a task of its own before the first render (#359)', async () => {
-    // A region no other spec uses: formatters are cached per locale for the whole module.
+    // Formatters are cached per locale for the whole module: start from an empty cache, so the
+    // build is seen on every run (and with --repeat).
+    resetRelativeTimeFormats();
     stubLanguages(['it-CH', 'en']);
-    const timer = vi.spyOn(window, 'setTimeout');
     const build = vi.spyOn(Intl, 'RelativeTimeFormat');
     const { locale } = setup();
-    await locale.init();
-    const warm = timer.mock.calls.find(([, delay]) => delay === undefined)?.[0];
-    expect(warm).toBeTypeOf('function');
-    (warm as () => void)();
+
+    const done = locale.init();
+    // Not built in the synchronous part of init(): it waits for a task of its own.
+    expect(build).not.toHaveBeenCalledWith('it-CH', { numeric: 'auto' });
+    await done;
+    // Timers with the same delay run in order, so this one runs after the warm-up task.
+    await new Promise((resolve) => setTimeout(resolve));
     expect(build).toHaveBeenCalledWith('it-CH', { numeric: 'auto' });
   });
 
