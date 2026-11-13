@@ -20,6 +20,7 @@ import {
   LIBRARY_VIEW,
   LINK_OPEN_TARGET,
   MOTION_PREFERENCE,
+  type FolderEmoji,
   type HexColour,
   THEME_PREFERENCE,
   TRASH_RETENTION_DAYS,
@@ -55,6 +56,14 @@ export class UserSettingsResponseDto implements UserSettingsResponse {
     description: 'Own colours (lower-case #rrggbb, at most 12): swatches for folders and the theme',
   })
   customColours!: HexColour[];
+
+  @ApiProperty({
+    type: [String],
+    example: ['🦩'],
+    description:
+      'Own emoji (each one emoji, at most 24): offered under "Yours" in the emoji picker',
+  })
+  customEmoji!: FolderEmoji[];
 
   @ApiProperty({ enum: Object.values(MOTION_PREFERENCE), example: MOTION_PREFERENCE.System })
   motion!: MotionPreference;

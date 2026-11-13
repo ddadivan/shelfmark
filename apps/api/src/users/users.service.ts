@@ -108,6 +108,7 @@ export class UsersService {
     if (request.theme !== undefined) data.theme = request.theme;
     if (request.motion !== undefined) data.motion = request.motion;
     if (request.customColours !== undefined) data.customColours = [...request.customColours];
+    if (request.customEmoji !== undefined) data.customEmoji = [...request.customEmoji];
     const layout = {
       textSize: request.textSize,
       font: request.font,
