@@ -46,7 +46,7 @@ Updated as work goes on — every session resumes from here.
     - [#346](https://github.com/ddadivan/shelfmark/pull/346) initial bundle 758 → 458 kB (#339), merge after #343. English, the landing (preloaded before bootstrap), the library stores, the signed-out dialog and the toast service are lazy.
     - [#344](https://github.com/ddadivan/shelfmark/pull/344) visual regression screenshots (#340). 17 screens × desktop, tablet and phone × light and dark, compared in the Playwright container. The `visual:update` label regenerates and commits the baselines.
     - [#345](https://github.com/ddadivan/shelfmark/pull/345) contract tests (#341). 97 shared scenarios run against the web mock and the real API, and 12 mock drifts are fixed.
-    - #342 component stylesheets under 4 kB, merge after #344 (the visual check proves no change).
+    - [#347](https://github.com/ddadivan/shelfmark/pull/347) component stylesheets under 4 kB (#342), merge after #344 (the visual check proves no change).
   - Next: the author reviews and merges the five quality PRs (#343 before #346, #344 before #342), then the release PR `stage → main` (merge commit) with the author's review; before it the author turns on merge commits for `main` and may review the five translations (the privacy text first). After the release: check the Feedback inbox shows for the admin, and re-open Dependabot's pending updates against `stage` (#279 and #282 target `main`).
 - [x] Motion in code (landing and app); promo video moved to stage 2
 
