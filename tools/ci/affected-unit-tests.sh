@@ -7,7 +7,9 @@
 #         Each shard writes a blob report to .vitest-reports; the `lint-test-build` job merges them
 #         and checks the coverage thresholds of apps/api/vitest.config.mts on the whole suite (a
 #         single shard covers only part of the code, so its own thresholds are switched off).
-#   web   the Angular app.
+#   web   the Angular app, with coverage: `web:test:coverage` checks the thresholds in
+#         apps/web/project.json (#362; measured 89.4 / 84.0 / 84.9 / 90.4% statements / branches /
+#         functions / lines on Nov 13, 2026, thresholds set at least a point below).
 #   libs  every other project with a `test` target (libs/ui keeps its coverage thresholds).
 #
 # A group with no affected project does nothing, so `nx affected` decides what runs, as before.
@@ -43,6 +45,8 @@ if [ "${group}" = "api" ]; then
     --outputFile.blob="../../.vitest-reports/blob-${shard}.json" \
     --coverage.thresholds.lines=0 --coverage.thresholds.branches=0 \
     --coverage.thresholds.functions=0 --coverage.thresholds.statements=0
+elif [ "${group}" = "web" ]; then
+  npx nx run web:test:coverage --output-style=static
 else
   npx nx run-many -t test -p "${projects}" --output-style=static
 fi

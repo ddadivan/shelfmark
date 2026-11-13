@@ -235,7 +235,13 @@
       },
       "configurations": {
         "coverage": {
-          "coverage": true
+          "coverage": true,
+          "coverageThresholds": {
+            "statements": 88,
+            "branches": 83,
+            "functions": 83,
+            "lines": 89
+          }
         }
       },
       "dependsOn": ["ui:icons"]
