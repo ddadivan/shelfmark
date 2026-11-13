@@ -63,7 +63,7 @@ let nextId = 0;
     '[class.ui-card--reveal]': 'reveal()',
   },
   templateUrl: './card.component.html',
-  styleUrl: './card.component.scss',
+  styleUrls: ['./card.component.scss', './card-content.scss', './card-actions.scss'],
 })
 export class CardComponent {
   /**

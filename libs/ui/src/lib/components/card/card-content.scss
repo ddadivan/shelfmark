@@ -1,0 +1,141 @@
+@use '../../../styles/ui' as *;
+
+.ui-card__overlay {
+  @include type(caption);
+
+  position: absolute;
+  inset: auto rem(10px) rem(10px);
+  z-index: 2;
+  padding: rem(6px) rem(8px) rem(6px) rem(10px);
+  color: var(--text);
+  pointer-events: none;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  border-radius: var(--radius-md);
+  opacity: 0;
+  backdrop-filter: blur(#{rem(6px)});
+  transform: translateY(#{rem(8px)});
+  transition:
+    opacity var(--duration-base) var(--ease-out),
+    transform var(--duration-base) var(--ease-out),
+    background-color var(--duration-instant);
+
+  &:empty {
+    display: none;
+  }
+
+  @include reduced-motion {
+    transform: none;
+  }
+}
+
+:host(:has(.ui-card__link:focus-visible)) .ui-card__overlay {
+  opacity: 1;
+  transform: none;
+}
+
+// Body ----------------------------------------------------------------------------------------
+
+.ui-card__body {
+  display: flex;
+
+  // Cards in a grid row share one height: the body takes the free room, so projected tags can sit
+  // at the bottom (`margin-block-start: auto`).
+  flex: 1;
+  flex-direction: column;
+  gap: var(--density-card-gap);
+  padding: var(--density-card-padding);
+}
+
+.ui-card__meta {
+  @include type(caption);
+
+  display: flex;
+  gap: rem(6px);
+  align-items: center;
+  min-width: 0;
+  color: var(--text-muted);
+}
+
+.ui-card__site {
+  display: flex;
+  flex: 0 1 auto;
+  gap: rem(6px);
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-card__date {
+  flex: none;
+  margin-inline-start: auto;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+
+  &:empty {
+    display: none;
+  }
+}
+
+// The heading wraps the link. It stays static positioned (the link's `::after` is stretched
+// over the card) and carries no type of its own.
+.ui-card__heading {
+  margin: 0;
+  font: inherit;
+}
+
+// The one activation target: a native link or button reset to look like text.
+.ui-card__link {
+  @include type(heading);
+  @include line-clamp(2);
+
+  font-size: rem(16px);
+  line-height: rem(22px);
+  letter-spacing: -0.01em;
+  padding: 0;
+  margin: 0;
+  color: var(--text);
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  overflow-wrap: anywhere;
+
+  // The card's ring replaces the one on the text.
+  &:focus-visible {
+    outline: none;
+  }
+
+  &::after {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    content: '';
+    border-radius: inherit;
+  }
+}
+
+// Above the stretched link's layer, so the pointer on the text reaches it (the full-title
+// tooltip opens only there); it is inside the link, so a click still activates the card.
+.ui-card__title-text {
+  position: relative;
+  z-index: 2;
+}
+
+.ui-card__description {
+  @include visually-hidden;
+}
+
+.ui-card__actions {
+  position: absolute;
+
+  --ui-button-sm-size: #{rem(32px)};
+  --ui-button-radius: #{rem(10px)};
+
+  inset: rem(10px) rem(10px) auto auto;
+  z-index: 2;
+  display: flex;
+  gap: rem(4px);
+}
