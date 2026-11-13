@@ -1,0 +1,109 @@
+@use '../../../styles/ui' as *;
+
+// Drop target while something is dragged over the row (DragDrop spec): sage fill, a 2px sage
+// ring and a "Move here" badge in place of the count. The row keeps its height (the badge fits in
+// it), so nothing below moves while a link passes over the folders; the name truncates to make room.
+.ui-tree__row--drop {
+  font-weight: 500;
+  color: var(--accent-text);
+  background: var(--accent-bg);
+  box-shadow: inset 0 0 0 2px var(--accent);
+
+  .ui-tree__icon,
+  .ui-tree__twist {
+    color: var(--accent-text);
+  }
+}
+
+// A row that cannot take what is dragged: a no-drop cursor and a muted state (no hover tint, never
+// the highlight) while the drag lasts; the feature sets `noDropIds` only then.
+.ui-tree__row--no-drop {
+  // Text stays `text-muted` (4.5:1: no opacity on text); only the glyph is dimmed.
+  color: var(--text-muted);
+
+  &,
+  * {
+    cursor: no-drop;
+  }
+
+  .ui-tree__icon,
+  .ui-tree__twist {
+    opacity: 0.55;
+  }
+
+  // After the hover rule in the file, so it wins at the same specificity.
+  &:not([aria-current]) {
+    background: transparent;
+  }
+}
+
+// Where the count was; fades in with the reorder slot below.
+.ui-tree__drop-badge {
+  @include type(caption);
+
+  flex: none;
+  padding: rem(2px) rem(8px);
+  margin-inline-start: auto;
+  font-weight: 500;
+  color: var(--accent-text);
+  white-space: nowrap;
+  background: var(--surface);
+  border-radius: var(--radius-full);
+}
+
+// "..." button: fades in on hover or focus, always there on touch.
+.ui-tree__more {
+  flex: none;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+
+  &.is-open,
+  &:focus-within {
+    opacity: 1;
+  }
+
+  @media (hover: none) {
+    opacity: 1;
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+// Open and close by height. The group stays rendered while closed so it can animate; it is
+// hidden from the tab order and assistive tech once the close has finished.
+.ui-tree__children {
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition:
+    grid-template-rows var(--duration-base) var(--ease-in-out),
+    visibility 0s var(--duration-base);
+
+  &.is-open {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition:
+      grid-template-rows var(--duration-base) var(--ease-in-out),
+      visibility 0s;
+  }
+
+  > .ui-tree__group {
+    min-height: 0;
+    overflow: hidden;
+
+    // The gap to the parent row lives inside, so a closed group is exactly 0 high.
+    > :first-child {
+      margin-block-start: rem(1px);
+    }
+  }
+
+  @include reduced-motion {
+    transition: none;
+
+    &.is-open {
+      transition: none;
+    }
+  }
+}

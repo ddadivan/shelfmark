@@ -1,0 +1,73 @@
+@use '../../../styles/ui' as *;
+
+// Reorder (folder rows, a mouse or a finger after a rest, #315): the rows hold still and a line
+// marks where the row lands (`reorder-drop-line` on every list: a 2px accent divider, rounded
+// ends, no dot, centred in the gap, as wide as the rows' own background; fades in, appears under
+// reduced motion). CDK still sorts in its model and would slide the siblings and its placeholder
+// with inline transforms; `uiTreeReorderList` removes them after each sort step (`holdRowsStill`),
+// so the placeholder stays where the row was as a faint ghost of it (one row tall: the list keeps
+// its height and nothing below moves). The dragged row follows the pointer as a small floating card.
+.ui-tree__list {
+  @include reorder-drop-line;
+}
+
+// The "Move here" badge fades in (duration-base, ease-out); under reduced motion it simply appears.
+.ui-tree__drop-badge {
+  @include enter(fade);
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+.ui-tree__drop-slot {
+  display: flex;
+  gap: rem(8px);
+  align-items: center;
+  box-sizing: border-box;
+  min-height: rem(36px);
+  padding-block: 0;
+  padding-inline: calc(#{rem(10px)} + (var(--ui-tree-level, 1) - 1) * #{rem(16px)}) rem(10px);
+  font-size: rem(14px);
+  line-height: rem(20px);
+  color: var(--text-muted);
+  list-style: none;
+  opacity: 0.45;
+
+  @include phone {
+    min-height: rem(44px);
+  }
+
+  @include coarse {
+    min-height: rem(44px);
+  }
+}
+
+// The preview's top-left corner is at the pointer: the card is offset so the pointer sits at its
+// start and the rows below stay visible.
+.ui-tree__reorder-preview {
+  pointer-events: none;
+}
+
+.ui-tree__reorder-card {
+  @include type(body);
+
+  display: flex;
+  gap: rem(8px);
+  align-items: center;
+  max-width: rem(240px);
+  min-height: rem(36px);
+  padding-inline: rem(10px) rem(14px);
+  font-size: rem(14px);
+  font-weight: 500;
+  line-height: rem(20px);
+  color: var(--text);
+  background: var(--surface);
+  border-radius: calc(var(--radius-md) - #{rem(2px)});
+  box-shadow: var(--shadow-float);
+  transform: translate(rem(-12px), -50%) rotate(-1.5deg);
+
+  @include reduced-motion {
+    transform: translate(rem(-12px), -50%);
+  }
+}
