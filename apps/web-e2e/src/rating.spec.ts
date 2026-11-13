@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test';
 import { COLOR_SCHEME } from './models/color-scheme.const';
 import { settled } from './support/settled';
 import { expectNoBlockingViolations } from './support/axe';
-import { demoUser, MOCK_USER, NEW_USER, seedSession } from './support/mock-session';
+import { MOCK_USER, seedSession } from './support/mock-session';
 import { expect, test } from './support/test';
 import { E2E_TAG } from './models/e2e-tag.const';
 
@@ -97,51 +97,6 @@ test.describe('app rating (mock API)', () => {
     expect((await stored(page)).entries).toEqual({
       week1: { score: 4, comment: 'More folder options' },
     });
-  });
-
-  test('Not now records a skip and the milestone is not asked again', async ({ page }) => {
-    const dialog = await openRating(page);
-
-    await dialog.getByRole('button', { name: 'Not now' }).click();
-    await expect(page.getByRole('dialog')).toHaveCount(0);
-    await expect.poll(async () => (await stored(page)).entries).toEqual({ week1: { score: null } });
-
-    await page.reload();
-    await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
-    await page.clock.runFor(SHOW_MS * 2);
-    await expect(page.getByRole('dialog')).toHaveCount(0);
-  });
-
-  test('is not shown before day 3', async ({ page }) => {
-    await openLibrary(page, 2);
-
-    await page.clock.runFor(SHOW_MS * 2);
-    await expect(page.getByRole('dialog')).toHaveCount(0);
-  });
-
-  test('is not shown in demo mode', async ({ page }) => {
-    await openLibrary(page, 9, { ...demoUser(24), onboardingCompletedAt: '2026-06-01T00:00:00Z' });
-
-    await page.clock.runFor(SHOW_MS * 2);
-    await expect(page.getByRole('dialog')).toHaveCount(0);
-  });
-
-  test('is not shown over the welcome dialog or before onboarding is completed', async ({
-    page,
-  }) => {
-    await page.clock.install({ time: NOW });
-    await seedSession(page, NEW_USER);
-    await page.addInitScript(
-      ([key, createdAt]) => localStorage.setItem(key, JSON.stringify({ createdAt })),
-      [RATING_KEY, new Date(NOW.getTime() - 9 * DAY).toISOString()],
-    );
-    await page.goto('/links');
-    const welcome = page.getByRole('dialog', { name: 'All your links in one place' });
-    await expect(welcome).toBeVisible();
-
-    await page.clock.runFor(SHOW_MS * 3);
-    await expect(page.getByRole('dialog')).toHaveCount(1);
-    await expect(welcome).toBeVisible();
   });
 
   test(

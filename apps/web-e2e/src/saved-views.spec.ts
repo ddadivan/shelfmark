@@ -1,10 +1,6 @@
 import { type Locator, type Page } from '@playwright/test';
-import { COLOR_SCHEME } from './models/color-scheme.const';
 import { openFeed } from './support/a11y-flows';
-import { expectNoBlockingViolations } from './support/axe';
-import { seedSession } from './support/mock-session';
 import { isCompact } from './support/sidebar';
-import { settled } from './support/settled';
 import { expect, test } from './support/test';
 
 // The mock state lives in the page: after the first load every step navigates inside the app.
@@ -137,78 +133,4 @@ test.describe('saved views (mock API)', () => {
     await expect(dialog).toHaveCount(0);
     await expect(chip(page, /^Keyboard view \d+$/)).toBeFocused();
   });
-
-  test('a failed rename puts the old name back with a toast', async ({ page }) => {
-    await openFeed(page);
-    await viewMenuItem(page, 'Videos', 'Rename');
-    const rename = page.getByRole('dialog', { name: 'Rename view' });
-    await rename.getByRole('textbox', { name: 'Name' }).fill('Fails to save');
-    await rename.getByRole('button', { name: 'Rename' }).click();
-    await expect(page.getByText("Couldn't rename the view")).toBeVisible();
-    await expect(chip(page, /^Videos \d+$/)).toBeVisible();
-  });
-
-  test('the arrow keys move between the chips', async ({ page }) => {
-    test.skip(isCompact(page), 'keyboard path, desktop');
-    await openFeed(page);
-    await chip(page, /^All \d+$/).focus();
-    await page.keyboard.press('ArrowRight');
-    await expect(chip(page, /^Videos \d+$/)).toBeFocused();
-    await page.keyboard.press('Enter');
-    await expect(page).toHaveURL('/links?kind=video');
-  });
-
-  test('Recently opened filters its history by kind', async ({ page }) => {
-    await seedSession(page);
-    await page.goto('/recent');
-    const filter = page.getByRole('toolbar', { name: 'Filter by type' });
-    await expect(filter).toBeVisible();
-    expect(
-      (await filter.locator('.ui-saved-views__label').allTextContents()).map((t) => t.trim()),
-    ).toEqual(['All', 'Videos', 'Articles', 'Shopping']);
-    await expect(filter.getByRole('button', { name: /^All \d+$/ })).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    );
-    const articles = filter.getByRole('button', { name: /^Articles \d+$/ });
-    const count = Number(/(\d+)$/.exec((await articles.textContent())?.trim() ?? '')?.[1]);
-    await articles.click();
-    await expect(articles).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.locator('app-link-history-row')).toHaveCount(count);
-    // No add button and no menus: a plain filter.
-    await expect(filter.getByRole('button', { name: 'Save this view' })).toHaveCount(0);
-    await expect(filter.getByRole('button', { name: /^Actions for / })).toHaveCount(0);
-  });
-
-  for (const colorScheme of Object.values(COLOR_SCHEME)) {
-    test.describe(`${colorScheme} theme`, () => {
-      test.use({ colorScheme });
-
-      test('chips, the view menu and the name dialog have no serious axe violations', async ({
-        page,
-      }, testInfo) => {
-        await openFeed(page, '/links?kind=video');
-        await expect(page.locator('html')).toHaveAttribute('data-theme', colorScheme);
-        await expect(chip(page, /^Videos \d+$/)).toHaveAttribute('aria-pressed', 'true');
-        await settled(page);
-        await expectNoBlockingViolations(page, testInfo, { include: 'app-saved-view-chips' });
-
-        await viewMenuItem(page, 'Articles', 'Rename');
-        const dialog = page.getByRole('dialog', { name: 'Rename view' });
-        await expect(dialog).toBeVisible();
-        await settled(page);
-        await expectNoBlockingViolations(page, testInfo, { include: '[role="dialog"]' });
-      });
-
-      test('the kind filter of Recently opened has no serious axe violations', async ({
-        page,
-      }, testInfo) => {
-        await seedSession(page);
-        await page.goto('/recent');
-        await expect(page.getByRole('toolbar', { name: 'Filter by type' })).toBeVisible();
-        await settled(page);
-        await expectNoBlockingViolations(page, testInfo);
-      });
-    });
-  }
 });

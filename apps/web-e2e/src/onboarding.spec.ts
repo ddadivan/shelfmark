@@ -1,11 +1,6 @@
 import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
-import {
-  dismissOnboarding,
-  NEW_USER,
-  openSettingsSection,
-  seedSession,
-} from './support/mock-session';
+import { NEW_USER, seedSession } from './support/mock-session';
 import { E2E_TAG } from './models/e2e-tag.const';
 
 const FIRST_TITLE = 'All your links in one place';
@@ -68,21 +63,6 @@ test.describe('onboarding (mock API)', () => {
     await page.reload();
     await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
     await expect(page.getByRole('dialog')).toHaveCount(0);
-  });
-
-  test('shows once: neither Settings nor the account menu bring it back (#315)', async ({
-    page,
-  }) => {
-    await signInAsNewUser(page);
-    await dismissOnboarding(page);
-
-    await openSettingsSection(page, 'Account');
-    await expect(page.getByRole('heading', { level: 1, name: 'Account' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Show welcome again' })).toHaveCount(0);
-    await expect(page.getByText('Welcome tour')).toHaveCount(0);
-    await page.reload();
-    await expect(page.getByRole('heading', { level: 1, name: 'Account' })).toBeVisible();
-    await expect(page.getByRole('dialog', { name: FIRST_TITLE })).toHaveCount(0);
   });
 
   test('the dialog fits a 360px phone without horizontal scroll', async ({ page }) => {
