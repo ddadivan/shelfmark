@@ -199,8 +199,8 @@ Steps: (1) tag constant + config, (2) tags per spec, (3) deletions, (4) CI + doc
 ## 4. Later phases (order matters)
 
 1. **Phase 2a, `ui-dev`: done** (branch `test/349-phase-2`, section 4.1). Harnesses in `libs/ui/src/lib/components/<name>/testing/<name>.harness.ts` for button, menu, select, dialog / sheet, tree, card, command-list, tag-input, choice-grid, color-picker, each with its own harness spec, exported only through `@shelfmark/ui/testing`. The static checks of 2b moved in the same branch (section 4.2).
-2. **Phase 2b, `frontend-dev` + `test-engineer`**, in parallel per feature: the component specs in the Later column, written with the harnesses of 4.1. Use `await fixture.whenStable()`, `vi.useFakeTimers()` instead of waits, and `HttpTestingController`. The static checks (deploy-config, pwa manifest / ngsw, theme-colors) are already in Vitest (4.2).
-3. **Phase 3**: remove each Later e2e only in a PR that links the spec now covering it. Consolidate a11y-app to the key screens.
+2. **Phase 2b: done** with phase 3 (branch `test/349-phase-3`, section 4.3). Plan was `frontend-dev` + `test-engineer`, in parallel per feature: the component specs in the Later column, written with the harnesses of 4.1. Use `await fixture.whenStable()`, `vi.useFakeTimers()` instead of waits, and `HttpTestingController`. The static checks (deploy-config, pwa manifest / ngsw, theme-colors) are already in Vitest (4.2).
+3. **Phase 3: done** (section 4.3): each removed e2e test names its covering spec in the commit that removes it. a11y-app is down to the key screens.
 
 ### 4.1 Harnesses (phase 2a)
 
@@ -232,6 +232,49 @@ Specs converted as proof (assertions kept): `apps/web` sidebar (tree and folder 
 
 `csp.spec.ts` compares the deployed file policy with `buildCsp(null)`; the deploy-config spec proves it equals `vercel.json`. Result: desktop 686 → 655 listed tests (57 → 55 files); tablet (39) and phone (128) unchanged, the moved tests were desktop-only.
 
+### 4.3 Phase 2b and 3: journeys only (done)
+
+Branch `test/349-phase-3`, one commit per feature. Each commit body lists every removed e2e test with the spec that now covers it (`git log origin/stage..test/349-phase-3`). Where no spec covered a removed assertion, the commit adds it first, with the `@shelfmark/ui/testing` harnesses, `fixture.whenStable()` and fake timers.
+
+**Counts** (`playwright test --list`):
+
+| Project | Before (phase 2a) | After | Ran in the local CI-mode run |
+| --- | ---: | ---: | --- |
+| desktop | 663 | 351 | about 260; the rest are touch-only tests that skip themselves (`mobile`, `touch-scroll`, phone groups, the deployed-URL CSP group) |
+| tablet | 39 | 39 | all |
+| phone | 128 | 128 | all |
+| total | 830 | 518 | 427 passed, 91 skipped, 0 failed; 2.8 min wall on 4 workers (`E2E_PORT=4300 CI=1`, production build) |
+
+The desktop set did not reach the ~150 of the plan: what is left needs a browser (pointer and touch drags, focus across overlays, layout and geometry, real tabs and downloads, CSP, the service worker, cross-page and cross-tab journeys, axe on key screens). The touch projects keep their tagged sets; none of their tests was a duplicate worth cutting.
+
+**Kept on purpose:** layout and geometry checks stay e2e, but width matrices now loop inside one test (root font size 19 → 4 tests, the grid, the feed edge, the Appearance width, the sign-in lanes). The sign-in lanes went from 7 windows to 3, one per card count (`drift-layout.spec.ts` proves every lane size).
+
+**axe:** `A11Y_SCREENS` 48 → 15 screens: 12 key screens on desktop in both themes (24 scans) plus the three phone-only screens. Every removed screen has a jsdom axe test in its component spec; contrast of the libs/ui parts stays with the Storybook axe run. Landing axe 12 → 4 (first screen and settled scenes, light and dark), languages 6 → 2 (each language and each theme once).
+
+**Removed e2e → covering spec**, by spec (desktop counts before → after; full titles in the commit bodies):
+
+| Spec | Count | Moved to (main specs) |
+| --- | --- | --- |
+| folders | 22 → 8 | `folder-actions.service.spec` (name, Inside field, refusal, delete counts, Cancel, Add link here, axe), `sidebar.component.spec` (arrows + Enter, ancestors open), `library.page.spec` (not found), `auth.guards.spec`; the tooltip after a focus return: `dialog.service.spec`, `focus-return.spec`, `tooltip.directive.spec` |
+| folder-style | 21 → 9 | `folder-actions.style.spec` (own colour picker, Delete + Undo, radio names, Reset, icons), `link-card.component.spec` + `link-actions.service.spec` + `library.page.spec` (pin menus), `pin-actions.service.spec`, `sidebar-pinned.component.spec`, `user-settings.store.colours.spec` |
+| tags | 20 → 5 | `sidebar-tags.component.spec` (failed create, focus on the new chip, right-click menu, outside click, rename, merge offer), `tag-editor.service.spec`, `tag-actions.service.spec`, `merge-tag-dialog.component.spec`, `library.page.spec`, `library-filter.service.spec` |
+| links-feed | 25 → 11 | `library.page.spec` (states, headings, no recent panel), `link-card.component.spec` (menu order), `link-actions.service.spec` (favorite rollback, declined delete), `mock-links.api.spec` |
+| bulk-actions | 32 → 20 | `library.page.selection.spec` (keys, focus back, axe), `bulk-link-actions.service.spec`, `library-selection.service.spec`, `link-row.component.spec` (row selection) |
+| search, search-inline | 22 → 9 | `header-search.component.spec`, `search-results.component.spec`, `search-dialog.component.spec`, `search-dialog.service.spec`, command-list spec, `library.page.spec` (sort menu, empty search), `link-opener.service.spec` |
+| landing | 40 → 19 | the landing component specs (header, hero, built, finale, bento, before-after, before-scene, hero preview incl. a hidden tab), `landing-reveal.directive.spec` |
+| a11y-app | 96 → 30 | jsdom axe in the component specs (see axe above) |
+| appearance, appearance-extras, library-settings, settings | 37 → 18 | `appearance.page.spec` (preview counts), `user-settings.store.appearance.spec`, settings `library.page.spec`, `privacy-data.page.spec`, `settings-nav.component.spec`, `account.page.spec`, `add-link-dialog.component.spec`, `link-card.component.spec`, `sidebar.component.spec`, `feed-memory.service.spec` |
+| trash, recent, recent-extras | 23 → 9 | `trash.page.spec` (incl. empty axe), `trash-days-left.spec`, settings `library.page.spec` (retention), `recent.page.spec` |
+| add-link, edit-link, paste-many, move-link | 30 → 13 | `add-link-dialog.component.spec` (incl. new tag axe), `link-actions.service.spec`, `paste-many-list.component.spec`, `library-hotkeys.directive.spec`, `move-picker.component.spec`, `picker-list.component.spec`, `dialog.service.spec` |
+| feedback, admin-feedback, delete-account, account, export | 40 → 10 | `send-feedback-dialog.component.spec`, `your-feedback.page.spec`, `mock-feedback.api.spec`, `admin-feedback.page.spec`, `admin-feedback.store.spec`, `account-deletion.service.spec`, `account.page.spec` (empty axe), `export-actions.service.spec`, `export-url.spec` |
+| about, shortcuts, share, saved-views, rating, onboarding | 49 → 25 | new `how-it-works-card.component.spec`, `how-it-works.service.spec`, `shortcuts-dialog.service.spec`, `shortcuts.page.spec`, `share.page.spec` (axe), `saved-view-actions.service.spec`, `saved-views.component.spec`, `recent.page.spec`, `rating.store.spec`, `due-feedback-milestone.spec`, `onboarding.store.spec` |
+| sign-in, demo, languages | 42 → 21 | `auth.guards.spec`, `drift-layout.spec`, `sign-in-drift.component.spec`, `sign-in.page.spec`, `demo-start.page.spec`, `demo-banner.component.spec` (axe), `add-link-dialog.component.spec`, `language.page.spec`, `translations.spec` |
+| privacy | 5 → 3 | `sign-in.page.spec`, `landing-footer.component.spec` |
+
+**Fixed waits replaced:** the tooltip waits in folders and tags (700 ms each, now unit specs of the focus return), the tab-sync wait in appearance (500 ms, now the other tab shows the account's Trash retention), the paging loop of the bulk bar (400 ms per round, now polls until all 60 cards are there), the landing waits (1.5, 3.5, 4 and 6 s, now fake-timer specs) the library-settings wait (800 ms, its test moved to `add-link-dialog.component.spec`), the layout-shift and overlay-close-shift waits (now `settled(page)`), the Trash long press (now held until the selection bar shows) and the paused-history wait in recent-extras (its negative check is `links.store.spec`). The only `waitForTimeout` left is in `support/touch.ts`: the timed finger hold and the 16 ms move steps are the gesture under test, not a wait for the app.
+
+**CI:** web e2e in 3 shards (was 5). Root files: `nx show projects --affected --files=vercel.json` (and `middleware.ts`, `docs/SETUP.md`) already selects `web-csp` (and `web-e2e`), through the inputs of the `web-csp` test target set in phase 2a; no change needed. `tools/ci/pr-browser-tests.sh` needs no spec name change (no spec file was removed or renamed).
+
 ## 5. Risks
 
 | Risk                                                                                                   | Mitigation                                                                                                                                                                                                                                               |
@@ -253,7 +296,7 @@ Decided by the tech lead on Nov 13, 2026 (the ADR stays Proposed until the autho
 - **D1. Yes.** Desktop runs everything; tablet only `@mobile` / `@tablet`; phone only `@mobile` / `@phone` (Playwright tags, per-project `grep`). The constant is `E2E_TAG` (`as const`) in `apps/web-e2e/src/models/e2e-tag.const.ts`. A test that sets its own viewport is never tagged (exception: the touch-only overflow matrix, `@phone`, see ADR 0043).
 - **D2. Yes.** The 390px width is dropped from the overflow matrix.
 - **D3. Yes.** CI retries 2 → 1.
-- **D4. Yes.** 5 web e2e shards for now.
+- **D4. Yes.** 5 web e2e shards for now; 3 after phase 3 (4.3).
 - **D5. Yes, inside phase 1.** The author's goal is the total CI wait. Storybook axe runs in 3 shards; `lint-test-build` is split into parallel jobs with an aggregate job of the same name, so the required checks (`lint-test-build`, `e2e`) still report (3.5).
 - **D6.** CDK harnesses only in component tests (phase 2); e2e stays on role locators.
 - **D7. OK.** The cut to ~150 e2e tests is phase 3, after the lower-level coverage exists.

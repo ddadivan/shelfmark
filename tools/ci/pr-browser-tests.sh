@@ -19,10 +19,10 @@
 #
 # Usage: tools/ci/pr-browser-tests.sh <base-ref> [web|ui|all]   (for example origin/stage web)
 #   web: only the web-e2e part, ui: only the Storybook axe part, all (default): both.
-#   PR_SHARD / PR_SHARDS (for example 2 and 5) split the part into Playwright shards, so a PR that
+#   PR_SHARD / PR_SHARDS (for example 2 and 3) split the part into Playwright shards, so a PR that
 #   runs many specs or stories (a Playwright config change runs every spec, a shared style change
 #   every story) spreads over the CI matrix like the full run does (#313, #349). The CI matrix runs
-#   5 web-e2e shards and 3 Storybook shards.
+#   3 web-e2e shards and 3 Storybook shards.
 set -euo pipefail
 
 base="${1:?base ref, for example origin/stage}"
