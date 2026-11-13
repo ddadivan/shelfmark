@@ -64,7 +64,7 @@ describe('OwnColourActionsService (#350)', () => {
     expect(shown[0].action).toBeUndefined();
   });
 
-  it('ignores something that is not an own colour', async () => {
+  it('ignores something that is not an own color', async () => {
     const { service, shown, removeCustomColour } = setup();
 
     await service.remove('ocean');

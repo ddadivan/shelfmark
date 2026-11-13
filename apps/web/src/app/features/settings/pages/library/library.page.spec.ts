@@ -244,7 +244,7 @@ describe('LibrarySettingsPage', () => {
     const { root } = await setup();
 
     for (const gone of [
-      'Folder colours',
+      'Folder colors',
       'Manage tags',
       'Pinned at the top',
       'Edit pinned',

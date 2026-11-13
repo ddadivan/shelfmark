@@ -150,7 +150,7 @@ describe('ThemePickerComponent', () => {
         theme: 'custom',
         base: 'light',
         accent: 'own',
-        removeLabel: 'Remove colour #a33a5b',
+        removeLabel: 'Remove color #a33a5b',
       },
     ];
 
@@ -159,7 +159,7 @@ describe('ThemePickerComponent', () => {
 
       expect(host.querySelectorAll('.ui-theme-picker__remove')).toHaveLength(1);
       expect(radios()[0].getAttribute('aria-keyshortcuts')).toBeNull();
-      expect(radios()[2].getAttribute('aria-description')).toBe('Remove colour #a33a5b');
+      expect(radios()[2].getAttribute('aria-description')).toBe('Remove color #a33a5b');
       expect(radios()[2].getAttribute('aria-keyshortcuts')).toBe('Delete Backspace');
       const button = host.querySelector<HTMLButtonElement>('.ui-theme-picker__remove');
       expect(button?.tabIndex).toBe(-1);

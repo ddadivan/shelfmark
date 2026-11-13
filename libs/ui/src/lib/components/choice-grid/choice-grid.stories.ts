@@ -39,7 +39,7 @@ const meta: Meta<ChoiceGridComponent> = {
     options: SWATCHES,
     kind: CHOICE_GRID_KIND.Swatch,
     colour: FOLDER_COLOUR.Clay,
-    ariaLabel: 'Colour',
+    ariaLabel: 'Color',
     value: 'clay',
   },
   argTypes: {
@@ -71,25 +71,25 @@ export const Icons: Story = {
   args: { options: ICONS, kind: CHOICE_GRID_KIND.Icon, ariaLabel: 'Icon', value: 'star' },
 };
 
-/** Own colours can be removed: a "×" on hover and focus (always on touch), Delete or Backspace on the focused swatch. */
+/** Own colors can be removed: a "×" on hover and focus (always on touch), Delete or Backspace on the focused swatch. */
 export const RemovableOwnColours: Story = {
   args: {
     options: [
       ...SWATCHES,
       {
         value: '#a33a5b',
-        label: 'Own colour #a33a5b',
+        label: 'Own color #a33a5b',
         colour: '#a33a5b',
-        removeLabel: 'Remove colour #a33a5b',
+        removeLabel: 'Remove color #a33a5b',
       },
       {
         value: '#23716c',
-        label: 'Own colour #23716c',
+        label: 'Own color #23716c',
         colour: '#23716c',
-        removeLabel: 'Remove colour #23716c',
+        removeLabel: 'Remove color #23716c',
       },
     ],
-    ariaLabel: 'Colour',
+    ariaLabel: 'Color',
     value: '#a33a5b',
   },
 };
@@ -102,7 +102,7 @@ export const AllVariants: Story = {
       <div class="ds-themes">
         @for (theme of themes; track theme) {
           <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane" style="display: grid; gap: 1rem">
-            <ui-choice-grid [options]="swatches" ariaLabel="Colour" value="plum" />
+            <ui-choice-grid [options]="swatches" ariaLabel="Color" value="plum" />
             <ui-choice-grid [options]="icons" kind="icon" colour="teal" ariaLabel="Icon" value="tag" />
           </div>
         }

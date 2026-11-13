@@ -343,7 +343,7 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     name: 'folder colour and icon dialog',
     open: async (page) => {
       await openFeed(page);
-      await pickFolderMenuItem(page, MOCK_FIXTURE.readingName, 'Colour and icon…');
+      await pickFolderMenuItem(page, MOCK_FIXTURE.readingName, 'Color and icon…');
       await expect(
         page.getByRole('dialog', { name: MOCK_FIXTURE.readingName }).getByRole('radiogroup'),
       ).toHaveCount(2);

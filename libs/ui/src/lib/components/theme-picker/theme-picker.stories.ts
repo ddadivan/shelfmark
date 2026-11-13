@@ -52,7 +52,7 @@ const meta: Meta<ThemePickerComponent> = {
     docs: {
       description: {
         component:
-          'Choose a theme, an accent colour or a background (Settings › Appearance). Each option is ' +
+          'Choose a theme, an accent color or a background (Settings › Appearance). Each option is ' +
           'drawn under its own theme attributes (`data-theme`, `data-custom-*`), so it shows the ' +
           'real token values with no inline colours. Native radios: the arrow keys move and select, ' +
           'Tab enters the checked option, each option is named by its label.',
@@ -79,12 +79,12 @@ export const Accents: Story = {
   args: {
     options: accents(THEME.Light),
     kind: THEME_PICKER_KIND.Accent,
-    ariaLabel: 'Accent colour',
+    ariaLabel: 'Accent color',
     value: 'ocean',
   },
 };
 
-/** An own accent colour can be removed: a "×" on hover and focus (always on touch), Delete or Backspace on the focused swatch. */
+/** An own accent color can be removed: a "×" on hover and focus (always on touch), Delete or Backspace on the focused swatch. */
 export const RemovableOwnAccent: Story = {
   args: {
     options: [
@@ -96,11 +96,11 @@ export const RemovableOwnAccent: Story = {
         base: THEME.Light,
         accent: 'own',
         tokens: { '--accent': '#a33a5b' },
-        removeLabel: 'Remove colour #a33a5b',
+        removeLabel: 'Remove color #a33a5b',
       },
     ],
     kind: THEME_PICKER_KIND.Accent,
-    ariaLabel: 'Accent colour',
+    ariaLabel: 'Accent color',
     value: '#a33a5b',
   },
 };
@@ -141,7 +141,7 @@ export const AllVariants: Story = {
             <ui-theme-picker
               [options]="accents(pane.base ?? pane.theme)"
               kind="accent"
-              ariaLabel="Accent colour"
+              ariaLabel="Accent color"
               value="teal"
             />
             <ui-theme-picker
