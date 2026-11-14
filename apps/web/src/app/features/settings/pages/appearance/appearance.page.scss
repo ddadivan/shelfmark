@@ -96,22 +96,48 @@
   padding-bottom: var(--space-2);
 }
 
-// The curated accent swatches and the "+" swatch share a wrapping row; the colour panel opens on a
-// line of its own under them (Themes mockup: up to 420px, right-aligned beside the text).
+// The curated swatches and the "+" swatch share a row; the colour panel opens on a line of its own
+// under them (Themes mockup: up to 420px, right-aligned beside the text). Two columns (#415): the
+// swatches wrap in the first one, right-aligned, and the "+" keeps the second, so it never drops
+// to a line of its own on a phone and sits centred on the last line of circles.
 .appearance__accents {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: rem(10px);
+  align-items: end;
+  max-width: rem(420px);
+
+  > ui-theme-picker {
+    justify-self: end;
+  }
+}
+
+// Background tiles carry a caption: the "+" is centred on the 56px tiles, not on tile plus caption.
+// A wrapping flex row: four tiles keep their width and, where the "+" does not fit beside them (a
+// phone), it takes the next line, at the end like the row.
+.appearance__accents--tiles {
+  --ui-color-picker-align-height: #{rem(56px)};
+
   display: flex;
   flex-wrap: wrap;
-  gap: rem(10px);
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-end;
-  max-width: rem(420px);
 }
 
 .appearance__own-hint {
   @include type(caption);
 
-  margin: 0;
   color: var(--text-muted);
+
+  p {
+    margin: 0;
+  }
+}
+
+// The note after a palette pick was moved to a readable shade (#415): neutral, under the hint. The
+// live region stays in the page while empty (no height), so the note is read out when it appears.
+.appearance__own-adjusted:not(:empty) {
+  margin-block-start: var(--space-1);
 }
 
 // The Custom options sit on the page background, inset in the panel (Themes mockup).

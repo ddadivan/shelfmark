@@ -90,7 +90,7 @@ function cachedLayout(tier: SignInDriftTier): SignInDriftLane[] {
  * pointer, near ones larger and livelier. Every visit they fly out from behind the sign-in card
  * in a staggered wave and settle (the sign-in card never waits for them), then each floats on its
  * own loop (speed, amplitude and phase differ, so they never move in sync) and in turn
- * "lands" with an accent ring like a newly saved link (the ring of the phone mosaic). With a
+ * "lands" with an accent ring like a newly saved link. With a
  * mouse the cards also lean toward the pointer, as parallax by layer (on an inner element, so it
  * composes with the float; one `pointermove` listener, throttled to a frame). Reduced motion (the
  * device or the Animations setting, `ReducedMotion`) leaves them at rest in their lanes, tilted,

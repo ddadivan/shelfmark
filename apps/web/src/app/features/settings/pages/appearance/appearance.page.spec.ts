@@ -272,9 +272,10 @@ describe('AppearancePage', () => {
     const picker = await pickerNamed(harness, 'Your own color');
     await picker.open();
     await picker.setHex('#f5d0e0');
-    // Typing only previews; "Add color" is the explicit choice (#350).
-    await picker.add();
     await stable();
+    // A typed colour is never changed, and it cannot be added while it is unreadable (#415).
+    expect(await picker.getHex()).toBe('#f5d0e0');
+    expect(await picker.canAdd()).toBe(false);
 
     // Not applied: the accent stays and nothing is saved.
     expect(theme.customTheme().accent).toBe(CUSTOM_THEME_DEFAULT.accent);
@@ -335,9 +336,8 @@ describe('AppearancePage', () => {
     const picker = await pickerNamed(harness, 'Your own background color');
     await picker.open();
     await picker.setHex('#808080');
-    // Typing only previews; "Add color" is the explicit choice (#350).
-    await picker.add();
     await stable();
+    expect(await picker.canAdd()).toBe(false);
 
     expect(theme.customTheme().background).toBe(CUSTOM_THEME_DEFAULT.background);
     expect(settingsApi.update).not.toHaveBeenCalled();
@@ -351,6 +351,58 @@ describe('AppearancePage', () => {
     use?.click();
     await stable();
     expect(theme.customTheme().background).toBe(shade);
+  });
+
+  it('a palette pick moves to the nearest readable shade with a note; Add is enabled (#415)', async () => {
+    const { root: page, theme, stable, harness } = await setup();
+    radioIn(page, 'Theme', 'Custom').click();
+    await stable();
+
+    const picker = await pickerNamed(harness, 'Your own background color');
+    await picker.open();
+    await picker.setHex('#fdf6e3');
+    await stable();
+    expect(await picker.canAdd()).toBe(true);
+    // Brightness down to black: on the light base text would not read, so the pick is lightened.
+    await picker.setBrightness(0);
+    await stable();
+    const shade = nearestReadableBackground('#000000', 'light');
+    expect(await picker.getHex()).toBe(shade);
+    expect(await picker.canAdd()).toBe(true);
+    expect(page.querySelector('ui-notice')).toBeNull();
+    const note = page.querySelector('.appearance__own-adjusted');
+    expect(note?.getAttribute('role')).toBe('status');
+    expect(note?.textContent?.trim()).toBe(`Adjusted to ${shade} so text stays readable.`);
+
+    // Typing again drops the note.
+    await picker.setHex('#fffdf8');
+    await stable();
+    expect(note?.textContent?.trim()).toBe('');
+
+    await picker.add();
+    await stable();
+    expect(theme.customTheme().background).toBe('#fffdf8');
+  });
+
+  it('the accent pick is adjusted for the current page too (#415)', async () => {
+    const { root: page, stable, harness } = await setup();
+    radioIn(page, 'Theme', 'Custom').click();
+    await stable();
+
+    const picker = await pickerNamed(harness, 'Your own color');
+    await picker.open();
+    await picker.setHex('#f5d0e0');
+    await stable();
+    await picker.setHue(330);
+    await stable();
+    const hex = await picker.getHex();
+    expect(hex).toBe(nearestAccessibleAccent(hex, 'light', 'paper'));
+    expect(hex).not.toBe('#f5d0e0');
+    expect(await picker.canAdd()).toBe(true);
+    expect(page.querySelector('ui-notice')).toBeNull();
+    expect(page.querySelector('.appearance__own-adjusted')?.textContent).toContain(
+      `Adjusted to ${hex} so it stays readable.`,
+    );
   });
 
   it('sets Animations', async () => {

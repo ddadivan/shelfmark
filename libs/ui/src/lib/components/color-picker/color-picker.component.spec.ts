@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { form, FormField } from '@angular/forms/signals';
 import { describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../../../testing/axe';
+import { compileScss, mediaBlocks, withoutMedia } from '../../../testing/scss';
 import { ColorPickerComponent } from './color-picker.component';
 
 const LABELS = {
@@ -208,6 +209,135 @@ describe('ColorPickerComponent', () => {
     fire('pointerup', 0, 100);
     expect(fixture.componentInstance.value()).toBe('#000000');
     expect(committed).toEqual([]);
+  });
+
+  describe('adjust (#415)', () => {
+    /** Accepts anything but black and white: those move to a grey. */
+    const adjust = (colour: string): string =>
+      colour === '#000000' || colour === '#ffffff' ? '#333333' : colour;
+
+    function pointerArea(area: HTMLElement) {
+      area.getBoundingClientRect = () => new DOMRect(0, 0, 200, 100);
+      area.setPointerCapture = () => undefined;
+      area.releasePointerCapture = () => undefined;
+      return (type: string, x: number, y: number) =>
+        area.dispatchEvent(
+          new PointerEvent(type, { clientX: x, clientY: y, pointerId: 1, bubbles: true }),
+        );
+    }
+
+    it('a drag previews the raw colour; on release it moves to the nearest accepted one', async () => {
+      const { fixture, area, hex, action, open, committed } = setup({ value: '#ff0000', adjust });
+      await open();
+      const picker = fixture.componentInstance;
+      const fire = pointerArea(area());
+
+      fire('pointerdown', 100, 50);
+      fire('pointermove', 0, 100);
+      fixture.detectChanges();
+      // While dragging: the raw colour, smooth; it cannot be added.
+      expect(picker.value()).toBe('#000000');
+      expect(picker.picking()).toBe(true);
+      expect(picker.adjusted()).toBe(false);
+      expect(action('Add color').disabled).toBe(true);
+
+      fire('pointerup', 0, 100);
+      fixture.detectChanges();
+      expect(picker.picking()).toBe(false);
+      expect(picker.value()).toBe('#333333');
+      expect(picker.adjusted()).toBe(true);
+      expect(hex().value).toBe('#333333');
+      // The handles follow the adjusted colour (grey: no saturation, 20% brightness).
+      expect(area().style.getPropertyValue('--ui-cp-x')).toBe('0%');
+      expect(area().style.getPropertyValue('--ui-cp-y')).toBe('80%');
+      expect(action('Add color').disabled).toBe(false);
+      expect(committed).toEqual([]);
+
+      // The next change forgets the note.
+      fire('pointerdown', 200, 0);
+      fixture.detectChanges();
+      expect(picker.adjusted()).toBe(false);
+      fire('pointerup', 200, 0);
+      expect(picker.value()).toBe('#ff0000');
+      expect(picker.adjusted()).toBe(false);
+      action('Add color').click();
+      expect(committed).toEqual(['#ff0000']);
+    });
+
+    it('a slider adjusts when its change ends, not on every input', async () => {
+      const { fixture, slider, open } = setup({ value: '#808080', adjust });
+      await open();
+      const picker = fixture.componentInstance;
+      const brightness = slider('Brightness');
+      brightness.value = '100';
+      brightness.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+      expect(picker.value()).toBe('#ffffff');
+      brightness.dispatchEvent(new Event('change'));
+      fixture.detectChanges();
+      expect(picker.value()).toBe('#333333');
+      expect(picker.adjusted()).toBe(true);
+
+      const hue = slider('Hue');
+      hue.value = '120';
+      hue.dispatchEvent(new Event('input'));
+      hue.dispatchEvent(new Event('change'));
+      fixture.detectChanges();
+      // An accepted colour stays as it is.
+      expect(picker.adjusted()).toBe(false);
+    });
+
+    it('a typed colour is never changed: "Add color" waits until it is accepted', async () => {
+      const { fixture, hex, action, open, committed } = setup({ adjust });
+      await open();
+      const picker = fixture.componentInstance;
+      type(hex(), '#ffffff');
+      fixture.detectChanges();
+      expect(picker.value()).toBe('#ffffff');
+      expect(picker.adjusted()).toBe(false);
+      expect(action('Add color').disabled).toBe(true);
+      action('Add color').click();
+      expect(committed).toEqual([]);
+
+      type(hex(), '#336699');
+      fixture.detectChanges();
+      expect(action('Add color').disabled).toBe(false);
+      action('Add color').click();
+      expect(committed).toEqual(['#336699']);
+    });
+
+    it('Cancel forgets an adjusted pick', async () => {
+      const { fixture, slider, action, open } = setup({ value: '#808080', adjust });
+      await open();
+      const brightness = slider('Brightness');
+      brightness.value = '0';
+      brightness.dispatchEvent(new Event('input'));
+      brightness.dispatchEvent(new Event('change'));
+      fixture.detectChanges();
+      expect(fixture.componentInstance.adjusted()).toBe(true);
+      action('Cancel').click();
+      expect(fixture.componentInstance.adjusted()).toBe(false);
+      expect(fixture.componentInstance.value()).toBe('#808080');
+    });
+  });
+
+  it('centres the swatch on taller neighbours through --ui-color-picker-align-height (#415)', () => {
+    const css = compileScss('lib/components/color-picker/color-picker.component.scss');
+    const base = withoutMedia(css, /./);
+    const swatch = /\.ui-color-picker__swatch\s*\{([^}]*)\}/.exec(base)?.[1] ?? '';
+    expect(swatch).toMatch(/--ui-color-picker-size:\s*2\.25rem/);
+    expect(swatch).toMatch(
+      /--ui-color-picker-offset:\s*calc\(\s*var\(--ui-color-picker-align-height, var\(--ui-color-picker-size\)\) - var\(--ui-color-picker-size\)\s*\)/,
+    );
+    expect(swatch).toMatch(/margin-block-start:\s*calc\(var\(--ui-color-picker-offset\) \/ 2\)/);
+    expect(swatch).toMatch(/inline-size:\s*var\(--ui-color-picker-size\)/);
+    expect(swatch).toMatch(/block-size:\s*var\(--ui-color-picker-size\)/);
+    // 44px on coarse pointers: the same variable, so the offset follows.
+    expect(mediaBlocks(css, /pointer:\s*coarse/).join('\n')).toMatch(
+      /\.ui-color-picker__swatch\s*\{\s*--ui-color-picker-size:\s*2\.75rem/,
+    );
+    // The open panel takes a line of its own in a flex or a grid row.
+    expect(base).toMatch(/\.ui-color-picker__disclose\s*\{[^}]*grid-column:\s*1\s*\/\s*-1/);
   });
 
   it('a typed hex previews at once (with or without #, in lower case); Enter and blur only tidy it', async () => {

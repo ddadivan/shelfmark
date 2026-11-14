@@ -1266,6 +1266,7 @@
           "invalid": "Gib # und sechs Ziffern oder Buchstaben a–f ein, z. B. #2e6a99.",
           "hint": "Shelfmark hält einen Kontrast von 4,5:1: Auf der anderen Basis nutzt es einen dunkleren oder helleren Ton deiner Farbe.",
           "warning": "Diese Farbe ist auf deinem Hintergrund schwer lesbar ({{ratio}}:1, nötig sind 4,5:1).",
+          "adjusted": "Auf {{colour}} angepasst, damit sie lesbar bleibt.",
           "use": "{{colour}} verwenden",
           "saturation": "Sättigung",
           "brightness": "Helligkeit",
@@ -1280,7 +1281,8 @@
         "ownBackground": {
           "label": "Deine eigene Hintergrundfarbe",
           "hint": "Text muss lesbar bleiben (4,5:1): Falls nötig, nutzt Shelfmark einen helleren oder dunkleren Ton deiner Farbe.",
-          "warning": "Text ist auf diesem Hintergrund schwer lesbar ({{ratio}}:1, nötig sind 4,5:1)."
+          "warning": "Text ist auf diesem Hintergrund schwer lesbar ({{ratio}}:1, nötig sind 4,5:1).",
+          "adjusted": "Auf {{colour}} angepasst, damit Text lesbar bleibt."
         }
       },
       "layout": {

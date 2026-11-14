@@ -1,6 +1,6 @@
 @use 'ui' as *;
 
-// Phone and tablet (below 64em): the mosaic is a band on top, the form under it. From 64em: a
+// Phone and tablet (below 64em): a strip of small floating cards on top, the form under it. From 64em: a
 // centred glass card on `bg` with saved-link cards drifting around it (SignIn.dc.html).
 .sign-in {
   position: relative;
@@ -24,7 +24,8 @@
   align-items: center;
   justify-content: center;
   height: rem(300px);
-  overflow: hidden;
+
+  // Not clipped: the cards fly in from below the screen (the page clips them).
   background: var(--surface);
   border-bottom: 1px solid var(--border);
 }
@@ -37,6 +38,16 @@
   gap: var(--space-4);
   width: 100%;
   padding: rem(28px) var(--space-6) var(--space-6);
+
+  // The panel rises after the cards have flown past (480 ms): a short slide and fade, `transform`
+  // and `opacity` only. It is in place, clickable and focusable from the first frame.
+  @include compact {
+    animation: sign-in-rise var(--duration-slow) var(--ease-drawer) 480ms backwards;
+
+    @include reduced-motion {
+      animation: none;
+    }
+  }
 
   @include tablet-up {
     max-width: rem(480px);
@@ -145,5 +156,12 @@
   &:hover,
   &:active {
     color: var(--text);
+  }
+}
+
+@keyframes sign-in-rise {
+  from {
+    opacity: 0;
+    transform: translateY(#{rem(40px)});
   }
 }
