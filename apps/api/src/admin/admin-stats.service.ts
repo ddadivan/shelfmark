@@ -4,6 +4,7 @@ import {
   ADMIN_STATS_FEATURE,
   ADMIN_STATS_LIMIT,
   ADMIN_STATS_LINKS_BUCKET,
+  ADMIN_STATS_SCORE_GROUP,
   FEEDBACK_MESSAGE_KIND,
   FEEDBACK_MILESTONE,
   FEEDBACK_STATUS,
@@ -36,7 +37,6 @@ import { toAdminStatsRate } from './to-admin-stats-rate';
 
 type Tx = Prisma.TransactionClient;
 
-const K = ADMIN_STATS_LIMIT.MinGroup;
 const DIM = { Theme: 'theme', Language: 'language', Retention: 'retention' } as const;
 const MESSAGE_DIM = { Kind: 'kind', Status: 'status' } as const;
 
@@ -95,7 +95,12 @@ function series(
 export class AdminStatsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async stats(now: Date = new Date()): Promise<AdminStatsResponse> {
+  /** `minGroup` is the limit of the contract; tests pass 1 to read the raw counts. */
+  async stats(
+    now: Date = new Date(),
+    minGroup: number = ADMIN_STATS_LIMIT.MinGroup,
+  ): Promise<AdminStatsResponse> {
+    const K = minGroup;
     const today = utcDay(now);
     const days = lastUtcDays(now, ADMIN_STATS_LIMIT.SignUpDays);
     const weeks = lastUtcWeeks(now, ADMIN_STATS_LIMIT.SignUpWeeks);
@@ -112,6 +117,9 @@ export class AdminStatsService {
         const ratings = await this.ratings(tx, real);
         const messages = await this.messages(tx, real);
         const activitySince = await this.activitySince(tx);
+        const enoughUsers = totals.realUsers >= K;
+        const signUps = (keys: readonly string[], rows: readonly AdminStatsKeyCountRow[]) =>
+          series(keys, enoughUsers ? rows : []);
         return {
           generatedAt: now.toISOString(),
           minGroup: K,
@@ -119,8 +127,8 @@ export class AdminStatsService {
             realUsers: totals.realUsers,
             demoSandboxes: totals.demoSandboxes,
             onboarded: toAdminStatsRate(totals.realUsers, totals.onboarded, K),
-            signUpsByDay: series(days, byDay),
-            signUpsByWeek: series(weeks, byWeek),
+            signUpsByDay: signUps(days, byDay),
+            signUpsByWeek: signUps(weeks, byWeek),
             active7d: toAdminStatsRate(totals.realUsers, totals.active7d, K),
             active30d: toAdminStatsRate(totals.realUsers, totals.active30d, K),
             returnedAfterWeek: toAdminStatsRate(totals.weekBase, totals.weekReturned, K),
@@ -178,9 +186,16 @@ export class AdminStatsService {
                 skipped: row?.skipped ?? 0,
                 mean: enough ? round(row.mean, 1) : null,
                 median: enough ? round(row.median, 1) : null,
-                low: enough ? row.low : null,
-                mid: enough ? row.mid : null,
-                high: enough ? row.high : null,
+                groups: enough
+                  ? suppressSmallGroups(
+                      [
+                        { key: ADMIN_STATS_SCORE_GROUP.Low, count: row.low },
+                        { key: ADMIN_STATS_SCORE_GROUP.Mid, count: row.mid },
+                        { key: ADMIN_STATS_SCORE_GROUP.High, count: row.high },
+                      ],
+                      K,
+                    )
+                  : [],
               };
             }),
             messagesByKind: this.plain(

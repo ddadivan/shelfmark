@@ -2161,11 +2161,12 @@
       "tooFew": "Pas encore assez d’utilisateurs : les parts et les groupes apparaissent à partir de {{min}} vrais utilisateurs.",
       "notEnough": "Pas encore assez d’utilisateurs",
       "fewer": "Moins de {{min}}",
+      "smallGroup": "Masqué : un groupe de moins de {{min}}",
       "shareOf": "{{percent}} · {{count}} sur {{base}}",
       "countOf": "{{count}} sur {{base}}",
       "shareCount": "{{percent}} · {{count}}",
-      "activitySince": "L’activité est enregistrée depuis le {{date}} ; les visites antérieures sont estimées.",
-      "activityEstimated": "Les visites antérieures au suivi de l’activité sont estimées.",
+      "activitySince": "L’activité est enregistrée depuis le {{date}}. Les visites antérieures sont estimées à partir des liens enregistrés et des connexions : les chiffres d’activité et de retour qui remontent avant cette date peuvent être surestimés.",
+      "activityEstimated": "Les visites antérieures au suivi de l’activité sont estimées à partir des liens enregistrés et des connexions : les chiffres d’activité et de retour peuvent être surestimés.",
       "overview": {
         "title": "Vue d’ensemble"
       },
@@ -2241,7 +2242,6 @@
         },
         "answered": "{{answered}} réponses · {{skipped}} ignorées",
         "summary": "Moyenne {{mean}} · médiane {{median}}",
-        "groups": "1–6 : {{low}} · 7–8 : {{mid}} · 9–10 : {{high}}",
         "byKind": "Messages par type",
         "byStatus": "Messages par statut"
       }

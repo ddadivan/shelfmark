@@ -2124,11 +2124,12 @@
       "tooFew": "Not enough users yet: shares and groups appear from {{min}} real users.",
       "notEnough": "Not enough users yet",
       "fewer": "Fewer than {{min}}",
+      "smallGroup": "Hidden: a group of fewer than {{min}}",
       "shareOf": "{{percent}} · {{count}} of {{base}}",
       "countOf": "{{count}} of {{base}}",
       "shareCount": "{{percent}} · {{count}}",
-      "activitySince": "Activity is recorded from {{date}}; earlier visits are estimated.",
-      "activityEstimated": "Visits before activity tracking started are estimated.",
+      "activitySince": "Activity is recorded from {{date}}. Earlier visits are estimated from saved links and sign-ins, so active and return numbers that reach back before then may read high.",
+      "activityEstimated": "Visits before activity tracking started are estimated from saved links and sign-ins, so active and return numbers may read high.",
       "overview": {
         "title": "Overview"
       },
@@ -2204,7 +2205,6 @@
         },
         "answered": "{{answered}} answered · {{skipped}} skipped",
         "summary": "Mean {{mean}} · median {{median}}",
-        "groups": "1–6: {{low}} · 7–8: {{mid}} · 9–10: {{high}}",
         "byKind": "Messages by type",
         "byStatus": "Messages by status"
       }
