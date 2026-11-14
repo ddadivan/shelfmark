@@ -7,10 +7,16 @@ import { E2E_TAG } from './models/e2e-tag.const';
 
 /** Whether the avatar image inside `scope` has loaded (a decoded picture, not the initials). */
 async function photoLoaded(page: Page, selector: string): Promise<boolean> {
-  return page.evaluate<boolean>(
-    `(() => { const img = document.querySelector(${JSON.stringify(selector)});
-      return !!img && img.complete && img.naturalWidth > 0; })()`,
-  );
+  // A locator with arguments, not a code string built from the selector (CodeQL
+  // js/bad-code-sanitization). Polled, so a missing image is simply "not yet".
+  const img = page.locator(selector).first();
+  if ((await img.count()) === 0) {
+    return false;
+  }
+  return img.evaluate((el) => {
+    const image = el as unknown as { complete: boolean; naturalWidth: number };
+    return image.complete && image.naturalWidth > 0;
+  });
 }
 
 // #352: the richer Account page — the provider photo, "Your shelf", connected accounts and
