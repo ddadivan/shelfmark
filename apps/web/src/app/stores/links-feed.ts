@@ -82,3 +82,27 @@ export function placeLink(
     inFilter(filter, link);
   return takesNewcomers ? insertAt(entities, afterPinned(entities), link) : entities;
 }
+
+/**
+ * `placeLink` for links that changed together (a bulk move). Links that leave are taken out from
+ * the end of the feed backwards, so each remembers its slot in the feed as it was; links that come
+ * back go in from the first slot onwards, so each lands where it was.
+ */
+export function placeLinks(
+  entities: readonly LinkResponse[],
+  filter: LinksFilter,
+  links: readonly LinkResponse[],
+  slots: Map<string, number>,
+): readonly LinkResponse[] {
+  const indexOf = new Map(entities.map((item, index) => [item.id, index]));
+  const held = links
+    .filter((link) => indexOf.has(link.id))
+    .sort((a, b) => (indexOf.get(b.id) ?? 0) - (indexOf.get(a.id) ?? 0));
+  const others = links
+    .filter((link) => !indexOf.has(link.id))
+    .sort((a, b) => (slots.get(a.id) ?? Infinity) - (slots.get(b.id) ?? Infinity));
+  return [...held, ...others].reduce(
+    (list, link) => placeLink(list, filter, link, slots),
+    entities,
+  );
+}

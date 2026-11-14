@@ -1,7 +1,7 @@
 import type { LinkResponse } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { LINKS_SCOPE } from '../features/links/models/links-scope.const';
-import { insertAt, placeLink, retagLink, staysAfterEdit } from './links-feed';
+import { insertAt, placeLink, placeLinks, retagLink, staysAfterEdit } from './links-feed';
 
 function link(changes: Partial<LinkResponse>): LinkResponse {
   return { ...MOCK_LINKS[0], ...changes };
@@ -97,6 +97,30 @@ describe('placeLink', () => {
     const list = [one];
     expect(placeLink(list, { scope: LINKS_SCOPE.All }, two, new Map())).toBe(list);
     expect(placeLink(list, folder, link({ id: '7', folderId: 'b' }), new Map())).toBe(list);
+  });
+});
+
+describe('placeLinks', () => {
+  const folder = { scope: LINKS_SCOPE.Folder, folderId: 'a' } as const;
+  const items = ['1', '2', '3', '4'].map((id) => link({ id, folderId: 'a' }));
+  const out = (id: string) => link({ id, folderId: 'b' });
+
+  it('puts links that left a batch back where they were, in any order', () => {
+    const slots = new Map<string, number>();
+    const left = placeLinks(items, folder, [out('1'), out('3')], slots);
+    expect(left.map((item) => item.id)).toEqual(['2', '4']);
+
+    const back = placeLinks(left, folder, [items[2], items[0]], slots);
+    expect(back.map((item) => item.id)).toEqual(['1', '2', '3', '4']);
+  });
+
+  it('works for one link and for none', () => {
+    expect(placeLinks(items, folder, [], new Map())).toBe(items);
+    expect(placeLinks(items, folder, [out('2')], new Map()).map((item) => item.id)).toEqual([
+      '1',
+      '3',
+      '4',
+    ]);
   });
 });
 
