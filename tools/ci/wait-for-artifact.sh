@@ -20,8 +20,16 @@ api="repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 output="${GITHUB_OUTPUT:-/dev/stdout}"
 deadline=$((SECONDS + timeout))
 
+# The artifact shows in the list as soon as the upload starts, before it can be downloaded, so it
+# only counts once the job's upload step has completed (a download right after the first listing
+# failed with "Artifact not found" in CI).
+upload_done() {
+  [ "$(gh api "${api}/jobs?filter=latest&per_page=100" \
+    --jq "[.jobs[] | select(.name == \"${job}\") | .steps[]? | select((.name | test(\"^Upload\")) and .status == \"completed\")] | length")" -gt 0 ]
+}
+
 has_artifact() {
-  [ "$(gh api "${api}/artifacts?name=${artifact}" --jq '.total_count')" -gt 0 ]
+  [ "$(gh api "${api}/artifacts?name=${artifact}" --jq '.total_count')" -gt 0 ] && upload_done
 }
 
 while true; do
