@@ -499,7 +499,7 @@
     "home": "Shelfmark, Startseite",
     "newTab": "(öffnet in einem neuen Tab)",
     "updated": "Zuletzt aktualisiert am {{date}}",
-    "updatedDate": "13. November 2026",
+    "updatedDate": "15. November 2026",
     "intro": "Shelfmark ist ein persönliches Projekt, das die Links speichert, die du sicherst. Diese Seite erklärt in einfachen Worten, was wir speichern und warum.",
     "store": {
       "title": "Was wir speichern",
@@ -508,6 +508,7 @@
       "images": "Für jeden Link eine kleine Kopie des Website-Icons und des Vorschaubilds, falls die Website welche hat. Unser Server lädt sie herunter und speichert sie, damit sie von Shelfmark geladen werden.",
       "feedback": "Deine Antworten auf die Bewertung in der App, mit deinem Konto verknüpft: eine Punktzahl von 1 bis 10 und, falls du einen schreibst, ein Kommentar.",
       "stats": "Die Zahlen unter „Dein Regal“ auf der Kontoseite (Anzahlen, deine häufigsten Websites und Tags, Links pro Woche) werden bei jedem Öffnen der Seite aus deinen eigenen Daten berechnet. Sie werden weder gespeichert noch weitergegeben.",
+      "usage": "Um zu verstehen, wie Shelfmark genutzt wird, speichern wir den Tag, an dem du die App zuletzt benutzt hast: nur ein Datum, ohne Uhrzeit, Seite oder Aktion. Der Autor sieht nur Summen über alle Konten zusammen, etwa wie viele Menschen Ordner oder Tags nutzen oder welche Designs beliebt sind. Gruppen mit weniger als drei Personen werden nicht gezeigt, und niemandes Links, Notizen oder Einstellungen werden einzeln angesehen. Diese Summen werden bei Bedarf berechnet und nicht gespeichert. Wenn du dein Konto löschst, wird das Datum mit gelöscht.",
       "sessions": "Für jede Anmeldung: wann sie abläuft, dazu die IP-Adresse und der Browser (User-Agent), von dem aus sie gestartet wurde, um Sitzungen abzusichern.",
       "logs": "Unsere API protokolliert Methode, Pfad, Status, Dauer und eine Anfrage-ID, ohne Link-Inhalte oder personenbezogene Daten. Unser Hoster Vercel führt eigene Standard-Anfrageprotokolle mit IP-Adressen für begrenzte Zeit."
     },

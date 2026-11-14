@@ -510,7 +510,7 @@
     "home": "Shelfmark, início",
     "newTab": "(abre em uma nova aba)",
     "updated": "Última atualização: {{date}}",
-    "updatedDate": "13 de novembro de 2026",
+    "updatedDate": "15 de novembro de 2026",
     "intro": "O Shelfmark é um projeto pessoal que guarda os links que você salva. Esta página explica o que mantemos e por quê, em palavras simples.",
     "store": {
       "title": "O que guardamos",
@@ -519,6 +519,7 @@
       "images": "Para cada link, uma pequena cópia do ícone e da imagem de prévia do site, se ele tiver. Nosso servidor baixa e guarda essas imagens para que carreguem a partir do Shelfmark.",
       "feedback": "Suas respostas à avaliação no app, vinculadas à sua conta: uma nota de 1 a 10 e, se você escrever, um comentário.",
       "stats": "Os números de “Sua estante” na página Conta (totais, os sites e tags que você mais usa, links por semana) são calculados a partir dos seus próprios dados toda vez que você abre a página. Eles não são guardados nem compartilhados.",
+      "usage": "Para entender como o Shelfmark é usado, registramos o dia em que você usou o app pela última vez: só uma data, sem hora, página ou ação. O autor vê apenas totais calculados sobre todas as contas juntas, como quantas pessoas usam pastas ou tags ou quais temas são populares. Grupos com menos de três pessoas não são mostrados, e ninguém olha um por um os links, notas ou configurações de alguém. Esses totais são calculados quando pedidos e não são guardados. Quando você exclui sua conta, a data vai junto.",
       "sessions": "Para cada login: quando expira, além do endereço IP e do navegador (user agent) de onde foi iniciado, para manter as sessões seguras.",
       "logs": "Nossa API registra o método, o caminho, o status, a duração e um id da solicitação, sem conteúdo de links nem dados pessoais. Nossa hospedagem, a Vercel, mantém seus próprios registros padrão de solicitações, que incluem endereços IP, por tempo limitado."
     },
