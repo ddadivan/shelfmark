@@ -1,5 +1,6 @@
 import { type Locator, type Page, type TestInfo } from '@playwright/test';
 import { E2E_PROJECT } from './models/e2e-project.const';
+import { E2E_TAG } from './models/e2e-tag.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { seedSession } from './support/mock-session';
 import { settled } from './support/settled';
@@ -24,6 +25,27 @@ const token = (page: Page, name: string): Promise<string> =>
   page.evaluate(
     `getComputedStyle(document.documentElement).getPropertyValue('${name}').trim().toLowerCase()`,
   );
+
+type Box = NonNullable<Awaited<ReturnType<Locator['boundingBox']>>>;
+
+async function boxOf(locator: Locator): Promise<Box> {
+  const box = await locator.boundingBox();
+  if (!box) throw new Error('not rendered');
+  return box;
+}
+
+/**
+ * How far the "+" swatch is from the centre of the last swatch or tile of its row (#415). Beside
+ * it: the distance of the centres. On a line of its own under the tiles (a phone): 0, it is then
+ * centred on the tile height in a line of its own; anywhere else (on the caption line) Infinity.
+ */
+async function misalignment(plus: Locator, last: Locator): Promise<number> {
+  const a = await boxOf(plus);
+  const b = await boxOf(last);
+  const middle = (box: Box): number => box.y + box.height / 2;
+  if (a.y < b.y + b.height) return Math.abs(middle(a) - middle(b));
+  return a.y > b.y + b.height + 16 ? 0 : Number.POSITIVE_INFINITY;
+}
 
 async function openAppearance(page: Page): Promise<void> {
   await page.goto('/settings/appearance');
@@ -165,13 +187,14 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     await expect(swatch.locator('.ui-color-picker__plus')).toBeVisible();
     await expect(hex).toHaveCount(0);
 
-    // Too faint: not applied, a warning offers the nearest shade that keeps 4.5:1.
+    // Too faint: a typed colour is not changed, a warning offers the nearest shade that keeps
+    // 4.5:1 and "Add color" waits (#415).
     await swatch.click();
     await expect(hex).toBeFocused();
     await hex.fill('#f5d0e0');
     await hex.press('Enter');
-    await page.getByRole('button', { name: 'Add color', exact: true }).click();
     await expect(page.getByText(/hard to read on your background/u)).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Add color', exact: true })).toBeDisabled();
     expect(await token(page, '--accent')).toBe('#23716c');
     const use = page.getByRole('button', { name: /^Use #[0-9a-f]{6}$/u });
     const shade = ((await use.textContent()) ?? '').trim().replace('Use ', '');
@@ -197,6 +220,93 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     expect(dark).not.toBe(shade);
     expect(dark).toMatch(/^#[0-9a-f]{6}$/u);
   });
+
+  test(
+    'own colour: a palette pick turns into the nearest readable shade, a typed one waits for "Use" (#415)',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await openAppearance(page);
+      await pick(page, 'Theme', 'Custom');
+      const swatch = page.getByRole('button', { name: 'Your own background color' });
+      await swatch.click();
+      const hex = page.getByRole('textbox', { name: 'Hex code' });
+      await expect(hex).toBeFocused();
+      const add = page.getByRole('button', { name: 'Add color', exact: true });
+      const warning = page.getByText(/Text is hard to read on this background/u);
+      const note = page.getByRole('status').filter({ hasText: /Adjusted to #[0-9a-f]{6}/u });
+
+      // Drag to the dark bottom of the area: on the light base text would not read there.
+      const area = page.getByRole('group', { name: 'Choose a color' });
+      await area.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+      await settled(page);
+      const box = await boxOf(area);
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(box.x + box.width * 0.8, box.y + box.height * 0.95, { steps: 4 });
+      // While dragging the raw colour is a preview: it cannot be added, no warning flashes.
+      await expect(add).toBeDisabled();
+      await expect(warning).toHaveCount(0);
+      const raw = await hex.inputValue();
+      await page.mouse.up();
+
+      // On release the colour is the nearest readable shade: hex, note, Add enabled, no warning.
+      await expect(hex).not.toHaveValue(raw);
+      const shade = await hex.inputValue();
+      expect(shade).toMatch(/^#[0-9a-f]{6}$/u);
+      await expect(note).toHaveText(`Adjusted to ${shade} so text stays readable.`);
+      await expect(warning).toHaveCount(0);
+      await expect(add).toBeEnabled();
+
+      // A typed unreadable hex keeps its value: the warning, Add disabled, until "Use".
+      await hex.fill('#3a3f45');
+      await expect(hex).toHaveValue('#3a3f45');
+      await expect(note).toHaveCount(0);
+      await expect(warning).toBeVisible();
+      await expect(add).toBeDisabled();
+      const use = page.getByRole('button', { name: /^Use #[0-9a-f]{6}$/u });
+      const fixed = ((await use.textContent()) ?? '').trim().replace('Use ', '');
+      await use.dispatchEvent('click');
+      await expect(page.locator('html')).toHaveAttribute('data-custom-background', 'own');
+      expect(await token(page, '--bg')).toBe(fixed);
+      await expect(choice(page, 'Background', fixed)).toBeChecked();
+
+      // A readable typed hex is added as it is (the closed panel has left first).
+      await expect(hex).toHaveCount(0);
+      await swatch.click();
+      await expect(hex).toBeFocused();
+      await hex.fill('#fffdf8');
+      await expect(warning).toHaveCount(0);
+      await expect(add).toBeEnabled();
+      await add.dispatchEvent('click');
+      expect(await token(page, '--bg')).toBe('#fffdf8');
+    },
+  );
+
+  test(
+    'the "+" swatch is centred on the swatches and tiles of its row (#415)',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await openAppearance(page);
+      await pick(page, 'Theme', 'Custom');
+      for (const base of ['Light', 'Dark']) {
+        await pick(page, 'Start from', base);
+        for (const [group, picker] of [
+          ['Accent color', 'Your own color'],
+          ['Background', 'Your own background color'],
+        ] as const) {
+          const plus = page.getByRole('button', { name: picker, exact: true });
+          const frames = page
+            .getByRole('radiogroup', { name: group })
+            .locator('.ui-theme-picker__frame');
+          expect(await misalignment(plus, frames.last())).toBeLessThanOrEqual(1);
+          // Never wider or taller than the curated round swatches.
+          const size = await boxOf(plus);
+          expect(size.width).toBeCloseTo(size.height, 0);
+          expect([36, 44]).toContain(Math.round(size.width));
+        }
+      }
+    },
+  );
 
   test('another tab follows the change', async ({ page, context }) => {
     await openAppearance(page);

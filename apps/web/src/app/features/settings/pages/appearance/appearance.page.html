@@ -76,13 +76,20 @@
               [addLabel]="'settings.appearance.custom.own.addColour' | transloco"
               [cancelLabel]="'settings.appearance.custom.own.cancel' | transloco"
               #accentPicker
+              [adjust]="appearance.adjustAccent"
               [(value)]="appearance.pickedColour"
               (committed)="appearance.pickOwnAccent($event, accentPicker)"
             >
-              <p class="appearance__own-hint">
-                {{ 'settings.appearance.custom.own.hint' | transloco }}
-              </p>
-              @if (appearance.accentWarning(); as warning) {
+              <div class="appearance__own-hint">
+                <p>{{ 'settings.appearance.custom.own.hint' | transloco }}</p>
+                <!-- A palette pick moved to a readable shade (#415): a neutral note, read out. -->
+                <p class="appearance__own-adjusted" role="status">
+                  @if (accentPicker.adjusted()) { {{ 'settings.appearance.custom.own.adjusted' |
+                  transloco: { colour: appearance.pickedColour() } }} }
+                </p>
+              </div>
+              <!-- Not while dragging: the raw colour is a preview until the pick ends. -->
+              @if (!accentPicker.picking() && appearance.accentWarning(); as warning) {
               <ui-notice [kind]="NOTICE_KIND.Warning">
                 {{ 'settings.appearance.custom.own.warning' | transloco: { ratio: warning.ratio } }}
                 <ui-button
@@ -104,7 +111,7 @@
           [description]="'settings.appearance.custom.background.hint' | transloco"
         >
           <!-- The curated backgrounds, the account's own colours, then the "+" swatch (#335). -->
-          <div class="appearance__accents">
+          <div class="appearance__accents appearance__accents--tiles">
             <ui-theme-picker
               [kind]="THEME_PICKER_KIND.Background"
               [ariaLabelledby]="backgroundRow.titleId"
@@ -124,13 +131,19 @@
               [addLabel]="'settings.appearance.custom.own.addColour' | transloco"
               [cancelLabel]="'settings.appearance.custom.own.cancel' | transloco"
               #backgroundPicker
+              [adjust]="appearance.adjustBackground"
               [(value)]="appearance.pickedBackground"
               (committed)="appearance.pickOwnBackground($event, backgroundPicker)"
             >
-              <p class="appearance__own-hint">
-                {{ 'settings.appearance.custom.ownBackground.hint' | transloco }}
-              </p>
-              @if (appearance.backgroundWarning(); as warning) {
+              <div class="appearance__own-hint">
+                <p>{{ 'settings.appearance.custom.ownBackground.hint' | transloco }}</p>
+                <p class="appearance__own-adjusted" role="status">
+                  @if (backgroundPicker.adjusted()) { {{
+                  'settings.appearance.custom.ownBackground.adjusted' | transloco: { colour:
+                  appearance.pickedBackground() } }} }
+                </p>
+              </div>
+              @if (!backgroundPicker.picking() && appearance.backgroundWarning(); as warning) {
               <ui-notice [kind]="NOTICE_KIND.Warning">
                 {{ 'settings.appearance.custom.ownBackground.warning' | transloco: { ratio:
                 warning.ratio } }}
