@@ -1,3 +1,4 @@
+import { MOCK_APPEARANCE_STORAGE_KEY } from '../../settings/models/mock-appearance-storage-key.const';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
@@ -38,6 +39,9 @@ function overlayLoader() {
 }
 
 async function setup() {
+  // The mock settings API keeps its choices (own colours, own emoji) in localStorage; start clean so
+  // an earlier test (or a retry) cannot leak its own emoji into this one.
+  localStorage.removeItem(MOCK_APPEARANCE_STORAGE_KEY);
   TestBed.configureTestingModule({
     providers: [
       provideTranslocoForTest(),
