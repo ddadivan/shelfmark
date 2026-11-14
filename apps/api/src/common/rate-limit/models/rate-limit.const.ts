@@ -12,8 +12,9 @@ const HOUR_MS = 60 * MINUTE_MS;
  * decorate their handler. `DeleteAccount` guards `DELETE /api/me` (irreversible, so strict).
  * `Share` limits the owner's enable / reset of a public link (#276). `PublicCollection` is the
  * anonymous collection page (strict: it is a capability lookup anyone can try);
- * `PublicCollectionImage` its images (a page shows up to 50 cards with two images each, and the
- * browser caches them for a year).
+ * `PublicCollectionImage` its images (a page shows up to 50 cards with two images each; they are
+ * `private, no-cache`, so every page view revalidates each image with its ETag, a 304 that still
+ * counts against the limit).
  * `AddLinksBatch` (`POST /api/links/batch`, up to 100 links each) is stricter than `AddLink`;
  * `DeleteLinksBatch` guards `POST /api/links/batch/delete` (bulk move to Trash, #267, and the
  * Undo of a paste, #265).
