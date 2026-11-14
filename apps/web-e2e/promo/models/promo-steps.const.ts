@@ -314,9 +314,16 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       await director.press(
         dialog.locator('label.ui-choice', { has: page.getByLabel(FOLDER_COLOR, { exact: true }) }),
       );
-      await director.pause(200);
-      // The emoji picker (#363): search, categories, Recent and Yours; the search finds it by name.
-      await director.press(dialog.getByRole('combobox', { name: 'Emoji' }));
+      // Icon or Emoji (#376): the Emoji tab holds the picker (search, categories, Recent, Yours).
+      const emojiTab = dialog.getByRole('radio', { name: 'Emoji', exact: true });
+      await director.press(
+        dialog
+          .locator('label', { has: page.getByRole('radio', { name: 'Emoji', exact: true }) })
+          .first(),
+      );
+      await expect(emojiTab).toBeChecked();
+      await director.pause(250);
+      await director.press(dialog.getByRole('combobox', { name: 'Emoji', exact: true }));
       const picker = page.getByRole('dialog', { name: 'Emoji', exact: true });
       const search = picker.getByRole('textbox', { name: 'Search emoji' });
       await expect(search).toBeVisible();
@@ -324,13 +331,15 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       await director.type(search, EMOJI_QUERY);
       const cell = picker.locator(`[data-emoji="${FOLDER_EMOJI}"]`).first();
       await expect(cell).toBeVisible();
-      await director.pause(400);
+      await director.pause(300);
       await director.press(cell);
       await expect(picker).toHaveCount(0);
-      await expect(dialog.getByRole('combobox', { name: 'Emoji' })).toHaveValue(FOLDER_EMOJI);
+      await expect(dialog.getByRole('combobox', { name: 'Emoji', exact: true })).toHaveValue(
+        FOLDER_EMOJI,
+      );
       // The dialog previews the emoji; the folder itself changes on Save.
       await director.point(dialog.locator('.folder-style__preview'));
-      await director.pause(700);
+      await director.pause(600);
       await director.press(dialog.getByRole('button', { name: 'Save' }));
       await expect(dialog).toHaveCount(0);
       // Then the folder row shows it: the pointer rests next to it, so the change is clear.
@@ -355,13 +364,13 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       const expanded = (await row.getAttribute('aria-expanded')) === 'true';
       await director.press(twist);
       await expect(row).toHaveAttribute('aria-expanded', expanded ? 'false' : 'true');
-      await director.pause(700);
+      await director.pause(500);
       if (!expanded) {
         return;
       }
       await director.press(twist);
       await expect(row).toHaveAttribute('aria-expanded', 'true');
-      await director.pause(600);
+      await director.pause(450);
     },
   },
   {
@@ -406,7 +415,7 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       await director.press(row.getByRole('button', { name: `Unpin ${FOLDER_PINNED}` }));
       await expect(toast(page, 'Unpinned from sidebar')).toBeVisible();
       await expect(pinnedItems(page)).toHaveCount(before - 1);
-      await director.pause(1000);
+      await director.pause(800);
     },
   },
   {
@@ -426,7 +435,7 @@ export const PROMO_STEPS: readonly PromoStep[] = [
         })
         .toBe(true);
       await director.parkPointer();
-      await director.pause(700);
+      await director.pause(500);
     },
   },
   {
@@ -464,11 +473,11 @@ export const PROMO_STEPS: readonly PromoStep[] = [
         .locator('app-sidebar-tags')
         .getByRole('button', { name: new RegExp(`Merge into .${TAG_MERGE}.`) });
       await expect(merge).toBeVisible();
-      await director.pause(800);
+      await director.pause(600);
       await director.press(merge);
       await expect(tagChip(page, TAG_RENAME)).toHaveCount(0);
       await director.parkPointer();
-      await director.pause(700);
+      await director.pause(500);
     },
   },
   {

@@ -6,9 +6,10 @@ captioned scenes (2–5 s), grouped into seven chapters:
 
 1. **Save a link**: landing → "Open the demo" → paste a link, the preview fills in, folder, tag
    and note, the card lands; the "already saved" notice; "Add several links" with a pasted list.
-2. **Folders and tags**: a nested folder and its empty state, a color and an emoji found through
-   the emoji picker's search, expand / collapse, pin, reorder Pinned by drag (the drop line), Unpin
-   with Undo, reorder folders, filter by a tag, rename a tag into another one and merge, Favorites.
+2. **Folders and tags**: a nested folder and its empty state, a color and, on the Emoji tab, an
+   emoji found through the picker's search (then the folder row shows it), expand / collapse, pin,
+   reorder Pinned by drag (the drop line), Unpin with Undo, reorder folders, filter by a tag, rename
+   a tag into another one and merge, Favorites.
 3. **Many at once**: the Move to folder picker (search, the current folder) and the toast's Undo,
    dragging two cards onto a sidebar folder, selecting links and the bulk bar (tags, favorite,
    copy, open all, move).
