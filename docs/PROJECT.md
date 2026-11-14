@@ -31,7 +31,7 @@ Updated as work goes on — every session resumes from here.
   - All stage-1 milestones have no open issues. Release security check closed (#110, `docs/security/release-check.md`); production checks done with the author (API boot fix #204, `CRON_SECRET`, Google OAuth app published, privacy page #202).
   - Author review of production fixed in #212 (#211): landing, sign-in, app shell scroll areas, view switch without layout shift, link card, menus, dialogs, overlays, search, tooltips, toasts (bottom centre by the author's decision), settings, favicon, 24px icons; icon sprite built from single SVG files (#210).
   - Left before stage 1 is formally complete (10.1): landing Lighthouse stable at ≥ 0.9 (#195, moved into stage 2), and the author's two weeks of daily use.
-- [x] Stage 2 (code done Nov 11, 2026, waiting for the release): scope chosen by the author on Nov 9, 2026 (see "Roadmap after stage 1" below). Started Nov 10, 2026 with the redesign.
+- [x] Stage 2: released to production on Nov 14, 2026 (release PR #378, `stage → main`). Scope chosen by the author on Nov 9, 2026 (see "Roadmap after stage 1" below). Started Nov 10, 2026 with the redesign.
   - Nov 10, 2026: the `stage` branch exists; the 2027 Refresh design is in `docs/design` (the stage 1 design in `docs/design-v1`), the migration plan in `docs/design/MIGRATION.md`; the work runs on `design/2027-refresh` from `stage`, one issue at a time, then one PR into `stage`.
   - First task of stage 2: switch to the release flow decided on Nov 9–10, 2026 (9.3 and 9.5): a `stage` integration branch without a staging environment, feature branches from `stage`, a To release column on the board, production changes only through a release PR at the end of a stage.
   - Then the redesign (an updated design with more convenient blocks, from the author's new mockups, which already cover the stage 2 screens), then the author reviews the redesigned app, and only then the stage 2 features start. Until then nothing from stage 2 is merged into `main`, so production stays as the author uses it.
@@ -55,8 +55,11 @@ Updated as work goes on — every session resumes from here.
     - the emoji picker for folders with search, categories, recent and own emoji (#363, PR #365);
     - refactors of the largest stores and components (#366, PRs #367–#370).
   - Nov 14, 2026, release preparation: the 16 migrations since the last release were applied in order to a database seeded on the `main` schema (PGlite, outside the repo). All apply cleanly, keep every row, backfill the link kind, starter views and folder positions, and copy the old feedback screenshot to `feedback_screenshots`. `nx run api:db-check` shows no drift from `schema.prisma`. None of them drops or renames a column that the code on `main` reads, so production keeps working between `prisma migrate deploy` and the switch to the new deployment. The security review of the release is in progress (#371).
-  - Next: the release waits for the author's command. Before it: #371 merged into `stage`, the promo videos re-recorded (#336), merge commits turned on for `main`. Then the release PR `stage → main` (merge commit) closes every issue in To release. After the release: production smoke (`BASE_URL=https://shelfmark-app.vercel.app npx nx e2e web-e2e`), the Feedback inbox shows for the admin (`ADMIN_EMAILS`), the Trash cleanup cron shows in Vercel, and Dependabot's pending updates are re-opened against `stage` (#279 and #282 target `main`).
+  - Nov 14, 2026: released to production in #378. Before the release it waited for the author's command: #371 merged into `stage`, the promo videos re-recorded (#336), merge commits turned on for `main`. Then the release PR `stage → main` (merge commit) closes every issue in To release. After the release: production smoke (`BASE_URL=https://shelfmark-app.vercel.app npx nx e2e web-e2e`), the Feedback inbox shows for the admin (`ADMIN_EMAILS`), the Trash cleanup cron shows in Vercel, and Dependabot's pending updates are re-opened against `stage` (#279 and #282 target `main`).
 - [x] Motion in code (landing and app); promo video moved to stage 2
+- [ ] Stage 3: planned by the author on Nov 14, 2026 (see "Roadmap after stage 2" below). Only side-by-side (#386, design first). The other tasks of that planning are in the backlog with their issues: import (#387), read / unread and Read later (#396), AI (#388 with #389–#395), the dead-link check (#397), rules without AI (#398) and commands in ⌘K (#399). Milestone and board moves are listed in the docs PR for the author.
+  - Next: the side-by-side design in `docs/design` (#386), reviewed by the author before code.
+  - Ideas that are not planned (licence, launch, monetisation, legal, trademark, save by email) are in "Ideas to discuss (not planned)".
 
 ## 1. Problem and idea
 
@@ -507,11 +510,38 @@ Source: [Better Auth — NestJS integration](https://better-auth.com/docs/integr
 
 ### 5.5 Ways to save links
 
-Stage 1: manual adding in the web interface only (a form with a URL field). A browser extension and import from Telegram are in the backlog. The API is designed so they can be plugged in later without rework.
+Stage 1: manual adding in the web interface only (a form with a URL field). Stage 2 added Paste many and the Share target. Import from browser bookmarks, Pocket, Raindrop.io and the Shelfmark JSON backup (#387), rules that put a link into a folder and tags by its domain (#398), the browser extension and import from Telegram are in the backlog. The API is designed so they can be plugged in later without rework.
 
 ### 5.6 AI features
 
-Not part of stage 1. Auto-tags, short descriptions and smart search are planned for stage 3 (see "Roadmap after stage 1").
+Not part of stages 1–3. In the backlog with prepared issues (parent issue #388; see "Roadmap after stage 2"), not scheduled. `docs/design` has no AI screens yet, so every user-facing capability is designed first.
+
+**Capabilities**
+
+| Capability | What it does | Issue |
+| --- | --- | --- |
+| Foundation | Provider abstraction, mock provider, quotas, opt-in, background processing, contracts and ADR; comes first | #389 |
+| Auto-tags and auto-folder | Suggestion chips built from the user's existing tags and folders; nothing applied without a tap | #390 |
+| Short summaries | Aware of the link `kind` (video, article, shopping, other); editable by the user | #391 |
+| Semantic search | Embeddings + pgvector in Neon, hybrid with the current search, which stays the fallback | #392 |
+| Ask your shelf | RAG chat over the library, every answer with its source links | #393 |
+| Library clean-up | Near-duplicates, dead links, synonym tags; always a preview with Undo | #394 |
+| Shelfmark MCP server | A user's own AI assistant searches and reads their library | #395 |
+
+**Rules from day one** (part of done for every AI issue):
+
+- a mock AI provider for dev, unit, e2e and CI: no real calls there;
+- the demo makes no real calls: ready summaries and tags in the seed data, canned chat answers or a tiny limit;
+- per-user quotas, and a spend limit in the provider console (set by the author);
+- graceful degradation: without AI (off, no key, quota used, provider error) the app works as today;
+- opt-in in settings, described in the privacy policy;
+- background processing: saving a link never waits for the model;
+- prompt-injection defence: no tools with side effects, structured output, model output rendered as text only, the SSRF guard on any fetch;
+- self-hosting uses its own key.
+
+**Models and cost (estimates, Nov 2026):** Haiku for tags, summaries and folders (\~$0.0004 per link), Sonnet for chat (\~$0.013 per question), the Batch API (−50%) for background reprocessing; personal use \~$1–2 per month.
+
+**Data:** new fields (`summary`, `suggestedTags`, embedding, processing status) go into `libs/shared/contracts` first, with an ADR (#389).
 
 ### 5.7 Infrastructure and deployment
 
@@ -1065,13 +1095,13 @@ Source: [Using Claude Code with your Pro or Max plan](https://support.claude.com
 
 ## Monetisation
 
-Discussed after stage 1 (roadmap, stage 5): pricing tiers, free plan limits, payment provider. Stage 1 only lays the groundwork: all data has an owner (`userId`), so per-tier limits can be introduced without reworking the model.
+Discussed after stage 1 (roadmap, stage 5): pricing tiers, free plan limits, payment provider. The options noted on Nov 14, 2026 are in "Ideas to discuss (not planned)". Stage 1 only lays the groundwork: all data has an owner (`userId`), so per-tier limits can be introduced without reworking the model.
 
 ## Roadmap after stage 1
 
-Chosen by the author on Nov 9, 2026. Stages 2 and 3 are planned; everything else stays in the backlog. Order inside a stage is decided when the stage starts.
+Chosen by the author on Nov 9, 2026; stage 3 re-planned on Nov 14, 2026 (only side-by-side) ("Roadmap after stage 2" below). Everything else stays in the backlog. Order inside a stage is decided when the stage starts.
 
-### Stage 2 (code done Nov 11, 2026)
+### Stage 2 (released to production Nov 14, 2026, #378)
 
 - [x] **First:** release flow with the `stage` integration branch (9.3): ADR, `stage` branch and ruleset, CI, To release column and board workflows, agent instructions; no staging environment for now
 - [x] **Second: redesign** (before the features below). An updated design rather than a new one: more convenient blocks and layouts on the existing design system. The author provides the new mockups in Claude Design, and they already include the screens of the stage 2 features, so those are built on the new design. Steps: update `docs/design` (screens, components, tokens if they change), then bring `libs/ui` and the existing screens up to it, keeping a11y, both themes, the phone and the e2e and Storybook suites green. Started Nov 10, 2026 with the "Shelfmark 2027 Refresh" design; plan and decisions in `docs/design/MIGRATION.md`
@@ -1098,12 +1128,28 @@ Chosen by the author on Nov 9, 2026. Stages 2 and 3 are planned; everything else
 
 ### Stage 3 (planned)
 
-- [ ] Browser extension for saving links in one click
-- [ ] AI: automatic tags and short descriptions of links
-- [ ] Smart search (AI)
-- [ ] Carrying data over from the demo sandbox into a real account on sign-in
+Re-planned by the author on Nov 14, 2026, after the stage 2 release: only side-by-side. The spec is in "Roadmap after stage 2" below.
+
+- [ ] Side-by-side: two feeds to move links between (#386)
 
 ### Backlog
+
+Prepared on Nov 14, 2026, with issues, not scheduled (details in "Roadmap after stage 2"):
+
+- [ ] Import links: browser bookmarks, Pocket, Raindrop.io, Shelfmark JSON backup (#387)
+- [ ] Read / unread status and Read later (#396)
+- [ ] AI: auto-tags and auto-folder, summaries, semantic (smart) search, "Ask your shelf", library clean-up, MCP server (#388, #389–#395; 5.6)
+- [ ] Dead-link check with a Wayback Machine copy (#397)
+- [ ] Rules without AI: domain → folder and / or tag (#398)
+- [ ] Commands in ⌘K (#399)
+
+Moved from stage 3 on Nov 14, 2026:
+
+- [ ] Browser extension for saving links in one click
+- [ ] Carrying data over from the demo sandbox into a real account on sign-in
+
+Earlier:
+
 
 - [ ] Email and password sign-in: email verification, password reset, an email sending service (#277; moved from stage 2 on Nov 10, 2026, needs a domain and an email provider first)
 - [ ] Reminders: come back to a saved link later (#275; moved from stage 2 on Nov 10, 2026): "Remind me" with a date picker, the badge on cards, the Reminders list, delivery in the app, by Web Push (VAPID, an external scheduler, as Vercel Hobby crons run once a day) and by email, quiet hours, the weekly digest and `SetNotifications`
@@ -1114,6 +1160,45 @@ Chosen by the author on Nov 9, 2026. Stages 2 and 3 are planned; everything else
 - [ ] Subscriptions and monetisation (pricing tiers, free plan limits, payment provider)
 - [ ] Move to paid hosting
 - [ ] Interactive "How it works" guided tour (moved from stage 2; the promo video covers it for now): an animated cursor shows adding a link, folders and tags, search and export with captions, on an in-browser sandbox (never the user's data), steps calling the same store actions as real clicks, with Pause / Stop / chapters / Esc, a reduced-motion path and screen-reader text. Worth it only with many self-onboarding users who need a guided, localised walkthrough
+
+## Roadmap after stage 2
+
+Planned by the author on Nov 14, 2026, after stage 2 was released (#378). **Stage 3 is only side-by-side.** The other tasks have issues ready but stay in the backlog until the author schedules them; the numbers show the order they were discussed in. Each user-facing task is designed in `docs/design` first, and its user story with acceptance criteria is added to section 4 when it starts.
+
+### Stage 3: side-by-side
+
+1. **Side-by-side (#386).** Design first in `docs/design` (desktop layout, empty right half, picker, drag), then implementation, then the release.
+   - Desktop only, from `80em`; on narrower screens the entry point is absent (via `ViewportService`).
+   - Two feeds side by side; the sidebar stays.
+   - Opening keeps the current feed on the **left** (same view, sort, selection). The **right** half opens a folder picker (the same as "Move to": search, tree, recent) with the empty hint "Choose a folder to move links into" until a folder is chosen.
+   - Each half can be changed from a dropdown in its header; a "⇄" button swaps them.
+   - Left: any feed (folder, Unsorted, Favorites, tag, search results). Right: only a folder or Unsorted (a real move target).
+   - Drag one link or the selection into the other half (and back when the left is a folder or Unsorted), Undo in the toast; the bulk bar gets "Move to → <right folder>".
+   - State in the URL (for example `?split=<folderId>`), so reload and Back work.
+   - Equal halves for v1 (a draggable divider maybe later).
+   - Reuses the existing drag and drop, selection, bulk bar, folder picker and Undo.
+
+### Backlog with prepared issues
+
+2. **Import links (#387):** browser bookmarks HTML, Pocket export (CSV / HTML with tags), Raindrop.io (CSV with collections and tags), Shelfmark JSON backup. The design exists (`docs/design/screens/Import.dc.html`): source → review (duplicates, folder, structure) → progress, summary, Undo import. Only export exists today (on the Account page, "Your data"). Fixes with it: Paste many says "Bigger lists go to Import as text", but that screen does not exist; `SendFeedback.dc.html` already promises import from the Pocket export. Why now: Pocket shut down in 2025 and its users (\~10M) are looking for an alternative.
+3. **Read / unread status and Read later (#396):** postponed in stage 1; the core scenario for former Pocket users.
+4. **AI (#388, sub-issues #389–#395):** auto-tags and auto-folder, short summaries, semantic search, "Ask your shelf", library clean-up, a Shelfmark MCP server; the rules from day one, models and costs are in 5.6.
+5. **Dead-link check (#397)** and an offer of a Wayback Machine copy.
+6. **Rules without AI (#398):** domain → folder and / or tag (for example youtube.com → Videos).
+7. **Commands in ⌘K (#399):** not only search but actions (new folder, move selected, change theme).
+
+The browser extension and carrying demo data into a real account, planned for stage 3 on Nov 9, 2026, moved to the backlog as well.
+
+## Ideas to discuss (not planned)
+
+Notes from the author's planning on Nov 14, 2026. Nothing here is a decision: no issues and no roadmap changes until the author decides; significant choices get an ADR then.
+
+- **Licence.** There is no `LICENSE` file now, and `package.json` says `UNLICENSED`. Options: AGPL-3.0 (open source plus paid hosting, as Plausible and Linkwarden do); FSL / BSL (source-available, becomes open after 2 years); open core; closing the repository. Current leaning: keep the repository open and pick a licence before the launch. The choice cannot be undone for versions already released; outside pull requests would need a CLA. Later an ADR compares the options.
+- **Launch plan.** Free at first, to test interest. Channels: Product Hunt, Reddit (Pocket alternatives, r/selfhosted, r/productivity), Show HN. Simple privacy-friendly analytics (week and month retention); check the free-tier infrastructure limits. Optional donations (Ko-fi, Buy Me a Coffee or GitHub Sponsors): check payouts to Ukraine; donations to a sole proprietor count as income.
+- **Monetisation.** Markets: Europe and the US (Asia later, through regional pricing at the Merchant of Record). Main option: Free / Pro \~$40–50 per year / AI pack +\~$30–50 per year / Pro + AI bundle \~$80 per year. The AI pack with a trial and a fair-use chat limit; AI entitlements modelled on the account early. Benchmarks: Raindrop \~$28 per year, Linkwarden \~$48, mymind \~$80–155, Readwise \~$110–155. Estimate (assumes \~3% conversion): 10k registered users ≈ $500 per month; 10k paying users ≈ $26k per month.
+- **Legal.** The author is a Ukrainian sole proprietor: check the IT activity code and tax group 3. Payments through a Merchant of Record (Paddle, Lemon Squeezy or Polar; check Ukraine support); Stripe does not work directly with Ukraine. The group 3 limit (\~10M UAH per year) is about 5,000 paying users. A foreign company only with serious revenue. GDPR documents and Terms in English.
+- **Trademark.** For now only check that "Shelfmark" is free (TMview, WIPO, USPTO; classes 9 and 42) and secure the domain and social handles. Registration (EUIPO \~€850, USPTO \~$350 per class) once there is interest.
+- **Save by email.** Forward a link to a personal address to save it.
 
 ## 10. Success metrics and roadmap after stage 1
 
@@ -1135,12 +1220,12 @@ Vercel Analytics (no personal data): number of registered users; share of users 
 
 ### 10.3 Roadmap
 
-Decided by the author on Nov 9, 2026; the full lists are in "Roadmap after stage 1" above.
+Decided by the author on Nov 9, 2026, stage 3 re-planned on Nov 14, 2026 (only side-by-side); the full lists are in "Roadmap after stage 1" and "Roadmap after stage 2" above.
 
 | Stage | Goal | Contents |
-| 2 | Daily use and polish | Redesign (2027 Refresh), Trash, folder colours, icons and pinning, saved views, paste several links, email and password sign-in, reminders, sharing, custom themes, feedback form, drag & drop, selection and bulk actions, "Move to folder", sync between tabs, interface languages (not Ukrainian for now), landing for signed-in users, Lighthouse ≥ 0.9, dev Dependabot alerts, promo video with a "How it works" button that plays it |
-| 3 | Save faster, smarter | Browser extension, AI tags and descriptions, smart search, demo data carried into a real account |
-| Backlog | Later | Import from Telegram, own authentication (learning format), subscriptions and monetisation, paid hosting, interactive guided tour |
+| 2 (released Nov 14, 2026) | Daily use and polish | Redesign (2027 Refresh), Trash, folder colours, icons and pinning, saved views, paste several links, email and password sign-in, reminders, sharing, custom themes, feedback form, drag & drop, selection and bulk actions, "Move to folder", sync between tabs, interface languages (not Ukrainian for now), landing for signed-in users, Lighthouse ≥ 0.9, dev Dependabot alerts, promo video with a "How it works" button that plays it |
+| 3 | Sort faster | Side-by-side: two feeds to move links between (desktop) |
+| Backlog | Later | Import (bookmarks, Pocket, Raindrop.io, JSON backup), read / unread and Read later, AI (tags and folders, summaries, semantic search, Ask your shelf, clean-up, MCP server), dead-link check with Wayback copies, rules without AI, commands in ⌘K, browser extension, demo data carried into a real account, import from Telegram, own authentication (learning format), subscriptions and monetisation, paid hosting, interactive guided tour |
 
 ## 11. Presentation in the CV and portfolio
 
