@@ -1424,7 +1424,7 @@
     },
     "footer": {
       "privacy": "Informativa sulla privacy",
-      "version": "Shelfmark v1.0"
+      "version": "Shelfmark {{version}}"
     },
     "delete": {
       "title": "Elimina account",

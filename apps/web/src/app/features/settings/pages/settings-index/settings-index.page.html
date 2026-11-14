@@ -68,5 +68,5 @@
   <a class="settings-index__privacy" [routerLink]="privacyHref"
     >{{ 'settings.footer.privacy' | transloco }}</a
   >
-  <span>{{ 'settings.footer.version' | transloco }}</span>
+  <span>{{ 'settings.footer.version' | transloco: { version: appVersion } }}</span>
 </p>

@@ -1445,7 +1445,7 @@
     },
     "footer": {
       "privacy": "Політика конфіденційності",
-      "version": "Shelfmark v1.0"
+      "version": "Shelfmark {{version}}"
     },
     "delete": {
       "title": "Видалити акаунт",

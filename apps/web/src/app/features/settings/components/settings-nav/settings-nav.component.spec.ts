@@ -4,6 +4,7 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { axeViolations } from '../../../../../testing/axe';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
 import { SettingsNavComponent } from './settings-nav.component';
+import { APP_VERSION } from '../../../../models/app-version.const';
 
 async function setup(url: string) {
   TestBed.configureTestingModule({
@@ -66,7 +67,7 @@ describe('SettingsNavComponent', () => {
   it('shows the version and has no axe violations', async () => {
     const { root } = await setup('/settings/account');
 
-    expect(root.textContent).toContain('Shelfmark v1.0');
+    expect(root.textContent).toContain(`Shelfmark ${APP_VERSION}`);
     expect(await axeViolations(root)).toEqual([]);
   });
 });

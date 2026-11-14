@@ -18,6 +18,7 @@ import { LocaleService } from '../../../../core/i18n/locale.service';
 import { LANGUAGE_NAMES } from '../../../../core/i18n/models/language-names.const';
 import { INTERFACE_LANGUAGE } from '@shelfmark/contracts';
 import { APP_PATH } from '../../../../models/app-path.const';
+import { APP_VERSION } from '../../../../models/app-version.const';
 import { HowItWorksService } from '../../../how-it-works/services/how-it-works.service';
 import { SETTINGS_NAV_ENTRIES } from '../../models/settings-nav-entries.const';
 import { SETTINGS_PATH } from '../../models/settings-path.const';
@@ -45,6 +46,7 @@ export default class SettingsIndexPage {
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
   protected readonly SETTINGS_PATH = SETTINGS_PATH;
+  protected readonly appVersion = APP_VERSION;
   protected readonly settingsPath = `/${APP_PATH.Settings}`;
   protected readonly adminFeedbackPath = ['/', APP_PATH.Admin, ADMIN_PATH.Feedback];
   protected readonly adminStatsPath = ['/', APP_PATH.Admin, ADMIN_PATH.Stats];

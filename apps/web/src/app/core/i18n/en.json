@@ -1403,7 +1403,7 @@
     },
     "footer": {
       "privacy": "Privacy policy",
-      "version": "Shelfmark v1.0"
+      "version": "Shelfmark {{version}}"
     },
     "delete": {
       "title": "Delete account",

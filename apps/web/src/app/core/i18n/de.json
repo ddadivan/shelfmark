@@ -1403,7 +1403,7 @@
     },
     "footer": {
       "privacy": "Datenschutzerklärung",
-      "version": "Shelfmark v1.0"
+      "version": "Shelfmark {{version}}"
     },
     "delete": {
       "title": "Konto löschen",
