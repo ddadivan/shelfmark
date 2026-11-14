@@ -184,7 +184,7 @@ export const LinksStore = signalStore(
       }
       pending.delete(id);
       patchState(store, setAllEntities(insertAt(store.entities(), removal.index, removal.link)));
-      publish({ upserted: [removal.link] });
+      publish({ upserted: [removal.link], moved: true });
       if (removal.recentIndex >= 0) {
         patchState(store, {
           recent: insertAt(store.recent(), removal.recentIndex, removal.link),

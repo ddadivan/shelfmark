@@ -155,13 +155,13 @@ describe('LinksStore.linkChanges', () => {
     expect(store.isPending('id-2')).toBe(true);
 
     store.undoRemove('id-2');
-    expect(changes.at(-1)).toEqual({ upserted: [link(2)] });
+    expect(changes.at(-1)).toEqual({ upserted: [link(2)], moved: true });
     expect(store.isPending('id-2')).toBe(false);
 
     api.remove.mockReturnValueOnce(throwError(() => new Error('boom')));
     store.remove('id-3');
     await store.commitRemove('id-3');
-    expect(changes.at(-1)).toEqual({ upserted: [link(3)] });
+    expect(changes.at(-1)).toEqual({ upserted: [link(3)], moved: true });
   });
 
   it('publishes removals of several links, a dropped save and a removal of another tab', () => {
