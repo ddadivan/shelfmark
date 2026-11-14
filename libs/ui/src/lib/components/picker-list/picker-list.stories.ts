@@ -61,6 +61,9 @@ const meta: Meta<PickerListComponent> = {
     searchLabel: 'Find a folder',
     listLabel: 'Folders',
     noResultsLabel: 'No folders found',
+    recentIds: [],
+    recentLabel: 'Recent',
+    currentCheck: true,
     autoFocus: false,
   },
   render: (args) => ({
@@ -73,6 +76,9 @@ const meta: Meta<PickerListComponent> = {
           [currentIds]="currentIds"
           [currentLabel]="currentLabel"
           [value]="value"
+          [recentIds]="recentIds"
+          [recentLabel]="recentLabel"
+          [currentCheck]="currentCheck"
           [searchLabel]="searchLabel"
           [listLabel]="listLabel"
           [noResultsLabel]="noResultsLabel"
@@ -102,6 +108,16 @@ export const NoCurrent: Story = { args: { currentIds: [] } };
 
 /** A shown value (the side-by-side headers): its row has the check; other rows in `currentIds` keep their label only. */
 export const WithValue: Story = { args: { value: 'clothes', currentIds: ['angular'] } };
+
+/** Recently used targets on top, in a group, while the search is empty (the search shows the plain list). */
+export const Recent: Story = {
+  args: { recentIds: ['clothes', null, 'angular'], currentIds: ['angular'] },
+};
+
+/** `currentCheck` off: a current row shows its label alone (the empty picker of side by side). */
+export const CurrentLabelOnly: Story = {
+  args: { currentCheck: false, currentLabel: 'On the left' },
+};
 
 export const WithoutUnsorted: Story = { args: { emptyLabel: '' } };
 
