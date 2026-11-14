@@ -1,7 +1,9 @@
 import { CdkDrag, CdkDragPlaceholder, CdkDragPreview, CdkDropList } from '@angular/cdk/drag-drop';
+import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
+  BadgeComponent,
   BreadcrumbsComponent,
   BULK_BAR_LAYOUT,
   BulkBarComponent,
@@ -17,6 +19,7 @@ import {
   MenuSeparatorComponent,
   MenuTriggerDirective,
   NoticeComponent,
+  PickerMenuComponent,
   ProgressBarComponent,
   SegmentedControlComponent,
   SKELETON_SHAPE,
@@ -54,6 +57,8 @@ import { LibrarySelectionService } from './services/library-selection.service';
 import { LibraryFilterService } from './services/library-filter.service';
 import { provideLibraryPage } from './services/provide-library-page';
 import { FolderTileComponent } from './components/folder-tile/folder-tile.component';
+import { SplitRightHalfComponent } from './components/split-right-half/split-right-half.component';
+import { SplitViewService } from './services/split-view.service';
 import { SORT_OPTION_KEYS } from './models/sort-option-keys.const';
 import { SORT_OPTIONS } from './models/sort-options.const';
 
@@ -72,7 +77,9 @@ const SKELETON_COUNT = 8;
     CdkDragPlaceholder,
     CdkDragPreview,
     CdkDropList,
+    NgTemplateOutlet,
     TranslocoPipe,
+    BadgeComponent,
     BreadcrumbsComponent,
     BulkBarComponent,
     ButtonComponent,
@@ -94,10 +101,12 @@ const SKELETON_COUNT = 8;
     MenuSeparatorComponent,
     MenuTriggerDirective,
     NoticeComponent,
+    PickerMenuComponent,
     ProgressBarComponent,
     SavedViewChipsComponent,
     SegmentedControlComponent,
     SkeletonComponent,
+    SplitRightHalfComponent,
   ],
   templateUrl: './library.page.html',
   styleUrls: ['./library.page.scss', './library-feed.scss', './library-selection.scss'],
@@ -121,6 +130,9 @@ export default class LibraryPage {
    * the stacked bulk bar over the tab bar, the share action.
    */
   protected readonly compact = inject(ViewportService).compact;
+  /** From 80em: the "Side by side" button and the right half (#386). */
+  protected readonly wide = inject(ViewportService).wide;
+  protected readonly splitView = inject(SplitViewService);
   protected readonly selection = inject(LibrarySelectionService);
   protected readonly bulk = inject(LibraryBulkService);
   protected readonly drag = inject(LinkDragService);

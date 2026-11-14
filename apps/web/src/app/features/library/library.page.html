@@ -61,441 +61,513 @@
     [collapsedLabel]="'library.breadcrumb.collapsed' | transloco"
     (linkClick)="openCrumb($event)"
   />
-  }
-  <header class="library__toolbar">
-    <div class="library__heading">
-      <!-- prettier-ignore -->
-      <h1 class="library__title">{{ filters.folder()?.name ?? (filters.titleKey() | transloco) }}</h1>
-      <!-- Always there (empty while the list loads) so the title block keeps its height. -->
-      <p class="library__count">
-        @if (feed.skeletonVisible() && !feed.showLinks()) {
-        <span class="library__count-skeleton" aria-hidden="true">
-          <ui-skeleton [shape]="SKELETON_SHAPE.Line" />
-        </span>
-        } @if (feed.showLinks()) { @if (feed.subfolders().length > 0) { {{
-        'library.countWithFolders' | transloco : { links: (pluralKey(feed.shownHasMore() ?
-        'library.countMore' : 'library.count', feed.shownCount()) | transloco: { count:
-        feed.shownCount() }), folders: (pluralKey('library.subfolders.folders',
-        feed.subfolders().length) | transloco: { count: feed.subfolders().length }) } }} } @else {
-        {{ pluralKey(feed.shownHasMore() ? 'library.countMore' : 'library.count', feed.shownCount())
-        | transloco: { count: feed.shownCount() } }} } }
-      </p>
-    </div>
-    @if (phone()) {
-    <div class="library__tools">
-      <ui-button
-        [uiMenuTrigger]="viewMenu"
-        variant="secondary"
-        iconLeft="settings"
-        iconRight="chevron-down"
-        [iconSize]="ICON_SIZE.Sm"
-      >
-        {{ 'library.viewMenu.button' | transloco }}
-      </ui-button>
-      <ui-menu #viewMenu align="end" [ariaLabel]="'library.viewMenu.label' | transloco">
-        @if (feed.showControls() && feed.viewOptions(); as options) {
-        <ui-menu-label>{{ 'library.viewMenu.sortBy' | transloco }}</ui-menu-label>
-        @for (option of SORT_OPTIONS; track option) {
-        <ui-menu-item
-          type="radio"
-          [selected]="option === filters.feedSort()"
-          (activated)="filters.setSort(option)"
-        >
-          {{ SORT_OPTION_KEYS[option] | transloco }}
-        </ui-menu-item>
-        }
-        <ui-menu-separator />
-        <ui-menu-label>{{ 'library.view.label' | transloco }}</ui-menu-label>
-        @for (option of options; track option.value) {
-        <ui-menu-item
-          type="radio"
-          [icon]="option.icon"
-          [selected]="option.value === filters.view()"
-          (activated)="feed.setView(option.value)"
-        >
-          {{ option.label }}
-        </ui-menu-item>
-        }
-        <ui-menu-separator />
-        }
-        <ui-menu-label>{{ 'export.menu' | transloco }}</ui-menu-label>
-        @if (filters.viewScope()) {
-        <ui-menu-item icon="code" (activated)="exportView(EXPORT_FORMAT.Json)">
-          {{ 'export.view.json' | transloco }}
-        </ui-menu-item>
-        <ui-menu-item icon="globe" (activated)="exportView(EXPORT_FORMAT.Html)">
-          {{ 'export.view.html' | transloco }}
-        </ui-menu-item>
-        <ui-menu-separator />
-        }
-        <ui-menu-item icon="code" (activated)="exportAll(EXPORT_FORMAT.Json)">
-          {{ 'export.all.json' | transloco }}
-        </ui-menu-item>
-        <ui-menu-item icon="globe" (activated)="exportAll(EXPORT_FORMAT.Html)">
-          {{ 'export.all.html' | transloco }}
-        </ui-menu-item>
-      </ui-menu>
-    </div>
-    } @else {
-    <div class="library__tools">
-      @if (feed.showControls() && feed.viewOptions(); as options) {
-      <div class="library__controls">
-        <ui-button
-          [uiMenuTrigger]="sortMenu"
-          variant="ghost"
-          iconRight="chevron-down"
-          [iconSize]="ICON_SIZE.Sm"
-          [ariaLabel]="'library.sort.label' | transloco: { sort: SORT_OPTION_KEYS[filters.feedSort()] | transloco }"
-        >
-          {{ SORT_OPTION_KEYS[filters.feedSort()] | transloco }}
-        </ui-button>
-        <ui-menu #sortMenu align="end" [ariaLabel]="'library.sort.menu' | transloco">
-          @for (option of SORT_OPTIONS; track option) {
-          <ui-menu-item
-            type="radio"
-            [selected]="option === filters.feedSort()"
-            (activated)="filters.setSort(option)"
-          >
-            {{ SORT_OPTION_KEYS[option] | transloco }}
-          </ui-menu-item>
-          }
-        </ui-menu>
-        <ui-segmented-control
-          iconOnly
-          [options]="options"
-          [value]="filters.view()"
-          [ariaLabel]="'library.view.label' | transloco"
-          (valueChange)="feed.setView($event)"
-        />
-      </div>
-      }
-      <ui-button
-        [uiMenuTrigger]="exportMenu"
-        variant="secondary"
-        iconLeft="download"
-        iconRight="chevron-down"
-        [ariaLabel]="'export.menu' | transloco"
-      >
-        {{ 'export.menu' | transloco }}
-      </ui-button>
-      <ui-menu #exportMenu align="end" [ariaLabel]="'export.menu' | transloco">
-        @if (filters.viewScope()) {
-        <ui-menu-item icon="code" (activated)="exportView(EXPORT_FORMAT.Json)">
-          {{ 'export.view.json' | transloco }}
-        </ui-menu-item>
-        <ui-menu-item icon="globe" (activated)="exportView(EXPORT_FORMAT.Html)">
-          {{ 'export.view.html' | transloco }}
-        </ui-menu-item>
-        <ui-menu-separator />
-        }
-        <ui-menu-item icon="code" (activated)="exportAll(EXPORT_FORMAT.Json)">
-          {{ 'export.all.json' | transloco }}
-        </ui-menu-item>
-        <ui-menu-item icon="globe" (activated)="exportAll(EXPORT_FORMAT.Html)">
-          {{ 'export.all.html' | transloco }}
-        </ui-menu-item>
-      </ui-menu>
-    </div>
-    }
-  </header>
-  @if (!feed.emptyLibrary()) {
-  <app-saved-view-chips class="library__views" [filter]="filters.filter()" />
-  } @if (filters.filtered()) {
-  <div class="library__filter" role="group" [attr.aria-label]="'library.filter.label' | transloco">
-    @if (filters.searching()) {
-    <ui-chip
-      variant="neutral"
-      icon="search"
-      removable
-      [removeLabel]="'library.search.remove' | transloco: { query: filters.query() }"
-      (removed)="filters.clearSearch()"
-    >
-      {{ 'library.search.chip' | transloco: { query: filters.query() } }}
-    </ui-chip>
-    } @if (filters.linkKind(); as kind) {
-    <ui-chip
-      variant="neutral"
-      removable
-      [removeLabel]="'library.kind.remove' | transloco: { kind: ('links.kind.' + kind | transloco) }"
-      (removed)="filters.clearKind()"
-    >
-      {{ 'links.kind.' + kind | transloco }}
-    </ui-chip>
-    } @for (name of filters.tags(); track name) {
-    <ui-chip
-      removable
-      [removeLabel]="'tags.filter.remove' | transloco: { name: name }"
-      (removed)="filters.removeTag(name)"
-    >
-      {{ name }}
-    </ui-chip>
-    }
-    <ui-button variant="ghost" size="sm" (click)="filters.clearAll()">
-      {{ 'tags.filter.clear' | transloco }}
-    </ui-button>
-  </div>
   } }
-  <div appLibraryHotkeys appToastArea class="library__scroll" tabindex="-1">
-    @if (store.error() && store.count() > 0 && !filters.folderMissing()) {
-    <ui-notice kind="danger" class="library__notice">
-      {{ 'library.refetchFailed' | transloco }}
-      <ui-button size="sm" (click)="retry()">{{ 'library.error.retry' | transloco }}</ui-button>
-    </ui-notice>
-    } @if (feed.subfolders().length > 0) {
-    <ul
-      class="library__folders"
-      [class.library__folders--rows]="filters.view() === UI_VIEW.List"
-      [class.library__folders--stale]="feed.stale()"
-      [attr.inert]="feed.stale() ? '' : null"
-      [attr.aria-label]="'library.subfolders.label' | transloco"
-    >
-      @for (item of feed.subfolders(); track item.folder.id) {
-      <li>
-        <app-folder-tile
-          [folder]="item.folder"
-          [childCount]="item.childCount"
-          [row]="filters.view() === UI_VIEW.List"
-          [dropTarget]="drag.folderTargetId() === item.folder.id"
-        />
-      </li>
-      }
-    </ul>
-    } @if (filters.folderMissing()) {
-    <ui-empty-state
-      layout="page"
-      illustration="not-found"
-      [heading]="'library.folderNotFound.title' | transloco"
-      [text]="'library.folderNotFound.text' | transloco"
-    >
-      <ui-button variant="primary" (click)="showAll()">
-        {{ 'library.folderNotFound.action' | transloco }}
-      </ui-button>
-    </ui-empty-state>
-    } @else if (feed.failed()) {
-    <ui-empty-state
-      layout="page"
-      illustration="offline"
-      [heading]="'library.error.title' | transloco"
-      [text]="'library.error.text' | transloco"
-    >
-      <ui-button variant="primary" (click)="retry()">
-        {{ 'library.error.retry' | transloco }}
-      </ui-button>
-    </ui-empty-state>
-    } @else if (feed.skeletonVisible()) { @if (filters.view() === UI_VIEW.List) {
-    <div class="library__rows">
-      <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="SKELETON_COUNT" />
-    </div>
-    } @else {
-    <div class="library__grid">
-      <ui-skeleton [shape]="SKELETON_SHAPE.Card" [count]="SKELETON_COUNT" />
-    </div>
-    } } @else if (feed.empty() && filters.searching()) {
-    <ui-empty-state
-      layout="page"
-      illustration="not-found"
-      [heading]="'library.emptySearch.title' | transloco: { query: filters.query() }"
-      [text]="'library.emptySearch.text' | transloco"
-    >
-      <ui-button (click)="filters.clearSearch()"
-        >{{ 'library.emptySearch.clear' | transloco }}</ui-button
-      >
-      @if (scope() !== LINKS_SCOPE.All) {
-      <ui-button (click)="filters.searchEverywhere()">
-        {{ 'library.emptySearch.all' | transloco }}
-      </ui-button>
-      }
-    </ui-empty-state>
-    } @else if (feed.empty() && filters.filtered()) {
-    <ui-empty-state
-      layout="page"
-      illustration="empty-filter"
-      [heading]="filters.filteredEmptyKey() + '.title' | transloco: { name: filters.activeView()?.name ?? '' }"
-      [text]="filters.filteredEmptyKey() + '.text' | transloco"
-    >
-      <ui-button variant="primary" (click)="filters.clearFilters()">
-        {{ filters.filteredEmptyKey() + '.clear' | transloco }}
-      </ui-button>
-    </ui-empty-state>
-    } @else if (feed.empty()) {
-    <ui-empty-state
-      layout="page"
-      [illustration]="emptyIllustration()"
-      [heading]="filters.emptyKey() + '.title' | transloco"
-      [text]="filters.emptyKey() + '.text' | transloco"
-    >
-      @if (filters.isFolder()) {
-      <ui-button (click)="openUnsorted()"
-        >{{ 'library.emptyFolder.unsorted' | transloco }}</ui-button
-      >
-      } @if (filters.canAddLink()) {
-      <ui-button variant="primary" iconLeft="add" (click)="actions.addLink(filters.addLinkData())">
-        {{ filters.emptyKey() + '.action' | transloco }}
-      </ui-button>
-      @if (scope() === LINKS_SCOPE.All) {
-      <ui-button variant="ghost" iconLeft="play" (click)="howItWorks.open()">
-        {{ 'howItWorks.emptyLink' | transloco }}
-      </ui-button>
-      } } @else {
-      <ui-button variant="primary" (click)="showAll()">
-        {{ filters.emptyKey() + '.action' | transloco }}
-      </ui-button>
-      }
-    </ui-empty-state>
-    } @else if (feed.showLinks()) { @for (batch of feed.batches(); track batch) { @if
-    (filters.view() === UI_VIEW.List) {
-    <ul
-      class="library__rows library__list"
-      cdkDropList
-      cdkDropListSortingDisabled
-      [cdkDropListDisabled]="compact()"
-      [class.library__list--reveal]="feed.reveal()"
-      [class.library__list--stale]="feed.stale()"
-      [attr.aria-busy]="feed.stale() ? 'true' : null"
-      [attr.inert]="feed.stale() ? '' : null"
-      [attr.aria-label]="'library.list.label' | transloco"
-    >
-      @for (link of feed.shownLinks(); track link.id) {
-      <li
-        class="library__item"
-        cdkDrag
-        [cdkDragData]="link"
-        [attr.data-link-id]="link.id"
-        [cdkDragDisabled]="compact()"
-        [cdkDragStartDelay]="dnd.DRAG_START_DELAY"
-        [class.library__item--carried]="drag.dragging() && drag.carriedIds().has(link.id)"
-        [style.view-transition-name]="feed.morphing() ? 'link-' + link.id : null"
-        [class.library__landed]="store.landed()[link.id] !== undefined"
-        [style.--ui-land-delay]="feed.landDelay(link.id)"
-        (pointerdown)="drag.grab($event)"
-        (cdkDragStarted)="dnd.started(link)"
-        (cdkDragMoved)="dnd.moved($event)"
-        (cdkDragEnded)="dnd.ended()"
-      >
-        <app-drag-slot
-          *cdkDragPlaceholder
-          class="library__drag-slot"
-          [title]="link.title"
-          [compact]="true"
-        />
-        @if (drag.dragging() && drag.carriedIds().has(link.id)) {
-        <app-drag-slot class="library__carried-slot" [title]="link.title" [compact]="true" />
-        }
-        <ng-template cdkDragPreview matchSize>
-          <div class="library__drag-preview" aria-hidden="true">
-            @if (dnd.deckDepth(link) > 1) {
-            <span class="library__drag-stack library__drag-stack--far"></span>
-            } @if (dnd.deckDepth(link) > 0) {
-            <span class="library__drag-stack library__drag-stack--near"></span>
-            }
-            <app-link-row [link]="link" />
-            <span class="library__drag-badge"
-              >{{ dnd.dragLabelKey(link) | transloco: { count: dnd.dragCount(link) } }}</span
-            >
-          </div>
-        </ng-template>
-        <app-link-row
-          [link]="link"
-          [pinnable]="filters.isFolder()"
-          [selecting]="selection.selecting()"
-          [selected]="selection.has(link.id)"
-          (selectToggled)="selection.toggleSelected(link, $event)"
-          [pinnedToSidebar]="pins.has(PIN_KIND.Link, link.id)"
-          (pinToTopToggled)="actions.togglePinInFolder(link)"
-          (pinToSidebarToggled)="actions.togglePinToSidebar(link)"
-          (opened)="actions.open(link)"
-          (openRequested)="actions.openFromMenu(link)"
-          (favoriteToggled)="actions.toggleFavorite(link)"
-          (editRequested)="actions.edit(link)"
-          (moveRequested)="actions.move(link)"
-          (deleteRequested)="actions.delete(link)"
-        />
-      </li>
-      }
-    </ul>
-    } @else {
-    <ul
-      class="library__grid library__list"
-      cdkDropList
-      cdkDropListSortingDisabled
-      [cdkDropListDisabled]="compact()"
-      [class.library__list--reveal]="feed.reveal()"
-      [class.library__list--stale]="feed.stale()"
-      [attr.aria-busy]="feed.stale() ? 'true' : null"
-      [attr.inert]="feed.stale() ? '' : null"
-      [attr.aria-label]="'library.list.label' | transloco"
-    >
-      @for (link of feed.shownLinks(); track link.id) {
-      <li
-        class="library__item"
-        cdkDrag
-        [cdkDragData]="link"
-        [attr.data-link-id]="link.id"
-        [cdkDragDisabled]="compact()"
-        [cdkDragStartDelay]="dnd.DRAG_START_DELAY"
-        [class.library__item--carried]="drag.dragging() && drag.carriedIds().has(link.id)"
-        [style.view-transition-name]="feed.morphing() ? 'link-' + link.id : null"
-        [class.library__landed]="store.landed()[link.id] !== undefined"
-        [style.--ui-land-delay]="feed.landDelay(link.id)"
-        (pointerdown)="drag.grab($event)"
-        (cdkDragStarted)="dnd.started(link)"
-        (cdkDragMoved)="dnd.moved($event)"
-        (cdkDragEnded)="dnd.ended()"
-      >
-        <app-drag-slot *cdkDragPlaceholder class="library__drag-slot" [title]="link.title" />
-        @if (drag.dragging() && drag.carriedIds().has(link.id)) {
-        <app-drag-slot class="library__carried-slot" [title]="link.title" />
-        }
-        <ng-template cdkDragPreview matchSize>
-          <div class="library__drag-preview" aria-hidden="true">
-            @if (dnd.deckDepth(link) > 1) {
-            <span class="library__drag-stack library__drag-stack--far"></span>
-            } @if (dnd.deckDepth(link) > 0) {
-            <span class="library__drag-stack library__drag-stack--near"></span>
-            }
-            <app-link-card [link]="link" [readOnly]="true" />
-            <span class="library__drag-badge"
-              >{{ dnd.dragLabelKey(link) | transloco: { count: dnd.dragCount(link) } }}</span
-            >
-          </div>
-        </ng-template>
-        <app-link-card
-          [link]="link"
-          [pinnable]="filters.isFolder()"
-          [selecting]="selection.selecting()"
-          [selected]="selection.has(link.id)"
-          (selectToggled)="selection.toggleSelected(link, $event)"
-          [pinnedToSidebar]="pins.has(PIN_KIND.Link, link.id)"
-          (pinToTopToggled)="actions.togglePinInFolder(link)"
-          (pinToSidebarToggled)="actions.togglePinToSidebar(link)"
-          (opened)="actions.open(link)"
-          (openRequested)="actions.openFromMenu(link)"
-          (favoriteToggled)="actions.toggleFavorite(link)"
-          (editRequested)="actions.edit(link)"
-          (moveRequested)="actions.move(link)"
-          (deleteRequested)="actions.delete(link)"
-        />
-      </li>
-      }
-    </ul>
-    } }
-
-    <ui-load-more [loading]="store.loadingMore()" [text]="'library.loadingMore' | transloco" />
-    @if (store.hasMore() && !feed.stale()) {
+  <div class="library__split" [class.library__split--open]="splitView.open()">
     <div
-      class="library__more"
-      appInView
-      [appInViewRecheck]="store.count()"
-      (entered)="store.loadMore()"
+      class="library__half"
+      [class.library__half--target]="splitView.open() && dnd.dropsOn(splitView.leftDropValue())"
+      [attr.aria-label]="splitView.open() ? ('library.split.leftRegion' | transloco: { name: splitView.leftLabel() }) : null"
+      [attr.role]="splitView.open() ? 'region' : null"
+      [attr.data-link-drop-folder]="splitView.open() ? splitView.leftDropValue() : null"
     >
-      @if (store.loadMoreFailed()) {
-      <p class="library__more-error">{{ 'library.loadMoreFailed' | transloco }}</p>
-      }
-      <ui-button [disabled]="store.loadingMore()" (click)="store.loadMore()">
-        {{ 'library.loadMore' | transloco }}
-      </ui-button>
+      @if (splitView.open() && dnd.dropsOn(splitView.leftDropValue())) {
+      <ui-badge class="library__here" tone="accent" aria-hidden="true"
+        >{{ 'links.drag.moveHere' | transloco }}</ui-badge
+      >
+      } @if (!filters.folderMissing()) {
+      <header class="library__toolbar">
+        <div class="library__heading" [class.library__heading--split]="splitView.open()">
+          <!-- prettier-ignore -->
+          <h1 class="library__title" [class.library__title--hidden]="splitView.open()">{{ filters.folder()?.name ?? (filters.titleKey() | transloco) }}</h1>
+          @if (splitView.open()) {
+          <ui-picker-menu
+            [options]="splitView.leftOptions()"
+            [value]="splitView.leftValue()"
+            [label]="splitView.leftLabel()"
+            [icon]="splitView.leftTile().icon"
+            [colour]="splitView.leftTile().colour ?? 'graphite'"
+            [emptyLabel]="'library.scope.unsorted' | transloco"
+            [currentIds]="splitView.leftCurrentIds()"
+            [currentLabel]="'library.split.onRight' | transloco"
+            [searchLabel]="'library.split.leftMenu.search' | transloco"
+            [listLabel]="'library.split.leftMenu.label' | transloco"
+            [noResultsLabel]="'library.split.leftMenu.noResults' | transloco"
+            [triggerLabel]="'library.split.leftTrigger' | transloco: { name: splitView.leftLabel() }"
+            (chosen)="splitView.chooseLeft($event)"
+          />
+          }
+          <!-- Always there (empty while the list loads) so the title block keeps its height. -->
+          <p class="library__count">
+            @if (feed.skeletonVisible() && !feed.showLinks()) {
+            <span class="library__count-skeleton" aria-hidden="true">
+              <ui-skeleton [shape]="SKELETON_SHAPE.Line" />
+            </span>
+            } @if (feed.showLinks()) { @if (feed.subfolders().length > 0) { {{
+            'library.countWithFolders' | transloco : { links: (pluralKey(feed.shownHasMore() ?
+            'library.countMore' : 'library.count', feed.shownCount()) | transloco: { count:
+            feed.shownCount() }), folders: (pluralKey('library.subfolders.folders',
+            feed.subfolders().length) | transloco: { count: feed.subfolders().length }) } }} } @else
+            { {{ pluralKey(feed.shownHasMore() ? 'library.countMore' : 'library.count',
+            feed.shownCount()) | transloco: { count: feed.shownCount() } }} } }
+          </p>
+        </div>
+        @if (phone()) {
+        <div class="library__tools">
+          <ui-button
+            [uiMenuTrigger]="viewMenu"
+            variant="secondary"
+            iconLeft="settings"
+            iconRight="chevron-down"
+            [iconSize]="ICON_SIZE.Sm"
+          >
+            {{ 'library.viewMenu.button' | transloco }}
+          </ui-button>
+          <ui-menu #viewMenu align="end" [ariaLabel]="'library.viewMenu.label' | transloco">
+            @if (feed.showControls() && feed.viewOptions(); as options) {
+            <ui-menu-label>{{ 'library.viewMenu.sortBy' | transloco }}</ui-menu-label>
+            @for (option of SORT_OPTIONS; track option) {
+            <ui-menu-item
+              type="radio"
+              [selected]="option === filters.feedSort()"
+              (activated)="filters.setSort(option)"
+            >
+              {{ SORT_OPTION_KEYS[option] | transloco }}
+            </ui-menu-item>
+            }
+            <ui-menu-separator />
+            <ui-menu-label>{{ 'library.view.label' | transloco }}</ui-menu-label>
+            @for (option of options; track option.value) {
+            <ui-menu-item
+              type="radio"
+              [icon]="option.icon"
+              [selected]="option.value === filters.view()"
+              (activated)="feed.setView(option.value)"
+            >
+              {{ option.label }}
+            </ui-menu-item>
+            }
+            <ui-menu-separator />
+            }
+            <ui-menu-label>{{ 'export.menu' | transloco }}</ui-menu-label>
+            @if (filters.viewScope()) {
+            <ui-menu-item icon="code" (activated)="exportView(EXPORT_FORMAT.Json)">
+              {{ 'export.view.json' | transloco }}
+            </ui-menu-item>
+            <ui-menu-item icon="globe" (activated)="exportView(EXPORT_FORMAT.Html)">
+              {{ 'export.view.html' | transloco }}
+            </ui-menu-item>
+            <ui-menu-separator />
+            }
+            <ui-menu-item icon="code" (activated)="exportAll(EXPORT_FORMAT.Json)">
+              {{ 'export.all.json' | transloco }}
+            </ui-menu-item>
+            <ui-menu-item icon="globe" (activated)="exportAll(EXPORT_FORMAT.Html)">
+              {{ 'export.all.html' | transloco }}
+            </ui-menu-item>
+          </ui-menu>
+        </div>
+        } @else {
+        <div class="library__tools">
+          @if (feed.showControls() && feed.viewOptions(); as options) {
+          <div class="library__controls">
+            <ui-button
+              [uiMenuTrigger]="sortMenu"
+              variant="ghost"
+              iconRight="chevron-down"
+              [iconSize]="ICON_SIZE.Sm"
+              [ariaLabel]="'library.sort.label' | transloco: { sort: SORT_OPTION_KEYS[filters.feedSort()] | transloco }"
+            >
+              {{ SORT_OPTION_KEYS[filters.feedSort()] | transloco }}
+            </ui-button>
+            <ui-menu #sortMenu align="end" [ariaLabel]="'library.sort.menu' | transloco">
+              @for (option of SORT_OPTIONS; track option) {
+              <ui-menu-item
+                type="radio"
+                [selected]="option === filters.feedSort()"
+                (activated)="filters.setSort(option)"
+              >
+                {{ SORT_OPTION_KEYS[option] | transloco }}
+              </ui-menu-item>
+              }
+            </ui-menu>
+            <ui-segmented-control
+              iconOnly
+              [options]="options"
+              [value]="filters.view()"
+              [ariaLabel]="'library.view.label' | transloco"
+              (valueChange)="feed.setView($event)"
+            />
+          </div>
+          }
+          <ui-button
+            [uiMenuTrigger]="exportMenu"
+            variant="secondary"
+            iconLeft="download"
+            iconRight="chevron-down"
+            [ariaLabel]="'export.menu' | transloco"
+          >
+            {{ 'export.menu' | transloco }}
+          </ui-button>
+          <ui-menu #exportMenu align="end" [ariaLabel]="'export.menu' | transloco">
+            @if (filters.viewScope()) {
+            <ui-menu-item icon="code" (activated)="exportView(EXPORT_FORMAT.Json)">
+              {{ 'export.view.json' | transloco }}
+            </ui-menu-item>
+            <ui-menu-item icon="globe" (activated)="exportView(EXPORT_FORMAT.Html)">
+              {{ 'export.view.html' | transloco }}
+            </ui-menu-item>
+            <ui-menu-separator />
+            }
+            <ui-menu-item icon="code" (activated)="exportAll(EXPORT_FORMAT.Json)">
+              {{ 'export.all.json' | transloco }}
+            </ui-menu-item>
+            <ui-menu-item icon="globe" (activated)="exportAll(EXPORT_FORMAT.Html)">
+              {{ 'export.all.html' | transloco }}
+            </ui-menu-item>
+          </ui-menu>
+          @if (wide() && !splitView.open()) {
+          <ui-button
+            variant="ghost"
+            iconOnly
+            iconLeft="columns"
+            [ariaLabel]="'library.split.open' | transloco"
+            (click)="splitView.openSplit()"
+          />
+          }
+        </div>
+        }
+      </header>
+      @if (!feed.emptyLibrary()) {
+      <app-saved-view-chips class="library__views" [filter]="filters.filter()" />
+      } @if (filters.filtered()) {
+      <div
+        class="library__filter"
+        role="group"
+        [attr.aria-label]="'library.filter.label' | transloco"
+      >
+        @if (filters.searching()) {
+        <ui-chip
+          variant="neutral"
+          icon="search"
+          removable
+          [removeLabel]="'library.search.remove' | transloco: { query: filters.query() }"
+          (removed)="filters.clearSearch()"
+        >
+          {{ 'library.search.chip' | transloco: { query: filters.query() } }}
+        </ui-chip>
+        } @if (filters.linkKind(); as kind) {
+        <ui-chip
+          variant="neutral"
+          removable
+          [removeLabel]="'library.kind.remove' | transloco: { kind: ('links.kind.' + kind | transloco) }"
+          (removed)="filters.clearKind()"
+        >
+          {{ 'links.kind.' + kind | transloco }}
+        </ui-chip>
+        } @for (name of filters.tags(); track name) {
+        <ui-chip
+          removable
+          [removeLabel]="'tags.filter.remove' | transloco: { name: name }"
+          (removed)="filters.removeTag(name)"
+        >
+          {{ name }}
+        </ui-chip>
+        }
+        <ui-button variant="ghost" size="sm" (click)="filters.clearAll()">
+          {{ 'tags.filter.clear' | transloco }}
+        </ui-button>
+      </div>
+      } }
+      <div appLibraryHotkeys appToastArea class="library__scroll" tabindex="-1">
+        @if (store.error() && store.count() > 0 && !filters.folderMissing()) {
+        <ui-notice kind="danger" class="library__notice">
+          {{ 'library.refetchFailed' | transloco }}
+          <ui-button size="sm" (click)="retry()">{{ 'library.error.retry' | transloco }}</ui-button>
+        </ui-notice>
+        } @if (feed.subfolders().length > 0) {
+        <ul
+          class="library__folders"
+          [class.library__folders--rows]="filters.view() === UI_VIEW.List"
+          [class.library__folders--stale]="feed.stale()"
+          [attr.inert]="feed.stale() ? '' : null"
+          [attr.aria-label]="'library.subfolders.label' | transloco"
+        >
+          @for (item of feed.subfolders(); track item.folder.id) {
+          <li>
+            <app-folder-tile
+              [folder]="item.folder"
+              [childCount]="item.childCount"
+              [row]="filters.view() === UI_VIEW.List"
+              [dropTarget]="drag.folderTargetId() === item.folder.id"
+            />
+          </li>
+          }
+        </ul>
+        } @if (filters.folderMissing()) {
+        <ui-empty-state
+          layout="page"
+          illustration="not-found"
+          [heading]="'library.folderNotFound.title' | transloco"
+          [text]="'library.folderNotFound.text' | transloco"
+        >
+          <ui-button variant="primary" (click)="showAll()">
+            {{ 'library.folderNotFound.action' | transloco }}
+          </ui-button>
+        </ui-empty-state>
+        } @else if (feed.failed()) {
+        <ui-empty-state
+          layout="page"
+          illustration="offline"
+          [heading]="'library.error.title' | transloco"
+          [text]="'library.error.text' | transloco"
+        >
+          <ui-button variant="primary" (click)="retry()">
+            {{ 'library.error.retry' | transloco }}
+          </ui-button>
+        </ui-empty-state>
+        } @else if (feed.skeletonVisible()) { @if (filters.view() === UI_VIEW.List) {
+        <div class="library__rows">
+          <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="SKELETON_COUNT" />
+        </div>
+        } @else {
+        <div class="library__grid">
+          <ui-skeleton [shape]="SKELETON_SHAPE.Card" [count]="SKELETON_COUNT" />
+        </div>
+        } } @else if (feed.empty() && filters.searching()) {
+        <ui-empty-state
+          layout="page"
+          illustration="not-found"
+          [heading]="'library.emptySearch.title' | transloco: { query: filters.query() }"
+          [text]="'library.emptySearch.text' | transloco"
+        >
+          <ui-button (click)="filters.clearSearch()"
+            >{{ 'library.emptySearch.clear' | transloco }}</ui-button
+          >
+          @if (scope() !== LINKS_SCOPE.All) {
+          <ui-button (click)="filters.searchEverywhere()">
+            {{ 'library.emptySearch.all' | transloco }}
+          </ui-button>
+          }
+        </ui-empty-state>
+        } @else if (feed.empty() && filters.filtered()) {
+        <ui-empty-state
+          layout="page"
+          illustration="empty-filter"
+          [heading]="filters.filteredEmptyKey() + '.title' | transloco: { name: filters.activeView()?.name ?? '' }"
+          [text]="filters.filteredEmptyKey() + '.text' | transloco"
+        >
+          <ui-button variant="primary" (click)="filters.clearFilters()">
+            {{ filters.filteredEmptyKey() + '.clear' | transloco }}
+          </ui-button>
+        </ui-empty-state>
+        } @else if (feed.empty()) {
+        <ui-empty-state
+          layout="page"
+          [illustration]="emptyIllustration()"
+          [heading]="filters.emptyKey() + '.title' | transloco"
+          [text]="filters.emptyKey() + '.text' | transloco"
+        >
+          @if (filters.isFolder()) {
+          <ui-button (click)="openUnsorted()"
+            >{{ 'library.emptyFolder.unsorted' | transloco }}</ui-button
+          >
+          } @if (filters.canAddLink()) {
+          <ui-button
+            variant="primary"
+            iconLeft="add"
+            (click)="actions.addLink(filters.addLinkData())"
+          >
+            {{ filters.emptyKey() + '.action' | transloco }}
+          </ui-button>
+          @if (scope() === LINKS_SCOPE.All) {
+          <ui-button variant="ghost" iconLeft="play" (click)="howItWorks.open()">
+            {{ 'howItWorks.emptyLink' | transloco }}
+          </ui-button>
+          } } @else {
+          <ui-button variant="primary" (click)="showAll()">
+            {{ filters.emptyKey() + '.action' | transloco }}
+          </ui-button>
+          }
+        </ui-empty-state>
+        } @else if (feed.showLinks()) { @for (batch of feed.batches(); track batch) { @if
+        (filters.view() === UI_VIEW.List) {
+        <ul
+          class="library__rows library__list"
+          cdkDropList
+          cdkDropListSortingDisabled
+          [cdkDropListDisabled]="compact()"
+          [class.library__list--reveal]="feed.reveal()"
+          [class.library__list--stale]="feed.stale()"
+          [attr.aria-busy]="feed.stale() ? 'true' : null"
+          [attr.inert]="feed.stale() ? '' : null"
+          [attr.aria-label]="'library.list.label' | transloco"
+        >
+          @for (link of feed.shownLinks(); track link.id) {
+          <li
+            class="library__item"
+            cdkDrag
+            [cdkDragData]="link"
+            [attr.data-link-id]="link.id"
+            [cdkDragDisabled]="compact()"
+            [cdkDragStartDelay]="dnd.DRAG_START_DELAY"
+            [class.library__item--carried]="drag.dragging() && drag.carriedIds().has(link.id)"
+            [style.view-transition-name]="feed.morphing() ? 'link-' + link.id : null"
+            [class.library__landed]="store.landed()[link.id] !== undefined"
+            [style.--ui-land-delay]="feed.landDelay(link.id)"
+            (pointerdown)="drag.grab($event)"
+            (cdkDragStarted)="dnd.started(link)"
+            (cdkDragMoved)="dnd.moved($event)"
+            (cdkDragEnded)="dnd.ended()"
+          >
+            <app-drag-slot
+              *cdkDragPlaceholder
+              class="library__drag-slot"
+              [title]="link.title"
+              [compact]="true"
+            />
+            @if (drag.dragging() && drag.carriedIds().has(link.id)) {
+            <app-drag-slot class="library__carried-slot" [title]="link.title" [compact]="true" />
+            }
+            <ng-template cdkDragPreview matchSize>
+              <div class="library__drag-preview" aria-hidden="true">
+                @if (dnd.deckDepth(link) > 1) {
+                <span class="library__drag-stack library__drag-stack--far"></span>
+                } @if (dnd.deckDepth(link) > 0) {
+                <span class="library__drag-stack library__drag-stack--near"></span>
+                }
+                <app-link-row [link]="link" />
+                <span class="library__drag-badge"
+                  >{{ dnd.dragLabelKey(link) | transloco: { count: dnd.dragCount(link) } }}</span
+                >
+              </div>
+            </ng-template>
+            <app-link-row
+              [link]="link"
+              [pinnable]="filters.isFolder()"
+              [selecting]="selection.selecting()"
+              [selected]="selection.has(link.id)"
+              (selectToggled)="selection.toggleSelected(link, $event)"
+              [pinnedToSidebar]="pins.has(PIN_KIND.Link, link.id)"
+              (pinToTopToggled)="actions.togglePinInFolder(link)"
+              (pinToSidebarToggled)="actions.togglePinToSidebar(link)"
+              (opened)="actions.open(link)"
+              (openRequested)="actions.openFromMenu(link)"
+              (favoriteToggled)="actions.toggleFavorite(link)"
+              (editRequested)="actions.edit(link)"
+              (moveRequested)="actions.move(link)"
+              (deleteRequested)="actions.delete(link)"
+            />
+          </li>
+          }
+        </ul>
+        } @else {
+        <ul
+          class="library__grid library__list"
+          cdkDropList
+          cdkDropListSortingDisabled
+          [cdkDropListDisabled]="compact()"
+          [class.library__list--reveal]="feed.reveal()"
+          [class.library__list--stale]="feed.stale()"
+          [attr.aria-busy]="feed.stale() ? 'true' : null"
+          [attr.inert]="feed.stale() ? '' : null"
+          [attr.aria-label]="'library.list.label' | transloco"
+        >
+          @for (link of feed.shownLinks(); track link.id) {
+          <li
+            class="library__item"
+            cdkDrag
+            [cdkDragData]="link"
+            [attr.data-link-id]="link.id"
+            [cdkDragDisabled]="compact()"
+            [cdkDragStartDelay]="dnd.DRAG_START_DELAY"
+            [class.library__item--carried]="drag.dragging() && drag.carriedIds().has(link.id)"
+            [style.view-transition-name]="feed.morphing() ? 'link-' + link.id : null"
+            [class.library__landed]="store.landed()[link.id] !== undefined"
+            [style.--ui-land-delay]="feed.landDelay(link.id)"
+            (pointerdown)="drag.grab($event)"
+            (cdkDragStarted)="dnd.started(link)"
+            (cdkDragMoved)="dnd.moved($event)"
+            (cdkDragEnded)="dnd.ended()"
+          >
+            <app-drag-slot *cdkDragPlaceholder class="library__drag-slot" [title]="link.title" />
+            @if (drag.dragging() && drag.carriedIds().has(link.id)) {
+            <app-drag-slot class="library__carried-slot" [title]="link.title" />
+            }
+            <ng-template cdkDragPreview matchSize>
+              <div class="library__drag-preview" aria-hidden="true">
+                @if (dnd.deckDepth(link) > 1) {
+                <span class="library__drag-stack library__drag-stack--far"></span>
+                } @if (dnd.deckDepth(link) > 0) {
+                <span class="library__drag-stack library__drag-stack--near"></span>
+                }
+                <app-link-card [link]="link" [readOnly]="true" />
+                <span class="library__drag-badge"
+                  >{{ dnd.dragLabelKey(link) | transloco: { count: dnd.dragCount(link) } }}</span
+                >
+              </div>
+            </ng-template>
+            <app-link-card
+              [link]="link"
+              [pinnable]="filters.isFolder()"
+              [selecting]="selection.selecting()"
+              [selected]="selection.has(link.id)"
+              (selectToggled)="selection.toggleSelected(link, $event)"
+              [pinnedToSidebar]="pins.has(PIN_KIND.Link, link.id)"
+              (pinToTopToggled)="actions.togglePinInFolder(link)"
+              (pinToSidebarToggled)="actions.togglePinToSidebar(link)"
+              (opened)="actions.open(link)"
+              (openRequested)="actions.openFromMenu(link)"
+              (favoriteToggled)="actions.toggleFavorite(link)"
+              (editRequested)="actions.edit(link)"
+              (moveRequested)="actions.move(link)"
+              (deleteRequested)="actions.delete(link)"
+            />
+          </li>
+          }
+        </ul>
+        } }
+
+        <ui-load-more [loading]="store.loadingMore()" [text]="'library.loadingMore' | transloco" />
+        @if (store.hasMore() && !feed.stale()) {
+        <div
+          class="library__more"
+          appInView
+          [appInViewRecheck]="store.count()"
+          (entered)="store.loadMore()"
+        >
+          @if (store.loadMoreFailed()) {
+          <p class="library__more-error">{{ 'library.loadMoreFailed' | transloco }}</p>
+          }
+          <ui-button [disabled]="store.loadingMore()" (click)="store.loadMore()">
+            {{ 'library.loadMore' | transloco }}
+          </ui-button>
+        </div>
+        } } @if (selection.selecting() && !splitView.open()) {
+        <ng-container *ngTemplateOutlet="bulkBar" />
+        }
+      </div>
     </div>
-    } } @if (selection.selecting()) {
+    @if (splitView.open()) {
+    <div class="library__divider" [attr.aria-hidden]="splitView.canSwap() ? null : 'true'">
+      @if (splitView.canSwap()) {
+      <ui-button
+        class="library__swap"
+        variant="ghost"
+        size="sm"
+        iconOnly
+        iconLeft="swap"
+        [ariaLabel]="'library.split.swap' | transloco"
+        (click)="splitView.swap()"
+      />
+      }
+    </div>
+    <app-split-right-half />
+    }
+  </div>
+  @if (selection.selecting() && splitView.open()) {
+  <div class="library__bulk-split"><ng-container *ngTemplateOutlet="bulkBar" /></div>
+  }
+  <ng-template #bulkBar>
     <ui-bulk-bar
       class="library__bulk"
       appToastAbove=".ui-bulk-bar__bar"
@@ -506,6 +578,5 @@
       [layout]="compact() ? BULK_BAR_LAYOUT.Stacked : BULK_BAR_LAYOUT.Inline"
       (action)="bulk.run($event)"
     />
-    }
-  </div>
+  </ng-template>
 </section>
