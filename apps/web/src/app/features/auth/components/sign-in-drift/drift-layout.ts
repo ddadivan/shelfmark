@@ -94,12 +94,14 @@ export function driftBoxesFit(a: SignInDriftBox, b: SignInDriftBox): boolean {
  * candidate farthest from the cards already there, so the lane fills evenly without a grid look;
  * far cards end up in the gaps. Spots are shares of the reference frame, so the real lane can be
  * any size (see `SignInDriftFrame`). Cards may hang over the outer edge, the top and the bottom,
- * never over the inner edge next to the sign-in card.
+ * never over the inner edge next to the sign-in card. `size` shrinks every card (and its float)
+ * for a small frame, like the strip of the phone sign-in; the overlap rules keep their meaning.
  */
 export function layoutDriftLane(
   layers: readonly SignInDriftLayer[],
   frame: SignInDriftFrame,
   seed: number,
+  size = 1,
 ): SignInDriftPlacement[] {
   const random = seededRandom(seed);
   const between = ([min, max]: readonly [number, number]): number => min + (max - min) * random();
@@ -112,7 +114,7 @@ export function layoutDriftLane(
   const boxes = new Array<SignInDriftBox>(layers.length);
 
   for (const { layer, index } of order) {
-    const scale = round(between(LAYER_SCALE[layer]));
+    const scale = round(between(LAYER_SCALE[layer]) * size);
     const tilt = 2 + random() * 5;
     const rotate = Math.round((index % 2 === 0 ? -tilt : tilt) * 10) / 10;
     const { w, h } = outline(scale, rotate);
@@ -159,8 +161,8 @@ export function layoutDriftLane(
       wave: 0,
       duration: round(duration),
       delay: round(-duration * random()),
-      ampY: round(between(LAYER_AMP[layer])),
-      ampX: round((random() * 2 - 1) * 10),
+      ampY: round(between(LAYER_AMP[layer]) * size),
+      ampX: round((random() * 2 - 1) * 10 * size),
       spin: round((random() < 0.5 ? -1 : 1) * (1.2 + random() * 1.6)),
     };
   }

@@ -104,7 +104,7 @@ describe('SignInPage', () => {
     );
   });
 
-  it('shows fourteen decorative, inert drifting cards on a desktop and no mosaic band', async () => {
+  it('shows fourteen decorative, inert drifting cards on a desktop and no phone strip', async () => {
     const { harness } = await setup();
     await harness.navigateByUrl('/sign-in');
     const root = harness.routeNativeElement as HTMLElement;
@@ -115,15 +115,24 @@ describe('SignInPage', () => {
     expect(drift?.querySelectorAll('.sd-card')).toHaveLength(14);
     expect(drift?.textContent).toContain('Signal Forms in 20 minutes');
     expect(root.querySelector('.sign-in__art')).toBeNull();
+    expect(root.querySelector('app-sign-in-phone-cards')).toBeNull();
   });
 
-  it('shows the mosaic band instead of the drifting cards below 64em', async () => {
+  it('shows the strip of small cards instead of the drifting ones below 64em, before the panel', async () => {
     const { harness } = await setup(undefined, undefined, false);
     await harness.navigateByUrl('/sign-in');
     const root = harness.routeNativeElement as HTMLElement;
 
     expect(root.querySelector('.sign-in__art')?.getAttribute('aria-hidden')).toBe('true');
     expect(root.querySelector('app-sign-in-drift')).toBeNull();
+    const strip = root.querySelector('app-sign-in-phone-cards');
+    expect(strip?.hasAttribute('inert')).toBe(true);
+    expect(strip?.querySelectorAll('.pc-card')).toHaveLength(6);
+    // Decorative and first in the DOM: the panel (and its buttons) is the first thing to focus.
+    expect(root.querySelector('.sign-in__panel')).not.toBeNull();
+    expect(strip?.compareDocumentPosition(root.querySelector('.sign-in__panel') as Node)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
     // The "or" divider is a desktop card detail: not rendered on a phone.
     expect(root.querySelector('.sign-in__or')).toBeNull();
   });
