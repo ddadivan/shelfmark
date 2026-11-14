@@ -98,6 +98,35 @@ describe('BulkBarComponent', () => {
     expect(host.querySelector('.ui-bulk-bar__divider')).toBeNull();
   });
 
+  it('draws a secondary action as a surface button and a folder tile in place of the icon', () => {
+    const { buttons, update } = setup();
+    expect(buttons()[0]?.classList.contains('ui-bulk-bar__action--secondary')).toBe(false);
+    update((c) =>
+      c.actions.set([
+        {
+          id: 'move-to',
+          label: 'Move to Clothes',
+          variant: 'secondary',
+          folder: { colour: 'rose', icon: 'shirt' },
+        },
+        { id: 'plain', label: 'Plain', folder: {} },
+        { id: 'bare', label: 'Bare' },
+        { id: 'tags', label: 'Tags', icon: 'tag', variant: 'default' },
+      ]),
+    );
+    const [moveTo, plain, bare, tags] = buttons();
+    expect(moveTo?.classList.contains('ui-bulk-bar__action--secondary')).toBe(true);
+    expect(moveTo?.querySelector(':scope > ui-icon')).toBeNull();
+    expect(moveTo?.querySelector('ui-folder-icon')?.classList).toContain('ui-folder-icon--rose');
+    expect(moveTo?.querySelector('ui-folder-icon')?.getAttribute('aria-hidden')).toBe('true');
+    expect(moveTo?.textContent).toContain('Move to Clothes');
+    expect(plain?.querySelector('ui-folder-icon')?.classList).toContain('ui-folder-icon--graphite');
+    expect(plain?.classList.contains('ui-bulk-bar__action--secondary')).toBe(false);
+    expect(bare?.querySelector(':scope > ui-icon, ui-folder-icon')).toBeNull();
+    expect(tags?.querySelector(':scope > ui-icon')).not.toBeNull();
+    expect(tags?.classList.contains('ui-bulk-bar__action--secondary')).toBe(false);
+  });
+
   it('is one tab stop; arrows, Home and End move between the actions', async () => {
     const { buttons, fixture } = setup();
     document.body.appendChild(fixture.nativeElement as HTMLElement);
@@ -131,6 +160,7 @@ describe('BulkBarComponent', () => {
     expect(css).toContain('var(--glass)');
     const hoverBlocks = mediaBlocks(css, /\(hover: ?hover\)/).join('\n');
     expect(hoverBlocks).toContain('background: var(--surface-hover)');
+    expect(css).toMatch(/ui-bulk-bar__action--secondary[^}]*var\(--surface\)/);
     const coarseBlocks = mediaBlocks(css, /\(pointer: ?coarse\)/).join('\n');
     expect(coarseBlocks).toContain('min-block-size: 2.75rem');
     expect(css).toContain('ui-toast-in');
