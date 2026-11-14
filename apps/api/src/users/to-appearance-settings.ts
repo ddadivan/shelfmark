@@ -4,6 +4,7 @@ import {
   isAppFont,
   isCardPreview,
   isDensity,
+  isFolderHighlight,
   isTextSize,
   type LayoutSettings,
   MOTION_PREFERENCE,
@@ -50,6 +51,9 @@ export function toAppearanceSettings(
     cardSite: row.cardSite,
     cardNotes: row.cardNotes,
     cardTags: row.cardTags,
+    folderHighlight: isFolderHighlight(row.folderHighlight)
+      ? row.folderHighlight
+      : d.folderHighlight,
   };
 }
 

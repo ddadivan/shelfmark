@@ -9,6 +9,13 @@
         </span>
       </div>
 
+      <ui-input
+        [label]="'folders.style.description.label' | transloco"
+        [hint]="'folders.style.description.hint' | transloco: { max: DESCRIPTION_MAX }"
+        [placeholder]="'folders.style.description.placeholder' | transloco"
+        [formField]="form.description"
+      />
+
       <div class="folder-style__group">
         <span class="folder-style__label" id="folder-style-colour">{{
           'folders.style.colour' | transloco
@@ -123,6 +130,14 @@
           }
         </div>
       </div>
+
+      <app-folder-cover-picker
+        [folderId]="data.folder.id"
+        [current]="currentCover"
+        [value]="coverValue()"
+        (valueChange)="chooseCover($event)"
+        [(image)]="coverImage"
+      />
     </div>
 
     <ui-button slot="footer" class="folder-style__reset" variant="ghost" (click)="reset()">{{

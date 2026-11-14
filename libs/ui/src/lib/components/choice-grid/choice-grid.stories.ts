@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { FOLDER_COLOUR } from '../folder-icon/models/folder-colour.const';
 import { THEME, THEME_ATTRIBUTE } from '../../models/theme';
+import { CARD_STORY_IMAGE } from '../card/stories/card-story-image.const';
 import { ChoiceGridComponent } from './choice-grid.component';
 import { CHOICE_GRID_KIND } from './models/choice-grid-kind.const';
 import type { ChoiceOption } from './models/choice-option.interface';
@@ -20,6 +21,14 @@ const ICONS: ChoiceOption[] = [
   { value: 'tag', label: 'Tag', icon: 'tag' },
   { value: 'inbox', label: 'Inbox', icon: 'inbox' },
   { value: 'image', label: 'Image', icon: 'image' },
+];
+
+/** Pictures (#418, the folder cover): "None" with a glyph, two previews, one that fails to load. */
+const IMAGES: ChoiceOption[] = [
+  { value: '', label: 'No cover', icon: 'close' },
+  { value: 'a', label: 'Cover from “Roast chicken”', image: CARD_STORY_IMAGE.Preview },
+  { value: 'b', label: 'Cover from “Lemon tart”', image: CARD_STORY_IMAGE.Preview },
+  { value: 'c', label: 'Cover from “Broken page”', image: CARD_STORY_IMAGE.Broken },
 ];
 
 const meta: Meta<ChoiceGridComponent> = {
@@ -71,6 +80,11 @@ export const Icons: Story = {
   args: { options: ICONS, kind: CHOICE_GRID_KIND.Icon, ariaLabel: 'Icon', value: 'star' },
 };
 
+/** 16:9 picture thumbnails (#418): an option without a picture, or whose picture fails, shows its glyph. */
+export const Images: Story = {
+  args: { options: IMAGES, kind: CHOICE_GRID_KIND.Image, ariaLabel: 'Cover', value: 'a' },
+};
+
 /** Own colors can be removed: a "×" on hover and focus (always on touch), Delete or Backspace on the focused swatch. */
 export const RemovableOwnColours: Story = {
   args: {
@@ -94,16 +108,17 @@ export const RemovableOwnColours: Story = {
   },
 };
 
-/** Both kinds in light and dark. */
+/** Every kind in light and dark. */
 export const AllVariants: Story = {
   render: () => ({
-    props: { themes: Object.values(THEME), swatches: SWATCHES, icons: ICONS },
+    props: { themes: Object.values(THEME), swatches: SWATCHES, icons: ICONS, images: IMAGES },
     template: `
       <div class="ds-themes">
         @for (theme of themes; track theme) {
           <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane" style="display: grid; gap: 1rem">
             <ui-choice-grid [options]="swatches" ariaLabel="Color" value="plum" />
             <ui-choice-grid [options]="icons" kind="icon" colour="teal" ariaLabel="Icon" value="tag" />
+            <ui-choice-grid [options]="images" kind="image" ariaLabel="Cover" value="b" />
           </div>
         }
       </div>`,

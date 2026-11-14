@@ -1,6 +1,7 @@
 import type { AppFont } from './app-font.type';
 import type { CardPreview } from './card-preview.type';
 import type { Density } from './density.type';
+import type { FolderHighlight } from './folder-highlight.type';
 import type { TextSize } from './text-size.type';
 
 /**
@@ -22,4 +23,6 @@ export interface LayoutSettings {
   cardNotes: boolean;
   /** Tag chips at the bottom of the card. Default on. */
   cardTags: boolean;
+  /** How coloured folders show in the sidebar (#418). Default `stripe`. */
+  folderHighlight: FolderHighlight;
 }

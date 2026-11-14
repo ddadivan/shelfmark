@@ -21,6 +21,7 @@ describe('toAppearanceSettings', () => {
         cardSite: false,
         cardNotes: false,
         cardTags: true,
+        folderHighlight: 'background',
       }),
     ).toEqual({
       theme: 'custom',
@@ -36,6 +37,7 @@ describe('toAppearanceSettings', () => {
       cardSite: false,
       cardNotes: false,
       cardTags: true,
+      folderHighlight: 'background',
     });
   });
 
@@ -58,6 +60,7 @@ describe('toAppearanceSettings', () => {
         cardSite: true,
         cardNotes: true,
         cardTags: true,
+        folderHighlight: 'rainbow',
       }),
     ).toEqual({
       theme: 'system',

@@ -1,0 +1,20 @@
+<div class="cover-picker">
+  <span class="cover-picker__label" id="folder-style-cover">{{
+    'folders.style.cover.label' | transloco
+  }}</span>
+  @if (options().length > 0) {
+    <p class="cover-picker__hint">{{ 'folders.style.cover.hint' | transloco }}</p>
+    <ui-choice-grid
+      kind="image"
+      name="folder-style-cover"
+      ariaLabelledby="folder-style-cover"
+      [columns]="3"
+      [options]="options()"
+      [(value)]="value"
+    />
+  } @else if (loading()) {
+    <ui-spinner [label]="'folders.style.cover.loading' | transloco" />
+  } @else {
+    <p class="cover-picker__hint">{{ 'folders.style.cover.empty' | transloco }}</p>
+  }
+</div>

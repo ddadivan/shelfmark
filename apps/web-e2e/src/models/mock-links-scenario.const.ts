@@ -5,4 +5,5 @@ export const MOCK_LINKS_SCENARIO = {
   empty: 'empty',
   error: 'error',
   pendingImages: 'pending-images',
+  previews: 'previews',
 } as const;

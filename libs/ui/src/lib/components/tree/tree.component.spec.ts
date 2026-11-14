@@ -905,4 +905,49 @@ describe('TreeComponent', () => {
       expect(root.querySelector('ui-button')).toBeNull();
     });
   });
+
+  describe('description (#418)', () => {
+    it('describes a folder row through its tooltip and leaves the others alone', async () => {
+      const { fixture, host, item } = await setup();
+
+      host.nodes.set(
+        TREE_STORY_NESTED.map((node) =>
+          node.id === TREE_STORY_ID.Recipes ? { ...node, description: 'Weeknight food' } : node,
+        ),
+      );
+      await settle(fixture);
+
+      expect(item(TREE_STORY_NAME.Recipes).getAttribute('aria-description')).toBe('Weeknight food');
+      expect(item(TREE_STORY_NAME.Work).hasAttribute('aria-description')).toBe(false);
+      expect(item(TREE_STORY_NAME.Favorites).hasAttribute('aria-description')).toBe(false);
+    });
+  });
+
+  describe('folder colour highlight (#418)', () => {
+    it('marks coloured folder rows only, with their colour as custom properties', async () => {
+      const { fixture, host, item } = await setup();
+
+      host.nodes.set(
+        TREE_STORY_NESTED.map((node) =>
+          node.id === TREE_STORY_ID.Recipes ? { ...node, colour: 'rose' } : node,
+        ),
+      );
+      await settle(fixture);
+
+      const recipes = item(TREE_STORY_NAME.Recipes);
+      expect(recipes.hasAttribute('data-ui-folder-colour')).toBe(true);
+      expect(recipes.style.getPropertyValue('--ui-folder-ink')).toBe('var(--folder-rose)');
+      expect(item(TREE_STORY_NAME.Work).hasAttribute('data-ui-folder-colour')).toBe(false);
+      expect(item(TREE_STORY_NAME.Favorites).hasAttribute('data-ui-folder-colour')).toBe(false);
+    });
+
+    it('draws a stripe by default and a tint for the background setting', () => {
+      const css = compileScss('lib/components/tree/tree.component.scss');
+      expect(css).toMatch(/\.ui-tree__row--folder\[data-ui-folder-colour\]::before/);
+      expect(css).toContain(':host-context([data-folder-highlight=off])');
+      expect(css).toMatch(
+        /:host-context\(\[data-folder-highlight=background\]\) \.ui-tree__row--folder\[data-ui-folder-colour\]\s*\{[^}]*color-mix\(in srgb, var\(--ui-folder-tint\) 55%/,
+      );
+    });
+  });
 });

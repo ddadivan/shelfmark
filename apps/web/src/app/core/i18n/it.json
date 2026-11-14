@@ -292,7 +292,8 @@
       }
     },
     "card": {
-      "moreTags": "+{{count}}"
+      "moreTags": "+{{count}}",
+      "inFolder": "Nella cartella"
     },
     "item": {
       "edit": "Modifica",
@@ -967,7 +968,23 @@
         "undo": "Annulla"
       },
       "iconsShowAll": "Mostra tutte le icone ({{count}})",
-      "iconsShowFewer": "Mostra meno"
+      "iconsShowFewer": "Mostra meno",
+      "description": {
+        "label": "Descrizione",
+        "hint": "Facoltativa, fino a {{max}} caratteri. Appare sotto il nome della cartella.",
+        "placeholder": "Cosa c’è in questa cartella?",
+        "tooLong": "Massimo {{max}} caratteri.",
+        "invalid": "Usa testo semplice su una riga."
+      },
+      "cover": {
+        "label": "Copertina",
+        "hint": "Un’immagine di anteprima di un link di questa cartella, dietro l’intestazione.",
+        "none": "Nessuna copertina",
+        "option": "Copertina da «{{title}}»",
+        "current": "Copertina attuale",
+        "empty": "I link di questa cartella con un’immagine di anteprima possono farle da copertina.",
+        "loading": "Caricamento immagini"
+      }
     }
   },
   "library": {
@@ -1358,6 +1375,13 @@
         "colours": {
           "label": "Colori delle cartelle",
           "hint": "Disattivato mostra ogni cartella in grafite"
+        },
+        "highlight": {
+          "label": "Evidenzia le cartelle con il loro colore",
+          "hint": "Come appare una cartella colorata nella barra laterale, più marcata quando è aperta",
+          "off": "No",
+          "stripe": "Striscia",
+          "background": "Sfondo"
         }
       },
       "motion": {

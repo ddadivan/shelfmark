@@ -292,7 +292,8 @@
       }
     },
     "card": {
-      "moreTags": "+{{count}}"
+      "moreTags": "+{{count}}",
+      "inFolder": "Dans le dossier"
     },
     "item": {
       "edit": "Modifier",
@@ -967,7 +968,23 @@
         "undo": "Annuler"
       },
       "iconsShowAll": "Afficher toutes les icônes ({{count}})",
-      "iconsShowFewer": "Afficher moins"
+      "iconsShowFewer": "Afficher moins",
+      "description": {
+        "label": "Description",
+        "hint": "Facultatif, {{max}} caractères maximum. Affichée sous le nom du dossier.",
+        "placeholder": "Que contient ce dossier ?",
+        "tooLong": "{{max}} caractères maximum.",
+        "invalid": "Utilisez du texte simple sur une ligne."
+      },
+      "cover": {
+        "label": "Couverture",
+        "hint": "Une image d’aperçu d’un lien de ce dossier, derrière l’en-tête du dossier.",
+        "none": "Pas de couverture",
+        "option": "Couverture de « {{title}} »",
+        "current": "Couverture actuelle",
+        "empty": "Les liens de ce dossier avec une image d’aperçu peuvent servir de couverture.",
+        "loading": "Chargement des images"
+      }
     }
   },
   "library": {
@@ -1358,6 +1375,13 @@
         "colours": {
           "label": "Couleurs des dossiers",
           "hint": "Désactivé, tous les dossiers sont en graphite"
+        },
+        "highlight": {
+          "label": "Mettre en valeur les dossiers par leur couleur",
+          "hint": "Comment un dossier coloré apparaît dans la barre latérale, plus marqué quand il est ouvert",
+          "off": "Non",
+          "stripe": "Bande",
+          "background": "Fond"
         }
       },
       "motion": {

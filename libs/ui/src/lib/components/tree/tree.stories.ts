@@ -10,6 +10,7 @@ import { TREE_STORY_FIXED } from './stories/tree-story-fixed.const';
 import { TREE_STORY_FLAT } from './stories/tree-story-flat.const';
 import { TREE_STORY_LONG } from './stories/tree-story-long.const';
 import { TREE_STORY_NESTED } from './stories/tree-story-nested.const';
+import { TREE_STORY_COLOURED } from './stories/tree-story-coloured.const';
 import {
   reorderDropLine,
   setReorderDropLine,
@@ -204,6 +205,37 @@ export const ReorderLine: Story = {
       .join('')}`,
   }),
   play: async ({ canvasElement }) => drawReorderLines(canvasElement),
+};
+
+/**
+ * Coloured folders (#418) in the three sidebar highlight modes (`html[data-folder-highlight]`, set
+ * here on a wrapper): stripe (default), a soft background tint, off. The current row (Angular) is
+ * stronger; graphite rows stay plain. Recipes has a description (its tooltip). Both themes.
+ */
+export const FolderColours: Story = {
+  parameters: { layout: 'fullscreen' },
+  render: () => ({
+    props: { nodes: TREE_STORY_COLOURED, ids: TREE_STORY_ID },
+    template: `${Object.values(THEME)
+      .map(
+        (theme) => `
+          <div ${THEME_ATTRIBUTE}="${theme}" class="ts-panel ts-panel--variants">
+            <p class="ts-hint">${theme} theme: stripe, background, off</p>
+            <div class="ts-row">
+              ${['stripe', 'background', 'off']
+                .map(
+                  (mode) => `
+                <div class="ts-sidebar" data-folder-highlight="${mode}">
+                  <ui-tree ariaLabel="Folders, ${mode} (${theme})" heading="Folders"
+                    menuLabel="Actions for {name}" [nodes]="nodes" [activeId]="ids.Angular" />
+                </div>`,
+                )
+                .join('')}
+            </div>
+          </div>`,
+      )
+      .join('')}`,
+  }),
 };
 
 const variants = (theme: Theme) => `

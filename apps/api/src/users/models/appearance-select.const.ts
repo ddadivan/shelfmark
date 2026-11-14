@@ -16,4 +16,5 @@ export const APPEARANCE_SELECT = {
   cardSite: true,
   cardNotes: true,
   cardTags: true,
+  folderHighlight: true,
 } as const;

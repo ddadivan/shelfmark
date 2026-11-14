@@ -292,7 +292,8 @@
       }
     },
     "card": {
-      "moreTags": "+{{count}}"
+      "moreTags": "+{{count}}",
+      "inFolder": "En la carpeta"
     },
     "item": {
       "edit": "Editar",
@@ -967,7 +968,23 @@
         "undo": "Deshacer"
       },
       "iconsShowAll": "Mostrar todos los iconos ({{count}})",
-      "iconsShowFewer": "Mostrar menos"
+      "iconsShowFewer": "Mostrar menos",
+      "description": {
+        "label": "Descripción",
+        "hint": "Opcional, hasta {{max}} caracteres. Se muestra bajo el nombre de la carpeta.",
+        "placeholder": "¿Qué hay en esta carpeta?",
+        "tooLong": "Máximo {{max}} caracteres.",
+        "invalid": "Usa texto sencillo en una sola línea."
+      },
+      "cover": {
+        "label": "Portada",
+        "hint": "Una imagen de vista previa de un enlace de esta carpeta, tras el encabezado.",
+        "none": "Sin portada",
+        "option": "Portada de «{{title}}»",
+        "current": "Portada actual",
+        "empty": "Los enlaces de esta carpeta con imagen de vista previa pueden ser su portada.",
+        "loading": "Cargando imágenes"
+      }
     }
   },
   "library": {
@@ -1358,6 +1375,13 @@
         "colours": {
           "label": "Colores de carpeta",
           "hint": "Desactivado muestra todas las carpetas en grafito"
+        },
+        "highlight": {
+          "label": "Resaltar las carpetas con su color",
+          "hint": "Cómo se ve una carpeta con color en la barra lateral, más marcada si está abierta",
+          "off": "No",
+          "stripe": "Franja",
+          "background": "Fondo"
         }
       },
       "motion": {

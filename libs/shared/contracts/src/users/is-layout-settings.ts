@@ -4,11 +4,13 @@ import { CARD_PREVIEW } from './card-preview.const';
 import type { CardPreview } from './card-preview.type';
 import { DENSITY } from './density.const';
 import type { Density } from './density.type';
+import { FOLDER_HIGHLIGHT } from './folder-highlight.const';
+import type { FolderHighlight } from './folder-highlight.type';
 import type { LayoutSettings } from './layout-settings.interface';
 import { TEXT_SIZE } from './text-size.const';
 import type { TextSize } from './text-size.type';
 
-const LAYOUT_KEYS = 'cardNotes,cardPreview,cardSite,cardTags,density,font,textSize';
+const LAYOUT_KEYS = 'cardNotes,cardPreview,cardSite,cardTags,density,folderHighlight,font,textSize';
 
 function isOneOf<T extends string>(values: readonly T[], value: unknown): value is T {
   return typeof value === 'string' && (values as readonly string[]).includes(value);
@@ -30,6 +32,10 @@ export function isCardPreview(value: unknown): value is CardPreview {
   return isOneOf(Object.values(CARD_PREVIEW), value);
 }
 
+export function isFolderHighlight(value: unknown): value is FolderHighlight {
+  return isOneOf(Object.values(FOLDER_HIGHLIGHT), value);
+}
+
 /** A whole, valid `LayoutSettings` with no other keys (what the web stores for the first paint). */
 export function isLayoutSettings(value: unknown): value is LayoutSettings {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
@@ -44,6 +50,7 @@ export function isLayoutSettings(value: unknown): value is LayoutSettings {
     isCardPreview(record['cardPreview']) &&
     typeof record['cardSite'] === 'boolean' &&
     typeof record['cardNotes'] === 'boolean' &&
-    typeof record['cardTags'] === 'boolean'
+    typeof record['cardTags'] === 'boolean' &&
+    isFolderHighlight(record['folderHighlight'])
   );
 }

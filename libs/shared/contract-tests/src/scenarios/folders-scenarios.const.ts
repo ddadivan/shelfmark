@@ -62,6 +62,80 @@ export const FOLDERS_SCENARIOS: readonly ContractScenario[] = [
     expectEqual(custom, expectedFolder('Books', { id: folder.id, colour: '#aa00ff', icon: '📚' }));
   }),
 
+  scenario('folders', 'saves, trims and removes a description (#418)', async ({ folders }) => {
+    const folder = await folders.create({ name: 'Recipes' });
+    const saved = await folders.update(folder.id, { description: '  Worth cooking twice ' });
+    expectEqual(
+      saved,
+      expectedFolder('Recipes', { id: folder.id, description: 'Worth cooking twice' }),
+    );
+    const { items } = await folders.list();
+    expectEqual(items[0]?.description, 'Worth cooking twice');
+    const blank = await folders.update(folder.id, { description: '  ' });
+    expectEqual(blank.description, null);
+    await folders.update(folder.id, { description: 'Again' });
+    expectEqual((await folders.update(folder.id, { description: null })).description, null);
+    await expectError(
+      folders.update(folder.id, { description: 'x'.repeat(FOLDER_LIMIT.DescriptionMax + 1) }),
+      { status: 400 },
+      'long description',
+    );
+    await expectError(
+      folders.update(folder.id, { description: 'line\nbreak' }),
+      { status: 400 },
+      'control character',
+    );
+  }),
+
+  scenario(
+    'folders',
+    'sets a link of the folder as its cover and drops it when the link leaves (#418)',
+    async ({ folders, links }) => {
+      const folder = await folders.create({ name: 'Recipes' });
+      const other = await folders.create({ name: 'Other' });
+      const link = await links.create({
+        url: 'https://a.example/',
+        title: 'Tart',
+        folderId: folder.id,
+      });
+      const outside = await links.create({ url: 'https://b.example/', title: 'B' });
+      const { imageUrl } = await links.get(link.id);
+
+      const saved = await folders.update(folder.id, { coverLinkId: link.id });
+      expectEqual(saved.coverLinkId, link.id);
+      expectEqual(saved.coverUrl, imageUrl);
+      expectEqual(
+        (await folders.list()).items.find((item) => item.id === folder.id)?.coverLinkId,
+        link.id,
+      );
+
+      const notFound = { status: 404, code: FOLDER_ERROR_MESSAGE.CoverNotFound };
+      await expectError(
+        folders.update(folder.id, { coverLinkId: outside.id }),
+        notFound,
+        'unsorted link',
+      );
+      await expectError(
+        folders.update(other.id, { coverLinkId: link.id }),
+        notFound,
+        'other folder',
+      );
+      await expectError(
+        folders.update(folder.id, { coverLinkId: MISSING_ID }),
+        notFound,
+        'missing link',
+      );
+
+      await links.update(link.id, { folderId: other.id });
+      const moved = (await folders.list()).items.find((item) => item.id === folder.id);
+      expectEqual([moved?.coverLinkId, moved?.coverUrl], [null, null]);
+
+      const cleared = await folders.update(other.id, { coverLinkId: link.id });
+      expectEqual(cleared.coverLinkId, link.id);
+      expectEqual((await folders.update(other.id, { coverLinkId: null })).coverUrl, null);
+    },
+  ),
+
   scenario('folders', 'moves a folder to the end of its new parent', async ({ folders }) => {
     const a = await folders.create({ name: 'A' });
     const b = await folders.create({ name: 'B' });

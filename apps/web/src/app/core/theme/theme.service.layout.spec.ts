@@ -3,6 +3,7 @@ import {
   APP_FONT,
   CARD_PREVIEW,
   DENSITY,
+  FOLDER_HIGHLIGHT,
   LAYOUT_SETTINGS_DEFAULT,
   TEXT_SIZE,
   type LayoutSettings,
@@ -19,6 +20,7 @@ const ALL: LayoutSettings = {
   cardSite: false,
   cardNotes: false,
   cardTags: false,
+  folderHighlight: FOLDER_HIGHLIGHT.Background,
 };
 
 function createService(): ThemeService {
@@ -44,7 +46,7 @@ describe('ThemeService text, layout and card options (#285)', () => {
   it('sets no layout attribute for the defaults', () => {
     const service = createService();
     expect(service.layout()).toEqual(LAYOUT_SETTINGS_DEFAULT);
-    expect(attributes()).toEqual([null, null, null, null, null, null, null]);
+    expect(attributes()).toEqual([null, null, null, null, null, null, null, null]);
   });
 
   it('writes every chosen option to <html> and removes it again for the default', () => {
@@ -59,6 +61,7 @@ describe('ThemeService text, layout and card options (#285)', () => {
       LAYOUT_OFF,
       LAYOUT_OFF,
       LAYOUT_OFF,
+      FOLDER_HIGHLIGHT.Background,
     ]);
 
     service.setLayout({ ...ALL, textSize: TEXT_SIZE.S, font: APP_FONT.System });
@@ -68,7 +71,7 @@ describe('ThemeService text, layout and card options (#285)', () => {
 
     service.setLayout(LAYOUT_SETTINGS_DEFAULT);
     TestBed.tick();
-    expect(attributes()).toEqual([null, null, null, null, null, null, null]);
+    expect(attributes()).toEqual([null, null, null, null, null, null, null, null]);
   });
 
   it('is part of the appearance and of apply()', () => {
@@ -105,6 +108,26 @@ describe('ThemeService text, layout and card options (#285)', () => {
       expect(service.layout()).toEqual(LAYOUT_SETTINGS_DEFAULT);
       expect(service.hasStoredAppearance()).toBe(false);
     }
+  });
+
+  it('keeps a layout stored before the folder highlight existed, with the default stripe (#418)', () => {
+    const older: Partial<LayoutSettings> = { ...ALL };
+    delete older.folderHighlight;
+    localStorage.setItem(LAYOUT_STORAGE_KEY, JSON.stringify(older));
+    const service = createService();
+    expect(service.layout()).toEqual({ ...ALL, folderHighlight: FOLDER_HIGHLIGHT.Stripe });
+    expect(document.documentElement.hasAttribute(LAYOUT_ATTRIBUTE.FolderHighlight)).toBe(false);
+    expect(service.hasStoredAppearance()).toBe(true);
+  });
+
+  it('sets the folder highlight attribute for off and background only (#418)', () => {
+    const service = createService();
+    service.setLayout({ ...LAYOUT_SETTINGS_DEFAULT, folderHighlight: FOLDER_HIGHLIGHT.Off });
+    TestBed.tick();
+    expect(document.documentElement.getAttribute(LAYOUT_ATTRIBUTE.FolderHighlight)).toBe('off');
+    service.setLayout({ ...LAYOUT_SETTINGS_DEFAULT, folderHighlight: FOLDER_HIGHLIGHT.Stripe });
+    TestBed.tick();
+    expect(document.documentElement.hasAttribute(LAYOUT_ATTRIBUTE.FolderHighlight)).toBe(false);
   });
 
   it('follows a layout changed in another tab', () => {
