@@ -7,6 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { AllowAnonymous, type AuthService } from '@thallesp/nestjs-better-auth';
 import type { AuthenticatedRequest } from '../common/auth/models/authenticated-request.interface';
+import type { UserActivityService } from '../users/user-activity.service';
 import type { SessionArgs } from './models/session-args.interface';
 import { SessionAuthGuard } from './session-auth.guard';
 
@@ -41,8 +42,10 @@ function setup(options: { isPublic?: boolean; getSession?: () => Promise<unknown
     getClass: () => 'class',
     switchToHttp: () => ({ getRequest: () => request }),
   } as unknown as ExecutionContext;
-  const guard = new SessionAuthGuard(reflector, authService);
-  return { guard, context, request, getSession, reflector };
+  const touch = vi.fn<(userId: string) => Promise<void>>(() => Promise.resolve());
+  const activity = { touch } as unknown as UserActivityService;
+  const guard = new SessionAuthGuard(reflector, authService, activity);
+  return { guard, context, request, getSession, reflector, touch };
 }
 
 describe('SessionAuthGuard', () => {
@@ -80,9 +83,11 @@ describe('SessionAuthGuard', () => {
       }
     }
     const getSession = vi.fn(() => Promise.resolve(null));
-    const guard = new SessionAuthGuard(new Reflector(), {
-      api: { getSession },
-    } as unknown as AuthService);
+    const guard = new SessionAuthGuard(
+      new Reflector(),
+      { api: { getSession } } as unknown as AuthService,
+      { touch: vi.fn() } as unknown as UserActivityService,
+    );
     const context = {
       getHandler: () => OpenClass.prototype.handler,
       getClass: () => OpenClass,
@@ -90,6 +95,39 @@ describe('SessionAuthGuard', () => {
     } as unknown as ExecutionContext;
     await expect(guard.canActivate(context)).rejects.toBeInstanceOf(UnauthorizedException);
     expect(getSession).toHaveBeenCalled();
+  });
+
+  it('records the day of activity for a resolved session without waiting for it', async () => {
+    const { guard, context, touch } = setup();
+    touch.mockReturnValue(new Promise<void>(() => undefined));
+    await expect(guard.canActivate(context)).resolves.toBe(true);
+    expect(touch).toHaveBeenCalledWith('u1');
+  });
+
+  it('records no activity on a public route, without a session or for a demo user', async () => {
+    const open = setup({ isPublic: true });
+    await open.guard.canActivate(open.context);
+    expect(open.touch).not.toHaveBeenCalled();
+
+    const none = setup({ getSession: () => Promise.resolve(null) });
+    await expect(none.guard.canActivate(none.context)).rejects.toBeInstanceOf(
+      UnauthorizedException,
+    );
+    expect(none.touch).not.toHaveBeenCalled();
+
+    const demo = setup({
+      getSession: () =>
+        Promise.resolve({
+          ...RAW_SESSION,
+          user: {
+            ...RAW_SESSION.user,
+            isDemo: true,
+            demoExpiresAt: new Date(Date.now() + 3_600_000),
+          },
+        }),
+    });
+    await expect(demo.guard.canActivate(demo.context)).resolves.toBe(true);
+    expect(demo.touch).not.toHaveBeenCalled();
   });
 
   it('reads the session read-only and from the request cookies', async () => {

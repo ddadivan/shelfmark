@@ -511,7 +511,7 @@
     "home": "Shelfmark, accueil",
     "newTab": "(s’ouvre dans un nouvel onglet)",
     "updated": "Dernière mise à jour : {{date}}",
-    "updatedDate": "13 novembre 2026",
+    "updatedDate": "15 novembre 2026",
     "intro": "Shelfmark est un projet personnel qui stocke les liens que vous enregistrez. Cette page explique ce que nous conservons et pourquoi, en termes simples.",
     "store": {
       "title": "Ce que nous stockons",
@@ -520,6 +520,7 @@
       "images": "Pour chaque lien, une petite copie de l’icône et de l’image d’aperçu du site, s’il en a. Notre serveur les télécharge et les stocke pour qu’elles se chargent depuis Shelfmark.",
       "feedback": "Vos réponses à l’évaluation dans l’application, liées à votre compte : une note de 1 à 10 et, si vous en écrivez un, un commentaire.",
       "stats": "Les chiffres de « Votre étagère » sur la page Compte (totaux, sites et tags les plus utilisés, liens par semaine) sont calculés à partir de vos propres données chaque fois que vous ouvrez la page. Ils ne sont ni stockés ni partagés.",
+      "usage": "Pour savoir comment Shelfmark est utilisé, nous enregistrons le jour où vous avez utilisé l’app pour la dernière fois : une date seulement, sans heure, page ni action. L’auteur ne voit que des totaux calculés sur l’ensemble des comptes, par exemple combien de personnes utilisent des dossiers ou des tags, ou quels thèmes sont populaires. Les groupes de moins de trois personnes ne sont pas affichés, et personne ne regarde un par un les liens, notes ou réglages de qui que ce soit. Ces totaux sont calculés à la demande et ne sont pas conservés. Quand vous supprimez votre compte, la date disparaît avec lui.",
       "sessions": "Pour chaque connexion : sa date d’expiration, ainsi que l’adresse IP et le navigateur (user agent) d’où elle a été ouverte, pour sécuriser les sessions.",
       "logs": "Notre API journalise la méthode, le chemin, le statut, la durée et un identifiant de requête, sans contenu de lien ni donnée personnelle. Notre hébergeur, Vercel, conserve ses propres journaux de requêtes standard, qui incluent les adresses IP, pendant une durée limitée."
     },
@@ -763,7 +764,8 @@
     },
     "sendFeedback": "Envoyer un avis",
     "feedbackInbox": "Boîte des avis",
-    "about": "À propos de Shelfmark"
+    "about": "À propos de Shelfmark",
+    "usageStats": "Statistiques d’usage"
   },
   "folders": {
     "dialog": {
@@ -1304,6 +1306,7 @@
           "invalid": "Saisissez # suivi de six chiffres ou lettres a–f, par exemple #2e6a99.",
           "hint": "Shelfmark garde un contraste de 4,5:1 : sur l’autre base, il utilise une nuance plus foncée ou plus claire de votre couleur.",
           "warning": "Cette couleur est difficile à lire sur votre fond ({{ratio}}:1, il faut 4,5:1).",
+          "adjusted": "Ajustée en {{colour}} pour rester lisible.",
           "use": "Utiliser {{colour}}",
           "saturation": "Saturation",
           "brightness": "Luminosité",
@@ -1318,7 +1321,8 @@
         "ownBackground": {
           "label": "Votre couleur d'arrière-plan",
           "hint": "Le texte doit rester lisible (4,5:1) : si besoin, Shelfmark utilise une teinte plus claire ou plus foncée de votre couleur.",
-          "warning": "Le texte est difficile à lire sur cet arrière-plan ({{ratio}}:1, il faut 4,5:1)."
+          "warning": "Le texte est difficile à lire sur cet arrière-plan ({{ratio}}:1, il faut 4,5:1).",
+          "adjusted": "Ajustée en {{colour}} pour que le texte reste lisible."
         }
       },
       "layout": {
@@ -2161,6 +2165,109 @@
       "saveFailed": {
         "title": "Enregistrement impossible",
         "detail": "Le message est revenu à son état précédent. Réessayez."
+      }
+    },
+    "nav": {
+      "label": "Pages d’administration",
+      "feedback": "Retours",
+      "stats": "Statistiques"
+    },
+    "stats": {
+      "title": "Statistiques d’usage",
+      "description": "Totaux sur les vrais comptes, calculés maintenant. Les comptes démo et admin sont exclus ; les groupes de moins de {{min}} personnes sont masqués.",
+      "updated": "Mis à jour à {{time}}",
+      "refreshing": "Actualisation…",
+      "refresh": "Actualiser",
+      "refreshFailed": "Impossible d’actualiser. Voici les derniers chiffres.",
+      "error": "Impossible de charger les statistiques.",
+      "retry": "Réessayer",
+      "loading": "Chargement des statistiques",
+      "tooFew": "Pas encore assez d’utilisateurs : les parts et les groupes apparaissent à partir de {{min}} vrais utilisateurs.",
+      "notEnough": "Pas encore assez d’utilisateurs",
+      "fewer": "Moins de {{min}}",
+      "smallGroup": "Masqué : un groupe de moins de {{min}}",
+      "shareOf": "{{percent}} · {{count}} sur {{base}}",
+      "countOf": "{{count}} sur {{base}}",
+      "shareCount": "{{percent}} · {{count}}",
+      "activitySince": "L’activité est enregistrée depuis le {{date}}. Les visites antérieures sont estimées à partir des liens enregistrés et des connexions : les chiffres d’activité et de retour qui remontent avant cette date peuvent être surestimés.",
+      "activityEstimated": "Les visites antérieures au suivi de l’activité sont estimées à partir des liens enregistrés et des connexions : les chiffres d’activité et de retour peuvent être surestimés.",
+      "overview": {
+        "title": "Vue d’ensemble"
+      },
+      "tiles": {
+        "realUsers": "Vrais utilisateurs",
+        "active7d": "Actifs ces 7 derniers jours",
+        "active30d": "Actifs ces 30 derniers jours",
+        "returnedWeek": "Revenus après une semaine",
+        "returnedMonth": "Revenus après un mois",
+        "onboarded": "Prise en main terminée",
+        "demo": "Démos en cours",
+        "demoHint": "Comptées nulle part ailleurs"
+      },
+      "signUps": {
+        "title": "Inscriptions",
+        "unit": "Afficher par",
+        "days": "Jours",
+        "weeks": "Semaines",
+        "chartDays": "Inscriptions, 30 derniers jours",
+        "chartWeeks": "Inscriptions, 12 dernières semaines",
+        "total": "{{count}} sur la période",
+        "day": "Jour",
+        "week": "Semaine du",
+        "count": "Inscriptions",
+        "dayBar": "{{date}} : {{count}}",
+        "weekBar": "Semaine du {{date}} : {{count}}"
+      },
+      "links": {
+        "title": "Liens par utilisateur",
+        "average": "Moyenne {{mean}} · médiane {{median}}",
+        "chart": "Vrais utilisateurs selon le nombre de liens enregistrés",
+        "bucket": "Liens",
+        "users": "Utilisateurs"
+      },
+      "features": {
+        "title": "Fonctionnalités",
+        "adoption": "Qui utilise quoi"
+      },
+      "feature": {
+        "folders": "Dossiers",
+        "nestedFolders": "Dossiers dans des dossiers",
+        "tags": "Tags",
+        "favorites": "Favoris",
+        "notes": "Notes",
+        "sidebarPins": "Épinglés dans la barre latérale",
+        "folderPins": "Épinglés dans un dossier",
+        "savedViews": "Vues enregistrées perso",
+        "trash": "Éléments dans la corbeille",
+        "publicCollections": "Collections publiques",
+        "ownColours": "Couleurs perso",
+        "ownEmoji": "Emoji perso",
+        "openedRecently": "Lien enregistré ouvert en 30 jours",
+        "historyPaused": "Historique en pause",
+        "previewsOff": "Aperçus désactivés"
+      },
+      "preferences": {
+        "title": "Préférences",
+        "theme": "Thème",
+        "language": "Langue",
+        "retention": "La corbeille garde les éléments"
+      },
+      "bucket": {
+        "other": "Autre",
+        "never": "Jamais choisi"
+      },
+      "ratings": {
+        "title": "Notes et messages",
+        "milestone": {
+          "day3": "Après 3 jours",
+          "week1": "Après une semaine",
+          "month1": "Après un mois",
+          "year1": "Après un an"
+        },
+        "answered": "{{answered}} réponses · {{skipped}} ignorées",
+        "summary": "Moyenne {{mean}} · médiane {{median}}",
+        "byKind": "Messages par type",
+        "byStatus": "Messages par statut"
       }
     }
   },

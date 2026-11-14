@@ -25,6 +25,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { SharesModule } from '../shares/shares.module';
 import { TagsModule } from '../tags/tags.module';
 import { TrashModule } from '../trash/trash.module';
+import { UserActivityService } from '../users/user-activity.service';
 import { UsersModule } from '../users/users.module';
 
 @Module({
@@ -57,6 +58,8 @@ import { UsersModule } from '../users/users.module';
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_GUARD, useFactory: () => new CsrfGuard(readAuthConfig().trustedOrigins) },
     { provide: APP_GUARD, useClass: SessionAuthGuard },
+    // Used by SessionAuthGuard to record the day of activity (ADR 0045).
+    UserActivityService,
     // The first interceptor is the outermost: logging sees the timeout's 504 as well.
     { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
     { provide: APP_INTERCEPTOR, useClass: TimeoutInterceptor },

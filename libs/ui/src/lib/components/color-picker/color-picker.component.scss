@@ -6,23 +6,33 @@
   display: contents;
 }
 
-// A 36px circle like the accent swatches of `ui-theme-picker` (44px on coarse pointers).
+// A 36px circle like the accent swatches of `ui-theme-picker` (44px on coarse pointers). Next to
+// taller drawings (the 56px background tiles, which carry a caption under them) the row sets
+// `--ui-color-picker-align-height` to their height and aligns its items to the start: the swatch
+// then sits centred on the drawings, not on drawing plus caption (#415).
 .ui-color-picker__swatch {
+  --ui-color-picker-size: #{rem(36px)};
+
+  // Centred on a taller neighbour: half the difference of the heights (0 by default).
+  --ui-color-picker-offset: calc(
+    var(--ui-color-picker-align-height, var(--ui-color-picker-size)) - var(--ui-color-picker-size)
+  );
+
   position: relative;
   display: grid;
   flex: none;
   place-items: center;
-  inline-size: rem(36px);
-  block-size: rem(36px);
+  inline-size: var(--ui-color-picker-size);
+  block-size: var(--ui-color-picker-size);
   padding: 0;
+  margin-block-start: calc(var(--ui-color-picker-offset) / 2);
   cursor: pointer;
   background: transparent;
   border: 0;
   border-radius: 50%;
 
   @include coarse {
-    inline-size: rem(44px);
-    block-size: rem(44px);
+    --ui-color-picker-size: #{rem(44px)};
   }
 
   &:focus-visible {
@@ -81,6 +91,9 @@
   display: grid;
   flex-basis: 100%;
   grid-template-rows: 1fr;
+
+  // A line of its own in a flex row (`flex-basis`) or a grid row (all columns).
+  grid-column: 1 / -1;
 
   &--enter {
     @include enter(disclose);

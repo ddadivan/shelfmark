@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import type { ContractApis } from '@shelfmark/contract-tests';
 import { AuthStore } from '../../core/auth/auth.store';
 import { MOCK_SESSION_STORAGE_KEY } from '../../core/auth/models/mock-session-storage-key.const';
+import { MockAdminApi } from '../../features/admin/mock/mock-admin.api';
 import { MockFeedbackApi } from '../../features/feedback/mock/mock-feedback.api';
 import { MockFoldersApi } from '../../features/links/mock/mock-folders.api';
 import { MockLibraryData } from '../../features/links/mock/mock-library-data';
@@ -56,8 +57,12 @@ export function createMockContractApis(): ContractApis {
   const shares = TestBed.inject(MockSharesApi);
   const feedback = TestBed.inject(MockFeedbackApi);
   const exporter = TestBed.inject(MockExportApi);
+  const admin = TestBed.inject(MockAdminApi);
 
   return {
+    admin: {
+      stats: () => settlePromise(admin.stats()),
+    },
     links: {
       create: (request) => settle(links.create(request)),
       list: (query) => settle(links.list(query)),

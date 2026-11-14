@@ -12,6 +12,7 @@ import { fromNodeHeaders } from 'better-auth/node';
 import { AUTH_METADATA_KEY } from '../common/auth/models/auth-metadata-key.const';
 import type { AuthenticatedRequest } from '../common/auth/models/authenticated-request.interface';
 import { isRecord } from '../common/util/is-record';
+import { UserActivityService } from '../users/user-activity.service';
 import { enforceDemoExpiry } from './enforce-demo-expiry';
 import { toAuthSessionResponse } from './to-auth-session-response';
 
@@ -43,6 +44,8 @@ function statusOf(error: unknown): number | undefined {
  *   sets the new cookie correctly.
  * - A demo user past `demoExpiresAt` (or without one) is a 401 (ADR 0034).
  * - The raw session (token, IP, user agent) never lands on the request: only the contract shape.
+ * - A resolved non-demo session records the day of activity (ADR 0045) without waiting for it;
+ *   that write can never fail or slow down the request.
  * - Better Auth 400/401/403 is a 401. A 429 is a 503, so a throttled lookup does not sign the user
  *   out. Anything else (a database outage, another status) is rethrown and the error filter answers
  *   with that status or a generic 500, because the web signs the user out on 401.
@@ -52,6 +55,7 @@ export class SessionAuthGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly authService: AuthService,
+    private readonly activity: UserActivityService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -80,6 +84,7 @@ export class SessionAuthGuard implements CanActivate {
     const auth = enforceDemoExpiry(toAuthSessionResponse(raw));
     if (!auth) throw noSession(request);
     request.auth = auth;
+    if (!auth.user.isDemo) void this.activity.touch(auth.user.id);
     return true;
   }
 }

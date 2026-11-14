@@ -76,4 +76,16 @@ describe('HttpAdminApi', () => {
 
     await expect(result).resolves.toEqual(saved);
   });
+
+  it('reads the stats with GET /api/admin/stats, without the error toast', async () => {
+    const { api, http } = setup();
+
+    const result = api.stats();
+    const request = http.expectOne('/api/admin/stats');
+    expect(request.request.method).toBe('GET');
+    expect(request.request.context.get(SKIP_ERROR_TOAST)).toBe(true);
+    request.flush({ minGroup: 3 });
+
+    await expect(result).resolves.toEqual({ minGroup: 3 });
+  });
 });

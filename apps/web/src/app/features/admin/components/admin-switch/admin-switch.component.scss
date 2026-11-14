@@ -1,0 +1,6 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+  max-inline-size: rem(320px);
+}
