@@ -152,7 +152,7 @@ jobs:
       # Replace the whole folder, so baselines of removed screens are deleted too.
       - name: Clear the old baselines
         run: rm -rf apps/web-e2e/visual/__screenshots__
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: visual-baselines
           path: apps/web-e2e/visual/__screenshots__
