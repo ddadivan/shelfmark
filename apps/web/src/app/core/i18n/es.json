@@ -172,30 +172,14 @@
       "copyright": "© 2026 Shelfmark",
       "privacy": "Privacidad",
       "github": "GitHub",
-      "language": "Idioma"
+      "language": "Idioma",
+      "changelog": "Novedades"
     },
     "newTab": "se abre en una pestaña nueva",
     "backToShelf": "Volver a mi estantería",
     "whatsNew": {
       "title": "Novedades",
-      "items": {
-        "trash": {
-          "title": "Papelera",
-          "text": "Los enlaces y carpetas eliminados esperan en la papelera, así nada desaparece por error. Elige cuánto tiempo se quedan en Ajustes."
-        },
-        "tabs": {
-          "title": "Tus pestañas van a la par",
-          "text": "Guarda, edita o elimina un enlace en una pestaña y todas las demás pestañas abiertas lo muestran."
-        },
-        "move": {
-          "title": "Mover a carpeta y arrastrar y soltar",
-          "text": "Mueve un enlace desde su menú o arrástralo a una carpeta de la barra lateral."
-        },
-        "refresh": {
-          "title": "Un aspecto renovado",
-          "text": "Esquinas más suaves, una barra de pestañas flotante en el móvil y avisos que dicen qué ha pasado."
-        }
-      }
+      "all": "Ver todos los cambios"
     }
   },
   "links": {
@@ -2490,5 +2474,102 @@
       "failedDetail": "Han vuelto a la lista",
       "undoFailed": "No se pudieron restaurar los enlaces"
     }
+  },
+  "changelog": {
+    "title": "Novedades",
+    "lead": "Todas las versiones de Shelfmark, de la más reciente a la más antigua.",
+    "current": "Usas Shelfmark {{version}}.",
+    "release": "Shelfmark {{version}}",
+    "home": "Shelfmark, inicio",
+    "items": {
+      "sideBySide": {
+        "title": "Lado a lado",
+        "text": "Abre dos listas una junto a otra y arrastra enlaces de una a la otra."
+      },
+      "folderStyle": {
+        "title": "Estilo de carpetas",
+        "text": "Elige el color, el icono o el emoji de una carpeta en un solo sitio."
+      },
+      "domainRules": {
+        "title": "Reglas por sitio",
+        "text": "Envía los enlaces de un sitio directamente a la carpeta que elijas."
+      },
+      "reminders": {
+        "title": "Recordatorios",
+        "text": "Pide a Shelfmark que te recuerde un enlace más tarde."
+      },
+      "colourPicker": {
+        "text": "Colores propios: el botón + está centrado y el color elegido se aplica al momento en un tono legible."
+      },
+      "phoneSignIn": {
+        "text": "Pequeñas tarjetas vuelan a la estantería mientras inicias sesión en el móvil."
+      },
+      "appSkeleton": {
+        "text": "Al iniciar sesión, la app toma forma enseguida en lugar de mostrar una pantalla negra."
+      },
+      "ukrainian": {
+        "text": "Shelfmark ya habla ucraniano. Elígelo en Ajustes › Idioma."
+      },
+      "noHttps": {
+        "text": "Un enlace escrito como ejemplo.com se guarda como cualquier otro."
+      },
+      "refresh": {
+        "title": "Un aspecto renovado",
+        "text": "Esquinas más suaves, colores más tranquilos, una barra de pestañas flotante en el móvil y avisos que dicen qué ha pasado."
+      },
+      "trash": {
+        "title": "Papelera",
+        "text": "Los enlaces y carpetas eliminados esperan en la papelera, así nada se pierde por error. Tú eliges cuánto tiempo."
+      },
+      "folders": {
+        "title": "Colores, iconos y carpetas fijadas",
+        "text": "Da a una carpeta un color y un icono o emoji, y fija en la barra lateral las que más usas."
+      },
+      "savedViews": {
+        "title": "Vistas guardadas",
+        "text": "Ten a un clic un filtro que usas a menudo, como vídeos o artículos por leer."
+      },
+      "sharing": {
+        "title": "Compartir una carpeta",
+        "text": "Convierte una carpeta en una página pública que cualquiera con el enlace puede abrir. Deja de compartir cuando quieras."
+      },
+      "pasteMany": {
+        "title": "Pegar muchos enlaces",
+        "text": "Pega una lista entera de enlaces y guárdalos de una vez."
+      },
+      "bulk": {
+        "title": "Seleccionar varios enlaces",
+        "text": "Mueve, etiqueta, marca como favoritos o elimina muchos enlaces a la vez."
+      },
+      "dragDrop": {
+        "title": "Arrastrar y soltar",
+        "text": "Arrastra un enlace a una carpeta de la barra lateral o reordena tus carpetas."
+      },
+      "theme": {
+        "title": "Tu propio tema",
+        "text": "Elige tu acento, fondo y esquinas, y cuánto se anima la app."
+      },
+      "languages": {
+        "title": "Seis idiomas",
+        "text": "Usa Shelfmark en inglés, francés, alemán, italiano, español o portugués."
+      },
+      "feedback": {
+        "title": "Enviar comentarios",
+        "text": "Cuéntanos qué funciona y qué no, con una captura si quieres, desde la propia app."
+      }
+    }
+  },
+  "whatsNew": {
+    "title": "Novedades de Shelfmark",
+    "lead": "Esto es lo que ha cambiado desde tu última visita.",
+    "seeAll": "Ver todos los cambios",
+    "close": "Entendido",
+    "entry": "Novedades",
+    "unseen": "nuevo"
+  },
+  "update": {
+    "available": "Hay una nueva versión de Shelfmark lista",
+    "reload": "Recargar",
+    "later": "Más tarde"
   }
 }
