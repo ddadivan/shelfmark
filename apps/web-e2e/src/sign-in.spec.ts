@@ -256,15 +256,116 @@ test.describe('sign-in flow (mock auth)', () => {
     expect(tx).toBe('');
   });
 
-  test('on a phone the mosaic sits above the form', { tag: E2E_TAG.Phone }, async ({ page }) => {
-    await page.setViewportSize({ width: 360, height: 780 });
-    await page.goto('/sign-in');
-    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  test(
+    'on a phone six small cards sit in the strip above the form, never over the panel',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await page.setViewportSize({ width: 360, height: 780 });
+      await page.goto('/sign-in');
+      await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+      await expect(page.locator('.pc-card')).toHaveCount(6);
+      await expect(page.locator('.sd-card')).toHaveCount(0);
+      await page.evaluate('document.fonts.ready.then(() => undefined)');
 
-    const art = await page.locator('.sign-in__art').boundingBox();
-    const panel = await page.locator('.sign-in__panel').boundingBox();
-    expect(art).not.toBeNull();
-    expect((art?.y ?? 0) + (art?.height ?? 0)).toBeLessThanOrEqual((panel?.y ?? 0) + 1);
-    await expect(page.locator('.sd-card')).toHaveCount(0);
-  });
+      const panel = await page.locator('.sign-in__panel').boundingBox();
+      if (!panel) {
+        throw new Error('the sign-in panel has no box');
+      }
+      const boxes = await page.locator('.pc-card .ui-card').evaluateAll((els) =>
+        els.map((el) => {
+          const r = el.getBoundingClientRect();
+          return { left: r.left, right: r.right, bottom: r.bottom };
+        }),
+      );
+      expect(boxes).toHaveLength(6);
+      for (const [i, box] of boxes.entries()) {
+        expect(box.bottom, `card ${i}`).toBeLessThanOrEqual(panel.y);
+        expect(box.right, `card ${i}`).toBeGreaterThan(0);
+        expect(box.left, `card ${i}`).toBeLessThan(360);
+      }
+    },
+  );
+
+  test(
+    'the buttons work at once while the cards fly in and the panel rises',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await page.setViewportSize({ width: 360, height: 780 });
+      await page.goto('/sign-in');
+      const github = page.getByRole('button', { name: GITHUB_BUTTON });
+      await expect(github).toBeVisible();
+
+      // The animation is running (cards on their way, panel not yet in place) ...
+      const running = await page.evaluate<number>(
+        "document.getAnimations().filter((a) => a instanceof CSSAnimation && a.animationName.endsWith('pc-fly') && a.playState === 'running').length",
+      );
+      expect(running).toBe(6);
+      // ... yet the button is the topmost element at its centre and nothing is inert or blocked.
+      const box = await github.boundingBox();
+      if (!box) {
+        throw new Error('the GitHub button has no box');
+      }
+      const x = box.x + box.width / 2;
+      const y = box.y + box.height / 2;
+      const hit = await page.evaluate<boolean>(
+        `document.elementFromPoint(${x}, ${y})?.closest('button')?.textContent?.includes('GitHub') ?? false`,
+      );
+      expect(hit).toBe(true);
+      await expect(page.locator('.sign-in__panel')).not.toHaveAttribute('inert');
+      expect(
+        await page.evaluate<string>(
+          "getComputedStyle(document.querySelector('.sign-in__panel')).pointerEvents",
+        ),
+      ).not.toBe('none');
+
+      // A tap does not wait for the animation to end.
+      await github.click();
+      await dismissOnboarding(page);
+      await expect(page).toHaveURL(/\/links$/);
+    },
+  );
+
+  test(
+    'with reduced motion the small cards sit still at the top: no fly-in, no drift, no panel slide',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await page.setViewportSize({ width: 360, height: 780 });
+      await page.goto('/sign-in');
+      await expect(page.locator('.pc-card')).toHaveCount(6);
+      await expect(page.locator('.pc-card .pc-fly').first()).toHaveCSS('opacity', /^(1|0\.\d+)$/);
+
+      const animations = await page.evaluate<number>(
+        'document.getAnimations().filter((a) => a instanceof CSSAnimation).length',
+      );
+      expect(animations).toBe(0);
+    },
+  );
+
+  test(
+    'the small cards drift after they have flown in, and the page never scrolls sideways at 360px',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await page.setViewportSize({ width: 360, height: 780 });
+      await page.goto('/sign-in');
+      await expect(page.locator('.pc-card')).toHaveCount(6);
+      await expect
+        .poll(() =>
+          page.evaluate<number>(
+            "document.getAnimations().filter((a) => a instanceof CSSAnimation && a.animationName.endsWith('pc-fly') && a.playState === 'running').length",
+          ),
+        )
+        .toBe(0);
+      const floating = await page.evaluate<number>(
+        "document.getAnimations().filter((a) => a instanceof CSSAnimation && a.animationName.endsWith('pc-float') && a.playState === 'running').length",
+      );
+      expect(floating).toBe(6);
+
+      const overflow = await page.evaluate<number>(
+        '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
+      );
+      expect(overflow).toBeLessThanOrEqual(0);
+    },
+  );
 });

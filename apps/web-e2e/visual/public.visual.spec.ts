@@ -17,8 +17,8 @@ test.describe('visual: public pages', () => {
       page.getByRole('heading', { level: 1, name: 'All your links on one shelf' }),
     ).toBeVisible();
 
-    // The art is an idle-loaded `@defer` block: the mosaic (tablet, phone) or the drift (desktop).
-    await expect(page.locator('app-sign-in-mosaic, app-sign-in-drift').first()).toBeAttached();
+    // The art: the small floating cards (tablet, phone) or the drift (desktop).
+    await expect(page.locator('app-sign-in-phone-cards, app-sign-in-drift').first()).toBeAttached();
 
     await expectScreen(page, 'sign-in');
   });
