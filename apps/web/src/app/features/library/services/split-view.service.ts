@@ -81,6 +81,8 @@ export class SplitViewService {
   readonly leftDropValue = computed(() => dropValue(leftDropTarget(this.filters.filter())));
   /** `data-link-drop-folder` of the right half: its folder id, `unsorted`, or `null` for the picker. */
   readonly rightDropValue = computed(() => dropValue(this.rightTarget()));
+  /** Where a link of the right half can go without dragging: the left folder (`null` Unsorted), `undefined` for another list. */
+  readonly leftTarget = computed(() => leftDropTarget(this.filters.filter()));
   /** The halves can trade places (the left one is a folder or Unsorted, the right one shows a target). */
   readonly canSwap = computed(
     () => this.open() && canSwap(this.filters.filter(), this.rightTarget()),

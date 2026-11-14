@@ -219,4 +219,26 @@ test.describe('side by side (mock API)', () => {
     await page.keyboard.press('Escape');
     await page.mouse.up();
   });
+
+  test('moves a right card to the left folder with its button, without dragging', async ({
+    page,
+  }) => {
+    test.skip(isCompact(page), 'side by side starts at 80em');
+    await seedSession(page);
+    await page.goto('/unsorted');
+    await expect(page.locator('ui-card').first()).toBeVisible();
+    await page.getByRole('button', { name: 'Side by side', exact: true }).click();
+    await page
+      .getByRole('region', { name: 'Right: choose a folder' })
+      .getByRole('option', { name: READING, exact: true })
+      .click();
+    const rightHalf = page.getByRole('region', { name: `Right: ${READING}` });
+    await expect(rightHalf.locator('ui-card').first()).toBeVisible();
+
+    const move = rightHalf.getByRole('button', { name: /^Move “.*” to Unsorted$/ }).first();
+    await move.focus();
+    await page.keyboard.press('Enter');
+
+    await expect(page.getByRole('status').filter({ hasText: 'Moved to Unsorted' })).toBeVisible();
+  });
 });

@@ -1141,7 +1141,8 @@
       "searchName": "Ricerca: {{query}}",
       "empty": {
         "text": "Trascina qui i link da sinistra."
-      }
+      },
+      "moveToLeft": "Sposta “{{title}}” in {{folder}}"
     }
   },
   "export": {

@@ -36,6 +36,7 @@ async function setup(...given: [SplitTarget?]) {
     show: vi.fn(),
     loadMore: vi.fn(),
   };
+  const actions = { open: vi.fn(), moveTo: vi.fn() };
   const split = {
     rightTarget,
     resolving: signal(false),
@@ -46,6 +47,8 @@ async function setup(...given: [SplitTarget?]) {
     rightOptions: () => [{ id: 'f1', name: 'Clothes' }],
     rightCurrentIds: () => [],
     rightRecent: () => [],
+    leftTarget: signal<string | null | undefined>('left-folder'),
+    leftLabel: () => 'Angular',
     takePickerFocus: () => false,
     close: vi.fn(() => Promise.resolve()),
     chooseRight: vi.fn(() => Promise.resolve()),
@@ -65,7 +68,7 @@ async function setup(...given: [SplitTarget?]) {
           dragCount: () => 1,
         },
       },
-      { provide: LinkActionsService, useValue: { open: vi.fn() } },
+      { provide: LinkActionsService, useValue: actions },
     ],
   });
   await loadEnglish();
@@ -73,10 +76,29 @@ async function setup(...given: [SplitTarget?]) {
   await fixture.whenStable();
   const element = fixture.nativeElement as HTMLElement;
   const loader = TestbedHarnessEnvironment.loader(fixture);
-  return { fixture, element, loader, feed, split, rightTarget, treeTarget, entities };
+  return { fixture, element, loader, feed, split, actions, rightTarget, treeTarget, entities };
 }
 
 describe('SplitRightHalfComponent', () => {
+  it('moves a card to the left folder with a button, not only by dragging', async () => {
+    const { loader, actions, split, fixture } = await setup();
+    const button = await loader.getHarness(
+      UiButtonHarness.with({ label: 'Move “Link 1” to Angular' }),
+    );
+
+    await button.click();
+    expect(actions.moveTo).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'id-1' }),
+      'left-folder',
+    );
+
+    split.leftTarget.set(undefined);
+    await fixture.whenStable();
+    expect(await loader.getAllHarnesses(UiButtonHarness.with({ label: /^Move “/ }))).toHaveLength(
+      0,
+    );
+  });
+
   it('asks for a folder while there is no target, with the close button', async () => {
     const { element, loader, split } = await setup(undefined);
 

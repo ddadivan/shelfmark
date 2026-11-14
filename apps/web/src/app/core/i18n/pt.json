@@ -1141,7 +1141,8 @@
       "searchName": "Busca: {{query}}",
       "empty": {
         "text": "Arraste links para cá a partir da esquerda."
-      }
+      },
+      "moveToLeft": "Mover “{{title}}” para {{folder}}"
     }
   },
   "export": {

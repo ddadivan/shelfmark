@@ -137,6 +137,21 @@
                 </div>
               </ng-template>
               <app-link-card [link]="link" [readOnly]="true" (opened)="actions.open(link)" />
+              @if (split.leftTarget() !== undefined) {
+                <!-- Not only by dragging (WCAG 2.5.7): the same move as the drop, for keyboard and touch. -->
+                <ui-button
+                  class="split-right__move"
+                  variant="secondary"
+                  size="sm"
+                  iconOnly
+                  iconLeft="folder-move"
+                  [ariaLabel]="
+                    'library.split.moveToLeft'
+                      | transloco: { title: link.title, folder: split.leftLabel() }
+                  "
+                  (click)="actions.moveTo(link, split.leftTarget() ?? null)"
+                />
+              }
             </li>
           }
         </ul>

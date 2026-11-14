@@ -131,8 +131,16 @@
 }
 
 .split-right__item {
+  position: relative;
   display: flex;
   flex-direction: column;
+
+  // The button that moves the card to the left half without dragging: on hover and focus, always
+  // on touch screens.
+  &:hover .split-right__move,
+  &:focus-within .split-right__move {
+    opacity: 1;
+  }
 
   &.cdk-drag-animating {
     transition: transform var(--duration-base) var(--ease-out);
@@ -173,4 +181,21 @@
   gap: var(--space-2);
   align-items: center;
   margin-block-start: var(--space-6);
+}
+
+.split-right__move {
+  position: absolute;
+  inset-block-start: var(--space-3);
+  inset-inline-end: var(--space-3);
+  z-index: 3;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+
+  @include reduced-motion {
+    transition: none;
+  }
+
+  @media (hover: none) {
+    opacity: 1;
+  }
 }
