@@ -13,6 +13,11 @@ export interface UiTreeNode {
   readonly colour?: FolderColour | string;
   /** Number shown on the right. */
   readonly count?: number;
+  /**
+   * A small accent dot after the name: something new waits behind the row ("What's new" until it
+   * is opened). The string is its accessible name ("new"), read with the row's name.
+   */
+  readonly dot?: string;
   /** Starts expanded (folders with children only). Later changes by the user are kept. */
   readonly expanded?: boolean;
   readonly children?: readonly UiTreeNode[];

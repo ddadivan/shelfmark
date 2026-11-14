@@ -8,4 +8,7 @@ export interface ChangelogVideo {
   readonly src: string;
   /** Path from the site root of the poster frame (`.webp`), shown before playing and under reduced motion. */
   readonly poster: string;
+  /** Intrinsic size of the clip and its poster, so the card keeps its layout. */
+  readonly width: number;
+  readonly height: number;
 }

@@ -69,6 +69,11 @@
           <ui-icon class="ui-tree__icon" [name]="node.icon" [size]="ICON_SIZE.Md" />
         }
         <span class="ui-tree__name" [id]="item.id() + '-name'">{{ node.name }}</span>
+        @if (node.dot) {
+          <span class="ui-tree__dot" [id]="item.id() + '-dot'"
+            ><span class="ui-tree__dot-label">&ngsp;{{ node.dot }}</span></span
+          >
+        }
         @if (dropTargetId() === node.id && dropLabel()) {
           <span class="ui-tree__drop-badge" [id]="item.id() + '-drop'"
             >&ngsp;{{ dropLabel() }}</span

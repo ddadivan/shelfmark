@@ -9,6 +9,7 @@ import { FEEDBACK_API } from '../../models/feedback-api.const';
 import type { FeedbackApi } from '../../models/feedback-api.interface';
 import { FEEDBACK_SEND_ERROR_REASON } from '../../models/feedback-send-error-reason.const';
 import { SendFeedbackDialogComponent } from './send-feedback-dialog.component';
+import { APP_VERSION } from '../../../../models/app-version.const';
 
 async function setup(
   send: FeedbackApi['send'] = () => Promise.resolve(feedbackMessage()),
@@ -172,7 +173,7 @@ describe('SendFeedbackDialogComponent', () => {
     expect(api.send).toHaveBeenCalledWith({
       kind: 'idea',
       text: 'Sort by last opened',
-      client: { appVersion: '1.0', userAgent: navigator.userAgent.slice(0, 300) },
+      client: { appVersion: APP_VERSION, userAgent: navigator.userAgent.slice(0, 300) },
     });
     await vi.waitFor(() => {
       expect(container()?.textContent).toContain("We read every message. You'll see its status");

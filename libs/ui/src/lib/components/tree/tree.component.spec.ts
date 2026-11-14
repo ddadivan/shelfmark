@@ -437,6 +437,22 @@ describe('TreeComponent', () => {
       expect(labelled(TREE_STORY_NAME.Work)).toBe('Work 34');
     });
 
+    it('draws a dot after the name of a row that has one and reads its label with the name', async () => {
+      const { host, fixture, item, root } = await setup();
+      host.fixed.set([...TREE_STORY_FIXED, { id: 'news', name: "What's new", dot: 'new' }]);
+      await settle(fixture);
+      const labelled = (id: string) =>
+        (item(id).getAttribute('aria-labelledby') ?? '')
+          .split(' ')
+          .map((ref) => root.querySelector(`[id="${ref}"]`)?.textContent?.trim())
+          .join(' ');
+
+      expect(item("What's new").querySelector('.ui-tree__dot')).not.toBeNull();
+      expect(labelled("What's new")).toBe("What's new new");
+      expect(item(TREE_STORY_NAME.All).querySelector('.ui-tree__dot')).toBeNull();
+      expect(labelled(TREE_STORY_NAME.All)).toBe('All links 248');
+    });
+
     it('indents each level by one step through the level variable', async () => {
       const { row } = await setup();
       expect(row(TREE_STORY_NAME.Work).style.getPropertyValue('--ui-tree-level')).toBe('1');

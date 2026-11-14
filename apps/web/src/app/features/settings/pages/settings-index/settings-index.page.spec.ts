@@ -70,6 +70,7 @@ describe('the You list (/settings)', () => {
       '/settings/language',
       '/settings/privacy',
       '/settings/feedback',
+      '/changelog',
       '/about',
     ]);
     expect(
