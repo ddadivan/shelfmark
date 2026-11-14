@@ -64,6 +64,10 @@ export class PickerMenuComponent {
   readonly emptyLabel = input('');
   /** Ids of rows that cannot be chosen (the other half's folder). */
   readonly currentIds = input<readonly (string | null)[]>([]);
+  /** Recently used ids, most recent first: a group on top of the list (see `ui-picker-list`). */
+  readonly recentIds = input<readonly (string | null)[]>([]);
+  /** Title of the recent group, for example "Recent". */
+  readonly recentLabel = input('');
   /** Text of those rows' mark, for example "On the left". */
   readonly currentLabel = input('');
   /** Accessible name and placeholder of the search box. */

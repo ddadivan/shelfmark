@@ -45,6 +45,7 @@ async function setup(...given: [SplitTarget?]) {
     rightTile: () => ({ colour: 'rose', icon: 'folder' }),
     rightOptions: () => [{ id: 'f1', name: 'Clothes' }],
     rightCurrentIds: () => [],
+    rightRecent: () => [],
     takePickerFocus: () => false,
     close: vi.fn(() => Promise.resolve()),
     chooseRight: vi.fn(() => Promise.resolve()),

@@ -6,6 +6,7 @@ import type { FolderResponse } from '@shelfmark/contracts';
 import { MOCK_FOLDERS, MOCK_ID, MOCK_TAGS } from '@shelfmark/contracts/testing';
 import { ViewportService } from '../../../core/layout/viewport.service';
 import { FoldersStore } from '../../../stores/folders.store';
+import { RecentFoldersStore } from '../../../stores/recent-folders.store';
 import { TagsStore } from '../../../stores/tags.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import type { LinksFilter } from '../../links/models/links-filter.type';
@@ -22,6 +23,7 @@ function setup({ wide = true, loaded = true } = {}) {
   const filter = signal<LinksFilter>({ scope: LINKS_SCOPE.All });
   const viewportWide = signal(wide);
   const foldersLoaded = signal(loaded);
+  const recordRecent = vi.fn();
   const entityMap: Record<string, FolderResponse> = Object.fromEntries(
     MOCK_FOLDERS.map((folder) => [folder.id, { ...folder }]),
   );
@@ -39,6 +41,7 @@ function setup({ wide = true, loaded = true } = {}) {
           loaded: foldersLoaded,
         },
       },
+      { provide: RecentFoldersStore, useValue: { targets: () => [], record: recordRecent } },
       { provide: TagsStore, useValue: { entities: () => MOCK_TAGS } },
       { provide: UserSettingsStore, useValue: { shownColour: (colour: string) => colour } },
       { provide: TranslocoService, useValue: { translate: (key: string) => key } },
@@ -51,6 +54,7 @@ function setup({ wide = true, loaded = true } = {}) {
     filter,
     viewportWide,
     foldersLoaded,
+    recordRecent,
   };
 }
 
@@ -231,6 +235,15 @@ describe('SplitViewService', () => {
       await service.close();
       expect(service.takeOpenerFocus()).toBe(true);
       expect(service.takeOpenerFocus()).toBe(false);
+    });
+
+    it('remembers the chosen right folder as a recent move target', async () => {
+      const { service, recordRecent } = setup();
+
+      await service.chooseRight(B);
+      await service.chooseRight(null);
+
+      expect(recordRecent.mock.calls).toEqual([[B], [null]]);
     });
 
     it('toggles: opens the picker while closed, closes while open', async () => {

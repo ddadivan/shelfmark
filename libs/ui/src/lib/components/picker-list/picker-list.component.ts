@@ -28,6 +28,9 @@ import { pickerRows } from './picker-rows';
 
 const COARSE_POINTER = '(pointer: coarse)';
 
+/** Option value of a row in the recent group: the id behind it would clash with the row's own. */
+const RECENT_PREFIX = 'recent:';
+
 /**
  * A searchable, nested list of choices that acts at once (the "Move to folder" picker): a search
  * box on top, an Angular Aria `ngListbox` below. Choosing a row emits `chosen`; there is no
@@ -69,6 +72,14 @@ export class PickerListComponent {
    * the shown row again emits `chosen` with the same id, so an owner can just close.
    */
   readonly value = input<string | null | undefined>(undefined);
+  /**
+   * Ids (`null` = the empty row) used lately, most recent first: while the search box is empty
+   * they come first, in a group titled `recentLabel`, as copies of their rows. Choosing a copy
+   * emits `chosen` like the row itself.
+   */
+  readonly recentIds = input<readonly (string | null)[]>([]);
+  /** Title of the recent group, for example "Recent". */
+  readonly recentLabel = input('');
   /** Text of the current-place mark, for example "Current folder". */
   readonly currentLabel = input('');
   /** Accessible name and placeholder of the search box. */
@@ -109,7 +120,13 @@ export class PickerListComponent {
     return value === undefined ? [] : [value];
   });
   protected readonly rows = computed(() =>
-    pickerRows(this.options(), this.query(), this.emptyLabel(), this.currentIds()),
+    pickerRows(
+      this.options(),
+      this.query(),
+      this.emptyLabel(),
+      this.currentIds(),
+      this.recentIds(),
+    ),
   );
 
   constructor() {
@@ -145,11 +162,24 @@ export class PickerListComponent {
     return value === undefined ? row.current : row.id === value;
   }
 
+  /** Aria value of a row: its id, or the prefixed id for a copy in the recent group. */
+  protected optionValue(row: PickerRow): string | null {
+    return row.recent ? `${RECENT_PREFIX}${row.id ?? ''}` : row.id;
+  }
+
   protected onValue(selected: readonly (string | null)[]): void {
     const value = this.value();
     const seq = ++this.valueSeq;
+    const last = selected[selected.length - 1] ?? null;
+    if (typeof last === 'string' && last.startsWith(RECENT_PREFIX)) {
+      // A recent copy: always a choice, even of the shown row; the selection goes back to the shown row.
+      const id = last.slice(RECENT_PREFIX.length) || null;
+      this.selection.set(value === undefined ? [] : [value]);
+      this.chosen.emit(id);
+      return;
+    }
     if (selected.length > 0) {
-      const id = selected[selected.length - 1] ?? null;
+      const id = last;
       // The shown row coming back as selected is the echo of our own reset below, not a choice.
       if (value === undefined || id !== value) {
         this.chosen.emit(id);

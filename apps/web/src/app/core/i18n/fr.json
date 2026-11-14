@@ -419,7 +419,8 @@
       "moved": "Déplacé dans {{folder}}",
       "failed": "Impossible de déplacer le lien",
       "failedDetail": "Il est de retour à sa place",
-      "undoFailed": "Impossible de remettre le lien à sa place"
+      "undoFailed": "Impossible de remettre le lien à sa place",
+      "recent": "Récents"
     },
     "many": {
       "title": {

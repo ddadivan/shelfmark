@@ -5,6 +5,7 @@ import { FOLDER_DEFAULT_COLOUR } from '@shelfmark/contracts';
 import { activeLang } from '../../../core/i18n/active-lang';
 import { ViewportService } from '../../../core/layout/viewport.service';
 import { FoldersStore } from '../../../stores/folders.store';
+import { RecentFoldersStore } from '../../../stores/recent-folders.store';
 import { TagsStore } from '../../../stores/tags.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { LINKS_SCOPE } from '../../links/models/links-scope.const';
@@ -43,6 +44,7 @@ export class SplitViewService {
   private readonly filters = inject(LibraryFilterService);
   private readonly folders = inject(FoldersStore);
   private readonly tags = inject(TagsStore);
+  private readonly recentFolders = inject(RecentFoldersStore);
   private readonly settings = inject(UserSettingsStore);
   private readonly viewport = inject(ViewportService);
   private readonly router = inject(Router);
@@ -102,6 +104,8 @@ export class SplitViewService {
       this.settings.shownColour(colour),
     ),
   );
+  /** Recently used move targets, for the right picker's "Recent" group. */
+  readonly rightRecent = this.recentFolders.targets;
   /** The option the left picker shows. */
   readonly leftValue = computed(() => leftFeedId(this.filters.filter()));
   /** The option the right picker shows; `undefined` while there is none. */
@@ -213,6 +217,7 @@ export class SplitViewService {
    * changes are new entries.
    */
   async chooseRight(target: string | null): Promise<void> {
+    this.recentFolders.record(target);
     await this.setSplit(splitParamValue(target), this.rightTarget() === undefined);
   }
 

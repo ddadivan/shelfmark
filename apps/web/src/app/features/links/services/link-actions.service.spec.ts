@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { RecentFoldersStore } from '../../../stores/recent-folders.store';
 import type { LinkResponse } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import {
@@ -202,6 +203,7 @@ describe('LinkActionsService', () => {
         }),
       );
       expect(store.entityMap()['id-1']?.folderId).toBe(folderId);
+      expect(TestBed.inject(RecentFoldersStore).ids()).toEqual([folderId]);
 
       toasts[0]?.action?.run();
       await vi.runAllTicks();

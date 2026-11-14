@@ -418,7 +418,8 @@
       "moved": "Verschoben nach {{folder}}",
       "failed": "Link konnte nicht verschoben werden",
       "failedDetail": "Er ist wieder an seinem Platz",
-      "undoFailed": "Link konnte nicht zurückverschoben werden"
+      "undoFailed": "Link konnte nicht zurückverschoben werden",
+      "recent": "Zuletzt verwendet"
     },
     "many": {
       "title": {

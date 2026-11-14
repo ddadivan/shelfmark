@@ -136,4 +136,20 @@ test.describe('side by side (mock API)', () => {
     await expect(left.locator('ui-card')).toHaveCount(60);
     expect(await documentScrollTop(page)).toBe(0);
   });
+
+  test('lists the recently used folders on top of the picker', async ({ page }) => {
+    test.skip(isCompact(page), 'side by side starts at 80em');
+    await openWithReading(page);
+
+    await page.getByRole('button', { name: /^Right folder:/ }).click();
+    const menu = page.getByRole('dialog', { name: 'Show on the right' });
+    await expect(menu.getByText('Recent', { exact: true })).toBeVisible();
+    const options = menu.getByRole('option');
+    await expect(options.first()).toHaveText(/Reading/);
+    await expect(options.nth(1)).toHaveText(/Unsorted/);
+
+    // A fresh search shows the plain list again.
+    await menu.getByRole('combobox').fill('read');
+    await expect(menu.getByText('Recent', { exact: true })).toHaveCount(0);
+  });
 });

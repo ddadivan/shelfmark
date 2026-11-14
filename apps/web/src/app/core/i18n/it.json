@@ -419,7 +419,8 @@
       "moved": "Spostato in {{folder}}",
       "failed": "Impossibile spostare il link",
       "failedDetail": "È tornato al suo posto",
-      "undoFailed": "Impossibile rimettere il link al suo posto"
+      "undoFailed": "Impossibile rimettere il link al suo posto",
+      "recent": "Recenti"
     },
     "many": {
       "title": {

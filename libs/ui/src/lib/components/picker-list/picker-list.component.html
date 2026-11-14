@@ -34,13 +34,24 @@
   [hidden]="rows().length === 0"
   (valueChange)="onValue($event)"
 >
-  @for (row of rows(); track row.id) {
+  @for (
+    row of rows();
+    track row.recent ? 'recent:' + row.id : row.id;
+    let first = $first;
+    let index = $index
+  ) {
+    @if (row.recent && first) {
+      <div class="ui-picker-list__group" aria-hidden="true">{{ recentLabel() }}</div>
+    }
+    @if (!row.recent && index > 0 && rows()[index - 1]?.recent) {
+      <div class="ui-picker-list__rule" aria-hidden="true"></div>
+    }
     <div
       ngOption
       uiRipple
       class="ui-picker-list__option"
       [class.is-current]="row.current"
-      [value]="row.id"
+      [value]="optionValue(row)"
       [label]="row.name"
       [disabled]="row.current"
       [attr.aria-label]="ariaName(row)"

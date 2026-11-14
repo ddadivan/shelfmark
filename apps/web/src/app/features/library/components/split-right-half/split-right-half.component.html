@@ -7,7 +7,6 @@
       : ('library.split.rightRegion' | transloco: { name: split.rightLabel() })
   "
   [attr.data-link-drop-folder]="split.rightDropValue()"
-  (keydown.escape)="onEscape($event)"
 >
   @if (dnd.dropsOn(split.rightDropValue())) {
     <ui-badge class="split-right__here" tone="accent" aria-hidden="true">
@@ -43,6 +42,8 @@
         [options]="split.rightOptions()"
         [emptyLabel]="'library.scope.unsorted' | transloco"
         [currentIds]="split.rightCurrentIds()"
+        [recentIds]="split.rightRecent()"
+        [recentLabel]="'links.move.recent' | transloco"
         [currentLabel]="'library.split.onLeft' | transloco"
         [searchLabel]="'library.split.choose.search' | transloco"
         [listLabel]="'library.split.choose.list' | transloco"
@@ -61,6 +62,8 @@
         [colour]="split.rightTile().colour"
         [emptyLabel]="'library.scope.unsorted' | transloco"
         [currentIds]="split.rightCurrentIds()"
+        [recentIds]="split.rightRecent()"
+        [recentLabel]="'links.move.recent' | transloco"
         [currentLabel]="'library.split.onLeft' | transloco"
         [searchLabel]="'library.split.choose.search' | transloco"
         [listLabel]="'library.split.rightMenu.label' | transloco"

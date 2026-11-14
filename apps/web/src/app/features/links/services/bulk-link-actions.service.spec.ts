@@ -11,6 +11,7 @@ import {
 } from '@shelfmark/ui';
 import { of, throwError } from 'rxjs';
 import { FoldersStore } from '../../../stores/folders.store';
+import { RecentFoldersStore } from '../../../stores/recent-folders.store';
 import { LinksStore } from '../../../stores/links.store';
 import { PinsStore } from '../../../stores/pins.store';
 import { SavedViewsStore } from '../../../stores/saved-views.store';
@@ -83,7 +84,11 @@ async function setup(options: Options = {}) {
   });
   const restore = vi.fn((): Promise<TrashOutcome> => Promise.resolve(TRASH_OUTCOME.Done));
   const counts = {
-    folders: { refresh: vi.fn(() => Promise.resolve()), pathTo: vi.fn(() => []) },
+    folders: {
+      refresh: vi.fn(() => Promise.resolve()),
+      pathTo: vi.fn(() => []),
+      entityMap: () => ({}),
+    },
     tags: {
       noteLinkSaved: vi.fn(() => Promise.resolve()),
       load: vi.fn(() => Promise.resolve()),
@@ -167,6 +172,8 @@ describe('BulkLinkActionsService', () => {
       expect(cleared).toBe(true);
       expect(toasts.at(-1)?.kind).toBe(TOAST_KIND.Moved);
       expect(toasts.at(-1)?.title).toBe('2 links moved to Unsorted');
+      expect(toasts.at(-1)?.folder).toEqual({ icon: 'inbox' });
+      expect(TestBed.inject(RecentFoldersStore).ids()).toEqual([FOLDER]);
       expect(counts.folders.refresh).toHaveBeenCalled();
       expect(counts.views.refresh).toHaveBeenCalled();
     });

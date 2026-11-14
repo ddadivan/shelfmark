@@ -51,6 +51,7 @@ const SKELETON_COUNT = 4;
     PickerMenuComponent,
     SkeletonComponent,
   ],
+  host: { '(keydown.escape)': 'onEscape($event)' },
   templateUrl: './split-right-half.component.html',
   styleUrl: './split-right-half.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

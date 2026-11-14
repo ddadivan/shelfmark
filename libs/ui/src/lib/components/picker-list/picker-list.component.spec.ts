@@ -28,6 +28,8 @@ const TREE: PickerOption[] = [
     emptyLabel="Unsorted"
     [currentIds]="current()"
     [value]="value()"
+    [recentIds]="recent()"
+    recentLabel="Recent"
     currentLabel="Current folder"
     searchLabel="Find a folder"
     listLabel="Folders"
@@ -39,6 +41,7 @@ const TREE: PickerOption[] = [
 class HostComponent {
   readonly options = TREE;
   readonly current = signal<readonly (string | null)[]>(['angular']);
+  readonly recent = signal<readonly (string | null)[]>([]);
   readonly autoFocus = signal(true);
   readonly value = signal<string | null | undefined>(undefined);
   readonly picked: (string | null)[] = [];
@@ -95,6 +98,32 @@ describe('PickerListComponent', () => {
     expect(options()[3]?.style.getPropertyValue('--ui-picker-level')).toBe('1');
     expect(options()[3]?.getAttribute('aria-label')).toBe('Work / Courses');
     expect(options()[1]?.getAttribute('aria-label')).toBeNull();
+  });
+
+  it('shows a Recent group on top, hides it while searching and emits a recent row like its own', async () => {
+    const { fixture, root, names, options, type } = await setup();
+    fixture.componentInstance.recent.set(['clothes', null]);
+    await settle(fixture);
+
+    expect(names()).toEqual([
+      'Clothes',
+      'Unsorted',
+      'Unsorted',
+      'Work',
+      'Angular',
+      'Courses',
+      'Clothes',
+    ]);
+    expect(root.querySelector('.ui-picker-list__group')?.textContent).toBe('Recent');
+    expect(root.querySelector('.ui-picker-list__group')?.getAttribute('aria-hidden')).toBe('true');
+
+    options()[0]?.click();
+    await settle(fixture);
+    expect(fixture.componentInstance.picked).toEqual(['clothes']);
+
+    await type('work');
+    expect(root.querySelector('.ui-picker-list__group')).toBeNull();
+    expect(names()).toEqual(['Work']);
   });
 
   it('draws the folder tile with its colour and the inbox for Unsorted', async () => {
