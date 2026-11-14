@@ -18,4 +18,9 @@ export interface UpdateFolderRequest {
    * characters, no control characters (`isFolderDescription`); blank or `null` removes it.
    */
   description?: string | null;
+  /**
+   * The cover (#418): the UUID of one of your live links directly in this folder (else 404,
+   * `FOLDER_ERROR_MESSAGE.CoverNotFound`), or `null` for none.
+   */
+  coverLinkId?: string | null;
 }

@@ -71,6 +71,8 @@ export class MockFoldersApi implements FoldersApi {
         colour: FOLDER_DEFAULT_COLOUR,
         icon: FOLDER_DEFAULT_ICON,
         description: null,
+        coverLinkId: null,
+        coverUrl: null,
         position: this.data.nextFolderPosition(parentId),
         pinned: false,
         linkCount: 0,
@@ -104,6 +106,17 @@ export class MockFoldersApi implements FoldersApi {
       ) {
         return throwError(() => mockHttpError(HttpStatusCode.BadRequest, ['invalid field']));
       }
+      if (
+        request.coverLinkId !== undefined &&
+        request.coverLinkId !== null &&
+        !this.data.links.some(
+          (link) => link.id === request.coverLinkId && link.folderId === current.id,
+        )
+      ) {
+        return throwError(() =>
+          mockHttpError(HttpStatusCode.NotFound, FOLDER_ERROR_MESSAGE.CoverNotFound),
+        );
+      }
       const parentId = request.parentId === undefined ? current.parentId : request.parentId;
       if (parentId !== null && !this.find(parentId)) {
         return throwError(() =>
@@ -125,6 +138,7 @@ export class MockFoldersApi implements FoldersApi {
           request.description === undefined
             ? current.description
             : normalizeFolderDescription(request.description),
+        coverLinkId: request.coverLinkId === undefined ? current.coverLinkId : request.coverLinkId,
         // A move goes to the end of the new parent, like the API.
         position:
           parentId === current.parentId ? current.position : this.data.nextFolderPosition(parentId),
@@ -133,7 +147,8 @@ export class MockFoldersApi implements FoldersApi {
       this.data.setFolders(
         this.data.folderList.map((folder) => (folder.id === id ? updated : folder)),
       );
-      return of({ ...updated });
+      // The cover is answered like the API's: only while it is a live link of the folder.
+      return of(this.data.foldersView().find((folder) => folder.id === id) ?? { ...updated });
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
 

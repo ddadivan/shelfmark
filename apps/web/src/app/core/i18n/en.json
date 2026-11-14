@@ -956,6 +956,15 @@
         "placeholder": "What’s in this folder?",
         "tooLong": "Keep it to {{max}} characters.",
         "invalid": "Use plain text on one line."
+      },
+      "cover": {
+        "label": "Cover",
+        "hint": "A preview picture from a link in this folder, behind the folder header.",
+        "none": "No cover",
+        "option": "Cover from “{{title}}”",
+        "current": "Current cover",
+        "empty": "Links in this folder with a preview picture can be its cover.",
+        "loading": "Loading pictures"
       }
     }
   },

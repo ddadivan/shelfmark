@@ -72,4 +72,14 @@ export class UpdateFolderDto implements UpdateFolderRequest {
   @MaxLength(FOLDER_LIMIT.DescriptionMax)
   @NoControlChars()
   description?: string | null;
+
+  @ApiPropertyOptional({
+    format: 'uuid',
+    nullable: true,
+    type: String,
+    description: 'One of your live links in this folder (its preview is the cover); null for none',
+  })
+  @IsOptional()
+  @IsUUID()
+  coverLinkId?: string | null;
 }

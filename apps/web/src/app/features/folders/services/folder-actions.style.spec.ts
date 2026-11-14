@@ -20,6 +20,7 @@ import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { FoldersStore } from '../../../stores/folders.store';
 import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
 import { MockFoldersApi } from '../../links/mock/mock-folders.api';
+import { MockLibraryData } from '../../links/mock/mock-library-data';
 import { MockLinksApi } from '../../links/mock/mock-links.api';
 import { MockTagsApi } from '../../links/mock/mock-tags.api';
 import { FOLDERS_API } from '../../links/models/folders-api.const';
@@ -188,6 +189,42 @@ describe('FolderActionsService style', () => {
 
     await until(() => {
       expect(store.entityMap()[MOCK_ID.FolderReading].description).toBe('Weekend reads');
+    });
+  });
+
+  it('offers the previews of the folder links as covers and saves the chosen one (#418)', async () => {
+    const { actions, store } = await setup();
+    const data = TestBed.inject(MockLibraryData);
+    const inFolder = data.links.filter((link) => link.folderId === MOCK_ID.FolderReading);
+    data.links = data.links.map((link) =>
+      link.id === inFolder[0]?.id
+        ? { ...link, imageUrl: `/api/links/${link.id}/image?v=0123456789abcdef` }
+        : link,
+    );
+    const chosen = inFolder[0];
+    if (!chosen) {
+      throw new Error('no link in the folder');
+    }
+
+    const done = actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    const root = await opened();
+    await until(() => {
+      expect(root.querySelectorAll('[aria-labelledby="folder-style-cover"] input')).toHaveLength(2);
+    });
+    const option = root.querySelector<HTMLInputElement>(
+      `[aria-labelledby="folder-style-cover"] input[aria-label="Cover from “${chosen.title}”"]`,
+    );
+    option?.click();
+    TestBed.tick();
+    button('Save').click();
+    await closed();
+    await done;
+
+    await until(() => {
+      expect(store.entityMap()[MOCK_ID.FolderReading]).toMatchObject({
+        coverLinkId: chosen.id,
+        coverUrl: `/api/links/${chosen.id}/image?v=0123456789abcdef`,
+      });
     });
   });
 

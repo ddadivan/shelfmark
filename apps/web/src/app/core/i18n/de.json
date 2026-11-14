@@ -956,6 +956,15 @@
         "placeholder": "Was ist in diesem Ordner?",
         "tooLong": "Höchstens {{max}} Zeichen.",
         "invalid": "Nur einfacher Text in einer Zeile."
+      },
+      "cover": {
+        "label": "Titelbild",
+        "hint": "Ein Vorschaubild eines Links aus diesem Ordner, hinter dem Ordnerkopf.",
+        "none": "Kein Titelbild",
+        "option": "Titelbild von „{{title}}“",
+        "current": "Aktuelles Titelbild",
+        "empty": "Links in diesem Ordner mit Vorschaubild können sein Titelbild sein.",
+        "loading": "Bilder werden geladen"
       }
     }
   },

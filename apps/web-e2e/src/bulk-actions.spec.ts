@@ -273,7 +273,17 @@ test.describe('select links and bulk actions (mock API)', () => {
             return cards(page).count();
           })
           .toBe(ALL_LINKS);
-        await area.evaluate((el) => el.scrollTo(0, el.scrollHeight));
+        // The list is `content-visibility: auto`: rows grow to their real height once scrolled
+        // into view, so scroll to the end again until the height holds.
+        await expect
+          .poll(async () =>
+            area.evaluate(async (el) => {
+              el.scrollTo(0, el.scrollHeight);
+              await new Promise((done) => setTimeout(done, 200));
+              return el.scrollHeight - el.scrollTop - el.clientHeight;
+            }),
+          )
+          .toBeLessThanOrEqual(1);
         const lastCard = cards(page).last();
         await expect(lastCard).toBeVisible();
         const barTop = (await page.locator('ui-bulk-bar').boundingBox())?.y ?? 0;

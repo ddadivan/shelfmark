@@ -21,6 +21,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import type { FolderDbClient } from './models/folder-db-client.type';
 import { FOLDER_LOCK_PREFIX } from './models/folder-advisory-lock.const';
 import { toFolderResponse } from './to-folder-response';
+import { loadFolderCovers } from './folder-covers';
 import { wouldCreateCycle } from './would-create-cycle';
 
 @Injectable()
@@ -45,8 +46,9 @@ export class FoldersService {
       this.prisma.link.count({ where: { userId, deletedAt: null, isFavorite: true } }),
     ]);
     const counts = new Map(perFolder.map((group) => [group.folderId, group._count._all]));
+    const covers = await loadFolderCovers(this.prisma, userId, rows);
     return {
-      items: rows.map((row) => toFolderResponse(row, counts.get(row.id) ?? 0)),
+      items: rows.map((row) => toFolderResponse(row, counts.get(row.id) ?? 0, covers.get(row.id))),
       counts: { all, unsorted, favorites },
     };
   }
@@ -54,7 +56,12 @@ export class FoldersService {
   async get(userId: string, id: string): Promise<FolderResponse> {
     const row = await this.prisma.folder.findFirst({ where: { id, userId, deletedAt: null } });
     if (!row) throw new NotFoundException(FOLDER_ERROR_MESSAGE.NotFound);
-    return toFolderResponse(row, await this.directLinkCount(this.prisma, userId, id));
+    const covers = await loadFolderCovers(this.prisma, userId, [row]);
+    return toFolderResponse(
+      row,
+      await this.directLinkCount(this.prisma, userId, id),
+      covers.get(row.id),
+    );
   }
 
   async create(userId: string, request: CreateFolderRequest): Promise<FolderResponse> {
@@ -97,6 +104,11 @@ export class FoldersService {
         if (request.colour !== undefined) data.colour = request.colour;
         if (request.icon !== undefined) data.icon = request.icon;
         if (request.description !== undefined) data.description = request.description;
+        if (request.coverLinkId !== undefined) {
+          if (request.coverLinkId !== null)
+            await this.requireCover(tx, userId, id, request.coverLinkId);
+          data.coverLinkId = request.coverLinkId?.toLowerCase() ?? null;
+        }
         if (request.parentId !== undefined) {
           if (request.parentId !== null) {
             await this.requireOwned(tx, userId, request.parentId);
@@ -118,7 +130,12 @@ export class FoldersService {
           Object.keys(data).length === 0
             ? current
             : await tx.folder.update({ where: { id_userId: { id, userId } }, data });
-        return toFolderResponse(row, await this.directLinkCount(tx, userId, id));
+        const covers = await loadFolderCovers(tx, userId, [row]);
+        return toFolderResponse(
+          row,
+          await this.directLinkCount(tx, userId, id),
+          covers.get(row.id),
+        );
       });
     } catch (error) {
       throw this.mapForeignKey(error);
@@ -230,6 +247,23 @@ export class FoldersService {
       select: { id: true },
     });
     if (!found) throw new NotFoundException(FOLDER_ERROR_MESSAGE.NotFound);
+  }
+
+  /**
+   * Throws 404 (`CoverNotFound`) unless the link is one of the user's live links directly in the
+   * folder: a foreign, missing, trashed or elsewhere filed link all look the same (#418).
+   */
+  private async requireCover(
+    tx: Prisma.TransactionClient,
+    userId: string,
+    folderId: string,
+    linkId: string,
+  ): Promise<void> {
+    const found = await tx.link.findFirst({
+      where: { id: linkId, userId, folderId, deletedAt: null },
+      select: { id: true },
+    });
+    if (!found) throw new NotFoundException(FOLDER_ERROR_MESSAGE.CoverNotFound);
   }
 
   /** The place after the last live subfolder of `parentId` (`null` = top level). */

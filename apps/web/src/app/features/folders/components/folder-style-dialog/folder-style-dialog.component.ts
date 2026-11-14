@@ -52,6 +52,7 @@ import { FOLDER_STYLE_TAB } from '../../models/folder-style-tab.const';
 import type { FolderStyleTab } from '../../models/folder-style-tab.type';
 import { folderStyleSymbol } from '../../utils/folder-style-symbol';
 import { descriptionError } from '../../utils/description-error';
+import { FolderCoverPickerComponent } from '../folder-cover-picker/folder-cover-picker.component';
 import type { FolderStyleFormModel } from '../../models/folder-style-form-model.interface';
 
 const COLOURS: readonly FolderColour[] = Object.values(FOLDER_COLOUR);
@@ -72,6 +73,7 @@ const ICONS: readonly FolderIcon[] = Object.values(FOLDER_ICON);
     ColorPickerComponent,
     DialogComponent,
     EmojiPickerComponent,
+    FolderCoverPickerComponent,
     FolderIconComponent,
     FormField,
     InputComponent,
@@ -102,7 +104,15 @@ export class FolderStyleDialogComponent {
     icon: isFolderIconName(this.data.folder.icon) ? this.data.folder.icon : FOLDER_DEFAULT_ICON,
     emoji: isFolderIconName(this.data.folder.icon) ? '' : this.data.folder.icon,
     description: this.data.folder.description ?? '',
+    cover: this.data.folder.coverLinkId ?? '',
   });
+  /** The folder's cover now, kept as a choice even when its link is not on the first page. */
+  protected readonly currentCover = this.data.folder.coverLinkId
+    ? { id: this.data.folder.coverLinkId, url: this.data.folder.coverUrl }
+    : null;
+  /** The picture of the chosen cover (the folder shows it before the server answers). */
+  protected readonly coverImage = signal<string | null>(this.data.folder.coverUrl);
+  protected readonly coverValue = computed(() => this.model().cover);
   protected readonly DESCRIPTION_MAX = FOLDER_LIMIT.DescriptionMax;
 
   /** Icon or Emoji; opens on the one the folder wears. Both choices stay while it is open. */
@@ -239,6 +249,11 @@ export class FolderStyleDialogComponent {
     this.model.update((model) => ({ ...model, colour: value }));
   }
 
+  /** A cover was chosen (empty for none). */
+  protected chooseCover(value: string): void {
+    this.model.update((model) => ({ ...model, cover: value }));
+  }
+
   /** An icon of the grid was chosen (the emoji field keeps its text for the other tab). */
   protected chooseIcon(value: string): void {
     this.model.update((model) => ({ ...model, icon: value }));
@@ -278,7 +293,7 @@ export class FolderStyleDialogComponent {
   }
 
   private save(): Promise<undefined> {
-    const { colour, description } = this.model();
+    const { colour, description, cover } = this.model();
     const icon = this.previewIcon();
     if (
       (isFolderColourName(colour) || isHexColour(colour)) &&
@@ -287,7 +302,15 @@ export class FolderStyleDialogComponent {
     ) {
       // "Recent" on this device; an emoji the collection lacks is kept under "Yours".
       this.emoji.remember(icon);
-      this.data.submit({ colour, icon, description: normalizeFolderDescription(description) });
+      this.data.submit(
+        {
+          colour,
+          icon,
+          description: normalizeFolderDescription(description),
+          coverLinkId: cover === '' ? null : cover,
+        },
+        cover === '' ? null : this.coverImage(),
+      );
       this.ref.close(true);
     }
     return Promise.resolve(undefined);

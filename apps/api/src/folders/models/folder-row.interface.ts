@@ -6,6 +6,7 @@ export interface FolderRow {
   colour: string;
   icon: string;
   description: string | null;
+  coverLinkId: string | null;
   position: number;
   pinnedPosition: number | null;
   createdAt: Date;

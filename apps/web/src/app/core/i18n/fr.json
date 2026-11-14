@@ -972,6 +972,15 @@
         "placeholder": "Que contient ce dossier ?",
         "tooLong": "{{max}} caractères maximum.",
         "invalid": "Utilisez du texte simple sur une ligne."
+      },
+      "cover": {
+        "label": "Couverture",
+        "hint": "Une image d’aperçu d’un lien de ce dossier, derrière l’en-tête du dossier.",
+        "none": "Pas de couverture",
+        "option": "Couverture de « {{title}} »",
+        "current": "Couverture actuelle",
+        "empty": "Les liens de ce dossier avec une image d’aperçu peuvent servir de couverture.",
+        "loading": "Chargement des images"
       }
     }
   },

@@ -1,4 +1,9 @@
-import { FOLDER_LIMIT, type FolderResponse } from '@shelfmark/contracts';
+import {
+  FOLDER_ERROR_MESSAGE,
+  FOLDER_LIMIT,
+  type FolderResponse,
+  type LinkResponse,
+} from '@shelfmark/contracts';
 import { createAuthTestApp } from '../../test-utils/auth-test-app';
 import { createIsolationUsers } from '../../test-utils/isolation/create-isolation-users';
 import { asUser } from '../../test-utils/isolation/test-agent';
@@ -120,5 +125,167 @@ describe('folder description', () => {
     expect((await owner.get(`${FOLDERS}/${folder.id}`).expect(200)).body).toMatchObject({
       description: 'Private notes',
     });
+  });
+});
+
+describe('folder cover', () => {
+  let t: AuthTestApp;
+  let users: IsolationUsers;
+  const SHA = 'ab'.repeat(32);
+
+  beforeAll(async () => {
+    t = await createAuthTestApp();
+  });
+
+  beforeEach(async () => {
+    resetRateLimits(t.app);
+    users = await createIsolationUsers(t);
+  });
+
+  afterEach(async () => {
+    await t.db.truncateAll();
+  });
+
+  afterAll(async () => {
+    await t.close();
+  });
+
+  const folderOf = async (
+    user: IsolationUsers['owner'],
+    name = 'Recipes',
+  ): Promise<FolderResponse> =>
+    (await asUser(t.app, user).post(FOLDERS).send({ name }).expect(201)).body as FolderResponse;
+
+  /** A link of `user` in `folderId` with a stored preview image. */
+  const linkIn = async (
+    user: IsolationUsers['owner'],
+    folderId: string | null,
+  ): Promise<LinkResponse> => {
+    const link = (
+      await asUser(t.app, user)
+        .post('/api/links')
+        .send({
+          url: `https://example.com/${globalThis.crypto.randomUUID()}`,
+          title: 'Tart',
+          ...(folderId !== null && { folderId }),
+        })
+        .expect(201)
+    ).body as LinkResponse;
+    await t.db.prisma.linkImage.create({
+      data: {
+        userId: user.userId,
+        linkId: link.id,
+        kind: 'preview',
+        contentType: 'image/webp',
+        bytes: Buffer.from('x'),
+        width: 1,
+        height: 1,
+        sha256: SHA,
+      },
+    });
+    return link;
+  };
+
+  it('sets a link of the folder as the cover, answers its preview path and removes it with null', async () => {
+    const folder = await folderOf(users.owner);
+    const link = await linkIn(users.owner, folder.id);
+    const a = asUser(t.app, users.owner);
+
+    const res = await a.patch(`${FOLDERS}/${folder.id}`).send({ coverLinkId: link.id }).expect(200);
+    const expected = `/api/links/${link.id}/image?v=${SHA.slice(0, 16)}`;
+    expect(res.body as FolderResponse).toMatchObject({ coverLinkId: link.id, coverUrl: expected });
+    const list = (await a.get(FOLDERS).expect(200)).body as { items: FolderResponse[] };
+    expect(list.items[0]).toMatchObject({ coverLinkId: link.id, coverUrl: expected });
+    expect((await a.get(`${FOLDERS}/${folder.id}`).expect(200)).body).toMatchObject({
+      coverUrl: expected,
+    });
+
+    const cleared = await a
+      .patch(`${FOLDERS}/${folder.id}`)
+      .send({ coverLinkId: null })
+      .expect(200);
+    expect(cleared.body as FolderResponse).toMatchObject({ coverLinkId: null, coverUrl: null });
+  });
+
+  it('answers no cover while the link is moved away or in Trash, and the cover again after', async () => {
+    const folder = await folderOf(users.owner);
+    const link = await linkIn(users.owner, folder.id);
+    const a = asUser(t.app, users.owner);
+    await a.patch(`${FOLDERS}/${folder.id}`).send({ coverLinkId: link.id }).expect(200);
+
+    await a.patch(`/api/links/${link.id}`).send({ folderId: null }).expect(200);
+    expect((await a.get(`${FOLDERS}/${folder.id}`).expect(200)).body).toMatchObject({
+      coverLinkId: null,
+      coverUrl: null,
+    });
+    await a.patch(`/api/links/${link.id}`).send({ folderId: folder.id }).expect(200);
+    expect((await a.get(`${FOLDERS}/${folder.id}`).expect(200)).body).toMatchObject({
+      coverLinkId: link.id,
+    });
+
+    await a.delete(`/api/links/${link.id}`).expect(204);
+    const list = (await a.get(FOLDERS).expect(200)).body as { items: FolderResponse[] };
+    expect(list.items[0]).toMatchObject({ coverLinkId: null, coverUrl: null });
+  });
+
+  it('refuses a link of another folder, Unsorted, a missing or a trashed link with 404', async () => {
+    const folder = await folderOf(users.owner);
+    const other = await folderOf(users.owner, 'Other');
+    const a = asUser(t.app, users.owner);
+    const elsewhere = await linkIn(users.owner, other.id);
+    const unsorted = await linkIn(users.owner, null);
+    const trashed = await linkIn(users.owner, folder.id);
+    await a.delete(`/api/links/${trashed.id}`).expect(204);
+
+    for (const coverLinkId of [
+      elsewhere.id,
+      unsorted.id,
+      trashed.id,
+      '018f0000-0000-7000-8000-00000000dead',
+    ]) {
+      const res = await a.patch(`${FOLDERS}/${folder.id}`).send({ coverLinkId }).expect(404);
+      expect((res.body as { message: string }).message).toBe(FOLDER_ERROR_MESSAGE.CoverNotFound);
+    }
+    expect((await a.get(`${FOLDERS}/${folder.id}`).expect(200)).body).toMatchObject({
+      coverLinkId: null,
+    });
+  });
+
+  it.each([[{ coverLinkId: 'not-a-uuid' }], [{ coverLinkId: 42 }], [{ coverUrl: '/x' }]])(
+    'rejects %j with 400',
+    async (body) => {
+      const folder = await folderOf(users.owner);
+      await asUser(t.app, users.owner).patch(`${FOLDERS}/${folder.id}`).send(body).expect(400);
+    },
+  );
+
+  it("is isolated: a user cannot use another user's link as a cover, nor touch their folder (404)", async () => {
+    const owners = await folderOf(users.owner);
+    const ownersLink = await linkIn(users.owner, owners.id);
+    const intruders = await folderOf(users.intruder, 'Mine');
+    const intruder = asUser(t.app, users.intruder);
+
+    const res = await intruder
+      .patch(`${FOLDERS}/${intruders.id}`)
+      .send({ coverLinkId: ownersLink.id })
+      .expect(404);
+    expect((res.body as { message: string }).message).toBe(FOLDER_ERROR_MESSAGE.CoverNotFound);
+    await intruder
+      .patch(`${FOLDERS}/${owners.id}`)
+      .send({ coverLinkId: ownersLink.id })
+      .expect(404);
+
+    // A cover id written behind the API's back still never leaks another user's link.
+    await t.db.prisma.folder.update({
+      where: { id: intruders.id },
+      data: { coverLinkId: ownersLink.id },
+    });
+    expect((await intruder.get(`${FOLDERS}/${intruders.id}`).expect(200)).body).toMatchObject({
+      coverLinkId: null,
+      coverUrl: null,
+    });
+    expect(
+      (await asUser(t.app, users.owner).get(`${FOLDERS}/${owners.id}`).expect(200)).body,
+    ).toMatchObject({ coverLinkId: null });
   });
 });

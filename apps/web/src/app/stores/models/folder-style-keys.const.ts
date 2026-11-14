@@ -5,4 +5,5 @@ export const FOLDER_STYLE_KEYS: readonly (keyof FolderStyleChange)[] = [
   'colour',
   'icon',
   'description',
+  'coverLinkId',
 ];

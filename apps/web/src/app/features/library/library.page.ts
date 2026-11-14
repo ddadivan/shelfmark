@@ -3,6 +3,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   inject,
   input,
@@ -18,6 +19,9 @@ import {
   CheckboxComponent,
   ChipComponent,
   EmptyStateComponent,
+  FolderBannerComponent,
+  FolderIconComponent,
+  FOLDER_ICON_SIZE,
   ICON_SIZE,
   LoadMoreComponent,
   MenuComponent,
@@ -93,6 +97,8 @@ const SKELETON_COUNT = 8;
     CheckboxComponent,
     ChipComponent,
     EmptyStateComponent,
+    FolderBannerComponent,
+    FolderIconComponent,
     FolderTileComponent,
     InViewDirective,
     LibraryHotkeysDirective,
@@ -116,7 +122,12 @@ const SKELETON_COUNT = 8;
     SplitRightHalfComponent,
   ],
   templateUrl: './library.page.html',
-  styleUrls: ['./library.page.scss', './library-feed.scss', './library-selection.scss'],
+  styleUrls: [
+    './library.page.scss',
+    './library-head.scss',
+    './library-feed.scss',
+    './library-selection.scss',
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: provideLibraryPage(),
 })
@@ -140,6 +151,11 @@ export default class LibraryPage {
   /** From 80em: the "Side by side" button and the right half (#386). */
   protected readonly wide = inject(ViewportService).wide;
   protected readonly splitView = inject(SplitViewService);
+  protected readonly FOLDER_ICON_SIZE = FOLDER_ICON_SIZE;
+  /** The folder header (#418): band or cover, big tile, description; none in the split view. */
+  protected readonly folderBanner = computed(() =>
+    this.splitView.open() ? null : this.head.banner(),
+  );
   protected readonly selection = inject(LibrarySelectionService);
   protected readonly bulk = inject(LibraryBulkService);
   protected readonly drag = inject(LinkDragService);

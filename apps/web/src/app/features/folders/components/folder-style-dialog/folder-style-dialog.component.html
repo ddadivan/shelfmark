@@ -130,6 +130,14 @@
           }
         </div>
       </div>
+
+      <app-folder-cover-picker
+        [folderId]="data.folder.id"
+        [current]="currentCover"
+        [value]="coverValue()"
+        (valueChange)="chooseCover($event)"
+        [(image)]="coverImage"
+      />
     </div>
 
     <ui-button slot="footer" class="folder-style__reset" variant="ghost" (click)="reset()">{{

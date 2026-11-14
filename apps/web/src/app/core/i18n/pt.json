@@ -972,6 +972,15 @@
         "placeholder": "O que tem nesta pasta?",
         "tooLong": "No máximo {{max}} caracteres.",
         "invalid": "Use texto simples em uma linha."
+      },
+      "cover": {
+        "label": "Capa",
+        "hint": "Uma imagem de prévia de um link desta pasta, atrás do cabeçalho da pasta.",
+        "none": "Sem capa",
+        "option": "Capa de “{{title}}”",
+        "current": "Capa atual",
+        "empty": "Links desta pasta com imagem de prévia podem ser a capa dela.",
+        "loading": "Carregando imagens"
       }
     }
   },

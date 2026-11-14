@@ -45,6 +45,25 @@ describe('ChoiceGridComponent', () => {
     expect(plain.classList).not.toContain('ui-choice-grid--columns');
   });
 
+  it('draws pictures as thumbnails and the glyph without one or after an error (#418)', async () => {
+    const pictures: ChoiceOption[] = [
+      { value: '', label: 'No cover', icon: 'close' },
+      { value: 'a', label: 'Cover A', image: '/api/links/a/image?v=1' },
+    ];
+    const { fixture, host, radios } = setup({ kind: CHOICE_GRID_KIND.Image, value: 'a' }, pictures);
+    expect(host.classList).toContain('ui-choice-grid--image');
+    expect(radios().map((r) => r.getAttribute('aria-label'))).toEqual(['No cover', 'Cover A']);
+    const image = host.querySelector<HTMLImageElement>('.ui-choice__image');
+    expect(image?.getAttribute('src')).toBe('/api/links/a/image?v=1');
+    expect(image?.getAttribute('alt')).toBe('');
+    expect(host.querySelectorAll('.ui-choice__thumb ui-icon')).toHaveLength(1);
+    image?.dispatchEvent(new Event('error'));
+    fixture.detectChanges();
+    expect(host.querySelector('.ui-choice__image')).toBeNull();
+    expect(host.querySelectorAll('.ui-choice__thumb ui-icon')).toHaveLength(2);
+    expect(await axeViolations(host)).toEqual([]);
+  });
+
   it('shares one radio name between grids that are given the same name (#335)', () => {
     const a = setup({ name: 'icons' }).radios();
     const b = setup({ name: 'icons' }).radios();

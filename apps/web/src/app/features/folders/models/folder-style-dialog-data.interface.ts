@@ -8,8 +8,8 @@ export interface FolderStyleDialogData {
   readonly linkCount: number;
   readonly subfolderCount: number;
   /**
-   * Called with the whole chosen style (colour, icon, description); the caller skips the request
-   * when nothing differs. The dialog closes at once.
+   * Called with the whole chosen style (colour, icon, description, cover) and the picture of the
+   * chosen cover; the caller skips the request when nothing differs. The dialog closes at once.
    */
-  readonly submit: (style: Required<FolderStyleChange>) => void;
+  readonly submit: (style: Required<FolderStyleChange>, coverUrl: string | null) => void;
 }

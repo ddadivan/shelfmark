@@ -170,6 +170,9 @@ model Folder {
   icon           String       @default("folder") @db.VarChar(24)
   // Optional short description (#418), trimmed, 1 to FOLDER_LIMIT.DescriptionMax characters (a CHECK in the migration).
   description    String?      @db.VarChar(140)
+  // The link whose preview image is the cover (#418). No foreign key: the API writes only a live own
+  // link of this folder and answers the cover only while that is still true (folder-covers.ts).
+  coverLinkId    String?      @map("cover_link_id") @db.Uuid
   // Manual order among the siblings (#314): PUT /api/folders/order; lists sort by it, then by name.
   position       Int          @default(0) @db.SmallInt
   // Place in the user's sidebar pins (ADR 0037); NULL = not pinned. Cleared when the folder goes to Trash.

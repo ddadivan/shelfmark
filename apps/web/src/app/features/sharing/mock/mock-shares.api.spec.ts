@@ -113,6 +113,8 @@ describe('MockSharesApi', () => {
       colour: FOLDER_DEFAULT_COLOUR,
       icon: FOLDER_DEFAULT_ICON,
       description: null,
+      coverLinkId: null,
+      coverUrl: null,
       position: i + 1,
       pinned: false,
       linkCount: 0,
