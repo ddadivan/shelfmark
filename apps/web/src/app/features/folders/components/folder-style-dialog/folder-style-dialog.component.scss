@@ -110,3 +110,11 @@
 .folder-style__reset {
   margin-inline-end: auto;
 }
+
+// The Icon or Emoji panel: its content stacks with the same gap as the group around it.
+.folder-style__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}

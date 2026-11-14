@@ -115,18 +115,21 @@ test.describe('folder style and pins (mock API)', () => {
     await expect(more).toHaveCSS('visibility', 'hidden');
     expect((await more.boundingBox())?.height ?? 0).toBeLessThan(2);
 
-    // The toggle sits closer to the icon grid above than to the emoji field below (#350).
-    const [grid, toggleBox, emoji] = await Promise.all([
+    // The Icon | Emoji tabs sit under "Color" and the Icon panel is the active one (#376).
+    await expect(dialog.getByRole('radio', { name: 'Icon', exact: true })).toBeChecked();
+    await expect(dialog.getByRole('region', { name: 'Icon' })).toBeVisible();
+    await expect(dialog.locator('.folder-style__emoji')).toHaveCount(0);
+
+    const [grid, toggleBox] = await Promise.all([
       dialog
         .locator('[role="radiogroup"][aria-labelledby="folder-style-icon"]')
         .first()
         .boundingBox(),
       toggle.boundingBox(),
-      dialog.locator('.folder-style__emoji').boundingBox(),
     ]);
+    // The toggle sits close to the icon grid above it (#350).
     const above = (toggleBox?.y ?? 0) - ((grid?.y ?? 0) + (grid?.height ?? 0));
-    const below = (emoji?.y ?? 0) - ((toggleBox?.y ?? 0) + (toggleBox?.height ?? 0));
-    expect(below).toBeGreaterThan(above * 2);
+    expect(above).toBeLessThan(16);
 
     await toggle.click();
     await expect(more).toHaveCSS('visibility', 'visible');

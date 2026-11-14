@@ -9,7 +9,8 @@
     "deploymentEnabled": {
       "*/**": false,
       "dependabot/**": false,
-      "docs/**": false
+      "docs/**": false,
+      "stage": false
     }
   },
   "headers": [

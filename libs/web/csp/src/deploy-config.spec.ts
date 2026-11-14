@@ -251,4 +251,8 @@ describe('vercel.json deployment config', () => {
     expect(config.git.deploymentEnabled['*/**']).toBe(false);
     expect(config.git.deploymentEnabled['main']).toBeUndefined();
   });
+
+  it('stage is not deployed: it is tested locally, only main reaches Vercel', () => {
+    expect(config.git.deploymentEnabled['stage']).toBe(false);
+  });
 });
