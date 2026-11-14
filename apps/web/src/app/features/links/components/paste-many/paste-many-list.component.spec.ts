@@ -385,6 +385,9 @@ describe('PasteManyListComponent', () => {
     };
     const CHIP = 'Rule: angular.dev → Angular, #docs';
 
+    function folderSelectText(): string {
+      return dialog().querySelector('ui-select')?.textContent ?? '';
+    }
     async function saveAll(result: Promise<unknown>): Promise<CreateLinksBatchRequest> {
       button('Save 3 links').click();
       await result;
@@ -398,6 +401,9 @@ describe('PasteManyListComponent', () => {
     it('shows the rule on its line and sends its folder and tags for that link only', async () => {
       const { result } = await setup(api, { text: PASTE }, [RULE], MOCK_ID.FolderReading);
       await until(() => expect(dialog().textContent).toContain(CHIP));
+      // The "New links go to" folder shows once the folders have loaded; saving earlier (a slow CI
+      // runner) sent no batch folder.
+      await until(() => expect(folderSelectText()).toContain('Reading'));
       const request = await saveAll(result);
       expect(request.applyRules).toBe(false);
       // "New links go to" stays the folder for all; the rule's folder wins on its line.
