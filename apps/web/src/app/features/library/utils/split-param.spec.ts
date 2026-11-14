@@ -5,6 +5,7 @@ import { LINKS_SCOPE } from '../../links/models/links-scope.const';
 import { SPLIT_RIGHT_KIND } from '../models/split-right-kind.const';
 import {
   canSwap,
+  dropValue,
   leftDropTarget,
   parseSplitParam,
   resolveSplitTarget,
@@ -136,5 +137,13 @@ describe('targetCommands', () => {
   it('is the route of a folder or of Unsorted', () => {
     expect(targetCommands(FOLDER_A)).toEqual(['/', 'folders', FOLDER_A]);
     expect(targetCommands(null)).toEqual(['/', 'unsorted']);
+  });
+});
+
+describe('dropValue', () => {
+  it('is the attribute value of a half: an id, the token, or none for the picker', () => {
+    expect(dropValue(FOLDER_A)).toBe(FOLDER_A);
+    expect(dropValue(null)).toBe('unsorted');
+    expect(dropValue(undefined)).toBeNull();
   });
 });

@@ -66,6 +66,11 @@ export function splitParamValue(target: SplitTarget): string {
   return target === null ? SPLIT_UNSORTED_TOKEN : target;
 }
 
+/** The `data-link-drop-folder` value of a half: the folder id, the unsorted token, or `null` for a half that takes no links. */
+export function dropValue(target: SplitTarget): string | null {
+  return target === undefined ? null : splitParamValue(target);
+}
+
 /** The folder id (`null` for Unsorted) the left half shows, `undefined` when it shows another list. */
 export function leftDropTarget(leftFilter: LinksFilter): SplitTarget {
   switch (leftFilter.scope) {
