@@ -113,6 +113,13 @@ export class SplitViewService {
     const target = leftDropTarget(this.filters.filter());
     return target === undefined ? [] : [target];
   });
+  /** The tile of the right feed (the bulk bar and the picker): its folder's colour and icon, `inbox` for Unsorted. */
+  readonly rightTile = computed(() => {
+    const folder = this.rightFolder();
+    return folder
+      ? { colour: this.settings.shownColour(folder.colour), icon: folder.icon }
+      : { icon: 'inbox' };
+  });
   /** Name of what the left half shows. */
   readonly leftLabel = computed(() => {
     activeLang();

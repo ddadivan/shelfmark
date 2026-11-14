@@ -1108,6 +1108,39 @@
       "label": "Ordenar, visualizar e exportar",
       "button": "Opções",
       "sortBy": "Ordenar por"
+    },
+    "split": {
+      "open": "Lado a lado",
+      "close": "Fechar o lado a lado",
+      "swap": "Trocar os lados",
+      "choose": {
+        "title": "Escolha uma pasta",
+        "heading": "Escolha uma pasta para onde mover links",
+        "text": "Depois arraste links para cá a partir da esquerda, ou selecione-os e use a barra abaixo.",
+        "search": "Encontrar uma pasta",
+        "list": "Pastas",
+        "noResults": "Nenhuma pasta encontrada"
+      },
+      "leftMenu": {
+        "label": "Mostrar à esquerda",
+        "search": "Encontrar uma pasta ou tag",
+        "list": "Listas",
+        "noResults": "Nada encontrado"
+      },
+      "rightMenu": {
+        "label": "Mostrar à direita"
+      },
+      "onLeft": "À esquerda",
+      "onRight": "À direita",
+      "leftTrigger": "Lista da esquerda: {{name}}. Alterar",
+      "rightTrigger": "Pasta da direita: {{name}}. Alterar",
+      "leftRegion": "Esquerda: {{name}}",
+      "rightRegion": "Direita: {{name}}",
+      "rightRegionEmpty": "Direita: escolha uma pasta",
+      "searchName": "Busca: {{query}}",
+      "empty": {
+        "text": "Arraste links para cá a partir da esquerda."
+      }
     }
   },
   "export": {
@@ -2226,7 +2259,8 @@
       "openAll": "Abrir todos",
       "copy": "Copiar links",
       "share": "Compartilhar",
-      "delete": "Excluir"
+      "delete": "Excluir",
+      "moveToFolder": "Mover para {{folder}}"
     },
     "header": {
       "label": "Seleção",

@@ -1108,6 +1108,39 @@
       "label": "Trier, afficher et exporter",
       "button": "Options",
       "sortBy": "Trier par"
+    },
+    "split": {
+      "open": "Côte à côte",
+      "close": "Fermer l’affichage côte à côte",
+      "swap": "Inverser les côtés",
+      "choose": {
+        "title": "Choisir un dossier",
+        "heading": "Choisissez un dossier où déplacer des liens",
+        "text": "Faites ensuite glisser des liens ici depuis la gauche, ou sélectionnez-les et utilisez la barre en bas.",
+        "search": "Trouver un dossier",
+        "list": "Dossiers",
+        "noResults": "Aucun dossier trouvé"
+      },
+      "leftMenu": {
+        "label": "Afficher à gauche",
+        "search": "Trouver un dossier ou un tag",
+        "list": "Listes",
+        "noResults": "Aucun résultat"
+      },
+      "rightMenu": {
+        "label": "Afficher à droite"
+      },
+      "onLeft": "À gauche",
+      "onRight": "À droite",
+      "leftTrigger": "Liste de gauche : {{name}}. Changer",
+      "rightTrigger": "Dossier de droite : {{name}}. Changer",
+      "leftRegion": "Gauche : {{name}}",
+      "rightRegion": "Droite : {{name}}",
+      "rightRegionEmpty": "Droite : choisir un dossier",
+      "searchName": "Recherche : {{query}}",
+      "empty": {
+        "text": "Faites glisser des liens ici depuis la gauche."
+      }
     }
   },
   "export": {
@@ -2226,7 +2259,8 @@
       "openAll": "Tout ouvrir",
       "copy": "Copier les liens",
       "share": "Partager",
-      "delete": "Supprimer"
+      "delete": "Supprimer",
+      "moveToFolder": "Déplacer vers {{folder}}"
     },
     "header": {
       "label": "Sélection",
