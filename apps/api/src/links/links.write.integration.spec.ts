@@ -148,10 +148,22 @@ describe('links API: writes', () => {
       expect(first.note).toBeNull();
     });
 
+    it('saves an address typed without a scheme as https:// (#405)', async () => {
+      const link = await create(a, { url: 'example.com', title: 'Example' });
+      expect(link.url).toBe('https://example.com');
+      expect(await row(link.id)).toMatchObject({ normalizedUrl: 'https://example.com' });
+      const www = await create(a, { url: ' www.example.com/path?x=1 ', title: 'Example' });
+      expect(www.url).toBe('https://www.example.com/path?x=1');
+      const scheme = await create(a, { url: '//sub.example.co.uk', title: 'Example' });
+      expect(scheme.url).toBe('https://sub.example.co.uk');
+    });
+
     it('rejects invalid input', async () => {
       const bad: object[] = [
         {},
         { url: 'javascript:alert(1)' },
+        { url: 'mailto:someone@site.test' },
+        { url: 'example' },
         { url: 'data:text/html,x' },
         { url: 'ftp://x.test/' },
         { url: 'https://u:p@site.test/' },
@@ -327,6 +339,14 @@ describe('links API: writes', () => {
       const unsorted = (await a.patch(`${BASE}/${id}`).send({ folderId: null }).expect(200))
         .body as LinkResponse;
       expect(unsorted.folderId).toBeNull();
+    });
+
+    it('adds https:// to a new URL typed without a scheme (#405)', async () => {
+      const id = await seedOne({ url: 'https://a.test/old' });
+      const updated = (await a.patch(`${BASE}/${id}`).send({ url: 'b.test/new' }).expect(200))
+        .body as LinkResponse;
+      expect(updated.url).toBe('https://b.test/new');
+      await a.patch(`${BASE}/${id}`).send({ url: 'javascript:alert(1)' }).expect(400);
     });
 
     it('recomputes the normalized URL and drops the old hints when the URL changes', async () => {

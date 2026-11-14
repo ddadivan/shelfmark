@@ -1,4 +1,4 @@
-import { LINK_LIMIT } from '@shelfmark/contracts';
+import { LINK_LIMIT, withDefaultScheme } from '@shelfmark/contracts';
 import { SHARE_INPUT_LIMIT } from '../models/share-input-limit.const';
 import type { SharedLink } from '../models/shared-link.interface';
 import type { SharedLinkParams } from '../models/shared-link-params.interface';
@@ -68,9 +68,17 @@ function firstHttpUrl(source: unknown): string | null {
   return null;
 }
 
+/** The `url` parameter alone typed without a scheme (`example.com`, #405): `https://` added. */
+function bareHttpUrl(source: unknown): string | null {
+  const text = asText(source).trim();
+  const url = withDefaultScheme(text);
+  return url === text ? null : toHttpUrl(url);
+}
+
 /**
  * Reads the Web Share Target query (`url`, `text`, `title`): the first http(s) URL of `url`,
- * else of `text` (Telegram and others put the link in the text). Every other scheme
+ * else of `text` (Telegram and others put the link in the text); a `url` that is only a host
+ * without a scheme (`example.com`) gets `https://` (#405). Every other scheme
  * (`javascript:`, `data:`, `file:`, `intent:`, ...) is ignored, as are addresses with
  * credentials or beyond the contract's length. `title` is never a URL source, only a title hint.
  * The result is plain text to be bound as text, never as HTML.
@@ -78,7 +86,7 @@ function firstHttpUrl(source: unknown): string | null {
 export function extractSharedLink(params: SharedLinkParams): SharedLink {
   const title = asText(params.title).replace(/\s+/g, ' ').trim();
   return {
-    url: firstHttpUrl(params.url) ?? firstHttpUrl(params.text),
+    url: firstHttpUrl(params.url) ?? bareHttpUrl(params.url) ?? firstHttpUrl(params.text),
     titleHint: title.slice(0, LINK_LIMIT.TitleMax),
   };
 }

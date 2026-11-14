@@ -54,6 +54,79 @@ describe('AddLinkFormService', () => {
     expect(state.form.url().valid()).toBe(true);
   });
 
+  it('accepts an address without a scheme as https:// (#405), still rejects other schemes', async () => {
+    const state = await setup();
+    for (const typed of [
+      'example.com',
+      'www.example.com',
+      'example.com/path?x=1',
+      ' sub.example.co.uk ',
+    ]) {
+      state.form.url().value.set(typed);
+      expect(state.form.url().valid()).toBe(true);
+    }
+    expect(state.url()).toBe('https://sub.example.co.uk');
+    for (const typed of ['javascript:alert(1)', 'mailto:a@example.com', 'example', 'not a link']) {
+      state.form.url().value.set(typed);
+      expect(state.form.url().valid()).toBe(false);
+    }
+  });
+
+  it('shows the normalised address after leaving the field, keeps other text as typed', async () => {
+    const state = await setup();
+    state.form.url().value.set('  example.com/a ');
+    state.normalizeUrlField();
+    expect(state.model().url).toBe('https://example.com/a');
+    state.form.url().value.set('HTTPS://EXAMPLE.COM');
+    state.normalizeUrlField();
+    expect(state.model().url).toBe('HTTPS://EXAMPLE.COM');
+    state.form.url().value.set('javascript:alert(1)');
+    state.normalizeUrlField();
+    expect(state.model().url).toBe('javascript:alert(1)');
+  });
+
+  describe('pasteUrl', () => {
+    function pasteEvent(text: string, value = '', selection: [number, number] = [0, value.length]) {
+      const input = document.createElement('input');
+      input.value = value;
+      input.setSelectionRange(...selection);
+      const event = new Event('paste', { cancelable: true }) as ClipboardEvent;
+      Object.defineProperty(event, 'target', { value: input });
+      Object.defineProperty(event, 'clipboardData', {
+        value: { getData: () => text },
+      });
+      return event;
+    }
+
+    it('puts a bare host pasted into the empty field in with https://', async () => {
+      const state = await setup();
+      const event = pasteEvent(' example.com/path ');
+      expect(state.pasteUrl(event)).toBe(true);
+      expect(event.defaultPrevented).toBe(true);
+      expect(state.model().url).toBe('https://example.com/path');
+    });
+
+    it('replaces a fully selected value', async () => {
+      const state = await setup();
+      expect(state.pasteUrl(pasteEvent('www.example.com', 'old text'))).toBe(true);
+      expect(state.model().url).toBe('https://www.example.com');
+    });
+
+    it('leaves a full URL, other text and a paste into part of the value to the browser', async () => {
+      const state = await setup();
+      for (const event of [
+        pasteEvent('https://example.com'),
+        pasteEvent('javascript:alert(1)'),
+        pasteEvent('hello world'),
+        pasteEvent('example.com', 'abc', [1, 2]),
+      ]) {
+        expect(state.pasteUrl(event)).toBe(false);
+        expect(event.defaultPrevented).toBe(false);
+      }
+      expect(state.model().url).toBe('');
+    });
+  });
+
   it('limits the title length', async () => {
     const state = await setup();
     state.form.title().value.set('x'.repeat(LINK_LIMIT.TitleMax + 1));

@@ -58,7 +58,7 @@ export class AddLinkSaveService {
     } else {
       const fetched = this.previewService.fetchedPreview();
       const payload: CreateLinkRequest = {
-        url: value.url.trim(),
+        url: this.formState.url(),
         ...(title && { title }),
         ...(note && { note }),
         ...(value.folderId !== null && { folderId: value.folderId }),
@@ -131,7 +131,7 @@ export class AddLinkSaveService {
     if (!link) {
       return changes;
     }
-    const url = value.url.trim();
+    const url = this.formState.url();
     const title = value.title.trim();
     const note = value.note.trim();
     const tags = [...normalizeTagNames(value.tags)];

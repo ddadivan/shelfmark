@@ -2,7 +2,7 @@ import { effect, inject, Service, signal, untracked } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { form, maxLength, required, validate, type ValidationError } from '@angular/forms/signals';
 import { TranslocoService } from '@jsverse/transloco';
-import { isHttpUrl, LINK_LIMIT } from '@shelfmark/contracts';
+import { isHttpUrl, LINK_LIMIT, withDefaultScheme } from '@shelfmark/contracts';
 import { injectDialogData } from '@shelfmark/ui';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { normalizeTagNames } from '../../tags/utils/normalize-tag-names';
@@ -65,7 +65,8 @@ export class AddLinkFormService {
         message: () => this.text('links.add.url.tooLong', { max: LINK_LIMIT.UrlMax }),
       });
       validate(path.url, ({ value }): ValidationError.WithoutFieldTree | undefined => {
-        const url = value().trim();
+        // A bare host counts as https:// (#405): `example.com` is valid while it is typed.
+        const url = withDefaultScheme(value());
         return url === '' || isHttpUrl(url)
           ? undefined
           : { kind: 'url', message: this.text('links.add.url.invalid') };
@@ -110,6 +111,46 @@ export class AddLinkFormService {
   /** Sets what a valid submit does (the save flow registers it). */
   onSubmit(action: () => Promise<undefined>): void {
     this.submitAction = action;
+  }
+
+  /** The address as it is previewed and saved: trimmed, `https://` added to a bare host (#405). */
+  url(): string {
+    return withDefaultScheme(this.model().url);
+  }
+
+  /**
+   * Shows the address the way it will be saved (#405): on blur and after a paste the field reads
+   * `https://example.com` instead of `example.com`. Text that is not a host stays as typed.
+   */
+  normalizeUrlField(): void {
+    const field = this.form.url();
+    const value = field.value();
+    const url = withDefaultScheme(value);
+    if (url !== value && isHttpUrl(url)) {
+      field.value.set(url);
+    }
+  }
+
+  /**
+   * A single address pasted over the whole field goes in already normalised (#405), so the field
+   * shows `https://example.com` at once. Returns whether the paste was taken over.
+   */
+  pasteUrl(event: ClipboardEvent): boolean {
+    const input = event.target;
+    const text = event.clipboardData?.getData('text/plain') ?? '';
+    const url = withDefaultScheme(text);
+    if (
+      !(input instanceof HTMLInputElement) ||
+      url === text.trim() ||
+      !isHttpUrl(url) ||
+      (input.value !== '' &&
+        (input.selectionStart !== 0 || input.selectionEnd !== input.value.length))
+    ) {
+      return false;
+    }
+    event.preventDefault();
+    this.form.url().value.set(url);
+    return true;
   }
 
   /** Reads `i18n` so a validation message re-translates when the language changes or loads. */

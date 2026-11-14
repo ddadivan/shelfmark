@@ -3,12 +3,13 @@ import { LINK_LIMIT, type CreateLinksBatchItem } from '@shelfmark/contracts';
 import { IsOptional, IsString, IsUUID, MaxLength, MinLength } from 'class-validator';
 import { NoControlChars } from '../../common/validation/no-control-chars.decorator';
 import { TrimString } from '../../folders/dto/trim-string.decorator';
+import { DefaultHttpsScheme } from './default-https-scheme.decorator';
 import { IsHttpUrl } from './is-http-url.decorator';
 
 /** One link of a batch: the same URL, title and hint rules as `CreateLinkDto`. */
 export class CreateLinksBatchItemDto implements CreateLinksBatchItem {
   @ApiProperty({ maxLength: LINK_LIMIT.UrlMax, example: 'https://angular.dev/guide/signals' })
-  @TrimString()
+  @DefaultHttpsScheme()
   @IsHttpUrl()
   url!: string;
 

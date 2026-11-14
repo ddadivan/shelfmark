@@ -29,6 +29,20 @@ describe('extractSharedLink', () => {
     );
   });
 
+  it('adds https:// to a url parameter typed without a scheme (#405)', () => {
+    expect(extractSharedLink({ url: 'example.com' }).url).toBe('https://example.com/');
+    expect(extractSharedLink({ url: ' www.example.com/a?x=1 ' }).url).toBe(
+      'https://www.example.com/a?x=1',
+    );
+    expect(extractSharedLink({ url: '//example.com/a' }).url).toBe('https://example.com/a');
+    expect(extractSharedLink({ url: 'user@example.com' }).url).toBeNull();
+  });
+
+  it('reads only full http(s) URLs out of the text', () => {
+    expect(extractSharedLink({ text: 'example.com/a' }).url).toBeNull();
+    expect(extractSharedLink({ text: '//example.com/a' }).url).toBeNull();
+  });
+
   it('accepts http and a mixed-case scheme', () => {
     expect(extractSharedLink({ text: 'HTTP://Example.com/x' }).url).toBe('http://example.com/x');
   });
@@ -46,8 +60,8 @@ describe('extractSharedLink', () => {
     'ftp://example.com/a',
     'blob:https://example.com/uuid',
     'vbscript:msgbox(1)',
-    '//example.com/a',
-    'example.com/a',
+    'mailto:someone@example.com',
+    'example',
     '',
   ])('rejects %j', (value) => {
     expect(extractSharedLink({ url: value }).url).toBeNull();
