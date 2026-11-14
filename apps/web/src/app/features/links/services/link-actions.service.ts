@@ -22,6 +22,7 @@ import { TrashStore } from '../../../stores/trash.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { PinActionsService } from '../../pins/services/pin-actions.service';
 import { AddLinkDialogService } from './add-link-dialog.service';
+import { RuleActionsService } from '../../rules/services/rule-actions.service';
 import { pluralKey } from '../../../core/i18n/plural-key';
 import { ADD_LINK_ACTION } from '../models/add-link-action.const';
 import type { AddLinkSavedMany } from '../models/add-link-saved-many.interface';
@@ -54,6 +55,7 @@ export class LinkActionsService {
   private readonly toasts = inject(ToastService);
   private readonly undoToast = inject(UndoToastService);
   private readonly addLinkDialog = inject(AddLinkDialogService);
+  private readonly ruleActions = inject(RuleActionsService);
   private readonly transloco = inject(TranslocoService);
   private readonly doc = inject(DOCUMENT);
 
@@ -134,6 +136,11 @@ export class LinkActionsService {
       onExpire: () => void this.commitDelete(link.id),
     });
     this.store.attachUndo(link.id, () => toast.dismiss());
+  }
+
+  /** "Create a rule for youtube.com…" (#398): the rule dialog with the link's domain. */
+  async createRule(link: LinkResponse): Promise<void> {
+    await this.ruleActions.create(link.url);
   }
 
   /** "Move to folder…": a folder picker (a sheet below 64em); choosing a folder moves the link at once. */

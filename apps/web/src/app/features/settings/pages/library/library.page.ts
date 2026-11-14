@@ -47,10 +47,12 @@ import { APP_PATH } from '../../../../models/app-path.const';
 import { TrashStore } from '../../../../stores/trash.store';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { SettingsPageHeaderComponent } from '../../components/settings-page-header/settings-page-header.component';
+import { RulesSectionComponent } from '../../../rules/components/rules-section/rules-section.component';
 
 /**
  * `/settings/library` (SetLibrary mockup, #284): Viewing (default view and sort, where links
- * open, sidebar counts) and Saving (default folder, page fetch) apply at once, are saved on the
+ * open, sidebar counts) and Saving (default folder, page fetch) apply at once,
+ * Rules (#398, `RulesSectionComponent`) put links from a domain into a folder with tags, are saved on the
  * account and roll back with a toast when the request fails. Trash: "Keep deleted items for"
  * (7, 30 or 90 days) saves at once and rolls back with a toast when the request fails; "Trash"
  * shows how many items wait there and opens the page. Since #315 the duplicate notice is always
@@ -65,6 +67,7 @@ import { SettingsPageHeaderComponent } from '../../components/settings-page-head
     NoticeComponent,
     SegmentedControlComponent,
     SelectComponent,
+    RulesSectionComponent,
     SettingsPageHeaderComponent,
     SettingsRowComponent,
     SettingsSectionComponent,

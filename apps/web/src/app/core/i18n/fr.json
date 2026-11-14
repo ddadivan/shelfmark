@@ -279,6 +279,10 @@
         "none": "Aucun lien trouvé dans ce texte",
         "back": "Un seul lien",
         "find": "Trouver les liens"
+      },
+      "rule": {
+        "chip": "Règle : {{domain}} → {{target}}",
+        "remove": "Ne pas appliquer la règle pour {{domain}}"
       }
     },
     "edit": {
@@ -325,7 +329,8 @@
       "unpinFromTop": "Désépingler du haut",
       "pinToSidebar": "Épingler dans la barre latérale",
       "unpinFromSidebar": "Désépingler de la barre latérale",
-      "pinned": "Épinglé"
+      "pinned": "Épinglé",
+      "createRule": "Créer une règle pour {{domain}}…"
     },
     "recent": {
       "title": "Ouverts récemment",
@@ -2489,6 +2494,91 @@
       "failed": "Impossible de supprimer les liens",
       "failedDetail": "Ils sont de retour dans la liste",
       "undoFailed": "Impossible de restaurer les liens"
+    }
+  },
+  "rules": {
+    "title": "Règles",
+    "intro": "Les liens d'un domaine vont dans un dossier et reçoivent des tags à l'enregistrement. Le dossier ou les tags que vous choisissez vous-même l'emportent toujours.",
+    "add": "Ajouter une règle",
+    "list": "Règles",
+    "tags": "Tags",
+    "empty": "Aucune règle pour le moment. Par exemple, les liens de youtube.com peuvent aller dans Vidéos avec le tag video.",
+    "loadFailed": "Impossible de charger les règles.",
+    "retry": "Réessayer",
+    "folderTrashed": "Dossier dans la corbeille : seuls les tags sont ajoutés",
+    "more": "Actions pour {{domain}}",
+    "moreTooltip": "Plus d'actions",
+    "edit": "Modifier",
+    "applyExisting": "Appliquer aux liens existants",
+    "delete": "Supprimer la règle",
+    "undo": "Annuler",
+    "describe": "{{domain}} : {{target}}",
+    "created": {
+      "title": "Règle ajoutée"
+    },
+    "saved": {
+      "title": "Règle enregistrée"
+    },
+    "deleted": {
+      "title": "Règle supprimée"
+    },
+    "deleteFailed": "Impossible de supprimer la règle",
+    "limit": {
+      "title": "Nombre maximal de règles atteint"
+    },
+    "apply": {
+      "title": "Appliquer la règle pour {{domain}} ?",
+      "message": {
+        "one": "{{count}} lien de « Sans dossier » reçoit le dossier et les tags de cette règle : {{target}}.",
+        "many": "{{count}} liens de « Sans dossier » reçoivent le dossier et les tags de cette règle : {{target}}.",
+        "other": "{{count}} liens de « Sans dossier » reçoivent le dossier et les tags de cette règle : {{target}}."
+      },
+      "more": "Il y en a {{total}} au total. Appliquez-la de nouveau pour le reste.",
+      "confirm": {
+        "one": "Appliquer à {{count}} lien",
+        "many": "Appliquer à {{count}} liens",
+        "other": "Appliquer à {{count}} liens"
+      },
+      "cancel": "Annuler",
+      "none": "Aucun lien de {{domain}} dans « Sans dossier »",
+      "done": {
+        "one": "Règle appliquée à {{count}} lien",
+        "many": "Règle appliquée à {{count}} liens",
+        "other": "Règle appliquée à {{count}} liens"
+      },
+      "failed": "Impossible d'appliquer la règle",
+      "undoFailed": "Impossible d'annuler la règle"
+    },
+    "dialog": {
+      "addTitle": "Ajouter une règle",
+      "editTitle": "Modifier la règle",
+      "close": "Fermer",
+      "cancel": "Annuler",
+      "save": "Enregistrer la règle",
+      "saving": "Enregistrement…",
+      "domain": {
+        "label": "Domaine",
+        "placeholder": "youtube.com",
+        "hint": "Inclut aussi ses sous-domaines, comme m.youtube.com",
+        "required": "Saisissez un domaine",
+        "invalid": "Saisissez un domaine comme youtube.com"
+      },
+      "folder": {
+        "label": "Dossier",
+        "none": "Aucun dossier",
+        "search": "Rechercher des dossiers",
+        "trashed": "Le dossier de cette règle est dans la corbeille. Choisissez-en un autre ou gardez seulement les tags."
+      },
+      "tags": {
+        "label": "Tags",
+        "max": "Jusqu'à {{max}} tags"
+      },
+      "nothing": "Choisissez un dossier ou ajoutez au moins un tag.",
+      "taken": "Une règle existe déjà pour ce domaine.",
+      "limit": "Vous pouvez avoir jusqu'à {{max}} règles. Supprimez-en une d'abord.",
+      "missingFolder": "Ce dossier n'existe plus. Choisissez-en un autre.",
+      "missing": "Cette règle a été supprimée entre-temps.",
+      "failed": "Impossible d'enregistrer la règle. Réessayez."
     }
   }
 }

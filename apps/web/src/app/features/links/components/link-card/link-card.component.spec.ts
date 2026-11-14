@@ -259,7 +259,7 @@ describe('LinkCardComponent', () => {
     expect(violations.map((violation) => violation.id)).toEqual([]);
   });
 
-  it('lists Open, Edit, the favorite toggle, Pin to sidebar, Move and, after a separator, Delete', async () => {
+  it('lists Open, Edit, the favorite toggle, Pin to sidebar, Move, Create a rule and, after a separator, Delete', async () => {
     const { fixture, element } = await setup();
 
     element
@@ -279,9 +279,31 @@ describe('LinkCardComponent', () => {
       'Add to favorites',
       'Pin to sidebar',
       'Move to folder…',
+      'Create a rule for angular.dev…',
       '---',
       'Delete',
     ]);
+  });
+
+  it('asks for a rule for the domain from the menu, and offers none without a domain (#398)', async () => {
+    const { fixture, element } = await setup();
+    const asked = vi.fn();
+    fixture.componentInstance.ruleRequested.subscribe(asked);
+    element
+      .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
+      ?.click();
+    await fixture.whenStable();
+    menuItem('Create a rule for angular.dev').click();
+    await fixture.whenStable();
+    expect(asked).toHaveBeenCalledTimes(1);
+
+    fixture.componentRef.setInput('link', { ...LINK, url: 'http://127.0.0.1/x' });
+    await fixture.whenStable();
+    element
+      .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
+      ?.click();
+    await fixture.whenStable();
+    expect(document.body.textContent).not.toContain('Create a rule');
   });
 
   describe('pin menu', () => {

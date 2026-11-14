@@ -1,0 +1,85 @@
+<ui-settings-section [title]="'rules.title' | transloco">
+  <div class="rules__head">
+    <p class="rules__intro">{{ 'rules.intro' | transloco }}</p>
+    <ui-button
+      class="rules__add"
+      [size]="BUTTON_SIZE.Sm"
+      iconLeft="add"
+      [disabled]="!store.loaded() || store.atLimit()"
+      (click)="add()"
+      >{{ 'rules.add' | transloco }}</ui-button
+    >
+  </div>
+
+  @if (store.error()) {
+    <ui-notice [kind]="NOTICE_KIND.Danger">
+      {{ 'rules.loadFailed' | transloco }}
+      <ui-button uiNoticeAction [size]="BUTTON_SIZE.Sm" (click)="retry()">{{
+        'rules.retry' | transloco
+      }}</ui-button>
+    </ui-notice>
+  } @else if (store.loaded() && rows().length === 0) {
+    <p class="rules__empty">{{ 'rules.empty' | transloco }}</p>
+  } @else if (store.loaded()) {
+    <ul class="rules__list" [attr.aria-label]="'rules.list' | transloco">
+      @for (row of rows(); track row.rule.id) {
+        <li class="rules__row">
+          <div class="rules__domain">
+            <ui-favicon [letter]="row.rule.domain[0]" />
+            <span class="rules__domain-name">{{ row.rule.domain }}</span>
+          </div>
+          <div class="rules__target">
+            @if (row.folder; as folder) {
+              <span class="rules__folder">
+                <ui-folder-icon size="sm" [icon]="folder.icon" [colour]="folder.colour" />
+                <span class="rules__folder-name">{{ folder.name }}</span>
+              </span>
+            } @else if (row.folderTrashed) {
+              <span class="rules__flag">{{ 'rules.folderTrashed' | transloco }}</span>
+            }
+            @if (row.rule.tags.length > 0) {
+              <ul class="rules__tags" [attr.aria-label]="'rules.tags' | transloco">
+                @for (tag of row.rule.tags; track tag) {
+                  <li>
+                    <ui-chip>{{ tag }}</ui-chip>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+          <ui-button
+            class="rules__more"
+            variant="ghost"
+            size="sm"
+            iconOnly
+            iconLeft="more"
+            [uiMenuTrigger]="menu"
+            [ariaLabel]="'rules.more' | transloco: { domain: row.rule.domain }"
+            [uiTooltip]="'rules.moreTooltip' | transloco"
+          />
+          <ui-menu
+            #menu
+            align="end"
+            [ariaLabel]="'rules.more' | transloco: { domain: row.rule.domain }"
+          >
+            <ui-menu-item icon="edit" (activated)="edit(row.rule)">{{
+              'rules.edit' | transloco
+            }}</ui-menu-item>
+            <ui-menu-item icon="folder-move" (activated)="apply(row.rule)">{{
+              'rules.applyExisting' | transloco
+            }}</ui-menu-item>
+            <ui-menu-separator />
+            <ui-menu-item icon="trash" danger (activated)="actions.delete(row.rule)">{{
+              'rules.delete' | transloco
+            }}</ui-menu-item>
+          </ui-menu>
+        </li>
+      }
+    </ul>
+    @if (store.atLimit()) {
+      <p class="rules__empty">
+        {{ 'rules.dialog.limit' | transloco: { max: RULE_LIMIT.PerUserMax } }}
+      </p>
+    }
+  }
+</ui-settings-section>

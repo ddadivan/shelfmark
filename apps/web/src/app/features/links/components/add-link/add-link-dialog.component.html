@@ -139,6 +139,20 @@
 
         <ui-input [label]="'links.add.titleField.label' | transloco" [formField]="form.title" />
 
+        @if (ruleChip(); as chip) {
+          <!-- A domain rule filled folder and tags (#398); removing the chip takes them out. -->
+          <div class="add-link__rule">
+            <ui-chip
+              variant="neutral"
+              icon="globe"
+              removable
+              [removeLabel]="'links.add.rule.remove' | transloco: { domain: chip.domain }"
+              (removed)="dismissRule()"
+              >{{ 'links.add.rule.chip' | transloco: chip }}</ui-chip
+            >
+          </div>
+        }
+
         <ui-select
           [label]="'links.add.folder.label' | transloco"
           [options]="folderOptions()"

@@ -8,6 +8,7 @@ import {
   BUTTON_TYPE,
   BUTTON_VARIANT,
   ButtonComponent,
+  ChipComponent,
   FaviconComponent,
   InputComponent,
   LOGO_VARIANT,
@@ -29,6 +30,7 @@ import { LinkActionsService } from '../links/services/link-actions.service';
 import { LINKS_API } from '../links/models/links-api.const';
 import { PREVIEW_STATE } from '../links/models/preview-state.const';
 import type { PreviewState } from '../links/models/preview-state.type';
+import { RuleSuggestionService } from '../rules/services/rule-suggestion.service';
 import { extractSharedLink } from './utils/extract-shared-link';
 import { SHARE_STATE } from './models/share-state.const';
 import type { ShareState } from './models/share-state.type';
@@ -54,7 +56,9 @@ import type { ShareFormModel } from './models/share-form-model.interface';
     SelectComponent,
     SkeletonComponent,
     TranslocoPipe,
+    ChipComponent,
   ],
+  providers: [RuleSuggestionService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './share.page.html',
   styleUrl: './share.page.scss',
@@ -140,6 +144,10 @@ export default class SharePage {
   protected readonly folderOptions = computed(() => buildFolderOptions(this.folders.entities()));
 
   private readonly model = signal<ShareFormModel>({ folderId: null, note: '' });
+  /** Tags a domain rule adds (#398): the page has no tag field, the chip shows them. */
+  private readonly ruleTags = signal<readonly string[]>([]);
+  private readonly rules = inject(RuleSuggestionService);
+  protected readonly ruleChip = this.rules.chip;
   protected readonly saving = signal(false);
   protected readonly saveFailed = signal(false);
 
@@ -156,13 +164,29 @@ export default class SharePage {
 
   constructor() {
     void this.folders.load();
-    // Settings › Library › New links go to: the folder the form starts with, unless already picked.
+    this.rules.connect({
+      url: () => this.address(),
+      read: () => ({ folderId: this.model().folderId, tags: this.ruleTags() }),
+      put: (fields) => {
+        this.model.update((model) => ({ ...model, folderId: fields.folderId }));
+        this.ruleTags.set(fields.tags);
+      },
+      locked: () => ({ folder: this.form.folderId().dirty(), tags: false }),
+    });
+    // Settings › Library › New links go to: the folder the form starts with, unless already
+    // picked or set by a domain rule.
     void this.settings.load().then(() => {
       const folderId = this.settings.libraryShown().newLinksFolderId;
-      if (folderId !== null && !this.form.folderId().dirty()) {
+      if (folderId !== null && !this.form.folderId().dirty() && !this.rules.applied()?.folderId) {
         this.model.update((model) => ({ ...model, folderId }));
       }
     });
+  }
+
+  /** The rule chip's remove: its folder and tags leave the form. */
+  protected dismissRule(): void {
+    this.rules.dismiss();
+    this.form.folderId().focusBoundControl();
   }
 
   /** Back to the library, saving nothing. */
@@ -176,6 +200,7 @@ export default class SharePage {
       return;
     }
     const { folderId, note } = this.model();
+    const tags = [...this.ruleTags()];
     const title = this.title().trim();
     const trimmedNote = note.trim();
     this.saving.set(true);
@@ -187,6 +212,9 @@ export default class SharePage {
           ...(title && { title }),
           ...(trimmedNote && { note: trimmedNote }),
           ...(folderId !== null && { folderId }),
+          ...(tags.length > 0 && { tags }),
+          // The page already shows what the domain rule does (#398).
+          ...(this.rules.handled() && { applyRules: false }),
         }),
       );
       this.actions.noteSaved(link);

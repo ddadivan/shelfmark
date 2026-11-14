@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import type { LinkResponse } from '@shelfmark/contracts';
+import { normalizeRuleDomain, type LinkResponse } from '@shelfmark/contracts';
 import {
   BadgeComponent,
   ButtonComponent,
@@ -78,6 +78,10 @@ export class LinkRowComponent {
   readonly editRequested = output<void>();
   /** "Move to folder…" from the actions menu. */
   readonly moveRequested = output<void>();
+  /** "Create a rule for youtube.com…" from the actions menu (#398). */
+  readonly ruleRequested = output<void>();
+  /** The domain a rule for this link would match; `null` hides the menu item. */
+  protected readonly ruleDomain = computed(() => normalizeRuleDomain(this.link().url));
   readonly deleteRequested = output<void>();
 
   /** A selection is in progress: a click toggles the link instead of opening it (#267). */

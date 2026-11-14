@@ -279,6 +279,10 @@
         "none": "Nenhum link encontrado neste texto",
         "back": "Um link",
         "find": "Encontrar links"
+      },
+      "rule": {
+        "chip": "Regra: {{domain}} → {{target}}",
+        "remove": "Não aplicar a regra de {{domain}}"
       }
     },
     "edit": {
@@ -325,7 +329,8 @@
       "unpinFromTop": "Desafixar do topo",
       "pinToSidebar": "Fixar na barra lateral",
       "unpinFromSidebar": "Desafixar da barra lateral",
-      "pinned": "Fixado"
+      "pinned": "Fixado",
+      "createRule": "Criar uma regra para {{domain}}…"
     },
     "recent": {
       "title": "Abertos recentemente",
@@ -2489,6 +2494,91 @@
       "failed": "Não foi possível excluir os links",
       "failedDetail": "Eles voltaram para a lista",
       "undoFailed": "Não foi possível restaurar os links"
+    }
+  },
+  "rules": {
+    "title": "Regras",
+    "intro": "Os links de um domínio vão para uma pasta e recebem tags quando você os salva. A pasta ou as tags que você escolhe sempre têm prioridade.",
+    "add": "Adicionar regra",
+    "list": "Regras",
+    "tags": "Tags",
+    "empty": "Ainda não há regras. Por exemplo, links de youtube.com podem ir para Vídeos com a tag video.",
+    "loadFailed": "Não foi possível carregar as regras.",
+    "retry": "Tentar novamente",
+    "folderTrashed": "Pasta na lixeira: só as tags são adicionadas",
+    "more": "Ações para {{domain}}",
+    "moreTooltip": "Mais ações",
+    "edit": "Editar",
+    "applyExisting": "Aplicar aos links existentes",
+    "delete": "Excluir regra",
+    "undo": "Desfazer",
+    "describe": "{{domain}}: {{target}}",
+    "created": {
+      "title": "Regra adicionada"
+    },
+    "saved": {
+      "title": "Regra salva"
+    },
+    "deleted": {
+      "title": "Regra excluída"
+    },
+    "deleteFailed": "Não foi possível excluir a regra",
+    "limit": {
+      "title": "Limite de regras atingido"
+    },
+    "apply": {
+      "title": "Aplicar a regra de {{domain}}?",
+      "message": {
+        "one": "{{count}} link em Sem pasta recebe a pasta e as tags desta regra: {{target}}.",
+        "many": "{{count}} links em Sem pasta recebem a pasta e as tags desta regra: {{target}}.",
+        "other": "{{count}} links em Sem pasta recebem a pasta e as tags desta regra: {{target}}."
+      },
+      "more": "São {{total}} no total. Aplique de novo para o restante.",
+      "confirm": {
+        "one": "Aplicar a {{count}} link",
+        "many": "Aplicar a {{count}} links",
+        "other": "Aplicar a {{count}} links"
+      },
+      "cancel": "Cancelar",
+      "none": "Nenhum link de {{domain}} em Sem pasta",
+      "done": {
+        "one": "Regra aplicada a {{count}} link",
+        "many": "Regra aplicada a {{count}} links",
+        "other": "Regra aplicada a {{count}} links"
+      },
+      "failed": "Não foi possível aplicar a regra",
+      "undoFailed": "Não foi possível desfazer a regra"
+    },
+    "dialog": {
+      "addTitle": "Adicionar regra",
+      "editTitle": "Editar regra",
+      "close": "Fechar",
+      "cancel": "Cancelar",
+      "save": "Salvar regra",
+      "saving": "Salvando…",
+      "domain": {
+        "label": "Domínio",
+        "placeholder": "youtube.com",
+        "hint": "Também vale para os subdomínios, como m.youtube.com",
+        "required": "Digite um domínio",
+        "invalid": "Digite um domínio como youtube.com"
+      },
+      "folder": {
+        "label": "Pasta",
+        "none": "Nenhuma pasta",
+        "search": "Buscar pastas",
+        "trashed": "A pasta desta regra está na lixeira. Escolha outra ou mantenha só as tags."
+      },
+      "tags": {
+        "label": "Tags",
+        "max": "Até {{max}} tags"
+      },
+      "nothing": "Escolha uma pasta ou adicione pelo menos uma tag.",
+      "taken": "Já existe uma regra para este domínio.",
+      "limit": "Você pode ter até {{max}} regras. Exclua uma primeiro.",
+      "missingFolder": "Esta pasta não existe mais. Escolha outra.",
+      "missing": "Esta regra foi excluída nesse meio-tempo.",
+      "failed": "Não foi possível salvar a regra. Tente novamente."
     }
   }
 }
