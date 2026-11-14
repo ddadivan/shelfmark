@@ -76,6 +76,7 @@ import { PinActionsService } from '../../services/pin-actions.service';
     './sidebar-pinned.component.scss',
     './sidebar-pinned-actions.scss',
     './sidebar-pinned-drag.scss',
+    './sidebar-pinned-highlight.scss',
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '[class.pinned--card]': 'card() && shown()' },

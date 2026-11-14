@@ -54,7 +54,7 @@ import type { ChoiceOption } from './models/choice-option.interface';
     '(focusout)': 'onFocusOut($event)',
   },
   templateUrl: './choice-grid.component.html',
-  styleUrl: './choice-grid.component.scss',
+  styleUrls: ['./choice-grid.component.scss', './choice-grid-image.scss'],
 })
 export class ChoiceGridComponent implements FormValueControl<string> {
   protected readonly CHOICE_GRID_KIND = CHOICE_GRID_KIND;

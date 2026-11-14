@@ -19,17 +19,6 @@
   grid-template-columns: repeat(var(--ui-choice-columns), minmax(0, 1fr));
 }
 
-// Pictures (#418): 16:9 thumbnails, three to a row in a dialog, more on a wide one.
-:host(.ui-choice-grid--image) {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(rem(96px), 1fr));
-  gap: var(--space-2);
-}
-
-:host(.ui-choice-grid--image.ui-choice-grid--columns) {
-  grid-template-columns: repeat(var(--ui-choice-columns), minmax(0, 1fr));
-}
-
 @each $name in 'graphite', 'sage', 'ocean', 'plum', 'clay', 'amber', 'rose', 'teal' {
   .ui-choice--#{$name} {
     --ui-choice-glyph: var(--folder-#{$name});
@@ -90,36 +79,7 @@
     0 0 0 5px var(--text);
 }
 
-.ui-choice__thumb {
-  display: grid;
-  place-items: center;
-  inline-size: 100%;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  color: var(--text-muted);
-  background: var(--surface-hover);
-  border-radius: var(--radius-md);
-  transition: box-shadow var(--duration-fast) var(--ease-out);
-
-  @include hover {
-    box-shadow: 0 0 0 1px var(--border-control);
-  }
-}
-
-.ui-choice__image {
-  inline-size: 100%;
-  block-size: 100%;
-  object-fit: cover;
-}
-
-.ui-choice--checked .ui-choice__thumb {
-  box-shadow:
-    0 0 0 2px var(--surface),
-    0 0 0 4px var(--text);
-}
-
 .ui-choice__input:focus-visible + .ui-choice__swatch,
-.ui-choice__input:focus-visible + .ui-choice__thumb,
 .ui-choice__input:focus-visible + .ui-choice__tile {
   @include focus-ring;
 }
@@ -190,7 +150,6 @@
 @include reduced-motion {
   .ui-choice__remove,
   .ui-choice__swatch,
-  .ui-choice__thumb,
   .ui-choice__tile {
     transition: none;
   }

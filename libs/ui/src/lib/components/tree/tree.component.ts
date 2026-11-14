@@ -83,7 +83,12 @@ import { indexTreeNodes } from './tree-nodes';
     '(focusout)': 'focus.onFocusout($event)',
   },
   templateUrl: './tree.component.html',
-  styleUrls: ['./tree.component.scss', './tree-drop.scss', './tree-reorder.scss'],
+  styleUrls: [
+    './tree.component.scss',
+    './tree-drop.scss',
+    './tree-reorder.scss',
+    './tree-highlight.scss',
+  ],
 })
 export class TreeComponent {
   /** Folder tree, shown after the heading. Rows nest by `children`. */

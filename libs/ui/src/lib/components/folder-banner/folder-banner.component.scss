@@ -44,6 +44,9 @@
   inline-size: 100%;
   block-size: 100%;
   object-fit: cover;
+
+  // The picture itself ends before the text: nothing of it is left at the rounded bottom corners.
+  mask-image: linear-gradient(to bottom, var(--bg) 30%, transparent 60%);
 }
 
 .ui-folder-banner__scrim {

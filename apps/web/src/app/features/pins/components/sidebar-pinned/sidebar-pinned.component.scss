@@ -113,8 +113,3 @@
 .pinned__hidden {
   @include visually-hidden;
 }
-
-// Pinned folders show their colour like the folder tree (#418): a stripe or a soft tint.
-.pinned__item {
-  @include folder-highlight(':has(.is-active)');
-}
