@@ -287,6 +287,53 @@ describe('SplitFeedStore', () => {
       expect(ids(store)).toEqual(['id-4']);
     });
 
+    it('brings a link back on Undo that was in its delete window when the feed loaded', async () => {
+      const { store, links } = setup();
+      links.setFilter({ scope: 'all' });
+      await settled();
+      links.remove('id-2');
+      store.show(FOLDER);
+      await flush();
+      expect(ids(store)).toEqual(['id-1', 'id-3']);
+
+      links.undoRemove('id-2');
+
+      expect(ids(store)).toContain('id-2');
+    });
+
+    it('replays a change that came during a reload over the stale page', async () => {
+      const { api, store, links } = setup();
+      await settled();
+      const again = new Subject<ListLinksResponse>();
+      api.list.mockReturnValueOnce(again);
+
+      links.refresh();
+      links.applyEdit(link(2, { title: 'Edited' }));
+      expect(store.entities()[1].title).toBe('Edited');
+      again.next(page([link(1), link(2), link(3)]));
+      await flush();
+
+      expect(store.entities()[1].title).toBe('Edited');
+    });
+
+    it('reloads as many links as were loaded, so the list does not collapse', async () => {
+      const { api, store, links } = setup(page([link(1), link(2)], 'c1'));
+      await settled();
+      api.list.mockReturnValueOnce(of(page([link(3)], null)));
+      await store.loadMore();
+      expect(ids(store)).toEqual(['id-1', 'id-2', 'id-3']);
+      api.list.mockReset();
+      api.list
+        .mockReturnValueOnce(of(page([link(1), link(2)], 'c1')))
+        .mockReturnValueOnce(of(page([link(3)], null)));
+
+      links.refresh();
+      await flush();
+
+      expect(api.list).toHaveBeenLastCalledWith({ folderId: FOLDER, cursor: 'c1' });
+      expect(ids(store)).toEqual(['id-1', 'id-2', 'id-3']);
+    });
+
     it('remembers the slots of several removed ids as they were in the feed', async () => {
       const { store, links } = setup(page([link(1), link(2), link(3), link(4)]));
       await settled();

@@ -84,17 +84,30 @@ export const SplitFeedStore = signalStore(
       pending.forEach((change) => apply(change));
     }
 
-    async function loadFirst(target: string | null, started: number): Promise<void> {
+    /**
+     * Loads page one, and more pages until `keep` links are there (a reload of the same target
+     * keeps the length the person had scrolled to, so the list does not collapse and jump).
+     */
+    async function loadFirst(target: string | null, started: number, keep: number): Promise<void> {
       try {
-        const page = await firstValueFrom(api.list(linksQuery(filterOf(target))));
+        const filter = filterOf(target);
+        const page = await firstValueFrom(api.list(linksQuery(filter)));
+        let items = page.items;
+        let nextCursor = page.nextCursor;
+        while (nextCursor !== null && page.pinned.length + items.length < keep) {
+          const more = await firstValueFrom(api.list(linksQuery(filter, nextCursor)));
+          if (started !== generation) {
+            return;
+          }
+          items = [...items, ...more.items];
+          nextCursor = more.nextCursor;
+        }
         if (started === generation) {
           patchState(
             store,
             // The pinned links of a folder come first; the rest follow in the sort order.
-            setAllEntities(
-              [...page.pinned, ...page.items].filter((link) => !links.isPending(link.id)),
-            ),
-            { nextCursor: page.nextCursor, loaded: true, loading: false },
+            setAllEntities([...page.pinned, ...items].filter((link) => !links.isPending(link.id))),
+            { nextCursor, loaded: true, loading: false },
           );
           replay(target);
         }
@@ -122,7 +135,7 @@ export const SplitFeedStore = signalStore(
         changed ? removeAllEntities() : {},
         changed ? { loaded: false, nextCursor: null } : {},
       );
-      void loadFirst(target, generation);
+      void loadFirst(target, generation, changed ? 0 : store.count());
     }
 
     function apply(change: LinkChange): void {
@@ -135,18 +148,19 @@ export const SplitFeedStore = signalStore(
         if (target !== null && folders.loaded() && !folders.entityMap()[target]) {
           return;
         }
-        if (store.loading() && !store.loaded()) {
+        if (store.loading()) {
           reloadAfter = true;
         } else {
           show(target);
         }
         return;
       }
+      if (store.loading()) {
+        // Page one is on its way (a first load or a reload) and may not hold this change: keep it
+        // to replay when it arrives, over what that page shows.
+        buffer.push(change);
+      }
       if (!store.loaded()) {
-        // Page one is on its way and may not hold this change: keep it for when it arrives.
-        if (store.loading()) {
-          buffer.push(change);
-        }
         return;
       }
       const filter = filterOf(target);
