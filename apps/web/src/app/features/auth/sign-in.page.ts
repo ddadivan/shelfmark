@@ -25,7 +25,7 @@ import { isSignInError } from '../../core/auth/is-sign-in-error';
 import { isSignInReason } from '../../core/auth/is-sign-in-reason';
 import { safeReturnUrl } from '../../core/auth/safe-return-url';
 import { SignInDriftComponent } from './components/sign-in-drift/sign-in-drift.component';
-import { SignInMosaicComponent } from './components/sign-in-mosaic/sign-in-mosaic.component';
+import { SignInPhoneCardsComponent } from './components/sign-in-phone-cards/sign-in-phone-cards.component';
 import { SIGN_IN_ERROR_GENERIC_KEY } from './models/sign-in-error-generic-key.const';
 import { SIGN_IN_ERROR_KEY } from './models/sign-in-error-key.const';
 import { DEMO_ERROR_REASON } from './models/demo-error-reason.const';
@@ -41,7 +41,7 @@ import { SIGN_IN_REASON_KEY } from './models/sign-in-reason-key.const';
     LogoComponent,
     NoticeComponent,
     SignInDriftComponent,
-    SignInMosaicComponent,
+    SignInPhoneCardsComponent,
   ],
   templateUrl: './sign-in.page.html',
   styleUrl: './sign-in.page.scss',
@@ -53,7 +53,7 @@ export default class SignInPage {
   protected readonly AUTH_DEMO = AUTH_DEMO;
   protected readonly NOTICE_KIND = NOTICE_KIND;
 
-  /** From 64em: the glass card with drifting cards; below it the mosaic band on top. */
+  /** From 64em: the glass card with drifting cards; below it a strip of small floating cards on top. */
   protected readonly isDesktop = inject(ViewportService).desktop;
 
   protected readonly auth = inject(AuthStore);

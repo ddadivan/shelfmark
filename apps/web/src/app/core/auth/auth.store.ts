@@ -21,6 +21,7 @@ import { SIGN_IN_QUERY } from './models/sign-in-query.const';
 import { SIGN_IN_REASON } from './models/sign-in-reason.const';
 import type { SignInReason } from './models/sign-in-reason.type';
 import { AUTH_DEMO } from './models/auth-pending.const';
+import { clearSessionHint, markSessionHint } from './session-hint';
 import { AuthState } from './models/auth-state.interface';
 import { TAB_SYNC_KIND } from '../sync/models/tab-sync-kind.const';
 import { TabSyncService } from '../sync/tab-sync.service';
@@ -72,6 +73,9 @@ export const AuthStore = signalStore(
           return;
         }
         patchState(store, { pending, failed: false, demoError: null });
+        // The browser may leave for the provider and come back signed in: the next load shows the
+        // app skeleton at once instead of an empty page (#410).
+        markSessionHint();
         try {
           const user = await action();
           if (user === null) {
@@ -82,6 +86,7 @@ export const AuthStore = signalStore(
           patchState(store, { user, loaded: true, pending: null });
           announceSignedIn(user);
         } catch (error) {
+          clearSessionHint();
           patchState(store, {
             pending: null,
             failed: true,
@@ -144,6 +149,11 @@ export const AuthStore = signalStore(
             .getSession()
             .then(
               (user) => {
+                if (user) {
+                  markSessionHint();
+                } else {
+                  clearSessionHint();
+                }
                 patchState(store, { user, loaded: true });
                 announceSignedIn(user);
               },
