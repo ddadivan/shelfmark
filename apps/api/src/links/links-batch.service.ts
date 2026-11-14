@@ -19,10 +19,12 @@ import { PRISMA_ERROR_CODE } from '../common/prisma/prisma-error-code.const';
 import { FoldersService } from '../folders/folders.service';
 import type { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { RulesService } from '../rules/rules.service';
 import { TagsService } from '../tags/tags.service';
 import type { CreateLinksBatchResult } from './models/create-links-batch-result.interface';
 import { LINK_INCLUDE } from './models/link-include.const';
 import type { LinkDbClient } from './models/link-db-client.type';
+import type { BatchTarget } from './models/batch-target.interface';
 import type { PlannedBatchItem } from './models/planned-batch-item.interface';
 import { fallbackTitle } from './title-or-url';
 import { toLinkResponse } from './to-link-response';
@@ -41,6 +43,7 @@ export class LinksBatchService {
     private readonly prisma: PrismaService,
     private readonly folders: FoldersService,
     private readonly tags: TagsService,
+    private readonly rules: RulesService,
   ) {}
 
   /** `isDemo` comes from the session (never the request): demo sandboxes have a lower link cap. */
@@ -68,8 +71,7 @@ export class LinksBatchService {
             await this.folders.requireOwned(tx, userId, request.folderId);
           }
           await this.assertFits(tx, userId, fresh.length, isDemo);
-          const tagIds = await this.tags.resolveNames(userId, request.tags ?? [], tx);
-          created = await this.insert(tx, userId, fresh, request.folderId ?? null, tagIds);
+          created = await this.insert(tx, userId, await this.targets(tx, userId, request, fresh));
         }
         const links = planned.flatMap((entry) => {
           const key = entry.item.idempotencyKey;
@@ -132,13 +134,11 @@ export class LinksBatchService {
   private async insert(
     tx: Prisma.TransactionClient,
     userId: string,
-    fresh: readonly PlannedBatchItem[],
-    folderId: string | null,
-    tagIds: readonly string[],
+    fresh: readonly BatchTarget[],
   ): Promise<Map<string, LinkResponse>> {
     const now = Date.now();
     const rows = await tx.link.createManyAndReturn({
-      data: fresh.map((entry, position) => {
+      data: fresh.map(({ entry, folderId }, position) => {
         const { item } = entry;
         const title = item.title ?? fallbackTitle(item.url);
         return {
@@ -158,14 +158,19 @@ export class LinksBatchService {
           updatedAt: new Date(now - position),
         };
       }),
-      select: { id: true },
+      select: { id: true, idempotencyKey: true },
     });
     const ids = rows.map((row) => row.id);
-    if (tagIds.length > 0) {
-      await tx.linkTag.createMany({
-        data: ids.flatMap((linkId) => tagIds.map((tagId) => ({ linkId, tagId }))),
-      });
-    }
+    const tagIdsByKey = new Map(
+      fresh.map((target) => [target.entry.item.idempotencyKey.toLowerCase(), target.tagIds]),
+    );
+    const pairs = rows.flatMap((row) =>
+      (row.idempotencyKey === null
+        ? []
+        : (tagIdsByKey.get(row.idempotencyKey.toLowerCase()) ?? [])
+      ).map((tagId) => ({ linkId: row.id, tagId })),
+    );
+    if (pairs.length > 0) await tx.linkTag.createMany({ data: pairs });
     const saved = await tx.link.findMany({
       where: { userId, id: { in: ids } },
       include: LINK_INCLUDE,
@@ -175,6 +180,34 @@ export class LinksBatchService {
         row.idempotencyKey === null ? [] : [[row.idempotencyKey, toLinkResponse(row)] as const],
       ),
     );
+  }
+
+  /**
+   * Folder and tags of each new link: the request's when it sends them, else the domain rule of
+   * the link (#398). Tag lists are resolved once per distinct list (the tags lock is taken there,
+   * after the folders lock).
+   */
+  private async targets(
+    tx: Prisma.TransactionClient,
+    userId: string,
+    request: CreateLinksBatchRequest,
+    fresh: readonly PlannedBatchItem[],
+  ): Promise<BatchTarget[]> {
+    const match = await this.rules.matcher(tx, userId);
+    const resolved = new Map<string, string[]>();
+    const targets: BatchTarget[] = [];
+    for (const entry of fresh) {
+      const rule = match(entry.item.url);
+      const names = request.tags?.length ? request.tags : (rule?.tags ?? []);
+      const key = JSON.stringify(names);
+      let tagIds = resolved.get(key);
+      if (tagIds === undefined) {
+        tagIds = await this.tags.resolveNames(userId, names, tx);
+        resolved.set(key, tagIds);
+      }
+      targets.push({ entry, folderId: request.folderId ?? rule?.folderId ?? null, tagIds });
+    }
+    return targets;
   }
 
   private async findByKeys(

@@ -5,6 +5,7 @@ import type { ContractFoldersApi } from './contract-folders-api.interface';
 import type { ContractLinksApi } from './contract-links-api.interface';
 import type { ContractMeApi } from './contract-me-api.interface';
 import type { ContractPinsApi } from './contract-pins-api.interface';
+import type { ContractRulesApi } from './contract-rules-api.interface';
 import type { ContractSettingsApi } from './contract-settings-api.interface';
 import type { ContractSharesApi } from './contract-shares-api.interface';
 import type { ContractTagsApi } from './contract-tags-api.interface';
@@ -22,6 +23,7 @@ export interface ContractApis {
   tags: ContractTagsApi;
   pins: ContractPinsApi;
   views: ContractViewsApi;
+  rules: ContractRulesApi;
   trash: ContractTrashApi;
   settings: ContractSettingsApi;
   shares: ContractSharesApi;

@@ -5,7 +5,7 @@ export interface RuleResponse {
   domain: string;
   /** The target folder, or `null` (the rule only adds tags, or the folder was deleted for good). */
   folderId: string | null;
-  /** `false` while the target folder is in Trash: the rule then only adds its tags. */
+  /** `false` only while the target folder is in Trash: the rule then only adds its tags. */
   folderAvailable: boolean;
   /** Tag names added to a matching link (0 to `RULE_LIMIT.TagsMax`, normalised like link tags). */
   tags: string[];
