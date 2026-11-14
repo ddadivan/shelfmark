@@ -20,6 +20,7 @@ export function expectedLink(
     pinnedInFolderAt: null,
     pinned: false,
     lastOpenedAt: null,
+    remindAt: null,
     tags: [],
     createdAt: ANY.time,
     updatedAt: ANY.time,

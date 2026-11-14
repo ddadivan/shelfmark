@@ -2,6 +2,7 @@ import type { FolderResponse, LinkResponse, PinRef } from '@shelfmark/contracts'
 import { PIN_KIND } from '@shelfmark/contracts';
 import { MOCK_SESSION_STORAGE_KEY } from '../../../core/auth/models/mock-session-storage-key.const';
 import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
+import { MS_PER_HOUR } from '../../../core/models/ms-per-hour.const';
 import { MOCK_LINKS_SCENARIO } from '../models/mock-links-scenario.const';
 import { MOCK_LINKS_SCENARIO_KEY } from '../models/mock-links-scenario-key.const';
 import type { DemoFolderKey } from './models/demo-folder-key.type';
@@ -93,6 +94,10 @@ export function buildDemoLibrarySeed(now: number = Date.now()): DemoLibrarySeed 
         link.openedDaysAgo === null
           ? null
           : new Date(now - link.openedDaysAgo * MS_PER_DAY).toISOString(),
+      remindAt:
+        link.remindInHours === undefined
+          ? null
+          : new Date(now + link.remindInHours * MS_PER_HOUR).toISOString(),
       tags: [...link.tags],
       createdAt: created,
       updatedAt: created,

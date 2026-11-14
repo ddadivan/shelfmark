@@ -8,6 +8,7 @@ export type { ContractFoldersApi } from './models/contract-folders-api.interface
 export type { ContractLinksApi } from './models/contract-links-api.interface';
 export type { ContractMeApi } from './models/contract-me-api.interface';
 export type { ContractPinsApi } from './models/contract-pins-api.interface';
+export type { ContractRemindersApi } from './models/contract-reminders-api.interface';
 export type { ContractScenario } from './models/contract-scenario.interface';
 export type { ContractSettingsApi } from './models/contract-settings-api.interface';
 export type { ContractSharesApi } from './models/contract-shares-api.interface';

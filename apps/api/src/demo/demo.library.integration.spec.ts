@@ -4,6 +4,7 @@ import type {
   LinkResponse,
   ListFoldersResponse,
   ListLinksResponse,
+  ListRemindersResponse,
   ListTagsResponse,
 } from '@shelfmark/contracts';
 import request from 'supertest';
@@ -65,6 +66,15 @@ describe('demo library, limits and expiry', () => {
       for (const link of links) {
         expect(link.titleSortKey).toBe(link.title.toLowerCase());
       }
+    });
+
+    it('seeds one due and one upcoming reminder (#275)', async () => {
+      const demo = await signInDemo(t.app, t.baseUrl);
+      const reminders = await asUser(t.app, demo).get('/api/reminders').expect(200);
+      const body = reminders.body as ListRemindersResponse;
+      expect(body.due.map((link) => link.title)).toEqual(['Patagonia Worn Wear']);
+      expect(body.upcoming.map((link) => link.title)).toEqual(['TypeScript Handbook']);
+      await asUser(t.app, demo).get('/api/reminders/count').expect(200, { due: 1 });
     });
 
     it('is readable through the API as the demo user, and each demo user has their own copy', async () => {

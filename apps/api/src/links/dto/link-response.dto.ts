@@ -22,6 +22,13 @@ export class LinkResponseDto implements LinkResponse, GetLinkResponse {
     string | null;
   @ApiProperty({ description: 'Pinned to the sidebar' }) pinned!: boolean;
   @ApiProperty({ format: 'date-time', nullable: true, type: String }) lastOpenedAt!: string | null;
+  @ApiProperty({
+    format: 'date-time',
+    nullable: true,
+    type: String,
+    description: 'Reminder time; due once it has passed',
+  })
+  remindAt!: string | null;
   @ApiProperty({ type: [String] }) tags!: string[];
   @ApiProperty({ format: 'date-time' }) createdAt!: string;
   @ApiProperty({ format: 'date-time' }) updatedAt!: string;

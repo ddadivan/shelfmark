@@ -103,7 +103,8 @@
       "tags": ["typescript", "reference"],
       "isFavorite": false,
       "createdDaysAgo": 11,
-      "lastOpenedDaysAgo": 3
+      "lastOpenedDaysAgo": 3,
+      "remindInHours": 72
     },
     {
       "url": "https://github.com/angular/angular",
@@ -169,6 +170,7 @@
       "isFavorite": false,
       "createdDaysAgo": 10,
       "lastOpenedDaysAgo": 4,
+      "remindInHours": -3,
       "note": "Repair before replacing."
     },
     {

@@ -12,4 +12,6 @@ export interface DemoSeedLink {
   isFavorite: boolean;
   createdDaysAgo: number;
   lastOpenedDaysAgo: number | null;
+  /** Reminder (#275) this many hours after the demo is created; negative = already due. */
+  remindInHours?: number;
 }

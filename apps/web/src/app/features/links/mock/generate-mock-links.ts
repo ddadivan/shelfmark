@@ -36,6 +36,7 @@ export function generateMockLinks(): LinkResponse[] {
         i % 4 === 0
           ? new Date(Date.now() - (i - FIRST_OPENED_INDEX) * OPEN_STEP_MS).toISOString()
           : null,
+      remindAt: null,
       tags: [TAGS[i % TAGS.length]],
       createdAt: created,
       updatedAt: created,
