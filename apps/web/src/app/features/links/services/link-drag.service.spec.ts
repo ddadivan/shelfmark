@@ -99,6 +99,43 @@ describe('LinkDragService', () => {
     expect(moveTo).toHaveBeenCalledWith(link(FOLDER_A.id), null);
   });
 
+  it('moves a link dragged from the right half into a folder half on the left', () => {
+    const { drag, moveTo, bulkMoveTo, element, under } = setup();
+    under.mockReturnValue(element({ [LINK_DROP_ATTRIBUTE]: FOLDER_A.id }));
+
+    drag.start(link(FOLDER_B.id));
+    drag.move(1, 1);
+    expect(drag.treeTargetId()).toBe(FOLDER_A.id);
+    drag.drop();
+
+    expect(moveTo).toHaveBeenCalledWith(link(FOLDER_B.id), FOLDER_A.id);
+    expect(bulkMoveTo).not.toHaveBeenCalled();
+  });
+
+  it('is no target for a half that shows the folder the link is already in', () => {
+    const { drag, moveTo, element, under } = setup();
+    under.mockReturnValue(element({ [LINK_DROP_ATTRIBUTE]: FOLDER_B.id }));
+
+    drag.start(link(FOLDER_B.id));
+    drag.move(1, 1);
+    expect(drag.treeTargetId()).toBeNull();
+    drag.drop();
+
+    expect(moveTo).not.toHaveBeenCalled();
+  });
+
+  it('is no target for a half without a drop value (the picker)', () => {
+    const { drag, moveTo, element, under } = setup();
+    under.mockReturnValue(element({}));
+
+    drag.start(link(FOLDER_B.id));
+    drag.move(1, 1);
+    drag.drop();
+
+    expect(drag.treeTargetId()).toBeNull();
+    expect(moveTo).not.toHaveBeenCalled();
+  });
+
   it('is no target for the unsorted token when the link is already unsorted', () => {
     const { drag, moveTo, element, under } = setup();
     under.mockReturnValue(element({ [LINK_DROP_ATTRIBUTE]: LINKS_SCOPE.Unsorted }));

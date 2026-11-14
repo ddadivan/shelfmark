@@ -137,6 +137,19 @@ describe('SplitViewService', () => {
     expect(service.canSwap()).toBe(false);
   });
 
+  it.each([
+    ['Favorites', { scope: LINKS_SCOPE.Favorites }],
+    ['all links', { scope: LINKS_SCOPE.All }],
+    ['a tag', { scope: LINKS_SCOPE.All, tags: [MOCK_TAGS[0].id] }],
+    ['search results', { scope: LINKS_SCOPE.All, q: 'pasta' }],
+  ] as [string, LinksFilter][])('cannot swap while the left half shows %s', (_name, left) => {
+    const { service, splitParam, filter } = setup();
+    splitParam.set(B);
+    filter.set(left);
+
+    expect(service.canSwap()).toBe(false);
+  });
+
   it('names the options, the current rows and the labels of both halves', () => {
     const { service, splitParam, filter } = setup();
     splitParam.set(B);
@@ -245,6 +258,40 @@ describe('SplitViewService', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/', 'folders', B], {
         queryParams: { split: A },
       });
+    });
+
+    it('swaps Unsorted on the left with the folder on the right', async () => {
+      const { service, router, splitParam, filter } = setup();
+      splitParam.set(B);
+      filter.set({ scope: LINKS_SCOPE.Unsorted });
+
+      await service.swap();
+
+      expect(router.navigate).toHaveBeenCalledWith(['/', 'folders', B], {
+        queryParams: { split: 'unsorted' },
+      });
+    });
+
+    it('swaps a folder on the left with Unsorted on the right', async () => {
+      const { service, router, splitParam, filter } = setup();
+      splitParam.set('unsorted');
+      filter.set({ scope: LINKS_SCOPE.Folder, folderId: A });
+
+      await service.swap();
+
+      expect(router.navigate).toHaveBeenCalledWith(['/', 'unsorted'], {
+        queryParams: { split: A },
+      });
+    });
+
+    it('does not swap while the left half shows Favorites', async () => {
+      const { service, router, splitParam, filter } = setup();
+      splitParam.set(B);
+      filter.set({ scope: LINKS_SCOPE.Favorites });
+
+      await service.swap();
+
+      expect(router.navigate).not.toHaveBeenCalled();
     });
 
     it('does not swap when it cannot', async () => {

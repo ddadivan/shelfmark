@@ -15,6 +15,8 @@ import type { FoldersApi } from '../links/models/folders-api.interface';
 import { LINKS_API } from '../links/models/links-api.const';
 import type { LinksApi } from '../links/models/links-api.interface';
 import { LINKS_SCOPE } from '../links/models/links-scope.const';
+import type { LinksScope } from '../links/models/links-scope.type';
+import { LibrarySelectionService } from './services/library-selection.service';
 import { loadEnglish, provideTranslocoForTest } from '../../testing/transloco-testing';
 import { FEED_MEMORY_STORAGE_KEY } from './models/feed-memory-storage-key.const';
 import LibraryPage from './library.page';
@@ -48,7 +50,17 @@ function link(n: number, folderId: string | null): LinkResponse {
   };
 }
 
-async function setup({ wide = true, split }: { wide?: boolean; split?: string } = {}) {
+async function setup({
+  wide = true,
+  split,
+  scope = LINKS_SCOPE.Unsorted,
+  extra = {},
+}: {
+  wide?: boolean;
+  split?: string;
+  scope?: LinksScope;
+  extra?: Record<string, unknown>;
+} = {}) {
   const linksApi = {
     list: vi.fn<LinksApi['list']>((query) =>
       of({
@@ -84,8 +96,11 @@ async function setup({ wide = true, split }: { wide?: boolean; split?: string } 
   await TestBed.inject(FoldersStore).load();
   const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
   const fixture = TestBed.createComponent(LibraryPage);
-  fixture.componentRef.setInput('scope', LINKS_SCOPE.Unsorted);
+  fixture.componentRef.setInput('scope', scope);
   fixture.componentRef.setInput('split', split);
+  for (const [name, value] of Object.entries(extra)) {
+    fixture.componentRef.setInput(name, value);
+  }
   await fixture.whenStable();
   return { fixture, element: fixture.nativeElement as HTMLElement, navigate, linksApi, viewport };
 }
@@ -194,6 +209,104 @@ describe('LibraryPage side by side', () => {
 
     expect(element.querySelector('app-split-right-half ui-picker-list')).not.toBeNull();
     expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('swaps the halves on a click: the right folder becomes the left route, the old left the split', async () => {
+    const { fixture, navigate } = await setup({ split: B });
+    const swap = await loader(fixture).getHarness(UiButtonHarness.with({ label: 'Swap sides' }));
+
+    await swap.click();
+
+    expect(navigate).toHaveBeenCalledWith(['/', 'folders', B], {
+      queryParams: { split: 'unsorted' },
+    });
+  });
+
+  it('has no Swap button while the left half shows Favorites', async () => {
+    const { fixture, element } = await setup({ split: B, scope: LINKS_SCOPE.Favorites });
+
+    expect(
+      await loader(fixture).getAllHarnesses(UiButtonHarness.with({ label: 'Swap sides' })),
+    ).toHaveLength(0);
+    expect(element.querySelector('app-split-right-half ui-picker-list')).toBeNull();
+  });
+
+  it('has no Swap button while the left half shows a tag', async () => {
+    const { fixture } = await setup({
+      split: B,
+      scope: LINKS_SCOPE.All,
+      extra: { tag: 'angular' },
+    });
+
+    expect(
+      await loader(fixture).getAllHarnesses(UiButtonHarness.with({ label: 'Swap sides' })),
+    ).toHaveLength(0);
+  });
+
+  it('has no Swap button while the left half shows search results', async () => {
+    const { fixture } = await setup({ split: B, scope: LINKS_SCOPE.All, extra: { q: 'pasta' } });
+
+    expect(
+      await loader(fixture).getAllHarnesses(UiButtonHarness.with({ label: 'Swap sides' })),
+    ).toHaveLength(0);
+  });
+
+  it('falls back to the picker for the folder the left half already shows', async () => {
+    const { element } = await setup({
+      split: B,
+      scope: LINKS_SCOPE.Folder,
+      extra: { folderId: B },
+    });
+
+    expect(element.querySelector('app-split-right-half ui-picker-list')).not.toBeNull();
+  });
+
+  it('falls back to the picker for an unknown value', async () => {
+    const { element } = await setup({ split: 'not-a-folder' });
+
+    expect(element.querySelector('app-split-right-half ui-picker-list')).not.toBeNull();
+  });
+
+  describe('bulk bar', () => {
+    const bulkLabels = (element: HTMLElement): string[] =>
+      [...element.querySelectorAll('ui-bulk-bar button')].map((button) =>
+        (button.textContent ?? '').trim(),
+      );
+
+    async function select(fixture: ComponentFixture<LibraryPage>): Promise<void> {
+      fixture.debugElement.injector.get(LibrarySelectionService).selectAll();
+      await fixture.whenStable();
+    }
+
+    it('starts with "Move to <right folder>" while a folder is open on the right', async () => {
+      const { fixture, element } = await setup({ split: B });
+      await select(fixture);
+
+      expect(bulkLabels(element)[0]).toBe('Move to Clothes');
+      expect(bulkLabels(element)).toContain('Move');
+    });
+
+    it('has no "Move to" action while the right half still shows the picker', async () => {
+      const { fixture, element } = await setup({ split: '' });
+      await select(fixture);
+
+      expect(bulkLabels(element).length).toBeGreaterThan(0);
+      expect(bulkLabels(element).some((label) => label.startsWith('Move to'))).toBe(false);
+    });
+
+    it('has no "Move to" action when side by side is closed', async () => {
+      const { fixture, element } = await setup();
+      await select(fixture);
+
+      expect(bulkLabels(element).some((label) => label.startsWith('Move to'))).toBe(false);
+    });
+
+    it('has no "Move to" action below 80em even with ?split', async () => {
+      const { fixture, element } = await setup({ wide: false, split: B });
+      await select(fixture);
+
+      expect(bulkLabels(element).some((label) => label.startsWith('Move to'))).toBe(false);
+    });
   });
 
   it('closes with the close button', async () => {
