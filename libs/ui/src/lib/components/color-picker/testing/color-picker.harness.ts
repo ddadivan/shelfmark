@@ -116,7 +116,7 @@ export class UiColorPickerHarness extends ComponentHarness {
     return this.setRange(await this.slider(1), percent);
   }
 
-  /** Whether Add is enabled (it is disabled while the hex text is invalid). */
+  /** Whether Add is enabled (disabled while the hex text is invalid or `adjust` refuses it). */
   async canAdd(): Promise<boolean> {
     return !(await (await this.addButton()).isDisabled());
   }
@@ -151,8 +151,10 @@ export class UiColorPickerHarness extends ComponentHarness {
     return slider;
   }
 
+  /** Moves a slider and ends the pick (`change`), as a release or a key press does. */
   private async setRange(element: TestElement, value: number): Promise<void> {
     await element.setInputValue(String(value));
     await element.dispatchEvent('input');
+    await element.dispatchEvent('change');
   }
 }

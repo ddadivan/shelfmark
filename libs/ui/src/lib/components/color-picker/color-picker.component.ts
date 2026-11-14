@@ -12,6 +12,7 @@ import {
   linkedSignal,
   model,
   output,
+  signal,
   untracked,
 } from '@angular/core';
 import type { FormValueControl } from '@angular/forms/signals';
@@ -45,6 +46,12 @@ function normalise(text: string): string | null {
  * "Add colour" button, the moment to save and apply. Esc, "Cancel" and closing the panel from the
  * swatch discard the preview: `value` goes back to what it was when the panel opened. Projected
  * content shows under the fields (a contrast warning). Every string comes in translated.
+ *
+ * `adjust` (#415) is the caller's rule for a colour it accepts: it returns the nearest colour that
+ * passes (the colour itself when it does). A colour picked in the area or on a slider moves to it
+ * when the pick ends (pointer release, a slider's `change`), so a drag stays smooth; `adjusted()`
+ * says so until the next change. A typed hex is never changed: "Add colour" stays disabled while
+ * the current colour does not pass.
  */
 @Component({
   selector: 'ui-color-picker',
@@ -90,6 +97,12 @@ export class ColorPickerComponent implements FormValueControl<string> {
   /** Label of the button that discards the preview and closes the panel ("Cancel"). */
   readonly cancelLabel = input.required<string>();
   readonly disabled = input(false, { transform: booleanAttribute });
+  /**
+   * The nearest colour the caller accepts (the colour itself when it passes), or null to accept
+   * any colour. Applied when a pick in the area or on a slider ends; "Add colour" waits for a
+   * colour that passes.
+   */
+  readonly adjust = input<((colour: string) => string) | null>(null);
   /** The explicit choice ("Add colour"), lower-case `#rrggbb`; nothing else commits. */
   readonly committed = output<string>();
   /** Emits when focus leaves the control; `[formField]` marks the field touched. */
@@ -123,6 +136,20 @@ export class ColorPickerComponent implements FormValueControl<string> {
   protected readonly shown = computed(() => this.value() || START_COLOUR);
   /** Fully saturated colour of the hue: the area's base. */
   protected readonly hueColour = computed(() => hsvToHex(this.hsv()[0], 1, 1));
+  /** The colour "Add colour" would choose: a valid hex text first, else the shown colour. */
+  private readonly candidate = computed(() => normalise(this.draft()) ?? this.shown());
+  /** Whether the caller's `adjust` keeps the candidate as it is. */
+  protected readonly acceptable = computed(() => {
+    const adjust = this.adjust();
+    const colour = this.candidate();
+    return !adjust || adjust(colour) === colour;
+  });
+  private readonly pickingState = signal(false);
+  private readonly adjustedState = signal(false);
+  /** A pointer drag in the area is under way (the value is a raw preview until release). */
+  readonly picking = this.pickingState.asReadonly();
+  /** The last pick was moved to the nearest colour `adjust` accepts; false again on any change. */
+  readonly adjusted = this.adjustedState.asReadonly();
   /** The value when the panel opened: what Esc and "Cancel" go back to. */
   private openedWith = '';
   private dragging = false;
@@ -140,6 +167,7 @@ export class ColorPickerComponent implements FormValueControl<string> {
     this.value.set('');
     this.draft.set('');
     this.openedWith = '';
+    this.adjustedState.set(false);
   }
 
   /** Focuses the swatch. */
@@ -178,15 +206,16 @@ export class ColorPickerComponent implements FormValueControl<string> {
   private discard(): void {
     this.value.set(this.openedWith);
     this.draft.set(this.openedWith);
+    this.adjustedState.set(false);
     this.open.set(false);
   }
 
   /** "Add colour": the shown colour (a valid hex text first) is the choice. */
   protected add(): void {
-    if (this.disabled() || this.hexInvalid()) {
+    if (this.disabled() || this.hexInvalid() || !this.acceptable()) {
       return;
     }
-    const colour = normalise(this.draft()) ?? this.shown();
+    const colour = this.candidate();
     this.draft.set(colour);
     if (colour !== this.value()) {
       this.value.set(colour);
@@ -203,6 +232,7 @@ export class ColorPickerComponent implements FormValueControl<string> {
     event.preventDefault();
     area.setPointerCapture(event.pointerId);
     this.dragging = true;
+    this.pickingState.set(true);
     this.moveHandle(event, area);
     // Focus the brightness slider so the arrow keys continue from here.
     area.querySelector<HTMLInputElement>('input')?.focus({ preventScroll: true });
@@ -219,7 +249,26 @@ export class ColorPickerComponent implements FormValueControl<string> {
       return;
     }
     this.dragging = false;
+    this.pickingState.set(false);
     (event.currentTarget as HTMLElement).releasePointerCapture(event.pointerId);
+    this.settle();
+  }
+
+  /**
+   * A pick ended (pointer release in the area, a slider's `change`): a colour the caller does not
+   * accept moves to the nearest one it does, and the handles, the preview and the hex follow.
+   */
+  protected settle(): void {
+    const adjust = this.adjust();
+    const colour = this.value();
+    if (!adjust || !parseHex(colour)) {
+      return;
+    }
+    const nearest = adjust(colour);
+    if (nearest !== colour && parseHex(nearest)) {
+      this.value.set(nearest);
+      this.adjustedState.set(true);
+    }
   }
 
   private moveHandle(event: PointerEvent, area: HTMLElement): void {
@@ -249,6 +298,7 @@ export class ColorPickerComponent implements FormValueControl<string> {
 
   private setHsv(h: number, s: number, v: number): void {
     const hex = hsvToHex(h, s, v);
+    this.adjustedState.set(false);
     this.hsv.set([h, s, v]);
     // The linked signal keeps the model while the value is what it produced.
     this.value.set(hex);
@@ -263,6 +313,7 @@ export class ColorPickerComponent implements FormValueControl<string> {
   protected onHexInput(event: Event): void {
     const text = (event.target as HTMLInputElement).value;
     this.draft.set(text);
+    this.adjustedState.set(false);
     const colour = normalise(text);
     if (colour && colour !== this.value()) {
       this.value.set(colour);

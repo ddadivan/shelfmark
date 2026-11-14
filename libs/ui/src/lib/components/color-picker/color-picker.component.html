@@ -59,6 +59,7 @@
           [value]="brightness()"
           [disabled]="disabled()"
           (input)="onBrightness($event)"
+          (change)="settle()"
           (keydown.enter)="sliderEnter($event)"
         />
         <input
@@ -72,6 +73,7 @@
           [value]="saturation()"
           [disabled]="disabled()"
           (input)="onSaturation($event)"
+          (change)="settle()"
           (keydown.enter)="sliderEnter($event)"
         />
         <span class="ui-color-picker__handle" aria-hidden="true"></span>
@@ -87,6 +89,7 @@
         [value]="hue()"
         [disabled]="disabled()"
         (input)="onHue($event)"
+        (change)="settle()"
         (keydown.enter)="sliderEnter($event)"
       />
       <div class="ui-color-picker__fields">
@@ -126,7 +129,7 @@
         }}</ui-button>
         <ui-button
           [variant]="BUTTON_VARIANT.Primary"
-          [disabled]="disabled() || hexInvalid()"
+          [disabled]="disabled() || hexInvalid() || !acceptable()"
           (click)="add()"
           >{{ addLabel() }}</ui-button
         >

@@ -99,6 +99,33 @@ describe('AppearanceSettingsService', () => {
     expect(picker.open()).toBe(false);
   });
 
+  it('warns while the picker holds an unreadable colour, e.g. a typed hex (#415)', () => {
+    const { service, customTheme } = setup();
+    const { base, background } = CUSTOM_THEME_DEFAULT;
+
+    service.pickedColour.set(PALE);
+    expect(service.accentWarning()?.shade).toBe(nearestAccessibleAccent(PALE, base, background));
+    service.pickedColour.set(DEEP);
+    expect(service.accentWarning()).toBeNull();
+
+    service.pickedBackground.set('#000000');
+    expect(service.backgroundWarning()?.shade).toBe(nearestReadableBackground('#000000', base));
+    // On the dark base black is a fine background.
+    customTheme.set({ ...CUSTOM_THEME_DEFAULT, base: CUSTOM_THEME_BASE.Dark });
+    expect(service.backgroundWarning()).toBeNull();
+  });
+
+  it('gives the pickers the nearest readable shade of the current theme as `adjust` (#415)', () => {
+    const { service, customTheme } = setup();
+    const { base, background } = CUSTOM_THEME_DEFAULT;
+
+    expect(service.adjustAccent(PALE)).toBe(nearestAccessibleAccent(PALE, base, background));
+    expect(service.adjustAccent(DEEP)).toBe(DEEP);
+    expect(service.adjustBackground('#000000')).toBe(nearestReadableBackground('#000000', base));
+    customTheme.set({ ...CUSTOM_THEME_DEFAULT, base: CUSTOM_THEME_BASE.Dark });
+    expect(service.adjustBackground('#000000')).toBe('#000000');
+  });
+
   it('checks an own accent swatch without remembering it again', () => {
     const { service, addCustomColour, setAppearance, pickerRef } = setup();
 
