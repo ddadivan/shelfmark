@@ -25,6 +25,7 @@ describe('GET /api/export', () => {
 
   beforeEach(async () => {
     const { prisma } = t.db;
+    await prisma.linkRule.deleteMany();
     await prisma.link.deleteMany();
     await prisma.folder.deleteMany();
     await prisma.tag.deleteMany();
@@ -109,9 +110,43 @@ describe('GET /api/export', () => {
     expect(Date.parse(a?.createdAt ?? '')).not.toBeNaN();
   });
 
+  it('exports the domain rules in a full export only, sorted, with folder paths (#398)', async () => {
+    const { prisma } = t.db;
+    const userId = users.owner.userId;
+    const { sub, other } = await seed(userId);
+    await prisma.linkRule.createMany({
+      data: [
+        { userId, domain: 'youtube.com', folderId: sub.id, tagNames: ['video'] },
+        { userId, domain: 'arxiv.org', tagNames: ['paper'] },
+        { userId, domain: 'vimeo.com', folderId: other.id, tagNames: [] },
+      ],
+    });
+    await prisma.linkRule.create({
+      data: { userId: users.intruder.userId, domain: 'theirs.example', tagNames: ['x'] },
+    });
+    await prisma.folder.update({ where: { id: other.id }, data: { deletedAt: new Date() } });
+    const doc = (await owner().get('/api/export?format=json').expect(200)).body as ExportDocument;
+    expect(doc.rules).toEqual([
+      { domain: 'arxiv.org', folderPath: null, tags: ['paper'], createdAt: expect.any(String) },
+      { domain: 'vimeo.com', folderPath: null, tags: [], createdAt: expect.any(String) },
+      {
+        domain: 'youtube.com',
+        folderPath: ['Work', 'Docs "x"'],
+        tags: ['video'],
+        createdAt: expect.any(String),
+      },
+    ]);
+    const filtered = (await owner().get('/api/export?format=json&q=root').expect(200))
+      .body as ExportDocument;
+    expect(filtered.rules).toEqual([]);
+    const scoped = (await owner().get(`/api/export?format=json&folderId=${sub.id}`).expect(200))
+      .body as ExportDocument;
+    expect(scoped.rules).toEqual([]);
+  });
+
   it('exports an empty library as valid files', async () => {
     const json = await owner().get('/api/export?format=json').expect(200);
-    expect(json.body).toMatchObject({ folders: [], links: [] });
+    expect(json.body).toMatchObject({ folders: [], links: [], rules: [] });
     const html = await owner().get('/api/export?format=html').expect(200);
     expect(html.text).toContain('<!DOCTYPE NETSCAPE-Bookmark-file-1>');
     expect(html.text).not.toContain('<A ');

@@ -82,6 +82,7 @@ export type { ExportFormat } from './export/export-format.type';
 export type { ExportQuery } from './export/export-query.interface';
 export type { ExportFolder } from './export/export-folder.interface';
 export type { ExportLink } from './export/export-link.interface';
+export type { ExportRule } from './export/export-rule.interface';
 export type { ExportDocument } from './export/export-document.interface';
 export { EXPORT_FORMAT } from './export/export-format.const';
 export { EXPORT_SCHEMA_VERSION } from './export/export-schema-version.const';

@@ -8,6 +8,7 @@ describe('ExportService stream failure', () => {
     const secret = 'user-secret-value';
     const prisma = {
       folder: { findMany: async () => [] },
+      linkRule: { findMany: async () => [] },
       link: {
         findMany: async () => {
           throw new TypeError(secret);
