@@ -26,24 +26,26 @@
     }
   </span>
 </figure>
-<table class="ui-bar-chart__table">
-  <caption>
-    {{
-      label()
-    }}
-  </caption>
-  <thead>
-    <tr>
-      <th scope="col">{{ labelHeader() }}</th>
-      <th scope="col">{{ valueHeader() }}</th>
-    </tr>
-  </thead>
-  <tbody>
-    @for (row of rows(); track $index) {
+<div class="ui-bar-chart__data">
+  <table class="ui-bar-chart__table">
+    <caption>
+      {{
+        label()
+      }}
+    </caption>
+    <thead>
       <tr>
-        <th scope="row">{{ row.text }}</th>
-        <td>{{ row.value }}</td>
+        <th scope="col">{{ labelHeader() }}</th>
+        <th scope="col">{{ valueHeader() }}</th>
       </tr>
-    }
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      @for (row of rows(); track $index) {
+        <tr>
+          <th scope="row">{{ row.text }}</th>
+          <td>{{ row.value }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

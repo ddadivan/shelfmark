@@ -56,8 +56,8 @@ test.describe('admin usage stats (mock API)', () => {
       await pick(page, 'Admin pages', 'Stats');
       await expect(page).toHaveURL(/\/admin\/stats$/);
       // The page never scrolls sideways, also on a 360px phone.
-      const overflow = await page.evaluate(
-        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      const overflow = await page.evaluate<number>(
+        'document.documentElement.scrollWidth - document.documentElement.clientWidth',
       );
       expect(overflow).toBeLessThanOrEqual(0);
     },

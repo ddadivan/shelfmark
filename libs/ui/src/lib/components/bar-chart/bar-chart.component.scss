@@ -52,6 +52,7 @@
   white-space: nowrap;
 }
 
-.ui-bar-chart__table {
+// On a wrapper: a table never shrinks to the 1px of visually-hidden and would make its parent scroll.
+.ui-bar-chart__data {
   @include visually-hidden;
 }
