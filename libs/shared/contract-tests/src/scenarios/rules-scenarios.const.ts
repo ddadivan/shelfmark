@@ -158,6 +158,43 @@ export const RULES_SCENARIOS: readonly ContractScenario[] = [
 
   scenario(
     'rules',
+    'takes the folder and tags of each batch item as sent, and no rule with applyRules false',
+    async ({ rules, folders, links }) => {
+      const videos = await folders.create({ name: 'Videos' });
+      const reading = await folders.create({ name: 'Reading' });
+      await rules.create({ domain: 'youtube.com', folderId: videos.id, tags: ['video'] });
+      const { links: saved } = await links.createBatch({
+        folderId: reading.id,
+        applyRules: false,
+        items: [
+          {
+            url: 'https://youtube.com/a',
+            idempotencyKey: KEY_A,
+            folderId: videos.id,
+            tags: ['clip'],
+          },
+          { url: 'https://youtube.com/b', idempotencyKey: KEY_B },
+        ],
+      });
+      expectEqual(
+        saved.map((link) => [link.folderId, link.tags]),
+        [
+          [videos.id, ['clip']],
+          [reading.id, []],
+        ],
+      );
+      await expectError(
+        links.createBatch({
+          items: [{ url: 'https://youtube.com/c', idempotencyKey: KEY_C, folderId: MISSING_ID }],
+        }),
+        { status: 404 },
+        'item folder',
+      );
+    },
+  ),
+
+  scenario(
+    'rules',
     'flags a rule whose folder is in Trash and still adds its tags',
     async ({ rules, folders, links }) => {
       const videos = await folders.create({ name: 'Videos' });

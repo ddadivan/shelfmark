@@ -17,4 +17,11 @@ export interface CreateLinksBatchItem {
   faviconUrl?: string;
   /** Source hint (http(s), at most `LINK_LIMIT.UrlMax`) from a loaded preview; fetched later by the capture. */
   imageUrl?: string;
+  /**
+   * This link's folder (a UUID of one of the user's live folders), in place of the batch `folderId`;
+   * a client that showed a domain rule per line sends its folder here (#398).
+   */
+  folderId?: string;
+  /** This link's tag names, in place of the batch `tags` (same rules, at most `LINK_LIMIT.TagsMax`). */
+  tags?: string[];
 }

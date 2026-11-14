@@ -401,7 +401,8 @@ export class MockLinksApi implements LinksApi {
       if (problems.length > 0) {
         return throwError(() => mockHttpError(HttpStatusCode.BadRequest, problems));
       }
-      if (request.folderId !== undefined && !this.hasFolder(request.folderId)) {
+      const folderIds = [request.folderId, ...request.items.map((item) => item.folderId)];
+      if (folderIds.some((id) => id !== undefined && !this.hasFolder(id))) {
         return throwError(() => folderNotFound());
       }
       const links: LinkResponse[] = [];
@@ -427,10 +428,12 @@ export class MockLinksApi implements LinksApi {
         }
         // The first pasted link is the newest, as on the server.
         const at = new Date(now - fresh.length).toISOString();
-        const rule = this.data.ruleEffect(item.url);
+        // Like the API: the item's own folder and tags, else the batch's, else its domain rule.
+        const rule = request.applyRules === false ? null : this.data.ruleEffect(item.url);
+        const tags = item.tags ?? (request.tags?.length ? request.tags : (rule?.tags ?? []));
         const link: LinkResponse = {
           id: globalThis.crypto.randomUUID(),
-          folderId: request.folderId ?? rule?.folderId ?? null,
+          folderId: item.folderId ?? request.folderId ?? rule?.folderId ?? null,
           url: item.url,
           title: item.title ?? item.url,
           kind: deriveLinkKind(item.url),
@@ -441,7 +444,7 @@ export class MockLinksApi implements LinksApi {
           pinnedInFolderAt: null,
           pinned: false,
           lastOpenedAt: null,
-          tags: normalizeLinkTags(request.tags?.length ? request.tags : (rule?.tags ?? [])),
+          tags: normalizeLinkTags(tags),
           createdAt: at,
           updatedAt: at,
         };

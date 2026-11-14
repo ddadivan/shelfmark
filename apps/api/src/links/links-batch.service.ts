@@ -52,7 +52,10 @@ export class LinksBatchService {
     request: CreateLinksBatchRequest,
     isDemo = false,
   ): Promise<CreateLinksBatchResult> {
-    this.assertTagNames(request.tags);
+    this.assertTagNames([
+      ...(request.tags ?? []),
+      ...request.items.flatMap((item) => item.tags ?? []),
+    ]);
     this.assertDistinctKeys(request);
     const { planned, errors } = this.plan(request);
     if (planned.length === 0) {
@@ -67,8 +70,14 @@ export class LinksBatchService {
         const fresh = planned.filter((entry) => !replayed.has(entry.item.idempotencyKey));
         let created = new Map<string, LinkResponse>();
         if (fresh.length > 0) {
-          if (request.folderId !== undefined) {
-            await this.folders.requireOwned(tx, userId, request.folderId);
+          // The batch folder and every item folder must be live folders of the user.
+          const folderIds = new Set(
+            [request.folderId, ...fresh.map((entry) => entry.item.folderId)].filter(
+              (id): id is string => id !== undefined,
+            ),
+          );
+          for (const folderId of folderIds) {
+            await this.folders.requireOwned(tx, userId, folderId);
           }
           await this.assertFits(tx, userId, fresh.length, isDemo);
           created = await this.insert(tx, userId, await this.targets(tx, userId, request, fresh));
@@ -183,8 +192,8 @@ export class LinksBatchService {
   }
 
   /**
-   * Folder and tags of each new link: the request's when it sends them, else the domain rule of
-   * the link (#398). Tag lists are resolved once per distinct list (the tags lock is taken there,
+   * Folder and tags of each new link: the item's own, else the batch's, else the domain rule of
+   * the link (#398, unless `applyRules` is false). Tag lists are resolved once per distinct list (the tags lock is taken there,
    * after the folders lock).
    */
   private async targets(
@@ -193,19 +202,24 @@ export class LinksBatchService {
     request: CreateLinksBatchRequest,
     fresh: readonly PlannedBatchItem[],
   ): Promise<BatchTarget[]> {
-    const match = await this.rules.matcher(tx, userId);
+    const match = request.applyRules === false ? () => null : await this.rules.matcher(tx, userId);
     const resolved = new Map<string, string[]>();
     const targets: BatchTarget[] = [];
     for (const entry of fresh) {
-      const rule = match(entry.item.url);
-      const names = request.tags?.length ? request.tags : (rule?.tags ?? []);
+      const { item } = entry;
+      const rule = match(item.url);
+      const names = item.tags ?? (request.tags?.length ? request.tags : (rule?.tags ?? []));
       const key = JSON.stringify(names);
       let tagIds = resolved.get(key);
       if (tagIds === undefined) {
         tagIds = await this.tags.resolveNames(userId, names, tx);
         resolved.set(key, tagIds);
       }
-      targets.push({ entry, folderId: request.folderId ?? rule?.folderId ?? null, tagIds });
+      targets.push({
+        entry,
+        folderId: item.folderId ?? request.folderId ?? rule?.folderId ?? null,
+        tagIds,
+      });
     }
     return targets;
   }
