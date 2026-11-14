@@ -47,7 +47,15 @@ Updated as work goes on — every session resumes from here.
     - [#344](https://github.com/ddadivan/shelfmark/pull/344) visual regression screenshots (#340). 17 screens × desktop, tablet and phone × light and dark, compared in the Playwright container. The `visual:update` label regenerates and commits the baselines.
     - [#345](https://github.com/ddadivan/shelfmark/pull/345) contract tests (#341). 97 shared scenarios run against the web mock and the real API, and 12 mock drifts are fixed.
     - [#347](https://github.com/ddadivan/shelfmark/pull/347) component stylesheets under 4 kB (#342), merge after #344 (the visual check proves no change).
-  - Next: the author reviews and merges the five quality PRs (#343 before #346, #344 before #342), then the release PR `stage → main` (merge commit) with the author's review; before it the author turns on merge commits for `main` and may review the five translations (the privacy text first). After the release: check the Feedback inbox shows for the admin, and re-open Dependabot's pending updates against `stage` (#279 and #282 target `main`).
+  - Nov 13–14, 2026: everything above is merged into `stage`, plus:
+    - the author's stage review batches 4–7 (#337, #351, #353, #357) and the wide-screen font steps (#355);
+    - the test rebalance (#349, ADR 0043) in phases 1, 2a, 2b and 3 (#354, #358, #361): e2e keeps the journeys, the rest moved to component specs with CDK harnesses;
+    - CI builds the app once for the browser shards and Lighthouse, caches the browsers and checks the web coverage threshold (#362, PR #364);
+    - Lighthouse performance back above 0.9 with margin (#359, PR #360);
+    - the emoji picker for folders with search, categories, recent and own emoji (#363, PR #365);
+    - refactors of the largest stores and components (#366, PRs #367–#370).
+  - Nov 14, 2026, release preparation: the 16 migrations since the last release were applied in order to a database seeded on the `main` schema (PGlite, outside the repo). All apply cleanly, keep every row, backfill the link kind, starter views and folder positions, and copy the old feedback screenshot to `feedback_screenshots`. `nx run api:db-check` shows no drift from `schema.prisma`. None of them drops or renames a column that the code on `main` reads, so production keeps working between `prisma migrate deploy` and the switch to the new deployment. The security review of the release is in progress (#371).
+  - Next: the release waits for the author's command. Before it: #371 merged into `stage`, the promo videos re-recorded (#336), merge commits turned on for `main`. Then the release PR `stage → main` (merge commit) closes every issue in To release. After the release: production smoke (`BASE_URL=https://shelfmark-app.vercel.app npx nx e2e web-e2e`), the Feedback inbox shows for the admin (`ADMIN_EMAILS`), the Trash cleanup cron shows in Vercel, and Dependabot's pending updates are re-opened against `stage` (#279 and #282 target `main`).
 - [x] Motion in code (landing and app); promo video moved to stage 2
 
 ## 1. Problem and idea
